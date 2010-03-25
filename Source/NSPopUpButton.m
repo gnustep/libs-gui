@@ -28,16 +28,17 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include <Foundation/NSKeyValueObserving.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSPopUpButtonCell.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSMenuView.h"
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSPopUpButtonCell.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSMenuView.h"
 
 /*
  * class variables

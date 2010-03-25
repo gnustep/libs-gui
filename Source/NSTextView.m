@@ -45,10 +45,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -83,7 +85,7 @@
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 
 /*

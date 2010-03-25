@@ -29,23 +29,24 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSForm.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSPrinter.h"
-#include "AppKit/NSPrintPanel.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPrintOperation.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSSavePanel.h"
-#include "AppKit/NSView.h"
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSPrinting.h"
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSForm.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSPrinter.h"
+#import "AppKit/NSPrintPanel.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSSavePanel.h"
+#import "AppKit/NSView.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSPrinting.h"
 
 static NSPrintPanel *shared_instance;
 

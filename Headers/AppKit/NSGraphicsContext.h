@@ -32,10 +32,10 @@
 #define _NSGraphicsContext_h_INCLUDE
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSMapTable.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSMapTable.h>
 
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSDate;
 @class NSDictionary;
@@ -125,7 +125,7 @@ typedef enum _GSTextDrawingMode
 } GSTextDrawingMode;
 
 // We have to load this after the NSCompositingOperation are defined!!!
-#include <GNUstepGUI/GSMethodTable.h>
+#import <GNUstepGUI/GSMethodTable.h>
 
 /*
  * Window ordering

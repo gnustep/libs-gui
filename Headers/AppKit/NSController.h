@@ -28,7 +28,7 @@
 #ifndef _GNUstep_H_NSController
 #define _GNUstep_H_NSController
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 

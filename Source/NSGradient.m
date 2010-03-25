@@ -29,7 +29,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <Foundation/NSGeometry.h>
+#import <Foundation/NSException.h>
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorSpace.h"

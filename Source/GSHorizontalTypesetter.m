@@ -25,22 +25,23 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GSHorizontalTypesetter.h"
 
 #include <math.h>
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSTextAttachment.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextStorage.h"
-#include "GNUstepGUI/GSLayoutManager.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSTextAttachment.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
+#import "GNUstepGUI/GSLayoutManager.h"
+#import "GNUstepGUI/GSHorizontalTypesetter.h"
 
 
 

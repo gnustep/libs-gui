@@ -26,17 +26,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSPopUpButtonCell.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "config.h"
+#import <Foundation/NSValue.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSPopUpButtonCell.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
 
 /* The image to use in a specific popupbutton depends on type and
  * preferred edge; that is, _pbc_image[0] if it is a

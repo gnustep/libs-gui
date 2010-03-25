@@ -1,3 +1,24 @@
+2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSController.h
+	* Headers/AppKit/NSGlyphGenerator.h
+	* Headers/AppKit/NSGradient.h
+	* Headers/AppKit/NSGraphicsContext.h
+	* Headers/AppKit/NSPopUpButton.h
+	* Headers/AppKit/NSShadow.h
+	* Source/NSPopUpButtonCell.m
+	* Source/NSGlyphGenerator.m
+	* Source/NSPopUpButton.m
+	* Source/NSMenu.m
+	* Source/NSGradient.m
+	* Source/GSHorizontalTypesetter.m
+	* Source/NSTextView.m
+	* Source/NSShadow.m
+	* Source/NSPrintPanel.m
+	* Source/NSSpellChecker.m
+	* Source/NSDocument.m: Yet another bit of #include -> #import
+	replacement. Replace includes of Foundation.h.
+
 2010-03-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSColorList.h

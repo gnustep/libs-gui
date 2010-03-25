@@ -33,31 +33,36 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSNotification.h>
+#import "config.h"
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNotificationQueue.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSPopUpButtonCell.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSAttributedString.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSPopUpButtonCell.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSAttributedString.h"
 
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
 
 /*
   Drawing related:

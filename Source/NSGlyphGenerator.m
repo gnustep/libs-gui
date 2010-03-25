@@ -25,15 +25,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDictionary.h>
-#include <GNUstepBase/Unicode.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
+#import <GNUstepBase/Unicode.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGlyphGenerator.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGlyphGenerator.h"
 /* just for NSAttachmentCharacter */
-#include "AppKit/NSTextAttachment.h"
-#include "GNUstepGUI/GSFontInfo.h"
+#import "AppKit/NSTextAttachment.h"
+#import "GNUstepGUI/GSFontInfo.h"
 
 static NSGlyphGenerator* instance;
 

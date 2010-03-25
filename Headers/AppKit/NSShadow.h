@@ -32,7 +32,8 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-#import <Foundation/Foundation.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
 
 @class NSColor;
 

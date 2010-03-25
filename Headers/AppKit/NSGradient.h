@@ -32,7 +32,13 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-#import <Foundation/Foundation.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+
+@class NSArray;
+@class NSBezierPath;
+@class NSColor;
+@class NSColorSpace;
 
 typedef NSUInteger NSGradientDrawingOptions;
 
@@ -40,10 +46,6 @@ enum {
   NSGradientDrawsBeforeStartingLocation = 1,
   NSGradientDrawsAfterEndingLocation = 2
 };
-
-@class NSBezierPath;
-@class NSColor;
-@class NSColorSpace;
 
 @interface NSGradient : NSObject <NSCopying, NSCoding>
 {

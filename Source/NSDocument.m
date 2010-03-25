@@ -28,19 +28,25 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSData.h>
-#include "AppKit/NSBox.h"
-#include "AppKit/NSDocument.h"
-#include "AppKit/NSFileWrapper.h"
-#include "AppKit/NSSavePanel.h"
-#include "AppKit/NSPageLayout.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPrintOperation.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSView.h"
-#include "NSDocumentFrameworkPrivate.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSUndoManager.h>
+#import <Foundation/NSURL.h>
+#import "AppKit/NSBox.h"
+#import "AppKit/NSDocument.h"
+#import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSSavePanel.h"
+#import "AppKit/NSPageLayout.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSView.h"
+#import "NSDocumentFrameworkPrivate.h"
 
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSDocument
 

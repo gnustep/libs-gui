@@ -32,10 +32,11 @@
 #ifndef _GNUstep_H_NSPopUpButton
 #define _GNUstep_H_NSPopUpButton
 
-#include <Foundation/Foundation.h>
+#import <Foundation/NSGeometry.h>
 
-#include <AppKit/NSButton.h>
-#include <AppKit/NSMenuItem.h>
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSMenuItem.h>
 
 @class NSString;
 @class NSArray;

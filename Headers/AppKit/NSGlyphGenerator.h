@@ -31,9 +31,11 @@
 #define _GNUstep_H_NSGlyphGenerator
 #import <GNUstepBase/GSVersionMacros.h>
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
 // define NSGlyph
 #import <AppKit/NSFont.h>
+
+@class NSAttributedString;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
