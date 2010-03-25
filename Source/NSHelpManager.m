@@ -27,28 +27,29 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSArchiver.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSFileWrapper.h"
-#include "AppKit/NSHelpManager.h"
-#include "AppKit/NSHelpPanel.h"
-#include "AppKit/NSHelpPanel.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSTextStorage.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSHelpManager.h"
+#import "AppKit/NSHelpPanel.h"
+#import "AppKit/NSHelpPanel.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSTextStorage.h"
 
-#include "GNUstepGUI/GSHelpManagerPanel.h"
+#import "GNUstepGUI/GSHelpManagerPanel.h"
 
 @implementation NSBundle (NSHelpManager)
 

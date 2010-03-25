@@ -24,18 +24,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <GNUstepGUI/GSWindowDecorationView.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
 
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
+#import <GNUstepGUI/GSWindowDecorationView.h>
+#import "AppKit/NSColor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSTheme.h"
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSTheme.h"
-
-#include "NSToolbarFrameworkPrivate.h"
+#import "NSToolbarFrameworkPrivate.h"
 
 @implementation GSWindowDecorationView
 

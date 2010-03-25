@@ -31,9 +31,9 @@
 #define _GNUstep_H_NSImage
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSGraphicsContext.h>
-#include <Foundation/NSBundle.h>
-#include <AppKit/NSBitmapImageRep.h>
+#import <AppKit/NSGraphicsContext.h>
+#import <Foundation/NSBundle.h>
+#import <AppKit/NSBitmapImageRep.h>
 
 @class NSString;
 @class NSMutableArray;

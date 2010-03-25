@@ -31,8 +31,9 @@
 #define _GNUstep_H_NSImageRep
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;

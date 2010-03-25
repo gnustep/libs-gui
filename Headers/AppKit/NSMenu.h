@@ -30,11 +30,11 @@
 #define _GNUstep_H_NSMenu
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/NSMenuItem.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSEvent;

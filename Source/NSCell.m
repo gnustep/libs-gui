@@ -1432,7 +1432,7 @@ static NSColor *dtxtCol;
 {
   SEL action = [self action];
 
-  if ([sender respondsTo: @selector(sendAction:to:)])
+  if ([sender respondsToSelector: @selector(sendAction:to:)])
     {
       return [sender sendAction: action to: [self target]];
     }

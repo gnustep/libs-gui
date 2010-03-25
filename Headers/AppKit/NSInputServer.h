@@ -29,9 +29,10 @@
 #define _GNUstep_H_NSInputServer
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <objc/Protocol.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+
+@class NSString;
 
 @protocol NSInputServerMouseTracker
 - (BOOL) mouseDownOnCharacterIndex: (unsigned)index

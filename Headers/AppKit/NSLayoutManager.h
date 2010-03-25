@@ -29,8 +29,9 @@
 #define _GNUstep_H_NSLayoutManager
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <GNUstepGUI/GSLayoutManager.h>
-#include <AppKit/NSTextView.h>
+#import <Foundation/NSGeometry.h>
+#import <GNUstepGUI/GSLayoutManager.h>
+#import <AppKit/NSTextView.h>
 
 @class NSParagraphStyle;
 

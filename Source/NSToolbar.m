@@ -29,31 +29,32 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSNull.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSDecimalNumber.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSToolbar.h"
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSToolbarView.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNull.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDecimalNumber.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSToolbar.h"
+#import "AppKit/NSToolbarItem.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSToolbarView.h"
 
-#include "NSToolbarFrameworkPrivate.h"
-#include "GSToolbarCustomizationPalette.h"
+#import "NSToolbarFrameworkPrivate.h"
+#import "GSToolbarCustomizationPalette.h"
 
 // internal
 static NSNotificationCenter *nc = nil;

@@ -30,7 +30,7 @@
 #define _GNUstep_H_NSMovieView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 @class NSMovie;
 

@@ -33,12 +33,14 @@
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenuView.h"
+#import "AppKit/NSWindow.h"
 
 /*
  * class variables

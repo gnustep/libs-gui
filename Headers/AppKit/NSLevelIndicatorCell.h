@@ -30,9 +30,9 @@
 #ifndef _GNUstep_H_NSLevelIndicatorCell
 #define _GNUstep_H_NSLevelIndicatorCell
 
-#include "AppKit/NSActionCell.h"
+#import "AppKit/NSActionCell.h"
 // For the tick mark 
-#include "AppKit/NSSliderCell.h"
+#import "AppKit/NSSliderCell.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 

@@ -26,17 +26,18 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSToolbar.h"
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSPopUpButton.h"
-#include "NSToolbarFrameworkPrivate.h"
-#include "GSToolbarCustomizationPalette.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSToolbar.h"
+#import "AppKit/NSToolbarItem.h"
+#import "AppKit/NSPopUpButton.h"
+#import "NSToolbarFrameworkPrivate.h"
+#import "GSToolbarCustomizationPalette.h"
 
 #define DEBUG_LEVEL @"Toolbar"
 

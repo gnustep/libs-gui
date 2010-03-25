@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSImageCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSCell.h>
+#import <AppKit/NSCell.h>
 
 /**
  *  <p>Enumeration of the ways that you can display an image in an

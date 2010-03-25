@@ -27,6 +27,7 @@
 */
 
 #import "config.h"
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"

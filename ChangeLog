@@ -1,5 +1,36 @@
 2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSImageCell.h
+	* Headers/AppKit/NSLevelIndicator.h
+	* Headers/AppKit/NSMatrix.h
+	* Headers/AppKit/NSMenu.h
+	* Headers/AppKit/NSLayoutManager.h
+	* Headers/AppKit/NSInputServer.h
+	* Headers/AppKit/NSImageRep.h
+	* Headers/AppKit/NSMovieView.h
+	* Headers/AppKit/NSMovie.h
+	* Headers/AppKit/NSHelpManager.h
+	* Headers/AppKit/NSMenuItemCell.h
+	* Headers/AppKit/NSInterfaceStyle.h
+	* Headers/AppKit/NSMenuItem.h
+	* Headers/AppKit/NSInputManager.h
+	* Headers/AppKit/NSLevelIndicatorCell.h
+	* Headers/AppKit/NSMenuView.h
+	* Headers/AppKit/NSHelpPanel.h
+	* Headers/AppKit/NSImage.h
+	* Headers/AppKit/NSKeyValueBinding.h
+	* Source/NSPopUpButtonCell.m
+	* Source/GSWindowDecorationView.m
+	* Source/NSPopUpButton.m
+	* Source/NSHelpManager.m
+	* Source/NSToolbar.m
+	* Source/GSToolbarCustomizationPalette.m
+	* Source/GSTitleView.m
+	* Source/NSMenuView.m
+	* Source/NSCell.m: Some more #include -> #import replacement.
+
+2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSNibLoading.m
 	(NSIBObjectData-nibInstantiateWithOwner:topLevelObjects:): Loop
 	over _names instead of _objects.

@@ -31,12 +31,13 @@
 #define __GNUstep_H_NSHelpManager
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSMapTable.h>
-#include <AppKit/NSApplication.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSApplication.h>
 
 @class NSAttributedString;
+@class NSString;
+@class NSMapTable;
 
 @interface NSBundle (NSHelpManager)
 - (NSString *)pathForHelpResource:(NSString *)fileName;

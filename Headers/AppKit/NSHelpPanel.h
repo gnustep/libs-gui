@@ -31,10 +31,10 @@
 #define _GNUstep_H_NSHelpPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#if	OS_API_VERSION(GS_API_OPENSTEP,GS_API_MACOSX) || GS_API_VERSION(GS_API_NONE, GS_API_LATEST)
+#if OS_API_VERSION(GS_API_OPENSTEP,GS_API_MACOSX) || GS_API_VERSION(GS_API_NONE, GS_API_LATEST)
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPanel.h>
 
 @class NSString;
 
@@ -81,12 +81,6 @@
 // Printing 
 //
 - (void) print: (id)sender;
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder *)aCoder;
-- (id) initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

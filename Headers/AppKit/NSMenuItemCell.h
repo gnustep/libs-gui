@@ -29,8 +29,8 @@
 #define _GNUstep_H_NSMenuItemCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSMenuItem.h>
+#import <AppKit/NSButtonCell.h>
+#import <AppKit/NSMenuItem.h>
 
 @class NSMenuView;
 

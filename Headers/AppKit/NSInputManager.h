@@ -29,12 +29,12 @@
 #define _GNUstep_H_NSInputManager
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <objc/Protocol.h>
-#include <objc/objc.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAttributedString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
 
+@class NSArray;
+@class NSAttributedString;
+@class NSMutableArray;
 @class NSInputServer;
 @class NSEvent;
 @class NSImage;

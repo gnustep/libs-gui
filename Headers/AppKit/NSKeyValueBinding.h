@@ -30,8 +30,8 @@
 #define _GNUstep_H_NSKeyValueBinding
 
 #import <GNUstepBase/GSVersionMacros.h>
-#include <Foundation/NSObject.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 

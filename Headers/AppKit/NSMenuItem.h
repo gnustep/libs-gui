@@ -34,8 +34,8 @@
 #define _GNUstep_H_NSMenuItem
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 @class NSAttributedString;
 @class NSString;

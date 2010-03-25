@@ -24,22 +24,25 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSRunLoop.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
 
-#include <AppKit/NSApplication.h>
-#include "AppKit/NSAttributedString.h"
-#include <AppKit/NSButton.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
-#include <GNUstepGUI/GSTitleView.h>
-#include "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSTitleView.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @implementation GSTitleView
 

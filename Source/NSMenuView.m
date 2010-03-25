@@ -28,24 +28,32 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSDebug.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDate.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+//#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSPopUpButtonCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "AppKit/NSImage.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSPopUpButtonCell.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
 
-#include "GNUstepGUI/GSTheme.h"
-#include "GNUstepGUI/GSTitleView.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSTitleView.h"
 
-#include <Foundation/Foundation.h>
 
 typedef struct _GSCellRect {
   NSRect rect;
@@ -60,7 +68,7 @@ typedef struct _GSCellRect {
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <GNUstepBase/GSIArray.h>
+#import <GNUstepBase/GSIArray.h>
 
 static NSMapTable *viewInfo = 0;
 

@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSMatrix
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSControl.h>
+#import <AppKit/NSControl.h>
 
 @class NSArray;
 @class NSMutableArray;

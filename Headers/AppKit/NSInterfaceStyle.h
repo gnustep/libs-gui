@@ -31,7 +31,7 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSResponder;
 @class NSString;

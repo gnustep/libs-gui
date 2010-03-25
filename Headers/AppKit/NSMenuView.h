@@ -29,23 +29,23 @@
 #define _GNUstep_H_NSMenuView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSNotification.h>
+#import <AppKit/NSMenu.h>
+#import <AppKit/NSMenuItem.h>
+//#import <AppKit/NSMenuItemCell.h>
+#import <AppKit/NSView.h>
 
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/NSMenuItemCell.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-
+@class NSArray;
+@class NSMutableArray;
+@class NSNotification;
+@class NSString;
 @class NSColor;
+@class NSMenuItemCell;
 @class NSPopUpButton;
+@class NSEvent;
 @class NSFont;
+@class NSScreen;
+@class NSWindow;
+
 
 /**
    The NSMenu class uses an object implementing the NSMenuView protocol to
