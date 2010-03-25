@@ -1897,7 +1897,8 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // iterate over all objects, instantiate, awaken objects and fill
   // in top level array.
-  objs = NSAllMapTableKeys(_objects);
+  // We use the _names map not the _objects map here. This seems to give better results.
+  objs = NSAllMapTableKeys(_names);
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {

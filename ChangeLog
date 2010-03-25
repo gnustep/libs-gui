@@ -1,5 +1,11 @@
 2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSNibLoading.m
+	(NSIBObjectData-nibInstantiateWithOwner:topLevelObjects:): Loop
+	over _names instead of _objects.
+
+2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSController.h
 	* Headers/AppKit/NSGlyphGenerator.h
 	* Headers/AppKit/NSGradient.h
