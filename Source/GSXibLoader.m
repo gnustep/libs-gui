@@ -905,6 +905,7 @@ didStartElement: (NSString *)elementName
   elementName = [element type];
   if ([@"object" isEqualToString: elementName])
     {
+      GSXibElement *last;
       NSString *classname = [element attributeForKey: @"class"];
       Class c = [self classForClassName: classname];
       id o, r;
@@ -935,7 +936,7 @@ didStartElement: (NSString *)elementName
 	}
 
       // push
-      GSXibElement *last = currentElement;
+      last = currentElement;
       currentElement = element;
 
       // Create instance.

@@ -2773,10 +2773,12 @@ in the main thread.
  */
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
+  NSValue *v;
+
   if (NSIsEmptyRect(invalidRect))
     return; // avoid unnecessary work when rectangle is empty
 	
-  NSValue *v = [[NSValue alloc]
+  v = [[NSValue alloc]
 		 initWithBytes: &invalidRect
 		 objCType: @encode(NSRect)];
 
