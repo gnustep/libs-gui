@@ -5140,26 +5140,30 @@ other than copy/paste or dragging. */
 
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
-      /* Shift-click is for extending an existing selection using 
+      /* Shift-click is for extending or shrinking an existing selection using 
 	 the existing granularity */
+      proposedRange = _layoutManager->_selected_range;
       granularity = _layoutManager->_selectionGranularity;
-      /* Compute the new selection */
-      proposedRange = NSMakeRange (startIndex, 0);
-      proposedRange = NSUnionRange (_layoutManager->_selected_range,
-	proposedRange);
-      proposedRange = [self selectionRangeForProposedRange: proposedRange
-	granularity: granularity];
-      /* Merge it with the old one */
-      proposedRange = NSUnionRange (_layoutManager->_selected_range,
-	proposedRange);
-      /* Now decide what happens if the user shift-drags.  The range 
-	 will be based in startIndex, so we need to adjust it. */
-      if (startIndex <= _layoutManager->_selected_range.location) 
+
+      /* If the clicked point is closer to the left end of the current selection
+	 adjust the left end of the selected range */
+      if (startIndex < proposedRange.location + proposedRange.length / 2)
 	{
-	  startIndex = NSMaxRange (proposedRange);
+	  proposedRange = NSMakeRange(startIndex,
+				      NSMaxRange(proposedRange) - startIndex);
+	  proposedRange = [self selectionRangeForProposedRange: proposedRange
+						   granularity: granularity];
+	  /* Prepare for shift-dragging. Anchor is at the right end. */
+	  startIndex = NSMaxRange(proposedRange);
 	}
-      else 
+      /* otherwise, adjust the right end of the selected range */
+      else
 	{
+	  proposedRange = NSMakeRange(proposedRange.location,
+				      startIndex - proposedRange.location);
+	  proposedRange = [self selectionRangeForProposedRange: proposedRange
+						   granularity: granularity];
+	  /* Prepare for shift-dragging. Anchor is at the left end. */
 	  startIndex = proposedRange.location;
 	}
     }

@@ -1,5 +1,9 @@
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-mouseDown:): Allow shift-clicking to
+	shrink the current selection. Comes handy when you accidentally
+	select a few characters too much.
+
 	* Source/NSTextView.m (-performDragOperation:): Select pasted text
 	after a DnD operation.
 
