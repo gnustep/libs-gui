@@ -1,5 +1,10 @@
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindowController.m (-synchronizeWindowTitleWithDocumentName):
+	Show a document's represented file name also when its display name
+	is equal to the last path component of the file	name, since that
+	is what NSDocument uses by default for compatibility with OS X.
+
 	* Source/NSWindowController.m (-_windowWillClose:): Extend
 	lifetime of the window controller to the end of the current event
 	cycle to prevent crashes due to a premature release after the

@@ -399,7 +399,11 @@
       NSString *title = [self windowTitleForDocumentDisplayName: displayName];
 
       /* If they just want to display the filename, use the fancy method */
-      if (filename != nil && [title isEqualToString: filename])
+      /* NB For compatibility with Mac OS X, a document display name is equal
+         to its last path component, so we check for that here too */
+      if (filename != nil &&
+	  ([title isEqualToString: filename] ||
+	   [title isEqualToString: [filename lastPathComponent]]))
         {
           [_window setTitleWithRepresentedFilename: filename];
         }
