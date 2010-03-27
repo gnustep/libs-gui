@@ -1,3 +1,22 @@
+2010-03-27 David Chisnall <theraven@gna.org>
+
+	* Source/NSWindow.m
+	* Source/GSNibLoading.m
+	* Source/NSSavePanel.m
+	* Source/NSPasteboard.m
+	* Source/NSInterfaceStyle.m
+	* Source/NSGraphicsContext.m
+	* Source/GSToolTips.m
+	* Source/NSView.m
+	* Headers/AppKit/AppKitDefines.h
+	* Headers/AppKit/NSWindow.h
+	* Headers/AppKit/NSResponder.h
+	* Headers/AppKit/NSView.h
+	Removed all uses of @defs() from -gui, so it now compiles cleanly with the
+	non-fragile ABI.  All ivars that must be accessed from other classes are
+	now wrapped in PACKAGE_SCOPE.  With clang, this expands to @package, with
+	GCC it expands to @public.  
+
 2010-03-25 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/GSXibLoader.m,
