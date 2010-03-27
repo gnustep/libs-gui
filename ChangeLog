@@ -1,5 +1,13 @@
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Headers/AppKit/NSResponder.h (-scrollToBeginningOfDocument:,
+	-scrollToEndOfDocument:):
+	* Source/NSScrollView.m (-scrollToBeginningOfDocument:,
+	-scrollToEndOfDocument:):
+	* Source/NSTextView_actions.m (-scrollToBeginningOfDocument:,
+	-scrollToEndOfDocument:):
+	Implement additional NSResponder action methods.
+
 	* Source/NSAttributedString.m (-nextWordFromIndex:forward:):
 	Move to the next end of a word rather than the beginning of the
 	next word so users can quickly navigate to either end of words.

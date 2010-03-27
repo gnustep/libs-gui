@@ -1368,6 +1368,16 @@ and layout is left-to-right */
   [[self enclosingScrollView] scrollPageUp: sender];
 }
 
+- (void) scrollToBeginningOfDocument: (id)sender
+{
+  [[self enclosingScrollView] scrollToBeginningOfDocument: sender];
+}
+
+- (void) scrollToEndOfDocument: (id)sender
+{
+  [[self enclosingScrollView] scrollToEndOfDocument: sender];
+}
+
 - (void) centerSelectionInVisibleArea: (id)sender
 {
   NSRange range;

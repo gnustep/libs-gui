@@ -730,6 +730,56 @@ static float scrollerWidth;
   [_contentView _scrollToPoint: point];
 }
 
+- (void) scrollToBeginningOfDocument: (id)sender
+{
+  NSRect  clipViewBounds, documentRect;
+  NSPoint point;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+      documentRect = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+      documentRect = [_contentView documentRect];
+    }
+  point = documentRect.origin;
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      point.y = NSMaxY(documentRect) - NSHeight(clipViewBounds);
+      if (point.y < 0)
+        point.y = 0;
+    }
+  [_contentView _scrollToPoint: point];
+}
+
+- (void) scrollToEndOfDocument: (id)sender
+{
+  NSRect  clipViewBounds, documentRect;
+  NSPoint point;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+      documentRect = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+      documentRect = [_contentView documentRect];
+    }
+  point = documentRect.origin;
+  if (_contentView == nil || _contentView->_rFlags.flipped_view)
+    {
+      point.y = NSMaxY(documentRect) - NSHeight(clipViewBounds);
+      if (point.y < 0)
+        point.y = 0;
+    }
+  [_contentView _scrollToPoint: point];
+}
+
 //
 // This method is here purely for nib compatibility.  This is the action
 // connected to by NSScrollers in IB when building a scrollview.
