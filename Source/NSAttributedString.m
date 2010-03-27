@@ -577,18 +577,18 @@ create_error(int code, NSString* desc)
 
   if (isForward)
     {
-      /* What we want to do is: move forward to the next chunk of word
-	 separator characters, skip them all, and return the location
-	 just after them.  */
+      /* What we want to do is: move forward to the next chunk of
+	 non-word separator characters, skip them all, and return the
+	 location just after them.  */
 
       if (location == length)
 	{
 	  return length;
 	}
 
-      /* Move forward to the next word-separator.  */
+      /* Move forward to the next non-word separator.  */
       range = NSMakeRange (location, length - location);
-      range = [str rangeOfCharacterFromSet: wordBreakCSet
+      range = [str rangeOfCharacterFromSet: wordCSet
 		                   options: NSLiteralSearch
                           	     range: range];
       if (range.location == NSNotFound)
@@ -596,12 +596,12 @@ create_error(int code, NSString* desc)
 	  return length;
 	}
       /* rangeOfCharacterFromSet: options: range: only returns the range
-	 of the first word-separator character ... we want to skip
+	 of the first non-word-separator character ... we want to skip
 	 them all!  So we need to search again, this time for the
-	 first non-word-separator character, and return the first such
+	 first word-separator character, and return the first such
 	 character.  */
       range = NSMakeRange (range.location, length - range.location);
-      range = [str rangeOfCharacterFromSet: wordCSet
+      range = [str rangeOfCharacterFromSet: wordBreakCSet
 		                   options: NSLiteralSearch
                           	     range: range];
       if (range.location == NSNotFound)
