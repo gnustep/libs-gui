@@ -221,6 +221,8 @@ PACKAGE_SCOPE
 - (void) scrollLineUp: (id)sender;
 - (void) scrollPageDown: (id)sender;
 - (void) scrollPageUp: (id)sender;
+- (void) scrollToBeginningOfDocument: (id)sender;
+- (void) scrollToEndOfDocument: (id)sender;
 - (void) selectAll: (id)sender;
 - (void) selectLine: (id)sender;
 - (void) selectParagraph: (id)sender;
