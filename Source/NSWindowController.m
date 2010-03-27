@@ -261,6 +261,7 @@
 	 nothing to do here. */
       if ([_window isReleasedWhenClosed])
 	{
+	  RETAIN(self);
 	  if ([_window delegate] == self) 
 	    {
 	      [_window setDelegate: nil];
@@ -281,6 +282,7 @@
 	  [self setWindow: nil];
 
 	  [_document _removeWindowController: self];
+	  AUTORELEASE(self);
 	}
     }
 }
