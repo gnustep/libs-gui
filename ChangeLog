@@ -1,5 +1,8 @@
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-performDragOperation:): Select pasted text
+	after a DnD operation.
+
 	* Source/NSWindowController.m (-synchronizeWindowTitleWithDocumentName):
 	Show a document's represented file name also when its display name
 	is equal to the last path component of the file	name, since that

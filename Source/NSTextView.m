@@ -4933,8 +4933,7 @@ other than copy/paste or dragging. */
 				    restrictedToTypesFromArray: types];
   unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  if (flags != NSDragOperationNone
-      && ![type isEqual:NSColorPboardType])
+  if (flags != NSDragOperationNone && ![type isEqual: NSColorPboardType])
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
@@ -5016,9 +5015,13 @@ other than copy/paste or dragging. */
      selection and hence _dragTargetLocation==NSNotFound in that case. */
   NSSelectionGranularity gran = [self selectionGranularity];
   NSRange sourceRange = [self selectedRange];
+  NSRange changeRange;
+  NSPasteboard *pboard;
+  NSString *type;
+
   if (_dragTargetLocation != NSNotFound)
     {
-      NSRange changeRange = NSMakeRange(_dragTargetLocation, 0);
+      changeRange = NSMakeRange(_dragTargetLocation, 0);
       [self _draggingReleaseInsertionPoint];
       [self setSelectedRange: changeRange];
     }
@@ -5034,7 +5037,22 @@ other than copy/paste or dragging. */
 	}
       [self replaceCharactersInRange: sourceRange withString: @""];
     }
-  return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
+
+  changeRange = [self rangeForUserTextChange];
+  pboard = [sender draggingPasteboard];
+  type = [self preferredPasteboardTypeFromArray: [pboard types]
+	       restrictedToTypesFromArray: [self readablePasteboardTypes]];
+  if ([self readSelectionFromPasteboard: pboard type: type])
+    {
+      if (![type isEqual: NSColorPboardType])
+	{
+	  changeRange.length =
+	    [self selectedRange].location - changeRange.location;
+	  [self setSelectedRange: changeRange];
+	}
+      return YES;
+    }
+  return NO;
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
