@@ -569,6 +569,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 - (void) deleteForward: (id)sender
 {
   NSRange range = [self rangeForUserTextChange];
+  NSDictionary *attributes;
   
   if (range.location == NSNotFound)
     {
@@ -603,15 +604,20 @@ static NSNumber *float_plus_one(NSNumber *cur)
       return;
     }
 
+  attributes = RETAIN([_textStorage attributesAtIndex: range.location
+				       effectiveRange: NULL]);
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
+  [self setTypingAttributes: attributes];
+  RELEASE(attributes);
   [self didChangeText];
 }
 
 - (void) deleteBackward: (id)sender
 {
   NSRange range = [self rangeForUserTextChange];
+  NSDictionary *attributes;
   
   if (range.location == NSNotFound)
     {
@@ -647,6 +653,8 @@ static NSNumber *float_plus_one(NSNumber *cur)
       return;
     }
 
+  attributes = RETAIN([_textStorage attributesAtIndex: range.location
+				       effectiveRange: NULL]);
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
@@ -659,6 +667,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   NSRange linerange;
   unsigned maxRange;
   unsigned endCorrection = 0;
+  NSDictionary *attributes;
 
   if (range.location == NSNotFound)
     {
@@ -704,9 +713,13 @@ static NSNumber *float_plus_one(NSNumber *cur)
     }
 
   ASSIGN(killBuffer, [[_textStorage string] substringWithRange: range]);
+  attributes = RETAIN([_textStorage attributesAtIndex: range.location
+				       effectiveRange: NULL]);
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
+  [self setTypingAttributes: attributes];
+  RELEASE(attributes);
   [self didChangeText];
 }
 

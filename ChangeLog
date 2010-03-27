@@ -1,5 +1,14 @@
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	* Source/NSTextView_actions.m (-deleteForward:, -deleteBackward:,
+	-deleteToEndOfLine:): Usability improvements: When setting the
+	cursor to the beginning of a line, set the typing attributes to
+	the attributes of the first character of that line rather than the
+	preceding newline. When deleting text, set the typing attributes
+	to those of the first deleted character rather than those of the
+	character preceding the deleted range.
+
 	* Source/NSTextView.m (-mouseDown:): Allow shift-clicking to
 	shrink the current selection. Comes handy when you accidentally
 	select a few characters too much.

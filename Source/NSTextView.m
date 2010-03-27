@@ -3597,7 +3597,9 @@ afterString in order over charRange.
 	    {
 	      NSDictionary *dict;
 	    
-	      if (charRange.location > 0)
+	      if (charRange.location > 0 &&
+		  [[_textStorage string] characterAtIndex:
+		      (charRange.location - 1)] != '\n')
 		{
 		  /* If the insertion point is after a bold word, for
 		     example, we need to use bold for further
