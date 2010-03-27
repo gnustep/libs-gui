@@ -46,11 +46,13 @@
 
 @interface NSResponder : NSObject <NSCoding>
 {
+PACKAGE_SCOPE
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
   NSInterfaceStyle	_interface_style;
 #else
   int			_interface_style;
 #endif
+@protected
   NSResponder		*_next_responder;
 
   /*

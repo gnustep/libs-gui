@@ -28,6 +28,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define EXPOSE_NSThread_IVARS
+
 #import <Foundation/NSGeometry.h> 
 #import <Foundation/NSString.h> 
 #import <Foundation/NSArray.h> 
@@ -52,8 +54,6 @@
 #import "AppKit/DPSOperators.h"
 #import "GNUstepGUI/GSVersion.h"
 #import "GNUstepGUI/GSDisplayServer.h"
-
-typedef struct { @defs(NSThread) } *TInfo;
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
@@ -97,7 +97,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  return (NSGraphicsContext*) ((TInfo)th)->_gcontext;
+  return (NSGraphicsContext*) th->_gcontext;
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
@@ -166,7 +166,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  ASSIGN(((TInfo)th)->_gcontext, context);
+  ASSIGN(th->_gcontext, context);
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 

@@ -596,12 +596,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 */
 @implementation NSWindow
 
-typedef struct NSView_struct
-{
-  @defs(NSView)
-} *NSViewPtr;
-
-
 /*
  * Class variables
  */
@@ -2548,14 +2542,14 @@ discardCursorRectsForView(NSView *theView)
 {
   if (theView != nil)
     {
-      if (((NSViewPtr)theView)->_rFlags.has_currects)
+      if (theView->_rFlags.has_currects)
         {
           [theView discardCursorRects];
         }
 
-      if (((NSViewPtr)theView)->_rFlags.has_subviews)
+      if (theView->_rFlags.has_subviews)
         {
-          NSArray *s = ((NSViewPtr)theView)->_sub_views;
+          NSArray *s = theView->_sub_views;
           unsigned count = [s count];
 
           if (count)
@@ -2585,7 +2579,7 @@ discardCursorRectsForView(NSView *theView)
 
 - (void) invalidateCursorRectsForView: (NSView*)aView
 {
-  if (((NSViewPtr)aView)->_rFlags.valid_rects)
+  if (aView->_rFlags.valid_rects)
     {
       [aView discardCursorRects];
 
@@ -2616,9 +2610,9 @@ resetCursorRectsForView(NSView *theView)
     {
       [theView resetCursorRects];
 
-      if (((NSViewPtr)theView)->_rFlags.has_subviews)
+      if (theView->_rFlags.has_subviews)
         {
-          NSArray *s = ((NSViewPtr)theView)->_sub_views;
+          NSArray *s = theView->_sub_views;
           unsigned count = [s count];
 
           if (count)
@@ -3340,9 +3334,9 @@ resetCursorRectsForView(NSView *theView)
 - (void) _checkTrackingRectangles: (NSView*)theView
                          forEvent: (NSEvent*)theEvent
 {
-  if (((NSViewPtr)theView)->_rFlags.has_trkrects)
+  if (theView->_rFlags.has_trkrects)
     {
-      NSArray *tr = ((NSViewPtr)theView)->_tracking_rects;
+      NSArray *tr = theView->_tracking_rects;
       unsigned count = [tr count];
 
       /*
@@ -3433,9 +3427,9 @@ resetCursorRectsForView(NSView *theView)
   /*
    * Check tracking rectangles for the subviews
    */
-  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+  if (theView->_rFlags.has_subviews)
     {
-      NSArray *sb = ((NSViewPtr)theView)->_sub_views;
+      NSArray *sb = theView->_sub_views;
       unsigned count = [sb count];
 
       if (count > 0)
@@ -3455,9 +3449,9 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _checkCursorRectangles: (NSView*)theView forEvent: (NSEvent*)theEvent
 {
-  if (((NSViewPtr)theView)->_rFlags.valid_rects)
+  if (theView->_rFlags.valid_rects)
     {
-      NSArray *tr = ((NSViewPtr)theView)->_cursor_rects;
+      NSArray *tr = theView->_cursor_rects;
       unsigned count = [tr count];
 
       // Loop through cursor rectangles
@@ -3523,9 +3517,9 @@ resetCursorRectsForView(NSView *theView)
   /*
    * Check cursor rectangles for the subviews
    */
-  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+  if (theView->_rFlags.has_subviews)
     {
-      NSArray *sb = ((NSViewPtr)theView)->_sub_views;
+      NSArray *sb = theView->_sub_views;
       unsigned count = [sb count];
 
       if (count > 0)
@@ -4064,7 +4058,7 @@ resetCursorRectsForView(NSView *theView)
               
               while (v != nil)
                 {
-                  if (((NSViewPtr)v)->_rFlags.has_draginfo != 0
+                  if (v->_rFlags.has_draginfo != 0
                       && GSViewAcceptsDrag(v, dragInfo))
                     break;
                   v = [v superview];

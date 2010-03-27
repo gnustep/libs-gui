@@ -31,6 +31,8 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#define EXPOSE_NSKeyedUnarchiver_IVARS
+
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>

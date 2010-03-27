@@ -99,11 +99,6 @@
 */
 NSView *viewIsPrinting = nil;
 
-struct NSWindow_struct
-{
-  @defs(NSWindow)
-};
-
 /**
   <unit>
   <heading>NSView</heading>
@@ -2022,8 +2017,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	      NSStringFromRect(_frame),_rFlags.flipped_view);
   if (viewIsPrinting == nil)
     {
-      struct NSWindow_struct *window_t = (struct NSWindow_struct *)_window;
-      [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+      [_window->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
     }
 
   /* Make sure we don't modify superview's gstate */
@@ -2155,16 +2149,14 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   if (viewIsPrinting == nil)
     {
       NSRect        rect;
-      struct	NSWindow_struct *window_t;
-      window_t = (struct NSWindow_struct *)_window;
       if (flush && !_rFlags.ignores_backing)
         {
-          rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
-          window_t->_rectNeedingFlush =
-              NSUnionRect(window_t->_rectNeedingFlush, rect);
-          window_t->_f.needs_flush = YES;
+          rect = [[_window->_rectsBeingDrawn lastObject] rectValue];
+          _window->_rectNeedingFlush =
+              NSUnionRect(_window->_rectNeedingFlush, rect);
+          _window->_f.needs_flush = YES;
         }
-      [window_t->_rectsBeingDrawn removeLastObject];
+      [_window->_rectsBeingDrawn removeLastObject];
     }
   [ctxt unlockFocusView: self needsFlush: YES ];
   [NSGraphicsContext restoreGraphicsState];
@@ -2606,10 +2598,8 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   // FIXME
   static NSRect rect;
-  struct NSWindow_struct *window_t;
 
-  window_t = (struct NSWindow_struct *)_window;
-  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+  rect = [[_window->_rectsBeingDrawn lastObject] rectValue];
   rect = [self convertRect: rect fromView: nil];
 
   if (rects != NULL)
@@ -3123,7 +3113,7 @@ Returns YES iff any scrolling was done.
 	  [_cursor_rects getObjects: rects];
 	  if (_rFlags.valid_rects != 0)
 	    {
-	      NSPoint loc = ((struct NSWindow_struct *)_window)->_lastPoint;
+	      NSPoint loc = _window->_lastPoint;
 	      unsigned i;
 
 	      for (i = 0; i < count; ++i)

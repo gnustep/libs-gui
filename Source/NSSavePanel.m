@@ -1553,15 +1553,10 @@ createRowsForColumn: (int)column
           column: (int)column;
 @end 
 
-struct NSSavePanel_struct
-{
-  @defs (NSSavePanel)
-};
-
 static int compareFilenames (id elem1, id elem2, void *context)
 {
   /* TODO - use IMP optimization here.  */
-  struct NSSavePanel_struct *s = (struct NSSavePanel_struct *)context;
+  NSSavePanel *s = context;
   NSSavePanel *self = (NSSavePanel *)context;
 
   return (int)[s->_delegate panel: self

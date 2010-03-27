@@ -53,4 +53,10 @@
 
 #endif
 
+#ifdef __clang__
+#  define PACKAGE_SCOPE @package
+#else
+#  define PACKAGE_SCOPE @public
+#endif
+
 #endif /* __AppKitDefines_INCLUDE */

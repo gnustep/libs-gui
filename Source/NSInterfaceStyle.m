@@ -61,9 +61,12 @@ styleFromString(NSString* str)
 
 
 
+/*
 typedef struct {
   @defs(NSResponder)
 } *accessToResponder;
+*/
+typedef NSResponder* accessToResponder;
 
 /**
    <p>

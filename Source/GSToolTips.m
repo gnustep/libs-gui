@@ -121,11 +121,13 @@
 - (void) _endDisplay;
 - (void) _timedOut: (NSTimer *)timer;
 @end
-
+/*
 typedef struct NSView_struct
 {
   @defs(NSView)
 } *NSViewPtr;
+*/
+typedef NSView* NSViewPtr;
 
 @implementation GSToolTips
 

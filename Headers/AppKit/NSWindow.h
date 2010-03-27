@@ -170,7 +170,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
   id            _firstResponder;
   id            _futureFirstResponder;
   NSView        *_initialFirstResponder;
+PACKAGE_SCOPE
   id            _delegate;
+@protected
   id            _fieldEditor;
   id            _lastView;
   id            _lastDragView;
@@ -186,12 +188,16 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSString      *_miniaturizedTitle;
   NSImage       *_miniaturizedImage;
   NSString      *_windowTitle;
+PACKAGE_SCOPE
   NSPoint       _lastPoint;
+@protected
   NSBackingStoreType _backingType;
   unsigned      _styleMask;
   int           _windowLevel;
+PACKAGE_SCOPE
   NSRect        _rectNeedingFlush;
   NSMutableArray *_rectsBeingDrawn;
+@protected
   unsigned	_disableFlushWindow;
   
   NSWindowDepth _depthLimit;
@@ -205,6 +211,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSPoint        _cachedImageOrigin;
   NSWindow       *_attachedSheet;
 
+PACKAGE_SCOPE
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
     unsigned	is_one_shot:1;
@@ -246,7 +253,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned ignores_mouse_events: 1;
     unsigned preserves_content_during_live_resize: 1;
   } _f;
- 
+@protected 
   NSToolbar     *_toolbar;
   void          *_reserved_1;
 }

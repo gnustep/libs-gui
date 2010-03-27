@@ -104,10 +104,14 @@ typedef enum _NSFocusRingType {
   id _matrixFromWindow;
 
   NSView* _super_view;
+PACKAGE_SCOPE
   NSMutableArray *_sub_views;
+@protected
   NSWindow *_window;
+PACKAGE_SCOPE
   NSMutableArray *_tracking_rects;
   NSMutableArray *_cursor_rects;
+@protected
   NSRect _invalidRect;
   NSRect _visibleRect;
   int _gstate;

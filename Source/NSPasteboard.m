@@ -1530,6 +1530,11 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
+- (BOOL)writeObjects: (NSArray*)objects
+{
+
+}
+
 /**
  * <p>Serialises the data in the supplied property list and writes it to the
  * pasteboard server using the -setData:forType: method.
