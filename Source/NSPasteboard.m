@@ -1532,7 +1532,8 @@ static  NSMapTable              *mimeMap = NULL;
 
 - (BOOL)writeObjects: (NSArray*)objects
 {
-
+  // FIXME: not implemented
+  return NO;
 }
 
 /**
