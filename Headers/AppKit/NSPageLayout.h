@@ -32,12 +32,12 @@
 #define _GNUstep_H_NSPageLayout
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSView.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPanel.h>
 
 @class NSPrintInfo;
-
+@class NSView;
+@class NSWindow;
 
 //
 // Note: not all of these tags are currently used in the

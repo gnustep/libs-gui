@@ -33,7 +33,7 @@
 #ifndef _GNUstep_H_NSPrintPanel
 #define _GNUstep_H_NSPrintPanel
 
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSPanel.h>
 
 @class NSView;
 @class NSPrintInfo;

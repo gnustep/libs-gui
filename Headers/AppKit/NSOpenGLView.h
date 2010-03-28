@@ -27,7 +27,7 @@
 #define _NSOpenGLView_h
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 @class NSOpenGLContext;
 @class NSOpenGLPixelFormat;

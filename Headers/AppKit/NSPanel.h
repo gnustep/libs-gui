@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSWindow.h>
+#import <AppKit/NSWindow.h>
 
 @class NSString;
 

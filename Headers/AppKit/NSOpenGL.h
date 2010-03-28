@@ -27,7 +27,8 @@
 #define _NSOpenGL_h_INCLUDE
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
+
 @class NSView;
 
 typedef enum {

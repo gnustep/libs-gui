@@ -38,8 +38,8 @@
 #define _GNUstep_H_NSPrintOperation
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSString;
 @class NSData;

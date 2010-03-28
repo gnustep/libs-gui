@@ -30,12 +30,15 @@
 #ifndef _GNUstep_H_NSPopUpButtonCell
 #define _GNUstep_H_NSPopUpButtonCell
 
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/NSMenuItemCell.h>
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSMenuItem.h>
+#import <AppKit/NSMenuItemCell.h>
 
-APPKIT_EXPORT NSString*NSPopUpButtonCellWillPopUpNotification;
-
+@class NSString;
 @class NSMenu;
+@class NSView;
+
+APPKIT_EXPORT NSString *NSPopUpButtonCellWillPopUpNotification;
 
 typedef enum {
   NSPopUpNoArrow = 0,

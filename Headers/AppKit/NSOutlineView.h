@@ -31,9 +31,9 @@
 #define _GNUstep_H_NSOutlineView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSTableView.h>
-#include <Foundation/NSMapTable.h>
+#import <AppKit/NSTableView.h>
 
+@class NSMapTable;
 @class NSMutableArray;
 @class NSString;
 

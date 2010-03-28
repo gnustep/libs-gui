@@ -38,7 +38,7 @@
 #define _GNUstep_H_NSOpenPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSSavePanel.h>
+#import <AppKit/NSSavePanel.h>
 
 @class NSString;
 @class NSArray;

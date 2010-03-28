@@ -34,9 +34,9 @@
 #ifndef _GNUstep_H_NSPrintInfo
 #define _GNUstep_H_NSPrintInfo
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSDictionary;

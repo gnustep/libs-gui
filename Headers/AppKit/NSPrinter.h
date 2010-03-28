@@ -33,8 +33,8 @@
 #ifndef _GNUstep_H_NSPrinter
 #define _GNUstep_H_NSPrinter
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSString;
 @class NSArray;

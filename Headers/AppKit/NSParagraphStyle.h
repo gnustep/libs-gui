@@ -33,7 +33,8 @@
 #define _GNUstep_H_NSParagraphStyle
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSText.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSText.h>
 
 typedef enum _NSTextTabType {
   NSLeftTabStopType = 0,
@@ -64,9 +65,9 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 @interface NSTextTab : NSObject <NSCopying, NSCoding>
 {
   NSTextTabType	_tabStopType;
-	NSDictionary *_options;
-	NSTextAlignment _alignment;
-  float		_location;
+  NSDictionary *_options;
+  NSTextAlignment _alignment;
+  float	_location;
 }
 
 - (id) initWithType: (NSTextTabType)type  location: (float)loc;
@@ -86,8 +87,8 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 @interface NSParagraphStyle : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
   NSMutableArray *_tabStops;
-	NSArray *_textBlocks;
-	NSArray *_textLists;
+  NSArray *_textBlocks;
+  NSArray *_textLists;
   float _lineSpacing;
   float _paragraphSpacing;
   float _headIndent;
@@ -95,15 +96,15 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
   float _firstLineHeadIndent;
   float _minimumLineHeight;
   float _maximumLineHeight;
-	float _paragraphSpacingBefore;
-	float _defaultTabInterval;
-	float _hyphenationFactor;
-	float _lineHeightMultiple;
-	float _tighteningFactorForTruncation;
+  float _paragraphSpacingBefore;
+  float _defaultTabInterval;
+  float _hyphenationFactor;
+  float _lineHeightMultiple;
+  float _tighteningFactorForTruncation;
   NSTextAlignment _alignment;
   NSLineBreakMode _lineBreakMode;
   NSWritingDirection _baseDirection;
-	int _headerLevel;
+  int _headerLevel;
 }
 
 + (NSParagraphStyle*) defaultParagraphStyle;

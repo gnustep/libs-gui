@@ -28,9 +28,10 @@
 
 #ifndef _GNUstep_H_NSObjectController
 #define _GNUstep_H_NSObjectController
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSController.h>
-#include <AppKit/NSMenuItem.h>
+#import <AppKit/NSController.h>
+#import <AppKit/NSMenuItem.h>
 
 #if OS_API_VERSION(100300,GS_API_LATEST)
 

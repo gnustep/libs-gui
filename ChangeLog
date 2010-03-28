@@ -1,5 +1,23 @@
 2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSPopUpButtonCell.h
+	* Headers/AppKit/NSPanel.h
+	* Headers/AppKit/NSOpenPanel.h
+	* Headers/AppKit/NSParagraphStyle.h
+	* Headers/AppKit/NSObjectController.h
+	* Headers/AppKit/NSOpenGLView.h
+	* Headers/AppKit/NSPrinter.h
+	* Headers/AppKit/NSPrintOperation.h
+	* Headers/AppKit/NSPageLayout.h
+	* Headers/AppKit/NSOutlineView.h
+	* Headers/AppKit/NSOpenGL.h
+	* Headers/AppKit/NSPrintInfo.h
+	* Headers/AppKit/NSPrintPanel.h
+	* Headers/AppKit/NSPasteboard.h: Some more #include -> #import
+	replacement.
+
+2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSNib.h,
 	* Source/externs.m: Define new string constants NSNibOwner and NSNibTopLevelObjects.
 	* Source/NSBundleAdditions.m,
