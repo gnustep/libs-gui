@@ -1,3 +1,8 @@
+2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (-writeObjects:): Add a return statement
+	to avoid a compiler warning.
+
 2010-03-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSResponder.h (-scrollToBeginningOfDocument:,
@@ -55,13 +60,13 @@
 	Removed all uses of @defs() from -gui, so it now compiles cleanly with the
 	non-fragile ABI.  All ivars that must be accessed from other classes are
 	now wrapped in PACKAGE_SCOPE.  With clang, this expands to @package, with
-	GCC it expands to @public.  
+	GCC it expands to @public.
 
 2010-03-25 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/GSXibLoader.m,
 	* Source/NSView.m : removed c99-isms
-	
+
 2010-03-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSImageCell.h

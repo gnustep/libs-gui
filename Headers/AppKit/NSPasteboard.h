@@ -32,9 +32,8 @@
 #define _GNUstep_H_NSPasteboard
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSString.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -285,7 +284,7 @@ APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 @end
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-#include <Foundation/NSURL.h>
+#import <Foundation/NSURL.h>
 
 @interface NSURL (NSPasteboard)
 + (NSURL*) URLFromPasteboard: (NSPasteboard*)pasteBoard;
