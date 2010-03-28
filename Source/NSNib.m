@@ -178,12 +178,12 @@
   NSMutableDictionary *externalNameTable = [NSMutableDictionary dictionary];
 
   // add the necessary things to the table...
-  [externalNameTable setObject: owner forKey: @"NSNibOwner"];
+  [externalNameTable setObject: owner forKey: NSNibOwner];
 
   if (topLevelObjects != 0)
     {
       *topLevelObjects = [NSMutableArray array];
-      [externalNameTable setObject: *topLevelObjects forKey: @"NSNibTopLevelObjects"];
+      [externalNameTable setObject: *topLevelObjects forKey: NSNibTopLevelObjects];
     }
 
   return [self instantiateNibWithExternalNameTable: externalNameTable]; 

@@ -249,7 +249,7 @@
     {
       return NO;
     }
-  table = [NSDictionary dictionaryWithObject: owner forKey: @"NSNibOwner"];
+  table = [NSDictionary dictionaryWithObject: owner forKey: NSNibOwner];
 
   /*
    * First look for the NIB in the bundle corresponding to the owning class,

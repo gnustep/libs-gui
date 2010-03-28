@@ -38,6 +38,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSControl.h"
 #import "AppKit/NSMenu.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSNibConnector.h"
 #import "AppKit/NSScreen.h"
@@ -156,16 +157,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
       // Add these objects with there old names as the code expects them
       context = AUTORELEASE([context mutableCopyWithZone: [context zone]]);
-      obj = [context objectForKey: @"NSNibTopLevelObjects"];
-      if (obj != nil)
-        {
-          [(NSMutableDictionary*)context setObject: obj forKey: @"NSTopLevelObjects"];
-        }
-      obj = [context objectForKey: @"NSNibOwner"];
-      if (obj != nil)
-        {
-          [(NSMutableDictionary*)context setObject: obj forKey: @"NSOwner"];
-        }
+      obj = [context objectForKey: NSNibTopLevelObjects];
+      obj = [context objectForKey: NSNibOwner];
 
       isAwake = YES;
       /*
@@ -226,12 +219,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 
       /* 
-       * See if the user has passed in the NSTopLevelObjects key.
-       * This is an implementation of an undocumented, but commonly used feature
-       * of nib files to allow the release of the top level objects in the nib
-       * file.
+       * See if the user has passed in the NSNibTopLevelObjects key.
+       * This is an implementation of a commonly used feature to give access to
+       * all top level objects of a nib file.
        */
-      obj = [context objectForKey: @"NSTopLevelObjects"];
+      obj = [context objectForKey: NSNibTopLevelObjects];
       if ([obj isKindOfClass: [NSMutableArray class]])
 	{
 	  topObjects = obj;
@@ -250,12 +242,12 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       while ((key = [enumerator nextObject]) != nil)
 	{
 	  if ([context objectForKey: key] == nil || 
-	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
+	      [key isEqualToString: NSNibOwner]) // we want to send the message to the owner
 	    {
 	      // we don't want to send a message to these menus twice, if they're custom classes. 
 	      if ([key isEqualToString: @"NSWindowsMenu"] == NO && 
 		  [key isEqualToString: @"NSServicesMenu"] == NO && 
-		  [key isEqualToString: @"NSTopLevelObjects"] == NO)
+		  [key isEqualToString: NSNibTopLevelObjects] == NO)
 		{
 		  id o = [nameTable objectForKey: key];
 
@@ -272,30 +264,22 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		   * We don't want to retain the owner.
 		   *
 		   * Please note: It is encumbent upon the developer of an application to 
-		   * release these objects.   Instantiating a window manually or loading in a .gorm 
-		   * file are equivalent processes.  These objects need to be released in their 
-		   * respective controllers.  If the developer has used the "NSTopLevelObjects" feature, 
-		   * then he will get the objects back in an array which he merely must release in
-		   * order to release the objects held within.  GJC
+		   * release these objects. Instantiating a window manually or loading in a .gorm 
+		   * file are equivalent processes. These objects need to be released in their 
+		   * respective controllers. If the developer has used the NSNibTopLevelObjects feature, 
+		   * then she will get the objects back in an array. She will will have to first release 
+                   * all the objects in the array and then the array itself in order to release the 
+                   * objects held within.
 		   */
-		  if ([key isEqualToString: @"NSOwner"] == NO)
+		  if ([key isEqualToString: NSNibOwner] == NO)
 		    {
 		      if ([topLevelObjects containsObject: o]) // anything already designated a top level item..
 			{
-			  if (topObjects == nil)
-			    {
-			      // It is expected, if the NSTopLevelObjects key is not passed in,
-			      // that the user has opted to either allow these objects to leak or
-			      // to release them explicitly.
-			      RETAIN(o);
-			    }
-			  else
-			    {
-			      // We don't want to do the extra retain if the items are added to the
-			      // array, since the array will do the retain for us.   When the array
-			      // is released, the top level objects should be released as well.
-			      [topObjects addObject: o];
-			    }
+			  [topObjects addObject: o];
+			  // All top level objects (that are not retained and
+			  // released by other nib objects) must be released by
+			  // the caller to avoid leaking.
+			  RETAIN(o);
 			}
 		    }
 		}

@@ -38,6 +38,7 @@
 #import	<GNUstepBase/GSMime.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
@@ -576,19 +577,8 @@
   NSEnumerator *en;
   id obj;
   IBObjectContainer *objects;
-  NSMutableArray *topLevelObjects = [context objectForKey: @"NSTopLevelObjects"];
-  id owner = [context objectForKey: @"NSOwner"];
-
-  // get using the alternate names.
-  if (topLevelObjects == nil)
-    {
-      topLevelObjects = [context objectForKey: @"NSNibTopLevelObjects"];
-    }
-
-  if (owner == nil)
-    {
-      owner = [context objectForKey: @"NSNibOwner"];
-    }
+  NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
+  //id owner = [context objectForKey: NSNibOwner];
 
   objects = [data objectForKey: @"IBDocument.Objects"];
   [objects nibInstantiate];
@@ -602,15 +592,8 @@
       if ([obj respondsToSelector: @selector(nibInstantiate)])
         {
           obj = [obj nibInstantiate];
-          if (topLevelObjects == nil)
-            {
-              // When there is no top level object array, just retain these objects
-              RETAIN(obj);
-            }
-          else
-            {
-              [topLevelObjects addObject: obj];
-            }
+          [topLevelObjects addObject: obj];
+          RETAIN(obj);
         }
 
       // instantiate all windows and fill in the top level array.

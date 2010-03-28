@@ -45,6 +45,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSZone.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSData;
 @class NSDictionary;
@@ -53,6 +54,9 @@
 @class NSURL;
 @class NSArray;
 @class NSMutableArray;
+
+APPKIT_EXPORT NSString *NSNibTopLevelObjects;
+APPKIT_EXPORT NSString *NSNibOwner;
 
 @interface NSNib : NSObject <NSCoding>
 {

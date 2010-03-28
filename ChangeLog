@@ -1,5 +1,16 @@
 2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSNib.h,
+	* Source/externs.m: Define new string constants NSNibOwner and NSNibTopLevelObjects.
+	* Source/NSBundleAdditions.m,
+	* Source/NSNib.m: Use these constants.
+	* Source/GSNibLoading.m,
+	* Source/GSGormLoading.m,
+	* Source/GSXibLoader.m: Rewrite of top level objects handling to
+	fit documentations as cited by Wolfgang Lux  <wolfgang.lux@gmail.com>.
+
+2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSPasteboard.m (-writeObjects:): Add a return statement
 	to avoid a compiler warning.
 

@@ -62,6 +62,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenuView.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSScreen.h"
 #import "AppKit/NSSound.h"
 #import "GNUstepGUI/GSInstantiator.h"
@@ -1909,15 +1910,10 @@ static BOOL _isInInterfaceBuilder = NO;
       // Object is top level if it isn't the owner but points to it. 
       if ((v == owner || v == _root) && (obj != owner) && (obj != _root))
         {
-          if (topLevelObjects == nil)
-            {
-              // When there is no top level object array, just retain these objects
-              RETAIN(obj);
-            }
-          else
-            {
-              [topLevelObjects addObject: obj];
-            }
+          [topLevelObjects addObject: obj];
+          // All top level objects must be released by
+          // the caller to avoid leaking.
+          RETAIN(obj);
         }
 
       // awaken the object.
@@ -1950,19 +1946,8 @@ static BOOL _isInInterfaceBuilder = NO;
  */
 - (void) awakeWithContext: (NSDictionary *)context
 {
-  NSMutableArray *tlo = [context objectForKey: @"NSTopLevelObjects"];
-  id owner = [context objectForKey: @"NSOwner"];
-
-  // get using the alternate names.
-  if (tlo == nil)
-    {
-      tlo = [context objectForKey: @"NSNibTopLevelObjects"];
-    }
-
-  if (owner == nil)
-    {
-      owner = [context objectForKey: @"NSNibOwner"];
-    }
+  NSMutableArray *tlo = [context objectForKey: NSNibTopLevelObjects];
+  id owner = [context objectForKey: NSNibOwner];
 
   // instantiate...
   [self nibInstantiateWithOwner: owner topLevelObjects: tlo];

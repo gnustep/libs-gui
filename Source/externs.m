@@ -659,6 +659,10 @@ id NSNoSelectionMarker = @"NSNoSelectionMarker";
 id NSNotApplicableMarker = @"NSNotApplicableMarker";
 
 
+// NSNib
+NSString *NSNibTopLevelObjects = @"NSTopLevelObjects";
+NSString *NSNibOwner = @"NSOwner";
+
 extern void __objc_gui_force_linking (void);
 
 void
