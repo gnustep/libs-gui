@@ -26,17 +26,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSWindowController.h"
-#include "NSDocumentFrameworkPrivate.h"
+#import "AppKit/NSNib.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSWindowController.h"
+#import "NSDocumentFrameworkPrivate.h"
 
 @implementation NSWindowController
 
@@ -468,8 +469,7 @@
       return;
     }
 
-  table = [NSDictionary dictionaryWithObject: _owner forKey: @"NSOwner"];
-  
+  table = [NSDictionary dictionaryWithObject: _owner forKey: NSNibOwner];
   if ([NSBundle loadNibFile: [self windowNibPath]
 		externalNameTable: table
 		withZone: [_owner zone]])

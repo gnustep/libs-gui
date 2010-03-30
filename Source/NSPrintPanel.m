@@ -37,6 +37,7 @@
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSForm.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSPrinter.h"
 #import "AppKit/NSPrintPanel.h"
@@ -138,15 +139,16 @@ static NSPrintPanel *shared_instance;
   if (self == nil)
     return nil;
 
-  panel = [GSGuiBundle() pathForResource: GSPANELNAME ofType: @"gorm"
-		      inDirectory: nil];
+  // self will come from a bundle, to get the panel from the GUI library 
+  // we have to select that bundle explicitly
+  panel = [GSGuiBundle() pathForNibResource: GSPANELNAME];
   if (panel == nil)
     {
       NSRunAlertPanel(@"Error", @"Could not find print panel resource", 
 		      @"OK", NULL, NULL);
       return nil;
     }
-  table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
+  table = [NSDictionary dictionaryWithObject: self forKey: NSNibOwner];
   if ([NSBundle loadNibFile: panel 
 	  externalNameTable: table
 		withZone: [self zone]] == NO)

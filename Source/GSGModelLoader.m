@@ -26,11 +26,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSNib.h"
 
-#include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/IMLoading.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/IMLoading.h"
 
 static 
 Class gmodel_class(void)
@@ -87,7 +93,7 @@ Class gmodel_class(void)
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 {
-  NSString      *ext = [fileName pathExtension];
+  NSString *ext = [fileName pathExtension];
 
   /*
    * If the file to be read is a gmodel, use the GMModel method to
@@ -96,7 +102,7 @@ Class gmodel_class(void)
   if ([ext isEqualToString: @"gmodel"])
     {
       return [gmodel_class() loadIMFile: fileName
-		      owner: [context objectForKey: @"NSOwner"]];
+		      owner: [context objectForKey: NSNibOwner]];
     } 
 
   return NO;

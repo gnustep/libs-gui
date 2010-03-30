@@ -30,7 +30,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
+#import "config.h"
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSConnection.h>
@@ -44,21 +44,22 @@
 #import <Foundation/NSSpellServer.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
-#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSNib.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSSpellChecker.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSTextField.h"
-#import "AppKit/NSMatrix.h"
-#import "AppKit/NSBrowser.h"
-#import "AppKit/NSBrowserCell.h"
-#import "AppKit/NSPopUpButton.h"
-#import "AppKit/NSGraphics.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSPanel.h"
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSServicesManager.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSServicesManager.h"
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
@@ -264,10 +265,12 @@ static int __documentTag = 0;
 - init
 {
   NSArray *userLanguages = [NSUserDefaults userLanguages];  
-  NSString *panel = nil;
+
+  self = [super init];
+  if (self == nil)
+    return nil;
 
   // Set the language to the default for the user.
-  self = [super init];
   _language = [userLanguages objectAtIndex: 0];
   _wrapFlag = NO;
   _position = 0;
@@ -276,11 +279,9 @@ static int __documentTag = 0;
   _currentTag = 0;
   _ignoredWords = [NSMutableDictionary new];
 
-  // Load the gmodel file
-  panel = [GSGuiBundle() pathForResource: @"GSSpellPanel" ofType: @"gorm"
-		      inDirectory: nil];
-  if (![NSBundle loadNibFile: panel
-	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"]
+  // Load the NIB file from the GUI bundle
+  if (![GSGuiBundle() loadNibFile: @"GSSpellPanel"
+	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: NSNibOwner]
 	           withZone: [self zone]])
     {
       NSLog(@"Model file load failed for GSSpellPanel");

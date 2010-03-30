@@ -55,8 +55,10 @@
 @class NSArray;
 @class NSMutableArray;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSNibTopLevelObjects;
 APPKIT_EXPORT NSString *NSNibOwner;
+#endif
 
 @interface NSNib : NSObject <NSCoding>
 {

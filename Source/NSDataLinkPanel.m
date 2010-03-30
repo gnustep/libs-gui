@@ -25,15 +25,16 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include "Foundation/NSDictionary.h"
-#include "AppKit/NSDataLinkPanel.h"
-#include "AppKit/NSDataLinkManager.h"
-#include "AppKit/NSDataLink.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSNibLoading.h"
-#include "GSGuiPrivate.h"
+#import "config.h"
+#import <Foundation/NSDictionary.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSDataLinkPanel.h"
+#import "AppKit/NSDataLinkManager.h"
+#import "AppKit/NSDataLink.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSNibLoading.h"
+#import "GSGuiPrivate.h"
 
 static NSDataLinkPanel *_sharedDataLinkPanel;
 
@@ -47,19 +48,9 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
 @implementation GSDataLinkPanelController
 - (id) init
 {
-  NSString *panelPath;
-  NSDictionary *table;
-
   if ((self = [super init]) != nil)
     {
-      panelPath = [GSGuiBundle() pathForResource: @"GSDataLinkPanel" 
-			      ofType: @"gorm"
-			      inDirectory: nil];
-      NSLog(@"Panel path=%@",panelPath);
-      table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
-      if ([NSBundle loadNibFile: panelPath 
-		    externalNameTable: table
-		    withZone: [self zone]] == NO)
+      if ([NSBundle loadNibNamed: @"GSDataLinkPanel" owner: self] == NO)
 	{
 	  NSRunAlertPanel(@"Error", @"Could not load data link panel resource", 
 			  @"OK", NULL, NULL);

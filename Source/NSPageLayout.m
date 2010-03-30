@@ -29,32 +29,32 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSNumberFormatter.h>
-#include <Foundation/NSDecimalNumber.h>
-#include <Foundation/NSUserDefaults.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSImageView.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSBox.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSComboBox.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSForm.h"
-#include "AppKit/NSFormCell.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPageLayout.h"
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSTabView.h"
-#include "AppKit/NSTabViewItem.h"
-#include "AppKit/NSPrinter.h"
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSPrinting.h"
+#import <Foundation/NSNumberFormatter.h>
+#import <Foundation/NSDecimalNumber.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSComboBox.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSForm.h"
+#import "AppKit/NSFormCell.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPageLayout.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSTabView.h"
+#import "AppKit/NSTabViewItem.h"
+#import "AppKit/NSPrinter.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSPrinting.h"
 
 static NSPageLayout *shared_instance;
 
@@ -404,25 +404,14 @@ enum {
 @implementation GSPageLayoutController
 - (id) init
 {
-  NSString *panelPath;
-  NSDictionary *table;
   NSImage *image;
   NSNumberFormatter *sizeFormatter;
   NSNumberFormatter *scaleFormatter;
 
-  self = [super init];
+  if ((self = [super init]) == nil)
+    return nil;
   
-  panelPath = [GSGuiBundle() pathForResource: @"GSPageLayout" 
-                                      ofType: @"gorm"
-                                 inDirectory: nil];
-                                 
-  NSLog(@"Panel path=%@",panelPath);
-  table = [NSDictionary dictionaryWithObject: self 
-                                      forKey: @"NSOwner"];
-                                      
-  if ([NSBundle loadNibFile: panelPath 
-          externalNameTable: table
-                   withZone: [self zone]] == NO)
+  if ([NSBundle loadNibNamed: @"GSPageLayout" owner: self] == NO)
     {
       NSRunAlertPanel(@"Error", @"Could not load page layout panel resource", 
                       @"OK", NULL, NULL);

@@ -1,3 +1,16 @@
+2010-03-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSNib.h: Make NSNibOwner and NSNibTopLevelObjects
+	available only for version > 10.3.
+	* Source/NSWindowController.m,
+	* Source/NSPageLayout.m,
+	* Source/GSGModelLoader.m,
+	* Source/NSDataLinkPanel.m,
+	* Source/NSPrintPanel.m,
+	* Source/NSSpellChecker.m: Use NSNibOwner instead of
+	@"NSOwner". Remove the hard coded "gorm" extension. Try to use
+	higher level NIB loading methods where possible.
+
 2010-03-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-sendEvent:): Remove a stray semicolon, which
