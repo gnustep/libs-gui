@@ -1,3 +1,9 @@
+2010-03-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSGormLoading.m:
+	* Source/GSNibLoading.m: Attempt to improve a possibly misleading
+	comment about releasing top level objects of a gorm/nib file.
+
 2010-03-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPopUpButtonCell.h

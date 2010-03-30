@@ -276,9 +276,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		      if ([topLevelObjects containsObject: o]) // anything already designated a top level item..
 			{
 			  [topObjects addObject: o];
-			  // All top level objects (that are not retained and
-			  // released by other nib objects) must be released by
-			  // the caller to avoid leaking.
+			  // All top level objects must be released by the
+			  // caller to avoid leaking, unless they are going
+			  // to be released by other nib objects on behalf
+			  // of the owner.
 			  RETAIN(o);
 			}
 		    }

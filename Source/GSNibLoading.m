@@ -1911,8 +1911,9 @@ static BOOL _isInInterfaceBuilder = NO;
       if ((v == owner || v == _root) && (obj != owner) && (obj != _root))
         {
           [topLevelObjects addObject: obj];
-          // All top level objects must be released by
-          // the caller to avoid leaking.
+          // All top level objects must be released by the caller to avoid
+          // leaking, unless they are going to be released by other nib
+          // objects on behalf of the owner.
           RETAIN(obj);
         }
 
