@@ -3972,7 +3972,7 @@ resetCursorRectsForView(NSView *theView)
 
             case GSAppKitWindowLeave:
 	      /* we ignore this event for a window that is already closed */
-	      if (_f.has_closed == YES); 
+	      if (_f.has_closed == YES)
 	        break;
 
               /*
