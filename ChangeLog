@@ -1,5 +1,9 @@
 2010-03-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-sendEvent:): Remove a stray semicolon, which
+	made NSWindow ignore all GSAppKitWindowLeave events. This was the
+	cause for, e.g., somewhat too sticky tooltips.
+
 	* Source/GSGormLoading.m:
 	* Source/GSNibLoading.m: Attempt to improve a possibly misleading
 	comment about releasing top level objects of a gorm/nib file.
