@@ -27,8 +27,8 @@
 #ifndef _GNUstep_H_NSWindowController
 #define _GNUstep_H_NSWindowController
 
-#include <AppKit/NSNibDeclarations.h>
-#include <AppKit/NSResponder.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSResponder.h>
 
 @class NSString;
 @class NSArray;

@@ -31,11 +31,12 @@
 
 #ifndef _GNUstep_H_NSToolbarItem
 #define _GNUstep_H_NSToolbarItem
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/AppKitDefines.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray;
 @class NSString;

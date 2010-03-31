@@ -1,5 +1,26 @@
 2010-03-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSStringDrawing.m
+	* Headers/AppKit/NSWindowController.h
+	* Headers/AppKit/NSTokenField.h
+	* Headers/AppKit/NSWorkspace.h
+	* Headers/AppKit/NSWindow.h
+	* Headers/AppKit/NSTextFieldCell.h
+	* Headers/AppKit/NSTextContainer.h
+	* Headers/AppKit/NSToolbar.h
+	* Headers/AppKit/NSTokenFieldCell.h
+	* Headers/AppKit/NSToolbarItemGroup.h
+	* Headers/AppKit/NSTextStorage.h
+	* Headers/AppKit/NSTextView.h
+	* Headers/AppKit/NSToolbarItem.h
+	* Headers/AppKit/NSUserDefaultsController.h
+	* Headers/AppKit/NSUserInterfaceValidation.h
+	* Headers/AppKit/NSTextField.h
+	* Headers/AppKit/NSView.h: Final part of #include -> #import
+	replacement in official headers.
+
+2010-03-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSSound.h
 	* Headers/AppKit/NSTextAttachment.h
 	* Headers/AppKit/NSTableHeaderCell.h

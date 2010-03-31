@@ -28,8 +28,9 @@
 
 #ifndef _GNUstep_H_NSUserDefaultsController
 #define _GNUstep_H_NSUserDefaultsController
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSController.h>
+#import <AppKit/NSController.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 

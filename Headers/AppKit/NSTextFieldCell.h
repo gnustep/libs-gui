@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSTextFieldCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSActionCell.h>
+#import <AppKit/NSActionCell.h>
 
 @class NSColor;
 

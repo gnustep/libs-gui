@@ -32,15 +32,15 @@
 
 #include <math.h>
 
-#include <Foundation/NSException.h>
-#include <Foundation/NSLock.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSLock.h>
 
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/DPSOperators.h"
-#include "GSTextStorage.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/DPSOperators.h"
 
 /*
 TODO:

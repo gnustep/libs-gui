@@ -30,9 +30,9 @@
 #ifndef _GNUstep_H_NSWorkspace
 #define _GNUstep_H_NSWorkspace
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSNumber;

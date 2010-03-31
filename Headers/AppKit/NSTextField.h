@@ -31,9 +31,9 @@
 #define _GNUstep_H_NSTextField
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSControl.h>
+#import <AppKit/NSControl.h>
 // For NSTextFieldBezelStyle
-#include <AppKit/NSTextFieldCell.h>
+#import <AppKit/NSTextFieldCell.h>
 
 @class NSNotification;
 @class NSColor;

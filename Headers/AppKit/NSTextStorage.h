@@ -34,10 +34,13 @@
 #ifndef _GNUstep_H_NSTextStorage
 #define _GNUstep_H_NSTextStorage
 
-#include <AppKit/NSStringDrawing.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSNotification;
+@class NSString;
 @class GSLayoutManager;
 
 /*

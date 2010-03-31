@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_NSUserInterfaceValidation
 #define _GNUstep_H_NSUserInterfaceValidation
 
-#include <objc/objc.h>
+#import <objc/objc.h>
 
 @protocol NSValidatedUserInterfaceItem
 

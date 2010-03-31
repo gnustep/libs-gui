@@ -29,8 +29,9 @@
 
 #ifndef _GNUstep_H_NSToolbarItemGroup
 #define _GNUstep_H_NSToolbarItemGroup
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSToolbarItem.h>
+#import <AppKit/NSToolbarItem.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 

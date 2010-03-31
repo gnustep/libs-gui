@@ -32,9 +32,10 @@
 
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSResponder.h>
+#import <AppKit/NSGraphicsContext.h>
+#import <AppKit/NSResponder.h>
 
 @class NSArray;
 @class NSAttributedString;

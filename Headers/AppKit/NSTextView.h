@@ -33,11 +33,11 @@
 #define _GNUstep_H_NSTextView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSText.h>
-#include <AppKit/NSInputManager.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSTextAttachment.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSText.h>
+#import <AppKit/NSInputManager.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSTextAttachment.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 @class NSTimer;
 @class NSTextContainer;

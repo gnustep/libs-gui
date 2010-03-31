@@ -33,11 +33,12 @@
 
 #ifndef _GNUstep_H_NSToolbar
 #define _GNUstep_H_NSToolbar
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSArray.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
+@class NSArray;
 @class NSString;
 @class NSMutableArray;
 @class NSDictionary;

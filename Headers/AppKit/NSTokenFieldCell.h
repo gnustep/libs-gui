@@ -31,7 +31,10 @@
 #define _GNUstep_H_NSTokenFieldCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSTextFieldCell.h>
+#import <Foundation/NSDate.h>
+#import <AppKit/NSTextFieldCell.h>
+
+@class NSCharacterSet;
 
 typedef enum _NSTokenStyle
 {  

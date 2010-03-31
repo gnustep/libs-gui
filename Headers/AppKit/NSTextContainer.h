@@ -64,11 +64,12 @@ whenever this happens.
 
 #ifndef _GNUstep_H_NSTextContainer
 #define _GNUstep_H_NSTextContainer
-#include <GNUstepBase/GSVersionMacros.h>
+#import <GNUstepBase/GSVersionMacros.h>
 
-#if	GS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if GS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
 
 @class GSLayoutManager;
 @class NSTextView;
