@@ -5704,28 +5704,55 @@ This method is deprecated, use -columnIndexesInRect:. */
       ASSIGN(_tableColumns, [NSMutableArray array]);
       ASSIGN(_sortDescriptors, [NSArray array]);
 
+      //
+      // Check for nil on some of these, since they are usually set
+      // in NSIBOutletConnector objects we don't want to override
+      // that setting unless they're directly encoded with the 
+      // object. 
+      // 
+      // I'm not sure why IB encodes nil values for these, but
+      // the behaviour here should match that on Mac OS X.
+      //
       if ([aDecoder containsValueForKey: @"NSDataSource"])
         {
-          [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
-        }
+	  id obj = [aDecoder decodeObjectForKey: @"NSDataSource"];
+	  if(obj != nil)
+	    {
+	      [self setDataSource: obj];
+	    }
+	}
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {      
-          [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
-        }
+	  id obj = [aDecoder decodeObjectForKey: @"NSDelegate"];
+	  if(obj != nil)
+	    {
+	      [self setDelegate: obj];
+	    }
+	}
       if ([aDecoder containsValueForKey: @"NSTarget"])
         {
-          [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
-        }
+	  id obj = [aDecoder decodeObjectForKey: @"NSTarget"];
+	  if(obj != nil)
+	    {
+	      [self setTarget: obj];
+	    }
+	}
       if ([aDecoder containsValueForKey: @"NSAction"])
         {
           NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
-          [self setAction: NSSelectorFromString(action)];
-        }
+	  if(action != nil)
+	    {
+	      [self setAction: NSSelectorFromString(action)];
+	    }
+	}
       if ([aDecoder containsValueForKey: @"NSDoubleAction"])
         {
           NSString *action = [aDecoder decodeObjectForKey: @"NSDoubleAction"];
-          [self setDoubleAction: NSSelectorFromString(action)];
-        }
+	  if(action != nil)
+	    {
+	      [self setDoubleAction: NSSelectorFromString(action)];
+	    }
+	}
 
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
         {

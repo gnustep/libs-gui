@@ -1,3 +1,10 @@
+2010-03-31 00:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTableView.m: Add nil check to make sure that the 
+	nil values set for certain keys don't get set since they are
+	normally set by connections later in the nib loading process. 
+	I'm not sure why IB includes these when they're set to nil.
+
 2010-03-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSNib.h: Make NSNibOwner and NSNibTopLevelObjects
