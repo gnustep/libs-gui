@@ -24,13 +24,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSTabViewItem.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTabViewItem.h"
+#import "AppKit/PSOperators.h"
 
 @implementation NSTabViewItem
 

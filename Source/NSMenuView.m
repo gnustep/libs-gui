@@ -32,9 +32,9 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSDate.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSNotification.h>
-//#import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>

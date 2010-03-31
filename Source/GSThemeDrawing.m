@@ -41,6 +41,7 @@
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
+#import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSView.h"
 #import "AppKit/PSOperators.h"
 

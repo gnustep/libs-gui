@@ -7,9 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Daniel B?hringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel Boehringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-   Source by Daniel B?hringer integrated into Scott Christley's preliminary
+   Source by Daniel Boehringer integrated into Scott Christley's preliminary
    implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
 
    This file is part of the GNUstep GUI Library.
@@ -35,7 +35,7 @@
 #define _GNUstep_H_NSSavePanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSPanel.h>
 
 @class NSString;
 @class NSURL;

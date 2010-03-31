@@ -58,6 +58,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSView.h"

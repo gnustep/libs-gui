@@ -30,8 +30,8 @@
 #ifndef _GNUstep_H_NSSecureTextField
 #define _GNUstep_H_NSSecureTextField
 
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSTextFieldCell.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSTextFieldCell.h>
 
 @interface NSSecureTextField : NSTextField
 {}

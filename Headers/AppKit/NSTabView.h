@@ -28,9 +28,9 @@
 #ifndef _GNUstep_H_NSTabView
 #define _GNUstep_H_NSTabView
  
-#include <AppKit/NSView.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSCell.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSColor.h>
+#import <AppKit/NSCell.h>
 
 typedef enum {
   NSTopTabsBezelBorder, 

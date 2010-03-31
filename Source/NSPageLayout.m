@@ -29,6 +29,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSNumberFormatter.h>
 #import <Foundation/NSDecimalNumber.h>
 #import <Foundation/NSUserDefaults.h>

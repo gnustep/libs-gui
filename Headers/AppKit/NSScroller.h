@@ -32,8 +32,8 @@
 #define _GNUstep_H_NSScroller
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSCell.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSCell.h>
 
 @class NSEvent;
 

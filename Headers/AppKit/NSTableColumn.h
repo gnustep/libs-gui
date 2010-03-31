@@ -31,8 +31,8 @@
 #ifndef _GNUstep_H_NSTableColumn
 #define _GNUstep_H_NSTableColumn
 
-#include <Foundation/NSObject.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSSortDescriptor;
 @class NSCell;

@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_NSSelection
 #define _GNUstep_H_NSSelection
 
-#include <Foundation/NSCoder.h>
+#import <Foundation/NSObject.h>
 
 @class NSData;
 @class NSPasteboard;
@@ -68,12 +68,6 @@
 // Writing a Selection to the Pasteboard
 //
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

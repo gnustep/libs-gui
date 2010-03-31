@@ -29,18 +29,19 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSException.h>
+#import "config.h"
+#import <Foundation/NSException.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSSecureTextField.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSSecureTextField.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSWindow.h"
 
 // the Unicode code point for a bullet
 #define BULLET 0x2022

@@ -28,8 +28,8 @@
 #ifndef _GNUstep_H_NSSlider
 #define _GNUstep_H_NSSlider
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSSliderCell.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSSliderCell.h>
 
 @class NSString;
 @class NSImage;

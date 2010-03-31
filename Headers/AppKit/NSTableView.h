@@ -30,9 +30,9 @@
 #ifndef _GNUstep_H_NSTableView
 #define _GNUstep_H_NSTableView
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray;
 @class NSIndexSet;

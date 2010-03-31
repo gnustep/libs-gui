@@ -26,7 +26,7 @@
 #ifndef _GNUstep_H_NSSegmentedControl
 #define _GNUstep_H_NSSegmentedControl
 
-#include <AppKit/NSControl.h>
+#import <AppKit/NSControl.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 typedef enum _NSSegmentStyle {

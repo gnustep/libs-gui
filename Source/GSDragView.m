@@ -31,21 +31,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSThread.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSThread.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSCell.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSDragView.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSDragView.h"
 #include <math.h>
 
 /* Size of the dragged window */

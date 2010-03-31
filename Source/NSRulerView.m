@@ -26,21 +26,22 @@
 */
 
 #include <math.h>
-#include "config.h"
+#import "config.h"
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSRulerMarker.h"
-#include "AppKit/NSRulerView.h"
-#include "AppKit/NSScrollView.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSRulerMarker.h"
+#import "AppKit/NSRulerView.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSStringDrawing.h"
 
 DEFINE_RINT_IF_MISSING
 

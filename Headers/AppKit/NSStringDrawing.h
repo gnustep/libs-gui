@@ -36,9 +36,11 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSAttributedString.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSString.h>
+
+@class NSDictionary;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 typedef enum 

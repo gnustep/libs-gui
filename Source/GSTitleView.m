@@ -38,6 +38,7 @@
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSPanel.h"
+#import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 

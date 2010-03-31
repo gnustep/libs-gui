@@ -31,8 +31,8 @@
 #ifndef _GNUstep_H_NSTableHeaderView
 #define _GNUstep_H_NSTableHeaderView
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSView.h>
 
 @class NSTableView;
 

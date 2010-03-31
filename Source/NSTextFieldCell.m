@@ -28,17 +28,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSText.h"
+#import "config.h"
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSText.h"
 
 @implementation NSTextFieldCell
 

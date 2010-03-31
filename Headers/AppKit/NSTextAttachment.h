@@ -48,13 +48,15 @@ the NSTextAttachment protocol.
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSCell.h>
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSCell.h>
 
-@class NSTextContainer;
 @class NSFileWrapper;
-@class NSTextAttachment;
 @class NSLayoutManager;
+@class NSTextAttachment;
+@class NSTextContainer;
 
 enum {
     NSAttachmentCharacter = 0xfffc	/* To denote attachments. */

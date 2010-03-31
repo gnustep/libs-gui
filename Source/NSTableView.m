@@ -30,40 +30,41 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFormatter.h>
-#include <Foundation/NSIndexSet.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSSortDescriptor.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFormatter.h>
+#import <Foundation/NSIndexSet.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSSortDescriptor.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSKeyedArchiver.h>
 
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTableColumn.h"
-#include "AppKit/NSTableHeaderView.h"
-#include "AppKit/NSText.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "AppKit/NSCachedImageRep.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSCustomImageRep.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSText.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
+#import "AppKit/NSCachedImageRep.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSCustomImageRep.h"
+#import "GNUstepGUI/GSTheme.h"
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;

@@ -25,18 +25,21 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTimer.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSPanel.h"
-#include "GNUstepGUI/GSTrackingRect.h"
-#include "GSToolTips.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSPanel.h"
+#import "GNUstepGUI/GSTrackingRect.h"
+#import "GSToolTips.h"
 
-@interface	NSWindow (GNUstepPrivate)
+@interface NSWindow (GNUstepPrivate)
 
 + (void) _setToolTipVisible: (GSToolTips*)t;
 + (GSToolTips*) _toolTipVisible;

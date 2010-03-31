@@ -30,13 +30,14 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSPrinter.h"
-#include "AppKit/NSPrintInfo.h"
-#include "GNUstepGUI/GSPrinting.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSPrinter.h"
+#import "AppKit/NSPrintInfo.h"
+#import "GNUstepGUI/GSPrinting.h"
+#import "GSGuiPrivate.h"
 
 // Class variables:
 static NSPrintInfo *sharedPrintInfo = nil;

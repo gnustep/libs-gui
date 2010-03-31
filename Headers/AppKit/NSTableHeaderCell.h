@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSTableHeaderCell
 #define _GNUstep_H_NSTableHeaderCell
-#include <GNUstepBase/GSVersionMacros.h>
+#import <GNUstepBase/GSVersionMacros.h>
 
 #import <AppKit/NSTextFieldCell.h>
 

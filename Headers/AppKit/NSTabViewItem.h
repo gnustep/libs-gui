@@ -28,7 +28,8 @@
 #ifndef _GNUstep_H_NSTabViewItem
 #define _GNUstep_H_NSTabViewItem
 
-#include <AppKit/NSTabView.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
 
 typedef enum {
   NSSelectedTab = 0,
@@ -36,7 +37,10 @@ typedef enum {
   NSPressedTab
 } NSTabState;
 
+@class NSString;
 @class NSColor;
+@class NSTabView;
+@class NSView;
 
 @interface NSTabViewItem : NSObject <NSCoding>
 {

@@ -31,12 +31,10 @@
 #ifndef _GNUstep_H_NSSound
 #define _GNUstep_H_NSSound
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSByteOrder.h>
+#import <Foundation/NSObject.h>
 
-#include "GNUstepGUI/GSSoundSource.h"
-#include "GNUstepGUI/GSSoundSink.h"
+#import "GNUstepGUI/GSSoundSource.h"
+#import "GNUstepGUI/GSSoundSink.h"
 
 @class NSArray;
 @class NSData;

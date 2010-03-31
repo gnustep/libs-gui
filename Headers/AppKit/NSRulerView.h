@@ -34,7 +34,7 @@
 #ifndef _GNUstep_H_NSRulerView
 #define _GNUstep_H_NSRulerView
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 /* Declaring classes, rather than #including the full class header,
  * results in much faster compilations.  */

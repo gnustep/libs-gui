@@ -26,8 +26,8 @@
 #ifndef _GNUstep_H_NSSegmentedCell
 #define _GNUstep_H_NSSegmentedCell
 
-#include <AppKit/NSActionCell.h>
-#include <AppKit/NSSegmentedControl.h>
+#import <AppKit/NSActionCell.h>
+#import <AppKit/NSSegmentedControl.h>
 
 // tracking types...
 typedef enum {

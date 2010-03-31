@@ -32,11 +32,12 @@
 */
 
 #import "config.h"
-#import <Foundation/NSLock.h>
 #import <Foundation/NSArray.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSException.h>
+#import <Foundation/NSAttributedString.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
 #import "AppKit/AppKitExceptions.h"
@@ -50,6 +51,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSSound.h"
+#import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSNibLoading.h"

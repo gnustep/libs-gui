@@ -28,7 +28,7 @@
 #ifndef _GNUstep_H_NSSliderCell
 #define _GNUstep_H_NSSliderCell
 
-#include <AppKit/NSActionCell.h>
+#import <AppKit/NSActionCell.h>
 
 @class NSString;
 @class NSColor;

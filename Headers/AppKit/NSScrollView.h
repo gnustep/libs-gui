@@ -32,7 +32,7 @@
 #define _GNUstep_H_NSScrollView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 @class NSClipView;
 @class NSRulerView;

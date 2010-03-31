@@ -29,30 +29,31 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSToolbar.h"
-#include "AppKit/NSView.h"
-#include "GNUstepGUI/GSToolbarView.h"
-#include "AppKit/NSToolbarItem.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSToolbar.h"
+#import "AppKit/NSView.h"
+#import "GNUstepGUI/GSToolbarView.h"
+#import "AppKit/NSToolbarItem.h"
 
-#include "NSToolbarFrameworkPrivate.h"
-#include "GSGuiPrivate.h"
+#import "NSToolbarFrameworkPrivate.h"
+#import "GSGuiPrivate.h"
 
 /*
  * Each NSToolbarItem object are coupled with a backView which is their 

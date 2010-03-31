@@ -32,8 +32,8 @@
 #ifndef _GNUstep_H_NSRulerMarker
 #define _GNUstep_H_NSRulerMarker
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSRulerView;
 @class NSImage;

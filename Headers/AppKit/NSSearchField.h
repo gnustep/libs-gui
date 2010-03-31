@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_NSSearchField
 #define _GNUstep_H_NSSearchField
 
-#include <AppKit/NSTextField.h>
+#import <AppKit/NSTextField.h>
 
 @interface NSSearchField : NSTextField
 

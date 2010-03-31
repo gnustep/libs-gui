@@ -62,6 +62,7 @@
  </chapter>
 */  
 
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSSortDescriptor.h>

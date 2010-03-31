@@ -35,8 +35,8 @@
 #define _GNUstep_H_NSScreen
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSGraphics.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSGraphics.h>
 
 @class NSArray;
 @class NSDictionary;

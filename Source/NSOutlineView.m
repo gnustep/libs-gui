@@ -31,31 +31,32 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSIndexSet.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSNull.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSIndexSet.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNull.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSOutlineView.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSTableColumn.h"
-#include "AppKit/NSTableHeaderView.h"
-#include "AppKit/NSText.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSOutlineView.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSText.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSWindow.h"
 
 #include <math.h>
 

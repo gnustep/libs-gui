@@ -31,9 +31,9 @@
 #define _GNUstep_H_NSResponder
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSInterfaceStyle.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSInterfaceStyle.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSCoder;
 @class NSError;

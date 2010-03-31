@@ -30,6 +30,9 @@
 #ifndef _GNUstep_H_GSSoundSink
 #define _GNUstep_H_GSSoundSink
 
+#import <Foundation/NSByteOrder.h>
+#import <Foundation/NSObject.h>
+
 @protocol GSSoundSink <NSObject>
 
 /** Returns YES if class has the ability of playing audio data

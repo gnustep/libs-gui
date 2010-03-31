@@ -30,6 +30,9 @@
 #ifndef _GNUstep_H_GSSoundSource
 #define _GNUstep_H_GSSoundSource
 
+#import <Foundation/NSByteOrder.h>
+#import <Foundation/NSObject.h>
+
 @class NSArray;
 
 enum

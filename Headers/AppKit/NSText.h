@@ -56,13 +56,16 @@
  * inside the GNUstep NSView tree, you can write a subclass of NSText
  * which just uses Emacs. */
  
-#include <AppKit/NSView.h>
-#include <AppKit/NSSpellProtocol.h>
-#include <Foundation/NSRange.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSSpellProtocol.h>
+//#import <AppKit/NSStringDrawing.h>
 
-@class NSString;
+@class NSAttributedString;
 @class NSData;
 @class NSNotification;
+@class NSString;
 @class NSColor;
 @class NSFont;
 
@@ -106,8 +109,6 @@ enum {
   NSDeleteKey         = 0x7f,
   NSBacktabKey        = 25
 };
-
-#include <AppKit/NSStringDrawing.h>
 
 @interface NSText : NSView <NSChangeSpelling, NSIgnoreMisspelledWords>
 {

@@ -33,8 +33,8 @@
 #ifndef _GNUstep_H_NSSpellChecker
 #define _GNUstep_H_NSSpellChecker
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSRange.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
 
 @class NSProxy;
 @class NSString;
