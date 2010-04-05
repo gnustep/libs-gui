@@ -1,3 +1,8 @@
+2010-04-05 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSDrawer.m: Fix problem with drawer window being shown
+	prematurely.
+
 2010-04-04 German Arias <german@xelalug.org>
 
 	* Panels/Spanish.lproj/GSPageLayout.gorm: Translations 
