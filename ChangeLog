@@ -1,5 +1,10 @@
 2010-04-05 Doug Simons <doug.simons@testplant.com>
 
+	* Source/NSWindow.m: Fix crash caused by close being called
+	recursively.
+
+2010-04-05 Doug Simons <doug.simons@testplant.com>
+
 	* Source/NSDrawer.m: Fix problem with drawer window being shown
 	prematurely.
 

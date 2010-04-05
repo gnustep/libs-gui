@@ -2664,6 +2664,7 @@ resetCursorRectsForView(NSView *theView)
 {
   if (_f.has_closed == NO)
     {
+      _f.has_closed = YES;
       CREATE_AUTORELEASE_POOL(pool);
 
       /* The NSWindowCloseNotification might result in us being
@@ -2689,7 +2690,6 @@ resetCursorRectsForView(NSView *theView)
 	}
 
       RELEASE(pool);
-      _f.has_closed = YES;
       RELEASE(self);
     }
 }
