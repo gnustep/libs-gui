@@ -3610,13 +3610,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	      GSIArrayRemoveItemAtIndex(pKV(tmp), count);
 	    }
 	}
-      /*
-       * If the view still points to us, make a note of it in the
-       * 'next' array while making space for the new link to aView.
-       */
       if (GSIArrayItemAtIndex(pKV(tmp), 0).obj == self)
 	{
-	  GSIArrayInsertItem(nKV(self), (GSIArrayItem)nil, 0);
+	  GSIArraySetItemAtIndex(pKV(tmp), (GSIArrayItem)nil, 0);
 	}
     }
 
@@ -4558,8 +4554,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _autoresizes_subviews = YES;
       _autoresizingMask = NSViewNotSizable;
       _coordinates_valid = NO;
-      _nextKeyView = 0;
-      _previousKeyView = 0;
+      /*
+       * Note: don't zero _nextKeyView and _previousKeyView, as the key view
+       * chain may already have been established by super's initWithCoder:
+       *
+       * _nextKeyView = 0;
+       * _previousKeyView = 0;
+       */
       
       _rFlags.flipped_view = [self isFlipped];
 
