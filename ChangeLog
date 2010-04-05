@@ -1,3 +1,8 @@
+2010-04-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSGModelLoader.m,
+	* Source/GSXibLoader.m: Avoid compiler warnings from old compilers.
+
 2010-04-05 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSView.m: Fix the worst problems with key view

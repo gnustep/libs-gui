@@ -195,12 +195,14 @@
 
 @end
 
-@interface IBConnection: NSObject
+@interface IBConnection: NSObject <NSCoding>
 {
   NSString *label;
   id source;
   id destination;
 }
+- (id) nibInstantiate;
+- (void) establishConnection;
 @end
 
 @implementation IBConnection
@@ -229,6 +231,11 @@
                    NSStringFromClass([coder class])];
     }
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  // FIXME
 }
 
 - (void) dealloc
@@ -464,7 +471,7 @@
 
 @end
 
-@interface IBObjectContainer: NSObject
+@interface IBObjectContainer: NSObject <NSCoding>
 {
   NSMutableArray *connectionRecords;
   IBMutableOrderedSet *objectRecords;
@@ -475,6 +482,7 @@
   id sourceID;
   int maxID;
 }
+- (id) nibInstantiate;
 @end
 
 @implementation IBObjectContainer
@@ -500,6 +508,11 @@
                    NSStringFromClass([coder class])];
     }
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  // FIXME
 }
 
 - (void) dealloc
@@ -542,6 +555,15 @@
   NSMutableDictionary *elements;
   NSMutableArray *values;
 }
+- (NSString*) type;
+- (NSString*) value;
+- (NSDictionary*) elements;
+- (NSArray*) values;
+- (void) addElement: (GSXibElement*)element;
+- (void) setElement: (GSXibElement*)element forKey: (NSString*)key;
+- (void) setValue: (NSString*)text;
+- (NSString*) attributeForKey: (NSString*)key;
+- (GSXibElement*) elementForKey: (NSString*)key;
 @end
 
 @interface GSXibKeyedUnarchiver: NSKeyedUnarchiver
@@ -892,7 +914,7 @@ didStartElement: (NSString *)elementName
       NSString *classname = [element attributeForKey: @"class"];
       Class c = [self classForClassName: classname];
       id o, r;
-      id _delegate = [self delegate];
+      id delegate = [self delegate];
 
       if (c == nil)
 	{
@@ -902,7 +924,7 @@ didStartElement: (NSString *)elementName
 	      c = NSClassFromString(classname);
 	      if (c == nil)
 		{
-		  c = [_delegate unarchiver: self
+		  c = [delegate unarchiver: self
                                  cannotDecodeObjectOfClassName: classname
                             originalClasses: nil];
 		  if (c == nil)
@@ -929,7 +951,7 @@ didStartElement: (NSString *)elementName
       r = [o initWithCoder: self];
       if (r != o)
 	{
-	  [_delegate unarchiver: self
+	  [delegate unarchiver: self
 	      willReplaceObject: o
 		     withObject: r];
 	  o = r;
@@ -939,19 +961,19 @@ didStartElement: (NSString *)elementName
       r = [o awakeAfterUsingCoder: self];
       if (r != o)
 	{
-	  [_delegate unarchiver: self
+	  [delegate unarchiver: self
 	      willReplaceObject: o
 		     withObject: r];
 	  o = r;
           if (key != nil)
             [decoded setObject: o forKey: key];
 	}
-      if (_delegate != nil)
+      if (delegate != nil)
 	{
-	  r = [_delegate unarchiver: self didDecodeObject: o];
+	  r = [delegate unarchiver: self didDecodeObject: o];
 	  if (r != o)
 	    {
-	      [_delegate unarchiver: self
+	      [delegate unarchiver: self
 		  willReplaceObject: o
 			 withObject: r];
 	      o = r;
