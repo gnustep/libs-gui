@@ -456,7 +456,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   cache_t *c;
 
   NSRange r;
-  BOOL need_clip;
+  BOOL need_clip = NO;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
@@ -540,7 +540,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 - (NSSize) size
 {
   int ci;
-  NSSize result;
+  NSSize result = NSZeroSize;
 
   cache_lock();
   NS_DURING
@@ -569,7 +569,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
                         options: (NSStringDrawingOptions)options
 {
   int ci;
-  NSRect result;
+  NSRect result = NSZeroRect;
 
   cache_lock();
   NS_DURING
@@ -660,7 +660,7 @@ NSAttributedString to do the job.
   cache_t *c;
 
   NSRange r;
-  BOOL need_clip;
+  BOOL need_clip = NO;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
@@ -743,7 +743,7 @@ NSAttributedString to do the job.
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
   int ci;
-  NSSize result;
+  NSSize result = NSZeroSize;
 
   cache_lock();
   NS_DURING
@@ -773,7 +773,7 @@ NSAttributedString to do the job.
                      attributes: (NSDictionary *)attributes
 {
   int ci;
-  NSRect result;
+  NSRect result = NSZeroRect;
 
   cache_lock();
   NS_DURING

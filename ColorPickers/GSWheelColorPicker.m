@@ -168,7 +168,7 @@
   NSPoint point = [self convertPoint: [theEvent locationInWindow] 
 			fromView: nil];
   NSEventType eventType = [theEvent type];
-  NSEvent *presentEvent;
+  NSEvent *presentEvent = theEvent;
 
   float new_hue, new_saturation;
   float old_x, old_y;

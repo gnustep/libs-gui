@@ -2586,8 +2586,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (id) _connectApplication: (NSString*)appName
 {
-  NSTimeInterval        replyTimeout;
-  NSTimeInterval        requestTimeout;
+  NSTimeInterval        replyTimeout = 0.0;
+  NSTimeInterval        requestTimeout = 0.0;
   NSString	*host;
   NSString	*port;
   NSDate	*when = nil;

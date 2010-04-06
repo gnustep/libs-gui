@@ -348,7 +348,7 @@
           const float columnMinX = NSMinX([self headerRectOfColumn: _resizedColumn]);
           const float columnMinWidth = [column minWidth];
           const float columnMaxWidth = [column maxWidth];
-          float newColumnWidth;
+          float newColumnWidth = [column width];
           float newColumnMaxX;
           NSRect oldHighlightRect;
           NSRect highlightRect = [self visibleRect];

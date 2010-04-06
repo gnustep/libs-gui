@@ -1,3 +1,10 @@
+2010-04-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ColorPickers/GSWheelColorPicker.m,
+	* Source/NSTableHeaderView.m,
+	* Source/NSStringDrawing.m,
+	* Source/NSWorkspace.m:	Remove some stupid compiler warnings.
+
 2010-04-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSGModelLoader.m,
