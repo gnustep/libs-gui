@@ -30,8 +30,8 @@
 #ifndef _GNUstep_H_COCOA
 #define _GNUstep_H_COCOA
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433

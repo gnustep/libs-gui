@@ -1,5 +1,10 @@
 2010-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Cocoa/Cocoa.h: One more forgotten header file changed
+	from #include into #import.
+
+2010-04-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSHbox.h
 	* Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h
 	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h
