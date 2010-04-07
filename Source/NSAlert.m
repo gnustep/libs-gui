@@ -58,6 +58,7 @@
 #import "AppKit/NSScreen.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
+#import <AppKit/NSStringDrawing.h>
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextView.h"
 

@@ -29,32 +29,37 @@
 #ifndef _GSDisplayServer_h_INCLUDE
 #define _GSDisplayServer_h_INCLUDE
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSSet.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
-#include <AppKit/NSDragging.h>
-#include <AppKit/AppKitDefines.h>
-#include <AppKit/NSGraphicsContext.h>
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSGraphicsContext.h>
 
 @class NSArray;
-@class NSMutableDictionary;
-@class NSEvent;
-@class NSImage;
+@class NSCountedSet;
+@class NSDictionary;
+@class NSMapTable;
 @class NSMutableArray;
 @class NSMutableData;
+@class NSMutableDictionary;
+@class NSString;
+
+@class NSEvent;
+@class NSImage;
+
 @class GSDisplayServer;
 @class NSGraphicsContext;
+@class NSWindow;
 
 #if !NO_GNUSTEP
-APPKIT_EXPORT GSDisplayServer * GSServerForWindow(NSWindow *window);
-APPKIT_EXPORT GSDisplayServer * GSCurrentServer(void);
+APPKIT_EXPORT GSDisplayServer *GSServerForWindow(NSWindow *window);
+APPKIT_EXPORT GSDisplayServer *GSCurrentServer(void);
 
 /* Display attributes */
-APPKIT_EXPORT NSString * GSDisplayName;
-APPKIT_EXPORT NSString * GSDisplayNumber;
-APPKIT_EXPORT NSString * GSScreenNumber;
+APPKIT_EXPORT NSString *GSDisplayName;
+APPKIT_EXPORT NSString *GSDisplayNumber;
+APPKIT_EXPORT NSString *GSScreenNumber;
 
 @interface GSDisplayServer : NSObject
 {

@@ -28,7 +28,11 @@
 #ifndef _GNUstep_H_GSServicesManager
 #define _GNUstep_H_GSServicesManager
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
+/* Forward declaring the NSMenuItem protocol here would be nicer, but older
+   versions of gcc can't handle that.  Thus, we include the header
+   instead. */
+#import "AppKit/NSMenuItem.h"
 
 @class	NSApplication;
 @class	NSArray;
@@ -40,11 +44,6 @@
 @class	NSMutableSet;
 @class	NSString;
 @class	NSTimer;
-
-/* Forward declaring the NSMenuItem protocol here would be nicer, but older
-   versions of gcc can't handle that.  Thus, we include the header
-   instead. */
-#include "AppKit/NSMenuItem.h"
 
 @interface      GSServicesManager : NSObject
 {

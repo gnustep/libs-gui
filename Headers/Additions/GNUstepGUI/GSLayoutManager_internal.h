@@ -28,7 +28,7 @@
 #ifndef _GNUstep_H_GSLayoutManager_internal
 #define _GNUstep_H_GSLayoutManager_internal
 
-#include <GNUstepGUI/GSLayoutManager.h>
+#import <GNUstepGUI/GSLayoutManager.h>
 
 
 /*

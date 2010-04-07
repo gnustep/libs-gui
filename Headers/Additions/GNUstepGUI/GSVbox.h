@@ -38,7 +38,7 @@
 #ifndef _GNUstep_H_GSVbox
 #define _GNUstep_H_GSVbox
 
-#include "GSTable.h"
+#import "GSTable.h"
 
 /** 
   <unit>

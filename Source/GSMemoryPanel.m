@@ -26,9 +26,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GSMemoryPanel.h"
-#include "GNUstepGUI/GSHbox.h"
-#include "GNUstepGUI/GSVbox.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSButton.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableView.h"
+#import "GNUstepGUI/GSMemoryPanel.h"
+#import "GNUstepGUI/GSHbox.h"
+#import "GNUstepGUI/GSVbox.h"
 
 enum {
   OrderByClassName,
@@ -336,7 +344,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 
 - (void) snapshot: (id)sender
 {
-  GSMemoryPanel		*snapshot = [GSMemoryPanel new];
+  GSMemoryPanel	*snapshot = [GSMemoryPanel new];
 
   [snapshot setTitle:
     [NSString stringWithFormat: @"Memory Snapshot at %@", [NSDate date]]];

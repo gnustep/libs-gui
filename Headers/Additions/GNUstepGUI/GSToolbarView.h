@@ -32,9 +32,9 @@
 #ifndef _GSToolbarView_h_INCLUDE
 #define _GSToolbarView_h_INCLUDE
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSColor.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSColor.h>
 
 @class NSMutableArray;
 @class NSClipView;

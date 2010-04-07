@@ -27,14 +27,15 @@
 #ifndef _GNUstep_H_GSAnimator_
 #define _GNUstep_H_GSAnimator_
 
-@class NSRunLoop;
-@class NSEvent;
-@class NSTimer;
-@class NSString;
+#import <Foundation/NSDate.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSZone.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSDate.h>
-#include <Foundation/NSTimer.h>
+@class NSArray;
+@class NSEvent;
+@class NSRunLoop;
+@class NSString;
+@class NSTimer;
 
 /**
  * Protocol that needs to be adopted by classes that want to

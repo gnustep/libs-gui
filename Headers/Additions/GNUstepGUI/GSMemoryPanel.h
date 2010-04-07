@@ -34,8 +34,11 @@
 #ifndef _GNUstep_H_GSMEMORY_PANEL_
 #define _GNUstep_H_GSMEMORY_PANEL_
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPanel.h>
+
+@class NSTableView;
+@class NSMutableArray;
 
 @interface GSMemoryPanel: NSPanel
 {

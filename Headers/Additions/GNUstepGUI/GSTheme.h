@@ -215,17 +215,17 @@
 #ifndef _GNUstep_H_GSTheme
 #define _GNUstep_H_GSTheme
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSCell.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSCell.h>
 // For gradient types
-#include <AppKit/NSButtonCell.h>
+#import <AppKit/NSButtonCell.h>
 // For image frame style
-#include <AppKit/NSImageCell.h>
+#import <AppKit/NSImageCell.h>
 // For scroller constants
-#include <AppKit/NSScroller.h>
+#import <AppKit/NSScroller.h>
 // For segmented control style constants
-#include <AppKit/NSSegmentedControl.h>
+#import <AppKit/NSSegmentedControl.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;

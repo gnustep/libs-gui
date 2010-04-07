@@ -32,10 +32,13 @@
 #ifndef _GNUstep_H_GSTextConverter
 #define _GNUstep_H_GSTextConverter
 
-#include <Foundation/NSAttributedString.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSError.h>
+#import <Foundation/NSObject.h>
+
+@class NSAttributedString;
+@class NSData;
+@class NSDictionary;
+@class NSError;
+@class NSString;
 
 @protocol GSTextConverter
 + (Class) classForFormat: (NSString*)format 

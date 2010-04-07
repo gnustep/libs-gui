@@ -31,8 +31,9 @@
 #ifndef _GNUstep_H_GSPrinting
 #define _GNUstep_H_GSPrinting
 
-#include <Foundation/NSBundle.h>
+#import <Foundation/NSObject.h>
 
+@class NSBundle;
 
 @interface GSPrinting : NSObject
 {

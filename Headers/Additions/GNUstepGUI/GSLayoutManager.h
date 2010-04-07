@@ -28,10 +28,10 @@
 #ifndef _GNUstep_H_GSLayoutManager
 #define _GNUstep_H_GSLayoutManager
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGlyphGenerator.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSFont.h>
+#import <AppKit/NSGlyphGenerator.h>
 
 @class GSTypesetter;
 @class NSTextStorage,NSTextContainer;

@@ -25,17 +25,17 @@
 #ifndef _GSMethodTable_h_INCLUDE
 #define _GSMethodTable_h_INCLUDE
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSFont.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSFont.h>
 
 @class NSAffineTransform;
-@class NSBezierPath;
 @class NSDate;
+@class NSString;
+@class NSBezierPath;
+@class NSColor;
 @class NSEvent;
 @class NSGraphicsContext;
-@class NSString;
-@class NSColor;
 
 typedef struct {
 

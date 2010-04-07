@@ -28,7 +28,7 @@
 #ifndef _GNUstep_H_GSHorizontalTypesetter
 #define _GNUstep_H_GSHorizontalTypesetter
 
-#include <GNUstepGUI/GSTypesetter.h>
+#import <GNUstepGUI/GSTypesetter.h>
 
 @class NSLock;
 @class GSLayoutManager, NSTextContainer, NSTextStorage;

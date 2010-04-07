@@ -28,18 +28,20 @@
    COPYING file from libFoundation for copyright information. */
 
 #ifndef GNUSTEP
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #else
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSScanner.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSArchiver.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSHashTable.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSObjCRuntime.h>
+#import <Foundation/NSScanner.h>
+#import <Foundation/NSString.h>
 #endif
 
 #ifndef AUTORELEASE
@@ -48,7 +50,7 @@
 #define RETAIN(object)          [object retain]
 #endif
 
-#include <GNUstepGUI/GMArchiver.h>
+#import <GNUstepGUI/GMArchiver.h>
 
 @interface GMClassInfo : NSObject
 {
@@ -1148,4 +1150,4 @@ static NSMutableDictionary* classToAliasMappings = nil;
 @end /* GMUnarchiver */
 
 
-#include "GMArchiveObjects.m"
+#import "GMArchiveObjects.m"

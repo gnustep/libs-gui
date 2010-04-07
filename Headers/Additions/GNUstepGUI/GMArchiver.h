@@ -31,18 +31,19 @@
 #define __GMArchiver_h__
 
 #ifndef GNUSTEP
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #else
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSHashTable.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSZone.h>
 #endif
 
 @class NSString;
 @class NSData;
 @class NSArray;
 @class NSDictionary;
+@class NSHashTable;
+@class NSMapTable;
 @class NSMutableArray;
 @class NSMutableDictionary;
 

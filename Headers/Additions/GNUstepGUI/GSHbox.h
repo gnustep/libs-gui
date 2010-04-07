@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_GSHbox
 #define _GNUstep_H_GSHbox
 
-#include "GSTable.h"
+#import "GSTable.h"
 
 /** 
   <unit>

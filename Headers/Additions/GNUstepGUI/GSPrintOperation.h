@@ -38,7 +38,7 @@
 #ifndef _GNUstep_H_GSPrintOperation
 #define _GNUstep_H_GSPrintOperation
 
-#include "AppKit/NSPrintOperation.h"
+#import "AppKit/NSPrintOperation.h"
 
 
 @class NSView;

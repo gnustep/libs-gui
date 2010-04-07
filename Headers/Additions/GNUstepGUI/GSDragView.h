@@ -30,13 +30,21 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */
+#ifndef _GSDragView_h_INCLUDE
+#define _GSDragView_h_INCLUDE
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSDate.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSView.h>
+
+@class NSMutableDictionary;
 
 @class NSCell;
-@class NSMutableDictionary;
+@class NSEvent;
+@class NSImage;
+@class NSPasteboard;
+@class NSWindow;
 
 /*
  * used in the operation mask to indicate that the
@@ -124,3 +132,4 @@
 			    windowRef: (int*)mouseWindowRef;
 
 @end
+#endif

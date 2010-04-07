@@ -30,7 +30,8 @@
 #ifndef _GNUstep_H_GSTrackingRect
 #define _GNUstep_H_GSTrackingRect
 
-#include <AppKit/NSView.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSView.h>
 
 @interface GSTrackingRect : NSObject <NSCoding>
 {
@@ -63,12 +64,6 @@
 
 - (BOOL) isValid;
 - (void) invalidate;
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 

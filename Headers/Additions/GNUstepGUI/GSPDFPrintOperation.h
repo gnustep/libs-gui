@@ -37,9 +37,9 @@
 #ifndef _GNUstep_H_GSPDFPrintOperation
 #define _GNUstep_H_GSPDFPrintOperation
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include "AppKit/NSPrintOperation.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import "AppKit/NSPrintOperation.h"
 
 @class NSString;
 
@@ -52,9 +52,9 @@
 }
 
 - (id) initWithView:(NSView *)aView	
-		     insideRect:(NSRect)rect
-			       toPath:(NSString *)path
-		      printInfo:(NSPrintInfo *)aPrintInfo;
+         insideRect:(NSRect)rect
+             toPath:(NSString *)path
+          printInfo:(NSPrintInfo *)aPrintInfo;
 @end
 
 

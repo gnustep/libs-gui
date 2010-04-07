@@ -28,8 +28,41 @@
 #ifndef _GNUstep_H_GMAppKit
 #define _GNUstep_H_GMAppKit
 
-#include <AppKit/AppKit.h>
-#include <GNUstepGUI/GMArchiver.h>
+#ifndef GNUSTEP
+#import <AppKit/AppKit.h>
+#else
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSBox.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSCell.h>
+#import <AppKit/NSClipView.h>
+#import <AppKit/NSColor.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSFont.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSMatrix.h>
+#import <AppKit/NSMenuItem.h>
+#import <AppKit/NSMenu.h>
+#import <AppKit/NSPopUpButton.h>
+#import <AppKit/NSResponder.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSScrollView.h>
+#import <AppKit/NSSecureTextField.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSPanel.h>
+#import <AppKit/NSSavePanel.h>
+#import <AppKit/NSOpenPanel.h>
+#import <AppKit/NSBrowser.h>
+#import <AppKit/NSColorWell.h>
+#import <AppKit/NSImageView.h>
+#import <AppKit/NSSliderCell.h>
+#import <AppKit/NSTextFieldCell.h>
+#import <AppKit/NSFormCell.h>
+#import <AppKit/NSText.h>
+#import <AppKit/NSTextView.h>
+#endif
+#import <GNUstepGUI/GMArchiver.h>
 
 @interface NSApplication (GMArchiverMethods) <ModelCoding>
 @end
@@ -58,6 +91,9 @@
 @interface NSImage (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSMatrix (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSMenuItem (GMArchiverMethods) <ModelCoding>
 @end
 
@@ -71,6 +107,9 @@
 @end
 
 @interface NSTextField (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSScrollView (GMArchiverMethods) <ModelCoding>
 @end
 
 @interface NSSecureTextFieldCell (GMArchiverMethods) <ModelCoding>
@@ -88,7 +127,25 @@
 @interface NSSavePanel (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSOpenPanel (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSBrowser (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSColorWell (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSImageView (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSSliderCell (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSTextFieldCell (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSFormCell (GMArchiverMethods) <ModelCoding>
 @end
 
 @interface NSText (GMArchiverMethods) <ModelCoding>

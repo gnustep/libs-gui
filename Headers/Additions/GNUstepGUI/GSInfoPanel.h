@@ -30,7 +30,9 @@
 #ifndef _GNUstep_H_GSInfoPanel
 #define _GNUstep_H_GSInfoPanel
 
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSPanel.h>
+
+@class NSDictionary;
 
 /* If you need an Info Panel, the simpler thing to do is to use
  * NSApplication -orderFrontStandardInfoPanel: and 
@@ -38,7 +40,7 @@
  * They automatically manage an infoPanel for you.
  */
 
-@interface GSInfoPanel:NSPanel
+@interface GSInfoPanel: NSPanel
 {
 }
 /*

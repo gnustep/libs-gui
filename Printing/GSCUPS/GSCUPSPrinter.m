@@ -34,29 +34,20 @@
  * (This is not required in the OpenStep standard, but could be useful).
  */
 
-#include "config.h"
-#include <Foundation/NSDebug.h>
-//#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSArray.h>
-//#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-//#include <Foundation/NSBundle.h>
-//#include <Foundation/NSCharacterSet.h>
-//#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSPathUtilities.h>
-//#include <Foundation/NSScanner.h>
-//#include <Foundation/NSString.h>
-//#include <Foundation/NSUserDefaults.h>
-//#include <Foundation/NSUtilities.h>
-//#include <Foundation/NSValue.h>
-//#include <Foundation/NSMapTable.h>
-#include <Foundation/NSSet.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSGraphics.h"
-#include "GSCUPSPrinter.h"
-#include "GNUstepGUI/GSPrinting.h"
+#import "config.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSSet.h>
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSGraphics.h"
+#import "GNUstepGUI/GSPrinting.h"
+#import "GSCUPSPrinter.h"
+
 #include <cups/cups.h>
 
 

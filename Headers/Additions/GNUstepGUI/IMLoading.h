@@ -29,9 +29,12 @@
 #define _GNUstep_H_IMLoading
 
 #ifndef GNUSTEP
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #else
-#include <Foundation/NSBundle.h>
+#import <Foundation/NSObject.h>
+@class NSArray;
+@class NSBundle;
+@class NSString;
 #endif
 
 @interface NSObject (NibAwaking)

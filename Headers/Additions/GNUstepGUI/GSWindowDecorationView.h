@@ -27,8 +27,8 @@
 #ifndef _GNUstep_H_GSWindowDecorationView
 #define _GNUstep_H_GSWindowDecorationView
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSView.h>
 
 @class NSWindow;
 

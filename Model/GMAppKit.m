@@ -25,7 +25,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GMAppKit.h"
+#import <Foundation/NSDebug.h>
+#import "GNUstepGUI/GMAppKit.h"
 
 #ifndef AUTORELEASE
 #define AUTORELEASE(object)	[object autorelease]

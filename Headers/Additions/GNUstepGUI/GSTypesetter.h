@@ -28,11 +28,9 @@
 #ifndef _GNUstep_H_GSTypesetter
 #define _GNUstep_H_GSTypesetter
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSRange.h>
-#include <Foundation/NSGeometry.h>
-
-
+#import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
+#import <Foundation/NSGeometry.h>
 
 @class GSLayoutManager;
 @class NSTextContainer;

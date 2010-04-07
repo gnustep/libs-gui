@@ -37,9 +37,9 @@
 #ifndef _GNUstep_H_GSEPSPrintOperation
 #define _GNUstep_H_GSEPSPrintOperation
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include "AppKit/NSPrintOperation.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import "AppKit/NSPrintOperation.h"
 
 @class NSString;
 @class NSView;
@@ -51,10 +51,9 @@
 }
 
 - (id) initWithView:(NSView *)aView	
-		     insideRect:(NSRect)rect
-			       toPath:(NSString *)path
-		      printInfo:(NSPrintInfo *)aPrintInfo;
+         insideRect:(NSRect)rect
+             toPath:(NSString *)path
+          printInfo:(NSPrintInfo *)aPrintInfo;
 @end
-
 
 #endif // _GNUstep_H_GSEPSPrintOperation

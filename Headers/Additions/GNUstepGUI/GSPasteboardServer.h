@@ -28,9 +28,9 @@
 #ifndef _GNUstep_H_GSPasteboardServer
 #define _GNUstep_H_GSPasteboardServer
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSString.h>
-#include <AppKit/NSPasteboard.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSString.h>
+#import <AppKit/NSPasteboard.h>
 
 @class NSString;
 @class NSArray;

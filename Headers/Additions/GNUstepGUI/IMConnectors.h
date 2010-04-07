@@ -33,9 +33,10 @@
 #define _GNUstep_H_IMConnectors
 
 #ifndef GNUSTEP
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #else
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
+@class NSString;
 #endif
 
 @interface IMConnector : NSObject

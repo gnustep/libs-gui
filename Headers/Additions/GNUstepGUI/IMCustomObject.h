@@ -33,10 +33,12 @@
 #define _GNUstep_H_IMCustomObject
 
 #ifndef GNUSTEP
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
 #else
-#include <Foundation/NSObject.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSView.h>
+
+@class NSString;
 #endif
 
 /* Add an archiving category to object so every object can respond to

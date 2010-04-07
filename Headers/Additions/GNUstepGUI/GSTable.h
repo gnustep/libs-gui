@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_GSTable
 #define _GNUstep_H_GSTable
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 /** 
   <unit>

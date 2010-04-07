@@ -1,3 +1,43 @@
+2010-04-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSHbox.h
+	* Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h
+	* Headers/Additions/GNUstepGUI/GSTypesetter.h
+	* Headers/Additions/GNUstepGUI/GSAnimator.h
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
+	* Headers/Additions/GNUstepGUI/GSTextConverter.h
+	* Headers/Additions/GNUstepGUI/GSPrintOperation.h
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h
+	* Headers/Additions/GNUstepGUI/GSVbox.h
+	* Headers/Additions/GNUstepGUI/GSHorizontalTypesetter.h
+	* Headers/Additions/GNUstepGUI/GMAppKit.h
+	* Headers/Additions/GNUstepGUI/GSTable.h
+	* Headers/Additions/GNUstepGUI/GSMemoryPanel.h
+	* Headers/Additions/GNUstepGUI/GSMethodTable.h
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Headers/Additions/GNUstepGUI/GSPDFPrintOperation.h
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h
+	* Headers/Additions/GNUstepGUI/GSDragView.h
+	* Headers/Additions/GNUstepGUI/IMLoading.h
+	* Headers/Additions/GNUstepGUI/IMConnectors.h
+	* Headers/Additions/GNUstepGUI/GSPasteboardServer.h
+	* Headers/Additions/GNUstepGUI/GSInfoPanel.h
+	* Headers/Additions/GNUstepGUI/GSTitleView.h
+	* Headers/Additions/GNUstepGUI/GSTrackingRect.h
+	* Headers/Additions/GNUstepGUI/GSEPSPrintOperation.h
+	* Headers/Additions/GNUstepGUI/GSPrinting.h
+	* Headers/Additions/GNUstepGUI/GMArchiver.h
+	* Headers/Additions/GNUstepGUI/IMCustomObject.h
+	* Printing/GSCUPS/GSCUPSPrinter.m
+	* Model/GMArchiver.m
+	* Model/GMAppKit.m
+	* Source/NSAlert.m
+	* Source/GSMemoryPanel.m: Final set of #include -> #import
+	replacement in additional headers.
+
 2010-04-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* ColorPickers/GSWheelColorPicker.m,

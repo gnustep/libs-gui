@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_GSHelpManagerPanel
 #define _GNUstep_H_GSHelpManagerPanel
 
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSPanel.h>
 
 @class NSTextView;
 @class NSAttributedString;
