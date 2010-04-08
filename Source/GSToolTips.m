@@ -119,6 +119,28 @@
 }
 @end
 
+@interface GSTTPanel : NSPanel
+// Tooltip panel that will not try to become main or key
+- (BOOL) canBecomeKeyWindow;
+- (BOOL) canBecomeMainWindow;
+
+@end
+
+@implementation GSTTPanel
+
+- (BOOL) canBecomeKeyWindow 
+{
+  return NO;
+}
+
+- (BOOL) canBecomeMainWindow 
+{
+  return NO;
+}
+
+@end
+
+
 @interface	GSToolTips (Private)
 - (void) _drawText: (NSAttributedString *)text;
 - (void) _endDisplay;
@@ -137,7 +159,8 @@ typedef NSView* NSViewPtr;
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
-static NSPanel		*window = nil;
+static GSTTPanel		*window = nil;
+static BOOL   isOpening = NO; // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
@@ -462,6 +485,8 @@ static BOOL		restoreMouseMoved;
 
 - (void) _endDisplay
 {
+  if (isOpening)
+    return;
   if ([NSWindow _toolTipVisible] == self)
     {
       [NSWindow _setToolTipVisible: nil];
@@ -573,7 +598,8 @@ static BOOL		restoreMouseMoved;
   offset.height = rect.origin.y - mouseLocation.y;
   offset.width = rect.origin.x - mouseLocation.x;
 
-  window = [[NSPanel alloc] initWithContentRect: rect
+  isOpening = YES;
+  window = [[GSTTPanel alloc] initWithContentRect: rect
 				       styleMask: NSBorderlessWindowMask
 					 backing: NSBackingStoreRetained
 					   defer: YES];
@@ -591,6 +617,7 @@ static BOOL		restoreMouseMoved;
   [window display];
   [self _drawText: toolTipText];
   [window flushWindow];
+  isOpening = NO;
 
   RELEASE(toolTipText);
 }

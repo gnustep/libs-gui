@@ -1,3 +1,7 @@
+2010-04-08 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Source/GSToolTips.m: Prevent Windows API callback from crashing when displaying tooltips.
+
 2010-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Cocoa/Cocoa.h: One more forgotten header file changed
