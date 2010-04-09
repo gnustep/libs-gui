@@ -1,3 +1,7 @@
+2010-04-09  David Ayers  <d.ayers@inode.at>
+
+	* Headers/AppKit/NSSound.h: Import NSBundle.h for category declaration.
+	
 2010-04-08 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/GSToolTips.m: Prevent Windows API callback from crashing when displaying tooltips.
@@ -4593,7 +4597,7 @@
 2008-12-16 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Restore priority in lookup for Editors
-	error in last change pointed out by david Ayers.
+	error in last change pointed out by David Ayers.
 
 2008-12-16 19:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
 

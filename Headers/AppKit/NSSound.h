@@ -32,6 +32,7 @@
 #define _GNUstep_H_NSSound
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSBundle.h>
 
 #import "GNUstepGUI/GSSoundSource.h"
 #import "GNUstepGUI/GSSoundSink.h"
