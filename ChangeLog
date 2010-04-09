@@ -1,4 +1,4 @@
-2010-04-09  David Ayers  <d.ayers@inode.at>
+2010-04-09  David Ayers  <ayers@fsfe.org>
 
 	* Headers/AppKit/NSSound.h: Import NSBundle.h for category declaration.
 	
