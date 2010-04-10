@@ -1643,8 +1643,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 - (NSArray*) mountedLocalVolumePaths
 {
   NSMutableArray	*names;
-  NSFileManager		*mgr = [NSFileManager defaultManager];
 #if	defined(__MINGW32__)
+  NSFileManager		*mgr = [NSFileManager defaultManager];
   unsigned		max = BUFSIZ;
   unichar		buf[max];
   unichar		*base = buf;
@@ -1679,6 +1679,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
 
 #elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+  NSFileManager		*mgr = [NSFileManager defaultManager];
   FILE		*fptr = fopen("/etc/mtab", "r");
   struct mntent	*m;
 

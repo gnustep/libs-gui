@@ -343,7 +343,7 @@ static void initSystemExtensionsColors(void)
     [(NSToolbarItem *)[[info draggingSource] toolbarItem] itemIdentifier];
   
   if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
-    && [allowedItemIdentifiers containsObject: itemIdentifier]);
+    && [allowedItemIdentifiers containsObject: itemIdentifier])
     {
       return NSDragOperationGeneric;
     }
@@ -360,7 +360,7 @@ static void initSystemExtensionsColors(void)
     [(NSToolbarItem *)[[info draggingSource] toolbarItem] itemIdentifier];
   
   if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
-    && [allowedItemIdentifiers containsObject: itemIdentifier]);
+    && [allowedItemIdentifiers containsObject: itemIdentifier])
     {
       return NSDragOperationGeneric;
     }

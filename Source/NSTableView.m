@@ -93,9 +93,9 @@ typedef struct _tableViewFlags
   unsigned int emptySelection:1;
   unsigned int multipleSelection:1;
   unsigned int columnSelection:1;
-  unsigned int __unused:26;
+  unsigned int _unused:26;
 #else
-  unsigned int __unused:26;
+  unsigned int _unused:26;
   unsigned int columnSelection:1;
   unsigned int multipleSelection:1;
   unsigned int emptySelection:1;

@@ -26,15 +26,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSUserDefaults.h>
-#include "AppKit/NSButton.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSScrollView.h"
-#include "GSThemePrivate.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSButton.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSScrollView.h"
+#import "GSThemePrivate.h"
+#import "GSGuiPrivate.h"
 
 
 @implementation	GSThemePanel

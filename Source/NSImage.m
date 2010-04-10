@@ -1897,19 +1897,19 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
                 {
                   if (repd->bg == nil)
                     {
-                      NSDebugLLog(@"NSImage", @"Invalid %@ ... %@ %d", 
+                      NSDebugLLog(@"NSImage", @"Invalid %@ ... %@ %@", 
                                   repd->bg, _color, repd->rep);
                       invalidCache = repd;
                     }
                   else if (opaque == YES || [repd->bg isEqual: _color] == YES)
                     {
-                      NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %d", 
+                      NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %@", 
                                   repd->bg, _color, repd->rep);
                       return repd;
                     }
                   else
                     {
-                      NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", 
+                      NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %@", 
                                   repd->bg, _color, repd->rep);
                       partialCache = repd;
                       partialCount++;

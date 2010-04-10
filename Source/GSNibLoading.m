@@ -46,6 +46,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSObjCRuntime.h>
+#import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 
 // FIXME: Used for NSKeyedArchiver access. All this should be moved into base.

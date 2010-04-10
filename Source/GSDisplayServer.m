@@ -26,23 +26,24 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSGeometry.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSDragView.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSDragView.h"
 
-#include "GSSlideView.h"
+#import "GSSlideView.h"
 
 /* Display attributes */
 NSString * GSDisplayName = @"DisplayName";

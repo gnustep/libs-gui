@@ -33,12 +33,14 @@
 */ 
 
 
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSData.h>
-#include "AppKit/NSView.h"
-#include "GNUstepGUI/GSPDFPrintOperation.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSProcessInfo.h>
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSView.h"
+#import "GNUstepGUI/GSPDFPrintOperation.h"
 
 
 /**

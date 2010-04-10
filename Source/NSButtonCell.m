@@ -1550,7 +1550,7 @@ typedef struct _GSButtonCellFlags
       [aCoder encodeInt: bFlags forKey: @"NSButtonFlags"];
 
       // style and border.
-      bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
+      bFlags2 |= [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
       bFlags2 |= (([self bezelStyle] & 0x7) | (([self bezelStyle] & 0x18) << 2));
       bFlags2 |= [self keyEquivalentModifierMask] << 8;
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];

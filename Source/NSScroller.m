@@ -1003,7 +1003,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
       [theCell highlight: YES withFrame: rect inView: self];
       [_window flushWindow];
 
-      NSDebugLog (@"tracking cell %x", theCell);
+      NSDebugLog (@"tracking cell %@", theCell);
 
       /*
        * The "tracking" in this method actually takes place within 

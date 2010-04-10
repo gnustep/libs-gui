@@ -36,6 +36,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDecimalNumber.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSNotification.h>

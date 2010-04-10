@@ -623,7 +623,7 @@ static	GSDragView *sharedDragView = nil;
   startPoint = [eWindow convertBaseToScreen: [theEvent locationInWindow]];
   startPoint.x -= offset.width;
   startPoint.y -= offset.height;
-  NSDebugLLog(@"NSDragging", @"Drag window origin %d %d\n", startPoint.x, startPoint.y);
+  NSDebugLLog(@"NSDragging", @"Drag window origin %@\n", NSStringFromPoint(startPoint));
 
   // Notify the source that dragging has started
   if ([dragSource respondsToSelector:
@@ -888,7 +888,7 @@ static	GSDragView *sharedDragView = nil;
       dragPoint = [destWindow convertScreenToBase: dragPosition];
     }
             
-  NSDebugLLog(@"NSDragging", @"mouse window %d (%x) at %@\n",
+  NSDebugLLog(@"NSDragging", @"mouse window %d (%@) at %@\n",
     mouseWindowRef, destWindow, NSStringFromPoint(dragPosition));
             
   //--- send exit message if necessary -------------------------------------

@@ -1,7 +1,26 @@
+2010-04-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/linking.m
+	* Source/GSDisplayServer.m
+	* Source/NSWorkspace.m
+	* Source/NSButtonCell.m
+	* Source/NSSplitView.m
+	* Source/GSNibLoading.m
+	* Source/NSCursor.m
+	* Source/NSScroller.m
+	* Source/NSOutlineView.m
+	* Source/GSToolbarView.m
+	* Source/GSPDFPrintOperation.m
+	* Source/GSThemePanel.m
+	* Source/NSImage.m
+	* Source/NSTableView.m
+	* Source/GSDragView.m: Remove compiler warnings detected by clang
+	and reported by David Chisnall <theraven@gna.org>.
+
 2010-04-09  David Ayers  <ayers@fsfe.org>
 
 	* Headers/AppKit/NSSound.h: Import NSBundle.h for category declaration.
-	
+
 2010-04-08 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/GSToolTips.m: Prevent Windows API callback from crashing when displaying tooltips.

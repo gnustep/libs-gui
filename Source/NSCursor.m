@@ -30,6 +30,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSKeyedArchiver.h>
 
 #include "AppKit/NSColor.h"

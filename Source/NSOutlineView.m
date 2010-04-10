@@ -39,6 +39,7 @@
 #import <Foundation/NSMapTable.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSNull.h>
+#import <Foundation/NSSet.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
 
