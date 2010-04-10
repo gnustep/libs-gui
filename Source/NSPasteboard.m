@@ -1490,12 +1490,12 @@ static  NSMapTable              *mimeMap = NULL;
   if ([self retainCount] == 2)
     {
       [dictionary_lock lock];
-      RETAIN(super);
+      [super retain];
       [pasteboards removeObjectForKey: name];
-      RELEASE(super);
+      [super release];
       [dictionary_lock unlock];
     }
-  RELEASE(super);
+  [super release];
 }
 
 /**
