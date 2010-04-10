@@ -186,7 +186,7 @@
 
 - (void)setRepresentedObject:(id <NSCopying>)anObject
 {
-  ASSIGN(_representedObject, anObject);
+  ASSIGN(_representedObject, (id)anObject);
 }
 
 - (id <NSCopying>)representedObject

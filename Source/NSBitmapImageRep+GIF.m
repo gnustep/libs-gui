@@ -162,7 +162,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
      }\
    else \
      {\
-       NSLog(msg);\
+       NSLog(@"%@", msg);\
      }
 
 #define GIF_CREATE_ERROR(msg) \

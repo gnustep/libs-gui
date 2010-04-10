@@ -1477,11 +1477,11 @@ typedef struct _GSButtonCellFlags
   NSButtonCell *c = [super copyWithZone: zone];
   
   c->_altContents = [_altContents copyWithZone: zone];
-  TEST_RETAIN(_altImage);
-  TEST_RETAIN(_keyEquivalent);
-  TEST_RETAIN(_keyEquivalentFont);
-  TEST_RETAIN(_sound);
-  TEST_RETAIN(_backgroundColor);
+  _altImage = TEST_RETAIN(_altImage);
+  _keyEquivalent = TEST_RETAIN(_keyEquivalent);
+  _keyEquivalentFont = TEST_RETAIN(_keyEquivalentFont);
+  _sound = TEST_RETAIN(_sound);
+  _backgroundColor = TEST_RETAIN(_backgroundColor);
 
   return c;
 }

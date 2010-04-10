@@ -154,7 +154,7 @@
 {
   NSTextList *l = (NSTextList*)NSCopyObject(self, 0, zone);
 
-  TEST_RETAIN(_markerFormat);
+  _markerFormat = TEST_RETAIN(_markerFormat);
 
   return l;
 }

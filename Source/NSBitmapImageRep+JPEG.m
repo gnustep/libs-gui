@@ -491,7 +491,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   if (jerrMgr.parent.num_warnings)
     {
-      NSLog(@"NSBitmapImageRep+JPEG: %d warnings during jpeg decompression, "
+      NSLog(@"NSBitmapImageRep+JPEG: %ld warnings during jpeg decompression, "
         @"image may be corrupted", jerrMgr.parent.num_warnings);
     }
 
@@ -549,7 +549,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
       if (errorMsg != NULL)
         *errorMsg = em;
       else
-        NSLog (em);
+        NSLog (@"JPEG image rep: Planar Image, not handled yet !");
       return nil;
     }
 

@@ -3787,8 +3787,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
    */
   if (_rFlags.has_draginfo == 1 && _window != nil)
     {
-      o = GSGetDragTypes(self);
-      TEST_RETAIN(o);
+      o = TEST_RETAIN(GSGetDragTypes(self));
     }
   else
     {

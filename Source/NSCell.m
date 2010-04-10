@@ -2326,12 +2326,12 @@ static NSColor *dtxtCol;
   /* Because of performance issues (and because so the doc says) only
      pointers to the objects are copied.  We need to RETAIN them all
      though. */
-  TEST_RETAIN (_font);
-  TEST_RETAIN (_object_value);
-  TEST_RETAIN (_menu);
-  TEST_RETAIN (_cell_image);
-  TEST_RETAIN (_formatter);
-  TEST_RETAIN (_represented_object);
+  _font = TEST_RETAIN (_font);
+  _object_value = TEST_RETAIN (_object_value);
+  _menu = TEST_RETAIN (_menu);
+  _cell_image = TEST_RETAIN (_cell_image);
+  _formatter = TEST_RETAIN (_formatter);
+  _formatter = TEST_RETAIN (_represented_object);
 
   return c;
 }

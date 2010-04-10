@@ -1300,9 +1300,13 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
       [self setTargetFrame: r];
 
       if (_effect == NSViewAnimationFadeOutEffect)
-        /* subclassResponsibility */;
+        {
+          [self subclassResponsibility: _cmd];
+        }
       if (_effect == NSViewAnimationFadeInEffect)
-        /* subclassResponsibility */;
+        {
+          [self subclassResponsibility: _cmd];
+        }
     }
   else
     {
@@ -1334,9 +1338,9 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 - (void) setCurrentProgress: (float)progress
 {
   [super setCurrentProgress: progress];
-  if (_effect == NSViewAnimationFadeOutEffect)
+  if (_effect == NSViewAnimationFadeOutEffect) {}
     /* ??? TODO */;
-  if (_effect == NSViewAnimationFadeInEffect)
+  if (_effect == NSViewAnimationFadeInEffect) {}
     /* ??? TODO */;
 
   if (progress>=1.0f)

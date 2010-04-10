@@ -87,7 +87,7 @@
 {
   NSTextTableBlock *t = [super copyWithZone: zone];
 
-  TEST_RETAIN(_table);
+  _table = TEST_RETAIN(_table);
 
   return t;
 }

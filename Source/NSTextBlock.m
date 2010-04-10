@@ -338,11 +338,15 @@
 {
   NSTextBlock *t = (NSTextBlock*)NSCopyObject(self, 0, zone);
 
-  TEST_RETAIN(_backgroundColor);
-  TEST_RETAIN(_borderColorForEdge[NSMinXEdge]);
-  TEST_RETAIN(_borderColorForEdge[NSMinYEdge]);
-  TEST_RETAIN(_borderColorForEdge[NSMaxXEdge]);
-  TEST_RETAIN(_borderColorForEdge[NSMaxYEdge]);
+  _backgroundColor = TEST_RETAIN(_backgroundColor);
+  _borderColorForEdge[NSMinXEdge] =
+      TEST_RETAIN(_borderColorForEdge[NSMinXEdge]);
+  _borderColorForEdge[NSMinYEdge] =
+      TEST_RETAIN(_borderColorForEdge[NSMinYEdge]);
+  _borderColorForEdge[NSMaxXEdge] =
+      TEST_RETAIN(_borderColorForEdge[NSMaxXEdge]);
+  _borderColorForEdge[NSMaxYEdge] =
+      TEST_RETAIN(_borderColorForEdge[NSMaxYEdge]);
 
   return t;
 }

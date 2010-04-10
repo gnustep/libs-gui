@@ -376,7 +376,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (void) setFocusStack: (void *)stack
 {
-  ASSIGN(focus_stack, stack);
+  ASSIGN(focus_stack, (id)stack);
 }
 
 - (void) setImageInterpolation: (NSImageInterpolation)interpolation

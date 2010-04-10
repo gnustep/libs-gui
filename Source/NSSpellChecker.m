@@ -650,7 +650,7 @@ inSpellDocumentWithTag:(int)tag
       if (proxy != nil)
 	{
 	  ASSIGN(_language, language);
-	  ASSIGN(_serverProxy, proxy);
+	  ASSIGN(_serverProxy, (id)proxy);
 	}
       else
 	{
