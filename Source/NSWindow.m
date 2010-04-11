@@ -786,7 +786,9 @@ many times.
   DESTROY(_defaultButtonCell);
   DESTROY(_cachedImage);
   DESTROY(_children);
-  DESTROY(_lastView);
+  DESTROY(_lastLeftMouseDownView);
+  DESTROY(_lastRightMouseDownView);
+  DESTROY(_lastOtherMouseDownView);
   DESTROY(_lastDragView);
   DESTROY(_screen);
 
@@ -3633,9 +3635,9 @@ resetCursorRectsForView(NSView *theView)
                 {
                   v = [_wv hitTest: [theEvent locationInWindow]];
                 }
-              if (_lastView)
+              if (_lastLeftMouseDownView)
                 {
-                  DESTROY(_lastView);
+                  DESTROY(_lastLeftMouseDownView);
                 }
               // Don't make buttons first responder otherwise they cannot 
               // send actions to the current first responder.
@@ -3658,7 +3660,7 @@ resetCursorRectsForView(NSView *theView)
                     }
                   else
                     {
-                      ASSIGN(_lastView, v);
+                      ASSIGN(_lastLeftMouseDownView, v);
                       if (toolTipVisible != nil)
                         {
                           /* Inform the tooltips system that we have had
@@ -3683,8 +3685,8 @@ resetCursorRectsForView(NSView *theView)
         }
 
       case NSLeftMouseUp:
-        v = AUTORELEASE(RETAIN(_lastView));
-        DESTROY(_lastView);
+        v = AUTORELEASE(RETAIN(_lastLeftMouseDownView));
+        DESTROY(_lastLeftMouseDownView);
         if (v == nil)
           break;
         [v mouseUp: theEvent];
@@ -3693,24 +3695,32 @@ resetCursorRectsForView(NSView *theView)
 
       case NSOtherMouseDown:
           v = [_wv hitTest: [theEvent locationInWindow]];
+	  ASSIGN(_lastOtherMouseDownView, v);
           [v otherMouseDown: theEvent];
           _lastPoint = [theEvent locationInWindow];
           break;
 
       case NSOtherMouseUp:
-        v = [_wv hitTest: [theEvent locationInWindow]];
+        v = AUTORELEASE(RETAIN(_lastOtherMouseDownView));
+        DESTROY(_lastOtherMouseDownView);
+        if (v == nil)
+          break;
         [v otherMouseUp: theEvent];
         _lastPoint = [theEvent locationInWindow];
         break;
 
       case NSRightMouseDown:
         v = [_wv hitTest: [theEvent locationInWindow]];
+	ASSIGN(_lastRightMouseDownView, v);
         [v rightMouseDown: theEvent];
         _lastPoint = [theEvent locationInWindow];
         break;
 
       case NSRightMouseUp:
-        v = [_wv hitTest: [theEvent locationInWindow]];
+        v = AUTORELEASE(RETAIN(_lastRightMouseDownView));
+        DESTROY(_lastRightMouseDownView);
+        if (v == nil)
+          break; 
         [v rightMouseUp: theEvent];
         _lastPoint = [theEvent locationInWindow];
         break;
@@ -3722,13 +3732,13 @@ resetCursorRectsForView(NSView *theView)
         switch (type)
           {
             case NSLeftMouseDragged:
-              [_lastView mouseDragged: theEvent];
+              [_lastLeftMouseDownView mouseDragged: theEvent];
               break;
             case NSOtherMouseDragged:
-              [_lastView otherMouseDragged: theEvent];
+              [_lastOtherMouseDownView otherMouseDragged: theEvent];
               break;
             case NSRightMouseDragged:
-              [_lastView rightMouseDragged: theEvent];
+              [_lastRightMouseDownView rightMouseDragged: theEvent];
               break;
             default:
               if (_f.accepts_mouse_moved)

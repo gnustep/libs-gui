@@ -1,3 +1,13 @@
+2010-04-10 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSWindow.h
+	* Source/NSWindow.m: Fix delivery of rightMouseDragged: and otherMouseDragged:
+	messages. These weren't working because right/otherMouseDragged: would be
+	called on the _lastView ivar, which was only set on mouse down.
+
+	I replace the _lastView ivar with _lastLeftMouseDownView, _lastRightMouseDownView,
+	and _lastOtherMouseDownView. Behaviour now matches OS X as far as I can tell.
+
 2010-04-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/linking.m

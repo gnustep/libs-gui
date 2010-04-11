@@ -175,7 +175,9 @@ PACKAGE_SCOPE
   id            _delegate;
 @protected
   id            _fieldEditor;
-  id            _lastView;
+  id            _lastLeftMouseDownView;
+  id            _lastRightMouseDownView;
+  id            _lastOtherMouseDownView;
   id            _lastDragView;
   int           _lastDragOperationMask;
   int           _windowNum;
