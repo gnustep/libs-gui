@@ -553,7 +553,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
       return nil;
     }
 
-  memset((void*)&cinfo, 0, sizeof(struct jpeg_decompress_struct));
+  memset((void*)&cinfo, 0, sizeof(struct jpeg_compress_struct));
 
   imageSource = [self bitmapData];
   sPP = [self samplesPerPixel];
