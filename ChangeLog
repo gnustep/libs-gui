@@ -1,3 +1,16 @@
+2010-04-13 Doug Simons <doug.simons@testplant.com>
+
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h:
+	* Source/GSToolbarView.m:
+	* Source/GSToolbarCustomizationPalette.m:
+	* Source/NSToolbar.m:
+	* Source/NSToolbarItem.m:
+	Fix numerous issues with toolbar customization, including: fix
+	crash when customization palette closed; make customization palette
+	a floating panel centered below toolbar; rewrote dragging code
+	to work well; layout toolbar items when added to toolbar; resize
+	customization palette to fit items; etc.
+
 2010-04-13 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/GSToolTips.m: Use a single retain window for tooltips instead of a  

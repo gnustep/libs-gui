@@ -99,6 +99,7 @@
   // Loop over all subviews
   while ((layoutedView = [e nextObject]) != nil)
     {
+	  [(id)layoutedView layout];
       NSRect frame = [layoutedView frame];
       NSSize size = frame.size;
       float height = size.height;
@@ -124,8 +125,17 @@
 
       [layoutedView setFrameOrigin: NSMakePoint(hAccumulator, 
                                                 maxHeight - vAccumulator)];
+	  [layoutedView setAutoresizingMask:NSViewMinYMargin];
       hAccumulator += width;
       index++;
+    }
+  maxHeight -= vAccumulator; // adjust for final row
+  if (maxHeight != 0) // need to grow (or shrink) the window to accommodate more (or fewer) items
+    {
+      NSRect windowFrame = [[self window] frame];
+	  windowFrame.origin.y += maxHeight;
+	  windowFrame.size.height -= maxHeight;
+	  [[self window] setFrame:windowFrame display:NO];
     }
 }
 
@@ -204,12 +214,12 @@
 
   [nc removeObserver: self];
 
-  DESTROY(_customizationWindow);
-  DESTROY(_customizationView);
-  DESTROY(_defaultTemplateView);
-  DESTROY(_sizeCheckBox);
-  DESTROY(_displayPopup);
-  DESTROY(_doneButton);
+//  DESTROY(_customizationWindow);
+//  DESTROY(_customizationView);
+//  DESTROY(_defaultTemplateView);
+//  DESTROY(_sizeCheckBox);
+//  DESTROY(_displayPopup);
+//  DESTROY(_doneButton);
 
   DESTROY(_defaultItems);
   DESTROY(_allowedItems);
@@ -223,6 +233,19 @@
 
   NSDebugLLog(DEBUG_LEVEL, @"GSToolbarCustomizationPalette awaking from nib");
 
+  [_defaultTemplateView setAutoresizingMask:NSViewWidthSizable | NSViewMaxYMargin];
+  
+  {
+    // for now, _defaultTemplateView isn't implemented, so remove it
+	NSRect dtvFrame = [_defaultTemplateView frame];
+	[_defaultTemplateView removeFromSuperview];
+	// expand _customizationView to fill the space
+	NSRect cvFrame = [_customizationView frame];
+	cvFrame.size.height += dtvFrame.size.height;
+	cvFrame.origin.y -= dtvFrame.size.height;
+	[_customizationView setFrame:cvFrame];
+  }
+  
   [nc addObserver: self 
          selector: @selector(paletteDidEnd:) 
              name: NSWindowWillCloseNotification
@@ -301,6 +324,17 @@
      when it goes away. */
   _toolbar = toolbar;
 
+  // position the customization window centered just below the toolbar
+  NSView *toolbarView = [_toolbar _toolbarView];
+  NSRect toolbarFrame = [toolbarView convertRect:[toolbarView bounds] toView:nil];
+  NSPoint bottomCenter = NSMakePoint(toolbarFrame.origin.x + (toolbarFrame.size.width/2), toolbarFrame.origin.y);
+  bottomCenter = [[toolbarView window] convertBaseToScreen:bottomCenter];
+  NSRect windowFrame = [_customizationWindow frame];
+  NSPoint topCenter = NSMakePoint(windowFrame.origin.x + (windowFrame.size.width/2), windowFrame.origin.y + windowFrame.size.height);
+  windowFrame.origin.x += bottomCenter.x-topCenter.x;
+  windowFrame.origin.y += bottomCenter.y-topCenter.y;
+  [_customizationWindow setFrame:windowFrame display:NO];
+  [_customizationWindow setLevel:NSFloatingWindowLevel];
   [_customizationWindow makeKeyAndOrderFront: self];
 }
 

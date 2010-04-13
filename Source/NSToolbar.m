@@ -943,7 +943,7 @@ static GSValidationCenter *vc = nil;
   while ((itemIdentifier = [e nextObject]) != nil) 
     {
       [self _insertItemWithItemIdentifier: itemIdentifier 
-                                  atIndex: i 
+                                  atIndex: [_items count]
                                 broadcast: NO];
       i++;
     }
@@ -1176,6 +1176,7 @@ static GSValidationCenter *vc = nil;
                             object: self
                           userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
           [item _setToolbar: self];
+		  [item _layout];
           [_items insertObject: item atIndex: index];
           
           // We reload the toolbarView each time a new item is added except when

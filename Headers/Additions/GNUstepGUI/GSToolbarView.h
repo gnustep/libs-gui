@@ -55,11 +55,13 @@ typedef enum {
   NSToolbar *_toolbar;
   NSClipView *_clipView;
   GSToolbarClippedItemsButton *_clippedItemsMark;
-  NSMutableArray *_visibleBackViews;
   unsigned int _borderMask;
   NSRect _rectAvailable;
   float _heightFromLayout;
 }
+
++ (int) draggedItemIndex;
++ (void) setDraggedItemIndex:(int)sourceIndex;
 
 - (id) initWithFrame: (NSRect)frame;
 

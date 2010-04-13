@@ -66,6 +66,8 @@ static const int ClippedItemsViewWidth = 28;
 static const int current_version = 1;
 static NSColorList *SystemExtensionsColors;
 
+static int draggedItemIndex = NSNotFound;
+
 // Toolbar color extensions
 
 static void initSystemExtensionsColors(void)
@@ -315,73 +317,161 @@ static void initSystemExtensionsColors(void)
 
 // Dragging related methods
 
++ (int) draggedItemIndex
+{
+  return draggedItemIndex;
+}
+
++ (void) setDraggedItemIndex:(int)sourceIndex
+{
+  draggedItemIndex = sourceIndex;
+}
+
 - (int) _insertionIndexAtPoint: (NSPoint)location
 {
-  id hitView = [self hitTest: location];
-  NSRect hitViewFrame = [hitView frame];
   int index;
-  
-  if ((hitView != nil)
-    && ([hitView isKindOfClass: NSClassFromString(@"GSToolbarButton")] 
-    || [hitView isKindOfClass: NSClassFromString(@"GSToolbarBackView")]))
+  NSArray *visibleBackViews = [self _visibleBackViews];
+
+  location = [_clipView convertPoint:location fromView:nil];
+  if (draggedItemIndex == NSNotFound)
     {
-      index = [_toolbar _indexOfItem: [hitView toolbarItem]];
-      if (location.x - hitViewFrame.origin.x > hitViewFrame.size.width / 2)
-        index++;
-      
-      return index; 
+      //simply locate the nearest location between existing items
+      for (index=0; index < [visibleBackViews count]; index++)
+        {
+          NSRect itemRect = [[visibleBackViews objectAtIndex:index] frame];
+          if (location.x < (itemRect.origin.x + (itemRect.size.width/2)))
+            {
+              NSLog(@"AT location %d", index);
+              return index;
+            }
+        }
+      return [visibleBackViews count];
     }
-  return NSNotFound;
+  else
+    {
+      // don't return a different index unless drag has crossed the midpoint of its neighbor
+      NSRect itemRect;
+      BOOL draggingLeft = YES;
+      if (draggedItemIndex < [visibleBackViews count])
+        {
+          itemRect = [[visibleBackViews objectAtIndex:draggedItemIndex] frame];
+          draggingLeft = (location.x < (itemRect.origin.x + (itemRect.size.width/2)));
+        }
+      if (draggingLeft)
+        {
+          // dragging to the left of dragged item's current location
+          for (index=0; index < draggedItemIndex; index++)
+            {
+              itemRect = [[visibleBackViews objectAtIndex:index] frame];
+              if (location.x < (itemRect.origin.x + (itemRect.size.width/2)))
+                {
+                  NSLog(@"To the LEFT of %d", index);
+                  return index;
+                }
+            }
+        }
+      else
+        {
+          // dragging to the right of current location
+          for (index=[visibleBackViews count]-1; index > draggedItemIndex; index--)
+            {
+              itemRect = [[visibleBackViews objectAtIndex:index] frame];
+              if (location.x > (itemRect.origin.x + (itemRect.size.width/2)))
+                {
+                  NSLog(@"To the RIGHT of %d", index);
+                  return index;
+                }
+            }
+        }
+      return draggedItemIndex;
+    }
+}
+
+- (NSDragOperation) updateItemWhileDragging:(id <NSDraggingInfo>)info exited:(BOOL)exited
+{
+  NSToolbarItem *item = [[info draggingSource] toolbarItem];
+  NSString *identifier = [item itemIdentifier];
+  NSToolbar *toolbar = [self toolbar];
+  NSArray *allowedItemIdentifiers = [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
+    
+  // don't accept any dragging if the customization palette isn't running for this toolbar
+  if (![toolbar customizationPaletteIsRunning] || ![allowedItemIdentifiers containsObject: identifier])
+    {
+      return NSDragOperationNone;
+    }
+	
+  if (draggedItemIndex == NSNotFound) // initialize the index for this drag session
+    {
+      // if duplicate items aren't allowed, see if we already have such an item
+      if (![item allowsDuplicatesInToolbar])
+        {
+          NSArray *items = [toolbar items];
+          int index;
+          for (index=0; index<[items count]; index++)
+            {
+              NSToolbarItem *anItem = [items objectAtIndex:index];
+              if ([[anItem itemIdentifier] isEqual:identifier])
+                {
+                  draggedItemIndex = index; // drag the existing item
+                  break;
+                }
+            }
+        }
+    }	
+  else if (draggedItemIndex == -1)
+    {
+      // re-entering after being dragged off -- treat as unknown location
+      draggedItemIndex = NSNotFound;
+    }
+
+  int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
+  
+  if (draggedItemIndex != NSNotFound)
+    {
+      // existing item being dragged -- either move or remove it
+      if (exited)
+        {
+          [toolbar _removeItemAtIndex:draggedItemIndex broadcast:YES];
+          draggedItemIndex = -1; // no longer in our items
+        }
+      else
+        {
+          if (newIndex != draggedItemIndex)
+            {
+              [toolbar _moveItemFromIndex: draggedItemIndex toIndex: newIndex broadcast: YES];
+              draggedItemIndex = newIndex;
+            }
+        }
+    }
+  else if (!exited)
+    {
+      // new item being dragged in -- add it
+      [toolbar _insertItemWithItemIdentifier: identifier 
+          atIndex: newIndex
+          broadcast: YES];	
+      draggedItemIndex = newIndex;
+    }
+	return NSDragOperationGeneric;
 }
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
 {
-  NSToolbar *toolbar = [self toolbar];
-  NSArray *allowedItemIdentifiers = 
-    [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
-  NSString *itemIdentifier = 
-    [(NSToolbarItem *)[[info draggingSource] toolbarItem] itemIdentifier];
-  
-  if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
-    && [allowedItemIdentifiers containsObject: itemIdentifier])
-    {
-      return NSDragOperationGeneric;
-    }
-        
-  return NSDragOperationNone;
+  return [self updateItemWhileDragging:info exited:NO];
 }
 
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)info
 {
-  NSToolbar *toolbar = [self toolbar];
-  NSArray *allowedItemIdentifiers = 
-    [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
-  NSString *itemIdentifier = 
-    [(NSToolbarItem *)[[info draggingSource] toolbarItem] itemIdentifier];
-  
-  if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
-    && [allowedItemIdentifiers containsObject: itemIdentifier])
-    {
-      return NSDragOperationGeneric;
-    }
-        
-  return NSDragOperationNone;
+  return [self updateItemWhileDragging:info exited:NO];
 }
 
 - (void) draggingEnded: (id <NSDraggingInfo>)info
 {
-  NSPasteboard *pboard = [info draggingPasteboard];
-  NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
-  int index = [str intValue];
-  NSToolbar *toolbar = [self toolbar];
-  
-  [toolbar _concludeRemoveItem: 
-    [[info draggingSource] toolbarItem] atIndex: index broadcast: YES];
+  draggedItemIndex = NSNotFound;
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)info
 {
-  // Nothing to do
+  [self updateItemWhileDragging:info exited:YES];
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)info
@@ -391,30 +481,11 @@ static void initSystemExtensionsColors(void)
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)info
 {
-  NSPasteboard *pboard = [info draggingPasteboard];
-  NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
-  int index = [str intValue];
   NSToolbar *toolbar = [self toolbar];
-  NSToolbarItem *item = [[info draggingSource] toolbarItem];
-  int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
 
-  if(index == -1)
-    {
-      NSString *identifier = [item itemIdentifier];
-      if([_toolbar _containsItemWithIdentifier: identifier] == NO)
-	{
-	  [toolbar _insertItemWithItemIdentifier: identifier 
-		   atIndex: newIndex
-		   broadcast: YES];
-	}
-      RELEASE(item);
-    }
-  else
-    {
-      [toolbar _insertPassivelyItem:item atIndex: index];
-      RELEASE(item);
-      [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
-    }
+  [self updateItemWhileDragging:info exited:NO];
+  
+  draggedItemIndex = NSNotFound;
   
   // save the configuration...
   [toolbar _saveConfig];
@@ -549,7 +620,7 @@ static void initSystemExtensionsColors(void)
   float x = 0;
   float newHeight = 0;
   // ---
-  NSArray *subviews = [self subviews];
+  NSArray *subviews = [_clipView subviews];
   
   //_heightFromLayout = 0;
 
@@ -774,8 +845,8 @@ static void initSystemExtensionsColors(void)
   int i, n = [items count];
   float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
 
-  [_visibleBackViews release];
-  _visibleBackViews = [[NSMutableArray alloc] init];
+  //[_visibleBackViews release];
+  NSMutableArray *_visibleBackViews = [NSMutableArray array];
   
   for (i = 0; i < n; i++)
     {

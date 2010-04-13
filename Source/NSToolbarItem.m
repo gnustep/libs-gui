@@ -261,7 +261,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSImage *image = [[NSImage alloc] initWithSize: viewSize];
       NSCell *cell = [self cell];
       NSPasteboard *pboard;
-      int index = -1;
+      int index = NSNotFound;
           
       // Prepare the drag
       
@@ -286,6 +286,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 	{
           index = [toolbar _indexOfItem: _toolbarItem];
         }
+	  [GSToolbarView setDraggedItemIndex:index];
       [pboard setString: [NSString stringWithFormat:@"%d", index] 
               forType: GSMovableToolbarItemPboardType];
           
@@ -306,19 +307,14 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
 {
-  /* We retain the toolbar item to be able to have have it reinsered later by 
-     the dragging destination. */
-  // FIXME: Where is this released?
-  RETAIN(_toolbarItem); 
-  
-  [[_toolbarItem toolbar] _performRemoveItem: _toolbarItem];
+  //nothing to do
 }
 
 - (void) draggedImage: (NSImage *)dragImage 
               endedAt: (NSPoint)location 
             operation: (NSDragOperation)operation
 {
-  RELEASE(self); // The view is no more needed : no more drawing to do with it.
+  //nothing to do
 }
 
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
@@ -616,7 +612,19 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   
   if ([view superview] == nil) // Show the view to eventually hide it later
     [self addSubview: view];
-    
+	
+  if([view respondsToSelector:@selector(sizeToFit)])
+    {
+      NSSize newSize, minSize = [_toolbarItem minSize];
+	  [view performSelector:@selector(sizeToFit)];
+	  newSize = [view frame].size;
+	  if (newSize.width < minSize.width || newSize.height < minSize.height)
+	    {
+		  newSize.width = MAX(newSize.width, minSize.width);
+		  newSize.height = MAX(newSize.height, minSize.height);
+		  [view setFrameSize:newSize];
+		}
+    }
   // Adjust the layout in accordance with NSToolbarSizeMode
   switch ([[_toolbarItem toolbar] sizeMode])
     {
@@ -742,7 +750,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSSize viewSize = [self frame].size;
       NSImage *image = [[NSImage alloc] initWithSize: viewSize];
       NSPasteboard *pboard;
-      int index = -1;
+      int index = NSNotFound;
       
       // Prepare the drag
       
@@ -765,6 +773,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 	{
           index = [toolbar _indexOfItem: _toolbarItem];
         }
+	  [GSToolbarView setDraggedItemIndex:index];
       [pboard setString: [NSString stringWithFormat:@"%d", index] 
               forType: GSMovableToolbarItemPboardType];
       
@@ -786,19 +795,14 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
 {
-  /* We retain the toolbar item to be able to have have it reinsered later by 
-     the dragging destination. */
-  // FIXME: Where is this released?
-  RETAIN(_toolbarItem); 
-  
-  [[_toolbarItem toolbar] _performRemoveItem: _toolbarItem];
+  //nothing to do
 }
 
 - (void) draggedImage: (NSImage *)dragImage 
               endedAt: (NSPoint)location 
             operation: (NSDragOperation)operation
 {
-  RELEASE(self); // The view is no more needed : no more drawing to do with it.
+  //nothing to do
 }
 
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
@@ -939,7 +943,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
                    [NSImage imageNamed: @"common_ToolbarSeparatorItem"]];
   /* We bypass the toolbar item accessor to set the image in order to have it
      (48 * 48) not resized. */
-   
+   [self setPaletteLabel: _(@"Separator")];
+  
   [[self _backView] setFrameSize: NSMakeSize(30, ItemBackViewDefaultHeight)];
   
   return self;
@@ -960,6 +965,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   if ([self toolbar] != nil)
     [backView setFrameSize: NSMakeSize(30, [backView frame].size.height)];
 }
+
+- (BOOL) allowsDuplicatesInToolbar
+{
+  return YES;
+}
+
 @end
 
 // ---- NSToolbarSpaceItemIdentifier
@@ -984,6 +995,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   return nil;
 }
+
+- (BOOL) allowsDuplicatesInToolbar
+{
+  return YES;
+}
+
 @end
 
 // ---- NSToolbarFlexibleSpaceItemIdentifier
@@ -1029,6 +1046,11 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 }
 
 - (BOOL) _isFlexibleSpace
+{
+  return YES;
+}
+
+- (BOOL) allowsDuplicatesInToolbar
 {
   return YES;
 }
