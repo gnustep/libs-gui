@@ -1,3 +1,7 @@
+2010-04-14 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSWindow.m : removed c99-isms
+
 2010-04-13 Doug Simons <doug.simons@testplant.com>
 
 	* Headers/Additions/GNUstepGUI/GSToolbarView.h:
