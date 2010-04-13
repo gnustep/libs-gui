@@ -1,3 +1,9 @@
+2010-04-13 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Source/GSToolTips.m: Use a single retain window for tooltips instead of a  
+  newly created one each time.  This significantly reduces callback interaction 
+  with MS-Windows callbacks.
+
 2010-04-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+JPEG.m

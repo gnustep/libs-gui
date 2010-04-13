@@ -54,7 +54,7 @@
 
 /* A trivial class to hold information about the provider of the tooltip
  * string.  Instance allocation/deallocation is managed by GSToolTip and
- * are instances are stored in the user data field of tracking rectangles.
+ * our instances are stored in the user data field of tracking rectangles.
  */
 @interface	GSTTProvider : NSObject
 {
@@ -159,7 +159,7 @@ typedef NSView* NSViewPtr;
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
-static GSTTPanel		*window = nil;
+static GSTTPanel		*window = nil; // Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
 static BOOL   isOpening = NO; // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
@@ -168,6 +168,18 @@ static BOOL		restoreMouseMoved;
 {
   viewsMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
 			     NSObjectMapValueCallBacks, 8);
+           
+  window = [[GSTTPanel alloc] initWithContentRect: NSMakeRect(0,0,100,25)
+				       styleMask: NSBorderlessWindowMask
+					 backing: NSBackingStoreRetained
+					   defer: YES];
+    
+  [window setBackgroundColor:
+    [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
+  [window setReleasedWhenClosed: NO];
+  [window setExcludedFromWindowsMenu: YES];
+  [window setLevel: NSStatusWindowLevel];
+  [window setAutodisplay: NO];
 }
 
 + (void) removeTipsForView: (NSView*)aView
@@ -505,8 +517,7 @@ static BOOL		restoreMouseMoved;
     }
   if (window != nil)
     {
-      [window close];
-      window = nil;
+      [window orderOut:self];
     }
   if (restoreMouseMoved == YES)
     {
@@ -515,6 +526,7 @@ static BOOL		restoreMouseMoved;
     }
 }
 
+/* The delay timed out -- display the tooltip */
 - (void) _timedOut: (NSTimer *)aTimer
 {
   NSString		*toolTipString = [aTimer userInfo];
@@ -523,7 +535,6 @@ static BOOL		restoreMouseMoved;
   NSPoint		mouseLocation = [NSEvent mouseLocation];
   NSRect		visible;
   NSRect		rect;
-  NSColor		*color;
   NSMutableDictionary	*attributes;
 
   if (timer != nil)
@@ -536,7 +547,7 @@ static BOOL		restoreMouseMoved;
       timedObject = nil;
     }
 
-  if (window != nil)
+  if ([window isVisible])
     {
       /* Moved from one tooltip view to another ... so stop displaying
        * the old tool tip before we start the new one.
@@ -599,21 +610,8 @@ static BOOL		restoreMouseMoved;
   offset.width = rect.origin.x - mouseLocation.x;
 
   isOpening = YES;
-  window = [[GSTTPanel alloc] initWithContentRect: rect
-				       styleMask: NSBorderlessWindowMask
-					 backing: NSBackingStoreRetained
-					   defer: YES];
-
-  color
-    = [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0];
-  [window setBackgroundColor: color];
-  [window setReleasedWhenClosed: YES];
-  [window setExcludedFromWindowsMenu: YES];
-  [window setLevel: NSStatusWindowLevel];
-
+  [window setFrame:rect display:NO];
   [window orderFront: nil];
-
-  [window setAutodisplay: NO];
   [window display];
   [self _drawText: toolTipText];
   [window flushWindow];
