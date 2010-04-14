@@ -590,9 +590,10 @@ static Class textFieldCellClass;
     {
       if ([self sendAction: [self action] to: [self target]] == NO)
         {
-          if ([self performKeyEquivalent: [_window currentEvent]] == NO)
-            [self selectText: self];
+          [self performKeyEquivalent: [_window currentEvent]];
         }
+      if ([_window firstResponder] == _window)
+	[self selectText: self];
     }
   else
     {
