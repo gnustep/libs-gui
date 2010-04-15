@@ -1,3 +1,11 @@
+2010-04-15 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSegmentedCell.m:
+	Fix some situations in initWithCoder: where the _selected_segment
+	ivar and the selected state of items in the _items array could be
+	out of sync leading to weirdly behaving segmented controls
+	loaded from nibs.
+
 2010-04-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextField.m (-textDidEndEditing:): When editing of a

@@ -638,10 +638,23 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
+      NSUInteger i;
+
+      _selected_segment = -1;
       if ([aDecoder containsValueForKey: @"NSSegmentImages"])
         ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSSegmentImages"]);
+      else
+	_items = [[NSMutableArray alloc] initWithCapacity: 2];
+
+      for (i=0; i<[_items count]; i++)
+	{
+	  if ([self isSelectedForSegment: i])
+	    _selected_segment = i;
+	}
+
       if ([aDecoder containsValueForKey: @"NSSelectedSegment"])
-        _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"];
+        [self setSelectedSegment: [aDecoder decodeIntForKey: @"NSSelectedSegment"]];
+
       _segmentCellFlags._style = [aDecoder decodeIntForKey: @"NSSegmentStyle"];
     }
   else
@@ -649,6 +662,8 @@
       int style;
       ASSIGN(_items,[aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      if (_selected_segment != -1)
+	[self setSelectedSegment: _selected_segment];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &style];
       _segmentCellFlags._style = style;
     }
