@@ -99,11 +99,16 @@
   // Loop over all subviews
   while ((layoutedView = [e nextObject]) != nil)
     {
-	  [(id)layoutedView layout];
-      NSRect frame = [layoutedView frame];
-      NSSize size = frame.size;
-      float height = size.height;
-      float width = size.width;
+      NSRect frame;
+      NSSize size;
+      float height;
+      float width;
+
+      [(id)layoutedView layout];
+      frame = [layoutedView frame];
+      size = frame.size;
+      height = size.height;
+      width = size.width;
  
       if ((hAccumulator + width) <= maxWidth)
         {
@@ -236,11 +241,14 @@
   [_defaultTemplateView setAutoresizingMask:NSViewWidthSizable | NSViewMaxYMargin];
   
   {
+	NSRect dtvFrame;
+	NSRect cvFrame;
+
     // for now, _defaultTemplateView isn't implemented, so remove it
-	NSRect dtvFrame = [_defaultTemplateView frame];
+	dtvFrame = [_defaultTemplateView frame];
 	[_defaultTemplateView removeFromSuperview];
 	// expand _customizationView to fill the space
-	NSRect cvFrame = [_customizationView frame];
+	cvFrame = [_customizationView frame];
 	cvFrame.size.height += dtvFrame.size.height;
 	cvFrame.origin.y -= dtvFrame.size.height;
 	[_customizationView setFrame:cvFrame];
@@ -265,6 +273,11 @@
   NSToolbarDisplayMode tag = [toolbar displayMode];
   NSToolbarSizeMode size = [toolbar sizeMode];
   id delegate = [toolbar delegate];
+  NSView *toolbarView;
+  NSRect toolbarFrame;
+  NSPoint bottomCenter;
+  NSRect windowFrame;
+  NSPoint topCenter;
 
   [_allowedItems removeAllObjects];
   [_defaultItems removeAllObjects];
@@ -325,12 +338,12 @@
   _toolbar = toolbar;
 
   // position the customization window centered just below the toolbar
-  NSView *toolbarView = [_toolbar _toolbarView];
-  NSRect toolbarFrame = [toolbarView convertRect:[toolbarView bounds] toView:nil];
-  NSPoint bottomCenter = NSMakePoint(toolbarFrame.origin.x + (toolbarFrame.size.width/2), toolbarFrame.origin.y);
+  toolbarView = [_toolbar _toolbarView];
+  toolbarFrame = [toolbarView convertRect:[toolbarView bounds] toView:nil];
+  bottomCenter = NSMakePoint(toolbarFrame.origin.x + (toolbarFrame.size.width/2), toolbarFrame.origin.y);
   bottomCenter = [[toolbarView window] convertBaseToScreen:bottomCenter];
-  NSRect windowFrame = [_customizationWindow frame];
-  NSPoint topCenter = NSMakePoint(windowFrame.origin.x + (windowFrame.size.width/2), windowFrame.origin.y + windowFrame.size.height);
+  windowFrame = [_customizationWindow frame];
+  topCenter = NSMakePoint(windowFrame.origin.x + (windowFrame.size.width/2), windowFrame.origin.y + windowFrame.size.height);
   windowFrame.origin.x += bottomCenter.x-topCenter.x;
   windowFrame.origin.y += bottomCenter.y-topCenter.y;
   [_customizationWindow setFrame:windowFrame display:NO];

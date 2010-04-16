@@ -393,6 +393,7 @@ static void initSystemExtensionsColors(void)
   NSString *identifier = [item itemIdentifier];
   NSToolbar *toolbar = [self toolbar];
   NSArray *allowedItemIdentifiers = [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
+  int newIndex; 
     
   // don't accept any dragging if the customization palette isn't running for this toolbar
   if (![toolbar customizationPaletteIsRunning] || ![allowedItemIdentifiers containsObject: identifier])
@@ -424,7 +425,7 @@ static void initSystemExtensionsColors(void)
       draggedItemIndex = NSNotFound;
     }
 
-  int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
+  newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
   
   if (draggedItemIndex != NSNotFound)
     {
