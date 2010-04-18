@@ -1,3 +1,12 @@
+2010-04-18 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSScrollView.m:
+	Add a new default, GSScrollViewNoInnerBorder, which can be set to
+	YES so themes can disable drawing of the inner border lines in
+	NSScrollView. These only look good with a NeXT style theme,
+	so most non-NeXT-like themes (WinUX, etc.) will want to set
+	GSScrollViewNoInnerBorder to YES.
+
 2010-04-16 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/GSToolbarCustomizationPalette.m

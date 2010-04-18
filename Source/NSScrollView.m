@@ -33,6 +33,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
@@ -145,6 +146,8 @@ static float scrollerWidth;
 {
   NSSize size = frameSize;
   NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
+  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   /*
    * Substract 1 from the width and height of
@@ -153,11 +156,11 @@ static float scrollerWidth;
    */
   if (hFlag)
     {
-      size.height -= scrollerWidth + 1;
+      size.height -= scrollerWidth + innerBorderWidth;
     }
   if (vFlag)
     {
-      size.width -= scrollerWidth + 1;
+      size.width -= scrollerWidth + innerBorderWidth;
     }
 
   size.width -= 2 * border.width;
@@ -173,6 +176,8 @@ static float scrollerWidth;
 {
   NSSize size = contentSize;
   NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
+  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   /*
    * Add 1 to the width and height for the line that separates the
@@ -180,11 +185,11 @@ static float scrollerWidth;
    */
   if (hFlag)
     {
-      size.height += scrollerWidth + 1;
+      size.height += scrollerWidth + innerBorderWidth;
     }
   if (vFlag)
     {
-      size.width += scrollerWidth + 1;
+      size.width += scrollerWidth + innerBorderWidth;
     }
 
   size.width += 2 * border.width;
@@ -1058,6 +1063,8 @@ static float scrollerWidth;
   float headerViewHeight = 0;
   NSRectEdge verticalScrollerEdge = NSMinXEdge;
   NSInterfaceStyle style;
+  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 
@@ -1127,8 +1134,9 @@ static float scrollerWidth;
       [_vertScroller setFrame: vertScrollerRect];
 
       /* Substract 1 for the line that separates the vertical scroller
-       * from the clip view (and eventually the horizontal scroller).  */
-      NSDivideRect (contentRect, NULL, &contentRect, 1, verticalScrollerEdge);
+       * from the clip view (and eventually the horizontal scroller),
+       * unless the GSScrollViewNoInnerBorder default is set. */
+      NSDivideRect (contentRect, NULL, &contentRect, innerBorderWidth, verticalScrollerEdge);
     }
 
   /* Prepare the horizontal scroller.  */
@@ -1142,8 +1150,9 @@ static float scrollerWidth;
       [_horizScroller setFrame: horizScrollerRect];
 
       /* Substract 1 for the width for the line that separates the
-       * horizontal scroller from the clip view.  */
-      NSDivideRect (contentRect, NULL, &contentRect, 1, bottomEdge);
+       * horizontal scroller from the clip view,
+       * unless the GSScrollViewNoInnerBorder default is set. */
+      NSDivideRect (contentRect, NULL, &contentRect, innerBorderWidth, bottomEdge);
     }
 
   /* Now place and size the header view to be exactly above the
@@ -1202,6 +1211,8 @@ static float scrollerWidth;
   GSTheme	*theme = [GSTheme theme];
   NSColor	*color;
   NSString	*name;
+  BOOL hasInnerBorder = ![[NSUserDefaults standardUserDefaults]
+			   boolForKey: @"GSScrollViewNoInnerBorder"];
 
   name = [theme nameForElement: self];
   if (name == nil)
@@ -1233,46 +1244,49 @@ static float scrollerWidth;
         break;
     }
 
-  [color set];
-  DPSsetlinewidth(ctxt, 1);
-
-  if (_hasVertScroller)
+  if (hasInnerBorder)
     {
-      NSInterfaceStyle style;
+      [color set];
+      DPSsetlinewidth(ctxt, 1);
 
-      style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
-      if (style == NSMacintoshInterfaceStyle
-        || style == NSWindows95InterfaceStyle)
-        {
-          DPSmoveto(ctxt, [_vertScroller frame].origin.x - 1, 
-            [_vertScroller frame].origin.y - 1);
-        }
-      else
-        {
-          DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
-            [_vertScroller frame].origin.y - 1);
-        }
-      DPSrlineto(ctxt, 0, [_vertScroller frame].size.height + 1);
-      DPSstroke(ctxt);
-    }
+      if (_hasVertScroller)
+	{
+	  NSInterfaceStyle style;
 
-  if (_hasHorizScroller)
-    {
-      float ypos;
-      float scrollerY = [_horizScroller frame].origin.y;
+	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+	  if (style == NSMacintoshInterfaceStyle
+	      || style == NSWindows95InterfaceStyle)
+	    {
+	      DPSmoveto(ctxt, [_vertScroller frame].origin.x - 1, 
+			[_vertScroller frame].origin.y - 1);
+	    }
+	  else
+	    {
+	      DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
+			[_vertScroller frame].origin.y - 1);
+	    }
+	  DPSrlineto(ctxt, 0, [_vertScroller frame].size.height + 1);
+	  DPSstroke(ctxt);
+	}
 
-      if (_rFlags.flipped_view)
-        {
-          ypos = scrollerY - 1;
-        }
-      else
-        {
-          ypos = scrollerY + scrollerWidth + 1;
-        }
+      if (_hasHorizScroller)
+	{
+	  float ypos;
+	  float scrollerY = [_horizScroller frame].origin.y;
 
-      DPSmoveto(ctxt, [_horizScroller frame].origin.x - 1, ypos);
-      DPSrlineto(ctxt, [_horizScroller frame].size.width + 1, 0);
-      DPSstroke(ctxt);
+	  if (_rFlags.flipped_view)
+	    {
+	      ypos = scrollerY - 1;
+	    }
+	  else
+	    {
+	      ypos = scrollerY + scrollerWidth + 1;
+	    }
+
+	  DPSmoveto(ctxt, [_horizScroller frame].origin.x - 1, ypos);
+	  DPSrlineto(ctxt, [_horizScroller frame].size.width + 1, 0);
+	  DPSstroke(ctxt);
+	}
     }
 }
 
