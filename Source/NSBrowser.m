@@ -206,14 +206,21 @@ static NSTextFieldCell *titleCell;
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   // This adjustment must match the drawn border
-  return NSInsetRect(theRect, 2, 2);
+  return [[GSTheme theme] browserHeaderDrawingRectForCell: self
+						withFrame: theRect];
 }
 
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView
 {
-  [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
+  [[GSTheme theme] drawBrowserHeaderCell: self
+			       withFrame: cellFrame
+				  inView: controlView];
+}
+
+- (BOOL) isOpaque
+{
+  return NO;
 }
 
 @end

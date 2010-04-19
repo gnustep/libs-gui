@@ -1,5 +1,13 @@
 2010-04-18 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSBrowser.m:
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Factor out browser
+	header drawing to GSTheme.
+
+2010-04-18 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSScrollView.m:
 	Add a new default, GSScrollViewNoInnerBorder, which can be set to
 	YES so themes can disable drawing of the inner border lines in

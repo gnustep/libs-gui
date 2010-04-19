@@ -1435,4 +1435,43 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+
+- (void) drawBrowserHeaderCell: (NSCell*)cell
+	 	     withFrame: (NSRect)rect
+			inView: (NSView*)view;
+{
+  GSDrawTiles *tiles;
+  tiles = [self tilesNamed: GSBrowserHeader state: GSThemeNormalState];
+  if (tiles == nil)
+   {
+     [self drawGrayBezel: rect withClip: NSZeroRect];
+     [cell _drawBackgroundWithFrame: rect inView: view];
+   }
+  else
+    {
+      [self fillRect: rect
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
+}
+
+- (NSRect) browserHeaderDrawingRectForCell: (NSCell*)cell
+				 withFrame: (NSRect)rect
+{
+  GSDrawTiles *tiles;
+  tiles = [self tilesNamed: GSBrowserHeader state: GSThemeNormalState];
+  if (tiles == nil)
+    {
+      return NSInsetRect(rect, 2, 2);
+    }
+  else
+    {
+      // FIXME: We assume the button's top and right padding are the same as
+      // its bottom and left.
+      return NSInsetRect(rect,
+			 tiles->contentRect.origin.x,
+			 tiles->contentRect.origin.y);
+    }
+}
+
 @end

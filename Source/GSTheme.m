@@ -78,6 +78,9 @@ NSString	*GSScrollerVerticalSlot = @"GSScrollerVerticalSlot";
 NSString	*GSTableHeader = @"GSTableHeader";
 NSString	*GSTableCorner = @"GSTableCorner";
 
+// Browser part names
+NSString        *GSBrowserHeader = @"GSBrowserHeader";
+
 // Menu part names
 NSString        *GSMenuHorizontalBackground = @"GSMenuHorizontalBackground";
 NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";

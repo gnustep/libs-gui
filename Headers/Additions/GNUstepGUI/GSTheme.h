@@ -264,6 +264,11 @@ APPKIT_EXPORT	NSString	*GSTableHeader;
 APPKIT_EXPORT	NSString	*GSTableCorner;
 
 /*
+ * Browser part names.
+ */
+APPKIT_EXPORT  NSString        *GSBrowserHeader;
+
+/*
  * Menu part names.
  */
 APPKIT_EXPORT  NSString        *GSMenuHorizontalBackground;
@@ -921,6 +926,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
              forStyleMask: (unsigned int)styleMask
                     state: (int)inputState
                  andTitle: (NSString*)title;
+
+- (void) drawBrowserHeaderCell: (NSCell*)cell
+		     withFrame: (NSRect)rect
+			inView: (NSView*)view;
+
+- (NSRect) browserHeaderDrawingRectForCell: (NSCell*)cell
+				 withFrame: (NSRect)rect;
+
 @end
 
 /**
