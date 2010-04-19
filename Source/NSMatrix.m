@@ -1773,6 +1773,9 @@ static SEL getSel;
 	    }
 	  break;
 	case NSTabTextMovement:
+          if ([_selectedCell sendsActionOnEndEditing])
+            [self sendAction];
+
 	  if (_tabKeyTraversesCells)
 	    {
 	      if ([self _selectNextSelectableCellAfterRow: _selectedRow
@@ -1793,6 +1796,9 @@ static SEL getSel;
 	    }
 	  break;
 	case NSBacktabTextMovement:
+          if ([_selectedCell sendsActionOnEndEditing])
+            [self sendAction];
+
 	  if (_tabKeyTraversesCells)
 	    {
 	      if ([self _selectPreviousSelectableCellBeforeRow: _selectedRow

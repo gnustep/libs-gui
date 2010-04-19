@@ -1,3 +1,9 @@
+2010-04-19 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSMatrix.m:
+	Honor sendsActionOnEndEditing setting when editing ended by
+	something other than return. 
+
 2010-04-18 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSBrowser.m:
