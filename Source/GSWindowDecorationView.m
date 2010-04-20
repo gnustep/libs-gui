@@ -213,17 +213,9 @@
 
 - (void) setContentView: (NSView *)contentView
 {
-  NSSize oldSize;
-
   [contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self addSubview: contentView];
-
-  oldSize = [contentView frame].size;
-  oldSize.width += _frame.size.width - contentRect.size.width;
-  oldSize.height += _frame.size.height - contentRect.size.height;
-  [contentView resizeWithOldSuperviewSize: oldSize];
-  [contentView setFrameOrigin: NSMakePoint(contentRect.origin.x,
-					   contentRect.origin.y)];
+  [self layout];
 }
 
 - (void) setDocumentEdited: (BOOL)flag
@@ -239,6 +231,7 @@
   NSRect contentViewFrame;
   NSToolbar *tb = [_window toolbar];
   NSRect frame = [window frame];
+  NSView *windowContentView = [_window contentView];
 
   frame.origin = NSZeroPoint;
   contentViewFrame = [isa contentRectForFrameRect: frame
@@ -282,6 +275,10 @@
 	  contentViewFrame.size.height -= newToolbarViewHeight;
 	}
     }
+  if ([windowContentView superview] == self)
+    {
+	  [windowContentView setFrame:contentViewFrame];
+	}
 }
 
 - (void) changeWindowHeight: (float)difference
@@ -307,6 +304,7 @@
 
   // then resize the window
   [window setFrame: windowFrame display: YES];
+  [self layout];
 }
 
 /*

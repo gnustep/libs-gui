@@ -1,3 +1,10 @@
+2010-04-20 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSWindow.m:
+	* Source/GSWindowDecorationView.m:
+	Fix problems with in-window menus sometimes overlapping toolbars or
+	toolbars overlapping window contents. 
+
 2010-04-19 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMatrix.m:

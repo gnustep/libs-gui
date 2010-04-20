@@ -1816,12 +1816,6 @@ many times.
         {
           [_wv setInputState: GSTitleBarNormal];
         }
-      if ([self menu] == [NSApp mainMenu])
-	{
-	  /* This window contains the main menu ... remove it.
-	   */
-	  [self setMenu: nil];
-	}
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
