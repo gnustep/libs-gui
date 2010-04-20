@@ -69,6 +69,7 @@ this, either directly, or indirectly (by using the backend).
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
+- (void) layout;
 - (void) changeWindowHeight: (float)difference;
 
 - (void) setBackgroundColor: (NSColor *)color;

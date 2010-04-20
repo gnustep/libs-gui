@@ -1,5 +1,10 @@
 2010-04-20 Doug Simons <doug.simons@testplant.com>
 
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h:
+	Update header to eliminate warning. 
+
+2010-04-20 Doug Simons <doug.simons@testplant.com>
+
 	* Source/NSWindow.m:
 	* Source/GSWindowDecorationView.m:
 	Fix problems with in-window menus sometimes overlapping toolbars or
