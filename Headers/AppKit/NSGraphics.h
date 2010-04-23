@@ -180,8 +180,10 @@ static inline void
 NSBeep(void)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSBeep)
-    (ctxt, @selector(NSBeep));
+  if (ctxt != nil) {
+    (ctxt->methods->NSBeep)
+      (ctxt, @selector(NSBeep));
+  }
 }
 
 static inline void

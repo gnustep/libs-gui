@@ -1,3 +1,9 @@
+2010-04-23  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Headers/AppKit/NSGraphics.h: NSBeep() - Don't crash when a
+	graphics context isn't available (eg - from a subthread).
+	
+	
 2010-04-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSAlert.m (NSRunAlertPanel): Fix incorrect return code
