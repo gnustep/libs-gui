@@ -302,13 +302,15 @@
 	}
 
       [self loadWindow];
-
-      [self _windowDidLoad];
-      if ([_document respondsToSelector:
-		       @selector(windowControllerDidLoadNib:)])
-	{
-	  [_document windowControllerDidLoadNib:self];
-	}
+      if ([self isWindowLoaded]) 
+      {
+        [self _windowDidLoad];
+        if ([_document respondsToSelector:
+	  	       @selector(windowControllerDidLoadNib:)])
+        {
+          [_document windowControllerDidLoadNib:self];
+        }
+      }
     }
 
   return _window;

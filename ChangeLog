@@ -1,8 +1,12 @@
 2010-04-23  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
+	* Source/NSWindowController.m: Fixed a problem where controller marks
+	the window as loaded even when the nib failed to load.
+
+2010-04-23  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
 	* Headers/AppKit/NSGraphics.h: NSBeep() - Don't crash when a
 	graphics context isn't available (eg - from a subthread).
-	
 	
 2010-04-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
@@ -85,9 +89,9 @@
 
 2010-04-13 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
-	* Source/GSToolTips.m: Use a single retain window for tooltips instead of a  
-  newly created one each time.  This significantly reduces callback interaction 
-  with MS-Windows callbacks.
+	* Source/GSToolTips.m: Use a single retained window for tooltips instead of
+	a newly created one each time.  This significantly reduces interaction 
+	with MS-Windows callbacks.
 
 2010-04-12 Fred Kiefer <FredKiefer@gmx.de>
 
