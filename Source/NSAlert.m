@@ -1384,7 +1384,7 @@ NSRunAlertPanel(
     {
       // No NSApp ... not running in a gui application so just log.
       NSLog(@"%@", message);
-      return NSAlertFirstButtonReturn;
+      return NSAlertDefaultReturn;
     }
   if (defaultButton == nil)
     {
