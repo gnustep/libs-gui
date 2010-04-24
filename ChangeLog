@@ -1,5 +1,12 @@
 2010-04-24 Doug Simons <doug.simons@testplant.com>
 
+	* Source/NSWindow.m:
+	Handle nil view passed to _checkTrackingRectangles:forEvent: (this
+	prevents a crash in Windows, e.g. when clicking the toolbar overflow
+	widget).
+
+2010-04-24 Doug Simons <doug.simons@testplant.com>
+
 	* Headers/AppKit/NSMenu.h:
 	* Source/NSMenu.m:
 	* Source/NSMenuItem.m:

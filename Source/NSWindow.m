@@ -3330,6 +3330,8 @@ resetCursorRectsForView(NSView *theView)
 - (void) _checkTrackingRectangles: (NSView*)theView
                          forEvent: (NSEvent*)theEvent
 {
+  if (theView == nil)
+    return;
   if (theView->_rFlags.has_trkrects)
     {
       NSArray *tr = theView->_tracking_rects;
