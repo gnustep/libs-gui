@@ -174,6 +174,9 @@ static Class imageClass;
 
 - (void) setSubmenu: (NSMenu*)submenu
 {
+  if (submenu == _submenu)
+    return; // no change
+	
   if ([submenu supermenu] != nil)
     {
       [NSException raise: NSInvalidArgumentException
@@ -200,7 +203,10 @@ static Class imageClass;
 {
   if (nil == aString)
     aString = @"";
-
+	
+  if ([_title isEqualToString:aString])
+    return; // no change
+	
   ASSIGNCOPY(_title,  aString);
   [_menu itemChanged: self];
 }
@@ -225,7 +231,9 @@ static Class imageClass;
                    @"Attempt to use nil as key equivalent");
       aKeyEquivalent = @"";
     }
-
+  if ([_keyEquivalent isEqualToString:aKeyEquivalent])
+    return; // no change
+	
   ASSIGNCOPY(_keyEquivalent,  aKeyEquivalent);
   [_menu itemChanged: self];
 }
@@ -240,7 +248,10 @@ static Class imageClass;
 
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
+  if (_keyEquivalentModifierMask == mask)
+    return; // no change
   _keyEquivalentModifierMask = mask;
+  [_menu itemChanged: self];
 }
 
 - (unsigned int) keyEquivalentModifierMask
@@ -269,6 +280,9 @@ static Class imageClass;
 
 - (void) setMnemonicLocation: (unsigned)location
 {
+  if (_mnemonicLocation == location)
+    return; // no change
+	
   _mnemonicLocation = location;
   [_menu itemChanged: self];
 }
@@ -302,7 +316,10 @@ static Class imageClass;
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
-
+	
+  if (_image == image)
+    return; // no change
+	
   ASSIGN(_image, image);
   [_menu itemChanged: self];
 }
@@ -331,7 +348,10 @@ static Class imageClass;
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
-
+	
+  if (_onStateImage == image)
+    return; // no change
+	
   ASSIGN(_onStateImage, image);
   [_menu itemChanged: self];
 }
@@ -345,6 +365,9 @@ static Class imageClass;
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
+	
+  if (_offStateImage == image)
+    return; // no change
 
   ASSIGN(_offStateImage, image);
   [_menu itemChanged: self];
@@ -359,7 +382,10 @@ static Class imageClass;
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
-
+	
+  if (_mixedStateImage == image)
+    return; // no change
+	
   ASSIGN(_mixedStateImage, image);
   [_menu itemChanged: self];
 }

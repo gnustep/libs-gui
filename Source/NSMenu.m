@@ -659,7 +659,7 @@ static BOOL menuBarVisible = YES;
      up menus in NSApplicationWillFinishLaunching.
   */
   [nc addObserver: self
-      selector: @selector(_showTornOffMenuIfAny:)
+      selector: @selector(applicationDidFinishLaunching:)
       name: NSApplicationDidFinishLaunchingNotification 
       object: NSApp];
 
@@ -684,6 +684,16 @@ static BOOL menuBarVisible = YES;
 /*
  * Setting Up the Menu Commands
  */
+
+ - (void) menuChanged
+{
+  // propagate notification up to the main menu
+  if (self == [NSApp mainMenu])
+    _menu.mainMenuChanged = YES;
+  else
+    [[self supermenu] menuChanged];
+}
+
 - (void) insertItem: (id <NSMenuItem>)newItem
 	    atIndex: (int)index
 {
@@ -723,6 +733,7 @@ static BOOL menuBarVisible = YES;
     [nc postNotification: inserted];
   else
     [_notifications addObject: inserted];
+  [self menuChanged];
 
   // Set this after the insert notification has been sent.
   [newItem setMenu: self];
@@ -794,6 +805,7 @@ static BOOL menuBarVisible = YES;
     [nc postNotification: removed];
   else
     [_notifications addObject: removed];
+  [self menuChanged];
 }
 
 - (void) itemChanged: (id <NSMenuItem>)anObject
@@ -819,6 +831,7 @@ static BOOL menuBarVisible = YES;
     [nc postNotification: changed];
   else
     [_notifications addObject: changed];
+  [self menuChanged];
 
   // Update the menu.
   [self update];
@@ -1048,33 +1061,6 @@ static BOOL menuBarVisible = YES;
 
 - (void) update
 {
-  if (self == [NSApp mainMenu])
-    {
-      /* For microsoft style menus, we attempt to notice that we have
-       * a main window, and make sure that the menu appears in it.
-       */
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
-        NSWindows95InterfaceStyle)
-	{
-	  NSWindow	*w = [NSApp mainWindow];
-
-	  if (w == nil)
-	    {
-	      /* Make sure we are set up properly and displayed.
-	       */
-	      if ([_aWindow isVisible] == NO)
-		{
-	          [self setMain: YES];
-		}
-	    }
-	  else if ([w menu] != self)
-	    {
-	      [w setMenu: self];
-	    }
-
-	  [[GSTheme theme] updateAllWindowsWithMenu: self];
-	}
-    }
   if (_delegate)
     {
       if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
@@ -1199,7 +1185,16 @@ static BOOL menuBarVisible = YES;
 	  }
 	NS_ENDHANDLER
       // Reenable displaying of menus
-      [self setMenuChangedMessagesEnabled: YES];
+      [self setMenuChangedMessagesEnabled: YES]; // this will send pending _notifications
+    }
+
+  if (_menu.mainMenuChanged)
+    {
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == NSWindows95InterfaceStyle)
+        {
+          [[GSTheme theme] updateAllWindowsWithMenu: self];
+        }
+      _menu.mainMenuChanged = NO;
     }
 
   if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
@@ -1610,16 +1605,7 @@ static BOOL menuBarVisible = YES;
   for (i = 0; i < [dItems count]; i++)
     {
       NSMenuItem	*item = [dItems objectAtIndex: i];
-      NSMenu		*sub = [item submenu];
-
       [self addItem: item];
-      // FIXME: We propably don't need this, as all the fields are
-      // already set up for the submenu item.
-      if (sub != nil)
-	{
-	  [sub setSupermenu: nil];
-	  [self setSubmenu: sub  forItem: item];
-	}
     }
   [self setMenuChangedMessagesEnabled: YES];
 
@@ -1701,6 +1687,12 @@ static BOOL menuBarVisible = YES;
 	    }
 	}
     }
+}
+
+- (void) applicationDidFinishLaunching:(NSNotification *)notification
+{
+  [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
+  [self _showTornOffMenuIfAny:notification];
 }
 
 - (void) _showOnActivateApp: (NSNotification*)notification
@@ -1902,7 +1894,7 @@ static BOOL menuBarVisible = YES;
       oldRep = [self menuRepresentation];
       oldStyle = [oldRep interfaceStyle];
       newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-
+	  
       /*
        * If necessary, rebuild menu for (different) style
        */
@@ -1953,6 +1945,7 @@ static BOOL menuBarVisible = YES;
         {
           [self display];
         }
+      [[GSTheme theme] updateAllWindowsWithMenu: self];
     }
   else 
     {

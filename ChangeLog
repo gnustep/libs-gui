@@ -1,3 +1,12 @@
+2010-04-24 Doug Simons <doug.simons@testplant.com>
+
+	* Headers/AppKit/NSMenu.h:
+	* Source/NSMenu.m:
+	* Source/NSMenuItem.m:
+	Rebuild in-window menus only when needed on Windows. Also fixed
+	notifying a menu item's menu only when a property value actually
+	changes.
+
 2010-04-23 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSMenuItem.m: Fix for bug 29635

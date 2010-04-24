@@ -347,7 +347,8 @@
     unsigned int is_tornoff: 1;
     unsigned int transient: 1;
     unsigned int horizontal: 1;
-		unsigned int unused: 26;
+	unsigned int mainMenuChanged: 1;
+		unsigned int unused: 25;
   } _menu;
 
 @private
