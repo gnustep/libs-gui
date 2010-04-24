@@ -566,6 +566,7 @@ static Class imageClass;
       NSString *action;
       NSString *key;
       BOOL isSeparator = NO;
+      int keyMask;
 
       if ([aDecoder containsValueForKey: @"NSIsSeparator"])
         {
@@ -617,11 +618,12 @@ static Class imageClass;
           NSMenu *submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
           [self setSubmenu: submenu];
         }
-      if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
-        {
-          int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
-          [self setKeyEquivalentModifierMask: keyMask];
-        }
+
+      // Set the key mask regardless of whether it is present;
+      // i.e. set it to 0 if it is not present in the nib.
+      keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+      [self setKeyEquivalentModifierMask: keyMask];
+
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {
           int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];

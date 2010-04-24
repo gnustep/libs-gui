@@ -1,3 +1,9 @@
+2010-04-23 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSMenuItem.m: Fix for bug 29635
+	(NSMenuItem -initWithCoder: should set modifier mask to 0 if
+	NSKeyEquivModMask not defined)
+
 2010-04-23  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/NSWindowController.m: Fixed a problem where controller marks
