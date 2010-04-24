@@ -1359,7 +1359,7 @@ Also returns the child index relative to this parent. */
       /* If we have been hovering over an item for more than half a second,
        * we should expand it.
        */
-      if ([lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
+      if (lastDragChange != nil && [lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
 	{
 	  id item = [_items objectAtIndex: row];
 	  if ([self isExpandable: item] && ![self isItemExpanded: item])
