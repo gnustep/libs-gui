@@ -1,3 +1,9 @@
+2010-04-28  Adam Fedor  <fedor@gnu.org>
+
+	* configure, configure.ac, Headers/Additions/GNUstepGUI/config.h.in,
+	Source/NSSliderCell.m: Check for atan2f function (not present on
+	old Solaris systems for instance).
+
 2010-04-24 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSOutlineView.m:

@@ -1,13 +1,22 @@
 /* Headers/Additions/GNUstepGUI/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you have the <ao/ao.h> header file. */
+#undef HAVE_AO_AO_H
+
 /* Define if you have the aspell header */
 #undef HAVE_ASPELL
 
 /* Define to 1 if you have the <aspell.h> header file. */
 #undef HAVE_ASPELL_H
 
+/* Define to 1 if you have the `atan2f' function. */
+#undef HAVE_ATAN2F
+
 /* Define to 1 if you have the <cups/cups.h> header file. */
 #undef HAVE_CUPS_CUPS_H
+
+/* Define to 1 if you have the <flite/flite.h> header file. */
+#undef HAVE_FLITE_FLITE_H
 
 /* Define to 1 if you have the `getmntent' function. */
 #undef HAVE_GETMNTENT
@@ -60,6 +69,9 @@
 /* Define to 1 if you have the `rintf' function. */
 #undef HAVE_RINTF
 
+/* Define to 1 if you have the <sndfile.h> header file. */
+#undef HAVE_SNDFILE_H
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
@@ -98,6 +110,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION

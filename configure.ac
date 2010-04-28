@@ -108,7 +108,7 @@ AC_PROG_CC
 AC_PROG_CPP
 
 AC_CHECK_LIB(m, main)
-AC_CHECK_FUNCS(rint rintf)
+AC_CHECK_FUNCS(rint rintf atan2f)
 
 
 #--------------------------------------------------------------------

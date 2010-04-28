@@ -44,6 +44,9 @@
 #import "AppKit/NSWindow.h"
 
 DEFINE_RINT_IF_MISSING
+#ifndef HAVE_ATAN2F
+#define atan2f atan2
+#endif
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626434
