@@ -722,7 +722,8 @@
   NSMutableData *resultData;
   unichar *buffer;
   int length, i;
-  
+  BOOL uc_flagged = NO;
+
   if (string == nil)
     {
       return nil;
@@ -733,9 +734,6 @@
   [string getCharacters: buffer];
   resultData = [[NSMutableData alloc]
                                initWithCapacity: (int)(length * 1.2)];
-
-  // We don't supply an ANSI representation for Unicode characters
-  [resultData appendBytes: "\\uc0 " length: 5];
 
   for (i = 0; i < length; i++)
     {
@@ -767,10 +765,10 @@
                   [resultData appendBytes: "\\}" length: 2];
                   break;
               case '`':
-                  [resultData appendBytes: "\\lquote }" length: 8];
+                  [resultData appendBytes: "\\lquote " length: 8];
                   break;
               case '\'':
-                  [resultData appendBytes: "\\rquote }" length: 8];
+                  [resultData appendBytes: "\\rquote " length: 8];
                   break;
               default:
                   [resultData appendBytes: &ansiChar length: 1];
@@ -780,28 +778,34 @@
       else if (c < 0xFF)
         {
           char unicodeCommand[16];
-          unicodeCommand[15] = '\0';
           
-          sprintf(unicodeCommand, "\\'%X", (short)c);
+          snprintf(unicodeCommand, 16, "\\'%X ", (short)c);
+          unicodeCommand[15] = '\0';
 
           [resultData appendBytes: unicodeCommand
                            length: strlen(unicodeCommand)];
 	}
+      else if (c == NSAttachmentCharacter)
+        {
+          [resultData appendBytes: "\\'AC}" length: 5];
+        }
       else
         {
           // write unicode encoding
           char unicodeCommand[16];
+
+          if (!uc_flagged)
+            {
+              // We don't supply an ANSI representation for Unicode characters
+              [resultData appendBytes: "\\uc0 " length: 5];
+              uc_flagged = YES;
+            }
+
+          snprintf(unicodeCommand, 16, "\\u%d ", (short)c);
           unicodeCommand[15] = '\0';
-          
-          sprintf(unicodeCommand, "\\u%d ", (short)c);
 
           [resultData appendBytes: unicodeCommand
-                           length: strlen(unicodeCommand)];
-          
-          if (c == NSAttachmentCharacter)
-            {
-              [resultData appendBytes: "}" length: 1];
-            }
+                           length: strlen(unicodeCommand)];       
         }
     }
 
@@ -1036,9 +1040,15 @@
   RELEASE(attributesToRemove);
   RELEASE(attributesToAdd);
 
-  if ([result length]) // ensure delimiter
+  if ([result length])
     {
-      [result appendString: @" "];
+      unichar c = [result characterAtIndex: [result length] - 1];
+
+      if ((c != '}') && (c != ' '))
+        {
+          // ensure delimiter
+          [result appendString: @" "];
+        }
     }
 
   [result appendString: [self _stringWithRTFCharacters: string]];
