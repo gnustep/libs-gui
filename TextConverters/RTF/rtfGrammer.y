@@ -363,9 +363,14 @@ rtfStatement: RTFfont				{ int font;
 
 /*
 	NeXTGraphic (images)
+	This is a Apple/NeXT extension. The format of the command is
+	  {{\NeXTGraphic attachment \widthN \heightN} string}
+	and the string is ignored (on OS X it is always 0xAC).
+	See the Section "RTF Files and Attributed Strings" in Apple's
+	Attributed Strings Programming Guide.
 */
 
-rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' rtfIngredients '}'
+rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); } '}'
 		{
 			GSRTFNeXTGraphic (CTXT, $4, $5.parameter, $6.parameter);
 		};

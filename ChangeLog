@@ -1,3 +1,9 @@
+2010-05-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* TextConverters/RTF/rtfGrammer.y: Ignore the string parameter of
+	a \NeXTGraphic command like OS X does. Fixes bug #29633.
+	* TextConverters/RTF/rtfGrammer.tab.c: Regenerated.
+
 2010-04-28  Adam Fedor  <fedor@gnu.org>
 
 	* configure, configure.ac, Headers/Additions/GNUstepGUI/config.h.in,
