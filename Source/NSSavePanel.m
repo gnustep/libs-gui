@@ -1131,6 +1131,11 @@ selectCellWithString: (NSString*)title
     return @"";
 }
 
+- (NSURL *) directoryURL
+{
+  return [NSURL fileURLWithPath: [self directory]];
+}
+
 /**<p> Returns the absolute filename choosen by the user.  Do not invoke
    filename within a modal loop because the information that these
    methods fetch is updated only upon return.</p>

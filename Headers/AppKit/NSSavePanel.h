@@ -128,7 +128,7 @@ enum {
 - (void) setDirectory: (NSString *)path;
 - (void) setRequiredFileType: (NSString *)fileType;
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setAllowedFileTypes: (NSArray *)types;
 - (void) setAllowsOtherFileTypes: (BOOL)flag;
 - (NSArray *) allowedFileTypes;
@@ -140,7 +140,7 @@ enum {
 
 - (void) validateVisibleColumns;
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setCanCreateDirectories: (BOOL)flag;
 - (BOOL) canCreateDirectories;
 #endif
@@ -171,6 +171,9 @@ enum {
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSURL *) URL;
 - (BOOL) isExpanded;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSURL *) directoryURL;
 #endif
 
 /*
