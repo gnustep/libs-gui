@@ -779,7 +779,7 @@
         {
           char unicodeCommand[16];
           
-          snprintf(unicodeCommand, 16, "\\'%X ", (short)c);
+          snprintf(unicodeCommand, 16, "\\'%X", (short)c);
           unicodeCommand[15] = '\0';
 
           [resultData appendBytes: unicodeCommand

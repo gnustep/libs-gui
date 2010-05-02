@@ -1,3 +1,9 @@
+2010-05-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFProducer.m (-_stringWithRTFCharacters:):
+	Remove extra space after \'xx characters accidentially introduced
+	with last change.
+
 2010-05-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFProducer.m
