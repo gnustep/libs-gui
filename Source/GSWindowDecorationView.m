@@ -252,33 +252,30 @@
       contentViewFrame.size.height -= menuBarHeight;
     }
 
-  if(hasToolbar)
+  if (hasToolbar)
     {
-      if ([tb isVisible])
-	{
-	  GSToolbarView *tv = [tb _toolbarView];
-	  float newToolbarViewHeight;
+      GSToolbarView *tv = [tb _toolbarView];
+      float newToolbarViewHeight;
 	  
-	  // If the width changed we may need to recalculate the height
-	  if (contentViewFrame.size.width != [tv frame].size.width)
-	    {
-	      [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
-	      // Will recalculate the layout
-	      [tv _reload];
-	    }
-	  newToolbarViewHeight = [tv _heightFromLayout];
-	  [tv setFrame: NSMakeRect(
-				   contentViewFrame.origin.x,
-				   NSMaxY(contentViewFrame) - newToolbarViewHeight,
-				   contentViewFrame.size.width, 
-				   newToolbarViewHeight)];
-	  contentViewFrame.size.height -= newToolbarViewHeight;
+      // If the width changed we may need to recalculate the height
+      if (contentViewFrame.size.width != [tv frame].size.width)
+	{
+	  [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+	  // Will recalculate the layout
+	  [tv _reload];
 	}
+      newToolbarViewHeight = [tv _heightFromLayout];
+      [tv setFrame: NSMakeRect(contentViewFrame.origin.x,
+			       NSMaxY(contentViewFrame) - newToolbarViewHeight,
+			       contentViewFrame.size.width, 
+			       newToolbarViewHeight)];
+      contentViewFrame.size.height -= newToolbarViewHeight;
     }
+
   if ([windowContentView superview] == self)
     {
-	  [windowContentView setFrame:contentViewFrame];
-	}
+      [windowContentView setFrame:contentViewFrame];
+    }
 }
 
 - (void) changeWindowHeight: (float)difference
@@ -398,7 +395,7 @@
 
   // take in account of the menubar when calculating the origin
   contentYOrigin = NSMaxY(contentRect);
-  if(hasMenu)
+  if (hasMenu)
     {
       float menuBarHeight = [[GSTheme theme] menuHeightForWindow: _window];
       contentYOrigin -= menuBarHeight;

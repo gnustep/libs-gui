@@ -1,3 +1,9 @@
+2010-05-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSWindowDecorationView.m (-layout): Fix a regression
+	where a window's content view was improperly resized when
+	toggleToolbarShown: makes its toolbar visible again.
+
 2010-05-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSavePanel.h,
