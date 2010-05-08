@@ -1,4 +1,4 @@
-2010-05-02 Fred Kiefer <FredKiefer@gmx.de>
+2010-05-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-dealloc): Use DESTROY instead of RELEASE.
 
