@@ -741,7 +741,7 @@ many times.
 
 - (void) dealloc
 {
-  RELEASE(_toolbar);
+  DESTROY(_toolbar);
   [nc removeObserver: self];
   [isa _removeAutodisplayedWindow: self];
   [NSApp removeWindowsItem: self];
@@ -764,7 +764,7 @@ many times.
       NSWindow *mini = [NSApp windowWithWindowNumber: _counterpart];
 
       _counterpart = 0;
-      RELEASE(mini);
+      DESTROY(mini);
     }
 
   /* Clean references to this window - important if some of the views
