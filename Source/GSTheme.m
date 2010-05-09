@@ -772,8 +772,16 @@ typedef	struct {
 	}
     }
 
-  /*
-   * Restore old images in NSImage's lookup dictionary so that the app
+  /* Unload all images created by this theme.
+   */
+  enumerator = [_images objectEnumerator];
+  while ((image = [enumerator nextObject]) != nil)
+    {
+      [image setName: nil];
+    }
+  [_images removeAllObjects];
+
+  /* Restore old images in NSImage's lookup dictionary so that the app
    * still has images to draw.
    * The remove all cached bundle images from both NSImage's name dictionary
    * and our cache dictionary, so that we can be sure we reload afresh
@@ -787,12 +795,6 @@ typedef	struct {
       [NSImage _setImage: image name: name];
     }
   [_oldImages removeAllObjects];
-  enumerator = [_images objectEnumerator];
-  while ((image = [enumerator nextObject]) != nil)
-    {
-      [image setName: nil];
-    }
-  [_images removeAllObjects];
 
   [self _revokeOwnerships];
 

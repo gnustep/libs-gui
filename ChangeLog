@@ -1,3 +1,9 @@
+2010-05-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: ([-deactivate]) unload current theme images before
+	restoring previous theme images to avoid conflict with image names.
+	* Source/NSImage.m: Add some comments.
+
 2010-05-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-dealloc): Use DESTROY instead of RELEASE.
@@ -805,12 +811,12 @@
 	-establishConnection): Undo the last change to this method, as
 	it should not retain the assign value.
 
-2005-03-12  Doug Simons <doug.simons@testplant.com>
+2010-03-12  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSTextView.m: (-readSelectionFromPasteboard:type:): 
 	Set insertion point _after_ pasted text, don't select it. 
 
-2005-03-12  Doug Simons <doug.simons@testplant.com>
+2010-03-12  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSTextView.m: (-mouseDown:): Only try to drag text
 	if the user starts by dragging the mouse. A simple click within
@@ -818,7 +824,7 @@
 	* Source/NSView.m: (-setNeedsDisplayInRect:): Avoid unnecessary
 	work when invalid rectangle is empty.
 
-2005-03-11  Doug Simons <doug.simons@testplant.com>
+2010-03-11  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSClipView.m: Call isFlipped rather than accessing
 	flag directly (fixes a problem with view loaded from a nib).
@@ -830,21 +836,21 @@
 	always be a subclass of NSControl and was causing a crash in
 	AddressManager.app.
 
-2005-03-09  Doug Simons <doug.simons@testplant.com>
+2010-03-09  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMenu.m: Protect changedMessagesEnabled flag against getting
 	stuck off if exceptions occur during update.
 	* Source/NSApplication.m: Update menu after modal session, and when
 	the key or main window has changed.
 
-2005-03-07  Richard Frith-Macdonald <rfm@gnu.org>
+2010-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAlert.m: Cope gracefully with being called from an non-gui
 	applications (ie where NSApp is not initialized).
 	* Tools/gopen.m: Print same warning as OSX if item to open is not a
 	URL and the named fiel does not exist.
 
-2005-03-05  Richard Frith-Macdonald <rfm@gnu.org>
+2010-03-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: update NSTask header
 	* Source/NSPasteboard.m: ditto

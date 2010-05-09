@@ -542,10 +542,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return copy;
 }
 
-/*
+/* This methd sets the name of an image, updating the global name dictionary
+ * to point to the image (or removing an image from the dictionary if the
+ * new name is nil).
  * The images are actually accessed via proxy objects, so that when a
- * new system image is set, the proxies for that image just start using
- * the new version.
+ * new system image is set (using [NSImage+_setImage:name:]), the proxy
+ * for that image just starts using the new version.
  */
 - (BOOL) setName: (NSString *)aName
 {
@@ -1971,6 +1973,13 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
 @implementation	NSImage (GSTheme)
 
+/* This method is used by the theming system to replace a named image
+ * without disturbing the proxy ... so that all views and cells using
+ * the named image are automatically updated to use the new image.
+ * This is the counterpart to the -setName: method, which replaces the
+ * proxy (to change a named image without updating the image used by
+ * existing views and cells).
+ */
 + (NSImage*) _setImage: (NSImage*)image name: (NSString*)name
 {
   GSThemeProxy	*proxy = nil;
