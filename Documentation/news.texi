@@ -9,6 +9,12 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.19.0}
+
+This is an (unstable) copy of the 0.18.0 release
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.18.0}
 
 A new stable release that has had many improvements. Many new
@@ -16,8 +22,6 @@ Mac OS X methods (10.5 and newer) were added. Many Windows specific
 improvements were made (particularly with the use of the Windows theme).
 There is also better compatibility with Mac OS X in terms of usage of NSInteger
 and other definitions.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.17.1}
 
