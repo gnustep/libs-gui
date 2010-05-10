@@ -19,6 +19,38 @@
 	changes and other information that might help developers and users
 	migrate to using a newer version of the library.
       </p>
+     <section>
+      	<heading>Version 0.18.0</heading>
+	<p>A new stable release that has had many improvements. Many new
+	Mac OS X methods (10.5 and newer) were added. Many Windows specific
+	improvements were made (particularly with the use of the Windows theme).
+	There is also better compatibility with Mac OS X in terms of usage of NSInteger
+	and other definitions.
+	</p>
+	<deflist>
+            <term>NSSliderCell</term>
+            <desc>
+	      Initial implementaiton of circular sliders.
+            </desc>
+            <term>Spanish Translation</term>
+            <desc>
+	     Added spanish translations in various places.
+            </desc>
+            <term>NSDrawers</term>
+            <desc>
+	      They now work.
+            </desc>
+            <term>NSTableColumn</term>
+            <desc>
+	      New 10.6 methods and constants.
+            </desc>
+            <term>Themes</term>
+            <desc>
+	      Usage of themes to draw UI elements is almost completely implemented.
+            </desc>
+  	</deflist>
+      </section>
+
       <section>
       	<heading>Version 0.17.1</heading>
 	<p>Bug fixes.

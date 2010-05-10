@@ -1,3 +1,7 @@
+2010-05-09  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.18.0
+
 2010-05-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: ([-deactivate]) unload current theme images before
