@@ -9,8 +9,9 @@ This is version @value{GNUSTEP-GUI-VERSION} of the GNUstep GUI library (@samp{gn
 @section What is the GNUstep GUI Library?
 
 It is a library of graphical user interface classes written completely 
-in the Objective-C language; the classes are based upon the OpenStep
-specification as release by NeXT Software, Inc.  The library has been
+in the Objective-C language; the classes are based upon 
+Apple's Cocoa framework (which came from the OpenStep
+specification as release by NeXT Software, Inc).  The library has been
 enhanced in a number of ways to take advantage of the GNU system.  
 These classes include graphical objects such as buttons, text fields, 
 popup lists, browser lists, and windows; there are also many associated 
