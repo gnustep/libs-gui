@@ -42,6 +42,7 @@
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSView.h"
 #import "AppKit/PSOperators.h"
 
@@ -1436,7 +1437,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 }
 
 
-- (void) drawBrowserHeaderCell: (NSCell*)cell
+- (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 	 	     withFrame: (NSRect)rect
 			inView: (NSView*)view;
 {
@@ -1455,7 +1456,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-- (NSRect) browserHeaderDrawingRectForCell: (NSCell*)cell
+- (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect
 {
   GSDrawTiles *tiles;

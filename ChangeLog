@@ -1,3 +1,9 @@
+2010-05-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m: Remove compiler warning for NSBrowser
+	header cell drawing.
+
 2010-05-10  Adam Fedor  <fedor@gnu.org>
 
 	* Clarify unstable release documentation

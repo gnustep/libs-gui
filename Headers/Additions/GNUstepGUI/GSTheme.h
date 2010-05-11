@@ -927,11 +927,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                     state: (int)inputState
                  andTitle: (NSString*)title;
 
-- (void) drawBrowserHeaderCell: (NSCell*)cell
+- (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 		     withFrame: (NSRect)rect
 			inView: (NSView*)view;
 
-- (NSRect) browserHeaderDrawingRectForCell: (NSCell*)cell
+- (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
 @end
