@@ -65,6 +65,7 @@ static NSString *CFBundleTypeRole       = @"CFBundleTypeRole";
 
 // FIXME: Looks like this was changed to @"NSRecentDocumentRecords"
 static NSString *NSRecentDocuments      = @"NSRecentDocuments";
+static NSString *NSMaximumRecentDocumentCount = @"NSMaximumRecentDocumentCount";
 
 static NSString *NSEditorRole = @"Editor";
 static NSString *NSViewerRole = @"Viewer";
@@ -274,7 +275,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
                        objectForKey: NSRecentDocuments];
   if (_recent_documents)
     {
-      int i, count;
+      int i, count, max;
 
       _recent_documents = [_recent_documents mutableCopy];
       count = [_recent_documents count];
@@ -297,6 +298,12 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
               [_recent_documents replaceObjectAtIndex: i withObject: url];
             }
         }
+
+      max = [self maximumRecentDocumentCount];
+      if (count > max)
+	{
+	  [_recent_documents removeObjectsInRange: NSMakeRange(0, count - max)];
+	}
     } 
   else
     _recent_documents = RETAIN([NSMutableArray array]);
@@ -1281,8 +1288,19 @@ static BOOL _shouldClose = YES;
 // The number of remembered recent documents
 - (NSUInteger) maximumRecentDocumentCount
 {
-  // FIXME: Should come from user defaults
-  return 5;
+  NSUserDefaults *sud = [NSUserDefaults standardUserDefaults];
+  NSInteger count = 5;
+  if ([sud objectForKey: NSMaximumRecentDocumentCount])
+    {
+      count = [sud integerForKey: NSMaximumRecentDocumentCount];
+      if (count < 0)
+	count = 5;
+    }
+  else
+    {
+      count = 5;
+    }
+  return count;
 }
 
 - (void) noteNewRecentDocument: (NSDocument *)aDocument
@@ -1303,7 +1321,7 @@ static BOOL _shouldClose = YES;
       // Always keep the current object at the end of the list
       [_recent_documents removeObjectAtIndex: index];
     }
-  else if ([_recent_documents count] > [self maximumRecentDocumentCount])
+  else if ([_recent_documents count] >= [self maximumRecentDocumentCount])
     {
       [_recent_documents removeObjectAtIndex: 0];
     }

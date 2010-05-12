@@ -1,6 +1,13 @@
-2010-05-12  Wolfgang Lux  <wlux@uni-muenster.de>
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Source/GSXibLoader.m (-awakeData:withContext): Fix bug where
+	* Source/NSDocumentController.m (-init, -maximumRecentDocumentCount,
+	-noteNewRecentDocumentURL:): Make number of remembered recent
+	documents configurable with a user preference and fix a bug where
+	one extra document was remembered.
+
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSXibLoader.m (-awakeData:withContext:): Fix bug where
 	some objects from the xib file were not sent an -awakeFromNib
 	message.
 
