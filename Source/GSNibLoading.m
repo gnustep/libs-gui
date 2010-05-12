@@ -1917,8 +1917,13 @@ static BOOL _isInInterfaceBuilder = NO;
           // objects on behalf of the owner.
           RETAIN(obj);
         }
+    }
 
-      // awaken the object.
+  // awaken all objects.
+  objs = NSAllMapTableKeys(_objects);
+  en = [objs objectEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
       if ([obj respondsToSelector: @selector(awakeFromNib)])
         {
           [obj awakeFromNib];

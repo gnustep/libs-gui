@@ -1,3 +1,9 @@
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSNibLoading.m	(-nibInstantiateWithOwner:topLevelObjects:):
+	Fix bug where some objects from the nib file were not sent an
+	-awakeFromNib message.
+
 2010-05-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
