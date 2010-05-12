@@ -1,5 +1,15 @@
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Headers/AppKit/NSDocumentController.h:
+	* Source/NSDocumentFrameworkPrivate.h: 
+	* Source/NSDocumentController.m (-_recentDocumentsMenu,
+	-_setRecentDocumentsMenu:, -_updateRecentDocumentsMenu): 
+	Add an attribute to NSDocumentController to maintain the recent
+	documents menu. Make the methods to access that menu available to
+	other classes in -gui.
+
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSNibLoading.m	(-nibInstantiateWithOwner:topLevelObjects:):
 	Fix bug where some objects from the nib file were not sent an
 	-awakeFromNib message.

@@ -43,6 +43,13 @@
 - (void)_recordAutosavedDocument: (NSDocument *)document;
 @end
 
+@interface NSDocumentController (RecentDocumentsMenu)
+- (NSMenu *) _recentDocumentsMenu;
+- (void) _setRecentDocumentsMenu: (NSMenu *)menu;
+- (void) _updateRecentDocumentsMenu;
+- (IBAction) _openRecentDocument: (id)sender;
+@end
+
 
 #include <AppKit/NSDocument.h>
 

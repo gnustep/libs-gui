@@ -44,6 +44,7 @@
 @class NSString;
 
 @class NSDocument;
+@class NSMenu;
 @class NSMenuItem;
 @class NSOpenPanel;
 @class NSWindow;
@@ -59,7 +60,7 @@
         unsigned int should_create_ui:1;
         unsigned int RESERVED:31;
     } _controller_flags;
-    void 		*_reserved1;
+    NSMenu		*_recent_documents_menu;
 }
 
 + (id) sharedDocumentController;

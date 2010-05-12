@@ -126,12 +126,6 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 }
 
 
-@interface NSDocumentController (RecentsMenu)
-- (NSMenu *) _recentMenu;
-- (void) _updateOpenRecentMenu;
-- (IBAction) _openRecentDocument: (id)sender;
-@end
-
 /** <p>
     NSDocumentController is a class that controls a set of NSDocuments
     for an application. As an application delegate, it responds to the
@@ -325,6 +319,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   RELEASE (_documents);
   RELEASE (_recent_documents);
   RELEASE (_types);
+  RELEASE (_recent_documents_menu);
   [super dealloc];
 }
 
@@ -1280,7 +1275,7 @@ static BOOL _shouldClose = YES;
   [_recent_documents removeAllObjects];
   [[NSUserDefaults standardUserDefaults] 
     setObject: _recent_documents forKey: NSRecentDocuments];
-	[self _updateOpenRecentMenu];
+  [self _updateRecentDocumentsMenu];
 }
 
 // The number of remembered recent documents
@@ -1326,7 +1321,7 @@ static BOOL _shouldClose = YES;
   [[NSUserDefaults standardUserDefaults] 
     setObject: a forKey: NSRecentDocuments];
   RELEASE(a);
-	[self _updateOpenRecentMenu];
+  [self _updateRecentDocumentsMenu];
 }
 
 - (NSArray *) recentDocumentURLs
@@ -1585,21 +1580,26 @@ static NSString *processName = nil;
 @end
 
 
-@implementation NSDocumentController (RecentsMenu)
+@implementation NSDocumentController (RecentDocumentsMenu)
 
-- (NSMenu *) _recentMenu
+- (NSMenu *) _recentDocumentsMenu
 {
-  // FIXME
-  return nil;
+  return _recent_documents_menu;
+}
+
+- (void) _setRecentDocumentsMenu: (NSMenu *)aMenu
+{
+  ASSIGN(_recent_documents_menu, aMenu);
+  [self _updateRecentDocumentsMenu];
 }
 
 // should be handled by making us the delegate of the recent's menu
-- (void) _updateOpenRecentMenu
+- (void) _updateRecentDocumentsMenu
 {
   NSMenu *recentMenu;
   int i;
 
-  recentMenu = [self _recentMenu];
+  recentMenu = [self _recentDocumentsMenu];
   if (!recentMenu)
     {
       return;
@@ -1666,7 +1666,7 @@ static NSString *processName = nil;
   if (idx < 0 || idx >= [_recent_documents count])
     {
       // something went wrong, ignore
-      [self _updateOpenRecentMenu];
+      [self _updateRecentDocumentsMenu];
       return;
     }
   url = (NSURL *)[_recent_documents objectAtIndex: idx];
