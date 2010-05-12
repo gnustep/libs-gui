@@ -27,32 +27,32 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSString.h>
-#include "AppKit/NSButton.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSColorList.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSPasteboard.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSButton.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSColorList.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSPasteboard.h"
 // It contains GSMovableToolbarItemPboardType declaration
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSToolbarItem.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
-#include "GNUstepGUI/GSTheme.h"
-#include "GNUstepGUI/GSToolbarView.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSToolbarView.h"
 
-#include "NSToolbarFrameworkPrivate.h"
+#import "NSToolbarFrameworkPrivate.h"
 
 typedef enum {
   ToolbarViewDefaultHeight = 62,
@@ -457,12 +457,12 @@ static void initSystemExtensionsColors(void)
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
 {
-  return [self updateItemWhileDragging:info exited:NO];
+  return [self updateItemWhileDragging: info exited: NO];
 }
 
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)info
 {
-  return [self updateItemWhileDragging:info exited:NO];
+  return [self updateItemWhileDragging: info exited: NO];
 }
 
 - (void) draggingEnded: (id <NSDraggingInfo>)info
@@ -472,7 +472,7 @@ static void initSystemExtensionsColors(void)
 
 - (void) draggingExited: (id <NSDraggingInfo>)info
 {
-  [self updateItemWhileDragging:info exited:YES];
+  [self updateItemWhileDragging: info exited: YES];
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)info
@@ -484,7 +484,7 @@ static void initSystemExtensionsColors(void)
 {
   NSToolbar *toolbar = [self toolbar];
 
-  [self updateItemWhileDragging:info exited:NO];
+  [self updateItemWhileDragging: info exited: NO];
   
   draggedItemIndex = NSNotFound;
   
@@ -614,19 +614,17 @@ static void initSystemExtensionsColors(void)
 
 - (void) _handleBackViewsFrame
 {
-  NSEnumerator *e = [[_toolbar items] objectEnumerator];
-  NSToolbarItem *item;
-  NSView *itemBackView;
-  NSRect itemBackViewFrame;
   float x = 0;
   float newHeight = 0;
-  // ---
   NSArray *subviews = [_clipView subviews];
+  NSEnumerator *e = [[_toolbar items] objectEnumerator];
+  NSToolbarItem *item;
   
-  //_heightFromLayout = 0;
-
   while ((item = [e nextObject]) != nil) 
     {
+      NSView *itemBackView;
+      NSRect itemBackViewFrame;
+
       itemBackView = [item _backView];
       if ([subviews containsObject: itemBackView] == NO
         || [item _isModified] 
@@ -645,7 +643,7 @@ static void initSystemExtensionsColors(void)
       x += [itemBackView frame].size.width;
       
       if (itemBackViewFrame.size.height > newHeight)
-       newHeight = itemBackViewFrame.size.height;
+        newHeight = itemBackViewFrame.size.height;
     }
     
   if (newHeight > 0)
@@ -662,7 +660,8 @@ static void initSystemExtensionsColors(void)
   float lengthAvailable;
   unsigned int flexibleSpaceItemsNumber = 0;
   BOOL mustAdjustNext = NO;
-  float x = 0;
+  CGFloat x = 0.0;
+  CGFloat maxX = 0.0;
   
   if ([items count] == 0)
     return; 
@@ -679,67 +678,85 @@ static void initSystemExtensionsColors(void)
     {
       flexibleSpaceItemsNumber++;
     }
+    maxX += [item maxSize].width;
   }
   
-  if (lengthAvailable < flexibleSpaceItemsNumber)
-    return; 
-  
-  e = [items objectEnumerator];
-  while ((item = [e nextObject]) != nil)
-  {
-    backView = [item _backView];
-    if ([item _isFlexibleSpace])
+  if (flexibleSpaceItemsNumber > 0)
     {
-      NSRect backViewFrame = [backView frame];
+      if (lengthAvailable < flexibleSpaceItemsNumber)
+        return; 
       
-      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-        lengthAvailable / flexibleSpaceItemsNumber, 
-        backViewFrame.size.height)];
-      mustAdjustNext = YES;
+      e = [items objectEnumerator];
+      while ((item = [e nextObject]) != nil)
+        {
+          backView = [item _backView];
+          if ([item _isFlexibleSpace])
+            {
+              NSRect backViewFrame = [backView frame];
+              
+              [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                lengthAvailable / flexibleSpaceItemsNumber, 
+                backViewFrame.size.height)];
+              mustAdjustNext = YES;
+            }
+          else if (mustAdjustNext)
+            {
+              NSRect backViewFrame = [backView frame];
+              
+              [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                backViewFrame.size.width, backViewFrame.size.height)];
+            }
+          x += [backView frame].size.width;
+        }
     }
-    else if (mustAdjustNext)
+  else
     {
-      NSRect backViewFrame = [backView frame];
-      
-      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-        backViewFrame.size.width, backViewFrame.size.height)];
+      // No flexible space
+      // Could the items fill more space?
+      if (maxX >= NSMaxX(lastBackViewFrame))
+        {
+          CGFloat rel = lengthAvailable / (maxX - NSMaxX(lastBackViewFrame));
+          e = [items objectEnumerator];
+          while ((item = [e nextObject]) != nil) 
+            {
+              CGFloat diff = [item maxSize].width - [item minSize].width;
+
+              backView = [item _backView];
+              if (diff > 0)
+                {
+                  NSRect backViewFrame = [backView frame];
+                  
+                  [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                     (rel * diff) + [item minSize].width, 
+                     backViewFrame.size.height)];
+                  mustAdjustNext = YES;
+                }
+              else if (mustAdjustNext)
+                {
+                  NSRect backViewFrame = [backView frame];
+                  
+                  [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                     backViewFrame.size.width, backViewFrame.size.height)];
+                }
+              x += [backView frame].size.width;
+            }
+        }
     }
-    x += [backView frame].size.width;
-  }
-  
 }
 
 - (void) _handleViewsVisibility
 {
-  NSArray *items = [_toolbar items];
-  
-  /* The back views which are associated with each toolbar item (the toolbar
-     items doesn't reflect the toolbar view content) */
-  NSArray *backViews = [items valueForKey: @"_backView"];
-  
-  /* The back views which will be visible in the toolbar view (when
-     _handleViewsVisibility will be terminated). */
-  NSArray *visibleBackViews;
-  
+  NSArray *backViews;
   NSArray *subviews;
   NSEnumerator *e;
   NSView *backView;
-  NSRect clipViewFrame;
   
-  // First, we resize
-  [self _handleBackViewsFrame];
-  [self _takeInAccountFlexibleSpaces];
-  
-  // Then we retrieve the back views which should be visible now that the resize
-  // process has been taken in account
-  visibleBackViews = [self _visibleBackViews];
-  
-  // ---
-     
+  /* The back views which are associated with each toolbar item (the toolbar
+     items doesn't reflect the toolbar view content) */
+  backViews = [[_toolbar items] valueForKey: @"_backView"];
+
   // We remove each back view associated with a removed toolbar item
- 
   e = [[_clipView subviews] objectEnumerator];
-  
   while ((backView = [e nextObject]) != nil) 
     {
       if ([backViews containsObject: backView] == NO)
@@ -750,10 +767,8 @@ static void initSystemExtensionsColors(void)
     }
       
   // We add each backView associated with an added toolbar item
-  
-  e = [backViews objectEnumerator];
   subviews = [_clipView subviews];
- 
+  e = [backViews objectEnumerator];
   while ((backView = [e nextObject]) != nil) 
   {
     if ([subviews containsObject: backView] == NO)
@@ -761,21 +776,22 @@ static void initSystemExtensionsColors(void)
         [_clipView addSubview: backView];
       }
   }
-  
-  // ---
-     
-  /* We manage the clipped items view in the case it should become visible or
-     invisible */
-  
-  clipViewFrame = [_clipView frame];  
-  
-  if ([visibleBackViews count] < [backViews count])
+}
+
+- (void) _manageClipView
+{
+  NSRect clipViewFrame = [_clipView frame];
+  int count = [[_toolbar items] count];
+  // Retrieve the back views which should be visible now that the resize
+  // process has been taken in account
+  NSArray *visibleBackViews = [self _visibleBackViews];
+
+  if ([visibleBackViews count] < count)
     {
       NSView *lastVisibleBackView = [visibleBackViews lastObject];
       float width = 0;
       
       // Resize the clip view
-      
       if (lastVisibleBackView != nil)
         width = NSMaxX([lastVisibleBackView frame]);  
       [_clipView setFrame: NSMakeRect(clipViewFrame.origin.x,
@@ -784,21 +800,19 @@ static void initSystemExtensionsColors(void)
                                       clipViewFrame.size.height)]; 
         
       // Adjust the clipped items mark frame handling   
-      
       [_clippedItemsMark layout];
-      
-      clipViewFrame = [_clipView frame]; // We get the new _clipView frame
+
+      // We get the new _clipView frame      
+      clipViewFrame = [_clipView frame];
       [_clippedItemsMark setFrameOrigin: NSMakePoint(
         [self frame].size.width - ClippedItemsViewWidth, clipViewFrame.origin.y)];
-        
-      // ---
         
       if ([_clippedItemsMark superview] == nil)       
         [self addSubview: _clippedItemsMark];  
       
     }
   else if (([_clippedItemsMark superview] != nil) 
-    && ([visibleBackViews count] == [backViews count])) 
+    && ([visibleBackViews count] == count)) 
     {      
       [_clippedItemsMark removeFromSuperview];
       
@@ -811,7 +825,15 @@ static void initSystemExtensionsColors(void)
 
 - (void) _reload 
 {  
+  // First, we resize
+  [self _handleBackViewsFrame];
+  [self _takeInAccountFlexibleSpaces];
+  
   [self _handleViewsVisibility]; 
+  /* We manage the clipped items view in the case it should become visible or
+     invisible */
+  [self _manageClipView];
+
   [self setNeedsDisplay: YES];
 }
 
@@ -846,8 +868,7 @@ static void initSystemExtensionsColors(void)
   int i, n = [items count];
   float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
 
-  //[_visibleBackViews release];
-  NSMutableArray *_visibleBackViews = [NSMutableArray array];
+  NSMutableArray *visibleBackViews = [NSMutableArray array];
   
   for (i = 0; i < n; i++)
     {
@@ -858,12 +879,11 @@ static void initSystemExtensionsColors(void)
       if ((backViewsWidth + ClippedItemsViewWidth <= toolbarWidth)
         || (i == n - 1 && backViewsWidth <= toolbarWidth))
         {
-          [_visibleBackViews addObject: backView];
+          [visibleBackViews addObject: backView];
         }     
     }
   
-  return _visibleBackViews;
-  
+  return visibleBackViews;
 }
 
 - (NSColor *) standardBackgroundColor

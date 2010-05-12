@@ -613,18 +613,20 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   if ([view superview] == nil) // Show the view to eventually hide it later
     [self addSubview: view];
 	
-  if([view respondsToSelector:@selector(sizeToFit)])
+  if ([view respondsToSelector: @selector(sizeToFit)])
     {
       NSSize newSize, minSize = [_toolbarItem minSize];
-	  [view performSelector:@selector(sizeToFit)];
-	  newSize = [view frame].size;
-	  if (newSize.width < minSize.width || newSize.height < minSize.height)
-	    {
-		  newSize.width = MAX(newSize.width, minSize.width);
-		  newSize.height = MAX(newSize.height, minSize.height);
-		  [view setFrameSize:newSize];
-		}
+      
+      [(id)view sizeToFit];
+      newSize = [view frame].size;
+      if (newSize.width < minSize.width || newSize.height < minSize.height)
+        {
+          newSize.width = MAX(newSize.width, minSize.width);
+          newSize.height = MAX(newSize.height, minSize.height);
+          [view setFrameSize: newSize];
+        }
     }
+
   // Adjust the layout in accordance with NSToolbarSizeMode
   switch ([[_toolbarItem toolbar] sizeMode])
     {
@@ -1495,7 +1497,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (BOOL) _isFlexibleSpace
 {
-  return [self isKindOfClass:[GSToolbarFlexibleSpaceItem class]];
+  return NO;
 }
 
 - (BOOL) _selectable
