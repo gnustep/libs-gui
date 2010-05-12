@@ -1901,8 +1901,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // iterate over all objects, instantiate, awaken objects and fill
   // in top level array.
-  // We use the _names map not the _objects map here. This seems to give better results.
-  objs = NSAllMapTableKeys(_names);
+  objs = NSAllMapTableKeys(_objects);
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
@@ -1917,17 +1916,18 @@ static BOOL _isInInterfaceBuilder = NO;
           // objects on behalf of the owner.
           RETAIN(obj);
         }
-    }
 
-  // awaken all objects.
-  objs = NSAllMapTableKeys(_objects);
-  en = [objs objectEnumerator];
-  while ((obj = [en nextObject]) != nil)
-    {
+      // awaken the object.
       if ([obj respondsToSelector: @selector(awakeFromNib)])
         {
           [obj awakeFromNib];
         }
+    }
+
+  // awaken the owner
+  if ([owner respondsToSelector: @selector(awakeFromNib)])
+    {
+      [owner awakeFromNib];
     }
 
   // bring visible windows to front...

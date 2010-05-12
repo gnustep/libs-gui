@@ -1,5 +1,12 @@
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLevelObjects:):
+	Next attempt at getting .nib file loading right. Make sure that
+	-nibInstantiate is sent to all loaded objects and also make sure
+	that -awakeFromNib is sent to the nib's owner.
+
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSDocumentController.m (-init, -maximumRecentDocumentCount,
 	-noteNewRecentDocumentURL:): Make number of remembered recent
 	documents configurable with a user preference and fix a bug where
