@@ -394,6 +394,7 @@
   id children;
   id parent;
 }
+- (id) object;
 @end
 
 @implementation IBObjectRecord
@@ -436,12 +437,18 @@
   [super dealloc];
 }
 
+- (id) object
+{
+  return object;
+}
+
 @end
 
 @interface IBMutableOrderedSet: NSObject
 {
   NSArray *orderedObjects;
 }
+- (NSArray *)orderedObjects;
 @end
 
 @implementation IBMutableOrderedSet
@@ -469,6 +476,10 @@
   [super dealloc];
 }
 
+- (NSArray *)orderedObjects
+{
+  return orderedObjects;
+}
 @end
 
 @interface IBObjectContainer: NSObject <NSCoding>
@@ -483,6 +494,7 @@
   int maxID;
 }
 - (id) nibInstantiate;
+- (NSEnumerator *) objectRecordEnumerator;
 @end
 
 @implementation IBObjectContainer
@@ -541,6 +553,11 @@
     }
 
   return self;
+}
+
+- (NSEnumerator *) objectRecordEnumerator
+{
+  return [[objectRecords orderedObjects] objectEnumerator];
 }
 
 @end
@@ -632,8 +649,13 @@
           // add the menu...
           [NSApp _setMainMenu: obj];
         }
+    }
       
-      // awaken the object.
+  // awaken all objects.
+  en = [objects objectRecordEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
+      obj = [obj object];
       if ([obj respondsToSelector: @selector(awakeFromNib)])
         {
           [obj awakeFromNib];

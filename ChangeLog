@@ -1,3 +1,9 @@
+2010-05-12  Wolfgang Lux  <wlux@uni-muenster.de>
+
+	* Source/GSXibLoader.m (-awakeData:withContext): Fix bug where
+	some objects from the xib file were not sent an -awakeFromNib
+	message.
+
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSMenu.h:
