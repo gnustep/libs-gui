@@ -1,3 +1,14 @@
+2010-05-12 18:48-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method 
+	rightMouseMenu:forEvent: to allow theming of transient and
+	context menus.
+	* Source/GSThemeMenu.m: Implementation of method 
+	rightMouseMenu:forEvent: to allow theming of transient and
+	context menus.
+	* Source/NSMenu.m: use the theming code implemented above instead
+	of rendering the menu directly.
+
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m: Fix a rather long standing incompatibility
@@ -49,6 +60,7 @@
 	Fix bug where some objects from the nib file were not sent an
 	-awakeFromNib message.
 
+>>>>>>> .r30369
 2010-05-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:

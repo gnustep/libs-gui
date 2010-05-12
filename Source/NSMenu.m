@@ -553,12 +553,8 @@ static BOOL menuBarVisible = YES;
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
 {
-  if (_menu.horizontal == NO)
-    {
-      [self displayTransient];
-      [_view mouseDown: theEvent];
-      [self closeTransient];
-    }
+  [[GSTheme theme] rightMouseDisplay: self
+			    forEvent: theEvent];
 }
 
 @end

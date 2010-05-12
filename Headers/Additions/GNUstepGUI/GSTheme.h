@@ -1056,6 +1056,12 @@ withRepeatedImage: (NSImage*)image
 - (void)  setMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
 
 /**
+ * Display the context menu when the right mouse button is pressed.
+ */
+- (void) rightMouseDisplay: (NSMenu *)menu
+                  forEvent: (NSEvent *)theEvent;
+
+/**
  * Processes menu events for the theme.   The default implementation
  * does nothing.  
  */

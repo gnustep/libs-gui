@@ -79,6 +79,18 @@
     }
 }
 
+- (void) rightMouseDisplay: (NSMenu *)menu
+		  forEvent: (NSEvent *)theEvent
+{
+  NSMenuView *mv = [menu menuRepresentation];
+  if ([mv isHorizontal] == NO)
+    {
+      [menu displayTransient];
+      [mv mouseDown: theEvent];
+      [menu closeTransient];
+    }
+}
+
 - (void) processCommand: (void *)context
 {
   // this is only implemented when we handle native menus.
