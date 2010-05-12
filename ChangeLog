@@ -1,9 +1,18 @@
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Headers/AppKit/NSMenu.h:
+	* Source/NSMenu.m (-_initWithCoder:, -dealloc, -_name,
+	-_setName:, -awakeFromNib): Add a private name attribute to menus
+	to identify special purpose menus. Fixes a bug where the services,
+	windows, and recent documents menu were defunct when loading the
+	menu from a .nib file.
+
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Headers/AppKit/NSDocumentController.h:
-	* Source/NSDocumentFrameworkPrivate.h: 
+	* Source/NSDocumentFrameworkPrivate.h:
 	* Source/NSDocumentController.m (-_recentDocumentsMenu,
-	-_setRecentDocumentsMenu:, -_updateRecentDocumentsMenu): 
+	-_setRecentDocumentsMenu:, -_updateRecentDocumentsMenu):
 	Add an attribute to NSDocumentController to maintain the recent
 	documents menu. Make the methods to access that menu available to
 	other classes in -gui.

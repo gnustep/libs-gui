@@ -336,18 +336,18 @@
   NSMenu *_superMenu;
   NSMenu *_attachedMenu;
   NSMutableArray *_notifications;
-	id _delegate;
+  id _delegate;
 
   // GNUstepExtra category
   NSPopUpButtonCell *_popUpButtonCell;
-	struct GSMenuFlags {
+  struct GSMenuFlags {
     unsigned int changedMessagesEnabled: 1;
     unsigned int autoenable: 1;
     unsigned int needsSizing: 1;
     unsigned int is_tornoff: 1;
     unsigned int transient: 1;
     unsigned int horizontal: 1;
-	unsigned int mainMenuChanged: 1;
+    unsigned int mainMenuChanged: 1;
 		unsigned int unused: 25;
   } _menu;
 
@@ -356,6 +356,7 @@
   NSWindow *_bWindow;
   NSMenu *_oldAttachedMenu;
   int     _oldHiglightedIndex;
+  NSString *_name;
 }
 
 /** Returns the memory allocation zone used to create instances of this class.

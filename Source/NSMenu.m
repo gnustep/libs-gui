@@ -62,6 +62,7 @@
 #import "AppKit/NSAttributedString.h"
 
 #import "GSGuiPrivate.h"
+#import "NSDocumentFrameworkPrivate.h"
 #import "GNUstepGUI/GSTheme.h"
 
 /*
@@ -132,6 +133,8 @@ static BOOL menuBarVisible = YES;
 
 @interface	NSMenu (GNUstepPrivate)
 
+- (NSString *) _name;
+- (void) _setName: (NSString *)name;
 - (NSMenuPanel *) _createWindow;
 - (NSString *) _locationKey;
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
@@ -171,6 +174,16 @@ static BOOL menuBarVisible = YES;
 @end
 
 @implementation	NSMenu (GNUstepPrivate)
+
+- (NSString *) _name;
+{
+  return _name;
+}
+
+- (void) _setName: (NSString *)aName
+{
+  ASSIGNCOPY(_name, aName);
+}
 
 - (NSString*) _locationKey
 {
@@ -608,6 +621,7 @@ static BOOL menuBarVisible = YES;
   RELEASE(_view);
   RELEASE(_aWindow);
   RELEASE(_bWindow);
+  RELEASE(_name);
 
   [super dealloc];
 }
@@ -1566,6 +1580,7 @@ static BOOL menuBarVisible = YES;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   NSString	*dTitle;
+  NSString	*dName;
   NSArray	*dItems;
   BOOL		dAuto;
   unsigned	i;
@@ -1588,15 +1603,28 @@ static BOOL menuBarVisible = YES;
 	}
       dTitle = [aDecoder decodeObjectForKey: @"NSTitle"];
       dItems = [aDecoder decodeObjectForKey: @"NSMenuItems"];
+      if ([aDecoder containsValueForKey: @"NSName"])
+        {
+	  dName = [aDecoder decodeObjectForKey: @"NSName"];
+	}
+      else
+	{
+	  dName = nil;
+	}
     }
   else
     {
       dTitle = [aDecoder decodeObject];
       dItems = [aDecoder decodeObject];
+      dName = nil;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dAuto];
     }
   self = [self initWithTitle: dTitle];
   [self setAutoenablesItems: dAuto];
+  if (dName)
+    {
+      ASSIGN(_name, dName);
+    }
 
   [self setMenuChangedMessagesEnabled: NO];
   /*
@@ -1610,6 +1638,41 @@ static BOOL menuBarVisible = YES;
   [self setMenuChangedMessagesEnabled: YES];
 
   return self;
+}
+
+- (void) awakeFromNib
+{
+  NSString *name = [self _name];
+
+  if (name)
+    {
+      if ([name isEqualToString: @"_NSMainMenu"])
+        {
+          // NB This is already handled by the nib loading code
+          //[NSApp setMainMenu: self];
+        }
+      else if ([name isEqualToString: @"_NSAppleMenu"])
+        {
+          // GNUstep does not handle Apple's application menu specially
+        }
+      else if ([name isEqualToString: @"_NSWindowsMenu"])
+        {
+          [NSApp setWindowsMenu: self];
+        }
+      else if ([name isEqualToString: @"_NSServicesMenu"])
+        {
+          [NSApp setServicesMenu: self];
+        }
+      else if ([name isEqualToString: @"_NSRecentDocumentsMenu"])
+        {
+          [[NSDocumentController sharedDocumentController]
+                  _setRecentDocumentsMenu: self];
+        }
+      else if ([name isEqualToString: @"_NSFontMenu"])
+        {
+          [[NSFontManager sharedFontManager] setFontMenu: self];
+        }
+    }
 }
 
 /*
