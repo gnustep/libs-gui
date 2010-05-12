@@ -1,5 +1,11 @@
 2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m: Fix a rather long standing incompatibility
+	and make -initWithContentRect:styleMask:backing:defer: the
+	designated initializer of NSWindow.
+
+2010-05-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLevelObjects:):
 	Next attempt at getting .nib file loading right. Make sure that
 	-nibInstantiate is sent to all loaded objects and also make sure

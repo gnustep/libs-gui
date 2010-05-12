@@ -931,7 +931,8 @@ many times.
 /**
   <p> Initializes the receiver with a content rect of
   <var>contentRect</var>, a style mask of <var>styleMask</var>, and a
-  backing store type of <var>backingType</var>.  
+  backing store type of <var>backingType</var>.  This is the designated
+  initializer.
   </p>
 
   <p> The style mask values are <code>NSTitledWindowMask</code>, for a
@@ -951,41 +952,6 @@ many times.
                  styleMask: (unsigned int)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
-{
-  return [self initWithContentRect: contentRect
-                         styleMask: aStyle
-                           backing: bufferingType
-                             defer: flag
-                            screen: nil];
-}
-
-/**
-  <p> Initializes the receiver with a content rect of
-  <var>contentRect</var>, a style mask of <var>styleMask</var>, a
-  backing store type of <var>backingType</var> and a boolean
-  <var>flag</var>.  <var>flag</var> specifies whether the window
-  should be created now (<code>NO</code>), or when it is displayed
-  (<code>YES</code>).  
-  </p>
-
-  <p> The style mask values are <code>NSTitledWindowMask</code>, for a
-  window with a title, <code>NSClosableWindowMask</code>, for a window
-  with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
-  window with a miniaturize widget, and
-  <code>NSResizableWindowMask</code>, for a window with a resizing
-  widget.  These mask values can be OR'd in any combination.  
-  </p>
-
-  <p> Backing store values are <code>NSBackingStoreBuffered</code>,
-  <code>NSBackingStoreRetained</code> and
-  <code>NSBackingStoreNonretained</code>.  
-  </p> 
-*/
-- (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
-                   backing: (NSBackingStoreType)bufferingType
-                     defer: (BOOL)flag
-                    screen: (NSScreen*)aScreen
 {
   NSRect  cframe;
   NSInterfaceStyle style = 
@@ -1011,9 +977,7 @@ many times.
   _attachedSheet = nil;
   _backingType = bufferingType;
   _styleMask = aStyle;
-  if (aScreen == nil)
-    aScreen = [NSScreen mainScreen];
-  ASSIGN(_screen, aScreen);
+  ASSIGN(_screen, [NSScreen mainScreen]);
   _depthLimit = [_screen depth];
   
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
@@ -1072,6 +1036,46 @@ many times.
     }
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
+  return self;
+}
+
+/**
+  <p> Initializes the receiver with a content rect of
+  <var>contentRect</var>, a style mask of <var>styleMask</var>, a
+  backing store type of <var>backingType</var> and a boolean
+  <var>flag</var>.  <var>flag</var> specifies whether the window
+  should be created now (<code>NO</code>), or when it is displayed
+  (<code>YES</code>).  
+  </p>
+
+  <p> The style mask values are <code>NSTitledWindowMask</code>, for a
+  window with a title, <code>NSClosableWindowMask</code>, for a window
+  with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
+  window with a miniaturize widget, and
+  <code>NSResizableWindowMask</code>, for a window with a resizing
+  widget.  These mask values can be OR'd in any combination.  
+  </p>
+
+  <p> Backing store values are <code>NSBackingStoreBuffered</code>,
+  <code>NSBackingStoreRetained</code> and
+  <code>NSBackingStoreNonretained</code>.  
+  </p> 
+*/
+- (id) initWithContentRect: (NSRect)contentRect
+                 styleMask: (unsigned int)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag
+                    screen: (NSScreen*)aScreen
+{
+  self = [self initWithContentRect: contentRect
+                         styleMask: aStyle
+                           backing: bufferingType
+                             defer: flag];
+  if (self && aScreen != nil)
+    {
+      ASSIGN(_screen, aScreen);
+      _depthLimit = [_screen depth];
+    }
   return self;
 }
 
