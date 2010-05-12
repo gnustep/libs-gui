@@ -1621,10 +1621,7 @@ static BOOL menuBarVisible = YES;
     }
   self = [self initWithTitle: dTitle];
   [self setAutoenablesItems: dAuto];
-  if (dName)
-    {
-      ASSIGN(_name, dName);
-    }
+  [self _setName: dName];
 
   [self setMenuChangedMessagesEnabled: NO];
   /*
