@@ -1888,19 +1888,12 @@ static BOOL _isInInterfaceBuilder = NO;
   // set the new root object.
   [_root setRealObject: owner];
 
-  // iterate over connections, instantiate and then establish them.
-  en = [_connections objectEnumerator];
-  while ((obj = [en nextObject]) != nil)
-    {
-      if ([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
-        {
-          [obj instantiateWithInstantiator: self];          
-          [obj establishConnection];
-        }
-    }
-
-  // iterate over all objects, instantiate, awaken objects and fill
-  // in top level array.
+  // iterate over all objects, instantiate them and fill in top level array.
+  /* Note: We instantiate all objects before establishing any connections
+     between them, so that any shared instances defined in the nib are
+     initialized before being used. This sequence is important when, e.g.,
+     the nib defines a shared document controller that is an instance of a
+     subclass of NSDocumentController. */
   objs = NSAllMapTableKeys(_objects);
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -1916,8 +1909,28 @@ static BOOL _isInInterfaceBuilder = NO;
           // objects on behalf of the owner.
           RETAIN(obj);
         }
+    }
 
-      // awaken the object.
+  // iterate over connections, instantiate and then establish them.
+  en = [_connections objectEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
+      if ([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
+        {
+          [obj instantiateWithInstantiator: self];          
+          [obj establishConnection];
+        }
+    }
+
+  // awaken all objects.
+  objs = NSAllMapTableKeys(_objects);
+  en = [objs objectEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
+      if ([obj respondsToSelector: @selector(realObject)])
+	{
+	  obj = [obj realObject];
+	}
       if ([obj respondsToSelector: @selector(awakeFromNib)])
         {
           [obj awakeFromNib];

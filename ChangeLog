@@ -1,3 +1,11 @@
+2010-05-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLeveObjects:):
+	Make sure all objects are instantiated before establishing any
+	connections. This fixes an issue where, e.g., a generic shared
+	document controller instance is created before a custom instance
+	defined in the nib file.
+
 2010-05-12 18:48-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method 
