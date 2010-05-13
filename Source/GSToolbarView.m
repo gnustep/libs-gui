@@ -652,25 +652,33 @@ static void initSystemExtensionsColors(void)
 
 - (void) _takeInAccountFlexibleSpaces
 {
+  // Borrow this from  NSToolbarItem.m
+  static const int InsetItemViewX = 10;
+
   NSArray *items = [_toolbar items];
-  NSEnumerator *e = [items objectEnumerator];
+  NSEnumerator *e;
   NSToolbarItem *item;
-  NSRect lastBackViewFrame;
   float lengthAvailable;
   unsigned int flexibleSpaceItemsNumber = 0;
   BOOL mustAdjustNext = NO;
   CGFloat x = 0.0;
   CGFloat maxX = 0.0;
-  
+  CGFloat currX;
+  // resizement of a flexible item
+  CGFloat rel = 1.0;
+  // Width of a flexible space
+  CGFloat flexWidth = 0.0;
+
   if ([items count] == 0)
     return; 
   
-  lastBackViewFrame = [[[items lastObject] _backView] frame];
-  lengthAvailable = [self frame].size.width - NSMaxX(lastBackViewFrame);
+  currX = NSMaxX([[[items lastObject] _backView] frame]);
+  lengthAvailable = NSWidth([self frame]) - currX;
 
   if (lengthAvailable < 1)
     return;
-  
+
+  e = [items objectEnumerator];
   while ((item = [e nextObject]) != nil) 
   {
     if ([item _isFlexibleSpace])
@@ -681,88 +689,68 @@ static void initSystemExtensionsColors(void)
     // Currently only item with a view are resizable
     if ([item view] != nil)
       {
-        maxX += [item maxSize].width;
+        maxX += [item maxSize].width + 2 * InsetItemViewX;
       }
     else
       {
         maxX += NSWidth([[item _backView] frame]);
       }
   }
+
+  // Could the items fill more space?
+  if (maxX >= currX)
+    {
+      rel = lengthAvailable / (maxX - currX);
+      
+      if (rel > 1.0)
+        rel = 1.0;
+    }
   
+  // Are there any flexible spaces to fill the rest?
   if (flexibleSpaceItemsNumber > 0)
     {
-      if (lengthAvailable < flexibleSpaceItemsNumber)
-        return; 
-      
-      e = [items objectEnumerator];
-      while ((item = [e nextObject]) != nil)
-        {
-          NSView *backView = [item _backView];
-          if ([item _isFlexibleSpace])
-            {
-              NSRect backViewFrame = [backView frame];
-              
-              [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                lengthAvailable / flexibleSpaceItemsNumber, 
-                backViewFrame.size.height)];
-              mustAdjustNext = YES;
-            }
-          else if (mustAdjustNext)
-            {
-              NSRect backViewFrame = [backView frame];
-              
-              [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                backViewFrame.size.width, backViewFrame.size.height)];
-            }
-          x += [backView frame].size.width;
-        }
+      flexWidth = (NSWidth([self frame]) - maxX) / flexibleSpaceItemsNumber;
+      if (flexWidth < 0.0)
+        flexWidth = 0.0;
     }
-  else
+  
+  e = [items objectEnumerator];
+  while ((item = [e nextObject]) != nil) 
     {
-      // No flexible space
-      // Could the items fill more space?
-      if (maxX >= NSMaxX(lastBackViewFrame))
+      NSView *view = [item view];
+      NSView *backView = [item _backView];
+      CGFloat diff = [item maxSize].width - [item minSize].width;
+      
+      if ([item _isFlexibleSpace])
         {
-          CGFloat rel = lengthAvailable / (maxX - NSMaxX(lastBackViewFrame));
-
-          if (rel > 1.0)
-            rel = 1.0;
-
-          e = [items objectEnumerator];
-          while ((item = [e nextObject]) != nil) 
-            {
-              NSView *view = [item view];
-              NSView *backView = [item _backView];
-
-              if (view != nil)
-                {
-                  CGFloat diff = [item maxSize].width - [item minSize].width;
-
-                  if (diff > 0)
-                    {
-                      NSRect backViewFrame = [backView frame];
-                      NSRect viewFrame = [view frame];
-
-                      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                        (rel * diff) + [item minSize].width, 
-                        backViewFrame.size.height)];
-                      // Subtract InsetItemViewX
-                      viewFrame.size.width = (rel * diff) + [item minSize].width 
-                        - 2 * 10;
-                      [view setFrame: viewFrame];
-                      mustAdjustNext = YES;
-                    }
-                  else if (mustAdjustNext)
-                    {
-                      NSRect backViewFrame = [backView frame];
-                      
-                      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                        backViewFrame.size.width, backViewFrame.size.height)];
-                    }
-                }
-              x += NSWidth([backView frame]);
-            }
+          NSRect backViewFrame = [backView frame];
+          
+          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+             flexWidth, backViewFrame.size.height)];
+          mustAdjustNext = YES;
         }
+      if ((view != nil) && (diff > 0))
+        {
+          NSRect backViewFrame = [backView frame];
+          NSRect viewFrame = [view frame];
+          
+          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+            (rel * diff) + [item minSize].width, 
+            backViewFrame.size.height)];
+          // Subtract InsetItemViewX
+          viewFrame.size.width = (rel * diff) + [item minSize].width 
+            - 2 * InsetItemViewX;
+          [view setFrame: viewFrame];
+          mustAdjustNext = YES;
+        }
+      else if (mustAdjustNext)
+        {
+          NSRect backViewFrame = [backView frame];
+          
+          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+            backViewFrame.size.width, backViewFrame.size.height)];
+        }
+      x += NSWidth([backView frame]);
     }
 }
 

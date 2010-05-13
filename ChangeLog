@@ -2,7 +2,8 @@
 
 	* Source/NSToolbarItem.m (-_isFlexibleSpace): Simplify this method.
 	* Source/GSToolbarView.m: Clean up toolbar item resizing, this now
-	allows for resizable item other than flexible space. 
+	allows for resizable item other than flexible space. If there are
+	flexible items and flexible space the items will be expanded first.
 
 2010-05-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
