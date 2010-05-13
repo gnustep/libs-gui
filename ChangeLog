@@ -1,3 +1,9 @@
+2010-05-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarItem.m (-_isFlexibleSpace): Simplify this method.
+	* Source/GSToolbarView.m: Clean up toolbar item resizing, this now
+	allows for resizable item other than flexible space. 
+
 2010-05-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLeveObjects:,
@@ -76,7 +82,6 @@
 	Fix bug where some objects from the nib file were not sent an
 	-awakeFromNib message.
 
->>>>>>> .r30369
 2010-05-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:

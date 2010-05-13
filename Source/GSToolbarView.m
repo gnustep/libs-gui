@@ -655,7 +655,6 @@ static void initSystemExtensionsColors(void)
   NSArray *items = [_toolbar items];
   NSEnumerator *e = [items objectEnumerator];
   NSToolbarItem *item;
-  NSView *backView; 
   NSRect lastBackViewFrame;
   float lengthAvailable;
   unsigned int flexibleSpaceItemsNumber = 0;
@@ -678,7 +677,16 @@ static void initSystemExtensionsColors(void)
     {
       flexibleSpaceItemsNumber++;
     }
-    maxX += [item maxSize].width;
+
+    // Currently only item with a view are resizable
+    if ([item view] != nil)
+      {
+        maxX += [item maxSize].width;
+      }
+    else
+      {
+        maxX += NSWidth([[item _backView] frame]);
+      }
   }
   
   if (flexibleSpaceItemsNumber > 0)
@@ -689,7 +697,7 @@ static void initSystemExtensionsColors(void)
       e = [items objectEnumerator];
       while ((item = [e nextObject]) != nil)
         {
-          backView = [item _backView];
+          NSView *backView = [item _backView];
           if ([item _isFlexibleSpace])
             {
               NSRect backViewFrame = [backView frame];
@@ -716,29 +724,43 @@ static void initSystemExtensionsColors(void)
       if (maxX >= NSMaxX(lastBackViewFrame))
         {
           CGFloat rel = lengthAvailable / (maxX - NSMaxX(lastBackViewFrame));
+
+          if (rel > 1.0)
+            rel = 1.0;
+
           e = [items objectEnumerator];
           while ((item = [e nextObject]) != nil) 
             {
-              CGFloat diff = [item maxSize].width - [item minSize].width;
+              NSView *view = [item view];
+              NSView *backView = [item _backView];
 
-              backView = [item _backView];
-              if (diff > 0)
+              if (view != nil)
                 {
-                  NSRect backViewFrame = [backView frame];
-                  
-                  [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                     (rel * diff) + [item minSize].width, 
-                     backViewFrame.size.height)];
-                  mustAdjustNext = YES;
+                  CGFloat diff = [item maxSize].width - [item minSize].width;
+
+                  if (diff > 0)
+                    {
+                      NSRect backViewFrame = [backView frame];
+                      NSRect viewFrame = [view frame];
+
+                      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                        (rel * diff) + [item minSize].width, 
+                        backViewFrame.size.height)];
+                      // Subtract InsetItemViewX
+                      viewFrame.size.width = (rel * diff) + [item minSize].width 
+                        - 2 * 10;
+                      [view setFrame: viewFrame];
+                      mustAdjustNext = YES;
+                    }
+                  else if (mustAdjustNext)
+                    {
+                      NSRect backViewFrame = [backView frame];
+                      
+                      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+                        backViewFrame.size.width, backViewFrame.size.height)];
+                    }
                 }
-              else if (mustAdjustNext)
-                {
-                  NSRect backViewFrame = [backView frame];
-                  
-                  [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-                     backViewFrame.size.width, backViewFrame.size.height)];
-                }
-              x += [backView frame].size.width;
+              x += NSWidth([backView frame]);
             }
         }
     }
