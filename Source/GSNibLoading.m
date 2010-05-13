@@ -1732,6 +1732,8 @@ static BOOL _isInInterfaceBuilder = NO;
 				NSObjectMapValueCallBacks, 2);
       _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				  NSObjectMapValueCallBacks, 2);
+      _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks, 2);
       
       // 
       // Get the maps.  There is no need to retain these, 
@@ -1750,6 +1752,10 @@ static BOOL _isInInterfaceBuilder = NO;
 	[coder decodeObjectForKey: @"NSObjectsKeys"];
       objectsValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSObjectsValues"];
+      oidsKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSOidsKeys"];
+      oidsValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSOidsValues"];
 
       // Fill in the maps...
       [self _buildMap: _classes 
@@ -1761,6 +1767,9 @@ static BOOL _isInInterfaceBuilder = NO;
       [self _buildMap: _objects 
 	    withKeys: objectsKeys 
 	    andValues: objectsValues];
+      [self _buildMap: _oids 
+	    withKeys: oidsKeys 
+	    andValues: oidsValues];
       
       //
       // Only get these maps when in the editor.  They
@@ -1770,10 +1779,6 @@ static BOOL _isInInterfaceBuilder = NO;
       if ([NSClassSwapper isInInterfaceBuilder])
 	{
 	  // Only get these when in the editor...
-	  oidsKeys = (NSArray *)
-	    [coder decodeObjectForKey: @"NSOidsKeys"];
-	  oidsValues = (NSArray *)
-	    [coder decodeObjectForKey: @"NSOidsValues"];
 	  accessibilityOidsKeys = (NSArray *)
 	    [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
 	  accessibilityOidsValues = (NSArray *)
@@ -1781,14 +1786,9 @@ static BOOL _isInInterfaceBuilder = NO;
 
 	  _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
 						NSObjectMapValueCallBacks, 2);	  
-	  _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				   NSObjectMapValueCallBacks, 2);
 	  [self _buildMap: _accessibilityOids 
 		withKeys: accessibilityOidsKeys 
 		andValues: accessibilityOidsValues];
-	  [self _buildMap: _oids 
-		withKeys: oidsKeys 
-		andValues: oidsValues];
 	}
 
       // instantiate...
@@ -1844,10 +1844,10 @@ static BOOL _isInInterfaceBuilder = NO;
   NSFreeMapTable(_objects);
   NSFreeMapTable(_names);
   NSFreeMapTable(_classes);
+  NSFreeMapTable(_oids);
   // these are not allocated when not in interface builder.
   if ([NSClassSwapper isInInterfaceBuilder])
     {
-      NSFreeMapTable(_oids);
       NSFreeMapTable(_accessibilityOids);
     }
 
@@ -1899,15 +1899,25 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((obj = [en nextObject]) != nil)
     {
       id v = NSMapGet(_objects, obj);
+      NSInteger oid = [(id)NSMapGet(_oids, obj) intValue];
+
       obj = [self instantiateObject: obj];
-      // Object is top level if it isn't the owner but points to it. 
-      if ((v == owner || v == _root) && (obj != owner) && (obj != _root))
-        {
-          [topLevelObjects addObject: obj];
-          // All top level objects must be released by the caller to avoid
-          // leaking, unless they are going to be released by other nib
-          // objects on behalf of the owner.
-          RETAIN(obj);
+      // Object is top level if it isn't the owner but points to it.
+      /* Don't record proxy objects in the top level array. The only
+	 reliable way to identify proxy objects seems to look at their
+	 object ID. Apparently, Apple is using fixed negative IDs for
+	 proxy objects (-1 = File's Owner, -2 = First Responder,
+	 -3 = NSApplication). */
+      if (oid >= 0)
+	{
+	  if ((v == owner || v == _root) && (obj != owner) && (obj != _root))
+	    {
+	      [topLevelObjects addObject: obj];
+	      // All top level objects must be released by the caller to avoid
+	      // leaking, unless they are going to be released by other nib
+	      // objects on behalf of the owner.
+	      RETAIN(obj);
+	    }
         }
     }
 
@@ -1922,18 +1932,22 @@ static BOOL _isInInterfaceBuilder = NO;
         }
     }
 
-  // awaken all objects.
+  // awaken all objects except proxy objects.
   objs = NSAllMapTableKeys(_objects);
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      if ([obj respondsToSelector: @selector(realObject)])
-	{
-	  obj = [obj realObject];
-	}
-      if ([obj respondsToSelector: @selector(awakeFromNib)])
+      NSInteger oid = [(id)NSMapGet(_oids, obj) intValue];
+      if (oid >= 0)
         {
-          [obj awakeFromNib];
+          if ([obj respondsToSelector: @selector(realObject)])
+            {
+              obj = [obj realObject];
+            }
+          if ([obj respondsToSelector: @selector(awakeFromNib)])
+            {
+              [obj awakeFromNib];
+            }
         }
     }
 

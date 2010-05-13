@@ -1,5 +1,13 @@
 2010-05-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLeveObjects:,
+	-initWithCoder:, -dealloc): Don't send -awakeFromNib to an
+	NSApplication proxy (nor any other proxy) and do not record it in
+	the top level array either. Identification of proxy objects is
+	based on their object IDs.
+
+2010-05-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSNibLoading.m (-nibInstantiateWithOwner:topLeveObjects:):
 	Make sure all objects are instantiated before establishing any
 	connections. This fixes an issue where, e.g., a generic shared
