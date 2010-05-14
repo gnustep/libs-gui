@@ -46,6 +46,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSGormLoading.h"
+#import "NSDocumentFrameworkPrivate.h"
 
 static const int currentVersion = 1; // GSNibItem version number...
 
@@ -215,6 +216,16 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
 	{
 	  [NSApp setWindowsMenu: menu];
+	}
+
+      /*
+       * Set the Recent Documents menu.
+       */
+      menu = [nameTable objectForKey: @"NSRecentDocumentsMenu"];
+      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
+	{
+	  [[NSDocumentController sharedDocumentController]
+	      _setRecentDocumentsMenu: menu];
 	}
 
 
