@@ -1688,6 +1688,19 @@ static NSString *processName = nil;
       return;
     }
   url = (NSURL *)[_recent_documents objectAtIndex: idx];
+  if ([url isFileURL])
+    {
+      /* From Apple's documentation of the -noteNewRecentDocumentURL: method:
+	 "Applications not based on NSDocument must also implement the
+	 application:openFile: method in the application delegate to
+	 handle requests from the Open Recent menu command." */
+      id appDelegate = [NSApp delegate];
+      if ([appDelegate respondsToSelector: @selector(application:openFile:)])
+        {
+          if ([appDelegate application: NSApp openFile: [url path]])
+            return;
+        }
+    }
   [self openDocumentWithContentsOfURL: url display: YES];
 }
 
