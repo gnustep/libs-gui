@@ -1,5 +1,10 @@
 2010-05-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSFontManager.m (-fontMenu): Remove key equivalents that
+	conflict with standard key equivalents.
+
+2010-05-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSAlert.m:
 	* Source/NSDrawer.m:
 	* Source/NSHelpPanel.m:

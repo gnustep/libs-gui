@@ -923,28 +923,28 @@ static Class         fontPanelClass = Nil;
       // Entry to increase weight
       menuItem = [_fontMenu addItemWithTitle: @"Heavier"
                             action: @selector(modifyFont:)
-                            keyEquivalent: @"h"];
+                            keyEquivalent: @""];
       [menuItem setTag: NSHeavierFontAction];
       [menuItem setTarget: self];
  
       // Entry to decrease weight
       menuItem = [_fontMenu addItemWithTitle: @"Lighter"
                             action: @selector(modifyFont:)
-                            keyEquivalent: @"g"];
+                            keyEquivalent: @""];
       [menuItem setTag: NSLighterFontAction];
       [menuItem setTarget: self];
  
       // Entry to increase size
       menuItem = [_fontMenu addItemWithTitle: @"Larger"
                             action: @selector(modifyFont:)
-                            keyEquivalent: @"l"];
+                            keyEquivalent: @"+"];
       [menuItem setTag: NSSizeUpFontAction];
       [menuItem setTarget: self];
 
       // Entry to decrease size
       menuItem = [_fontMenu addItemWithTitle: @"Smaller"
                             action: @selector(modifyFont:)
-                            keyEquivalent: @"s"];
+                            keyEquivalent: @"-"];
       [menuItem setTag: NSSizeDownFontAction];
       [menuItem setTarget: self];
     }
