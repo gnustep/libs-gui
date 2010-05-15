@@ -362,8 +362,7 @@ setControl(NSView* content, id control, NSString *title)
   self = [self initWithContentRect: r
 	       styleMask: NSTitledWindowMask
 	       backing: NSBackingStoreRetained
-	       defer: YES
-	       screen: nil];
+	       defer: YES];
 
   if (self == nil)
     return nil;
@@ -955,7 +954,6 @@ setControl(NSView* content, id control, NSString *title)
                  styleMask: (unsigned int)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
-                    screen: (NSScreen*)aScreen
 {
   if(NSIsEmptyRect(contentRect))
     {
@@ -965,8 +963,7 @@ setControl(NSView* content, id control, NSString *title)
   self = [super initWithContentRect: contentRect
 		styleMask: NSBorderlessWindowMask
 		backing: bufferingType
-		defer: flag
-		screen: aScreen];
+		defer: flag];
 
   if (self != nil)
     {

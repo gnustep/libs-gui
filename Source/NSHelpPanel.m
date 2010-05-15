@@ -133,7 +133,6 @@ static NSHelpPanel	*_sharedPanel = nil;
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
-		    screen: (NSScreen*)aScreen
 {
   if (_sharedPanel == nil)
     {
@@ -147,8 +146,7 @@ static NSHelpPanel	*_sharedPanel = nil;
       self = [super initWithContentRect: contentRect
 	styleMask: NSTitledWindowMask|NSClosableWindowMask|NSResizableWindowMask
 	backing: NSBackingStoreBuffered
-	defer: NO
-	screen: nil];
+	defer: NO];
       [self setReleasedWhenClosed: NO];
       [self setTitle: _(@"Help")];
       s = [[NSScrollView alloc] initWithFrame: contentRect];

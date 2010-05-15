@@ -123,7 +123,6 @@ static NSPrintPanel *shared_instance;
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
-		    screen: (NSScreen*)aScreen
 {
   unsigned int i;
   id control;
@@ -134,8 +133,7 @@ static NSPrintPanel *shared_instance;
   self = [super initWithContentRect: contentRect
 		 styleMask: aStyle
 		   backing: bufferingType
-		     defer: flag
-		    screen: aScreen];
+		     defer: flag];
   if (self == nil)
     return nil;
 
