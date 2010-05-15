@@ -458,8 +458,7 @@ static BOOL _isInInterfaceBuilder = NO;
                       initWithContentRect: _windowRect
                       styleMask: _windowStyle
                       backing: _backingStoreType
-                      defer: _flags.isDeferred
-                      screen: nil];
+                      defer: _flags.isDeferred];
       
       // set flags...
       [_realObject setHidesOnDeactivate: _flags.isHiddenOnDeactivate];
@@ -472,7 +471,7 @@ static BOOL _isInInterfaceBuilder = NO;
       // [_realObject setAutoPositionMask: _flags.autoPositionMask]; // currently not implemented for nibs
       // [_realObject setAutoPosition: _flags.autoPosition];
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
-      [_realObject setFrameAutosaveName: _autosaveName];
+      // [_realObject setFrameAutosaveName: _autosaveName]; // done after setting the min/max sizes
 
       // reset attributes...
       [_realObject setContentView: _view];
@@ -482,10 +481,13 @@ static BOOL _isInInterfaceBuilder = NO;
 
       [_view _fixSubviews];
 
+      // FIXME What is the point of calling -setFrame:display: here? It looks
+      // like an effective no op to me.
       // resize the window...
       [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
                                        styleMask: [self windowStyle]]
                    display: NO];
+      [_realObject setFrameAutosaveName: _autosaveName];
     } 
   return _realObject;
 }

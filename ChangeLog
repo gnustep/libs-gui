@@ -1,5 +1,10 @@
 2010-05-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/GSNibLoading.m (-nibInstantiate): Fix bug where a window
+	was ignoring its autosaved frame when loaded from a .nib file.
+
+2010-05-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSFontManager.m (-fontMenu): Remove key equivalents that
 	conflict with standard key equivalents.
 
