@@ -949,7 +949,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSBundle		*mainBundle = [NSBundle mainBundle];
   NSDictionary		*infoDict = [mainBundle infoDictionary];
   NSDocumentController	*sdc;
-  NSString		*mainModelFile;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSString		*filePath;
@@ -991,15 +990,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   [self setApplicationIconImage: image];
   [self _appIconInit];
-
-  mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
-  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
-    {
-      if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
-	{
-	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
-	}
-    }
 
   /* post notification that launch will finish */
   [nc postNotificationName: NSApplicationWillFinishLaunchingNotification

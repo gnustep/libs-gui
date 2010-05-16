@@ -33,6 +33,7 @@
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSBitmapImageRep.h"
+#include "AppKit/NSNibLoading.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSGraphics.h"
@@ -50,6 +51,7 @@ int
 NSApplicationMain(int argc, const char **argv)
 {
   NSDictionary		*infoDict;
+  NSString              *mainModelFile;
   NSString		*className;
   Class			appClass;
   CREATE_AUTORELEASE_POOL(pool);
@@ -70,8 +72,20 @@ NSApplicationMain(int argc, const char **argv)
       NSLog(@"Bad application class '%@' specified", className);
       appClass = [NSApplication class];
     }
+  [appClass sharedApplication];
 
-  [[appClass sharedApplication] run];
+  mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
+  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
+    {
+      if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO)
+	{
+	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
+	}
+    }
+
+  RECREATE_AUTORELEASE_POOL(pool);
+
+  [NSApp run];
 
   DESTROY(NSApp);
 
