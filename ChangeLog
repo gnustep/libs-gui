@@ -1,3 +1,8 @@
+2010-05-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarItem.m (-setView:): Only set the min/max size of
+	the toolbar item when it was zero.
+
 2010-05-17 04:36-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSApplication.m: Attempt to open files from the command

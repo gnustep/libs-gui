@@ -1386,8 +1386,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSSize size;
 
       size = [view frame].size;
-      [self setMinSize: size];
-      [self setMaxSize: size];
+      if (NSEqualSizes(NSZeroSize, _minSize))
+          [self setMinSize: size];
+      if (NSEqualSizes(NSZeroSize, _maxSize))
+          [self setMaxSize: size];
 
       [_view setToolTip: _toolTip];
 
