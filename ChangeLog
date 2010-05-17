@@ -1,3 +1,9 @@
+2010-05-17 04:36-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSApplication.m: Attempt to open files from the command
+	line, if possible in -finishLaunching.  This matches the behavior
+	seen on OpenStep and on Mac OS X/Cocoa.
+
 2010-05-16 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/Functions.m:

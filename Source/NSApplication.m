@@ -379,6 +379,7 @@ struct _NSModalSession {
 - (void) _windowDidResignKey: (NSNotification*) notification;
 - (void) _windowWillClose: (NSNotification*) notification;
 - (void) _workspaceNotification: (NSNotification*) notification;
+- (NSArray *) _openFiles;
 @end
 
 @interface NSWindow (ApplicationPrivate)
@@ -958,6 +959,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   BOOL			hadDuplicates = NO;
   BOOL			didAutoreopen = NO;
   NSImage		*image = nil;
+  NSArray               *files = nil;
 
   appIconFile = [infoDict objectForKey: @"NSIcon"];
   if (appIconFile && ![appIconFile isEqual: @""])
@@ -1107,7 +1109,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
    *	Now check to see if we were launched with arguments asking to
    *	open a file.  We permit some variations on the default name.
    */
-  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil
+
+  if ((files = [self _openFiles]) != nil)
+    {
+      NSEnumerator *en = [files objectEnumerator];
+      filePath = nil;
+      while ((filePath = (NSString *)[en nextObject]) != nil)
+	{
+	  [_listener application: self openFile: filePath];
+	}
+    } 
+  else if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil
     || (filePath = [defs stringForKey: @"NSOpen"]) != nil)
     {
       [_listener application: self openFile: filePath];
@@ -4009,6 +4021,34 @@ struct _DelegateWrapper
 	  [self hide: self];
 	}
     }
+}
+
+- (NSArray *) _openFiles
+{
+  NSMutableArray *files = nil;
+  NSArray *args = [[NSProcessInfo processInfo] arguments];
+  NSEnumerator *en = [args objectEnumerator];
+  NSString *file = nil;
+
+  [en nextObject]; // skip the first element, which is always empty...
+  while((file = [en nextObject]) != nil)
+    {
+      unichar c = [file characterAtIndex: 0];
+      if(c != '-')
+	{
+	  if(files == nil)
+	    {
+	      files = [NSMutableArray array];
+	    }
+	  [files addObject: file];
+	}
+      else
+	{
+	  break;
+	}
+    }
+
+  return files;
 }
 
 @end // NSApplication (Private)
