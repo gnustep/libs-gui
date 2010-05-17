@@ -77,10 +77,10 @@ before-install:: $(DESTDIR)$(GNUSTEP_MAKEFILES)/Additional
 after-distclean::
 	rm -f config.status config.log config.cache TAGS config.make gui.make
 
-gui.make: gui.make.in
+gui.make: gui.make.in Version configure
 	./configure
 
-config.make: config.make.in
+config.make: config.make.in configure
 	./configure
 
 # Things to do before checking
