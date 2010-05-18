@@ -2,7 +2,7 @@
 
    <abstract>The GSHbox class (a GNU extension)</abstract>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999-2010 Free Software Foundation, Inc.
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
@@ -26,9 +26,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GSHbox.h"
+#import "GNUstepGUI/GSHbox.h"
 // For the separator
-#include "AppKit/NSBox.h"
+#import "AppKit/NSBox.h"
 
 @implementation GSHbox: GSTable
 //

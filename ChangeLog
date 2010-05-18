@@ -1,3 +1,9 @@
+2010-05-19 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/GSVbox.m,
+	* Source/GSHbox.m:
+	Changed heder include to import
+
 2010-05-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarItem.m (-setView:): Only set the min/max size of

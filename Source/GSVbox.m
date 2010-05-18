@@ -2,7 +2,7 @@
 
    <abstract>The GSVbox class (a GNU extension)</abstract>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999-2010 Free Software Foundation, Inc.
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
@@ -28,8 +28,8 @@
 
 // See GSHbox.m for comments
 // This file is derived from GSVbox.m
-#include "GNUstepGUI/GSVbox.h"
-#include "AppKit/NSBox.h"
+#import "GNUstepGUI/GSVbox.h"
+#import "AppKit/NSBox.h"
 
 @implementation GSVbox: GSTable
 //
