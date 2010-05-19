@@ -31,8 +31,6 @@
 #define _GNUstep_H_NSColorPicking
 #import <GNUstepBase/GSVersionMacros.h>
 
-#import <objc/Protocol.h>
-
 @class NSColor;
 @class NSColorPanel;
 @class NSView;
