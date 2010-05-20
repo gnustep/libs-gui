@@ -838,17 +838,12 @@ static NSImage *_pbc_image[5];
       [mr setHighlightedItemIndex: selectedItem];
     }
 
-  // Ask the MenuView to attach the menu to this rect
-  [mr setWindowFrameForAttachingToRect: cellFrame
-      onScreen: [cvWin screen]
-      preferredEdge: _pbcFlags.preferredEdge
-      popUpSelectedItem: selectedItem];
-
-  // Set to be above the main window
-  [cvWin addChildWindow: [mr window] ordered: NSWindowAbove];
-
-  // Last, display the window
-  [[mr window] orderFrontRegardless];
+  // display the menu item...
+  [[GSTheme theme] displayPopUpMenu: mr
+		      withCellFrame: cellFrame
+		  controlViewWindow: cvWin
+		      preferredEdge: _pbcFlags.preferredEdge
+		       selectedItem: selectedItem];
 
   [nc addObserver: self
       selector: @selector(_handleNotification:)

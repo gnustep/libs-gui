@@ -91,6 +91,25 @@
     }
 }
 
+- (void) displayPopUpMenu: (NSMenuView *)mr
+	    withCellFrame: (NSRect)cellFrame
+	controlViewWindow: (NSWindow *)cvWin
+	    preferredEdge: (NSRectEdge)edge
+	     selectedItem: (int)selectedItem
+{ 
+  // Ask the MenuView to attach the menu to this rect
+  [mr setWindowFrameForAttachingToRect: cellFrame
+			      onScreen: [cvWin screen]
+			 preferredEdge: edge
+		     popUpSelectedItem: selectedItem];
+  
+  // Set to be above the main window
+  [cvWin addChildWindow: [mr window] ordered: NSWindowAbove];
+
+  // Last, display the window
+  [[mr window] orderFrontRegardless];
+}
+
 - (void) processCommand: (void *)context
 {
   // this is only implemented when we handle native menus.

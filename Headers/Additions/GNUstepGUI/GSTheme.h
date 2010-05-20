@@ -1062,6 +1062,15 @@ withRepeatedImage: (NSImage*)image
                   forEvent: (NSEvent *)theEvent;
 
 /**
+ * Display popup menu item.
+ */
+- (void) displayPopUpMenu: (NSMenuView *)mr
+	    withCellFrame: (NSRect)cellFrame
+	controlViewWindow: (NSWindow *)cvWin
+	    preferredEdge: (NSRectEdge)edge
+	     selectedItem: (int)selectedItem;
+
+/**
  * Processes menu events for the theme.   The default implementation
  * does nothing.  
  */
