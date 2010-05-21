@@ -60,6 +60,9 @@ typedef enum {
   ToolbarViewSmallHeight = 52
 } ToolbarViewHeight;
 
+// Borrow this from  NSToolbarItem.m
+static const int InsetItemViewX = 10;
+
 static const int ClippedItemsViewWidth = 28;
 
 // Internal
@@ -652,106 +655,143 @@ static void initSystemExtensionsColors(void)
 
 - (void) _takeInAccountFlexibleSpaces
 {
-  // Borrow this from  NSToolbarItem.m
-  static const int InsetItemViewX = 10;
-
   NSArray *items = [_toolbar items];
   NSEnumerator *e;
   NSToolbarItem *item;
-  float lengthAvailable;
-  unsigned int flexibleSpaceItemsNumber = 0;
+  NSView *backView, *view;
+  CGFloat lengthAvailable;
   BOOL mustAdjustNext = NO;
-  CGFloat x = 0.0;
-  CGFloat maxX = 0.0;
-  CGFloat currX;
-  // resizement of a flexible item
-  CGFloat rel = 1.0;
-  // Width of a flexible space
-  CGFloat flexWidth = 0.0;
-
-  if ([items count] == 0)
+  CGFloat x = 0, visibleItemsMinWidth = 0, backViewsWidth = 0;
+  NSMutableArray *variableWidthItems = [NSMutableArray array];
+  int flexibleItemsCount = 0, maxWidthItemsCount = 0;
+  CGFloat spacePerFlexItem, extraSpace = 0;
+  CGFloat toolbarWidth = [self frame].size.width;
+  int i, n = [items count];
+  NSMutableArray *visibleItems = [NSMutableArray array];
+  static const int FlexItemWeight = 4; // non-space flexible item counts as much as 4 flexible spaces
+  
+  if (n == 0)
     return; 
   
-  currX = NSMaxX([[[items lastObject] _backView] frame]);
-  lengthAvailable = NSWidth([self frame]) - currX;
+  // First determine which items can fit in toolbar if all are at their minimum width.
+  // We'd like to show as many items as possible. These are our visibleItems.
+  for (i=0; i < n; i++) 
+    {
+      item = [items objectAtIndex:i];
+      backView = [item _backView];
+      view = [item view];
+      if (view != nil)
+        backViewsWidth += [item minSize].width + 2*InsetItemViewX;
+      else
+        backViewsWidth += [backView frame].size.width;
+
+      if ((backViewsWidth + ClippedItemsViewWidth <= toolbarWidth)
+        || (i == n - 1 && backViewsWidth <= toolbarWidth))
+        {
+          visibleItemsMinWidth = backViewsWidth;
+          [visibleItems addObject:item];
+        }
+      else
+        {
+          break;
+        }
+    }
+  // next, figure out how much additional space there is for expanding flexible items
+  lengthAvailable = toolbarWidth - visibleItemsMinWidth;
+  if ([visibleItems count] < n)
+    lengthAvailable -= ClippedItemsViewWidth;
 
   if (lengthAvailable < 1)
     return;
-
-  e = [items objectEnumerator];
-  while ((item = [e nextObject]) != nil) 
-  {
-    if ([item _isFlexibleSpace])
-    {
-      flexibleSpaceItemsNumber++;
-    }
-
-    // Currently only item with a view are resizable
-    if ([item view] != nil)
-      {
-        maxX += [item maxSize].width + 2 * InsetItemViewX;
-      }
-    else
-      {
-        maxX += NSWidth([[item _backView] frame]);
-      }
-  }
-
-  // Could the items fill more space?
-  if (maxX >= currX)
-    {
-      rel = lengthAvailable / (maxX - currX);
-      
-      if (rel > 1.0)
-        rel = 1.0;
-    }
-  
-  // Are there any flexible spaces to fill the rest?
-  if (flexibleSpaceItemsNumber > 0)
-    {
-      flexWidth = (NSWidth([self frame]) - maxX) / flexibleSpaceItemsNumber;
-      if (flexWidth < 0.0)
-        flexWidth = 0.0;
-    }
-  
-  e = [items objectEnumerator];
+ 
+  // We want to divide available space evenly among all flexible items, but some items may
+  // reach their maximum width, making more space available for the other items.
+  // To do this, first we count the flexible items, gathering a list of those that may
+  // have a maximum width.
+  // To match observed behavior on Cocoa (which is NOT as documented!) we allocate only 1/4
+  // as much space to flexible spaces as we do to other flexible items.
+  e = [visibleItems objectEnumerator];
   while ((item = [e nextObject]) != nil) 
     {
-      NSView *view = [item view];
-      NSView *backView = [item _backView];
-      CGFloat diff = [item maxSize].width - [item minSize].width;
-      
       if ([item _isFlexibleSpace])
         {
-          NSRect backViewFrame = [backView frame];
-          
-          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-             flexWidth, backViewFrame.size.height)];
-          mustAdjustNext = YES;
+          flexibleItemsCount++;
         }
-      if ((view != nil) && (diff > 0))
+      else
         {
-          NSRect backViewFrame = [backView frame];
-          NSRect viewFrame = [view frame];
-          
-          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-            (rel * diff) + [item minSize].width, 
-            backViewFrame.size.height)];
-          // Subtract InsetItemViewX
-          viewFrame.size.width = (rel * diff) + [item minSize].width 
-            - 2 * InsetItemViewX;
-          [view setFrame: viewFrame];
-          mustAdjustNext = YES;
+          CGFloat minWidth = [item minSize].width;
+          CGFloat maxWidth = [item maxSize].width;
+          if (minWidth < maxWidth)
+            {
+              [variableWidthItems addObject:item];
+              flexibleItemsCount += FlexItemWeight; // gets FlexItemWeight times the weight of a flexible space
+            }
         }
-      else if (mustAdjustNext)
-        {
-          NSRect backViewFrame = [backView frame];
-          
-          [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-            backViewFrame.size.width, backViewFrame.size.height)];
-        }
-      x += NSWidth([backView frame]);
     }
+  if (flexibleItemsCount == 0)
+    return;
+    
+  // Now go through any variableWidthItems to see if the available space per item would
+  // cause any of them to exceed their maximum width, and calculate the extra space available
+  spacePerFlexItem = MAX(lengthAvailable / flexibleItemsCount, 0);
+  e = [variableWidthItems objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+    {
+      CGFloat minWidth = [item minSize].width;
+      CGFloat maxWidth = [item maxSize].width;
+      if (maxWidth-minWidth < spacePerFlexItem * FlexItemWeight)
+        {
+          extraSpace += spacePerFlexItem * FlexItemWeight - (maxWidth-minWidth); // give back unneeded space
+          maxWidthItemsCount += FlexItemWeight;
+        }
+    }
+  // Recalculate spacePerFlexItem (unless all flexible items are going to their max width)
+  if (flexibleItemsCount > maxWidthItemsCount)
+    spacePerFlexItem += extraSpace / (flexibleItemsCount-maxWidthItemsCount);
+  
+  // Finally, go through all items, adjusting their width and positioning them as needed
+  e = [items objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+  {
+    backView = [item _backView];
+    if ([item _isFlexibleSpace])
+      {
+        NSRect backViewFrame = [backView frame];
+      
+        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+          spacePerFlexItem, 
+          backViewFrame.size.height)];        
+        mustAdjustNext = YES;
+      }
+    else if ([variableWidthItems indexOfObjectIdenticalTo:item] != NSNotFound)
+      {
+        NSRect backViewFrame = [backView frame];
+        CGFloat maxFlex = [item maxSize].width - [item minSize].width;
+        CGFloat flexAmount = MIN(maxFlex, spacePerFlexItem * FlexItemWeight);
+        CGFloat newWidth = [item minSize].width + flexAmount + 2 * InsetItemViewX;
+        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+          newWidth, 
+          backViewFrame.size.height)];
+        mustAdjustNext = YES;
+      }
+    else if (mustAdjustNext)
+      {
+        NSRect backViewFrame = [backView frame];
+      
+        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+          backViewFrame.size.width, backViewFrame.size.height)];
+      }
+    view = [item view];
+    if (view != nil)
+      {
+        NSRect viewFrame = [view frame];
+        // Subtract InsetItemViewX
+        viewFrame.size.width = [backView frame].size.width - 2 * InsetItemViewX;
+        viewFrame.origin.x = InsetItemViewX;
+        [view setFrame: viewFrame];
+      }
+    x += [backView frame].size.width;
+  }
 }
 
 - (void) _handleViewsVisibility
@@ -874,7 +914,7 @@ static void initSystemExtensionsColors(void)
 - (NSArray *) _visibleBackViews 
 {
   NSArray *items = [_toolbar items];
-  NSView *backView;
+  NSView *backView, *view;
   int i, n = [items count];
   float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
 
@@ -882,9 +922,13 @@ static void initSystemExtensionsColors(void)
   
   for (i = 0; i < n; i++)
     {
-      backView = [[items objectAtIndex:i] _backView];
-  
-      backViewsWidth += [backView frame].size.width;
+      NSToolbarItem *item = [items objectAtIndex:i];
+      backView = [item _backView];
+      view = [item view];
+      if (view != nil)
+        backViewsWidth += [item minSize].width + 2*InsetItemViewX;
+      else
+        backViewsWidth += [backView frame].size.width;
 
       if ((backViewsWidth + ClippedItemsViewWidth <= toolbarWidth)
         || (i == n - 1 && backViewsWidth <= toolbarWidth))

@@ -1,3 +1,11 @@
+2010-05-21 Doug Simons <doug.simons@testplant.com>
+
+	* Source/GSToolbarView.m:
+	* Source/NSToolbarItem.m:
+	Make toolbar resizing behavior match the Cocoa behavior for dividing
+	extra space between flexible spaces and other flexible items. Ensure
+	custom view items are resized properly, taking minSize into account.
+
 2010-05-20 04:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method 

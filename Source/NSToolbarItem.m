@@ -619,9 +619,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       
       [(id)view sizeToFit];
       newSize = [view frame].size;
-      if (newSize.width < minSize.width || newSize.height < minSize.height)
+      if (minSize.width > 0 || newSize.height < minSize.height)
         {
-          newSize.width = MAX(newSize.width, minSize.width);
+          if (minSize.width > 0)
+			newSize.width = minSize.width;
           newSize.height = MAX(newSize.height, minSize.height);
           [view setFrameSize: newSize];
         }
