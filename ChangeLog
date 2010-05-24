@@ -1,5 +1,10 @@
 2010-05-24 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
+	Move and declare this method to keep gcc 2.95 quite.
+
+2010-05-24 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSSimpleLayoutManager.m: Remove obsolete file.
 	* Source/NSBitmapImageRep+PNG.m,
 	* Source/NSBitmapImageRep+JPEG.m,

@@ -129,6 +129,9 @@ a new internal method called from NSLayoutManager when text has changed.
 Interface for a bunch of internal methods that need to be cleaned up.
 */
 @interface NSTextView (GNUstepPrivate)
+- (unsigned int) _characterIndexForPoint: (NSPoint)point
+                         respectFraction: (BOOL)respectFraction;
+
 /*
  * Used to implement the blinking insertion point
  */
@@ -1937,43 +1940,6 @@ here. */
   if (theRange.location + theRange.length > [_textStorage length])
     theRange.length = [_textStorage length] - theRange.location;
   return [_textStorage attributedSubstringFromRange: theRange];
-}
-
-/*
-TODO: make sure this is only called when _layoutManager is known non-nil,
-or add guards
-*/
-- (unsigned int) _characterIndexForPoint: (NSPoint)point
-                         respectFraction: (BOOL)respectFraction
-{
-  unsigned	index;
-  float		fraction;
-
-  point.x -= _textContainerOrigin.x;
-  point.y -= _textContainerOrigin.y;
-
-  if ([_layoutManager extraLineFragmentTextContainer] == _textContainer)
-    {
-      NSRect extraRect = [_layoutManager extraLineFragmentRect];
-      if (point.y >= NSMinY(extraRect))
-	return [_textStorage length];
-    }
-
-  index = [_layoutManager glyphIndexForPoint: point 
-			     inTextContainer: _textContainer
-	      fractionOfDistanceThroughGlyph: &fraction];
-  // FIXME The layoutManager should never return -1.
-  // Assume that the text is empty if this happens.
-  if (index == (unsigned int)-1)
-    return 0;
-
-  index = [_layoutManager characterIndexForGlyphAtIndex: index];
-  if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
-      [[_textStorage string] characterAtIndex:index] != '\n')
-    {
-      index++;
-    }
-  return index;
 }
 
 // This method takes screen coordinates as input.
@@ -5550,6 +5516,43 @@ configuation! */
 
 
 @implementation NSTextView (GNUstepPrivate)
+
+/*
+TODO: make sure this is only called when _layoutManager is known non-nil,
+or add guards
+*/
+- (unsigned int) _characterIndexForPoint: (NSPoint)point
+                         respectFraction: (BOOL)respectFraction
+{
+  unsigned	index;
+  float		fraction;
+
+  point.x -= _textContainerOrigin.x;
+  point.y -= _textContainerOrigin.y;
+
+  if ([_layoutManager extraLineFragmentTextContainer] == _textContainer)
+    {
+      NSRect extraRect = [_layoutManager extraLineFragmentRect];
+      if (point.y >= NSMinY(extraRect))
+	return [_textStorage length];
+    }
+
+  index = [_layoutManager glyphIndexForPoint: point 
+			     inTextContainer: _textContainer
+	      fractionOfDistanceThroughGlyph: &fraction];
+  // FIXME The layoutManager should never return -1.
+  // Assume that the text is empty if this happens.
+  if (index == (unsigned int)-1)
+    return 0;
+
+  index = [_layoutManager characterIndexForGlyphAtIndex: index];
+  if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
+      [[_textStorage string] characterAtIndex:index] != '\n')
+    {
+      index++;
+    }
+  return index;
+}
 
 - (void) _blink: (NSTimer *)t
 {
