@@ -26,18 +26,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSForm.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSTabView.h"
-#include "AppKit/NSTabViewItem.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSForm.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSTabView.h"
+#import "AppKit/NSTabViewItem.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @implementation NSTabView
 

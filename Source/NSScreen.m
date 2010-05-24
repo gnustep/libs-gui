@@ -27,15 +27,22 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSInterfaceStyle.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDisplayServer.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSInterfaceStyle.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 @interface NSScreen (Private)
 - (id) _initWithScreenNumber: (int)screen;

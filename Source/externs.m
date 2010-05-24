@@ -27,9 +27,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSString.h>
-#include "AppKit/NSEvent.h"
+#import "config.h"
+#import <Foundation/NSString.h>
+#import "AppKit/NSEvent.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";

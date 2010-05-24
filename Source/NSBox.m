@@ -27,20 +27,20 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSString.h>
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSBox.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
 
 #include <math.h>
 

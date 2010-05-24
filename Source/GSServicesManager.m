@@ -25,41 +25,41 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
+#import "config.h"
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSConnection.h>
-#include <Foundation/NSDistantObject.h>
-#include <Foundation/NSMethodSignature.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSSerialization.h>
-#include <Foundation/NSPort.h>
-#include <Foundation/NSPortNameServer.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSInvocation.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSConnection.h>
+#import <Foundation/NSDistantObject.h>
+#import <Foundation/NSMethodSignature.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSSerialization.h>
+#import <Foundation/NSPort.h>
+#import <Foundation/NSPortNameServer.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSObjCRuntime.h>
+#import <Foundation/NSInvocation.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSDocumentController.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSDocumentController.h"
 
-#include "GNUstepGUI/GSServicesManager.h"
-#include "GSGuiPrivate.h"
+#import "GNUstepGUI/GSServicesManager.h"
+#import "GSGuiPrivate.h"
 
 static GSServicesManager	*manager = nil;
 

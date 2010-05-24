@@ -30,6 +30,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/PSOperators.h"
 

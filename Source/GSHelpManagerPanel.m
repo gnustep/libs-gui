@@ -26,18 +26,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSImage.h"
-#include "GNUstepGUI/GSHelpManagerPanel.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSImage.h"
+#import "GNUstepGUI/GSHelpManagerPanel.h"
+#import "GSGuiPrivate.h"
 
 @implementation GSHelpManagerPanel
 

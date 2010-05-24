@@ -26,9 +26,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GSFusedSilicaContext.h"
-#include "AppKit/NSAffineTransform.h"
-#include <Foundation/NSDictionary.h>
+#import <Foundation/NSDictionary.h>
+#import "AppKit/NSAffineTransform.h"
+#import "GSFusedSilicaContext.h"
 
 /* Managing Graphics Contexts */
 

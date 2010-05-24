@@ -26,17 +26,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include "NSBitmapImageRep+JPEG.h"
+#import "config.h"
 
 #if HAVE_LIBJPEG
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSGraphics.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+JPEG.h"
+#import "GSGuiPrivate.h"
 
 #include <jerror.h>
 #if defined(__MINGW32__)
@@ -52,7 +53,7 @@
 typedef int jpeg_boolean;
 #define boolean jpeg_boolean
 #endif
-#endif
+#endif // __MINGW32__
 #include <jpeglib.h>
 #if defined(__CYGWIN__)
 /* Cygwin uses a patched jpeg */

@@ -28,10 +28,10 @@
 #ifndef _GNUstep_H_NSImageSource
 #define _GNUstep_H_NSImageSource
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSButton.h>
-#include <GNUstepGUI/GSTheme.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSButton.h>
+#import <GNUstepGUI/GSTheme.h>
 
 /**
  * Handle images for button cell theming.

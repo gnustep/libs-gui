@@ -26,24 +26,24 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSProcessInfo.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSProcessInfo.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSImageView.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSTextField.h"
-#include "GNUstepGUI/GSInfoPanel.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSTextField.h"
+#import "GNUstepGUI/GSInfoPanel.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 static id
 value_from_info_plist_for_key (NSString *key)

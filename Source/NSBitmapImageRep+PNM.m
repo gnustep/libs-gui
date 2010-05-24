@@ -26,10 +26,10 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "NSBitmapImageRep+PNM.h"
-
-#include <Foundation/NSData.h>
-#include "AppKit/NSGraphics.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+PNM.h"
 
 @implementation NSBitmapImageRep (PNM)
 

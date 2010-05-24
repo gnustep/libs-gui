@@ -26,15 +26,15 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "GNUstepGUI/GSPrinting.h"
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSUserDefaults.h>
-#include "AppKit/NSPanel.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSPanel.h"
+#import "GNUstepGUI/GSPrinting.h"
 
 static NSBundle *printingBundle = nil;
 

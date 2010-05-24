@@ -32,52 +32,52 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 #include <math.h>
 #include <float.h>
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCalendarDate.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSCalendarDate.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSSet.h>
 
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSBitmapImageRep.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSDocumentController.h"
-#include "AppKit/NSDocument.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPrintOperation.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSTrackingRect.h"
-#include "GNUstepGUI/GSNibLoading.h"
-#include "GSToolTips.h"
-#include "GSBindingHelpers.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSDocumentController.h"
+#import "AppKit/NSDocument.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSTrackingRect.h"
+#import "GNUstepGUI/GSNibLoading.h"
+#import "GSToolTips.h"
+#import "GSBindingHelpers.h"
+#import "GSGuiPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...

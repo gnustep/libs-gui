@@ -29,8 +29,8 @@
 #ifndef _GSFusedSilicaContext_h_INCLUDE
 #define _GSFusedSilicaContext_h_INCLUDE
 
-#include <AppKit/NSGraphicsContext.h>
-#include <GNUstepGUI/GSFusedSilica.h>
+#import "AppKit/NSGraphicsContext.h"
+#import "GNUstepGUI/GSFusedSilica.h"
 
 @interface NSGraphicsContext (FusedSilica)
 

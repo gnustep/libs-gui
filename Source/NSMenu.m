@@ -118,6 +118,7 @@
 {
   NSMenu *_the_menu;
 }
+- (void) _setmenu: (NSMenu *)menu;
 @end
 
 @interface NSMenuView (GNUstepPrivate)
@@ -140,6 +141,7 @@ static BOOL menuBarVisible = YES;
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
 - (void) _setGeometry;
 - (void) _updateUserDefaults: (id) notification;
+- (void) _organizeMenu;
 
 @end
 

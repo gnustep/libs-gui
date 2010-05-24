@@ -27,20 +27,20 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSProcessInfo.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSProcessInfo.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBitmapImageRep.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/DPSOperators.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/DPSOperators.h"
 
 char **NSArgv = NULL;
 

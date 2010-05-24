@@ -24,10 +24,10 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "GSKeyBindingAction.h"
-#include "GSKeyBindingTable.h"
-#include "AppKit/NSInputManager.h"
-#include "AppKit/NSEvent.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSInputManager.h"
+#import "GSKeyBindingAction.h"
+#import "GSKeyBindingTable.h"
 
 @implementation GSKeyBindingTable : NSObject
 

@@ -25,7 +25,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "NSButtonImageSource.h"
+#import "NSButtonImageSource.h"
 
 
 @implementation NSButtonImageSource

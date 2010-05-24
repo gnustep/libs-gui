@@ -1,3 +1,55 @@
+2010-05-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: Remove obsolete file.
+	* Source/NSBitmapImageRep+PNG.m,
+	* Source/NSBitmapImageRep+JPEG.m,
+	* Source/NSColorPicker.m,
+	* Source/NSMenu.m,
+	* Source/NSScreen.m: Remove gcc 2.95 warnings reported by
+	Riccardo Mottola <rmottola@users.sf.net>.
+
+	* Source/externs.m
+	* Source/Functions.m
+	* Source/GSAnimator.m
+	* Source/GSHelpManagerPanel.m
+	* Source/GSEPSPrintOperation.m
+	* Source/GSFusedSilica.m
+	* Source/GSFusedSilicaContext.h
+	* Source/GSFusedSilicaContext.m
+	* Source/GSLayoutManager.m
+	* Source/GSPrinting.m
+	* Source/GSPrintOperation.m
+	* Source/GSInfoPanel.m
+	* Source/GSKeyBindingAction.h
+	* Source/GSKeyBindingAction.m
+	* Source/GSKeyBindingTable.h
+	* Source/GSKeyBindingTable.m
+	* Source/GSServicesManager.m
+	* Source/NSColorList.m
+	* Source/NSBox.m
+	* Source/NSAttributedString.m
+	* Source/NSWorkspace.m
+	* Source/NSBitmapImageRep+PNG.h
+	* Source/NSWindow.m
+	* Source/NSClipView.m
+	* Source/NSBitmapImageRep.m
+	* Source/NSApplication.m
+	* Source/NSCachedImageRep.m
+	* Source/NSButtonImageSource.h
+	* Source/NSButtonImageSource.m
+	* Source/NSBitmapImageRep+GIF.h
+	* Source/NSBitmapImageRep+GIF.m
+	* Source/NSTabViewItem.m
+	* Source/NSBitmapImageRep+JPEG.h
+	* Source/NSBitmapImageRep+PNM.h
+	* Source/NSBitmapImageRep+PNM.m
+	* Source/NSTabView.m
+	* Source/NSArrayController.m
+	* Source/NSBrowserCell.m
+	* Source/NSBitmapImageRep+ICNS.h
+	* Source/NSBitmapImageRep+ICNS.m
+	* Source/NSView.m: Replace #include -> #import
+
 2010-05-21 Doug Simons <doug.simons@testplant.com>
 
 	* Source/GSToolbarView.m:

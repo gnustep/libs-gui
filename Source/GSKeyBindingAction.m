@@ -24,8 +24,8 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "GSKeyBindingAction.h"
-#include "AppKit/NSInputManager.h"
+#import "AppKit/NSInputManager.h"
+#import "GSKeyBindingAction.h"
 
 @implementation GSKeyBindingAction
 - (void) performActionWithInputManager: (NSInputManager *)manager

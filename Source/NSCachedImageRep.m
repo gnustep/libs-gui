@@ -35,17 +35,17 @@
 // for fabs()
 #include <math.h>
 
-#include "config.h"
-#include <Foundation/NSString.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSUserDefaults.h>
+#import "config.h"
+#import <Foundation/NSString.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSUserDefaults.h>
 
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSBitmapImageRep.h"
-#include "AppKit/NSCachedImageRep.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSCachedImageRep.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
 
 @interface GSCacheW : NSWindow
 @end

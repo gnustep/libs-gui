@@ -27,7 +27,7 @@
 #ifndef _GS_KEYBINDING_TABLE_H
 #define _GS_KEYBINDING_TABLE_H
 
-#include "GSKeyBindingAction.h"
+#import "GSKeyBindingAction.h"
 
 @class GSKeyBindingTable;
 

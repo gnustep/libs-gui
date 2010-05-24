@@ -33,17 +33,17 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSData.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSUserDefaults.h>
-#include "AppKit/NSView.h"
-#include "AppKit/NSPrintPanel.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSWorkspace.h"
-#include "GNUstepGUI/GSPrinting.h"
-#include "GNUstepGUI/GSPrintOperation.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSPrintPanel.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWorkspace.h"
+#import "GNUstepGUI/GSPrinting.h"
+#import "GNUstepGUI/GSPrintOperation.h"
+#import "GSGuiPrivate.h"
 
 
 

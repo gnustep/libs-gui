@@ -26,12 +26,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GSFusedSilicaContext.h"
-#include "GNUstepGUI/GSFontInfo.h"
-#include "AppKit/NSGraphics.h"
-#include <Foundation/NSData.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "GNUstepGUI/GSFontInfo.h"
+#import "GSFusedSilicaContext.h"
 
 #define NUMBER(num) \
   [NSNumber numberWithInt: num]

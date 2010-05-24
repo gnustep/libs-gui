@@ -28,22 +28,22 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSNotificationQueue.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSScanner.h>
-#include <Foundation/NSString.h>
+#import "config.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNotificationQueue.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSScanner.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSColorList.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/AppKitExceptions.h"
+#import "AppKit/NSColorList.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/AppKitExceptions.h"
 
 // The list of available color lists is cached and re-loaded only
 // after a time.

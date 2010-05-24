@@ -30,7 +30,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
+#import "config.h"
 
 #if	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
 #if	defined(HAVE_MNTENT_H)
@@ -42,37 +42,37 @@
 #endif
 #endif
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSHost.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSDistributedLock.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSTask.h>
-#include <GNUstepBase/NSTask+GNUstepBase.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSNotificationQueue.h>
-#include <Foundation/NSDistributedNotificationCenter.h>
-#include <Foundation/NSConnection.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSURL.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSScreen.h"
-#include "GNUstepGUI/GSServicesManager.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSHost.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSDistributedLock.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSTask.h>
+#import <GNUstepBase/NSTask+GNUstepBase.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotificationQueue.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+#import <Foundation/NSConnection.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSURL.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSScreen.h"
+#import "GNUstepGUI/GSServicesManager.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GSGuiPrivate.h"
 
 /* Informal protocol for method to ask an app to open a URL.
  */

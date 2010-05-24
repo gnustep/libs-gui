@@ -30,14 +30,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include "NSBitmapImageRep+ICNS.h"
-#include <Foundation/NSByteOrder.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSGraphics.h"
-#include "GSGuiPrivate.h"
+#import "config.h"
+#import "NSBitmapImageRep+ICNS.h"
+#import <Foundation/NSByteOrder.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "GSGuiPrivate.h"
 
 #define ICNS_HEADER "icns"
 

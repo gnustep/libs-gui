@@ -25,24 +25,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include <GNUstepBase/Unicode.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
 
-
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSTextContainer.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextContainer.h"
 
 /* just for NSAttachmentCharacter */
-#include "AppKit/NSTextAttachment.h"
+#import "AppKit/NSTextAttachment.h"
 
-#include "GNUstepGUI/GSFontInfo.h"
-#include "GNUstepGUI/GSTypesetter.h"
-#include "GNUstepGUI/GSLayoutManager_internal.h"
+#import "GNUstepGUI/GSFontInfo.h"
+#import "GNUstepGUI/GSTypesetter.h"
+#import "GNUstepGUI/GSLayoutManager_internal.h"
 
 /* TODO: is using rand() here ok? */
 static int random_level(void)

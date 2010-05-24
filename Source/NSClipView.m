@@ -26,21 +26,21 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSException.h>
+#import "config.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSException.h>
 
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
 
-#include <GNUstepGUI/GSNibLoading.h>
-#include "GSGuiPrivate.h"
+#import <GNUstepGUI/GSNibLoading.h>
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 

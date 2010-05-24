@@ -27,10 +27,10 @@
 */
 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include <AppKit/NSArrayController.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSArrayController.h"
 
 @implementation NSArrayController
 

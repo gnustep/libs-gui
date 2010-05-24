@@ -33,16 +33,16 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSProcessInfo.h>
-#include "AppKit/NSView.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPrintOperation.h"
-#include "GNUstepGUI/GSEPSPrintOperation.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSProcessInfo.h>
+#import "AppKit/NSView.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "GNUstepGUI/GSEPSPrintOperation.h"
 
 
 /**

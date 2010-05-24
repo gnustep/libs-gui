@@ -30,7 +30,7 @@
 #ifndef _NSBitmapImageRep_ICNS_H_include
 #define _NSBitmapImageRep_ICNS_H_include
 
-#include "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSBitmapImageRep.h"
 
 @interface NSBitmapImageRep (ICNS)
 + (BOOL) _bitmapIsICNS: (NSData *)imageData;

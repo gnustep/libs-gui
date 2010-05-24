@@ -28,18 +28,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 
-#include <Foundation/NSUserDefaults.h>
+#import <Foundation/NSUserDefaults.h>
 
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSWindow.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSWindow.h"
+#import "GSGuiPrivate.h"
 
 /*
  * Class variables

@@ -29,9 +29,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include "NSBitmapImageRep+GIF.h"
-#include "GSGuiPrivate.h"
+#import "config.h"
 
 #if HAVE_LIBUNGIF || HAVE_LIBGIF
 
@@ -44,12 +42,14 @@ objective-c headers.
 #include <gif_lib.h>
 #undef Object
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSGraphics.h"
-
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+GIF.h"
+#import "GSGuiPrivate.h"
 
 /* -----------------------------------------------------------
    The following types and functions are for interacting with

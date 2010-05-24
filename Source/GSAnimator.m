@@ -25,14 +25,14 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSDebug.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTimer.h>
 
-#include <AppKit/NSEvent.h>
-#include <GNUstepGUI/GSAnimator.h>
+#import "AppKit/NSEvent.h"
+#import "GNUstepGUI/GSAnimator.h"
 
 @interface GSAnimator (private)
 - (void) _animationBegin;

@@ -27,7 +27,7 @@
 #ifndef _GS_KEYBINDING_ACTION_H
 #define _GS_KEYBINDING_ACTION_H
 
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 
 @class NSInputManager;
 

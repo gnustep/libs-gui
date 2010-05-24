@@ -28,11 +28,14 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSBundle.h>
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSColorPicker.h"
-#include "AppKit/NSImage.h"
+#import "config.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSColorList.h"
+#import "AppKit/NSColorPanel.h"
+#import "AppKit/NSColorPicker.h"
+#import "AppKit/NSImage.h"
 
 @implementation NSColorPicker
 

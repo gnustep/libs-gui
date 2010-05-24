@@ -26,32 +26,32 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
+
 #include <stdlib.h>
 #include <math.h>
 #include <tiff.h>
 
-#include "AppKit/NSBitmapImageRep.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSBitmapImageRep.h"
 
-#include "NSBitmapImageRep+GIF.h"
-#include "NSBitmapImageRep+JPEG.h"
-#include "NSBitmapImageRep+PNG.h"
-#include "NSBitmapImageRep+PNM.h"
-#include "NSBitmapImageRep+ICNS.h"
-
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSView.h"
-#include "GSGuiPrivate.h"
+#import "NSBitmapImageRep+GIF.h"
+#import "NSBitmapImageRep+JPEG.h"
+#import "NSBitmapImageRep+PNG.h"
+#import "NSBitmapImageRep+PNM.h"
+#import "NSBitmapImageRep+ICNS.h"
+#import "GSGuiPrivate.h"
 
 #include "nsimage-tiff.h"
 

@@ -30,64 +30,64 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSError.h>
-#include <Foundation/NSErrorRecoveryAttempting.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSObject.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSErrorRecoveryAttempting.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSInvocation.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
-# include <Foundation/NSConnection.h>
+#include <Foundation/NSConnection.h>
 #endif
 
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSAlert.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSDocumentController.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFontManager.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSPageLayout.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSAlert.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSDocumentController.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFontManager.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSPageLayout.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSToolbarItem.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/PSOperators.h"
 
-#include "GSIconManager.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSServicesManager.h"
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSInfoPanel.h"
-#include "GNUstepGUI/GSVersion.h"
-#include "NSDocumentFrameworkPrivate.h"
-#include "NSToolbarFrameworkPrivate.h"
+#import "GSIconManager.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSServicesManager.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSInfoPanel.h"
+#import "GNUstepGUI/GSVersion.h"
+#import "NSDocumentFrameworkPrivate.h"
+#import "NSToolbarFrameworkPrivate.h"
 
 // minimize icon when suppressed?
 #define	MINI_ICON	0

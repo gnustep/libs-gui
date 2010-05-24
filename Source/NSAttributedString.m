@@ -28,34 +28,34 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSError.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSRange.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSRange.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSDocumentController.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSTextAttachment.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFileWrapper.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSFontManager.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSDocumentController.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSTextAttachment.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSFontManager.h"
 // For the colour name spaces
-#include "AppKit/NSGraphics.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSTextTable.h"
 
-#include "GNUstepGUI/GSTextConverter.h"
-#include "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTextConverter.h"
+#import "GSGuiPrivate.h"
 
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;
