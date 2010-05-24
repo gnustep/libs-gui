@@ -29,6 +29,7 @@
 
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSProcessInfo.h>
 
 #import "AppKit/NSApplication.h"

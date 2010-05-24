@@ -27,9 +27,6 @@
 */ 
 
 #import "config.h"
-
-#if HAVE_LIBJPEG
-
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
@@ -38,6 +35,8 @@
 #import "AppKit/NSGraphics.h"
 #import "NSBitmapImageRep+JPEG.h"
 #import "GSGuiPrivate.h"
+
+#if HAVE_LIBJPEG
 
 #include <jerror.h>
 #if defined(__MINGW32__)

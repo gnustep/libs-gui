@@ -30,6 +30,14 @@
 */ 
 
 #import "config.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+GIF.h"
+#import "GSGuiPrivate.h"
 
 #if HAVE_LIBUNGIF || HAVE_LIBGIF
 
@@ -41,15 +49,6 @@ objective-c headers.
 #define Object GS_GifLib_Object
 #include <gif_lib.h>
 #undef Object
-
-#import <Foundation/NSData.h>
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSException.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSValue.h>
-#import "AppKit/NSGraphics.h"
-#import "NSBitmapImageRep+GIF.h"
-#import "GSGuiPrivate.h"
 
 /* -----------------------------------------------------------
    The following types and functions are for interacting with

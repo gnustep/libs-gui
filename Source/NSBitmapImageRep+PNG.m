@@ -28,6 +28,13 @@
 */
 
 #import "config.h"
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+PNG.h"
 
 #if HAVE_LIBPNG
 
@@ -36,14 +43,6 @@
 #else
 #include <png.h>
 #endif
-
-#import <Foundation/NSData.h>
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSException.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSValue.h>
-#import "AppKit/NSGraphics.h"
-#import "NSBitmapImageRep+PNG.h"
 
 #if defined(PNG_FLOATING_POINT_SUPPORT)
 #  define PNG_FLOATING_POINT 1
