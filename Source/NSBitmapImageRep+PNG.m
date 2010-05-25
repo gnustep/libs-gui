@@ -37,7 +37,7 @@
 #import "NSBitmapImageRep+PNG.h"
 
 #if HAVE_LIBPNG
-
+#define PNG_SKIP_SETJMP_CHECK 1
 #ifdef HAVE_LIBPNG_PNG_H
 #include <libpng/png.h>
 #else

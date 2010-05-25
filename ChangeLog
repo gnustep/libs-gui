@@ -1,3 +1,8 @@
+2010-05-25 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSBitmapImageRep+PNG.m
+	Skip libpng's check for setjmp. I hope we are indeed correct.
+
 2010-05-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
