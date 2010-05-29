@@ -42,16 +42,10 @@
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
+#import "GNUstepGUI/GSXibLoading.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
-@end
-
-// Hack: This allows the class name FirstResponder in NSCustomObject and
-// correctly returns nil as the corresponding object.
-@interface FirstResponder: NSObject
-{
-}
 @end
 
 @implementation FirstResponder
@@ -61,13 +55,6 @@
   return nil;
 }
 
-@end
-
-@interface IBClassDescriptionSource: NSObject
-{
-  NSString *majorKey;
-  NSString *minorKey;
-}
 @end
 
 @implementation IBClassDescriptionSource
@@ -101,16 +88,6 @@
   [super dealloc];
 }
 
-@end
-
-@interface IBPartialClassDescription: NSObject
-{
-  NSString *className;
-  NSString *superclassName;
-  NSMutableDictionary *actions;
-  NSMutableDictionary *outlets;
-  IBClassDescriptionSource *sourceIdentifier;
-}
 @end
 
 @implementation IBPartialClassDescription
@@ -161,12 +138,6 @@
 
 @end
 
-@interface IBClassDescriber: NSObject
-{
-  NSMutableArray *referencedPartialClassDescriptions;
-}
-@end
-
 @implementation IBClassDescriber
 
 - (id) initWithCoder: (NSCoder*)coder
@@ -193,16 +164,6 @@
   [super dealloc];
 }
 
-@end
-
-@interface IBConnection: NSObject <NSCoding>
-{
-  NSString *label;
-  id source;
-  id destination;
-}
-- (id) nibInstantiate;
-- (void) establishConnection;
 @end
 
 @implementation IBConnection
@@ -266,11 +227,6 @@
 
 @end
 
-@interface IBActionConnection: IBConnection
-{
-}
-@end
-
 @implementation IBActionConnection
 
 - (void) establishConnection
@@ -281,11 +237,6 @@
   [destination setAction: sel];
 }
 
-@end
-
-@interface IBOutletConnection: IBConnection
-{
-}
 @end
 
 @implementation IBOutletConnection
@@ -337,13 +288,6 @@
 
 @end
 
-@interface IBConnectionRecord: NSObject
-{
-  IBConnection *connection;
-  int connectionID;
-}
-@end
-
 @implementation IBConnectionRecord
 
 - (id) initWithCoder: (NSCoder*)coder
@@ -385,16 +329,6 @@
   [connection establishConnection];
 }
 
-@end
-
-@interface IBObjectRecord: NSObject
-{
-  int objectID;
-  id object;
-  id children;
-  id parent;
-}
-- (id) object;
 @end
 
 @implementation IBObjectRecord
@@ -444,13 +378,6 @@
 
 @end
 
-@interface IBMutableOrderedSet: NSObject
-{
-  NSArray *orderedObjects;
-}
-- (NSArray *)orderedObjects;
-@end
-
 @implementation IBMutableOrderedSet
 - (id) initWithCoder: (NSCoder*)coder
 {
@@ -480,21 +407,6 @@
 {
   return orderedObjects;
 }
-@end
-
-@interface IBObjectContainer: NSObject <NSCoding>
-{
-  NSMutableArray *connectionRecords;
-  IBMutableOrderedSet *objectRecords;
-  NSMutableDictionary *flattenedProperties;
-  NSMutableDictionary *unlocalizedProperties;
-  id activeLocalization;
-  NSMutableDictionary *localizations;
-  id sourceID;
-  int maxID;
-}
-- (id) nibInstantiate;
-- (NSEnumerator *) objectRecordEnumerator;
 @end
 
 @implementation IBObjectContainer
@@ -558,37 +470,6 @@
 - (NSEnumerator *) objectRecordEnumerator
 {
   return [[objectRecords orderedObjects] objectEnumerator];
-}
-
-@end
-
-
-
-@interface GSXibElement: NSObject
-{
-  NSString *type;
-  NSDictionary *attributes;
-  NSString *value;
-  NSMutableDictionary *elements;
-  NSMutableArray *values;
-}
-- (NSString*) type;
-- (NSString*) value;
-- (NSDictionary*) elements;
-- (NSArray*) values;
-- (void) addElement: (GSXibElement*)element;
-- (void) setElement: (GSXibElement*)element forKey: (NSString*)key;
-- (void) setValue: (NSString*)text;
-- (NSString*) attributeForKey: (NSString*)key;
-- (GSXibElement*) elementForKey: (NSString*)key;
-@end
-
-@interface GSXibKeyedUnarchiver: NSKeyedUnarchiver
-{
-  NSMutableDictionary *objects;
-  NSMutableArray *stack;
-  GSXibElement *currentElement;
-  NSMutableDictionary *decoded;
 }
 
 @end
