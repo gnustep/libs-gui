@@ -443,7 +443,8 @@ GSModelLoaderFactory.h \
 GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \
-GSWindowDecorationView.h
+GSWindowDecorationView.h \
+GSXibLoading.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
