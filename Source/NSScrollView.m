@@ -61,7 +61,7 @@
 //
 typedef struct _scrollViewFlags 
 {
-#ifdef WORDS_BIGENDIAN
+#if GS_WORDS_BIGENDIAN == 1
   unsigned int __unused6:14;
   unsigned int __unused5:1;
   unsigned int autohidesScrollers:1;

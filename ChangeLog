@@ -1,3 +1,13 @@
+2010-05-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h:
+	* Source/NSButtonCell.m:
+	* Source/NSMatrix.m:
+	* Source/NSScrollView.m:
+	* Source/NSTableView.m: Correct serious nib loading bug on big
+	endian machines by testing GS_WORDS_BIGENDIAN instead of
+	WORDS_BIGENDIAN.
+
 2010-05-29 01:34-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Took out interface definitions and moved them.

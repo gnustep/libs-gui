@@ -86,7 +86,7 @@ static unsigned currentDragOperation;
  */
 typedef struct _tableViewFlags
 {
-#ifdef WORDS_BIGENDIAN
+#if GS_WORDS_BIGENDIAN == 1
   unsigned int columnOrdering:1;
   unsigned int columnResizing:1;
   unsigned int drawsGrid:1;

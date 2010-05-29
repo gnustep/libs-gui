@@ -61,7 +61,7 @@
 
 typedef struct _GSButtonCellFlags 
 {
-#ifdef WORDS_BIGENDIAN
+#if GS_WORDS_BIGENDIAN == 1
   unsigned int isPushin:1;
   unsigned int changeContents:1;
   unsigned int changeBackground:1;

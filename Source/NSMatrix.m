@@ -125,7 +125,7 @@ typedef struct {
 } MRect;
 
 typedef struct _GSMatrixFlags {
-#ifdef WORDS_BIGENDIAN
+#if GS_WORDS_BIGENDIAN == 1
   unsigned int isHighlight:1;
   unsigned int isRadio:1;
   unsigned int isList:1;

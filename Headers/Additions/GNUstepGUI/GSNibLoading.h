@@ -66,7 +66,7 @@
 
 typedef struct _GSWindowTemplateFlags
 {
-#ifdef WORDS_BIGENDIAN
+#if GS_WORDS_BIGENDIAN == 1
   unsigned int isHiddenOnDeactivate:1;
   unsigned int isNotReleasedOnClose:1;
   unsigned int isDeferred:1;
