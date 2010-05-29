@@ -402,7 +402,8 @@ static NSNotificationCenter *nc = nil;
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSApplication *app = [NSApplication sharedApplication];
-  NSPoint p, op;
+  NSPoint p = NSZeroPoint, 
+    op = NSZeroPoint;
   NSEvent *e;
   NSRect r, r1, bigRect, vis;
   id v = nil, prev = nil;

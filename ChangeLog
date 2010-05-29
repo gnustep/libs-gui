@@ -1,3 +1,8 @@
+2010-05-29 12:00-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSSplitView.m: In mouseDown: initialize p and op to
+	NSZeroPoint to prevent compiler warning.
+
 2010-05-29 11:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSBitmapImageRep+PNG.m: Reverting change which removed
