@@ -1,3 +1,8 @@
+2010-05-29 11:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBitmapImageRep+PNG.m: Reverting change which removed
+	check for setjmp.  This was causing a compilation error.
+
 2010-05-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibLoading.h:
