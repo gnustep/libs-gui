@@ -117,7 +117,7 @@ use bounds rectangle instead of frame? */
 
 - (id) init
 {
-  return [self initWithContainerSize: NSZeroSize];
+  return [self initWithContainerSize: NSMakeSize(1e7, 1e7)];
 }
 
 - (void) dealloc
@@ -465,8 +465,7 @@ framework intact.
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      NSSize size = NSZeroSize;
-      // NSTextView *view = [aDecoder decodeObjectForKey: @"NSTextView"];
+      NSSize size = NSMakeSize(1e7, 1e7);
 
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
@@ -478,9 +477,10 @@ framework intact.
           int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
           
           // decode the flags.
-          _widthTracksTextView = flags & 1;
-          _heightTracksTextView = flags & 2;
-          _observingFrameChanges = flags & 4;          
+          _widthTracksTextView = (flags & 1) != 0;
+          _heightTracksTextView = (flags & 2) != 0;
+	  // Mac OS X doesn't seem to save this flag
+          _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
         }
 
       // decoding the manager adds this text container automatically...
@@ -489,7 +489,6 @@ framework intact.
 	  _layoutManager = [aDecoder decodeObjectForKey: @"NSLayoutManager"];
 	}
 
-      // [self setTextView: view];
       return self;
     }
   else
@@ -508,10 +507,9 @@ framework intact.
         ((_observingFrameChanges)?4:0);
 
       [coder encodeObject: _textView forKey: @"NSTextView"];
+      [coder encodeObject: _layoutManager forKey: @"NSLayoutManager"];
       [coder encodeFloat: size.width forKey: @"NSWidth"];
       [coder encodeInt: flags forKey: @"NSTCFlags"];
-
-      // TODO: Add layout manager encoding, if needed...
     }
 }
 
