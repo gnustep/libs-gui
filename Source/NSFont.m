@@ -1322,27 +1322,26 @@ static BOOL flip_hack;
       float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
       DESTROY(self);
-      if ([aDecoder containsValueForKey: @"NSfFlags"])
-        {
-          int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
-          // FIXME
-          if (flags == 16)
-            {
-              return RETAIN([NSFont controlContentFontOfSize: size]);
-            }
-          else if (flags == 20)
-            {
-              return RETAIN([NSFont labelFontOfSize: size]);
-            }
-          else if (flags == 22)
-            {
-              return RETAIN([NSFont titleBarFontOfSize: size]);
-            }
-        }
-
       self = RETAIN([NSFont fontWithName: name size: size]);
       if (self == nil)
         {
+	  if ([aDecoder containsValueForKey: @"NSfFlags"])
+	    {
+	      int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
+	      // FIXME
+	      if (flags == 16)
+		{
+		  return RETAIN([NSFont controlContentFontOfSize: size]);
+		}
+	      else if (flags == 20)
+		{
+		  return RETAIN([NSFont labelFontOfSize: size]);
+		}
+	      else if (flags == 22)
+		{
+		  return RETAIN([NSFont titleBarFontOfSize: size]);
+		}
+	    }
           self = RETAIN([NSFont systemFontOfSize: size]);
         }
 

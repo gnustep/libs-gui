@@ -1,5 +1,10 @@
 2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSFont.m (-initWithCoder:): Fixed keyed decoding to fall
+	back to a standard font only if the named font was not found.
+
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (NSTextViewUndoObject, -performUndo:,
 	-shouldChangeTextInRange:replacementString:): Select text
 	restored by an undo operation and set insertion point to the end
