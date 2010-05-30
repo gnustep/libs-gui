@@ -1,5 +1,12 @@
 2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextContainer.m (-init:, -initWithCoder:): Use
+	more reasonable initial container size.
+	* Source/NSTextContainer.m (-initWithCoder:): Better decoding of
+	text container flags.
+
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSLayoutManager.m (-encodeWithCoder:, -initWithCoder:):
 	Make layout manager attributes and flags persistent when using a
 	keyed archiver, i.e., saving or loading a .nib file.
