@@ -208,7 +208,8 @@
 
 - (void) setDocumentEdited: (BOOL)flag
 {
-  [[self window] setDocumentEdited: flag];
+  if ([self isWindowLoaded])
+    [[self window] setDocumentEdited: flag];
 }
 
 - (void) setWindowFrameAutosaveName:(NSString *)name
@@ -368,6 +369,7 @@
       else
         {
           [_window setReleasedWhenClosed: YES];
+          [_window setDocumentEdited: [_document isDocumentEdited]];
         }
 
     }
@@ -402,7 +404,7 @@
       NSString *title = [self windowTitleForDocumentDisplayName: displayName];
 
       /* If they just want to display the filename, use the fancy method */
-      /* NB For compatibility with Mac OS X, a document display name is equal
+      /* NB For compatibility with Mac OS X, a document's display name is equal
          to its last path component, so we check for that here too */
       if (filename != nil &&
 	  ([title isEqualToString: filename] ||
