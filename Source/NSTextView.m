@@ -706,7 +706,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = YES;
+  _tf.is_vertically_resizable = NO;
 
   /* We set defaults for all shared attributes here. If container is already
   part of a text network, we reset the attributes in -setTextContainer:. */
@@ -744,9 +744,12 @@ If a text view is added to an empty text network, it keeps its attributes.
 {
   NSTextContainer *aTextContainer;
 
-  aTextContainer = [self buildUpTextNetwork: frameRect.size];
+  NSSize containerSize = NSMakeSize(NSWidth(frameRect), 1e7);
+  aTextContainer = [self buildUpTextNetwork: containerSize];
 
   self = [self initWithFrame: frameRect textContainer: aTextContainer];
+  [self setVerticallyResizable: YES];
+  [aTextContainer setWidthTracksTextView: YES];
 
   /* At this point the situation is as follows: 
 

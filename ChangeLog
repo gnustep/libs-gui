@@ -1,5 +1,11 @@
 2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-initWithFrame:, -initWithFrame:textContainer:):
+	Ensure a more consistent initial setup of a new text view and its
+	text container.
+
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-initWithCoder:, -initWithTextView:,
 	-encodeWithCoder:): Fix decoding and encoding of a few text view
 	flags, which did not match Cocoa.
