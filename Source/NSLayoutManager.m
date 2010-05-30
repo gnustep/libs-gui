@@ -2307,6 +2307,24 @@ no_soft_invalidation:
 }
 
 
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  if ([aCoder allowsKeyedCoding])
+    {
+      int flags =
+	// FIXME attribute not yet supported by GNUstep
+	//defaultAttachementScaling |
+	(backgroundLayoutEnabled ? 0x04 : 0) |
+	(showsInvisibleCharacters ? 0x08 : 0) |
+	(showsControlCharacters ? 0x10 : 0);
+
+      [aCoder encodeObject: [self textContainers] forKey: @"NSTextContainers"];
+      [aCoder encodeObject: [self textStorage] forKey: @"NSTextStorage"];
+      [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [aCoder encodeInt: flags forKey: @"NSLMFlags"];
+    }
+}
+
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [self init];
@@ -2322,9 +2340,12 @@ no_soft_invalidation:
       if ([aDecoder containsValueForKey: @"NSLMFlags"])
         {
 	  flags = [aDecoder decodeIntForKey: @"NSLMFlags"];
-	  // nothing really to do with these flags....
-	  // they are runtime flags which, even if set into the archive
-	  // they are ignored...
+
+	  // FIXME attribute not yet supported by GNUstep
+	  //defaultAttachementScaling = (NSImageScaling)(flags & 0x03);
+	  backgroundLayoutEnabled = (flags & 0x04) != 0;
+	  showsInvisibleCharacters = (flags & 0x08) != 0;
+	  showsControlCharacters = (flags & 0x10) != 0;
 	}
       [self setDelegate: delegate];
       [storage addLayoutManager: self];

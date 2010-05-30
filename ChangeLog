@@ -1,3 +1,9 @@
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSLayoutManager.m (-encodeWithCoder:, -initWithCoder:):
+	Make layout manager attributes and flags persistent when using a
+	keyed archiver, i.e., saving or loading a .nib file.
+
 2010-05-29 12:00-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSSplitView.m: In mouseDown: initialize p and op to
