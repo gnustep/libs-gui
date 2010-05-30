@@ -179,17 +179,17 @@ Interface for a bunch of internal methods that need to be cleaned up.
 {
   if ((self = [super init]) != nil)
     {
-      flags = (([tv isEditable]?0x01:0) |
-	       ([tv isSelectable]?0x02:0) |
+      flags = (([tv isSelectable]?0x01:0) |
+	       ([tv isEditable]?0x02:0) |
 	       ([tv isRichText]?0x04:0) |
 	       ([tv importsGraphics]?0x08:0) |
 	       ([tv isFieldEditor]?0x10:0) |
 	       ([tv usesFontPanel]?0x20:0) |
 	       ([tv isRulerVisible]?0x40:0) |
 	       ([tv usesRuler]?0x100:0) |
-	       ([tv drawsBackground]?0x800:0) |
-	       ([tv smartInsertDeleteEnabled]?0x2000000:0) |
-	       ([tv allowsUndo]?0x40000000:0));
+	       ([tv smartInsertDeleteEnabled]?0x200:0) |
+	       ([tv allowsUndo]?0x400:0) |
+	       ([tv drawsBackground]?0x800:0));
 
       ASSIGN(backgroundColor, [tv backgroundColor]);
       ASSIGN(paragraphStyle, [tv defaultParagraphStyle]);
@@ -779,7 +779,12 @@ that makes decoding and encoding compatible with the old code.
 
   if ([aCoder allowsKeyedCoding])
     {
-      NSTextViewSharedData *tvsd = [[NSTextViewSharedData alloc] initWithTextView: self];
+      int flags =
+	(_tf.is_horizontally_resizable ? 0x01 : 0) |
+	(_tf.is_vertically_resizable ? 0x02 : 0) |
+	(_tf.owns_text_network ? 0x04 : 0);
+      NSTextViewSharedData *tvsd =
+	[[NSTextViewSharedData alloc] initWithTextView: self];
 
       [aCoder encodeConditionalObject: _delegate forKey: @"NSDelegate"];
       [aCoder encodeSize: [self maxSize] forKey: @"NSMaxSize"];
@@ -788,8 +793,7 @@ that makes decoding and encoding compatible with the old code.
       RELEASE(tvsd);
       [aCoder encodeObject: [self textStorage] forKey: @"NSTextStorage"];
       [aCoder encodeObject: [self textContainer] forKey: @"NSTextContainer"];
-      [aCoder encodeInt: 0 forKey: @"NSTVFlags"]; // no delegates, etc... set to zero.      
-      [self setAllowsUndo: YES];
+      [aCoder encodeInt: flags forKey: @"NSTVFlags"];
     }
   else
     {
@@ -843,7 +847,6 @@ that makes decoding and encoding compatible with the old code.
 
   if ([aDecoder allowsKeyedCoding])
     {  
-      id textString = nil;
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
           [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -886,57 +889,41 @@ that makes decoding and encoding compatible with the old code.
           ASSIGN(_markedTextAttributes, [shared markAttributes]);
           ASSIGN(_linkTextAttributes, [shared linkAttributes]);
 
-          _tf.is_editable = ((0x01 & flags) > 0);
-          _tf.is_selectable = ((0x02 & flags) > 0);
+          _tf.is_selectable = ((0x01 & flags) > 0);
+          _tf.is_editable = ((0x02 & flags) > 0);
           _tf.is_rich_text = ((0x04 & flags) > 0);
           _tf.imports_graphics = ((0x08 & flags) > 0);
           _tf.is_field_editor = ((0x10 & flags) > 0);
           _tf.uses_font_panel = ((0x20 & flags) > 0);
           _tf.is_ruler_visible = ((0x40 & flags) > 0);
           _tf.uses_ruler = ((0x100 & flags) > 0);
+          _tf.smart_insert_delete = ((0x200 & flags) > 0);
+          _tf.allows_undo = ((0x400 & flags) > 0);	  
           _tf.draws_background = ((0x800 & flags) > 0);
-          _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
-          _tf.allows_undo = ((0x40000000 & flags) > 0);	  
-          
-          _tf.owns_text_network = YES;
-          _tf.is_horizontally_resizable = NO;
-          _tf.is_vertically_resizable = YES;
         }
+     
+      if ([aDecoder containsValueForKey: @"NSTVFlags"])
+        {
+          int flags = [aDecoder decodeIntForKey: @"NSTVFlags"];
 
+          _tf.is_horizontally_resizable = ((flags & 0x01) != 0);
+          _tf.is_vertically_resizable = ((flags & 0x02) != 0);
+          _tf.owns_text_network = ((flags & 0x04) != 0);
+        }
+ 
       // Get the text container to retrieve the text which was previously archived
       // so that it can be inserted into the current textview.
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         { 
 	  NSTextContainer *container = [aDecoder decodeObjectForKey: @"NSTextContainer"];
-	  GSLayoutManager *lm = [container layoutManager];
-	  textString = [lm textStorage];
-	  [self setRichText: YES];
-        }
-
-      // set up the text network...
-      {
-	NSSize size = NSMakeSize(0,_maxSize.height);
-	NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
-	
-	[aTextContainer setTextView: self];
-	// See initWithFrame: for comments on this RELEASE 
-	RELEASE(self);
-        
-	[aTextContainer setContainerSize: size];
-	[aTextContainer setWidthTracksTextView: YES];
-	[aTextContainer setHeightTracksTextView: NO];
-      }
-      
-      if ([aDecoder containsValueForKey: @"NSTVFlags"])
-        {
-          //[aDecoder decodeIntForKey: @"NSTVFlags"];
+	  [container setTextView: self];
         }
       //@"NSDragTypes"
 
-      // Don't add the string if it's nil
-      if(textString != nil)
+      if (_tf.owns_text_network && _textStorage != nil)
 	{
-	  [self insertText: textString];
+	  // See initWithFrame: for comments on this RELEASE
+	  RELEASE(self);
 	}
     }
   else

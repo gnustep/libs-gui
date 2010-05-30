@@ -1,5 +1,14 @@
 2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-initWithCoder:, -initWithTextView:,
+	-encodeWithCoder:): Fix decoding and encoding of a few text view
+	flags, which did not match Cocoa.
+	* Source/NSTextView.m (-initWithCoder:): Replace a completely
+	bogus workaround to set up the text network of a text view loaded
+	from a .nib file with a clean solution.
+
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextContainer.m (-init:, -initWithCoder:): Use
 	more reasonable initial container size.
 	* Source/NSTextContainer.m (-initWithCoder:): Better decoding of
