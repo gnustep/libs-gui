@@ -1,5 +1,12 @@
 2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (NSTextViewUndoObject, -performUndo:,
+	-shouldChangeTextInRange:replacementString:): Select text
+	restored by an undo operation and set insertion point to the end
+	of the changed text after a redo operation.
+
+2010-05-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-initWithFrame:, -initWithFrame:textContainer:):
 	Ensure a more consistent initial setup of a new text view and its
 	text container.

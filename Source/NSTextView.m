@@ -113,11 +113,9 @@ a new internal method called from NSLayoutManager when text has changed.
 {
   NSRange range;
   NSAttributedString *string;
-  NSRange selectedRange;
 }
 - (id) initWithRange: (NSRange)aRange
-    attributedString: (NSAttributedString *)aString
-       selectedRange: (NSRange)selected;
+    attributedString: (NSAttributedString *)aString;
 - (NSRange) range;
 - (void) setRange: (NSRange)aRange;
 - (void) performUndo: (NSTextStorage *)aTextStorage;
@@ -2617,8 +2615,7 @@ TextDidEndEditing notification _without_ asking the delegate
 
       undoObject =
 	[[NSTextViewUndoObject alloc] initWithRange: undoRange
-				   attributedString: undoString
-				      selectedRange: [self selectedRange]];
+				   attributedString: undoString];
       [undo registerUndoWithTarget: _textStorage
 			  selector: @selector(_undoTextChange:)
 			    object: undoObject];
@@ -5658,13 +5655,11 @@ or add guards
 
 - (id) initWithRange: (NSRange)aRange
     attributedString: (NSAttributedString *)aString
-       selectedRange: (NSRange)selected
 {
   if ((self = [super init]) != nil)
     {
       range = aRange;
       string = RETAIN(aString);
-      selectedRange = selected;
     }
   return self;
 }
@@ -5695,7 +5690,11 @@ or add guards
     {
       [tv replaceCharactersInRange: range
 	      withAttributedString: string];
-      [tv setSelectedRange: selectedRange];
+      range.length = [string length];
+      if ([[tv undoManager] isUndoing])
+	[tv setSelectedRange: range];
+      else
+	[tv setSelectedRange: NSMakeRange(NSMaxRange(range), 0)];
       [tv didChangeText];
     }
 }
