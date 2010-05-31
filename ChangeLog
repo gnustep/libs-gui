@@ -1,3 +1,12 @@
+2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAlert.m: Fix NSAlert implementation so that buttons are
+	assigned tags starting with NSAlertFirstButtonReturn, except if the
+	panel was created with the backward compatibility method
+	+alertWithMessageText:defaultButton:... Also assign appropriate
+	key equivalents to buttons in panels created with the old OpenStep
+	alert panel functions.
+
 2010-06-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSOutlineView.h,

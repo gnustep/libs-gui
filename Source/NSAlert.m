@@ -208,10 +208,15 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 - (void) setTitleBar: (NSString*)titleBar
 		icon: (NSImage*)icon
 	       title: (NSString*)title
+	     message: (NSString*)message;
+- (void) setTitleBar: (NSString*)titleBar
+		icon: (NSImage*)icon
+	       title: (NSString*)title
 	     message: (NSString*)message
 		 def: (NSString*)defaultButton
 		 alt: (NSString*)alternateButton
 	       other: (NSString*)otherButton;
+- (void) setButtons: (NSArray *)buttons;
 - (void) sizePanelToFit;
 - (void) buttonAction: (id)sender;
 - (int) result;
@@ -306,7 +311,7 @@ makeScrollViewWithRect(NSRect rect)
   return scroll;
 }
 
-- (NSButton*) _makeButtonWithRect: (NSRect)rect
+- (NSButton*) _makeButtonWithRect: (NSRect)rect tag: (int)tag
 {
   NSButton	*button = [[NSButton alloc] initWithFrame: rect];
 
@@ -315,6 +320,7 @@ makeScrollViewWithRect(NSRect rect)
   [button setTitle: @""];
   [button setTarget: self];
   [button setAction: @selector(buttonAction:)];
+  [button setTag: tag];
   [button setFont: [NSFont systemFontOfSize: 0]];
   return button;
 }
@@ -343,6 +349,53 @@ setControl(NSView* content, id control, NSString *title)
   else if (useControl(control))
     {
       [control removeFromSuperview];
+    }
+}
+
+static void
+setButton(NSView* content, NSButton *control, NSButton *template)
+{
+  if (template != nil)
+    {
+      [control setTitle: [template title]];
+      [control setKeyEquivalent: [template keyEquivalent]];
+      [control setKeyEquivalentModifierMask:
+		 [template keyEquivalentModifierMask]];
+      [control setTag: [template tag]];
+      [control sizeToFit];
+      if (!useControl(control))
+	{
+	  [content addSubview: control];
+	}
+    }
+  else if (useControl(control))
+    {
+      [control removeFromSuperview];
+    }
+}
+
+static void
+setKeyEquivalent(NSButton *button)
+{
+  NSString *title = [button title];
+  
+  if (![[button keyEquivalent] isEqualToString: @"\r"])
+    {
+      if ([title isEqualToString: _(@"Cancel")])
+	{
+	  [button setKeyEquivalent: @"\e"];
+	  [button setKeyEquivalentModifierMask: 0];
+	}
+      else if ([title isEqualToString: _(@"Don't Save")])
+	{
+	  [button setKeyEquivalent: @"d"];
+	  [button setKeyEquivalentModifierMask: NSCommandKeyMask];
+	}
+      else
+	{
+	  [button setKeyEquivalent: @""];
+	  [button setKeyEquivalentModifierMask: 0];
+	}
     }
 }
 
@@ -443,7 +496,7 @@ setControl(NSView* content, id control, NSString *title)
   [messageField setStringValue: @""];
   [messageField setFont: MessageFont];
   
-  defButton = [self _makeButtonWithRect: rect];
+  defButton = [self _makeButtonWithRect: rect tag: NSAlertDefaultReturn];
   [defButton setKeyEquivalent: @"\r"];
   [defButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask 
                               | NSContentsCellMask];
@@ -451,8 +504,8 @@ setControl(NSView* content, id control, NSString *title)
   [defButton setImage: [NSImage imageNamed: @"common_ret"]];
   [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
   
-  altButton = [self _makeButtonWithRect: rect];
-  othButton = [self _makeButtonWithRect: rect];
+  altButton = [self _makeButtonWithRect: rect tag: NSAlertAlternateReturn];
+  othButton = [self _makeButtonWithRect: rect tag: NSAlertOtherReturn];
   
   rect.size.height = 80.0;
   scroll = makeScrollViewWithRect(rect);
@@ -727,22 +780,7 @@ setControl(NSView* content, id control, NSString *title)
       NSLog(@"alert panel buttonAction: when not in modal loop\n");
       return;
     }
-  else if (sender == defButton)
-    {
-      result = NSAlertDefaultReturn;
-    }
-  else if (sender == altButton)
-    {
-      result = NSAlertAlternateReturn;
-    }
-  else if (sender == othButton)
-    {
-      result = NSAlertOtherReturn;
-    }
-  else
-    {
-      NSLog(@"alert panel buttonAction: from unknown sender - x%p\n", sender);
-    }
+  result = [sender tag];
   [NSApp stopModalWithCode: result];
 }
 
@@ -780,9 +818,6 @@ setControl(NSView* content, id control, NSString *title)
 		icon: (NSImage*)icon
 	       title: (NSString*)title
 	     message: (NSString*)message
-		 def: (NSString*)defaultButton
-		 alt: (NSString*)alternateButton
-	       other: (NSString*)otherButton
 {
   NSView	*content = [self contentView];
 
@@ -820,7 +855,19 @@ setControl(NSView* content, id control, NSString *title)
     {
       [messageField setAlignment: NSCenterTextAlignment];
     }
+}
 
+- (void) setTitleBar: (NSString*)titleBar
+		icon: (NSImage*)icon
+	       title: (NSString*)title
+	     message: (NSString*)message
+		 def: (NSString*)defaultButton
+		 alt: (NSString*)alternateButton
+	       other: (NSString*)otherButton
+{
+  NSView *content = [self contentView];
+
+  [self setTitleBar: titleBar icon: icon title: title message: message];
   setControl(content, defButton, defaultButton);
   setControl(content, altButton, alternateButton);
   setControl(content, othButton, otherButton);
@@ -831,6 +878,14 @@ setControl(NSView* content, id control, NSString *title)
   else
     {
       [self makeFirstResponder: self];
+    }
+  if (useControl(altButton))
+    {
+      setKeyEquivalent(altButton);
+    }
+  if (useControl(othButton))
+    {
+      setKeyEquivalent(othButton);
     }
 
   /* a *working* nextKeyView chain:
@@ -884,6 +939,49 @@ setControl(NSView* content, id control, NSString *title)
 	  }
       }
   }
+  [self sizePanelToFit];
+  isGreen = YES;
+  result = NSAlertErrorReturn; 	/* If no button was pressed	*/
+}
+
+- (void) setButtons: (NSArray *)buttons;
+{
+  NSView *content = [self contentView];
+  NSUInteger count = [buttons count];
+
+  setButton(content, defButton, count > 0 ? [buttons objectAtIndex: 0] : nil);
+  setButton(content, altButton, count > 1 ? [buttons objectAtIndex: 1] : nil);
+  setButton(content, othButton, count > 2 ? [buttons objectAtIndex: 2] : nil);
+  if (useControl(defButton))
+    {
+      [self makeFirstResponder: defButton];
+    }
+  else
+    {
+      [self makeFirstResponder: self];
+    }
+
+  /* a *working* nextKeyView chain:
+     the trick is that the 3 buttons are not always used (displayed)
+     so we have to set the nextKeyView *each* time.
+     */
+  if (count > 2)
+    {
+      [defButton setNextKeyView: othButton];
+      [othButton setNextKeyView: altButton];
+      [altButton setNextKeyView: defButton];
+    }
+  else if (count > 1)
+    {
+      [defButton setNextKeyView: altButton];
+      [altButton setNextKeyView: defButton];
+    }
+  else if (count > 0)
+    {
+      [defButton setPreviousKeyView: nil];
+      [defButton setNextKeyView: nil];
+    }
+
   [self sizePanelToFit];
   isGreen = YES;
   result = NSAlertErrorReturn; 	/* If no button was pressed	*/
@@ -1712,6 +1810,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 {
   va_list ap;
   NSAlert *alert = [[self alloc] init];
+  NSButton *but;
   NSString *text;
 
   va_start(ap, format);
@@ -1727,21 +1826,24 @@ void NSBeginInformationalAlertSheet(NSString *title,
 
   if (defaultButtonTitle != nil)
     {
-      [alert addButtonWithTitle: defaultButtonTitle];
+      but = [alert addButtonWithTitle: defaultButtonTitle];
     }
   else
     {
-      [alert addButtonWithTitle: _(@"OK")];
+      but = [alert addButtonWithTitle: _(@"OK")];
     }
+  [but setTag: NSAlertDefaultReturn];
 
   if (alternateButtonTitle != nil)
     {
-      [alert addButtonWithTitle: alternateButtonTitle];
+      but = [alert addButtonWithTitle: alternateButtonTitle];
+      [but setTag: NSAlertAlternateReturn];
     }
 
   if (otherButtonTitle != nil)
     {
-      [alert addButtonWithTitle: otherButtonTitle];
+      but = [alert addButtonWithTitle: otherButtonTitle];
+      [but setTag: NSAlertOtherReturn];
     }
 
   return AUTORELEASE(alert);
@@ -1814,15 +1916,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
   else
     {
       [button setTag: NSAlertFirstButtonReturn + count];
-      if ([aTitle isEqualToString: _(@"Cancel")])
-        {
-	  [button setKeyEquivalent: @"\e"];
-	}
-      else if ([aTitle isEqualToString: _(@"Don't Save")])
-        {
-	  [button setKeyEquivalent: @"D"];
-	  [button setKeyEquivalentModifierMask: NSCommandKeyMask];
-	}
+      setKeyEquivalent(button);
     }
 
   [_buttons addObject: button];
@@ -1887,7 +1981,6 @@ void NSBeginInformationalAlertSheet(NSString *title,
     {
       GSAlertPanel *panel;
       NSString *title;
-      unsigned nbut = [_buttons count];
 
       panel = [[GSAlertPanel alloc] init];
       _window = panel;
@@ -1908,10 +2001,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
       [panel setTitleBar: title
              icon: _icon
              title: _message_text != nil ? _message_text : _(@"Alert")
-             message: _informative_text
-             def: (nbut > 0) ? [[_buttons objectAtIndex: 0] title] : (NSString*)nil
-             alt: (nbut > 1) ? [[_buttons objectAtIndex: 1] title] : (NSString*)nil
-             other: (nbut > 2) ? [[_buttons objectAtIndex: 2] title] : (NSString*)nil];
+	     message: _informative_text];
+      [panel setButtons: _buttons];
     }
 }
 
