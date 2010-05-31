@@ -1,3 +1,8 @@
+2010-05-31  David Wetzel <dave@turbocat.de>
+       * Source/NSViewController.m
+       * Headers/AppKit/NSViewController.h
+       New files fixes #29822
+
 2010-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindowController.m (-setDocumentEdited:, -setWindow:):

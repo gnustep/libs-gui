@@ -183,6 +183,7 @@ NSTokenField.m \
 NSTokenFieldCell.m \
 NSUserDefaultsController.m \
 NSView.m \
+NSViewController.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
@@ -386,6 +387,7 @@ NSTokenField.h \
 NSTokenFieldCell.h \
 NSUserDefaultsController.h \
 NSView.h \
+NSViewController.h \
 NSWindow.h \
 NSWindowController.h \
 NSWorkspace.h \

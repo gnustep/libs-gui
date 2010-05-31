@@ -178,6 +178,7 @@
 #import <AppKit/NSToolbarItem.h>
 #import <AppKit/NSUserDefaultsController.h>
 #import <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSViewController.h>
 #import <AppKit/NSWindowController.h>
 #endif
 
