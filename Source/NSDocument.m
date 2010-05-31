@@ -1052,6 +1052,8 @@ originalContentsURL: (NSURL *)orig
 
   ASSIGN(_save_type, [[sender selectedItem] representedObject]);
   extensions = [controller fileExtensionsFromType: _save_type];
+  if ([extensions containsObject: @"*"])
+    extensions = nil;
   [(NSSavePanel *)[sender window] setAllowedFileTypes: extensions];
 }
 
@@ -1157,6 +1159,8 @@ originalContentsURL: (NSURL *)orig
   if ([types count] > 0)
     {
       NSArray *extensions = [controller fileExtensionsFromType: [self fileType]];
+      if ([extensions containsObject: @"*"])
+	extensions = nil;
       [savePanel setAllowedFileTypes: extensions];
     }
 
@@ -1272,7 +1276,7 @@ originalContentsURL: (NSURL *)orig
   NSArray *exts = [[NSDocumentController sharedDocumentController]
                       fileExtensionsFromType: typeName];
   
-  if ([exts count])
+  if ([exts count] && ![exts containsObject: @"*"])
     return (NSString *)[exts objectAtIndex: 0];
 
   return @"";

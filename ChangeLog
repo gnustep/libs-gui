@@ -1,3 +1,11 @@
+2010-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocumentController.m (-_openableFileExtensions,
+	-typeFromFileExtension:):
+	* Source/NSDocument.m (-_runSavePanelForSaveOperation:,
+	-changeSaveType:, -fileNameExtensionForType:saveOperation:):
+	Implement support for document types with a wild card extension.
+
 2010-05-31  David Wetzel <dave@turbocat.de>
        * Source/NSViewController.m
        * Headers/AppKit/NSViewController.h

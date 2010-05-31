@@ -769,7 +769,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
       [array addObjectsFromArray: [typeInfo objectForKey: CFBundleTypeExtensions]];
     }
   
-  return array;
+  return [array containsObject: @"*"] == NO ? (NSArray *)array : (NSArray *)nil;
 }
 
 /** Uses -runModalOpenPanel:forTypes: to allow the user to select
@@ -1215,7 +1215,8 @@ static BOOL _shouldClose = YES;
 - (NSString *) typeFromFileExtension: (NSString *)fileExtension
 {
   int i, count = [_types count];
-        
+
+  // Check for a document type with the supplied extension
   for (i = 0; i < count; i++)
     {
       NSDictionary *typeInfo = [_types objectAtIndex: i];
@@ -1236,7 +1237,28 @@ static BOOL _shouldClose = YES;
           return type;
         }
     }
-        
+
+  // No exact match; check for a document type that supports any extension
+  for (i = 0; i < count; i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex: i];
+      
+      if ([[typeInfo objectForKey: NSUnixExtensionsKey] containsObject: @"*"]
+	|| [[typeInfo objectForKey: NSDOSExtensionsKey] containsObject: @"*"]
+	|| [[typeInfo objectForKey: CFBundleTypeExtensions]
+          containsObject: @"*"])
+        {
+          NSString *type = [typeInfo objectForKey: NSNameKey];
+
+          if (type == nil)
+            {
+              type = [typeInfo objectForKey: CFBundleTypeName];
+            }
+          return type;
+        }
+    }
+
+  // No luck
   return nil;
 }
 
