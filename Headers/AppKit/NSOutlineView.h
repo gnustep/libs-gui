@@ -47,7 +47,7 @@
   BOOL _autoResizesOutlineColumn;
   BOOL _indentationMarkerFollowsCell;
   BOOL _autosaveExpandedItems;
-  float _indentationPerLevel;
+  CGFloat _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
 }
 
@@ -58,25 +58,30 @@
 - (void) collapseItem: (id)item collapseChildren: (BOOL)collapseChildren;
 - (void) expandItem: (id)item;
 - (void) expandItem: (id)item expandChildren: (BOOL)expandChildren;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSRect) frameOfOutlineCellAtRow: (NSInteger)row;
+#endif
 - (BOOL) indentationMarkerFollowsCell;
-- (float) indentationPerLevel;
+- (CGFloat) indentationPerLevel;
 - (BOOL) isExpandable: (id)item;
 - (BOOL) isItemExpanded: (id)item;
-- (id) itemAtRow: (int)row;
-- (int) levelForItem: (id)item;
-- (int) levelForRow: (int)row;
+- (id) itemAtRow: (NSInteger)row;
+- (NSInteger) levelForItem: (id)item;
+- (NSInteger) levelForRow: (NSInteger)row;
 - (NSTableColumn *) outlineTableColumn;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (id) parentForItem: (id)item;
+#endif
 - (void) reloadItem: (id)item;
 - (void) reloadItem: (id)item reloadChildren: (BOOL)reloadChildren;
-- (int) rowForItem: (id)item;
+- (NSInteger) rowForItem: (id)item;
 - (void) setAutoresizesOutlineColumn: (BOOL)resize;
 - (void) setAutosaveExpandedItems: (BOOL)flag;
-- (void) setDropItem: (id)item dropChildIndex: (int)childIndex;
+- (void) setDropItem: (id)item dropChildIndex: (NSInteger)childIndex;
 - (void) setIndentationMarkerFollowsCell: (BOOL)followsCell;
-- (void) setIndentationPerLevel: (float)newIndentLevel;
+- (void) setIndentationPerLevel: (CGFloat)newIndentLevel;
 - (void) setOutlineTableColumn: (NSTableColumn *)outlineTableColumn;
 - (BOOL) shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited;
-
 @end /* interface of NSOutlineView */
 
 /** 

@@ -367,6 +367,24 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+- (NSRect) frameOfOutlineCellAtRow: (NSInteger)row
+{
+  NSRect frameRect;
+
+  if (![self isExpandable: [self itemAtRow: row]])
+    return NSZeroRect;
+
+  frameRect = [self frameOfCellAtColumn: 0
+                                    row: row];
+  
+  if (_indentationMarkerFollowsCell)
+    {
+      frameRect.origin.x += _indentationPerLevel * [self levelForRow: row];
+    }
+
+  return frameRect;
+}
+
 /**
  * Returns whether or not the indentation marker or "knob" is indented
  * along with the content inside the cell.
@@ -380,7 +398,7 @@ static NSImage *unexpandable  = nil;
  * Returns the amount of indentation, in points, for each level
  * of the tree represented by the outline view.
  */
-- (float) indentationPerLevel
+- (CGFloat) indentationPerLevel
 {
   return _indentationPerLevel;
 }
@@ -418,7 +436,7 @@ static NSImage *unexpandable  = nil;
  * Returns the item at a given row. If no item exists for the given row,
  * returns nil.
  */
-- (id) itemAtRow: (int)row
+- (id) itemAtRow: (NSInteger)row
 {
   if ((row >= [_items count]) || (row < 0))
     {
@@ -430,12 +448,12 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns the level for a given item.
  */
-- (int) levelForItem: (id)item
+- (NSInteger) levelForItem: (id)item
 {
   if (item != nil)
     {
       id object = NSMapGet(_levelOfItems, item);
-      return [object intValue];
+      return [object integerValue];
     }
 
   return -1;
@@ -444,7 +462,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns the level for the given row.
  */
-- (int) levelForRow: (int)row
+- (NSInteger) levelForRow: (NSInteger)row
 {
   return [self levelForItem: [self itemAtRow: row]];
 }
@@ -455,6 +473,29 @@ static NSImage *unexpandable  = nil;
 - (NSTableColumn *) outlineTableColumn
 {
   return _outlineTableColumn;
+}
+
+/**
+ * Returns the parent of the given item or nil
+ */
+- (id) parentForItem: (id)item
+{
+  NSArray *allKeys = NSAllMapTableKeys(_itemDict);
+  NSEnumerator *en = [allKeys objectEnumerator];
+  NSInteger index;
+  id parent;
+
+  while ((parent = [en nextObject]))
+    {
+      NSMutableArray *childArray = NSMapGet(_itemDict, parent);
+
+      if ((index = [childArray indexOfObject: item]) != NSNotFound)
+        {
+          return (parent == [NSNull null]) ? (id)nil : (id)parent;
+        }
+    }
+
+  return nil;
 }
 
 /**
@@ -473,7 +514,7 @@ static NSImage *unexpandable  = nil;
  */
 - (void) reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
-  int index;
+  NSInteger index;
   id parent;
   BOOL expanded;
   id dsobj = nil;
@@ -490,7 +531,7 @@ static NSImage *unexpandable  = nil;
 
       if ((index = [childArray indexOfObject: object]) != NSNotFound)
         {
-          parent = (parent == [NSNull null]) ? (id)nil :  (id)parent;
+          parent = (parent == [NSNull null]) ? (id)nil : (id)parent;
           dsobj = [_dataSource outlineView: self
                                child: index
                                ofItem: parent];
@@ -524,9 +565,9 @@ static NSImage *unexpandable  = nil;
  * Returns the corresponding row in the outline view for the given item.
  * Returns -1 if item is nil or not found.
  */
-- (int) rowForItem: (id)item
+- (NSInteger) rowForItem: (id)item
 {
-  int row;
+  NSInteger row;
   if (item == nil)
     return -1;
 
@@ -599,7 +640,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Sets the amount, in points, that each level is to be indented by.
  */
-- (void)setIndentationPerLevel: (float)newIndentLevel
+- (void)setIndentationPerLevel: (CGFloat)newIndentLevel
 {
   _indentationPerLevel = newIndentLevel;
 }
@@ -717,6 +758,7 @@ static NSImage *unexpandable  = nil;
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding] == NO)
     {
+      float indentation = _indentationPerLevel;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
                                  at: &_autoResizesOutlineColumn];
       [aCoder encodeValueOfObjCType: @encode(BOOL)
@@ -724,7 +766,7 @@ static NSImage *unexpandable  = nil;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
                                  at: &_autosaveExpandedItems];
       [aCoder encodeValueOfObjCType: @encode(float)
-                                 at: &_indentationPerLevel];
+                                 at: &indentation];
       [aCoder encodeConditionalObject: _outlineTableColumn];
     }
 }
@@ -748,6 +790,7 @@ static NSImage *unexpandable  = nil;
     }
   else
     {
+      float indentation;
       // overrides outline defaults with archived values
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
                                    at: &_autoResizesOutlineColumn];
@@ -756,7 +799,8 @@ static NSImage *unexpandable  = nil;
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
                                    at: &_autosaveExpandedItems];
       [aDecoder decodeValueOfObjCType: @encode(float)
-                                   at: &_indentationPerLevel];
+                                   at: &indentation];
+      _indentationPerLevel = indentation;
       _outlineTableColumn = [aDecoder decodeObject];
     }
   return self;
@@ -887,8 +931,8 @@ static NSImage *unexpandable  = nil;
       if (tb == _outlineTableColumn)
         {
           NSImage *image = nil;
-          int level = 0;
-          float indentationFactor = 0.0;
+          NSInteger level = 0;
+          CGFloat indentationFactor = 0.0;
           // float originalWidth = drawingRect.size.width;
 
           // display the correct arrow...
@@ -909,17 +953,7 @@ static NSImage *unexpandable  = nil;
           level = [self levelForItem: item];
           indentationFactor = _indentationPerLevel * level;
           imageCell = [[NSCell alloc] initImageCell: image];
-
-          if (_indentationMarkerFollowsCell)
-            {
-              imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-              imageRect.origin.y = drawingRect.origin.y;
-            }
-          else
-            {
-              imageRect.origin.x = drawingRect.origin.x;
-              imageRect.origin.y = drawingRect.origin.y;
-            }
+          imageRect = [self frameOfOutlineCellAtRow: rowIndex];
 
           if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
             {
@@ -978,7 +1012,7 @@ static NSImage *unexpandable  = nil;
 }
 
 - (void) setDropItem: (id)item
-      dropChildIndex: (int)childIndex
+      dropChildIndex: (NSInteger)childIndex
 {
 
   if (item != nil && [_items indexOfObject: item] == NSNotFound)
@@ -1018,7 +1052,9 @@ static NSImage *unexpandable  = nil;
 }
 
 // TODO: Move the part that starts at 'Compute the indicator rect area' to GSTheme
-- (void) drawDropAboveIndicatorWithDropItem: (id)currentDropItem atRow: (int)row childDropIndex: (int)currentDropIndex
+- (void) drawDropAboveIndicatorWithDropItem: (id)currentDropItem 
+                                      atRow: (int)row 
+                             childDropIndex: (int)currentDropIndex
 {
   int level = 0;
   NSBezierPath *path = nil;
@@ -1136,10 +1172,12 @@ static NSImage *unexpandable  = nil;
 
 /* Returns the row whose item is the parent that owns the child at the given row. 
 Also returns the child index relative to this parent. */
-- (int) parentRowForRow: (int)row atLevel: (int)level andReturnChildIndex: (int *)childIndex
+- (NSInteger) _parentRowForRow: (NSInteger)row 
+                       atLevel: (NSInteger)level 
+           andReturnChildIndex: (NSInteger *)childIndex
 {
-  int i;
-  int lvl;
+  NSInteger i;
+  NSInteger lvl;
 
   *childIndex = 0;
 
@@ -1173,29 +1211,29 @@ Also returns the child index relative to this parent. */
    * The insertion row is identical to the hovered row, except when p is in 
    * the hovered row bottom part (the last quarter).
    */
-  int row;
+  NSInteger row;
   /* A row can be divided into 4 vertically stacked portions.
    * We call each portion a quarter. 
    * verticalQuarterPosition is the number of quarters that exists between the 
    * top left origin (NSOutlineView is flipped) and the hovered row (precisely 
    * up to the quarter occupied by the pointer in this row). 
    */
-  int verticalQuarterPosition;
+  NSInteger verticalQuarterPosition;
   /* An indentation unit can be divided into 2 portions (left and right).
    * We call each portion a half.
    * We use it to compute the insertion level. */
-  int horizontalHalfPosition;
+  NSInteger horizontalHalfPosition;
   /* The quarter (0, 1, 2 or 3) occupied by the pointer within the hovered row
    * (not in the insertion row). */
-  int positionInRow;
+  NSInteger positionInRow;
   /* The previous row level (the row before the insertion row) */
-  int levelBefore;
+  NSInteger levelBefore;
   /* The next row level (the row after the insertion row) */
-  int levelAfter;
+  NSInteger levelAfter;
   /* The insertion level that may vary with the horizontal pointer position, 
    * when the pointer is between two rows and the bottom row is a parent.
    */
-  int level;
+  NSInteger level;
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
 
   ASSIGN(lastDragUpdate, [NSDate date]);
@@ -1243,9 +1281,9 @@ Also returns the child index relative to this parent. */
   if ((lastVerticalQuarterPosition != verticalQuarterPosition)
     || (lastHorizontalHalfPosition != horizontalHalfPosition))
     {
-      int minInsertionLevel = levelAfter;
-      int maxInsertionLevel = levelBefore;
-      int pointerInsertionLevel = rint((float)horizontalHalfPosition / 2.);
+      NSInteger minInsertionLevel = levelAfter;
+      NSInteger maxInsertionLevel = levelBefore;
+      NSInteger pointerInsertionLevel = rint((float)horizontalHalfPosition / 2.);
 
       /* Save positions to avoid executing this code when the general
        * position of the mouse is unchanged.
@@ -1302,10 +1340,10 @@ Also returns the child index relative to this parent. */
 	}
       else /* Drop above */
 	{
-          int childIndex = 0;
-          int parentRow = [self parentRowForRow: row 
-                                        atLevel: level 
-                            andReturnChildIndex: &childIndex];
+          NSInteger childIndex = 0;
+          NSInteger parentRow = [self _parentRowForRow: row 
+                                               atLevel: level 
+                                   andReturnChildIndex: &childIndex];
 
 	  //NSLog(@"found %d (proposed childIndex = %d)", parentRow, childIndex);
 
