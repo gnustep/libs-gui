@@ -743,6 +743,8 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
   [openPanel setDirectory: [self currentDirectory]];
   [openPanel setAllowsMultipleSelection: YES];
+  [openPanel setCanChooseFiles: YES];
+  [openPanel setCanChooseDirectories: NO];
   return openPanel;
 }
 

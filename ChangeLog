@@ -1,5 +1,11 @@
 2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSDocumentController.m (-_setupOpenPanel): Disable
+	directory selection in open panels, which is useless since
+	document file packages are shown as plain files in the panel.
+
+2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSAlert.m: Fix NSAlert implementation so that buttons are
 	assigned tags starting with NSAlertFirstButtonReturn, except if the
 	panel was created with the backward compatibility method
