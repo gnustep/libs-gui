@@ -767,6 +767,17 @@ many times.
       DESTROY(mini);
     }
 
+  /* Terminate backend window early so that the receiver is no longer returned
+     from GSOrderedWindows() or GSAllWindows(). This helps to prevent crashes
+     due to a race with some lame window managers under X that do not update
+     the _NET_CLIENT_LIST_STACKING property quickly enough. GSOrderedWindows()
+     may be called (indirectly) when a tooltip is visible while a window is
+     deallocated. */
+  if (_windowNum)
+    {
+      [self _terminateBackendWindow];
+    }
+
   /* Clean references to this window - important if some of the views
      are not deallocated now */
   [_wv _viewWillMoveToWindow: nil];
@@ -797,11 +808,6 @@ many times.
    * their drag types, so we should already have been removed.
    */
   [GSServerForWindow(self) removeDragTypes: nil fromWindow: self];
-
-  if (_windowNum)
-    {
-      [self _terminateBackendWindow];
-    }
 
   if (_delegate != nil)
     {

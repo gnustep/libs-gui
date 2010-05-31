@@ -1,5 +1,11 @@
 2010-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-dealloc): Avoid a race with some lame window
+	managers, which could lead to a crash when a window is closed and
+	deallocated while a tool tip is visible.
+
+2010-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSDocumentController.m (-_openableFileExtensions,
 	-typeFromFileExtension:):
 	* Source/NSDocument.m (-_runSavePanelForSaveOperation:,
