@@ -1540,6 +1540,44 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
+/** <override-dummy />
+Returns whether the backend supports a GSDraw operator.
+
+By default, returns NO.<br />
+When a GSContext backend subclass overrides this method to return YES, the 
+backend must also implement -drawGState:fromRect:toPoint:op:fraction: in its 
+GSState subclass.
+
+When YES is returned, -[NSImage drawXXX] methods that involves rotation, 
+scaling etc. will delegate as much as possible the image drawing to the backend, 
+rather than trying to emulate the resulting image in Gui by using intermediate 
+images to rotate and scale the content, and then composite the result with 
+-GScomposite:toPoint:fromRect:operation:fraction:.
+
+Backends which doesn't implement -compositeGState:fromRect:toPoint:op:fraction: 
+can draw rotated or scaled images, but the semantic won't exactly match the 
+NSImage documentation in non-trivial cases. */
+- (BOOL) supportsDrawGState
+{
+  return NO;
+}
+
+/** <override-dummy />
+Draws a gstate in a way that fully respects the destination transform, 
+unlike the GSComposite operator which ignores the rotation and the scaling 
+effect on the content.
+
+Note: For the GScomposite operator, the scaling and rotation affects the 
+destination point but not the content. */
+- (void) GSdraw: (int)gstateNum
+        toPoint: (NSPoint)aPoint
+       fromRect: (NSRect)srcRect
+      operation: (NSCompositingOperation)op
+       fraction: (float)delta
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /** Generic method to draw an image into a rect. The image is defined
     by imageref, an opaque structure. Support for this method hasn't
     been implemented yet, so it should not be used anywhere. */

@@ -3002,9 +3002,16 @@ in the main thread.
   destPoint = aRect.origin;
   destPoint.x += delta.width;
   destPoint.y += delta.height;
+  if ([self isFlipped])
+    {
+      destPoint.y += aRect.size.height;
+    }
+
+  //NSLog(@"destPoint %@ in %@", NSStringFromPoint(destPoint), NSStringFromRect(_bounds));
 
   [self lockFocus];
-  NSCopyBits(0, aRect, destPoint);
+  //NSCopyBits(0, aRect, destPoint);
+  NSCopyBits([[self window] gState], [self convertRect: aRect toView: nil], destPoint);
   [self unlockFocus];
 }
 

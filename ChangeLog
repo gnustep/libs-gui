@@ -1,3 +1,44 @@
+2010-06-01  Quentin Mathe <quentin.mathe@gmail.com>
+
+	Fixed many drawing issues (many ones being related to the flipping).
+	In particular, fixed -[NSImage drawXXX] methods to work exactly as 
+	Cocoa and improve the drawing performance in some cases (the last two 
+	points only holds with Cairo backend).
+	Eliminated as many flipping checks as possible.
+	Warning: Untested with the winlib backend.
+	* Headers/AppKit/NSGraphicsContext.h:
+	* Source/NSGraphicsContext.m:
+	(-supportsDrawGState, -GSdraw:toPoint:fromRect:operation:fraction:): 
+	Added (see also the Backend Changelog).
+	* Source/NSImage.m
+	(-drawInRect:fromRect:operation:fraction:): Moved the previous 
+	implementation to -guiDrawInRect:fromRect:operation:fraction: and 
+	rewritten as a switch that checks -supportsDrawState.
+	(-guiDrawInRect:fromRect:operation:fraction:): New method identical to 
+	the old -drawInRect:fromRect:operation:fraction:.
+	(-nativeDrawInRect:fromRect:operation:fraction:): Added. 
+	New method that leverages the backend as much possible and implement 
+	semantic that exactly matches Cocoa.
+	(-drawRepresentation:inRect:): Removed flipping 
+	check.
+	* Source/NSImageRep.m (-drawInPoint:, -drawInRect:): Removed the 
+	flipping checks.
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Fixed 
+	-drawInRect:fromRect:operation:fraction use as Apple doc suggests it 
+	rather than using a negative height trick which doesn't work anymore 
+	(at least with Cairo) and has never worked on Mac OS X.
+	* Source/NSView.m (-scrollRect:by:): Ajusted to do the copy bits on 
+	the window gstate rather than the view gstate. 
+	Required now that Cairo NSCopyBits/compositeGState won't compensate the 
+	flipping when copyOnSelf is YES. Moreover -scrollRect:by: was broken 
+	previously when the view wass not flipped (at least for Cairo). 
+	Finally NSCopyBits() behaves in another way on Mac OS X when the view 
+	gstate is used instead of the window gstate. By using the window gstate, 
+	we can more easily change how NSCopyBits() handles the view gstate to 
+	match Cocoa.
+	* Source/NSClipView.m (-setBoundsOrigin:): Turned off dubious code that 
+	should probably be removed. 
+
 2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocumentController.m (-_setupOpenPanel): Disable

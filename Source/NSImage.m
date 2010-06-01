@@ -797,7 +797,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return _color;
 }
 
-
 // Using the Image 
 - (void) compositeToPoint: (NSPoint)aPoint 
                 operation: (NSCompositingOperation)op
@@ -813,8 +812,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                  fromRect: (NSRect)aRect
                 operation: (NSCompositingOperation)op
 {
-  [self compositeToPoint: aPoint
-        fromRect: aRect
+  [self compositeToPoint: aPoint 
+        fromRect: aRect 
         operation: op
         fraction: 1.0];
 }
@@ -850,27 +849,27 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       if (cache != nil)
         {
+          NSGraphicsContext *ctxt = GSCurrentContext();
           NSRect rect = [cache rect];
 
           NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
                       NSStringFromRect(rect), NSStringFromRect(srcRect));
+
           // Move the drawing rectangle to the origin of the image rep
           // and intersect the two rects.
           srcRect.origin.x += rect.origin.x;
           srcRect.origin.y += rect.origin.y;
           rect = NSIntersectionRect(srcRect, rect);
           
-          [GSCurrentContext() GScomposite: [[cache window] gState]
-                           toPoint: aPoint
-                           fromRect: rect
-                           operation: op
-                           fraction: delta];
+          [ctxt GScomposite: [[cache window] gState]
+                    toPoint: aPoint
+                   fromRect: rect
+                  operation: op
+                   fraction: delta];
         }
       else        
         {
-          NSRect rect;
-
-          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+          NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
           [self drawRepresentation: rep inRect: rect];
         }
     }
@@ -922,9 +921,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       NSRect fillrect = aRect;
 
-      if ([[NSView focusView] isFlipped])
-        fillrect.origin.y -= _size.height;
-
       [_color set];
       NSRectFill(fillrect);
 
@@ -957,10 +953,145 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
         fraction: delta];
 }
 
-- (void) drawInRect: (NSRect)dstRect
-           fromRect: (NSRect)srcRect
-          operation: (NSCompositingOperation)op
-           fraction: (float)delta
+/* New code path that delegates as much as possible to the backend and whose 
+behavior precisely matches Cocoa. */
+- (void) nativeDrawInRect: (NSRect)dstRect
+                 fromRect: (NSRect)srcRect
+                operation: (NSCompositingOperation)op
+                 fraction: (float)delta
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSSize imgSize = [self size];
+  float widthScaleFactor;
+  float heightScaleFactor;
+
+  if (NSEqualRects(srcRect, NSZeroRect))
+    {
+      srcRect.size = imgSize;
+      /* For -drawAtPoint:fromRect:operation:fraction: used with a zero rect */
+      if (NSEqualSizes(dstRect.size, NSZeroSize))
+        {
+          dstRect.size = imgSize;
+        }
+    }
+
+  if (!dstRect.size.width || !dstRect.size.height
+    || !srcRect.size.width || !srcRect.size.height)
+    return;
+
+  // Clip to image bounds
+  if (srcRect.origin.x < 0)
+    srcRect.origin.x = 0;
+  if (srcRect.origin.y < 0)
+    srcRect.origin.y = 0;
+  if (NSMaxX(srcRect) > imgSize.width)
+    srcRect.size.width = imgSize.width - srcRect.origin.x;
+  if (NSMaxY(srcRect) > imgSize.height)
+    srcRect.size.height = imgSize.height - srcRect.origin.y;
+
+  widthScaleFactor = dstRect.size.width / srcRect.size.width;
+  heightScaleFactor = dstRect.size.height / srcRect.size.height;
+
+  if (![ctxt isDrawingToScreen])
+    {
+      /* We can't composite or dissolve if we aren't drawing to a screen,
+         so we'll just draw the right part of the image in the right
+         place. */
+      NSPoint p;
+  
+      p.x = dstRect.origin.x / widthScaleFactor - srcRect.origin.x;
+      p.y = dstRect.origin.y / heightScaleFactor - srcRect.origin.y;
+
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
+                  dstRect.size.width, dstRect.size.height);
+      DPSscale(ctxt, widthScaleFactor, heightScaleFactor);
+      [self drawRepresentation: [self bestRepresentationForDevice: nil]
+            inRect: NSMakeRect(p.x, p.y, imgSize.width, imgSize.height)];
+      DPSgrestore(ctxt);
+
+      return;
+    }
+
+  /* We cannot ask the backend to draw the image directly when the source rect 
+     doesn't cover the whole image.
+     Cairo doesn't support to specify a source rect for a surface used as a 
+     source, see cairo_set_source_surface()).
+     CoreGraphics is similarly limited, see CGContextDrawImage().
+     For now, we always use a two step process:
+     - draw the image data in a cache to apply the srcRect to inRect scaling
+     - draw the cache into the destination context
+     It might be worth to move the first step to the backend, so we don't have 
+     to create a cache window but just an intermediate surface.
+     We create a cache every time but otherwise we are more efficient than the 
+     old code path since the cache size is limited to what we actually draw 
+     and doesn't involve drawing the whole image. */
+  {
+    /* An intermediate image used to scale the image to be drawn as needed */
+    NSCachedImageRep *cache;
+    /* The scaled image graphics state we used as the source from which we 
+       draw into the destination (the current graphics context)*/
+    int gState;
+    /* The context of the cache window */
+    NSGraphicsContext *cacheCtxt;
+    /* The size of the cache window that will hold the scaled image */
+    NSSize cacheSize = NSMakeSize(imgSize.width * widthScaleFactor, 
+      imgSize.height * heightScaleFactor);
+    NSRect srcRectInCache = NSMakeRect(srcRect.origin.x * widthScaleFactor, 
+                                      srcRect.origin.y * heightScaleFactor, 
+                                     srcRect.size.width * widthScaleFactor, 
+                                   srcRect.size.height * heightScaleFactor);
+
+    cache = [[NSCachedImageRep alloc]
+                initWithSize: cacheSize
+                       depth: [[NSScreen mainScreen] depth]
+                    separate: YES
+                       alpha: YES];
+
+    [[[cache window] contentView] lockFocus];
+    cacheCtxt = GSCurrentContext();
+
+    /* Clear the cache window surface */
+    DPScompositerect(cacheCtxt, 0, 0, cacheSize.width, cacheSize.height, NSCompositeClear);
+    gState = [cacheCtxt GSDefineGState];
+
+    //NSLog(@"Draw in cache size %@", NSStringFromSize(cacheSize));
+
+    /* We must not use -drawRepresentation:inRect: because the image must drawn 
+       scaled even when -scalesWhenResized is NO */
+    [[self bestRepresentationForDevice: nil] 
+      drawInRect: NSMakeRect(0, 0, cacheSize.width, cacheSize.height)];
+    /* If we're doing a dissolve, use a DestinationIn composite to lower
+       the alpha of the pixels.  */
+    if (delta != 1.0)
+      {
+        DPSsetalpha(cacheCtxt, delta);
+        DPScompositerect(cacheCtxt, 0, 0, cacheSize.width, cacheSize.height,
+                         NSCompositeDestinationIn);
+      }
+
+    [[[cache window] contentView] unlockFocus];
+
+    //NSLog(@"Draw in %@ from %@ from cache rect %@", NSStringFromRect(dstRect), 
+    //  NSStringFromRect(srcRect), NSStringFromRect(srcRectInCache));
+
+    [ctxt GSdraw: gState
+         toPoint: dstRect.origin
+        fromRect: srcRectInCache
+       operation: op
+        fraction: delta];
+
+    [ctxt GSUndefineGState: gState];
+    DESTROY(cache);
+  }
+}
+
+/* Old code path that can probably partially be merged with the new native implementation.
+Fallback for backends other than Cairo. */
+- (void) guiDrawInRect: (NSRect)dstRect
+              fromRect: (NSRect)srcRect
+             operation: (NSCompositingOperation)op
+              fraction: (float)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
@@ -1140,6 +1271,21 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     [ctxt GSUndefineGState: gState];
 
     DESTROY(cache);
+  }
+}
+
+- (void) drawInRect: (NSRect)dstRect
+           fromRect: (NSRect)srcRect
+          operation: (NSCompositingOperation)op
+           fraction: (float)delta
+{
+  if ([GSCurrentContext() supportsDrawGState])
+  {
+    [self nativeDrawInRect: dstRect fromRect: srcRect operation: op fraction: delta];
+  }
+  else
+  {
+    [self guiDrawInRect: dstRect fromRect: srcRect operation: op fraction: delta];
   }
 }
 

@@ -410,6 +410,12 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
 	    fraction: (float)delta;
+- (BOOL) supportsDrawGState;
+- (void) GSdraw: (int)gstateNum
+        toPoint: (NSPoint)aPoint
+       fromRect: (NSRect)srcRect
+      operation: (NSCompositingOperation)op
+       fraction: (float)delta;
 - (void) GSDrawImage: (NSRect)rect : (void *)imageref;
 
 /* ----------------------------------------------------------------------- */

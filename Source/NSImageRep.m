@@ -453,8 +453,6 @@ implement, so we can't do that. */
   ctxt = GSCurrentContext();
   if (aPoint.x != 0 || aPoint.y != 0)
     {
-      if ([[ctxt focusView] isFlipped])
-	aPoint.y -= _size.height;
       ctm = GSCurrentCTM(ctxt);
       DPStranslate(ctxt, aPoint.x, aPoint.y);
       reset = 1;
@@ -480,8 +478,6 @@ implement, so we can't do that. */
   ctxt = GSCurrentContext();
   scale = NSMakeSize(NSWidth(aRect) / _size.width, 
 		     NSHeight(aRect) / _size.height);
-  if ([[ctxt focusView] isFlipped])
-    aRect.origin.y -= NSHeight(aRect);
   ctm = GSCurrentCTM(ctxt);
   DPStranslate(ctxt, NSMinX(aRect), NSMinY(aRect));
   DPSscale(ctxt, scale.width, scale.height);

@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <Foundation/NSDebug.h>
+#include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImageCell.h"
@@ -197,6 +198,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
   NSSize  imageSize, realImageSize;
+  NSAffineTransform *xform = nil;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
@@ -273,10 +275,13 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     }
 
   // account for flipped views
-  if (is_flipped)
+  if (is_flipped && controlView != nil)
     {
-      position.y += imageSize.height;
-      imageSize.height = -imageSize.height;
+      xform = [NSAffineTransform transform];
+      [xform translateXBy: 0 yBy: [controlView bounds].size.height];
+      [xform scaleXBy: 1 yBy: -1];
+      [xform concat];
+      position.y = [controlView bounds].size.height - position.y - imageSize.height;
     }
 
   // draw!
@@ -286,6 +291,12 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
                                     realImageSize.height)
                operation: NSCompositeSourceOver
                fraction: 1.0];
+
+  if (is_flipped && controlView != nil)
+    {
+      [xform invert];
+      [xform concat];
+    }
 }
 
 - (NSSize) cellSize

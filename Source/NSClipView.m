@@ -372,11 +372,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
     }
 
   /* ?? TODO: Understand the following code - and add explanatory comment */
-  if ([NSView focusView] == _documentView)
+  /*if ([NSView focusView] == _documentView)
     {
       PStranslate (NSMinX (originalBounds) - aPoint.x, 
 		   NSMinY (originalBounds) - aPoint.y);
-    }
+    }*/
   
   [_super_view reflectScrolledClipView: self];
 }
