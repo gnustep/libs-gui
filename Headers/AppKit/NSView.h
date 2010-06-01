@@ -118,7 +118,6 @@ PACKAGE_SCOPE
   int _gstate;
   void *_nextKeyView;
   void *_previousKeyView;
-  NSRect *_dirtyRects;
 
 @public
   /*
