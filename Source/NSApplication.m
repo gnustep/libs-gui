@@ -1145,7 +1145,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
               [_delegate applicationOpenUntitledFile: self];
             }
         }
-      else if ([[sdc documentClassNames] count] > 0)
+      else if ([[sdc documentClassNames] count] > 0 && [sdc defaultType] != nil)
         {
 	  NSError *err = nil;
 
