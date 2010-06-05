@@ -190,12 +190,25 @@
               styleMask: aStyle];
 }
 
-#if 0
+/* If the contentView is removed from the window we must make sure the
+ * window no longer tries to access it.  This situation may occur, for
+ * example, when people create inspectors where they want to swap in
+ * and out views.  In the example I saw, a bunch of non-visible
+ * windows were created to create the inspector views.  When an
+ * inspector view was needed, it was added as a subview in the visible
+ * inspector window.  We need to make sure that when 'addSubview:' is
+ * called to add the view to another window, all references to it in
+ * the old window will automatically disappear (this is how it works
+ * on Apple too).
+ */
 - (void) removeSubview: (NSView*)aView
 {
   RETAIN(aView);
   /*
-   * If the content view is removed, we must let the window know.
+   * If the content view is removed (for example, because it was added
+   * to another view in another window), we must let the window know.
+   * Otherwise, it would keep trying to resize/manage it as if it was
+   * its content view, while it actually is now in another window!
    */
   [super removeSubview: aView];
   if (aView == [_window contentView])
@@ -204,7 +217,6 @@
     }
   RELEASE(aView);
 }
-#endif
 
 - (void) setBackgroundColor: (NSColor *)color
 {

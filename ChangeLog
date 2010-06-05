@@ -1,3 +1,9 @@
+2010-06-05  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Source/GSWindowDecorationView.m ([-removeSubview:]): Uncommented
+	the method, fixing moving the content view from one window to
+	another one.
+
 2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-finishLaunching): Do not attempt to
