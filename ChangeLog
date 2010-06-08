@@ -1,3 +1,11 @@
+2010-06-08 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSMenu.m:
+	Fix menu key equivalents to only trigger when the exact modifiers
+	are held down. Previously, an item would activate even when additional
+	modifiers were held down (e.g. typing Ctrl-Alt-x would activate a
+	menu item whose key equivalent was Ctrl-x).
+
 2010-06-07 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMenuItem.m:
