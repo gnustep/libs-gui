@@ -134,9 +134,9 @@ static Class imageClass;
     return nil;
 
   //_menu = nil;
-  [self setTitle: aString];
   [self setKeyEquivalent: charCode];
   _keyEquivalentModifierMask = NSCommandKeyMask;
+  [self setTitle: aString]; // do this AFTER setKeyEquivalent: in case NSUserKeyEquivalents is defined
   _mnemonicLocation = 255; // No mnemonic
   _state = NSOffState;
   _enabled = YES;
@@ -149,6 +149,50 @@ static Class imageClass;
   _action = aSelector;
   //_changesState = NO;
   return self;
+}
+
+- (void) _updateKeyEquivalent
+{
+  // Update keyEquivalent based on any entries in NSUserKeyEquivalents in the defaults database
+  // TODO: also check in other defaults domains, to allow NSUserKeyEquivalents dictionaries
+  // in different domains to provide overrides of different menu items.
+  NSString *userKeyEquivalent = [(NSDictionary*)[[NSUserDefaults standardUserDefaults]
+				     objectForKey: @"NSUserKeyEquivalents"]
+				    objectForKey: _title];
+  if (userKeyEquivalent)
+    {
+      // check for leading symbols representing modifier flags: @, ~, $, ^
+      unsigned int modifierMask = 0;
+      while ([userKeyEquivalent length] > 1)
+        {
+          if ([userKeyEquivalent hasPrefix:@"@"])
+            {
+              modifierMask |= NSCommandKeyMask;
+              userKeyEquivalent = [userKeyEquivalent substringFromIndex:1];
+            }
+          else if ([userKeyEquivalent hasPrefix:@"~"])
+            {
+              modifierMask |= NSAlternateKeyMask;
+              userKeyEquivalent = [userKeyEquivalent substringFromIndex:1];
+            }
+          else if ([userKeyEquivalent hasPrefix:@"$"])
+            {
+              modifierMask |= NSShiftKeyMask;
+              userKeyEquivalent = [userKeyEquivalent substringFromIndex:1];
+            }
+          else if ([userKeyEquivalent hasPrefix:@"^"])
+            {
+              modifierMask |= NSControlKeyMask;
+              userKeyEquivalent = [userKeyEquivalent substringFromIndex:1];
+            }
+          else
+            {
+              break;
+            }
+        }
+      [self setKeyEquivalent:userKeyEquivalent];
+      [self setKeyEquivalentModifierMask:modifierMask];
+    }
 }
 
 - (void) setMenu: (NSMenu*)menu
@@ -208,6 +252,7 @@ static Class imageClass;
     return; // no change
 	
   ASSIGNCOPY(_title,  aString);
+  [self _updateKeyEquivalent];
   [_menu itemChanged: self];
 }
 
@@ -710,6 +755,7 @@ static Class imageClass;
         }
     }
 
+  [self _updateKeyEquivalent];
   return self;
 }
 

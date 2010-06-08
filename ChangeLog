@@ -1,3 +1,9 @@
+2010-06-07 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSMenuItem.m:
+	Implement NSUserKeyEquivalents default for providing custom key
+	equivalents for menu items based on their title.
+
 2010-06-05  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/GSWindowDecorationView.m ([-removeSubview:]): Uncommented
