@@ -1247,12 +1247,16 @@ static BOOL menuBarVisible = YES;
         }
       else
         {
-          static unsigned relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSShiftKeyMask | NSControlKeyMask;
-          unsigned	mask = [item keyEquivalentModifierMask];
-	  modifiers &= relevantModifiersMask; // mask out any irrelevant flags
+          unsigned int relevantMask =
+            NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+          unsigned int mask = [item keyEquivalentModifierMask];
 
+          if (modifiers & NSFunctionKeyMask)
+            {
+              relevantMask |= NSShiftKeyMask;
+            }
           if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
-            && modifiers == mask)
+            && (modifiers & relevantMask) == (mask & relevantMask))
             {
               if ([item isEnabled])
                 {

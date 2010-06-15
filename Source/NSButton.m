@@ -519,9 +519,11 @@ static id buttonCellClass = nil;
 
       if (key != nil && [key isEqual: [anEvent charactersIgnoringModifiers]])
         {
+          const unsigned int relevantMask =
+            NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
           unsigned int	mask = [self keyEquivalentModifierMask];
 
-          if (([anEvent modifierFlags] & mask) == mask)
+          if (([anEvent modifierFlags] & relevantMask) == (mask & relevantMask))
             {
               [self performClick: self];
               return YES;

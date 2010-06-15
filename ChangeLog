@@ -1,3 +1,12 @@
+2010-06-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenu.m (-performKeyEquivalent:): Fix Doug's previous
+	change to ignore the shift key except when a function key is
+	pressed, as documented by Apple.
+	* Source/NSButton.m (-performKeyEquivalent): Fix to trigger only
+	when command, alternate, and control keys match the modifier mask
+	exactly, as documented by Apple.
+
 2010-06-08 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMenu.m:
