@@ -32,6 +32,7 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSError.h>
 #import <Foundation/NSException.h>
@@ -765,7 +766,31 @@ create_error(int code, NSString* desc)
 
   if (type == nil)
     {
-      // FIXME: try to determine type
+      const void *dataBytes = [data bytes];
+
+      // The list of file types below was derived from Apache's conf/magic file
+      // FIXME extend the list
+      if (strncmp(dataBytes, "{\\rtf", 5) == 0)
+	{
+	  type = NSRTFTextDocumentType;
+	}
+      else if (strncmp(dataBytes, "<!DOCTYPE HTML", 14) == 0 ||
+	       strncmp(dataBytes, "<!doctype html", 14) == 0 ||
+	       strncmp(dataBytes, "<HEAD", 5) == 0 ||
+	       strncmp(dataBytes, "<head", 5) == 0 ||
+	       strncmp(dataBytes, "<TITLE", 6) == 0 ||
+	       strncmp(dataBytes, "<title", 6) == 0 ||
+	       strncmp(dataBytes, "<HTML", 5) == 0 ||
+	       strncmp(dataBytes, "<html", 5) == 0 ||
+	       strncmp(dataBytes, "<!--", 4) == 0 ||
+	       strncmp(dataBytes, "<h1", 3) == 0 ||
+	       strncmp(dataBytes, "<H1", 3) == 0)
+	{
+	  type = NSHTMLTextDocumentType;
+	}
+    }
+  if (type == nil)
+    {
       if (error)
 	*error = create_error(0, NSLocalizedString(@"No type specified for data.",
 						   @"Error description"));
@@ -845,8 +870,14 @@ create_error(int code, NSString* desc)
 - (id) initWithURL: (NSURL *)url 
 documentAttributes: (NSDictionary **)dict
 {
-  NSDictionary *options = [NSDictionary dictionaryWithObject: [url baseURL]
-                                        forKey: NSBaseURLDocumentOption];
+  NSURL *baseURL = [url baseURL];
+  NSDictionary *options = nil;
+
+  if (baseURL != nil)
+    {
+      [NSDictionary dictionaryWithObject: baseURL
+				  forKey: NSBaseURLDocumentOption];
+    }
 
   return [self initWithURL: url
                options: options
@@ -859,6 +890,7 @@ documentAttributes: (NSDictionary **)dict
 documentAttributes: (NSDictionary **)dict
              error: (NSError **)error
 {
+  NSURL *baseURL;
   NSData *data = [url resourceDataUsingCache: YES];
 
   if (data == nil)
@@ -871,14 +903,18 @@ documentAttributes: (NSDictionary **)dict
     }
 
   // Pass on baseURL
-  if (options == nil)
-    options = [NSDictionary dictionaryWithObject: [url baseURL]
-					  forKey: NSBaseURLDocumentOption];
-  else if ([options objectForKey: NSBaseURLDocumentOption] == nil)
+  baseURL = [url baseURL];
+  if (baseURL != nil)
     {
-      options = AUTORELEASE([options mutableCopy]);
-      [(NSMutableDictionary*)options setObject: [url baseURL]
-                             forKey: NSBaseURLDocumentOption];
+      if (options == nil)
+	options = [NSDictionary dictionaryWithObject: baseURL
+					      forKey: NSBaseURLDocumentOption];
+      else if ([options objectForKey: NSBaseURLDocumentOption] == nil)
+	{
+	  options = AUTORELEASE([options mutableCopy]);
+	  [(NSMutableDictionary*)options setObject: baseURL
+					    forKey: NSBaseURLDocumentOption];
+	}
     }
 
   return [self initWithData: data

@@ -1,3 +1,14 @@
+2010-06-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAttributedString.m
+	(-initWithData:options:documentAttributes:error:): Attempt to auto
+	detect the document type if it wasn't specified by the caller.
+	Currently works for RTF and HTML documents.
+
+	* Source/NSAttributedString.m (-initWithURL:documentAttributes:,
+	-initWithURL:options:documentAttributes:error:): Add base URL to
+	the document importing options only if it is not nil.
+
 2010-06-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenu.m (-performKeyEquivalent:): Fix Doug's previous
