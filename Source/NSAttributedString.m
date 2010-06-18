@@ -766,25 +766,31 @@ create_error(int code, NSString* desc)
 
   if (type == nil)
     {
-      const void *dataBytes = [data bytes];
+      // Make sure this buffer is long enough
+      char prefix[14];
+      NSUInteger l = [data length];
+      if (l < sizeof(prefix))
+	{
+	  [data getBytes: prefix length: l];
+	  prefix[l] = 0;
+	}
+      else
+	{
+	  [data getBytes: prefix length: sizeof(prefix)];
+	}
 
       // The list of file types below was derived from Apache's conf/magic file
       // FIXME extend the list
-      if (strncmp(dataBytes, "{\\rtf", 5) == 0)
+      if (strncmp(prefix, "{\\rtf", 5) == 0)
 	{
 	  type = NSRTFTextDocumentType;
 	}
-      else if (strncmp(dataBytes, "<!DOCTYPE HTML", 14) == 0 ||
-	       strncmp(dataBytes, "<!doctype html", 14) == 0 ||
-	       strncmp(dataBytes, "<HEAD", 5) == 0 ||
-	       strncmp(dataBytes, "<head", 5) == 0 ||
-	       strncmp(dataBytes, "<TITLE", 6) == 0 ||
-	       strncmp(dataBytes, "<title", 6) == 0 ||
-	       strncmp(dataBytes, "<HTML", 5) == 0 ||
-	       strncmp(dataBytes, "<html", 5) == 0 ||
-	       strncmp(dataBytes, "<!--", 4) == 0 ||
-	       strncmp(dataBytes, "<h1", 3) == 0 ||
-	       strncmp(dataBytes, "<H1", 3) == 0)
+      else if (strncasecmp(prefix, "<!doctype html", 14) == 0 ||
+	       strncasecmp(prefix, "<head", 5) == 0 ||
+	       strncasecmp(prefix, "<title", 6) == 0 ||
+	       strncasecmp(prefix, "<html", 5) == 0 ||
+	       strncmp(prefix, "<!--", 4) == 0 ||
+	       strncasecmp(prefix, "<h1", 3) == 0)
 	{
 	  type = NSHTMLTextDocumentType;
 	}
