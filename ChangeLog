@@ -1,3 +1,10 @@
+2010-06-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSliderCell.m (-closestTickMarkValueToValue:,
+	-rectOfTickMarkAtIndex:, -tickMarkValueAtIndex:): Fix tick mark
+	related calculations to correctly take into account that the first
+	and last tick marks conincide with the minimum and maximum values.
+
 2010-06-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSAttributedString.m

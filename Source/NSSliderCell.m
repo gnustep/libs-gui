@@ -665,10 +665,12 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (double) closestTickMarkValueToValue: (double)aValue
 {
-  double f;
+  double d, f;
 
   if (_numberOfTickMarks == 0)
     return aValue;
+  else if (_numberOfTickMarks == 1)
+    return (_maxValue + _minValue) / 2;
 
   if (aValue < _minValue)
     {
@@ -679,8 +681,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       aValue = _maxValue; 
     }
 
-  f = ((aValue - _minValue)  * _numberOfTickMarks) / (_maxValue - _minValue);
-  f = ((rint(f) * (_maxValue - _minValue)) / _numberOfTickMarks) + _minValue;
+  d = _maxValue - _minValue;
+  f = ((aValue - _minValue)  * (_numberOfTickMarks - 1)) / d;
+  f = ((rint(f) * d) / (_numberOfTickMarks - 1)) + _minValue;
 
   return f;
 }
@@ -713,20 +716,23 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   if ((index < 0) || (index >= _numberOfTickMarks))
     {
       [NSException raise: NSRangeException
-		   format: @"Index of tick mark out of bound."];
+		   format: @"Index of tick mark out of bounds."];
     }
 
-  if (_isVertical)
+  if (_numberOfTickMarks > 1)
     {
-      d = NSHeight(rect) / _numberOfTickMarks;
-      rect.size.height = d;
-      rect.origin.y += d * index;
-    }
-  else
-    {
-      d = NSWidth(rect) / _numberOfTickMarks;
-      rect.size.width = d;
-      rect.origin.x += d * index;
+      if (_isVertical)
+	{
+	  d = NSHeight(rect) / (_numberOfTickMarks - 1);
+	  rect.size.height = d;
+	  rect.origin.y += d * index;
+	}
+      else
+	{
+	  d = NSWidth(rect) / (_numberOfTickMarks - 1);
+	  rect.size.width = d;
+	  rect.origin.x += d * index;
+	}
     }
 
   return rect;
@@ -764,12 +770,20 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (double) tickMarkValueAtIndex: (int)index
 {
+  if ((index < 0) || (index >= _numberOfTickMarks))
+    {
+      [NSException raise: NSRangeException
+		   format: @"Index of tick mark out of bounds."];
+    }
+
+  if (_numberOfTickMarks == 1)
+    return (_maxValue + _minValue) / 2;
   if (index >= _numberOfTickMarks)
     return _maxValue;
   if (index <= 0)
     return _minValue;
 
-  return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
+  return _minValue + index * (_maxValue - _minValue) / (_numberOfTickMarks - 1);
 }
 
 - (BOOL) trackMouse: (NSEvent*)theEvent
