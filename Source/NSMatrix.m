@@ -55,6 +55,7 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
@@ -63,8 +64,8 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSZone.h>
 
-#include "AppKit/NSActionCell.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSButtonCell.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSEvent.h"
@@ -2580,8 +2581,18 @@ static SEL getSel;
  */
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  NSString	*key = [theEvent charactersIgnoringModifiers];
+  NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
+  unsigned int modifiers = [theEvent modifierFlags];
   int		i;
+  unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+  unichar key = ([keyEquivalent length] > 0 ? [keyEquivalent characterAtIndex:0] : 0);
+  /* Take shift key into account only for control keys and arrow and function keys */
+  if ((modifiers & NSFunctionKeyMask)
+      || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
+    relevantModifiersMask |= NSShiftKeyMask;
+
+  if ([keyEquivalent length] == 0)
+    return NO; // don't respond to zero-length string (such as the Windows key)
 
   for (i = 0; i < _numRows; i++)
     {
@@ -2590,9 +2601,13 @@ static SEL getSel;
       for (j = 0; j < _numCols; j++)
 	{
 	  NSCell	*aCell = _cells[i][j];;
+    unsigned int mask = 0;
+    if ([aCell respondsToSelector:@selector(keyEquivalentModifierMask)])
+      mask = [(NSButtonCell *)aCell keyEquivalentModifierMask];
 
 	  if ([aCell isEnabled]
-	    && [[aCell keyEquivalent] isEqualToString: key])
+	    && [[aCell keyEquivalent] isEqualToString: keyEquivalent]
+      && (mask & relevantModifiersMask) == (modifiers & relevantModifiersMask))
 	    {
 	      NSCell *oldSelectedCell = _selectedCell;
 	      int     oldSelectedRow = _selectedRow; 

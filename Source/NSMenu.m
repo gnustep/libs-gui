@@ -1226,10 +1226,15 @@ static BOOL menuBarVisible = YES;
   unsigned      i;
   unsigned      count = [_items count];
   NSEventType   type = [theEvent type];
-  unsigned	modifiers = [theEvent modifierFlags];
+  unsigned int modifiers = [theEvent modifierFlags];
   NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
+  unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+  /* Take shift key into account only for control keys and arrow and function keys */
+  if ((modifiers & NSFunctionKeyMask)
+      || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
+    relevantModifiersMask |= NSShiftKeyMask;
 
-  if (type != NSKeyDown && type != NSKeyUp) 
+  if ((type != NSKeyDown && type != NSKeyUp) || [keyEquivalent length] == 0)
     return NO;
              
   for (i = 0; i < count; i++)
@@ -1239,6 +1244,7 @@ static BOOL menuBarVisible = YES;
       if ([item hasSubmenu])
         {
 	  // Recurse through submenus whether active or not.
+          // Recurse through submenus whether active or not.
           if ([[item submenu] performKeyEquivalent: theEvent])
             {
               // The event has been handled by an item in the submenu.
@@ -1247,16 +1253,10 @@ static BOOL menuBarVisible = YES;
         }
       else
         {
-          unsigned int relevantMask =
-            NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
           unsigned int mask = [item keyEquivalentModifierMask];
 
-          if (modifiers & NSFunctionKeyMask)
-            {
-              relevantMask |= NSShiftKeyMask;
-            }
           if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
-            && (modifiers & relevantMask) == (mask & relevantMask))
+            && (modifiers & relevantModifiersMask) == (mask & relevantModifiersMask))
             {
               if ([item isEnabled])
                 {

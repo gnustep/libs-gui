@@ -515,15 +515,19 @@ static id buttonCellClass = nil;
 
   if ([self isEnabled] && (mw == nil || [w worksWhenModal] || mw == w))
     {
-      NSString	*key = [self keyEquivalent];
+      NSString	*keyEquivalent = [self keyEquivalent];
 
-      if (key != nil && [key isEqual: [anEvent charactersIgnoringModifiers]])
+      if ([keyEquivalent length] > 0 && [keyEquivalent isEqualToString: [anEvent charactersIgnoringModifiers]])
         {
-          const unsigned int relevantMask =
-            NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
           unsigned int	mask = [self keyEquivalentModifierMask];
-
-          if (([anEvent modifierFlags] & relevantMask) == (mask & relevantMask))
+          unsigned int modifiers = [anEvent modifierFlags];
+          unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+          /* Take shift key into account only for control keys and arrow and function keys */
+          if ((modifiers & NSFunctionKeyMask)
+              || [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]])
+            relevantModifiersMask |= NSShiftKeyMask;
+          
+          if ((modifiers & relevantModifiersMask) == (mask & relevantModifiersMask))
             {
               [self performClick: self];
               return YES;

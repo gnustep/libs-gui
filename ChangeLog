@@ -1,3 +1,15 @@
+2010-06-22 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSButton.m:
+	* Source/NSMatrix.m:
+	* Source/NSMenu.m:
+	Further change to performKeyEquivalent: methods to take Shift key
+	into account for control keys (such as Return and Tab) as well as
+	function keys, and to honor keyEquivalentModifierMask for cells in
+	a matrix that implement that method. Also, ignore key events with
+	zero length (such as the Windows key) which was previously triggering
+	actions on objects with no keyEquivalent.
+
 2010-06-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m (-initTextCell:pullsDown:, -initWithCoder:,
