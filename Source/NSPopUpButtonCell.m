@@ -117,7 +117,7 @@ static NSImage *_pbc_image[5];
   [self _initMenu];
   [self setPullsDown: flag];
   _pbcFlags.usesItemFromMenu = YES;
-  [self setPreferredEdge: NSMinYEdge];
+  [self setPreferredEdge: NSMaxYEdge];
   [self setArrowPosition: NSPopUpArrowAtCenter];
 
   if ([stringValue length] > 0)
@@ -562,7 +562,7 @@ static NSImage *_pbc_image[5];
           return nil;
         }
 
-      if (_pbcFlags.preferredEdge == NSMinYEdge)
+      if (_pbcFlags.preferredEdge == NSMaxYEdge)
         {
           return _pbc_image[1];
         }
@@ -570,7 +570,7 @@ static NSImage *_pbc_image[5];
         {
           return _pbc_image[2];
         }
-      else if (_pbcFlags.preferredEdge == NSMaxYEdge)
+      else if (_pbcFlags.preferredEdge == NSMinYEdge)
         {
           return _pbc_image[3];
         }
@@ -843,6 +843,7 @@ static NSImage *_pbc_image[5];
 - (void) attachPopUpWithFrame: (NSRect)cellFrame
                        inView: (NSView *)controlView
 {
+  NSRectEdge            preferredEdge = _pbcFlags.preferredEdge;
   NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
@@ -874,11 +875,23 @@ static NSImage *_pbc_image[5];
       [mr setHighlightedItemIndex: selectedItem];
     }
 
+  if ([controlView isFlipped])
+    {
+      if (preferredEdge == NSMinYEdge)
+	{
+	  preferredEdge = NSMaxYEdge;
+	}
+      else if (preferredEdge == NSMaxYEdge)
+	{
+	  preferredEdge = NSMinYEdge;
+	}
+    }
+
   // display the menu item...
   [[GSTheme theme] displayPopUpMenu: mr
 		      withCellFrame: cellFrame
 		  controlViewWindow: cvWin
-		      preferredEdge: _pbcFlags.preferredEdge
+		      preferredEdge: preferredEdge
 		       selectedItem: selectedItem];
 
   [nc addObserver: self
@@ -1243,7 +1256,7 @@ static NSImage *_pbc_image[5];
         }
       if (version < 3)
         {
-          [self setPreferredEdge: NSMinYEdge];
+          [self setPreferredEdge: NSMaxYEdge];
           [self setArrowPosition: NSPopUpArrowAtCenter];
         }
       [self selectItem: selectedItem];

@@ -1,5 +1,12 @@
 2010-06-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSPopUpButtonCell.m (-initTextCell:pullsDown:, -initWithCoder:,
+	-_currentArrowImage:, -attachPopUpWithFrame:inView:): Swap meaning
+	of NSMinYEdge and NSMaxYEdge to match their use in Cocoa. Recall
+	that pop up buttons use flipped geometry.
+
+2010-06-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMenuView.m (-rectOfItemAtIndex:,
 	-setWindowFrameForAttachingToRect:onScreen:preferredEdge:...):
 	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:):
