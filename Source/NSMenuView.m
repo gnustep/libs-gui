@@ -926,6 +926,13 @@ static NSMapTable *viewInfo = 0;
       [self sizeToFit];
     } 
 
+  // The first item of a pull down menu holds its title and isn't displayed
+  if (index == 0 && [_attachedMenu _ownedByPopUp] &&
+      [[_attachedMenu _owningPopUp] pullsDown])
+    {
+      return NSZeroRect;
+    }
+
   if (_horizontal == YES)
     {
       GSCellRect aRect;
@@ -1136,78 +1143,89 @@ static NSMapTable *viewInfo = 0;
   if (resizeScreenRect)
     {
       cellFrame = [self convertRect: cellFrame toView: nil];
-      screenRect.size = cellFrame.size;
     }
 
   /*
    * Compute the frame
    */
-  screenFrame = screenRect;
+  screenFrame.origin = screenRect.origin;
+  screenFrame.size = cellFrame.size;
   if (items > 0)
     {
       float f;
 
       if (_horizontal == NO)
         {
-          f = screenRect.size.height * (items - 1);
+          f = cellFrame.size.height * (items - 1);
           screenFrame.size.height += f + _leftBorderOffset;
           screenFrame.origin.y -= f;
           screenFrame.size.width += _leftBorderOffset;
           screenFrame.origin.x -= _leftBorderOffset;
+
+	  // If the menu is a pull down menu the first item, which would
+	  // appear at the top of the menu, holds the title and is omitted
+	  if ([_attachedMenu _ownedByPopUp])
+	    {
+	      if ([[_attachedMenu _owningPopUp] pullsDown])
+		{
+		  screenFrame.size.height -= cellFrame.size.height;
+		  screenFrame.origin.y += cellFrame.size.height;
+		}
+	    }
+
           // Compute position for popups, if needed
           if (selectedItemIndex != -1) 
             {
               screenFrame.origin.y
-                  += screenRect.size.height * selectedItemIndex;
+                  += cellFrame.size.height * selectedItemIndex;
             }
         }
       else
         {
-          f = screenRect.size.width * (items - 1);
+          f = cellFrame.size.width * (items - 1);
           screenFrame.size.width += f;
+
+	  // If the menu is a pull down menu the first item holds the
+	  // title and is omitted
+	  if ([_attachedMenu _ownedByPopUp])
+	    {
+	      if ([[_attachedMenu _owningPopUp] pullsDown])
+		{
+		  screenFrame.size.width -= cellFrame.size.width;
+		}
+	    }
+
           // Compute position for popups, if needed
           if (selectedItemIndex != -1) 
             {
-              screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+              screenFrame.origin.x -= cellFrame.size.width * selectedItemIndex;
             }
         }
     }  
   
   // Update position, if needed, using the preferredEdge
-  if ([_attachedMenu _ownedByPopUp])
+  if (selectedItemIndex == -1)
     {
-      // Per Cocoa documentation, the selected cell should always show up
-      // over the button for popups.   For pull down menus, the preferred 
-      // edge is relevant.   This is also apparent from testing under Cocoa.
-      if ([[_attachedMenu _owningPopUp] pullsDown])
+      // FIXME if screen space is tight at the preferred edge attach
+      // the menu at the opposite edge
+      screenFrame.origin.y -= cellFrame.size.height;
+      switch (edge)
 	{
-	  // Handle the Y edge...
-	  /*
-	  if ([[[_attachedMenu _owningPopUp] controlView] isFlipped])
-	    {
-	      if (edge == NSMaxYEdge)
-		{
-		  screenFrame.origin.y += screenRect.size.height;  
-		}
-	    }
-	  else
-	    {
-	      if (edge == NSMinYEdge)
-		{
-		  screenFrame.origin.y += screenRect.size.height;  
-		}
-	    }
-	  */
-
-	  // Handle the X edge...
-	  if (edge == NSMaxXEdge)
-	    {
-	      screenFrame.origin.x += screenRect.size.width;
-	    }
-	  else if (edge == NSMinXEdge)
-	    {
-	      screenFrame.origin.x -= screenRect.size.width;
-	    }
+	default:
+	case NSMinYEdge:
+	  break;
+	case NSMaxYEdge:
+	  screenFrame.origin.y +=
+	    screenFrame.size.height + screenRect.size.height - _leftBorderOffset;
+	  break;
+	case NSMinXEdge:
+	  screenFrame.origin.y += screenRect.size.height;
+	  screenFrame.origin.x -= screenFrame.size.width;
+	  break;
+	case NSMaxXEdge:
+	  screenFrame.origin.y += screenRect.size.height;
+	  screenFrame.origin.x += screenRect.size.width + _leftBorderOffset;
+	  break;
 	}
     }
 

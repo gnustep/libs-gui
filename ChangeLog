@@ -1,3 +1,19 @@
+2010-06-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenuView.m (-rectOfItemAtIndex:,
+	-setWindowFrameForAttachingToRect:onScreen:preferredEdge:...):
+	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:):
+	Don't display the first item of a pull down menu, which holds its
+	title, and fix the attachment of pull down menus to their button.
+
+	* Source/NSPopUpButtonCell.m (-title:): Implement to return the
+	title of the menu.
+	* Source/NSPopUpButtonCell.m (-setTitle): Fix implementation to
+	actually change the title of a pull down menu.
+
+	* Source/NSPopUpButtonCell.m (-selectItem:): Prevent exception
+	when a horizontal menu does not have a selected item.
+
 2010-06-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSliderCell.m (-closestTickMarkValueToValue:,

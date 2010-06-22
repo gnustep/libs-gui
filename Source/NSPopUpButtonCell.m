@@ -646,8 +646,11 @@ static NSImage *_pbc_image[5];
   [[_menu menuRepresentation] setHighlightedItemIndex: 
                    [_menu indexOfItem: _selectedItem]];
 
-  [[_menu menuRepresentation] setNeedsDisplayForItemAtIndex:
-                   [_menu indexOfItem: oldSelectedItem]];
+  if (oldSelectedItem)
+    {
+      [[_menu menuRepresentation] setNeedsDisplayForItemAtIndex:
+                       [_menu indexOfItem: oldSelectedItem]];
+    }
 }
 
 - (void) selectItemAtIndex: (int)index
@@ -669,6 +672,32 @@ static NSImage *_pbc_image[5];
   [self selectItem: anItem];
 }
 
+- (NSString *)title
+{
+  id <NSMenuItem> selectedItem;
+
+  if (!_pbcFlags.usesItemFromMenu)
+    {
+      selectedItem = _menuItem;
+    }
+  else if (_pbcFlags.pullsDown)
+    {
+      if ([_menu numberOfItems] == 0)
+	{
+	  selectedItem = _menuItem;
+	}
+      else
+	{
+	  selectedItem = [_menu itemAtIndex: 0];
+	}
+    }
+  else
+    {
+      selectedItem = [self selectedItem];
+    }
+  return [selectedItem title]; 
+}
+
 - (void) setTitle: (NSString *)aString
 {
   id <NSMenuItem> anItem;
@@ -688,6 +717,7 @@ static NSImage *_pbc_image[5];
       else
         {
           anItem = [_menu itemAtIndex: 0];
+          [anItem setTitle: aString];
         }
     }
   else
@@ -830,8 +860,14 @@ static NSImage *_pbc_image[5];
 
   if (_pbcFlags.pullsDown)
     selectedItem = -1;
-  else 
-    selectedItem = [self indexOfSelectedItem];
+  else
+    {
+      selectedItem = [self indexOfSelectedItem];
+      if (selectedItem == -1)
+	{
+	  selectedItem = 0;
+	}
+    }
 
   if (selectedItem > 0)
     {
