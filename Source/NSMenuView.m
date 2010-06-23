@@ -306,6 +306,7 @@ static NSMapTable *viewInfo = 0;
 
       scRect.size.height = [NSMenuView menuBarHeight];
       [self setFrameSize: scRect.size];
+      [self setNeedsSizing: YES];
     }
   else if (flag == NO && _horizontal == YES)
     {
@@ -317,6 +318,7 @@ static NSMapTable *viewInfo = 0;
           NSZoneFree(NSDefaultMallocZone(), a);
           NSMapRemove(viewInfo, self);
         }
+      [self setNeedsSizing: YES];
     }
 
   _horizontal = flag;
@@ -649,6 +651,9 @@ static NSMapTable *viewInfo = 0;
 
 - (void) sizeToFit
 {
+  BOOL isPullDown =
+    [_attachedMenu _ownedByPopUp] && [[_attachedMenu _owningPopUp] pullsDown];
+
   if (_horizontal == YES)
     {
       unsigned i;
@@ -665,7 +670,17 @@ static NSMapTable *viewInfo = 0;
 */
       _cellSize.height = [NSMenuView menuBarHeight];
 
-      for (i = 0; i < howMany; i++)
+      if (howMany && isPullDown)
+        {
+          GSCellRect elem;
+          elem.rect = NSMakeRect (currentX,
+                                  0,
+                                  (2 * _horizontalEdgePad),
+                                  _cellSize.height);
+          GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
+          currentX += 2 * _horizontalEdgePad;
+        }
+      for (i = isPullDown ? 1 : 0; i < howMany; i++)
         {
           GSCellRect elem;
           NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: i];
@@ -722,8 +737,8 @@ static NSMapTable *viewInfo = 0;
         {
           menuBarHeight += _leftBorderOffset;
         }
-      
-      for (i = 0; i < howMany; i++)
+
+      for (i = isPullDown ? 1 : 0; i < howMany; i++)
         {
           float aStateImageWidth;
           float aTitleWidth;
@@ -787,6 +802,8 @@ static NSMapTable *viewInfo = 0;
           if (anImageWidth)
             popupImageWidth = anImageWidth;
         }
+      if (isPullDown && howMany)
+        howMany -= 1;
       
       // Cache the needed widths.
       _stateImageWidth = neededStateImageWidth;

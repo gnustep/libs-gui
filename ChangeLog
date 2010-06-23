@@ -1,3 +1,12 @@
+2010-06-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenuView.m (-sizeToFit): Correctly take into account
+	that the first item of a pull down menu is not visible.
+
+	* Source/NSMenuView.m (-setHorizontal:): Ensure that the layout is
+	recomputed after changing the view from vertical to horizontal and
+	vice versa.
+
 2010-06-22 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSButton.m:
