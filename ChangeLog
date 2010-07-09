@@ -1,3 +1,9 @@
+2010-07-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSPopUpButtonCell.m (-setMenuView:): Override super class
+	method so that the button's appearance is not inadvertently
+	changed when the menu view is set.
+
 2010-06-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenuView.m (-sizeToFit): Correctly take into account

@@ -184,6 +184,15 @@ static NSImage *_pbc_image[5];
   [self synchronizeTitleAndSelectedItem];
 }
 
+- (void)setMenuView: (NSMenuView *)aMenuView
+{
+  // NB Don't call NSMenuItemCell's implementation here because it also
+  //    changes various items of the receiver, which is reasonable for a
+  //    menu item cell that is part of a menu, but not for a pop up button
+  //    cell.
+  _menuView = aMenuView;
+}
+
 /**
  * Return the menu for the popup.
  */
