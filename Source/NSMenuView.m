@@ -1086,6 +1086,8 @@ static NSMapTable *viewInfo = 0;
 
   // Make sure the menu entries are up to date
   [self update];
+  if (_needsSizing)
+    [self sizeToFit];
 
   /* FIXME: Perhaps all of this belongs into NSPopupButtonCell and
      should be used to determine the proper screenRect to pass on into

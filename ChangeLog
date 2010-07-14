@@ -1,3 +1,8 @@
+2010-07-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-setWindowFrameForAttachingToRect...):
+	Resize the menu view if needed. This should correct part of bug #30025.
+
 2010-07-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m (-setMenuView:): Override super class
