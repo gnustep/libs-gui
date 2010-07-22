@@ -1,3 +1,11 @@
+2010-07-22 19:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSTheme.m: Call method _setArchiveByName: with YES so that
+	images loaded by a theme will not be persisted as image data, but
+	rather as references.  This will avoid an issue with saving theme
+	images when saving files in Gorm while a theme is loaded.
+	* Source/NSImage.m: Added method _setArchiveByName:.
+
 2010-07-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m (-setWindowFrameForAttachingToRect...):

@@ -209,6 +209,7 @@ GSStringFromBorderType(NSBorderType borderType)
 
 @interface	NSImage (GSTheme)
 + (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;
+- (void) _setArchiveByName: (BOOL)flag;
 @end
 
 @interface	GSTheme (Private)
@@ -493,6 +494,15 @@ typedef	struct {
 		   * any previous/default image of the same name.
 		   */
 		  [_images setObject: image forKey: imageName];
+
+		  /* Force the image to be archived by name.  This prevents
+		   * problems such as when/if gorm is being used with a theme
+		   * active, it will not save the image which was loaded
+		   * here and will, instead save the name so that the proper
+		   * image gets loaded in the future.
+		   */
+		  [image _setArchiveByName: YES];
+
 		  RELEASE(image);
 		  old = [NSImage imageNamed: imageName];
 		  if (old == nil)

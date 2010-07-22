@@ -2156,4 +2156,14 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   return (NSImage*)proxy;
 }
 
+/**
+ * This method allows the theme system to specify that an image
+ * should be archived using the reference to it's name only.
+ * This prevents saving theme specific image data into the
+ * images in an archive.
+ */
+- (void) _setArchiveByName: (BOOL)flag;
+{
+  _flags.archiveByName = flag;
+}
 @end
