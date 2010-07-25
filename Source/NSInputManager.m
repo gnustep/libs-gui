@@ -39,7 +39,7 @@
 
 /* A table mapping character names to characters, used to interpret
    the character names found in KeyBindings dictionaries.  */
-#define CHARACTER_TABLE_SIZE 77
+#define CHARACTER_TABLE_SIZE 78
 
 static struct 
 {
@@ -125,6 +125,7 @@ character_table[CHARACTER_TABLE_SIZE] =
   /* Special characters by name.  Useful if you want, for example,
      to associate some special action to C-Tab or similar evils.  */
   { @"Backspace", NSBackspaceCharacter },
+  { @"BackTab", NSBackTabCharacter },
   { @"Tab", NSTabCharacter },
   { @"Enter", NSEnterCharacter },
   { @"FormFeed", NSFormFeedCharacter },
@@ -652,6 +653,10 @@ static NSInputManager *currentInputManager = nil;
           
         case '\e': // escape
           [self doCommandBySelector: @selector (cancelOperation:)];
+          break;
+
+        case NSBackTabCharacter:
+          [self doCommandBySelector: @selector (insertBacktab:)];
           break;
 
         case NSTabCharacter:

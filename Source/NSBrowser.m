@@ -2517,6 +2517,9 @@ static NSTextFieldCell *titleCell;
         case NSRightArrowFunctionKey:
           [self moveRight:self];
           return;
+        case NSBackTabCharacter:
+          [_window selectKeyViewPrecedingView: self];
+          return;
         case NSTabCharacter:
           {
             if ([theEvent modifierFlags] & NSShiftKeyMask)
@@ -2529,7 +2532,6 @@ static NSTextFieldCell *titleCell;
               }
           }
           return;
-          break;
         }
     }
 

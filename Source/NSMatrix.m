@@ -2585,7 +2585,7 @@ static SEL getSel;
   unsigned int modifiers = [theEvent modifierFlags];
   int		i;
   unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
-  unichar key = ([keyEquivalent length] > 0 ? [keyEquivalent characterAtIndex:0] : 0);
+
   /* Take shift key into account only for control keys and arrow and function keys */
   if ((modifiers & NSFunctionKeyMask)
       || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
@@ -3726,6 +3726,15 @@ static SEL getSel;
 	    [self moveRight: self];
 	}
       return;
+
+    case NSBackTabCharacter:
+      if (_tabKeyTraversesCells)
+	{
+          if ([self _selectNextSelectableCellAfterRow: _selectedRow
+                                               column: _selectedColumn])
+            return;
+        }
+      break;
 
     case NSTabCharacter:
       if (_tabKeyTraversesCells)
