@@ -3219,7 +3219,7 @@ resetCursorRectsForView(NSView *theView)
     }
 
   // If this is a BACKTAB event, move to the previous key view
-  if (character == NSTabCharacter)
+  if (character == NSBackTabCharacter)
     {
       [self selectPreviousKeyView: self];
       return;
