@@ -1,3 +1,9 @@
+2010-07-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenuView.m (-setWindowFrameForAttachingToRect:...):
+	Better placement of pull down menus. If there is not enough room
+	at the preferred edge display the menu at the opposite edge.
+
 2010-07-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenuView.m (-trackWithEvent:):

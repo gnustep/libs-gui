@@ -1078,7 +1078,7 @@ static NSMapTable *viewInfo = 0;
 {
   NSRect r;
   NSRect cellFrame;
-  NSRect screenFrame;
+  NSRect popUpFrame;
   int items = [_itemCells count];
   BOOL growHeight = YES;
   BOOL resizeCell = NO;
@@ -1167,8 +1167,8 @@ static NSMapTable *viewInfo = 0;
   /*
    * Compute the frame
    */
-  screenFrame.origin = screenRect.origin;
-  screenFrame.size = cellFrame.size;
+  popUpFrame.origin = screenRect.origin;
+  popUpFrame.size = cellFrame.size;
   if (items > 0)
     {
       float f;
@@ -1176,10 +1176,10 @@ static NSMapTable *viewInfo = 0;
       if (_horizontal == NO)
         {
           f = cellFrame.size.height * (items - 1);
-          screenFrame.size.height += f + _leftBorderOffset;
-          screenFrame.origin.y -= f;
-          screenFrame.size.width += _leftBorderOffset;
-          screenFrame.origin.x -= _leftBorderOffset;
+          popUpFrame.size.height += f + _leftBorderOffset;
+          popUpFrame.origin.y -= f;
+          popUpFrame.size.width += _leftBorderOffset;
+          popUpFrame.origin.x -= _leftBorderOffset;
 
 	  // If the menu is a pull down menu the first item, which would
 	  // appear at the top of the menu, holds the title and is omitted
@@ -1187,22 +1187,22 @@ static NSMapTable *viewInfo = 0;
 	    {
 	      if ([[_attachedMenu _owningPopUp] pullsDown])
 		{
-		  screenFrame.size.height -= cellFrame.size.height;
-		  screenFrame.origin.y += cellFrame.size.height;
+		  popUpFrame.size.height -= cellFrame.size.height;
+		  popUpFrame.origin.y += cellFrame.size.height;
 		}
 	    }
 
           // Compute position for popups, if needed
           if (selectedItemIndex != -1) 
             {
-              screenFrame.origin.y
+              popUpFrame.origin.y
                   += cellFrame.size.height * selectedItemIndex;
             }
         }
       else
         {
           f = cellFrame.size.width * (items - 1);
-          screenFrame.size.width += f;
+          popUpFrame.size.width += f;
 
 	  // If the menu is a pull down menu the first item holds the
 	  // title and is omitted
@@ -1210,14 +1210,14 @@ static NSMapTable *viewInfo = 0;
 	    {
 	      if ([[_attachedMenu _owningPopUp] pullsDown])
 		{
-		  screenFrame.size.width -= cellFrame.size.width;
+		  popUpFrame.size.width -= cellFrame.size.width;
 		}
 	    }
 
           // Compute position for popups, if needed
           if (selectedItemIndex != -1) 
             {
-              screenFrame.origin.x -= cellFrame.size.width * selectedItemIndex;
+              popUpFrame.origin.x -= cellFrame.size.width * selectedItemIndex;
             }
         }
     }  
@@ -1225,31 +1225,85 @@ static NSMapTable *viewInfo = 0;
   // Update position, if needed, using the preferredEdge
   if (selectedItemIndex == -1)
     {
-      // FIXME if screen space is tight at the preferred edge attach
-      // the menu at the opposite edge
-      screenFrame.origin.y -= cellFrame.size.height;
-      switch (edge)
+      NSRect screenFrame;
+
+      if (screen == nil)
+	screen = [NSScreen mainScreen];
+      screenFrame = [screen frame];
+
+      popUpFrame.origin.y -= cellFrame.size.height;
+      if (edge == NSMinYEdge || edge == NSMaxYEdge)
 	{
-	default:
-	case NSMinYEdge:
-	  break;
-	case NSMaxYEdge:
-	  screenFrame.origin.y +=
-	    screenFrame.size.height + screenRect.size.height - _leftBorderOffset;
-	  break;
-	case NSMinXEdge:
-	  screenFrame.origin.y += screenRect.size.height;
-	  screenFrame.origin.x -= screenFrame.size.width;
-	  break;
-	case NSMaxXEdge:
-	  screenFrame.origin.y += screenRect.size.height;
-	  screenFrame.origin.x += screenRect.size.width + _leftBorderOffset;
-	  break;
+	  NSRect minYFrame = popUpFrame;
+	  NSRect maxYFrame = popUpFrame;
+
+	  // show menu above or below the cell depending on the preferred edge
+	  // if the menu would be partially off screen on that edge use the
+	  // opposite edge or at least the one where more space is left
+	  maxYFrame.origin.y +=
+	    maxYFrame.size.height + screenRect.size.height - _leftBorderOffset;
+
+	  if (edge == NSMinYEdge)
+	    {
+	      if ((NSMinY(minYFrame) < NSMinY(screenFrame))
+		  && ((NSMaxY(maxYFrame) <= NSMaxY(screenFrame))
+		      || (NSMaxY(screenFrame) - NSMaxY(screenRect) >
+			  NSMinY(screenRect) - NSMinY(screenFrame))))
+		{
+		  edge = NSMaxYEdge;
+		}
+	    }
+	  else
+	    {
+	      if ((NSMaxY(maxYFrame) > NSMaxY(screenFrame))
+		  && ((NSMinY(minYFrame) >= NSMinY(screenFrame))
+		      || (NSMaxY(screenFrame) - NSMaxY(screenRect) <
+			  NSMinY(screenRect) - NSMinY(screenFrame))))
+		{
+		  edge = NSMinYEdge;
+		}
+	    }
+	  popUpFrame = edge == NSMinYEdge ? minYFrame : maxYFrame;
+	}
+      else
+	{
+	  NSRect minXFrame = popUpFrame;
+	  NSRect maxXFrame = popUpFrame;
+
+	  minXFrame.origin.y += screenRect.size.height;
+	  minXFrame.origin.x -= minXFrame.size.width;
+
+	  maxXFrame.origin.y += screenRect.size.height;
+	  maxXFrame.origin.x += screenRect.size.width + _leftBorderOffset;
+
+	  // show menu on the opposite edge if it does not fit on screen on
+	  // the preferred edge
+	  if (edge == NSMinXEdge)
+	    {
+	      if ((NSMinX(minXFrame) < NSMinX(screenFrame))
+		  && ((NSMaxX(maxXFrame) <= NSMaxX(screenFrame))
+		      || (NSMaxX(screenFrame) - NSMaxX(screenRect) >
+			  NSMinX(screenRect) - NSMinX(screenFrame))))
+		{
+		  edge = NSMaxXEdge;
+		}
+	    }
+	  else
+	    {
+	      if ((NSMaxX(maxXFrame) > NSMaxX(screenFrame))
+		  && ((NSMinX(minXFrame) >= NSMinX(screenFrame))
+		      || (NSMaxX(screenFrame) - NSMaxX(screenRect) <
+			  NSMinX(screenRect) - NSMinX(screenFrame))))
+		{
+		  edge = NSMinXEdge;
+		}
+	    }
+	  popUpFrame = edge == NSMinXEdge ? minXFrame : maxXFrame;
 	}
     }
 
   // Get the frameRect
-  r = [NSWindow frameRectForContentRect: screenFrame
+  r = [NSWindow frameRectForContentRect: popUpFrame
                 styleMask: [_window styleMask]];
   
   // Set the window frame
