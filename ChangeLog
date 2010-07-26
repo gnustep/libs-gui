@@ -1,5 +1,9 @@
 2010-07-26 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSInputManager.m: Use NSDeleteCharacter for the backspace key.
+
+2010-07-26 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m (-keyDown:): Correction of last change.
 
 2010-07-25 Eric Wasylishen <ewasylishen@gmail.com>

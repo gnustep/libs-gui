@@ -124,7 +124,7 @@ character_table[CHARACTER_TABLE_SIZE] =
 
   /* Special characters by name.  Useful if you want, for example,
      to associate some special action to C-Tab or similar evils.  */
-  { @"Backspace", NSBackspaceCharacter },
+  { @"Backspace", NSDeleteCharacter },
   { @"BackTab", NSBackTabCharacter },
   { @"Tab", NSTabCharacter },
   { @"Enter", NSEnterCharacter },
@@ -647,6 +647,7 @@ static NSInputManager *currentInputManager = nil;
 
       switch (character)
         {
+        case NSDeleteCharacter:
         case NSBackspaceCharacter:
           [self doCommandBySelector: @selector (deleteBackward:)];
           break;
