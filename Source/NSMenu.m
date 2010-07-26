@@ -2047,25 +2047,36 @@ static BOOL menuBarVisible = YES;
   NSRect    screenRect = [[theWindow screen] visibleFrame];
   NSPoint   vector    = {0.0, 0.0};
   BOOL      moveIt    = NO;
+  NSPoint location = [theWindow mouseLocationOutsideOfEventStream];
+  NSPoint pointerLoc = [theWindow convertBaseToScreen: location];
   
+  // Why forget about moving the main menu? If the main menu was partially
+  // shifted off screen while tracking one of its submenus, it should be
+  // possible to shift it back on screen again.
+#if 0
   // If we are the main menu forget about moving.
   if ([self isEqual: [NSApp mainMenu]] && !_menu.transient)
     return;
+#endif
 
   // 1 - determine the amount we need to shift in the y direction.
-  if (NSMinY (frameRect) < 0)
+  if (pointerLoc.y <= 1 && NSMinY (frameRect) < 0)
     {
       vector.y = MIN (SHIFT_DELTA, -NSMinY (frameRect));
       moveIt = YES;
     }
-  else if (NSMaxY (frameRect) > NSMaxY (screenRect))
+  /* Note: pointerLoc.y may be greater than NSMaxY(screenRect) if we have a
+     horizontal menu bar at the top of the screen (Macintosh interface style) */
+  // FIXME Don't move the horizontal menu bar downward in this case!
+  else if (pointerLoc.y >= NSMaxY(screenRect) &&
+	   NSMaxY (frameRect) > NSMaxY (screenRect))
     {
       vector.y = -MIN (SHIFT_DELTA, NSMaxY (frameRect) - NSMaxY (screenRect));
       moveIt = YES;
     }
 
   // 2 - determine the amount we need to shift in the x direction.
-  if (NSMinX (frameRect) < 0)
+  if (pointerLoc.x == 0 && NSMinX (frameRect) < 0)
     {
       vector.x = MIN (SHIFT_DELTA, -NSMinX (frameRect));
       moveIt = YES;
@@ -2073,7 +2084,8 @@ static BOOL menuBarVisible = YES;
   // Note the -3.  This is done so the menu, after shifting completely
   // has some spare room on the right hand side.  This is needed otherwise
   // the user can never access submenus of this menu.
-  else if (NSMaxX (frameRect) > NSMaxX (screenRect) - 3)
+  else if (pointerLoc.x == NSMaxX(screenRect) - 1 &&
+	   NSMaxX (frameRect) > NSMaxX (screenRect) - 3)
     {
       vector.x
 	= -MIN (SHIFT_DELTA, NSMaxX (frameRect) - NSMaxX (screenRect) + 3);
@@ -2087,7 +2099,7 @@ static BOOL menuBarVisible = YES;
       
       if (_menu.horizontal)
         {
-          masterLocation = [[self window] frame].origin;
+          masterLocation = frameRect.origin;
           destinationPoint.x = masterLocation.x + vector.x;
           destinationPoint.y = masterLocation.y + vector.y;
           [self nestedSetFrameOrigin: destinationPoint];

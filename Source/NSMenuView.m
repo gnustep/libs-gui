@@ -1473,14 +1473,15 @@ static NSMapTable *viewInfo = 0;
           if ([_attachedMenu isPartlyOffScreen])
             {
               NSPoint pointerLoc = [_window convertBaseToScreen: location];
+              NSRect screenFrame = [[_window screen] visibleFrame];
               /*
                * The +/-1 in the y - direction is because the flipping
                * between X-coordinates and GNUstep coordinates let the
                * GNUstep screen coordinates start with 1.
                */
               if (pointerLoc.x == 0 || pointerLoc.y == 1
-                || pointerLoc.x == [[_window screen] frame].size.width - 1
-                || pointerLoc.y == [[_window screen] frame].size.height)
+                || pointerLoc.x == screenFrame.size.width - 1
+                || pointerLoc.y == screenFrame.size.height)
                 [_attachedMenu shiftOnScreen];
             }
 
@@ -1520,7 +1521,7 @@ static NSMapTable *viewInfo = 0;
                 = [_window convertBaseToScreen: location];
 
               /*
-               * 3a - Check if moved into one of the ancester menus.
+               * 3a - Check if moved into one of the ancestor menus.
                *      This is tricky, there are a few possibilities:
                *          We are a transient attached menu of a
                *          non-transient menu

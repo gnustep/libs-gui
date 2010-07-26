@@ -1,3 +1,10 @@
+2010-07-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenuView.m (-trackWithEvent:):
+	* Source/NSMenu.m (-shiftOnScreen): Correctly handle the cases
+	where a menu is partially off screen on the top and the left side
+	of the screen, respectively. This fixes bug #30439.
+
 2010-07-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSInputManager.m: Use NSDeleteCharacter for the backspace key.
