@@ -1,3 +1,14 @@
+2010-07-25 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSplitView.m (-adjustSubviews):
+	Call setFrame: on subviews rather than setFrameSize: followed
+	by setFrameOrigin:, so that the subviews never have an inconsistent
+	frame (old origin + new size).
+	
+	This was messing up cases with NSOpenGLView's inside split views,
+	(e.g. usr-apps/examples/gui/MyGL)	because the NSOpenGLView,
+	when notified of its size changing, was using the invalid origin.
+
 2010-07-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m,

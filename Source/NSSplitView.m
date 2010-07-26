@@ -880,8 +880,7 @@ static NSNotificationCenter *nc = nil;
           newSize = NSMakeSize(NSWidth(_bounds), newHeight);
           newPoint = NSMakePoint(0.0, running);
           running += newHeight + _dividerWidth;
-          [views[i] setFrameSize: newSize];
-          [views[i] setFrameOrigin: newPoint];
+          [views[i] setFrame: NSMakeRect(newPoint.x, newPoint.y, newSize.width, newSize.height)];
         }
     }
   else
@@ -904,8 +903,7 @@ static NSNotificationCenter *nc = nil;
           newSize = NSMakeSize(newWidth, NSHeight(_bounds));
           newPoint = NSMakePoint(running, 0.0);
           running += newWidth + _dividerWidth;
-          [views[i] setFrameSize: newSize];
-          [views[i] setFrameOrigin: newPoint];
+          [views[i] setFrame: NSMakeRect(newPoint.x, newPoint.y, newSize.width, newSize.height)];
         }
     }
 
