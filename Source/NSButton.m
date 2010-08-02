@@ -29,11 +29,13 @@
 
 #include "config.h"
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSWindow.h"
+#import <Foundation/NSCharacterSet.h>
+
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSWindow.h"
 
 //
 // class variables

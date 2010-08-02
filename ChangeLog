@@ -1,3 +1,8 @@
+2010-08-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButton.m,
+	* Source/NSMenu.m: Add missing #import.
+
 2010-07-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenuView.m (-setWindowFrameForAttachingToRect:...):

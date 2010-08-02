@@ -36,6 +36,7 @@
 #import "config.h"
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSProcessInfo.h>
