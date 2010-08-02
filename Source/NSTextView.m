@@ -86,6 +86,7 @@
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
 #import "GSGuiPrivate.h"
+#import "GSTextFinder.h"
 
 
 /*
@@ -187,7 +188,8 @@ Interface for a bunch of internal methods that need to be cleaned up.
 	       ([tv usesRuler]?0x100:0) |
 	       ([tv smartInsertDeleteEnabled]?0x200:0) |
 	       ([tv allowsUndo]?0x400:0) |
-	       ([tv drawsBackground]?0x800:0));
+	       ([tv drawsBackground]?0x800:0) |
+	       ([tv usesFindPanel]?0x2000:0));
 
       ASSIGN(backgroundColor, [tv backgroundColor]);
       ASSIGN(paragraphStyle, [tv defaultParagraphStyle]);
@@ -297,7 +299,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 /**** Misc. helpers and stuff ****/
 
-static const int currentVersion = 2;
+static const int currentVersion = 3;
 
 static BOOL noLayoutManagerException(void)
 {
@@ -831,6 +833,8 @@ that makes decoding and encoding compatible with the old code.
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _tf.allows_undo;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.uses_find_panel;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       [aCoder encodeObject: _insertionPointColor];
       [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
       flag = [_textContainer widthTracksTextView];
@@ -901,6 +905,7 @@ that makes decoding and encoding compatible with the old code.
           _tf.smart_insert_delete = ((0x200 & flags) > 0);
           _tf.allows_undo = ((0x400 & flags) > 0);	  
           _tf.draws_background = ((0x800 & flags) > 0);
+	  _tf.uses_find_panel = ((0x2000 & flags) > 0);
         }
      
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
@@ -968,6 +973,11 @@ that makes decoding and encoding compatible with the old code.
       _tf.smart_insert_delete = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.allows_undo = flag;
+      if (version >= 3)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  _tf.uses_find_panel = flag;	  
+	}
 
       /* build up the rest of the text system, which doesn't get stored 
 	 <doesn't even implement the Coding protocol>. */
@@ -976,7 +986,7 @@ that makes decoding and encoding compatible with the old code.
       /* See initWithFrame: for comments on this RELEASE */
       RELEASE(self);
 
-      if (version == currentVersion)
+      if (version >= 2)
         {
 	  NSSize containerSize;
 	  	  
@@ -2965,6 +2975,17 @@ Scroll so that the beginning of the range is visible.
   if (sel_eq(action, @selector(selectAll:))
       || sel_eq(action, @selector(centerSelectionInVisibleArea:)))
     return [self isSelectable];
+
+  if (sel_eq(action, @selector(performFindPanelAction:)))
+    {
+      if ([self usesFindPanel] == NO)
+	{
+	  return NO;
+	}
+      return [[GSTextFinder sharedTextFinder]
+	       validateFindPanelAction: item
+			  withTextView: self];
+    }
 
   return YES;
 }
@@ -5496,7 +5517,9 @@ configuation! */
 
 - (void) performFindPanelAction: (id)sender
 {
-  // FIXME
+    [[GSTextFinder sharedTextFinder]
+      performFindPanelAction: sender
+		withTextView: self];
 }
 
 @end

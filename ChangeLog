@@ -1,3 +1,19 @@
+2010-08-02  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-validateUserInterfaceItem:,
+	-performFindPanelAction:): Implement find panel support.
+
+	* Source/GNUmakefile:
+	* Source/GSTextFinder.h:
+	* Source/GSTextFinder.m:
+	* Panels/GNUmakefile:
+	* Panels/English.lproj/GSFindPanel.gorm:
+	New text finder and associated find panel.
+
+	* Source/NSTextView.m(currentVersion, -initWithTextView:,
+	-encodeWithCoder:, -initWithCoder:): Archive the uses find panel
+	attribute. This required updating the NSTextView version to 3.
+
 2010-08-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButton.m,

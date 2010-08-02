@@ -217,6 +217,7 @@ GSKeyBindingAction.m \
 GSKeyBindingTable.m \
 NSTextView.m \
 NSTextView_actions.m \
+GSTextFinder.m \
 GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
