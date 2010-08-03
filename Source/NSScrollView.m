@@ -379,11 +379,20 @@ static float scrollerWidth;
   [self tile];
 }
 
+/**
+ <p> Return wether scroller autohiding is set or not. </p>
+ <p>See Also: -setAutohidesScrollers:</p>
+*/
 - (BOOL) autohidesScrollers
 {
   return _autohidesScrollers;
 }
 
+/**
+ <p>Sets whether the view hides the scrollers (horizontal and/or vertical independendently) if they are not needed.</p>
+ <p>If the content fits inside the clip view on the X or Y axis or both, the respective scroller is removed and additional space is gained.</p>
+ <p>See Also: -autohidesScrollers</p>
+ */
 - (void) setAutohidesScrollers: (BOOL)flag
 {
   _autohidesScrollers = flag;
