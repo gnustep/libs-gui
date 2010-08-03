@@ -2152,18 +2152,16 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
     }
   [proxy _setResource: image];
   IF_NO_GC([[proxy retain] autorelease]);
+
+  /* Force the image to be archived by name.  This prevents
+   * problems such as when/if gorm is being used with a theme
+   * active, it will not save the image which was loaded
+   * here and will, instead save the name so that the proper
+   * image gets loaded in the future.
+   */
+  image->_flags.archiveByName = YES;
+
   [imageLock unlock];
   return (NSImage*)proxy;
-}
-
-/**
- * This method allows the theme system to specify that an image
- * should be archived using the reference to it's name only.
- * This prevents saving theme specific image data into the
- * images in an archive.
- */
-- (void) _setArchiveByName: (BOOL)flag;
-{
-  _flags.archiveByName = flag;
 }
 @end
