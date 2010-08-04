@@ -46,6 +46,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSPasteboard.h"
+#import "AppKit/NSPanel.h"
 #import "AppKit/NSSlider.h"
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSWindow.h"
@@ -222,7 +223,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   NSColorWell *well;
   int i;
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
-                      | NSResizableWindowMask;
+                      | NSResizableWindowMask | NSUtilityWindowMask;
 
   self = [super initWithContentRect: contentRect 
 			  styleMask: style

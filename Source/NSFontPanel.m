@@ -534,7 +534,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSBox *slash;
 
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
-                     | NSMiniaturizableWindowMask | NSResizableWindowMask;
+                     | NSResizableWindowMask | NSUtilityWindowMask;
 
   self = [super initWithContentRect: contentRect 
 			  styleMask: style

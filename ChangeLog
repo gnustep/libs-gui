@@ -1,5 +1,14 @@
 2010-08-03  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSColorPanel.m:
+	* Source/NSFontPanel.m:
+	Make the NSColorPanel and NSFontPanel use NSUtilityWindowMask.
+	Also remove the NSMiniaturizableWindowMask from NSFontPanel.
+	This makes the panels behave as they do on Mac OS.
+	Feel free to revert/discuss if you disagree with this.. :-)
+
+2010-08-03  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSPanel.m: Override 
 	-initWithContentRect:styleMask:backing:defer: so that if
 	NSUtilityWindowMask is part of the style mask, we can
