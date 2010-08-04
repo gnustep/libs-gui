@@ -60,7 +60,27 @@
 			   backing: NSBackingStoreBuffered
 			     defer: NO];
 }
+- (id) initWithContentRect: (NSRect)contentRect
+                 styleMask: (unsigned int)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag
+{
+  self = [super initWithContentRect: contentRect
+			  styleMask: aStyle
+			    backing: bufferingType
+			      defer: flag];
+  if (nil == self)
+    {
+      return nil;
+    }
 
+  if ((_styleMask & NSUtilityWindowMask) == NSUtilityWindowMask)
+    {
+      [self setFloatingPanel: YES];
+    }
+
+  return self;
+}
 - (void) _initDefaults
 {
   [super _initDefaults];

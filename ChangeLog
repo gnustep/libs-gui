@@ -1,3 +1,12 @@
+2010-08-03  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSPanel.m: Override 
+	-initWithContentRect:styleMask:backing:defer: so that if
+	NSUtilityWindowMask is part of the style mask, we can
+	set the panel to be a floating panel (which is the definition
+	of NSUtilityWindowMask, in addition to making the panel
+	have a thin title bar.)
+
 2010-08-03 Riccardo Mottola
 
 	* Source/NSScrollView.m :
