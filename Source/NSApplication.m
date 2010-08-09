@@ -2515,7 +2515,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 }
 
 /**
- * Arranges all app's windows in front by successively calling
+ * Arranges all non-miniaturized app's windows in front by successively calling
  * [NSWindow-orderFront:] on each window in the app's Windows menu.
  */
 - (void) arrangeInFront: (id)sender
@@ -2535,7 +2535,8 @@ image.</p><p>See Also: -applicationIconImage</p>
 	{
 	  id	win = [(NSMenuItem*)[itemArray objectAtIndex: i] target];
 
-	  if ([win isKindOfClass: [NSWindow class]])
+	  if ([win isKindOfClass: [NSWindow class]] &&
+	      [win isVisible] && ![win isMiniaturized])
 	    {
 	      [win orderFront: sender];
 	    }
