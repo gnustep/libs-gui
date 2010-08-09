@@ -4888,7 +4888,8 @@ other than copy/paste or dragging. */
                         respectFraction: YES];
 
       if ([sender draggingSource] != self ||
-	  !NSLocationInRange(dragIndex, [self selectedRange]))
+          dragIndex <= [self selectedRange].location ||
+          dragIndex >= NSMaxRange([self selectedRange]))
 	[self _draggingHijackInsertionPoint: dragIndex];
       else
         {
@@ -4957,7 +4958,8 @@ other than copy/paste or dragging. */
 #undef DRAGGING_SCROLL_DIST
 
       if ([sender draggingSource] != self ||
-	  !NSLocationInRange(dragIndex, [self selectedRange]))
+          dragIndex <= [self selectedRange].location ||
+          dragIndex >= NSMaxRange([self selectedRange]))
 	[self _draggingHijackInsertionPoint: dragIndex];
       else
         {

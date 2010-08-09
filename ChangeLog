@@ -1,3 +1,10 @@
+2010-08-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-draggingEntered:, -draggingUpdated): Fix
+	an incorrect range check which prevented the user from copying or
+	moving the current selection immediately before itself with a DnD
+	operation.
+
 2010-08-03  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSColorPanel.m:
