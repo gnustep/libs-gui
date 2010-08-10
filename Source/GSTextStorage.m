@@ -646,8 +646,10 @@ _attributesAtIndexEffectiveRange(
 - (void) setAttributes: (NSDictionary*)attributes
 		 range: (NSRange)range
 {
-  unsigned	tmpLength, arrayIndex, arraySize;
-  NSRange	effectiveRange;
+  unsigned	tmpLength;
+  unsigned      arrayIndex = 0;
+  unsigned      arraySize;
+  NSRange	effectiveRange = NSMakeRange(0, NSNotFound);
   NSRange	originalRange = range;
   unsigned	afterRangeLoc, beginRangeLoc;
   NSDictionary	*attrs;
@@ -776,8 +778,10 @@ changeInLength: 0];
 - (void) replaceCharactersInRange: (NSRange)range
 		       withString: (NSString*)aString
 {
-  unsigned	tmpLength, arrayIndex, arraySize;
-  NSRange	effectiveRange;
+  unsigned	tmpLength;
+  unsigned      arrayIndex = 0;
+  unsigned      arraySize;
+  NSRange	effectiveRange = NSMakeRange(0, NSNotFound);
   NSDictionary	*attrs;
   GSTextInfo	*info;
   int		moveLocations;

@@ -1,3 +1,8 @@
+2010-08-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSTextStorage.m: Follow Richard's changes to
+	GSAttributedString in base.
+
 2010-08-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-arrangeInFront:): Only order
