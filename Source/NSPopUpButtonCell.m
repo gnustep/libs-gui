@@ -157,6 +157,8 @@ static NSImage *_pbc_image[5];
  */ 
 - (void) setMenu: (NSMenu *)menu
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   if (_menu == menu)
     {
       return;
@@ -165,6 +167,9 @@ static NSImage *_pbc_image[5];
   if (_menu != nil)
     {
       [_menu _setOwnedByPopUp: nil];
+      [nc removeObserver: self
+                    name: nil
+                  object: _menu];
     }
   ASSIGN(_menu, menu);
   if (_menu != nil)
@@ -174,6 +179,18 @@ static NSImage *_pbc_image[5];
        * popupbutton code in super class NSMenuItemCell
        */
       [self setMenuView: [_menu menuRepresentation]];
+      [nc addObserver: self
+             selector: @selector(synchronizeTitleAndSelectedItem)
+                 name: NSMenuDidAddItemNotification
+               object: _menu];
+      [nc addObserver: self
+             selector: @selector(synchronizeTitleAndSelectedItem)
+                 name: NSMenuDidRemoveItemNotification
+               object: _menu];
+      [nc addObserver: self
+             selector: @selector(synchronizeTitleAndSelectedItem)
+                 name: NSMenuDidChangeItemNotification
+               object: _menu];
     }
   else 
     {
@@ -202,7 +219,7 @@ static NSImage *_pbc_image[5];
 }
 
 /**
- * Returns YES, if this is a pull-down 
+ * Set the pull-down state
  */
 - (void) setPullsDown: (BOOL)flag
 {
@@ -218,6 +235,7 @@ static NSImage *_pbc_image[5];
   _pbcFlags.pullsDown = flag;
 
   [self setMenuItem: item];
+  [self synchronizeTitleAndSelectedItem];
 }
 
 /**

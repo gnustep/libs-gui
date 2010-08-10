@@ -1,5 +1,13 @@
 2010-08-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m (-setPullsDown:): Call
+	synchronizeTitleAndSelectedItem to display the correct item.
+	* Source/NSPopUpButtonCell.m (-setMenu:): Listen to notifications
+	from the menu to call synchronizeTitleAndSelectedItem, when the
+	menu items change.
+
+2010-08-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSTextStorage.m: Follow Richard's changes to
 	GSAttributedString in base.
 
