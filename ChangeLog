@@ -1,3 +1,11 @@
+2010-08-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSComboBox.m (-textView:doCommandBySelector:): New
+	override to pop up the combo box's list when the user presses
+	the down arrow key.
+	* Source/NSComboBoxCell.m (_performClickWithFrame:inView:):
+	Remember the cell's control view.
+
 2010-08-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-setPullsDown:): Call

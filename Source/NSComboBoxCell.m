@@ -1883,6 +1883,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   NSWindow *cvWindow = [controlView window];
   NSRect buttonRect = buttonCellFrameFromRect(cellFrame);
 
+  _control_view = controlView;
   [controlView lockFocus];
   [_buttonCell highlight: YES 
 	       withFrame: buttonRect

@@ -29,6 +29,7 @@
 #include "AppKit/NSComboBox.h"
 #include "AppKit/NSComboBoxCell.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSTextView.h"
 
 /*
  * Class variables
@@ -36,6 +37,15 @@
 static Class usedCellClass;
 static Class comboBoxCellClass;
 static NSNotificationCenter *nc;
+
+/*
+ * Declaration of private cell method
+ */
+
+@interface NSComboBoxCell (GNUstepPrivate)
+- (void) _performClickWithFrame: (NSRect)cellFrame
+			 inView: (NSView *)controlView;
+@end
 
 /**
  <unit>
@@ -475,6 +485,18 @@ static NSNotificationCenter *nc;
   
   if (!buttonClicked)
     [super mouseDown: theEvent];
+}
+
+- (BOOL) textView: (NSTextView *)textView doCommandBySelector: (SEL)command
+{
+  if ([super textView: textView doCommandBySelector: command])
+    return YES;
+  if (sel_eq(command, @selector(moveDown:)))
+    {
+      [_cell _performClickWithFrame: [self bounds] inView: self];
+      return YES;
+    }
+  return NO;
 }
 
 - (void) setFrame: (NSRect)frame
