@@ -2600,8 +2600,9 @@ static SEL getSel;
 
       for (j = 0; j < _numCols; j++)
 	{
-	  NSCell	*aCell = _cells[i][j];;
+	  NSCell	*aCell = _cells[i][j];
     unsigned int mask = 0;
+
     if ([aCell respondsToSelector:@selector(keyEquivalentModifierMask)])
       mask = [(NSButtonCell *)aCell keyEquivalentModifierMask];
 

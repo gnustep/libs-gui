@@ -1,3 +1,8 @@
+2010-08-13 Riccardo Mottola
+
+	* Source/NSMatrix.m
+	cleaned up code
+
 2010-08-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSComboBox.m (-textView:doCommandBySelector:): New
