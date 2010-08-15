@@ -661,6 +661,13 @@ static NSImage *_pbc_image[5];
 
   _selectedItem = item;
 
+  /* Set the item in the menu */
+  /* Note: Must do this before changing the state of the selected item, since
+   * the change will recursively invoke synchronizeTitleAndSelectedItem, which
+   * otherwise would select the old item again */
+  [[_menu menuRepresentation] setHighlightedItemIndex: 
+                   [_menu indexOfItem: _selectedItem]];
+
   if (_selectedItem != nil)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
@@ -668,10 +675,6 @@ static NSImage *_pbc_image[5];
           [_selectedItem setState: NSOnState];
         }
     }
-
-  /* Set the item in the menu */
-  [[_menu menuRepresentation] setHighlightedItemIndex: 
-                   [_menu indexOfItem: _selectedItem]];
 
   if (oldSelectedItem)
     {
