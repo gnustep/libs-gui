@@ -1,5 +1,8 @@
 2010-08-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSSpellChecker.m (-awakeFromNib): Make the spell panel a
+	utility window like the font and color panels.
+
 	* Source/NSPopUpButtonCell.m (-selectItem): Fix bug caused by the
 	fix for #30025, which made it impossible to programmatically
 	change the selected item of some pop up buttons.
