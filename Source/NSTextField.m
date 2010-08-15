@@ -39,6 +39,7 @@
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCursor.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSTextFieldCell.h"
@@ -179,6 +180,24 @@ static Class textFieldCellClass;
              so we need to call it before setting up the _text_object */
           length = [[self stringValue] length];
           _text_object = [_cell setUpFieldEditorAttributes: text];
+	  if (sender == self)
+	  {
+	    /* Special case: If -selectText: is called in response to making
+	       the receiver first responder with a mouse click, don't select
+	       the whole text. First of all, this is redundant since the field
+	       editor will receive the mouse click and immediately collapse the
+	       selection by placing the insertion point at the mouse location.
+	       Furthermore, we thus preserve the current selection on X and
+	       therefore the user can easily paste it into the text field with
+	       a middle mouse click. */
+	    NSEvent *event = [_window currentEvent];
+	    if ([event type] == NSLeftMouseDown &&
+		NSPointInRect([event locationInWindow],
+			      [self convertRect:[self bounds] toView:nil]))
+	      {
+		length = 0;
+	      }
+	  }
           [_cell selectWithFrame: _bounds
                  inView: self
                  editor: _text_object

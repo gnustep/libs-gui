@@ -1,5 +1,9 @@
 2010-08-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextField.m (-selectText:): Add special case to
+	preserve the current X selection when editing is started with a
+	mouse click.
+
 	* Source/NSSpellChecker.m (-awakeFromNib): Make the spell panel a
 	utility window like the font and color panels.
 
