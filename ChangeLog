@@ -1,3 +1,9 @@
+2010-08-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSComboBoxCell.m (-runLoopWithComboBoxCell:): Dismiss
+	the combo box's list without changing the selection when the user
+	presses Escape.
+
 2010-08-13 Riccardo Mottola
 
 	* Source/NSMatrix.m

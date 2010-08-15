@@ -465,6 +465,10 @@ static GSComboWindow *gsWindow = nil;
             {
               [self validateSelection];
             }
+	  else if (key == 0x001b)
+	    {
+	      break;
+	    }
           else
             {
 	      [NSApp sendEvent: event];
