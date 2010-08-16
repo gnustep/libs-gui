@@ -1,3 +1,12 @@
+2010-08-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Headers/AppKit/NSDocument.h:
+	* Source/NSDocument.m: Change result type of method
+	-saveToURL:ofType:forSaveOperation:delegate:didSaveSelector:contextInfo:
+	from BOOL to void. This fixes an incompatibility with Cocoa where
+	this method has no result (as any other method receiving a
+	callback selector).
+
 2010-08-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextField.m (-selectText:): Add special case to

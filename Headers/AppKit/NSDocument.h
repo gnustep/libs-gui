@@ -341,11 +341,11 @@ originalContentsURL:(NSURL *)orig
            ofType:(NSString *)type
  forSaveOperation:(NSSaveOperationType)op
             error:(NSError **)error;
-- (BOOL)saveToURL:(NSURL *)url
+- (void)saveToURL:(NSURL *)url
            ofType:(NSString *)type
  forSaveOperation:(NSSaveOperationType)op
          delegate:(id)delegate
-  didSaveSelector:(SEL)didSaveSelector 
+  didSaveSelector:(SEL)didSaveSelector
       contextInfo:(void *)contextInfo;
  
 /* Autosaving */

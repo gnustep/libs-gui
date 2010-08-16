@@ -1577,7 +1577,7 @@ originalContentsURL: (NSURL *)orig
                error: error];
 }
 
-- (BOOL) saveToURL: (NSURL *)url
+- (void) saveToURL: (NSURL *)url
             ofType: (NSString *)type
   forSaveOperation: (NSSaveOperationType)op
           delegate: (id)delegate
@@ -1604,8 +1604,6 @@ originalContentsURL: (NSURL *)orig
       if (meth)
         meth(delegate, didSaveSelector, self, saved, contextInfo);
     }
-
-  return saved;
 }
 
 - (IBAction) revertDocumentToSaved: (id)sender
