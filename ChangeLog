@@ -1,3 +1,10 @@
+2010-08-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocument.m (-svaveToFile:saveOperation:delegate:...,
+	-saveToURLofType:forSaveOperation:...): Update the document
+	controller's recent document list. This means that the user will
+	find her fresh documents in that list after saving them.
+
 2010-08-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSDocument.h:

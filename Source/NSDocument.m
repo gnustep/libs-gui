@@ -1554,6 +1554,13 @@ originalContentsURL: (NSURL *)orig
       saved = [self writeWithBackupToFile: fileName 
                     ofType: [self fileTypeFromLastRunSavePanel]
                     saveOperation: saveOperation];
+      if (saved &&
+	  (saveOperation == NSSaveOperation ||
+	   saveOperation == NSSaveAsOperation))
+	{
+	  [[NSDocumentController sharedDocumentController]
+	    noteNewRecentDocument: self];
+	}
     }
 
   if (delegate != nil && didSaveSelector != NULL)
@@ -1571,10 +1578,17 @@ originalContentsURL: (NSURL *)orig
   forSaveOperation: (NSSaveOperationType)op
              error: (NSError **)error
 {
-  return [self writeSafelyToURL: url
-               ofType: type
-               forSaveOperation: op
-               error: error];
+  BOOL saved =
+    [self writeSafelyToURL: url
+	  ofType: type
+          forSaveOperation: op
+          error: error];
+  if (saved && (op == NSSaveOperation || op == NSSaveAsOperation))
+    {
+      [[NSDocumentController sharedDocumentController]
+	noteNewRecentDocument: self];
+    }
+  return saved;
 }
 
 - (void) saveToURL: (NSURL *)url
@@ -1594,6 +1608,11 @@ originalContentsURL: (NSURL *)orig
   if (!saved)
     {
       [self presentError: error]; 
+    }
+  else if (op == NSSaveOperation || op == NSSaveAsOperation)
+    {
+      [[NSDocumentController sharedDocumentController]
+	noteNewRecentDocument: self];
     }
 
   if (delegate != nil && didSaveSelector != NULL)
