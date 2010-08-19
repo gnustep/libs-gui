@@ -1,5 +1,11 @@
 2010-08-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSOutlineView.m (-mouseDown): If the alt modifier is
+	pressed when the user expands or collapses an item expand or
+	collapse all children of the item as well.
+
+2010-08-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSDocument.m (-svaveToFile:saveOperation:delegate:...,
 	-saveToURLofType:forSaveOperation:...): Update the document
 	controller's recent document list. This means that the user will

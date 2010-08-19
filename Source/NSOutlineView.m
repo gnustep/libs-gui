@@ -843,13 +843,15 @@ static NSImage *unexpandable  = nil;
           && location.x >= position
                 && location.x <= position + [image size].width)
         {
+          BOOL withChildren =
+	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
           if (![self isItemExpanded: item])
             {
-              [self expandItem: item];
+              [self expandItem: item expandChildren: withChildren];
             }
           else
             {
-              [self collapseItem: item];
+              [self collapseItem: item collapseChildren: withChildren];
             }
           return;
         }
