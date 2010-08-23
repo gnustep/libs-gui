@@ -1,3 +1,10 @@
+2010-08-23  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* ColorPickers/GSWheelColorPicker.m: Rewrite to draw the HSV
+	wheel in a bitmap. This gives a pretty large performance improvement.
+	* Source/NSColorPanel.m: Set a sensible min and max size for the
+	color panel.
+
 2010-08-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSOutlineView.m (-mouseDown): If the alt modifier is

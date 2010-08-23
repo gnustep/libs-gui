@@ -37,6 +37,30 @@
 #include <GNUstepGUI/GSHbox.h>
 #include "GSStandardColorPicker.h"
 
+@interface GSColorWheelMarker : NSView
+{
+}
+
+@end
+
+@implementation GSColorWheelMarker : NSView
+
+-(BOOL) isOpaque
+{
+  return YES;
+}
+
+-(void) drawRect: (NSRect)rect
+{
+  NSRect bounds = [self bounds];
+  [[NSColor whiteColor] set];
+  NSRectFill(bounds);
+  [[NSColor blackColor] set];
+  NSFrameRect(bounds);
+}
+
+@end
+
 
 @interface GSColorWheel : NSView
 {
@@ -44,10 +68,16 @@
 
   id target;
   SEL action;
+
+  GSColorWheelMarker *marker;
+  NSImage *image;
 }
 
 -(float) hue;
 -(float) saturation;
+
+-(void) regenerateImage;
+-(NSRect) markerRect;
 
 -(void) setHue: (float)h saturation: (float)s brightness: (float)brightness;
 
@@ -57,6 +87,37 @@
 @end
 
 @implementation GSColorWheel
+
+-(id) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (nil == self)
+    {
+      return nil;
+    }
+
+  [self setPostsFrameChangedNotifications: YES];
+  [[NSNotificationCenter defaultCenter] 
+    addObserver: self
+       selector: @selector(_frameChanged:)
+	   name: NSViewFrameDidChangeNotification
+	 object: self];
+
+  return self;
+}
+
+-(void) _frameChanged: (id)sender
+{
+  [self regenerateImage];
+  [marker setFrame: [self markerRect]];
+}
+
+-(void) dealloc
+{
+  [image release];
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [super dealloc];
+}
 
 -(void) setTarget: (id)t
 {
@@ -76,28 +137,10 @@
   return saturation;
 }
 
--(void) setHue: (float)h saturation: (float)s brightness: (float)b
-{
-  if (hue == h && saturation == s && brightness == b)
-    return;
-  hue = h;
-  saturation = s;
-  brightness = b;
-  [self setNeedsDisplay: YES];
-}
-
--(BOOL) isOpaque
-{
-  return YES;
-}
-
--(void) drawRect: (NSRect)rect
+-(NSRect) markerRect
 {
   NSRect frame = [self bounds];
-  float cx, cy, cr;
-  float x, y;
-  float r, a;
-  float dx, dy;
+  float a,r,x,y,cr,cx,cy;
 
   cx = (frame.origin.x + frame.size.width) / 2;
   cy = (frame.origin.y + frame.size.height) / 2;
@@ -107,37 +150,6 @@
     cr = frame.size.height;
 
   cr = cr / 2 - 2;
-
-  rect.origin.x = floor(rect.origin.x);
-  rect.origin.y = floor(rect.origin.y);
-  rect.size.width = ceil(rect.size.width) + 1;
-  rect.size.height = ceil(rect.size.height) + 1;
-
-  [[NSColor windowBackgroundColor] set];
-  NSRectFill(rect);
-
-  for (y = rect.origin.y; y < rect.origin.y + rect.size.height; y++)
-    {
-      for (x = rect.origin.x; x < rect.origin.x + rect.size.width; x++)
-	{
-	  dx = x - cx;
-	  dy = y - cy;
-
-	  r = dx * dx + dy * dy;
-	  r = sqrt(r);
-	  r /= cr;
-	  if (r > 1)
-	    continue;
-
-	  a = atan2(dy, dx);
-	  a = a / 2.0 / PI;
-	  if (a < 0)
-	    a += 1;
-
-	  PSsethsbcolor(a, r, brightness);
-	  PSrectfill(x,y,1,1);
-	}
-    }
 
   a = hue * 2 * PI;
   r = saturation * cr;
@@ -145,37 +157,179 @@
   x = cos(a) * r + cx;
   y = sin(a) * r + cy;
 
-  PSsetgray(0);
-  PSrectstroke(x - 2, y - 2, 4, 4);
-  PSsetgray(1);
-  PSrectfill(x - 1, y - 1, 2, 2);
+  return NSMakeRect(x-2,y-2,4,4);
 }
 
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+-(void) setHue: (float)h saturation: (float)s brightness: (float)b
+{
+  if (nil == marker)
+    {
+      marker = [[[GSColorWheelMarker alloc] initWithFrame: [self markerRect]] autorelease];
+      [self addSubview: marker];
+    }
+  
+  if (hue != h || saturation != s || brightness != b)
+    {
+      BOOL regenerate = (brightness != b);
+      
+      hue = h;
+      saturation = s;
+      brightness = b;
+      
+      if (regenerate)
+	[self regenerateImage];
+    
+      [marker setFrame: [self markerRect]];
+
+      [self setNeedsDisplay: YES];
+    }
+}
+
+-(void) regenerateImage
+{
+  NSRect frame = [self bounds];
+  CGFloat cx, cy, cr;
+ 
+  [image release];
+  image = nil;
+
+  cx = (frame.origin.x + frame.size.width) / 2;
+  cy = (frame.origin.y + frame.size.height) / 2;
+
+  cr = frame.size.width;
+  if (cr > frame.size.height)
+    cr = frame.size.height;
+
+  cr = cr / 2 - 2;
+
+  {
+    NSUInteger width = frame.size.width;
+    NSUInteger height = frame.size.height;
+    NSUInteger bytesPerRow;
+    NSBitmapImageRep *bmp;
+    unsigned char *data;
+    NSUInteger x, y;
+
+    if (width < 1 || height < 1)
+      return;
+
+    bmp = [[NSBitmapImageRep alloc]
+			      initWithBitmapDataPlanes: NULL
+					    pixelsWide: width
+					    pixelsHigh: height
+					 bitsPerSample: 8
+				       samplesPerPixel: 4
+					      hasAlpha: YES
+					      isPlanar: NO
+					colorSpaceName: NSCalibratedRGBColorSpace
+					   bytesPerRow: 0
+					  bitsPerPixel: 32];
+
+    bytesPerRow = [bmp bytesPerRow];
+    data = [bmp bitmapData];
+    
+    for (y = 0; y < height; y++)
+      {
+	uint32_t *row = (uint32_t*)(data + (y * bytesPerRow));
+
+	for (x = 0; x < width; x++)
+	  {
+	    CGFloat dx, dy, dist;
+	    CGFloat h, s, v;
+	    CGFloat R, G, B, A;
+
+	    dx = x - cx;
+	    dy = cy - y; // compensate for flipped coordinates
+	    dist = sqrt(dx * dx + dy * dy);
+
+	    // calculate h,s,v from x,y
+	    {
+	      h = atan2(dy, dx) / 2.0 / PI;
+	      if (h < 0)
+		h += 1;
+	  
+	      s = dist/cr;
+	      if (s > 1)
+		s = 1;
+
+	      v = brightness;
+	    }
+
+	    // caluclate R,G,B from h,s,v
+	    {
+	      int	I = (int)(h * 6);
+	      CGFloat V = v;
+	      CGFloat S = s;
+	      CGFloat F = (h * 6) - I;
+	      CGFloat M = V * (1 - S);
+	      CGFloat N = V * (1 - S * F);
+	      CGFloat K = M - N + V;
+
+	      switch (I)
+		{
+		default: R = V; G = K; B = M; break;
+		case 1: R = N; G = V; B = M; break;
+		case 2: R = M; G = V; B = K; break;
+		case 3: R = M; G = N; B = V; break;
+		case 4: R = K; G = M; B = V; break;
+		case 5: R = V; G = M; B = N; break;
+		}
+	    }
+
+	    // calculate alpha
+	    {
+	      A = (cr - dist) + 0.5;
+	      if (A > 1) A = 1;
+	      if (A < 0) A = 0;
+	    }
+
+	    // premultiply color with alpha
+	    R *= A;
+	    G *= A;
+	    B *= A;
+ 
+	    // store pixel
+	    row[x] = ((uint32_t)(255 * R))
+	      | (((uint32_t)(255 * G)) << 8)
+	      | (((uint32_t)(255 * B)) << 16)
+	      | (((uint32_t)(255 * A)) << 24);
+	  }
+      }
+
+    image = [[NSImage alloc] initWithSize: frame.size];
+    [image addRepresentation: bmp];
+    [bmp release];
+  }
+}
+
+-(void) drawRect: (NSRect)rect
+{
+  if (nil == image)
+    {
+      [self regenerateImage];
+    }
+
+  [image drawInRect: [self bounds]
+           fromRect: NSZeroRect
+          operation: NSCompositeSourceOver
+           fraction: 1.0];  
+}
+
+-(BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
 }
 
-- (BOOL) acceptsFirstResponder
+-(BOOL) acceptsFirstResponder
 {
   return NO;
 }
 
-- (void) mouseDown: (NSEvent *)theEvent
+-(void) handleMouseAtPoint: (NSPoint)point
 {
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			  | NSLeftMouseDraggedMask;
-  NSPoint point = [self convertPoint: [theEvent locationInWindow] 
-			fromView: nil];
-  NSEventType eventType = [theEvent type];
-  NSEvent *presentEvent = theEvent;
-
-  float new_hue, new_saturation;
-  float old_x, old_y;
-
   NSRect frame = [self bounds];
-  float cx, cy, cr;
-  float dx, dy;
+  CGFloat cx, cy, cr, dx, dy, new_hue, new_saturation;
+
   cx = (frame.origin.x + frame.size.width) / 2;
   cy = (frame.origin.y + frame.size.height) / 2;
   cr = frame.size.width;
@@ -183,79 +337,41 @@
     cr = frame.size.height;
   cr = cr / 2 - 2;
 
-  new_hue = hue;
-  new_saturation = saturation;
+  dx = point.x - cx;
+  dy = point.y - cy;
 
-  do
+  new_saturation = sqrt(dx * dx + dy * dy) / cr;
+  if (new_saturation > 1)
+    new_saturation = 1;
+
+  new_hue = atan2(dy, dx) / 2.0 / PI;
+  if (new_hue < 0)
+    new_hue += 1;
+
+  [self setHue: new_hue saturation: new_saturation brightness: brightness];
+
+  if (target)
     {
-       /* Inner loop that gets and (quickly) handles all events that have
-          already arrived. */
-       while (theEvent && eventType != NSLeftMouseUp)
-         {
-           /* Note the event here. Don't do any expensive handling. */
-	   presentEvent = theEvent;
-
-           theEvent = [NSApp nextEventMatchingMask: eventMask
-                         untilDate: [NSDate distantPast] /* Only get events that have arrived */
-                         inMode: NSEventTrackingRunLoopMode
-                         dequeue: YES];
-           eventType = [theEvent type];
-         }
-                           
-       /* No more events right now. Do expensive handling, like drawing, 
-        * here. 
-	*/
-       point = [self convertPoint: [presentEvent locationInWindow]
-			     fromView: nil];
-
-       dx = point.x - cx;
-       dy = point.y - cy;
-
-       new_saturation = dx * dx + dy * dy;
-       new_saturation = sqrt(new_saturation);
-       new_saturation /= cr;
-       if (new_saturation > 1)
-         new_saturation = 1;
-
-       new_hue = atan2(dy, dx);
-       new_hue = new_hue / 2.0 / PI;
-       if (new_hue < 0)
-         new_hue += 1;
-
-       if (new_hue != hue || new_saturation != saturation)
-         {
-	   old_x = cos(hue * 2 * PI) * saturation * cr + cx;
-	   old_y = sin(hue * 2 * PI) * saturation * cr + cy;
-
-	   hue = new_hue;
-	   saturation = new_saturation;
-
-	   [self lockFocus];
-	   [self drawRect: NSMakeRect(old_x - 3, old_y - 3, 6, 6)];
-	   [self drawRect: NSMakeRect(point.x - 3, point.y - 3, 6, 6)];
-	   [self unlockFocus];
-	   [_window flushWindow];
-
-	   if (target)
-	     [target performSelector: action withObject: self];
-	 }
-
-       /*
-        * If our current event is actually the mouse up (perhaps the inner
-        * loop got to this point) we want to update with the last info and
-        * then quit.
-        */
-       if (eventType == NSLeftMouseUp)
-         break;
-
-       /* Get the next event, blocking if necessary. */
-       theEvent = [NSApp nextEventMatchingMask: eventMask
-                     untilDate: nil /* No limit, block until we get an event. */
-                     inMode: NSEventTrackingRunLoopMode
-                     dequeue: YES];
-       eventType = [theEvent type];
-  } while (eventType != NSLeftMouseUp);
+      [target performSelector: action withObject: self];
+    }
 }
+
+-(void) mouseDown: (NSEvent *)theEvent
+{
+  if ([theEvent type] == NSLeftMouseDown)
+    {
+      [self handleMouseAtPoint: [self convertPoint: [theEvent locationInWindow] fromView: nil]];
+    }
+}
+
+-(void) mouseDragged: (NSEvent *)theEvent
+{
+  if ([theEvent type] == NSLeftMouseDragged)
+    {
+      [self handleMouseAtPoint: [self convertPoint: [theEvent locationInWindow] fromView: nil]];
+    }
+}
+
 @end
 
 

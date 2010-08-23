@@ -207,6 +207,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (id) _initWithoutGModel
 {
   NSRect contentRect = {{352, 519}, {200, 270}};
+  NSSize maxContentSize = {500, 675};
   NSRect topViewRect = {{0, 0}, {200, 270}};
   NSRect magnifyRect = {{4, 230}, {50, 36}};
   NSRect wellRect = {{58, 230}, {138, 36}};
@@ -232,7 +233,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 			     screen: nil];
   [self setTitle: _(@"Colors")];
   [self setBecomesKeyOnlyIfNeeded: YES];
-
+  [self setContentMinSize: contentRect.size];
+  [self setContentMaxSize: maxContentSize];
   v = [self contentView];
 
   _topView = [[NSView alloc] initWithFrame: topViewRect];
