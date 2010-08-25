@@ -16,8 +16,8 @@
   "Control-Shift-UpArrow" = "moveToBeginningOfDocumentAndModifySelection:";
   "Control-Shift-DownArrow" = "moveToEndOfDocumentAndModifySelection:";
 
-/*  "Alternate-UpArrow" = ("moveUp:", "moveWordBackward:"); */
-/*  "Alternate-DownArrow" = ("moveDown:", "moveWordForward:"); */
+  "Alternate-UpArrow" = ("moveUp:", "moveWordBackward:"); 
+  "Alternate-DownArrow" = ("moveDown:", "moveWordForward:"); 
   "Alternate-LeftArrow" = "moveWordBackward:";
   "Alternate-RightArrow" = "moveWordForward:";
 
@@ -26,23 +26,23 @@
   "Shift-LeftArrow" = "moveBackwardAndModifySelection:";
   "Shift-RightArrow" = "moveForwardAndModifySelection:";
 
-/*  "Alternate-Shift-UpArrow" = ("moveUpAndModifySelection:",
-    "moveWordBackwardAndModifySelection:"); */
-/*  "Alternate-Shift-DownArrow" = ("moveDownAndModifySelection:",
-    "moveWordForwardAndModifySelection:"); */
+  "Alternate-Shift-UpArrow" = ("moveUpAndModifySelection:",
+    "moveWordBackwardAndModifySelection:"); 
+  "Alternate-Shift-DownArrow" = ("moveDownAndModifySelection:",
+    "moveWordForwardAndModifySelection:"); 
   "Alternate-Shift-LeftArrow" = "moveWordBackwardAndModifySelection:";
   "Alternate-Shift-RightArrow" = "moveWordForwardAndModifySelection:";
 
-/*  "Control-Alternate-UpArrow" = ("pageUp:", "moveWordBackward:"); */
-/*  "Control-Alternate-DownArrow" = ("pageDown:", "moveWordForward:"); */
+  "Control-Alternate-UpArrow" = ("pageUp:", "moveWordBackward:"); 
+  "Control-Alternate-DownArrow" = ("pageDown:", "moveWordForward:"); 
 
   "Delete" = "deleteForward:";
   "Home" = "moveToBeginningOfParagraph:"; 
   "Control-Home" = "moveToBeginningOfDocument:";
-/*  "Shift-Home" = "moveToBeginningOfParagraphAndModifySelection:"; */
+  "Shift-Home" = "moveToBeginningOfParagraphAndModifySelection:";
   "End" = "moveToEndOfParagraph:"; 
   "Control-End" = "moveToEndOfDocument:";
-/*  "Shift-End" = "moveToEndOfParagraphAndModifySelection:"; */
+  "Shift-End" = "moveToEndOfParagraphAndModifySelection:";
   "PageUp" = "scrollPageUp:";
   "PageDown" = "scrollPageDown:";
   

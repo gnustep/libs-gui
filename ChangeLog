@@ -1,3 +1,8 @@
+2010-08-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* KeyBindings/DefaultKeyBindings.dict: Uncomment some key bindings which
+	are now implemented. (e.g. Shift-Home, Shift-End)
+
 2010-08-23  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* ColorPickers/GSWheelColorPicker.m: Rewrite to draw the HSV
