@@ -1,3 +1,19 @@
+2010-08-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSOutlineView.m (-collapseItem:collapseChildren:,
+	-expandItem:expandChildren:, -reloadItem:reloadChildren:,
+	-_closeItem:, -_openItem:, -removeChildren:):
+	Update the selected row indexes after collapsing or expanding
+	an item. This fixes bug #29892.
+
+	* Source/NSOutlineView.m (-_noteNumberOfRowsChangedBelowItem:by:):
+	New helper method.
+
+	* Source/NSOutlineView.m (-collapseItem:collapseChildren:):
+	Collapse children before their parent item. Necessary to ensure
+	that the selected row indexes are valid when a notification is
+	posted.
+
 2010-08-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* KeyBindings/DefaultKeyBindings.dict: Uncomment some key bindings which

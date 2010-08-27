@@ -123,6 +123,7 @@ static NSImage *unexpandable  = nil;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
 - (void) _removeChildren: (id)startitem;
+- (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)n;
 @end
 
 @interface	NSOutlineView (Private)
@@ -252,27 +253,20 @@ static NSImage *unexpandable  = nil;
           object: self
           userInfo: infoDict];
 
-      // collapse...
-      [self _closeItem: item];
-
-      // Send out the notification to let observers know that this has
-      // occured.
-      [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
-          object: self
-          userInfo: infoDict];
-
-      // recursively find all children and call this method to open them.
+      // recursively find all children and call this method to close them.
+      // Note: The children must be collapsed before their parent item so
+      // that the selected row indexes are properly updated (and in particular
+      // are valid when we post our notifications).
       if (collapseChildren) // collapse all
         {
-          NSMutableArray *allChildren = nil;
-          int numchild = 0;
-          int index = 0;
+          int index, numChildren;
+          NSMutableArray *allChildren;
           id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
           allChildren = NSMapGet(_itemDict, sitem);
-          numchild = [allChildren count];
+          numChildren = [allChildren count];
 
-          for (index = 0; index < numchild; index++)
+          for (index = 0; index < numChildren; index++)
             {
               id child = [allChildren objectAtIndex: index];
 
@@ -282,7 +276,16 @@ static NSImage *unexpandable  = nil;
                 }
             }
         }
-      [self noteNumberOfRowsChanged];
+
+      // collapse...
+      [self _closeItem: item];
+
+      // Send out the notification to let observers know that this has
+      // occured.
+      [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
+          object: self
+          userInfo: infoDict];
+
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
     }
@@ -342,15 +345,14 @@ static NSImage *unexpandable  = nil;
       // recursively find all children and call this method to open them.
       if (expandChildren) // expand all
         {
-          NSMutableArray *allChildren = nil;
-          int numchild = 0;
-          int index = 0;
+          int index, numChildren;
+          NSMutableArray *allChildren;
           id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
           allChildren = NSMapGet(_itemDict, sitem);
-          numchild = [allChildren count];
+          numChildren = [allChildren count];
 
-          for (index = 0; index < numchild; index++)
+          for (index = 0; index < numChildren; index++)
             {
               id child = [allChildren objectAtIndex: index];
 
@@ -361,7 +363,6 @@ static NSImage *unexpandable  = nil;
             }
         }
 
-      [self noteNumberOfRowsChanged];
       // Should only mark the rect below the expanded item for redraw
       [self setNeedsDisplay: YES];
     }
@@ -555,7 +556,6 @@ static NSImage *unexpandable  = nil;
       if (expanded)
         {
           [self _openItem: dsobj];
-          [self noteNumberOfRowsChanged];
         }
     }
   [self setNeedsDisplay: YES];
@@ -1952,12 +1952,11 @@ Also returns the child index relative to this parent. */
 
 - (void)_closeItem: (id)item
 {
-  int numchildren = 0;
-  int i = 0;
+  int i, numChildren;
   NSMutableArray *removeAll = [NSMutableArray array];
 
   [self _collectItemsStartingWith: item into: removeAll];
-  numchildren = [removeAll count];
+  numChildren = [removeAll count];
 
   // close the item...
   if (item != nil)
@@ -1967,23 +1966,22 @@ Also returns the child index relative to this parent. */
 
   // For the close method it doesn't matter what order they are
   // removed in.
-  for (i = 0; i < numchildren; i++)
+  for (i = 0; i < numChildren; i++)
     {
       id child = [removeAll objectAtIndex: i];
       [_items removeObject: child];
     }
+  [self _noteNumberOfRowsChangedBelowItem: item by: -numChildren];
 }
 
 - (void)_openItem: (id)item
 {
-  int numchildren = 0;
-  int i = 0;
-  int insertionPoint = 0;
-  id object = nil;
+  int i, insertionPoint, numChildren, numDescendants;
+  id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
   object = NSMapGet(_itemDict, sitem);
-  numchildren = [object count];
+  numChildren = numDescendants = [object count];
 
   // open the item...
   if (item != nil)
@@ -2001,7 +1999,7 @@ Also returns the child index relative to this parent. */
       insertionPoint++;
     }
 
-  for (i = numchildren-1; i >= 0; i--)
+  for (i = numChildren-1; i >= 0; i--)
     {
       id obj = NSMapGet(_itemDict, sitem);
       id child = [obj objectAtIndex: i];
@@ -2009,12 +2007,13 @@ Also returns the child index relative to this parent. */
       // Add all of the children...
       if ([self isItemExpanded: child])
         {
+          int i, numItems;
           NSMutableArray *insertAll = [NSMutableArray array];
-          int i = 0, numitems = 0;
 
           [self _collectItemsStartingWith: child into: insertAll];
-          numitems = [insertAll count];
-           for (i = numitems-1; i >= 0; i--)
+          numItems = [insertAll count];
+          numDescendants += numItems;
+          for (i = numItems-1; i >= 0; i--)
             {
               [_items insertObject: [insertAll objectAtIndex: i]
                       atIndex: insertionPoint];
@@ -2024,18 +2023,19 @@ Also returns the child index relative to this parent. */
       // Add the parent
       [_items insertObject: child atIndex: insertionPoint];
     }
+
+  [self _noteNumberOfRowsChangedBelowItem: item by: numDescendants];
 }
 
 - (void) _removeChildren: (id)startitem
 {
-  int numchildren = 0;
-  int i = 0;
+  int i, numChildren;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray;
 
   anarray = NSMapGet(_itemDict, sitem);
-  numchildren = [anarray count];
-  for (i = 0; i < numchildren; i++)
+  numChildren = [anarray count];
+  for (i = 0; i < numChildren; i++)
     {
       id child = [anarray objectAtIndex: i];
 
@@ -2045,6 +2045,91 @@ Also returns the child index relative to this parent. */
       [_expandedItems removeObject: child];
     }
   [anarray removeAllObjects];
+  [self _noteNumberOfRowsChangedBelowItem: startitem by: -numChildren];
+}
+
+- (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)numItems
+{
+  BOOL selectionDidChange = NO;
+  int rowIndex, nextIndex;
+
+  // check for trivial case
+  if (numItems == 0)
+    return;
+
+  // if a row below item is selected, update the selected row indexes
+  /* Note: We update the selected row indexes directly instead of calling
+   * -selectRowIndexes:extendingSelection: to avoid posting bogus selection
+   * did change notifications. */
+  rowIndex = [_items indexOfObject: item];
+  rowIndex = (rowIndex == NSNotFound) ? 0 : rowIndex + 1;
+  nextIndex = [_selectedRows indexGreaterThanOrEqualToIndex: rowIndex];
+  if (nextIndex != NSNotFound)
+    {
+      if (numItems > 0)
+	{
+	  [_selectedRows shiftIndexesStartingAtIndex: rowIndex by: numItems];
+	  if (_selectedRow >= rowIndex)
+	    {
+	      _selectedRow += numItems;
+	    }
+	}
+      else
+        {
+	  numItems = -numItems;
+	  [_selectedRows shiftIndexesStartingAtIndex: rowIndex + numItems
+						  by: -numItems];
+	  if (nextIndex < rowIndex + numItems)
+	    {
+	      /* Don't post the notification here, as the table view is in
+	       * an inconsistent state. */
+	      selectionDidChange = YES;
+	    }
+
+	  /* If the selection becomes empty after removing items and the
+	   * receiver does not allow empty selections, select the root item. */
+          if ([_selectedRows firstIndex] == NSNotFound &&
+              [self allowsEmptySelection] == NO)
+            {
+              [_selectedRows addIndex: 0];
+            }
+
+	  if (_selectedRow >= rowIndex + numItems)
+	    {
+	      _selectedRow -= numItems;
+	    }
+	  else if (_selectedRow >= rowIndex)
+	    {
+	      /* If the item at _selectedRow was removed, we arbitrarily choose
+	       * another selected item (if there is still any). The policy
+	       * implemented below chooses the index most close to item. */
+	      int r1 = [_selectedRows indexLessThanIndex: rowIndex];
+	      int r2 = [_selectedRows indexGreaterThanOrEqualToIndex: rowIndex];
+	      if (r1 != NSNotFound && r2 != NSNotFound)
+		{
+		  _selectedRow = (rowIndex - r1) <= (r2 - rowIndex) ? r1 : r2;
+		}
+	      else if (r1 != NSNotFound)
+		{
+		  _selectedRow = r1;
+		}
+	      else if (r2 != NSNotFound)
+		{
+		  _selectedRow = r2;
+		}
+	      else
+		{
+		  _selectedRow = -1;
+		}
+	    }
+        }
+    }
+
+  [self noteNumberOfRowsChanged];
+  if (selectionDidChange)
+    {
+      [self _postSelectionDidChangeNotification];
+    }
 }
 
 @end
