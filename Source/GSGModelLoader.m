@@ -1,6 +1,6 @@
-/** <title>GSGormLoader</title>
+/** <title>GSGModelLoader</title>
 
-   <abstract>Gorm model loader</abstract>
+   <abstract>GModel loader</abstract>
 
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
@@ -89,6 +89,22 @@ Class gmodel_class(void)
 + (float) priority
 {
   return 2.0;
+}
+
+- (NSData *) dataForFile: (NSString *)fileName
+{
+  // Horrible hack
+  return (NSData*)fileName;
+}
+
+- (BOOL) loadModelData: (NSData *)data
+     externalNameTable: (NSDictionary *)context
+              withZone: (NSZone *)zone
+{
+  // Horrible hack
+  return [self loadModelFile: (NSString *)data
+           externalNameTable: context
+                    withZone: zone];
 }
 
 - (BOOL) loadModelFile: (NSString *)fileName

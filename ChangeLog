@@ -1,3 +1,8 @@
+2010-08-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSGModelLoader.m: Add hack to get GModel loading working again.
+	* Source/GSGormLoader.m: Remove an astray semicolon.
+
 2010-08-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSOutlineView.m (-collapseItem:collapseChildren:,
