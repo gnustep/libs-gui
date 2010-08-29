@@ -1,5 +1,11 @@
 2010-08-29 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSLayoutManager.h,
+	* Source/NSLayoutManager.m: Correction of the declarations for the methods
+	to handle temporary attributes.
+
+2010-08-29 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSGModelLoader.m: Add hack to get GModel loading working again.
 	* Source/GSGormLoader.m: Remove an astray semicolon.
 

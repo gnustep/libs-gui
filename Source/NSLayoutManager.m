@@ -2369,40 +2369,52 @@ no_soft_invalidation:
   // to be implemented
 }
 
-- (void) addTemporaryAttribute: (NSString *)attr value: (id)value forCharacterRange: (NSRange)range
+- (void) addTemporaryAttribute: (NSString *)attr 
+                         value: (id)value 
+             forCharacterRange: (NSRange)range
 {
   // to be implemented
 }
 
-- (void) setTemporaryAttributes:forCharacterRange: (NSRange)range
+- (void) setTemporaryAttributes: (NSDictionary *)attrs 
+              forCharacterRange: (NSRange)range
 {
   // to be implemented
 }
 
-- (void) removeTemporaryAttribute: (NSString *)attr forCharacterRange: (NSRange)range
+- (void) removeTemporaryAttribute: (NSString *)attr 
+                forCharacterRange: (NSRange)range
 {
   // to be implemented
 }
 
-- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range
-{
-  // to be implemented
-  return nil;
-}
-
-- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range
-{
-  // to be implemented
-  return nil;
-}
-
-- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range
+- (id) temporaryAttribute: (NSString *)attr 
+         atCharacterIndex: (NSUInteger)index 
+           effectiveRange: (NSRange*)range
 {
   // to be implemented
   return nil;
 }
 
-- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int) longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range
+- (id) temporaryAttribute: (NSString *)attr 
+         atCharacterIndex: (NSUInteger)index 
+    longestEffectiveRange: (NSRange*)longestRange 
+                  inRange: (NSRange)range
+{
+  // to be implemented
+  return nil;
+}
+
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index 
+                                        effectiveRange: (NSRange*)longestRange
+{
+  // to be implemented
+  return nil;
+}
+
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index
+                                 longestEffectiveRange: (NSRange*)longestRange 
+                                               inRange: (NSRange)range
 {
   // to be implemented
   return nil;

@@ -190,14 +190,30 @@ GNUstep extension.
 @end
 
 @interface NSLayoutManager (temporaryattributes)
-- (void) addTemporaryAttributes: (NSDictionary *)attrs forCharacterRange: (NSRange)range;
-- (void) addTemporaryAttribute: (NSString *)attr value: (id)value forCharacterRange: (NSRange)range;
-- (void) setTemporaryAttributes:forCharacterRange: (NSRange)range;
-- (void) removeTemporaryAttribute: (NSString *)attr forCharacterRange: (NSRange)range;
-- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range;
-- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range;
-- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range;
-- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int) longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range;
+- (void) addTemporaryAttributes: (NSDictionary *)attrs 
+              forCharacterRange: (NSRange)range;
+- (void) removeTemporaryAttribute: (NSString *)attr 
+                forCharacterRange: (NSRange)range;
+- (void) setTemporaryAttributes: (NSDictionary *)attrs 
+              forCharacterRange: (NSRange)range;
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index 
+                                        effectiveRange: (NSRange*)range;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) addTemporaryAttribute: (NSString *)attr 
+                         value: (id)value 
+             forCharacterRange: (NSRange)range;
+- (id) temporaryAttribute: (NSString *)attr 
+         atCharacterIndex: (NSUInteger)index 
+           effectiveRange: (NSRange*)range;
+- (id) temporaryAttribute: (NSString *)attr 
+         atCharacterIndex: (NSUInteger)index 
+    longestEffectiveRange: (NSRange*)longestRange 
+                  inRange: (NSRange)range;
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index
+                                 longestEffectiveRange: (NSRange*)longestRange 
+                                               inRange: (NSRange)range;
+#endif
 @end
 #endif
 
