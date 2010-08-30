@@ -1304,6 +1304,10 @@ static NSImage *_pbc_image[5];
  */
 - (void) _popUpItemAction: (id)sender
 {
+  // first, if sender is one of our items, set it as our selected item
+  int index = [_menu indexOfItem:sender];
+  if (index != NSNotFound)
+    [self selectItemAtIndex:index];
   [NSApp sendAction: [self action] to: [self target] from: self];
 }
 

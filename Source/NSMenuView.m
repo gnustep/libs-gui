@@ -1452,6 +1452,13 @@ static NSMapTable *viewInfo = 0;
   NSEvent *original;
   NSEventType type;
   NSEventType end;
+  NSPopUpButtonCell *bcell = nil;
+  SEL bcellAction = NULL;
+  if([_attachedMenu _ownedByPopUp])
+    {
+      bcell = [_attachedMenu _owningPopUp];
+      bcellAction = [bcell action];
+    }
 
   /*
    * The original event is unused except to determine whether the method
@@ -1656,11 +1663,13 @@ static NSMapTable *viewInfo = 0;
           lastLocation = location;
         }
 
+      [bcell setAction:NULL]; // block actions while fetching an event (this is a problem on Windows)
       event = [NSApp nextEventMatchingMask: eventMask
         untilDate: theDistantFuture
         inMode: NSEventTrackingRunLoopMode
         dequeue: YES];
       type = [event type];
+      [bcell setAction:bcellAction]; // restore the popUpButtonCell's action
     }
   while (type != end || shouldFinish == NO);
 

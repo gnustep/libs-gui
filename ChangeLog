@@ -1,3 +1,11 @@
+2010-08-30 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSPopUpButtonCell.m:
+	Fix problem of pulldown action not being called with correct cell
+	selected (possibly only a problem for Mac nib files?).
+	* Source/NSMenuView.m:
+	Fix problem of pulldown action getting invoked twice on Windows.
+
 2010-08-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTableView.m (computeNewSelection): Fix bug where the
