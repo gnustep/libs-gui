@@ -299,7 +299,6 @@ static void computeNewSelection
 	  // ic, sc : ok
         {
 	  int count = [_selectedRows count];
-	  BOOL notified = NO;
 	  
 	  if ([tv _shouldSelectRow: _currentRow] == NO)
 	    {
@@ -310,7 +309,7 @@ static void computeNewSelection
 	    {
 	      // this is the first call that goes thru shouldSelectRow
 	      // Therefore we don't know anything about the selection
-	      notified = ![_selectedRows containsIndex: _currentRow];
+	      BOOL notified = ![_selectedRows containsIndex: _currentRow];
 	      [tv _unselectAllRows];
 	      [_selectedRows addIndex: _currentRow];
 	      *_selectedRow = _currentRow;
@@ -446,7 +445,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int last = [_selectedRows lastIndex];
 
@@ -458,6 +457,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = last;
 			}
+		    }
+		  if (notified)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -501,7 +503,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 
@@ -513,6 +515,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = first;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -549,7 +554,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 
@@ -561,6 +566,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = first;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -594,7 +602,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int last = [_selectedRows lastIndex];
 
@@ -606,6 +614,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = last;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -694,7 +705,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int last = [_selectedRows lastIndex];
 
@@ -706,6 +717,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = last;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -741,7 +755,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 
@@ -753,6 +767,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = first;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -778,7 +795,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 
@@ -790,6 +807,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = first;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -814,7 +834,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int last = [_selectedRows lastIndex];
 
@@ -826,6 +846,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = last;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -965,7 +988,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int last = [_selectedRows lastIndex];
 		      
@@ -977,6 +1000,9 @@ static void computeNewSelection
 		        {
 			  *_selectedRow = last;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -1013,7 +1039,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 
@@ -1025,6 +1051,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = first;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -1050,7 +1079,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 
@@ -1062,6 +1091,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = first;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -1086,7 +1118,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int last = [_selectedRows lastIndex];
 
@@ -1098,6 +1130,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = last;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -1152,7 +1187,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int last = [_selectedRows lastIndex];
 
@@ -1164,6 +1199,9 @@ static void computeNewSelection
 		        {
 			  *_selectedRow = last;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -1207,7 +1245,7 @@ static void computeNewSelection
 			  notified = YES;
 			}
 		    }
-		  if (notified == YES)
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 
@@ -1219,6 +1257,9 @@ static void computeNewSelection
 			{
 			  *_selectedRow = first;
 			}
+		    }
+		  if (notified == YES)
+		    {
 		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
@@ -1252,7 +1293,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1264,6 +1305,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = first;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -1298,7 +1342,7 @@ static void computeNewSelection
 		    }
 		}
 
-	      if (notified == YES)
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int last = [_selectedRows lastIndex];
 
@@ -1310,6 +1354,9 @@ static void computeNewSelection
 		    {
 		      *_selectedRow = last;
 		    }
+		}
+	      if (notified == YES)
+		{
 		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
@@ -1337,9 +1384,7 @@ static void computeNewSelection
 		      notified = YES;
 		    }
 		}
-	      if (notified 
-		  && (*_selectedRow >= _originalRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1363,9 +1408,7 @@ static void computeNewSelection
 		      notified = YES;
 		    }
 		}
-	      if (notified 
-		  && (*_selectedRow >= _originalRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1404,9 +1447,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified 
-		      && (*_selectedRow > _oldRow)
-		      && (*_selectedRow <= _currentRow))
+		  if (*_selectedRow == -1)
 		    {
 			unsigned int first = [_selectedRows firstIndex];
 			
@@ -1462,9 +1503,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified 
-		      && (*_selectedRow < _oldRow)
-		      && (*_selectedRow >= _currentRow))
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1539,9 +1578,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (notified 
-		  && (*_selectedRow > _oldRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1591,9 +1628,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (notified 
-		  && (*_selectedRow > _oldRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1637,9 +1672,7 @@ static void computeNewSelection
 		      count--;
 		    }
 		}
-	      if (notified 
-		  && (*_selectedRow >= _originalRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1665,9 +1698,7 @@ static void computeNewSelection
 		      count--;
 		    }
 		}
-	      if (notified 
-		  && (*_selectedRow >= _originalRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1708,9 +1739,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified 
-		      && (*_selectedRow > _oldRow)
-		      && (*_selectedRow <= _currentRow))
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 		  
@@ -1768,9 +1797,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (notified 
-		      && (*_selectedRow < _oldRow)
-		      && (*_selectedRow >= _currentRow))
+		  if (*_selectedRow == -1)
 		    {
 		      unsigned int first = [_selectedRows firstIndex];
 		      
@@ -1846,9 +1873,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (notified 
-		  && (*_selectedRow > _oldRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		    
@@ -1899,9 +1924,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (notified 
-		  && (*_selectedRow > _oldRow)
-		  && (*_selectedRow <= _currentRow))
+	      if (*_selectedRow == -1)
 		{
 		  unsigned int first = [_selectedRows firstIndex];
 		    

@@ -1,3 +1,8 @@
+2010-08-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTableView.m (computeNewSelection): Fix bug where the
+	_selectedRow attribute could be updated incorrectly.
+
 2010-08-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSLayoutManager.h,
