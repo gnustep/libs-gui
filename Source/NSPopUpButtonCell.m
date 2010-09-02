@@ -320,11 +320,11 @@ static NSImage *_pbc_image[5];
 
   if (flag)
     {
-      [selectedItem setState: NSOffState];
+      [selectedItem setState: NSOnState];
     }
   else
     {
-      [selectedItem setState: NSOnState];
+      [selectedItem setState: NSOffState];
     }
 
   _pbcFlags.altersStateOfSelectedItem = flag;
@@ -649,7 +649,13 @@ static NSImage *_pbc_image[5];
   id<NSMenuItem> oldSelectedItem = _selectedItem;
 
   if (_selectedItem == item)
-    return;
+    {
+      // pull-down should set highlighted item even when selection is unchanged
+      if (_pbcFlags.pullsDown)
+        [[_menu menuRepresentation] setHighlightedItemIndex: 
+                   [_menu indexOfItem: _selectedItem]];
+      return;
+    }
 
   if (_selectedItem != nil)
     {

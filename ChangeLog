@@ -1,3 +1,10 @@
+2010-09-02 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSPopUpButtonCell.m:
+	Fix problem with pull-down menu not allowing same item to be selected
+	twice in a row. Also correct setAltersStateOfSelectedItem: to work as
+	described in the Cocoa docs (states were reversed).
+
 2010-08-30 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSPopUpButtonCell.m:
