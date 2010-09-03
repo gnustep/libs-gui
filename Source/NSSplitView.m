@@ -956,7 +956,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
-  if (_rFlags.flipped_view)
+  if ([self isFlipped])
     {
       dimpleOrigin.y += dimpleSize.height;
     }

@@ -158,8 +158,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   /* Don't retain this since it's stored in our subviews. */
   _documentView = aView;
 
-  /* Call this before doing anything else ! */
-  _rFlags.flipped_view = [self isFlipped];
+  /* Update the view hierarchy coordinates if -isFlipped has changed.
+     Call this before doing anything else! */
   [self _invalidateCoordinates];
 
   if (_documentView)

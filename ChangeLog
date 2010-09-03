@@ -1,3 +1,15 @@
+2010-09-03  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Headers/AppKit/NSView.h:
+	* Source/NSView.m:
+	* Source/NSClipView.m:
+	* Source/NSScrollView.m:
+	* Source/NSSplitView.m:
+	Replaced _rFlags.flipped_view use with -isFlipped and deprecated 
+	_rFlagsType.flipped_view.
+	Still needs some work to automatically invalidate coordinates when the 
+	flipping changes e.g. between two drawing sessions.
+
 2010-09-02 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSPopUpButtonCell.m:

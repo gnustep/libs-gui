@@ -124,14 +124,7 @@ PACKAGE_SCOPE
    * Flags for internal use by NSView and it's subclasses.
    */
   struct _rFlagsType {
-    /*
-     * 'flipped_view' is set in NSViews designated initialiser (and other
-     * methods that create views) to be the value returned by [-isFlipped]
-     * This caching assumes that the value returned by [-isFlipped] will
-     * not change during the views lifetime - if it does, the view must
-     * be sure to change the flag accordingly.
-     */
-    unsigned	flipped_view:1;
+    unsigned	flipped_view:1;         /* Deprecated and unused.       */ 
     unsigned	has_subviews:1;		/* The view has subviews.	*/
     unsigned	has_currects:1;		/* The view has cursor rects.	*/
     unsigned	has_trkrects:1;		/* The view has tracking rects.	*/

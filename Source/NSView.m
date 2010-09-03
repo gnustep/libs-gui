@@ -306,7 +306,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       else
         {
           NSRect		superviewsVisibleRect;
-          BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
+          BOOL			wasFlipped = [_super_view isFlipped];
           NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
           NSAffineTransformStruct     ts = [pMatrix transformStruct];
  
@@ -321,7 +321,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               (*preImp)(_matrixToWindow, preSel, _frameMatrix);
             }
  
-          if (_rFlags.flipped_view != wasFlipped)
+          if ([self isFlipped] != wasFlipped)
             {
               /*
                * The flipping process must result in a coordinate system that
@@ -603,9 +603,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_coordinates_valid = NO;
   //_nextKeyView = 0;
   //_previousKeyView = 0;
-
-  // cache as optimization
-  _rFlags.flipped_view = [self isFlipped];
 
   return self;
 }
@@ -1953,7 +1950,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
-	  if (_super_view && _super_view->_rFlags.flipped_view == YES)
+	  if (_super_view && [_super_view isFlipped])
 	    {
 	      if (_autoresizingMask & NSViewMaxYMargin)
 		{
@@ -2014,7 +2011,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	      @"\t frame %@, flip %d",
 	      NSStringFromRect(wrect),
 	      self, _window, NSStringFromRect([_window frame]),
-	      NSStringFromRect(_frame),_rFlags.flipped_view);
+	      NSStringFromRect(_frame), [self isFlipped]);
   if (viewIsPrinting == nil)
     {
       [_window->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
@@ -2110,7 +2107,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 
   /* Tell backends that images are drawn upside down. Obsolete?
      This is needed when a backend is able to handle full image transformation. */
-  GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
+  GSWSetViewIsFlipped(ctxt, [self isFlipped]);
 }
 
 - (void) _setIgnoresBacking: (BOOL) flag
@@ -3362,7 +3359,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (BOOL) mouse: (NSPoint)aPoint  inRect: (NSRect)aRect
 {
-  return NSMouseInRect (aPoint, aRect, _rFlags.flipped_view);
+  return NSMouseInRect (aPoint, aRect, [self isFlipped]);
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
@@ -4568,8 +4565,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
        * _previousKeyView = 0;
        */
       
-      _rFlags.flipped_view = [self isFlipped];
-
       // previous and next key views...
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
@@ -4653,8 +4648,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [self setNextKeyView: [aDecoder decodeObject]];
       [[aDecoder decodeObject] setNextKeyView: self];
 
-      _rFlags.flipped_view = [self isFlipped];
-      
       [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
       NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
 

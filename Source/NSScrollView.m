@@ -368,7 +368,7 @@ static float scrollerWidth;
 
           [self setVerticalScroller: scroller];
           RELEASE(scroller);
-          if (_contentView && !_contentView->_rFlags.flipped_view)
+          if (_contentView && ![_contentView isFlipped])
             [_vertScroller setFloatValue: 1];
         }
       [self addSubview: _vertScroller];
@@ -448,14 +448,14 @@ static float scrollerWidth;
       amount = - _vLineScroll * deltaY;
     }
 
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       /* If view is flipped reverse the scroll direction */
       amount = -amount;
     }
   NSDebugLLog (@"NSScrollView", 
     @"increment/decrement: amount = %f, flipped = %d",
-    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+    amount, _contentView ? [_contentView isFlipped] : 0);
 
   point.y = clipViewBounds.origin.y + amount;
 
@@ -512,7 +512,7 @@ static float scrollerWidth;
     }
   point = clipViewBounds.origin;
   amount = _vLineScroll;
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       amount = -amount;
     }
@@ -540,7 +540,7 @@ static float scrollerWidth;
     }
   point = clipViewBounds.origin;
   amount = _vLineScroll;
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       amount = -amount;
     }
@@ -584,7 +584,7 @@ static float scrollerWidth;
   amount = clipViewBounds.size.height - _vPageScroll;
   amount = (amount < 0) ? 0 : amount;
 
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       amount = -amount;
     }
@@ -627,7 +627,7 @@ static float scrollerWidth;
    */
   amount = clipViewBounds.size.height - _vPageScroll;
   amount = (amount < 0) ? 0 : amount;
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       amount = -amount;
     }
@@ -710,14 +710,14 @@ static float scrollerWidth;
         }
       else
         {
-          if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+          if (_contentView != nil && ![_contentView isFlipped])
             {
               /* If view is flipped reverse the scroll direction */
               amount = -amount;
             }
           NSDebugLLog (@"NSScrollView", 
                        @"increment/decrement: amount = %f, flipped = %d",
-            amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+            amount, _contentView ? [_contentView isFlipped] : 0);
           point.y = clipViewBounds.origin.y + amount;
         }
     }
@@ -731,7 +731,7 @@ static float scrollerWidth;
         }
       else
         {
-          if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+          if (_contentView != nil && ![_contentView isFlipped])
             floatValue = 1 - floatValue;
           point.y = floatValue * (documentRect.size.height
             - clipViewBounds.size.height);
@@ -760,7 +760,7 @@ static float scrollerWidth;
       documentRect = [_contentView documentRect];
     }
   point = documentRect.origin;
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && ![_contentView isFlipped])
     {
       point.y = NSMaxY(documentRect) - NSHeight(clipViewBounds);
       if (point.y < 0)
@@ -785,7 +785,7 @@ static float scrollerWidth;
       documentRect = [_contentView documentRect];
     }
   point = documentRect.origin;
-  if (_contentView == nil || _contentView->_rFlags.flipped_view)
+  if (_contentView == nil || [_contentView isFlipped])
     {
       point.y = NSMaxY(documentRect) - NSHeight(clipViewBounds);
       if (point.y < 0)
@@ -857,7 +857,7 @@ static float scrollerWidth;
           floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
             / (documentFrame.size.height - clipViewBounds.size.height);
 
-          if (!_contentView->_rFlags.flipped_view)
+          if (![_contentView isFlipped])
             {
               floatValue = 1 - floatValue;
             }
@@ -1084,7 +1084,7 @@ static float scrollerWidth;
     }
 
   /* Determine edge positions.  */
-  if (_rFlags.flipped_view)
+  if ([self isFlipped])
     {
       topEdge = NSMinYEdge;
       bottomEdge = NSMaxYEdge;
@@ -1283,7 +1283,7 @@ static float scrollerWidth;
 	  float ypos;
 	  float scrollerY = [_horizScroller frame].origin.y;
 
-	  if (_rFlags.flipped_view)
+	  if ([self isFlipped])
 	    {
 	      ypos = scrollerY - 1;
 	    }
@@ -1337,7 +1337,7 @@ static float scrollerWidth;
 {
   [_contentView setDocumentView: aView];
 
-  if (_contentView && !_contentView->_rFlags.flipped_view)
+  if (_contentView && ![_contentView isFlipped])
     {
       [_vertScroller setFloatValue: 1];
     }
