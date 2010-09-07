@@ -1,5 +1,9 @@
 2010-09-06 German Arias <german@xelalug.org>
 	* Panels/Spanish.lproj/GSFindPanel.gorm:
+	Fixed a misspelling.
+
+2010-09-06 German Arias <german@xelalug.org>
+	* Panels/Spanish.lproj/GSFindPanel.gorm:
 	* Resources/Spanish.lproj/Localizable.strings:
 	Added find panel in spanish.
 
