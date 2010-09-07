@@ -413,3 +413,12 @@ add comments above this one
 "Hide Toolbar" = "Ocultar Barra";
 /* File: ../Source/NSWindow.m:4866 */
 "Show Toolbar" = "Mostrar Barra";
+
+
+/*** Strings from ../Source/GSTextFinder.m ***/
+/* File: ../Source/GSTextFinder.m:332 */
+/* File: ../Source/GSTextFinder.m:381 */
+"Not found" = "No se encontro";
+/* File: ../Source/GSTextFinder.m:408 */
+"%d replaced" = "%d reemplazado(s)";
+

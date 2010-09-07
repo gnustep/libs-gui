@@ -1,3 +1,8 @@
+2010-09-06 German Arias <german@xelalug.org>
+	* Panels/Spanish.lproj/GSFindPanel.gorm:
+	* Resources/Spanish.lproj/Localizable.strings:
+	Added find panel in spanish.
+
 2010-09-03  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/AppKit/NSView.h:
