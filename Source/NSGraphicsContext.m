@@ -757,7 +757,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
   [NSException raise: GSWindowServerInternalException
     format: @"subclass %s(%s) should override %s", 
-	       object_get_class_name(self),
+	       class_getName(object_getClass(self)),
 	       GSObjCIsInstance(self) ? "instance" : "class",
 	       sel_get_name(aSel)];
   return nil;
