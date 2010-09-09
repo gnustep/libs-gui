@@ -1457,9 +1457,9 @@ originalContentsURL: (NSURL *)orig
 
 - (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
 {
-  if (sel_eq([anItem action], @selector(revertDocumentToSaved:)))
+  if (sel_isEqual([anItem action], @selector(revertDocumentToSaved:)))
     return ([self fileName] != nil && [self isDocumentEdited]);
-  if (sel_eq([anItem action], @selector(saveDocument:)))
+  if (sel_isEqual([anItem action], @selector(saveDocument:)))
     return [self isDocumentEdited];
 
   // FIXME should validate spa popup items; return YES if it's a native type.

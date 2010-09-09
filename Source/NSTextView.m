@@ -2932,36 +2932,36 @@ Scroll so that the beginning of the range is visible.
 
   // FIXME The list of validated actions below is far from complete
 
-  if (sel_eq(action, @selector(cut:)) || sel_eq(action, @selector(delete:)))
+  if (sel_isEqual(action, @selector(cut:)) || sel_isEqual(action, @selector(delete:)))
     return [self isEditable] && [self selectedRange].length > 0;
 
-  if (sel_eq(action, @selector(copy:)))
+  if (sel_isEqual(action, @selector(copy:)))
     return [self selectedRange].length > 0;
 
-  if (sel_eq(action, @selector(copyFont:))
-      || sel_eq(action, @selector(copyRuler:)))
+  if (sel_isEqual(action, @selector(copyFont:))
+      || sel_isEqual(action, @selector(copyRuler:)))
     return [self selectedRange].location != NSNotFound;
 
-  if (sel_eq(action, @selector(paste:))
-      || sel_eq(action, @selector(pasteAsPlainText:))
-      || sel_eq(action, @selector(pasteAsRichText:))
-      || sel_eq(action, @selector(pasteFont:))
-      || sel_eq(action, @selector(pasteRuler:)))
+  if (sel_isEqual(action, @selector(paste:))
+      || sel_isEqual(action, @selector(pasteAsPlainText:))
+      || sel_isEqual(action, @selector(pasteAsRichText:))
+      || sel_isEqual(action, @selector(pasteFont:))
+      || sel_isEqual(action, @selector(pasteRuler:)))
     {
       if ([self isEditable])
 	{
 	  NSArray *types = nil;
 	  NSString *available;
 
-	  if (sel_eq(action, @selector(paste:)))
+	  if (sel_isEqual(action, @selector(paste:)))
 	    types = [self readablePasteboardTypes];
-	  else if (sel_eq(action, @selector(pasteAsPlainText:)))
+	  else if (sel_isEqual(action, @selector(pasteAsPlainText:)))
 	    types = [NSArray arrayWithObject: NSStringPboardType];
-	  else if (sel_eq(action, @selector(pasteAsRichText:)))
+	  else if (sel_isEqual(action, @selector(pasteAsRichText:)))
 	    types = [NSArray arrayWithObject: NSRTFPboardType];
-	  else if (sel_eq(action, @selector(pasteFont:)))
+	  else if (sel_isEqual(action, @selector(pasteFont:)))
 	    types = [NSArray arrayWithObject: NSFontPboardType];
-	  else if (sel_eq(action, @selector(pasteRuler:)))
+	  else if (sel_isEqual(action, @selector(pasteRuler:)))
 	    types = [NSArray arrayWithObject: NSRulerPboard];
 
 	  available = [[NSPasteboard generalPasteboard]
@@ -2972,11 +2972,11 @@ Scroll so that the beginning of the range is visible.
  	return NO;
     }
 
-  if (sel_eq(action, @selector(selectAll:))
-      || sel_eq(action, @selector(centerSelectionInVisibleArea:)))
+  if (sel_isEqual(action, @selector(selectAll:))
+      || sel_isEqual(action, @selector(centerSelectionInVisibleArea:)))
     return [self isSelectable];
 
-  if (sel_eq(action, @selector(performFindPanelAction:)))
+  if (sel_isEqual(action, @selector(performFindPanelAction:)))
     {
       if ([self usesFindPanel] == NO)
 	{

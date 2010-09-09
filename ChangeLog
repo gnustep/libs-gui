@@ -1,3 +1,18 @@
+2010-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
+	* Source/NSMenu.m:
+	* Source/NSWindow.m:
+	* Source/NSObjectController.m:
+	* Source/NSImageView.m:
+	* Source/NSResponder.m:
+	* Source/NSApplication.m:
+	* Source/NSComboBox.m:
+	* Source/NSTextView.m:
+	* Source/NSDocumentController.m:
+	* Source/NSDocument.m:
+	Replace sel_eq with sel_isEqual
+
 2010-09-06 German Arias <german@xelalug.org>
 	* Panels/Spanish.lproj/GSFindPanel.gorm:
 	Fixed a misspelling.

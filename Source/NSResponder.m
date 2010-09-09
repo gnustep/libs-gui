@@ -280,7 +280,7 @@
 - (void) noResponderFor: (SEL)eventSelector
 {
   /* Only beep for key down events */
-  if (sel_eq(eventSelector, @selector(keyDown:)))
+  if (sel_isEqual(eventSelector, @selector(keyDown:)))
     NSBeep();
 }
 

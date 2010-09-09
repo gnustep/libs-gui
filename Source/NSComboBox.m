@@ -491,7 +491,7 @@ static NSNotificationCenter *nc;
 {
   if ([super textView: textView doCommandBySelector: command])
     return YES;
-  if (sel_eq(command, @selector(moveDown:)))
+  if (sel_isEqual(command, @selector(moveDown:)))
     {
       [_cell _performClickWithFrame: [self bounds] inView: self];
       return YES;

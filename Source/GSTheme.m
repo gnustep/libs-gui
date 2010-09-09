@@ -1345,7 +1345,7 @@ typedef	struct {
        * signature of methodSignatureForSelector:, so we hack in
        * the signature required manually :-(
        */
-      if (sel_eq(aSelector, _cmd))
+      if (sel_isEqual(aSelector, _cmd))
 	{
 	  static	NSMethodSignature	*sig = nil;
 

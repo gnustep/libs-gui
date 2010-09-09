@@ -4971,19 +4971,19 @@ current key view.<br />
   BOOL result = YES;
   SEL  action = [anItem action];
 
-  if (sel_eq(action, @selector(performClose:)))
+  if (sel_isEqual(action, @selector(performClose:)))
     {
       result = ([self styleMask] & NSClosableWindowMask) ? YES : NO;
     }
-  else if (sel_eq(action, @selector(performMiniaturize:)))
+  else if (sel_isEqual(action, @selector(performMiniaturize:)))
     {
       result = ([self styleMask] & NSMiniaturizableWindowMask) ? YES : NO;
     }
-  else if (sel_eq(action, @selector(performZoom:)))
+  else if (sel_isEqual(action, @selector(performZoom:)))
     {
       result = ([self styleMask] & NSResizableWindowMask) ? YES : NO;
     }
-  else if (sel_eq(action, @selector(undo:)))
+  else if (sel_isEqual(action, @selector(undo:)))
     {
       NSUndoManager *undo = [_firstResponder undoManager];
       if (undo == nil)
@@ -5003,7 +5003,7 @@ current key view.<br />
             }
         }
     }
-  else if (sel_eq(action, @selector(redo:)))
+  else if (sel_isEqual(action, @selector(redo:)))
     {
       NSUndoManager *undo = [_firstResponder undoManager];
       if (undo == nil)
@@ -5023,7 +5023,7 @@ current key view.<br />
             }
         }
     }
-  else if (sel_eq(action, @selector(toggleToolbarShown:)))
+  else if (sel_isEqual(action, @selector(toggleToolbarShown:)))
     {
       NSToolbar *toolbar = [self toolbar];
 

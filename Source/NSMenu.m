@@ -947,7 +947,7 @@ static BOOL menuBarVisible = YES;
     {
       NSMenuItem *menuItem = [_items objectAtIndex: i];
 
-      if (actionSelector == 0 || sel_eq([menuItem action], actionSelector))
+      if (actionSelector == 0 || sel_isEqual([menuItem action], actionSelector))
         {
           // There are different possibilities to implement the check here
           if ([menuItem target] == anObject)

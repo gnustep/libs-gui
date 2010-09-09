@@ -1188,11 +1188,11 @@ static BOOL _shouldClose = YES;
 
 - (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
 {
-  if (sel_eq([anItem action], @selector(saveAllDocuments:)))
+  if (sel_isEqual([anItem action], @selector(saveAllDocuments:)))
     {
       return [self hasEditedDocuments];
     }
-  if (sel_eq([anItem action], @selector(newDocument:)))
+  if (sel_isEqual([anItem action], @selector(newDocument:)))
     {
       return ([self defaultType] != nil); 
     }

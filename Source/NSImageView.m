@@ -230,12 +230,12 @@ static Class imageCellClass;
 
   if (_allowsCutCopyPaste)
     {
-      if (sel_eq(action, @selector(cut:)) ||
-          sel_eq(action, @selector(copy:)) ||
-          sel_eq(action, @selector(deleteBackward:)) ||
-          sel_eq(action, @selector(delete:)))
+      if (sel_isEqual(action, @selector(cut:)) ||
+          sel_isEqual(action, @selector(copy:)) ||
+          sel_isEqual(action, @selector(deleteBackward:)) ||
+          sel_isEqual(action, @selector(delete:)))
         return [self image] != nil;
-      if (sel_eq(action, @selector(paste:)))
+      if (sel_isEqual(action, @selector(paste:)))
         {
           return [NSImage canInitWithPasteboard: 
                             [NSPasteboard generalPasteboard]];

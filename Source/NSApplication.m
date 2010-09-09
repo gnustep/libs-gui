@@ -3014,13 +3014,13 @@ image.</p><p>See Also: -applicationIconImage</p>
   count = [itemArray count];
 
   i = 0;
-  if (count > 0 && sel_eq([[itemArray objectAtIndex: 0] action],
+  if (count > 0 && sel_isEqual([[itemArray objectAtIndex: 0] action],
 		@selector(arrangeInFront:)))
     i++;
-  if (count > i && sel_eq([[itemArray objectAtIndex: count-1] action],
+  if (count > i && sel_isEqual([[itemArray objectAtIndex: count-1] action],
 		@selector(performClose:)))
     count--;
-  if (count > i && sel_eq([[itemArray objectAtIndex: count-1] action],
+  if (count > i && sel_isEqual([[itemArray objectAtIndex: count-1] action],
 		@selector(performMiniaturize:)))
     count--;
 

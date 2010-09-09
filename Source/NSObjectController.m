@@ -354,11 +354,11 @@
 {
   SEL  action = [item action];
 
-  if (sel_eq(action, @selector(add:)))
+  if (sel_isEqual(action, @selector(add:)))
     {
       return [self canAdd];
     }
-  else if (sel_eq(action, @selector(remove:)))
+  else if (sel_isEqual(action, @selector(remove:)))
     {
       return [self canRemove];
     }
