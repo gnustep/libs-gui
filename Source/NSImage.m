@@ -419,15 +419,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (id) initWithBitmapHandle: (void *)bitmap
 {
-  NSImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapHandle: bitmap];
+  NSImageRep *rep;
   
+  if (!(self = [self init]))
+    return nil;
+
+  rep = [[NSBitmapImageRep alloc] initWithBitmapHandle: bitmap];
   if (rep == nil)
     {
       RELEASE(self);
       return nil;
     }
-  if (!(self = [self init]))
-    return nil;
 
   [self addRepresentation: rep];
   RELEASE(rep);
@@ -437,15 +439,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id)initWithIconHandle:(void *)icon
 {
   // Only needed on MS Windows
-  NSImageRep *rep = [[NSBitmapImageRep alloc] initWithIconHandle: icon];
+  NSImageRep *rep;
   
+  if (!(self = [self init]))
+    return nil;
+
+  rep = [[NSBitmapImageRep alloc] initWithIconHandle: icon];
   if (rep == nil)
     {
       RELEASE(self);
       return nil;
     }
-  if (!(self = [self init]))
-    return nil;
 
   [self addRepresentation: rep];
   RELEASE(rep);
@@ -454,15 +458,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (id) initWithContentsOfURL: (NSURL *)anURL
 {
-  NSArray *array = [NSImageRep imageRepsWithContentsOfURL: anURL];
+  NSArray *array;
 
+  if (!(self = [self init]))
+    return nil;
+
+  array = [NSImageRep imageRepsWithContentsOfURL: anURL];
   if (!array)
     {
       RELEASE(self);
       return nil;
     }
-  if (!(self = [self init]))
-    return nil;
 
   _flags.dataRetained = YES;
   [self addRepresentations: array];
@@ -477,7 +483,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     return nil;
   
   reps = [NSImageRep imageRepsWithPasteboard: pasteboard];
-
   if (reps != nil)
     [self addRepresentations: reps]; 
   else

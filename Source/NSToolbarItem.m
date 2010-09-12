@@ -1581,22 +1581,36 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] 
     initWithItemIdentifier: _itemIdentifier];
+  NSString *toolTip;
+  NSImage *image;
+  NSString *label;
+  NSMenuItem *item;
 
   // Copy all items individually...
   [new setTarget: [self target]];
   [new setAction: [self action]];
-  [new setToolTip: [[self toolTip] copyWithZone: zone]];
+
+  toolTip = [[self toolTip] copyWithZone: zone];
+  [new setToolTip: toolTip];
+  RELEASE(toolTip);
   [new setTag: [self tag]];
-  [new setImage: [[self image] copyWithZone: zone]];
+  image = [[self image] copyWithZone: zone];
+  [new setImage: image];
+  RELEASE(image);
   [new setEnabled: [self isEnabled]];
-  [new setPaletteLabel: [[self paletteLabel] copyWithZone: zone]];
-  [new setLabel: [[self label] copyWithZone: zone]];
+  label = [[self paletteLabel] copyWithZone: zone];
+  [new setPaletteLabel: label];
+  RELEASE(label);
+  label = [[self label] copyWithZone: zone];
+  [new setLabel: label];
+  RELEASE(label);
   [new setMinSize: [self minSize]];
   [new setMaxSize: [self maxSize]];
   [new setAutovalidates: [self autovalidates]];
   [new setVisibilityPriority: [self visibilityPriority]];
-  [new setMenuFormRepresentation: [[self menuFormRepresentation] 
-                                      copyWithZone: zone]];
+  item = [[self menuFormRepresentation] copyWithZone: zone];
+  [new setMenuFormRepresentation: item];
+  RELEASE(item);
 
   if ([self view] != nil)
     {

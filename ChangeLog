@@ -1,3 +1,31 @@
+2010-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (+detachDrawingThread:...): Correct the
+	creation of the NSInvocation.
+	* Source/NSTableView.m (-mouseDown:): Free the auto release pool
+	and the create object when returning out of the method.
+	* Source/NSButtonCell.m (-encodeWithCoder:): Free the temporary
+	NSButtonImageSource.
+	* Source/NSCachedImageRep.m (-draw): Free the temporary
+	NSBitmapImageRep.
+	* Source/NSComboBoxCell.m (-initWithContentRect:...): Free the
+	NSScrollView, the NSTableColumn and the NSCell.
+	* Source/NSComboBoxCell.m (-textDidChange:): Free the temporary string.
+	* Source/NSDataLinkPanel.m (+sharedDataLinkPanel): Free the
+	controller but keep the panel.
+	* Source/NSImage.m (-initWithIconHandle:, -initWithBitmapHandle:):
+	Restructure initialisation order.
+	* Source/NSLayoutManager.m (-rulerMarkersForTextView:...): Don't
+	leak the created marker.
+	* Source/NSMenu.m (-copyWithZone:): Don't leak the copied menu
+	items.
+	* Source/GSThemeInspector.m (-update:): Release the views
+	after adding them to the hierarchy.
+	* Source/GSToolbarView.m (initSystemExtensionsColors): Don't leak
+	the colors dictionary.
+	* Source/GSToolbarCustomizationPalette.m
+	(-paletteItemsWithToolbarItems:): Release the copied toolbar items.
+
 2010-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:

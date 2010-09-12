@@ -57,7 +57,7 @@
 /* If the toolbar item has a custom view and the item is in use in the 
    toolbar, this view has already a superview. We need to make a copy of it 
    in order to be able to put it in the customization view. 
-   As a safety measure, we makes a copy of all toolbar items, thereby of all
+   As a safety measure, we make a copy of all toolbar items, thereby of all
    views. This ensures the toolbar items displayed in the palette don't 
    reference a toolbar. */
 - (NSArray *) paletteItemsWithToolbarItems: (NSArray *)items
@@ -76,6 +76,7 @@
       [newItem setEnabled: YES];
       [newItem _layout];
       [paletteItems addObject: newItem];
+      RELEASE(newItem);
     }
 
   NSDebugLLog(DEBUG_LEVEL, @"Generated palette items %@ from toolbar items %@", 

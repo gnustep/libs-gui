@@ -1574,7 +1574,8 @@ typedef struct _GSButtonCellFlags
       // encode button image source, if it exists...
       if (bi != nil)
         {
-          [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
+          [aCoder encodeObject: bi forKey: @"NSAlternateImage"];
+          RELEASE(bi);
         }
       else if (_altImage != nil)
         {

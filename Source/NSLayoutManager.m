@@ -1768,6 +1768,7 @@ dictionary.
 		   imageOrigin: NSMakePoint(0, 0)];
       [marker setRepresentedObject: tab];
       [markers addObject: marker];
+      RELEASE(marker);
     }
 
   return markers;

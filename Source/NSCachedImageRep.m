@@ -203,6 +203,7 @@
       [view unlockFocus];
       
       [rep draw];
+      RELEASE(rep);
     }
 
   return YES;

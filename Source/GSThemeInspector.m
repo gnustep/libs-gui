@@ -118,6 +118,7 @@ static GSThemeInspector	*sharedInspector = nil;
   iv = [[NSImageView alloc] initWithFrame: frame];
   [iv setImage: [[GSTheme theme] icon]];
   [content addSubview: iv];
+  RELEASE(iv);
 
   width = cFrame.size.width - 58;
   tf = new_label([theme name]);
@@ -159,6 +160,7 @@ static GSThemeInspector	*sharedInspector = nil;
       frame.origin.y = nameFrame.origin.y - frame.size.height - 25;
       [view setFrame: frame];
       [content addSubview: view];
+      RELEASE(view);
     }
 
   details = [[theme infoDictionary] objectForKey: @"GSThemeDetails"];

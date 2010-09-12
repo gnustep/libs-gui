@@ -753,7 +753,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSInvocation *inv;
 
-  inv = [[NSInvocation alloc] 
+  inv = [NSInvocation
             invocationWithMethodSignature: 
                 [target methodSignatureForSelector: selector]]; 
   [inv setTarget: target];
@@ -762,7 +762,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [NSThread detachNewThreadSelector: @selector(_invokeWithAutoreleasePool:) 
 	    toTarget: self 
 	    withObject: inv];
-  RELEASE(inv);
 }
 
 /**

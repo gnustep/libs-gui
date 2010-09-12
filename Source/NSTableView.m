@@ -3740,6 +3740,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		    {
 		      if ([self _startDragOperationWithEvent: theEvent])
 			{
+                          RELEASE(oldSelectedRows);
+                          IF_NO_GC(DESTROY(arp));
 			  return;
 			}
 		      else

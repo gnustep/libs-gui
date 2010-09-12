@@ -119,6 +119,7 @@ static void initSystemExtensionsColors(void)
 
           changed = YES;
         }
+      RELEASE(colors);
 
       if (changed)
         [SystemExtensionsColors writeToFile: nil];

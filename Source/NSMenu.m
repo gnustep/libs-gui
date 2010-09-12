@@ -1690,8 +1690,9 @@ static BOOL menuBarVisible = YES;
   for (i = 0; i < count; i++)
     {
       // This works because the copy on NSMenuItem sets the menu to nil!!!
-      [new insertItem: [[_items objectAtIndex: i] copyWithZone: zone]
-	   atIndex: i];
+      NSMenuItem *item = [[_items objectAtIndex: i] copyWithZone: zone];
+      [new insertItem: item atIndex: i];
+      RELEASE(item);
     }
   
   return new;

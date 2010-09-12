@@ -110,10 +110,9 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
   if (_sharedDataLinkPanel == nil)
     {
       id controller = [[GSDataLinkPanelController alloc] init];
-      _sharedDataLinkPanel = [controller panel];
-      [_sharedDataLinkPanel setDelegate: controller];
+      ASSIGN(_sharedDataLinkPanel, [controller panel]);
+      RELEASE(controller);
     }
-  NSLog(@"%@",_sharedDataLinkPanel);
   return _sharedDataLinkPanel;
 }
 

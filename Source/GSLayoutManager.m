@@ -746,10 +746,18 @@ Fills in all glyph holes up to last. only looking at levels below level
     return;
   length = [_textStorage length];
 
-  /* OPT: this can be done __much__ more efficiently */
   while (glyphs->glyph_length <= last && (glyphs->char_length < length || !glyphs->complete))
     {
-      [self _generateGlyphsUpToCharacter: glyphs->char_length];
+      // Make an estimate for the character position
+      unsigned int char_last;
+
+      if (glyphs->glyph_length == 0)
+        char_last = last;
+      else
+        char_last = glyphs->char_length + 1 +
+          (last - glyphs->glyph_length) * (glyphs->char_length / (glyphs->glyph_length + 1));
+
+      [self _generateGlyphsUpToCharacter: char_last];
     }
 }
 
@@ -841,7 +849,8 @@ Fills in all glyph holes up to last. only looking at levels below level
   glyph_run_t *r;
   unsigned int pos;
 
-  *isValidIndex = NO;
+  if (isValidIndex != NULL)
+    *isValidIndex = NO;
 
   /* glyph '-1' is returned in other places as an "invalid" marker; this
   way, we can say that it isn't valid without building all glyphs */
@@ -862,7 +871,9 @@ Fills in all glyph holes up to last. only looking at levels below level
   if (!r || !r->glyphs) /* shouldn't happen */
     return NSNullGlyph;
 
-  *isValidIndex = YES;
+  if (isValidIndex != NULL)
+    *isValidIndex = YES;
+
   return r->glyphs[glyphIndex - pos].g;
 }
 

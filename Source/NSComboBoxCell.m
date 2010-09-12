@@ -135,7 +135,6 @@ static GSComboWindow *gsWindow = nil;
 		     defer: (BOOL)flag
 {
   NSBox *box;
-  NSScrollView *scrollView;
   NSRect borderRect;
    
   self = [super initWithContentRect: contentRect
@@ -156,52 +155,64 @@ static GSComboWindow *gsWindow = nil;
   
   if (!ForceBrowser)
     {
-  _tableView = [[GSComboBoxTableView alloc] 
-    initWithFrame: NSMakeRect(0, 0, 100, 100)];
-  [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  //[_tableView setBackgroundColor: [NSColor whiteColor]];
-  [_tableView setDrawsGrid: NO];
-  [_tableView setAllowsEmptySelection: YES];
-  [_tableView setAllowsMultipleSelection: NO];
-  [_tableView setAutoresizesAllColumnsToFit: YES];
-  [_tableView setHeaderView: nil];
-  [_tableView setCornerView: nil];
-  [_tableView addTableColumn: [[NSTableColumn alloc] initWithIdentifier: @"content"]];
-  [[_tableView tableColumnWithIdentifier:@"content"]  setDataCell: [[NSCell alloc] initTextCell: @""]];
-  [_tableView setDataSource: self];
-  [_tableView setDelegate: self];
-  [_tableView setAction: @selector(clickItem:)];
-  [_tableView setTarget: self];
-  
-  scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
-                                                               borderRect.origin.y,
-				                             borderRect.size.width, 
-						          borderRect.size.height)];
-  [scrollView setHasVerticalScroller: YES];
-  [scrollView setDocumentView: _tableView];
-  [box setContentView: scrollView];
-  
-  [_tableView reloadData];
+      NSScrollView *scrollView;
+      NSTableColumn *column;
+      NSCell *cell;
+
+      _tableView = [[GSComboBoxTableView alloc] 
+                     initWithFrame: NSMakeRect(0, 0, 100, 100)];
+      [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      //[_tableView setBackgroundColor: [NSColor whiteColor]];
+      [_tableView setDrawsGrid: NO];
+      [_tableView setAllowsEmptySelection: YES];
+      [_tableView setAllowsMultipleSelection: NO];
+      [_tableView setAutoresizesAllColumnsToFit: YES];
+      [_tableView setHeaderView: nil];
+      [_tableView setCornerView: nil];
+
+      column = [[NSTableColumn alloc] initWithIdentifier: @"content"];
+      cell = [[NSCell alloc] initTextCell: @""];
+      [column setDataCell: cell];
+      RELEASE(cell);
+      [_tableView addTableColumn: column];
+      RELEASE(column);
+
+
+      [_tableView setDataSource: self];
+      [_tableView setDelegate: self];
+      [_tableView setAction: @selector(clickItem:)];
+      [_tableView setTarget: self];
+      
+      scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
+                                                                   borderRect.origin.y,
+                                                                   borderRect.size.width, 
+                                                                   borderRect.size.height)];
+      [scrollView setHasVerticalScroller: YES];
+      [scrollView setDocumentView: _tableView];
+      [box setContentView: scrollView];
+      RELEASE(scrollView);
+
+      [_tableView reloadData];
     }
   else
     {
-  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
-                                                          borderRect.origin.y,
-				                        borderRect.size.width, 
-						     borderRect.size.height)];
-  [_browser setMaxVisibleColumns: 1];
-  [_browser setTitled: NO];
-  [_browser setHasHorizontalScroller: NO];
-  [_browser setTarget: self];
-  [_browser setAction: @selector(clickItem:)];
-  [_browser setDelegate: self];
-  [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [_browser setAllowsEmptySelection: YES];
-  [_browser setAllowsMultipleSelection: NO];
-  [_browser setReusesColumns: YES];
-  // Create an empty matrix
-  [_browser loadColumnZero];
-  [box setContentView: _browser];
+      _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
+                                                              borderRect.origin.y,
+                                                              borderRect.size.width, 
+                                                              borderRect.size.height)];
+      [_browser setMaxVisibleColumns: 1];
+      [_browser setTitled: NO];
+      [_browser setHasHorizontalScroller: NO];
+      [_browser setTarget: self];
+      [_browser setAction: @selector(clickItem:)];
+      [_browser setDelegate: self];
+      [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [_browser setAllowsEmptySelection: YES];
+      [_browser setAllowsMultipleSelection: NO];
+      [_browser setReusesColumns: YES];
+      // Create an empty matrix
+      [_browser loadColumnZero];
+      [box setContentView: _browser];
     }
 
   return self;
@@ -1844,6 +1855,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	      [textObject scrollRangeToVisible: NSMakeRange(location, length)];
 	    }
         }
+      RELEASE(myString);
     }
 }
 
