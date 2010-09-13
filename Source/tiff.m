@@ -3,7 +3,7 @@
 
    Functions for dealing with tiff images.
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999-2010 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -341,7 +341,6 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   int     i;
   unsigned int row, col;
-  int     maxval;
   int	  error = 0;
   uint8* outP;
   uint8* buf;
@@ -360,7 +359,6 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	return -1;
     }
 
-  maxval = (1 << info->bitsPerSample) - 1;
   scan_line_size = TIFFScanlineSize(image);
   buf = _TIFFmalloc(scan_line_size);
   

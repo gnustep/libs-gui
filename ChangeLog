@@ -1,3 +1,8 @@
+2010-09-13 Riccardo Mottola
+
+	* Source/NSBitmapImageRep+JPEG.m: remove useless double statement
+	* Source/tiff.m: remove unused variable and assignment
+	
 2010-09-12 German Arias <german@xelalug.org>
 	* Panels/Spanish.lproj/GSFindPanel.gorm: Fixed a misspelling.
 	* Source/NSFontPanel:  Changed the width of size's column to

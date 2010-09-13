@@ -2,7 +2,7 @@
 
    Methods for reading jpeg images
 
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003-2010 Free Software Foundation, Inc.
    
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
@@ -185,7 +185,6 @@ static void gs_jpeg_memory_src_create(j_decompress_ptr cinfo, NSData *data)
   gs_jpeg_source_ptr src;
   
   cinfo->src = (struct jpeg_source_mgr *)malloc(sizeof(gs_jpeg_source_mgr));
-  src = (gs_jpeg_source_ptr)cinfo->src;
 
   src = (gs_jpeg_source_ptr) cinfo->src;
   src->parent.init_source = gs_init_source;
