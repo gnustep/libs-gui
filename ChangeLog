@@ -1,3 +1,9 @@
+2010-09-12 German Arias <german@xelalug.org>
+	* Panels/Spanish.lproj/GSFindPanel.gorm: Fixed a misspelling.
+	* Source/NSFontPanel:  Changed the width of size's column to
+	permit a correct internationalization (in other languages "size"
+	is written with more than 4 characters).
+
 2010-09-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (+detachDrawingThread:...): Correct the

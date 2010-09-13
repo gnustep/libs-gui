@@ -500,22 +500,22 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 - (id) _initWithoutGModel
 {
-  NSRect contentRect = {{100, 100}, {300, 300}};
-  NSRect topAreaRect = {{0, 42}, {300, 258}};
-  NSRect splitViewRect = {{8, 8}, {284, 243}};
-  NSRect topSplitRect = {{0, 0}, {284, 45}};
-  NSRect previewAreaRect = {{0, 1}, {284, 44}};
-  NSRect bottomSplitRect = {{0, 0}, {284, 190}};
+  NSRect contentRect = {{100, 100}, {320, 300}};
+  NSRect topAreaRect = {{0, 42}, {320, 258}};
+  NSRect splitViewRect = {{8, 8}, {304, 243}};
+  NSRect topSplitRect = {{0, 0}, {304, 45}};
+  NSRect previewAreaRect = {{0, 1}, {304, 44}};
+  NSRect bottomSplitRect = {{0, 0}, {304, 190}};
   NSRect familyBrowserRect = {{0, 0}, {111, 189}};
   NSRect typefaceBrowserRect = {{113, 0}, {111, 189}};
-  NSRect sizeBrowserRect = {{226, 0}, {58, 143}};
-  NSRect sizeLabelRect = {{226, 145}, {58, 21}};
-  NSRect sizeTitleRect = {{226, 168}, {58, 21}};
-  NSRect bottomAreaRect   = {{0, 0}, {300, 42}};
-  NSRect slashRect        = {{0, 40}, {300, 2}};
-  NSRect revertButtonRect = {{63, 8}, {71, 24}};
-  NSRect previewButtonRect = {{142, 8}, {71, 24}};
-  NSRect setButtonRect = {{221, 8}, {71, 24}};
+  NSRect sizeBrowserRect = {{226, 0}, {78, 143}};
+  NSRect sizeLabelRect = {{226, 145}, {78, 21}};
+  NSRect sizeTitleRect = {{226, 168}, {78, 21}};
+  NSRect bottomAreaRect   = {{0, 0}, {320, 42}};
+  NSRect slashRect        = {{0, 40}, {320, 2}};
+  NSRect revertButtonRect = {{83, 8}, {71, 24}};
+  NSRect previewButtonRect = {{162, 8}, {71, 24}};
+  NSRect setButtonRect = {{241, 8}, {71, 24}};
   NSView *v;
   NSView *topArea;
   NSView *bottomArea;
