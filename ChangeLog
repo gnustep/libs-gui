@@ -1,3 +1,7 @@
+2010-09-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSTextStorage.m: Fix an unisgned->NSUInteger
+
 2010-09-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-releaseGState): Check if the window and it's
@@ -44,6 +48,7 @@
 	* Source/GSToolbarCustomizationPalette.m
 	(-paletteItemsWithToolbarItems:): Release the copied toolbar items.
 
+>>>>>>> .r31351
 2010-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:

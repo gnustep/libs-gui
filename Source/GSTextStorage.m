@@ -623,7 +623,7 @@ _attributesAtIndexEffectiveRange(
   return _textProxy;
 }
 
-- (NSDictionary*) attributesAtIndex: (unsigned)index
+- (NSDictionary*) attributesAtIndex: (NSUInteger)index
 		     effectiveRange: (NSRange*)aRange
 {
   unsigned dummy;
@@ -930,7 +930,7 @@ changeInLength: [aString length] - range.length];
 }
 
 // The superclass implementation is correct but too slow
-- (unsigned int) length
+- (NSUInteger) length
 {
   return [_textChars length];
 }
