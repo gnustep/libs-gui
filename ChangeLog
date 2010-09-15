@@ -1,8 +1,15 @@
+2010-09-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-releaseGState): Check if the window and it's
+	gstate exist before undefining the gstate.
+	Patch by Georg Fleischmann <G.Fleischmann@vhf.de>.
+	* Source/NSView.m (-_viewWillMoveToWindow:): Call [-releaseGState].
+
 2010-09-13 Riccardo Mottola
 
 	* Source/NSBitmapImageRep+JPEG.m: remove useless double statement
 	* Source/tiff.m: remove unused variable and assignment
-	
+
 2010-09-12 German Arias <german@xelalug.org>
 	* Panels/Spanish.lproj/GSFindPanel.gorm: Fixed a misspelling.
 	* Source/NSFontPanel:  Changed the width of size's column to
@@ -4138,7 +4145,7 @@
 
 	* Source/NSPrintOperation.m (-_printPaginateWithInfo:knowsRange:, -_print):
 	Try to handle not set print information more graceful.
-	
+
 2009-07-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m (-_printPaginateWithInfo:knowsRange:):

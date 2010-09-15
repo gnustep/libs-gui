@@ -383,6 +383,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       return;
     }
+
+  // This call also reset _allocate_gstate, but then want 
+  // would that setting mean in a different window?
+  // This way we keep the logic in one place.
+  [self releaseGState];
+
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
@@ -2183,8 +2189,11 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 */
 - (void) releaseGState
 {
-  if (_allocate_gstate && _gstate)
-    GSUndefineGState([_window graphicsContext], _gstate);
+  if (_allocate_gstate && _gstate &&
+      _window && ([_window graphicsContext] != nil))
+    {
+      GSUndefineGState([_window graphicsContext], _gstate);
+    }
   _gstate = 0;
   _allocate_gstate = NO;
 }
