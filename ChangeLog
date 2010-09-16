@@ -1,3 +1,7 @@
+2010-09-15 German Arias <german@xelalug.org>
+	* Panels/Spanish.lproj/GSPrintPanel.gorm: Changed the width
+	of a label.
+
 2010-09-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSParagraphStyle.m:
