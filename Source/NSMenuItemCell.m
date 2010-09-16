@@ -160,7 +160,7 @@
   return _menuItem;
 }
 
-- (int) tag
+- (NSInteger) tag
 {
   return [[self menuItem] tag];
 }

@@ -1,5 +1,13 @@
 2010-09-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSParagraphStyle.m:
+	* Source/NSPopUpButton.m:
+	* Source/NSMenuItemCell.m:
+	* Source/NSFont.m: Fix more unsigned int / ints that should
+	be NSUInteger/NSInteger
+
+2010-09-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSTextStorage.m: Fix an unisgned->NSUInteger
 
 2010-09-15 Fred Kiefer <FredKiefer@gmx.de>

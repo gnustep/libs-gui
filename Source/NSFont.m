@@ -79,7 +79,7 @@ globalFontMap.
 }
 @end
 @implementation GSFontMapKey
--(unsigned int) hash
+-(NSUInteger) hash
 {
   return hash;
 }
@@ -935,7 +935,7 @@ static void setNSFont(NSString *key, NSFont *font)
   return YES;
 }
 
-- (unsigned) hash
+- (NSUInteger) hash
 {
   int i, sum;
   sum = 0;

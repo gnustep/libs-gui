@@ -257,7 +257,7 @@ this to return nil to indicate that we have no context menu.
 /**<p>Returns the tag of the selected item</p>
    <p>See Also: [NSPopUpButtonCell-indexOfSelectedItem]</p>
 */
-- (int) selectedTag
+- (NSInteger) selectedTag
 {
   return [[_cell selectedItem] tag];
 }

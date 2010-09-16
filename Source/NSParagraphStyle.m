@@ -139,7 +139,7 @@
     return NSOrderedSame;
 }
 
-- (unsigned) hash
+- (NSUInteger) hash
 {
   unsigned val = (unsigned)_location;
 
@@ -601,7 +601,7 @@ static NSParagraphStyle	*defaultStyle = nil;
   return [_tabStops isEqualToArray: other->_tabStops];
 }
 
-- (unsigned int) hash
+- (NSUInteger) hash
 {
   return _alignment + _lineBreakMode;
 }
