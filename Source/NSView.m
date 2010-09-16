@@ -475,7 +475,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [desc appendString: [v _subtreeDescriptionWithPrefix: prefix]];
     }
 
-  return desc;
+  return AUTORELEASE(desc);
 }
 
 /*
@@ -1886,8 +1886,6 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   int		options = 0;
   NSSize	superViewFrameSize;
   NSRect        newFrame = _frame;
-  BOOL		changedOrigin = NO;
-  BOOL		changedSize = NO;
 
   if (_autoresizingMask == NSViewNotSizable)
     return;
@@ -1919,12 +1917,10 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
       if (_autoresizingMask & NSViewWidthSizable)
 	{ 
           newFrame.size.width += changePerOption;
-          changedSize = YES;
 	}
       if (_autoresizingMask & NSViewMinXMargin)
 	{
 	  newFrame.origin.x += changePerOption;
-	  changedOrigin = YES;
 	}
     }
 
@@ -1952,7 +1948,6 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
       if (_autoresizingMask & NSViewHeightSizable)
 	{
           newFrame.size.height += changePerOption;
-	  changedSize = YES;
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
@@ -1961,7 +1956,6 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	      if (_autoresizingMask & NSViewMaxYMargin)
 		{
 		  newFrame.origin.y += changePerOption;
-		  changedOrigin = YES;
 		}
 	    }
 	  else
@@ -1969,11 +1963,11 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	      if (_autoresizingMask & NSViewMinYMargin)
 		{
 		  newFrame.origin.y += changePerOption;
-		  changedOrigin = YES;
 		}
 	    }
 	}
     }
+
   [self setFrame: newFrame];
 }
 
@@ -2622,31 +2616,12 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 - (NSBitmapImageRep *) bitmapImageRepForCachingDisplayInRect: (NSRect)rect
 {
   NSBitmapImageRep *bitmap;
-  NSDictionary *dict;
-  int bps, spp, alpha;
-  NSString *space;
-  
-  dict = [_window deviceDescription];
-  bps = [[dict objectForKey: NSDeviceBitsPerSample] intValue];
-  if (bps == 0)
-    bps = 8;
-//  spp = [[dict objectForKey: @"SamplesPerPixel"] intValue];
-  spp = 4;
-//  alpha = [[dict objectForKey: @"HasAlpha"] intValue];
-  alpha = 1;
-  space = [dict objectForKey: NSDeviceColorSpaceName];
 
-  bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
-                                     pixelsWide: rect.size.width
-                                     pixelsHigh: rect.size.height
-                                     bitsPerSample: bps
-                                     samplesPerPixel: spp
-                                     hasAlpha: (alpha) ? YES : NO
-                                     isPlanar: NO
-                                     colorSpaceName: space
-                                     bytesPerRow: 0
-                                     bitsPerPixel: 0];
-  return bitmap;
+  [self lockFocus];
+  bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect: rect];
+  [self unlockFocus];
+
+  return AUTORELEASE(bitmap);
 }
 
 - (void) cacheDisplayInRect: (NSRect)rect 
@@ -2658,9 +2633,13 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   [self lockFocus];
   dict = [GSCurrentContext() GSReadRect: rect];
   [self unlockFocus];
-  imageData = RETAIN([dict objectForKey: @"Data"]);
-  // FIXME: Copy the image data to the bitmap
-  memcpy([bitmap bitmapData], [imageData bytes], [imageData length]);
+  imageData = [dict objectForKey: @"Data"];
+
+  if (imageData != nil)
+    {
+      // Copy the image data to the bitmap
+      memcpy([bitmap bitmapData], [imageData bytes], [imageData length]);
+    }
 }
 
 

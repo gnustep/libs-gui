@@ -1,3 +1,16 @@
+2010-09-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-resizeWithOldSuperviewSize): Remove unneeded
+	local varibales.
+	* Source/NSView.m (-bitmapImageRepForCachingDisplayInRect:):
+	Create the image rep with [-initWithFocusedViewRect:], that way it
+	will better map to the following -cacheDisplayInRect:... call.
+	Also don't leak the image.
+	* Source/NSView.m (-cacheDisplayInRect:...): Don't leak the image
+	rep.
+	* Source/NSView.m (-_subtreeDescriptionWithPrefix:): Don't leak
+	the returned string.
+
 2010-09-15 German Arias <german@xelalug.org>
 	* Panels/Spanish.lproj/GSPrintPanel.gorm: Changed the width
 	of a label.
@@ -60,7 +73,6 @@
 	* Source/GSToolbarCustomizationPalette.m
 	(-paletteItemsWithToolbarItems:): Release the copied toolbar items.
 
->>>>>>> .r31351
 2010-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:
