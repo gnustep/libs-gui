@@ -477,12 +477,6 @@ static id buttonCellClass = nil;
   if ([self isEnabled])
     {
       NSString *characters = [theEvent characters];
-      unichar character = 0;
-
-      if ([characters length] > 0)
-        {
-          character = [characters characterAtIndex: 0];
-        }
 
       /* Handle SPACE to perform a click */
       if ([characters isEqualToString: @" "])

@@ -1,5 +1,13 @@
 2010-09-24 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSButton.m (-keyDown:): Remove unused code found by
+	static analyser.
+	* Source/NSColor.m (-colorUsingColorSpace:): Add missing break
+	statements.
+	* Source/NSColor.m (initSystemColors): Remove unused variable.
+
+2010-09-24 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (-_viewWillMoveToWindow:): When calling
 	[-releaseGState] make sure to keep the value of _allocate_gstate.
 

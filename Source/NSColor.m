@@ -250,7 +250,6 @@ void initSystemColors(void)
     {
       NSEnumerator *enumerator;
       NSString *key;
-      BOOL changed = NO;
 
       // Set up default system colors
 
@@ -269,7 +268,6 @@ void initSystemColors(void)
 
 	      NSCAssert1(color, @"couldn't get default system color %@", key);
 	      [systemColors setColor: color forKey: key];
-	      changed = YES;
 	    }
 	  if (defaultSystemColors != systemColors)
 	    {
@@ -1250,10 +1248,13 @@ systemColorWithName(NSString *name)
         return nil;
       case NSGrayColorSpaceModel:
         colorSpaceName = NSDeviceWhiteColorSpace;
+        break;
       case NSRGBColorSpaceModel:
         colorSpaceName = NSDeviceRGBColorSpace;
+        break;
       case NSCMYKColorSpaceModel:
         colorSpaceName = NSDeviceCMYKColorSpace;
+        break;
       case NSLABColorSpaceModel:
         return nil;
       case NSDeviceNColorSpaceModel:
