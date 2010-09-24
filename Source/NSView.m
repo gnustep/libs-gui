@@ -7,8 +7,7 @@
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    Author: Ovidiu Predescu <ovidiu@net-community.com>
-   Date: 1997
-   Author: Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: 1997   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: January 1999
@@ -378,16 +377,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) _viewWillMoveToWindow: (NSWindow*)newWindow
 {
+  BOOL old_allocate_gstate;
+
   [self viewWillMoveToWindow: newWindow];
   if (newWindow == _window)
     {
       return;
     }
 
-  // This call also reset _allocate_gstate, but then want 
-  // would that setting mean in a different window?
+  // This call also reset _allocate_gstate, so we have 
+  // to store this value and set it again.
   // This way we keep the logic in one place.
+  old_allocate_gstate = _allocate_gstate;
   [self releaseGState];
+  _allocate_gstate = old_allocate_gstate;
 
   if (_coordinates_valid)
     {
