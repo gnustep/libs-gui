@@ -1,3 +1,9 @@
+2010-09-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSFontManager.m (-orderFrontFontPanel:): Add method to
+	NSApplication in a new category to make the standard font panel
+	toolbar item work.
+
 2010-09-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButton.m (-keyDown:): Remove unused code found by

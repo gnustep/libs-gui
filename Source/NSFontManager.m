@@ -1192,3 +1192,12 @@ static Class         fontPanelClass = Nil;
 }
 
 @end
+
+@implementation NSApplication(NSFontPanel)
+
+- (void) orderFrontFontPanel: (id)sender
+{
+  [[NSFontManager sharedFontManager] orderFrontFontPanel: sender];
+}
+
+@end
