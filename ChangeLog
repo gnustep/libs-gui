@@ -1,3 +1,17 @@
+2010-09-27  Quentin Mathe <quentin.mathe@gmail.com>
+
+	Fixed NSOutlineView to use incremental loading as Mac OS X does. 
+	You can now use an outline view to browse a big tree structure e.g. a 
+	filesystem. Previously in such a case, NSOutlineView was attempting to 
+	traverse the entire directory structure on -reloadData.
+	* Source/NSOutlineView.m
+	(-reloadData:): Removed a redundant _loadDictionaryStartingWith:atLevel: 
+	call, _openItem: now does it.
+	(-_loadDictionaryStartingWith:atLevel:): Modified to load the children only 
+	if the item is expanded.
+	(_openItem:): Modified to call _loadDictionaryStartingWith:atLevel: when 
+	the item children are not loaded.
+
 2010-09-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSFontManager.m (-orderFrontFontPanel:): Add method to

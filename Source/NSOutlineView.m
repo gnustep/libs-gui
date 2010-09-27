@@ -718,8 +718,6 @@ static NSImage *unexpandable  = nil;
                                    64);
 
   // reload all the open items...
-  [self _loadDictionaryStartingWith: nil
-        atLevel: -1];
   [self _openItem: nil];
   [super reloadData];
 }
@@ -1911,6 +1909,20 @@ Also returns the child index relative to this parent. */
     }
 }
 
+- (BOOL) _isItemLoaded: (id)item
+{
+  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
+  id object = NSMapGet(_itemDict, sitem);
+
+  // NOTE: We could store the loaded items in a map to ensure we only load 
+  // the children of item when it gets expanded for the first time. This would
+  // allow to write: return (NSMapGet(_loadedItemDict, sitem) != nil);
+  // The last line isn't truly correct because it implies an item without 
+  // children will get incorrectly reloaded automatically on each 
+  // expand/collapse.
+  return ([object count] != 0);
+}
+
 - (void) _loadDictionaryStartingWith: (id) startitem
                              atLevel: (int) level
 {
@@ -1919,12 +1931,16 @@ Also returns the child index relative to this parent. */
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
 
-  /* Check to see if item is expandable before getting the number of
-   * items. For macos compatibility the topmost item (startitem==nil)
+  /* Check to see if item is expandable and expanded before getting the number 
+   * of items. For macos compatibility the topmost item (startitem==nil)
    * is always considered expandable and must not be checked.
+   * We must load the item only if expanded, otherwise an outline view is not 
+   * usable with a big tree structure. For example, an outline view to browse 
+   * file system would try to traverse every file/directory on -reloadData.
    */
-  if (startitem == nil
+  if ((startitem == nil
     || [_dataSource outlineView: self isItemExpandable: startitem])
+    && [self isItemExpanded: startitem])
     {
       num = [_dataSource outlineView: self
 			 numberOfChildrenOfItem: startitem];
@@ -1980,14 +1996,20 @@ Also returns the child index relative to this parent. */
   id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
-  object = NSMapGet(_itemDict, sitem);
-  numChildren = numDescendants = [object count];
-
   // open the item...
   if (item != nil)
     {
       [_expandedItems addObject: item];
     }
+
+  // Load the children of the item if needed
+  if ([self _isItemLoaded: item] == NO)
+    {
+      [self _loadDictionaryStartingWith: item atLevel: [self levelForItem: item]];
+    }
+
+  object = NSMapGet(_itemDict, sitem);
+  numChildren = numDescendants = [object count];
 
   insertionPoint = [_items indexOfObject: item];
   if (insertionPoint == NSNotFound)
