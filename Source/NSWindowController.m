@@ -295,22 +295,28 @@
     {
       // Do all the notifications.  Yes, the docs say this should
       // be implemented here instead of in -loadWindow itself.
+
+      // Note: The docs say that windowController{Will,Did}LoadNib: are sent
+      // to the window controller's document, but Apple's implementation
+      // really sends them to the owner of the nib. Since this behavior is
+      // more useful, in particular when non-document classes use a window
+      // controller, we implement it here too.
       [self windowWillLoad];
-      if ([_document respondsToSelector:
-		       @selector(windowControllerWillLoadNib:)])
+      if (_owner != self &&
+	  [_owner respondsToSelector: @selector(windowControllerWillLoadNib:)])
 	{
-	  [_document windowControllerWillLoadNib:self];
+	  [_owner windowControllerWillLoadNib: self];
 	}
 
       [self loadWindow];
       if ([self isWindowLoaded]) 
       {
         [self _windowDidLoad];
-        if ([_document respondsToSelector:
-	  	       @selector(windowControllerDidLoadNib:)])
-        {
-          [_document windowControllerDidLoadNib:self];
-        }
+	if (_owner != self &&
+	    [_owner respondsToSelector: @selector(windowControllerDidLoadNib:)])
+	{
+	  [_owner windowControllerDidLoadNib: self];
+	}
       }
     }
 

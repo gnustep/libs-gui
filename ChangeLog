@@ -1,3 +1,11 @@
+2010-10-08  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindowController.m (-window): Send
+	windowControllerWillLoadNib: and windowControllerDidLoadNib: to
+	the owner of the nib, since this is what Apple seems to do and
+	since this behavior is more useful when a non-document class uses
+	a window controller.
+
 2010-09-27  Quentin Mathe <quentin.mathe@gmail.com>
 
 	Fixed NSOutlineView to use incremental loading as Mac OS X does. 
