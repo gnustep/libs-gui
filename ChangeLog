@@ -1,3 +1,8 @@
+2010-10-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Cocoa/Cocoa.h: Add one more protection around definition
+	of BOOL.
+
 2010-10-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-finishLaunching): Open a new document

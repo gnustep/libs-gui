@@ -37,7 +37,7 @@
 #define M_PI 3.1415926535897932384626433
 #endif
 
-#if (!defined(__cplusplus) && !defined(__USE_ISOC99))
+#if (!defined(__cplusplus) && !defined(__USE_ISOC99) && !defined(__bool_true_false_are_defined))
 typedef BOOL bool;
 #define false NO
 #define true  YES
