@@ -1134,24 +1134,34 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
   else if (!didAutoreopen && ![defs boolForKey: @"autolaunch"])
     {
+      // For document based applications we automatically open a fresh document
+      // unless denied by the delegate. For non-document based applications we
+      // open a fresh document only when requested by the delegate.
+      // Note: We consider an application document based if the shared document
+      // controller reports at least one editable type.
+      BOOL docBased =
+	[[sdc documentClassNames] count] > 0 && [sdc defaultType] != nil;
+      BOOL shouldOpen = docBased ? YES : NO;
+
       if ([_delegate respondsToSelector:
                        @selector(applicationShouldOpenUntitledFile:)])
         {
-          if ([_delegate applicationShouldOpenUntitledFile: self]
-            && [_delegate respondsToSelector:
-                              @selector(applicationOpenUntitledFile:)])
-            {
-              [_delegate applicationOpenUntitledFile: self];
-            }
-        }
-      else if ([[sdc documentClassNames] count] > 0 && [sdc defaultType] != nil)
-        {
-	  NSError *err = nil;
-
-	  if ([sdc openUntitledDocumentAndDisplay: YES error: &err] == nil
-	    && [sdc presentError: err] == NO)
+	  shouldOpen = [_delegate applicationShouldOpenUntitledFile: self];
+	}
+      if (shouldOpen)
+	{
+	  if (docBased)
 	    {
-	      [self terminate: self];
+	      NSError *err = nil;
+	      if ([sdc openUntitledDocumentAndDisplay: YES error: &err] == nil)
+		{
+		  [sdc presentError: err];
+		}
+	    }
+	  else if ([_delegate respondsToSelector:
+                                @selector(applicationOpenUntitledFile:)])
+	    {
+	      [_delegate applicationOpenUntitledFile: self];
 	    }
         }
     }

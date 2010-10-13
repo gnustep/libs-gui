@@ -1,3 +1,10 @@
+2010-10-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSApplication.m (-finishLaunching): Open a new document
+	in a document based application when the delegate responds YES to
+	applicationShouldOpenUntitledFile: but does not implement
+	applicationOpenUntitledFile:.
+
 2010-10-08  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindowController.m (-window): Send
