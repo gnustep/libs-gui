@@ -2302,12 +2302,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	   */
 	  if (prefs)
 	    {
-	      if ((appName = [extInfo objectForKey: @"Editor"]) != nil)
+	      if ((appName = [prefs objectForKey: @"Editor"]) != nil)
 		{
 		  icon = [self _extIconForApp: appName info: extInfo];
 		}
 	      if (icon == nil
-		&& (appName = [extInfo objectForKey: @"Viewer"]) != nil)
+		&& (appName = [prefs objectForKey: @"Viewer"]) != nil)
 		{
 		  icon = [self _extIconForApp: appName info: extInfo];
 		}
