@@ -221,6 +221,12 @@ typedef void NSAppleEventDescriptor;
 	     inRole: (NSString*)role
        forExtension: (NSString*)ext;
 - (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext;
+- (NSDictionary*) infoForScheme: (NSString*)scheme;
+- (NSString*) getBestAppInRole: (NSString*)role
+		     forScheme: (NSString*)scheme;
+- (void) setBestApp: (NSString*)appName
+	     inRole: (NSString*)role
+	  forScheme: (NSString*)scheme;
 @end
 #endif
 
