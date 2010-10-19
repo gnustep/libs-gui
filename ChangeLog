@@ -1,3 +1,13 @@
+2010-10-19 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSPasteboard.m:
+	Changed lock to recursive to prevent deadlock issue (at least on
+	Windows). Also added missing lock on one access to the dictionary.
+	Improved +generalPasteboard to retain instance as long as possible
+	(previously it would get released with each autorelease pool, which
+	happened multiple times on each call to [NSMenu update] for just
+	one example). 
+
 2010-10-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSWorkspace.h:

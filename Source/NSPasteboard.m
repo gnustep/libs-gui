@@ -1058,7 +1058,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
  */
 @implementation NSPasteboard
 
-static	NSLock			*dictionary_lock = nil;
+static	NSRecursiveLock		*dictionary_lock = nil;
 static	NSMutableDictionary	*pasteboards = nil;
 static	id<GSPasteboardSvr>	the_server = nil;
 static  NSMapTable              *mimeMap = NULL;
@@ -1069,7 +1069,20 @@ static  NSMapTable              *mimeMap = NULL;
  */
 + (NSPasteboard*) generalPasteboard
 {
-  return [self pasteboardWithName: NSGeneralPboard];
+  static NSPasteboard *generalPboard = nil;
+  // call pasteboardWithName: every time, to update server conniction if needed
+  NSPasteboard *currentGeneralPboard = [self pasteboardWithName: NSGeneralPboard];
+  if (!generalPboard) // getting it for the first time
+    {
+      // add an extra retain to keep it from being released and recreated in every release pool
+      generalPboard = [currentGeneralPboard retain];
+    }
+  else if (currentGeneralPboard != generalPboard)
+    {
+      [generalPboard release];
+      generalPboard = [currentGeneralPboard retain];
+    }
+  return generalPboard;
 }
 
 + (void) initialize
@@ -1078,7 +1091,7 @@ static  NSMapTable              *mimeMap = NULL;
     {
       // Initial version
       [self setVersion: 1];
-      dictionary_lock = [[NSLock alloc] init];
+      dictionary_lock = [[NSRecursiveLock alloc] init];
       pasteboards = [[NSMutableDictionary alloc] initWithCapacity: 8];
     }
 }
@@ -1459,7 +1472,9 @@ static  NSMapTable              *mimeMap = NULL;
 		  format: @"Illegal attempt to globally release %@", name];
     }
   [target releaseGlobally];
+  [dictionary_lock lock];
   [pasteboards removeObjectForKey: name];
+  [dictionary_lock unlock];
 }
 
 /**
@@ -1490,9 +1505,12 @@ static  NSMapTable              *mimeMap = NULL;
   if ([self retainCount] == 2)
     {
       [dictionary_lock lock];
-      [super retain];
-      [pasteboards removeObjectForKey: name];
-      [super release];
+      if ([self retainCount] == 2)
+        {
+          [super retain];
+          [pasteboards removeObjectForKey: name];
+          [super release];
+        }
       [dictionary_lock unlock];
     }
   [super release];
