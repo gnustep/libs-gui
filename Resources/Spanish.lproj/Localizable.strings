@@ -406,6 +406,8 @@ add comments above this one
 "Print..." = "Imprimir...";
 /* File: ../Source/NSToolbarItem.m:881 */
 "Space" = "Espacio";
+/* File: ../Source/NSToolbarItem.m:949 */
+"Separator" = "Separador";
 
 
 /*** Strings from ../Source/NSWindow.m ***/
