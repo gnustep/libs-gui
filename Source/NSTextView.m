@@ -87,6 +87,8 @@
 #import "AppKit/NSWindow.h"
 #import "GSGuiPrivate.h"
 #import "GSTextFinder.h"
+#import "GSToolTips.h"
+#import "GSFastEnumeration.h"
 
 
 /*
@@ -3836,8 +3838,70 @@ Figure out how the additional layout stuff is supposed to work.
                 turnedOn: _drawInsertionPointNow];
         }
     }
+
+  // Remove any existing tooltips in the redrawn rectangle.
+  [[GSToolTips tipsForView: self] removeToolTipsInRect: rect];
+  {
+    NSRange r;
+    NSUInteger i = drawnRange.location;
+    NSUInteger end = i + drawnRange.length;
+    while (i < end)
+      {
+        // Find the next tooltip
+        id text = [_textStorage attribute: NSToolTipAttributeName
+                                  atIndex: i
+                           effectiveRange: &r];
+        // Give up if there are not tooltips
+        if (nil == text) { return; }
+        // If there is one, find the rectangles it uses.
+        NSUInteger rectCount;
+        NSRectArray rects = 
+          [_layoutManager rectArrayForCharacterRange: r
+                        withinSelectedCharacterRange: NSMakeRange(0, 0)
+                                     inTextContainer: _textContainer
+                                           rectCount: &rectCount];
+        NSUInteger j;
+        // Add this object as the tooltip provider for each rectangle
+        for (j=0 ; j<rectCount ; j++)
+          {
+            [self addToolTipRect: rects[j]
+                           owner: self
+                        userData: nil];
+          }
+        i = r.location + r.length;
+      }
+  }
 }
 
+-  (NSString*)view: (NSView *)view
+  stringForToolTip: (NSToolTipTag)tag 
+             point: (NSPoint)point
+          userData: (void*)userData
+{
+  // Find the rectangle for this tag
+  FOR_IN(GSTrackingRect*, rect, _tracking_rects)
+    if (rect->tag == tag)
+      {
+        // Origin is in window coordinate space
+        NSPoint origin = rect->rectangle.origin;
+        // Point is an offset from this origin - translate it to the window's
+        // coordinate space
+        point.x += origin.x;
+        point.y += origin.y;
+        // Then translate it to the view's coordinate space
+        point = [self convertPoint: point
+                          fromView: nil];
+        // Find out what the corresponding text is.
+        NSUInteger startIndex = [self _characterIndexForPoint: point
+                                              respectFraction: NO];
+        // Look up what the tooltip text should be.
+        return [_textStorage attribute: NSToolTipAttributeName
+                               atIndex: startIndex
+                        effectiveRange: NULL];
+      }
+  END_FOR_IN(((NSViewPtr)view)->_tracking_rects)
+  return nil;
+}
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {

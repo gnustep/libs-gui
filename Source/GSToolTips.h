@@ -56,6 +56,10 @@
 - (NSToolTipTag) addToolTipRect: (NSRect)aRect
                           owner: (id)anObject
                        userData: (void *)data;
+/**
+ * Removes all of the tool tips in a given rectangle.
+ */
+- (void)removeToolTipsInRect: (NSRect)aRect;
 
 /** Return the number of tooltip rectangles active.
  */

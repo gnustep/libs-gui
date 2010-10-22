@@ -28,6 +28,7 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimer.h>
+#import <Foundation/NSIndexSet.h>
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
@@ -38,6 +39,7 @@
 #import "AppKit/NSPanel.h"
 #import "GNUstepGUI/GSTrackingRect.h"
 #import "GSToolTips.h"
+#import "GSFastEnumeration.h"
 
 @interface NSWindow (GNUstepPrivate)
 
@@ -288,9 +290,16 @@ static BOOL		restoreMouseMoved;
   if ([[provider object] respondsToSelector:
     @selector(view:stringForToolTip:point:userData:)] == YES)
     {
+      // According to the Apple docs, the point is relative to the tracking
+      // rectangle
+      NSPoint p = [theEvent locationInWindow];
+      NSPoint origin = 
+        [view convertRect: [provider viewRect] toView: nil].origin;
+      p.x -= origin.x;
+      p.y -= origin.y;
       toolTipString = [[provider object] view: view
 			     stringForToolTip: [theEvent trackingNumber]
-					point: [theEvent locationInWindow]
+					point: p
 				     userData: [provider data]];
     }
   else
@@ -393,6 +402,28 @@ static BOOL		restoreMouseMoved;
   toolTipTag = -1;
 }
 
+- (void)removeToolTipsInRect: (NSRect)aRect
+{
+  NSUInteger idx = 0;
+  NSMutableIndexSet *indexes = [NSMutableIndexSet new];
+  FOR_IN(GSTrackingRect*, rect, ((NSViewPtr)view)->_tracking_rects)
+    if ((rect->owner == self) && NSContainsRect(aRect, rect->rectangle))
+      {
+        RELEASE((GSTTProvider*)rect->user_data);
+        rect->user_data = 0;
+        [indexes addIndex: idx];
+        [rect invalidate];
+      }
+      idx++;
+  END_FOR_IN(((NSViewPtr)view)->_tracking_rects)
+  [((NSViewPtr)view)->_tracking_rects removeObjectsAtIndexes: indexes];
+  if ([((NSViewPtr)view)->_tracking_rects count] == 0)
+    {
+      ((NSViewPtr)view)->_rFlags.has_trkrects = 0;
+    }
+  [indexes release];
+}
+
 - (void) removeToolTip: (NSToolTipTag)tag
 {
   NSEnumerator   	*enumerator;
@@ -406,6 +437,7 @@ static BOOL		restoreMouseMoved;
 	  RELEASE((GSTTProvider*)rect->user_data);
 	  rect->user_data = 0;
 	  [view removeTrackingRect: tag];
+          return;
 	}
     }
 }
