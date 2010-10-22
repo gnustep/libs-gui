@@ -406,7 +406,8 @@ static BOOL		restoreMouseMoved;
 {
   NSUInteger idx = 0;
   NSMutableIndexSet *indexes = [NSMutableIndexSet new];
-  FOR_IN(GSTrackingRect*, rect, ((NSViewPtr)view)->_tracking_rects)
+  id tracking_rects = ((NSViewPtr)view)->_tracking_rects;
+  FOR_IN(GSTrackingRect*, rect, tracking_rects)
     if ((rect->owner == self) && NSContainsRect(aRect, rect->rectangle))
       {
         RELEASE((GSTTProvider*)rect->user_data);
@@ -415,7 +416,7 @@ static BOOL		restoreMouseMoved;
         [rect invalidate];
       }
       idx++;
-  END_FOR_IN(((NSViewPtr)view)->_tracking_rects)
+  END_FOR_IN(tracking_rects)
   [((NSViewPtr)view)->_tracking_rects removeObjectsAtIndexes: indexes];
   if ([((NSViewPtr)view)->_tracking_rects count] == 0)
     {

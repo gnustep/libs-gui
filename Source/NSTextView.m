@@ -3903,7 +3903,7 @@ Figure out how the additional layout stuff is supposed to work.
                                atIndex: startIndex
                         effectiveRange: NULL];
       }
-  END_FOR_IN(((NSViewPtr)view)->_tracking_rects)
+  END_FOR_IN(_tracking_rects)
   return nil;
 }
 
