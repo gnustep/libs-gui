@@ -3851,8 +3851,12 @@ Figure out how the additional layout stuff is supposed to work.
         id text = [_textStorage attribute: NSToolTipAttributeName
                                   atIndex: i
                            effectiveRange: &r];
-        // Give up if there are not tooltips
-        if (nil == text) { return; }
+        if (r.location > end) { return; }
+        if (nil == text) 
+          {
+            i = r.location + r.length;
+            continue;
+          }
         // If there is one, find the rectangles it uses.
         NSUInteger rectCount;
         NSRectArray rects = 
