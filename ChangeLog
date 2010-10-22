@@ -1,3 +1,14 @@
+2010-10-22 David Chisnall <theraven@gna.org>
+
+	* Source/NSTextView.m
+	* Source/GSToolTips.h
+	* Source/GSToolTips.m
+
+	Fixed the point argument to -view:stringForToolTip:point:userData: (should
+	be relative to the tracking rectangle, was relative to the window).  Added
+	support for displaying tooltips from NSToolTipAttributeName attributes in
+	NSTextView.
+
 2010-10-20 German Arias <german@xelalug.org>
 	
 	* Resources/Spanish.lproj/Localizable.strings: Added translation
