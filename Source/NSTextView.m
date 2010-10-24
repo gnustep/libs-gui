@@ -3847,6 +3847,10 @@ Figure out how the additional layout stuff is supposed to work.
     NSUInteger end = i + drawnRange.length;
     while (i < end)
       {
+        NSUInteger rectCount;
+        NSRectArray rects; 
+        NSUInteger j;
+
         // Find the next tooltip
         id text = [_textStorage attribute: NSToolTipAttributeName
                                   atIndex: i
@@ -3858,13 +3862,11 @@ Figure out how the additional layout stuff is supposed to work.
             continue;
           }
         // If there is one, find the rectangles it uses.
-        NSUInteger rectCount;
-        NSRectArray rects = 
+        rects = 
           [_layoutManager rectArrayForCharacterRange: r
                         withinSelectedCharacterRange: NSMakeRange(0, 0)
                                      inTextContainer: _textContainer
                                            rectCount: &rectCount];
-        NSUInteger j;
         // Add this object as the tooltip provider for each rectangle
         for (j=0 ; j<rectCount ; j++)
           {
@@ -3886,8 +3888,11 @@ Figure out how the additional layout stuff is supposed to work.
   FOR_IN(GSTrackingRect*, rect, _tracking_rects)
     if (rect->tag == tag)
       {
+        NSPoint origin;
+        NSUInteger startIndex;
+
         // Origin is in window coordinate space
-        NSPoint origin = rect->rectangle.origin;
+        origin = rect->rectangle.origin;
         // Point is an offset from this origin - translate it to the window's
         // coordinate space
         point.x += origin.x;
@@ -3896,7 +3901,7 @@ Figure out how the additional layout stuff is supposed to work.
         point = [self convertPoint: point
                           fromView: nil];
         // Find out what the corresponding text is.
-        NSUInteger startIndex = [self _characterIndexForPoint: point
+        startIndex = [self _characterIndexForPoint: point
                                               respectFraction: NO];
         // Look up what the tooltip text should be.
         return [_textStorage attribute: NSToolTipAttributeName

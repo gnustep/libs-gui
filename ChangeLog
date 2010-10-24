@@ -1,3 +1,8 @@
+2010-10-24 Riccardo Mottola
+
+	* Source/NSTextView.m
+	Fixed some c99-isms
+
 2010-10-22 David Chisnall <theraven@gna.org>
 
 	* Source/NSTextView.m
