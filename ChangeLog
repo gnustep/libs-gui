@@ -1,3 +1,8 @@
+2010-10-25 Doug Simons <doug.simons@testplant.com>
+
+	* Source/GSToolbarCustomizationPalette.m:
+	GSToolbarCustomizationView needs to retain its list of palette items.
+
 2010-10-24 Riccardo Mottola
 
 	* Source/NSTextView.m

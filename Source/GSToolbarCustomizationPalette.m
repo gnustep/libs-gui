@@ -44,6 +44,7 @@
 /* Customization View */
 @interface GSToolbarCustomizationView : NSView
 {
+  NSArray *_paletteItems;
 }
 
 - (void) setToolbarItems: (NSArray *)items;
@@ -53,6 +54,12 @@
 @end
 
 @implementation GSToolbarCustomizationView
+
+- (void)dealloc
+{
+  [_paletteItems release];
+  [super dealloc];
+}
 
 /* If the toolbar item has a custom view and the item is in use in the 
    toolbar, this view has already a superview. We need to make a copy of it 
@@ -147,10 +154,11 @@
 
 - (void) setToolbarItems: (NSArray *)items
 {
-  NSArray *paletteItems = [self paletteItemsWithToolbarItems: items];
   NSEnumerator *e;
   NSView *itemView;
   NSToolbarItem *item;
+  [_paletteItems release];
+  _paletteItems = [[self paletteItemsWithToolbarItems: items] retain];
 
   // Remove all old subviews
   e = [[self subviews] objectEnumerator];
@@ -160,8 +168,8 @@
     }
 
   NSDebugLLog(DEBUG_LEVEL, @"Will insert the views of toolbar items %@ in \
-    customization view", paletteItems);
-  e = [paletteItems objectEnumerator];
+    customization view", _paletteItems);
+  e = [_paletteItems objectEnumerator];
   while ((item = [e nextObject]) != nil)
     {
       itemView = [item _backView];
