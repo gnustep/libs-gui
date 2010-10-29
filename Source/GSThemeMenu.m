@@ -130,5 +130,11 @@
 {
   // default implementation of this method does nothing.
 }
+
+- (BOOL) doesProcessEventsForPopUpMenu
+{
+  return NO; // themes that handle events in a popUpMenu should return YES
+}
+
 @end
 

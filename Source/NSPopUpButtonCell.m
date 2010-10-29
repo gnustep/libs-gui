@@ -993,6 +993,8 @@ static NSImage *_pbc_image[5];
   // Attach the popUp
   [self attachPopUpWithFrame: cellFrame
                       inView: controlView];
+  if ([[GSTheme theme] doesProcessEventsForPopUpMenu])
+    return YES; // the theme handles the events, so we're done
   
   p = [[controlView window] convertBaseToScreen: [theEvent locationInWindow]];
   p = [menuWindow convertScreenToBase: p];

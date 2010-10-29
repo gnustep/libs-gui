@@ -1,3 +1,12 @@
+2010-10-29 Doug Simons <doug.simons@testplant.com>
+
+	* Source/GSThemeMenu.m
+	* Source/NSPopUpButtonCell.m
+	Added theme method to identify themes that handle event processing
+	for PopUp (and PullDown) menus. Use that to prevent duplicate event
+	handling in NSPopUpButtonCell. This fixes a problem with actions
+	getting sent twice on Windows with the WinUXTheme.
+
 2010-10-25 Doug Simons <doug.simons@testplant.com>
 
 	* Source/GSToolbarCustomizationPalette.m:
