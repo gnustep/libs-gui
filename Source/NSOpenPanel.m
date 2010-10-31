@@ -442,8 +442,19 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Running the NSOpenPanel
  */
-/**<p>Displays the open panel in a modal session, filtering for
-   files that have the specified types </p>
+
+/**<p>Displays the open panel in a modal session, showing the current directory
+   (or last selected), and filtering for files that matches the allowed file 
+   types.</p>
+   <p>See Also: -runModalForDirectory:file:types: and -allowedFileTypes</p>
+*/
+- (int) runModal
+{
+  return [self runModalForTypes: [self allowedFileTypes]];
+}
+
+/**<p>Displays the open panel in a modal session, showing the current directory 
+   (or last selected), and filtering for files that have the specified types.</p>
    <p>See Also: -runModalForDirectory:file:types:</p>
 */
 - (int) runModalForTypes: (NSArray *)fileTypes
