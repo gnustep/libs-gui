@@ -1713,11 +1713,11 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     {
       aView = [[_window contentView] superview];
     }
-  if (aView == self || aView == nil)
+  if (aView == self || aView == nil || _window == nil || [aView window] == nil)
     {
       return aRect;
     }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
+  NSAssert(_window == [aView window], NSInvalidArgumentException); 
 
   matrix1 = [aView _matrixToWindow];
 
@@ -1749,7 +1749,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     {
       aView = [[_window contentView] superview];
     }
-  if (aView == self || aView == nil)
+  if (aView == self || aView == nil || _window == nil || [aView window] == nil)
     {
       return aRect;
     }
