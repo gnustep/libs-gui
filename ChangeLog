@@ -1,9 +1,18 @@
+2010-11-03  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSPopUpButtonCell.m (-initWithCoder:): Fixed broken selection 
+	with keyed unarchiver. -selectMenuItem: was given a nil item because 
+	the menu was not yet unarchived.
+	Removed setAutoenableItems: and -setEnabled: use to match Cocoa doc 
+	and IB behavior. By default, -autoenableItems is YES and is archived 
+	by the menu. A popup can be disabled and archived as such.
+
 2010-11-02  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/NSView.m: Added some basic santity checkts that the views
 	are in windows when converting rectangles.
 
-22010-10-31  Quentin Mathe <quentin.mathe@gmail.com>
+2010-10-31  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSOpenPanel.m (-runModal): Added. NSOpenPanel overrides 
 	NSSavePanel version to take in account -allowedFileTypes as documented 

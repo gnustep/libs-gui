@@ -1202,6 +1202,11 @@ static NSImage *_pbc_image[5];
 
   if ([aDecoder allowsKeyedCoding])
     {
+      /* First decode menu, menu items must be available to set the selection */
+      menu = [aDecoder decodeObjectForKey: @"NSMenu"];
+      [self setMenu: nil];
+      [self setMenu: menu];
+
       if ([aDecoder containsValueForKey: @"NSAltersState"])
         {
           BOOL alters = [aDecoder decodeBoolForKey: @"NSAltersState"];
@@ -1238,12 +1243,6 @@ static NSImage *_pbc_image[5];
 	  BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
 	  [self setPullsDown: pullDown];
 	}
-
-      menu = [aDecoder decodeObjectForKey: @"NSMenu"];
-      [self setMenu: nil];
-      [self setMenu: menu];
-      [self setAutoenablesItems: NO];
-      [self setEnabled: YES];
     }
   else
     {
