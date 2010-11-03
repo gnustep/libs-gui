@@ -1,10 +1,16 @@
+2010-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-validRequestorForSendType:returnType:):
+	Don't forward this method if the delegate is a NSResponder.
+	Patch by Georg Fleischmann <G.Fleischmann@vhf.de>.
+
 2010-11-03  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSPopUpButtonCell.m (-initWithCoder:): Fixed broken selection 
-	with keyed unarchiver. -selectMenuItem: was given a nil item because 
+	* Source/NSPopUpButtonCell.m (-initWithCoder:): Fixed broken selection
+	with keyed unarchiver. -selectMenuItem: was given a nil item because
 	the menu was not yet unarchived.
-	Removed setAutoenableItems: and -setEnabled: use to match Cocoa doc 
-	and IB behavior. By default, -autoenableItems is YES and is archived 
+	Removed setAutoenableItems: and -setEnabled: use to match Cocoa doc
+	and IB behavior. By default, -autoenableItems is YES and is archived
 	by the menu. A popup can be disabled and archived as such.
 
 2010-11-02  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
@@ -14,13 +20,13 @@
 
 2010-10-31  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSOpenPanel.m (-runModal): Added. NSOpenPanel overrides 
-	NSSavePanel version to take in account -allowedFileTypes as documented 
+	* Source/NSOpenPanel.m (-runModal): Added. NSOpenPanel overrides
+	NSSavePanel version to take in account -allowedFileTypes as documented
 	in Cocoa.
 
 2010-10-30 German Arias <german@xelalug.org>
-	
-	* Documentation/GNUmakefile: Changes in some files names to 
+
+	* Documentation/GNUmakefile: Changes in some files names to
 	correspond with the files provided in the Documentation directory.
 
 2010-10-29 Doug Simons <doug.simons@testplant.com>
@@ -54,7 +60,7 @@
 	NSTextView.
 
 2010-10-20 German Arias <german@xelalug.org>
-	
+
 	* Resources/Spanish.lproj/Localizable.strings: Added translation
 	for string "Separator".
 
@@ -66,7 +72,7 @@
 	Improved +generalPasteboard to retain instance as long as possible
 	(previously it would get released with each autorelease pool, which
 	happened multiple times on each call to [NSMenu update] for just
-	one example). 
+	one example).
 
 2010-10-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
@@ -111,16 +117,16 @@
 
 2010-09-27  Quentin Mathe <quentin.mathe@gmail.com>
 
-	Fixed NSOutlineView to use incremental loading as Mac OS X does. 
-	You can now use an outline view to browse a big tree structure e.g. a 
-	filesystem. Previously in such a case, NSOutlineView was attempting to 
+	Fixed NSOutlineView to use incremental loading as Mac OS X does.
+	You can now use an outline view to browse a big tree structure e.g. a
+	filesystem. Previously in such a case, NSOutlineView was attempting to
 	traverse the entire directory structure on -reloadData.
 	* Source/NSOutlineView.m
-	(-reloadData:): Removed a redundant _loadDictionaryStartingWith:atLevel: 
+	(-reloadData:): Removed a redundant _loadDictionaryStartingWith:atLevel:
 	call, _openItem: now does it.
-	(-_loadDictionaryStartingWith:atLevel:): Modified to load the children only 
+	(-_loadDictionaryStartingWith:atLevel:): Modified to load the children only
 	if the item is expanded.
-	(_openItem:): Modified to call _loadDictionaryStartingWith:atLevel: when 
+	(_openItem:): Modified to call _loadDictionaryStartingWith:atLevel: when
 	the item children are not loaded.
 
 2010-09-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
@@ -248,9 +254,9 @@
 	* Source/NSClipView.m:
 	* Source/NSScrollView.m:
 	* Source/NSSplitView.m:
-	Replaced _rFlags.flipped_view use with -isFlipped and deprecated 
+	Replaced _rFlags.flipped_view use with -isFlipped and deprecated
 	_rFlagsType.flipped_view.
-	Still needs some work to automatically invalidate coordinates when the 
+	Still needs some work to automatically invalidate coordinates when the
 	flipping changes e.g. between two drawing sessions.
 
 2010-09-02 Doug Simons <doug.simons@testplant.com>
@@ -400,7 +406,7 @@
 
 2010-08-03  Eric Wasylishen <ewasylishen@gmail.com>
 
-	* Source/NSPanel.m: Override 
+	* Source/NSPanel.m: Override
 	-initWithContentRect:styleMask:backing:defer: so that if
 	NSUtilityWindowMask is part of the style mask, we can
 	set the panel to be a floating panel (which is the definition
@@ -598,43 +604,43 @@
 2010-06-01  Quentin Mathe <quentin.mathe@gmail.com>
 
 	Fixed many drawing issues (many ones being related to the flipping).
-	In particular, fixed -[NSImage drawXXX] methods to work exactly as 
-	Cocoa and improve the drawing performance in some cases (the last two 
+	In particular, fixed -[NSImage drawXXX] methods to work exactly as
+	Cocoa and improve the drawing performance in some cases (the last two
 	points only holds with Cairo backend).
 	Eliminated as many flipping checks as possible.
 	Warning: Untested with the winlib backend.
 	* Headers/AppKit/NSGraphicsContext.h:
 	* Source/NSGraphicsContext.m:
-	(-supportsDrawGState, -GSdraw:toPoint:fromRect:operation:fraction:): 
+	(-supportsDrawGState, -GSdraw:toPoint:fromRect:operation:fraction:):
 	Added (see also the Backend Changelog).
 	* Source/NSImage.m
-	(-drawInRect:fromRect:operation:fraction:): Moved the previous 
-	implementation to -guiDrawInRect:fromRect:operation:fraction: and 
+	(-drawInRect:fromRect:operation:fraction:): Moved the previous
+	implementation to -guiDrawInRect:fromRect:operation:fraction: and
 	rewritten as a switch that checks -supportsDrawState.
-	(-guiDrawInRect:fromRect:operation:fraction:): New method identical to 
+	(-guiDrawInRect:fromRect:operation:fraction:): New method identical to
 	the old -drawInRect:fromRect:operation:fraction:.
-	(-nativeDrawInRect:fromRect:operation:fraction:): Added. 
-	New method that leverages the backend as much possible and implement 
+	(-nativeDrawInRect:fromRect:operation:fraction:): Added.
+	New method that leverages the backend as much possible and implement
 	semantic that exactly matches Cocoa.
-	(-drawRepresentation:inRect:): Removed flipping 
+	(-drawRepresentation:inRect:): Removed flipping
 	check.
-	* Source/NSImageRep.m (-drawInPoint:, -drawInRect:): Removed the 
+	* Source/NSImageRep.m (-drawInPoint:, -drawInRect:): Removed the
 	flipping checks.
-	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Fixed 
-	-drawInRect:fromRect:operation:fraction use as Apple doc suggests it 
-	rather than using a negative height trick which doesn't work anymore 
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Fixed
+	-drawInRect:fromRect:operation:fraction use as Apple doc suggests it
+	rather than using a negative height trick which doesn't work anymore
 	(at least with Cairo) and has never worked on Mac OS X.
-	* Source/NSView.m (-scrollRect:by:): Ajusted to do the copy bits on 
-	the window gstate rather than the view gstate. 
-	Required now that Cairo NSCopyBits/compositeGState won't compensate the 
-	flipping when copyOnSelf is YES. Moreover -scrollRect:by: was broken 
-	previously when the view wass not flipped (at least for Cairo). 
-	Finally NSCopyBits() behaves in another way on Mac OS X when the view 
-	gstate is used instead of the window gstate. By using the window gstate, 
-	we can more easily change how NSCopyBits() handles the view gstate to 
+	* Source/NSView.m (-scrollRect:by:): Ajusted to do the copy bits on
+	the window gstate rather than the view gstate.
+	Required now that Cairo NSCopyBits/compositeGState won't compensate the
+	flipping when copyOnSelf is YES. Moreover -scrollRect:by: was broken
+	previously when the view wass not flipped (at least for Cairo).
+	Finally NSCopyBits() behaves in another way on Mac OS X when the view
+	gstate is used instead of the window gstate. By using the window gstate,
+	we can more easily change how NSCopyBits() handles the view gstate to
 	match Cocoa.
-	* Source/NSClipView.m (-setBoundsOrigin:): Turned off dubious code that 
-	should probably be removed. 
+	* Source/NSClipView.m (-setBoundsOrigin:): Turned off dubious code that
+	should probably be removed.
 
 2010-06-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
@@ -747,8 +753,8 @@
 2010-05-29 01:34-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Took out interface definitions and moved them.
-	* Headers/Additions/GNUstepGUI/GSXibLoading.h: New file 
-	which contains the definitions for the new classes defined in 
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h: New file
+	which contains the definitions for the new classes defined in
 	GSXibLoader.m.  This change will allow those classes to be used by
 	applications such as Gorm.
 
@@ -824,7 +830,7 @@
 
 2010-05-20 04:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method
 	displayPopUpMenu:... to handle the display of the popup menus for
 	themes.
 	* Source/GSThemeMenu.m: Added default implementation.
@@ -833,9 +839,9 @@
 
 2010-05-19 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Headers/AppKit/NSColorPicking.h: Removed Protocol.h import to 
-	eliminate potential return type conflicts, between -(unsigned int)hash 
-	from Object and -(NSUInteger)hash from NSObject, when the receiver is 
+	* Headers/AppKit/NSColorPicking.h: Removed Protocol.h import to
+	eliminate potential return type conflicts, between -(unsigned int)hash
+	from Object and -(NSUInteger)hash from NSObject, when the receiver is
 	of type (id).
 
 2010-05-19 Riccardo Mottola <rmottola@users.sf.net>
@@ -859,9 +865,9 @@
 
 	* Source/Functions.m:
 	* Source/NSApplication.m (-finishLaunching):
-	Moved the main Nib file loading from -finishLaunching to 
+	Moved the main Nib file loading from -finishLaunching to
 	NSApplicationMain() to match Cocoa behavior/documentation.
-	This makes easier to implement a custom AppKit main that works with both 
+	This makes easier to implement a custom AppKit main that works with both
 	Cocoa and GNUstep.
 
 2010-05-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
@@ -919,10 +925,10 @@
 
 2010-05-12 18:48-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method
 	rightMouseMenu:forEvent: to allow theming of transient and
 	context menus.
-	* Source/GSThemeMenu.m: Implementation of method 
+	* Source/GSThemeMenu.m: Implementation of method
 	rightMouseMenu:forEvent: to allow theming of transient and
 	context menus.
 	* Source/NSMenu.m: use the theming code implemented above instead
@@ -1079,7 +1085,7 @@
 
 	* Headers/AppKit/NSGraphics.h: NSBeep() - Don't crash when a
 	graphics context isn't available (eg - from a subthread).
-	
+
 2010-04-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSAlert.m (NSRunAlertPanel): Fix incorrect return code
@@ -1088,20 +1094,20 @@
 2010-04-20 Doug Simons <doug.simons@testplant.com>
 
 	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h:
-	Update header to eliminate warning. 
+	Update header to eliminate warning.
 
 2010-04-20 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSWindow.m:
 	* Source/GSWindowDecorationView.m:
 	Fix problems with in-window menus sometimes overlapping toolbars or
-	toolbars overlapping window contents. 
+	toolbars overlapping window contents.
 
 2010-04-19 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMatrix.m:
 	Honor sendsActionOnEndEditing setting when editing ended by
-	something other than return. 
+	something other than return.
 
 2010-04-18 Eric Wasylishen <ewasylishen@gmail.com>
 
@@ -1162,7 +1168,7 @@
 2010-04-13 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/GSToolTips.m: Use a single retained window for tooltips instead of
-	a newly created one each time.  This significantly reduces interaction 
+	a newly created one each time.  This significantly reduces interaction
 	with MS-Windows callbacks.
 
 2010-04-12 Fred Kiefer <FredKiefer@gmx.de>
@@ -1284,7 +1290,7 @@
 
 2010-04-04 German Arias <german@xelalug.org>
 
-	* Panels/Spanish.lproj/GSPageLayout.gorm: Translations 
+	* Panels/Spanish.lproj/GSPageLayout.gorm: Translations
 	of some strings.
 
 2010-03-31 Fred Kiefer <FredKiefer@gmx.de>
@@ -1362,9 +1368,9 @@
 
 2010-03-31 00:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSTableView.m: Add nil check to make sure that the 
+	* Source/NSTableView.m: Add nil check to make sure that the
 	nil values set for certain keys don't get set since they are
-	normally set by connections later in the nib loading process. 
+	normally set by connections later in the nib loading process.
 	I'm not sure why IB includes these when they're set to nil.
 
 2010-03-30 Fred Kiefer <FredKiefer@gmx.de>
@@ -1676,7 +1682,7 @@
 
 	This fixes the bug where NSSearchField doesn't send action
 	messages while the user is typing, when it is supposed to.
-	
+
 2010-03-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-buildUpTextNetwork:): Prevent retain cycle
@@ -1730,7 +1736,7 @@
 
 2010-03-16 German Arias <german@xelalug.org>
 
-	* Resources/French.lproj/Localizable.strings: Added patch 
+	* Resources/French.lproj/Localizable.strings: Added patch
         by Philippe Roussel.
 
 2010-03-16 Fred Kiefer <FredKiefer@gmx.de>
@@ -1769,9 +1775,9 @@
 	* Source/NSOpenGLView.m:
 	Add an -initWithCoder: implementation which subscribes to
 	the frame change notifications like -init.
-	Without this addition, NSOpenGLViews loaded from nibs 
+	Without this addition, NSOpenGLViews loaded from nibs
 	weren't resizing properly.
-	
+
 	Note: it should also probably set a pixel format, but I
 	didn't add that because it was causing an error.
 
@@ -1812,8 +1818,8 @@
 
 2010-03-12  Doug Simons <doug.simons@testplant.com>
 
-	* Source/NSTextView.m: (-readSelectionFromPasteboard:type:): 
-	Set insertion point _after_ pasted text, don't select it. 
+	* Source/NSTextView.m: (-readSelectionFromPasteboard:type:):
+	Set insertion point _after_ pasted text, don't select it.
 
 2010-03-12  Doug Simons <doug.simons@testplant.com>
 
@@ -1875,9 +1881,9 @@
 	* Source/GNUmakefile: Build new category.
 	* Source/GSThemeOpenSavePanels.m: Implementation of methods
 	-savePanelClass and -openPanelClass.
-	* Source/NSOpenPanel.m: Modifications to use class from current 
+	* Source/NSOpenPanel.m: Modifications to use class from current
 	theme.
-	* Source/NSSavePanel.m: Modifications to use class from current 
+	* Source/NSSavePanel.m: Modifications to use class from current
 	theme.
 
 2010-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
@@ -2057,7 +2063,7 @@
 
 2010-02-18 17:21-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSWindow.m: Remove private menu - (void) _menuUpdate, since 
+	* Source/NSWindow.m: Remove private menu - (void) _menuUpdate, since
 	it was causing performance issue on windows as the menu was updating
 	each time through the runloop.
 
@@ -2099,7 +2105,7 @@
 
 2010-02-14 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/GSDragView.m (-_handleDrag:slidePoint:): Fixed to create a 
+	* Source/GSDragView.m (-_handleDrag:slidePoint:): Fixed to create a
 	GSAppKitDraggingDrop event with a valid location.
 
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2107,13 +2113,13 @@
 	* Source/NSMenu.m: Make the background color of NSMenuPanel clear
 	* Source/GSThemeDrawing.m:
 	in drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:,
-	when not using tiles, fill the background of the menu with 
+	when not using tiles, fill the background of the menu with
 	the window background color.
 	Now themes can draw semitransparent menus, and they work properly.
 
 2010-02-12 19:44-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSBrowser.m: Make sure that the matrix used in the 
+	* Source/NSBrowser.m: Make sure that the matrix used in the
 	browser draws its cell backgrounds properly.
 
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2145,7 +2151,7 @@
 
 2010-02-12 German Arias <german@xelalug.org>
 
-	* Source/GSTitleView.m: Search in theme colors: GSMenuBar and 
+	* Source/GSTitleView.m: Search in theme colors: GSMenuBar and
 	GSMenuBarTitle (both GSThemeNormalState). If not present, set
 	black and white respectively.
 
@@ -2181,7 +2187,7 @@
 2010-02-11 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* NSTableHeaderView.m:
-	* GSThemeDrawing.m: Move code in NSTableHeaderView which leaves a 
+	* GSThemeDrawing.m: Move code in NSTableHeaderView which leaves a
 	1pt gap underneath table headers to GSThemeDrawing, since it only
 	looks decent with a NeXT-like theme. This fixes the
 	misalignment between the table corner and the table headers visible
@@ -2212,13 +2218,13 @@
 	* Tools/GNUmakefile.postamble (after-distclean): Do not remove the
 	non-existing GNUmakefile.local and GNUmakefile.local.service
 	files.
-	
+
 	* Documentation/GNUmakefile: Do not include aggregate.make twice.
 	* KeyBindings/GNUmakefile (after-uninstall): Remove the
 	$(GNUSTEP_LIBRARY)/KeyBindings directory if empty.
 	* Model/GNUmakefile: Do not include library.make when GUI_LIB =
 	gnu.
-	
+
 2010-02-11 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSWindow.m: revert accidental commit
@@ -2273,8 +2279,8 @@
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:
-	* Source/GSThemePrivate.h: 
-	* Source/GSThemeDrawing.m (-drawBorderType:frame:view:): 
+	* Source/GSThemePrivate.h:
+	* Source/GSThemeDrawing.m (-drawBorderType:frame:view:):
 	Draw borders using image tiles, if available.
 
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2292,22 +2298,22 @@
 
 2010-02-06 Quentin Mathe <quentin.mathe@gmail.com>
 
-	Fixed table header/content random disappearance with unarchived table 
+	Fixed table header/content random disappearance with unarchived table
 	views.
-	* Source/NSTableView.m (-initWithCoder:): Fixed _columnsOrigin to be 
-	always initialized by calling -tile with non-keyed unarchiving. Until 
-	now, in case no method that invokes -tile was called before the 
-	display, the table header view was not drawing the table header cells 
-	but just an empty black stroked rect, since -columnAtPoint: was 
-	returning invalid values. This was rarely visible since you usually 
+	* Source/NSTableView.m (-initWithCoder:): Fixed _columnsOrigin to be
+	always initialized by calling -tile with non-keyed unarchiving. Until
+	now, in case no method that invokes -tile was called before the
+	display, the table header view was not drawing the table header cells
+	but just an empty black stroked rect, since -columnAtPoint: was
+	returning invalid values. This was rarely visible since you usually
 	set a data source with an outlet and -setDataSource: calls -tile.
 	Also fixed a _columnOrigins memory with keyed unarchiving.
-	(-initWithCoder:, -encodeWithCoder:): Added double action keyed 
+	(-initWithCoder:, -encodeWithCoder:): Added double action keyed
 	archiving.
-	* Source/NSScrollView.m (-initWithCoder:): Fixed to only decode the 
-	flags we really encode, otherwise we read random memory and the 
-	flags are then incorrect. This can prevent the table header/content to 
-	be drawn in a table view enclosed in a scroll view, and also result 
+	* Source/NSScrollView.m (-initWithCoder:): Fixed to only decode the
+	flags we really encode, otherwise we read random memory and the
+	flags are then incorrect. This can prevent the table header/content to
+	be drawn in a table view enclosed in a scroll view, and also result
 	in keyed archiving exceptions complaning about some NaN rect values.
 
 2010-02-05 16:26-EST Gregory John Casamento <greg.casamento@gmail.com>
@@ -2319,15 +2325,15 @@
 
 2010-02-03 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSWindow.m (-sendEvent:): Fixed button action which were sent 
-	to the button itself when the target is the first responder. We don't 
+	* Source/NSWindow.m (-sendEvent:): Fixed button action which were sent
+	to the button itself when the target is the first responder. We don't
 	give anymore the first responder status to a button on a click.
 
 2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSStepperCell.m: Correct clamping behaviour as I did to
 	NSSliderCell earlier.
-	
+
 2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m: Preliminary support for themeing the window
@@ -2370,7 +2376,7 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added new method
 	declaration for updateAllWindowsWithMenu:
-	* Source/GSThemeMenu.m: Added default implementation of 
+	* Source/GSThemeMenu.m: Added default implementation of
 	updateAllWindowsWithMenu:
 	* Source/NSMenu.m: Added call to updateAllWindowsWithMenu: on
 	current theme.
@@ -2382,7 +2388,7 @@
 	* Source/NSTableHeaderView.m:
 	* Source/GSThemeDrawing.m:
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Use theme tiles (if available)
-	to draw table headers. New tile names are GSTableHeader and 
+	to draw table headers. New tile names are GSTableHeader and
 	GSTableCorner.
 
 2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2447,7 +2453,7 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/NSMenuView.m:
-	* Source/GSThemeDrawing.m: 
+	* Source/GSThemeDrawing.m:
 	Create a new GSTheme method for drawing the background of NSMenuView,
 	-drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:
 
@@ -2508,9 +2514,9 @@
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSThemeTools.m:
-	* Source/GSThemePrivate.m: Added a contentRect feature to 
+	* Source/GSThemePrivate.m: Added a contentRect feature to
 	GSDrawTiles. Previously, GSDrawTiles assumed that the rect the user
-	would draw in was exactly the center middle rect; i.e. the 
+	would draw in was exactly the center middle rect; i.e. the
 	return value of the xxStlyeFillRect: methods was the center middle
 	rect scaled to fit inside the drawing rect.
 
@@ -2532,21 +2538,21 @@
 
 	* Headers/GNUstepGUI/GSTheme.h:
 	* Source/GSThemeDrawing.m:
-	(-titleViewClassForMenuView:): Added the possibility to customize the 
+	(-titleViewClassForMenuView:): Added the possibility to customize the
 	title view with this new method.
-	* Source/NSMenuView.m (-update): Modified to loop uk the title view 
+	* Source/NSMenuView.m (-update): Modified to loop uk the title view
 	class through the active theme rather than just using GSTitleView.
 
 2010-01-27 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSApplication.m (-_postAndSendEvent:): Added.
-	* Source/GSDragView 
-	(-_sendLocalEvent:action:position:timestamp:toWindow:): Dispatch drag 
+	* Source/GSDragView
+	(-_sendLocalEvent:action:position:timestamp:toWindow:): Dispatch drag
 	events -[NSApp _postAndSendEvent:] to match Mac OS X behavior.
 
 2010-01-26 Eric Wasylishen <ewasylishen@gmail.com>
 
-	* Source/NSView.m (-setHidden:): When hiding a view, we need to 
+	* Source/NSView.m (-setHidden:): When hiding a view, we need to
 	call -setNeedsDisplay:YES on the superview, rather than self
 
 2010-01-26 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2557,7 +2563,7 @@
 
 2010-01-24 03:07-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSWindow.m: Uncomment updateMenu:.. method call in 
+	* Source/NSWindow.m: Uncomment updateMenu:.. method call in
 	-[NSWindow update] method.
 
 2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
@@ -2582,7 +2588,7 @@
 	8 pixels of padding to the left of the first menu item as activating
 	the first menu item.
 	This lets you open the application menu with a Macintosh-syle
-	menu bar when the mouse is on the top-left pixel of the screen. 
+	menu bar when the mouse is on the top-left pixel of the screen.
 
 2010-01-23 18:41-EST Gregory John Casamento <greg.casamento@gmail.com>
 
@@ -2592,13 +2598,13 @@
 	returned from menuHeightForWindow:.
 	* Source/NSWindow.m: initWithContentRect:.. call setMenu: here so that
 	the menu is added immediately when the window is created.  Also
-	add code to update menus.  
+	add code to update menus.
 
 2010-01-20 German Arias <german@xelalug.org>
 
-	* Resources/Spanish.lproj/Localizable.strings: Added translation 
+	* Resources/Spanish.lproj/Localizable.strings: Added translation
 	to "Opacity".
-	* ColorPickers/Spanish.lproj/StandardPicker.strings: Corrected the 
+	* ColorPickers/Spanish.lproj/StandardPicker.strings: Corrected the
 	file path in the commentary.
 
 2010-01-20 Riccardo Mottola <rmottola@users.sf.net>
@@ -2627,10 +2633,10 @@
 
 2010-01-16 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-_selectColumn:modifiers:): Rewrote to be 
-	simpler, support selection by range as Cocoa does and to remove the 
-	toggle selection behavior when a column is clicked twice. This toggle 
-	behavior was in conflict with the ability to change the sort direction 
+	* Source/NSTableView.m (-_selectColumn:modifiers:): Rewrote to be
+	simpler, support selection by range as Cocoa does and to remove the
+	toggle selection behavior when a column is clicked twice. This toggle
+	behavior was in conflict with the ability to change the sort direction
 	by clicking in an already selected column header.
 
 2010-01-16 14:55-EST Gregory John Casamento <greg.casamento@gmail.com>
@@ -2640,34 +2646,34 @@
 	different backends.  Also, it's better to keep the state in one place
 	instead of keeping them in sync.  I changed all of the instances of
 	_f.is_key to [self isKeyWindow] and all of the instances of _f.is_main
-	to [self isMainWindow] and those methods now check with NSApp to 
+	to [self isMainWindow] and those methods now check with NSApp to
 	determine if the current window is main.   I realize this is slower
 	than the previous method of using flags, but it is also more resilient
 	and reliable when the backend sends extra events.  This corrects the
-	issue on Windows where we were losing the main window and had two 
+	issue on Windows where we were losing the main window and had two
 	windows marked as "main".
 
 2010-01-16 Quentin Mathe <quentin.mathe@gmail.com>
 
 	Finished to implement the NSTable/OutlineView sort descriptor support.
-	More changes are needed to get proper sorting support (e.g. visual 
+	More changes are needed to get proper sorting support (e.g. visual
 	feedback).
 	* Headers/NSTableView.h:
 	Added _sortDescriptors ivar.
 	(-tableView:sortDescriptorsDidChange:): Declared.
 	* Source/NSTableView.m
-	(-_clickTableColumn:, -_didChangeSortDescriptors:): Added. 
-	(-_initDefaults, -dealloc): Modified to initialize/release 
+	(-_clickTableColumn:, -_didChangeSortDescriptors:): Added.
+	(-_initDefaults, -dealloc): Modified to initialize/release
 	_sortDescriptors ivar.
-	(-initWithCoder:, -encodeWithCoder:): Modified to support archiving 
+	(-initWithCoder:, -encodeWithCoder:): Modified to support archiving
 	the sort descriptors.
 	(-setSortSelectors:, -sortSelectors): Implemented.
-	* Source/NSTableHeaderView.m (-mouseDown:): Modified to now call 
-	-_clickTableColumn which prepares the sort descriptors among other 
+	* Source/NSTableHeaderView.m (-mouseDown:): Modified to now call
+	-_clickTableColumn which prepares the sort descriptors among other
 	things. -_didClickTableColumn: will be called by -_clickTableColumn:.
-	* Headers/NSOutlineView.h (-outlineView:sortDescriptorsDidChange:, 
+	* Headers/NSOutlineView.h (-outlineView:sortDescriptorsDidChange:,
 	-outlineView:didClickTableColumn:): Declared.
-	* Source/NSOutlineView.m (-_didClickTableColumn:, 
+	* Source/NSOutlineView.m (-_didClickTableColumn:,
 	-_didChangeSortDescriptors:): Added overriden NSTableView methods.
 
 2010-01-15 German Arias <german@xelalug.org>
@@ -2678,7 +2684,7 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method to call
 	back menuHeightForWindow:
-	* Source/GSThemeMenu.m: Added default implementation of 
+	* Source/GSThemeMenu.m: Added default implementation of
 	menuHeightForWindow:.  Default implementation returns NSMenuView
 	menuBarHeight.
 	* Source/GSWindowDecorationView.m: Use menuHeightForWindow: instead
@@ -2692,8 +2698,8 @@
 
 2010-01-14 07:08-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSApplication.m: For hide: perform miniaturizeAll: 
-	on Windows, since hiding the app causes it to be inaccessible on 
+	* Source/NSApplication.m: For hide: perform miniaturizeAll:
+	on Windows, since hiding the app causes it to be inaccessible on
 	that platform.
 
 2010-01-14 04:07-EST Gregory John Casamento <greg.casamento@gmail.com>
@@ -2740,7 +2746,7 @@
 
 2010-01-11 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSOutlineView.m (-editColumn:row:withEvent:select:): Fixed broken 
+	* Source/NSOutlineView.m (-editColumn:row:withEvent:select:): Fixed broken
 	cell editability by replicating NSTableView changes r25091.
 
 2010-01-11 Fred Kiefer <FredKiefer@gmx.de>
@@ -2776,8 +2782,8 @@
 
 2010-01-05 03:39-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSMenu.m: Do not show the menu at the top of the screen in 
-	NSWindows95InterfaceStyle mode.  
+	* Source/NSMenu.m: Do not show the menu at the top of the screen in
+	NSWindows95InterfaceStyle mode.
 
 2010-01-04 00:25-EST Gregory John Casamento <greg.casamento@gmail.com>
 
@@ -2964,7 +2970,7 @@
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSColorWell.m: Draw a black-and-white pattern behind
-	transparent color swatches. 
+	transparent color swatches.
 
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
@@ -2976,7 +2982,7 @@
 	* Source/NSColorWell.m
 	* Source/GSThemeDrawing.m
 	* Source/NSColorPanel.m
-	* Headers/AppKit/NSColorWell.h: 
+	* Headers/AppKit/NSColorWell.h:
 	Finish NSColorWell interaction tweaks:
 	- activation of the now happens on mouseUp, not mouseDown
 	- non-bordered NSColorWells can't be activated by clicking
@@ -2995,14 +3001,14 @@
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSliderCell.m: Some more changes to NSSliderCell to get
-	BezierPathLab working, and a test suite in 
+	BezierPathLab working, and a test suite in
 	tests/testsuite/gui/NSSliderCell. Set the doubleValue to 0 in -init,
 	unarchive the @"NSValue" key and set the floatValue to it when
 	unarchiving, adjust setObjectValue: so that when minValue > maxValue,
 	the slider cell takes its value to be minValue.
 	Also override setContinuous: and isContinuous to use
 	NSLeftMouseDraggedMask rather than NSPeriodicMask, which makes
-	the continuous setting of sliders in Nibs work properly in GNUstep. 
+	the continuous setting of sliders in Nibs work properly in GNUstep.
 
 2009-11-24 David Chisnall <theraven@gna.org>
 
@@ -3045,7 +3051,7 @@
 2009-12-17 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSTableView.m (-setDropRow:dropOperation:, -draggingUpdated):
-	Corrected to support a drop on root with -1 as the drop row as explained 
+	Corrected to support a drop on root with -1 as the drop row as explained
 	in Cocoa documentation.
 
 2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
@@ -3162,15 +3168,15 @@
 2009-12-12 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSBitmapImageRep.m:
-	* Source/GSThemeTools.m: 
+	* Source/GSThemeTools.m:
 	Change the colorAtX:y: and related methods in NSBitmapImageRep
-	to use flipped coordinates, matching OS X. colorAtX:0 y:0 now 
+	to use flipped coordinates, matching OS X. colorAtX:0 y:0 now
 	returns the top-left pixel instead of the bottom left.
 
 2009-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSApplication (-setWindowsMenu:): Only add windows that 
-	are either visible or miniaturized. 
+	* Source/NSApplication (-setWindowsMenu:): Only add windows that
+	are either visible or miniaturized.
 
 2009-12-11 13:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -3178,7 +3184,7 @@
 	with nib loading.
 	* Source/NSTextContainer.m: -[NSTextContainer initWithCoder:]
 	removed call to unarchive the textview to prevent a leak.  Also
-	don't set the textview as the text container.   Currently we 
+	don't set the textview as the text container.   Currently we
 	just get the contents of the text container and rebuild it
 	in NSTextView.m.
 
@@ -3186,20 +3192,20 @@
 
 	* Headers/AppKit/NSKeyValueBinding.h:
 	* Source/externs.m:
-	* Source/NSWindow.m (+initialize, -bind:toObject:withKeyPath:options:): 
+	* Source/NSWindow.m (+initialize, -bind:toObject:withKeyPath:options:):
 	Added NSWindow 'title' binding.
 
 2009-12-08 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableColumn.m (-dealloc): Fixed missing release for 
+	* Source/NSTableColumn.m (-dealloc): Fixed missing release for
 	_sortDescriptorPrototype ivar.
 
 2009-12-08 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/NSTableColumn.h:
-	* Source/NSTableColumn.m: 
+	* Source/NSTableColumn.m:
 	Added all new table column methods and constants up to Mac OS X 10.6.
-	These new additions remain to be fully implemented and the archiving code 
+	These new additions remain to be fully implemented and the archiving code
 	to be updated.
 
 2009-12-08 Hans Baier <hansfbaier@googlemail.com>
@@ -3210,36 +3216,36 @@
 
 2009-12-06 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSOutlineView.m (-draggingUpdated:): 
-	Fixed drop above as a child in the previous row (when this row is an 
+	* Source/NSOutlineView.m (-draggingUpdated:):
+	Fixed drop above as a child in the previous row (when this row is an
 	empty parent).
-	(-drawDropAboveIndicatorWithDropItem:atRow:childDropIndex:): Fixed the 
-	drop above indicator drawing when the level doesn't match the previous 
-	row. Done by including an extra row parameter which makes possible to 
-	remove the row computation code that appears to partially duplicate 
+	(-drawDropAboveIndicatorWithDropItem:atRow:childDropIndex:): Fixed the
+	drop above indicator drawing when the level doesn't match the previous
+	row. Done by including an extra row parameter which makes possible to
+	remove the row computation code that appears to partially duplicate
 	-parentRowForRow:atLevel:andReturnChildIndex:.
 
 2009-12-05 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-_startDragOperationWithEvent:): Modified to call 
+	* Source/NSTableView.m (-_startDragOperationWithEvent:): Modified to call
 	-canDragRowsWithIndexes:atPoint: as expected.
 
 2009-12-05 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSOutlineView.m (-draggingUpdated): Further simplified.
-	Wrote detailed code documentation since the overall behavior is pretty 
+	Wrote detailed code documentation since the overall behavior is pretty
 	complex.
-	Fixed to compute the vertical and horizontal positions correctly when 
+	Fixed to compute the vertical and horizontal positions correctly when
 	the view is scrolled.
-	Fixed out of bounds exception when the pointer moves into the empty 
+	Fixed out of bounds exception when the pointer moves into the empty
 	area below the rows (was trying to auto-expand the root item).
-	Implemented drop on root indicator in addition to drop on row and drop 
+	Implemented drop on root indicator in addition to drop on row and drop
 	drop above (works the same as Mac OS X).
-	(-isExpandable:): Modified to always return NO when the item is nil (as 
+	(-isExpandable:): Modified to always return NO when the item is nil (as
 	Mac OS X does).
-	(-drawDropAboveIndicatorWithDropItem:childDropIndex:, 
-	-drawDropOnRootIndicator, -drawDropOnWithDropItem:, 
-	-parentRowForRow:atLevel:andReturnChildIndex:): New methods extracted 
+	(-drawDropAboveIndicatorWithDropItem:childDropIndex:,
+	-drawDropOnRootIndicator, -drawDropOnWithDropItem:,
+	-parentRowForRow:atLevel:andReturnChildIndex:): New methods extracted
 	from -draggingUpdated.
 
 2009-11-30 Richard Frith-Macdonald <rfm@gnu.org>
@@ -3354,14 +3360,14 @@
 
 	* Source/NSButtonCell.m: Change default value for
 	keyEquivalentModifierMask to 0. Add keyed decoding and encoding of
-	keyEquivalentModifierMask. 
+	keyEquivalentModifierMask.
 	* Source/NSSearchFieldCell.m,
 	* Source/NSSpellChecker.m: Add explicit keyEquivalentModifierMask setting.
 
 	* Source/NSInputManager.m: Add handling of escape character to
-	call cancelOperation: 
+	call cancelOperation:
 	* Source/NSTextField.m: Fix textDidEndEditing: to send action
-	when sendsActionOnEndEditing is set. 
+	when sendsActionOnEndEditing is set.
 	Patch by Douglas Simons <doug.simons@testplant.com>.
 
 2009-11-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
@@ -3425,7 +3431,7 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
 	* Source/GSThemeDrawing.m,
 	* Source/NSColorWell.m: Move colour well border drawing into GSTheme.
-	This change makes the dragable area of the well a bit smaller.	
+	This change makes the dragable area of the well a bit smaller.
 
 2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -3465,13 +3471,13 @@
 	* Source/NSApplication.m (-finishLaunching): Only activate the
 	application if it isn't hidden.
 	* Source/Functions.m (NSConvertGlobalToWindowNumber,
-	NSConvertWindowNumberToGlobal): Add a slightly better implementation. 
+	NSConvertWindowNumberToGlobal): Add a slightly better implementation.
 
 2009-11-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocumentController.m (+initialize): Don't ignore types
 	without an associated document class.
-	* Source/NSDocument.m (+readableTypes, +writableTypes): 
+	* Source/NSDocument.m (+readableTypes, +writableTypes):
 	* Source/NSDocumentController.m(-_readableTypesForClass:,
 	-_writableTypesForClass:): Add the exportable types to the
 	writable types. Rename private NSDocumentController methods.
@@ -3501,7 +3507,7 @@
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m (-colorUsingColorSpace): Support more color spaces.
-	* Source/NSColorSpace.m (COLORSPACE): Initialize the static variable. 
+	* Source/NSColorSpace.m (COLORSPACE): Initialize the static variable.
 
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -3510,7 +3516,7 @@
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/Functions.m (NSConvertGlobalToWindowNumber,
-	NSConvertWindowNumberToGlobal): Add dummy implementation. 
+	NSConvertWindowNumberToGlobal): Add dummy implementation.
 
 2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -3612,7 +3618,7 @@
 
 2009-10-19 Riccardo Mottola <rmottola@users.sf.net>
 
-	* Source/GSWindowDecorationView.h: add method declaration 
+	* Source/GSWindowDecorationView.h: add method declaration
 	so that certain compilers pick up the correct signature
 
 2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
@@ -3631,7 +3637,7 @@
 	to use document controller to open an untitled document.
 	Drop non-standard method (which didn't work) for determining whether
 	we have a document based app.
-	* Source/NSDocumentController.m: Rewrite code for determining 
+	* Source/NSDocumentController.m: Rewrite code for determining
 	whether the current app is document based. Cache singleton information
 	in static variables rether than ivars.
 
@@ -3773,7 +3779,7 @@
 
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSEvent.m, 
+	* Source/NSEvent.m,
 	* Source/NSImage.m,
 	* Source/GSTextStorage.m: Remove usage of NSDeallocateObject.
 
@@ -3846,24 +3852,24 @@
 	* Headers/AppKit/NSWorkspace.h,
 	* Source/NSWorkspace.m: ([-launchAppWithBundleIdentifier:])
 	add method and dummy implementation
-	
+
 2009-09-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScroller.m,
 	* Headers/AppKit/NSScroller.h: Add new 10.5 methods and change
 	implementation to be similar to the currentApple one. Remove the
 	left over caching code that didn't do anything useful anymore.
-	
+
 2009-09-14 Hans Baier <hansfbaier@googlemail.com>
 
 	* Headers/AppKit/NSWorkspace.h: add NSWorkspaceLaunchoptions
-	
+
 2009-09-12 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Images/common_Mount.tiff
 	* Images/common_Unmount.tiff
 	Newly recreated true-color artwork.
-	
+
 2009-09-10 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: ([-setApplicationIconImage:]) ensure that
@@ -3904,7 +3910,7 @@
 2009-09-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButton.m (-selectedTag): Return the tag of the
-	selected item. 
+	selected item.
 	Patch by Douglas Simons <doug.simons@testplant.com>.
 
 2009-09-04  Nicola  <nicola.pero@meta-innovation.com>
@@ -3919,7 +3925,7 @@
 	* Images/GNUmakefile.postamble: Removed.
 	* Sounds/GNUmakefile.postamble: Removed.
 	* Themes/GNUmakefile.postamble: Removed.
-	
+
 2009-09-01 19:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Images/common_ToolbarCustomizeToolbarItem.tiff: Minor cleanup
@@ -4009,8 +4015,8 @@
 	* Source/NSAttributedString.m (-fixFontAttributeInRange:): Fix
 	compiler warning.
 	* Source/NSHelpManager.m (NSApplication-showHelp:): Fix	compiler
-	warning. 
-	
+	warning.
+
 2009-08-23 17:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Sounds/Frog.wav: New sound.
@@ -4044,14 +4050,14 @@
 	* Source/NSButtonCell.m: Use the new method.
 
 2009-08-23 Doug Simons <dpsimons@testplant.com>
-	
+
 	* Source/GSHorizontalTypesetter.m: Remove unlock and
 	log the exception, but don't rethrow it.
 	* Source/GSLayoutManager.m: return a zero length range in
 	 -(NSRange)glyphRangeForCharacterRange:actualCharacterRange:
 	when charRange has a length and a location of 0.
 	Added by Gregory John Casamento <greg.casamento@gmail.com>
-	
+
 2009-08-23 17:16-BST David Chisnall <theraven@sucs.org>
 
 	* Tools/sound/GSOSSSoundSink.m: Added OSS sound back end
@@ -4104,7 +4110,7 @@
 	-drawTitleWithFrame:inView:): Remove specific drawing code, use
 	general code instead.
 	* Source/NSMenuItemCell.m (-drawingRectForBounds:): Add call to calcSize.
-	
+
 2009-08-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+ICNS.m: Redefine icns_size_t to int, as
@@ -4140,12 +4146,12 @@
 
 	* Source/NSDrawer.m: Changed - (void) stopTimer.  Fixed to
 	prevent a crash when the drawer is opened/closed and then the
-	window is then closed causing a double release.  
-	
+	window is then closed causing a double release.
+
 2009-08-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextStorage.m (-classForCoder, -initWithCoder:,
-	-encodeWithCoder:): Encode this class and not the concrete 
+	-encodeWithCoder:): Encode this class and not the concrete
 	one. Also call super encoding/decoding methods as they are
 	correct in base now.
 	* Source/GSTextStorage.m (-classForPortCoder, -encodeWithCoder:,
@@ -4184,14 +4190,14 @@
 
 	* Source/NSTextView.m: initWithCoder: temporarily remove decoding
 	of NSTextContainer since it is causing a crash when editing a text
-	view's that was loaded from a nib file. 
+	view's that was loaded from a nib file.
 
 2009-08-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSToolbarItem.h: Move the _flags to the class
-	GSToolbarBackView in NSToolbarItem.m. 
+	GSToolbarBackView in NSToolbarItem.m.
 	* Source/NSToolbarItem.m: More clean up of code.
-	
+
 2009-08-02 10:15-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSWindow.h
@@ -4206,7 +4212,7 @@
 	* Tools/GNUmakefile: Add ${BUILD_SPEECH} to subproject list.
 	* Tools/say/GNUmakefile
 	* Tools/say/say.m: Say utility
-	* Tools/speech/FliteSpeechEngine.m: 
+	* Tools/speech/FliteSpeechEngine.m:
 	* Tools/speech/GNUmakefile
 	* Tools/speech/GSSpeechEngine.[hm]
 	* Tools/speech/GSSpeechServer.[hm]
@@ -4215,7 +4221,7 @@
 	* Tools/speech/main.m: main for the server application.
 	Speech code by David Chisnall <theraven@sucs.org>
 	Changes to makefiles and config by Gregory Casamento.
-	
+
 2009-08-01 17:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Sounds/GNUmakefile: Change makefile to copy wav files.
@@ -4249,7 +4255,7 @@
 2009-07-30 15:43-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeTools.m: -[GSThemeTools drawRoundBezel:withColor:]
-	add code to draw highlights for rounded buttons to give them a 
+	add code to draw highlights for rounded buttons to give them a
 	better 3D look.
 
 2009-07-28 Fred Kiefer <FredKiefer@gmx.de>
@@ -4279,25 +4285,25 @@
 	* Source/NSAlert.m: Offset color by less in -resetWindow.  Remove
 	redundant logic for calling the "didEnd" method in the NSBeginSheet...
 	functions.
-	* Source/NSApplication.m: Add code to reset parent window in 
+	* Source/NSApplication.m: Add code to reset parent window in
 	beginSheet:... method.  Also added check to make sure the
 	modalDelegate is not nil.
 
 2009-07-25 20:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: Remove category for setAttachedSheet method.
-	* Source/NSApplication.m: Added private category to add 
+	* Source/NSApplication.m: Added private category to add
 	setAttachedSheet: to NSWindow.  Modified beginSheet:... method
 	to call the new method with the sheet that is associated with it.
 
 2009-07-25 20:25-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSAlert.m: GSAlertSheet - removed unecessary parentWindow 
+	* Source/NSAlert.m: GSAlertSheet - removed unecessary parentWindow
 	and  container ivars in interface declaration.  Removed uneeded
 	accessors for parentWindow and contentRect.  Added check in
 	frameFromParentWindowFrame to check to see if parent is initialized
-	prior to using it.   Removed NSBox in the init.. method since it 
-	could cause issues with drawing.   Added code to lighten the 
+	prior to using it.   Removed NSBox in the init.. method since it
+	could cause issues with drawing.   Added code to lighten the
 	color of the background of the sheet relative to the parent window.
 
 2009-07-24 Fred Kiefer <FredKiefer@gmx.de>
@@ -4345,7 +4351,7 @@
 	* Source/NSView.m (-_setNeedsDisplayInRect_real:) Set the window
 	views as needing display, even when the invalidated rectangle
 	didn't change.
-	
+
 2009-07-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-_editPreviousEditableCellBeforeRow:column:,
@@ -4372,8 +4378,8 @@
 
 2009-06-28 23:46-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSTextView.m (-initWithCoder:): Retain the text 
-	container and storage to prevent a crash since both are 
+	* Source/NSTextView.m (-initWithCoder:): Retain the text
+	container and storage to prevent a crash since both are
 	autoreleased by the archiver.
 
 2009-06-29 Fred Kiefer <FredKiefer@gmx.de>
@@ -4402,20 +4408,20 @@
 
 2009-06-05 18:21-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/NSSpeechSynthesizer.h: 
+	* Headers/AppKit/NSSpeechSynthesizer.h:
 	* Source/NSSpeechSynthesizer.m: Implementation of
-	NSSpeechSynthesizer.  
+	NSSpeechSynthesizer.
 	Patch by David Chisnall <theraven@sucs.org>
 
 2009-06-02 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
+	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...):
 	Check whether there is a returned save panel, this wont be the case
 	when the user cancels the save operation.
-	
+
 2009-05-31 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSApplication.m (detachDrawingThread:toTarget:withObject:): 
+	* Source/NSApplication.m (detachDrawingThread:toTarget:withObject:):
 	Replace a call to a now longer existing extension on NSInvocation
 	with the correct method calls.
 
@@ -4434,11 +4440,11 @@
 
 	* Source/GSStandardWindowDecorationView.m: Live window resize changes
 	for when using GNUstep decorations in resizeWindowStartingWithEvent:.
-	* Source/NSLayoutManager.m: Unarchive the text containers into an 
+	* Source/NSLayoutManager.m: Unarchive the text containers into an
 	array in initWithCoder:.
 	* Source/NSTextContainer.m: Get the layout manager in initWithCoder:.
 	* Source/NSTextView.m: Changes to include text container from nib
-	file into the nib loading process in initWithCoder:.   
+	file into the nib loading process in initWithCoder:.
 
 2009-05-22 Nicolas Roard <nicolas@roard.com>
 	Add a live resize for splitviews. Users can revert to the old behaviour
@@ -4453,8 +4459,8 @@
 2009-05-14 14:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSWindow.h: Added ivar to contain attachedSheet.
-	* Source/NSAlert.m: New class GSSheetPanel.  Initial changes for 
-	sheet implementation. 
+	* Source/NSAlert.m: New class GSSheetPanel.  Initial changes for
+	sheet implementation.
 	* Source/NSWindow.m: Added code to return value of new ivar.
 
 2009-05-10  Adam Fedor  <fedor@gnu.org>
@@ -4462,11 +4468,11 @@
 	* Version 0.17.0
 
 2009-05-02 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSMenu.m (-_updateUserDefaults:): Fix small memory leak.
 	* Source/GSTitleView.m (+height: Get height from NSMenuView.
 	* Source/GSTitleView.m (-addCloseButtonWithAction:,
-	-addMiniaturizeButtonWithAction:): Get buttons from NSWindow. 
+	-addMiniaturizeButtonWithAction:): Get buttons from NSWindow.
 	* Source/GSTitleView.m: Clean up a bit.
 
 2009-04-27 Fred Kiefer <FredKiefer@gmx.de>
@@ -4491,7 +4497,7 @@
 
 2009-04-19 00:46-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/NSSearchFieldCell.h: Give the values assigned in 
+	* Headers/AppKit/NSSearchFieldCell.h: Give the values assigned in
 	Cocoa to the enum.  Patch by: doug@riverrock.org
 	* Source/NSSearchFieldCell.m: Implemented search menu template and
 	recent items.  Patch by: doug@rivverrock.org
@@ -4509,8 +4515,8 @@
 	* Source/NSScrollView.m: If the scrollview has scrollers,
 	don't pay attention to the hidden flag in nib loading.
 	* Source/NSTableView.m: if the table has a cornerview, don't
-	pay attention to the hidden flag in nib loading.  
-	NOTE: In both instances it appears that Cocoa sets the hidden flag 
+	pay attention to the hidden flag in nib loading.
+	NOTE: In both instances it appears that Cocoa sets the hidden flag
 	when autohide is set to true.   GNUstep handles this case differently,
 	so it's okay to ignore this flag when the scroller is in an
 	NSScrollView.
@@ -4521,18 +4527,18 @@
 
 2009-04-16 15:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSAlert.m: Order front regardless to prevent reported 
-	cases of problems when sheets/panels bring up additional 
+	* Source/NSAlert.m: Order front regardless to prevent reported
+	cases of problems when sheets/panels bring up additional
 	sheets/panels.
 
 2009-04-14 21:24-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSHorizontalTypesetter.m: Use thread dictionary to hold
 	the instance of the typesetter for that thread.
-	* Source/NSStringDrawing.m: Add locks to methods to prevent 
-	modification of static variables by separate threads from 
+	* Source/NSStringDrawing.m: Add locks to methods to prevent
+	modification of static variables by separate threads from
 	causing applications to get glyph generation errors.
-	NOTE: These changes based on suggestions/ideas from Doug 
+	NOTE: These changes based on suggestions/ideas from Doug
 	Simons <doug@riverrock.org>.
 
 2009-04-12 15:16-EDT Gregory John Casamento <greg_casamento@yahoo.com>
@@ -4558,8 +4564,8 @@
 
 2009-04-10 15:00-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSSplitView.m: Set subviews to resize when loaded from 
-	the nib. 
+	* Source/NSSplitView.m: Set subviews to resize when loaded from
+	the nib.
 	* Source/NSView.m: Partial revert of previous change.
 
 2009-04-10 14:27-EDT Gregory John Casamento <greg_casamento@yahoo.com>
@@ -4587,7 +4593,7 @@
 
 	* Source/NSAlert.m: in the method _initWithoutGModel add a call
 	to setLevel: to set the level to NSModalPanelWindowLevel.   This was
-	not previously being done and was causing alert panels to get lost 
+	not previously being done and was causing alert panels to get lost
 	behind other application windows.
 
 2009-04-10 01:32-EDT Gregory John Casamento <greg_casamento@yahoo.com>
@@ -4602,16 +4608,16 @@
 	* Source/NSMenuView.m: In the method
 	- (void) setWindowFrameForAttachingToRect:... test if the view
 	is flipped and make the adjustment.
-	
+
 2009-04-10 00:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: In the method
 	- (void) setWindowFrameForAttachingToRect:... changed how
 	popup/pulldown buttons handle the preferred edge.
 	Per Cocoa documentation, the selected cell should always show up
-	over the button for popups.   For pull down menus, the preferred 
+	over the button for popups.   For pull down menus, the preferred
 	edge is relevant.   This is also apparent from testing under Cocoa.
-	
+
 2009-04-09 22:55-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSRulerMarker.m: Changes suggested by Doug Simons for
@@ -4641,8 +4647,8 @@
 	* Headers/AppKit/NSSplitView.h
 	(-maxPossiblePositionOfDividerAtIndex:,
 	-minPossiblePositionOfDividerAtIndex:,
-	-setPosition:ofDividerAtIndex:): New MacOSX 10.5 methods. 
-	* Source/NSSplitView.m: Basic implementation of these methods. 
+	-setPosition:ofDividerAtIndex:): New MacOSX 10.5 methods.
+	* Source/NSSplitView.m: Basic implementation of these methods.
 	* Headers/AppKit/NSSplitView.h: Add ivars, will break binary compatibility.
 	* Source/NSSplitView.m (-isPaneSplitter, -setIsPaneSplitter:):
 	Implement these methods.
@@ -4653,14 +4659,14 @@
 	position also check orientaion for _isVertical == NO situation.
 	This fix avoids situation when split view is vertical, postion
 	changed but method exists after next 'else if' check.
-	
+
 2009-03-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):
 	Warn about the GNUstep secondary thread behaviour not being
 	portable to Cocoa.
 	* Source/NSApplication.m
-	(-nextEventMatchingMask:untilDate:inMode:dequeue:): 
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:):
 	Use distantPast instead of distantFuture as default of expiration.
 
 2009-03-25 Fred Kiefer <FredKiefer@gmx.de>
@@ -4692,7 +4698,7 @@
 
 2009-03-22 23:57-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add 
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add
 	connection to _doneButton outlet.
 	* Source/GSToolbarCustomizationPalette.m: Added code in init
 	to set the state of the size checkbox.
@@ -4702,7 +4708,7 @@
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Added
 	size: method to class in gorm file.  Added connection to size: method
 	from the switch.
-	* Source/GSToolbarCustomizationPalette.m: Added size: method 
+	* Source/GSToolbarCustomizationPalette.m: Added size: method
 	implementation.
 	* Source/NSToolbar.m: Added code to save and load sizeMode attribute
 	for toolbar.
@@ -4712,7 +4718,7 @@
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Changed
 	formatting.  Added text field and buttons.
 	* Source/GSToolbarCustomizationPalette.m: Added reset button and
-	done button. 
+	done button.
 	* Source/NSToolbarFrameworkPrivate.h: Added _resetConfig method.
 	* Source/NSToolbar.m: Added _resetConfig method.
 
@@ -4722,9 +4728,9 @@
 	Default item to popup and make the connection to the show: method
 	to allow setting the toolbar display mode.
 	* Source/GSToolbarCustomizationPalette.m: Enable changing of
-	text, text & icon, icon only on the toolbar.   
-	* Source/NSToolbar.m: Change _build method to load the 
-	displayMode setting. 
+	text, text & icon, icon only on the toolbar.
+	* Source/NSToolbar.m: Change _build method to load the
+	displayMode setting.
 
 2009-03-20 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -4762,21 +4768,21 @@
 	* Source/NSToolbar.m: Added check for items already in the toolbar,
 	removed calls to _loadConfig which were commented out, implemented
 	setConfigurationFromDictionary: as described in the documentation,
-	changed _build to get dictionary from defaults if it's there. 
-	Implemented new method _containsItemWithIdentifier: and 
+	changed _build to get dictionary from defaults if it's there.
+	Implemented new method _containsItemWithIdentifier: and
 	_itemsFromConfig.
 
 2009-03-16 01:22-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m: Call the _insertItemWithItemIdentifier:..
-	method to add items when they are not being dragged from within 
+	method to add items when they are not being dragged from within
 	the toolbar and are being added from the palette.
 	* Source/NSToolbarItem.m: Added information to the description
 	to help with debugging.
 
 2009-03-15 18:37-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSScrollView.m: Fix for infinite notification loop which 
+	* Source/NSScrollView.m: Fix for infinite notification loop which
 	happens with some nib files.
 
 2009-03-15 22:09-EDT Gregory John Casamento <greg_casamento@yahoo.com>
@@ -4789,7 +4795,7 @@
 
 2009-03-15 15:09-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSScrollView.m: Remove FIXME comment and provided an 
+	* Source/NSScrollView.m: Remove FIXME comment and provided an
 	explaination for why a cast wasn't used.   Added nonDynamic flag
 	as well as other flags from the nib file.
 
@@ -4805,9 +4811,9 @@
 
 2009-03-12 19:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSPrintOperation.m: Correct issues with handling of 
-	rectangle passed back from rectForPage: callback in NSView 
-	subclasses.  This rect should override existing calculations 
+	* Source/NSPrintOperation.m: Correct issues with handling of
+	rectangle passed back from rectForPage: callback in NSView
+	subclasses.  This rect should override existing calculations
 	when it is passed in.
 	* Source/NSView.m: Change to use NSPrintPaperBounds if and only if
 	aRect is passed in as a blank rect.  Previously the code was
@@ -4827,7 +4833,7 @@
 
 2009-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Resources/GNUmakefile: Add French localisation. 
+	* Resources/GNUmakefile: Add French localisation.
 	* Resources/French.lproj/Localizable.strings: New localisation file.
 	Patch by Philippe Roussel <p.o.roussel@free.fr>.
 
@@ -4881,7 +4887,7 @@
 	* Source/NSAttributedString.m,
 	* Source/NSMenu.m: Add include of GSGuiPrivate.h for correct localization.
 	* Source/NSAttributedString.m: Better handling of localization of
-	error strings. 
+	error strings.
 
 2009-02-26 00:35-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -4890,9 +4896,9 @@
 	actualCharacterRange:.  Tests on Mac OS X indicate that this is
 	a valid case.
 	* Source/GSNibLoading.m: Fixed some memory leaks.
-	* Source/NSRulerMarker.m: Use the bounds of the containing view 
+	* Source/NSRulerMarker.m: Use the bounds of the containing view
 	instead of markersRect.   I will revisit if the _markersRect method
-	needs to be corrected, but this code seems to correct problems 
+	needs to be corrected, but this code seems to correct problems
 	observed when dragging markers in and out of the rulerView.
 
 2009-02-23 Fred Kiefer <FredKiefer@gmx.de>
@@ -4903,11 +4909,11 @@
 
 	* Source/NSButtonCell.m: Changed all title methods to use the
 	super string value methods and redefine the local string value
-	methods to work with the object value. 
+	methods to work with the object value.
 	Patch by Matt Rice <ratmice@gmail.com>.
 	* Source/GSThemeDrawing.m (-cellForScrollerKnobSlot:): Use
-	setTitle: instead of setStringValue:. 
-	
+	setTitle: instead of setStringValue:.
+
 2009-02-20 12:08-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarCustomizationPalette.m: Look up default items before
@@ -4926,17 +4932,17 @@
 
 2009-02-18 02:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoading.m: Rollback of previous change.  Found a 
+	* Source/GSNibLoading.m: Rollback of previous change.  Found a
 	minor problem.
 	* Source/NSDrawer.m: Improvements to NSDrawer handling.
 
 2009-02-17 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoading.m: use the new code committed to NSMenu to 
+	* Source/GSNibLoading.m: use the new code committed to NSMenu to
 	lay out the menu when vertical.  Get rid of the duplicate code here.
 	* Source/NSDrawer.m: set the child window position when opening.
-	* Source/NSMatrix.m: -_selectCell:atRow:column: Check to make 
-	sure the selectedRow and selectedColumn are > -1.  This check is 
+	* Source/NSMatrix.m: -_selectCell:atRow:column: Check to make
+	sure the selectedRow and selectedColumn are > -1.  This check is
 	done elsewhere and was not done here.  This was causing a crash.
 
 2009-02-17 Fred Kiefer <FredKiefer@gmx.de>
@@ -4978,11 +4984,11 @@
 
 	* Source/NSCell.m: Change to implement 10.3 and later behavior for
 	the method setStringValue: as documented in Apple's documentation
-	for the method.  This behavior was observed on Cocoa under 
+	for the method.  This behavior was observed on Cocoa under
 	Mac OS 10.5.
 
 2009-02-12 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* Source/NSSavePanel.m: Return autoreleased copy of the directory
 	string
 
@@ -5005,14 +5011,14 @@
 
 2009-02-11 00:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSBundleAdditions.m: 
+	* Source/NSBundleAdditions.m:
 	-[NSNibOutletConnector establishConnection] report exceptions when
-	establishing a connection, but don't fail to load.  
+	establishing a connection, but don't fail to load.
 
 2009-02-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarFrameworkPrivate.h: Add method
-	_setCustomizationPaletteIsRunning:. 
+	_setCustomizationPaletteIsRunning:.
 	* Source/NSToolbar.m: (-runCustomizationPalette:): Code to run
 	customization palette.
 	* Source/NSToolbarItem.m (-copyWithZone:): Try to copy the view.
@@ -5078,7 +5084,7 @@
 
 2009-02-08 01:17-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSApplication.m: Added code to handle exceptions in 
+	* Source/NSApplication.m: Added code to handle exceptions in
 	-[NSApplication run].  Rudimentary implementation of default
 	NSExceptionHandlerMask.
 
@@ -5116,14 +5122,14 @@
 
 2009-02-04 01:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoader.m: Correct the message to indicate an issue 
+	* Source/GSNibLoader.m: Correct the message to indicate an issue
 	loading a nib, not a gorm, file.
 	* Source/GSNibLoading.m: Uncomment the release in the dealloc
 	method.
 	* Source/NSApplication.m: Restrict the icon size to the size of the
 	miniwindow if it's larger, but don't expand it, if it's smaller.
-	* Source/NSLayoutManager.m: -initWithCoder: Initialize when 
-	loading a nib in the same way that we initialize when loading 
+	* Source/NSLayoutManager.m: -initWithCoder: Initialize when
+	loading a nib in the same way that we initialize when loading
 	a gorm file.
 
 2009-02-03 Fred Kiefer <FredKiefer@gmx.de>
@@ -5214,7 +5220,7 @@
 
 2009-01-27 15:28-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoading.m: Temporarily comment out the release of 
+	* Source/GSNibLoading.m: Temporarily comment out the release of
 	connections until we find the cause of some current crashes.  This
 	will be reverted ASAP.
 	* Source/NSDrawer.m: Don't slide the window out, just appear where it
@@ -5225,9 +5231,9 @@
 	* Headers/AppKit/NSAttributedString.h: Add missing MacOSX methods.
 	* Source/NSAttributedString.m: Rewrote data loading and add
 	setting of NSError.
-	* Headers/AppKit/NSLayoutManager.h (-attachmentSizeForGlyphAtIndex:, 
+	* Headers/AppKit/NSLayoutManager.h (-attachmentSizeForGlyphAtIndex:,
 	showAttachmentCell:inRect:characterIndex:): Declare these missing
-	methods. 
+	methods.
 	* Source/NSLayoutManager.m: Implement and use them.
 	* Source/NSTextView.m (-dragSelectionWithEvent:...): Use layout
 	manager attachment methods.
@@ -5260,14 +5266,14 @@
 
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSDocumentController.m (-_nameForHumanReadableType:): Also 
+	* Source/NSDocumentController.m (-_nameForHumanReadableType:): Also
 	look at CFBundleTypeName.
 
 2009-01-25 06:47-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSMenuView.m: Refactor code which executes the action 
+	* Source/NSMenuView.m: Refactor code which executes the action
 	of a menu item at a given index into a separate method to make it
-	easier to override this behavior when necessary.   Added method 
+	easier to override this behavior when necessary.   Added method
 	_executeItemAtIndex:removeSubmenu:.
 
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
@@ -5277,7 +5283,7 @@
 
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
+	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...):
 	Correct the name of the selector being tested.
 
 2009-01-24 Fred Kiefer <FredKiefer@gmx.de>
@@ -5292,12 +5298,12 @@
 
 2009-01-23 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSMenuView.m: Convert between the window and the view 
+	* Source/NSMenuView.m: Convert between the window and the view
 	coordinate system.
-	* Source/NSDocument.m (dataOfType:error:): Call dataRepresentationofType: 
-	when that method was overriden. 
+	* Source/NSDocument.m (dataOfType:error:): Call dataRepresentationofType:
+	when that method was overriden.
 	* Source/NSDocument.m (writeToURL:ofType:error:): Use dataOfType:error:
-	instead of dataRepresentationofType:. 
+	instead of dataRepresentationofType:.
 
 2009-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -5375,8 +5381,8 @@
 2009-01-16 12:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItem.m: Retain the GSMenuSeparator instance if
-	the menu item is a separator since we want to make sure the 
-	object isn't prematurely released.  
+	the menu item is a separator since we want to make sure the
+	object isn't prematurely released.
 
 2009-01-16 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -5400,28 +5406,28 @@
 2009-01-11 20:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Reorganization and simplification of
-	nib loading logic in NSIBObjectData.  Also documentation for 
+	nib loading logic in NSIBObjectData.  Also documentation for
 	NSIBObjectData and NSClassSwapper.
 
 2009-01-10 15:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbarItem.m: Added _sendAction: method to send
 	the action with the NSToolbarItem instance as the sender
-	when the toolbar item is represented by an NSMenuItem.  
+	when the toolbar item is represented by an NSMenuItem.
 
 2009-01-09 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenu.m: Correction to previous change.  Update when
-	setAutoenableItems: value is changed.  Altered update to 
+	setAutoenableItems: value is changed.  Altered update to
 	enable menu items when autoenable is not being performed.
 
 2009-01-09 22:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSMenuItemCell.m: encode menu item in encodeWithCoder: 
+	* Source/NSMenuItemCell.m: encode menu item in encodeWithCoder:
 	method.
 	* Source/NSMenu.m: Add code to handle NSNoAutoenable
 	* Source/NSPopUpButtonCell.m: Decode/encode selected index
-	* Source/NSPrintInfo.m: Set orientation after the page size is 
+	* Source/NSPrintInfo.m: Set orientation after the page size is
 	known, since it has no effect when done earlier.
 
 2009-01-09 Richard Frith-Macdonald <rfm@gnu.org>
@@ -5452,7 +5458,7 @@
 	* Source/NSToolbar.m,
 	* Source/GSToolbarView.m: Revert the relationship between
 	NSToolbar and GSToolbarView, now the toolbar retains the view.
-	
+
 2009-01-07 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
@@ -5511,7 +5517,7 @@
 2009-01-04 16:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m: Correct crash in toolbar, since the
-	static constant was being released.  
+	static constant was being released.
 
 2009-01-04 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -5564,7 +5570,7 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSThemePanel.m:
-	* Source/GSTheme.m: 
+	* Source/GSTheme.m:
 	Simplify +initialize.  Set name properly on initialisation.  Hide
 	private instance variables to make it easy to add new ones later.
 	Refrain from displaying backup versions of themes in selection panel.
@@ -5590,7 +5596,7 @@
 	* Source/GSToolbarView.m: Remove method _setToolbar:, code is now
 	in setToolbar:.
 	* Source/NSWindow+Toolbar.m (-setToolbar:): Adopt to changes in
-	GSToolbarView. 
+	GSToolbarView.
 
 2009-01-01 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -5645,7 +5651,7 @@
 	here.
 	* Source/GSToolbar.m,
 	* Source/NSToolbar.m: Simplify by adding helper methods and
-	removing dead code. 
+	removing dead code.
 	* Headers/AppKit/NSToolbarItemGroup.h,
 	* Source/NSToolbarItemGroup.m: New files.
 	* Source/GNUmakefile: Add new files.
@@ -5715,23 +5721,23 @@
 	* Source/NSAttributedString.m (-initWithData:...,
 	-initWithURL:...): Basic implementation.
 	* Source/NSAttributedString.m
-	(NSMutableAttributedString-readFromData:...): Implement. 
+	(NSMutableAttributedString-readFromData:...): Implement.
 
 2008-12-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocumentController.m: Remove now unused override helper
-	method. 
+	method.
 	* Headers/AppKit/NSDocument.h: Change to use NSUInteger and
 	NSInteger. Add new 10.5 method
 	* Source/NSDocument.m: Implement all Cocoa methods of this class
-	and clean up the rest of the implementation. 
-	
+	and clean up the rest of the implementation.
+
 2008-12-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenuItem.h: Declare to implement interface
-	NSValidatedUserInterfaceItem. 
+	NSValidatedUserInterfaceItem.
 	* Headers/AppKit/NSDocumentController.h: Change to use NSUInteger and
-	NSInteger. 
+	NSInteger.
 	* Source/NSDocumentController.m: Implement all Cocoa methods of this
 	class and clean up the rest of the implementation.
 	Partly using code by Nikolaus Schaller <hns@computer.org>.
@@ -5841,7 +5847,7 @@
 
 2008-12-16 13:58-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoading.m: Make the log into debug in awakeFromNib 
+	* Source/GSNibLoading.m: Make the log into debug in awakeFromNib
 	* Source/NSApplication.m: Allow modal to end multiple times, per spec
 	there is no exception for doing this.
 	* Source/NSPasteboard.m: Allow multiple threads in pasteboard
@@ -5925,19 +5931,19 @@
 
 2008-12-12 19:36-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSOutlineView.m: Added change suggested by Doug in 
+	* Source/NSOutlineView.m: Added change suggested by Doug in
 	bug #25078.  This should fix the problem in SVN.
 
 2008-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc): 
+	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc):
 	Replaced the last fix here with a slightly better one that removes
 	the ownership of the shared titlecell as soon as it isn't needed
 	any more. The old code caused redundant redraws.
 
 2008-12-12 02:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added new method 
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added new method
 	nibInstantiateWithCoder: to do the initialization normally done
 	in NSView when not in IB/Gorm.
 	* Source/GSNibLoading.m: Added implementation of new method and
@@ -5950,7 +5956,7 @@
 	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
 	Made the code a bit more tolerant on matching colour spaces during
 	image conversion.
-	
+
 2008-12-10 02:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Change code which adds subviews to use
@@ -5982,7 +5988,7 @@
 2008-12-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextFieldCell.h: Declare new private method
-	_drawBackgroundWithFrame:inView:. 
+	_drawBackgroundWithFrame:inView:.
 	* Source/NSTextFieldCell.m: Change drawInteriorWithFrame:inView:
 	into _drawBorderAndBackgroundWithFrame:inView:. And moved some
 	code into _drawBackgroundWithFrame:inView:.
@@ -5991,10 +5997,10 @@
 	and improve decoding.
 	* Source/NSTextFieldCell.m (-encodeWithCoder:): Encode bezel style.
 	* Source/NSTableHeaderView.m
-	(-_drawBorderAndBackgroundWithFrame:inView:), 
+	(-_drawBorderAndBackgroundWithFrame:inView:),
 	* Source/NSBrowser.m (GSBrowserTitleCell
 	-_drawBorderAndBackgroundWithFrame:inView:):  Use
-	_drawBackgroundWithFrame:inView:. 
+	_drawBackgroundWithFrame:inView:.
 
 2008-12-07 22:50-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -6014,7 +6020,7 @@
 	Solves bug #25004.
 	* Source/NSCachedImageRep.m(-draw): Don't draw an empty
 	rect. Fixes the remaining issue of #22282.
-	
+
 2008-12-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-mouseDown:): Start drag operation only
@@ -6113,7 +6119,7 @@
 
 	* Source/NSApplication.m: Always resize icon to 48x48 so that
 	icons larger than this will display correctly.  Change made in
-	setApplicationIconImage:. 
+	setApplicationIconImage:.
 
 2008-12-02 23:55-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -6123,7 +6129,7 @@
 
 2008-12-02 19:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSApplication.m: Fix for bug #24785. 
+	* Source/NSApplication.m: Fix for bug #24785.
 
 2008-12-02 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -6501,8 +6507,8 @@
 
 2008-10-18 19:06-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSWindow.m: Remove code in stringWithSavedFrame which 
-	was causing a crash due to issues in NSToolbar described 
+	* Source/NSWindow.m: Remove code in stringWithSavedFrame which
+	was causing a crash due to issues in NSToolbar described
 	in bug#24601.
 
 2008-10-18 Riccardo Mottola <rmottola@users.sf.net>
@@ -6870,7 +6876,7 @@
 2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-selectRow:byExtendingSelection:,
-	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:): 
+	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:):
 	Don't raise an exception for invalid indexes.
 
 2008-05-01 Fred Kiefer <FredKiefer@gmx.de>

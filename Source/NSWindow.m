@@ -4488,8 +4488,8 @@ current key view.<br />
 {
   id result = nil;
 
-  // FIXME: We should not forward this method if the delegate is a NSResponder
-  if (_delegate && [_delegate respondsToSelector: _cmd])
+  if (_delegate && [_delegate respondsToSelector: _cmd] 
+      && ![_delegate isKindOfClass: [NSResponder class]])
     result = [_delegate validRequestorForSendType: sendType
                                       returnType: returnType];
 
