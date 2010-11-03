@@ -1,5 +1,15 @@
 2010-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add method
+	doesProcessEventsForPopUpMenu to avoid compiler warnings.
+	* Headers/AppKit/NSLayoutManager.h,
+	* Source/NSLayoutManager.m: Change a few "unsigned int" into
+	NSUInteger to avoid compiler warnings.
+	* Source/NSTextView.m (firstRectForCharacterRange:): Adopt to
+	these changes.
+
+2010-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m (-validRequestorForSendType:returnType:):
 	Don't forward this method if the delegate is a NSResponder.
 	Patch by Georg Fleischmann <G.Fleischmann@vhf.de>.

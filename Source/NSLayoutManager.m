@@ -157,12 +157,12 @@ first. Remaining cases, highest priority first:
 
 @implementation NSLayoutManager (layout)
 
--(NSPoint) locationForGlyphAtIndex: (unsigned int)glyphIndex
+-(NSPoint) locationForGlyphAtIndex: (NSUInteger)glyphIndex
 {
   NSRange r;
   NSPoint p;
   NSFont *f;
-  unsigned int i;
+  NSUInteger i;
 
   r = [self rangeOfNominallySpacedGlyphsContainingIndex: glyphIndex
 	    startLocation: &p];
@@ -213,16 +213,15 @@ container? necessary? */
 -(NSRect *) rectArrayForGlyphRange: (NSRange)glyphRange
 	  withinSelectedGlyphRange: (NSRange)selGlyphRange
 		   inTextContainer: (NSTextContainer *)container
-			 rectCount: (unsigned int *)rectCount
+			 rectCount: (NSUInteger *)rectCount
 {
-  unsigned int last;
+  NSUInteger last;
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
   int num_rects;
   float x0, x1;
   NSRect r;
-
 
   *rectCount = 0;
 
@@ -320,7 +319,7 @@ container? necessary? */
 	  The end index is inside the line frag, so we need to find the
 	  exact end location.
 	  */
-	  unsigned int i;
+	  NSUInteger i;
 	  int j;
 	  linefrag_point_t *lp;
 	  glyph_run_t *r;
@@ -400,7 +399,7 @@ container? necessary? */
 -(NSRect *) rectArrayForCharacterRange: (NSRange)charRange
 	  withinSelectedCharacterRange: (NSRange)selCharRange
 		       inTextContainer: (NSTextContainer *)container
-			     rectCount: (unsigned int *)rectCount
+			     rectCount: (NSUInteger *)rectCount
 {
   NSRange r1, r2;
 
@@ -422,7 +421,7 @@ container? necessary? */
 {
   NSRect *r;
   NSRect result;
-  unsigned int i, c;
+  NSUInteger i, c;
 
 /* TODO: This isn't correct. Need to handle glyphs that extend outside the
 line frag rect. */
@@ -1161,7 +1160,7 @@ container
   unsigned int glyph_pos, char_pos, first_char_pos;
   int i, j;
   NSRect *rects;
-  unsigned int count;
+  NSUInteger count;
   NSColor *color, *last_color;
 
   NSGraphicsContext *ctxt = GSCurrentContext();

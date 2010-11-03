@@ -1997,7 +1997,7 @@ here. */
 
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
-  unsigned int rectCount = 0;
+  NSUInteger rectCount = 0;
   NSRect *rects;
 
   if (!_layoutManager)

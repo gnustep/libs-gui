@@ -97,17 +97,17 @@ typedef enum {
 - (void) textContainerChangedTextView: (NSTextContainer *)aContainer;
 
 
-- (NSPoint) locationForGlyphAtIndex: (unsigned int)glyphIndex;
+- (NSPoint) locationForGlyphAtIndex: (NSUInteger)glyphIndex;
 
 
 - (NSRect *) rectArrayForGlyphRange: (NSRange)glyphRange
 	withinSelectedGlyphRange: (NSRange)selGlyphRange
 	inTextContainer: (NSTextContainer *)container
-	rectCount: (unsigned int *)rectCount;
+	rectCount: (NSUInteger *)rectCount;
 - (NSRect *) rectArrayForCharacterRange: (NSRange)charRange
 	withinSelectedCharacterRange: (NSRange)selCharRange
 	inTextContainer: (NSTextContainer *)container
-	rectCount: (unsigned int *)rectCount;
+	rectCount: (NSUInteger *)rectCount;
 
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange 
 	inTextContainer: (NSTextContainer *)aTextContainer;

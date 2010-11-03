@@ -1069,6 +1069,7 @@ withRepeatedImage: (NSImage*)image
 	controlViewWindow: (NSWindow *)cvWin
 	    preferredEdge: (NSRectEdge)edge
 	     selectedItem: (int)selectedItem;
+- (BOOL) doesProcessEventsForPopUpMenu;
 
 /**
  * Processes menu events for the theme.   The default implementation
