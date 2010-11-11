@@ -1,5 +1,12 @@
 2010-11-11 Riccardo Mottola
 
+	* Images/common_ImageFolder.tif
+	* Images/common_DocsFolder.tif
+	* Images/GNUmakefile
+	Added new icons
+
+2010-11-11 Riccardo Mottola
+
 	* Images/common_LibraryFolder.tif
 	* Images/common_GSFolder.tif
 	* Images/GNUmakefile

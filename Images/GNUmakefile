@@ -67,12 +67,14 @@ Images_RESOURCE_FILES = \
  common_Diamond.tiff \
  common_Dimple.tiff \
  common_DimpleHoriz.tiff \
+ common_DocsFolder.tiff \
  common_DownArrowSmall.tiff \
  common_Folder.tiff \
  common_GSFolder.tiff \
  common_HelpCursor.tiff \
  common_Home.tiff \
  common_HomeDirectory.tiff \
+ common_ImageFolder.tiff \
  common_LeftTabStop.tiff \
  common_LibraryFolder.tiff \
  common_MiniWindowTile.tiff \
