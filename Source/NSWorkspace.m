@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-1999, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1996-2010 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -89,7 +89,11 @@
 #define PosixExecutePermission	(0111)
 
 static NSImage	*folderImage = nil;
+static NSImage  *libraryImage = nil;
+static NSImage  *systemImage = nil;
 static NSImage	*homeImage = nil;
+static NSImage  *documentsImage = nil;
+static NSImage  *imagesImage = nil;
 static NSImage	*multipleFiles = nil;
 static NSImage	*rootImage = nil;
 static NSImage	*unknownApplication = nil;
@@ -1163,6 +1167,24 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       if (image == nil)
 	{
+	  NSArray *documentDir;
+	  NSArray *libraryDirs;
+	  NSArray *sysAppDir;
+	  NSString *sysDir;
+
+	  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
+          sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
+
+	  /* we try to guess a System directory and check if looks like one */
+	  sysDir = nil;
+	  if ([sysAppDir count] > 0)
+	    {
+	      sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
+	      if (![[sysDir lastPathComponent] isEqualToString: @"System"])
+		sysDir = nil;
+	    }
+
 	  image = [self _iconForExtension: pathExtension];
 	  if (image == nil || image == [self unknownFiletypeImage])
 	    {
@@ -1176,6 +1198,24 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 		  image = rootImage;
 		}
+	      else if (sysDir != nil && [fullPath isEqual: sysDir])
+		{
+		  if (systemImage == nil)
+		    {
+		      systemImage = RETAIN([NSImage _standardImageWithName:
+			@"GSFolder"]);
+		    }
+		  image = systemImage;
+		}
+	      else if ([libraryDirs containsObject: fullPath])
+		{
+		  if (libraryImage == nil)
+		    {
+		      libraryImage = RETAIN([NSImage _standardImageWithName:
+			@"LibraryFolder"]);
+		    }
+		  image = libraryImage;
+		}
 	      else if ([fullPath isEqual: NSHomeDirectory ()])
 		{
 		  if (homeImage == nil)
@@ -1184,6 +1224,24 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 			@"HomeDirectory"]);
 		    }
 		  image = homeImage;
+		}
+	      else if ([fullPath isEqual: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]])
+		{
+		  if (imagesImage == nil)
+		    {
+		      imagesImage = RETAIN([NSImage _standardImageWithName:
+			@"ImageFolder"]);
+		    }
+		  image = imagesImage;
+		}
+	      else if ([documentDir count] > 0 && [fullPath isEqual: [documentDir objectAtIndex:0]])
+		{
+		  if (documentsImage == nil)
+		    {
+		      documentsImage = RETAIN([NSImage _standardImageWithName:
+			@"DocsFolder"]);
+		    }
+		  image = documentsImage;
 		}
 	      else
 		{

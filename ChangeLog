@@ -5,6 +5,9 @@
 	* Images/GNUmakefile
 	Added new icons
 
+	* Source/NSWorkspace.m
+	Handling of icons for folders of type document, image, system and library.
+
 2010-11-11 Riccardo Mottola
 
 	* Images/common_LibraryFolder.tif
