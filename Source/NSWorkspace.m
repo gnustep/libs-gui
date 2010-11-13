@@ -88,14 +88,11 @@
 
 #define PosixExecutePermission	(0111)
 
+static NSMutableDictionary *folderPathIconDict = nil;
+static NSMutableDictionary *folderIconCache = nil;
+
 static NSImage	*folderImage = nil;
-static NSImage  *libraryImage = nil;
-static NSImage  *systemImage = nil;
-static NSImage	*homeImage = nil;
-static NSImage  *documentsImage = nil;
-static NSImage  *imagesImage = nil;
 static NSImage	*multipleFiles = nil;
-static NSImage	*rootImage = nil;
 static NSImage	*unknownApplication = nil;
 static NSImage	*unknownTool = nil;
 
@@ -655,6 +652,13 @@ static NSString			*_rootPath = @"/";
 
 - (id) init
 {
+  NSArray *documentDir;
+  NSArray *libraryDirs;
+  NSArray *sysAppDir;
+  NSArray *downloadDir;
+  NSString *sysDir;
+  int i;
+
   if (sharedWorkspace != self)
     {
       RELEASE(self);
@@ -674,6 +678,42 @@ static NSString			*_rootPath = @"/";
     {
       [self findApplications];
     }
+
+  /* icon associtation and caching */
+  folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
+
+  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
+  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
+  sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
+ 
+  /* we try to guess a System directory and check if looks like one */
+  sysDir = nil;
+  if ([sysAppDir count] > 0)
+    {
+      sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
+      if (![[sysDir lastPathComponent] isEqualToString: @"System"])
+	sysDir = nil;
+    }
+
+  if (sysDir != nil)
+    [folderPathIconDict setObject: @"GSFolder" forKey: sysDir];
+
+  [folderPathIconDict setObject: @"HomeDirectory" forKey: NSHomeDirectory()];
+  [folderPathIconDict setObject: @"ImageFolder" forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
+  /* it would be nice to use different root icons... */
+  [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
+
+  for (i = 0; i < [libraryDirs count]; i++)
+    [folderPathIconDict setObject: @"LibraryFolder" forKey: [libraryDirs objectAtIndex: i]];
+
+  for (i = 0; i < [documentDir count]; i++)
+    [folderPathIconDict setObject: @"DocsFolder" forKey: [documentDir objectAtIndex: i]];
+ 
+  for (i = 0; i < [downloadDir count]; i++)
+    [folderPathIconDict setObject: @"DownloadFolder" forKey: [downloadDir objectAtIndex: i]];
+
+  folderIconCache = [[NSMutableDictionary alloc] init];
 
   return self;
 }
@@ -1167,92 +1207,36 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       if (image == nil)
 	{
-	  NSArray *documentDir;
-	  NSArray *libraryDirs;
-	  NSArray *sysAppDir;
-	  NSString *sysDir;
-
-	  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
-          sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
-
-	  /* we try to guess a System directory and check if looks like one */
-	  sysDir = nil;
-	  if ([sysAppDir count] > 0)
-	    {
-	      sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
-	      if (![[sysDir lastPathComponent] isEqualToString: @"System"])
-		sysDir = nil;
-	    }
-
 	  image = [self _iconForExtension: pathExtension];
 	  if (image == nil || image == [self unknownFiletypeImage])
 	    {
-	      if ([fullPath isEqual: _rootPath])
+	      NSString *iconName;
+	      iconName = nil;
+	      iconName = [folderPathIconDict objectForKey: fullPath];
+	      if (iconName != nil)
 		{
-		  if (rootImage == nil)
-		    {
-		      rootImage = RETAIN([NSImage _standardImageWithName:
-			@"Root_PC"]);
-		    }
+		  NSImage *iconImage;
 
-		  image = rootImage;
-		}
-	      else if (sysDir != nil && [fullPath isEqual: sysDir])
-		{
-		  if (systemImage == nil)
+		  iconImage = [folderIconCache objectForKey: iconName];
+		  if (iconImage == nil)
 		    {
-		      systemImage = RETAIN([NSImage _standardImageWithName:
-			@"GSFolder"]);
+		      iconImage = [NSImage _standardImageWithName: iconName];
+		      /* the dictionary retains the image */
+		      [folderIconCache setObject: iconImage forKey: iconName];
 		    }
-		  image = systemImage;
-		}
-	      else if ([libraryDirs containsObject: fullPath])
-		{
-		  if (libraryImage == nil)
-		    {
-		      libraryImage = RETAIN([NSImage _standardImageWithName:
-			@"LibraryFolder"]);
-		    }
-		  image = libraryImage;
-		}
-	      else if ([fullPath isEqual: NSHomeDirectory ()])
-		{
-		  if (homeImage == nil)
-		    {
-		      homeImage = RETAIN([NSImage _standardImageWithName:
-			@"HomeDirectory"]);
-		    }
-		  image = homeImage;
-		}
-	      else if ([fullPath isEqual: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]])
-		{
-		  if (imagesImage == nil)
-		    {
-		      imagesImage = RETAIN([NSImage _standardImageWithName:
-			@"ImageFolder"]);
-		    }
-		  image = imagesImage;
-		}
-	      else if ([documentDir count] > 0 && [fullPath isEqual: [documentDir objectAtIndex:0]])
-		{
-		  if (documentsImage == nil)
-		    {
-		      documentsImage = RETAIN([NSImage _standardImageWithName:
-			@"DocsFolder"]);
-		    }
-		  image = documentsImage;
+		  image = iconImage;
 		}
 	      else
 		{
 		  if (folderImage == nil)
 		    {
 		      folderImage = RETAIN([NSImage _standardImageWithName:
-			@"Folder"]);
+						      @"Folder"]);
 		    }
 		  image = folderImage;
 		}
 	    }
+
 	}
     }
   else

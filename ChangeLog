@@ -4,6 +4,9 @@
 	* Images/GNUmakefile
 	Added new icon
 
+	* Source/NSWorkspace.m
+	Cache folders and their assdociation with icon names in dictionaries.
+
 2010-11-11 Riccardo Mottola
 
 	* Images/common_ImageFolder.tif
