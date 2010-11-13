@@ -1,6 +1,6 @@
 #
 #  Images makefile for GNUstep GUI Library
-#  Copyright (C) 2009 Free Software Foundation, Inc.
+#  Copyright (C) 2009-2010 Free Software Foundation, Inc.
 #
 #  Author: Nicola Pero <nicola.pero@meta-innovation.com>
 #  Date: September 2009
@@ -68,6 +68,7 @@ Images_RESOURCE_FILES = \
  common_Dimple.tiff \
  common_DimpleHoriz.tiff \
  common_DocsFolder.tiff \
+ common_DownloadFolder.tiff \
  common_DownArrowSmall.tiff \
  common_Folder.tiff \
  common_GSFolder.tiff \
