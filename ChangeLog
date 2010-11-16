@@ -1,3 +1,8 @@
+2010-11-16 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSDrawer.m:
+	Ensure drawer is visible if parent window became visible since the drawer was opened.
+
 2010-11-13 Riccardo Mottola
 
 	* Images/common_DownloadFolder.tiff

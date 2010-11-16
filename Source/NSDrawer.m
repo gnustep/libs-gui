@@ -387,6 +387,8 @@ static NSNotificationCenter *nc = nil;
     { 
       NSRect frame = [self frameFromParentWindowFrameInState:[_drawer state]]; 
       [self setFrame: frame display: YES];
+      if (![self isVisible] && [_drawer state] != NSDrawerClosedState)
+        [self orderFront:self];
     }
   if ([self isVisible] && [_parentWindow isKeyWindow]) // do our best to maintain proper window ordering
     {
