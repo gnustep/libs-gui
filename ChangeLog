@@ -1,7 +1,14 @@
 2010-11-16 Doug Simons <doug.simons@testplant.com>
 
+	* Source/GSThemeDrawing.m:
+	Make border of NSColorWell smaller to more closely match Cocoa metrics. This makes a
+	big difference in small color wells.
+
+2010-11-16 Doug Simons <doug.simons@testplant.com>
+
 	* Source/NSDrawer.m:
 	Ensure drawer is visible if parent window became visible since the drawer was opened.
+
 
 2010-11-13 Riccardo Mottola
 
