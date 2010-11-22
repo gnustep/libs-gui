@@ -658,6 +658,8 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
+  [self setTypingAttributes: attributes];
+  RELEASE(attributes);
   [self didChangeText];
 }
 

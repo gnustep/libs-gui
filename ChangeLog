@@ -1,14 +1,19 @@
+2010-11-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView_actions.m (-deleteBackward:): Add missing
+	assignment to update the typing attributes.
+
 2010-11-16 Doug Simons <doug.simons@testplant.com>
 
 	* Source/GSThemeDrawing.m:
-	Make border of NSColorWell smaller to more closely match Cocoa metrics. This makes a
-	big difference in small color wells.
+	Make border of NSColorWell smaller to more closely match Cocoa
+	metrics. This makes a big difference in small color wells.
 
 2010-11-16 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSDrawer.m:
-	Ensure drawer is visible if parent window became visible since the drawer was opened.
-
+	Ensure drawer is visible if parent window became visible since the
+	drawer was opened.
 
 2010-11-13 Riccardo Mottola
 
@@ -27,7 +32,8 @@
 	Added new icons
 
 	* Source/NSWorkspace.m
-	Handling of icons for folders of type document, image, system and library.
+	Handling of icons for folders of type document, image, system and
+	library.
 
 2010-11-11 Riccardo Mottola
 
