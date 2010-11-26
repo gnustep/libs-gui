@@ -28,6 +28,7 @@
 
 #import "GSThemePrivate.h"
 
+#import "Foundation/NSUserDefaults.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSButtonCell.h"
@@ -43,6 +44,7 @@
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSView.h"
@@ -1909,7 +1911,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	 isHorizontal: (BOOL)horizontal
 	    itemCells: (NSArray *)itemCells
 {
-
   int         i = 0;
   int         howMany = [itemCells count];
   NSMenuView *menuView = (NSMenuView *)view;
@@ -1935,4 +1936,96 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (void) drawScrollViewRect: (NSRect)rect
+		     inView: (NSView *)view 
+{
+  NSScrollView  *scrollView = (NSScrollView *)view;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  GSTheme	*theme = [GSTheme theme];
+  NSColor	*color;
+  NSString	*name;
+  NSBorderType   borderType = [scrollView borderType];
+  NSRect         bounds = [view bounds];
+  BOOL hasInnerBorder = ![[NSUserDefaults standardUserDefaults]
+			   boolForKey: @"GSScrollViewNoInnerBorder"];
+
+  name = [theme nameForElement: self];
+  if (name == nil)
+    {
+      name = @"NSScrollView";
+    }
+  color = [theme colorNamed: name state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor controlDarkShadowColor];
+    }
+  
+  switch (borderType)
+    {
+      case NSNoBorder:
+        break;
+
+      case NSLineBorder:
+        [color set];
+        NSFrameRect(bounds);
+        break;
+
+      case NSBezelBorder:
+        [theme drawGrayBezel: bounds withClip: rect];
+        break;
+
+      case NSGrooveBorder:
+        [theme drawGroove: bounds withClip: rect];
+        break;
+    }
+
+  if (hasInnerBorder)
+    {
+      NSScroller *vertScroller = [scrollView verticalScroller];
+      NSScroller *horizScroller = [scrollView horizontalScroller];
+      CGFloat scrollerWidth = [NSScroller scrollerWidth];
+
+      [color set];
+      DPSsetlinewidth(ctxt, 1);
+
+      if ([scrollView hasVerticalScroller])
+	{
+	  NSInterfaceStyle style;
+
+	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+	  if (style == NSMacintoshInterfaceStyle
+	      || style == NSWindows95InterfaceStyle)
+	    {
+	      DPSmoveto(ctxt, [vertScroller frame].origin.x - 1, 
+			[vertScroller frame].origin.y - 1);
+	    }
+	  else
+	    {
+	      DPSmoveto(ctxt, [vertScroller frame].origin.x + scrollerWidth, 
+			[vertScroller frame].origin.y - 1);
+	    }
+	  DPSrlineto(ctxt, 0, [vertScroller frame].size.height + 1);
+	  DPSstroke(ctxt);
+	}
+
+      if ([scrollView hasHorizontalScroller])
+	{
+	  float ypos;
+	  float scrollerY = [horizScroller frame].origin.y;
+
+	  if ([scrollView isFlipped])
+	    {
+	      ypos = scrollerY - 1;
+	    }
+	  else
+	    {
+	      ypos = scrollerY + scrollerWidth + 1;
+	    }
+
+	  DPSmoveto(ctxt, [horizScroller frame].origin.x - 1, ypos);
+	  DPSrlineto(ctxt, [horizScroller frame].size.width + 1, 0);
+	  DPSstroke(ctxt);
+	}
+    }
+}
 @end
