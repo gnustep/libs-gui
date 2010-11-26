@@ -31,6 +31,7 @@
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSButtonCell.h"
+#import "AppKit/NSBrowser.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
@@ -1821,4 +1822,84 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (void) drawBrowserRect: (NSRect)rect
+		  inView: (NSView *)view
+	withScrollerRect: (NSRect)scrollerRect
+	      columnSize: (NSSize)columnSize
+{
+  NSBrowser *browser = (NSBrowser *)view;
+  NSRect bounds = [view bounds];
+
+  // Load the first column if not already done
+  if (![browser isLoaded])
+    {
+      [browser loadColumnZero];
+    }
+
+  // Draws titles
+  if ([browser isTitled])
+    {
+      int i;
+
+      for (i = [browser firstVisibleColumn]; 
+	   i <= [browser lastVisibleColumn]; 
+	   ++i)
+        {
+          NSRect titleRect = [browser titleFrameOfColumn: i];
+          if (NSIntersectsRect (titleRect, rect) == YES)
+            {
+              [browser drawTitleOfColumn: i
+                    inRect: titleRect];
+            }
+        }
+    }
+
+  // Draws scroller border
+  if ([browser hasHorizontalScroller] && 
+      [browser separatesColumns])
+    {
+      NSRect scrollerBorderRect = scrollerRect;
+      NSSize bs = [self sizeForBorderType: NSBezelBorder];
+
+      scrollerBorderRect.origin.x = 0;
+      scrollerBorderRect.origin.y = 0;
+      scrollerBorderRect.size.width += 2 * bs.width;
+      scrollerBorderRect.size.height += (2 * bs.height) - 1;
+
+      if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && [view window])
+        {
+          [self drawGrayBezel: scrollerBorderRect withClip: rect];
+        }
+    }
+
+  if (![browser separatesColumns])
+    {
+      NSPoint p1,p2;
+      int     i, visibleColumns;
+      float   hScrollerWidth = [browser hasHorizontalScroller] ? 
+	[NSScroller scrollerWidth] : 0;
+      
+      // Columns borders
+      [self drawGrayBezel: bounds withClip: rect];
+      
+      [[NSColor blackColor] set];
+      visibleColumns = [browser numberOfVisibleColumns]; 
+      for (i = 1; i < visibleColumns; i++)
+        {
+          p1 = NSMakePoint((columnSize.width * i) + 2 + (i-1), 
+                           columnSize.height + hScrollerWidth + 2);
+          p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
+                           hScrollerWidth + 2);
+          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+        }
+
+      // Horizontal scroller border
+      if ([browser hasHorizontalScroller])
+        {
+          p1 = NSMakePoint(2, hScrollerWidth + 2);
+          p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
+          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+        }
+    }
+}
 @end

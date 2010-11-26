@@ -944,6 +944,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 		   inView: (NSView *)view
       		  hitPart: (NSScrollerPart)hitPart
 	     isHorizontal: (BOOL)isHorizontal;
+
+- (void) drawBrowserRect: (NSRect)rect
+		  inView: (NSView *)view
+	withScrollerRect: (NSRect)scrollerRect
+	      columnSize: (NSSize)columnSize;
 @end
 
 /**

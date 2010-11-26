@@ -1,6 +1,14 @@
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
-	* Source/GSThemeDrawing.m: Added method to scroller view.
+	* Source/GSThemeDrawing.m: Added method to draw NSBrowser view.
+	* Source/NSBrowser.m: Added call in drawRect: to new drawing method
+	in GSTheme.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	Added declaration for new method.
+	
+2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
+
+	* Source/GSThemeDrawing.m: Added method to draw NSScroller view.
 	* Source/NSScroller.m: Added call in drawRect: to new drawing method
 	in GSTheme.
 	* Headers/Additions/GNUstepGUI/GSTheme.h: 
