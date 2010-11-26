@@ -38,6 +38,7 @@
 #import "AppKit/NSColorWell.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSProgressIndicator.h"
@@ -1902,4 +1903,36 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         }
     }
 }
+
+- (void) drawMenuRect: (NSRect)rect
+	       inView: (NSView *)view
+	 isHorizontal: (BOOL)horizontal
+	    itemCells: (NSArray *)itemCells
+{
+
+  int         i = 0;
+  int         howMany = [itemCells count];
+  NSMenuView *menuView = (NSMenuView *)view;
+  NSRect      bounds = [view bounds];
+
+  [self drawBackgroundForMenuView: menuView
+	withFrame: bounds
+	dirtyRect: rect
+	horizontal: horizontal];
+  
+  // Draw the menu cells.
+  for (i = 0; i < howMany; i++)
+    {
+      NSRect aRect;
+      NSMenuItemCell *aCell;
+      
+      aRect = [menuView rectOfItemAtIndex: i];
+      if (NSIntersectsRect(rect, aRect) == YES)
+        {
+          aCell = [menuView menuItemCellForItemAtIndex: i];
+          [aCell drawWithFrame: aRect inView: menuView];
+        }
+    }
+}
+
 @end

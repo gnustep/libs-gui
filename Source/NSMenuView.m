@@ -1320,27 +1320,10 @@ static NSMapTable *viewInfo = 0;
 
 - (void) drawRect: (NSRect)rect
 {
-  int        i;
-  int        howMany = [_itemCells count];
-
-  [[GSTheme theme] drawBackgroundForMenuView: self
-                                   withFrame: _bounds
-                                   dirtyRect: rect
-                                  horizontal: _horizontal];
- 
-  // Draw the menu cells.
-  for (i = 0; i < howMany; i++)
-    {
-      NSRect aRect;
-      NSMenuItemCell *aCell;
-      
-      aRect = [self rectOfItemAtIndex: i];
-      if (NSIntersectsRect(rect, aRect) == YES)
-        {
-          aCell = [self menuItemCellForItemAtIndex: i];
-          [aCell drawWithFrame: aRect inView: self];
-        }
-    }
+  [[GSTheme theme] drawMenuRect: rect
+		   inView: self
+		   isHorizontal: _horizontal
+		   itemCells: _itemCells];
 }
 
 /*

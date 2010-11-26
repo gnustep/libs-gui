@@ -949,6 +949,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 		  inView: (NSView *)view
 	withScrollerRect: (NSRect)scrollerRect
 	      columnSize: (NSSize)columnSize;
+
+- (void) drawMenuRect: (NSRect)rect
+	       inView: (NSView *)view
+	 isHorizontal: (BOOL)horizontal
+	    itemCells: (NSArray *)itemCells;
 @end
 
 /**
