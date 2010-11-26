@@ -1768,7 +1768,7 @@ many times.
               
               aString = [NSString stringWithFormat: @"%@  --  %@", 
 		[_representedFilename lastPathComponent],
-		[_representedFilename stringByDeletingLastPathComponent]];                                                            
+		[_representedFilename stringByDeletingLastPathComponent]];
               isFileName = [_windowTitle isEqual: aString]; 
 
               [NSApp addWindowsItem: self
@@ -2860,7 +2860,11 @@ resetCursorRectsForView(NSView *theView)
   /* Don't close if a modal session is running and we are not the
      modal window */
   if ([NSApp modalWindow] && self != [NSApp modalWindow])
-    return;
+    {
+      /* Panel that work in modal session can be closed nevertheless */
+      if (![self worksWhenModal])
+	return;
+    }
 
   /* self must have a close button in order to be closed */
   if (!(_styleMask & NSClosableWindowMask))

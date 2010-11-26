@@ -1,3 +1,9 @@
+2010-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>>
+
+	* Source/NSWindow.m (-performClose:): Do not discard close
+	requests for a window in a modal session when the window has
+	-worksWhenModal==YES.
+
 2010-11-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView_actions.m (-deleteBackward:): Add missing
