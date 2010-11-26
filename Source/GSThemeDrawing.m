@@ -1786,4 +1786,39 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   DPSgrestore(ctxt);
 }
 
+- (void) drawScrollerRect: (NSRect)rect
+		   inView: (NSView *)view
+		  hitPart: (NSScrollerPart)hitPart
+	     isHorizontal: (BOOL)isHorizontal
+{
+  NSRect rectForPartIncrementLine;
+  NSRect rectForPartDecrementLine;
+  NSRect rectForPartKnobSlot;
+  NSScroller *scroller = (NSScroller *)view;
+
+  rectForPartIncrementLine = [scroller rectForPart: NSScrollerIncrementLine];
+  rectForPartDecrementLine = [scroller rectForPart: NSScrollerDecrementLine];
+  rectForPartKnobSlot = [scroller rectForPart: NSScrollerKnobSlot];
+
+  [[[view window] backgroundColor] set];
+  NSRectFill (rect);
+
+  if (NSIntersectsRect (rect, rectForPartKnobSlot) == YES)
+    {
+      [scroller drawKnobSlot];
+      [scroller drawKnob];
+    }
+
+  if (NSIntersectsRect (rect, rectForPartDecrementLine) == YES)
+    {
+      [scroller drawArrow: NSScrollerDecrementArrow 
+		highlight: hitPart == NSScrollerDecrementLine];
+    }
+  if (NSIntersectsRect (rect, rectForPartIncrementLine) == YES)
+    {
+      [scroller drawArrow: NSScrollerIncrementArrow 
+		highlight: hitPart == NSScrollerIncrementLine];
+    }
+}
+
 @end

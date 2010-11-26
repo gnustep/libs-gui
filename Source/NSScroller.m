@@ -1028,33 +1028,10 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
  */
 - (void) drawRect: (NSRect)rect
 {
-  NSRect rectForPartIncrementLine;
-  NSRect rectForPartDecrementLine;
-  NSRect rectForPartKnobSlot;
-
-  rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
-  rectForPartDecrementLine = [self rectForPart: NSScrollerDecrementLine];
-  rectForPartKnobSlot = [self rectForPart: NSScrollerKnobSlot];
-
-  [[_window backgroundColor] set];
-  NSRectFill (rect);
-
-  if (NSIntersectsRect (rect, rectForPartKnobSlot) == YES)
-    {
-      [self drawKnobSlot];
-      [self drawKnob];
-    }
-
-  if (NSIntersectsRect (rect, rectForPartDecrementLine) == YES)
-    {
-      [self drawArrow: NSScrollerDecrementArrow 
-            highlight: _hitPart == NSScrollerDecrementLine];
-    }
-  if (NSIntersectsRect (rect, rectForPartIncrementLine) == YES)
-    {
-      [self drawArrow: NSScrollerIncrementArrow 
-            highlight: _hitPart == NSScrollerIncrementLine];
-    }
+  [[GSTheme theme] drawScrollerRect: rect
+		   inView: self
+		   hitPart: _hitPart
+		   isHorizontal: _scFlags.isHorizontal];
 }
 
 /**<p>(Un)Highlight the button specified by <var>whichButton</var>.

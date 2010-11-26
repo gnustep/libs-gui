@@ -939,6 +939,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 		  inView: (NSView *)view
 	       withItems: (NSArray *)items
 	    selectedItem: (NSTabViewItem *)item;
+
+- (void) drawScrollerRect: (NSRect)rect
+		   inView: (NSView *)view
+      		  hitPart: (NSScrollerPart)hitPart
+	     isHorizontal: (BOOL)isHorizontal;
 @end
 
 /**
