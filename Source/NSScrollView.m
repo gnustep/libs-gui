@@ -1216,8 +1216,8 @@ static float scrollerWidth;
 
 - (void) drawRect: (NSRect)rect
 {
-   [self drawScrollViewRect: rect
-	 inView: self];
+   [[GSTheme theme] drawScrollViewRect: rect
+		    inView: self];
 }
 
 - (NSRect) documentVisibleRect

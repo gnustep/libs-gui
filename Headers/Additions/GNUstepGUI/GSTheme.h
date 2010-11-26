@@ -954,6 +954,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal
 	    itemCells: (NSArray *)itemCells;
+
+- (void) drawScrollViewRect: (NSRect)rect
+	             inView: (NSView *)view;
 @end
 
 /**
