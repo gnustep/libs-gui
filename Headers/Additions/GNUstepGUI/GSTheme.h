@@ -241,6 +241,7 @@
 @class NSMenuView;
 @class NSProgressIndicator;
 @class NSTableHeaderCell;
+@class NSTabViewItem;
 @class GSDrawTiles;
 
 /* First, declare names used for obtaining colors and/or tiles for specific
@@ -934,6 +935,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
+- (void) drawTabViewRect: (NSRect)rect
+		  inView: (NSView *)view
+	       withItems: (NSArray *)items
+	    selectedItem: (NSTabViewItem *)item;
 @end
 
 /**

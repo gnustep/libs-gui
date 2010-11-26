@@ -1,3 +1,10 @@
+2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
+
+	* Source/GSThemeDrawing.m: Added method to draw tab view.
+	* Source/NSTabView.m: Added call in drawRect: to new drawing method
+	in GSTheme.
+	* Headers/GNUstepGUI/GSTheme.h: Added declaration for new method.
+	
 2010-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>>
 
 	* Source/NSWindow.m (-performClose:): Do not discard close
