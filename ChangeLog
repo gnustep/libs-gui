@@ -1,5 +1,13 @@
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
+	* Source/GSThemeDrawing.m: Added methods to draw NSSliderCell view.
+	* Source/NSSliderCell.m: Added call in drawKnobInCell:... and 
+	drawBarInside:.. to drawing methods in GSTheme.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	Added declaration for new method.
+
+2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
+
 	* Source/GSThemeDrawing.m: Added method to draw NSScrollView view.
 	* Source/NSScrollView.m: Added call in drawRect: to new drawing method
 	in GSTheme.

@@ -42,6 +42,7 @@
 #import "AppKit/NSSliderCell.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
+#import <GNUstepGUI/GSTheme.h>
 
 DEFINE_RINT_IF_MISSING
 #ifndef HAVE_ATAN2F
@@ -230,11 +231,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   only.</p> */
 - (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped
 {
-  if (_type == NSLinearSlider)
-    {
-      [[NSColor scrollBarColor] set];
-      NSRectFill(rect);
-    }
+  [[GSTheme theme] drawBarInside: rect
+		   inCell: self
+		   flipped: flipped];
 }
 
 /**<p>Returns the rect in which to draw the knob, based on the
@@ -295,7 +294,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 */
 - (void) drawKnob
 {
-  [self drawKnob: [self knobRectFlipped: [_control_view isFlipped]]];
+  [[GSTheme theme] drawKnobInCell: self];
 }
 
 /**<p>Draws the knob in <var>knobRect</var>.  Before calling this

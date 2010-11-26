@@ -957,6 +957,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (void) drawScrollViewRect: (NSRect)rect
 	             inView: (NSView *)view;
+
+- (void) drawBarInside: (NSRect)rect
+		inCell: (NSCell *)cell
+	       flipped: (BOOL)flipped;
+
+- (void) drawKnobInCell: (NSCell *)cell;
 @end
 
 /**

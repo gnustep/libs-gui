@@ -51,6 +51,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/PSOperators.h"
+#import "AppKit/NSSliderCell.h"
 
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
@@ -2027,5 +2028,27 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  DPSstroke(ctxt);
 	}
     }
+}
+
+- (void) drawBarInside: (NSRect)rect
+		inCell: (NSCell *)cell
+	       flipped: (BOOL)flipped
+{
+  NSSliderType type = [(NSSliderCell *)cell sliderType];
+  if (type == NSLinearSlider)
+    {
+      [[NSColor scrollBarColor] set];
+      NSRectFill(rect);
+    }
+}
+
+- (void) drawKnobInCell: (NSCell *)cell
+{
+  NSView *controlView = [cell controlView];
+  NSSliderCell *sliderCell = (NSSliderCell *)cell;
+
+  [sliderCell drawKnob: 
+		[sliderCell knobRectFlipped: 
+			      [controlView isFlipped]]];  
 }
 @end
