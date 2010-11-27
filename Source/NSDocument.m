@@ -1294,8 +1294,19 @@ originalContentsURL: (NSURL *)orig
 
 - (void) setPrintInfo: (NSPrintInfo *)printInfo
 {
+  NSUndoManager *undoManager = [self undoManager];
+
+  if (undoManager != nil)
+    {
+      [[undoManager prepareWithInvocationTarget: self]
+	setPrintInfo: _print_info];
+      // FIXME undoManager -setActionName:
+    }
   ASSIGN(_print_info, printInfo);
-  [self updateChangeCount: NSChangeDone];
+  if (undoManager == nil)
+    {
+      [self updateChangeCount: NSChangeDone];
+    }
 }
 
 

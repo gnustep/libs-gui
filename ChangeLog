@@ -1,3 +1,8 @@
+2010-11-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocument.m (-setPrintInfo:): Record old print info with
+	the document's undo manager (if there is one) as in Cocoa.
+
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSSliderCell view.
@@ -54,7 +59,7 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h: 
 	Added declaration for new method.
 	
-2010-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>>
+2010-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-performClose:): Do not discard close
 	requests for a window in a modal session when the window has
