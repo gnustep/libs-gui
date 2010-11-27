@@ -1,3 +1,8 @@
+2010-11-27 Riccardo Mottola
+
+       * Source/GSThemeDrawing.m:
+       Revert color well thickness. If desired, this should go in a theme.
+
 2010-11-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocument.m (-setPrintInfo:): Record old print info with

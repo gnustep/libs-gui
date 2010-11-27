@@ -2,7 +2,7 @@
 
    <abstract>The theme methods for drawing controls</abstract>
 
-   Copyright (C) 2004-2008 Free Software Foundation, Inc.
+   Copyright (C) 2004-2010 Free Software Foundation, Inc.
 
    Author: Adam Fedor <fedor@gnu.org>
    Date: Jan 2004
@@ -56,8 +56,9 @@
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
-// a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good
-#define COLOR_WELL_BORDER_WIDTH 5.0
+/* a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good */
+/* 8.0 gives us the NeXT Look */
+#define COLOR_WELL_BORDER_WIDTH 8.0
 
 @implementation	GSTheme (Drawing)
 
