@@ -53,12 +53,7 @@
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  NSSize borderSize;
-
-  // This adjustment must match the drawn border
-  borderSize = NSMakeSize(1, 1);
-
-  return NSInsetRect(theRect, borderSize.width, borderSize.height);
+  return [[GSTheme theme] tableHeaderCellDrawingRectForBounds: theRect];
 }
 
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 

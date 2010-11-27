@@ -963,6 +963,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	       flipped: (BOOL)flipped;
 
 - (void) drawKnobInCell: (NSCell *)cell;
+
+- (NSRect) tableHeaderCellDrawingRectForBounds: (NSRect)theRect;
 @end
 
 /**

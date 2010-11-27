@@ -2051,4 +2051,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		[sliderCell knobRectFlipped: 
 			      [controlView isFlipped]]];  
 }
+
+- (NSRect) tableHeaderCellDrawingRectForBounds: (NSRect)theRect
+{
+  NSSize borderSize;
+
+  // This adjustment must match the drawn border
+  borderSize = NSMakeSize(1, 1);
+
+  return NSInsetRect(theRect, borderSize.width, borderSize.height);
+}
 @end
