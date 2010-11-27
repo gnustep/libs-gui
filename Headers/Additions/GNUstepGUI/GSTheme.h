@@ -965,6 +965,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawKnobInCell: (NSCell *)cell;
 
 - (NSRect) tableHeaderCellDrawingRectForBounds: (NSRect)theRect;
+							
+- (void) drawTableHeaderRect: (NSRect)aRect							      inView: (NSView *)view;
 @end
 
 /**

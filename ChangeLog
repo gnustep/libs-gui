@@ -1,3 +1,12 @@
+2010-11-27  Gregory John Casamento  <greg.casamento@gmail.com>
+
+	* Source/GSThemeDrawing.m: Added methods to draw NSTableHeaderView
+	drawTableHeaderRect:inView:.
+	* Source/NSTableHeaderView.m: Added call in to drawing methods in 
+	GSTheme.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	Added declaration for new method.
+
 2010-11-27 Riccardo Mottola
 
        * Source/GSThemeDrawing.m:
@@ -10,7 +19,7 @@
 
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
-	* Source/GSThemeDrawing.m: Added methods to draw NSSliderCell view.
+	* Source/GSThemeDrawing.m: Added methods to draw NSTableHeaderCell view.
 	* Source/NSTableHeaderCell.m: Added call in 
 	tableHeaderCellDrawingRectForBounds: to drawing methods in GSTheme.
 	* Headers/Additions/GNUstepGUI/GSTheme.h: 
