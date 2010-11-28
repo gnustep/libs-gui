@@ -1063,6 +1063,9 @@ static NSImage *_pbc_image[5];
 
   /* We need to calc our size to get images placed correctly */
   [self calcSize];
+  [[GSTheme theme] drawPopUpButtonCellInteriorWithFrame: cellFrame
+		   withCell: self
+		   inView: controlView];
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 
   /* Unset the item to restore balance if a new was created */

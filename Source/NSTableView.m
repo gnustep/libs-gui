@@ -5023,100 +5023,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawGridInClipRect: (NSRect)aRect
 {
-  float minX = NSMinX (aRect);
-  float maxX = NSMaxX (aRect);
-  float minY = NSMinY (aRect);
-  float maxY = NSMaxY (aRect);
-  int i;
-  float x_pos;
-  int startingColumn; 
-  int endingColumn;
-
-  NSGraphicsContext *ctxt = GSCurrentContext ();
-  float position = 0.0;
-
-  int startingRow    = [self rowAtPoint: 
-			       NSMakePoint (_bounds.origin.x, minY)];
-  int endingRow      = [self rowAtPoint: 
-			       NSMakePoint (_bounds.origin.x, maxY)];
-
-  /* Using columnAtPoint:, rowAtPoint: here calls them only twice 
-
-     per drawn rect */
-  x_pos = minX;
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  x_pos = maxX;
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
-  /*
-  int startingColumn = [self columnAtPoint: 
-			       NSMakePoint (minX, _bounds.origin.y)];
-  int endingColumn   = [self columnAtPoint: 
-			       NSMakePoint (maxX, _bounds.origin.y)];
-  */
-
-  DPSgsave (ctxt);
-  DPSsetlinewidth (ctxt, 1);
-  [_gridColor set];
-
-  if (_numberOfRows > 0)
-    {
-      /* Draw horizontal lines */
-      if (startingRow == -1)
-	startingRow = 0;
-      if (endingRow == -1)
-	endingRow = _numberOfRows - 1;
-      
-      position = _bounds.origin.y;
-      position += startingRow * _rowHeight;
-      for (i = startingRow; i <= endingRow + 1; i++)
-	{
-	  DPSmoveto (ctxt, minX, position);
-	  DPSlineto (ctxt, maxX, position);
-	  DPSstroke (ctxt);
-	  position += _rowHeight;
-	}
-    }
-  
-  if (_numberOfColumns > 0)
-    {
-      int lastRowPosition = position - _rowHeight;
-      /* Draw vertical lines */
-      if (startingColumn == -1)
-	startingColumn = 0;
-      if (endingColumn == -1)
-	endingColumn = _numberOfColumns - 1;
-
-      for (i = startingColumn; i <= endingColumn; i++)
-	{
-	  DPSmoveto (ctxt, _columnOrigins[i], minY);
-	  DPSlineto (ctxt, _columnOrigins[i], lastRowPosition);
-	  DPSstroke (ctxt);
-	}
-      position =  _columnOrigins[endingColumn];
-      position += [[_tableColumns objectAtIndex: endingColumn] width];  
-      /* Last vertical line must moved a pixel to the left */
-      if (endingColumn == (_numberOfColumns - 1))
-	position -= 1;
-      DPSmoveto (ctxt, position, minY);
-      DPSlineto (ctxt, position, lastRowPosition);
-      DPSstroke (ctxt);
-    }
-
-  DPSgrestore (ctxt);
+  [[GSTheme theme] drawTableViewGridInClipRect: aRect
+		   inView: self];
 }
 
 - (void) highlightSelectionInClipRect: (NSRect)clipRect
@@ -5198,9 +5106,10 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
 {
-  [_backgroundColor set];
-  NSRectFill (clipRect);
-} 
+  [[GSTheme theme] drawTableViewBackgroundInClipRect: clipRect
+		   inView: self
+		   withBackgroundColor: _backgroundColor];
+}
 
 - (void) drawRect: (NSRect)aRect
 {

@@ -63,6 +63,10 @@
 /* 8.0 gives us the NeXT Look */
 #define COLOR_WELL_BORDER_WIDTH 8.0
 
+@interface NSTableView (Private)
+- (float *)_columnOrigins;
+@end
+
 @implementation	GSTheme (Drawing)
 
 - (void) drawButton: (NSRect)frame 
@@ -2156,5 +2160,125 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
                            inView: tableHeaderView];
       drawingRect.origin.x += width;
     }
+}
+
+- (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame
+				     withCell: (NSCell *)cell
+				       inView: (NSView *)controlView
+{
+  // Default implementation of this method does nothing.
+}
+
+- (void) drawTableViewBackgroundInClipRect: (NSRect)clipRect
+				    inView: (NSView *)view
+		       withBackgroundColor: (NSColor *)backgroundColor
+{
+
+  [backgroundColor set];
+  NSRectFill (clipRect);
+}
+
+- (void) drawTableViewGridInClipRect: (NSRect)aRect
+			      inView: (NSView *)view
+{
+  NSTableView *tableView = (NSTableView *)view;
+  NSRect bounds = [view bounds];
+  float minX = NSMinX (aRect);
+  float maxX = NSMaxX (aRect);
+  float minY = NSMinY (aRect);
+  float maxY = NSMaxY (aRect);
+  int i;
+  float x_pos;
+  int startingColumn; 
+  int endingColumn;
+  int numberOfColumns = [tableView numberOfColumns];
+  NSArray *tableColumns = [tableView tableColumns];
+  NSGraphicsContext *ctxt = GSCurrentContext ();
+  float position = 0.0;
+  float *columnOrigins = [tableView _columnOrigins];
+  int startingRow    = [tableView rowAtPoint: 
+			       NSMakePoint (bounds.origin.x, minY)];
+  int endingRow      = [tableView rowAtPoint: 
+			       NSMakePoint (bounds.origin.x, maxY)];
+  NSColor *gridColor = [tableView gridColor];
+  int rowHeight = [tableView rowHeight];
+  int numberOfRows = [tableView numberOfRows];
+
+  /* Using columnAtPoint:, rowAtPoint: here calls them only twice 
+     per drawn rect */
+  x_pos = minX;
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  x_pos = maxX;
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+  /*
+  int startingColumn = [tableView columnAtPoint: 
+			       NSMakePoint (minX, bounds.origin.y)];
+  int endingColumn   = [tableView columnAtPoint: 
+			       NSMakePoint (maxX, bounds.origin.y)];
+  */
+
+  DPSgsave (ctxt);
+  DPSsetlinewidth (ctxt, 1);
+  [gridColor set];
+
+  if (numberOfRows > 0)
+    {
+      /* Draw horizontal lines */
+      if (startingRow == -1)
+	startingRow = 0;
+      if (endingRow == -1)
+	endingRow = numberOfRows - 1;
+      
+      position = bounds.origin.y;
+      position += startingRow * rowHeight;
+      for (i = startingRow; i <= endingRow + 1; i++)
+	{
+	  DPSmoveto (ctxt, minX, position);
+	  DPSlineto (ctxt, maxX, position);
+	  DPSstroke (ctxt);
+	  position += rowHeight;
+	}
+    }
+  
+  if (numberOfColumns > 0)
+    {
+      int lastRowPosition = position - rowHeight;
+      /* Draw vertical lines */
+      if (startingColumn == -1)
+	startingColumn = 0;
+      if (endingColumn == -1)
+	endingColumn = numberOfColumns - 1;
+
+      for (i = startingColumn; i <= endingColumn; i++)
+	{
+	  DPSmoveto (ctxt, columnOrigins[i], minY);
+	  DPSlineto (ctxt, columnOrigins[i], lastRowPosition);
+	  DPSstroke (ctxt);
+	}
+      position =  columnOrigins[endingColumn];
+      position += [[tableColumns objectAtIndex: endingColumn] width];  
+      /* Last vertical line must moved a pixel to the left */
+      if (endingColumn == (numberOfColumns - 1))
+	position -= 1;
+      DPSmoveto (ctxt, position, minY);
+      DPSlineto (ctxt, position, lastRowPosition);
+      DPSstroke (ctxt);
+    }
+
+  DPSgrestore (ctxt);
 }
 @end
