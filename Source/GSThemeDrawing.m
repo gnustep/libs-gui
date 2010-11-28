@@ -29,6 +29,8 @@
 #import "GSThemePrivate.h"
 
 #import "Foundation/NSUserDefaults.h"
+#import "Foundation/NSIndexSet.h"
+
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSButtonCell.h"
@@ -65,6 +67,13 @@
 
 @interface NSTableView (Private)
 - (float *)_columnOrigins;
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index;
+@end
+
+@interface NSCell (Private)
+- (void) _setInEditing: (BOOL)flag;
 @end
 
 @implementation	GSTheme (Drawing)
@@ -2280,5 +2289,218 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 
   DPSgrestore (ctxt);
+}
+
+- (void) drawTableViewRect: (NSRect)aRect
+		    inView: (NSView *)view
+{
+  int startingRow;
+  int endingRow;
+  int i;
+  NSTableView *tableView = (NSTableView *)view;
+  int numberOfRows = [tableView numberOfRows];
+  int numberOfColumns = [tableView numberOfColumns];
+  BOOL drawsGrid = [tableView drawsGrid];
+
+  /* Draw background */
+  [tableView drawBackgroundInClipRect: aRect];
+
+  if ((numberOfRows == 0) || (numberOfColumns == 0))
+    {
+      return;
+    }
+
+  /* Draw selection */
+  [tableView highlightSelectionInClipRect: aRect];
+
+  /* Draw grid */
+  if (drawsGrid)
+    {
+      [tableView drawGridInClipRect: aRect];
+    }
+  
+  /* Draw visible cells */
+  /* Using rowAtPoint: here calls them only twice per drawn rect */
+  startingRow = [tableView rowAtPoint: NSMakePoint (0, NSMinY (aRect))];
+  endingRow   = [tableView rowAtPoint: NSMakePoint (0, NSMaxY (aRect))];
+
+  if (startingRow == -1)
+    {
+      startingRow = 0;
+    }
+  if (endingRow == -1)
+    {
+      endingRow = numberOfRows - 1;
+    }
+  //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
+  {
+    SEL sel = @selector(drawRow:clipRect:);
+    IMP imp = [tableView methodForSelector: sel];
+    
+    for (i = startingRow; i <= endingRow; i++)
+      {
+        (*imp)(tableView, sel, i, aRect);
+      }
+  }
+}
+
+- (void) highlightTableViewSelectionInClipRect: (NSRect)clipRect
+					inView: (NSView *)view
+			      selectingColumns: (BOOL)selectingColumns
+{
+  NSTableView *tableView = (NSTableView *)view;
+  int numberOfRows = [tableView numberOfRows];
+  int numberOfColumns = [tableView numberOfColumns];
+  NSIndexSet *selectedRows = [tableView selectedRowIndexes];
+  NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
+  NSColor *backgroundColor = [tableView backgroundColor];
+
+  if (selectingColumns == NO)
+    {
+      int selectedRowsCount;
+      int row;
+      int startingRow, endingRow;
+
+      selectedRowsCount = [selectedRows count];      
+      if (selectedRowsCount == 0)
+	return;
+      
+      /* highlight selected rows */
+      startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(clipRect))];
+      endingRow   = [tableView rowAtPoint: NSMakePoint(0, NSMaxY(clipRect))];
+      
+      if (startingRow == -1)
+	startingRow = 0;
+      if (endingRow == -1)
+	endingRow = numberOfRows - 1;
+      
+      row = [selectedRows indexGreaterThanOrEqualToIndex: startingRow];
+      while ((row != NSNotFound) && (row <= endingRow))
+	{
+	  NSColor *selectionColor = nil;
+	  
+	  // Switch to the alternate color of the backgroundColor is white.
+	  if([backgroundColor isEqual: [NSColor whiteColor]])
+	    {
+	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
+					green: 0.92
+					blue: 0.99
+					alpha: 1.0];
+	    }
+	  else
+	    {
+	      selectionColor = [NSColor whiteColor];
+	    }
+
+	  //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
+	  //						 clipRect));
+	  [selectionColor set];
+	  NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
+	  row = [selectedRows indexGreaterThanIndex: row];
+	}	  
+    }
+  else // Selecting columns
+    {
+      unsigned int selectedColumnsCount;
+      unsigned int column;
+      int startingColumn, endingColumn;
+      
+      selectedColumnsCount = [selectedColumns count];
+      
+      if (selectedColumnsCount == 0)
+	return;
+      
+      /* highlight selected columns */
+      startingColumn = [tableView columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
+      endingColumn = [tableView columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
+
+      if (startingColumn == -1)
+	startingColumn = 0;
+      if (endingColumn == -1)
+	endingColumn = numberOfColumns - 1;
+
+      column = [selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
+      while ((column != NSNotFound) && (column <= endingColumn))
+	{
+	  NSHighlightRect(NSIntersectionRect([tableView rectOfColumn: column],
+					     clipRect));
+	  column = [selectedColumns indexGreaterThanIndex: column];
+	}	  
+    }
+}
+
+- (void) drawTableViewRow: (int)rowIndex 
+		 clipRect: (NSRect)clipRect
+		   inView: (NSView *)view
+{
+  NSTableView *tableView = (NSTableView *)view;
+  // int numberOfRows = [tableView numberOfRows];
+  int numberOfColumns = [tableView numberOfColumns];
+  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
+  // NSColor *backgroundColor = [tableView backgroundColor];
+  id dataSource = [tableView dataSource];
+  float *columnOrigins = [tableView _columnOrigins];
+  int editedRow = [tableView editedRow];
+  int editedColumn = [tableView editedColumn];
+  NSArray *tableColumns = [tableView tableColumns];
+  int startingColumn; 
+  int endingColumn;
+  NSTableColumn *tb;
+  NSRect drawingRect;
+  NSCell *cell;
+  int i;
+  float x_pos;
+
+  if (dataSource == nil)
+    {
+      return;
+    }
+
+  /* Using columnAtPoint: here would make it called twice per row per drawn 
+     rect - so we avoid it and do it natively */
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  if (startingColumn == -1)
+    startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      tb = [tableColumns objectAtIndex: i];
+      cell = [tb dataCellForRow: rowIndex];
+      if (i == editedColumn && rowIndex == editedRow)
+	[cell _setInEditing: YES];
+      [tableView _willDisplayCell: cell
+		 forTableColumn: tb
+		 row: rowIndex];
+      [cell setObjectValue: [dataSource tableView: tableView
+					objectValueForTableColumn: tb
+					row: rowIndex]]; 
+      drawingRect = [tableView frameOfCellAtColumn: i
+			       row: rowIndex];
+      [cell drawWithFrame: drawingRect inView: tableView];
+      if (i == editedColumn && rowIndex == editedRow)
+	[cell _setInEditing: NO];
+    }
 }
 @end

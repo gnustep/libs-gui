@@ -4955,65 +4955,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawRow: (int)rowIndex clipRect: (NSRect)clipRect
 {
-  int startingColumn; 
-  int endingColumn;
-  NSTableColumn *tb;
-  NSRect drawingRect;
-  NSCell *cell;
-  int i;
-  float x_pos;
-
-  if (_dataSource == nil)
-    {
-      return;
-    }
-
-  /* Using columnAtPoint: here would make it called twice per row per drawn 
-     rect - so we avoid it and do it natively */
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
-
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
-    {
-      tb = [_tableColumns objectAtIndex: i];
-      cell = [tb dataCellForRow: rowIndex];
-      if (i == _editedColumn && rowIndex == _editedRow)
-	[cell _setInEditing: YES];
-      [self _willDisplayCell: cell
-	    forTableColumn: tb
-	    row: rowIndex];
-      [cell setObjectValue: [_dataSource tableView: self
-					 objectValueForTableColumn: tb
-					 row: rowIndex]]; 
-      drawingRect = [self frameOfCellAtColumn: i
-			  row: rowIndex];
-      [cell drawWithFrame: drawingRect inView: self];
-      if (i == _editedColumn && rowIndex == _editedRow)
-	[cell _setInEditing: NO];
-    }
+  [[GSTheme theme] drawTableViewRow: rowIndex
+		   clipRect: clipRect
+		   inView: self];
 }
 
 - (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes
@@ -5029,79 +4973,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) highlightSelectionInClipRect: (NSRect)clipRect
 {
-  if (_selectingColumns == NO)
-    {
-      int selectedRowsCount;
-      int row;
-      int startingRow, endingRow;
-      
-      selectedRowsCount = [_selectedRows count];
-      
-      if (selectedRowsCount == 0)
-	return;
-      
-      /* highlight selected rows */
-      startingRow = [self rowAtPoint: NSMakePoint(0, NSMinY(clipRect))];
-      endingRow   = [self rowAtPoint: NSMakePoint(0, NSMaxY(clipRect))];
-      
-      if (startingRow == -1)
-	startingRow = 0;
-      if (endingRow == -1)
-	endingRow = _numberOfRows - 1;
-      
-      row = [_selectedRows indexGreaterThanOrEqualToIndex: startingRow];
-      while ((row != NSNotFound) && (row <= endingRow))
-	{
-	  NSColor *selectionColor = nil;
-	  
-	  // Switch to the alternate color of the backgroundColor is white.
-	  if([_backgroundColor isEqual: [NSColor whiteColor]])
-	    {
-	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
-					green: 0.92
-					blue: 0.99
-					alpha: 1.0];
-	    }
-	  else
-	    {
-	      selectionColor = [NSColor whiteColor];
-	    }
-
-	  //NSHighlightRect(NSIntersectionRect([self rectOfRow: row],
-	  //						 clipRect));
-	  [selectionColor set];
-	  NSRectFill(NSIntersectionRect([self rectOfRow: row], clipRect));
-	  row = [_selectedRows indexGreaterThanIndex: row];
-	}	  
-    }
-  else // Selecting columns
-    {
-      unsigned int selectedColumnsCount;
-      unsigned int column;
-      int startingColumn, endingColumn;
-      
-      selectedColumnsCount = [_selectedColumns count];
-      
-      if (selectedColumnsCount == 0)
-	return;
-      
-      /* highlight selected columns */
-      startingColumn = [self columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
-      endingColumn = [self columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
-
-      if (startingColumn == -1)
-	startingColumn = 0;
-      if (endingColumn == -1)
-	endingColumn = _numberOfColumns - 1;
-
-      column = [_selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
-      while ((column != NSNotFound) && (column <= endingColumn))
-	{
-	  NSHighlightRect(NSIntersectionRect([self rectOfColumn: column],
-					     clipRect));
-	  column = [_selectedColumns indexGreaterThanIndex: column];
-	}	  
-    }
+  [[GSTheme theme] highlightTableViewSelectionInClipRect: clipRect
+		   inView: self
+		   selectedColumns: _selectingColumns];
 }
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
@@ -5113,50 +4987,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawRect: (NSRect)aRect
 {
-  int startingRow;
-  int endingRow;
-  int i;
-
-  /* Draw background */
-  [self drawBackgroundInClipRect: aRect];
-
-  if ((_numberOfRows == 0) || (_numberOfColumns == 0))
-    {
-      return;
-    }
-
-  /* Draw selection */
-  [self highlightSelectionInClipRect: aRect];
-
-  /* Draw grid */
-  if (_drawsGrid)
-    {
-      [self drawGridInClipRect: aRect];
-    }
-  
-  /* Draw visible cells */
-  /* Using rowAtPoint: here calls them only twice per drawn rect */
-  startingRow = [self rowAtPoint: NSMakePoint (0, NSMinY (aRect))];
-  endingRow   = [self rowAtPoint: NSMakePoint (0, NSMaxY (aRect))];
-
-  if (startingRow == -1)
-    {
-      startingRow = 0;
-    }
-  if (endingRow == -1)
-    {
-      endingRow = _numberOfRows - 1;
-    }
-  //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
-  {
-    SEL sel = @selector(drawRow:clipRect:);
-    IMP imp = [self methodForSelector: sel];
-    
-    for (i = startingRow; i <= endingRow; i++)
-      {
-        (*imp)(self, sel, i, aRect);
-      }
-  }
+  [[GSTheme theme] drawTableViewRect: aRect
+		   inView: self];
 }
 
 - (BOOL) isOpaque

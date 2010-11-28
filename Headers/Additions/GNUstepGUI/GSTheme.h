@@ -976,6 +976,20 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawTableViewBackgroundInClipRect: (NSRect)clipRect
 				    inView: (NSView *)view
 		       withBackgroundColor: (NSColor *)backgroundColor;
+
+- (void) drawTableViewRect: (NSRect)aRect
+		    inView: (NSView *)view;
+
+- (void) drawTableViewGridInClipRect: (NSRect)aRect
+		      	      inView: (NSView *)view;
+
+- (void) highlightTableViewSelectionInClipRect: (NSRect)clipRect
+					inView: (NSView *)view
+			      selectingColumns: (BOOL)selectingColumns;
+
+- (void) drawTableViewRow: (int)rowIndex 
+		 clipRect: (NSRect)clipRect
+		   inView: (NSView *)view;
 @end
 
 /**
