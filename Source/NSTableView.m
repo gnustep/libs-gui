@@ -4975,7 +4975,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   [[GSTheme theme] highlightTableViewSelectionInClipRect: clipRect
 		   inView: self
-		   selectedColumns: _selectingColumns];
+		   selectingColumns: _selectingColumns];
 }
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
