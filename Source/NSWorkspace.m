@@ -656,6 +656,7 @@ static NSString			*_rootPath = @"/";
   NSArray *libraryDirs;
   NSArray *sysAppDir;
   NSArray *downloadDir;
+  NSArray *desktopDir;
   NSString *sysDir;
   int i;
 
@@ -684,6 +685,7 @@ static NSString			*_rootPath = @"/";
 
   documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
+  desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES);
   libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
  
@@ -712,6 +714,9 @@ static NSString			*_rootPath = @"/";
  
   for (i = 0; i < [downloadDir count]; i++)
     [folderPathIconDict setObject: @"DownloadFolder" forKey: [downloadDir objectAtIndex: i]];
+
+  for (i = 0; i < [desktopDir count]; i++)
+    [folderPathIconDict setObject: @"Desktop" forKey: [desktopDir objectAtIndex: i]];
 
   folderIconCache = [[NSMutableDictionary alloc] init];
 

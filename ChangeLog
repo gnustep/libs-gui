@@ -1,3 +1,10 @@
+2010-12-06  Riccardo Mottola
+
+	* Source/NSWorkspace.m
+	* Images/common_Desktop.tiff
+	* Images/GNUmakefile
+	Added handling of a Desktop icon (and added the icon itself).
+	
 2010-11-27  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSTableView

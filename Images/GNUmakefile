@@ -64,6 +64,7 @@ Images_RESOURCE_FILES = \
  common_ColorSwatch.tiff \
  common_ComboBoxEllipsis.tiff \
  common_DecimalTabStop.tiff \
+ common_Desktop.tiff \
  common_Diamond.tiff \
  common_Dimple.tiff \
  common_DimpleHoriz.tiff \
