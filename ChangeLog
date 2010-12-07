@@ -1,3 +1,9 @@
+2010-12-07  Riccardo Mottola
+
+	* Images/common_SwitchOff.tiff
+	* Images/common_SwitchOn.tiff
+	Match NeXT 15x15 dimension and tweak the check alpha.
+	
 2010-12-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-finishLaunching): Don't make an
