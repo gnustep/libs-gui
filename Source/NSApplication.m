@@ -1060,7 +1060,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
         {
           NSWindow	*win = [windows_list objectAtIndex: i];
 
-          if ([win canBecomeMainWindow])
+          if ([win isVisible] && [win canBecomeMainWindow])
             {
               _main_window = win;
               break;
