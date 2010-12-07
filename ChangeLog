@@ -1,3 +1,8 @@
+2010-12-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (-sendEvent:): Allow any window that responds
+	YES to -worksWhenModal to become key in a modal session.
+
 2010-12-06  Riccardo Mottola
 
 	* Source/NSWorkspace.m

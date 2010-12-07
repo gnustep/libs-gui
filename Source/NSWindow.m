@@ -3972,7 +3972,8 @@ resetCursorRectsForView(NSView *theView)
 		  [self deminiaturize: self];
 		}
               if ([NSApp modalWindow]
-		&& self != [NSApp modalWindow])
+		&& self != [NSApp modalWindow]
+		&& ![self worksWhenModal])
 		{
 		  /* Ignore this request. We're in a modal loop and the
 		     user pressed on the title bar of another window. */
