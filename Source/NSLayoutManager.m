@@ -350,6 +350,28 @@ container? necessary? */
 	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
 	    }
 	}
+      else if (lf->pos + lf->length == last)
+	{
+	  /*
+	  The range ends in the last glyph of the line frag, so the end
+	  x-coordinate is the right edge of this glyph. This egde is
+	  equal to the right edge of the line fragment's rectangle if
+	  the glyph is invisible or a control glyph, e.g., a newline,
+	  and to the right edge of the line fragment's used rectangle
+	  otherwise.
+	  */
+	  NSUInteger i;
+	  glyph_run_t *r;
+	  unsigned int gpos, cpos;
+
+	  r = run_for_glyph_index(last - 1, glyphs, &gpos, &cpos);
+	  i = (last - 1) - gpos;
+	  if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
+	      r->glyphs[i].g != NSControlGlyph)
+	    x1 = NSMaxX(lf->used_rect);
+	  else
+	    x1 = NSMaxX(lf->rect);
+	}
       else
 	{
 	  /*

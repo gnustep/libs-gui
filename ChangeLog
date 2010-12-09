@@ -1,3 +1,10 @@
+2010-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:...): Clip the
+	rectangle computed for the last line to the line fragment's used
+	rectangle if the line doesn't end with a newline (or other
+	invisible character). This better matches Apple's implementation.
+
 2010-12-07  Riccardo Mottola
 
 	* Images/common_SwitchOff.tiff
