@@ -1,5 +1,11 @@
 2010-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSMatrix.m (-setState:atRow:column:): Fix bug where the
+	old selected cell wasn't properly deselected when the matrix's
+	mode is NSRadioMatrixMode.
+
+2010-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:...): Clip the
 	rectangle computed for the last line to the line fragment's used
 	rectangle if the line doesn't end with a newline (or other

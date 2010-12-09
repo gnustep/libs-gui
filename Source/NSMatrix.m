@@ -1040,6 +1040,10 @@ static SEL getSel;
 	  if (_selectedRow > -1 && _selectedColumn > -1)
 	    {
 	      _selectedCells[_selectedRow][_selectedColumn] = NO;
+	      [_selectedCell setState: NSOffState];
+	      [self setNeedsDisplayInRect:
+		     [self cellFrameAtRow: _selectedRow
+				   column: _selectedColumn]];
 	    }
 
 	  _selectedCell = aCell;
