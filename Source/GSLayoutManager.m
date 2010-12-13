@@ -1749,7 +1749,25 @@ places where we switch.
 - (int) intAttribute: (int)attributeTag
      forGlyphAtIndex: (unsigned int)glyphIndex
 {
-  [self subclassResponsibility: _cmd];
+  glyph_run_t *run;
+  glyph_t *g;
+  unsigned int pos;
+
+  run = run_for_glyph_index(glyphIndex, glyphs, &pos, NULL);
+  if (run && run->glyphs && (run->head.glyph_length < glyphIndex - pos))
+    {
+      g = &run->glyphs[glyphIndex - pos];
+
+      if (attributeTag == NSGlyphAttributeInscribe)
+        return g->inscription;
+      else if (attributeTag == NSGlyphAttributeSoft)
+        return g->soft;
+      else if (attributeTag == NSGlyphAttributeElastic)
+        return g->elasitc;
+      else if (attributeTag == NSGlyphAttributeBidiLevel)
+        return g->bidilevel;
+    }
+ 
   return 0;
 }
 
@@ -3174,9 +3192,25 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
                    value: (NSInteger)anInt
          forGlyphAtIndex: (NSUInteger)glyphIndex
 {
-  // FIXME
-  [self subclassResponsibility: _cmd];
-}
+  glyph_run_t *run;
+  glyph_t *g;
+  unsigned int pos;
+
+  run = run_for_glyph_index(glyphIndex, glyphs, &pos, NULL);
+  if (run && run->glyphs && (run->head.glyph_length < glyphIndex - pos))
+    {
+      g = &run->glyphs[glyphIndex - pos];
+
+      if (attributeTag == NSGlyphAttributeInscribe)
+        g->inscription = anInt;
+      else if (attributeTag == NSGlyphAttributeSoft)
+        g->soft = anInt;
+      else if (attributeTag == NSGlyphAttributeElastic)
+        g->elasitc = anInt;
+      else if (attributeTag == NSGlyphAttributeBidiLevel)
+        g->bidilevel = anInt;
+    }
+ }
 
 /*
  * NSCoding protocol

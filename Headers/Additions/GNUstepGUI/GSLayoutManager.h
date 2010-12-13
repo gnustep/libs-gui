@@ -45,6 +45,15 @@ typedef enum
   NSGlyphInscribeOverBelow = 4
 } NSGlyphInscription;
 
+enum {
+  NSGlyphAttributeSoft = 0,
+  NSGlyphAttributeElastic = 1,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+  NSGlyphAttributeBidiLevel = 2,
+#endif
+  NSGlyphAttributeInscribe = 5
+};
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 @interface GSLayoutManager : NSObject <NSGlyphStorage, NSCoding>
 #else
