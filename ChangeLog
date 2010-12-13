@@ -1,3 +1,8 @@
+2010-12-13 Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Source/NSMenuView.m:
+	Prevent trying to retrieve a menuCell that is out of range.
+
 2010-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMatrix.m (-setState:atRow:column:): Fix bug where the

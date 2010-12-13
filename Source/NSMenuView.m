@@ -407,7 +407,10 @@ static NSMapTable *viewInfo = 0;
 
 - (NSMenuItemCell*) menuItemCellForItemAtIndex: (int)index
 {
-  return [_itemCells objectAtIndex: index];
+  if (index < [_itemCells count])
+    return [_itemCells objectAtIndex: index];
+  else
+    return nil;
 }
 
 - (NSMenuView*) attachedMenuView
