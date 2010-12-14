@@ -1,3 +1,10 @@
+2010-12-14 Riccardo Mottola
+
+	* Source/NSWorkspace.m
+	* Images/GNUmakefile
+	* Images/common_MusicFolder.tiff
+	Added icon for the Music folder.
+
 2010-12-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h,

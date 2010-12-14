@@ -62,8 +62,8 @@
 #import "GNUstepGUI/GSTitleView.h"
 
 /* a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good */
-/* 8.0 gives us the NeXT Look */
-#define COLOR_WELL_BORDER_WIDTH 8.0
+/* 7.0 gives us the NeXT Look (which is 8 pix wide including the shadow) */
+#define COLOR_WELL_BORDER_WIDTH 7.0
 
 @interface NSTableView (Private)
 - (float *)_columnOrigins;

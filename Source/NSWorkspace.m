@@ -703,6 +703,7 @@ static NSString			*_rootPath = @"/";
 
   [folderPathIconDict setObject: @"HomeDirectory" forKey: NSHomeDirectory()];
   [folderPathIconDict setObject: @"ImageFolder" forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
+  [folderPathIconDict setObject: @"MusicFolder" forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Music"]];
   /* it would be nice to use different root icons... */
   [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
 

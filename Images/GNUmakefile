@@ -82,6 +82,7 @@ Images_RESOURCE_FILES = \
  common_MiniWindowTile.tiff \
  common_Miniaturize.tiff \
  common_MiniaturizeH.tiff \
+ common_MusicFolder.tiff \
  common_Mount.tiff \
  common_Nibble.tiff \
  common_OpenHandCursor.tiff \
