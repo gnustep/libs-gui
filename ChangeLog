@@ -1,3 +1,8 @@
+2010-12-17 Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSSearchFieldCell.m:
+	Set search menu 'ownedByPopup' to make it work on Windows.
+
 2010-12-14 Riccardo Mottola
 
 	* Source/NSWorkspace.m

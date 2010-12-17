@@ -552,6 +552,17 @@
   return template;
 }
 
+/* These two methods allow the NSSearchFieldCell to act enough like an
+   NSPopUpButtonCell that it can serve as the "owner" of the popup menu. */
+- (BOOL) pullsDown
+{
+  return NO;
+}
+- (void) selectItemAtIndex:(int)anIndex
+{
+  // do nothing
+}
+
 - (void) _openPopup: (id)sender
 {
   NSMenu *template;
@@ -565,6 +576,8 @@
 
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == NSWindows95InterfaceStyle)
+    [popupmenu _setOwnedByPopUp:(NSPopUpButtonCell *)self]; // needed for menu to show up in NSWindows95InterfaceStyle
 
   // Fill the popup menu 
   for (i = 0; i < [template numberOfItems]; i++)
