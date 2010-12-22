@@ -68,20 +68,20 @@
   // Screen coordinates of mouse pointer, only valid when destWindow != nil
   NSPoint	dragPoint;
 
-  int		dragSequence;
+  NSInteger	dragSequence;
 
   // the source of the dragging operation
   id		dragSource;
 
   // Operations supported by the source
-  unsigned int	dragMask;
+  NSDragOperation dragMask;
 
   /* User specified operation mask (key modifiers).
    * This is either a mask of type _NSDragOperation,
    * or NSDragOperationIgnoresModifiers, which
    * is defined as 0xffff
    */
-  unsigned int	operationMask;
+  NSDragOperation operationMask;
 
   // slide the image back when drag fails?
   BOOL		slideBack;
@@ -102,7 +102,7 @@
   int		targetWindowRef;
 
   // Operations supported by the target, only valid if targetWindowRef isn't 0
-  unsigned int	targetMask;
+  NSDragOperation targetMask;
 
   // YES if target and source are in a different application
   BOOL		destExternal;

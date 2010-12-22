@@ -4922,7 +4922,7 @@ other than copy/paste or dragging. */
  */
 
 // dragging of text, colors and files
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
     return (NSDragOperationGeneric | NSDragOperationCopy);
 }

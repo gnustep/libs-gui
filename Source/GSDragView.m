@@ -180,7 +180,7 @@ static	GSDragView *sharedDragView = nil;
   return dragPasteboard;
 }
 
-- (int) draggingSequenceNumber
+- (NSInteger) draggingSequenceNumber
 {
   return dragSequence;
 }
@@ -190,7 +190,7 @@ static	GSDragView *sharedDragView = nil;
   return dragSource;
 }
 
-- (unsigned int) draggingSourceOperationMask
+- (NSDragOperation) draggingSourceOperationMask
 {
   // Mix in possible modifiers
   return dragMask & operationMask;
@@ -250,7 +250,7 @@ static	GSDragView *sharedDragView = nil;
 
   // Unset the target window  
   targetWindowRef = 0;
-  targetMask = NSDragOperationAll;
+  targetMask = NSDragOperationEvery;
   destExternal = NO;
 
   NSDebugLLog(@"NSDragging", @"Start drag with %@", [pboard types]);
@@ -423,7 +423,7 @@ static	GSDragView *sharedDragView = nil;
 - (BOOL) _updateOperationMask: (NSEvent*) theEvent
 {
   unsigned int mod = [theEvent modifierFlags];
-  unsigned int oldOperationMask = operationMask;
+  NSDragOperation oldOperationMask = operationMask;
 
   if (operationMask == NSDragOperationIgnoresModifiers)
     {
@@ -444,7 +444,7 @@ static	GSDragView *sharedDragView = nil;
     }
   else
     {
-      operationMask = NSDragOperationAll;
+      operationMask = NSDragOperationEvery;
     }
 
   return (operationMask != oldOperationMask);
@@ -477,7 +477,7 @@ static	GSDragView *sharedDragView = nil;
   NSCursor *newCursor;
   NSString *name;
   NSString *iname;
-  int       mask;
+  NSDragOperation mask;
 
   mask = dragMask & operationMask;
 
@@ -775,7 +775,7 @@ static	GSDragView *sharedDragView = nil;
           NSDebugLLog(@"NSDragging", @"got GSAppKitDraggingStatus\n");
           if ((int)[theEvent data1] == targetWindowRef)
             {
-              unsigned int newTargetMask = [theEvent data2];
+              NSDragOperation newTargetMask = (NSDragOperation)[theEvent data2];
 
               if (newTargetMask != targetMask)
                 {
@@ -919,7 +919,7 @@ static	GSDragView *sharedDragView = nil;
   //  Reset drag mask when we switch from external to internal or back
   if (oldDestExternal != destExternal)
     {
-      unsigned int newMask;
+      NSDragOperation newMask;
 
       newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
       if (newMask != dragMask)

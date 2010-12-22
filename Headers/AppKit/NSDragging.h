@@ -38,17 +38,19 @@
 @class NSImage;
 @class NSURL;
 
-typedef enum _NSDragOperation {
+enum _NSDragOperation {
   NSDragOperationNone = 0,
   NSDragOperationCopy = 1,
   NSDragOperationLink = 2,
   NSDragOperationGeneric = 4,
   NSDragOperationPrivate = 8,
+  NSDragOperationAll = 15,
   NSDragOperationMove = 16,
   NSDragOperationDelete = 32,
-  NSDragOperationAll = 63,
-  NSDragOperationEvery = 0xffff  
-} NSDragOperation;
+  NSDragOperationEvery = UINT_MAX  
+};
+
+typedef unsigned int NSDragOperation;
 
 @protocol NSDraggingInfo
 
@@ -58,9 +60,9 @@ typedef enum _NSDragOperation {
 - (NSWindow *)draggingDestinationWindow;
 - (NSPoint)draggingLocation;
 - (NSPasteboard *)draggingPasteboard;
-- (int)draggingSequenceNumber;
+- (NSInteger)draggingSequenceNumber;
 - (id)draggingSource;
-- (unsigned int)draggingSourceOperationMask;
+- (NSDragOperation)draggingSourceOperationMask;
 
 //
 // Image Information
@@ -107,7 +109,7 @@ typedef enum _NSDragOperation {
 //
 // Querying the Source
 //
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
 - (BOOL)ignoreModifierKeysWhileDragging;
 
 //

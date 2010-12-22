@@ -342,7 +342,7 @@ static Class imageCellClass;
   [super mouseDown: theEvent];
 }
 
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   return NSDragOperationCopy;
 }

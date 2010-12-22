@@ -317,7 +317,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   //nothing to do
 }
 
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   return isLocal ? NSDragOperationGeneric : NSDragOperationNone;
 }
@@ -808,7 +808,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   //nothing to do
 }
 
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   return isLocal ? NSDragOperationGeneric : NSDragOperationNone;
 }

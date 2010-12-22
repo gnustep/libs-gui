@@ -137,8 +137,8 @@ typedef enum _NSTableViewColumnAutoresizingStyle
      tile at the end */
   BOOL _tilingDisabled;
 
-	unsigned int _draggingSourceOperationMaskForLocal;
-	unsigned int _draggingSourceOperationMaskForRemote;
+  NSDragOperation _draggingSourceOperationMaskForLocal;
+  NSDragOperation _draggingSourceOperationMaskForRemote;
 }
 
 /* Data Source */
@@ -314,7 +314,7 @@ typedef enum _NSTableViewColumnAutoresizingStyle
                              tableColumns: (NSArray*)cols
                                     event: (NSEvent*)event
                                    offset: (NSPoint*)offset;
-- (void) setDraggingSourceOperationMask: (unsigned int)mask
+- (void) setDraggingSourceOperationMask: (NSDragOperation)mask
                                forLocal: (BOOL)isLocal;
 #endif
 

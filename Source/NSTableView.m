@@ -77,7 +77,7 @@ static NSTableViewDropOperation oldDropOperation;
 static NSTableViewDropOperation currentDropOperation;
 static int currentDropRow;
 static int lastQuarterPosition;
-static unsigned currentDragOperation;
+static NSDragOperation currentDragOperation;
 
 /*
  * Nib compatibility struct.  This structure is used to 
@@ -6095,7 +6095,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 }
 
 
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   if (isLocal)
     {
@@ -6107,7 +6107,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (void) setDraggingSourceOperationMask: (unsigned int)mask
+- (void) setDraggingSourceOperationMask: (NSDragOperation)mask
                                forLocal: (BOOL)isLocal
 {
   if (isLocal)
@@ -6127,10 +6127,9 @@ This method is deprecated, use -columnIndexesInRect:. */
   oldDropRow = -1;
   lastQuarterPosition = -1;
   oldDraggingRect = NSMakeRect(0.,0., 0., 0.);
-  currentDragOperation = NSDragOperationAll;
+  currentDragOperation = NSDragOperationEvery;
   return currentDragOperation;
 }
-
 
 - (void) draggingExited: (id <NSDraggingInfo>) sender
 {
@@ -6145,7 +6144,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   int row;
   int quarterPosition, positionInRow;
   int currentRow;
-  unsigned dragOperation;
+  NSDragOperation dragOperation;
 
   p = [self convertPoint: p fromView: nil];
   /* This is a crude method of scrolling the view while dragging so

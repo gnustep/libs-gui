@@ -1,3 +1,17 @@
+2010-12-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDragging.h,
+	* Headers/AppKit/NSTableView.h,
+	* Headers/Additions/GNUstepGUI/GSDragView.h,
+	* Source/NSImageView.m,
+	* Source/NSColorWell.m,
+	* Source/NSSavePanel.m,
+	* Source/NSTextView.m,
+	* Source/NSToolbarItem.m,
+	* Source/NSTableView.m,
+	* Source/GSDragView.m: Correct the definition of NSDragOperation
+	and all its usages.
+
 2010-12-17 Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSSearchFieldCell.m:

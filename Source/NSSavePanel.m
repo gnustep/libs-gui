@@ -137,7 +137,7 @@ setPath(NSBrowser *browser, NSString *path)
       return NSDragOperationNone;
     }
 
-  return NSDragOperationAll;
+  return NSDragOperationEvery;
 }
     
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
