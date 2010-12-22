@@ -1844,6 +1844,36 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   return new;
 }
 
+- (NSPoint) convertPointFromBase: (NSPoint)aPoint
+{
+  return [self convertPoint: aPoint fromView: nil];
+}
+
+- (NSPoint) convertPointToBase: (NSPoint)aPoint
+{
+  return [self convertPoint: aPoint toView: nil];
+}
+
+- (NSRect) convertRectFromBase: (NSRect)aRect
+{
+  return [self convertRect: aRect fromView: nil];
+}
+
+- (NSRect) convertRectToBase: (NSRect)aRect
+{
+  return [self convertRect: aRect toView: nil];
+}
+
+- (NSSize) convertSizeFromBase: (NSSize)aSize
+{
+  return [self convertSize: aSize fromView: nil];
+}
+
+- (NSSize) convertSizeToBase: (NSSize)aSize
+{
+  return [self convertSize: aSize toView: nil];
+}
+
 /** 
  * Sets whether the receiver should post NSViewFrameDidChangeNotification 
  * when its frame changed. 

@@ -239,6 +239,14 @@ PACKAGE_SCOPE
 	      fromView: (NSView*)aView;
 - (NSSize) convertSize: (NSSize)aSize
 		toView: (NSView*)aView;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSPoint) convertPointFromBase: (NSPoint)aPoint;
+- (NSPoint) convertPointToBase: (NSPoint)aPoint;
+- (NSRect) convertRectFromBase: (NSRect)aRect;
+- (NSRect) convertRectToBase: (NSRect)aRect;
+- (NSSize) convertSizeFromBase: (NSSize)aSize;
+- (NSSize) convertSizeToBase: (NSSize)aSize;
+#endif
 
 /*
  * Notifying Ancestor Views

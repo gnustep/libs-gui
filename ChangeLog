@@ -1,5 +1,10 @@
 2010-12-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSView.h,
+	* Source/NSView.m: Add the 10.5 coordinate transformation methods.
+
+2010-12-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSDragging.h,
 	* Headers/AppKit/NSTableView.h,
 	* Headers/Additions/GNUstepGUI/GSDragView.h,
