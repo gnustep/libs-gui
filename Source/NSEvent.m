@@ -517,16 +517,14 @@ static Class eventClass;
    </p>
    <p>
    This method is only valid for NSMouseMoved, NS*MouseDragged and 
-   NSScrollWheel events, otherwise it will raise an 
-   NSInternalInconsistencyException.
+   NSScrollWheel events, otherwise it will return 0.
    </p>
  */
-- (float)deltaX
+- (float) deltaX
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"deltaX requested for invalid event type"];
+      return 0.0;
     }
   return event_data.mouse.deltaX;
 }
@@ -537,16 +535,14 @@ static Class eventClass;
    </p>
    <p>
    This method is only valid for NSMouseMoved, NS*MouseDragged and 
-   NSScrollWheel events, otherwise it will raise an 
-   NSInternalInconsistencyException.
+   NSScrollWheel events, otherwise it will return 0.
    </p>
  */
-- (float)deltaY
+- (float) deltaY
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"deltaY requested for invalid event type"];
+      return 0.0;
     }
   return event_data.mouse.deltaY;
 }
@@ -557,19 +553,17 @@ static Class eventClass;
    </p>
    <p>
    This method is only valid for NSMouseMoved, NS*MouseDragged and 
-   NSScrollWheel events, otherwise it will raise an 
-   NSInternalInconsistencyException.
+   NSScrollWheel events, otherwise it will return 0.
    </p>
    <p>
    The value returned is 0.0 in most cases.
    </p>
  */
-- (float)deltaZ
+- (float) deltaZ
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"deltaZ requested for invalid event type"];
+      return 0.0;
     }
   return event_data.mouse.deltaZ;
 }

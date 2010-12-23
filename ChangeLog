@@ -1,3 +1,8 @@
+2010-12-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSEvent.m (-deltaX, -deltaY, -deltaZ): Don't raise an
+	exception when called on the wrong type of event.
+
 2010-12-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSView.h,
