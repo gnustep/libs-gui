@@ -36,6 +36,7 @@
 #include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/NSAttributedString.h"
+#include "AppKit/NSBox.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
@@ -719,8 +720,21 @@
 - (void) drawSeparatorItemWithFrame:(NSRect)cellFrame
                             inView:(NSView *)controlView
 {
-  // FIXME: This only has sense in MacOS or Windows interface styles.
-  // Maybe somebody wants to support this (Lazaro).
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+  if (style == NSMacintoshInterfaceStyle
+      || style == NSWindows95InterfaceStyle)
+    {
+      /*
+      NSRect lineFrame = NSMakeRect(cellFrame.origin.x,
+				    cellFrame.origin.y 
+				    + cellFrame.size.height/2,
+				    cellFrame.size.width,
+				    1);
+      NSBox *line = [[NSBox alloc] initWithFrame: lineFrame];
+      [controlView addSubview:line];
+      RELEASE(line);
+      */
+    }
 }
 
 - (void) drawStateImageWithFrame: (NSRect)cellFrame

@@ -64,6 +64,7 @@
     {
       NSData *data = [NSArchiver archivedDataWithRootObject: menu]; // copy the view...
       NSMenu *newMenu = [NSUnarchiver unarchiveObjectWithData: data];
+      NSMenuView *menuView = nil;
 
       /* 
        * Set the new menu
@@ -73,7 +74,7 @@
       /*
        * And transfer the new menu representation to the window decoration view.
        */
-      NSMenuView *menuView = [newMenu menuRepresentation];
+      menuView = [newMenu menuRepresentation];
       if (menuView != nil)
 	{
 	  [menu close];
@@ -81,6 +82,23 @@
 	  [wv addMenuView: menuView];
 	  [menuView sizeToFit];
 	}
+    }
+  else
+    {
+      NSMenu *m = [window menu];
+      // NSMenuView *menuView = nil;
+
+      [m update];      
+      /*
+      menuView = [m menuRepresentation];
+      if (menuView != nil)
+	{
+	  [menu close];
+	  [menuView setHorizontal: YES];
+	  [wv addMenuView: menuView];
+	  [menuView sizeToFit];
+	}
+      */
     }
 }
 

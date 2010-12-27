@@ -256,7 +256,7 @@
       float menuBarHeight = [theme menuHeightForWindow: _window];
       NSRect menuRect = 
 	NSMakeRect(contentViewFrame.origin.x,
-		   NSMaxY(contentViewFrame) - menuBarHeight, 
+		   (NSMaxY(contentRect) + 1) - menuBarHeight,  
 		   contentViewFrame.size.width, 
 		   menuBarHeight);
 
@@ -466,7 +466,7 @@
 			  menuHeightForWindow: 
 			    _window];
   NSRect menuRect = NSMakeRect(contentRect.origin.x,
-			       NSMaxY(contentRect), 
+			       (NSMaxY(contentRect) + 1) - menubarHeight,  
 			       contentRect.size.width, 
 			       menubarHeight);
   hasMenu = YES;
