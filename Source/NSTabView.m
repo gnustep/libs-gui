@@ -529,7 +529,7 @@
     {
       [aCoder encodeObject: _items];
       [aCoder encodeObject: _font];
-      [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_type];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       [aCoder encodeConditionalObject: _delegate];
@@ -582,7 +582,7 @@
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_items];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
-      [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_type];
       if (version < 2)
         {
           switch(_type)

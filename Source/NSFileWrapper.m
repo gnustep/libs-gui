@@ -579,7 +579,7 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(GSFileWrapperType) at: &_wrapperType];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_wrapperType];
   // Dont store the file name
   [aCoder encodeObject: _preferredFilename];
   [aCoder encodeObject: _fileAttributes];
@@ -595,7 +595,7 @@
   id wrapperData;
   NSImage *iconImage;
 
-  [aDecoder decodeValueOfObjCType: @encode(GSFileWrapperType) at: &wrapperType];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &wrapperType];
   // Dont restore the file name
   preferredFilename = [aDecoder decodeObject];
   fileAttributes = [aDecoder decodeObject];

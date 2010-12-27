@@ -210,7 +210,7 @@
       [aCoder encodeObject:_label];
       [aCoder encodeObject:_view];
       [aCoder encodeObject:_color];
-      [aCoder encodeValueOfObjCType: @encode(NSTabState) at: &_state];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_state];
       [aCoder encodeObject:_first_responder];
       [aCoder encodeObject:_tabview];
     }
@@ -234,7 +234,7 @@
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_label];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_view];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_color];
-      [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&_state];
+      [aDecoder decodeValueOfObjCType: @encode(int) at:&_state];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_first_responder];
       AUTORELEASE(_first_responder);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_tabview];

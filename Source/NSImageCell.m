@@ -340,9 +340,9 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
-      [aCoder encodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
-      [aCoder encodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_imageAlignment];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_frameStyle];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_imageScaling];
       [aCoder encodeSize: _original_image_size];
     }
 }
@@ -372,9 +372,9 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 	}
       else
 	{
-	  [aDecoder decodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
-	  [aDecoder decodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
-	  [aDecoder decodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
+	  [aDecoder decodeValueOfObjCType: @encode(int) at: &_imageAlignment];
+	  [aDecoder decodeValueOfObjCType: @encode(int) at: &_frameStyle];
+	  [aDecoder decodeValueOfObjCType: @encode(int) at: &_imageScaling];
 	  _original_image_size = [aDecoder decodeSize];
 	}
     }

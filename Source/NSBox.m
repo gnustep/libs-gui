@@ -514,8 +514,8 @@
     {
       [aCoder encodeObject: _cell];
       [aCoder encodeSize: _offsets];
-      [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_border_type];
-      [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &_title_position];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_border_type];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_title_position];
       // NB: the content view is our (only) subview, so it is already 
       // encoded by NSView.
     }
@@ -564,9 +564,9 @@
     {
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
         _offsets = [aDecoder decodeSize];
-        [aDecoder decodeValueOfObjCType: @encode(NSBorderType)
+        [aDecoder decodeValueOfObjCType: @encode(int)
                                      at: &_border_type];
-        [aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
+        [aDecoder decodeValueOfObjCType: @encode(int) 
                                      at: &_title_position];
 
         // The content view is our only sub_view

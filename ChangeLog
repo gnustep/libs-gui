@@ -1,3 +1,30 @@
+2010-12-27  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Source/NSBezierPath.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Explicitly encode/decode NSBezierPathElement as 'int' to work
+	across compiler versions.
+	* Source/NSBox.m ([-encodeWithCoder:], [-initWithCoder:]): Same
+	for NSBorderType and NSTitlePosition.
+	* Source/NSEvent.m ([-encodeWithCoder:], [-initWithCoder:]): Same
+	for NSEventType.
+	* Source/NSFileWrapper.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for GSFileWrapperType.
+	* Source/NSImageCell.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for NSImageAlignment, NSImageFrameStyle, NSImageScaling,
+	* Source/NSParagraphStyle.m ([-initWithCoder:],
+	[-encodeWithCoder:]): Same for NSTextAlignment, NSLineBreakMode
+	and NSTextTabType.
+	* Source/NSResponder.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for NSInterfaceStyle.
+	* Source/NSScrollView.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for NSBorderType.
+	* Source/NSTabView.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for NSTabViewType.
+	* Source/NSTabViewItem.m ([-encodeWithCoder:], [-initWithCoder:]):
+	Same for NSTabState.
+	* Source/NSWindow.m ([-encodeWithCoder:], [-initWithCoder:]): Same
+	for NSBackingStoreType.
+
 2010-12-27 02:12-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Added implementation for 

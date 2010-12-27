@@ -5124,7 +5124,7 @@ current key view.<br />
 
   [aCoder encodeRect: [[self contentView] frame]];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &_styleMask];
-  [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &_backingType];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_backingType];
 
   [aCoder encodePoint: NSMakePoint(NSMinX([self frame]), NSMaxY([self frame]))];
   [aCoder encodeObject: _contentView];
@@ -5191,7 +5191,7 @@ current key view.<br />
       aRect = [aDecoder decodeRect];
       [aDecoder decodeValueOfObjCType: @encode(unsigned)
                                    at: &aStyle];
-      [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
+      [aDecoder decodeValueOfObjCType: @encode(int)
                                    at: &aBacking];
 
       // call the designated initializer....

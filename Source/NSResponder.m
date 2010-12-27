@@ -357,8 +357,7 @@
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(NSInterfaceStyle)
-	      at: &_interface_style];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_interface_style];
       [aCoder encodeObject: _menu];
     }
 }
@@ -386,8 +385,7 @@
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(NSInterfaceStyle)
-		at: &_interface_style];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_interface_style];
       obj = [aDecoder decodeObject];
     }
 

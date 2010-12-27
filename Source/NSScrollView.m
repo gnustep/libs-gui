@@ -1478,7 +1478,7 @@ static float scrollerWidth;
   else
     {
       [aCoder encodeObject: _contentView];
-      [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_borderType];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_hLineScroll];
@@ -1609,7 +1609,7 @@ static float scrollerWidth;
       int version = [aDecoder versionForClassName: @"NSScrollView"];
       NSDebugLLog(@"NSScrollView", @"NSScrollView: start decoding\n");
       _contentView = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_borderType];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_hLineScroll];

@@ -1628,7 +1628,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
   for (i = 0; i < count; i++) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
-      [aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &type];
       switch(type) 
         {
 	  case NSMoveToBezierPathElement:
@@ -1674,7 +1674,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 
   for (i = 0; i < count; i++) 
     {
-      [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &type];
       switch(type) 
         {
 	  case NSMoveToBezierPathElement:

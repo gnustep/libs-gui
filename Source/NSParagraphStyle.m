@@ -473,9 +473,8 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       unsigned	count;
       
-      [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
-      [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) 
-	      at: &_lineBreakMode];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &_alignment];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &_lineBreakMode];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_headIndent];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_lineSpacing];
@@ -498,7 +497,7 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+          [aCoder decodeArrayOfObjCType: @encode(int)
                   count: count
                   at: types];
           for (i = 0; i < count; i++)
@@ -531,9 +530,8 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       unsigned	count;
       
-      [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
-      [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) 
-	      at: &_lineBreakMode];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_alignment];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_lineBreakMode];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_headIndent];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_lineSpacing];
@@ -563,7 +561,7 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder encodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
+          [aCoder encodeArrayOfObjCType: @encode(int)
                   count: count
                   at: types];
         }
