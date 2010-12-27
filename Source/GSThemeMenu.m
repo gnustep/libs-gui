@@ -27,9 +27,11 @@
 */
 
 #include <Foundation/NSString.h>
+#include <Foundation/NSArchiver.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSMenuView.h>
+#include <AppKit/NSApplication.h>
 
 #include <GNUstepGUI/GSTheme.h>
 #include <GNUstepGUI/GSWindowDecorationView.h>
@@ -38,12 +40,18 @@
 
 @interface NSWindow (Private)
 - (GSWindowDecorationView *) windowView;
+- (void) _setMenu: (NSMenu *)menu;
 @end
 
 @implementation NSWindow (Private)
 - (GSWindowDecorationView *) windowView
 {
   return _wv;
+}
+
+- (void) _setMenu: (NSMenu *)menu
+{
+  [super setMenu: menu];
 }
 @end
 
@@ -52,29 +60,26 @@
        forWindow: (NSWindow *)window
 {
   GSWindowDecorationView *wv = [window windowView];
-  if ([window menu] != menu)
+  if ([window menu] == nil && menu != nil)
     {
-      NSMenuView *menuView;
-      
-      /* Restore the old representation to its original menu after
-       * removing it from the window.  If we didn't do this, the menu
-       * representation would be left without a partent view or
-       * window to draw in.
+      NSData *data = [NSArchiver archivedDataWithRootObject: menu]; // copy the view...
+      NSMenu *newMenu = [NSUnarchiver unarchiveObjectWithData: data];
+
+      /* 
+       * Set the new menu
        */
-      menuView = [wv removeMenuView];
-      [[window menu] setMenuRepresentation: menuView];
-      [menuView sizeToFit];
-      
-      /* Set the new menu, and transfer the new menu representation
-       * to the window decoration view.
+      [window _setMenu: newMenu];
+
+      /*
+       * And transfer the new menu representation to the window decoration view.
        */
-      menuView = [menu menuRepresentation];
+      NSMenuView *menuView = [newMenu menuRepresentation];
       if (menuView != nil)
 	{
 	  [menu close];
 	  [menuView setHorizontal: YES];
-	  [menuView sizeToFit];
 	  [wv addMenuView: menuView];
+	  [menuView sizeToFit];
 	}
     }
 }
@@ -123,12 +128,22 @@
 
 - (void) updateMenu: (NSMenu *)menu forWindow: (NSWindow *)window
 {
-  // default implementation of this method does nothing.
+  [self setMenu: menu 
+	forWindow: window];
 }
 
 - (void) updateAllWindowsWithMenu: (NSMenu *) menu
 {
-  // default implementation of this method does nothing.
+  NSEnumerator *en = [[NSApp windows] objectEnumerator];
+  id            o = nil;
+
+  while ((o = [en nextObject]) != nil)
+    {
+      if([o canBecomeMainWindow])
+	{
+	  [self updateMenu: menu forWindow: o];
+	}
+    }
 }
 
 - (BOOL) doesProcessEventsForPopUpMenu

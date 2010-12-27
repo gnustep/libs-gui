@@ -1,3 +1,16 @@
+2010-12-27 02:12-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeMenu.m: Added implementation for 
+	updateAllWindowsWithMenu:, updateMenu:forWindow:, altered
+	implementation for setMenu:forWindow:, added private method
+	_setMenu: to set the current menu on the window.
+	* Source/GSWindowDecorationView.m: Changes to layout
+	* Source/NSMenu.m: Only call the method updateAllWindowsWithMenu:
+	when NSMenuInterfaceStyle = NSWindows95InterfaceStyle.
+	* Source/NSMenuView.m: Change to -update so that it does not
+	render the top bar of the menu if NSMenuInterfaceStyle =
+	NSWindows95InterfaceStyle.
+
 2010-12-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSEvent.m (-deltaX, -deltaY, -deltaZ): Don't raise an

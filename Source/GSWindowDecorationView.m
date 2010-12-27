@@ -254,13 +254,14 @@
       NSMenuView *menuView;
       GSTheme *theme = [GSTheme theme];
       float menuBarHeight = [theme menuHeightForWindow: _window];
-      
+      NSRect menuRect = 
+	NSMakeRect(contentViewFrame.origin.x,
+		   NSMaxY(contentViewFrame) - menuBarHeight, 
+		   contentViewFrame.size.width, 
+		   menuBarHeight);
+
       menuView = [[_window menu] menuRepresentation];
-      [menuView setFrame: NSMakeRect(
-              contentViewFrame.origin.x,
-              NSMaxY(contentViewFrame) - menuBarHeight, 
-              contentViewFrame.size.width, 
-              menuBarHeight)];
+      [menuView setFrame: menuRect];
       contentViewFrame.size.height -= menuBarHeight;
     }
 
@@ -268,7 +269,7 @@
     {
       GSToolbarView *tv = [tb _toolbarView];
       float newToolbarViewHeight;
-	  
+      NSRect toolbarRect;
       // If the width changed we may need to recalculate the height
       if (contentViewFrame.size.width != [tv frame].size.width)
 	{
@@ -277,10 +278,11 @@
 	  [tv _reload];
 	}
       newToolbarViewHeight = [tv _heightFromLayout];
-      [tv setFrame: NSMakeRect(contentViewFrame.origin.x,
+      toolbarRect = NSMakeRect(contentViewFrame.origin.x,
 			       NSMaxY(contentViewFrame) - newToolbarViewHeight,
 			       contentViewFrame.size.width, 
-			       newToolbarViewHeight)];
+			       newToolbarViewHeight);
+      [tv setFrame: toolbarRect];
       contentViewFrame.size.height -= newToolbarViewHeight;
     }
 
@@ -463,15 +465,15 @@
   float	menubarHeight = [[GSTheme theme] 
 			  menuHeightForWindow: 
 			    _window];
+  NSRect menuRect = NSMakeRect(contentRect.origin.x,
+			       NSMaxY(contentRect), 
+			       contentRect.size.width, 
+			       menubarHeight);
   hasMenu = YES;
   // Plug the menu view
-  [menuView setFrame: NSMakeRect(
-          contentRect.origin.x,
-          NSMaxY(contentRect), 
-          contentRect.size.width, 
-          menubarHeight)];
+  [menuView setFrame: menuRect];
   [self addSubview: menuView];
-  
+
   [self changeWindowHeight: menubarHeight];  
 }
 

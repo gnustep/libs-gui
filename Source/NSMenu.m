@@ -1757,7 +1757,11 @@ static BOOL menuBarVisible = YES;
 
 - (void) applicationDidFinishLaunching:(NSNotification *)notification
 {
-  [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+      NSWindows95InterfaceStyle)
+    {
+      [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
+    }
   [self _showTornOffMenuIfAny:notification];
 }
 
@@ -2011,7 +2015,12 @@ static BOOL menuBarVisible = YES;
         {
           [self display];
         }
-      [[GSTheme theme] updateAllWindowsWithMenu: self];
+
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+	  NSWindows95InterfaceStyle)
+	{
+	  [[GSTheme theme] updateAllWindowsWithMenu: self];
+	}
     }
   else 
     {

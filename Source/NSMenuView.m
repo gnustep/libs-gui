@@ -594,7 +594,12 @@ static NSMapTable *viewInfo = 0;
   /*
    * Ensure that a title view exists only if needed.
    */
-  if (_attachedMenu == nil)
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+      NSWindows95InterfaceStyle)
+    {
+      needTitleView = NO;
+    }
+  else if (_attachedMenu == nil)
     {
       needTitleView = NO;
     }
