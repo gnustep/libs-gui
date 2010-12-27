@@ -759,7 +759,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     format: @"subclass %s(%s) should override %s", 
 	       class_getName(object_getClass(self)),
 	       GSObjCIsInstance(self) ? "instance" : "class",
-	       sel_get_name(aSel)];
+	       sel_getName(aSel)];
   return nil;
 }
 
