@@ -29,19 +29,20 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include "AppKit/NSMenuView.h"
-#include <AppKit/NSSearchFieldCell.h>
-#include "AppKit/NSWindow.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSSearchFieldCell.h"
+#import "AppKit/NSWindow.h"
 
 @interface NSSearchFieldCell (Private)
 
@@ -82,8 +83,8 @@
 
       //_recent_searches = [[NSMutableArray alloc] init];
       //_recents_autosave_name = nil;
-      [self _loadSearches];
       _max_recents = 10;
+      [self _loadSearches];
     }
 
   return self;
@@ -199,7 +200,7 @@
     }
   else
     {
-      searches = [NSMutableArray arrayWithArray:searches];
+      searches = [NSMutableArray arrayWithArray: searches];
     }
   ASSIGN(_recent_searches, searches);
   [self _saveSearches];
@@ -212,9 +213,9 @@
       ASSIGN(_recent_searches, [NSMutableArray array]);
     }
   if (searchTerm != nil && [searchTerm length] > 0
-	&& [_recent_searches indexOfObject:searchTerm] == NSNotFound)
+	&& [_recent_searches indexOfObject: searchTerm] == NSNotFound)
     {
-      [_recent_searches addObject:searchTerm];
+      [_recent_searches addObject: searchTerm];
       [self _saveSearches];
     }
 }
@@ -229,9 +230,9 @@
   ASSIGN(_menu_template, menu);
   if (menu)
     {
-      [[self searchButtonCell] setTarget:self];
-      [[self searchButtonCell] setAction:@selector(_openPopup:)];
-      [[self searchButtonCell] sendActionOn:NSLeftMouseDownMask];
+      [[self searchButtonCell] setTarget: self];
+      [[self searchButtonCell] setAction: @selector(_openPopup:)];
+      [[self searchButtonCell] sendActionOn: NSLeftMouseDownMask];
     }
   else
     {
@@ -295,7 +296,7 @@
 //  [c setTarget: [self target]];
   [c setAction: @selector(performClick:)];
   [c setTarget: self];
-  [c sendActionOn:NSLeftMouseUpMask];
+  [c sendActionOn: NSLeftMouseUpMask];
   [c setKeyEquivalent: @"\r"];
   [c setKeyEquivalentModifierMask: 0];
 }
@@ -361,7 +362,7 @@
 
 - (void) endEditing: (NSText *)editor
 {
-  [self addToRecentSearches:[[[editor string] copy] autorelease]];
+  [self addToRecentSearches: [[[editor string] copy] autorelease]];
   [super endEditing: editor];
   [[NSNotificationCenter defaultCenter] 
       removeObserver: self 
@@ -558,6 +559,7 @@
 {
   return NO;
 }
+
 - (void) selectItemAtIndex:(int)anIndex
 {
   // do nothing
@@ -572,7 +574,6 @@
   NSRect cellFrame;
   int i;
   int recentCount = [_recent_searches count];
-  // NSRect textRect;
 
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
@@ -652,15 +653,16 @@
   // Last, display the window
   [[mr window] orderFrontRegardless];
 
-  [mr mouseDown:[NSApp currentEvent]];
+  [mr mouseDown: [NSApp currentEvent]];
   AUTORELEASE(popupmenu);
 }
 
 - (void) _searchForRecent: (id)sender
 {
   NSString *searchTerm = [sender title];
-  [(id)_control_view setStringValue:searchTerm];
-  [self performClick:self];  // do the search
+
+  [(id)_control_view setStringValue: searchTerm];
+  [self performClick: self];  // do the search
 }
 
 - (void) _clearSearches: (id)sender
@@ -672,6 +674,7 @@
 {
   NSArray *list;
   NSString *name = [self recentsAutosaveName];
+
   if (name)
     {
       list = [[NSUserDefaults standardUserDefaults] 
@@ -684,6 +687,7 @@
 {
   NSArray *list = [self recentSearches];
   NSString *name = [self recentsAutosaveName];
+
   if (name && list)
     {
       [[NSUserDefaults standardUserDefaults] 

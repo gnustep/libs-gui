@@ -1,5 +1,10 @@
 2010-12-27 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSSearchField.m,
+	* Source/NSSearchFieldCell.m: Some coding standard changes.
+
+2010-12-27 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSDragView.m: Check whether the drag source supports
 	methods before calling them.
 

@@ -27,10 +27,11 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <AppKit/NSSearchField.h>
-#include <AppKit/NSSearchFieldCell.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+
+#import "AppKit/NSSearchField.h"
+#import "AppKit/NSSearchFieldCell.h"
 
 /*
  * Class variables
@@ -92,16 +93,17 @@ static Class usedCellClass;
        untilMouseUp: YES];
 }
 
-- (void)delete:(id)sender
+- (void) delete: (id)sender
 {
-  [self setStringValue:@""]; // this may need to do more (like send action), but start here...
-  [[self cell] performClick:self];
+  // this may need to do more (like send action), but start here...
+  [self setStringValue: @""];
+  [[self cell] performClick: self];
 }
 
 // Cocoa only defines these methods on the cell, but nib loading targets the field itself
-- (void) setSearchMenuTemplate:(NSMenu *)newTemplate
+- (void) setSearchMenuTemplate: (NSMenu *)newTemplate
 {
-  [[self cell] setSearchMenuTemplate:newTemplate];
+  [[self cell] setSearchMenuTemplate: newTemplate];
 }
 
 - (void) setSendsWholeSearchString: (BOOL)flag
