@@ -217,9 +217,18 @@ static	GSDragView *sharedDragView = nil;
   return loc;
 }
 
-- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
+- (NSArray *) namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 {
-  return [[self draggingSource] namesOfPromisedFilesDroppedAtDestination: dropDestination];
+  if ([dragSource respondsToSelector:
+                    @selector(namesOfPromisedFilesDroppedAtDestination:)])
+    {
+      return [dragSource namesOfPromisedFilesDroppedAtDestination: 
+                           dropDestination];
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (BOOL) isDragging
@@ -646,7 +655,17 @@ static	GSDragView *sharedDragView = nil;
       [self _updateOperationMask: theEvent];
     }
 
-  dragMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
+
+  if ([dragSource respondsToSelector:
+                    @selector(draggingSourceOperationMaskForLocal:)])
+    {
+      dragMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
+    }
+  else
+    {
+      dragMask = NSDragOperationCopy | NSDragOperationLink |
+        NSDragOperationGeneric | NSDragOperationPrivate;
+    }
   
   // --- Setup the event loop ------------------------------------------
   [self _updateAndMoveImageToCorrectPosition];
@@ -874,7 +893,13 @@ static	GSDragView *sharedDragView = nil;
  
   //--- Move drag image to the new position -----------------------------------
   [self _moveDraggedImageToNewPosition];
-  
+
+  if ([dragSource respondsToSelector:
+              @selector(draggedImage:movedTo:)])
+    {
+      [dragSource draggedImage: [self draggedImage] movedTo: dragPosition];
+    }
+
   //--- Determine target window ---------------------------------------------
   destWindow = [self windowAcceptingDnDunder: dragPosition
                                    windowRef: &mouseWindowRef];
@@ -921,7 +946,17 @@ static	GSDragView *sharedDragView = nil;
     {
       NSDragOperation newMask;
 
-      newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
+      if ([dragSource respondsToSelector:
+                        @selector(draggingSourceOperationMaskForLocal:)])
+        {
+          newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
+        }
+      else
+        {
+          newMask = NSDragOperationCopy | NSDragOperationLink |
+            NSDragOperationGeneric | NSDragOperationPrivate;
+        }
+
       if (newMask != dragMask)
         {
           dragMask = newMask;

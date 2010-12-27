@@ -1,3 +1,8 @@
+2010-12-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDragView.m: Check whether the drag source supports
+	methods before calling them.
+
 2010-12-27  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/NSGraphicsContext.m ([-subclassResponsibility:]): Use
