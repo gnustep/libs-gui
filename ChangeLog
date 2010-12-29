@@ -1,5 +1,20 @@
 2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* configure.ac:
+	* Headers/Additions/GNUstepGUI/config.h.in:
+	Add test for getmntinfo(3).
+
+	* Source/NSWorkspace.m (-mountedLocalVolumePaths):
+	Provide more portable implementation based on getmntinfo(3), which
+	is available on many systems. Also a Solaris compatibility fix.
+
+	* Source/NSWorkspace.m (-getFileSystemInfoForPath:...):
+	Tentative implementation for system with a statfs system call.
+
+	* configure: Regenerated.
+
+2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSWorkspace.m(GSWorkspacePreferencesChanged, -init,
 	-findApplications, -setBestApp:inRole:forExtension:,
 	-setBestIcon:forExtension:, -setBestApp:inRole:forScheme:,

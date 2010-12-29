@@ -119,6 +119,7 @@ AC_CHECK_HEADERS(sys/mntent.h)
 AC_CHECK_MEMBER(struct mntent.mnt_dir,[AC_DEFINE(MNT_MEMB,mnt_dir,mntent structure member name)],,[#include <mntent.h>])
 AC_CHECK_MEMBER(struct mntent.mnt_mountp,[AC_DEFINE(MNT_MEMB,mnt_mountp,mntent structure member name)],,[#include <sys/mntent.h>])
 AC_FUNC_GETMNTENT
+AC_CHECK_FUNCS(getmntinfo)
 
 #--------------------------------------------------------------------
 # Simple way to add a bunch of paths to the flags

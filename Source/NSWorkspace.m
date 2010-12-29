@@ -32,7 +32,12 @@
 
 #import "config.h"
 
-#if	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+#if	defined(HAVE_GETMNTINFO)
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
 #if	defined(HAVE_MNTENT_H)
 #include <mntent.h>
 #elif defined(HAVE_SYS_MNTENT_H)
@@ -1059,8 +1064,49 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		      description: (NSString **)description
 			     type: (NSString **)fileSystemType
 {
+#if defined (HAVE_GETMNTINFO)
+  /* FIXME Check for presence of statfs call explicitly. Not all systems
+     with getmntinfo do have a statfs calls. In particular, NetBSD offers
+     only a statvfs calls for compatibility with POSIX. Other BSDs and
+     Linuxes have statvfs as well, but this returns less information than
+     the 4.4BSD statfs call. The NetBSD statvfs, on the other hand, is just
+     a statfs in disguise, i.e., it provides all information available in
+     the 4.4BSD statfs call. Therefore, we go ahead an just #define statfs
+     as statvfs on NetBSD.
+     Note that the POSIX statvfs is not really helpful for us here. The
+     only information that could be extracted from the data returned by
+     that syscall is the ST_RDONLY flag. There is no owner field nor a
+     typename.
+     The statvfs call on Solaris returns a structure that includes a
+     non-standard f_basetype field, which provides the name of the
+     underlying file system type.
+  */
+#ifdef __NetBSD__
+#define statfs statvfs
+#define f_flags f_flag
+#endif
+  uid_t uid;
+  struct statfs m;
+  NSStringEncoding enc;
+
+  if (statfs([fullPath fileSystemRepresentation], &m))
+    return NO;
+
+  uid = geteuid();
+  enc = [NSString defaultCStringEncoding];
+  *removableFlag = NO; // FIXME
+  *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
+  *unmountableFlag =
+    (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
+  *description = @"filesystem"; // FIXME
+  *fileSystemType =
+    [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
+
+  return YES;
+#else
   // FIXME
   return NO;
+#endif
 }
 
 /**
@@ -1724,9 +1770,37 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       NSZoneFree(NSDefaultMallocZone(), base);
     }
 
+#elif defined (HAVE_GETMNTINFO)
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  unsigned int	i, n;
+  struct statfs	*m;
+
+  n = getmntinfo(&m, MNT_NOWAIT);
+  names = [NSMutableArray arrayWithCapacity: n];
+  for (i = 0; i < n; i++)
+    {
+      /* NB For now assume that all local volumes are mounted from a device
+         with an entry /dev and this is not the case for any pseudo
+	 filesystems.
+      */
+      if (strncmp(m[i].f_mntfromname, "/dev/", 5) == 0)
+        {
+	  [names addObject:
+		   [mgr stringWithFileSystemRepresentation: m[i].f_mntonname
+			length: strlen(m[i].f_mntonname)]];
+        }
+    }
 #elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
-  NSFileManager		*mgr = [NSFileManager defaultManager];
-  FILE		*fptr = fopen("/etc/mtab", "r");
+  /* FIXME Solaris uses /etc/mnttab instead of /etc/mtab, but defines
+   * MNTTAB to that path.
+   * FIXME We won't get here on Solaris at all because it defines the
+   * mntent struct in sys/mnttab.h instead of sys/mntent.h.
+   */
+# ifndef MNTTAB
+#  define MNTTAB "/etc/mtab"
+# endif
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  FILE		*fptr = fopen(MNTTAB, "r");
   struct mntent	*m;
 
 
