@@ -98,6 +98,8 @@ static NSImage	*unknownTool = nil;
 
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
+static NSString *GSWorkspacePreferencesChanged =
+    @"GSWorkspacePreferencesChanged";
 
 /*
  * Depending on the 'active' flag this returns either the currently
@@ -404,6 +406,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 - (BOOL) _scheme: (NSString*)scheme
 	    role: (NSString*)role
 	     app: (NSString**)app;
+- (void) _workspacePreferencesChanged: (NSNotification *)aNotification;
 
 // application communication
 - (BOOL) _launchApplication: (NSString*)appName
@@ -679,6 +682,11 @@ static NSString			*_rootPath = @"/";
     {
       [self findApplications];
     }
+  [_workspaceCenter
+    addObserver: self
+    selector: @selector(_workspacePreferencesChanged:)
+    name: GSWorkspacePreferencesChanged
+    object: nil];
 
   /* icon associtation and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
@@ -1375,9 +1383,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 - (void) findApplications
 {
   static NSString	*path = nil;
-  NSFileManager		*mgr = [NSFileManager defaultManager];
-  NSData		*data;
-  NSDictionary		*dict;
   NSTask		*task;
 
   /*
@@ -1393,42 +1398,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       [task waitUntilExit];
     }
-  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: extPrefPath];
-      if (data)
-	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  ASSIGN(extPreferences, dict);
-	}
-    }
-
-  if ([mgr isReadableFileAtPath: urlPrefPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: urlPrefPath];
-      if (data)
-	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  ASSIGN(urlPreferences, dict);
-	}
-    }
-
-  if ([mgr isReadableFileAtPath: appListPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: appListPath];
-      if (data)
-	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  ASSIGN(applications, dict);
-	}
-    }
-  /*
-   *	Invalidate the cache of icons for file extensions.
-   */
-  [_iconMap removeAllObjects];
+  [self _workspacePreferencesChanged:
+     [NSNotification notificationWithName: GSWorkspacePreferencesChanged
+				   object: self]];
 }
 
 /**
@@ -2180,7 +2152,15 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   RELEASE(extPreferences);
   extPreferences = map;
   data = [NSSerializer serializePropertyList: extPreferences];
-  [data writeToFile: extPrefPath atomically: YES];
+  if ([data writeToFile: extPrefPath atomically: YES])
+    {
+      [_workspaceCenter postNotificationName: GSWorkspacePreferencesChanged
+				      object: self];
+    }
+  else
+    {
+      NSLog(@"Update %@ of failed", extPrefPath);
+    }
 }
 
 /**
@@ -2211,7 +2191,15 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   RELEASE(extPreferences);
   extPreferences = map;
   data = [NSSerializer serializePropertyList: extPreferences];
-  [data writeToFile: extPrefPath atomically: YES];
+  if ([data writeToFile: extPrefPath atomically: YES])
+    {
+      [_workspaceCenter postNotificationName: GSWorkspacePreferencesChanged
+				      object: self];
+    }
+  else
+    {
+      NSLog(@"Update %@ of failed", extPrefPath);
+    }
 }
 
 /**
@@ -2299,7 +2287,15 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   RELEASE(urlPreferences);
   urlPreferences = map;
   data = [NSSerializer serializePropertyList: urlPreferences];
-  [data writeToFile: urlPrefPath atomically: YES];
+  if ([data writeToFile: urlPrefPath atomically: YES])
+    {
+      [_workspaceCenter postNotificationName: GSWorkspacePreferencesChanged
+				      object: self];
+    }
+  else
+    {
+      NSLog(@"Update %@ of failed", urlPrefPath);
+    }
 }
 
 @end
@@ -2813,6 +2809,54 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       return NO;
     }
 }
+
+- (void) _workspacePreferencesChanged: (NSNotification *)aNotification
+{
+  // FIXME reload only those preferences that really were changed
+  // TODO  add a user info to aNotification, which includes a bitmask
+  //       denoting the updated preference files.
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSData		*data;
+  NSDictionary		*dict;
+
+  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
+    {
+      data = [NSData dataWithContentsOfFile: extPrefPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  ASSIGN(extPreferences, dict);
+	}
+    }
+
+  if ([mgr isReadableFileAtPath: urlPrefPath] == YES)
+    {
+      data = [NSData dataWithContentsOfFile: urlPrefPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  ASSIGN(urlPreferences, dict);
+	}
+    }
+
+  if ([mgr isReadableFileAtPath: appListPath] == YES)
+    {
+      data = [NSData dataWithContentsOfFile: appListPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  ASSIGN(applications, dict);
+	}
+    }
+  /*
+   *	Invalidate the cache of icons for file extensions.
+   */
+  [_iconMap removeAllObjects];
+}
+
 
 /**
  * Launch an application locally (ie without reference to the workspace
