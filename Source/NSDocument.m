@@ -1071,6 +1071,17 @@ originalContentsURL: (NSURL *)orig
     {
       directory = [[self fileName] stringByDeletingLastPathComponent];
       file = [[self fileName] lastPathComponent];
+      if (![savePanel allowsOtherFileTypes])
+	{
+	  NSArray *exts = [savePanel allowedFileTypes];
+	  if ([exts count] && ![exts containsObject: [file pathExtension]] &&
+	      ![exts containsObject: @"*"])
+	    {
+	      file = [file stringByDeletingPathExtension];
+	      file = [file stringByAppendingPathExtension:
+			     [exts objectAtIndex: 0]];
+	    }
+	}
       return [savePanel runModalForDirectory: directory file: file];
     }
 

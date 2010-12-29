@@ -1,3 +1,9 @@
+2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocument.m (-runModalSavePanel:withAccessoryView:):
+	Make sure the file name displayed in the panel has a valid
+	extension.
+
 2010-12-27 16:51-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Changes for compiling with older compilers.
@@ -47,7 +53,6 @@
 	* Source/NSWindow.m ([-encodeWithCoder:], [-initWithCoder:]): Same
 	for NSBackingStoreType.
 
->>>>>>> .r31789
 2010-12-27 02:12-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Added implementation for 
