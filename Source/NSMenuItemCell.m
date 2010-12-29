@@ -36,7 +36,7 @@
 #include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/NSAttributedString.h"
-#include "AppKit/NSBox.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
@@ -724,6 +724,19 @@
   if (style == NSMacintoshInterfaceStyle
       || style == NSWindows95InterfaceStyle)
     {
+      NSBezierPath *path = [NSBezierPath bezierPath];
+      NSPoint start = NSMakePoint(3, cellFrame.size.height/2 + 
+				  cellFrame.origin.y);
+      NSPoint end   = NSMakePoint(cellFrame.size.width - 3, 
+				  cellFrame.size.height/2 + 
+				  cellFrame.origin.y);
+
+      [[NSColor blackColor] set];
+
+      [path moveToPoint: start];
+      [path lineToPoint: end];
+
+      [path stroke];
       /*
       NSRect lineFrame = NSMakeRect(cellFrame.origin.x,
 				    cellFrame.origin.y 

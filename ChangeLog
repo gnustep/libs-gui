@@ -1,3 +1,8 @@
+2010-12-29 12:31-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSMenuItemCell.m: Implement drawing a line in the menu
+	separator item for the Windows95 and Mac modes. 
+
 2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-_updateDragTargetLocation:operation:,
@@ -39,6 +44,7 @@
 	Make sure the file name displayed in the panel has a valid
 	extension.
 
+>>>>>>> .r31796
 2010-12-27 16:51-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Changes for compiling with older compilers.
