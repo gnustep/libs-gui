@@ -4913,12 +4913,11 @@ other than copy/paste or dragging. */
 /**** Drag and drop handling ****/
 
 /*
- * TODO: Dragging should use a transient insertion point distinct from the
- * text view's current selection. This allows subclasses of NSTextView to
- * determine the origin of the dragged selection during a drag operation and
- * provides better visual feedback for users, since the origin of the dragged
- * selection remains visible. Note that -rangeForUserTextChange will have to
- * be changed to take this transient insertion point into account.
+ * Note: Dragging uses a transient insertion point distinct from the text
+ * view's current selection. This allows subclasses of NSTextView to determine
+ * the origin of the dragged selection during a drag operation and provides
+ * better visual feedback for users, since the origin of the dragged selection
+ * remains visible.
  */
 
 // dragging of text, colors and files
@@ -4927,16 +4926,35 @@ other than copy/paste or dragging. */
     return (NSDragOperationGeneric | NSDragOperationCopy);
 }
 
-- (void)_draggingHijackInsertionPoint: (unsigned int)dragIndex
+- (void) _updateDragTargetLocation: (id <NSDraggingInfo>)sender
+			 operation: (unsigned int *)flags
 {
-  _dragTargetLocation = dragIndex;
-  [self updateInsertionPointStateAndRestartTimer: NO];
-  [self displayIfNeeded];
-}
+  if (*flags != NSDragOperationNone)
+    {
+      NSPoint	dragPoint;
+      unsigned	dragIndex;
 
-- (void)_draggingReleaseInsertionPoint
-{
-  _dragTargetLocation = NSNotFound;
+      dragPoint = [sender draggingLocation];
+      dragPoint = [self convertPoint: dragPoint fromView: nil];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
+
+      if ([sender draggingSource] != self ||
+          dragIndex <= [self selectedRange].location ||
+          dragIndex >= NSMaxRange([self selectedRange]))
+	{
+	  _dragTargetLocation = dragIndex;
+	}
+      else
+        {
+	  _dragTargetLocation = NSNotFound;
+	  *flags = NSDragOperationNone;
+        }
+    }
+  else if (_dragTargetLocation != NSNotFound)
+    {
+      _dragTargetLocation = NSNotFound;
+    }
   [self updateInsertionPointStateAndRestartTimer: NO];
   [self displayIfNeeded];
 }
@@ -4949,29 +4967,10 @@ other than copy/paste or dragging. */
 				    restrictedToTypesFromArray: types];
   unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  if (flags != NSDragOperationNone
-      && ![type isEqual:NSColorPboardType])
+  if (![type isEqual: NSColorPboardType])
     {
-      NSPoint	dragPoint;
-      unsigned	dragIndex;
-
-      dragPoint = [sender draggingLocation];
-      dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self _characterIndexForPoint: dragPoint
-                        respectFraction: YES];
-
-      if ([sender draggingSource] != self ||
-          dragIndex <= [self selectedRange].location ||
-          dragIndex >= NSMaxRange([self selectedRange]))
-	[self _draggingHijackInsertionPoint: dragIndex];
-      else
-        {
-	  [self _draggingReleaseInsertionPoint];
-	  flags = NSDragOperationNone;
-        }
+      [self _updateDragTargetLocation: sender operation: &flags];
     }
-  else if (_dragTargetLocation != NSNotFound)
-    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
@@ -4983,74 +4982,59 @@ other than copy/paste or dragging. */
 				    restrictedToTypesFromArray: types];
   unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  if (flags != NSDragOperationNone && ![type isEqual: NSColorPboardType])
-    {
-      NSPoint	dragPoint;
-      unsigned	dragIndex;
-      NSRect	vRect;
+  NSPoint	dragPoint;
+  NSRect	vRect;
 
-      dragPoint = [sender draggingLocation];
-      dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self _characterIndexForPoint: dragPoint
-                        respectFraction: YES];
+  dragPoint = [sender draggingLocation];
+  dragPoint = [self convertPoint: dragPoint fromView: nil];
 
-      /* Note: Keep DRAGGING_SCROLL_BORDER in sync with a similar value used
-       * in -draggingUpdated: of NSOutlineView and NSTableView.
-       * FIXME: Is the value of DRAGGING_SCROLL_DIST reasonable?
-       */
+  /* Note: Keep DRAGGING_SCROLL_BORDER in sync with a similar value used
+   * in -draggingUpdated: of NSOutlineView and NSTableView.
+   * FIXME: Is the value of DRAGGING_SCROLL_DIST reasonable?
+   */
 #define DRAGGING_SCROLL_BORDER 3
 #define DRAGGING_SCROLL_DIST 10
-      vRect = [self visibleRect];
-      if (dragPoint.x <= NSMinX(vRect) + DRAGGING_SCROLL_BORDER)
-        {
-	  vRect.origin.x -= DRAGGING_SCROLL_DIST;
-	  if (NSMinX(vRect) < NSMinX(_bounds))
-	    vRect.origin.x = NSMinX(_bounds);
-	}
-      else if (dragPoint.x >= NSMaxX(vRect) - DRAGGING_SCROLL_BORDER)
-        {
-	  vRect.origin.x += DRAGGING_SCROLL_DIST;
-	  if (NSMaxX(vRect) > NSMaxX(_bounds))
-	    vRect.origin.x = NSMaxX(_bounds) - NSWidth(vRect);
-	}
+  vRect = [self visibleRect];
+  if (dragPoint.x <= NSMinX(vRect) + DRAGGING_SCROLL_BORDER)
+    {
+      vRect.origin.x -= DRAGGING_SCROLL_DIST;
+      if (NSMinX(vRect) < NSMinX(_bounds))
+	vRect.origin.x = NSMinX(_bounds);
+    }
+  else if (dragPoint.x >= NSMaxX(vRect) - DRAGGING_SCROLL_BORDER)
+    {
+      vRect.origin.x += DRAGGING_SCROLL_DIST;
+      if (NSMaxX(vRect) > NSMaxX(_bounds))
+	vRect.origin.x = NSMaxX(_bounds) - NSWidth(vRect);
+    }
 
-      if (dragPoint.y <= NSMinY(vRect) + DRAGGING_SCROLL_BORDER)
-        {
-	  vRect.origin.y -= DRAGGING_SCROLL_DIST;
-	  if (NSMinY(vRect) < NSMinY(_bounds))
-	    vRect.origin.y = NSMinY(_bounds);
-	}
-      else if (dragPoint.y >= NSMaxY(vRect) - DRAGGING_SCROLL_BORDER)
-        {
-	  vRect.origin.y += DRAGGING_SCROLL_DIST;
-	  if (NSMaxY(vRect) > NSMaxY(_bounds))
-	    vRect.origin.y = NSMaxY(_bounds) - NSHeight(vRect);
-	}
-      [self scrollPoint: vRect.origin];
+  if (dragPoint.y <= NSMinY(vRect) + DRAGGING_SCROLL_BORDER)
+    {
+      vRect.origin.y -= DRAGGING_SCROLL_DIST;
+      if (NSMinY(vRect) < NSMinY(_bounds))
+	vRect.origin.y = NSMinY(_bounds);
+    }
+  else if (dragPoint.y >= NSMaxY(vRect) - DRAGGING_SCROLL_BORDER)
+    {
+      vRect.origin.y += DRAGGING_SCROLL_DIST;
+      if (NSMaxY(vRect) > NSMaxY(_bounds))
+	vRect.origin.y = NSMaxY(_bounds) - NSHeight(vRect);
+    }
+  [self scrollPoint: vRect.origin];
 #undef DRAGGING_SCROLL_BORDER
 #undef DRAGGING_SCROLL_DIST
 
-      if ([sender draggingSource] != self ||
-          dragIndex <= [self selectedRange].location ||
-          dragIndex >= NSMaxRange([self selectedRange]))
-	[self _draggingHijackInsertionPoint: dragIndex];
-      else
-        {
-	  [self _draggingReleaseInsertionPoint];
-	  flags = NSDragOperationNone;
-        }
+  if (![type isEqual: NSColorPboardType])
+    {
+      [self _updateDragTargetLocation: sender operation: &flags];
     }
-  else if (_dragTargetLocation != NSNotFound)
-    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  if (_dragTargetLocation != NSNotFound)
-    {
-      [self _draggingReleaseInsertionPoint];
-    }
+  unsigned int flags = NSDragOperationNone;
+  [self _updateDragTargetLocation: sender operation: &flags];
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
@@ -5073,7 +5057,7 @@ other than copy/paste or dragging. */
   if (_dragTargetLocation != NSNotFound)
     {
       changeRange = NSMakeRange(_dragTargetLocation, 0);
-      [self _draggingReleaseInsertionPoint];
+      _dragTargetLocation = NSNotFound;
       [self setSelectedRange: changeRange];
     }
 

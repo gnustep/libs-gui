@@ -1,5 +1,15 @@
 2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-_updateDragTargetLocation:operation:,
+	-draggingEntered:, -draggingUpdated:, -draggingExited:,
+	-prepareForDragOperation:):
+	Rewrite implementation so that the target view is scrolled even
+	when it does not accept the drag operation. This is useful, e.g.,
+	when a subclass considers parts of the text read only and does not
+	accept a drop in those regions.
+
+2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* configure.ac:
 	* Headers/Additions/GNUstepGUI/config.h.in:
 	Add test for getmntinfo(3).
