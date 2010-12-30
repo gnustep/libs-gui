@@ -1,5 +1,11 @@
 2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSMenuView.m (-locationForSubmenu:):
+	Fix submenu placement for WindowMaker interface style (it was off
+	by 1 pixel).
+
+2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMenuView.m (-trackWithEvent:):
 	Make pop up menus in Macintosh menu style behave more similar to
 	OS X. In particular, when the user clicks the button, the menu

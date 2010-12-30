@@ -1046,7 +1046,7 @@ static NSMapTable *viewInfo = 0;
           NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
           return NSMakePoint (NSMaxX(frame),
-            subOrigin.y - NSHeight(submenuFrame) - 3 +
+            subOrigin.y - NSHeight(submenuFrame) - 2 +
             2*[NSMenuView menuBarHeight]);
         }
       else if ([self _rootIsHorizontal: 0] == YES)
