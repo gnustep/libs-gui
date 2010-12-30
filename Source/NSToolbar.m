@@ -599,6 +599,10 @@ static GSValidationCenter *vc = nil;
 {
   GSToolbarCustomizationPalette *palette;
 
+  if (![self allowsUserCustomization])
+    {
+      return;
+    }
   if (_customizationPaletteIsRunning)
     {
       NSLog(@"Customization palette is already running for toolbar: %@", self);

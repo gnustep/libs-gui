@@ -5048,6 +5048,19 @@ current key view.<br />
             }
         }
     }
+  else if (sel_isEqual(action, @selector(runToolbarCustomizationPalette:)))
+    {
+      NSToolbar *toolbar = [self toolbar];
+
+      if (toolbar == nil)
+	{
+	  result = NO;
+	}
+      else
+	{
+	  result = [toolbar allowsUserCustomization];
+	}
+    }
     
   return result;
 }

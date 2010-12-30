@@ -1,3 +1,10 @@
+2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSToolbar.m (-runCustomizationPalette:):
+	* Source/NSWindow.m (-validateUserInterfaceItem:):
+	Don't show the customization palette if user customization is
+	disabled.
+
 2010-12-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSLayoutManager.m: Add code to handle temporary
