@@ -1465,7 +1465,15 @@ static NSMapTable *viewInfo = 0;
       eventMask |= NSLeftMouseDownMask;
     }
 
-  if ([self isHorizontal] == YES)
+  /* We attempt to mimic Mac OS X behavior for pop up menus. If the user
+     presses the mouse button over a pop up button and then drags the mouse
+     over the menu, the is closed when the user releases the mouse. On the
+     other hand, when the user clicks on the button and then moves the mouse
+     the menu is closed upon the next mouse click. */
+  if ([self isHorizontal] == YES ||
+      ([[self menu] _ownedByPopUp] == YES &&
+       NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+       == NSMacintoshInterfaceStyle))
     {
       /*
        * Ignore the first mouse up if nothing interesting has happened.

@@ -1,5 +1,12 @@
 2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSMenuView.m (-trackWithEvent:):
+	Make pop up menus in Macintosh menu style behave more similar to
+	OS X. In particular, when the user clicks the button, the menu
+	stays open until the next click.
+
+2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMenuView.m (-update):
 	Don't use a title bar for menus in Macintosh interface style.
 
