@@ -1,3 +1,9 @@
+2010-12-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSLayoutManager.m: Add code to handle temporary
+	attributes. This code is taken from NSAttributedString and the two
+	core methods are still missing.
+
 2010-12-29 12:31-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenuItemCell.m: Implement drawing a line in the menu
