@@ -1,5 +1,23 @@
 2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSMenuView.m (-update):
+	Don't use a title bar for menus in Macintosh interface style.
+
+	* Source/NSMenuView.m (_executeItemAtIndex:removeSubmenu:):
+	End menu tracking in Macintosh and Windows95 interface styles when
+	the user clicks on a submenu item.
+
+	* Source/NSMenu.m (-displayTransient):
+	Place the top left edge of a menu at the mouse position when
+	displaying a context menu in Macintosh and Windows95 interface
+	styles to prevent a user from accidentally selecting the first
+	menu item.
+
+	* Source/NSMenu.m (-shiftOnScreen):
+	Don't move the main menu bar in Macintosh interface style.
+
+2010-12-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSToolbar.m (-runCustomizationPalette:):
 	* Source/NSWindow.m (-validateUserInterfaceItem:):
 	Don't show the customization palette if user customization is
@@ -57,7 +75,6 @@
 	Make sure the file name displayed in the panel has a valid
 	extension.
 
->>>>>>> .r31796
 2010-12-27 16:51-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Changes for compiling with older compilers.

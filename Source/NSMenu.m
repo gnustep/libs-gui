@@ -1863,13 +1863,26 @@ static BOOL menuBarVisible = YES;
   else
     {
       NSRect	frame = [_aWindow frame];
+      NSInterfaceStyle style;
 
       location = [_aWindow mouseLocationOutsideOfEventStream];
       location = [_aWindow convertBaseToScreen: location];
-      location.x -= frame.size.width/2;
-      if (location.x < 0)
-	location.x = 0;
-      location.y -= frame.size.height - 10;
+      location.y -= frame.size.height;
+
+      /* When using the standard NextStep/OpenStep interface style, the
+	 center of the menu's title view is placed below the mouse cursor.
+	 However, in Macintosh and Windows95 styles, menus have no visible
+	 title. To prevent the user from accidentally selecting the first
+	 item, the top left edge is placed below the mouse cursor for them. */
+      style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+      if (style != NSWindows95InterfaceStyle &&
+	  style != NSMacintoshInterfaceStyle)
+	{
+	  location.x -= frame.size.width/2;
+	  if (location.x < 0)
+	    location.x = 0;
+	  location.y += 10;
+	}
     }
 
   [_bWindow setFrameOrigin: location];
@@ -2060,15 +2073,13 @@ static BOOL menuBarVisible = YES;
   BOOL      moveIt    = NO;
   NSPoint location = [theWindow mouseLocationOutsideOfEventStream];
   NSPoint pointerLoc = [theWindow convertBaseToScreen: location];
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
   
-  // Why forget about moving the main menu? If the main menu was partially
-  // shifted off screen while tracking one of its submenus, it should be
-  // possible to shift it back on screen again.
-#if 0
-  // If we are the main menu forget about moving.
-  if ([self isEqual: [NSApp mainMenu]] && !_menu.transient)
+  // Don't move the main menu bar in Macintosh interface style, this is
+  // annoying (in particular, since the effective screen range is reduced
+  // by the height of the menu bar!)
+  if (style == NSMacintoshInterfaceStyle && [self isEqual: [NSApp mainMenu]])
     return;
-#endif
 
   // 1 - determine the amount we need to shift in the y direction.
   if (pointerLoc.y <= 1 && NSMinY (frameRect) < 0)
@@ -2108,7 +2119,7 @@ static BOOL menuBarVisible = YES;
       NSPoint  masterLocation;
       NSPoint  destinationPoint;
       
-      if (_menu.horizontal)
+      if (style == NSMacintoshInterfaceStyle || _menu.horizontal)
         {
           masterLocation = frameRect.origin;
           destinationPoint.x = masterLocation.x + vector.x;
@@ -2123,6 +2134,7 @@ static BOOL menuBarVisible = YES;
           // Look for the "master" menu, i.e. the one to move from.
           for (candidateMenu = masterMenu = self;
                (candidateMenu = masterMenu->_superMenu)
+                   && !candidateMenu->_menu.horizontal
                    && (!masterMenu->_menu.is_tornoff
                        || masterMenu->_menu.transient);
                masterMenu = candidateMenu);

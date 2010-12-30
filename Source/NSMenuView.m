@@ -588,14 +588,15 @@ static NSMapTable *viewInfo = 0;
 {
   BOOL needTitleView;
   BOOL rootIsAppMenu;
+  NSInterfaceStyle style;
 
   NSDebugLLog (@"NSMenu", @"update called on menu view");
 
   /*
    * Ensure that a title view exists only if needed.
    */
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
-      NSWindows95InterfaceStyle)
+  style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+  if (style == NSWindows95InterfaceStyle || style == NSMacintoshInterfaceStyle)
     {
       needTitleView = NO;
     }
@@ -1390,40 +1391,24 @@ static NSMapTable *viewInfo = 0;
       && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
       [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
-#if 1
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-	  == NSMacintoshInterfaceStyle)
+      NSInterfaceStyle style =
+	  NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
+      if (style == NSMacintoshInterfaceStyle ||
+	  style == NSWindows95InterfaceStyle)
         {
-          /*
-           * FIXME ... always remove submenus in mac mode ... this is not
-           * quite the way the mac behaves, but it's closer than the normal
-           * behavior.
-           */
-          subMenusNeedRemoving = YES;
+	  // On Macintosh, clicking on or releasing the mouse over a
+	  // submenu item always closes the menu (if it is open) and
+	  // ends menu tracking. We do the same here, too.
+          [self detachSubmenu];
+	  return YES;
         }
-#endif
+
       if (subMenusNeedRemoving)
         {
           [self detachSubmenu];
         }
       // Clicked on a submenu.
       return NO;
-    }
-  
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-      == NSMacintoshInterfaceStyle)
-    {
-      NSMenu *tmp = _attachedMenu;
-      
-      do
-        {
-          if ([tmp isEqual: [NSApp mainMenu]] == NO)
-            {
-              [tmp close];
-            }
-          tmp = [tmp supermenu];
-        }
-      while (tmp != nil);
     }
 
   return YES;
