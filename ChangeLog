@@ -1,5 +1,10 @@
 2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSLayoutManager.m (attachmentSize): Prevent potential
+	null pointer dereference.
+
+2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextStorage.m (-removeLayoutManager:): Avoid potential
 	crash when text network is owned by a text view.
 
