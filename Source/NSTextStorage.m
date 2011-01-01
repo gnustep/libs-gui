@@ -99,8 +99,13 @@ static NSNotificationCenter *nc = nil;
 
 - (void) removeLayoutManager: (GSLayoutManager*)obj
 {
+  /* If the receiver belongs to a text network that is owned by its text view
+     it could get deallocated by the call to -setTextStorage:. To prevent
+     crashes we retain the receiver until the end of this method. */
+  RETAIN(self);
   [obj setTextStorage: nil];
   [_layoutManagers removeObjectIdenticalTo: obj];
+  RELEASE(self);
 }
 
 - (NSArray*) layoutManagers
