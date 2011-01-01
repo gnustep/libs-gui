@@ -1,5 +1,11 @@
 2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-mouseDown:): Add missing conversion from
+	character indexes to glyph indexes when computing an attachment
+	cell's frame.
+
+2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSLayoutManager.m (attachmentSize): Prevent potential
 	null pointer dereference.
 
