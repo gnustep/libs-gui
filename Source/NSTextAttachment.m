@@ -167,27 +167,49 @@
         { 
 	  if ([theEvent clickCount] == 2)
 	    {
-	      if (delegate != nil && [delegate respondsToSelector: 
-		@selector(textView:doubleClickedOnCell:inRect:atIndex:)])
-	        {
-		  [delegate textView: textView 
-			    doubleClickedOnCell: self 
-			    inRect: cellFrame
-			    atIndex: charIndex];
-		  return YES;
-		}
+              if (delegate != nil)
+                {
+                  if ([delegate respondsToSelector: 
+                    @selector(textView:doubleClickedOnCell:inRect:atIndex:)])
+                    {
+                      [delegate textView: textView 
+                                doubleClickedOnCell: self 
+                                inRect: cellFrame
+                                atIndex: charIndex];
+                      return YES;
+                    }
+                  else if ([delegate respondsToSelector: 
+                    @selector(textView:doubleClickedOnCell:inRect:)])
+                    {
+                      [delegate textView: textView 
+                                doubleClickedOnCell: self 
+                                inRect: cellFrame];
+                      return YES;
+                    }
+                }
 	    }
 	  else
 	    {
-	      if (delegate != nil && [delegate respondsToSelector: 
-		@selector(textView:clickedOnCell:inRect:atIndex:)])
-	        {
-		  [delegate textView: textView 
-			    clickedOnCell: self 
-			    inRect: cellFrame
-			    atIndex: charIndex];
-		  return YES;
-		}
+              if (delegate != nil)
+                {
+                  if ([delegate respondsToSelector: 
+                    @selector(textView:clickedOnCell:inRect:atIndex:)])
+                    {
+                      [delegate textView: textView 
+                                clickedOnCell: self 
+                                inRect: cellFrame
+                                atIndex: charIndex];
+                      return YES;
+                    }
+                  else if ([delegate respondsToSelector: 
+                    @selector(textView:clickedOnCell:inRect:)])
+                    {
+                      [delegate textView: textView 
+                                clickedOnCell: self 
+                                inRect: cellFrame];
+                      return YES;
+                    }
+                }
 	    }
 	}
       else if (type == NSLeftMouseDragged)

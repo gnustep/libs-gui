@@ -1,5 +1,11 @@
 2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextAttachment.m (-trackMouse:inRect:ofView:...): Call
+	the deprecated OpenStep delegate methods if the delegate does not
+	implement the new Mac OS X methods.
+
+2011-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-mouseDown:): Add missing conversion from
 	character indexes to glyph indexes when computing an attachment
 	cell's frame.
