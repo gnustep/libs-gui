@@ -78,42 +78,48 @@
      RTFNeXTGraphic = 294,
      RTFNeXTGraphicWidth = 295,
      RTFNeXTGraphicHeight = 296,
-     RTFpaperWidth = 297,
-     RTFpaperHeight = 298,
-     RTFmarginLeft = 299,
-     RTFmarginRight = 300,
-     RTFmarginTop = 301,
-     RTFmarginButtom = 302,
-     RTFfirstLineIndent = 303,
-     RTFleftIndent = 304,
-     RTFrightIndent = 305,
-     RTFalignCenter = 306,
-     RTFalignJustified = 307,
-     RTFalignLeft = 308,
-     RTFalignRight = 309,
-     RTFlineSpace = 310,
-     RTFspaceAbove = 311,
-     RTFstyle = 312,
-     RTFbold = 313,
-     RTFitalic = 314,
-     RTFunderline = 315,
-     RTFunderlineStop = 316,
-     RTFunichar = 317,
-     RTFsubscript = 318,
-     RTFsuperscript = 319,
-     RTFtabstop = 320,
-     RTFfcharset = 321,
-     RTFfprq = 322,
-     RTFcpg = 323,
-     RTFOtherStatement = 324,
-     RTFfontListStart = 325,
-     RTFfamilyNil = 326,
-     RTFfamilyRoman = 327,
-     RTFfamilySwiss = 328,
-     RTFfamilyModern = 329,
-     RTFfamilyScript = 330,
-     RTFfamilyDecor = 331,
-     RTFfamilyTech = 332
+     RTFNeXTHelpLink = 297,
+     RTFNeXTHelpMarker = 298,
+     RTFNeXTfilename = 299,
+     RTFNeXTmarkername = 300,
+     RTFNeXTlinkFilename = 301,
+     RTFNeXTlinkMarkername = 302,
+     RTFpaperWidth = 303,
+     RTFpaperHeight = 304,
+     RTFmarginLeft = 305,
+     RTFmarginRight = 306,
+     RTFmarginTop = 307,
+     RTFmarginButtom = 308,
+     RTFfirstLineIndent = 309,
+     RTFleftIndent = 310,
+     RTFrightIndent = 311,
+     RTFalignCenter = 312,
+     RTFalignJustified = 313,
+     RTFalignLeft = 314,
+     RTFalignRight = 315,
+     RTFlineSpace = 316,
+     RTFspaceAbove = 317,
+     RTFstyle = 318,
+     RTFbold = 319,
+     RTFitalic = 320,
+     RTFunderline = 321,
+     RTFunderlineStop = 322,
+     RTFunichar = 323,
+     RTFsubscript = 324,
+     RTFsuperscript = 325,
+     RTFtabstop = 326,
+     RTFfcharset = 327,
+     RTFfprq = 328,
+     RTFcpg = 329,
+     RTFOtherStatement = 330,
+     RTFfontListStart = 331,
+     RTFfamilyNil = 332,
+     RTFfamilyRoman = 333,
+     RTFfamilySwiss = 334,
+     RTFfamilyModern = 335,
+     RTFfamilyScript = 336,
+     RTFfamilyDecor = 337,
+     RTFfamilyTech = 338
    };
 #endif
 /* Tokens.  */
@@ -156,42 +162,48 @@
 #define RTFNeXTGraphic 294
 #define RTFNeXTGraphicWidth 295
 #define RTFNeXTGraphicHeight 296
-#define RTFpaperWidth 297
-#define RTFpaperHeight 298
-#define RTFmarginLeft 299
-#define RTFmarginRight 300
-#define RTFmarginTop 301
-#define RTFmarginButtom 302
-#define RTFfirstLineIndent 303
-#define RTFleftIndent 304
-#define RTFrightIndent 305
-#define RTFalignCenter 306
-#define RTFalignJustified 307
-#define RTFalignLeft 308
-#define RTFalignRight 309
-#define RTFlineSpace 310
-#define RTFspaceAbove 311
-#define RTFstyle 312
-#define RTFbold 313
-#define RTFitalic 314
-#define RTFunderline 315
-#define RTFunderlineStop 316
-#define RTFunichar 317
-#define RTFsubscript 318
-#define RTFsuperscript 319
-#define RTFtabstop 320
-#define RTFfcharset 321
-#define RTFfprq 322
-#define RTFcpg 323
-#define RTFOtherStatement 324
-#define RTFfontListStart 325
-#define RTFfamilyNil 326
-#define RTFfamilyRoman 327
-#define RTFfamilySwiss 328
-#define RTFfamilyModern 329
-#define RTFfamilyScript 330
-#define RTFfamilyDecor 331
-#define RTFfamilyTech 332
+#define RTFNeXTHelpLink 297
+#define RTFNeXTHelpMarker 298
+#define RTFNeXTfilename 299
+#define RTFNeXTmarkername 300
+#define RTFNeXTlinkFilename 301
+#define RTFNeXTlinkMarkername 302
+#define RTFpaperWidth 303
+#define RTFpaperHeight 304
+#define RTFmarginLeft 305
+#define RTFmarginRight 306
+#define RTFmarginTop 307
+#define RTFmarginButtom 308
+#define RTFfirstLineIndent 309
+#define RTFleftIndent 310
+#define RTFrightIndent 311
+#define RTFalignCenter 312
+#define RTFalignJustified 313
+#define RTFalignLeft 314
+#define RTFalignRight 315
+#define RTFlineSpace 316
+#define RTFspaceAbove 317
+#define RTFstyle 318
+#define RTFbold 319
+#define RTFitalic 320
+#define RTFunderline 321
+#define RTFunderlineStop 322
+#define RTFunichar 323
+#define RTFsubscript 324
+#define RTFsuperscript 325
+#define RTFtabstop 326
+#define RTFfcharset 327
+#define RTFfprq 328
+#define RTFcpg 329
+#define RTFOtherStatement 330
+#define RTFfontListStart 331
+#define RTFfamilyNil 332
+#define RTFfamilyRoman 333
+#define RTFfamilySwiss 334
+#define RTFfamilyModern 335
+#define RTFfamilyScript 336
+#define RTFfamilyDecor 337
+#define RTFfamilyTech 338
 
 
 
@@ -205,7 +217,7 @@ typedef union YYSTYPE
 	RTFcmd		cmd;
 }
 /* Line 1529 of yacc.c.  */
-#line 209 "rtfGrammar.tab.h"
+#line 221 "rtfGrammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

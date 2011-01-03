@@ -399,7 +399,10 @@ rtfNeXTGraphic: '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHei
 	other commands.
 */
 
-rtfNeXTHelpLink: '{' RTFNeXTHelpLink RTFNeXTmarkername RTFtext RTFNeXTlinkFilename RTFtext RTFNeXTlinkMarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); };
+rtfNeXTHelpLink: '{' RTFNeXTHelpLink RTFNeXTmarkername RTFtext RTFNeXTlinkFilename RTFtext RTFNeXTlinkMarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); }
+		{
+			GSRTFNeXTHelpLink (CTXT, $2.parameter, $4, $6, $8);
+		};
 
 /*
 	NeXTHelpMarker
@@ -410,7 +413,10 @@ rtfNeXTHelpLink: '{' RTFNeXTHelpLink RTFNeXTmarkername RTFtext RTFNeXTlinkFilena
 	other commands.
 */
 
-rtfNeXTHelpMarker: '{' RTFNeXTHelpMarker RTFNeXTmarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); };
+rtfNeXTHelpMarker: '{' RTFNeXTHelpMarker RTFNeXTmarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); }
+		{
+			GSRTFNeXTHelpMarker (CTXT, $2.parameter, $4);
+		};
 
 /*
 	Font description

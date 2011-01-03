@@ -239,7 +239,8 @@ GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
 GSXibLoader.m \
-NSManagedObjectContext.m
+NSManagedObjectContext.m \
+GSHelpAttachment.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -447,7 +448,8 @@ GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \
 GSWindowDecorationView.h \
-GSXibLoading.h
+GSXibLoading.h \
+GSHelpAttachment.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

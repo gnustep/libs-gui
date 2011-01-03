@@ -339,7 +339,7 @@
 
 - (NSImage*) icon
 {
-  if (_iconImage == nil)
+  if (_iconImage == nil && [self filename])
     {
       return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
     }

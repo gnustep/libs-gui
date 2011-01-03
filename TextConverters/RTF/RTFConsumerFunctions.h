@@ -137,6 +137,11 @@ void GSRTFunderline(void *ctxt, BOOL on);
 void GSRTFparagraph(void *ctxt);
 /* NeXTGraphic */
 void GSRTFNeXTGraphic(void *ctxt, const char *fileName, int width, int height);
+/* NeXTHelpLink */
+void GSRTFNeXTHelpLink(void *ctxt, int num, const char *markername,
+		       const char *linkFilename, const char *linkMarkername);
+/* NeXTHelpMarker */
+void GSRTFNeXTHelpMarker(void *ctxt, int num, const char *markername);
 
 #endif
 

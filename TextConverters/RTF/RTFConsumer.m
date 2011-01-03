@@ -26,11 +26,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
-#include "RTFConsumer.h"
-#include "RTFConsumerFunctions.h"
-#include "RTFProducer.h"
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+#import <GNUstepGUI/GSHelpAttachment.h>
+#import "RTFConsumer.h"
+#import "RTFConsumerFunctions.h"
+#import "RTFProducer.h"
 
 /*  we have to satisfy the scanner with a stream reading function */
 typedef struct {
@@ -266,6 +267,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) push;
 - (void) pop;
 - (void) appendString: (NSString*)string;
+- (void) appendHelpLink: (NSString*)fileName marker: (NSString *)markerName;
+- (void) appendHelpMarker: (NSString*)markerName;
 
 @end
 
@@ -659,6 +662,84 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 	  DESTROY(attributes);
 	  attr->changed = NO;
 	}
+    }
+}
+
+- (void) appendHelpLink: (NSString*)fileName marker: (NSString*)markerName
+{
+  int  oldPosition = [result length];
+  NSRange insertionRange = NSMakeRange(oldPosition,0);
+
+  if (!ignore)
+    {
+      GSHelpLinkAttachment* attachment;
+      RTFAttribute* attr = [self attr];
+      NSMutableDictionary* attributes = nil;
+      NSMutableAttributedString* str = nil;
+
+      attachment =
+	[[GSHelpLinkAttachment alloc]
+	  initWithFileName: fileName
+		markerName: markerName];
+      if (attachment == nil)
+	{
+	  NSLog(@"No attachment at %d", oldPosition);
+	  return;
+	}
+        
+      attributes = [[NSMutableDictionary alloc]
+		     initWithObjectsAndKeys:
+		       [attr currentFont], NSFontAttributeName,
+		       attr->paragraph, NSParagraphStyleAttributeName,
+		       nil];
+          
+      str = (NSMutableAttributedString*) [NSMutableAttributedString 
+                     attributedStringWithAttachment: attachment];
+
+      [str addAttributes: attributes range: NSMakeRange (0, [str length])];
+          
+      [result replaceCharactersInRange: insertionRange withAttributedString: str];
+      attr->changed = YES;
+      RELEASE(attributes);
+      RELEASE(attachment);
+    }
+}
+
+- (void) appendHelpMarker: (NSString*)markerName
+{
+  int  oldPosition = [result length];
+  NSRange insertionRange = NSMakeRange(oldPosition,0);
+
+  if (!ignore)
+    {
+      GSHelpMarkerAttachment* attachment;
+      RTFAttribute* attr = [self attr];
+      NSMutableDictionary* attributes = nil;
+      NSMutableAttributedString* str = nil;
+
+      attachment =
+	[[GSHelpMarkerAttachment alloc] initWithMarkerName: markerName];
+      if (attachment == nil)
+	{
+	  NSLog(@"No attachment at %d", oldPosition);
+	  return;
+	}
+        
+      attributes = [[NSMutableDictionary alloc]
+		     initWithObjectsAndKeys:
+		       [attr currentFont], NSFontAttributeName,
+		       attr->paragraph, NSParagraphStyleAttributeName,
+		       nil];
+          
+      str = (NSMutableAttributedString*) [NSMutableAttributedString 
+                     attributedStringWithAttachment: attachment];
+
+      [str addAttributes: attributes range: NSMakeRange (0, [str length])];
+          
+      [result replaceCharactersInRange: insertionRange withAttributedString: str];
+      attr->changed = YES;
+      RELEASE(attributes);
+      RELEASE(attachment);
     }
 }
 
@@ -1160,5 +1241,36 @@ void GSRTFparagraph (void *ctxt)
 void GSRTFNeXTGraphic (void *ctxt, const char *fileName, int width, int height)
 {
   [(RTFDConsumer *)ctxt appendImage: [NSString stringWithCString: fileName]];
+}
+
+void GSRTFNeXTHelpLink (void *ctxt, int num, const char *markername,
+			const char *linkFilename, const char *linkMarkername)
+{
+  NSRange range;
+  NSString *fileName = [NSString stringWithCString: linkFilename];
+  NSString *markerName = [NSString stringWithCString: linkMarkername];
+
+  range = [fileName rangeOfString: @";"];
+  if (range.location != NSNotFound)
+    fileName = [fileName substringToIndex:range.location];
+
+  range = [markerName rangeOfString: @";"];
+  if (range.location == 0)
+    markerName = nil;
+  else if (range.location != NSNotFound)
+    markerName = [markerName substringToIndex:range.location];
+
+  [(RTFDConsumer *)ctxt appendHelpLink: fileName marker: markerName];
+}
+
+void GSRTFNeXTHelpMarker (void *ctxt, int num, const char *markername)
+{
+  NSRange range;
+  NSString *markerName = [NSString stringWithCString: markername];
+
+  range = [markerName rangeOfString: @";"];
+  if (range.location != NSNotFound)
+    markerName = [markerName substringToIndex:range.location];
+  [(RTFDConsumer *)ctxt appendHelpMarker: markerName];
 }
 

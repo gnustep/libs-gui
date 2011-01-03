@@ -1,5 +1,33 @@
 2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/GNUmakefile:
+	* Headers/Additions/GNUstepGUI/GSHelpAttachment.h:
+	* Source/GSHelpAttachment.m:
+	Introduce new classes GSHelpLinkAttachment and
+	GSHelpMarkerAttachment to implement help links and markers in RTF
+	documents.
+
+	* TextConverters/RTF/rtfGrammar.y:
+	* TextConverters/RTF/RTFConsumerFunctions.h:
+	* TextConverters/RTF/RTFConsumer.m (-addHelpLink:marker:,
+	-addHelpMarker:, GSRTFNeXTHelpLink, GSRTFNeXTHelpMarker):
+	Create attachments for help links and markers in RTF documents.
+
+	* TextConverters/RTF/RTFProducer.m (-_addAttributesString:):
+	Properly write out help links and markers to RTF documents.
+
+	* TextConverters/RTF/rtfGrammar.tab.h:
+	* TextConverters/RTF/rtfGrammar.tab.c: Regenerated.
+
+	* Images/GNUmakefile:
+	* Images/common_HelpLink.tiff:
+	New icon for help link attachments.
+
+	* Source/NSFileWrapper.m (-icon): Bug fix: Don't return a default
+	icon for a wrapper without a file name.
+
+2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* TextConverters/RTF/rtfGrammar.y:
 	* TextConverters/RTF/rtfScanner.c (RTFCommands):
 	Extend and modify grammar to handle \NeXTHelpLink and

@@ -74,6 +74,7 @@ Images_RESOURCE_FILES = \
  common_Folder.tiff \
  common_GSFolder.tiff \
  common_HelpCursor.tiff \
+ common_HelpLink.tiff \
  common_Home.tiff \
  common_HomeDirectory.tiff \
  common_ImageFolder.tiff \

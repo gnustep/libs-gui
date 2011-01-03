@@ -30,9 +30,10 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
  */
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
-#include "RTFProducer.h"
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+#import <GNUstepGUI/GSHelpAttachment.h>
+#import "RTFProducer.h"
 
 // FIXME: Should be defined in a central place
 #define PAPERSIZE @"PaperSize"
@@ -928,60 +929,93 @@
               NSString *attachmentFilename;
               NSSize cellSize;
 
-              attachmentFileWrapper = [attachment fileWrapper];
-              attachmentFilename = [attachmentFileWrapper filename];
-              if (! attachmentFilename)
-                {
-                  attachmentFilename =
-                    [attachmentFileWrapper preferredFilename];
+	      if ([attachment isKindOfClass: [GSHelpLinkAttachment class]])
+		{
+		  GSHelpLinkAttachment *link =
+		    (GSHelpLinkAttachment *)attachment;
 
-                  if (! attachmentFilename)
-                    {
-                      // If we do not have a proper filename, we set it here, incrementing
-                      // the number of unnamed attachment so we do not overwrite existing ones.
+		  [result appendString: @"{{\\NeXTHelpLink"];
+		  [result appendString: @" \\markername "];
+		  [result appendString: @";\\linkFilename "];
+		  [result appendString: [link fileName]];
+		  [result appendString: @";\\linkMarkername "];
+		  [result appendString: [link markerName]];
+		  [result appendString: @";}"];
+		}
+	      else if ([attachment
+			 isKindOfClass: [GSHelpMarkerAttachment class]])
+		{
+		  GSHelpMarkerAttachment *marker =
+		    (GSHelpMarkerAttachment *)attachment;
 
-                      // FIXME: setting the filename extension to tiff is not that great, but as
-                      // we anyway append \NeXTGraphic just after it makes sense... (without the
-                      // extension the file is not loaded) 
+		  [result appendString: @"{{\\NeXTHelpMarker"];
+		  [result appendString: @" \\markername "];
+		  [result appendString: [marker markerName]];
+		  [result appendString: @";}"];
+		}
+	      else
+		{
+		  attachmentFileWrapper = [attachment fileWrapper];
+		  attachmentFilename = [attachmentFileWrapper filename];
+		  if (! attachmentFilename)
+		    {
+		      attachmentFilename =
+			[attachmentFileWrapper preferredFilename];
 
-                      attachmentFilename = [NSString stringWithFormat: @"__unnamed_file_%d.tiff", 
-                                             unnamedAttachmentCounter++];
-                      [attachmentFileWrapper setPreferredFilename: 
-                          attachmentFilename];
-                    }
-                }
+		      if (! attachmentFilename)
+			{
+			  // If we do not have a proper filename, we set it
+			  // here, incrementing the number of unnamed attachment
+			  // so we do not overwrite existing ones.
 
-              /*
-               if ([attachmentFilename respondsToSelector: 
-                  @selector(fileSystemRepresentation)])
-                {
-                  const char *fileSystemRepresentation;
+			  // FIXME: setting the filename extension to tiff
+			  // is not that great, but as we anyway append
+			  // \NeXTGraphic just after it makes sense... (without
+			  // the extension the file is not loaded) 
 
-                  fileSystemRepresentation =
-                      [attachmentFilename fileSystemRepresentation];
+			  attachmentFilename =
+			    [NSString stringWithFormat:
+					@"__unnamed_file_%d.tiff",
+					unnamedAttachmentCounter++];
+			  [attachmentFileWrapper
+			    setPreferredFilename: attachmentFilename];
+			}
+		    }
 
-                  attachmentFilename = [self _encodedFilenameRepresentation: 
-                      fileSystemRepresentation];
-                }
-              else
-               */
-                {
-                  attachmentFilename =
-                    [self _ASCIIfiedString: attachmentFilename];
-                }
+		  /*
+		  if ([attachmentFilename respondsToSelector: 
+		         @selector(fileSystemRepresentation)])
+		    {
+		      const char *fileSystemRepresentation;
 
-              cellSize = [[attachment attachmentCell] cellSize];
+		      fileSystemRepresentation =
+			[attachmentFilename fileSystemRepresentation];
 
-              [result appendString: @"{{\\NeXTGraphic "];
-              [result appendString: [attachmentFilename lastPathComponent]];
-              [result appendFormat: @" \\width%d \\height%d}",
-                  (short)points2twips(cellSize.width),
-                  (short)points2twips(cellSize.height)];
+		      attachmentFilename =
+			[self _encodedFilenameRepresentation:
+				fileSystemRepresentation];
+		    }
+		  else
+		    */
+		    {
+		      attachmentFilename =
+			[self _ASCIIfiedString: attachmentFilename];
+		    }
 
-              [attachmentFileWrapper setFilename: attachmentFilename];
-              [attachmentFileWrapper setPreferredFilename: attachmentFilename];
-	      if (attachmentFileWrapper)
-		[attachments addObject: attachmentFileWrapper];
+		  cellSize = [[attachment attachmentCell] cellSize];
+
+		  [result appendString: @"{{\\NeXTGraphic "];
+		  [result appendString: [attachmentFilename lastPathComponent]];
+		  [result appendFormat: @" \\width%d \\height%d}",
+			  (short)points2twips(cellSize.width),
+			  (short)points2twips(cellSize.height)];
+
+		  [attachmentFileWrapper setFilename: attachmentFilename];
+		  [attachmentFileWrapper
+		    setPreferredFilename: attachmentFilename];
+		  if (attachmentFileWrapper)
+		    [attachments addObject: attachmentFileWrapper];
+		}
             }
         }
       else
