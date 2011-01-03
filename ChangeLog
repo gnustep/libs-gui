@@ -1,6 +1,14 @@
 2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* TextConverters/RTF/rtfGrammar.y:
+	* TextConverters/RTF/rtfScanner.c (RTFCommands):
+	Extend and modify grammar to handle \NeXTHelpLink and
+	\NeXTHelpMarker commands possibly used in old RTF documents
+	generated on NeXTstep/OpenStep.
+
+2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* TextConverters/RTF/rtfGrammar.y:
 	* TextConverters/RTF/RTFConsumerFunctions.h:
 	* TextConverters/RTF/RTFConsumer.m (GSRTFerror):
 	Upgrade to compile with more recent bison versions.
