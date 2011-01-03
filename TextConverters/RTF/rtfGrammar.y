@@ -124,6 +124,12 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token <cmd> RTFNeXTGraphic
 %token <cmd> RTFNeXTGraphicWidth
 %token <cmd> RTFNeXTGraphicHeight
+%token <cmd> RTFNeXTHelpLink
+%token <cmd> RTFNeXTHelpMarker
+%token <cmd> RTFNeXTfilename
+%token <cmd> RTFNeXTmarkername
+%token <cmd> RTFNeXTlinkFilename
+%token <cmd> RTFNeXTlinkMarkername
 %token <cmd> RTFpaperWidth
 %token <cmd> RTFpaperHeight
 %token <cmd> RTFmarginLeft
@@ -183,7 +189,6 @@ rtfCharset: RTFansi { $$ = 1; }
 		;
 
 rtfIngredients:	/*	empty	*/
-		|	rtfIngredients rtfNeXTGraphic 
 		|	rtfIngredients rtfFontList
 		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
@@ -192,7 +197,7 @@ rtfIngredients:	/*	empty	*/
 		|	rtfIngredients error
 		;
 
-rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock(CTXT, NO); } /* may be empty */
+rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients rtfNeXTstuff '}' { GSRTFcloseBlock(CTXT, NO); } /* may be empty */
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFignore rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFinfo rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFstylesheet rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
@@ -364,6 +369,12 @@ rtfStatement: RTFfont				{ int font;
 		                                  free((void*)$1.name); }
 		;
 
+rtfNeXTstuff: /* empty */
+		|	rtfNeXTGraphic
+		|	rtfNeXTHelpLink
+		|	rtfNeXTHelpMarker
+		;
+
 /*
 	NeXTGraphic (images)
 	This is a Apple/NeXT extension. The format of the command is
@@ -373,10 +384,33 @@ rtfStatement: RTFfont				{ int font;
 	Attributed Strings Programming Guide.
 */
 
-rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); } '}'
+rtfNeXTGraphic: '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); }
 		{
-			GSRTFNeXTGraphic (CTXT, $4, $5.parameter, $6.parameter);
+			GSRTFNeXTGraphic (CTXT, $3, $4.parameter, $5.parameter);
 		};
+
+/*
+	NeXTHelpLink
+	This is a NeXT extension. The format of the command is
+	  {{\NeXTHelpLinkN \markername markername; \linkFilename filename;
+	    \linkMarkername markername;} string}
+	and the string is ignored (it is always 0xAC on NeXT).
+	Note that the {\NeXTHelpLink } group may itself be preceded by
+	other commands.
+*/
+
+rtfNeXTHelpLink: '{' RTFNeXTHelpLink RTFNeXTmarkername RTFtext RTFNeXTlinkFilename RTFtext RTFNeXTlinkMarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); };
+
+/*
+	NeXTHelpMarker
+	This is a NeXT extension. The format of the command is
+	  {{\NeXTHelpMarkerN \markername markername;} string}
+	and the string is ignored (it is always 0xAC on NeXT).
+	Note that the {\NeXTHelpLink } group may itself be preceded by
+	other commands.
+*/
+
+rtfNeXTHelpMarker: '{' RTFNeXTHelpMarker RTFNeXTmarkername RTFtext '}' { GSRTFopenBlock(CTXT, YES); } rtfIngredients { GSRTFcloseBlock(CTXT, YES); };
 
 /*
 	Font description
