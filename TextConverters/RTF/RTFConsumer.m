@@ -698,7 +698,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 */
 
 /* handle errors (this is the yacc error mech)	*/
-void GSRTFerror (const char *msg)
+void GSRTFerror (void *ctxt, void *lctxt, const char *msg)
 {
 /*  [NSException raise:NSInvalidArgumentException
 	       format:@"Syntax error in RTF: %s", msg];*/

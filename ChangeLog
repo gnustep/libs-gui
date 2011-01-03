@@ -1,5 +1,25 @@
 2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* TextConverters/RTF/rtfGrammar.y:
+	* TextConverters/RTF/RTFConsumerFunctions.h:
+	* TextConverters/RTF/RTFConsumer.m (GSRTFerror):
+	Upgrade to compile with more recent bison versions.
+
+	* TextConverters/RTF/GNUmakefile:
+	* TextConverters/RTF/GNUmakefile.postamble:
+	* TextConverters/RTF/rtfGrammar.y:
+	* TextConverters/RTF/rtfScanner.c:
+	Correct spelling (rtfGrammer->rtfGrammar).
+
+	* TextConverters/RTF/GNUmakefile.postamble:
+	Update rationale why bison rule is (still) not enabled.
+
+	* TextConverters/RTF/rtfGrammar.tab.h:
+	* TextConverters/RTF/rtfGrammar.tab.c:
+	Regenerated.
+
+2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMatrix.m (-setEnabled:): Implement method. It enables
 	or disables all cells as in Cocoa.
 

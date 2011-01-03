@@ -29,7 +29,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "rtfScanner.h"
-#include "rtfGrammer.tab.h"
+#include "rtfGrammar.tab.h"
 
 //	<§> scanner types and helpers
 

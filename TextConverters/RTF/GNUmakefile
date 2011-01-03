@@ -32,7 +32,7 @@ RTFConverter_OBJC_FILES = 		\
 	RTFConsumer.m RTFProducer.m
 
 RTFConverter_C_FILES =	 		\
-	rtfGrammer.tab.c rtfScanner.c
+	rtfGrammar.tab.c rtfScanner.c
 
 RTFConverter_PRINCIPAL_CLASS = RTFConsumer
 

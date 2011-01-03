@@ -61,9 +61,9 @@
 typedef void	*GSRTFctxt;
 // Two parameters are not supported by some bison versions. The declaration of 
 // yyparse in the .c file must be corrected to be able to compile it.
-#define YYPARSE_PARAM	ctxt, void *lctxt
+/*#define YYPARSE_PARAM	ctxt, void *lctxt*/
 #define YYLEX_PARAM		lctxt
-#define YYLSP_NEEDED 0
+/*#undef YYLSP_NEEDED*/
 #define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
@@ -74,6 +74,9 @@ typedef void	*GSRTFctxt;
 int GSRTFlex(void *lvalp, void *lctxt);
 
 %}
+
+%parse-param {void *ctxt}
+%parse-param {void *lctxt}
 
 %union {
 	int		number;

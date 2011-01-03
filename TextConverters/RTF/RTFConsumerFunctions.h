@@ -55,7 +55,7 @@ void GSRTFopenBlock(void *ctxt, BOOL ignore);
 void GSRTFcloseBlock(void *ctxt, BOOL ignore);
 
 /* handle errors */
-void GSRTFerror(const char *msg);
+void GSRTFerror(void *ctxt, void *lctxt, const char *msg);
 
 /* handle rtf commands not expicated in the grammer */
 void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd);

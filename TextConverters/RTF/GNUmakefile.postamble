@@ -25,6 +25,7 @@
 BISON_FLAGS = -d -p GSRTF
 BISON = BISON_SIMPLE=bison.simple bison
 
-# This parser doesn't compile with newer bison programs. Needs to be fixed...
-#rtfGrammer.tab.c: rtfGrammer.y
+# Rule not enabled because not every system has bison installed...
+# FIXME add configure check for bison?
+#rtfGrammar.tab.c: rtfGrammar.y
 #	$(BISON) $(BISON_FLAGS) $<
