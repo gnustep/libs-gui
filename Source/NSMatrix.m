@@ -3162,6 +3162,21 @@ static SEL getSel;
   return _errorAction;
 }
 
+/**<p> Enables or disables all cells of the receiver. </p>
+ */
+- (void) setEnabled: (BOOL)flag
+{
+  int i, j;
+
+  for (i = 0; i < _numRows; i++)
+    {
+      for (j = 0; j < _numCols; j++)
+	{
+	  [_cells[i][j] setEnabled: flag];
+	}
+    }
+}
+
 /**<p> Sets a flag to indicate whether the matrix should permit empty
    selections or should force one or mor cells to be selected at all times.
    </p><p>See Also: -allowsEmptySelection</p>
