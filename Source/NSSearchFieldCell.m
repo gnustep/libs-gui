@@ -273,8 +273,8 @@
   [c setEditable: NO];
   [c setImagePosition: NSImageOnly];
   [c setImage: [NSImage imageNamed: @"GSStop"]];
-  [c setAction: @selector(delete:)];
-  [c setTarget: nil];
+  [c setAction: @selector(clearSearch:)];
+  [c setTarget: self];
   [c setKeyEquivalent: @"\e"];
   [c setKeyEquivalentModifierMask: 0];
 }
@@ -441,10 +441,15 @@
   textObject = [notification object];
   // copy the current NSTextEdit string so that it can be read from the NSSearchFieldCell!
   [self setStringValue: [textObject string]];
-  [[self searchButtonCell] performClickWithFrame: 
-			       [self searchButtonRectForBounds: [_control_view bounds]] 
-			   inView: _control_view];
+  [NSApp sendAction:[self action] to:[self target] from:_control_view];
 }
+
+- (void) clearSearch:(id)sender
+{
+  [self setStringValue:@""];
+  [NSApp sendAction:[self action] to:[self target] from:_control_view];
+}
+
 //
 // NSCoding protocol
 //

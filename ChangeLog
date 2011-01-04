@@ -1,3 +1,11 @@
+2011-01-04  Doug Simons  <doug.simons@testplant.com>
+
+	* Source/NSSearchFieldCell.m:
+	Fix cancel button to correctly clear the field and send action.
+	Fix -textDidChange: to correctly send action rather than popping up
+	the menu on each keystroke (when sendsWholeSearchString is false).
+	 
+
 2011-01-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/tiff.m (NSTiffWrite):
