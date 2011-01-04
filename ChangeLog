@@ -1,3 +1,9 @@
+2011-01-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/tiff.m (NSTiffWrite):
+	Fix long standing bug where incorrect data was written out for RGB
+	images if bits per sample != 8.
+
 2011-01-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/GNUmakefile:

@@ -451,6 +451,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   int		i;
   unsigned int 	row;
   int           error = 0;
+  int           scan_line_size;
 
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
@@ -468,6 +469,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   else
     sample_info[0] = EXTRASAMPLE_UNASSALPHA;
   TIFFSetField(image, TIFFTAG_EXTRASAMPLES, info->extraSamples, sample_info);
+  scan_line_size = TIFFScanlineSize(image);
 
   switch (info->photoInterp) 
     {
@@ -475,24 +477,20 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
       case PHOTOMETRIC_MINISWHITE:
 	if (info->planarConfig == PLANARCONFIG_CONTIG) 
 	  {
-	    int	line = ceil((float)info->width * info->bitsPerSample / 8.0);
-
 	    for (row = 0; row < info->height; ++row) 
 	      {
 		WRITE_SCANLINE(0)
-		buf += line;
+		buf += scan_line_size;
 	      }
 	  } 
 	else 
 	  {
-	    int	line = ceil((float)info->width / 8.0);
-
 	    for (i = 0; i < info->samplesPerPixel; i++)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
 		    WRITE_SCANLINE(i)
-		    buf += line;
+		    buf += scan_line_size;
 		  }
 	      }
 	  }
@@ -504,7 +502,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	    for (row = 0; row < info->height; ++row) 
 	      {
 		WRITE_SCANLINE(0)
-		buf += info->width * info->samplesPerPixel;
+		buf += scan_line_size;
 	      }
 	  } 
 	else 
@@ -514,7 +512,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 		for (row = 0; row < info->height; ++row) 
 		  {
 		    WRITE_SCANLINE(i)
-		    buf += info->width;
+		    buf += scan_line_size;
 		  }
 	      }
 	  }
