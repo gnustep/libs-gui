@@ -1071,7 +1071,9 @@ static NSMapTable *viewInfo = 0;
 	[_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
       NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
-      return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame));
+      /*We add +1 for don't lose the track when the user move the
+	mouse from the horizontal menu to a submenu.*/
+      return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame) + 1);
     }
 }
 
@@ -1618,6 +1620,27 @@ static NSMapTable *viewInfo = 0;
                     }
                   return subMenuResult;
                 }
+	      
+	      /*We track the menu correctly when this is located
+		in a window*/
+	      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+		  NSWindows95InterfaceStyle)
+		{
+		  if ([self hitTest: location] == nil)
+		    {
+		      [[[[NSApp mainWindow] menu] attachedMenu] close];
+		      shouldFinish = YES;
+		      return NO;
+		    }
+		  
+		  if (self != [[[NSApp mainWindow] menu] menuRepresentation])
+		    {
+		      [self setHighlightedItemIndex: -1];
+		      shouldFinish = YES;
+		      return [[[[NSApp mainWindow] menu] menuRepresentation]
+			       trackWithEvent: original];
+		    }
+		}
             }
 
           // 4 - We changed the selected item and should update.

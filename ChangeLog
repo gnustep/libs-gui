@@ -1,3 +1,8 @@
+2011-01-06 German Arias <german@xelalug.org>
+
+	* Source/NSMenuView.m (-locationForSubmenu:, -trackWithEvent:):
+	Fixed the tracking of mouse at horizontal menu.	
+
 2011-01-04  Doug Simons  <doug.simons@testplant.com>
 
 	* Source/NSSearchFieldCell.m:
