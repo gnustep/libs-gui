@@ -1,3 +1,10 @@
+2011-01-08 German Arias <german@xelalug.org>
+
+	* Source/NSMenuView.m (-trackWithEvent:):
+	Close the menu in window if user press a modifier key.
+	And improvements for don't lose the mouse tracking
+	in a menu in window.
+	
 2011-01-06 German Arias <german@xelalug.org>
 
 	* Source/NSMenuView.m (-locationForSubmenu:, -trackWithEvent:):

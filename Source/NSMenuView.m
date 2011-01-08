@@ -1427,6 +1427,7 @@ static NSMapTable *viewInfo = 0;
   int delayCount = 0;
   int indexOfActionToExecute = -1;
   int firstIndex = -1;
+  int space = 0;
   NSEvent *original;
   NSEventType type;
   NSEventType end;
@@ -1458,6 +1459,14 @@ static NSMapTable *viewInfo = 0;
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
       eventMask |= NSLeftMouseDownMask;
+
+      /*We need know if the user press a modifier key to close the menu
+	when the menu is in a window*/
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+	  NSWindows95InterfaceStyle)
+	{
+	  eventMask |= NSFlagsChangedMask;
+	}
     }
   else
     {
@@ -1484,6 +1493,17 @@ static NSMapTable *viewInfo = 0;
     }
   do
     {
+      /*Close the menu if the user press a modifier key and menu
+	is in a window*/
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+	  NSWindows95InterfaceStyle && type == NSFlagsChanged)
+	{
+	  [self setHighlightedItemIndex: -1];
+	  [[[[NSApp mainWindow] menu] attachedMenu] close];
+	  shouldFinish = YES;
+	  return NO;
+	}
+
       if (type == end)
         {
           shouldFinish = YES;
@@ -1628,9 +1648,17 @@ static NSMapTable *viewInfo = 0;
 		{
 		  if ([self hitTest: location] == nil)
 		    {
-		      [[[[NSApp mainWindow] menu] attachedMenu] close];
-		      shouldFinish = YES;
-		      return NO;
+		      /*This gives us time to move the cursor between a menu and
+			its submenu (or vice versa) without lose the mouse
+			tracking*/
+		      space += 1;
+
+		      if (space == 2)
+			{
+			  [[[[NSApp mainWindow] menu] attachedMenu] close];
+			  shouldFinish = YES;
+			  return NO;
+			}
 		    }
 		  
 		  if (self != [[[NSApp mainWindow] menu] menuRepresentation])
