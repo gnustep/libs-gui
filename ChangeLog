@@ -1,3 +1,10 @@
+2011-01-09 German Arias <german@xelalug.org>
+
+	* Source/NSApplication.m (-activateIgnoringOtherApps:):
+	If we have menu in window, set a main window when unhide.
+	* Source/NSWindow.m (-resignMainWindow): Close the menu
+	in window if resign main window.
+
 2011-01-08 German Arias <german@xelalug.org>
 
 	* Source/NSMenuView.m (-trackWithEvent:):

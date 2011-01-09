@@ -1297,6 +1297,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       if ([self keyWindow] != nil)
         {
           [[self keyWindow] orderFront: self];
+	  
+	  /* If menu is in window, we need a main window, in other way
+	     the menu can't respond */
+	  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+	      NSWindows95InterfaceStyle && [[self keyWindow] canBecomeMainWindow])
+	    {
+	      [[self keyWindow] becomeMainWindow];
+	    }
         }
       else if ([self mainWindow] != nil)
         {
