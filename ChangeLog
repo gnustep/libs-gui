@@ -1,3 +1,11 @@
+2011-01-09 21:58-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSSavePanel.m: (-_initWithoutGModel): added
+	code near the and to close the current menu when in Win95
+	mode.  If this doesn't happen the menu remains open
+	and allows the user to drag the window around while the 
+	menu remains in it's old position.
+
 2011-01-09 German Arias <german@xelalug.org>
 
 	* Source/NSApplication.m (-activateIgnoringOtherApps:):
