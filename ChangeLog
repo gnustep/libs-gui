@@ -1,5 +1,24 @@
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSApplication.m (-rightMouseDown:):
+	* Source/NSApplication.m (-_dockMenu):
+	Provide a default context menu for application icons when using
+	Macintosh or Windows 95 style menus. Inspired by OS X, the menu
+	contains items to hide or show the application, to terminate the
+	application, an item for each window present in the application's
+	window menu, and the items of the dock menu returned by the
+	application delegate.
+
+	* Headers/AppKit/NSApplication.h:
+	Update documentation to note that the -applicationDockMenu:
+	delegate method now may be called on GNUstep.
+
+	* Resources/English.lproj/Localizable.strings:
+	* Resources/German.lproj/Localizable.strings:
+	Update. Also add a few more German translations.
+
+2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSApplication.m (-changeWindowsItem:title:filename):
 	Insert window menu items strictly at the bottom of the menu,
 	keeping only items with actions -performMiniaturize: and

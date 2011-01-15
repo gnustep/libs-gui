@@ -595,8 +595,8 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
 /**
  * Method used on OS X to allow an application to override the standard menu
- * obtained by right-clicking on the application's dock icon.  <em>Not sent
- * yet in GNUstep.</em>
+ * obtained by right-clicking on the application's dock icon.  <em>Called
+ * when the application uses Macintosh or Windows95 style menus.</em>
  */
 - (NSMenu *) applicationDockMenu: (NSApplication*)sender;
 

@@ -380,6 +380,7 @@ struct _NSModalSession {
 - (void) _windowWillClose: (NSNotification*) notification;
 - (void) _workspaceNotification: (NSNotification*) notification;
 - (NSArray *) _openFiles;
+- (NSMenu *) _dockMenu;
 @end
 
 @interface NSWindow (ApplicationPrivate)
@@ -455,6 +456,27 @@ NSApplication	*NSApp = nil;
     }
 #endif
   _windowLevel = NSDockWindowLevel;
+}
+
+- (void) rightMouseDown: (NSEvent *)theEvent
+{
+  NSMenu *menu = nil;
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+
+  if (style == NSMacintoshInterfaceStyle || style == NSWindows95InterfaceStyle)
+    {
+      menu = [NSApp _dockMenu];
+    }
+  if (menu)
+    {
+      [NSMenu popUpContextMenu: menu
+		     withEvent: theEvent
+		       forView: [self contentView]];
+    }
+  else
+    {
+      [super rightMouseDown: theEvent];
+    }
 }
 
 @end
@@ -4060,6 +4082,69 @@ struct _DelegateWrapper
     }
 
   return files;
+}
+
+- (NSMenu *) _dockMenu
+{
+  NSUInteger i, j, n; 
+  NSMenu *dockMenu, *windowsMenu;
+
+  // ask delegate for a dock menu, if none create a new one
+  dockMenu = nil;
+  if ([_delegate respondsToSelector: @selector(applicationDockMenu:)])
+    {
+      // NB we make a copy of the menu since we are going to modify it
+      dockMenu = [[_delegate applicationDockMenu: self] copy];
+    }
+  if (dockMenu == nil)
+    {
+      dockMenu = [[NSMenu alloc] initWithTitle:@""];
+    }
+
+  // copy window menu entries to the top of the menu
+  windowsMenu = [NSApp windowsMenu];
+  for (i = j = 0, n = [windowsMenu numberOfItems]; i < n; i++)
+    {
+      NSMenuItem *item = [windowsMenu itemAtIndex: i];
+      if ([[item target] isKindOfClass:[NSWindow class]] &&
+          sel_isEqual([item action], @selector(makeKeyAndOrderFront:)))
+        {
+          [[dockMenu insertItemWithTitle: [item title]
+                                  action: @selector(makeKeyAndOrderFront:)
+                           keyEquivalent: @""
+                                 atIndex: j++]
+                    setTarget: [item target]];
+        }
+    }
+  if (j > 0)
+    {
+      [dockMenu insertItem: [NSMenuItem separatorItem] atIndex: j++];
+    }
+
+  // insert standard entries to show or hide and to quit the application at
+  // the bottom
+  if (j < [dockMenu numberOfItems])
+    {
+      [dockMenu addItem: [NSMenuItem separatorItem]];
+    }
+  if ([self isHidden])
+    {
+      [dockMenu addItemWithTitle:_(@"Show")
+                          action:@selector(unhide:)
+                   keyEquivalent:@""];
+    }
+  else
+    {
+      [dockMenu addItemWithTitle:_(@"Hide")
+                          action:@selector(hide:)
+                   keyEquivalent:@""];
+    }
+  [dockMenu addItemWithTitle:_(@"Quit")
+                      action:@selector(terminate:)
+               keyEquivalent:@""];
+
+  // return the menu
+  return dockMenu;
 }
 
 @end // NSApplication (Private)
