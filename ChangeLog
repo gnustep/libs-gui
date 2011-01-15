@@ -1,3 +1,13 @@
+2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSApplication.m (-changeWindowsItem:title:filename):
+	Insert window menu items strictly at the bottom of the menu,
+	keeping only items with actions -performMiniaturize: and
+	-performClose: beneath them. This allows having additional items
+	at the top of the menu and works better for window menus that
+	follow the Mac OS X UI guidelines and have miniaturize and zoom
+	commands at the top and arrange in front below them.
+
 2011-01-09 21:58-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSSavePanel.m: (-_initWithoutGModel): added

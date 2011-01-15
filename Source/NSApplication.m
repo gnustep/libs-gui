@@ -3022,24 +3022,27 @@ image.</p><p>See Also: -applicationIconImage</p>
   
   /*
    * Now we insert a menu item for the window in the correct order.
-   * Make special allowance for menu entries to 'arrangeInFront: '
+   * Window menu items are inserted in alphabetic order at the bottom
+   * of the windows menu except for two special items with actions
    * 'performMiniaturize: ' and 'performClose: '.  If these exist the
-   * window entries should stay after the first one and before the
-   * other two.
+   * they are kept at the below all window entries in the menu.
    */
   itemArray = [_windows_menu itemArray];
   count = [itemArray count];
 
-  i = 0;
-  if (count > 0 && sel_isEqual([[itemArray objectAtIndex: 0] action],
-		@selector(arrangeInFront:)))
-    i++;
-  if (count > i && sel_isEqual([[itemArray objectAtIndex: count-1] action],
+  if (count > 0 && sel_isEqual([[itemArray objectAtIndex: count-1] action],
 		@selector(performClose:)))
     count--;
-  if (count > i && sel_isEqual([[itemArray objectAtIndex: count-1] action],
+  if (count > 0 && sel_isEqual([[itemArray objectAtIndex: count-1] action],
 		@selector(performMiniaturize:)))
     count--;
+  for (i = 0; i < count; i++)
+    {
+      NSMenuItem *item = [itemArray objectAtIndex: i];
+      if ([[item target] isKindOfClass: [NSWindow class]] &&
+	  sel_isEqual([item action], @selector(makeKeyAndOrderFront:)))
+	break;
+    }
 
   while (i < count)
     {
@@ -3050,20 +3053,10 @@ image.</p><p>See Also: -applicationIconImage</p>
       i++;
     }
 
-  if ([aWindow canBecomeKeyWindow])
-    {
-      item = [_windows_menu insertItemWithTitle: aString
+  item = [_windows_menu insertItemWithTitle: aString
 			action: @selector(makeKeyAndOrderFront:)
 			keyEquivalent: @""
 			atIndex: i];
-    }
-  else 
-    {
-      item = [_windows_menu insertItemWithTitle: aString
-			action: @selector(orderFront:)
-			keyEquivalent: @""
-			atIndex: i];
-    }
   [item setTarget: aWindow];
 
   // When changing for a window with a file, we should also set the image.
