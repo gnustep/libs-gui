@@ -101,6 +101,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
              name: NSColorPanelColorDidChangeNotification
            object: nil];
 
+  [nc addObserver: self
+         selector: @selector(deactivate)
+             name: NSWindowWillCloseNotification
+           object: colorPanel];
+
   _is_active = YES;
 
   [colorPanel setColor: _the_color];

@@ -1,5 +1,10 @@
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSColorWell.m (-activate:): Deactivate an activate color
+	well when the user closes the color panel.
+
+2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Headers/AppKit/NSColorList.h:
 	* Headers/AppKit/NSColorPanel.h:
 	* Source/NSColorList.m (-insertColor:key:atIndex:,
