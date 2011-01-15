@@ -1,5 +1,18 @@
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Headers/AppKit/NSColorList.h:
+	* Headers/AppKit/NSColorPanel.h:
+	* Source/NSColorList.m (-insertColor:key:atIndex:,
+	-removeColorWithKey:, -setColorForKey:):
+	* Source/NSColorPanel.m (-setColor:):
+	* Source/NSColorWell.m (-activate:):
+	* Source/NSWindow.m (-initWithContentRect:styleMask:backing:defer:):
+	* Source/externs.m(NSColorListDidChangeNotification,
+	NSColorPanelColorDidChangeNotification):
+	Rename notifications to match Cocoa (and OpenStep).
+
+2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSApplication.m (-rightMouseDown:):
 	* Source/NSApplication.m (-_dockMenu):
 	Provide a default context menu for application icons when using

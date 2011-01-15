@@ -149,11 +149,18 @@ NSString *NSSystemColorsDidChangeNotification =
             @"NSSystemColorsDidChangeNotification";
 
 // NSColorList notifications
-NSString *NSColorListChangedNotification = @"NSColorListChange";
+NSString *NSColorListDidChangeNotification = @"NSColorListDidChange";
 
 // NSColorPanel notifications
-NSString *NSColorPanelColorChangedNotification =
-@"NSColorPanelColorChangedNotification";
+NSString *NSColorPanelColorDidChangeNotification =
+  @"NSColorPanelColorDidChange";
+
+#if GNUSTEP_GUI_MAJOR_VERSION == 0 && GNUSTEP_GUI_MINOR_VERSION < 20
+/* The above notifications had been misspelled in GNUstep. We keep them around
+   here to preserve binary compatibility until the next release. */
+NSString *NSColorListChangedNotification = @"NSColorListDidChange";
+NSString *NSColorPanelColorChangedNotification = @"NSColorPanelColorDidChange";
+#endif
 
 // NSComboBox notifications
 NSString *NSComboBoxWillPopUpNotification = 

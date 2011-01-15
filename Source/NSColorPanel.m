@@ -676,7 +676,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 }
 
 /** <p>Sets the NSColor displayed to aColor. This method post a
-    NSColorPanelColorChangedNotification notification if needed.</p>
+    NSColorPanelColorDidChangeNotification notification if needed.</p>
     <p>See Also: -color [NSColorWell-setColor:]
     </p>
 */
@@ -691,7 +691,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     [NSApp sendAction: _action to: _target from: self];  
 
   [[NSNotificationCenter defaultCenter]
-      postNotificationName: NSColorPanelColorChangedNotification
+      postNotificationName: NSColorPanelColorDidChangeNotification
                     object: (id)self];
 }
 

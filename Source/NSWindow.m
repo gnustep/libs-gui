@@ -1030,7 +1030,7 @@ many times.
 
   [nc addObserver: self
          selector: @selector(colorListChanged:)
-             name: NSColorListChangedNotification
+             name: NSColorListDidChangeNotification
            object: nil];
 
   if (style == NSWindows95InterfaceStyle)

@@ -342,7 +342,7 @@ static NSColorList *themeColorList = nil;
   [_orderedColorKeys removeObject: key];
   [_orderedColorKeys insertObject: key atIndex: location];
   
-  n = [NSNotification notificationWithName: NSColorListChangedNotification
+  n = [NSNotification notificationWithName: NSColorListDidChangeNotification
 				    object: self
 				  userInfo: nil];
   [[NSNotificationQueue defaultQueue] 
@@ -363,7 +363,7 @@ static NSColorList *themeColorList = nil;
   [_colorDictionary removeObjectForKey: key];
   [_orderedColorKeys removeObject: key];
 
-  n = [NSNotification notificationWithName: NSColorListChangedNotification
+  n = [NSNotification notificationWithName: NSColorListDidChangeNotification
 				    object: self
 				  userInfo: nil];
   [[NSNotificationQueue defaultQueue] 
@@ -387,7 +387,7 @@ static NSColorList *themeColorList = nil;
   if ([_orderedColorKeys containsObject: key] == NO)
     [_orderedColorKeys addObject: key];
 
-  n = [NSNotification notificationWithName: NSColorListChangedNotification
+  n = [NSNotification notificationWithName: NSColorListDidChangeNotification
 				    object: self
 				  userInfo: nil];
   [[NSNotificationQueue defaultQueue] 

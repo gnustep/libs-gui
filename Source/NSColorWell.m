@@ -98,7 +98,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
   [nc addObserver: self
          selector: @selector(_takeColorFromPanel:)
-             name: NSColorPanelColorChangedNotification
+             name: NSColorPanelColorDidChangeNotification
            object: nil];
 
   _is_active = YES;

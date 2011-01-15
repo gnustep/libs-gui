@@ -164,6 +164,6 @@
 @end
 
 /* Notifications */
-APPKIT_EXPORT NSString *NSColorListChangedNotification;
+APPKIT_EXPORT NSString *NSColorListDidChangeNotification;
 
 #endif // _GNUstep_H_NSColorList
