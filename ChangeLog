@@ -1,7 +1,7 @@
 2011-01-15 23:50-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenuView.m: Fix to previous change to 
-	[NSMenuView _executeItemAtIndex:removeSubmenu:].  
+	[NSMenuView trackWithEvent:].  
 	Assign attachedMenu to local variable and test for nil
 	prior to entering the code to close the menu when tracking
 	the mouse for normal menus.  Previous version of this code 
