@@ -255,7 +255,7 @@
 	      v = brightness;
 	    }
 
-	    // caluclate R,G,B from h,s,v
+	    // calculate R,G,B from h,s,v
 	    {
 	      int	I = (int)(h * 6);
 	      CGFloat V = v;
@@ -289,10 +289,17 @@
 	    B *= A;
  
 	    // store pixel
+#if GS_WORDS_BIGENDIAN
+	    row[x] = ((uint32_t)(255 * R) << 24)
+	      | (((uint32_t)(255 * G)) << 16)
+	      | (((uint32_t)(255 * B)) << 8)
+	      | (((uint32_t)(255 * A)));
+#else
 	    row[x] = ((uint32_t)(255 * R))
 	      | (((uint32_t)(255 * G)) << 8)
 	      | (((uint32_t)(255 * B)) << 16)
 	      | (((uint32_t)(255 * A)) << 24);
+#endif
 	  }
       }
 
