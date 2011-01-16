@@ -1586,6 +1586,7 @@ static NSMapTable *viewInfo = 0;
               NSPoint locationInScreenCoordinates;
               NSWindow *windowUnderMouse;
               NSMenu *candidateMenu;
+	      NSMenu *anAttachedMenu = [[[NSApp mainWindow] menu] attachedMenu];
 
               subMenusNeedRemoving = NO;
 
@@ -1656,7 +1657,8 @@ static NSMapTable *viewInfo = 0;
 	      /*We track the menu correctly when this is located
 		in a window*/
 	      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-		  NSWindows95InterfaceStyle)
+		  NSWindows95InterfaceStyle &&
+		  anAttachedMenu != nil)
 		{
 		  if ([self hitTest: location] == nil)
 		    {
@@ -1667,7 +1669,7 @@ static NSMapTable *viewInfo = 0;
 
 		      if (space == 2)
 			{
-			  [[[[NSApp mainWindow] menu] attachedMenu] close];
+			  [anAttachedMenu close];
 			  shouldFinish = YES;
 			  return NO;
 			}
