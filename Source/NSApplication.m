@@ -1315,18 +1315,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           [_hidden_key makeKeyWindow];
           _hidden_key = nil;
         }
+
+      if ([self mainWindow] == nil && _hidden_main != nil
+          && [[self windows] indexOfObjectIdenticalTo: _hidden_main] != NSNotFound)
+        {
+          [_hidden_main makeMainWindow];
+          _hidden_main = nil;
+        }
       
       if ([self keyWindow] != nil)
         {
           [[self keyWindow] orderFront: self];
-	  
-	  /* If menu is in window, we need a main window, in other way
-	     the menu can't respond */
-	  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-	      NSWindows95InterfaceStyle && [[self keyWindow] canBecomeMainWindow])
-	    {
-	      [[self keyWindow] becomeMainWindow];
-	    }
         }
       else if ([self mainWindow] != nil)
         {
@@ -1376,10 +1375,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           _hidden_key = [self keyWindow];
           [_hidden_key resignKeyWindow];
         }
-      // FIXME: main window is not saved for when the app is activated again.
-      // This is not a problem if it is also key, and I'm not sure if it
-      // is a problem at all. May be annoying in the case of workspace switch.
-      [[self mainWindow] resignMainWindow];
+      // The main window is saved for when the app is activated again.
+      // This is necessary for menu in window.
+      if ([self mainWindow] != nil)
+        {
+          _hidden_main = [self mainWindow];
+          [_hidden_main resignMainWindow];
+        }
       
       windows_list = GSOrderedWindows();
       iter = [windows_list reverseObjectEnumerator];
@@ -2416,6 +2418,14 @@ image.</p><p>See Also: -applicationIconImage</p>
         {
           _hidden_key = [self keyWindow];
           [_hidden_key resignKeyWindow];
+        }
+      
+      // The main window is saved for when the app is activated again.
+      // This is necessary for menu in window.
+      if ([self mainWindow] != nil)
+        {
+          _hidden_main = [self mainWindow];
+          [_hidden_main resignMainWindow];
         }
       
       windows_list = GSOrderedWindows();

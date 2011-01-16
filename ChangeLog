@@ -1,3 +1,14 @@
+2011-01-15 German Arias <german@xelalug.org>
+
+	* Source/NSWindow.m:
+	* Source/NSSavePanel.m:	Reverted latest changes.
+	* Source/NSMenuView.m: Added the appropriate code to close
+	the menu after select an option, but before do the
+	instructions of the selected option.
+	* Headers/AppKit/NSApplication.h:
+	* Source/NSApplication.m: Save the main window when the
+	app is hidden or when is deactivated.
+
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSColorWell.m (-activate:): Deactivate an activate color

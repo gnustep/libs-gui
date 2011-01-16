@@ -1818,14 +1818,6 @@ many times.
   if (_f.is_main == YES)
     {
       _f.is_main = NO;
-
-      //We close the menu if the app will be hide
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-	  NSWindows95InterfaceStyle)
-	{
-	  [[[self menu] attachedMenu] close];
-	}
-      
       if (_f.is_key == YES)
         {
           [_wv setInputState: GSTitleBarKey];

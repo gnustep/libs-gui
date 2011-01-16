@@ -50,7 +50,6 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSMatrix.h"
-#import "AppKit/NSMenu.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSSavePanel.h"
@@ -183,7 +182,6 @@ setPath(NSBrowser *browser, NSString *path)
   NSImage *image;
   NSRect r;
   id lastKeyView;
-  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
 
   // Track window resizing so we can change number of browser columns.
   [[NSNotificationCenter defaultCenter] addObserver: self
@@ -374,12 +372,6 @@ setPath(NSBrowser *browser, NSString *path)
 
   [self registerForDraggedTypes: [NSArray arrayWithObjects:
 	NSFilenamesPboardType, nil]];
-
-
-  if (style == NSWindows95InterfaceStyle)
-    {	  
-      [[[[NSApp mainWindow] menu] attachedMenu] close];
-    }
 
   return self;
 }

@@ -145,6 +145,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
+  NSWindow              *_hidden_main;
   GSInfoPanel           *_infoPanel;
 
   /* This autorelease pool should only be created and used by -run, with

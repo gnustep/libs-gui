@@ -1389,14 +1389,21 @@ static NSMapTable *viewInfo = 0;
 - (BOOL) _executeItemAtIndex: (int)indexOfActionToExecute
 	       removeSubmenu: (BOOL)subMenusNeedRemoving
 {
+  NSInterfaceStyle style =
+    NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
+  
+  /*If we have menu in window, close the menu after select
+    an option*/
+  if (style == NSWindows95InterfaceStyle)
+    {
+      [[[[NSApp mainWindow] menu] attachedMenu] close];
+    }
+  
   if (indexOfActionToExecute >= 0
       && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
       [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
-      NSInterfaceStyle style =
-	  NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
-      if (style == NSMacintoshInterfaceStyle ||
-	  style == NSWindows95InterfaceStyle)
+      if (style == NSMacintoshInterfaceStyle)
         {
 	  // On Macintosh, clicking on or releasing the mouse over a
 	  // submenu item always closes the menu (if it is open) and
@@ -1404,6 +1411,11 @@ static NSMapTable *viewInfo = 0;
           [self detachSubmenu];
 	  return YES;
         }
+
+      if (style == NSWindows95InterfaceStyle)
+	{
+	  return YES;
+	}
 
       if (subMenusNeedRemoving)
         {
