@@ -434,6 +434,16 @@ NSApplication	*NSApp = nil;
   return YES;
 }
 
+
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+{     
+  if ([[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSSuppressAppIcon"] == NO)
+    {
+      [super orderWindow: place relativeTo: otherWin];
+    }
+}
+
 - (void) _initDefaults
 {
   [super _initDefaults];

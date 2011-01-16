@@ -1,3 +1,13 @@
+2011-01-16 00:32-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSApplication.m: Added overide for orderWindow:relativeTo:
+	in NSIconWindow.  Check for GSSuppressAppIcon and order the window
+	ONLY if the app icon window is supposed to be displayed, otherwise
+	do not do anything with it.   I observed issues with this
+	functionality while testing the GNOME theme the app icon would 
+	periodically show even when the default mentioned above was set to 
+	YES.
+
 2011-01-15 23:50-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenuView.m: Fix to previous change to 
