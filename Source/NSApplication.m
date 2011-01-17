@@ -2090,8 +2090,13 @@ See -runModalForWindow:
       case NSKeyDown:
 	{
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
+	  /* Key equivalents must be looked up explicitly in the Services menu
+	     after checking the main menu, as NSMenu's -performKeyEquivalent:
+	     ignores the Services menu. See the comment in that method for a
+	     rationale. */
 	  if ([[self keyWindow] performKeyEquivalent: theEvent] == NO
-	    && [[self mainMenu] performKeyEquivalent: theEvent] == NO)
+	    && [[self mainMenu] performKeyEquivalent: theEvent] == NO
+	    && [[self servicesMenu] performKeyEquivalent: theEvent] == NO)
 	    {
 	      [[theEvent window] sendEvent: theEvent];
 	    }

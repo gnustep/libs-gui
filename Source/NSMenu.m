@@ -1244,6 +1244,19 @@ static BOOL menuBarVisible = YES;
                                     
       if ([item hasSubmenu])
         {
+	  /* Ignore the Services submenu during menu traversal so that its key
+	     equivalents do not accidentally shadow standard key equivalents
+	     in the application's own menus. NSApp calls -performKeyEquivalent:
+	     explicitly for the Services menu when no matching key equivalent
+	     was found here (see NSApplication -sendEvent:).
+	     Note: Shadowing is no problem for a standard OpenStep menu, where
+	     the Services menu appears close to the end of the main menu, but
+	     is very likely for Macintosh or Windows 95 interface styles, where
+	     the Services menu appears in the first submenu of the main menu. */
+	  // FIXME Should really remove conflicting key equivalents from the
+	  // menus so that users don't get confused.
+	  if ([item submenu] == [NSApp servicesMenu])
+	    continue;
 	  // Recurse through submenus whether active or not.
           // Recurse through submenus whether active or not.
           if ([[item submenu] performKeyEquivalent: theEvent])

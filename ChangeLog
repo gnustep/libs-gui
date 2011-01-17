@@ -1,5 +1,13 @@
 2011-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSApplication.m (-sendEvent:):
+	* Source/NSMenu.m (-performKeyEquivalent:):
+	Look up key equivalents in the Services menu only after traversing
+	the rest of the main menu to avoid accidentally shadowing key
+	equivalents in the application's own menus.
+
+2011-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* ColorPickers/GSWheelColorPicker.m (-regenerateImage):
 	Fix to correctly display color wheel image on big endian
 	machines.
