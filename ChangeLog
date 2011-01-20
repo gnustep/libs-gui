@@ -1,3 +1,10 @@
+2011-01-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSColorList.m (+availableColorLists): Make sure the
+	system colors are set up properly before computing the available
+	color lists. Fixes an issue where the returned list would either
+	be empty or contain two instances of the system color list.
+
 2011-01-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: check on-disk cache at regular intervals ...
@@ -61,7 +68,7 @@
 
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Source/NSColorWell.m (-activate:): Deactivate an activate color
+	* Source/NSColorWell.m (-activate:): Deactivate an active color
 	well when the user closes the color panel.
 
 2011-01-15  Wolfgang Lux  <wolfgang.lux@gmail.com>

@@ -99,6 +99,7 @@ static NSColorList *themeColorList = nil;
 
   // Serialize access to color list
   [_colorListLock lock];
+  [NSColor whiteColor]; // NB This ensures that the System color list is defined
   [NSColorList _loadAvailableColorLists: nil];
   a =  [NSArray arrayWithArray: _availableColorLists];
   [_colorListLock unlock];
