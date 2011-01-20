@@ -598,7 +598,7 @@ static NSString			*_rootPath = @"/";
 	   *	Load cached application information.
 	   */
 	  appListPath = [service
-			  stringByAppendingPathComponent: @".GNUstepAppList"];
+	    stringByAppendingPathComponent: @".GNUstepAppList"];
 	  RETAIN(appListPath);
 	  if ([mgr isReadableFileAtPath: appListPath] == YES)
 	    {
@@ -680,6 +680,15 @@ static NSString			*_rootPath = @"/";
     name: NSUserDefaultsDidChangeNotification
     object: nil];
 
+  /* There's currently no way of knowing if things have changed due to
+   * apps being installed etc ... so we actually poll regularly.
+   */
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_workspacePreferencesChanged:)
+    name: @"GSHousekeeping"
+    object: nil];
+
   _workspaceCenter = [_GSWorkspaceCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
@@ -693,14 +702,19 @@ static NSString			*_rootPath = @"/";
     name: GSWorkspacePreferencesChanged
     object: nil];
 
-  /* icon associtation and caching */
+  /* icon association and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
 
-  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
-  desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES);
-  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
-  sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
+  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+    NSUserDomainMask, YES);
+  downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory,
+    NSUserDomainMask, YES);
+  desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory,
+    NSUserDomainMask, YES);
+  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+    NSAllDomainsMask, YES);
+  sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
+    NSSystemDomainMask, YES);
  
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
@@ -714,24 +728,35 @@ static NSString			*_rootPath = @"/";
   if (sysDir != nil)
     [folderPathIconDict setObject: @"GSFolder" forKey: sysDir];
 
-  [folderPathIconDict setObject: @"HomeDirectory" forKey: NSHomeDirectory()];
-  [folderPathIconDict setObject: @"ImageFolder" forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
-  [folderPathIconDict setObject: @"MusicFolder" forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Music"]];
+  [folderPathIconDict setObject: @"HomeDirectory"
+    forKey: NSHomeDirectory()];
+  [folderPathIconDict setObject: @"ImageFolder"
+    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
+  [folderPathIconDict setObject: @"MusicFolder"
+    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Music"]];
   /* it would be nice to use different root icons... */
   [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
 
   for (i = 0; i < [libraryDirs count]; i++)
-    [folderPathIconDict setObject: @"LibraryFolder" forKey: [libraryDirs objectAtIndex: i]];
-
+    {
+      [folderPathIconDict setObject: @"LibraryFolder"
+	forKey: [libraryDirs objectAtIndex: i]];
+    }
   for (i = 0; i < [documentDir count]; i++)
-    [folderPathIconDict setObject: @"DocsFolder" forKey: [documentDir objectAtIndex: i]];
- 
+    {
+      [folderPathIconDict setObject: @"DocsFolder"
+	forKey: [documentDir objectAtIndex: i]];
+    }
   for (i = 0; i < [downloadDir count]; i++)
-    [folderPathIconDict setObject: @"DownloadFolder" forKey: [downloadDir objectAtIndex: i]];
-
+    {
+      [folderPathIconDict setObject: @"DownloadFolder"
+	forKey: [downloadDir objectAtIndex: i]];
+    }
   for (i = 0; i < [desktopDir count]; i++)
-    [folderPathIconDict setObject: @"Desktop" forKey: [desktopDir objectAtIndex: i]];
-
+    {
+      [folderPathIconDict setObject: @"Desktop"
+	forKey: [desktopDir objectAtIndex: i]];
+    }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
   return self;
@@ -1828,7 +1853,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   
   // get reserved names....
   reservedMountNames = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSReservedMountNames"];
-  if(reservedMountNames == nil)
+  if (reservedMountNames == nil)
     {
       reservedMountNames = [NSArray arrayWithObjects: 
 				      @"proc",@"devpts",
@@ -1840,7 +1865,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 					     forKey: @"GSReservedMountNames"];
     }
 
-  mtab = [NSString stringWithContentsOfFile:mtabPath];
+  mtab = [NSString stringWithContentsOfFile: mtabPath];
   mounts = [mtab componentsSeparatedByString: @"\n"];
 
   names = [NSMutableArray arrayWithCapacity: [mounts count]];
@@ -2065,7 +2090,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   
   iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-  if(iconPath == nil)
+  if (iconPath == nil)
     {
       /*
        * Try the CFBundleIconFile property.
@@ -2381,20 +2406,20 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
   NSString	*file = [typeInfo objectForKey: @"NSIcon"];
   
-  //
-  // If the NSIcon entry isn't there and the CFBundle entries are,
-  // get the first icon in the list if it's an array, or assign
-  // the icon to file if it's a string.
-  //
-  // FIXME: CFBundleTypeExtensions/IconFile can be arrays which assign
-  // multiple types to icons.  This needs to be handled eventually.
-  //
-  if(file == nil)
+  /*
+   * If the NSIcon entry isn't there and the CFBundle entries are,
+   * get the first icon in the list if it's an array, or assign
+   * the icon to file if it's a string.
+   *
+   * FIXME: CFBundleTypeExtensions/IconFile can be arrays which assign
+   * multiple types to icons.  This needs to be handled eventually.
+   */
+  if (file == nil)
     {
       id icon = [typeInfo objectForKey: @"CFBundleTypeIconFile"];
-      if([icon isKindOfClass: [NSArray class]])
+      if ([icon isKindOfClass: [NSArray class]])
 	{
-	  if([icon count])
+	  if ([icon count])
 	    {
 	      file = [icon objectAtIndex: 0];
 	    }
@@ -2477,8 +2502,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   absolute = [[NSURL fileURLWithPath: [file stringByStandardizingPath]] 
 		 absoluteString];
-  // This compensates for a feature we have in NSURL, that is there to have 
-  // MacOSX compatibility.
+  /* This compensates for a feature we have in NSURL, that is there to have 
+   * MacOSX compatibility.
+   */
   if ([absolute hasPrefix:  @"file://localhost/"])
     {
       absolute = [@"file:///" stringByAppendingString: 
@@ -2886,9 +2912,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (void) _workspacePreferencesChanged: (NSNotification *)aNotification
 {
-  // FIXME reload only those preferences that really were changed
-  // TODO  add a user info to aNotification, which includes a bitmask
-  //       denoting the updated preference files.
+  /* FIXME reload only those preferences that really were changed
+   * TODO  add a user info to aNotification, which includes a bitmask
+   *       denoting the updated preference files.
+   */
   NSFileManager		*mgr = [NSFileManager defaultManager];
   NSData		*data;
   NSDictionary		*dict;
