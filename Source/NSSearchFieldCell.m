@@ -41,6 +41,8 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuView.h"
+#import "AppKit/NSPopUpButtonCell.h"
+#import "AppKit/NSSearchField.h"
 #import "AppKit/NSSearchFieldCell.h"
 #import "AppKit/NSWindow.h"
 
@@ -127,7 +129,8 @@
 		       inView: controlView];
   [super drawWithFrame: [self searchTextRectForBounds: cellFrame] 
 	 inView: controlView];
-  [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame] 
+  if ([[self stringValue] length] > 0)
+    [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame] 
 		       inView: controlView];
 }
 
@@ -256,7 +259,7 @@
 }
 
 - (void) setSearchButtonCell: (NSButtonCell *)cell
-{ 
+{
   ASSIGN(_search_button_cell, cell);
 }
 
@@ -430,7 +433,8 @@
 - (void) textDidChange: (NSNotification *)notification
 { 
   NSText *textObject;
-
+  [_control_view setNeedsDisplay:YES];
+  
   // make textChanged send action (unless disabled)
   if (_sends_whole_search_string)
     {
@@ -448,6 +452,7 @@
 {
   [self setStringValue:@""];
   [NSApp sendAction:[self action] to:[self target] from:_control_view];
+  [_control_view setNeedsDisplay:YES];
 }
 
 //
@@ -558,18 +563,6 @@
   return template;
 }
 
-/* These two methods allow the NSSearchFieldCell to act enough like an
-   NSPopUpButtonCell that it can serve as the "owner" of the popup menu. */
-- (BOOL) pullsDown
-{
-  return NO;
-}
-
-- (void) selectItemAtIndex:(int)anIndex
-{
-  // do nothing
-}
-
 - (void) _openPopup: (id)sender
 {
   NSMenu *template;
@@ -579,11 +572,11 @@
   NSRect cellFrame;
   int i;
   int recentCount = [_recent_searches count];
-
+  NSPopUpButtonCell *pbcell = [[NSPopUpButtonCell alloc] initTextCell:nil pullsDown:NO];
+  int selectedItemIndex = -1, newSelectedItemIndex;
+  
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == NSWindows95InterfaceStyle)
-    [popupmenu _setOwnedByPopUp:(NSPopUpButtonCell *)self]; // needed for menu to show up in NSWindows95InterfaceStyle
 
   // Fill the popup menu 
   for (i = 0; i < [template numberOfItems]; i++)
@@ -592,55 +585,62 @@
       NSMenuItem *item, *newItem = nil;
 
       item = (NSMenuItem*)[template itemAtIndex: i];
+      if ([item state])
+        selectedItemIndex = [popupmenu numberOfItems]; // remember index of previously selected item
       tag = [item tag];
       if (tag == NSSearchFieldRecentsTitleMenuItemTag)
-	{
-	  if (recentCount > 0) // only show items with this tag if there are recent searches
-	    {
-	      newItem = [[item copy] autorelease];
-	    }
-	}
+        {
+          if (recentCount > 0) // only show items with this tag if there are recent searches
+            {
+              newItem = [[item copy] autorelease];
+            }
+        }
       else if (tag == NSSearchFieldClearRecentsMenuItemTag)
-	{
-	  if (recentCount > 0) // only show items with this tag if there are recent searches
-	    {
-	      newItem = [[item copy] autorelease];
-	      [newItem setTarget:self];
-	      [newItem setAction:@selector(_clearSearches:)];
-	    }
-	}
+        {
+          if (recentCount > 0) // only show items with this tag if there are recent searches
+            {
+              newItem = [[item copy] autorelease];
+              [newItem setTarget:self];
+              [newItem setAction:@selector(_clearSearches:)];
+            }
+        }
       else if (tag == NSSearchFieldNoRecentsMenuItemTag)
         { 
-	  if (recentCount == 0) // only show items with this tag if there are NO recent searches
-	    {
-	      newItem = [[item copy] autorelease];
-	    }
-	}
+          if (recentCount == 0) // only show items with this tag if there are NO recent searches
+            {
+              newItem = [[item copy] autorelease];
+            }
+        }
       else if (tag == NSSearchFieldRecentsMenuItemTag)
         {
-	  int j;
+          int j;
 
-	  for (j = 0; j < recentCount; j++)
-	    {
-	      id <NSMenuItem> searchItem = [popupmenu addItemWithTitle: 
-						    [_recent_searches objectAtIndex: j]
-						  action: 
-						    @selector(_searchForRecent:)
-						  keyEquivalent: 
-						    [item keyEquivalent]];
-	      [searchItem setTarget: self];
-	    }
-	}
+          for (j = 0; j < recentCount; j++)
+            {
+              id <NSMenuItem> searchItem = [popupmenu addItemWithTitle: 
+                                                                    [_recent_searches objectAtIndex: j]
+                                                                action: 
+                                                                    @selector(_searchForRecent:)
+                                                         keyEquivalent: 
+                                                                    [item keyEquivalent]];
+              [searchItem setTarget: self];
+            }
+        }
       else // copy all other items without special tags from the template into the popup
-	{
-	  newItem = [[item copy] autorelease];
-	}
+        {
+          newItem = [[item copy] autorelease];
+        }
 
       if (newItem != nil)
-	{
-	  [popupmenu addItem: newItem];
-	}
+        {
+          [popupmenu addItem: newItem];
+        }
     } 
+
+  [pbcell setMenu:popupmenu];
+  [pbcell selectItemAtIndex:selectedItemIndex];
+  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOffState]; // ensure that state resets fully
+  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOnState];
 
   // Prepare to display the popup
   cvWin = [_control_view window];
@@ -659,15 +659,31 @@
   [[mr window] orderFrontRegardless];
 
   [mr mouseDown: [NSApp currentEvent]];
+  newSelectedItemIndex = [pbcell indexOfSelectedItem];
+  if (newSelectedItemIndex != selectedItemIndex && newSelectedItemIndex != -1
+      && newSelectedItemIndex < [template numberOfItems])
+    {
+      int tag = [[template itemAtIndex:newSelectedItemIndex] tag];
+      if (tag != NSSearchFieldRecentsTitleMenuItemTag && tag != NSSearchFieldClearRecentsMenuItemTag
+          && tag != NSSearchFieldNoRecentsMenuItemTag && tag != NSSearchFieldRecentsMenuItemTag
+          && ![[template itemAtIndex:newSelectedItemIndex] isSeparatorItem])
+        {
+          //new selected item within the template that's not a template special item
+          [[template itemAtIndex:selectedItemIndex] setState:NSOffState];
+          [[template itemAtIndex:newSelectedItemIndex] setState:NSOnState];
+        }
+    }
   AUTORELEASE(popupmenu);
+  AUTORELEASE(pbcell);
 }
 
 - (void) _searchForRecent: (id)sender
 {
   NSString *searchTerm = [sender title];
 
-  [(id)_control_view setStringValue: searchTerm];
+  [self setStringValue: searchTerm];
   [self performClick: self];  // do the search
+  [(id)_control_view selectText: self];
 }
 
 - (void) _clearSearches: (id)sender
