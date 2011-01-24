@@ -424,6 +424,15 @@
 				      untilMouseUp: untilMouseUp];
     }
 
+  NSText *currentEditor = ([controlView isKindOfClass:[NSControl class]]
+                              ? [(NSControl *)controlView currentEditor]
+                              : nil);
+  if (currentEditor)
+    {
+      [currentEditor mouseDown: event];
+      return YES;
+    }
+
   return [super trackMouse: event 
 		inRect: [self searchTextRectForBounds: cellFrame]
 		ofView: controlView 

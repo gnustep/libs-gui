@@ -1,3 +1,9 @@
+2011-01-24  Doug Simons  <doug.simons@testplant.com>
+
+	* Source/NSSearchFieldCell.m (-trackMouse:inRect:ofView:untilMouseUp:):
+	Pass mouseDown event to the field editor when click is in the field, to
+	select at the correct point in the text.
+
 2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-setFrameFromString:, -stringWithSavedFrame):
