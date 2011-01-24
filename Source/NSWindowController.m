@@ -378,6 +378,11 @@
           [_window setDocumentEdited: [_document isDocumentEdited]];
         }
 
+      /* Make sure window sizes itself right */
+      if ([_window_frame_autosave_name length] > 0)
+        {
+          [_window setFrameAutosaveName: _window_frame_autosave_name];
+        }
     }
 }
 
@@ -445,13 +450,6 @@
   _wcFlags.nib_is_loaded = YES;
 
   [self synchronizeWindowTitleWithDocumentName];
-  
-  /* Make sure window sizes itself right */
-  if ([_window_frame_autosave_name length] > 0)
-    {
-      [_window setFrameUsingName: _window_frame_autosave_name];
-      [_window setFrameAutosaveName: _window_frame_autosave_name];
-    }
 
   if ([self shouldCascadeWindows])
     {

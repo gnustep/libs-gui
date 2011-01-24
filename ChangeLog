@@ -1,3 +1,11 @@
+2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindowController.m (-windowDidLoad): Move code to set
+	the autosave name of the window's frame from here ...
+
+	* Source/NSWindowController.m (-setWindow:): ... to here to match
+	Cocoa behavior (cf. Apple's AppKit release notes for OS X 10.5).
+
 2011-01-24  Doug Simons  <doug.simons@testplant.com>
 
 	* Source/NSSearchFieldCell.m (-trackMouse:inRect:ofView:untilMouseUp:):
