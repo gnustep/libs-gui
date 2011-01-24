@@ -4606,9 +4606,16 @@ current key view.<br />
   // if toolbar is showing, adjust saved frame to add the toolbar back in
   if ([_toolbar isVisible])
     {
-      int toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
       fRect.size.height += toolbarHeight;
       fRect.origin.y -= toolbarHeight;
+    }
+  // if window has a menu, adjust saved frame to add the menu back in
+  if ([_wv hasMenu])
+    {
+      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+      fRect.size.height -= menuBarHeight;
+      fRect.origin.y -= menuBarHeight;
     }
 
   /*
@@ -4739,9 +4746,16 @@ current key view.<br />
   // if toolbar is showing, adjust saved frame to not include the toolbar
   if ([_toolbar isVisible])
     {
-      int toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
       fRect.size.height -= toolbarHeight;
       fRect.origin.y += toolbarHeight;
+    }
+  // if window has a menu, adjust saved frame to not include the menu
+  if ([_wv hasMenu])
+    {
+      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+      fRect.size.height -= menuBarHeight;
+      fRect.origin.y += menuBarHeight;
     }
 
   /*

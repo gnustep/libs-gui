@@ -1,3 +1,8 @@
+2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (-setFrameFromString:, -stringWithSavedFrame):
+	Do not include an in-window menu in a window's saved frame either.
+
 2011-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSViewController.h,
