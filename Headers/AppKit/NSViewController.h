@@ -24,12 +24,14 @@ Boston, MA 02110-1301, USA.
 
 #ifndef _GNUstep_H_NSViewController
 #define _GNUstep_H_NSViewController
+#import <GNUstepBase/GSVersionMacros.h>
 
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSResponder.h>
 
-@class NSArray, NSBundle, NSPointerArray, NSView;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
+@class NSArray, NSBundle, NSPointerArray, NSView;
 
 @interface NSViewController : NSResponder
 {
@@ -43,34 +45,30 @@ Boston, MA 02110-1301, USA.
   NSPointerArray      *_editors;
   id                   _autounbinder;
   NSString            *_designNibBundleIdentifier;
-  id                   _reserved[2];
+  struct ___vcFlags 
+    {
+      unsigned int nib_is_loaded:1;
+      unsigned int RESERVED:31;
+    } _vcFlags;
+  id                   _reserved;
 }
-
 
 - (id)initWithNibName:(NSString *)nibNameOrNil 
                bundle:(NSBundle *)nibBundleOrNil;
 
 - (void)setRepresentedObject:(id)representedObject;
-
 - (id)representedObject;
 
 - (void)setTitle:(NSString *)title;
 - (NSString *)title;
 
+- (void)setView:(NSView *)aView;
 - (NSView *)view;
+- (void)loadView;
 
 - (NSString *)nibName;
 - (NSBundle *)nibBundle;
-
-- (void)setView:(NSView *)aView;
-
-- (void)commitEditingWithDelegate:(id)delegate 
-                didCommitSelector:(SEL)didCommitSelector 
-                      contextInfo:(void *)contextInfo;
-
-- (BOOL)commitEditing;
-- (void)discardEditing;
-
 @end
 
+#endif // OS_API_VERSION
 #endif /* _GNUstep_H_NSViewController */

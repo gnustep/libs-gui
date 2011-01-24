@@ -1,3 +1,9 @@
+2011-01-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSViewController.h,
+	* Source/NSViewController.m: Add loading of NIB.
+	* Headers/AppKit/NSObjectController.h: Use version constant names.
+
 2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-setFrameFromString:, -stringWithSavedFrame):

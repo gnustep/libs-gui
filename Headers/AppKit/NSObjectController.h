@@ -33,7 +33,7 @@
 #import <AppKit/NSController.h>
 #import <AppKit/NSMenuItem.h>
 
-#if OS_API_VERSION(100300,GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3,GS_API_LATEST)
 
 @class NSArray;
 @class NSMutableArray;
@@ -87,7 +87,7 @@
 
 - (BOOL) validateMenuItem: (id <NSMenuItem>)item;
 
-#if OS_API_VERSION(100400,GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4,GS_API_LATEST)
 - (NSString*) entityNameKey;
 - (void) setEntityName: (NSString*)entityName;
 - (NSPredicate*) fetchPredicate;
