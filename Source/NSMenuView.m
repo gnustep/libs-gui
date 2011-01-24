@@ -1658,7 +1658,8 @@ static NSMapTable *viewInfo = 0;
 		in a window*/
 	      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
 		  NSWindows95InterfaceStyle &&
-		  anAttachedMenu != nil)
+		  ![[self menu] isTransient] &&
+		  ![[self menu] _ownedByPopUp])
 		{
 		  if ([self hitTest: location] == nil)
 		    {

@@ -1,3 +1,9 @@
+2011-01-24 German Arias <german@xelalug.org>
+
+	* Source/NSMenuView.m (-trackWithEvent:): Fixed problems with
+	transient menus and PopUp (pulls-down) with Windows95 interface
+	style.
+
 2011-01-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSColorList.m (+availableColorLists): Make sure the
