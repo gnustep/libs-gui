@@ -388,6 +388,7 @@ PACKAGE_SCOPE
 - (NSTimeInterval) animationResizeTime: (NSRect)newFrame;
 - (void) performZoom: (id)sender;
 - (void) zoom: (id)sender;
+- (BOOL) isZoomed;
 - (BOOL) showsResizeIndicator;
 - (void) setShowsResizeIndicator: (BOOL)show;
 #endif

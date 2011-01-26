@@ -1,6 +1,11 @@
+2011-01-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Headers/AppKit/NSWindow.h: Add missing declaration of the
+	-isZoomed method.
+
 2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Source/NSWindowController.m (-windowDidLoad): Move code to set
+	* Source/NSWindowController.m (-_windowDidLoad): Move code to set
 	the autosave name of the window's frame from here ...
 
 	* Source/NSWindowController.m (-setWindow:): ... to here to match
