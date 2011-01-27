@@ -1,3 +1,17 @@
+2011-01-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSApplication.m (-terminate:): Send message to the
+	document controller to let the user review any unsaved changes in
+	its managed documents before asking the application delegate
+	whether its okay to terminate the application. This matches
+	Cocoa's documented and implemented behavior.
+
+	* Source/NSApplication.m (-terminate): Move call to GSRemoveIcon
+	from here ...
+	* Source/NSApplication.m (-replyToApplicationShouldTerminate:):
+	... to here to ensure that the app icon is removed from the icon
+	manager even when the delegate delays application termination.
+
 2011-01-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSWindow.h: Add missing declaration of the

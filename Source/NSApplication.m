@@ -3432,8 +3432,22 @@ struct _DelegateWrapper
  */
 - (void) terminate: (id)sender
 {
-  NSApplicationTerminateReply	termination = NSTerminateNow;
+  NSDocumentController		*sdc;
+  NSApplicationTerminateReply	termination;
 
+  /* First ask the shared document controller to save any unsaved changes */
+  sdc = [NSDocumentController sharedDocumentController];
+  if ([[sdc documentClassNames] count] > 0)
+    {
+      if ([sdc reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
+					cancellable: YES] == NO)
+	{
+	  return;
+	}
+    }
+
+  /* Now ask the application delegate whether its okay to terminate */
+  termination = NSTerminateNow;
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
       /* The old API has applicationShouldTerminate: return a BOOL,
@@ -3447,28 +3461,9 @@ struct _DelegateWrapper
        */
       termination = ([_delegate applicationShouldTerminate: self] & 0xff);
     }
-  else
-    {
-      NSDocumentController	*sdc;
-
-      sdc = [NSDocumentController sharedDocumentController];
-      if ([[sdc documentClassNames] count] > 0)
-	{
-	  if ([sdc reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
-					    cancellable: YES] == YES)
-            {
-              termination = NSTerminateNow;
-            }
-          else
-            {
-              termination = NSTerminateCancel;
-            }
-	}
-    }
 
   if (termination == NSTerminateNow)
     {
-      GSRemoveIcon(_app_icon_window);
       [self replyToApplicationShouldTerminate: YES];
     }
   /*
@@ -3492,6 +3487,7 @@ struct _DelegateWrapper
       
       _app_is_running = NO;
 
+      GSRemoveIcon(_app_icon_window);
       [[self windows] makeObjectsPerformSelector: @selector(close)];
       [NSCursor setHiddenUntilMouseMoves: NO];
       
