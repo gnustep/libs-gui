@@ -231,7 +231,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
     initWithBytesNoCopy: buf
 		 length: bytes_per_row * height];
 
-  if (PNG_INFO_gAMA & png_info->valid)
+  if (png_get_valid(png_struct, png_info, PNG_INFO_gAMA))
   {
     double file_gamma = 2.2;
     if (PNG_FLOATING_POINT)
