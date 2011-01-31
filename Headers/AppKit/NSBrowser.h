@@ -212,6 +212,9 @@ typedef enum _NSBrowserColumnResizingType
 - (void) scrollColumnToVisible: (int)column;
 - (void) scrollViaScroller: (NSScroller *)sender;
 - (void) updateScroller;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) scrollRowToVisible: (NSInteger)row inColumn: (NSInteger)column;
+#endif
 
 //
 // Event Handling 

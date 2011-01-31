@@ -1677,6 +1677,13 @@ static NSTextFieldCell *titleCell;
     }
 }
 
+- (void) scrollRowToVisible: (NSInteger)row inColumn: (NSInteger)column
+{
+  NSMatrix *matrix = [self matrixInColumn: column];
+
+  [matrix scrollCellToVisibleAtRow: row
+                            column: 1];
+}
 
 /*
  * Showing a horizontal scroller

@@ -1,3 +1,8 @@
+2011-01-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSBrowser.h,
+	* Source/NSBrowser.m: Add method -scrollRowToVisible:inColumn:
+
 2011-01-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+PNG.m (_initBitmapFromPNG:): Use
