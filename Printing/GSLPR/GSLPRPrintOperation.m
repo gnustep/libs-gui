@@ -33,33 +33,21 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <math.h>
 #include <config.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSAffineTransform.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPrinter.h>
-#include <AppKit/NSPrintPanel.h>
-#include <AppKit/NSPrintInfo.h>
-#include <AppKit/NSPrintOperation.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/PSOperators.h>
-#include "GSLPRPrintOperation.h"
-
-
-
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSPrinter.h"
+#import "AppKit/NSPrintPanel.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "GSGuiPrivate.h"
+#import "GSLPRPrintOperation.h"
 
 //A subclass of GSPrintOperation, NOT NSPrintOperation.
 @implementation GSLPRPrintOperation
@@ -68,7 +56,6 @@
 //
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 
@@ -78,6 +65,8 @@
 {
   self = [super initWithView: aView
                    printInfo: aPrintInfo];
+  if (self == nil)
+    return nil;
 
   _path = [NSTemporaryDirectory()
 	    stringByAppendingPathComponent: @"GSLPRPrintJob-"];
@@ -91,7 +80,6 @@
   
   return self;
 }
-  
 
 
 - (BOOL) _deliverSpooledResult
@@ -102,9 +90,8 @@
   NSString *name, *status;
   NSMutableArray *args;
   
-  NSDebugMLLog(@"GSPrinting", @"");
   name = [[[self printInfo] printer] name];
-  status = [NSString stringWithFormat: @"Spooling to printer %@.", name];
+  status = [NSString stringWithFormat: _(@"Spooling to printer %@."), name];
   [[self printPanel] _setStatusStringValue: status];
 
   dict = [[self printInfo] dictionary];
@@ -133,7 +120,6 @@
   NSMutableDictionary *info;
   NSString *output;
   
-  //NSDebugMLLog(@"GSPrinting", @"_path is %@", _path);
   if (_context)
     {
       NSDebugMLLog(@"GSPrinting", @"Already had context, returning it.");

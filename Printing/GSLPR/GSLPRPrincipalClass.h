@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_GSLPRPrincipalClass
 #define _GNUstep_H_GSLPRPrincipalClass
 
-#include <GNUstepGUI/GSPrinting.h>
+#import "GNUstepGUI/GSPrinting.h"
 
 @interface GSLPRPrincipalClass : GSPrintingPrincipalClass
 {

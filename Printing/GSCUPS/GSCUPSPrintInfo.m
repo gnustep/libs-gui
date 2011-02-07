@@ -27,17 +27,11 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
-#include <AppKit/NSPrinter.h>
-#include "GSCUPSPrintInfo.h"
-#include "GSCUPSPrinter.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSPrinter.h"
+#import "GSCUPSPrintInfo.h"
+#import "GSCUPSPrinter.h"
 #include <cups/cups.h>
 
 
@@ -48,7 +42,6 @@
 //
 + (void)initialize
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   if (self == [GSCUPSPrintInfo class])
     {
       // Initial version
@@ -59,7 +52,6 @@
 
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 

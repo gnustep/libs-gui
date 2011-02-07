@@ -38,27 +38,15 @@
  */
 
 #include "config.h"
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSScanner.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSMapTable.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSGraphics.h"
-#include "GSLPRPrinter.h"
-#include "GNUstepGUI/GSPrinting.h"
-
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
+#import "GSLPRPrinter.h"
+#import "GNUstepGUI/GSPrinting.h"
 
 
 @implementation GSLPRPrinter
@@ -68,7 +56,6 @@
 //
 +(void) initialize
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   if (self == [GSLPRPrinter class])
     {
       // Initial version
@@ -79,7 +66,6 @@
 
 +(id) allocWithZone: (NSZone*) zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 
@@ -93,7 +79,6 @@
   NSPrinter* printer;
 
   printersDict = [self printersDictionary];
- 
   printerEntry = [printersDict objectForKey: name];
 
   if( printerEntry == nil)
@@ -120,25 +105,8 @@
 
 + (NSArray *)printerNames
 {
-  NSDebugMLLog(@"GSPrinting", @"");
-
   return [[self printersDictionary] allKeys];
 }
-
-
-
--(id) initWithCoder: (NSCoder*) coder
-{
-  return [super initWithCoder: coder];
-}
-
-
--(void) encodeWithCoder: (NSCoder*) coder
-{
-  [super encodeWithCoder: coder];
-}
-
-
 
 //
 // Load the printer setup from NSUserDefaults
@@ -150,7 +118,6 @@
   NSDictionary *printers;
   
   defaults = [NSUserDefaults standardUserDefaults];
-
   printers = [defaults dictionaryForKey: @"GSLPRPrinters"];
 
   if (!printers) //Not set, make a default printer because we are nice.
@@ -196,6 +163,5 @@
 
   return printers;
 }
-
 
 @end

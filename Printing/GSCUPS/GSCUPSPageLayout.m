@@ -25,8 +25,8 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSDebug.h>
-#include "GSCUPSPageLayout.h"
+#import <Foundation/NSDebug.h>
+#import "GSCUPSPageLayout.h"
 
 
 @implementation GSCUPSPageLayout
@@ -35,7 +35,6 @@
 //
 + (void)initialize
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   if (self == [GSCUPSPageLayout class])
     {
       // Initial version
@@ -46,9 +45,7 @@
 
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
-
 
 @end

@@ -27,13 +27,13 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSDebug.h>
-#include "GSCUPSPrincipalClass.h"
-#include "GSCUPSPageLayout.h"
-#include "GSCUPSPrintInfo.h"
-#include "GSCUPSPrintOperation.h"
-#include "GSCUPSPrintPanel.h"
-#include "GSCUPSPrinter.h"
+#import <Foundation/NSDebug.h>
+#import "GSCUPSPrincipalClass.h"
+#import "GSCUPSPageLayout.h"
+#import "GSCUPSPrintInfo.h"
+#import "GSCUPSPrintOperation.h"
+#import "GSCUPSPrintPanel.h"
+#import "GSCUPSPrinter.h"
 
 
 @implementation GSCUPSPrincipalClass
@@ -42,43 +42,35 @@
 //
 +(Class) pageLayoutClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPageLayout class];
 }
 
 +(Class) printInfoClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPrintInfo class];
 }
 
 +(Class) printOperationClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPrintOperation class];
 }
 
 
 +(Class) printPanelClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPrintPanel class];
 }
 
 
 +(Class) printerClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPrinter class];
 }
 
 
 +(Class) gsPrintOperationClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSCUPSPrintOperation class];
 }
-
-
 
 @end

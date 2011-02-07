@@ -33,13 +33,11 @@
 #ifndef _GNUstep_H_GSLPRPrintPanel
 #define _GNUstep_H_GSLPRPrintPanel
 
-#include <AppKit/NSPrintPanel.h>
-
+#import "AppKit/NSPrintPanel.h"
 
 @interface GSLPRPrintPanel : NSPrintPanel
 {
 }
-
 
 @end
 

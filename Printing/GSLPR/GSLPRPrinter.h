@@ -33,11 +33,10 @@
 #ifndef _GNUstep_H_GSLPRPrinter
 #define _GNUstep_H_GSLPRPrinter
 
-#include <AppKit/NSPrinter.h>
+#import "AppKit/NSPrinter.h"
 
 
-
-@interface GSLPRPrinter : NSPrinter <NSCoding>
+@interface GSLPRPrinter : NSPrinter
 {
 }
 

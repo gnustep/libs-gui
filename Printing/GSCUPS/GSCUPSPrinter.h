@@ -30,14 +30,14 @@
 #ifndef _GNUstep_H_GSCUPSPrinter
 #define _GNUstep_H_GSCUPSPrinter
 
-#include <AppKit/NSPrinter.h>
+#import "AppKit/NSPrinter.h"
 
 
 @class NSString;
 
 extern NSString *GSCUPSDummyPrinterName;
 
-@interface GSCUPSPrinter : NSPrinter <NSCoding>
+@interface GSCUPSPrinter : NSPrinter
 {
 }
 

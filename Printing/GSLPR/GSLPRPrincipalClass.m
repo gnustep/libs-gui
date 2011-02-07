@@ -27,13 +27,13 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSDebug.h>
-#include "GSLPRPrincipalClass.h"
-#include "GSLPRPageLayout.h"
-#include "GSLPRPrintInfo.h"
-#include "GSLPRPrintOperation.h"
-#include "GSLPRPrintPanel.h"
-#include "GSLPRPrinter.h"
+#import <Foundation/NSDebug.h>
+#import "GSLPRPrincipalClass.h"
+#import "GSLPRPageLayout.h"
+#import "GSLPRPrintInfo.h"
+#import "GSLPRPrintOperation.h"
+#import "GSLPRPrintPanel.h"
+#import "GSLPRPrinter.h"
 
 
 @implementation GSLPRPrincipalClass
@@ -42,43 +42,35 @@
 //
 +(Class) pageLayoutClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPageLayout class];
 }
 
 +(Class) printInfoClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPrintInfo class];
 }
 
 +(Class) printOperationClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPrintOperation class];
 }
 
 
 +(Class) printPanelClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPrintPanel class];
 }
 
 
 +(Class) printerClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPrinter class];
 }
 
 
 +(Class) gsPrintOperationClass
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return [GSLPRPrintOperation class];
 }
-
-
 
 @end

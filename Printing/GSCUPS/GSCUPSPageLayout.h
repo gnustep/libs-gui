@@ -29,11 +29,7 @@
 #ifndef _GNUstep_H_GSCUPSPageLayout
 #define _GNUstep_H_GSCUPSPageLayout
 
-#include <AppKit/NSPageLayout.h>
-
-
-@class NSPrintInfo;
-@class NSView;
+#import "AppKit/NSPageLayout.h"
 
 
 @interface GSCUPSPageLayout: NSPageLayout

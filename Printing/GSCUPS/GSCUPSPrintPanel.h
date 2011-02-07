@@ -30,13 +30,12 @@
 #ifndef _GNUstep_H_GSCUPSPrintPanel
 #define _GNUstep_H_GSCUPSPrintPanel
 
-#include <AppKit/NSPrintPanel.h>
+#import "AppKit/NSPrintPanel.h"
 
 
 @interface GSCUPSPrintPanel : NSPrintPanel
 {
 }
-
 
 @end
 

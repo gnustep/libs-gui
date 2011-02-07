@@ -30,19 +30,13 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSValue.h>
-#include <AppKit/NSPrinter.h>
-#include "GSLPRPrintInfo.h"
-#include "GSLPRPrinter.h"
-
-
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSPrinter.h"
+#import "GSLPRPrintInfo.h"
 
 
 @implementation GSLPRPrintInfo
@@ -52,7 +46,6 @@
 //
 + (void)initialize
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   if (self == [GSLPRPrintInfo class])
     {
       // Initial version
@@ -63,7 +56,6 @@
 
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 
@@ -73,24 +65,23 @@
   NSUserDefaults *defaults;
   NSString *name;
     
-  NSDebugMLLog(@"GSPrinting", @"");
+  NSDebugMLLog(@"GSPrinting", @"defaultPrinter");
   defaults = [NSUserDefaults standardUserDefaults];
   name = [defaults objectForKey: @"GSLPRDefaultPrinter"];
   
-  if( name == nil )
+  if (name == nil)
     {
       name = [[NSPrinter printerNames] objectAtIndex: 0];
     }
   else
     {
-      if( [NSPrinter printerWithName: name] == nil )
+      if ([NSPrinter printerWithName: name] == nil)
         {
-          name = [[GSLPRPrinter printerNames] objectAtIndex: 0];
+          name = [[NSPrinter printerNames] objectAtIndex: 0];
         }
     }
   return [NSPrinter printerWithName: name];
 }
-
 
 
 + (void)setDefaultPrinter:(NSPrinter *)printer
@@ -98,12 +89,12 @@
   NSUserDefaults *defaults;
   NSMutableDictionary *globalDomain;
   
-  NSDebugMLLog(@"GSPrinting", @"");  
+  NSDebugMLLog(@"GSPrinting", @"setDefaultPrinter");  
   defaults = [NSUserDefaults standardUserDefaults];
   
   globalDomain = (NSMutableDictionary*)[defaults persistentDomainForName: NSGlobalDomain];
   
-  if( globalDomain )
+  if (globalDomain)
     {
       globalDomain = [globalDomain mutableCopy];
   
@@ -112,14 +103,12 @@
   
       [defaults setPersistentDomain: globalDomain
                             forName: NSGlobalDomain];
+      RELEASE(globalDomain);
     }
   else
     {
       NSDebugMLLog(@"GSPrinting", @"(GSLPR) Could not save default printer named %@ to NSUserDefaults GSLPRDefaultPrinter in NSGlobalDomain.", [printer name]);
     }
-
 }
 
-    
- 
 @end

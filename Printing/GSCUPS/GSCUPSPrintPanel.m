@@ -26,9 +26,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include "GSCUPSPrintPanel.h"
-
+#import <Foundation/NSDebug.h>
+#import "GSCUPSPrintPanel.h"
 
 
 @implementation GSCUPSPrintPanel
@@ -37,7 +36,6 @@
 //
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 

@@ -29,7 +29,7 @@
 #ifndef _GSCUPSPRINCIPALCLASS_H_
 #define _GSCUPSPRINCIPALCLASS_H_
 
-#include <GNUstepGUI/GSPrinting.h>
+#import "GNUstepGUI/GSPrinting.h"
 
 @interface GSCUPSPrincipalClass : GSPrintingPrincipalClass
 {

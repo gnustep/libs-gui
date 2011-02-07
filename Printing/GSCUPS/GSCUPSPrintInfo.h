@@ -29,16 +29,12 @@
 #ifndef _GNUstep_H_GSCUPSPrintInfo
 #define _GNUstep_H_GSCUPSPrintInfo
 
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSPrintInfo.h>
-
-
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSPrintInfo.h"
 
 @interface GSCUPSPrintInfo: NSPrintInfo
 {
 }
 @end
-
-
 
 #endif // _GNUstep_H_GSCUPSPrintInfo

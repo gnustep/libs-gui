@@ -37,7 +37,7 @@
 #ifndef _GNUstep_H_GSLPRPrintOperation
 #define _GNUstep_H_GSLPRPrintOperation
 
-#include <GNUstepGUI/GSPrintOperation.h>
+#import "GNUstepGUI/GSPrintOperation.h"
 
 //GSPrintOperation is subclasses of GSPrintOperation, NOT NSPrintOperation.
 //NSPrintOperation does a lot of work that is pretty generic.

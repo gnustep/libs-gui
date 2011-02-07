@@ -29,9 +29,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include "GSLPRPrintPanel.h"
-
+#import <Foundation/NSDebug.h>
+#import "GSLPRPrintPanel.h"
 
 
 @implementation GSLPRPrintPanel
@@ -40,7 +39,6 @@
 //
 + (id) allocWithZone: (NSZone*)zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 

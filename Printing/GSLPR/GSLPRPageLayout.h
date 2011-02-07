@@ -32,12 +32,10 @@
 #ifndef _GNUstep_H_GSLPRPageLayout
 #define _GNUstep_H_GSLPRPageLayout
 
-#include <AppKit/NSPageLayout.h>
-
+#import "AppKit/NSPageLayout.h"
 
 @class NSPrintInfo;
 @class NSView;
-
 
 @interface GSLPRPageLayout: NSPageLayout
 {

@@ -60,7 +60,6 @@ NSString *GSCUPSDummyPrinterName = @"GSCUPSDummyPrinter";
 //
 +(void) initialize
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   if (self == [GSCUPSPrinter class])
     {
       // Initial version
@@ -71,7 +70,6 @@ NSString *GSCUPSDummyPrinterName = @"GSCUPSDummyPrinter";
 
 +(id) allocWithZone: (NSZone*) zone
 {
-  NSDebugMLLog(@"GSPrinting", @"");
   return NSAllocateObject(self, 0, zone);
 }
 
@@ -163,19 +161,6 @@ static BOOL didWarn;
 
   return [set allObjects];
 }
-
-
--(id) initWithCoder: (NSCoder*) coder
-{
-  return [super initWithCoder: coder];
-}
-
-
--(void) encodeWithCoder: (NSCoder*) coder
-{
-  [super encodeWithCoder: coder];
-}
-
 
 @end
 

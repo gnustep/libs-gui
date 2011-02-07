@@ -34,16 +34,12 @@
 #ifndef _GNUstep_H_GSLPRPrintInfo
 #define _GNUstep_H_GSLPRPrintInfo
 
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSPrintInfo.h>
-
-
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSPrintInfo.h"
 
 @interface GSLPRPrintInfo: NSPrintInfo
 {
 }
 @end
-
-
 
 #endif // _GNUstep_H_GSLPRPrintInfo
