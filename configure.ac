@@ -1,7 +1,7 @@
 # configure.in for GNUstep GUI library
 # Process this file with autoconf to produce a configure script.
 #
-# Copyright (C) 1996 Free Software Foundation, Inc.
+# Copyright (C) 1996-2011 Free Software Foundation, Inc.
 #
 # Author:  Adam Fedor <fedor@gnu.org>
 #
@@ -229,27 +229,47 @@ if test "$have_tiff" = no; then
 fi
 
 #--------------------------------------------------------------------
-# Find additional image libs
+# Find PNG
 #--------------------------------------------------------------------
 AC_ARG_ENABLE(png,
   [  --disable-png           Disable PNG support],,
   enable_png=yes)
 
 if test $enable_png = yes; then
-  AC_CHECK_LIB(png, png_sig_cmp)
-  AC_CHECK_HEADERS(libpng/png.h)
+  # use libpng-config if available
+  AC_CHECK_PROG(HAVE_LIBPNG_CONFIG, [libpng-config], yes)
+  if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
+    PNG_CFLAGS="`libpng-config --cflags`"
+    PNG_LDFLAGS="`libpng-config --ldflags`"
+    CFLAGS="$PNG_CFLAGS ${CFLAGS}"
+    LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
+    AC_CHECK_HEADERS(png.h)
+    AC_SEARCH_LIBS(png_sig_cmp)
+    if test "$ac_cv_search_png_sig_cmp" != no; then
+      GRAPHIC_CFLAGS="$PNG_CFLAGS $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="$PNG_LDFLAGS $GRAPHIC_LFLAGS"
+      AC_DEFINE([HAVE_LIBPNG], [1])
+    fi
+  else
+    AC_MSG_WARN([Can't find libpng-config, guessing required headers and libraries.])
+    AC_CHECK_HEADERS(png.h)
+    AC_CHECK_LIB(png, png_sig_cmp)
+  fi
 
-  if test "$ac_cv_lib_png_png_sig_cmp" = no; then
+
+
+  if test "$ac_cv_lib_png_png_sig_cmp" = no && test "$ac_cv_search_png_sig_cmp" = no; then
     echo "GNUstep requires libpng to support PNG images, but this library"
     echo "can't be found. If you really want to compile GNUstep without"
     echo "PNG support, pass the --disable-png option to ./configure."
-    echo "Note that this isn't recommended. For more information, see:"
-    echo "http://gnustep.made-it.com/BuildGuide/index.html#PNG"
+    echo "Note that this isn't recommended."
     AC_MSG_ERROR([libpng not found.])
   fi
 fi
 
-
+#--------------------------------------------------------------------
+# Find additional image libs
+#--------------------------------------------------------------------
 AC_ARG_ENABLE(ungif,
   [  --disable-ungif         Disable libungif-based GIF support],,
   enable_ungif=yes)

@@ -1,3 +1,13 @@
+2011-02-08 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+PNG.m:
+	Cleaned up includes so that compilation without PNG works again.
+
+	* configure.ac:
+	Use libpng-config to determine the correct includes and libraries.
+
+	* configure: regenerated.
+
 2011-02-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Printing/*: Clean up all the header includes.
