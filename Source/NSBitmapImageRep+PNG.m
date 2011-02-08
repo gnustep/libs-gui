@@ -3,7 +3,7 @@
 
    Methods for loading .png images.
 
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2003-2011 Free Software Foundation, Inc.
    
    Written by: Alexander Malmberg <alexander@malmberg.org>
    Date: 2003-12-07
@@ -29,14 +29,6 @@
 
 #import "config.h"
 
-#if HAVE_LIBPNG
-
-#ifdef HAVE_LIBPNG_PNG_H
-#include <libpng/png.h>
-#else
-#include <png.h>
-#endif
-
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
@@ -44,6 +36,10 @@
 #import <Foundation/NSValue.h>
 #import "AppKit/NSGraphics.h"
 #import "NSBitmapImageRep+PNG.h"
+
+#ifdef HAVE_LIBPNG
+
+#include <png.h>
 
 #if defined(PNG_FLOATING_POINT_SUPPORT)
 #  define PNG_FLOATING_POINT 1
