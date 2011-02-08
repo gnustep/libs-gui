@@ -29,14 +29,8 @@
 
 #import "config.h"
 
-#import <Foundation/NSData.h>
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSException.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSValue.h>
-#import "AppKit/NSGraphics.h"
-#import "NSBitmapImageRep+PNG.h"
-
+/* we include PNG stuff only if required and before the resto to avoid header and
+   redeclaration problems (setjmp, etc) */
 #ifdef HAVE_LIBPNG
 
 #include <png.h>
@@ -51,6 +45,20 @@
 #else
 #  define PNG_gAMA 0
 #endif
+
+#endif /* HAVE_LIBPNG */
+
+/* we import all the standard headers to allow compilation without PNG */
+#import <Foundation/NSData.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRep+PNG.h"
+
+
+#ifdef HAVE_LIBPNG
 
 @implementation NSBitmapImageRep (PNG)
 

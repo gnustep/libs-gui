@@ -1,6 +1,11 @@
 2011-02-08 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+PNG.m:
+	Tweak png.h header order to avoid problems on some systems.
+
+2011-02-08 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+PNG.m:
 	Cleaned up includes so that compilation without PNG works again.
 
 	* configure.ac:
