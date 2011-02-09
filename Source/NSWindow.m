@@ -4110,7 +4110,6 @@ resetCursorRectsForView(NSView *theView)
                     }
                   ASSIGN(_lastDragView, v);
                   _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
-                  action = NSDragOperationNone;
                 }
               if (_f.accepts_drag)
                 {

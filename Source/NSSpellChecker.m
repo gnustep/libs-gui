@@ -578,14 +578,13 @@ inSpellDocumentWithTag:(int)tag
 - _forget: (id)sender
 {
   NSString *word = [_wordField stringValue];
-  BOOL result = NO;
 
   // Call the server and remove the word from the learned
   // list.
   NS_DURING
     {
-      result = [[self _serverProxy] _forgetWord: word
-				    inDictionary: _language];
+      [[self _serverProxy] _forgetWord: word
+                          inDictionary: _language];
     }
   NS_HANDLER
     {

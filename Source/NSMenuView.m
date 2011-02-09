@@ -1512,7 +1512,6 @@ static NSMapTable *viewInfo = 0;
 	{
 	  [self setHighlightedItemIndex: -1];
 	  [[[[NSApp mainWindow] menu] attachedMenu] close];
-	  shouldFinish = YES;
 	  return NO;
 	}
 
@@ -1671,7 +1670,6 @@ static NSMapTable *viewInfo = 0;
 		      if (space == 2)
 			{
 			  [anAttachedMenu close];
-			  shouldFinish = YES;
 			  return NO;
 			}
 		    }
@@ -1679,7 +1677,6 @@ static NSMapTable *viewInfo = 0;
 		  if (self != [[[NSApp mainWindow] menu] menuRepresentation])
 		    {
 		      [self setHighlightedItemIndex: -1];
-		      shouldFinish = YES;
 		      return [[[[NSApp mainWindow] menu] menuRepresentation]
 			       trackWithEvent: original];
 		    }

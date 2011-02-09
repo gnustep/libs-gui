@@ -691,7 +691,6 @@ new_label (NSString *value)
   f = [themeLabel frame];
   f.origin.x = (width - f.size.width) / 2;
   f.origin.y = tmp_b - 5 - f.size.height;
-  tmp_b = f.origin.y;
   [cv addSubview: themeLabel];
   [themeLabel setFrame: f];
   [themeLabel setTarget: [GSTheme class]];

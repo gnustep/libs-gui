@@ -694,7 +694,6 @@ SANITY();
 	  if (NSMaxRange(effectiveRange) > afterRangeLoc)
 	    {
 	      range.length = NSMaxRange(effectiveRange) - range.location;
-	      afterRangeLoc = NSMaxRange(range);
 	    }
 	}
       else if (effectiveRange.location > beginRangeLoc)
@@ -782,7 +781,6 @@ changeInLength: 0];
   unsigned      arrayIndex = 0;
   unsigned      arraySize;
   NSRange	effectiveRange = NSMakeRange(0, NSNotFound);
-  NSDictionary	*attrs;
   GSTextInfo	*info;
   int		moveLocations;
   unsigned	start;
@@ -825,8 +823,8 @@ SANITY();
     start = range.location - 1;
   else
     start = range.location;
-  attrs = _attributesAtIndexEffectiveRange(start, &effectiveRange,
-    tmpLength, _infoArray, &arrayIndex);
+  _attributesAtIndexEffectiveRange(start, &effectiveRange,
+                                   tmpLength, _infoArray, &arrayIndex);
 
   moveLocations = [aString length] - range.length;
 
@@ -876,8 +874,8 @@ SANITY();
    */
   if ((moveLocations + range.length) == 0)
     {
-      attrs = _attributesAtIndexEffectiveRange(start, &effectiveRange,
-        tmpLength, _infoArray, &arrayIndex);
+      _attributesAtIndexEffectiveRange(start, &effectiveRange,
+                                       tmpLength, _infoArray, &arrayIndex);
       arrayIndex++;
 
       if (effectiveRange.location == range.location

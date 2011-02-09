@@ -643,7 +643,6 @@
                 {
                   NSHighlightRect(highlightRect);
                   [_window flushWindow];
-                  lit = NO;
                 }
               [self unlockFocus];
             }

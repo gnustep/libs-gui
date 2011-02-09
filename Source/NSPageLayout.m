@@ -29,9 +29,10 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDecimalNumber.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSNumberFormatter.h>
-#import <Foundation/NSDecimalNumber.h>
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSFont.h"
@@ -609,7 +610,7 @@ enum {
   
   defaults = [NSUserDefaults standardUserDefaults];
   string = [defaults objectForKey: @"NSMeasurementUnit"];
-  NSLog(@"NSMeasurementUnit is %@", string);
+  NSDebugLLog(@"NSPageLayout", @"NSMeasurementUnit is %@", string);
 
   if (string == nil) //default to cm, most of the world is metric...
     {
@@ -777,13 +778,10 @@ enum {
 
 - (void)readPrintInfo
 {
-  NSPrinter *printer;
   NSString *paperName;
   NSNumber *scaleNumber; 
 
-  NSLog(@"readPrintInfo: %@", [[_printInfo dictionary] description]);
-
-  printer = [_printInfo printer];
+  NSDebugLLog(@"NSPageLayout", @"readPrintInfo: %@", [[_printInfo dictionary] description]);
 
   [self syncInterface];
     
@@ -909,32 +907,32 @@ enum {
   [[_printInfo dictionary] setObject: scaleNumber
                               forKey: NSPrintScalingFactor];
 
-  NSLog(@"writePrintInfo: %@", [[_printInfo dictionary] description]);
+  NSDebugLLog(@"NSPageLayout", @"writePrintInfo: %@", [[_printInfo dictionary] description]);
 }
 
 
 //NSTextField delegate handlers
 -(void) textDidBeginEditing:(NSNotification*) notification
 {
-  NSLog(@"textDidBeginEditing: %@", [notification description]);
+  NSDebugLLog(@"NSPageLayout", @"textDidBeginEditing: %@", [notification description]);
 }
 
 
 -(void) textDidEndEditing:(NSNotification*) notification
 {
-  NSLog(@"textDidEndEditing: %@", [notification description]);
+  NSDebugLLog(@"NSPageLayout", @"textDidEndEditing: %@", [notification description]);
 }
 
 
 -(void) textDidChange:(NSNotification*) notification
 {
-  NSLog(@"textDidChange: %@", [notification description]);
+  NSDebugLLog(@"NSPageLayout", @"textDidChange: %@", [notification description]);
 }
 
 
 -(void) controlTextDidChange:(NSNotification*) notification
 {
-  NSLog(@"controlTextDidChange: %@", [notification description]);
+  NSDebugLLog(@"NSPageLayout", @"controlTextDidChange: %@", [notification description]);
 }
 
 

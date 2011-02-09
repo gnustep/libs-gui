@@ -274,7 +274,6 @@ static int cache_lookup_string(NSString *string, NSDictionary *attributes,
 {
   cache_t *c;
   int ci, hit;
-  NSTextStorage *textStorage;
   NSLayoutManager *layoutManager;
   NSTextContainer *textContainer;
 
@@ -311,7 +310,6 @@ static int cache_lookup_string(NSString *string, NSDictionary *attributes,
     }
   c = &cache[ci];
   
-  textStorage = c->textStorage;
   layoutManager = c->layoutManager;
   textContainer = c->textContainer;
   
@@ -331,7 +329,6 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
 {
   cache_t *c;
   int ci, hit;
-  NSTextStorage *textStorage;
   NSLayoutManager *layoutManager;
   NSTextContainer *textContainer;
 
@@ -352,7 +349,6 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
   
   c = &cache[ci];
   
-  textStorage = c->textStorage;
   layoutManager = c->layoutManager;
   textContainer = c->textContainer;
   

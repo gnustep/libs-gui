@@ -79,7 +79,6 @@ static GSThemeInspector	*sharedInspector = nil;
 - (id) init
 {
   NSRect	frame;
-  NSView	*content;
 
   frame.size = NSMakeSize(272,388);
   frame.origin = NSZeroPoint;
@@ -90,7 +89,7 @@ static GSThemeInspector	*sharedInspector = nil;
     defer: NO];
   
   [self setReleasedWhenClosed: NO];
-  content = [self contentView];
+
   return self;
 }
 

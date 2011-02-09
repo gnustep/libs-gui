@@ -1,3 +1,20 @@
+2011-02-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSInfoPanel.m,
+	* Source/GSTextStorage.m,
+	* Source/GSThemeInspector.m,
+	* Source/NSBrowser.m,
+	* Source/NSImage.m,
+	* Source/NSMenuView.m,
+	* Source/NSPageLayout.m,
+	* Source/NSSpellChecker.m,
+	* Source/NSStringDrawing.m,
+	* Source/NSTableHeaderView.m,
+	* Source/NSTableView.m,
+	* Source/NSWindow.m,
+	* Tools/gclose.m,
+	* Tools/make_services.m: Remove dead assignments found by static code analysis.
+
 2011-02-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSEvent.m: Avoid unneccessary creation/destruction of NSDate

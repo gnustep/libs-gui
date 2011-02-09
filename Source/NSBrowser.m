@@ -2399,7 +2399,6 @@ static NSTextFieldCell *titleCell;
         }
       if (selectedColumn == -1)
         {
-          selectedColumn = 0;
           matrix = [self matrixInColumn: 0];
 
           if ([[matrix cells] count])
@@ -2772,10 +2771,9 @@ static NSTextFieldCell *titleCell;
   else
     {
       int colCount;
-      id dummy;
       
       // Here to keep compatibility with old version
-      dummy = [aDecoder decodeObject];
+      [aDecoder decodeObject];
       _browserCellPrototype = RETAIN([aDecoder decodeObject]);
       _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
       

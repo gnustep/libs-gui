@@ -910,6 +910,10 @@ static void computeNewSelection
 			}
 		    }	      
 		}
+              if (notified == YES)
+                {
+                  [tv _postSelectionIsChangingNotification];
+                }
 	    }
 	  else
 	    {

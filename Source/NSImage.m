@@ -1448,14 +1448,17 @@ Fallback for backends other than Cairo. */
 {
   NSImageRep* rep;
   NSMutableArray *breps;
-  NSSize dres;
   NSEnumerator *enumerator = [reps objectEnumerator];
+
+  /*
+  NSSize dres;
   NSValue *resolution = [deviceDescription objectForKey: NSDeviceResolution];
 
   if (resolution)
     dres = [resolution sizeValue];
   else
     dres = NSMakeSize(0, 0);
+  */
 
   breps = [NSMutableArray array];
   while ((rep = [enumerator nextObject]) != nil)
@@ -1757,10 +1760,8 @@ Fallback for backends other than Cairo. */
         }
       if ([coder containsValueForKey: @"NSImageFlags"])
         {
-          int flags;
-          
           //FIXME
-          flags = [coder decodeIntForKey: @"NSImageFlags"];
+          //int flags = [coder decodeIntForKey: @"NSImageFlags"];
         }
       if ([coder containsValueForKey: @"NSReps"])
         {

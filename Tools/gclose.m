@@ -56,7 +56,7 @@ main(int argc, char** argv, char **env_c)
       if ([arg isEqualToString: @"-NSHost"])
 	{
 	  // skip since this is handled above...
-	  arg = [argEnumerator nextObject];
+	  [argEnumerator nextObject];
 	}
       else // no option specified
 	{

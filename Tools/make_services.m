@@ -95,7 +95,6 @@ main(int argc, char** argv, char **env_c)
   NSData		*data;
   NSProcessInfo		*proc;
   NSFileManager		*mgr;
-  NSDictionary		*env;
   NSMutableDictionary	*services;
   NSArray		*args;
   NSString		*usrRoot;
@@ -136,7 +135,6 @@ main(int argc, char** argv, char **env_c)
   extensionsMap = [NSMutableDictionary dictionaryWithCapacity: 64];
   schemesMap = [NSMutableDictionary dictionaryWithCapacity: 64];
 
-  env = [proc environment];
   args = [proc arguments];
 
   for (index = 1; index < [args count]; index++)
