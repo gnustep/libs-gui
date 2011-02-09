@@ -64,6 +64,7 @@
  * Class variables
  */
 static NSString *timerKey = @"NSEventTimersKey";
+static Class dateClass;
 static Class eventClass;
 
 /*
@@ -74,6 +75,7 @@ static Class eventClass;
   if (self == [NSEvent class])
     {
       [self setVersion: 3];
+      dateClass = [NSDate class];
       eventClass = [NSEvent class];
     }
 }
@@ -310,7 +312,7 @@ static Class eventClass;
   NSTimeInterval timeInterval;
   NSEvent        *periodicEvent;
 
-  timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
+  timeInterval = [dateClass timeIntervalSinceReferenceDate];
   periodicEvent = [self otherEventWithType: NSPeriodic
                                   location: NSZeroPoint
                              modifierFlags: 0
@@ -338,7 +340,7 @@ static Class eventClass;
     NSTimeInterval timeInterval;
     NSEvent        *periodicEvent;
     
-    timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
+    timeInterval = [dateClass timeIntervalSinceReferenceDate];
     periodicEvent = [self otherEventWithType: NSPeriodic
                           location: NSZeroPoint
                           modifierFlags: 0
