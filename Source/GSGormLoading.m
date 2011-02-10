@@ -54,22 +54,6 @@ static const int currentVersion = 1; // GSNibItem version number...
 - (BOOL) isInInterfaceBuilder;
 @end
 
-@interface NSApplication (GSNibContainer)
-- (void)_deactivateVisibleWindow: (NSWindow *)win;
-@end
-
-@implementation NSApplication (GSNibContainer)
-/* Since awakeWithContext often gets called before the the app becomes
-   active, [win -orderFront:] requests get ignored, so we add the window
-   to the inactive list, so it gets sent an -orderFront when the app
-   becomes active. */
-- (void) _deactivateVisibleWindow: (NSWindow *)win
-{
-  if (_inactive)
-    [_inactive addObject: win];
-}
-@end
-
 /*
  * This private class is used to collect the nib items while the 
  * .gorm file is being unarchived.  This is done to allow only
@@ -309,10 +293,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  while (pos-- > 0)
 	    {
 	      NSWindow *win = [visibleWindows objectAtIndex: pos];
-	      if ([NSApp isActive])
-		[win orderFront: self];
-	      else
-		[NSApp _deactivateVisibleWindow: win];
+	      [win orderFront: self];
 	    }
 	}
 

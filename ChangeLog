@@ -1,3 +1,11 @@
+2011-02-10 German Arias <german@xelalug.org>
+
+	* Source/GSGormLoading.m (-awakeWithContext:): Call directly the method
+	-orderFront: on visible windows, since this works fine here, instead
+	put these windows into _inactive list. This solve the problem of menu
+	in window in non document-based apps and the problem with the outlet
+	"initialFirstResponder" on gorm files.
+
 2011-02-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSInfoPanel.m,
