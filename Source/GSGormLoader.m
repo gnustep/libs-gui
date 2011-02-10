@@ -29,6 +29,7 @@
 #import "config.h"
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
@@ -36,6 +37,8 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSString.h>
 
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSImage.h>
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSGormLoading.h"
 
@@ -45,7 +48,37 @@
 @implementation GSGormLoader
 + (void) initialize
 {
-  // should do something...
+  /* We load the app icon here, at launch time, since GSGormLoader is
+     initialized before call -finishLaunching in NSApp (In non document-based
+     apps that load a gorm file at launch). So the windows and panels at initial
+     gorm file don't show the app icon. Maybe this is a duplicate code,
+     but solve the problem (bug #31039). */
+  if (![NSApp isRunning])
+    {
+      NSDictionary	*infoDict = [[NSBundle mainBundle] infoDictionary];
+      NSString		*appIconFile;
+      NSImage		*image = nil;
+      
+      appIconFile = [infoDict objectForKey: @"NSIcon"];
+      if (appIconFile && ![appIconFile isEqual: @""])
+	{
+	  image = [NSImage imageNamed: appIconFile];
+	}
+      
+      // Try to look up the icns file.
+      appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
+      if (appIconFile && ![appIconFile isEqual: @""])
+	{
+	  image = [NSImage imageNamed: appIconFile];
+	}
+      
+      if (image == nil)
+	{
+	  image = [NSImage imageNamed: @"GNUstep"];
+	}
+      
+      [NSApp setApplicationIconImage: image];
+    }
 }
 
 + (NSString *)type

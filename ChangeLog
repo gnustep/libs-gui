@@ -1,5 +1,13 @@
 2011-02-10 German Arias <german@xelalug.org>
 
+	* Source/GSGormLoader.m (+initialize): Load the app icon here, at launch
+	time, since GSGormLoader is initialized before call -finishLaunching
+	in NSApp (In non document-based apps that load a gorm file at launch).
+	So the windows and panels at initial gorm file don't show the app
+	icon (bug #31039).
+
+2011-02-10 German Arias <german@xelalug.org>
+
 	* Source/GSGormLoading.m (-awakeWithContext:): Call directly the method
 	-orderFront: on visible windows, since this works fine here, instead
 	put these windows into _inactive list. This solve the problem of menu
