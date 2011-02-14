@@ -1160,7 +1160,14 @@ many times.
     }
   if (_contentView != nil)
     {
-      [_contentView removeFromSuperview];
+      /* NB It is important to set _contentView to nil *before* removing
+	 the content view from its superview. Otherwise, the window decoration
+	 view would call back into this method with aView==nil and we would
+	 leak a stray content view that may eventually hide the title bar
+	 buttons when -gui handles window decorations. */
+      NSView *tmpView = _contentView;
+      _contentView = nil;
+      [tmpView removeFromSuperview];
     }
   _contentView = aView;
 
