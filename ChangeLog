@@ -1,5 +1,12 @@
 2011-02-14 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSOutlineView.m (-editColumn:...select:): Bring closer to
+	the new code in [-drawRow:clipRect:].
+	* Source/GSInfoPanel.m (-initWithDictionary:): Protect against
+	icon being nil.
+
+2011-02-14 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCursor.m,
 	* Source/GSDragView.m,
 	* Source/GSMemoryPanel.m: Fix Use-after-release found by static analyser.

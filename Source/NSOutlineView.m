@@ -970,9 +970,9 @@ static NSImage *unexpandable  = nil;
               imageRect.size.height = [image size].height;
               [imageCell drawWithFrame: imageRect inView: self];
               drawingRect.origin.x
-                += indentationFactor + [image size].width + 5;
+                += indentationFactor + imageRect.size.width + 5;
               drawingRect.size.width
-                -= indentationFactor + [image size].width + 5;
+                -= indentationFactor + imageRect.size.width + 5;
             }
           else
             {
@@ -1459,7 +1459,7 @@ Also returns the child index relative to this parent. */
 {
   NSText *t;
   NSTableColumn *tb;
-  NSRect drawingRect, imageRect;
+  NSRect drawingRect;
   unsigned length = 0;
   int level = 0;
   float indentationFactor = 0.0;
@@ -1543,8 +1543,9 @@ Also returns the child index relative to this parent. */
       id item = nil;
       NSImage *image = nil;
       NSCell *imageCell = nil;
+      NSRect imageRect;
 
-      item = [self itemAtRow: _editedRow];
+      item = [self itemAtRow: rowIndex];
       // determine which image to use...
       if ([self isItemExpanded: item])
         {
@@ -1557,37 +1558,45 @@ Also returns the child index relative to this parent. */
 
       if (![self isExpandable: item])
         {
-//          image = unexpandable;
-	  image = nil;
+          image = unexpandable;
         }
 
       level = [self levelForItem: item];
       indentationFactor = _indentationPerLevel * level;
-
       // create the image cell..
       imageCell = [[NSCell alloc] initImageCell: image];
-      if (_indentationMarkerFollowsCell)
+      imageRect = [self frameOfOutlineCellAtRow: rowIndex];
+
+      if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
         {
-          imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-          imageRect.origin.y = drawingRect.origin.y;
+          [_delegate outlineView: self
+                     willDisplayOutlineCell: imageCell
+                     forTableColumn: tb
+                     item: item];
+        }
+
+
+      if ([imageCell image])
+        {
+
+          imageRect.size.width = [image size].width;
+          imageRect.size.height = [image size].height;
+          
+          // draw...
+          [self lockFocus];
+          [imageCell drawWithFrame: imageRect inView: self];
+          [self unlockFocus];
+          
+          // move the drawing rect over like in the drawRow routine...
+          drawingRect.origin.x += indentationFactor + 5 + imageRect.size.width;
+          drawingRect.size.width -= indentationFactor + 5 + imageRect.size.width;
         }
       else
         {
-          imageRect.origin.x = drawingRect.origin.x;
-          imageRect.origin.y = drawingRect.origin.y;
+          // move the drawing rect over like in the drawRow routine...
+          drawingRect.origin.x += indentationFactor;
+          drawingRect.size.width -= indentationFactor;
         }
-
-      imageRect.size.width = [image size].width;
-      imageRect.size.height = [image size].height;
-
-      // draw...
-      [self lockFocus];
-      [imageCell drawWithFrame: imageRect inView: self];
-      [self unlockFocus];
-
-      // move the drawing rect over like in the drawRow routine...
-      drawingRect.origin.x += indentationFactor + 5 + [image size].width;
-      drawingRect.size.width -= indentationFactor + 5 + [image size].width;
 
       RELEASE(imageCell);
     }

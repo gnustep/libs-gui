@@ -398,7 +398,11 @@ new_label (NSString *value)
    * Create GUI Objects 
    */
   f = NSZeroRect;
-  f.size = [icon size];
+  if (icon != nil)
+    {
+      f.size = [icon size];
+    }
+
   iconButton = AUTORELEASE([[NSButton alloc] initWithFrame: f]); 
   [iconButton setImage: icon];
   [iconButton setBordered: NO];
@@ -477,7 +481,7 @@ new_label (NSString *value)
    */
 
   /** width **/
-  tmp_A = [icon size].width;
+  tmp_A = f.size.width;
   /* distance between icon and title */
   tmp_A += 10;
   /* compute the maximum of the following three sizes */
@@ -533,7 +537,7 @@ new_label (NSString *value)
      standard height of 48.  The code tries to be nice so that 50 or
      47 should more or less work -- but beware that 200 or 20 will
      *not* work. */
-  tmp_A = [icon size].height;
+  tmp_A = f.size.height;
 
   if (description)
     tmp_A += 10; 
