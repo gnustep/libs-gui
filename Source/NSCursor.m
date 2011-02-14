@@ -296,6 +296,7 @@ NSCursor *getStandardCursor(NSString *name, int style)
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
       [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+      // FIXME: This make the cursor active 
       [GSCurrentServer() setcursorcolor: [NSColor greenColor] 
       	                               : [NSColor blackColor] : c];
       [cursor _setCid: c];
@@ -344,7 +345,10 @@ foregroundColorHint:(NSColor *)fg
 backgroundColorHint:(NSColor *)bg
 	    hotSpot:(NSPoint)hotSpot
 {
-  NSCursor *cursor = [self initWithImage: newImage hotSpot: hotSpot];
+  self = [self initWithImage: newImage hotSpot: hotSpot];
+  if (self == nil)
+    return nil;
+
   if (fg || bg)
     {
       if (bg == nil)
@@ -353,9 +357,10 @@ backgroundColorHint:(NSColor *)bg
 	fg = [NSColor blackColor];
       bg = [bg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
       fg = [fg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
+      // FIXME: This make the cursor active 
       [GSCurrentServer() setcursorcolor: fg : bg : _cid];
     }
-  return cursor;
+  return self;
 }
 - (void) dealloc
 {

@@ -1,3 +1,9 @@
+2011-02-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCursor.m,
+	* Source/GSDragView.m,
+	* Source/GSMemoryPanel.m: Fix Use-after-release found by static analyser.
+
 2011-02-10 German Arias <german@xelalug.org>
 
 	* Source/GSGormLoader.m (+initialize): Load the app icon here, at launch

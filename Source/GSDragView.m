@@ -141,15 +141,15 @@ static	GSDragView *sharedDragView = nil;
   if (self != nil)
     {
       NSRect winRect = {{0, 0}, {DWZ, DWZ}};
-      NSWindow *sharedDragWindow = [[isa windowClass] alloc];
+      NSWindow *sharedDragWindow = [[[isa windowClass] alloc]
+                                     initWithContentRect: winRect
+                                               styleMask: NSBorderlessWindowMask
+                                                 backing: NSBackingStoreNonretained
+                                                   defer: NO];
 
       dragCell = [[NSCell alloc] initImageCell: nil];
       [dragCell setBordered: NO];
       
-      [sharedDragWindow initWithContentRect: winRect
-				  styleMask: NSBorderlessWindowMask
-				    backing: NSBackingStoreNonretained
-				      defer: NO];
       [sharedDragWindow setContentView: self];
       // Kept alive by the window
       RELEASE(self);

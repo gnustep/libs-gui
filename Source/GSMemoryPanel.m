@@ -374,9 +374,11 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
       peak = GSDebugAllocationPeak (pointer[i]);
       
       /* Insert into array */
-      entry = [GSMemoryPanelEntry alloc];
-      [entry initWithString: className  count: count  
-	     total: total  peak: peak];
+      entry = [[GSMemoryPanelEntry alloc]
+                initWithString: className
+                         count: count  
+                         total: total  
+                          peak: peak];
       [array addObject: entry];
       RELEASE (entry);
       i++;
