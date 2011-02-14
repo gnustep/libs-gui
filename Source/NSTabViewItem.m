@@ -36,6 +36,11 @@
 
 @implementation NSTabViewItem
 
+- (id) init
+{
+  return [self initWithIdentifier: @""];
+}
+
 - (id) initWithIdentifier: (id)identifier
 {
   self = [super init];
@@ -44,6 +49,7 @@
     {
       ASSIGN(_ident, identifier);
       _state = NSBackgroundTab;
+      _view = [NSView new];
       // Use the window background colour as default, not the control background colour.
       [self setColor: [NSColor windowBackgroundColor]];
     }

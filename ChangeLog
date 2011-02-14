@@ -1,3 +1,9 @@
+2011-02-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTabViewItem.m (-init, -initWithItemIdentifier:):
+	Create a default content view for new tab view items. Compatible
+	with Apple.
+
 2011-02-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m (-editColumn:...select:): Bring closer to
