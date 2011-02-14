@@ -378,7 +378,15 @@ has blocked and waited for events.
   [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
-  _windowLevel = NSDockWindowLevel;
+  /* App icons and mini windows are displayed at dock level by default. Yet,
+     with the current window level mapping in -back, some window managers
+     will order pop up and context menus behind app icons and mini windows.
+     Therefore, it is possible to have app icons and mini windows displayed
+     at normal window level under control of a user preference. */
+  // See also NSIconWindow _initDefaults in NSApplication.m
+  if ([[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSAllowWindowsOverIcons"] == YES)
+    _windowLevel = NSDockWindowLevel;
 }
 
 @end
