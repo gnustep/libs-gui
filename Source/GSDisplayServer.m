@@ -903,6 +903,28 @@ GSCurrentServer(void)
     nil for fg and bg. */
 - (void) setcursorcolor: (NSColor *)fg : (NSColor *)bg : (void*) cid
 {
+  NSLog(@"Call to obsolete method -setcursorcolor:::");
+  [self recolorcursor: fg : bg : cid];
+  [self setcursor: cid];
+}
+
+/** Recolour the cursor given by the cid representation into having
+    a foreground color fg and a background color bg. */
+- (void) recolorcursor: (NSColor *)fg : (NSColor *)bg : (void*) cid
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/** Set the cursor given by the cid representation as being the
+    current cursor. */
+- (void) setcursor: (void*) cid
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/** Free the cursor given by the cid representation. */
+- (void) freecursor: (void*) cid
+{
   [self subclassResponsibility: _cmd];
 }
 

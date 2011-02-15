@@ -1,5 +1,14 @@
 2011-02-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/GSDisplayServer.m (-recolorcursor:::, -recolorcursor:::)
+	(-setcursor:, -freecursor:): New backend methods replacing
+	-setcursorcolor:::.
+	* Source/NSCursor.m,
+	* Source/GSDragView.m: Use new cursor methods.
+
+2011-02-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m (-setContentView:): Revert Wolfgangs change
 	and add a different solution as explained in his mail.
 

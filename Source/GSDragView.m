@@ -553,20 +553,20 @@ static	GSDragView *sharedDragView = nil;
 	}
     }
   
-  [newCursor set];
-
   if ((targetWindowRef != 0) && mask != NSDragOperationNone)
     {
-      [GSCurrentServer() setcursorcolor: [NSColor greenColor] 
+      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
 		      : [NSColor blackColor] 
 		      : [newCursor _cid]];
     }
   else
     {
-      [GSCurrentServer() setcursorcolor: [NSColor blackColor] 
+      [GSCurrentServer() recolorcursor: [NSColor blackColor] 
 		      : [NSColor whiteColor] 
 		      : [newCursor _cid]];
     }
+
+  [newCursor set];
 }
 
 - (void) _sendLocalEvent: (GSAppKitSubtype)subtype

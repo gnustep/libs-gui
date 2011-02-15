@@ -296,9 +296,8 @@ NSCursor *getStandardCursor(NSString *name, int style)
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
       [GSCurrentServer() standardcursor: GSArrowCursor : &c];
-      // FIXME: This make the cursor active 
-      [GSCurrentServer() setcursorcolor: [NSColor greenColor] 
-      	                               : [NSColor blackColor] : c];
+      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
+                                      : [NSColor blackColor] : c];
       [cursor _setCid: c];
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
@@ -357,14 +356,17 @@ backgroundColorHint:(NSColor *)bg
 	fg = [NSColor blackColor];
       bg = [bg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
       fg = [fg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
-      // FIXME: This make the cursor active 
-      [GSCurrentServer() setcursorcolor: fg : bg : _cid];
+      [GSCurrentServer() recolorcursor: fg : bg : _cid];
     }
   return self;
 }
 - (void) dealloc
 {
   RELEASE (_cursor_image);
+  if (_cid)
+    {
+      [GSCurrentServer() freecursor: _cid];
+    }
   [super dealloc];
 }
 
@@ -494,7 +496,7 @@ backgroundColorHint:(NSColor *)bg
   gnustep_gui_current_cursor = self;
   if (_cid)
     {
-      [GSCurrentServer() setcursorcolor: nil : nil : _cid];
+      [GSCurrentServer() setcursor: _cid];
     }
 }
 
