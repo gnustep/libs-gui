@@ -1166,7 +1166,10 @@ many times.
     }
   _contentView = aView;
 
-  [_wv setContentView: _contentView];
+  if (_contentView != nil)
+    {
+      [_wv setContentView: _contentView];
+    }
 }
 
 /*
