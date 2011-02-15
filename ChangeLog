@@ -1,3 +1,8 @@
+2011-02-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-setContentView:): Revert Wolfgangs change
+	and add a different solution as explained in his mail.
+
 2011-02-14  Wolfgang Lux  <wolfgang.lux@gmail.com>>
 
 	* Source/NSApplication.m (-_initDefaults):
