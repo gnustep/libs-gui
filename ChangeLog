@@ -1,3 +1,8 @@
+2011-02-19  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tests/GNUmakefile: Run/clean tests
+	* Tests/gui: Imported from testsuite
+
 2011-02-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
