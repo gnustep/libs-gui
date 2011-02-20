@@ -692,7 +692,7 @@ If a text view is added to an empty text network, it keeps its attributes.
     return nil;
 
   if (!did_register_for_services)
-    [isa registerForServices];
+    [[self class] registerForServices];
 
   _minSize = frameRect.size;
   _maxSize = NSMakeSize(frameRect.size.width, HUGE);
@@ -1010,7 +1010,7 @@ that makes decoding and encoding compatible with the old code.
 
   // register for services...
   if (!did_register_for_services)
-    [isa registerForServices];
+    [[self class] registerForServices];
 
   [self updateDragTypeRegistration];
 
@@ -1042,7 +1042,7 @@ that makes decoding and encoding compatible with the old code.
 	   * set the isa pointer so that the subclass dealloc methods
 	   * won't get called again.
 	   */
-	  isa = [NSTextView class];
+          GSClassSwizzle(self, [NSTextView class]);
 	  DESTROY(_textStorage);
 	  return;
 	}
@@ -1144,7 +1144,7 @@ to this method from the text container or layout manager.
 
       DESTROY(_layoutManager->_typingAttributes);
 
-      _layoutManager->_typingAttributes = [[isa defaultTypingAttributes] mutableCopy];
+      _layoutManager->_typingAttributes = [[[self class] defaultTypingAttributes] mutableCopy];
       _layoutManager->_original_selected_range.location = NSNotFound;
       _layoutManager->_selected_range = NSMakeRange(0,0);
     }
@@ -3175,7 +3175,7 @@ This method is for user changes; see NSTextView_actions.m.
 
   if (attrs == nil)
     {
-      attrs = [isa defaultTypingAttributes];
+      attrs = [[self class] defaultTypingAttributes];
     }
 
   old_attrs = _layoutManager->_typingAttributes;

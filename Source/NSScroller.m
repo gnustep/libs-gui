@@ -31,23 +31,23 @@
 
 #include <math.h>
 
-#include <Foundation/NSDate.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSDebug.h>
+#import <Foundation/NSDate.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDebug.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSWindow.h"
 
-#include "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSTheme.h"
 
 /**<p>TODO Description</p>
  */
@@ -358,12 +358,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   if (frameRect.size.width > frameRect.size.height)
     {
       _scFlags.isHorizontal = YES;
-      frameRect.size.height = [isa scrollerWidth];
+      frameRect.size.height = [[self class] scrollerWidth];
     }
   else
     {
       _scFlags.isHorizontal = NO;
-      frameRect.size.width = [isa scrollerWidth];
+      frameRect.size.width = [[self class] scrollerWidth];
     }
 
   self = [super initWithFrame: frameRect];
@@ -469,7 +469,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 {
   NSSize frameSize = _frame.size;
   float size = (_scFlags.isHorizontal ? frameSize.width : frameSize.height);
-  int buttonsWidth = [isa scrollerWidth] - 2*buttonsOffset;
+  int buttonsWidth = [[self class] scrollerWidth] - 2*buttonsOffset;
 
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
@@ -620,12 +620,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   if (frameRect.size.width > frameRect.size.height)
     {
       _scFlags.isHorizontal = YES;
-      frameRect.size.height = [isa scrollerWidth];
+      frameRect.size.height = [[self class] scrollerWidth];
     }
   else
     {
       _scFlags.isHorizontal = NO;
-      frameRect.size.width = [isa scrollerWidth];
+      frameRect.size.width = [[self class] scrollerWidth];
     }
 
   [super setFrame: frameRect];
@@ -654,12 +654,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   if (size.width > size.height)
     {
       _scFlags.isHorizontal = YES;
-      size.height = [isa scrollerWidth];
+      size.height = [[self class] scrollerWidth];
     }
   else
     {
       _scFlags.isHorizontal = NO;
-      size.width = [isa scrollerWidth];
+      size.width = [[self class] scrollerWidth];
     }
 
   [super setFrameSize: size];
@@ -1160,7 +1160,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
       [self drawParts];
       [self checkSpaceForParts];
     }
-  buttonsWidth = ([isa scrollerWidth] - 2 * buttonsOffset);
+  buttonsWidth = ([[self class] scrollerWidth] - 2 * buttonsOffset);
   x = y = buttonsOffset;
   buttonsSize = 2 * buttonsWidth + 2 * buttonsOffset;
 

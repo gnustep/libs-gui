@@ -751,7 +751,7 @@ many times.
 {
   DESTROY(_toolbar);
   [nc removeObserver: self];
-  [isa _removeAutodisplayedWindow: self];
+  [[self class] _removeAutodisplayedWindow: self];
   [NSApp removeWindowsItem: self];
   [NSApp _windowWillDealloc: self];
 
@@ -1708,7 +1708,7 @@ many times.
       /*
        * Don't keep trying to update the window while it is ordered out
        */
-      [isa _removeAutodisplayedWindow: self];
+      [[self class] _removeAutodisplayedWindow: self];
       [self _lossOfKeyOrMainWindow];
     }
   else
@@ -1757,7 +1757,7 @@ many times.
        * Once we are ordered back in, we will want to update the window
        * whenever there is anything to do.
        */
-      [isa _addAutodisplayedWindow: self];
+      [[self class] _addAutodisplayedWindow: self];
 
       if (_f.has_closed == YES)
         {
@@ -2524,7 +2524,7 @@ many times.
 {
   if (limit == 0)
     {
-      limit = [isa defaultDepthLimit];
+      limit = [[self class] defaultDepthLimit];
     }
 
   _depthLimit = limit;

@@ -234,7 +234,7 @@ static NSMutableArray *screenArray = nil;
 {
   if (anObject == self)
     return YES;
-  if ([anObject isKindOfClass: self->isa] == NO)
+  if ([anObject isKindOfClass: [self class]] == NO)
     return NO;
   if (_screenNumber == ((NSScreen *)anObject)->_screenNumber)
     return YES;

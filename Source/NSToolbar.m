@@ -1087,7 +1087,7 @@ static GSValidationCenter *vc = nil;
   NSArray *linked;
   id toolbar;
   
-  linked = [isa _toolbarsWithIdentifier: [self identifier]];
+  linked = [[self class] _toolbarsWithIdentifier: [self identifier]];
     
   if (linked != nil && [linked count] > 0)
     {

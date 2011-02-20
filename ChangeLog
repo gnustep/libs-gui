@@ -1,3 +1,12 @@
+2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScreen.m,
+	* Source/NSWindow.m,
+	* Source/NSToolbar.m,
+	* Source/NSScroller.m,
+	* Source/NSTextView.m: Remove diract usage of isa.
+	* Source/GSBindingHelpers.h: Replace #include with #import.
+
 2011-02-19  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tests/GNUmakefile: Run/clean tests

@@ -29,7 +29,7 @@
 #ifndef _GS_BINDING_HELPER_H
 #define _GS_BINDING_HELPER_H
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 @class NSString;
 @class NSDictionary;
