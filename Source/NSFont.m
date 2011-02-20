@@ -45,7 +45,6 @@
 #import "AppKit/NSFontManager.h"
 #import "AppKit/NSView.h"
 #import "GNUstepGUI/GSFontInfo.h"
-#import "GSFusedSilicaContext.h"
 
 
 @interface NSFont (Private)
@@ -1492,7 +1491,7 @@ static BOOL flip_hack;
 - (void *) fontRef
 {
   if (_fontRef == nil)
-    _fontRef = [NSGraphicsContext CGFontReferenceFromFont: self];
+    _fontRef = fontInfo;
   return _fontRef;
 }
 

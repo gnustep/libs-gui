@@ -1,5 +1,16 @@
 2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSFusedSilica.h,
+	* Source/GSFusedSilicaContext.h,
+	* Source/GSFusedSilicaContext.m,
+	* Source/GSFusedSilica.m: Remove these files as they are obsolete
+	now. The Opal library is a more complete replacement for CoreGraphics.
+	* Source/GNUmakefile,
+	* Source/DocMakefile,
+	* Source/NSFont.m: Remove references to GSFusedSilica.
+
+2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSScreen.m,
 	* Source/NSWindow.m,
 	* Source/NSToolbar.m,

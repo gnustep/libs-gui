@@ -189,8 +189,6 @@ NSWindowController.m \
 NSWorkspace.m \
 GSAnimator.m \
 GSDisplayServer.m \
-GSFusedSilica.m \
-GSFusedSilicaContext.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
@@ -424,7 +422,6 @@ GSHelpManagerPanel.h \
 GSGormLoading.h \
 GSNibContainer.h \
 GSDisplayServer.h \
-GSFusedSilica.h \
 GSTable.h \
 GSHbox.h \
 GSVbox.h \
