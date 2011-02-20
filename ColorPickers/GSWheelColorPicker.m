@@ -449,6 +449,7 @@
 - (void) loadViews
 {
   NSSlider *s;
+  NSCell *c;
 
   baseView = [[GSHbox alloc] init];
   [baseView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
@@ -461,7 +462,9 @@
 
   s = brightnessSlider = [[NSSlider alloc] initWithFrame: NSMakeRect(0,0,16,0)];
   [s setAutoresizingMask: NSViewHeightSizable];
-  [s setCell: [[GSColorSliderCell alloc] init]];
+  c = [[GSColorSliderCell alloc] init];
+  [s setCell: c];
+  RELEASE(c);
   [(GSColorSliderCell *)[s cell] _setColorSliderCellMode: 10];
   [s setContinuous: YES];
   [s setMinValue: 0.0];

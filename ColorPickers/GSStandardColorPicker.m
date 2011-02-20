@@ -314,8 +314,12 @@
   for (i = 0; i < numFields; i++)
     {
       NSSlider *s;
+      NSCell *c;
+
       s = sliders[i] = [[NSSlider alloc] initWithFrame: NSMakeRect(0, 0, 0, 16)];
-      [s setCell: [[GSColorSliderCell alloc] init]];
+      c = [[GSColorSliderCell alloc] init];
+      [s setCell: c];
+      RELEASE(c);
       [s setContinuous: YES];
       [s setMinValue: 0.0];
       [s setTitle: names[i]];

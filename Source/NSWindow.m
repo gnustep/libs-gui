@@ -1116,6 +1116,7 @@ many times.
                            backing: bufferingType
                              defer: YES
                             screen: aScreen];
+  RELEASE(aScreen);
 
   // Fake the initialisation of the backend
   _windowNum = winNum;

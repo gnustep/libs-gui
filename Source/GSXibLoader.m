@@ -849,6 +849,8 @@ didStartElement: (NSString *)elementName
 
       // Create instance.
       o = [c allocWithZone: [self zone]];
+      // Make sure the object stays around, even when replaced.
+      RETAIN(o);
       if (key != nil)
         [decoded setObject: o forKey: key];
       r = [o initWithCoder: self];
@@ -857,7 +859,7 @@ didStartElement: (NSString *)elementName
 	  [delegate unarchiver: self
 	      willReplaceObject: o
 		     withObject: r];
-	  o = r;
+	  ASSIGN(o, r);
           if (key != nil)
             [decoded setObject: o forKey: key];
 	}
@@ -867,7 +869,7 @@ didStartElement: (NSString *)elementName
 	  [delegate unarchiver: self
 	      willReplaceObject: o
 		     withObject: r];
-	  o = r;
+	  ASSIGN(o, r);
           if (key != nil)
             [decoded setObject: o forKey: key];
 	}
@@ -879,23 +881,18 @@ didStartElement: (NSString *)elementName
 	      [delegate unarchiver: self
 		  willReplaceObject: o
 			 withObject: r];
-	      o = r;
+              ASSIGN(o, r);
               if (key != nil)
                 [decoded setObject: o forKey: key];
 	    }
 	}
-      if (key != nil)
-        {
-          // Retained in decoded
-          RELEASE(o);
-        }
-      else
-        AUTORELEASE(o);
+      // Balance the retain above
+      RELEASE(o);
 
       // pop
       currentElement = last;
 
-      return o;
+      return AUTORELEASE(o);
     }
   else if ([@"string" isEqualToString: elementName])
     {

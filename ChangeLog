@@ -1,5 +1,13 @@
 2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m,
+	* Source/NSControl.m,
+	* ColorPickers/GSStandardColorPicker.m,
+	* ColorPickers/GSWheelColorPicker.m,
+	* Source/GSXibLoader.m: Fix memory leaks found by analyser.
+
+2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSFusedSilica.h,
 	* Source/GSFusedSilicaContext.h,
 	* Source/GSFusedSilicaContext.m,
