@@ -52,6 +52,7 @@
 
   NSColor *fgColor;
   NSColor *bgColor;
+  NSColor *ulColor;
 
   NSDictionary *_attributesOfLastRun; /*" holds the attributes of the last run
     to build the delta "*/

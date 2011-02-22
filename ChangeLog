@@ -1,3 +1,11 @@
+2011-02-22  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/externs.m:
+	* Headers/AppKit/NSAttributedString.h: Add
+	NSStrikethroughStyleAttributeName
+	* TextConverters/RTF: Add support for reading and writing
+	underline and strikethrough.
+
 2011-02-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m:

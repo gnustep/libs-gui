@@ -53,6 +53,7 @@
   first place.
 */
 
+#import <AppKit/AppKit.h>
 #include <stdlib.h>
 #include <string.h>
 #include "rtfScanner.h"
@@ -118,6 +119,7 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token <cmd> RTFblue
 %token <cmd> RTFcolorbg
 %token <cmd> RTFcolorfg
+%token <cmd> RTFunderlinecolor
 %token <cmd> RTFcolortable
 %token <cmd> RTFfont
 %token <cmd> RTFfontSize
@@ -149,7 +151,20 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token <cmd> RTFbold
 %token <cmd> RTFitalic
 %token <cmd> RTFunderline
+%token <cmd> RTFunderlineDot
+%token <cmd> RTFunderlineDash
+%token <cmd> RTFunderlineDashDot
+%token <cmd> RTFunderlineDashDotDot
+%token <cmd> RTFunderlineDouble
 %token <cmd> RTFunderlineStop
+%token <cmd> RTFunderlineThick
+%token <cmd> RTFunderlineThickDot
+%token <cmd> RTFunderlineThickDash
+%token <cmd> RTFunderlineThickDashDot
+%token <cmd> RTFunderlineThickDashDotDot
+%token <cmd> RTFunderlineWord
+%token <cmd> RTFstrikethrough
+%token <cmd> RTFstrikethroughDouble
 %token <cmd> RTFunichar
 %token <cmd> RTFsubscript
 %token <cmd> RTFsuperscript
@@ -325,6 +340,13 @@ rtfStatement: RTFfont				{ int font;
 						  else
 						      color = $1.parameter;
 						  GSRTFcolorfg(CTXT, color); }
+		|	RTFunderlinecolor	{ int color; 
+		
+		                                  if ($1.isEmpty)
+						      color = 0;
+						  else
+						      color = $1.parameter;
+						  GSRTFunderlinecolor(CTXT, color); }
 		|	RTFsubscript		{ int script;
 		
 		                                  if ($1.isEmpty)
@@ -359,8 +381,92 @@ rtfStatement: RTFfont				{ int font;
 						      on = YES;
 						  else
 						      on = NO;
-						  GSRTFunderline(CTXT, on); }
-		|	RTFunderlineStop	{ GSRTFunderline(CTXT, NO); }
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternSolid); }
+		|	RTFunderlineDot		{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDot); }
+		|	RTFunderlineDash	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDash); }
+		|	RTFunderlineDashDot	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDashDot); }
+		|	RTFunderlineDashDotDot	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDashDotDot); }
+		|	RTFunderlineDouble	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleDouble | NSUnderlinePatternSolid); }
+|	RTFunderlineStop	{ GSRTFunderline(CTXT, NO, NSUnderlineStyleNone); }
+		|	RTFunderlineThick	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternSolid); }
+		|	RTFunderlineThickDot	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDot); }
+		|	RTFunderlineThickDash	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDash); }
+		|	RTFunderlineThickDashDot	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDashDot); }
+		|	RTFunderlineThickDashDotDot { BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDashDotDot); }
+		|	RTFunderlineWord	{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternSolid | NSUnderlineByWordMask); }
+|	RTFstrikethrough	{   NSInteger style;
+   if ($1.isEmpty || $1.parameter)
+     style = NSUnderlineStyleSingle | NSUnderlinePatternSolid;
+   else
+     style = NSUnderlineStyleNone;
+   GSRTFstrikethrough(CTXT, style); }
+|	RTFstrikethroughDouble	{ GSRTFstrikethrough(CTXT, NSUnderlineStyleDouble | NSUnderlinePatternSolid); }
 		|	RTFunichar	        { GSRTFunicode(CTXT, $1.parameter); }
                 |	RTFplain	        { GSRTFdefaultCharacterStyle(CTXT); }
                 |	RTFparagraph	        { GSRTFparagraph(CTXT); }

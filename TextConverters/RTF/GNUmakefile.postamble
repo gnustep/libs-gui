@@ -22,10 +22,10 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-BISON_FLAGS = -d -p GSRTF
+BISON_FLAGS = -p GSRTF --output=rtfGrammar.tab.m --defines=rtfGrammar.tab.h
 BISON = BISON_SIMPLE=bison.simple bison
 
 # Rule not enabled because not every system has bison installed...
 # FIXME add configure check for bison?
-#rtfGrammar.tab.c: rtfGrammar.y
+#rtfGrammar.tab.m: rtfGrammar.y
 #	$(BISON) $(BISON_FLAGS) $<

@@ -121,6 +121,8 @@ void GSRTFaddDefaultColor(void *ctxt);
 void GSRTFcolorbg(void *ctxt, int color);
 /* set foreground colour */
 void GSRTFcolorfg(void *ctxt, int color);
+/* set underline colour */
+void GSRTFunderlinecolor(void *ctxt, int color);
 /* set default character style */
 void GSRTFdefaultCharacterStyle(void *ctxt);
 /* set subscript in half points */
@@ -131,8 +133,10 @@ void GSRTFsuperscript(void *ctxt, int script);
 void GSRTFbold(void *ctxt, BOOL on);
 /* Switch italic mode on or off */
 void GSRTFitalic(void *ctxt, BOOL on);
-/* Switch underline mode on or off */
-void GSRTFunderline(void *ctxt, BOOL on);
+/* Set the underline style */
+void GSRTFunderline(void *ctxt, BOOL on, NSInteger style);
+/* Set the strikethrough style */
+void GSRTFstrikethrough(void *ctxt, NSInteger style);
 /* new paragraph */
 void GSRTFparagraph(void *ctxt);
 /* NeXTGraphic */

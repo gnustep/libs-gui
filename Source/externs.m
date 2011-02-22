@@ -507,6 +507,7 @@ NSString *NSParagraphStyleAttributeName = @"NSParagraphStyleAttributeName";
 NSString *NSShadowAttributeName = @"NSShadowAttributeName";
 NSString *NSStrikethroughColorAttributeName
   = @"NSStrikethroughColorAttributeName";
+NSString *NSStrikethroughStyleAttributeName = @"NSStrikethroughStyleAttributeName";
 NSString *NSStrokeColorAttributeName = @"NSStrokeColorAttributeName";
 NSString *NSStrokeWidthAttributeName = @"NSStrokeWidthAttributeName";
 NSString *NSSuperscriptAttributeName = @"NSSuperscriptAttributeName";

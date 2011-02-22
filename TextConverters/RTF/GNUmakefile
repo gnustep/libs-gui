@@ -29,10 +29,7 @@ BUNDLE_NAME 		= RTFConverter
 BUNDLE_INSTALL_DIR	=$(GNUSTEP_BUNDLES)/TextConverters
 
 RTFConverter_OBJC_FILES = 		\
-	RTFConsumer.m RTFProducer.m
-
-RTFConverter_C_FILES =	 		\
-	rtfGrammar.tab.c rtfScanner.c
+	rtfGrammar.tab.m RTFConsumer.m RTFProducer.m rtfScanner.m
 
 RTFConverter_PRINCIPAL_CLASS = RTFConsumer
 

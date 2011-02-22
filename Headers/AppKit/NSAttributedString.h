@@ -70,6 +70,7 @@ APPKIT_EXPORT NSString *NSObliquenessAttributeName;
 APPKIT_EXPORT NSString *NSParagraphStyleAttributeName;
 APPKIT_EXPORT NSString *NSShadowAttributeName;
 APPKIT_EXPORT NSString *NSStrikethroughColorAttributeName;
+APPKIT_EXPORT NSString *NSStrikethroughStyleAttributeName;
 APPKIT_EXPORT NSString *NSStrokeColorAttributeName;
 APPKIT_EXPORT NSString *NSStrokeWidthAttributeName;
 APPKIT_EXPORT NSString *NSSuperscriptAttributeName;

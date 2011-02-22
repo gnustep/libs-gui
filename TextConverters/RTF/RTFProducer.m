@@ -148,6 +148,7 @@
 
   ASSIGN(fgColor, [NSColor textColor]);
   ASSIGN(bgColor, [NSColor textBackgroundColor]);
+  ASSIGN(ulColor, [NSColor textColor]);
 
   return self;
 }
@@ -162,6 +163,7 @@
 
   RELEASE(fgColor);
   RELEASE(bgColor);
+  RELEASE(ulColor);
 
   RELEASE(_attributesOfLastRun);
 
@@ -872,9 +874,72 @@
                   (short)[self numberForColor: color]];
             }
         }
+      else if ([attributeName isEqualToString: NSUnderlineColorAttributeName])
+        {
+          NSColor *color = [attributesToAdd objectForKey: 
+              NSUnderlineColorAttributeName];
+
+          [result appendFormat: @"\\ulc%d",
+              (short)[self numberForColor: color]];
+        }
       else if ([attributeName isEqualToString: NSUnderlineStyleAttributeName])
         {
-          [result appendString: @"\\ul"];
+	  NSInteger styleMask = [[attributesToAdd objectForKey: NSUnderlineStyleAttributeName] integerValue];
+
+	  if ((styleMask & NSUnderlineByWordMask) == NSUnderlineByWordMask)
+	    {
+	      [result appendString: @"\\ulw"];
+	    }
+	  else if ((styleMask & NSUnderlineStyleDouble) == NSUnderlineStyleDouble)
+	    {
+	      [result appendString: @"\\uldb"];
+	    }
+	  else if ((styleMask & NSUnderlineStyleThick) == NSUnderlineStyleThick)
+	    {
+	      if ((styleMask & NSUnderlinePatternDot) == NSUnderlinePatternDot)
+		{
+		  [result appendString: @"\\ulthd"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDash) == NSUnderlinePatternDash)
+		{
+		  [result appendString: @"\\ulthdash"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDashDot) == NSUnderlinePatternDashDot)
+		{
+		  [result appendString: @"\\ulthdashd"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDashDotDot) == NSUnderlinePatternDashDotDot)
+		{
+		  [result appendString: @"\\ulthdashdd"];
+		}
+	      else // Assume NSUnderlinePatternSolid
+		{
+		  [result appendString: @"\\ulth"];
+		}
+	    }
+	  else // Assume NSUnderlineStyleSingle
+	    {
+	      if ((styleMask & NSUnderlinePatternDot) == NSUnderlinePatternDot)
+		{
+		  [result appendString: @"\\uld"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDash) == NSUnderlinePatternDash)
+		{
+		  [result appendString: @"\\uldash"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDashDot) == NSUnderlinePatternDashDot)
+		{
+		  [result appendString: @"\\uldashd"];
+		}
+	      else if ((styleMask & NSUnderlinePatternDashDotDot) == NSUnderlinePatternDashDotDot)
+		{
+		  [result appendString: @"\\uldashdd"];
+		}
+	      else // Assume NSUnderlinePatternSolid
+		{
+		  [result appendString: @"\\ul"];
+		}
+	    }
         }
       else if ([attributeName isEqualToString: NSSuperscriptAttributeName])
         {

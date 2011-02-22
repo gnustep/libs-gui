@@ -63,11 +63,13 @@ readString (StringContext *ctxt)
   NSMutableParagraphStyle *paragraph;
   NSColor *fgColour;
   NSColor *bgColour;
+  NSColor *ulColour;
   NSString *fontName;
   float fontSize;
   BOOL bold;
   BOOL italic;
-  BOOL underline;
+  NSInteger underline;
+  NSInteger strikethrough;
   int script;
 
   float real_fi, real_li;
@@ -76,6 +78,7 @@ readString (StringContext *ctxt)
 - (NSFont*) currentFont;
 - (NSNumber*) script;
 - (NSNumber*) underline;
+- (NSNumber*) strikethrough;
 - (void) resetParagraphStyle;
 - (void) resetFont;
 - (void) addTab: (float)location  type: (NSTextTabType)type;
@@ -98,6 +101,7 @@ readString (StringContext *ctxt)
   RELEASE(fontName);
   RELEASE(fgColour);
   RELEASE(bgColour);
+  RELEASE(ulColour);
   [super dealloc];
 }
 
@@ -109,6 +113,7 @@ readString (StringContext *ctxt)
   RETAIN(new->fontName);
   RETAIN(new->fgColour);
   RETAIN(new->bgColour);
+  RETAIN(new->ulColour);
 
   return new;
 }
@@ -183,8 +188,16 @@ readString (StringContext *ctxt)
 
 - (NSNumber*) underline
 {
-  if (underline)
-    return [NSNumber numberWithInt: NSSingleUnderlineStyle];
+  if (underline != NSUnderlineStyleNone)
+    return [NSNumber numberWithInteger: underline];
+  else
+    return nil;
+}
+
+- (NSNumber*) strikethrough
+{
+  if (strikethrough != NSUnderlineStyleNone)
+    return [NSNumber numberWithInteger: strikethrough];
   else
     return nil;
 }
@@ -208,10 +221,12 @@ readString (StringContext *ctxt)
   italic = NO;
   bold = NO;
 
-  underline = NO;
+  underline = NSUnderlineStyleNone;
+  strikethrough = NSUnderlineStyleNone;
   script = 0;
   DESTROY(fgColour);
   DESTROY(bgColour);
+  DESTROY(ulColour);
 
   changed = YES;
 }
@@ -636,10 +651,15 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 			   ps, NSParagraphStyleAttributeName,
 			   nil];
 	  DESTROY(ps);
-	  if (attr->underline)
+	  if ([attr underline])
 	    {
 	      [attributes setObject: [attr underline]
 			  forKey: NSUnderlineStyleAttributeName];
+	    }
+	  if ([attr strikethrough])
+	    {
+	      [attributes setObject: [attr strikethrough]
+			  forKey: NSStrikethroughStyleAttributeName];
 	    }
 	  if (attr->script)
 	    {
@@ -656,7 +676,12 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 	      [attributes setObject: attr->bgColour 
 			  forKey: NSBackgroundColorAttributeName];
 	    }
-	  
+	  if (attr->ulColour != nil)
+	    {
+	      [attributes setObject: attr->ulColour 
+			  forKey: NSUnderlineColorAttributeName];
+	    }
+  
 	  [result setAttributes: attributes 
 		  range: NSMakeRange(oldPosition, textlen)];
 	  DESTROY(attributes);
@@ -764,8 +789,10 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 #define ITALIC CTXT->italic
 #define BOLD CTXT->bold
 #define UNDERLINE CTXT->underline
+#define STRIKETHROUGH CTXT->strikethrough
 #define FGCOLOUR CTXT->fgColour
 #define BGCOLOUR CTXT->bgColour
+#define ULCOLOUR CTXT->ulColour
 
 #define PAPERSIZE @"PaperSize"
 #define LEFTMARGIN @"LeftMargin"
@@ -1183,6 +1210,19 @@ void GSRTFcolorfg (void *ctxt, int color)
   CHANGED = YES;
 }
 
+void GSRTFunderlinecolor (void *ctxt, int color)
+{
+  if ([COLOURS count] <= (unsigned int)color)
+    {
+      ASSIGN (ULCOLOUR, [NSColor blackColor]);
+    }
+  else
+    {
+      ASSIGN (ULCOLOUR, [COLOURS objectAtIndex: color]);
+    }
+  CHANGED = YES;
+}
+
 void GSRTFsubscript (void *ctxt, int script)
 {
   script = (int) (-halfpoints2points(script) / 3.0);
@@ -1223,11 +1263,36 @@ void GSRTFbold (void *ctxt, BOOL state)
     }
 }
 
-void GSRTFunderline (void *ctxt, BOOL state)
+void GSRTFunderline (void *ctxt, BOOL state, NSInteger style)
 {
-  if (state != UNDERLINE)
+  if (state == NO)
     {
-      UNDERLINE = state;
+      style = NSUnderlineStyleNone;
+    }
+
+  if (UNDERLINE != style)
+    {
+      UNDERLINE = style;
+      CHANGED = YES;
+    }
+}
+
+void GSRTFstrikethrough (void *ctxt, NSInteger style)
+{
+  if (STRIKETHROUGH != style)
+    {
+      STRIKETHROUGH = style;
+      CHANGED = YES;
+    }
+}
+
+void GSRTFstrikethroughDouble (void *ctxt)
+{
+  const NSInteger style = NSUnderlineStyleDouble | NSUnderlinePatternSolid;
+
+  if (STRIKETHROUGH != style)
+    {
+      STRIKETHROUGH = style;
       CHANGED = YES;
     }
 }
