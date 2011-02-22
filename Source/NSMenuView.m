@@ -1773,6 +1773,9 @@ static NSMapTable *viewInfo = 0;
       return YES;
     }
 
+  // Before executing the action, uncapture the mouse
+  [_window _releaseMouse: self];
+
   if([self _executeItemAtIndex: indexOfActionToExecute
 	   removeSubmenu: subMenusNeedRemoving] == NO)
     {

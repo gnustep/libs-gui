@@ -1,5 +1,11 @@
 2011-02-22  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSMenuView.m (-_trackWithEvent:): Quick fix for recent
+	menu tracking changes: release the mouse before invoking
+	the menu's action.
+
+2011-02-22  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/externs.m:
 	* Headers/AppKit/NSAttributedString.h: Add
 	NSStrikethroughStyleAttributeName
