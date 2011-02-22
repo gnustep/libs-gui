@@ -1428,7 +1428,7 @@ static NSMapTable *viewInfo = 0;
   return YES;
 }
 
-- (BOOL) trackWithEvent: (NSEvent*)event
+- (BOOL) _trackWithEvent: (NSEvent*)event
 {
   unsigned eventMask = NSPeriodicMask;
   NSDate *theDistantFuture = [NSDate distantFuture];
@@ -1439,7 +1439,6 @@ static NSMapTable *viewInfo = 0;
   int delayCount = 0;
   int indexOfActionToExecute = -1;
   int firstIndex = -1;
-  int space = 0;
   NSEvent *original;
   NSEventType type;
   NSEventType end;
@@ -1490,7 +1489,7 @@ static NSMapTable *viewInfo = 0;
 
   /* We attempt to mimic Mac OS X behavior for pop up menus. If the user
      presses the mouse button over a pop up button and then drags the mouse
-     over the menu, the is closed when the user releases the mouse. On the
+     over the menu, the menu is closed when the user releases the mouse. On the
      other hand, when the user clicks on the button and then moves the mouse
      the menu is closed upon the next mouse click. */
   if ([self isHorizontal] == YES ||
@@ -1585,7 +1584,6 @@ static NSMapTable *viewInfo = 0;
               NSPoint locationInScreenCoordinates;
               NSWindow *windowUnderMouse;
               NSMenu *candidateMenu;
-	      NSMenu *anAttachedMenu = [[[NSApp mainWindow] menu] attachedMenu];
 
               subMenusNeedRemoving = NO;
 
@@ -1660,25 +1658,27 @@ static NSMapTable *viewInfo = 0;
 		  ![[self menu] isTransient] &&
 		  ![[self menu] _ownedByPopUp])
 		{
-		  if ([self hitTest: location] == nil)
+                  // If the user moves the mouse into the main window
+                  // horizontal menu, start tracking again.
+                  NSWindow *mainWindow = [NSApp mainWindow];
+                  NSMenuView *mainWindowMenuView = [[mainWindow menu]
+                    menuRepresentation];
+                  NSPoint locationInMainWindow = [mainWindow 
+                    convertScreenToBase: locationInScreenCoordinates];
+		  if ([mainWindowMenuView 
+                        hitTest: locationInMainWindow] != nil)
 		    {
-		      /*This gives us time to move the cursor between a menu and
-			its submenu (or vice versa) without lose the mouse
-			tracking*/
-		      space += 1;
-
-		      if (space == 2)
-			{
-			  [anAttachedMenu close];
-			  return NO;
-			}
-		    }
-		  
-		  if (self != [[[NSApp mainWindow] menu] menuRepresentation])
-		    {
-		      [self setHighlightedItemIndex: -1];
-		      return [[[[NSApp mainWindow] menu] menuRepresentation]
+                      int index = [mainWindowMenuView indexOfItemAtPoint: 
+                        [mainWindowMenuView 
+                          convertPoint: locationInMainWindow
+                              fromView: nil]];
+                      if (index != -1 &&
+                          index != [mainWindowMenuView highlightedItemIndex])
+                        {
+		          [self setHighlightedItemIndex: -1];
+		          return [[[[NSApp mainWindow] menu] menuRepresentation]
 			       trackWithEvent: original];
+                        }
 		    }
 		}
             }
@@ -1737,6 +1737,7 @@ static NSMapTable *viewInfo = 0;
    * 4 - Perform the action if there is one.
    */
 
+  // FIXME
   [NSEvent stopPeriodicEvents];
 
   /*
@@ -1791,6 +1792,23 @@ static NSMapTable *viewInfo = 0;
       [self setHighlightedItemIndex: -1];
     }
   return YES;
+}
+
+- (BOOL) trackWithEvent: (NSEvent*)event
+{
+  BOOL result = NO;
+
+  // Capture the mouse so we get clicks outside the menus and
+  // GNUstep windows.
+  [_window _captureMouse: self];
+  NS_DURING
+    result = [self _trackWithEvent: event];
+  NS_HANDLER
+    [_window _releaseMouse: self];
+    [localException raise];
+  NS_ENDHANDLER
+  [_window _releaseMouse: self];
+  return result;
 }
 
 /**

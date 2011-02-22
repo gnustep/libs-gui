@@ -1,3 +1,9 @@
+2011-02-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-trackWithEvent:): Rewrite that uses mouse
+	capture to ensure we get mouse events outside our windows.
+	Patch by Christopher Armstrong <carmstrong@fastmail.com.au>
+
 2011-02-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m,
