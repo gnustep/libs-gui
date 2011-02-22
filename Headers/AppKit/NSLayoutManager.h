@@ -180,7 +180,17 @@ GNUstep extension.
 -(void) drawGlyphsForGlyphRange: (NSRange)range
 	atPoint: (NSPoint)containerOrigin;
 
-/* TODO: underline */
+-(void) underlineGylphRange: (NSRange)range
+              underlineType: (NSInteger)type
+           lineFragmentRect: (NSRect)fragmentRect
+     lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+	    containerOrigin: (NSPoint)containerOrigin;
+-(void) drawUnderlineForGlyphRange: (NSRange)underlineRange
+                     underlineType: (NSInteger)type
+                    baselineOffset: (CGFloat)offset
+                  lineFragmentRect: (NSRect)fragmentRect
+            lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+	           containerOrigin: (NSPoint)containerOrigin;
 
 - (NSSize) attachmentSizeForGlyphAtIndex: (NSUInteger)glyphIndex;
 - (void) showAttachmentCell: (NSCell *)cell

@@ -117,6 +117,7 @@ first. Remaining cases, highest priority first:
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/DPSOperators.h"
+#import "AppKit/NSBezierPath.h"
 
 #import "GNUstepGUI/GSLayoutManager_internal.h"
 
@@ -1659,6 +1660,225 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
     }
 
 #undef GBUF_SIZE
+
+  // Draw underline where necessary
+  // FIXME: Also draw strikeout
+  {
+    const NSRange characterRange = [self characterRangeForGlyphRange: range
+						    actualGlyphRange: NULL];
+
+    for (i=characterRange.location; i<NSMaxRange(characterRange); )
+      {
+	NSRange underlinedCharacterRange;
+	id underlineValue = [[self textStorage] attribute: NSUnderlineStyleAttributeName
+						  atIndex: i
+				    longestEffectiveRange: &underlinedCharacterRange
+						  inRange: characterRange];
+	if (underlineValue != nil && [underlineValue integerValue] != NSUnderlineStyleNone)
+	  {
+	    const NSRange underlinedGylphRange = [self glyphRangeForCharacterRange: underlinedCharacterRange
+							      actualCharacterRange: NULL];
+	  
+	    // we have a range of glpyhs that need underlining, which might span
+	    // multiple line fragments, so we need to iterate though the line fragments
+	    for (j=underlinedGylphRange.location; j<NSMaxRange(underlinedGylphRange); )
+	      {
+		NSRange lineFragmentGlyphRange;
+		const NSRect lineFragmentRect = [self lineFragmentRectForGlyphAtIndex: j
+								       effectiveRange: &lineFragmentGlyphRange];
+		const NSRange rangeToUnderline = NSIntersectionRange(underlinedGylphRange, lineFragmentGlyphRange);
+
+		[self underlineGylphRange: rangeToUnderline
+			    underlineType: [underlineValue integerValue]
+			 lineFragmentRect: lineFragmentRect
+		   lineFragmentGlyphRange: lineFragmentGlyphRange
+			  containerOrigin: containerOrigin];
+
+		j = NSMaxRange(rangeToUnderline);
+	      }
+	  }
+	i += underlinedCharacterRange.length;
+      }
+  }
+}
+
+-(void) underlineGylphRange: (NSRange)range
+              underlineType: (NSInteger)type
+           lineFragmentRect: (NSRect)fragmentRect
+     lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+            containerOrigin: (NSPoint)containerOrigin
+{
+  // FIXME: Implement underlining by word
+  /*if ((type & NSUnderlineByWordMask) != 0)
+    {
+      NSCharacterSet *setToSkip = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+      NSRange characterRange = [self characterRangeForGlyphRange: range
+						actualGlyphRange: NULL];
+      NSString *string = [[self textStorage] string];
+      NSRange examiningRange = range;
+      while (1)
+	{
+	  NSRange nextRangeToSkip = [string rangeOfCharacterInSet: setToSkip
+							   option: 0
+							    range: NSMakeRange(i, range.length - (i - range.location))];
+	  if (nextRangeToSkip.location == NSNotFound)
+	    {
+	    }
+	  else
+	    {
+
+	    }
+        }
+    }
+  else*/
+    {
+      [self drawUnderlineForGlyphRange: range
+                         underlineType: type
+                        baselineOffset: 0 // FIXME:
+		      lineFragmentRect: fragmentRect
+		lineFragmentGlyphRange: fragmentGlyphRange
+		       containerOrigin: containerOrigin];
+    }
+}
+
+
+static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGFloat thickness, CGFloat phase)
+{
+  NSBezierPath *path = [NSBezierPath bezierPath];
+  // FIXME: setLineDash should take CGFloat
+  if ((pattern & NSUnderlinePatternDot) == NSUnderlinePatternDot)
+    {
+      const float dot[2] = {2.5 * thickness, 2.5 * thickness};
+      [path setLineDash: dot count: 2 phase: phase];
+    }
+  else if ((pattern & NSUnderlinePatternDash) == NSUnderlinePatternDash)
+    {
+      const float dash[2] = {10 * thickness, 5 * thickness};   
+      [path setLineDash: dash count: 2 phase: phase];
+    }
+  else if ((pattern & NSUnderlinePatternDashDot) == NSUnderlinePatternDashDot)
+    {
+      const float dashdot[4] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      [path setLineDash: dashdot count: 4 phase: phase];
+    }
+  else if ((pattern & NSUnderlinePatternDashDotDot) == NSUnderlinePatternDashDotDot)
+    {
+      const float dashdotdot[6] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      [path setLineDash: dashdotdot count: 6 phase: phase];
+    }
+
+  [path setLineWidth: thickness];
+  [path moveToPoint: start];
+  [path lineToPoint: end];
+  [path stroke];
+}
+
+-(void) drawUnderlineForGlyphRange: (NSRange)underlineRange
+                     underlineType: (NSInteger)type
+                    baselineOffset: (CGFloat)offset
+                  lineFragmentRect: (NSRect)fragmentRect
+            lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+                   containerOrigin: (NSPoint)containerOrigin
+{       
+  /*NSLog(@"drawUnderlineForGlyphRange:%@ underlineType:%d baselineOffset:%f lineFragmentRect:%@ lineFragmentGlyphRange:%@ containerOrigin:%@",
+		  NSStringFromRange(underlineRange),
+		  (int)type,
+		  (float)offset,
+		  NSStringFromRect(fragmentRect),
+		  NSStringFromRange(fragmentGlyphRange),
+		  NSStringFromPoint(containerOrigin));*/
+  
+  // We have to iterate through the attributes (again..) to find
+  // contiguous regions with the same underline color.
+
+  NSUInteger i;
+  const NSRange characterRange = [self characterRangeForGlyphRange: underlineRange
+						  actualGlyphRange: NULL];
+
+  if (!(underlineRange.location >= fragmentGlyphRange.location &&
+        NSMaxRange(underlineRange) <= NSMaxRange(fragmentGlyphRange)))
+    {
+      NSLog(@"Error, underlineRange must be inside fragmentGlyphRange");
+      return;
+    }
+
+  for (i=characterRange.location; i<NSMaxRange(characterRange); )
+    {
+      NSRange underlineColorCharacterRange, foregroundColorCharacterRange, rangeToDraw;
+      NSColor *underlineColor = (NSColor*)[[self textStorage] attribute: NSUnderlineColorAttributeName
+								atIndex: i
+						  longestEffectiveRange: &underlineColorCharacterRange
+								inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
+      NSColor *foregroundColor = (NSColor*)[[self textStorage] attribute: NSForegroundColorAttributeName
+								 atIndex: i
+						   longestEffectiveRange: &foregroundColorCharacterRange
+								 inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
+      /*NSLog(@"asked to underline '%@'. at %d, ul color is %@ (%@) and fg color is %@ (%@)", [[[self textStorage] string] substringWithRange: characterRange],
+	    i,
+	    underlineColor,
+	    NSStringFromRange(underlineColorCharacterRange),
+	    foregroundColor,
+	    NSStringFromRange(foregroundColorCharacterRange));*/
+
+      if (underlineColor != nil)
+	{
+	  [underlineColor set];
+	}
+      else if (foregroundColor != nil)
+	{
+	  [foregroundColor set];
+	}
+      else 
+	{
+	  [[NSColor textColor] set];
+	}
+
+      // Draw the smaller range
+      rangeToDraw = underlineColorCharacterRange.length < foregroundColorCharacterRange.length ?
+	underlineColorCharacterRange : foregroundColorCharacterRange;
+      
+      // do the actual underline
+      {
+
+	  const NSRange glyphRangeToDraw = [self glyphRangeForCharacterRange: rangeToDraw
+						       actualCharacterRange: NULL];
+
+	  // FIXME: find the largest font within the range to underline
+	  NSFont *largestFont = [self effectiveFontForGlyphAtIndex: glyphRangeToDraw.location // NOTE: GS private method
+						     range: NULL];
+
+	  const CGFloat underlineWidth = [largestFont pointSize] * 
+	    (((type & NSUnderlineStyleDouble) != 0) ? 0.05 : 0.07);
+	  
+	  NSPoint start = [self locationForGlyphAtIndex: glyphRangeToDraw.location];
+	  NSPoint end = [self locationForGlyphAtIndex: NSMaxRange(glyphRangeToDraw) - 1]; //FIXME: check length > 0
+
+	  // FIXME: remove this hack lowers the underline slightly
+	  start.y += [largestFont pointSize] * 0.07;
+	  end.y += [largestFont pointSize] * 0.07;
+
+	  end.x += [largestFont advancementForGlyph: [self glyphAtIndex: (NSMaxRange(glyphRangeToDraw) - 1)]].width;
+	  
+	  start = NSMakePoint(start.x + containerOrigin.x + fragmentRect.origin.x, start.y + containerOrigin.y + fragmentRect.origin.y);
+	  end = NSMakePoint(end.x + containerOrigin.x + fragmentRect.origin.x, end.y + containerOrigin.y + fragmentRect.origin.y);
+	  
+	  if ((type & NSUnderlineStyleDouble) == NSUnderlineStyleDouble)
+	    {
+	      GSDrawPatternLine(NSMakePoint(start.x, start.y - (underlineWidth / 2)), 
+				NSMakePoint(end.x, end.y - (underlineWidth / 2)),
+				type, underlineWidth / 2, start.x);
+	      GSDrawPatternLine(NSMakePoint(start.x, start.y + (underlineWidth / 2)), 
+				NSMakePoint(end.x, end.y + (underlineWidth / 2)),
+				type, underlineWidth / 2, start.x);
+	    }
+	  else
+	    {
+	      GSDrawPatternLine(start, end, type, underlineWidth, start.x);
+	    }
+	}
+
+      i += rangeToDraw.length;
+    }
 }
 
 @end

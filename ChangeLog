@@ -1,3 +1,9 @@
+2011-02-22  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSLayoutManager.m:
+	* Headers/AppKit/NSLayoutManager.h: Preliminary implementation of 
+	underlining
+
 2011-02-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m (-trackWithEvent:): Rewrite that uses mouse
