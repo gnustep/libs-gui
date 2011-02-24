@@ -70,7 +70,7 @@
 
 - (void) setBorderColor: (NSColor *)color forEdge: (NSRectEdge)edge
 {
-  if (edge < 0 || edge >= sizeof(_borderColorForEdge) / sizeof(_borderColorForEdge[0]))
+  if (edge >= sizeof(_borderColorForEdge) / sizeof(_borderColorForEdge[0]))
     [NSException raise: NSInvalidArgumentException
                  format: @"invalid edge %d", edge];
   ASSIGN(_borderColorForEdge[edge], color);
@@ -111,7 +111,7 @@
 
 - (float) valueForDimension: (NSTextBlockDimension)dimension
 {
-  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+  if (dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid dimension %d", dimension];
   return _value[dimension];
@@ -119,7 +119,7 @@
 
 - (NSTextBlockValueType) valueTypeForDimension: (NSTextBlockDimension)dimension
 {
-  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+  if (dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid dimension %d", dimension];
   return _valueType[dimension];
@@ -153,7 +153,7 @@
              type: (NSTextBlockValueType)type
      forDimension: (NSTextBlockDimension)dimension
 {
-  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+  if (dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid dimension %d", dimension];
   _value[dimension] = val;
@@ -162,10 +162,10 @@
 
 - (float) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge
 {
-  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+  if (layer >= sizeof(_width) / sizeof(_width[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
-  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+  if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %d", edge];
   return _width[layer][edge];
@@ -174,10 +174,10 @@
 - (NSTextBlockValueType) widthValueTypeForLayer: (NSTextBlockLayer)layer
                                            edge: (NSRectEdge)edge
 {
-  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+  if (layer >= sizeof(_width) / sizeof(_width[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
-  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+  if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %d", edge];
   return _widthType[layer][edge];
@@ -188,10 +188,10 @@
          forLayer: (NSTextBlockLayer)layer
              edge: (NSRectEdge)edge
 {
-  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+  if (layer >= sizeof(_width) / sizeof(_width[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
-  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+  if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %d", edge];
   _width[layer][edge] = val;
@@ -202,7 +202,7 @@
              type: (NSTextBlockValueType)type 
          forLayer: (NSTextBlockLayer)layer
 {
-  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+  if (layer >= sizeof(_width) / sizeof(_width[0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
   _width[layer][NSMinXEdge] = val;
