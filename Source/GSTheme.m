@@ -637,7 +637,7 @@ typedef	struct {
   int	pos;
   int	end;
 
-  if (elementState < 0 || elementState > GSThemeSelectedState)
+  if (elementState > GSThemeSelectedState)
     {
       pos = 0;
       end = GSThemeSelectedState;
@@ -1120,7 +1120,7 @@ typedef	struct {
   int	pos;
   int	end;
 
-  if (elementState < 0 || elementState > GSThemeSelectedState)
+  if (elementState > GSThemeSelectedState)
     {
       pos = 0;
       end = GSThemeSelectedState;
