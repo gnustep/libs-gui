@@ -102,6 +102,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return nil;
 }
 
+/*
 static NSDictionary *
 TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 {
@@ -125,6 +126,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
   return nil;
 }
+*/
 
 
 /** <p>
