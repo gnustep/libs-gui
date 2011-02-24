@@ -2755,7 +2755,7 @@ no_soft_invalidation:
   id		tmpAttrValue;
   NSRange	tmpRange;
 
-  if (range.location < 0 || NSMaxRange(range) > [_textStorage length])
+  if (NSMaxRange(range) > [_textStorage length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -temporaryAttribute:atCharacterIndex:longestEffectiveRange:inRange: in class NSLayoutManager"];
@@ -2815,7 +2815,7 @@ no_soft_invalidation:
   NSDictionary	*attrDictionary, *tmpDictionary;
   NSRange	tmpRange;
 
-  if (range.location < 0 || NSMaxRange(range) > [_textStorage length])
+  if (NSMaxRange(range) > [_textStorage length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -temporaryAttributesAtCharacterIndex:longestEffectiveRange:inRange: in class NSLayoutManager"];
