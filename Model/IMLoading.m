@@ -212,6 +212,7 @@ BOOL _fileOwnerDecoded = NO;
 #if GNU_RUNTIME
 #include "IMConnectors.h"
 
+__attribute__((unused))
 static void __dummyFunctionForLinking (void)
 {
   [IMCustomObject new];
