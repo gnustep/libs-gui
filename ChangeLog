@@ -1,3 +1,24 @@
+2011-02-24 13:15  David Chisnall <theraven@gna.org>
+
+	* libs/gui/trunk/Source/NSDocumentController.m: Comment out unused
+	  function.
+	* libs/gui/trunk/Source/NSFontManager.m: Change unsigned int ->
+	  int, so that loops terminate with termination condition, rather
+	  than SegV
+	* libs/gui/trunk/Source/NSLayoutManager.m: Remove some tests that
+	  are always true (NSRange.length > 0 - NSUIntegers are always >
+	  0).
+	* libs/gui/trunk/Source/NSTextBlock.m: Remove some more comparisons
+	  testing unsigned values are < 0.
+	* libs/gui/trunk/Source/GSServicesManager.m: get_imp() ->
+	  class_getMethodImplementation() (GCC runtime function -> standard
+	  runtime function)
+	* libs/gui/trunk/Source/GSTheme.m: More unsigned < 0 tests.
+	* libs/gui/trunk/Source/NSTextView.m: Rename HUGE -> GSHUGE to
+	  remove conflict with standard library #define.
+	* libs/gui/trunk/Model/IMLoading.m: Add __attribute__((unused)) on
+	  __dummyFunctionForLinking().
+
 2011-02-22  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:): Quick fix for recent
