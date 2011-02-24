@@ -315,7 +315,7 @@ static NSNotificationCenter *notificationCenter;
 
 /* Default max. size. Don't change this without understanding and checking
 for roundoff issues. Whole points should be representable. */
-#define HUGE 1e7
+#define GSHUGE 1e7
 
 
 /**** Synchronization stuff ****/
@@ -695,7 +695,7 @@ If a text view is added to an empty text network, it keeps its attributes.
     [[self class] registerForServices];
 
   _minSize = frameRect.size;
-  _maxSize = NSMakeSize(frameRect.size.width, HUGE);
+  _maxSize = NSMakeSize(frameRect.size.width, GSHUGE);
   _textContainerInset = NSMakeSize(2, 0);
 
   ASSIGN(_insertionPointColor, [NSColor textColor]);
@@ -865,7 +865,7 @@ that makes decoding and encoding compatible with the old code.
         }
       else
         {
-          [self setMaxSize: NSMakeSize(_frame.size.width, HUGE)];            
+          [self setMaxSize: NSMakeSize(_frame.size.width, GSHUGE)];            
         }
 
       if ([aDecoder containsValueForKey: @"NSMinSize"])
