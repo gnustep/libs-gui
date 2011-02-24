@@ -247,7 +247,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
   if (aSelector == 0)
     [NSException raise: NSInvalidArgumentException
                 format: @"%@ null selector given", NSStringFromSelector(_cmd)];
-  return get_imp(GSObjCClass(self), aSelector);
+  return class_getMethodImplementation(GSObjCClass(self), aSelector);
 }
 
 + (id) servicesProvider
