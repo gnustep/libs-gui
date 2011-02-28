@@ -161,7 +161,7 @@ TiffHandleClose(thandle_t handle)
   chandle_t* chand = (chandle_t *)handle;
 
   /* Presumably, we don't need the handle anymore */
-  OBJC_FREE(chand);
+  free(chand);
   return 0;
 }
 
@@ -202,7 +202,7 @@ NSTiffOpenDataRead(const char* data, long size)
       TIFFSetWarningHandler(NSTiffWarning);
     }
 
-  OBJC_MALLOC(handle, chandle_t, 1);
+  handle = malloc(sizeof(chandle_t));
   handle->data = (char*)data;
   handle->outdata = 0;
   handle->position = 0;
@@ -221,7 +221,7 @@ TIFF*
 NSTiffOpenDataWrite(char **data, long *size)
 {
   chandle_t* handle;
-  OBJC_MALLOC(handle, chandle_t, 1);
+  handle = malloc(sizeof(chandle_t));
   handle->data = *data;
   handle->outdata = data;
   handle->position = 0;
@@ -269,7 +269,7 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   if (image == NULL)
     return NULL;
 
-  OBJC_MALLOC(info, NSTiffInfo, 1);
+  info = malloc(sizeof(NSTiffInfo));
   memset(info, 0, sizeof(NSTiffInfo));
   if (imageNumber >= 0)
     {
@@ -567,14 +567,14 @@ NSTiffGetColormap(TIFF* image)
   if (info->photoInterp != PHOTOMETRIC_PALETTE)
     return NULL;
 
-  OBJC_MALLOC(map, NSTiffColormap, 1);
+  map = malloc(sizeof(NSTiffColormap));
   map->size = 1 << info->bitsPerSample;
 
   if (!TIFFGetField(image, TIFFTAG_COLORMAP,
 		    &map->red, &map->green, &map->blue)) 
     {
       TIFFError(TIFFFileName(image), "Missing required \"Colormap\" tag");
-      OBJC_FREE(map);
+      free(map);
       return NULL;
     }
   if (CheckAndCorrectColormap(map) == 8)

@@ -631,36 +631,36 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   jpeg_start_compress (&cinfo, TRUE);
 
   if (isRGB && [self hasAlpha])	// strip alpha channel before encoding
-  {
-    unsigned char * RGB, * pRGB, * pRGBA;
-    unsigned int iRGB, iRGBA;
-    OBJC_MALLOC(RGB, unsigned char, 3*width);
-    while (cinfo.next_scanline < cinfo.image_height)
     {
-      iRGBA = cinfo.next_scanline * row_stride;
-      pRGBA = &imageSource[iRGBA];
-      pRGB = RGB;
-      for (iRGB = 0; iRGB < 3*width; iRGB += 3)
-      {
-        memcpy(pRGB, pRGBA, 3);
-        pRGB +=3;
-        pRGBA +=4;
-      }
-      row_pointer[0] = RGB;
-      jpeg_write_scanlines (&cinfo, row_pointer, 1);
+      unsigned char * RGB, * pRGB, * pRGBA;
+      unsigned int iRGB, iRGBA;
+      RGB = malloc(sizeof(unsigned char)*3*width);
+      while (cinfo.next_scanline < cinfo.image_height)
+	{
+	  iRGBA = cinfo.next_scanline * row_stride;
+	  pRGBA = &imageSource[iRGBA];
+	  pRGB = RGB;
+	  for (iRGB = 0; iRGB < 3*width; iRGB += 3)
+	    {
+	      memcpy(pRGB, pRGBA, 3);
+	      pRGB +=3;
+	      pRGBA +=4;
+	    }
+	  row_pointer[0] = RGB;
+	  jpeg_write_scanlines (&cinfo, row_pointer, 1);
+	}
+      free(RGB);
     }
-    OBJC_FREE(RGB);
-  }
   else	// no alpha channel
-  {
-    while (cinfo.next_scanline < cinfo.image_height)
     {
-      int	index = cinfo.next_scanline * row_stride;
+      while (cinfo.next_scanline < cinfo.image_height)
+	{
+	  int	index = cinfo.next_scanline * row_stride;
 
-      row_pointer[0] = &imageSource[index];
-      jpeg_write_scanlines (&cinfo, row_pointer, 1);
+	  row_pointer[0] = &imageSource[index];
+	  jpeg_write_scanlines (&cinfo, row_pointer, 1);
+	}
     }
-  }
 
   jpeg_finish_compress(&cinfo);
 

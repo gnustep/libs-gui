@@ -407,7 +407,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 
   width = [self pixelsWide];
   height = [self pixelsHigh];
-  if ( !width || !height )
+  if (!width || !height)
   {
     SET_ERROR_MSG(@"GIFRepresentation: image is zero size");
     return nil;
@@ -417,69 +417,69 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   colorSpaceName = [self colorSpaceName];
   isRGB = ([colorSpaceName isEqualToString: NSDeviceRGBColorSpace] ||
            [colorSpaceName isEqualToString: NSCalibratedRGBColorSpace]);
-  if ( !isRGB )
-  {  
-    SET_ERROR_MSG(@"GIFRepresentation: Only RGB is supported at this time.");
-    return nil;
-  }
-  hasAlpha = [self hasAlpha];
-  if ([self isPlanar])
-  {
-    [self getBitmapDataPlanes: planes];
-    redPlane = planes[0];
-    greenPlane = planes[1];
-    bluePlane = planes[2];
-  }
-  else	// interleaved RGB or RGBA
-  {
-    OBJC_MALLOC(rgbPlanes, GifByteType, width*height*3);
-    if ( !rgbPlanes )
-    {
-      SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
+  if (!isRGB)
+    {  
+      SET_ERROR_MSG(@"GIFRepresentation: Only RGB is supported at this time.");
       return nil;
     }
-    redPlane = rgbPlanes;
-    greenPlane = redPlane + width*height;
-    bluePlane = greenPlane + width*height;
-    bitmapData = [self bitmapData];
-    for (h = 0; h < width*height; h++)
+  hasAlpha = [self hasAlpha];
+  if ([self isPlanar])
     {
-      *redPlane++ = *bitmapData++;
-      *greenPlane++ = *bitmapData++;
-      *bluePlane++ = *bitmapData++;
-      if (hasAlpha) bitmapData++;	// ignore alpha channel
+      [self getBitmapDataPlanes: planes];
+      redPlane = planes[0];
+      greenPlane = planes[1];
+      bluePlane = planes[2];
     }
-    redPlane = rgbPlanes;
-    greenPlane = redPlane + width*height;
-    bluePlane = greenPlane + width*height;
-  }
+  else	// interleaved RGB or RGBA
+    {
+      rgbPlanes = malloc(sizeof(GifByteType)*width*height*3);
+      if (!rgbPlanes)
+	{
+	  SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
+	  return nil;
+	}
+      redPlane = rgbPlanes;
+      greenPlane = redPlane + width*height;
+      bluePlane = greenPlane + width*height;
+      bitmapData = [self bitmapData];
+      for (h = 0; h < width*height; h++)
+	{
+	  *redPlane++ = *bitmapData++;
+	  *greenPlane++ = *bitmapData++;
+	  *bluePlane++ = *bitmapData++;
+	  if (hasAlpha) bitmapData++;	// ignore alpha channel
+	}
+      redPlane = rgbPlanes;
+      greenPlane = redPlane + width*height;
+      bluePlane = greenPlane + width*height;
+    }
 
   // If you have a color table, you must be certain that it is GIF format
   colorTable = [self valueForProperty: NSImageRGBColorTable];	// nil is OK
   colorMapSize = (colorTable)? [colorTable length]/sizeof(GifColorType) : 256;
   GIFColorMap = MakeMapObject(colorMapSize, [colorTable bytes]);
-  if ( !GIFColorMap )
-  {
-    SET_ERROR_MSG(@"GIFRepresentation (giflib): MakeMapObject() failed.");
-    OBJC_FREE(rgbPlanes);
-    return nil;
-  }
+  if (!GIFColorMap)
+    {
+      SET_ERROR_MSG(@"GIFRepresentation (giflib): MakeMapObject() failed.");
+      free(rgbPlanes);
+      return nil;
+    }
 
-  OBJC_MALLOC(GIFImage, GifByteType, height*width);
-  if ( !GIFImage )
-  {
-    SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
-    OBJC_FREE(rgbPlanes);
-  }
+  GIFImage = malloc(sizeof(GifByteType)*height*width);
+  if (!GIFImage)
+    {
+      SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
+      free(rgbPlanes);
+    }
   status = QuantizeBuffer(width, height, &colorMapSize,
 		       redPlane, greenPlane, bluePlane,
 		       GIFImage, GIFColorMap->Colors);
   if (status == GIF_ERROR)
-  {
-    OBJC_FREE(GIFImage);
-    OBJC_FREE(rgbPlanes);
-    return nil;
-  }
+    {
+      free(GIFImage);
+      free(rgbPlanes);
+      return nil;
+    }
 
   // QuantizeBuffer returns an optimized colorMapSize,
   // but we must round up to nearest power of 2
@@ -490,48 +490,48 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   GIFColorMap->ColorCount = colorMapSize;
   GIFColorMap->BitsPerPixel = h;
 
-  if ( ![self isPlanar] ) OBJC_FREE(rgbPlanes);
+  if (![self isPlanar]) free(rgbPlanes);
 
   // Write the converted image out to the NSData
   GIFRep = [NSMutableData dataWithLength: 0];
-  if ( !GIFRep ) 
-  {
-    OBJC_FREE(GIFImage);
-    return nil;
-  }
+  if (!GIFRep) 
+    {
+      free(GIFImage);
+      return nil;
+    }
   GIFFile = EGifOpen(GIFRep, gs_gif_output);
   status = EGifPutScreenDesc(GIFFile, width, height, 8, 0, NULL);
   if (status == GIF_ERROR)
-  {
-    SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutScreenDesc() failed.");
-    OBJC_FREE(GIFImage);
-    return nil;
-  }
+    {
+      SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutScreenDesc() failed.");
+      free(GIFImage);
+      return nil;
+    }
 
   // note we are not supporting interlaced mode
   status = EGifPutImageDesc(GIFFile, 0, 0, width, height, FALSE, GIFColorMap);
   if (status == GIF_ERROR)
-  {
-    SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutImageDesc() failed.");
-    OBJC_FREE(GIFImage);
-    return nil;
-  }
+    {
+      SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutImageDesc() failed.");
+      free(GIFImage);
+      return nil;
+    }
 
   GIFImageP = GIFImage;
   for (h = 0; h < height ; h++)
-  {
-    status = EGifPutLine(GIFFile, GIFImageP, width);
-    if (status == GIF_ERROR)
     {
-      SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutLine() failed.");
-      OBJC_FREE(GIFImage);
-      return nil;
+      status = EGifPutLine(GIFFile, GIFImageP, width);
+      if (status == GIF_ERROR)
+	{
+	  SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutLine() failed.");
+	  free(GIFImage);
+	  return nil;
+	}
+      GIFImageP += width;
     }
-    GIFImageP += width;
-  }
   status = EGifCloseFile(GIFFile);
 
-  OBJC_FREE(GIFImage);
+  free(GIFImage);
 
   return GIFRep;
 }

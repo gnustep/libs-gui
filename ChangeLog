@@ -1,3 +1,11 @@
+2011-02-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBitmapImageRep.m:
+	* Source/NSBitmapImageRep+GIF.m:
+	* Source/NSBitmapImageRep+JPEG.m:
+	* Source/tiff.m:
+	Avoid obsolete OBJC_... macros
+
 2011-02-28 Riccardo Mottola <rm@gnu.org>
 
 	* Source/GSLayoutManager.m

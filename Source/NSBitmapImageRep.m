@@ -1932,12 +1932,12 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   if (NSTiffRead(image, info, [self bitmapData]))
     {
-      OBJC_FREE(info);
+      free(info);
       RELEASE(self);
       NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
       return nil;
     }
-  OBJC_FREE(info);
+  free(info);
 
   return self;
 }
