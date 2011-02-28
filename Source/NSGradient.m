@@ -225,7 +225,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
       // FIXME: Convert all colours to colour space
       ASSIGN(_colors, colorArray);
 
-      _locations = objc_malloc(sizeof(CGFloat)*_numberOfColorStops);
+      _locations = malloc(sizeof(CGFloat)*_numberOfColorStops);
       if (locations)
         {
           // FIXME: Check that the locations are properly ordered
@@ -248,7 +248,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   va_list ap;
   unsigned int max = 128;
   unsigned int count = 0;
-  CGFloat *locations = (CGFloat*)objc_malloc(max * sizeof(CGFloat));
+  CGFloat *locations = (CGFloat*)malloc(max * sizeof(CGFloat));
   NSMutableArray *colorArray = [[NSMutableArray alloc] init];
 
   va_start(ap, color);
@@ -257,7 +257,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
       if (max <= count)
         {
           max *= 2;
-          locations = (CGFloat*)objc_realloc(locations, max * sizeof(CGFloat));
+          locations = (CGFloat*)realloc(locations, max * sizeof(CGFloat));
         }
       [colorArray addObject: color];
       // gcc insists on using double here
@@ -272,7 +272,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
                colorSpace: nil];
 
   RELEASE(colorArray);
-  objc_free(locations);
+  free(locations);
   return self;
 }
 
@@ -285,7 +285,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
   RELEASE(_colorSpace);
   RELEASE(_colors);
-  objc_free(_locations);
+  free(_locations);
   [super dealloc];
 }
 
@@ -334,7 +334,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 
   RETAIN(g->_colorSpace);
   RETAIN(g->_colors);
-  g->_locations = objc_malloc(sizeof(CGFloat) * _numberOfColorStops);
+  g->_locations = malloc(sizeof(CGFloat) * _numberOfColorStops);
   memcpy(g->_locations, _locations, sizeof(CGFloat) * _numberOfColorStops);
 
   return g;

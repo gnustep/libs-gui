@@ -63,7 +63,7 @@
   
   _selectorsCount = [sels count];
 
-  _selectors = objc_malloc (sizeof (SEL) * _selectorsCount);
+  _selectors = malloc (sizeof (SEL) * _selectorsCount);
 
   for (i = 0; i < _selectorsCount; i++)
     {
@@ -84,7 +84,7 @@
 
 - (void) dealloc
 {
-  objc_free (_selectors);
+  free (_selectors);
   [super dealloc];
 }
 

@@ -94,7 +94,7 @@ static void run_remove(glyph_run_head_t **context, glyph_run_t *r)
 
   // Free the glyphs
   if (r->glyphs)
-    objc_free(r->glyphs);
+    free(r->glyphs);
 
   h = &r->head;
   if (h->next)
@@ -104,7 +104,7 @@ static void run_remove(glyph_run_head_t **context, glyph_run_t *r)
     context[i]->next = context[i]->next->next;
 
   h -= r->level;
-  objc_free(h);
+  free(h);
 }
 
 /*
@@ -116,7 +116,7 @@ static inline void run_free_glyphs(glyph_run_t *r)
     {
       r->head.complete = 0;
       r->head.glyph_length = 0;
-      objc_free(r->glyphs);
+      free(r->glyphs);
       r->glyphs = NULL;
     }
  }
@@ -230,16 +230,16 @@ Private method used internally by GSLayoutManager for sanity checking.
     {
       next = (glyph_run_t *)cur->head.next;
       if (cur->glyphs)
-        objc_free(cur->glyphs);
+        free(cur->glyphs);
       [self _run_free_attributes: cur];
       // Find the start of the allocated memory
       h = &cur->head;
       h -= cur->level;
-      objc_free(h);
+      free(h);
     }
 
   // Free the head element
-  objc_free(glyphs);
+  free(glyphs);
   glyphs = NULL;
 }
 
@@ -1795,12 +1795,12 @@ places where we switch.
 	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags + tc->num_soft; j++, lf++)
 	    {
 	      if (lf->points)
-		objc_free(lf->points);
+		free(lf->points);
 	      if (lf->attachments)
-		objc_free(lf->attachments);
+		free(lf->attachments);
 	    }
 
-	  objc_free(tc->linefrags);
+	  free(tc->linefrags);
 	}
       tc->linefrags = NULL;
       tc->num_linefrags = tc->num_soft = 0;
@@ -1887,12 +1887,12 @@ places where we switch.
             {
               if (lf->points)
                 {
-                  objc_free(lf->points);
+                  free(lf->points);
                   lf->points = NULL;
                 }
               if (lf->attachments)
                 {
-                  objc_free(lf->attachments);
+                  free(lf->attachments);
                   lf->attachments = NULL;
                 }
             }
@@ -1967,12 +1967,12 @@ places where we switch.
             {
               if (lf->points)
                 {
-                  objc_free(lf->points);
+                  free(lf->points);
                   lf->points = NULL;
                 }
               if (lf->attachments)
                 {
-                  objc_free(lf->attachments);
+                  free(lf->attachments);
                   lf->attachments = NULL;
                 }
             }
@@ -2195,7 +2195,7 @@ by calling this incorrectly.
       if (tc->size_linefrags <= tc->num_linefrags)
 	{
 	  tc->size_linefrags += tc->size_linefrags / 2;
-	  tc->linefrags = objc_realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	  tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
 	}
       tc->num_linefrags++;
       lf = &tc->linefrags[tc->num_linefrags - 1];
@@ -2209,12 +2209,12 @@ by calling this incorrectly.
 	    break;
 	  if (lf->points)
 	    {
-	      objc_free(lf->points);
+	      free(lf->points);
 	      lf->points = NULL;
 	    }
 	  if (lf->attachments)
 	    {
-	      objc_free(lf->attachments);
+	      free(lf->attachments);
 	      lf->attachments = NULL;
 	    }
 	}
@@ -2228,7 +2228,7 @@ by calling this incorrectly.
 	  if (tc->size_linefrags <= tc->num_linefrags + tc->num_soft)
 	    {
 	      tc->size_linefrags += tc->size_linefrags / 2;
-	      tc->linefrags = objc_realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	      tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
 	    }
 	  memmove(&tc->linefrags[tc->num_linefrags + 1], &tc->linefrags[tc->num_linefrags], tc->num_soft * sizeof(linefrag_t));
 	}
@@ -2318,7 +2318,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	  return;
 	}
       lf->num_points++;
-      lf->points = objc_realloc(lf->points, sizeof(linefrag_point_t) * lf->num_points);
+      lf->points = realloc(lf->points, sizeof(linefrag_point_t) * lf->num_points);
       lp = &lf->points[lf->num_points - 1];
     }
   lp->pos = glyphRange.location;
@@ -2367,7 +2367,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   /* TODO: we do no sanity checking of attachment size ranges. might want
   to consider doing it */
-  lf->attachments = objc_realloc(lf->attachments,
+  lf->attachments = realloc(lf->attachments,
 		      sizeof(linefrag_attachment_t) * (lf->num_attachments + 1));
   la = &lf->attachments[lf->num_attachments++];
 
@@ -2651,7 +2651,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     [self _invalidateLayoutFromContainer: index];
 
   num_textcontainers++;
-  textcontainers = objc_realloc(textcontainers,
+  textcontainers = realloc(textcontainers,
 			 sizeof(textcontainer_t) * num_textcontainers);
 
   for (i = num_textcontainers - 1; i > index; i--)
@@ -2679,11 +2679,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
     textcontainers[i] = textcontainers[i + 1];
 
   if (num_textcontainers)
-    textcontainers = objc_realloc(textcontainers,
+    textcontainers = realloc(textcontainers,
 			   sizeof(textcontainer_t) * num_textcontainers);
   else
     {
-      objc_free(textcontainers);
+      free(textcontainers);
       textcontainers = NULL;
     }
 
@@ -2876,7 +2876,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   int i;
   textcontainer_t *tc;
 
-  objc_free(rect_array);
+  free(rect_array);
   rect_array_size = 0;
   rect_array = NULL;
 
@@ -2885,7 +2885,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     {
       [tc->textContainer release];
     }
-  objc_free(textcontainers);
+  free(textcontainers);
   textcontainers = NULL;
 
   [self _freeGlyphs];
@@ -3160,7 +3160,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
     }
   else if (run->head.glyph_length < len)
     {
-      run->glyphs = objc_realloc(run->glyphs, sizeof(glyph_t) * len);
+      run->glyphs = realloc(run->glyphs, sizeof(glyph_t) * len);
       memset(&run->glyphs[glyph - gpos], 0, sizeof(glyph_t) * length);
     }
   run->head.glyph_length = len;

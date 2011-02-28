@@ -213,7 +213,7 @@
   else
     {
       _bindingsCount++;
-      _bindings = objc_realloc (_bindings, sizeof (struct _GSKeyBinding) 
+      _bindings = realloc (_bindings, sizeof (struct _GSKeyBinding) 
 				* _bindingsCount);
     }
   _bindings[_bindingsCount - 1].character = character;
@@ -266,7 +266,7 @@
       RELEASE (_bindings[i].action);
       RELEASE (_bindings[i].table);
     }
-  objc_free (_bindings);
+  free (_bindings);
   [super dealloc];
 }
 
