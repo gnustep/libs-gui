@@ -1,7 +1,7 @@
 /*
    GSLayoutManager.m
 
-   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 2002-2011 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
    Date: November 2002 - February 2003
@@ -63,7 +63,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context, int level)
   int i, size;
 
   size = sizeof(glyph_run_head_t) * level + sizeof(glyph_run_t);
-  h = objc_malloc(size);
+  h = malloc(size);
   memset(h, 0, size);
 
   for (i = level; i >= 0; i--, h++)
@@ -253,7 +253,7 @@ Private method used internally by GSLayoutManager for sanity checking.
   glyph_run_head_t *h;
 
   size = sizeof(glyph_run_head_t) * (SKIP_LIST_DEPTH - 1) + sizeof(glyph_run_t);
-  glyphs = objc_malloc(size);
+  glyphs = malloc(size);
   memset(glyphs, 0, size);
 
   for (h = glyphs, i = SKIP_LIST_DEPTH; i; i--, h++)
@@ -2185,7 +2185,7 @@ by calling this incorrectly.
       if (!tc->size_linefrags)
 	{
 	  tc->size_linefrags = 16;
-	  tc->linefrags = objc_malloc(sizeof(linefrag_t) * tc->size_linefrags);
+	  tc->linefrags = malloc(sizeof(linefrag_t) * tc->size_linefrags);
 	}
       tc->num_linefrags = 1;
       lf = tc->linefrags;
@@ -2304,7 +2304,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 			      __PRETTY_FUNCTION__];
 	  return;
 	}
-      lp = lf->points = objc_malloc(sizeof(linefrag_point_t));
+      lp = lf->points = malloc(sizeof(linefrag_point_t));
       lf->num_points++;
     }
   else
@@ -3155,7 +3155,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
   len = glyph - gpos + length;
   if (!run->glyphs)
     {
-      run->glyphs = objc_malloc(sizeof(glyph_t) * len);
+      run->glyphs = malloc(sizeof(glyph_t) * len);
       memset(run->glyphs, 0, sizeof(glyph_t) * len);
     }
   else if (run->head.glyph_length < len)

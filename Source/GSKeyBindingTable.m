@@ -1,6 +1,6 @@
 /* GSKeyBindingTable.m                    -*-objc-*-
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002-2011 Free Software Foundation, Inc.
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: February 2002
@@ -208,7 +208,7 @@
   if (_bindingsCount == 0)
     {
       _bindingsCount = 1;
-      _bindings = objc_malloc (sizeof (struct _GSKeyBinding));
+      _bindings = malloc (sizeof (struct _GSKeyBinding));
     }
   else
     {
