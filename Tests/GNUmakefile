@@ -5,7 +5,7 @@
 #
 #  Written by:	Richard Frith-Macdonald <rfm@gnu.org>
 #
-#  This file is part of the GNUstep Base Library.
+#  This file is part of the GNUstep GUI Library.
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public
@@ -40,10 +40,18 @@ ifeq ($(GNUSTEP_MAKEFILES),)
   $(error You need to set GNUSTEP_MAKEFILES before running this!)
 endif
 
+include $(GNUSTEP_MAKEFILES)/common.make
 
-check:
+TEST_APP_NAMES=
+
+all::
+	@(echo If you want to run the gnustep-gui testsuite, please type \'make check\')
+
+check::
 	gnustep-tests gui
 
-clean:
+clean::
 	gnustep-tests --clean
+
+include $(GNUSTEP_MAKEFILES)/test-application.make
 
