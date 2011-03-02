@@ -1823,16 +1823,6 @@ Fallback for backends other than Cairo. */
   return self;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder*)aDecoder
-{
-  if (_name && [nameDict objectForKey: _name]) 
-    {
-      return [nameDict objectForKey: _name];
-    }
-    
-  return self;
-}
-
 + (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
   int i, count;

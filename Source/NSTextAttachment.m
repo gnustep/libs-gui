@@ -251,9 +251,10 @@
 	  icon = [[NSImage alloc] initByReferencingFile: fileName];
         }
       if (icon == nil)
-	icon = [fileWrap icon];
+	icon = RETAIN([fileWrap icon]);
 
       [self setImage: icon];
+      RELEASE(icon);
     }
 }
 

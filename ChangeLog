@@ -1,3 +1,10 @@
+2011-03-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m: Remove the -awakeAfterUsingCoder: method as
+	this method was incorrectly implemented and
+	* Source/NSTextAttachment.m (NSTextAttachmentCell-setAttachment:):
+	Release the created icon after setting it as image.
+
 2011-02-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBitmapImageRep.m:
