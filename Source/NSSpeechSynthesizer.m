@@ -25,15 +25,15 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSError.h>
-#include <Foundation/NSConnection.h>
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSSpeechSynthesizer.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSConnection.h>
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSSpeechSynthesizer.h"
 
 // Keys for properties...
 NSString *NSVoiceIdentifier = @"NSVoiceIdentifier";

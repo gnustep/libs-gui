@@ -26,15 +26,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSTimer.h>
-#include "AppKit/NSProgressIndicator.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GNUstepGUI/GSNibLoading.h"
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSTimer.h>
+#import "AppKit/NSProgressIndicator.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSNibLoading.h"
 
 @implementation NSProgressIndicator
 

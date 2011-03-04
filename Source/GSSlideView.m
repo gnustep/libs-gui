@@ -27,16 +27,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GSSlideView.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GSSlideView.h"
 #include <math.h>
 
 // Minimal slide distance per step in pixel

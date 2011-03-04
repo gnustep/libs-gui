@@ -29,20 +29,20 @@
 */ 
 
 #include "config.h"
-#include "AppKit/NSActionCell.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSColorPanel.h"
-#include "AppKit/NSColorWell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSNotification.h>
+#import "AppKit/NSActionCell.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSColorPanel.h"
+#import "AppKit/NSColorWell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
 #include <math.h>
 
 static NSString *GSColorWellDidBecomeExclusiveNotification =

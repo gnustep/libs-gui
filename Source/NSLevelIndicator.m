@@ -27,7 +27,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <AppKit/NSLevelIndicator.h>
+#import "AppKit/NSLevelIndicator.h"
 
 static Class cellClass;
 

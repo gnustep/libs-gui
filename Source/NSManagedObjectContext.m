@@ -30,12 +30,12 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "NSManagedObjectContext.h"
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
+#import "NSManagedObjectContext.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
 
 @interface NSMergePolicy : NSObject <NSCoding>
 {

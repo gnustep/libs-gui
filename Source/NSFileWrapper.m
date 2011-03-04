@@ -30,17 +30,17 @@
 
 #include "config.h"
 
-#include "AppKit/NSFileWrapper.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSWorkspace.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSWorkspace.h"
 
 @implementation NSFileWrapper
 

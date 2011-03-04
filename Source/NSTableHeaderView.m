@@ -29,22 +29,22 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>
-#include "AppKit/NSTableHeaderCell.h"
-#include "AppKit/NSTableHeaderView.h"
-#include "AppKit/NSTableColumn.h"
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSGraphics.h"
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSTheme.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSTableHeaderCell.h"
+#import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSGraphics.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
 
 /*
  * Number of pixels in either direction that will be counted as a hit 

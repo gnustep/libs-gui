@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_GSGuiPrivate
 #define _GNUstep_H_GSGuiPrivate
 
-#include <Foundation/NSBundle.h>
+#import <Foundation/NSBundle.h>
 #include "GNUstepBase/preface.h"
 
 /*

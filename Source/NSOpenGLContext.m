@@ -26,9 +26,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSOpenGL.h"
-#include "GNUstepGUI/GSDisplayServer.h"
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSOpenGL.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 @implementation NSOpenGLContext
 + _classContext

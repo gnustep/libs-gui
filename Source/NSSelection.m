@@ -31,10 +31,10 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSData.h>
-#include "AppKit/NSSelection.h"
-#include "AppKit/NSPasteboard.h"
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSData.h>
+#import "AppKit/NSSelection.h"
+#import "AppKit/NSPasteboard.h"
 
 //
 // Global instances of these selections

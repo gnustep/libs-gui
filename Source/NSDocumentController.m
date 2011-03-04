@@ -28,24 +28,24 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSURL.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSTimer.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSURL.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSTimer.h>
 
-#include "AppKit/NSDocumentController.h"
-#include "AppKit/NSOpenPanel.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSWorkspace.h"
-#include "NSDocumentFrameworkPrivate.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSDocumentController.h"
+#import "AppKit/NSOpenPanel.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSWorkspace.h"
+#import "NSDocumentFrameworkPrivate.h"
+#import "GSGuiPrivate.h"
 
 static NSString *NSTypesKey             = @"NSTypes";
 static NSString *NSNameKey              = @"NSName";

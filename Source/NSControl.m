@@ -30,20 +30,20 @@
 
 #include "config.h"
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSActionCell.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSWindow.h"
-#include "GSBindingHelpers.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSActionCell.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSWindow.h"
+#import "GSBindingHelpers.h"
 
 /*
  * Class variables

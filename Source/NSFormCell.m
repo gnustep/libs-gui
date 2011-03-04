@@ -29,14 +29,14 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFormCell.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "GNUstepGUI/GSTheme.h"
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFormCell.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "GNUstepGUI/GSTheme.h"
 
 /** <p>TODO Description </p>
  */

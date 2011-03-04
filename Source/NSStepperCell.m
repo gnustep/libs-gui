@@ -34,7 +34,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSStepperCell.h"
 #import "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @interface NSStepperCell (Private)
 - (void) _increment;

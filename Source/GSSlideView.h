@@ -27,8 +27,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSGeometry.h>
-#include "AppKit/NSView.h"
+#import <Foundation/NSGeometry.h>
+#import "AppKit/NSView.h"
 
 @class NSCell;
 

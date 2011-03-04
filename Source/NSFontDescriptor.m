@@ -29,16 +29,16 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSFontDescriptor.h"
-#include "AppKit/NSFontManager.h"
+#import "AppKit/NSFontDescriptor.h"
+#import "AppKit/NSFontManager.h"
 
 @interface NSFontManager (GNUstep)
 - (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;

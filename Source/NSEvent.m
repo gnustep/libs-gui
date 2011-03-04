@@ -32,23 +32,23 @@
 */
 
 #include "config.h"
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSDebug.h>
 
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/PSOperators.h"
 
-#include "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 /*
  *        gstep-base has a faster mechanism to get the current thread.

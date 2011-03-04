@@ -28,7 +28,7 @@
 #import "AppKit/NSFont.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSTableHeaderCell.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @implementation NSTableHeaderCell
 

@@ -25,14 +25,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GSTypesetter.h"
-
-#include "GNUstepGUI/GSLayoutManager.h"
-#include "GNUstepGUI/GSHorizontalTypesetter.h"
-
-#include <Foundation/NSDictionary.h>
-#include "AppKit/NSAttributedString.h"
-
+#import <Foundation/NSDictionary.h>
+#import "AppKit/NSAttributedString.h"
+#import "GNUstepGUI/GSTypesetter.h"
+#import "GNUstepGUI/GSLayoutManager.h"
+#import "GNUstepGUI/GSHorizontalTypesetter.h"
 
 @implementation GSTypesetter
 

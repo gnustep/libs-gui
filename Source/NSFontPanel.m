@@ -29,26 +29,26 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSFontPanel.h"
-#include "AppKit/NSFontManager.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSSplitView.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSBox.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSFontPanel.h"
+#import "AppKit/NSFontManager.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSSplitView.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSBox.h"
 
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4

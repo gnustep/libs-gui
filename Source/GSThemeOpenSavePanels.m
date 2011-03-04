@@ -26,9 +26,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSOpenPanel.h"
-#include "AppKit/NSSavePanel.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSOpenPanel.h"
+#import "AppKit/NSSavePanel.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @implementation GSTheme (OpenSavePanels)
 /**

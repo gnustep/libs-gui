@@ -23,10 +23,10 @@
  * USA.
  */
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSSegmentedControl.h>
-#include <AppKit/NSSegmentedCell.h>
-#include <AppKit/NSEvent.h>
+#import "AppKit/NSControl.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSSegmentedControl.h"
+#import "AppKit/NSSegmentedCell.h"
 
 static Class segmentedControlCellClass;
 

@@ -24,12 +24,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include "AppKit/NSComboBox.h"
-#include "AppKit/NSComboBoxCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSTextView.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSComboBox.h"
+#import "AppKit/NSComboBoxCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSTextView.h"
 
 /*
  * Class variables

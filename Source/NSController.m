@@ -26,10 +26,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <AppKit/NSController.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import "AppKit/NSController.h"
 
 @implementation NSController
 

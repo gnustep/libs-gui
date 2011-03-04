@@ -27,15 +27,15 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSTextView.h"
-#include "GNUstepGUI/GSLayoutManager.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextView.h"
+#import "GNUstepGUI/GSLayoutManager.h"
+#import "GSGuiPrivate.h"
 
 @interface NSTextContainer (TextViewObserver)
 - (void) _textViewFrameChanged: (NSNotification*)aNotification;

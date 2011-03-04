@@ -36,12 +36,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSText.h"
+#import "AppKit/NSText.h"
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSSpellChecker.h"
-#include "AppKit/NSTextView.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSSpellChecker.h"
+#import "AppKit/NSTextView.h"
 
 
 static	Class	abstract;

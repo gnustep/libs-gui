@@ -68,7 +68,7 @@ typedef struct _GSCellRect {
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#import <GNUstepBase/GSIArray.h>
+#include <GNUstepBase/GSIArray.h>
 
 static NSMapTable *viewInfo = 0;
 

@@ -27,12 +27,12 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSException.h>
+#import <Foundation/NSException.h>
 
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSLevelIndicatorCell.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSLevelIndicatorCell.h"
 
 @implementation NSLevelIndicatorCell
 

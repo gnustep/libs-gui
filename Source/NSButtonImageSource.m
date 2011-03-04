@@ -25,8 +25,10 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import <AppKit/NSImage.h>
+#import <AppKit/NSButton.h>
+#import <GNUstepGUI/GSTheme.h>
 #import "NSButtonImageSource.h"
-
 
 @implementation NSButtonImageSource
 

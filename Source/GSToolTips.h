@@ -25,9 +25,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSObject.h>
-#include "GNUstepGUI/GSTrackingRect.h"
-
+#import <Foundation/NSObject.h>
+#import "GNUstepGUI/GSTrackingRect.h"
 
 @class	NSTimer;
 @class	NSView;

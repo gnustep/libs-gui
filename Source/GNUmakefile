@@ -110,6 +110,7 @@ NSKeyValueBinding.m \
 NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
+NSManagedObjectContext.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuView.m \
@@ -176,6 +177,8 @@ NSTextList.m \
 NSTextStorage.m \
 NSTextTable.m \
 NSTextTableBlock.m \
+NSTextView.m \
+NSTextView_actions.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSToolbarItemGroup.m \
@@ -199,13 +202,6 @@ GSServicesManager.m \
 tiff.m \
 externs.m \
 linking.m \
-GSTheme.m \
-GSThemeDrawing.m \
-GSThemeInspector.m \
-GSThemeMenu.m \
-GSThemeOpenSavePanels.m \
-GSThemePanel.m \
-GSThemeTools.m \
 GSDragView.m \
 GSFontInfo.m \
 GSTable.m \
@@ -213,8 +209,6 @@ GSHbox.m \
 GSVbox.m \
 GSKeyBindingAction.m \
 GSKeyBindingTable.m \
-NSTextView.m \
-NSTextView_actions.m \
 GSTextFinder.m \
 GSLayoutManager.m \
 GSTypesetter.m \
@@ -222,6 +216,13 @@ GSHorizontalTypesetter.m \
 GSGormLoading.m \
 GSIconManager.m \
 GSNibLoading.m \
+GSTheme.m \
+GSThemeDrawing.m \
+GSThemeInspector.m \
+GSThemeMenu.m \
+GSThemeOpenSavePanels.m \
+GSThemePanel.m \
+GSThemeTools.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbarView.m \
@@ -237,7 +238,6 @@ GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
 GSXibLoader.m \
-NSManagedObjectContext.m \
 GSHelpAttachment.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,

@@ -25,29 +25,29 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
 
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItemCell.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItemCell.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 
 @implementation NSMenuItemCell

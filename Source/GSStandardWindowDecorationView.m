@@ -24,23 +24,23 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSStringDrawing.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSTheme.h"
 
-#include <GNUstepGUI/GSWindowDecorationView.h>
+#import <GNUstepGUI/GSWindowDecorationView.h>
 
 @interface GSStandardWindowDecorationView (GSTheme)
 - (void) _themeDidActivate: (NSNotification*)notification;

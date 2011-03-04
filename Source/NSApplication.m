@@ -57,7 +57,7 @@
 #import <Foundation/NSValue.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
-#include <Foundation/NSConnection.h>
+#import <Foundation/NSConnection.h>
 #endif
 
 #import "AppKit/AppKitExceptions.h"

@@ -27,14 +27,14 @@
 */
 
 #include "config.h"
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImageCell.h"
-#include "AppKit/NSImage.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImageCell.h"
+#import "AppKit/NSImage.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSImageCell
 

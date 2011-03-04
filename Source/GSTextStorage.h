@@ -28,7 +28,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextStorage.h"
 
 @class NSMutableString;
 @class NSMutableArray;

@@ -27,9 +27,9 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSForm.h"
-#include "AppKit/NSFormCell.h"
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSForm.h"
+#import "AppKit/NSFormCell.h"
 
 @implementation NSForm
 

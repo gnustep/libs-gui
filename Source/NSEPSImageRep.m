@@ -26,11 +26,11 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSData.h>
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSEPSImageRep.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSData.h>
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSEPSImageRep.h"
 
 @implementation NSEPSImageRep 
 

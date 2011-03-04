@@ -37,8 +37,8 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSString.h>
 
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSImage.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSImage.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSGormLoading.h"
 

@@ -30,26 +30,26 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSColorList.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSInterfaceStyle.h"
-#include "AppKit/NSRulerView.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTableHeaderView.h"
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSColorList.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSInterfaceStyle.h"
+#import "AppKit/NSRulerView.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @interface NSClipView (Private)
 - (void) _scrollToPoint: (NSPoint)aPoint;

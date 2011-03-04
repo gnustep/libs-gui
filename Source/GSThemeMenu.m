@@ -26,17 +26,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSArchiver.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/NSApplication.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArchiver.h>
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSApplication.h"
 
-#include <GNUstepGUI/GSTheme.h>
-#include <GNUstepGUI/GSWindowDecorationView.h>
+#import "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSWindowDecorationView.h"
 
-#include "NSToolbarFrameworkPrivate.h"
+#import "NSToolbarFrameworkPrivate.h"
 
 @interface NSWindow (Private)
 - (GSWindowDecorationView *) windowView;

@@ -30,18 +30,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSTimer.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSBox.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSDrawer.h>
-#include <AppKit/NSGraphics.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSTimer.h>
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSDrawer.h"
+#import "AppKit/NSGraphics.h"
 
 static NSNotificationCenter *nc = nil;
 

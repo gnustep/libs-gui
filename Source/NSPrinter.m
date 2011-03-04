@@ -30,28 +30,28 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSScanner.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSSet.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSPrinter.h"
-#include "GNUstepGUI/GSPrinting.h"
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSScanner.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSSet.h>
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSPrinter.h"
+#import "GNUstepGUI/GSPrinting.h"
 
 //
 // Class variables:

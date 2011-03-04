@@ -27,12 +27,8 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-/* To keep the allocation counts valid when swizzling the class in
-[NSMutableParagraphStyle -copyWithZone:]. */
-#include <Foundation/NSDebug.h>
-
-#include <Foundation/NSException.h>
-#include "AppKit/NSParagraphStyle.h"
+#import <Foundation/NSException.h>
+#import "AppKit/NSParagraphStyle.h"
 
 @implementation NSTextTab
 
@@ -804,16 +800,14 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (id) copyWithZone: (NSZone*)aZone
 {
-  NSMutableParagraphStyle	*c;
+  NSMutableParagraphStyle *c;
 
   c = (NSMutableParagraphStyle*)NSCopyObject (self, 0, aZone);
-  GSDebugAllocationRemove(c->isa, c);
-  c->isa = [NSParagraphStyle class];
-  GSDebugAllocationAdd(c->isa, c);
+  GSClassSwizzle(c, [NSParagraphStyle class]);
   c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
   c->_textBlocks = [_textBlocks mutableCopyWithZone: aZone];
   c->_textLists = [_textLists mutableCopyWithZone: aZone];
-   return c;
+  return c;
 }
 
 @end

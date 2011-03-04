@@ -56,8 +56,8 @@
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSWorkspace.h"
 
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4

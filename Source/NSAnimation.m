@@ -35,13 +35,13 @@
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSValue.h>
-#include <GNUstepBase/GSLock.h>
+#import <GNUstepBase/GSLock.h>
 
-#import <AppKit/NSAnimation.h>
-#import <AppKit/NSApplication.h>
+#import "AppKit/NSAnimation.h"
+#import "AppKit/NSApplication.h"
 // needed by NSViewAnimation
-#import <AppKit/NSView.h>
-#import <AppKit/NSWindow.h>
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
 #include <math.h>
 

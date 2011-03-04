@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_GSToolbarCustomizationPalette
 #define _GNUstep_H_GSToolbarCustomizationPalette
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 @class NSMutableArray;
 @class NSToolbar;

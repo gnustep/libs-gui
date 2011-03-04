@@ -52,8 +52,8 @@
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSOpenPanel.h"
 
-#include "GSGuiPrivate.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static NSString	*
 pathToColumn(NSBrowser *browser, int column)

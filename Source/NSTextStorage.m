@@ -24,14 +24,14 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSPortCoder.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSTextStorage.h"
-#include "GNUstepGUI/GSLayoutManager.h"
-#include "GSTextStorage.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSPortCoder.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSTextStorage.h"
+#import "GNUstepGUI/GSLayoutManager.h"
+#import "GSTextStorage.h"
 
 @implementation NSTextStorage
 

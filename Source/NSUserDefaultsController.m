@@ -26,13 +26,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSKeyValueObserving.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSUserDefaultsController.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSUserDefaultsController.h"
 
 static id shared = nil;
 

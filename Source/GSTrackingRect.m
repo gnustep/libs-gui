@@ -28,7 +28,7 @@
 */ 
 
 #include "config.h"
-#include "GNUstepGUI/GSTrackingRect.h"
+#import "GNUstepGUI/GSTrackingRect.h"
 
 @implementation GSTrackingRect
 

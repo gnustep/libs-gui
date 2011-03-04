@@ -33,7 +33,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSTextTable.h"
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSTextBlock
 

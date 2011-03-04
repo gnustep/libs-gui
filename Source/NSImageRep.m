@@ -28,22 +28,22 @@
 
 #include "config.h"
 #include <string.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSURL.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSImageRep.h"
-#include "AppKit/NSBitmapImageRep.h"
-#include "AppKit/NSEPSImageRep.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/DPSOperators.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSURL.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSImageRep.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSEPSImageRep.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/DPSOperators.h"
 
 static NSMutableArray *imageReps = nil;
 static Class NSImageRep_class = NULL;

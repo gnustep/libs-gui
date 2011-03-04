@@ -25,12 +25,12 @@
 */ 
 
 #include "config.h"
-#include "AppKit/NSHelpPanel.h"
-#include "AppKit/NSHelpManager.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSTextContainer.h"
-#include "GSGuiPrivate.h" 
+#import "AppKit/NSHelpPanel.h"
+#import "AppKit/NSHelpManager.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSTextContainer.h"
+#import "GSGuiPrivate.h" 
 
 
 @implementation NSApplication (NSHelpPanel)

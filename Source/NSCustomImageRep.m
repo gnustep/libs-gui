@@ -27,13 +27,13 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSCustomImageRep.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/DPSOperators.h"
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/DPSOperators.h"
 
 /** <p>TODO : Desciption</p>
  */

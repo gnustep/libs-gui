@@ -26,14 +26,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSImageView.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSWindow.h"
-#include "GSThemePrivate.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSWindow.h"
+#import "GSThemePrivate.h"
+#import "GSGuiPrivate.h"
 
 static NSTextField *
 new_label (NSString *value)

@@ -30,12 +30,11 @@
 #ifndef _NSToolbarFrameworkPrivate_h_INCLUDE
 #define _NSToolbarFrameworkPrivate_h_INCLUDE
 
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSToolbar.h"
-#include "AppKit/NSToolbarItem.h"
-#include "GNUstepGUI/GSToolbarView.h"
-
-#include <GNUstepGUI/GSWindowDecorationView.h>
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSToolbar.h"
+#import "AppKit/NSToolbarItem.h"
+#import "GNUstepGUI/GSToolbarView.h"
+#import "GNUstepGUI/GSWindowDecorationView.h"
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;

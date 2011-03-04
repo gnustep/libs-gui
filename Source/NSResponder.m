@@ -27,16 +27,16 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSInvocation.h>
-#include "AppKit/NSResponder.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSHelpManager.h"
-#include "AppKit/NSInputManager.h"
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSInvocation.h>
+#import "AppKit/NSResponder.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSHelpManager.h"
+#import "AppKit/NSInputManager.h"
 
 @implementation NSResponder
 

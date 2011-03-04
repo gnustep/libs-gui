@@ -27,12 +27,12 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSSound.h"
+#import <Foundation/Foundation.h>
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSSound.h"
 
-#include "GNUstepGUI/GSSoundSource.h"
-#include "GNUstepGUI/GSSoundSink.h"
+#import "GNUstepGUI/GSSoundSource.h"
+#import "GNUstepGUI/GSSoundSink.h"
 
 // Private NSConditionLock conditions used for streaming
 enum

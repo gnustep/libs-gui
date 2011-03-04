@@ -26,12 +26,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSURL.h>
-#include "AppKit/NSMovie.h"
-#include "AppKit/NSMovieView.h"
-#include "AppKit/NSPasteboard.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSURL.h>
+#import "AppKit/NSMovie.h"
+#import "AppKit/NSMovieView.h"
+#import "AppKit/NSPasteboard.h"
 
 @implementation NSMovieView
 

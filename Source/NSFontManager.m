@@ -28,20 +28,20 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSDebug.h>
-#include "AppKit/NSFontDescriptor.h"
-#include "AppKit/NSFontManager.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSFontPanel.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "GNUstepGUI/GSFontInfo.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSFontDescriptor.h"
+#import "AppKit/NSFontManager.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSFontPanel.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSMenuItem.h"
+#import "GNUstepGUI/GSFontInfo.h"
 
 
 /*

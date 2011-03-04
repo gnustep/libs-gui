@@ -26,10 +26,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSString.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSTextTable.h"
+#import "AppKit/NSTextTable.h"
 
 @implementation NSTextTableBlock
 

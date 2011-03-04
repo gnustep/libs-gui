@@ -26,12 +26,12 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSCharacterSet.h>
-#include "AppKit/NSControl.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSTokenField.h"
-#include "AppKit/NSTokenFieldCell.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSCharacterSet.h>
+#import "AppKit/NSControl.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSTokenField.h"
+#import "AppKit/NSTokenFieldCell.h"
 
 
 @implementation NSTokenFieldCell

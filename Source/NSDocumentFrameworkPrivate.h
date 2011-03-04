@@ -30,7 +30,9 @@
 #ifndef _GNUstep_H_NSDocumentFramworkPrivate
 #define _GNUstep_H_NSDocumentFramworkPrivate
 
-#include <AppKit/NSDocumentController.h>
+#import "AppKit/NSDocument.h"
+#import "AppKit/NSDocumentController.h"
+#import "AppKit/NSWindowController.h"
 
 @class NSTimer;
 
@@ -50,17 +52,11 @@
 - (IBAction) _openRecentDocument: (id)sender;
 @end
 
-
-#include <AppKit/NSDocument.h>
-
 @interface NSDocument (Private)
 - (void)_removeWindowController:(NSWindowController *)controller;
 - (NSWindow *)_transferWindowOwnership;
 - (void)_removeAutosavedContentsFile;
 @end
-
-
-#include <AppKit/NSWindowController.h>
 
 @interface NSWindowController (Private)
 - (void)_windowDidLoad;

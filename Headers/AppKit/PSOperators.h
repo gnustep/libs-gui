@@ -27,7 +27,7 @@
 #ifndef _PSOperators_h_INCLUDE
 #define _PSOperators_h_INCLUDE
 
-#include <AppKit/DPSOperators.h>
+#import <AppKit/DPSOperators.h>
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 #define	DEFCTXT	GSCurrentContext()

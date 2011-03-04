@@ -30,7 +30,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 @class NSMergePolicy;
 

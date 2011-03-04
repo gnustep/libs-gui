@@ -28,21 +28,21 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSKeyValueObserving.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSValueTransformer.h>
-#include <GNUstepBase/GSLock.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSInvocation.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSValueTransformer.h>
+#import <GNUstepBase/GSLock.h>
 
-#include "AppKit/NSKeyValueBinding.h"
-#include "GSBindingHelpers.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 
 @implementation NSObject (NSKeyValueBindingCreation)
 

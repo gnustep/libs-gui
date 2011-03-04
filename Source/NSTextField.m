@@ -32,20 +32,20 @@
 
 #include "config.h"
 
-#include <Foundation/NSFormatter.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSFormatter.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include "GSBindingHelpers.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 
 static NSNotificationCenter *nc;
 

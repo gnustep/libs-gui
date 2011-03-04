@@ -26,11 +26,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSOpenGL.h"
-#include "AppKit/NSOpenGLView.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSOpenGL.h"
+#import "AppKit/NSOpenGLView.h"
 
 // Declare a private method of NSView
 @interface NSView (Private)

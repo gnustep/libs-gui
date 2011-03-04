@@ -27,14 +27,14 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSData.h>
-#include "AppKit/NSDataLink.h"
-#include "AppKit/NSDataLinkManager.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSSavePanel.h"
-#include "AppKit/NSSelection.h"
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSData.h>
+#import "AppKit/NSDataLink.h"
+#import "AppKit/NSDataLinkManager.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSSavePanel.h"
+#import "AppKit/NSSelection.h"
 
 @implementation NSDataLink
 

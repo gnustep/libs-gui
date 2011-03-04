@@ -56,7 +56,7 @@
 #define GSI_ARRAY_RETAIN(A, X)	RETAIN((X).obj)
 #define GSI_ARRAY_RELEASE(A, X)	RELEASE((X).obj)
 #define GSI_ARRAY_TYPES GSUNION_OBJ
-#import <GNUstepBase/GSIArray.h>
+#include <GNUstepBase/GSIArray.h>
 
 #import "GNUstepGUI/GSNibLoading.h"
 #import "AppKit/NSApplication.h"

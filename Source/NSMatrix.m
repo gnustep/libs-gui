@@ -52,26 +52,26 @@
 #include "config.h"
 #include <stdlib.h>
 
-#include <Foundation/NSValue.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSFormatter.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSZone.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSFormatter.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSZone.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSWindow.h"
 
 #include <math.h>
 

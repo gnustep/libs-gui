@@ -32,26 +32,26 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDecimalNumber.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDecimalNumber.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSplitView.h"
-#include "AppKit/NSWindow.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSSplitView.h"
+#import "AppKit/NSWindow.h"
+#import "GSGuiPrivate.h"
 
 static NSNotificationCenter *nc = nil;
 

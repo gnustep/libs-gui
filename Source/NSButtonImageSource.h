@@ -29,9 +29,9 @@
 #define _GNUstep_H_NSImageSource
 
 #import <Foundation/NSObject.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSButton.h>
-#import <GNUstepGUI/GSTheme.h>
+#import <AppKit/NSButtonCell.h>
+
+@class NSString, NSMutableDictionary;
 
 /**
  * Handle images for button cell theming.
@@ -44,14 +44,10 @@
 + (BOOL) archiveButtonImageSourceWithName: (NSString*)name
 			      toDirectory: (NSString*)path;
 + (id) buttonImageSourceWithName: (NSString*)name;
-- (id) copyWithZone: (NSZone*)zone;
-- (void) dealloc;
-- (void) encodeWithCode: (NSCoder*)aCoder;
 - (id) imageForState: (struct NSButtonState)state;
-- (id) initWithCoder: (NSCoder*)aCoder;
 @end
 
-@interface	NSButtonCell (NSButtonImageSource)
+@interface NSButtonCell (NSButtonImageSource)
 - (id) _buttonImageSource;
 - (void) _setButtonImageSource: (id)source;
 @end

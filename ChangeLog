@@ -1,3 +1,104 @@
+2011-03-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/PSOperators.h
+	* Source/NSFontPanel.m
+	* Source/NSSound.m
+	* Source/NSTextAttachment.m
+	* Source/NSOpenGLPixelFormat.m
+	* Source/GSThemeOpenSavePanels.m
+	* Source/NSTableHeaderCell.m
+	* Source/GSTypesetter.m
+	* Source/NSAlert.m
+	* Source/NSOpenPanel.m
+	* Source/NSImageCell.m
+	* Source/NSManagedObjectContext.h
+	* Source/GSGormLoader.m
+	* Source/NSText.m
+	* Source/NSTokenField.m
+	* Source/NSParagraphStyle.m
+	* Source/NSManagedObjectContext.m
+	* Source/GNUmakefile
+	* Source/NSTableHeaderView.m
+	* Source/NSTextTable.m
+	* Source/NSTextBlock.m
+	* Source/NSFontManager.m
+	* Source/NSFormCell.m
+	* Source/NSLevelIndicator.m
+	* Source/NSMatrix.m
+	* Source/NSTextTableBlock.m
+	* Source/NSObjectController.m
+	* Source/NSOpenGLView.m
+	* Source/NSDataLinkManager.m
+	* Source/GSThemeInspector.m
+	* Source/GSStandardWindowDecorationView.m
+	* Source/NSInputServer.m
+	* Source/NSSplitView.m
+	* Source/NSImageRep.m
+	* Source/NSBezierPath.m
+	* Source/GSTextStorage.h
+	* Source/GSNibLoading.m
+	* Source/NSResponder.m
+	* Source/NSColorWell.m
+	* Source/GSTextStorage.m
+	* Source/NSForm.m
+	* Source/NSApplication.m
+	* Source/GSGuiPrivate.h
+	* Source/NSComboBox.m
+	* Source/NSMovieView.m
+	* Source/NSSavePanel.m
+	* Source/NSMovie.m
+	* Source/GSThemeMenu.m
+	* Source/NSMenuItemCell.m
+	* Source/NSPrinter.m
+	* Source/NSPasteboard.m
+	* Source/NSTextContainer.m
+	* Source/NSButtonImageSource.h
+	* Source/GSToolbarCustomizationPalette.h
+	* Source/NSFontDescriptor.m
+	* Source/GSTrackingRect.m
+	* Source/NSCursor.m
+	* Source/NSPrintOperation.m
+	* Source/GSSlideView.h
+	* Source/NSControl.m
+	* Source/NSInterfaceStyle.m
+	* Source/NSDocumentFrameworkPrivate.h
+	* Source/NSTokenFieldCell.m
+	* Source/GSSlideView.m
+	* Source/NSOpenGLContext.m
+	* Source/NSInputManager.m
+	* Source/NSRulerMarker.m
+	* Source/NSToolbarItemGroup.m
+	* Source/NSProgressIndicator.m
+	* Source/NSLevelIndicatorCell.m
+	* Source/NSTextStorage.m
+	* Source/NSFileWrapper.m
+	* Source/NSDocumentController.m
+	* Source/NSDrawer.m
+	* Source/NSCustomImageRep.m
+	* Source/NSMenuView.m
+	* Source/NSHelpPanel.m
+	* Source/NSComboBoxCell.m
+	* Source/NSSegmentedCell.m
+	* Source/NSStepperCell.m
+	* Source/NSDataLink.m
+	* Source/tiff.m
+	* Source/NSScrollView.m
+	* Source/NSEPSImageRep.m
+	* Source/NSUserDefaultsController.m
+	* Source/NSSegmentedControl.m
+	* Source/GSTable.m
+	* Source/NSKeyValueBinding.m
+	* Source/NSTextList.m
+	* Source/NSEvent.m
+	* Source/NSController.m
+	* Source/NSSelection.m
+	* Source/NSTextField.m
+	* Source/GSToolTips.h
+	* Source/NSToolbarFrameworkPrivate.h
+	* Source/NSAnimation.m
+	* Source/NSSpeechSynthesizer.m: Replace #include -> #import
+	* Source/NSParagraphStyle.m: Use GSClassSwizzle.
+
 2011-03-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m: Remove the -awakeAfterUsingCoder: method as
@@ -91,7 +192,7 @@
 	* Source/NSWindow.m,
 	* Source/NSToolbar.m,
 	* Source/NSScroller.m,
-	* Source/NSTextView.m: Remove diract usage of isa.
+	* Source/NSTextView.m: Remove direct usage of isa.
 	* Source/GSBindingHelpers.h: Replace #include with #import.
 
 2011-02-19  Richard Frith-Macdonald <rfm@gnu.org>

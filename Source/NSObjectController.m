@@ -26,18 +26,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSPredicate.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSKeyValueObserving.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <AppKit/NSObjectController.h>
-
-#include "AppKit/NSKeyValueBinding.h"
-#include "GSBindingHelpers.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSPredicate.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import "AppKit/NSObjectController.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 
 @interface _NSManagedProxy : NSObject
 {

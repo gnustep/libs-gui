@@ -519,40 +519,39 @@
 */ 
 
 #include "config.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSWorkspace.h"
-#include "AppKit/NSFileWrapper.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSHost.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSConnection.h>
-#include <Foundation/NSDistantObject.h>
-#include <Foundation/NSDistributedNotificationCenter.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSPortCoder.h>
-#include <Foundation/NSPortNameServer.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSSerialization.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSMethodSignature.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSTask.h>
-#include <GNUstepBase/NSTask+GNUstepBase.h>
-#include <Foundation/NSTimer.h>
-
-#include "GNUstepGUI/GSServicesManager.h"
-#include "GNUstepGUI/GSPasteboardServer.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSHost.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSConnection.h>
+#import <Foundation/NSDistantObject.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSInvocation.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSPortCoder.h>
+#import <Foundation/NSPortNameServer.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSSerialization.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSMethodSignature.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSTimer.h>
+#import <GNUstepBase/NSTask+GNUstepBase.h>
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSFileWrapper.h"
+#import "GNUstepGUI/GSServicesManager.h"
+#import "GNUstepGUI/GSPasteboardServer.h"
 
 static NSString	*contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";

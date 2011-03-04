@@ -23,18 +23,18 @@
  * USA.
  */
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSSegmentedCell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSStringDrawing.h>
-#include <AppKit/NSEvent.h>
-#include <GNUstepGUI/GSTheme.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSSegmentedCell.h"
+#import "AppKit/NSStringDrawing.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @interface NSSegmentItem : NSObject
 {

@@ -27,8 +27,8 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include "AppKit/NSToolbarItemGroup.h"
+#import <Foundation/NSArray.h>
+#import "AppKit/NSToolbarItemGroup.h"
 
 @implementation NSToolbarItemGroup
 // FIXME: Most of the implementation is missing.

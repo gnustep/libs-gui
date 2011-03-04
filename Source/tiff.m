@@ -59,12 +59,12 @@
 
 #include "config.h"
 #include "nsimage-tiff.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include "GSGuiPrivate.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 #include <stdlib.h>

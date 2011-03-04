@@ -26,7 +26,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GNUstepGUI/GSTable.h"
+#import "GNUstepGUI/GSTable.h"
 
 @interface GSTable (Private)
 -(void) _updateForNewFrameSize: (NSSize)newFrameSize;

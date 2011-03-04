@@ -79,7 +79,7 @@ typedef struct _PathElement
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#import <GNUstepBase/GSIArray.h>
+#include <GNUstepBase/GSIArray.h>
 
 @interface GSBezierPath : NSBezierPath
 {

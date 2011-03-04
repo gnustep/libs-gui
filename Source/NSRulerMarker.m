@@ -26,14 +26,14 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSException.h>
-#include "AppKit/NSRulerMarker.h"
-#include "AppKit/NSRulerView.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSCursor.h"
+#import <Foundation/NSException.h>
+#import "AppKit/NSRulerMarker.h"
+#import "AppKit/NSRulerView.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSCursor.h"
 
 @interface NSRulerView (GNUstepInternal)
 - (NSRect)_markersRect;

@@ -30,15 +30,15 @@
 
 #include "config.h"
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSTokenField.h"
-#include "AppKit/NSTokenFieldCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include <Foundation/NSNotification.h>
-#include "GSBindingHelpers.h"
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTokenField.h"
+#import "AppKit/NSTokenFieldCell.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 
 static NSNotificationCenter *nc = nil;
 

@@ -25,16 +25,16 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSString.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSMapTable.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSMapTable.h>
 
-#include "AppKit/NSResponder.h"
-#include "AppKit/NSInterfaceStyle.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "AppKit/NSResponder.h"
+#import "AppKit/NSInterfaceStyle.h"
+#import "GNUstepGUI/GSTheme.h"
 
 NSString	*NSInterfaceStyleDefault = @"NSInterfaceStyleDefault";
 

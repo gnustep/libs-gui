@@ -27,13 +27,13 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSArchiver.h>
-#include <AppKit/NSDataLinkManager.h>
-#include <AppKit/NSDataLink.h>
-#include <AppKit/NSPasteboard.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
+#import "AppKit/NSDataLinkManager.h"
+#import "AppKit/NSDataLink.h"
+#import "AppKit/NSPasteboard.h"
 
 @interface NSDataLink (Private)
 - (void) setLastUpdateTime: (NSDate *)date;

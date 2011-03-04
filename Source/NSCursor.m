@@ -28,18 +28,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSKeyedArchiver.h>
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSBitmapImageRep.h"
 
-#include "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;

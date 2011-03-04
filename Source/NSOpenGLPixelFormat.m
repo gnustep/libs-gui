@@ -26,11 +26,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSString.h>
-
-#include <Foundation/NSDebug.h>
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "AppKit/NSOpenGL.h"
+#import <Foundation/NSString.h>
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSOpenGL.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 
 // @interface GSGLPixelFormat : NSOpenGLPixelFormat

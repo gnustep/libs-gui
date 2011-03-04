@@ -26,34 +26,34 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSBox.h"
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSComboBox.h"
-#include "AppKit/NSComboBoxCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTableColumn.h"
-#include "AppKit/NSTableView.h"
-#include "AppKit/NSTextView.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSComboBox.h"
+#import "AppKit/NSComboBoxCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableView.h"
+#import "AppKit/NSTextView.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;

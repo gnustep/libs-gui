@@ -24,18 +24,18 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSException.h>
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSInputManager.h"
-#include "AppKit/NSInputServer.h"
-#include "AppKit/NSText.h"
-#include "AppKit/NSHelpManager.h"
+#import <Foundation/NSException.h>
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSInputManager.h"
+#import "AppKit/NSInputServer.h"
+#import "AppKit/NSText.h"
+#import "AppKit/NSHelpManager.h"
 
 /* For NSBeep () */
-#include "AppKit/NSGraphics.h"
+#import "AppKit/NSGraphics.h"
 
-#include "GSKeyBindingAction.h"
-#include "GSKeyBindingTable.h"
+#import "GSKeyBindingAction.h"
+#import "GSKeyBindingTable.h"
 
 /* A table mapping character names to characters, used to interpret
    the character names found in KeyBindings dictionaries.  */
