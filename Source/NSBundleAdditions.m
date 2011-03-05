@@ -282,11 +282,14 @@
 - (NSString *) pathForNibResource: (NSString *)fileName
 {
   NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
-  NSArray		*languages = [NSUserDefaults userLanguages];
+  NSArray		*languages;
   NSString		*rootPath = [self bundlePath];
   NSString		*primary;
   NSString		*language;
   NSEnumerator		*enumerator;
+
+  languages = [[NSUserDefaults standardUserDefaults]
+    stringArrayForKey: @"NSLanguages"];
 
   /*
    * Build an array of resource paths that differs from the normal order -

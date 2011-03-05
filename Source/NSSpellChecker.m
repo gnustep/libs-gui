@@ -264,14 +264,16 @@ static int __documentTag = 0;
 //
 - init
 {
-  NSArray *userLanguages = [NSUserDefaults userLanguages];  
+  NSArray *languages;
 
   self = [super init];
   if (self == nil)
     return nil;
 
+  languages = [[NSUserDefaults standardUserDefaults]
+    stringArrayForKey: @"NSLanguages"];
   // Set the language to the default for the user.
-  _language = [userLanguages objectAtIndex: 0];
+  _language = [languages objectAtIndex: 0];
   _wrapFlag = NO;
   _position = 0;
   _spellPanel = nil;

@@ -57,12 +57,14 @@
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSMutableArray *array = [NSMutableArray array];
-  NSArray *languages = [NSUserDefaults userLanguages];
+  NSArray *languages;
   NSString *rootPath = [self bundlePath];
   NSString *primary;
   NSString *language;
   NSEnumerator *enumerator;
   
+  languages = [[NSUserDefaults standardUserDefaults]
+    stringArrayForKey: @"NSLanguages"];
   primary = [rootPath stringByAppendingPathComponent: @"Resources"];
   
   enumerator = [languages objectEnumerator];

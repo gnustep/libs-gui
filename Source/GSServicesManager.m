@@ -927,7 +927,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
   if (_allServices == nil)
     return;
 
-  newLang = AUTORELEASE([[NSUserDefaults userLanguages] mutableCopy]);
+  newLang = [[[[NSUserDefaults standardUserDefaults]
+    stringArrayForKey: @"NSLanguages"] mutableCopy] autorelease];
   if (newLang == nil)
     {
       newLang = [NSMutableArray arrayWithCapacity: 1];
