@@ -1,3 +1,11 @@
+2011-03-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibLoading.m (NSCustomView): Correct implementation of
+	-initWithCoder: and remove -awakeAfterUsingCoder:.
+	* Source/NSSound.m: Remove method -awakeAfterUsingCoder:.
+	* Source/NSWindow.m (-_captureMouse:, -_releaseMouse:) Add some
+	debug log code here to simplify debugging these methods.
+
 2011-03-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/PSOperators.h

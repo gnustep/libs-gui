@@ -1038,39 +1038,37 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  Class aClass;
-  
   if ([NSClassSwapper isInInterfaceBuilder])
     {
       _view = self;
       return self;
     }
-  else
+
+  if (_view == nil)
     {
-      aClass = NSClassFromString(_className);
-    }
+      Class aClass;
   
-  // If the class name is nil, assume NSView.
-  if (_className == nil)
-    {
-      aClass = [NSView class];
-    }
+      // If the class name is nil, assume NSView.
+      if (_className == nil)
+        {
+          aClass = [NSView class];
+        }
+      else
+        {
+          aClass = NSClassFromString(_className);
+        }
   
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-  else
-    {
-      _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+      if (aClass == nil)
+        {
+          [NSException raise: NSInternalInconsistencyException
+                      format: @"Unable to find class '%@'", _className];
+        }
+      else
+        {
+          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+        }
     }
 
-  return _view;
-}
-
-- (id) awakeAfterUsingCoder:  (NSCoder *)coder
-{
   return _view;
 }
 
@@ -1137,46 +1135,46 @@ static BOOL _isInInterfaceBuilder = NO;
   if ([NSClassSwapper isInInterfaceBuilder])
     {
       self = [super initWithCoder: coder];
+      if (self == nil)
+        {
+          return nil;
+        }
     }
 
-  if (self != nil)
+  if ([coder allowsKeyedCoding])
     {
-      if ([coder allowsKeyedCoding])
+      // get the super stuff without calling super...
+      if ([coder containsValueForKey: @"NSFrame"])
         {
-	  // get the super stuff without calling super...
-	  if ([coder containsValueForKey: @"NSFrame"])
-	    {
-	      _frame = [coder decodeRectForKey: @"NSFrame"];
-	    }
-	  else
-	    {
-	      _frame = NSZeroRect;
-	      if ([coder containsValueForKey: @"NSFrameSize"])
-		{
-		  _frame.size = [coder decodeSizeForKey: @"NSFrameSize"];
-		}
-	    }
-	  
-          ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
-          ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
-
-	  if ([self nibInstantiate] != nil)
-	    {
-	      [self nibInstantiateWithCoder: coder];
-	    }
-
-	  if (self != _view)
-	    {
-	      AUTORELEASE(self);
-	      [(NSKeyedUnarchiver *)coder replaceObject: self withObject: _view];
-	    }
+          _frame = [coder decodeRectForKey: @"NSFrame"];
         }
       else
         {
-          [NSException raise: NSInvalidArgumentException 
-                       format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-                       NSStringFromClass([coder class])];
+          _frame = NSZeroRect;
+          if ([coder containsValueForKey: @"NSFrameSize"])
+            {
+              _frame.size = [coder decodeSizeForKey: @"NSFrameSize"];
+            }
         }
+      
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+      ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+      
+      if ([self nibInstantiate] != nil)
+        {
+          [self nibInstantiateWithCoder: coder];
+        }
+      
+      if (self != _view)
+        {
+          AUTORELEASE(self);
+        }
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 
   return _view;

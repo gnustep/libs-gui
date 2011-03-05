@@ -5451,11 +5451,13 @@ current key view.<br />
  */
 - (void) _captureMouse: sender
 {
+  NSDebugLLog(@"CaptureMouse", @"Capturing the mouse");
   [GSCurrentServer() capturemouse: _windowNum];
 }
 
 - (void) _releaseMouse: sender
 {
+  NSDebugLLog(@"CaptureMouse", @"Releasing the mouse");
   [GSCurrentServer() releasemouse];
 }
 

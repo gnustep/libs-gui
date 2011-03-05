@@ -767,11 +767,6 @@ static inline void _loadNSSoundPlugIns (void)
   return self;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  return self;
-}
-
 //
 // NSCopying 
 //
