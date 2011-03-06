@@ -7,6 +7,7 @@
 	* Source/NSDataLink.m: Correct the init methods to return a
 	retained object.
 	* Source/NSAnimation.m: Implement the copy and coding methods.
+	* Source/NSImageView.m (-cut:): Use the correct copy method.
 	Fixed issues spotted by the static code analysis.
 
 2011-03-05  Richard Frith-Macdonald <rfm@gnu.org>

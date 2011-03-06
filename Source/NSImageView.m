@@ -180,15 +180,6 @@ static Class imageCellClass;
     [self setImage: nil];
 }
 
-- (void) cut: (id)sender
-{
-  if (_allowsCutCopyPaste)
-    {
-      [self copy];
-      [self setImage: nil];
-    }
-}
-
 - (void) copy: (id)sender
 {
   if (_allowsCutCopyPaste)
@@ -205,6 +196,15 @@ static Class imageCellClass;
           [pboard setData: [anImage TIFFRepresentation]
                   forType: NSTIFFPboardType];
         }
+    }
+}
+
+- (void) cut: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    {
+      [self copy: sender];
+      [self setImage: nil];
     }
 }
 
