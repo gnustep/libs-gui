@@ -1,3 +1,14 @@
+2011-03-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMatrix.m (-_privateFrame:...numberOfColumns): Change
+	the init helper method to conform with the Objective-C conventions,
+	* Source/GSGormLoading.m (GSNibItem-initWithCoder:): Retain the
+	shared application before returning it.
+	* Source/NSDataLink.m: Correct the init methods to return a
+	retained object.
+	* Source/NSAnimation.m: Implement the copy and coding methods.
+	Fixed issues spotted by the static code analysis.
+
 2011-03-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSHelpManager.m:

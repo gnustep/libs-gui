@@ -64,7 +64,7 @@
       NSSelection *selection = [NSSelection selectionWithDescriptionData: data];
       ASSIGN(sourceSelection, selection);
     }
-  return nil;
+  return self;
 }
 
 - (id)initLinkedToSourceSelection:(NSSelection *)selection
@@ -82,18 +82,21 @@
 
 - (id)initWithContentsOfFile:(NSString *)filename
 {
-  NSData *data = AUTORELEASE([[NSData alloc] initWithContentsOfFile: filename]);
+  NSData *data = [[NSData alloc] initWithContentsOfFile: filename];
   id object = [NSUnarchiver unarchiveObjectWithData: data];
+
+  RELEASE(data);
   RELEASE(self);
-  return object;
+  return RETAIN(object);
 }
 
 - (id)initWithPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
   id object = [NSUnarchiver unarchiveObjectWithData: data];
+
   RELEASE(self);
-  return object;
+  return RETAIN(object);
 }
 
 //

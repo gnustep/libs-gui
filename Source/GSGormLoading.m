@@ -546,7 +546,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	{
 	  if(GSObjCIsKindOf(cls, [NSApplication class]))
 	    {
-	      obj = [cls sharedApplication];
+	      obj = RETAIN([cls sharedApplication]);
 	    }
 	  else
 	    {

@@ -262,10 +262,10 @@ static SEL getSel;
 	     numberOfColumns: 0];
 }
 
-- (id) _privateFrame: (NSRect)frameRect
-	        mode: (int)aMode
-        numberOfRows: (int)rows
-     numberOfColumns: (int)cols
+- (void) _privateFrame: (NSRect)frameRect
+                  mode: (int)aMode
+          numberOfRows: (int)rows
+       numberOfColumns: (int)cols
 {
   _myZone = [self zone];
   [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
@@ -327,7 +327,6 @@ static SEL getSel;
       _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
     }
-  return self;
 }
 
 /**<p>Initializes and returns a new NSMatrix in the specified frame frameRect.
@@ -346,10 +345,11 @@ static SEL getSel;
     return nil;
 
   [self setCellClass: classId];
-  return [self _privateFrame: frameRect
-		        mode: aMode
-		numberOfRows: rowsHigh
-	     numberOfColumns: colsWide];
+  [self _privateFrame: frameRect
+                 mode: aMode
+         numberOfRows: rowsHigh
+      numberOfColumns: colsWide];
+  return self;
 }
 
 /**<p>Initializes and returns a new NSMatrix in the specified frame frameRect.
@@ -368,10 +368,11 @@ static SEL getSel;
     return nil;
 
   [self setPrototype: aCell];
-  return [self _privateFrame: frameRect
-		        mode: aMode
-		numberOfRows: rowsHigh
-	     numberOfColumns: colsWide];
+  [self _privateFrame: frameRect
+                 mode: aMode
+         numberOfRows: rowsHigh
+      numberOfColumns: colsWide];
+  return self;
 }
 
 - (void) dealloc

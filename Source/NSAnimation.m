@@ -445,7 +445,13 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  return [self notImplemented: _cmd];
+  NSAnimation *c = (NSAnimation*)NSCopyObject (self, 0, zone);
+
+  c->_progressMarks = GSIArrayCopyWithZone(_progressMarks, zone);
+  c->_animator = nil;
+  c->_isANewAnimatorNeeded = YES;
+  c->_isAnimatingLock = [GSLazyRecursiveLock new];
+  return c;
 }
 
 - (void) dealloc
@@ -910,14 +916,44 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_UNLOCK;
 }
 
-- (void) encodeWithCoder: (NSCoder*)coder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [self notImplemented: _cmd];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeInt: (int)[self animationCurve] 
+                 forKey: @"NSAnimationAnimationCurve"];
+      [aCoder encodeDouble: [self duration] 
+                    forKey: @"NSAnimationDuration"];
+    }
+  else
+    {
+      [self notImplemented: _cmd];
+    }
 }
 
-- (id) initWithCoder: (NSCoder*)coder
+- (id) initWithCoder: (NSCoder*)aCoder
 {
-  return [self notImplemented: _cmd];
+  if ([aCoder allowsKeyedCoding])
+    {
+      NSTimeInterval duration = 1.0;
+      NSAnimationCurve animationCurve = 0;
+
+      if ([aCoder containsValueForKey: @"NSAnimationAnimationCurve"])
+        {
+          animationCurve = [aCoder decodeIntForKey: @"NSAnimationAnimationCurve"];
+        }
+      if ([aCoder containsValueForKey: @"NSAnimationDuration"])
+        {
+          duration = [aCoder decodeDoubleForKey: @"NSAnimationDuration"];
+        }
+      return [self initWithDuration: duration
+                     animationCurve: animationCurve];
+    }
+  else
+    {
+      [self notImplemented: _cmd];
+    }
+  return self;
 }
 
 /*
