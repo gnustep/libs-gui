@@ -1,5 +1,11 @@
 2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSGraphicsContext.m (+saveGraphicsState): Release the
+	stack, as it is retained in the thread dictionary.
+	Leak found by static code analyser.
+
+2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* gui/Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	* gui/Source/GSDisplayServer.m
 	* gui/Source/NSCursor.m: Change the way the image for the cursor

@@ -262,6 +262,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     {
       stack = [[NSMutableArray allocWithZone: _globalGSZone] init];
       [dict setObject: stack forKey: NSGraphicsContextStackKey];
+      RELEASE(stack);
     }
   // might be nil, i.e. no current context
   ctxt = GSCurrentContext();
