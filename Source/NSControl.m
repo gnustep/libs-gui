@@ -1004,25 +1004,33 @@ static NSNotificationCenter *nc;
 {
   if ([binding isEqual: NSValueBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
       // FIXME: We could also do the mapping via 
       // setKeys:triggerChangeNotificationsForDependentKey:
-      [[GSKeyValueBinding alloc] initWithBinding: @"objectValue"
-                                 withName: NSValueBinding
-                                 toObject: anObject
-                                 withKeyPath: keyPath
-                                 options: options
-                                 fromObject: self];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"objectValue"
+                                              withName: NSValueBinding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else if ([binding hasPrefix: NSEnabledBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
-                                    withName: binding 
-                                    toObject: anObject
-                                    withKeyPath: keyPath
-                                    options: options
-                                    fromObject: self];
+      kvb = [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                                 withName: binding 
+                                                 toObject: anObject
+                                              withKeyPath: keyPath
+                                                  options: options
+                                               fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {

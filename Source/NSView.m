@@ -4967,13 +4967,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   if ([binding hasPrefix: NSHiddenBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueOrBinding alloc] initWithBinding: NSHiddenBinding 
+      kvb = [[GSKeyValueOrBinding alloc] initWithBinding: NSHiddenBinding 
                                    withName: binding 
                                    toObject: anObject
                                    withKeyPath: keyPath
                                    options: options
                                    fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {

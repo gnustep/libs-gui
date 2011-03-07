@@ -788,13 +788,17 @@ static Class textFieldCellClass;
 {
   if ([binding hasPrefix: NSEditableBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueAndBinding alloc] initWithBinding: NSEditableBinding 
-                                    withName: binding 
-                                    toObject: anObject
-                                    withKeyPath: keyPath
-                                    options: options
-                                    fromObject: self];
+      kvb = [[GSKeyValueAndBinding alloc] initWithBinding: NSEditableBinding 
+                                                 withName: binding 
+                                                 toObject: anObject
+                                              withKeyPath: keyPath
+                                                  options: options
+                                               fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {

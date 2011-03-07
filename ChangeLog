@@ -1,3 +1,15 @@
+2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m
+	* Source/NSObjectController.m
+	* Source/NSControl.m
+	* Source/NSMenuItem.m
+	* Source/NSKeyValueBinding.m
+	* Source/NSTextField.m
+	* Source/NSView.m: Release the key value binding as it will be
+	retained in the binding table.
+	Leak found by static code analyser.
+
 2011-03-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m (-_privateFrame:...numberOfColumns): Change

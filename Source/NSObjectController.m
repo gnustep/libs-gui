@@ -216,13 +216,17 @@
 {
   if ([binding isEqual:NSContentObjectBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueBinding alloc] initWithBinding: @"content" 
-                                        withName: binding
-                                        toObject: anObject
-                                     withKeyPath: keyPath
-                                         options: options
-                                      fromObject: self];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
+                                              withName: binding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {

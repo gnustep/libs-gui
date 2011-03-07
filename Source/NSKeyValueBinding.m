@@ -90,13 +90,17 @@
 
   if ([[self exposedBindings] containsObject: binding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueBinding alloc] initWithBinding: binding 
-                                 withName: binding 
-                                 toObject: anObject
-                                 withKeyPath: keyPath
-                                 options: options
-                                 fromObject: self];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: binding 
+                                              withName: binding 
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {

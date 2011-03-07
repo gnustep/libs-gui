@@ -766,13 +766,17 @@ static Class imageClass;
 {
   if ([binding hasPrefix: NSEnabledBinding])
     {
+      GSKeyValueBinding *kvb;
+
       [self unbind: binding];
-      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
-                                    withName: binding 
-                                    toObject: anObject
-                                    withKeyPath: keyPath
-                                    options: options
-                                    fromObject: self];
+      kvb = [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                                 withName: binding 
+                                                 toObject: anObject
+                                              withKeyPath: keyPath
+                                                  options: options
+                                               fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
     }
   else
     {
