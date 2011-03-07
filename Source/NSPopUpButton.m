@@ -65,7 +65,10 @@ Class _nspopupbuttonCellClass = 0;
       [self setCellClass: [NSPopUpButtonCell class]];
 
       [self exposeBinding: NSSelectedIndexBinding];
-    } 
+      [self exposeBinding: NSSelectedTagBinding];
+      [self setKeys: [NSArray arrayWithObject: NSSelectedIndexBinding] 
+            triggerChangeNotificationsForDependentKey: NSSelectedTagBinding];
+   } 
 }
 
 + (Class) cellClass
@@ -568,6 +571,10 @@ this to return nil to indicate that we have no context menu.
     {
       [self selectItemAtIndex: [anObject intValue]];
     }
+  else if ([aKey isEqual: NSSelectedTagBinding])
+    {
+      [self selectItemWithTag: [anObject integerValue]];
+    }
   else
     {
       [super setValue: anObject forKey: aKey];
@@ -579,6 +586,10 @@ this to return nil to indicate that we have no context menu.
   if ([aKey isEqual: NSSelectedIndexBinding])
     {
       return [NSNumber numberWithInt: [self indexOfSelectedItem]];
+    }
+  else if ([aKey isEqual: NSSelectedTagBinding])
+    {
+      return [NSNumber numberWithInteger: [self selectedTag]];
     }
   else
     {

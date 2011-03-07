@@ -1,5 +1,11 @@
 2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSKeyValueBinding.h
+	* Source/externs.m: Add a few more binding names.
+	* Source/NSPopUpButton.m: Implement NSSelectedTagBinding.
+
+2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m
 	* Source/NSObjectController.m
 	* Source/NSControl.m
