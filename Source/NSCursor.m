@@ -83,7 +83,6 @@ static NSMutableDictionary *cursorDict = nil;
 - (void) _computeCid
 {
   void *c;
-  NSBitmapImageRep *rep;
   
   if (_cursor_image == nil)
     {
@@ -91,35 +90,7 @@ static NSMutableDictionary *cursorDict = nil;
       return;
     }
 
-/*
-  We should rather convert the image to a bitmap representation here via 
-  the following code, but this is currently not supported by the libart backend
-
-{
-  NSSize size = [_cursor_image size];
-
-  [_cursor_image lockFocus];
-  rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
-            NSMakeRect(0, 0, size.width, size.height)];
-  AUTORELEASE(rep);
-  [_cursor_image unlockFocus];
-} 
- */
-  rep = (NSBitmapImageRep *)[_cursor_image bestRepresentationForDevice: nil];
-  if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
-    {
-      NSLog(@"NSCursor can only handle NSBitmapImageReps for now");
-      return;
-    }
-  if (_hot_spot.x >= [rep pixelsWide])
-    _hot_spot.x = [rep pixelsWide]-1;
-  
-  if (_hot_spot.y >= [rep pixelsHigh])
-    _hot_spot.y = [rep pixelsHigh]-1;
-
-  [GSCurrentServer() imagecursor: _hot_spot 
-		 : [rep pixelsWide] : [rep pixelsHigh]
-		 : [rep samplesPerPixel] : [rep bitmapData] : &c];
+  [GSCurrentServer() imagecursor: _hot_spot : _cursor_image : &c];
   _cid = c;
 }
 

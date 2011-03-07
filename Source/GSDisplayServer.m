@@ -891,8 +891,7 @@ GSCurrentServer(void)
 /** Create a cursor from an image. Returns a pointer to the internal
     device representation that can be used later to make this cursor
     the current one */
-- (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int) colors 
-		    : (const unsigned char *) image : (void**) cid
+- (void) imagecursor: (NSPoint)hotp : (NSImage *) image : (void**) cid
 {
   [self subclassResponsibility: _cmd];
 }

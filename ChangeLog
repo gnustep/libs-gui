@@ -1,5 +1,13 @@
 2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* gui/Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* gui/Source/GSDisplayServer.m
+	* gui/Source/NSCursor.m: Change the way the image for the cursor
+	gets passed on to the backend. The old way could only work for 8
+	bit data.
+
+2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSKeyValueBinding.h
 	* Source/externs.m: Add a few more binding names.
 	* Source/NSPopUpButton.m: Implement NSSelectedTagBinding.
