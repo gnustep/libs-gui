@@ -3667,10 +3667,9 @@ static SEL getSel;
       break;
     }
 
-  [self setSelectionFrom:
-	  INDEX_FROM_COORDS(_selectedRow, _selectedColumn)
-	to: INDEX_FROM_COORDS(_dottedRow, _dottedColumn)
-	anchor: INDEX_FROM_COORDS(_selectedRow, _selectedColumn)
+  [self setSelectionFrom: INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
+	to: INDEX_FROM_COORDS(_dottedColumn, _dottedRow)
+	anchor: INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
 	highlight: YES];
 
   [self displayIfNeeded];
