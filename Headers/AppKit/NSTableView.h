@@ -338,6 +338,9 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 
 @interface NSObject (NSTableDataSource)
 
+/**
+ * Returns the number of records that the data source manages for <em>aTableView</em>.
+ */
 - (int) numberOfRowsInTableView: (NSTableView *)aTableView;
 - (id) tableView: (NSTableView *)aTableView 
 objectValueForTableColumn: (NSTableColumn *)aTableColumn 
