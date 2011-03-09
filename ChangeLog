@@ -1,5 +1,11 @@
 2011-03-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSPopUpButtonCell.m (-dealloc): Stop observing
+	notifications from the button's menu to prevent obscure crashes
+	later.
+
+2011-03-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMatrix.m (_altModifier:): Fix swapped macro arguments,
 	which could lead to a wrong selection and potentially a crash when
 	extending the selection with the alt modifier key.

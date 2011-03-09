@@ -147,6 +147,11 @@ static NSImage *_pbc_image[5];
    * so the local reference to it is invalid and will result in a 
    * segmentation fault. 
    */
+  if (_menu != nil)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      [nc removeObserver: self name: nil object: _menu];
+    }
   _selectedItem = nil;
   [super dealloc];
 }
