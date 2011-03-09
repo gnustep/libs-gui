@@ -133,6 +133,19 @@ first. Remaining cases, highest priority first:
 }
 @end
 
+/**
+ * Temporary attributes are implemented using an NSMutableAttributedString
+ * stored in the _temporaryAttributes ivar. We only care about this attributed
+ * string's attributes, not its characters, so to save space, _temporaryAttributes
+ * is initialized with an instance of the following NSMutableString subclass,
+ * which doesn't store any character data.
+ */
+@interface GSDummyMutableString : NSMutableString
+{
+  NSUInteger _length;
+}
+- (id)initWithLength: (NSUInteger)aLength;
+@end
 
 /* Helper for searching for the line frag of a glyph. */
 #define LINEFRAG_FOR_GLYPH(glyph) \
@@ -1918,6 +1931,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 -(void) dealloc
 {
   DESTROY(_typingAttributes);
+  DESTROY(_temporaryAttributes);
   [super dealloc];
 }
 
@@ -2176,6 +2190,16 @@ this file describes this.
 
   if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
+
+  if (_temporaryAttributes != nil && (mask & NSTextStorageEditedCharacters) != 0)
+    {
+      NSRange oldRange = NSMakeRange(range.location, range.length - lengthChange);
+
+      NSString *replacementString = [[GSDummyMutableString alloc] initWithLength: range.length];
+      [_temporaryAttributes replaceCharactersInRange: oldRange
+					  withString: replacementString];
+      [replacementString release];
+    }
 
   [self invalidateGlyphsForCharacterRange: invalidatedRange
 	changeInLength: lengthChange
@@ -2607,143 +2631,92 @@ no_soft_invalidation:
 
 @end
 
+
+@implementation GSDummyMutableString
+- (id)initWithLength: (NSUInteger)aLength
+{
+  self = [super init];
+  if (self != nil)
+    {
+      self->_length = aLength;
+    }
+  return self;
+}
+- (NSUInteger)length
+{
+  return _length;
+}
+- (unichar)characterAtIndex: (NSUInteger)index
+{
+  return 0;
+}
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)aString
+{
+  _length = (_length - range.length) + [aString length];
+}
+- (id) copyWithZone: (NSZone*)zone
+{
+  return [self mutableCopyWithZone: zone];
+}
+- (id) mutableCopyWithZone: (NSZone*)zone
+{
+  return [[GSDummyMutableString allocWithZone: zone] initWithLength: _length];
+}
+@end
+
 @implementation NSLayoutManager (temporaryattributes)
+
+- (NSMutableAttributedString*) _temporaryAttributes
+{
+  if (_temporaryAttributes == nil)
+    {
+      NSString *dummyString = [[GSDummyMutableString alloc] initWithLength: [[self textStorage] length]];
+      _temporaryAttributes = [[NSMutableAttributedString alloc] initWithString: dummyString];
+      [dummyString release];
+    }
+  return _temporaryAttributes;
+}
 
 - (void) setTemporaryAttributes: (NSDictionary *)attrs 
               forCharacterRange: (NSRange)range
 {
-  // to be implemented
+  [[self _temporaryAttributes] setAttributes: attrs range: range];
+  [self invalidateDisplayForCharacterRange: range];
 }
 
 - (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index 
                                         effectiveRange: (NSRange*)longestRange
 {
-  // to be implemented
-  return nil;
+  return [[self _temporaryAttributes] attributesAtIndex: index effectiveRange: longestRange];
 }
 
 - (void) addTemporaryAttributes: (NSDictionary *)attrs 
               forCharacterRange: (NSRange)range
 {
-  NSRange		effectiveRange;
-  NSDictionary		*attrDict;
-  NSMutableDictionary	*newDict;
-  unsigned int		tmpLength;
-
-  if (!attrs)
-    {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"attributes is nil in method -addTemporaryAttributes:forCharacterRange: "
-			  @"in class NSLayoutManager"];
-    }
-  tmpLength = [_textStorage length];
-  if (NSMaxRange(range) > tmpLength)
-    {
-      [NSException raise: NSRangeException
-		  format: @"RangeError in method -addTemporaryAttributes:forCharacterRange: "
-			  @"in class NSLayoutManager"];
-    }
-
-  attrDict = [self temporaryAttributesAtCharacterIndex: range.location
-                                        effectiveRange: &effectiveRange];
-
-  while (effectiveRange.location < NSMaxRange(range))
-    {
-      effectiveRange = NSIntersectionRange(range, effectiveRange);
-	
-      newDict = [attrDict mutableCopy];
-      [newDict addEntriesFromDictionary: attrs];
-      [self setTemporaryAttributes: newDict
-                 forCharacterRange: effectiveRange];
-      RELEASE(newDict);
-      
-      if (NSMaxRange(effectiveRange) >= NSMaxRange(range))
-        {
-          effectiveRange.location = NSMaxRange(range);// stop the loop...
-        }
-      else if (NSMaxRange(effectiveRange) < tmpLength)
-        {
-          attrDict = [self temporaryAttributesAtCharacterIndex: NSMaxRange(effectiveRange)
-                                                effectiveRange: &effectiveRange];
-        }
-    }
+  [[self _temporaryAttributes] addAttributes: attrs range: range];
+  [self invalidateDisplayForCharacterRange: range];
 }
 
 - (void) addTemporaryAttribute: (NSString *)attr 
                          value: (id)value 
              forCharacterRange: (NSRange)range
 {
-  NSDictionary *dict = [[NSDictionary alloc] initWithObjects: &value
-                                                     forKeys: &attr
-                                                       count: 1];
-
-  [self addTemporaryAttributes: dict forCharacterRange: range];
-  RELEASE(dict);
+  [[self _temporaryAttributes] addAttribute: attr value: value range: range];
+  [self invalidateDisplayForCharacterRange: range];
 }
 
 - (void) removeTemporaryAttribute: (NSString *)attr 
                 forCharacterRange: (NSRange)range
 {
-  NSRange		effectiveRange;
-  NSDictionary		*attrDict;
-  NSMutableDictionary	*newDict;
-  unsigned int		tmpLength;
-
-  tmpLength = [_textStorage length];
-  if (NSMaxRange(range) > tmpLength)
-    {
-      [NSException raise: NSRangeException
-		  format: @"RangeError in method -removeTemporaryAttribute:forCharacterRange: "
-			  @"in class NSLayoutManager"];
-    }
-
-  attrDict = [self temporaryAttributesAtCharacterIndex: range.location
-                                        effectiveRange: &effectiveRange];
-
-  while (effectiveRange.location < NSMaxRange(range))
-    {
-      effectiveRange = NSIntersectionRange(range, effectiveRange);
-      
-      newDict = [attrDict mutableCopy];
-      [newDict removeObjectForKey: attr];
-      [self setTemporaryAttributes: newDict
-                 forCharacterRange: effectiveRange];
-      RELEASE(newDict);
-      
-      if (NSMaxRange(effectiveRange) >= NSMaxRange(range))
-        {
-          effectiveRange.location = NSMaxRange(range);// stop the loop...
-        }
-      else if (NSMaxRange(effectiveRange) < tmpLength)
-        {
-          attrDict = [self temporaryAttributesAtCharacterIndex: NSMaxRange(effectiveRange)
-                                                effectiveRange: &effectiveRange];
-        }
-    }
+  [[self _temporaryAttributes] removeAttribute: attr range: range];
+  [self invalidateDisplayForCharacterRange: range];
 }
 
 - (id) temporaryAttribute: (NSString *)attr 
          atCharacterIndex: (NSUInteger)index 
            effectiveRange: (NSRange*)range
 {
-  NSDictionary *tmpDictionary;
-
-  if (attr == nil)
-    {
-      if (range != 0)
-	{
-	  *range = NSMakeRange(0, [_textStorage length]);
-	  /*
-	   * If attr is nil, then the attribute will not exist in the
-	   * entire text - therefore range of the entire text must be correct
-	   */
-        }
-      return nil;
-    }
-
-  tmpDictionary = [self temporaryAttributesAtCharacterIndex: index 
-                                             effectiveRange: range];
-  return [tmpDictionary objectForKey: attr];
+  return [[self _temporaryAttributes] attribute: attr atIndex: index effectiveRange: range];
 }
 
 - (id) temporaryAttribute: (NSString *)attr 
@@ -2751,113 +2724,23 @@ no_soft_invalidation:
     longestEffectiveRange: (NSRange*)longestRange 
                   inRange: (NSRange)range
 {
-  id		attrValue;
-  id		tmpAttrValue;
-  NSRange	tmpRange;
-
-  if (NSMaxRange(range) > [_textStorage length])
-    {
-      [NSException raise: NSRangeException
-		  format: @"RangeError in method -temporaryAttribute:atCharacterIndex:longestEffectiveRange:inRange: in class NSLayoutManager"];
-    }
-
-  if (attr == nil)
-    return nil;
-
-  attrValue = [self temporaryAttribute: attr
-		      atCharacterIndex: index
-                        effectiveRange: longestRange];
-
-  if (longestRange == 0)
-    return attrValue;
-
-  while (longestRange->location > range.location)
-    {
-      //Check extend range backwards
-      tmpAttrValue = [self temporaryAttribute: attr
-                             atCharacterIndex: longestRange->location-1
-                               effectiveRange: &tmpRange];
-      if (tmpAttrValue == attrValue
-          || (attrValue != nil && [attrValue isEqual: tmpAttrValue]))
-	{
-	  longestRange->length = NSMaxRange(*longestRange) - tmpRange.location;
-	  longestRange->location = tmpRange.location;
-	}
-      else
-	{
-	  break;
-	}
-    }
-  while (NSMaxRange(*longestRange) < NSMaxRange(range))
-    {
-      //Check extend range forwards
-      tmpAttrValue = [self temporaryAttribute: attr
-                             atCharacterIndex: longestRange->location-1
-                               effectiveRange: &tmpRange];
-      if (tmpAttrValue == attrValue
-          || (attrValue != nil && [attrValue isEqual: tmpAttrValue]))
-	{
-	  longestRange->length = NSMaxRange(tmpRange) - longestRange->location;
-	}
-      else
-	{
-	  break;
-	}
-    }
-  *longestRange = NSIntersectionRange(*longestRange,range);//Clip to rangeLimit
-  return attrValue;
+  return [[self _temporaryAttributes] attribute: attr atIndex: index longestEffectiveRange: longestRange inRange: range];
 }
 
 - (NSDictionary *) temporaryAttributesAtCharacterIndex: (NSUInteger)index
                                  longestEffectiveRange: (NSRange*)longestRange 
                                                inRange: (NSRange)range
 {
-  NSDictionary	*attrDictionary, *tmpDictionary;
-  NSRange	tmpRange;
+  return [[self _temporaryAttributes] attributesAtIndex: index longestEffectiveRange: longestRange inRange: range];
+}
 
-  if (NSMaxRange(range) > [_textStorage length])
-    {
-      [NSException raise: NSRangeException
-		  format: @"RangeError in method -temporaryAttributesAtCharacterIndex:longestEffectiveRange:inRange: in class NSLayoutManager"];
-    }
-
-  attrDictionary = [self temporaryAttributesAtCharacterIndex: index
-                                              effectiveRange: longestRange];
-  if (longestRange == 0)
-    return attrDictionary;
-
-  while (longestRange->location > range.location)
-    {
-      //Check extend range backwards
-      tmpDictionary = [self temporaryAttributesAtCharacterIndex: longestRange->location-1
-                                                 effectiveRange: &tmpRange];
-      if ([tmpDictionary isEqualToDictionary: attrDictionary])
-	{
-	  longestRange->length = NSMaxRange(*longestRange) - tmpRange.location;
-	  longestRange->location = tmpRange.location;
-	}
-      else
-	{
-	  break;
-	}
-    }
-  while (NSMaxRange(*longestRange) < NSMaxRange(range))
-    {
-      //Check extend range forwards
-      tmpDictionary = [self temporaryAttributesAtCharacterIndex: NSMaxRange(*longestRange)
-                                                 effectiveRange: &tmpRange];
-      if ([tmpDictionary isEqualToDictionary: attrDictionary])
-	{
-	  longestRange->length = NSMaxRange(tmpRange) - longestRange->location;
-	}
-      else
-	{
-	  break;
-	}
-    }
-  //Clip to range
-  *longestRange = NSIntersectionRange(*longestRange, range);
-  return attrDictionary;
+/**
+ * Most of this is implemented in GSLayoutManager
+ */
+- (void) setTextStorage: (NSTextStorage *)aTextStorage
+{
+  DESTROY(_temporaryAttributes);
+  [super setTextStorage: aTextStorage];
 }
 
 @end

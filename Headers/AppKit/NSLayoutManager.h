@@ -67,6 +67,8 @@ typedef enum {
   should release the old value and retain the new one. It is nil originally
   and will be released when the NSLayoutManager is deallocated. */
   NSMutableDictionary *_typingAttributes;
+
+  NSMutableAttributedString *_temporaryAttributes;
 }
 
 /* TODO */

@@ -1,3 +1,8 @@
+2011-03-08  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSLayoutManager.m: Implement temporary attributes
+	* Header/AppKit/NSLayoutManager.h: Add a _temporaryAttributes ivar
+
 2011-03-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m (+saveGraphicsState): Release the
