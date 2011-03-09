@@ -1,3 +1,8 @@
+2011-03-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTableHeaderCell.m (-initTextCell:): Don't wrap text in
+	table view headers by default. This partially fixes #30020.
+
 2011-03-08  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m: Implement temporary attributes
@@ -279,7 +284,7 @@
 	* Source/NSWindow.m (-setContentView:): Revert Wolfgangs change
 	and add a different solution as explained in his mail.
 
-2011-02-14  Wolfgang Lux  <wolfgang.lux@gmail.com>>
+2011-02-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-_initDefaults):
 	* Source/NSWindow.m (-_initDefaults):

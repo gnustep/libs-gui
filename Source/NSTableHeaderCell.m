@@ -44,6 +44,7 @@
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setDrawsBackground: YES];
   [self setFont: [NSFont titleBarFontOfSize: 0]];
+  [self setWraps: NO];
   // This is not exactly true 
   _cell.is_bezeled = YES;
   _cell.is_bordered = NO;
