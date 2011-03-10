@@ -136,9 +136,15 @@ first. Remaining cases, highest priority first:
 /**
  * Temporary attributes are implemented using an NSMutableAttributedString
  * stored in the _temporaryAttributes ivar. We only care about this attributed
- * string's attributes, not its characters, so to save space, _temporaryAttributes
- * is initialized with an instance of the following NSMutableString subclass,
- * which doesn't store any character data.
+ * string's attributes, not its characters, so to save space,
+ * _temporaryAttributes is initialized with an instance of the following
+ * NSMutableString subclass, which doesn't store any character data.
+ *
+ * WARNING ... it's an unofficial implementation detail that the
+ * GSMutableAttributedString class creates it's internal storage by taking
+ * a mutable copy of its initialisation argument, and we have a comment in
+ * the source to warn about it.  If we change the behavior here, we should
+ * remove the warning comment from the source in base.
  */
 @interface GSDummyMutableString : NSMutableString
 {
