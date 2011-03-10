@@ -819,7 +819,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 - (void) loadServices
 {
   NSFileManager         *mgr = [NSFileManager defaultManager];
-  NSDate		*stamp = [NSDate date];
   BOOL			changed = NO;
 
   if ([mgr fileExistsAtPath: _disabledPath])
@@ -853,7 +852,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	}
     }
 
-  stamp = [NSDate date];
   if ([mgr fileExistsAtPath: _servicesPath])
     {
       NSDictionary	*attr;

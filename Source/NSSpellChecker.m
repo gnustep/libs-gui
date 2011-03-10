@@ -327,15 +327,14 @@ static int __documentTag = 0;
 		 language:(NSString *)language
 {
   int count = 0;
-  NSRange r = NSMakeRange(0,0);
   id<NSSpellServerPrivateProtocol> proxy = [self _serverProxy];
 
   if (proxy != nil)
-    r = [proxy _findMisspelledWordInString: aString
-	       language: _language
-	       ignoredWords: nil
-	       wordCount: &count
-	       countOnly: YES];
+    [proxy _findMisspelledWordInString: aString
+                              language: _language
+                          ignoredWords: nil
+                             wordCount: &count
+                             countOnly: YES];
 
   return count;
 }
@@ -344,7 +343,7 @@ static int __documentTag = 0;
 		      startingAt:(int)startingOffset
 {
   int wordCount = 0;
-  NSRange r = NSMakeRange(0,0);
+  NSRange r;
 
   r = [self checkSpellingOfString: stringToCheck
   	               startingAt: startingOffset
@@ -541,7 +540,7 @@ inSpellDocumentWithTag:(int)tag
   [self _populateAccessoryView];
 }
 
-- _findNext: (id)sender
+- (id) _findNext: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(checkSpelling:)
@@ -555,16 +554,15 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _learn: (id)sender
+- (id) _learn: (id)sender
 {
   NSString *word = [_wordField stringValue];
-  BOOL result = NO;
 
   // Call server and record the learned word.
   NS_DURING
     {
-      result = [[self _serverProxy] _learnWord: word
-				    inDictionary: _language];
+      [[self _serverProxy] _learnWord: word
+                         inDictionary: _language];
     }
   NS_HANDLER
     {
@@ -577,7 +575,7 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _forget: (id)sender
+- (id) _forget: (id)sender
 {
   NSString *word = [_wordField stringValue];
 
@@ -599,7 +597,7 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _ignore: (id)sender
+- (id) _ignore: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(ignoreSpelling:)
@@ -615,14 +613,14 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _guess: (id)sender
+- (id) _guess: (id)sender
 {
   // Fill in the view...
   [self _populateAccessoryView];
   return self;
 }
 
-- _correct: (id)sender
+- (id) _correct: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(changeSpelling:)
@@ -637,7 +635,7 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _switchDictionary: (id)sender
+- (id) _switchDictionary: (id)sender
 {
   id<NSSpellServerPrivateProtocol> proxy = nil;
   NSString *language = nil;
@@ -663,7 +661,7 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
-- _highlightGuess: (id)sender
+- (id) _highlightGuess: (id)sender
 {
   NSString *selectedGuess = nil;
 

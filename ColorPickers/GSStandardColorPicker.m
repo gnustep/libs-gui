@@ -238,7 +238,7 @@
 
 - (void) _showNewPicker: (id) sender
 {
-  NSView *currentView = [currentPicker provideNewView: NO];
+  NSView *currentView;
 
   //NSLog(@"Old View size %@", NSStringFromRect([currentView frame]));
   currentPicker = [pickers objectAtIndex: [sender selectedColumn]];

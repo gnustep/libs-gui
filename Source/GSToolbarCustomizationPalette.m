@@ -73,7 +73,6 @@
   NSEnumerator *e = [items objectEnumerator];
   NSToolbarItem *item = nil;
 
-  e = [items objectEnumerator];
   while ((item = [e nextObject]) != nil)
     {
       NSToolbarItem *newItem = [item copy];

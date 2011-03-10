@@ -1,3 +1,11 @@
+2011-03-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ColorPickers/GSStandardColorPicker.m
+	* Source/GSToolbarCustomizationPalette.m
+	* Source/GSServicesManager.m
+	* Source/NSSpellChecker.m: Fix dead initialisation found by static
+	analyser.
+
 2011-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumer.m
