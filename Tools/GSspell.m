@@ -531,6 +531,8 @@ int main(int argc, char** argv)
     {
       NSLog(@"Cannot create spell checker instance");
     }
+  RELEASE(aSpellChecker);
+  RELEASE(aServer);
   RELEASE(_pool);
   return 0;
 }

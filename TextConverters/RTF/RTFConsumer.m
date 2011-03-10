@@ -482,6 +482,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
           if (attachment == nil)
             {
               NSLog(@"No attachment at %d", oldPosition);
+              RELEASE(image);
               return;
             }
         

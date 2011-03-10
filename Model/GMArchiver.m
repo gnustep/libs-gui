@@ -131,7 +131,7 @@
   [super dealloc];
 }
 
-- (NSString*) newLabel
+- (NSString*) nextLabel
 {
   return [NSString stringWithFormat: @"Object%5d", ++counter];
 }
@@ -256,7 +256,7 @@
       label = NSHashGet(conditionals, anObject);
       if (label) {
 	NSHashRemove(conditionals, anObject);
-	NSMapInsert(objects, anObject, [self newLabel]);
+	NSMapInsert(objects, anObject, [self nextLabel]);
 	return label;
       }
     }
@@ -274,7 +274,7 @@
 	label = name;
       }
       else
-	label = [self newLabel];
+	label = [self nextLabel];
 
       NSMapInsert(objects, anObject, label);
 

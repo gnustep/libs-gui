@@ -93,6 +93,7 @@ main(int argc, char** argv, char **env)
     }
 
   NSLog(@"Nothing to do.\n");
+  RELEASE(pool);
   return(1);
 }
 

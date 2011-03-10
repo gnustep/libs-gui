@@ -1474,6 +1474,7 @@ static BOOL _isInInterfaceBuilder = NO;
       Class newCellClass = [newClass cellClass];
       if (newCellClass != [NSCell class])
         {
+          RELEASE(obj);
           result = [[newCellClass alloc] initWithCoder: coder];      
         }
     }

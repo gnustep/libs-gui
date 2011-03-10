@@ -74,7 +74,7 @@
 // Initializing a New Instance 
 + (id) imageRepWithData: (NSData *)epsData
 {
-  return [[self alloc] initWithData: epsData];
+  return AUTORELEASE([[self alloc] initWithData: epsData]);
 }
 
 - (id) initWithData: (NSData *)epsData

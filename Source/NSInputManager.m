@@ -290,7 +290,7 @@ static NSInputManager *currentInputManager = nil;
       NSString *c = [NSString stringWithCharacters: &character  length: 1];
       [description appendString: c];
     }
-  return description;
+  return AUTORELEASE(description);
 }
 
 - (void) loadBindingsFromFile: (NSString *)fullPath

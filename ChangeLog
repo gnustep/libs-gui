@@ -1,5 +1,15 @@
 2011-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* TextConverters/RTF/RTFConsumer.m
+	* Source/GSNibLoading.m
+	* Source/NSInputManager.m
+	* Source/NSEPSImageRep.m
+	* Model/GMArchiver.m
+	* Tools/set_show_service.m
+	* Tools/GSspell.m: Fix memory leaks found by static analyser.
+
+2011-03-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSTitleView.h,
 	* Headers/AppKit/NSProgressIndicator.h: Remove unused ivars found
 	by static analyser.
