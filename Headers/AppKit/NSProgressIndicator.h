@@ -72,7 +72,7 @@ typedef enum _NSProgressIndicatorStyle
   BOOL _isRunning;
   int _count;  
   NSTimer *_timer;
-  NSThread *_thread;
+  id _reserved;
 }
 
 //

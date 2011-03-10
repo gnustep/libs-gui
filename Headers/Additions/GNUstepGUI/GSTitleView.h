@@ -43,8 +43,6 @@
   @private
     id       _owner;
     unsigned _ownedByMenu;
-    unsigned _hasCloseButton;
-    unsigned _hasMiniaturizeButton;
     unsigned _isKeyWindow;
     unsigned _isMainWindow;
     unsigned _isActiveApplication;
