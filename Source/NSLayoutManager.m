@@ -107,6 +107,7 @@ first. Remaining cases, highest priority first:
 
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSImage.h"
@@ -121,6 +122,16 @@ first. Remaining cases, highest priority first:
 
 #import "GNUstepGUI/GSLayoutManager_internal.h"
 
+
+@interface NSLayoutManager (spelling)
+
+-(void) _drawSpellingState: (NSInteger)spellingState
+	     forGylphRange: (NSRange)range
+	  lineFragmentRect: (NSRect)fragmentRect
+    lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+	   containerOrigin: (NSPoint)containerOrigin;
+
+@end
 
 @interface NSLayoutManager (LayoutHelpers)
 -(void) _doLayoutToContainer: (int)cindex  point: (NSPoint)p;
@@ -1718,6 +1729,41 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 	  }
 	i += underlinedCharacterRange.length;
       }
+  
+    // Draw spelling state (i.e. red underline for misspelled words)
+  
+    for (i=characterRange.location; i<NSMaxRange(characterRange); )
+      {
+	NSRange underlinedCharacterRange;
+	id underlineValue = [self temporaryAttribute: NSSpellingStateAttributeName
+				    atCharacterIndex: i
+			       longestEffectiveRange: &underlinedCharacterRange
+					     inRange: characterRange];
+	if (underlineValue != nil && [underlineValue integerValue] != 0)
+	  {
+	    const NSRange underlinedGylphRange = [self glyphRangeForCharacterRange: underlinedCharacterRange
+							      actualCharacterRange: NULL];
+	  
+	    // we have a range of glpyhs that need underlining, which might span
+	    // multiple line fragments, so we need to iterate though the line fragments
+	    for (j=underlinedGylphRange.location; j<NSMaxRange(underlinedGylphRange); )
+	      {
+		NSRange lineFragmentGlyphRange;
+		const NSRect lineFragmentRect = [self lineFragmentRectForGlyphAtIndex: j
+								       effectiveRange: &lineFragmentGlyphRange];
+		const NSRange rangeToUnderline = NSIntersectionRange(underlinedGylphRange, lineFragmentGlyphRange);
+
+		[self _drawSpellingState: [underlineValue integerValue]
+			   forGylphRange: rangeToUnderline
+			lineFragmentRect: lineFragmentRect
+		  lineFragmentGlyphRange: lineFragmentGlyphRange
+			 containerOrigin: containerOrigin];
+		
+		j = NSMaxRange(rangeToUnderline);
+	      }
+	  }
+	i += underlinedCharacterRange.length;
+      }
   }
 }
 
@@ -1898,6 +1944,55 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 
       i += rangeToDraw.length;
     }
+}
+
+@end
+
+@implementation NSLayoutManager (spelling)
+
+-(void) _drawSpellingState: (NSInteger)spellingState
+	     forGylphRange: (NSRange)range
+	  lineFragmentRect: (NSRect)fragmentRect
+    lineFragmentGlyphRange: (NSRange)fragmentGlyphRange
+	   containerOrigin: (NSPoint)containerOrigin
+{
+  NSBezierPath *path;
+  const float pattern[2] = {2.5, 1.0};
+  NSFont *largestFont = [self effectiveFontForGlyphAtIndex: range.location // NOTE: GS private method
+						     range: NULL];
+  NSPoint start = [self locationForGlyphAtIndex: range.location];
+  NSPoint end = [self locationForGlyphAtIndex: NSMaxRange(range) - 1]; //FIXME: check length > 0
+
+  if (spellingState == 0)
+    {
+      return;
+    }
+  
+  // FIXME: calculate the underline position correctly, using the font on both the start and end glyph
+  start.y += [largestFont pointSize] * 0.07;
+  end.y += [largestFont pointSize] * 0.07;
+
+  end.x += [largestFont advancementForGlyph: [self glyphAtIndex: (NSMaxRange(range) - 1)]].width;
+	  
+  start = NSMakePoint(start.x + containerOrigin.x + fragmentRect.origin.x, start.y + containerOrigin.y + fragmentRect.origin.y);
+  end = NSMakePoint(end.x + containerOrigin.x + fragmentRect.origin.x, end.y + containerOrigin.y + fragmentRect.origin.y);
+
+  path = [NSBezierPath bezierPath];
+  [path setLineDash: pattern count: 2 phase: 0];
+  [path setLineWidth: 1.5];
+  [path moveToPoint: start];
+  [path lineToPoint: end];
+
+  if ((spellingState & NSSpellingStateGrammarFlag) != 0)
+    {
+      [[NSColor greenColor] set];
+    }
+  else
+    {
+      [[NSColor redColor] set];
+    }
+
+  [path stroke];	  
 }
 
 @end

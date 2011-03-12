@@ -547,6 +547,11 @@ NSString *NSModificationTimeDocumentAttribute = @"ModificationTime";
 
 const unsigned NSUnderlineByWordMask = 0x01;
 
+NSString *NSSpellingStateAttributeName = @"NSSpellingState";
+const unsigned NSSpellingStateSpellingFlag = 1;
+const unsigned NSSpellingStateGrammarFlag = 2;
+
+
 NSString *NSPlainTextDocumentType = @"PlainText";
 NSString *NSRTFTextDocumentType = @"RTF";
 NSString *NSRTFDTextDocumentType = @"RTFD";

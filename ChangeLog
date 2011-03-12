@@ -1,3 +1,11 @@
+2011-03-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSLayoutManager.m:
+	* Source/externs.m:
+	* Source/NSTextView.m:
+	* Headers/AppKit/NSAttributedString.h:
+	* Headers/AppKit/NSTextView.h: Implement continuous spell checking
+
 2011-03-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* ColorPickers/GSStandardColorPicker.m

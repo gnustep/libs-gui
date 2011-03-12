@@ -111,6 +111,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
     would be very awkward if they weren't. */
     unsigned allows_undo:1;
     unsigned smart_insert_delete:1;
+    unsigned continuous_spell_checking:1;
   /* End of shared attributes. */
 
 
@@ -243,6 +244,10 @@ therefore be stored in the NSLayoutManager to avoid problems.
   NSParagraphStyle *_defaultParagraphStyle;
   NSDictionary *_linkTextAttributes;
   NSRange _markedRange;
+
+  // Text checking (spelling/grammar)
+  NSTimer *_textCheckingTimer;
+  NSRect _lastCheckedRect;
 }
 
 

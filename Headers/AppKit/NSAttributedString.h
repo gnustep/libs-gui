@@ -142,6 +142,9 @@ APPKIT_EXPORT NSString *NSWebResourceLoadDelegateDocumentOption;
 
 APPKIT_EXPORT NSString *NSCharacterShapeAttributeName;
 APPKIT_EXPORT const unsigned NSUnderlineByWordMask;
+APPKIT_EXPORT NSString *NSSpellingStateAttributeName;
+APPKIT_EXPORT const unsigned NSSpellingStateSpellingFlag;
+APPKIT_EXPORT const unsigned NSSpellingStateGrammarFlag;
 
 // readFrom... attributes
 

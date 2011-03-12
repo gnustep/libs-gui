@@ -148,6 +148,14 @@ Interface for a bunch of internal methods that need to be cleaned up.
 //
 - (void) copySelection;
 - (void) pasteSelection;
+
+/*
+ * Text checking
+ */
+- (void) _scheduleTextCheckingInVisibleRectIfNeeded;
+- (void) _textDidChange: (NSNotification*)notif;
+- (void) _textCheckingTimerFired: (NSTimer *)t;
+
 @end
 
 
@@ -187,6 +195,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 	       ([tv isFieldEditor]?0x10:0) |
 	       ([tv usesFontPanel]?0x20:0) |
 	       ([tv isRulerVisible]?0x40:0) |
+	       ([tv isContinuousSpellCheckingEnabled]?0x80:0) |
 	       ([tv usesRuler]?0x100:0) |
 	       ([tv smartInsertDeleteEnabled]?0x200:0) |
 	       ([tv allowsUndo]?0x400:0) |
@@ -738,6 +747,10 @@ If a text view is added to an empty text network, it keeps its attributes.
     name: NSViewFrameDidChangeNotification
     object: self];
 
+  [notificationCenter addObserver: self
+			 selector: @selector(_textDidChange:)
+			     name: NSTextDidChangeNotification
+			   object: self];
   return self;
 }
 
@@ -903,6 +916,7 @@ that makes decoding and encoding compatible with the old code.
           _tf.is_field_editor = ((0x10 & flags) > 0);
           _tf.uses_font_panel = ((0x20 & flags) > 0);
           _tf.is_ruler_visible = ((0x40 & flags) > 0);
+	  _tf.continuous_spell_checking = ((0x80 & flags) > 0);
           _tf.uses_ruler = ((0x100 & flags) > 0);
           _tf.smart_insert_delete = ((0x200 & flags) > 0);
           _tf.allows_undo = ((0x400 & flags) > 0);	  
@@ -1019,7 +1033,10 @@ that makes decoding and encoding compatible with the old code.
 		      selector: @selector(_updateState:)
 		      name: NSViewFrameDidChangeNotification
 		      object: self];
-
+ [notificationCenter addObserver: self
+			 selector: @selector(_textDidChange:)
+			     name: NSTextDidChangeNotification
+			   object: self];
   return self;
 }
 
@@ -1051,6 +1068,11 @@ that makes decoding and encoding compatible with the old code.
   [notificationCenter removeObserver: self
     name: NSViewFrameDidChangeNotification
     object: self];
+  [notificationCenter removeObserver: self
+    name: NSTextDidChangeNotification
+    object: self];
+  [_textCheckingTimer invalidate];
+
   [[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(_updateState:)
     target: self
     argument: nil];
@@ -1471,18 +1493,35 @@ to make sure syncing is handled properly in all cases.
 
 /* Continuous spell checking */
 
-/* TODO */
 - (BOOL) isContinuousSpellCheckingEnabled
 {
-  NSLog(@"Method %s is not implemented for class %s",
-	__PRETTY_FUNCTION__, "NSTextView");
-  return NO;
+  return _tf.continuous_spell_checking;
 }
 
 - (void) setContinuousSpellCheckingEnabled: (BOOL)flag
 {
-  NSLog(@"Method %s is not implemented for class %s",
-	__PRETTY_FUNCTION__, "NSTextView");
+  NSTEXTVIEW_SYNC;
+
+  if (_tf.continuous_spell_checking && !flag)
+    {
+      _tf.continuous_spell_checking = 0;
+
+      const NSRange allRange = NSMakeRange(0, [[self string] length]);
+      [_layoutManager removeTemporaryAttribute: @"NSTextChecked"
+			     forCharacterRange: allRange];
+      [_layoutManager removeTemporaryAttribute: NSSpellingStateAttributeName
+			     forCharacterRange: allRange];
+      _lastCheckedRect = NSZeroRect;
+
+      [_textCheckingTimer invalidate];
+      _textCheckingTimer = nil;
+    }
+  else if (!_tf.continuous_spell_checking && flag)
+    {
+      _tf.continuous_spell_checking = 1;
+
+      [self _scheduleTextCheckingInVisibleRectIfNeeded];
+    }
 }
 
 
@@ -3813,6 +3852,8 @@ Figure out how the additional layout stuff is supposed to work.
       drawnRange = NSMakeRange(0, 0);
     }
 
+  [self _scheduleTextCheckingInVisibleRectIfNeeded];
+
   /* FIXME: We should only draw inside of rect. This code is necessary
    * to remove markings of old glyphs.  These would not be removed
    * by the following call to the layout manager because that only
@@ -5738,6 +5779,195 @@ or add guards
   [self readSelectionFromPasteboard: 
             [NSPasteboard pasteboardWithName: @"Selection"]
         type: NSStringPboardType];
+}
+
+/**
+ * Text checking
+ */
+
+- (void) _checkTextInRange: (NSRange)aRange
+{
+  NSRange longestRange;
+  id value = [_layoutManager temporaryAttribute: @"NSTextChecked" 
+			       atCharacterIndex: aRange.location
+			  longestEffectiveRange: &longestRange
+					inRange: aRange];
+  longestRange = NSIntersectionRange(longestRange, aRange);
+  
+  if ([value boolValue] && NSEqualRanges(longestRange, aRange))
+    {
+      //NSLog(@"No need to check in range %@", NSStringFromRange(aRange));
+      return;
+    }
+  
+  // Check all of aRange
+
+  [_layoutManager removeTemporaryAttribute: NSSpellingStateAttributeName
+			 forCharacterRange: aRange];
+  
+  {
+    NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
+    NSInteger start = 0;
+    int count;
+    // FIXME: doing the spellcheck on this substring could create false-positives
+    // if a word is split in half.. so the range should be expanded to the 
+    // nearest word boundary
+    NSString *substring = [[self string] substringWithRange: aRange];
+    
+    do {
+      NSRange errorRange = [sp checkSpellingOfString: substring
+					  startingAt: start
+					    language: [sp language]
+						wrap: YES
+			      inSpellDocumentWithTag: [self spellCheckerDocumentTag]
+					   wordCount: &count];
+      
+      if (errorRange.location < start)
+	{
+	  break;
+	}
+      
+      if (errorRange.length > 0)
+	{
+	  start = NSMaxRange(errorRange);
+	}
+      else
+	{
+	  break;
+	}
+      
+      errorRange = NSMakeRange(aRange.location + errorRange.location, errorRange.length);
+      
+      //NSLog(@"highlighting mistake: %@", [[self string] substringWithRange: errorRange]);
+      
+      [_layoutManager addTemporaryAttribute: NSSpellingStateAttributeName
+				      value: [NSNumber numberWithInteger: NSSpellingStateSpellingFlag]
+			  forCharacterRange: errorRange];
+      
+    } while (1);
+    
+    [_layoutManager addTemporaryAttribute: @"NSTextChecked"
+				    value: [NSNumber numberWithBool: YES]
+			forCharacterRange: aRange];
+  }
+}
+
+- (void) _textCheckingTimerFired: (NSTimer *)t
+{
+  _textCheckingTimer = nil;
+
+  if (nil == _layoutManager)
+    return;
+
+  {
+    const NSRect visibleRect = [self visibleRect];
+    
+    NSRange visibleGlyphRange = [_layoutManager glyphRangeForBoundingRect: visibleRect
+							  inTextContainer: _textContainer];
+    
+    NSRange visibleRange = [_layoutManager characterRangeForGlyphRange: visibleGlyphRange
+						      actualGlyphRange: NULL];
+    
+    [self _checkTextInRange: visibleRange];
+    
+    _lastCheckedRect = visibleRect;
+  }
+}
+
+- (void) _scheduleTextCheckingTimer
+{
+  [_textCheckingTimer invalidate];
+  _textCheckingTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+							target: self
+						      selector: @selector(_textCheckingTimerFired:) 
+						      userInfo: [NSValue valueWithRect: [self visibleRect]]
+						       repeats: NO];
+  
+}
+
+- (void) _scheduleTextCheckingInVisibleRectIfNeeded
+{
+  if (_tf.continuous_spell_checking)
+    {
+      const NSRect visibleRect = [self visibleRect];
+      if (!NSEqualRects(visibleRect, _lastCheckedRect))
+	{
+	   if (NSEqualRects(visibleRect, [[_textCheckingTimer userInfo] rectValue]))
+	     {
+	       return;
+	     }
+	   [self _scheduleTextCheckingTimer];
+	}
+    }
+}
+
+/**
+ * If selected has a nonzero length, return it unmodified.
+ * If selected is touching a word, expand it to cover the entire word
+ * Otherwise return selected unmodified
+ */
+- (NSRange) _rangeToInvalidateSpellingForSelectionRange: (NSRange)selected
+{
+  if (selected.length > 0)
+    {
+      return selected;
+    }
+  else
+    {
+      NSCharacterSet *boundary = [[NSCharacterSet letterCharacterSet] invertedSet];
+  
+      if (selected.location == [[self string] length] && selected.location > 0)
+	{
+	  selected.location--;
+	}
+
+      NSRange prevNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: NSBackwardsSearch range: NSMakeRange(0, selected.location)];
+      NSRange nextNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: 0 range: NSMakeRange(NSMaxRange(selected), [[self string] length] - NSMaxRange(selected))];
+      NSRange range;
+  
+      if (prevNonCharacter.length == 0)
+	{
+	  range.location = 0;
+	}
+      else
+	{
+	  range.location = prevNonCharacter.location + 1;
+	}
+
+      if (nextNonCharacter.length == 0)
+	{
+	  range.length = [[self string] length] - range.location;
+	}
+      else
+	{
+	  range.length = nextNonCharacter.location - range.location;
+	}
+
+      return range;
+    }
+}
+
+- (void) _textDidChange: (NSNotification*)notif
+{
+  if (_tf.continuous_spell_checking)
+    {
+      // FIXME: This uses the caret position to guess what change caused
+      // the NSTextDidChangeNotification and mark that range of the text as requiring re-checking.
+      //
+      // It would be better to use accurate information to decide what range
+      // need its spelling state invalidated.
+
+      NSRange range = [self _rangeToInvalidateSpellingForSelectionRange: [self selectedRange]];
+      if (range.length > 0)
+	{
+	  [_layoutManager removeTemporaryAttribute: @"NSTextChecked"
+				 forCharacterRange: range];
+	  [_layoutManager removeTemporaryAttribute: NSSpellingStateAttributeName
+				 forCharacterRange: range];
+	}
+
+      [self _scheduleTextCheckingTimer];
+    }
 }
 
 @end
