@@ -1,3 +1,12 @@
+2011-03-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMatrix.m (_shiftModifier:): Use correct column index
+	for old cell.
+	* Headers/AppKit/NSCursor.h
+	* gui/Source/NSCursor.m: Add Mac 10.6 methods and implement keyed
+	coding/decoding properly.
+	* Images/nsmapping.strings: Add mappings for some new cursors.
+
 2011-03-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m:

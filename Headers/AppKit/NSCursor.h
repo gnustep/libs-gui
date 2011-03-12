@@ -42,15 +42,21 @@
 {
   NSImage	*_cursor_image;
   NSPoint	_hot_spot;
-  BOOL		_is_set_on_mouse_entered;
-  BOOL		_is_set_on_mouse_exited;
+  struct GSCursorFlagsType {
+    unsigned int is_set_on_mouse_entered: 1;
+    unsigned int is_set_on_mouse_exited: 1;
+    unsigned int type: 5;
+    unsigned int reserved: 25;
+  } _cursor_flags;
   void		*_cid;
 }
 
 /*
  * Initializing a New NSCursor Object
  */
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (id) initWithImage: (NSImage *)newImage;
+#endif
 - (id) initWithImage: (NSImage *)newImage
 	     hotSpot: (NSPoint)hotSpot;
 
@@ -101,7 +107,7 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) greenArrowCursor;
 #endif
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 + (NSCursor*) closedHandCursor;
 + (NSCursor*) crosshairCursor;
 + (NSCursor*) disappearingItemCursor;
@@ -115,23 +121,36 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) resizeUpDownCursor;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
++ (NSCursor*) currentSystemCursor;
+
++ (NSCursor*) contextualMenuCursor;
++ (NSCursor*) dragCopyCursor;
++ (NSCursor*) dragLinkCursor;
++ (NSCursor*) operationNotAllowedCursor;
+#endif
+
 @end
 
 /* Cursor types */
 typedef enum {
-  GSArrowCursor,
+  GSArrowCursor = 0,
   GSIBeamCursor,
-  GSClosedHandCursor,
-  GSCrosshairCursor,
-  GSDisappearingItemCursor,
+  GSDragLinkCursor,
+  GSOperationNotAllowedCursor,
+  GSDragCopyCursor = 5,
+  GSClosedHandCursor = 11,
   GSOpenHandCursor,
   GSPointingHandCursor,
-  GSResizeDownCursor,
-  GSResizeLeftCursor,
-  GSResizeLeftRightCursor,
+  GSResizeLeftCursor = 17,
   GSResizeRightCursor,
+  GSResizeLeftRightCursor,
+  GSCrosshairCursor,
   GSResizeUpCursor,
+  GSResizeDownCursor,
   GSResizeUpDownCursor,
+  GSContextualMenuCursor,
+  GSDisappearingItemCursor
 } GSCursorTypes;
 
 #endif /* _GNUstep_H_NSCursor */

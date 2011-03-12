@@ -14,3 +14,6 @@ NSMenuMixedState = common_2DDash;
 NSComboArrow = common_ComboBoxEllipsis;
 GSClosedHandCursor =  common_ClosedHandCursor;
 GSOpenHandCursor = common_OpenHandCursor;
+GSDragCopyCursor = common_copyCursor;
+GSDragLinkCursor = common_linkCursor;
+GSOperationNotAllowedCursor = common_noCursor;

@@ -3626,7 +3626,7 @@ static SEL getSel;
     }
 
   [self lockFocus];
-  [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+  [self drawCell: _cells[lastDottedRow][lastDottedColumn]];
   [self drawCell: _cells[_dottedRow][_dottedColumn]];
   [self unlockFocus];
   [_window flushWindow];

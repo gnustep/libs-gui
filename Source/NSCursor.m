@@ -59,7 +59,7 @@ static NSMutableDictionary *cursorDict = nil;
   if (self == [NSCursor class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
 
       // Initialize class variables
       NSCursor_class = self;
@@ -161,22 +161,27 @@ NSCursor *getStandardCursor(NSString *name, int style)
     {
       void *c = NULL;
     
-      cursor = [[NSCursor_class alloc] initWithImage: nil];
-      [GSCurrentServer() standardcursor: style : &c];
-      if (c == NULL)
+      cursor = [[NSCursor_class alloc] initWithImage: nil
+                                             hotSpot: NSZeroPoint];
+      if (nil != cursor)
         {
-	  /* 
-	     There is no standard cursor with this name defined in the 
-	     backend, so try an image with this name.
-	  */
-	  [cursor setImage: [NSImage imageNamed: name]];
-	}
-      else
-        {
-	  [cursor _setCid: c];
-	}
-      [cursorDict setObject: cursor forKey: name];
-      RELEASE(cursor);
+          [GSCurrentServer() standardcursor: style : &c];
+          if (c == NULL)
+            {
+              /* 
+                 There is no standard cursor with this name defined in the 
+                 backend, so try an image with this name.
+              */
+              [cursor setImage: [NSImage imageNamed: name]];
+            }
+          else
+            {
+              [cursor _setCid: c];
+            }
+          cursor->_cursor_flags.type = style;
+          [cursorDict setObject: cursor forKey: name];
+          RELEASE(cursor);
+        }
     }
   return cursor;
 }
@@ -200,9 +205,24 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return getStandardCursor(@"GSClosedHandCursor", GSClosedHandCursor);
 }
 
++ (NSCursor*) contextualMenuCursor
+{
+  return getStandardCursor(@"GSContextualMenuCursor", GSContextualMenuCursor);
+}
+
 + (NSCursor*) crosshairCursor
 {
   return getStandardCursor(@"GSCrosshairCursor", GSCrosshairCursor);
+}
+
++ (NSCursor*) dragCopyCursor
+{
+  return getStandardCursor(@"GSDragCopyCursor", GSDragCopyCursor);
+}
+
++ (NSCursor*) dragLinkCursor
+{
+  return getStandardCursor(@"GSDragLinkCursor", GSDragLinkCursor);
 }
 
 + (NSCursor*) disappearingItemCursor
@@ -213,6 +233,12 @@ NSCursor *getStandardCursor(NSString *name, int style)
 + (NSCursor*) openHandCursor
 {
   return getStandardCursor(@"GSOpenHandCursor", GSOpenHandCursor);
+}
+
++ (NSCursor*) operationNotAllowedCursor
+{
+  return getStandardCursor(@"GSOperationNotAllowedCursor", 
+                           GSOperationNotAllowedCursor);
 }
 
 + (NSCursor*) pointingHandCursor
@@ -257,6 +283,12 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return gnustep_gui_current_cursor;
 }
 
++ (NSCursor*) currentSystemCursor
+{
+  // FIXME
+  return nil;
+}
+
 + (NSCursor*) greenArrowCursor
 {
   NSString *name = @"GSGreenArrowCursor";
@@ -265,7 +297,8 @@ NSCursor *getStandardCursor(NSString *name, int style)
     {
       void *c;
     
-      cursor = [[NSCursor_class alloc] initWithImage: nil];
+      cursor = [[NSCursor_class alloc] initWithImage: nil
+                                             hotSpot: NSZeroPoint];
       [GSCurrentServer() standardcursor: GSArrowCursor : &c];
       [GSCurrentServer() recolorcursor: [NSColor greenColor] 
                                       : [NSColor blackColor] : c];
@@ -281,7 +314,7 @@ NSCursor *getStandardCursor(NSString *name, int style)
  */
 - (id) init
 {
-  return [self initWithImage: nil hotSpot: NSMakePoint(0,0)];
+  return [self initWithImage: nil hotSpot: NSZeroPoint];
 }
 
 /**<p>Initializes and returns a new NSCursor with a NSImage <var>newImage</var>
@@ -302,8 +335,8 @@ NSCursor *getStandardCursor(NSString *name, int style)
  */
 - (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)hotSpot
 {
-  //_is_set_on_mouse_entered = NO;
-  //_is_set_on_mouse_exited = NO;
+  //_cursor_flags.is_set_on_mouse_entered = NO;
+  //_cursor_flags.is_set_on_mouse_exited = NO;
   _hot_spot = hotSpot;
   [self setImage: newImage];
 
@@ -331,9 +364,10 @@ backgroundColorHint:(NSColor *)bg
     }
   return self;
 }
+
 - (void) dealloc
 {
-  RELEASE (_cursor_image);
+  RELEASE(_cursor_image);
   if (_cid)
     {
       [GSCurrentServer() freecursor: _cid];
@@ -381,7 +415,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (BOOL) isSetOnMouseEntered
 {
-  return _is_set_on_mouse_entered;
+  return _cursor_flags.is_set_on_mouse_entered;
 }
 
 /** <p>Returns whether if the cursor is push on -mouseExited:.
@@ -390,7 +424,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (BOOL) isSetOnMouseExited
 {
-  return _is_set_on_mouse_exited;
+  return _cursor_flags.is_set_on_mouse_exited;
 }
 
 /**<p>Sets the cursor if -isSetOnMouseEntered is YES or pushs the cursor
@@ -399,11 +433,11 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) mouseEntered: (NSEvent*)theEvent
 {
-  if (_is_set_on_mouse_entered == YES)
+  if (_cursor_flags.is_set_on_mouse_entered == YES)
     {
       [self set];
     }
-  else if (_is_set_on_mouse_exited == NO)
+  else if (_cursor_flags.is_set_on_mouse_exited == NO)
     {
       /*
        * Undocumented behavior - if a cursor is not set on exit or entry,
@@ -420,11 +454,11 @@ backgroundColorHint:(NSColor *)bg
 - (void) mouseExited: (NSEvent*)theEvent
 {
   NSDebugLLog(@"NSCursor", @"Cursor mouseExited:");
-  if (_is_set_on_mouse_exited == YES)
+  if (_cursor_flags.is_set_on_mouse_exited == YES)
     {
       [self set];
     }
-  else if (_is_set_on_mouse_entered == NO)
+  else if (_cursor_flags.is_set_on_mouse_entered == NO)
     {
       /*
        * Undocumented behavior - if a cursor is not set on exit or entry,
@@ -476,7 +510,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) setOnMouseEntered: (BOOL)flag
 {
-  _is_set_on_mouse_entered = flag;
+  _cursor_flags.is_set_on_mouse_entered = flag;
 }
 
 /** <p>Sets whether if the cursor is push on -mouseExited:.
@@ -484,7 +518,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) setOnMouseExited: (BOOL)flag
 {
-  _is_set_on_mouse_exited = flag;
+  _cursor_flags.is_set_on_mouse_exited = flag;
 }
 
 /*
@@ -492,53 +526,127 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // FIXME: This wont work for the two standard cursor
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
-  [aCoder encodeObject: _cursor_image];
-  [aCoder encodePoint: _hot_spot];
+  if ([aCoder allowsKeyedCoding])
+    {
+      if (nil != _cursor_image)
+        {
+          [aCoder encodeObject: _cursor_image forKey: @"NSImage"];
+        }
+      else
+        {
+          int type = _cursor_flags.type;
+          [aCoder encodeInt: type forKey: @"NSCursorType"];
+        }
+      [aCoder encodePoint: _hot_spot forKey: @"NSHotSpot"];
+    }
+  else
+    {
+      BOOL flag;
+
+      // FIXME: This wont work for the standard cursor
+      flag = _cursor_flags.is_set_on_mouse_entered;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cursor_flags.is_set_on_mouse_exited;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aCoder encodeObject: _cursor_image];
+      [aCoder encodePoint: _hot_spot];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      int type = 0;
-      NSPoint hotSpot;
-      
+      DESTROY(self);
       if ([aDecoder containsValueForKey: @"NSCursorType"])
         {
-	  type = [aDecoder decodeIntForKey: @"NSCursorType"];
-	}
+	  int type = [aDecoder decodeIntForKey: @"NSCursorType"];
 
-      DESTROY(self);
-      // FIXME
-      if (type == 0)
-        {
-	  self = [NSCursor arrowCursor];
+          switch (type)
+            {
+            case 0:
+              self = [NSCursor arrowCursor];
+              break;
+            case 1:
+              self = [NSCursor IBeamCursor];
+              break;
+            case 2:
+              self = [NSCursor dragLinkCursor];
+              break;
+            case 3:
+              self = [NSCursor operationNotAllowedCursor];
+              break;
+            case 5:
+              self = [NSCursor dragCopyCursor];
+              break;
+            case 11:
+              self = [NSCursor closedHandCursor];
+              break;
+            case 12:
+              self = [NSCursor openHandCursor];
+              break;
+            case 13:
+              self = [NSCursor pointingHandCursor];
+              break;
+            case 17:
+              self = [NSCursor resizeLeftCursor];
+              break;
+            case 18:
+              self = [NSCursor resizeRightCursor];
+              break;
+            case 19:
+              self = [NSCursor resizeLeftRightCursor];
+              break;
+            case 20:
+              self = [NSCursor crosshairCursor];
+              break;
+            case 21:
+              self = [NSCursor resizeUpCursor];
+              break;
+            case 22:
+              self = [NSCursor resizeDownCursor];
+              break;
+            case 24:
+              self = [NSCursor contextualMenuCursor];
+              break;
+            case 25:
+              self = [NSCursor disappearingItemCursor];
+              break;
+            default:
+              // FIXME
+              self = [NSCursor arrowCursor];
+              break;
+            }
+          RETAIN(self);
 	}
-      else if (type == 1)
+      else
         {
-	  self = [NSCursor IBeamCursor];
-	}
-      else 
-        {
-	  // FIXME
-	  self = [NSCursor arrowCursor];
-	}
-      RETAIN(self);
+          NSPoint hotSpot = NSMakePoint(0, 0);
+          NSImage *image = nil;
 
-      if ([aDecoder containsValueForKey: @"NSHotSpot"])
-        {
-	  hotSpot = [aDecoder decodePointForKey: @"NSHotSpot"];
-	}
+          if ([aDecoder containsValueForKey: @"NSHotSpot"])
+            {
+              hotSpot = [aDecoder decodePointForKey: @"NSHotSpot"];
+            }
+          if ([aDecoder containsValueForKey: @"NSImage"])
+            {
+              image = [aDecoder decodeObjectForKey: @"NSImage"];
+            }
+          
+          self = [[NSCursor alloc] initWithImage: image
+                                         hotSpot: hotSpot];
+        }
     }
   else
     {
+      BOOL flag;
+
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_is_set_on_mouse_entered];
+                                   at: &flag];
+      _cursor_flags.is_set_on_mouse_entered = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_is_set_on_mouse_exited];
+                                   at: &flag];
+      _cursor_flags.is_set_on_mouse_exited = flag;
       _cursor_image = [aDecoder decodeObject];
       _hot_spot = [aDecoder decodePoint];
       [self _computeCid];
