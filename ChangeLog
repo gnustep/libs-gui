@@ -1,8 +1,14 @@
 2011-03-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSSpellChecker.m (-_findNext:, -_learn:, -_forget:,
+	-_ignore:, -_guess:, -_correct:, -_switchDictionary:,
+	-_highlightGuess:): Change action methods to return no result.
+
+2011-03-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSSpellChecker.m (-init, -dealloc): Fix nasty
 	retain/release error, which could crash applications after
-	changing the spell checker language in the spell panel.
+	changing the spell checker language in the spelling panel.
 
 2011-03-13 Fred Kiefer <FredKiefer@gmx.de>
 

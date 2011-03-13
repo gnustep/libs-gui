@@ -541,7 +541,7 @@ inSpellDocumentWithTag:(int)tag
   [self _populateAccessoryView];
 }
 
-- (id) _findNext: (id)sender
+- (void) _findNext: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(checkSpelling:)
@@ -551,11 +551,9 @@ inSpellDocumentWithTag:(int)tag
     {
       NSLog(@"No responder found");
     }
-
-  return self;
 }
 
-- (id) _learn: (id)sender
+- (void) _learn: (id)sender
 {
   NSString *word = [_wordField stringValue];
 
@@ -572,11 +570,9 @@ inSpellDocumentWithTag:(int)tag
   NS_ENDHANDLER
 
   [self _findNext: sender];
-
-  return self;
 }
 
-- (id) _forget: (id)sender
+- (void) _forget: (id)sender
 {
   NSString *word = [_wordField stringValue];
 
@@ -594,11 +590,9 @@ inSpellDocumentWithTag:(int)tag
   NS_ENDHANDLER
 
   [self _findNext: sender];
-
-  return self;
 }
 
-- (id) _ignore: (id)sender
+- (void) _ignore: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(ignoreSpelling:)
@@ -610,18 +604,15 @@ inSpellDocumentWithTag:(int)tag
     }
 
   [self _findNext: sender];
-
-  return self;
 }
 
-- (id) _guess: (id)sender
+- (void) _guess: (id)sender
 {
   // Fill in the view...
   [self _populateAccessoryView];
-  return self;
 }
 
-- (id) _correct: (id)sender
+- (void) _correct: (id)sender
 {
   BOOL processed = [[[NSApp mainWindow] firstResponder]
 		       tryToPerform: @selector(changeSpelling:)
@@ -632,11 +623,9 @@ inSpellDocumentWithTag:(int)tag
       NSLog(@"No responder found");
     }
   [self _findNext: sender];
-
-  return self;
 }
 
-- (id) _switchDictionary: (id)sender
+- (void) _switchDictionary: (id)sender
 {
   id<NSSpellServerPrivateProtocol> proxy = nil;
   NSString *language = nil;
@@ -658,11 +647,9 @@ inSpellDocumentWithTag:(int)tag
 	  [_dictionaryPulldown selectItemWithTitle: _language];
 	}
     }
-
-  return self;
 }
 
-- (id) _highlightGuess: (id)sender
+- (void) _highlightGuess: (id)sender
 {
   NSString *selectedGuess = nil;
 
@@ -670,8 +657,6 @@ inSpellDocumentWithTag:(int)tag
   [_ignoreButton setEnabled: NO];
   [_guessButton setEnabled: YES];
   [_wordField setStringValue: selectedGuess];
-
-  return self;
 }
 
 - (void) awakeFromNib
