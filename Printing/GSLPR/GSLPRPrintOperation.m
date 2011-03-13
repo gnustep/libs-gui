@@ -139,10 +139,18 @@
   
   [info setObject: _path 
            forKey: @"NSOutputFile"];
+
+  if ([[[_path pathExtension] lowercaseString] isEqualToString: @"pdf"])
+    {
+      [info setObject: NSGraphicsContextPDFFormat
+	       forKey: NSGraphicsContextRepresentationFormatAttributeName];
+    }
+  else
+    {
+      [info setObject: NSGraphicsContextPSFormat
+	       forKey: NSGraphicsContextRepresentationFormatAttributeName];
+    }
   
-  [info setObject: NSGraphicsContextPSFormat
-           forKey: NSGraphicsContextRepresentationFormatAttributeName];
-           
   _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
 
   return _context;

@@ -254,7 +254,7 @@ static NSPrintPanel *shared_instance;
   NSSavePanel *sp;
 
   sp = [NSSavePanel savePanel];
-  [sp setRequiredFileType: @"ps"];
+  [sp setAllowedFileTypes: [NSArray arrayWithObjects: @"pdf", @"ps", nil]];
   result = [sp runModal];
   if (result == NSOKButton)
     {

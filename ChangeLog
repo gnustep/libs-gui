@@ -1,3 +1,10 @@
+2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrintPanel.m:
+	* Printing/GSCUPS/GSCUPSPrintOperation.m:
+	* Printing/GSLPR/GSLPRPrintOperation.m: Allow saving a print
+	job as a PDF.
+
 2011-03-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSpellChecker.m (-_findNext:, -_learn:, -_forget:,
