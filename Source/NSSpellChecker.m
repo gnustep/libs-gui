@@ -273,7 +273,7 @@ static int __documentTag = 0;
   languages = [[NSUserDefaults standardUserDefaults]
     stringArrayForKey: @"NSLanguages"];
   // Set the language to the default for the user.
-  _language = [languages objectAtIndex: 0];
+  _language = RETAIN([languages objectAtIndex: 0]);
   _wrapFlag = NO;
   _position = 0;
   _spellPanel = nil;
@@ -296,6 +296,7 @@ static int __documentTag = 0;
 
 - (void)dealloc
 {
+  RELEASE(_language);
   RELEASE(_ignoredWords);
   RELEASE(_serverProxy);
   [super dealloc];

@@ -1,3 +1,9 @@
+2011-03-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSpellChecker.m (-init, -dealloc): Fix nasty
+	retain/release error, which could crash applications after
+	changing the spell checker language in the spell panel.
+
 2011-03-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWorkspace.m (-iconForFile:): Remove unused local variable.
