@@ -1247,15 +1247,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   fileType = [attributes objectForKey: NSFileType];
   if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
-      NSString		*iconPath = nil;
-      BOOL		isApplication = NO;
+      NSString *iconPath = nil;
       
       if ([pathExtension isEqualToString: @"app"]
 	|| [pathExtension isEqualToString: @"debug"]
 	|| [pathExtension isEqualToString: @"profile"])
 	{
-          isApplication = YES;
-	  
 	  image = [self appIconForApp: fullPath];
 	  
 	  if (image == nil)

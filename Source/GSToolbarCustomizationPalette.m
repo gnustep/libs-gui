@@ -100,7 +100,6 @@
   float vAccumulator = 0.0;
   NSEnumerator *e = [[self subviews] objectEnumerator];
   NSView *layoutedView = nil;
-  int lastRow = 0;
   int index = 0;
 
   // Loop over all subviews
@@ -132,12 +131,11 @@
           maxHeight -= vAccumulator;
           hAccumulator = 0.0;
           vAccumulator = height;
-          lastRow = index;
         }
 
       [layoutedView setFrameOrigin: NSMakePoint(hAccumulator, 
                                                 maxHeight - vAccumulator)];
-	  [layoutedView setAutoresizingMask:NSViewMinYMargin];
+      [layoutedView setAutoresizingMask:NSViewMinYMargin];
       hAccumulator += width;
       index++;
     }

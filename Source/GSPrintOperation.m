@@ -152,9 +152,7 @@
 	    }
 	  NS_HANDLER
 	    {
-	      BOOL	result;
-
-	      result = NSRunAlertPanel(_(@"Preview"),
+	      NSRunAlertPanel(_(@"Preview"),
 _(@"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"),
 		_(@"Dismiss"), nil, nil, preview);
 	    }

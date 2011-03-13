@@ -35,10 +35,6 @@
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSCursor.h"
 
-@interface NSRulerView (GNUstepInternal)
-- (NSRect)_markersRect;
-@end
-
 @implementation NSRulerMarker
 
 - (id)initWithRulerView:(NSRulerView *)aRulerView
@@ -238,7 +234,6 @@
   NSPoint mousePositionInWindow;
   NSPoint previousMousePositionInWindow;
   NSPoint mouseOffset;
-  NSRect markersRect;
   float location;
   NSRect drawRect;
   NSRect bounds = [_rulerView bounds];
@@ -270,7 +265,6 @@
   [_rulerView lockFocus];
 
   /* cache some values */
-  markersRect = [_rulerView _markersRect];
   flipped = [_rulerView isFlipped];
   window = [_rulerView window];
   

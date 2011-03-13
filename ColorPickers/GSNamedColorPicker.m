@@ -24,8 +24,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 @interface GSNamedColorPicker: NSColorPicker <NSColorPickingCustom>
 {
@@ -106,12 +106,24 @@
   NSColor *c = [color colorUsingColorSpaceName: NSNamedColorSpace];
   NSString *list;
   NSString *name;
+  unsigned int index;
 
   if (c == nil)
     return;
 
   list = [c catalogNameComponent];
   name = [c colorNameComponent];
+  // Select the correspondig entries in the lists
+  index = [self comboBox: cb
+                indexOfItemWithStringValue: list];
+  if (index == NSNotFound)
+    return;
+  [cb selectItemAtIndex: index];
+
+  index = [[currentList allKeys] indexOfObject: name];
+  if (index == NSNotFound)
+    return;
+  [browser selectRow: index inColumn: 0];
 }
 
 - (void) loadViews

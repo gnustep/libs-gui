@@ -721,7 +721,6 @@ static NSNotificationCenter *nc = nil;
         {
           [_dividerColor set];
           NSHighlightRect(oldRect);
-          lit = NO;
         }
       [self unlockFocus];
     }

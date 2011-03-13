@@ -939,7 +939,7 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setLastColumn: (int)column
 {
-  int i, count, num;
+  int i, count;
   NSBrowserColumn *bc;
   NSScrollView *sc;
 
@@ -958,7 +958,6 @@ static NSTextFieldCell *titleCell;
 
   // Unloads columns.
   count = [_browserColumns count];
-  num = [self numberOfVisibleColumns];
 
   for (i = column + 1; i < count; ++i)
     {

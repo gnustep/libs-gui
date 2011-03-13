@@ -1152,7 +1152,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   if ((files = [self _openFiles]) != nil)
     {
       NSEnumerator *en = [files objectEnumerator];
-      filePath = nil;
+
       while ((filePath = (NSString *)[en nextObject]) != nil)
 	{
 	  [_listener application: self openFile: filePath];

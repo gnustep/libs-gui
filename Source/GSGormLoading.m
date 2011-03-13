@@ -142,8 +142,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
       // Add these objects with there old names as the code expects them
       context = AUTORELEASE([context mutableCopyWithZone: [context zone]]);
-      obj = [context objectForKey: NSNibTopLevelObjects];
-      obj = [context objectForKey: NSNibOwner];
 
       isAwake = YES;
       /*

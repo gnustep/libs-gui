@@ -1,3 +1,23 @@
+2011-03-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWorkspace.m (-iconForFile:): Remove unused local variable.
+	* Source/GSGormLoading.m (gmodel_class): Remove useless assignment.
+	* Source/NSTextBlock.m
+	(-drawBackgroundWithFrame:...layoutManager:): Use the correct variables.
+	* Source/NSRulerMarker.m (-trackMouse:adding:): Remove unused variable.
+	* ColorPickers/GSNamedColorPicker.m (-setColor:): Add missing
+	implementation.
+	* ColorPickers/GSStandardColorPicker.m (-_showNewPicker:),
+	* Source/GSToolbarCustomizationPalette.m (-layout),
+	* Source/NSTableView.m (-sizeToFit),
+	* Source/NSApplication.m (-finishLaunching),
+	* Source/GSGormLoading.m (GSNibContainer-awakeWithContext:),
+	* Source/NSMenu.m (-sizeToFit),
+	* Source/NSSplitView.m (-mouseDown:),
+	* Source/NSBrowser.m (-setLastColumn:),
+	* Source/NSPrintOperation.m (-deliverResult):
+	Removed dead assignments found by static code analyser.
+
 2011-03-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m (_shiftModifier:): Use correct column index

@@ -4522,7 +4522,6 @@ This method is deprecated, use -columnIndexesInRect:. */
   NSTableColumn *tb;
   int i, j;
   float remainingWidth;
-  float availableWidth;
   columnSorting *columnInfo;
   float *currentWidth;
   float *maxWidth;
@@ -4531,9 +4530,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   int numberOfCurrentColumns = 0;
   float previousPoint;
   float nextPoint;
-  float difference;
   float toAddToCurrentColumns;
-
 
   if ((_super_view == nil) || (_numberOfColumns == 0))
     return;
@@ -4550,9 +4547,8 @@ This method is deprecated, use -columnIndexesInRect:. */
   isResizable = NSZoneMalloc(NSDefaultMallocZone(),
 			     sizeof(BOOL) * _numberOfColumns);
 
-  availableWidth = NSMaxX([self convertRect: [_super_view bounds] 
+  remainingWidth = NSMaxX([self convertRect: [_super_view bounds] 
 				fromView: _super_view]);
-  remainingWidth = availableWidth;
 
   /*
    *  We store the minWidth and the maxWidth of every column
@@ -4717,10 +4713,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  remainingWidth += minWidth[i];
 	}
     }
-
-
-  difference = availableWidth - remainingWidth;
-
 
   _tilingDisabled = NO;
   NSZoneFree(NSDefaultMallocZone(), columnInfo);

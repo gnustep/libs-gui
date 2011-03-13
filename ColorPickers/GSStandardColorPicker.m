@@ -26,15 +26,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
-#include <GNUstepGUI/GSVbox.h>
-#include <GNUstepGUI/GSHbox.h>
-#include "GSRGBColorPicker.h"
-#include "GSHSBColorPicker.h"
-#include "GSCMYKColorPicker.h"
-#include "GSGrayColorPicker.h"
-#include "GSStandardColorPicker.h"
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+#import <GNUstepGUI/GSVbox.h>
+#import <GNUstepGUI/GSHbox.h>
+#import "GSRGBColorPicker.h"
+#import "GSHSBColorPicker.h"
+#import "GSCMYKColorPicker.h"
+#import "GSGrayColorPicker.h"
+#import "GSStandardColorPicker.h"
 
 @implementation GSStandardColorPicker
 
@@ -238,20 +238,10 @@
 
 - (void) _showNewPicker: (id) sender
 {
-  NSView *currentView;
-
-  //NSLog(@"Old View size %@", NSStringFromRect([currentView frame]));
   currentPicker = [pickers objectAtIndex: [sender selectedColumn]];
   [currentPicker setColor: [_colorPanel color]];
-  //NSLog(@"Base View size %@", NSStringFromRect([baseView frame]));
-/*  [baseView putView: [currentPicker provideNewView: NO]
-        atRow: 0
-        column: 0
-        withMargins: 0];*/
   [pickerBox setContentView: [currentPicker provideNewView: NO]];
-  currentView = [currentPicker provideNewView: NO];
 
-  //NSLog(@"New View size %@", NSStringFromRect([currentView frame]));
   // Show the new image
   [imageCell setImage: [[sender selectedCell] image]];
 }

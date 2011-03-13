@@ -59,7 +59,6 @@ Class gmodel_class(void)
 	  path = [path stringByAppendingPathComponent: @"libgmodel.bundle"];
 	  if ([[NSFileManager defaultManager] fileExistsAtPath: path])
 	    break;
-	  path = nil;
 	}
       NSCAssert(path != nil, @"Unable to load gmodel bundle");
       NSDebugLog(@"Loading gmodel from %@", path);

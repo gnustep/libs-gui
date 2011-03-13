@@ -327,9 +327,9 @@
   [_borderColorForEdge[NSMaxYEdge] set];
   NSRectFill(NSMakeRect(rect.origin.x, rect.origin.y + rect.size.height + maxy, rect.size.width, maxy));
   [_borderColorForEdge[NSMaxXEdge] set];
-  NSRectFill(NSMakeRect(rect.origin.x + rect.size.width, rect.origin.y, minx, rect.size.height));
+  NSRectFill(NSMakeRect(rect.origin.x + rect.size.width, rect.origin.y, maxx, rect.size.height));
   [_borderColorForEdge[NSMinYEdge] set];
-  NSRectFill(NSMakeRect(rect.origin.x, rect.origin.y - maxy, rect.size.width, maxy));
+  NSRectFill(NSMakeRect(rect.origin.x, rect.origin.y - maxy, rect.size.width, miny));
   // FIXME: how do we handle the corners of differenly sized and colored borders? 
   // Do we have to fill trapezoids?
 }

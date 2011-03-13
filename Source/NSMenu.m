@@ -1483,14 +1483,12 @@ static BOOL menuBarVisible = YES;
   NSRect oldWindowFrame;
   NSRect newWindowFrame;
   NSRect menuFrame;
-  NSSize size;
 
   [_view sizeToFit];
   
   menuFrame = [_view frame];
-  size = menuFrame.size;
  
-	// Main
+  // Main
   oldWindowFrame = [_aWindow frame];
   newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
                              styleMask: [_aWindow styleMask]];
