@@ -67,22 +67,22 @@ static NSString *commandKeyString = @"#";
       keyString = [userDefaults objectForKey: @"GSControlKeyString"];
       if (nil != keyString)
 	{
-	  controlKeyString = keyString;
+	  controlKeyString = [keyString retain];
 	}
       keyString = [userDefaults objectForKey: @"GSAlternateKeyString"];
       if (nil != keyString)
 	{
-	  alternateKeyString = keyString;
+	  alternateKeyString = [keyString retain];
 	}
       keyString = [userDefaults objectForKey: @"GSShiftKeyString"];
       if (nil != keyString)
 	{
-	  shiftKeyString = keyString;
+	  shiftKeyString = [keyString retain];
 	}
       keyString = [userDefaults objectForKey: @"GSCommandKeyString"];
       if (nil != keyString)
 	{
-	  commandKeyString = keyString;
+	  commandKeyString = [keyString retain];
 	}
     }
 }

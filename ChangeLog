@@ -1,5 +1,10 @@
 2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSMenuItemCell.m: Add missing -retain for key
+	equivalent modifier strings
+
+2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/AppKit/NSSavePanel.h: Add OS 10.6 #ifdef around
 	new showsHiddenFiles methods
 
