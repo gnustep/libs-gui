@@ -181,6 +181,7 @@ setPath(NSBrowser *browser, NSString *path)
   NSBox *bar;
   NSButton *button;
   NSImage *image;
+  NSImageView *imageView;
   NSRect r;
   id lastKeyView;
 
@@ -342,17 +343,13 @@ setPath(NSBrowser *browser, NSString *path)
   [_browser setTarget: _okButton];
 
   r = NSMakeRect (8, 261, 48, 48);
-  button = [[NSButton alloc] initWithFrame: r]; 
   image = [[NSApplication sharedApplication] applicationIconImage];
-  [button setImage: image];
-  [button setBordered: NO];
-  [button setEnabled: NO];
-  [[button cell] setImageDimsWhenDisabled: NO];
-  [button setImagePosition: NSImageOnly];
-  [button setAutoresizingMask: NSViewMinYMargin];
-  [button setTag: NSFileHandlingPanelImageButton];
-  [_topView addSubview: button];
-  [button release];
+  imageView = [[NSImageView alloc] initWithFrame: r];
+  [imageView setAutoresizingMask: NSViewMinYMargin];
+  [imageView setImage:image];
+  [imageView setTag: NSFileHandlingPanelImageButton];
+  [_topView addSubview: imageView];
+  [imageView release];
 
   r = NSMakeRect (67, 276, 200, 14);
   _titleField = [[NSTextField alloc] initWithFrame: r]; 

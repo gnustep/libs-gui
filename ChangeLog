@@ -1,10 +1,17 @@
+2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-_initWithoutGModel): Use an image view
+	instead of a button to display the application icon. That way
+	icons get scaled correctly.
+	Patch by Philippe Roussel <p.o.roussel@free.fr>.
+
 2011-03-14  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Resources/GNUmakefile
 	(gui-resources_RESOURCE_FILES_INSTALL_DIR): Removed.
 	* Source/GNUmakefile
 	(libgui-resources_RESOURCE_FILES_INSTALL_DIR): Removed.
-	
+
 2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m: Don't draw spelling underlines
