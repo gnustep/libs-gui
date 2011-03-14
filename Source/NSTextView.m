@@ -5506,8 +5506,15 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
 - (void) _acceptGuess: (id)sender
 {
   NSString *guess = [(NSMenuItem*)sender title];
-  [[self textStorage] replaceCharactersInRange: [self selectedRange]
-				    withString: guess];
+  NSRange range = [self selectedRange];
+
+  if (![self shouldChangeTextInRange: range replacementString: guess])
+    return;
+
+  [_textStorage beginEditing];
+  [self replaceCharactersInRange: range withString: guess];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) rightMouseDown: (NSEvent *)theEvent
@@ -5546,7 +5553,9 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
 
   if (NSEqualRanges([self selectedRange],
 		    [self selectionRangeForProposedRange: NSMakeRange([self selectedRange].location, 0)
-					     granularity: NSSelectByWord]))
+					     granularity: NSSelectByWord])
+      && [self selectedRange].length > 0
+      && [self isEditable])
     {
       // Possibly show spelling suggestions
       
