@@ -1731,38 +1731,41 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
       }
   
     // Draw spelling state (i.e. red underline for misspelled words)
-  
-    for (i=characterRange.location; i<NSMaxRange(characterRange); )
-      {
-	NSRange underlinedCharacterRange;
-	id underlineValue = [self temporaryAttribute: NSSpellingStateAttributeName
-				    atCharacterIndex: i
-			       longestEffectiveRange: &underlinedCharacterRange
-					     inRange: characterRange];
-	if (underlineValue != nil && [underlineValue integerValue] != 0)
-	  {
-	    const NSRange underlinedGylphRange = [self glyphRangeForCharacterRange: underlinedCharacterRange
-							      actualCharacterRange: NULL];
-	  
-	    // we have a range of glpyhs that need underlining, which might span
-	    // multiple line fragments, so we need to iterate though the line fragments
-	    for (j=underlinedGylphRange.location; j<NSMaxRange(underlinedGylphRange); )
-	      {
-		NSRange lineFragmentGlyphRange;
-		const NSRect lineFragmentRect = [self lineFragmentRectForGlyphAtIndex: j
-								       effectiveRange: &lineFragmentGlyphRange];
-		const NSRange rangeToUnderline = NSIntersectionRange(underlinedGylphRange, lineFragmentGlyphRange);
 
-		[self _drawSpellingState: [underlineValue integerValue]
-			   forGylphRange: rangeToUnderline
-			lineFragmentRect: lineFragmentRect
-		  lineFragmentGlyphRange: lineFragmentGlyphRange
-			 containerOrigin: containerOrigin];
+    if ([NSGraphicsContext currentContextDrawingToScreen])
+      {
+	for (i=characterRange.location; i<NSMaxRange(characterRange); )
+	  {
+	    NSRange underlinedCharacterRange;
+	    id underlineValue = [self temporaryAttribute: NSSpellingStateAttributeName
+					atCharacterIndex: i
+				   longestEffectiveRange: &underlinedCharacterRange
+						 inRange: characterRange];
+	    if (underlineValue != nil && [underlineValue integerValue] != 0)
+	      {
+		const NSRange underlinedGylphRange = [self glyphRangeForCharacterRange: underlinedCharacterRange
+								  actualCharacterRange: NULL];
 		
-		j = NSMaxRange(rangeToUnderline);
+		// we have a range of glpyhs that need underlining, which might span
+		// multiple line fragments, so we need to iterate though the line fragments
+		for (j=underlinedGylphRange.location; j<NSMaxRange(underlinedGylphRange); )
+		  {
+		    NSRange lineFragmentGlyphRange;
+		    const NSRect lineFragmentRect = [self lineFragmentRectForGlyphAtIndex: j
+									   effectiveRange: &lineFragmentGlyphRange];
+		    const NSRange rangeToUnderline = NSIntersectionRange(underlinedGylphRange, lineFragmentGlyphRange);
+		    
+		    [self _drawSpellingState: [underlineValue integerValue]
+			       forGylphRange: rangeToUnderline
+			    lineFragmentRect: lineFragmentRect
+		      lineFragmentGlyphRange: lineFragmentGlyphRange
+			     containerOrigin: containerOrigin];
+		    
+		    j = NSMaxRange(rangeToUnderline);
+		  }
 	      }
+	    i += underlinedCharacterRange.length;
 	  }
-	i += underlinedCharacterRange.length;
       }
   }
 }

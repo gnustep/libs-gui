@@ -1,5 +1,10 @@
 2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSLayoutManager.m: Don't draw spelling underlines
+	when printing
+
+2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m: Attempt to add pagination support
 	so lines aren't cut in half when printing
 
