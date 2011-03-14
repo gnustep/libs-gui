@@ -1293,7 +1293,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  if (image == nil || image == [self unknownFiletypeImage])
 	    {
 	      NSString *iconName;
-	      iconName = nil;
+
 	      iconName = [folderPathIconDict objectForKey: fullPath];
 	      if (iconName != nil)
 		{

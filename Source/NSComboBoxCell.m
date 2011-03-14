@@ -34,7 +34,7 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
-#import "AppKit/NSBezierPath.h"
+//#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -44,9 +44,8 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSImage.h"
-#import "AppKit/NSMatrix.h"
 #import "AppKit/NSPanel.h"
-#import "AppKit/NSScreen.h"
+//#import "AppKit/NSScreen.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
@@ -56,11 +55,9 @@
 #import "GSGuiPrivate.h"
 
 static NSNotificationCenter *nc;
-static const BOOL ForceBrowser = NO;
 
 @interface GSComboBoxTableView : NSTableView
 {
-
 }
 
 @end
@@ -136,11 +133,17 @@ static GSComboWindow *gsWindow = nil;
 {
   NSBox *box;
   NSRect borderRect;
+  NSScrollView *scrollView;
+  NSTableColumn *column;
+  NSCell *cell;
    
   self = [super initWithContentRect: contentRect
 		          styleMask: aStyle
 		            backing: bufferingType
 		              defer: flag];	  
+  if (nil == self)
+    return self;
+
   [self setLevel: NSPopUpMenuWindowLevel];
   [self setBecomesKeyOnlyIfNeeded: YES];
   
@@ -153,67 +156,39 @@ static GSComboWindow *gsWindow = nil;
   borderRect = contentRect;
   RELEASE(box);
   
-  if (!ForceBrowser)
-    {
-      NSScrollView *scrollView;
-      NSTableColumn *column;
-      NSCell *cell;
-
-      _tableView = [[GSComboBoxTableView alloc] 
+  _tableView = [[GSComboBoxTableView alloc] 
                      initWithFrame: NSMakeRect(0, 0, 100, 100)];
-      [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      //[_tableView setBackgroundColor: [NSColor whiteColor]];
-      [_tableView setDrawsGrid: NO];
-      [_tableView setAllowsEmptySelection: YES];
-      [_tableView setAllowsMultipleSelection: NO];
-      [_tableView setAutoresizesAllColumnsToFit: YES];
-      [_tableView setHeaderView: nil];
-      [_tableView setCornerView: nil];
-
-      column = [[NSTableColumn alloc] initWithIdentifier: @"content"];
-      cell = [[NSCell alloc] initTextCell: @""];
-      [column setDataCell: cell];
-      RELEASE(cell);
-      [_tableView addTableColumn: column];
-      RELEASE(column);
-
-
-      [_tableView setDataSource: self];
-      [_tableView setDelegate: self];
-      [_tableView setAction: @selector(clickItem:)];
-      [_tableView setTarget: self];
-      
-      scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
-                                                                   borderRect.origin.y,
-                                                                   borderRect.size.width, 
-                                                                   borderRect.size.height)];
-      [scrollView setHasVerticalScroller: YES];
-      [scrollView setDocumentView: _tableView];
-      [box setContentView: scrollView];
-      RELEASE(scrollView);
-
-      [_tableView reloadData];
-    }
-  else
-    {
-      _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
-                                                              borderRect.origin.y,
-                                                              borderRect.size.width, 
-                                                              borderRect.size.height)];
-      [_browser setMaxVisibleColumns: 1];
-      [_browser setTitled: NO];
-      [_browser setHasHorizontalScroller: NO];
-      [_browser setTarget: self];
-      [_browser setAction: @selector(clickItem:)];
-      [_browser setDelegate: self];
-      [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [_browser setAllowsEmptySelection: YES];
-      [_browser setAllowsMultipleSelection: NO];
-      [_browser setReusesColumns: YES];
-      // Create an empty matrix
-      [_browser loadColumnZero];
-      [box setContentView: _browser];
-    }
+  [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  //[_tableView setBackgroundColor: [NSColor whiteColor]];
+  [_tableView setDrawsGrid: NO];
+  [_tableView setAllowsEmptySelection: YES];
+  [_tableView setAllowsMultipleSelection: NO];
+  [_tableView setAutoresizesAllColumnsToFit: YES];
+  [_tableView setHeaderView: nil];
+  [_tableView setCornerView: nil];
+  
+  column = [[NSTableColumn alloc] initWithIdentifier: @"content"];
+  cell = [[NSCell alloc] initTextCell: @""];
+  [column setDataCell: cell];
+  RELEASE(cell);
+  [_tableView addTableColumn: column];
+  RELEASE(column);
+  
+  [_tableView setDataSource: self];
+  [_tableView setDelegate: self];
+  [_tableView setAction: @selector(clickItem:)];
+  [_tableView setTarget: self];
+  
+  scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
+                                                               borderRect.origin.y,
+                                                               borderRect.size.width, 
+                                                               borderRect.size.height)];
+  [scrollView setHasVerticalScroller: YES];
+  [scrollView setDocumentView: _tableView];
+  [box setContentView: scrollView];
+  RELEASE(scrollView);
+  
+  [_tableView reloadData];
 
   return self;
 }
@@ -231,7 +206,6 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) layoutWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  NSMatrix *matrix = [_browser matrixInColumn: 0];
   NSSize bsize = [[GSTheme theme] sizeForBorderType: NSLineBorder];
   NSSize size;
   float itemHeight;
@@ -247,14 +221,7 @@ static GSComboWindow *gsWindow = nil;
   if (itemHeight <= 0)
     {
       // FIX ME : raise NSException
-      if (!ForceBrowser)
-        {
       itemHeight = [_tableView rowHeight];
-        }
-      else
-        {
-      itemHeight = [matrix cellSize].height;
-        }
     }
   size.height = itemHeight;
     
@@ -276,14 +243,7 @@ static GSComboWindow *gsWindow = nil;
       size.width = 0;
     }
    
-  if (!ForceBrowser)
-    {
   [_tableView setRowHeight: size.height];
-    }
-  else
-    {
-  [matrix setCellSize: size];
-    }
     
   // Just check intercell spacing
 
@@ -291,25 +251,11 @@ static GSComboWindow *gsWindow = nil;
   if (intercellSpacing.height <= 0)
     {
       // FIX ME : raise NSException
-      if (!ForceBrowser)
-        {
       intercellSpacing.height = [_tableView intercellSpacing].height;
-        }
-      else
-        {
-      intercellSpacing.height = [matrix intercellSpacing].height;
-	}
     }
   else 
     {
-      if (!ForceBrowser)
-        {
       [_tableView setIntercellSpacing: intercellSpacing];
-        }
-      else
-        {
-      [matrix setIntercellSpacing: intercellSpacing];
-        }
     }
     
     
@@ -508,14 +454,7 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) reloadData
 {
-  if (!ForceBrowser)
-    {
   [_tableView reloadData];
-    }
-  else
-    {
-  [_browser loadColumnZero];
-    }
   [self selectItemAtIndex: [_cell indexOfSelectedItem]];
 }
 
@@ -529,32 +468,13 @@ static GSComboWindow *gsWindow = nil;
 {
   NSRect rect;
   
-  if (!ForceBrowser)
-    {
   rect = [_tableView frameOfCellAtColumn: 0 row: index];
   [_tableView scrollPoint: rect.origin]; 
-    }
-  else
-    {  
-  NSMatrix *matrix = [_browser matrixInColumn: 0];
-
-  rect = [matrix cellFrameAtRow: index column: 0];
-  [matrix scrollPoint: rect.origin];
-    }
 }
 
 - (void) scrollItemAtIndexToVisible: (int)index
 {
-  if (!ForceBrowser)
-    {
   [_tableView scrollRowToVisible: index];
-    }
-  else
-    {
-  NSMatrix *matrix = [_browser matrixInColumn: 0];
-
-  [matrix scrollCellToVisibleAtRow: index column: 0];
-    }
 }
 
 - (void) selectItemAtIndex: (int)index
@@ -562,36 +482,15 @@ static GSComboWindow *gsWindow = nil;
   if (index < 0)
     return;
   
-  if (!ForceBrowser)
-    {
   if ([_tableView selectedRow] == index || [_tableView numberOfRows] <= index)
     return;
   
   [_tableView selectRow: index byExtendingSelection: NO];     
-    }
-  else
-    {
-  NSMatrix *matrix = [_browser matrixInColumn: 0];
-  
-  if ([matrix selectedRow] == index || [matrix numberOfRows] <= index)
-    return;
-    
-  [_browser selectRow: index inColumn: 0];
-    }   
 }
 
 - (void) deselectItemAtIndex: (int)index
 {
-  if (!ForceBrowser)
-    {
   [_tableView deselectAll: self];
-    }
-  else
-    {
-  NSMatrix *matrix = [_browser matrixInColumn: 0];
-
-  [matrix deselectSelectedCell];
-    }
 }
 
 // Target/Action method
@@ -600,19 +499,7 @@ static GSComboWindow *gsWindow = nil;
   if (_cell == nil)
     return;
   
-  if (!ForceBrowser)  
-    {
-      [_cell _setSelectedItem: [sender selectedRow]];
-    }
-  else
-    {
-      [_cell _setSelectedItem: [sender selectedRowInColumn: 0]];
-      // NSBrowser has nothing like browserSelectionDidChange: delegate method
-      // which means selection changes not resulting from a click should be 
-      // handled here by calling previously -setSendsActionOnArrowKeys: on the
-      // browser.
-    }
-  
+  [_cell _setSelectedItem: [sender selectedRow]];
   [self validateSelection];
   
   [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
@@ -665,8 +552,6 @@ static GSComboWindow *gsWindow = nil;
 // Key actions methods
 - (void) moveUpSelection
 {
-  if (!ForceBrowser)
-    {
   int index = [_tableView selectedRow] - 1;
 
   if (index > -1 && index < [_tableView numberOfRows])
@@ -674,38 +559,16 @@ static GSComboWindow *gsWindow = nil;
       [_tableView selectRow: index byExtendingSelection: NO];
       [_tableView scrollRowToVisible: index];
     }
-    }
-  else
-    {
-  int index = [_browser selectedRowInColumn: 0] - 1;
-
-  if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
-    {
-      [_browser selectRow: index inColumn: 0];
-    }
-    }
 }
 
 - (void) moveDownSelection
 {
-  if (!ForceBrowser)
-    { 
   int index = [_tableView selectedRow] + 1;
   
   if (index > -1 && index < [_tableView numberOfRows])
     {
       [_tableView selectRow: index byExtendingSelection: NO];
       [_tableView scrollRowToVisible: index];
-    }
-    }
-  else
-    {
-  int index = [_browser selectedRowInColumn: 0] + 1;
-
-  if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
-    {
-      [_browser selectRow: index inColumn: 0];
-    }
     }
 }
 
@@ -1711,7 +1574,9 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  
+  if (nil == self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       //id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];

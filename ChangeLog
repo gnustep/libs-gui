@@ -1,3 +1,11 @@
+2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Printing/GSCUPS/GSCUPSPrinter.m (+printerWithName:) Autorelease
+	the dummy printer.
+	* Source/NSWorkspace.m (-iconForFile:): Remove unused code.
+	* Source/NSComboBoxCell.m: Remove the old browser based
+	implementation after testing the new one for seven years.
+
 2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSMenuItemCell.m: Add missing -retain for key
@@ -12,7 +20,7 @@
 
 	* Source/NSTextView.m: Add a message in the context menu
 	if there are no spelling suggestions
-	
+
 2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItemCell.m: Make key equivalent modifier string

@@ -109,7 +109,7 @@ static BOOL didWarn;
 
       [printer parsePPDAtPath: ppdPath];
 
-      return printer;
+      return AUTORELEASE(printer);
     }
 
   printer = [[GSCUPSPrinter alloc]
@@ -142,16 +142,16 @@ static BOOL didWarn;
   int n;
 
   set = [[NSMutableSet alloc] init];
-  AUTORELEASE( set );
+  AUTORELEASE(set);
 
-  numDests = cupsGetDests( &dests );
+  numDests = cupsGetDests(&dests);
   
-  for( n = 0; n < numDests; n++ )
+  for (n = 0; n < numDests; n++)
     {
       [set addObject: [NSString stringWithCString: dests[n].name]];
     }
 
-  cupsFreeDests( numDests, dests );
+  cupsFreeDests(numDests, dests);
 
   // No printer found, return at least the dummy printer
   if ([set count] == 0)
