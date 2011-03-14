@@ -1,5 +1,13 @@
 2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenuItemCell.m: Make key equivalent modifier string
+	user adjustable by getting them from the defaults.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document the new
+	equivalent modifier strings and remove the now obsolete
+	documentation for GSFileBrowserHideDotFiles.
+
+2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSavePanel.m (-_initWithoutGModel): Use an image view
 	instead of a button to display the application icon. That way
 	icons get scaled correctly.

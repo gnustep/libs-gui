@@ -28,10 +28,10 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSDictionary.h>
-#import <Foundation/NSException.h>
+//#import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
-#import <Foundation/NSNotification.h>
-#import <Foundation/NSProcessInfo.h>
+//#import <Foundation/NSNotification.h>
+//#import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSUserDefaults.h>
 
@@ -49,6 +49,10 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
+static NSString *controlKeyString = @"^";
+static NSString *alternateKeyString = @"+";
+static NSString *shiftKeyString = @"/";
+static NSString *commandKeyString = @"#";
 
 @implementation NSMenuItemCell
 
@@ -56,7 +60,30 @@
 {
   if (self == [NSMenuItemCell class])
     {
+      NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+      NSString *keyString;
+
       [self setVersion: 2];
+      keyString = [userDefaults objectForKey: @"GSControlKeyString"];
+      if (nil != keyString)
+	{
+	  controlKeyString = keyString;
+	}
+      keyString = [userDefaults objectForKey: @"GSAlternateKeyString"];
+      if (nil != keyString)
+	{
+	  alternateKeyString = keyString;
+	}
+      keyString = [userDefaults objectForKey: @"GSShiftKeyString"];
+      if (nil != keyString)
+	{
+	  shiftKeyString = keyString;
+	}
+      keyString = [userDefaults objectForKey: @"GSCommandKeyString"];
+      if (nil != keyString)
+	{
+	  commandKeyString = keyString;
+	}
     }
 }
 
@@ -67,7 +94,10 @@
 
 - (id) init
 {
-  [super init];
+  self = [super init];
+  if (nil == self)
+    return nil;
+
   [self setButtonType: NSMomentaryLightButton];
   [self setAlignment: NSLeftTextAlignment];
   [self setFont: [NSFont menuFontOfSize: 0]];
@@ -197,7 +227,6 @@
   NSString *key = [_menuItem keyEquivalent];
   unsigned int m = [_menuItem keyEquivalentModifierMask];
   NSString *ucKey = [key uppercaseString];
-  BOOL shift;
   unichar uchar;
 
   if ((key == nil) || [key isEqualToString: @""])
@@ -216,17 +245,21 @@
   else if ([key isEqualToString: @"\\e"])
     key = @"ESC";
   else if ([key isEqualToString: @"\\d"])
-    key=@"DEL";
+    key = @"DEL";
 
-  // shift mask and not an upper case string?
-  shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
-  
-  key = [NSString stringWithFormat:@"%@%@%@%@%@",
-                  (m & NSControlKeyMask) ? @"^" : @"",
-                  (m & NSAlternateKeyMask) ? @"+" : @"",
-                  shift ? @"/" : @"",
-                  (m & NSCommandKeyMask) ? @"#" : @"",
-                  key];
+  if (m != 0)
+    {
+      BOOL shift;
+      // shift mask and not an upper case string?
+      shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
+      key = [NSString stringWithFormat:@"%@%@%@%@%@",
+                      (m & NSControlKeyMask) ? controlKeyString : @"",
+                      (m & NSAlternateKeyMask) ? alternateKeyString : @"",
+                      shift ? shiftKeyString : @"",
+                      (m & NSCommandKeyMask) ? commandKeyString : @"",
+                      key];
+    }
+
   return key;
 }
 
@@ -925,6 +958,8 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {

@@ -93,14 +93,6 @@
 	  it is).  Default is <code>Control-q</code>.
 	  </p>
 	  </desc>
-	  <term>GSFileBrowserHideDotFiles</term>
-	  <desc>
-          <p>
-	  A boolean, by default NO.  If you set it to YES, files that
-	  begin with a dot ('.') are not shown in the NSSavePanel or
-	  NSOpenPanel.
-	  </p>
-	  </desc>
 	  <term>GSUseGhostResize</term>
 	  <desc>
           <p>
@@ -222,6 +214,38 @@
 	  application icon window should not be displayed. Set to <code>YES</code>
 	  for background server applications.
           </p>
+	  </desc>
+	  <term>GSControlKeyString</term>
+	  <desc>
+          <p>
+	  A string used in the menu to signify that the control key needs to 
+          be pressed together with the key equivalent of the menu item. 
+          Default "^".
+	  </p>
+	  </desc>
+	  <term>GSAlternateKeyString</term>
+	  <desc>
+          <p>
+	  A string used in the menu to signify that the alternate key needs to 
+          be pressed together with the key equivalent of the menu item. 
+          Default "+".
+	  </p>
+	  </desc>
+	  <term>GSShiftKeyString</term>
+	  <desc>
+          <p>
+	  A string used in the menu to signify that the shift key needs to 
+          be pressed together with the key equivalent of the menu item. 
+          Default "/".
+	  </p>
+	  </desc>
+	  <term>GSCommandKeyString</term>
+	  <desc>
+          <p>
+	  A string used in the menu to signify that the command key needs to 
+          be pressed together with the key equivalent of the menu item. 
+          Default "#".
+	  </p>
 	  </desc>
 	  <term>NSInterfaceStyleDefault</term>
 	  <desc>
