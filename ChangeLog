@@ -1,3 +1,8 @@
+2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m: Attempt to add pagination support
+	so lines aren't cut in half when printing
+
 2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m: Tweaks to last commit

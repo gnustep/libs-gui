@@ -4097,6 +4097,47 @@ Figure out how the additional layout stuff is supposed to work.
     }
 }
 
+/**** Pagination *****/
+
+- (void) adjustPageHeightNew: (float*)newBottom
+			 top: (float)oldTop
+		      bottom: (float)oldBottom
+		       limit: (float)bottomLimit
+{
+  // FIXME: This assumes we are printing a vertical column
+
+  NSRect proposedPage = NSMakeRect([self bounds].origin.x,
+				   oldTop,
+				   [self bounds].size.width,
+				   oldBottom - oldTop);
+
+  NSRange pageGlyphRange = [_layoutManager glyphRangeForBoundingRect: proposedPage
+						     inTextContainer: _textContainer];
+
+  NSInteger i;
+  for (i = NSMaxRange(pageGlyphRange) - 1; i >= (NSInteger)pageGlyphRange.location; )
+    {
+      NSRange lineFragGlyphRange = NSMakeRange(0, 0);
+      NSRect lineFragRect = [_layoutManager lineFragmentRectForGlyphAtIndex: i
+						      effectiveRange: &lineFragGlyphRange];
+
+      if (NSContainsRect(proposedPage, lineFragRect))
+	{
+	  *newBottom = NSMaxY(lineFragRect);
+	  return;
+	}
+
+      i = lineFragGlyphRange.location - 1;
+    }
+
+  NSLog(@"Error -[NSTextView adjustPageHeightNew:top:bottom:limit:] failed to find a line fragment completely inside the page");
+  *newBottom = oldBottom;
+}
+
+- (float)heightAdjustLimit
+{
+  return 1.0;
+}
 
 
 
