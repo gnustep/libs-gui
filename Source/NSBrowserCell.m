@@ -106,7 +106,10 @@ static NSFont *_leafFont;
  */
 - (id) initTextCell: (NSString *)aString
 {
-  [super initTextCell: aString];
+  self = [super initTextCell: aString];
+  if (nil == self)
+    return self;
+
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
@@ -120,7 +123,10 @@ static NSFont *_leafFont;
 
 - (id) initImageCell: (NSImage *)anImage
 {
-  [super initImageCell: anImage];
+  self = [super initImageCell: anImage];
+  if (nil == self)
+    return self;
+  
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
@@ -357,7 +363,9 @@ static NSFont *_leafFont;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return self;
 
   if ([aDecoder allowsKeyedCoding])
     {

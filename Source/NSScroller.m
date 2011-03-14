@@ -236,6 +236,8 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if(nil == self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -352,17 +354,19 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (id) initWithFrame: (NSRect)frameRect
 {
+  BOOL isHorizontal;
+
   /*
    * determine the orientation of the scroller and adjust it's size accordingly
    */
   if (frameRect.size.width > frameRect.size.height)
     {
-      _scFlags.isHorizontal = YES;
+      isHorizontal = YES;
       frameRect.size.height = [[self class] scrollerWidth];
     }
   else
     {
-      _scFlags.isHorizontal = NO;
+      isHorizontal = NO;
       frameRect.size.width = [[self class] scrollerWidth];
     }
 
@@ -370,6 +374,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   if (!self)
     return nil;
 
+  _scFlags.isHorizontal = isHorizontal;
   if (_scFlags.isHorizontal)
     {
       _arrowsPosition = NSScrollerArrowsMinEnd;

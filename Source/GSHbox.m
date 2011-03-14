@@ -39,21 +39,27 @@
   if (self == [GSHbox class])
     [self setVersion: 1];
 }
+
 //
 // Instance Methods
 //
 -(id) init
 {
-  [super initWithNumberOfRows: 1
-	 numberOfColumns: 1];
+  self = [super initWithNumberOfRows: 1
+                     numberOfColumns: 1];
+  if (nil == self)
+    return nil;
+
   _haveViews = NO;
   _defaultMinXMargin = 0;
   return self;
 }
+
 -(void) dealloc
 {
   [super dealloc];
 }
+
 // 
 // Adding Views 
 // 
@@ -63,6 +69,7 @@
 	enablingXResizing: YES
 	withMinXMargin: _defaultMinXMargin];
 }
+
 -(void)   addView: (NSView *)aView
 enablingXResizing: (BOOL)aFlag
 {
@@ -70,6 +77,7 @@ enablingXResizing: (BOOL)aFlag
 	enablingXResizing: aFlag
 	withMinXMargin: _defaultMinXMargin];
 }
+
 -(void) addView: (NSView *)aView
  withMinXMargin: (float) aMargin
 {
@@ -77,6 +85,7 @@ enablingXResizing: (BOOL)aFlag
 	enablingXResizing: YES
 	withMinXMargin: aMargin];
 }
+
 -(void)   addView: (NSView *)aView
 enablingXResizing: (BOOL)aFlag
    withMinXMargin: (float)aMargin	 
@@ -115,6 +124,7 @@ enablingXResizing: (BOOL)aFlag
     }
 
 }
+
 //
 // Adding a Separator
 //
@@ -122,6 +132,7 @@ enablingXResizing: (BOOL)aFlag
 {
   [self addSeparatorWithMinXMargin: _defaultMinXMargin];
 }
+
 -(void) addSeparatorWithMinXMargin: (float)aMargin
 {
   NSBox *separator;
@@ -136,6 +147,7 @@ enablingXResizing: (BOOL)aFlag
 	withMinXMargin: aMargin];
   [separator release];
 }
+
 //
 // Setting Margins
 //
@@ -175,7 +187,10 @@ enablingXResizing: (BOOL)aFlag
 
 -(id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       _haveViews = [aDecoder decodeBoolForKey: @"GSHaveViews"];

@@ -1,5 +1,31 @@
 2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
 
+	* ColorPickers/GSNamedColorPicker.m
+	* Source/NSBrowser.m
+	* Source/NSPanel.m
+	* Source/NSOpenPanel.m
+	* Source/GSDisplayServer.m
+	* Source/NSFormCell.m
+	* Source/NSBitmapImageRep.m
+	* Source/NSForm.m
+	* Source/GSVbox.m
+	* Source/NSSavePanel.m
+	* Source/GSMemoryPanel.m
+	* Source/NSScroller.m
+	* Source/NSMenuView.m
+	* Source/NSSecureTextField.m
+	* Source/NSHelpPanel.m
+	* Source/NSSegmentedCell.m
+	* Source/NSStepperCell.m
+	* Source/NSColorPanel.m
+	* Source/NSDataLinkPanel.m
+	* Source/GSTable.m
+	* Source/NSBrowserCell.m
+	* Source/GSHbox.m: Correct issues with missing or incorrect self
+	tests in initXXX methods pointed out by static analyser.
+
+2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Printing/GSCUPS/GSCUPSPrinter.m (+printerWithName:) Autorelease
 	the dummy printer.
 	* Source/NSWorkspace.m (-iconForFile:): Remove unused code.

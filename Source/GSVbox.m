@@ -40,21 +40,27 @@
   if (self == [GSVbox class])
     [self setVersion: 1];
 }
+
 //
 // Instance Methods
 //
 -(id) init
 {
-  [super initWithNumberOfRows: 1
-	 numberOfColumns: 1];
+  self = [super initWithNumberOfRows: 1
+                     numberOfColumns: 1];
+  if (nil == self)
+    return nil;
+
   _haveViews = NO;
   _defaultMinYMargin = 0;
   return self;
 }
+
 -(void) dealloc
 {
   [super dealloc];
 }
+
 // 
 // Adding Views 
 // 
@@ -64,6 +70,7 @@
 	enablingYResizing: YES
 	withMinYMargin: _defaultMinYMargin];
 }
+
 -(void)   addView: (NSView *)aView
 enablingYResizing: (BOOL)aFlag
 {
@@ -71,6 +78,7 @@ enablingYResizing: (BOOL)aFlag
 	enablingYResizing: aFlag
 	withMinYMargin: _defaultMinYMargin];
 }
+
 -(void) addView: (NSView *)aView
  withMinYMargin: (float) aMargin
 {
@@ -78,6 +86,7 @@ enablingYResizing: (BOOL)aFlag
 	enablingYResizing: YES
 	withMinYMargin: aMargin];
 }
+
 -(void)   addView: (NSView *)aView
 enablingYResizing: (BOOL)aFlag
    withMinYMargin: (float)aMargin	 
@@ -116,6 +125,7 @@ enablingYResizing: (BOOL)aFlag
     }
   
 }
+
 //
 // Adding a Separator
 //
@@ -123,6 +133,7 @@ enablingYResizing: (BOOL)aFlag
 {
   [self addSeparatorWithMinYMargin: _defaultMinYMargin];
 }
+
 -(void) addSeparatorWithMinYMargin: (float)aMargin
 {
   NSBox *separator;
@@ -177,7 +188,10 @@ enablingYResizing: (BOOL)aFlag
 
 -(id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       _haveViews = [aDecoder decodeBoolForKey: @"GSHaveViews"];

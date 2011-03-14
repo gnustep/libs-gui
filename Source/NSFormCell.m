@@ -61,7 +61,8 @@
  */
 - (id) initTextCell: (NSString *)aString
 {
-  if (! ( self = [super initTextCell: @""] ) )
+  self = [super initTextCell: @""];
+  if (nil == self)
     return nil;
   
   _cell.is_bezeled = YES;
@@ -473,7 +474,10 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSContents"])

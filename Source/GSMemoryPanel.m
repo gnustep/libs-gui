@@ -193,8 +193,6 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   /* Activate debugging of allocation. */
   GSDebugAllocationActive (YES);
 
-  orderingBy = @selector(compareByCount:); 
-  array = [NSMutableArray new];
   hbox = [GSHbox new];
   [hbox setDefaultMinXMargin: 5];
   [hbox setBorder: 5];
@@ -266,13 +264,12 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   scrollView = [[NSScrollView alloc] 
 		 initWithFrame: NSMakeRect (0, 0, 350, 300)];
   [scrollView setDocumentView: table];
-  RELEASE (table);
   [scrollView setHasHorizontalScroller: YES];
   [scrollView setHasVerticalScroller: YES];
   [scrollView setBorderType: NSBezelBorder];
   [scrollView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
-
   [table sizeToFit];
+  RELEASE (table);
  
   vbox = [GSVbox new];
   [vbox setDefaultMinYMargin: 5];
@@ -287,13 +284,18 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   winFrame.origin = NSMakePoint (100, 200);
   
   self = [super initWithContentRect: winFrame
-	 styleMask: (NSTitledWindowMask 
-		     | NSClosableWindowMask 
-		     | NSMiniaturizableWindowMask 
-		     | NSResizableWindowMask)
-	 backing: NSBackingStoreBuffered
-	 defer: NO];
-  
+                          styleMask: (NSTitledWindowMask 
+                                      | NSClosableWindowMask 
+                                      | NSMiniaturizableWindowMask 
+                                      | NSResizableWindowMask)
+                            backing: NSBackingStoreBuffered
+                              defer: NO];
+  if (nil == self)
+    return nil;
+
+  array = [NSMutableArray new];
+  orderingBy = @selector(compareByCount:); 
+
   [self setReleasedWhenClosed: NO];
   [self setContentView: vbox];
   RELEASE (vbox);

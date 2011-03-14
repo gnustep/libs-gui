@@ -49,9 +49,13 @@
 {
   if (aMask & NSColorPanelColorListModeMask)
     {
-      lists =  [[NSColorList availableColorLists] mutableCopy];
-      return [super initWithPickerMask: aMask
+      self = [super initWithPickerMask: aMask
 		    colorPanel: colorPanel];
+      if (nil == self)
+        return nil;
+
+      lists =  [[NSColorList availableColorLists] mutableCopy];
+      return self;
     }
   RELEASE(self);
   return nil;

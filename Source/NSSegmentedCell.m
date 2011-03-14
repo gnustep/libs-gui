@@ -74,7 +74,9 @@
 - (id) init
 {
   self = [super init];
- 
+  if (nil == self)
+    return nil;
+
   _enabled = YES;
  
   return self;

@@ -147,6 +147,9 @@ static NSHelpPanel	*_sharedPanel = nil;
 	styleMask: NSTitledWindowMask|NSClosableWindowMask|NSResizableWindowMask
 	backing: NSBackingStoreBuffered
 	defer: NO];
+      if (nil == self)
+        return nil;
+
       [self setReleasedWhenClosed: NO];
       [self setTitle: _(@"Help")];
       s = [[NSScrollView alloc] initWithFrame: contentRect];
@@ -177,6 +180,7 @@ static NSHelpPanel	*_sharedPanel = nil;
   else
     {
       RELEASE(self);
+      RETAIN(_sharedPanel);
     }
   return _sharedPanel;
 }
@@ -220,7 +224,9 @@ static NSHelpPanel	*_sharedPanel = nil;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   return self;
 }

@@ -618,12 +618,12 @@
 
 - (int) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete
 {
-	if (!complete)
+  if (!complete)
     {
       // we don't implement it really
       return NSImageRepLoadStatusWillNeedAllData;
     }
-	return [self initWithData:data] ? NSImageRepLoadStatusCompleted : NSImageRepLoadStatusUnexpectedEOF;
+  return [self initWithData:data] ? NSImageRepLoadStatusCompleted : NSImageRepLoadStatusUnexpectedEOF;
 }
 
 - (void) dealloc

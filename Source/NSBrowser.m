@@ -95,7 +95,9 @@ static NSTextFieldCell *titleCell;
 
 - (id) init
 {
-  [super init];
+  self = [super init];
+  if (nil == self)
+    return nil;
 
   _isLoaded = NO;
 
@@ -174,7 +176,6 @@ static NSTextFieldCell *titleCell;
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      
     }
   else
     {

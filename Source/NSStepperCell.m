@@ -365,7 +365,9 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {

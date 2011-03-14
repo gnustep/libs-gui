@@ -69,6 +69,8 @@ static Class defaultCellClass = nil;
                     cellClass: (Class)class
                  numberOfRows: (int)rowsHigh
               numberOfColumns: (int)colsWide];
+  if (nil == self)
+    return nil;
 
   [self setIntercellSpacing: NSMakeSize (0, 4)];
   return self;
@@ -85,6 +87,8 @@ static Class defaultCellClass = nil;
                     prototype: (NSCell*)prototype
                  numberOfRows: (int)rowsHigh
               numberOfColumns: (int)colsWide];
+  if (nil == self)
+    return nil;
 
   [self setIntercellSpacing: NSMakeSize (0, 4)];  
   return self;
@@ -413,7 +417,9 @@ static Class defaultCellClass = nil;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   return self;
 }

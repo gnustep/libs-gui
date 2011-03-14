@@ -213,7 +213,9 @@ GSCurrentServer(void)
 */
 - (id) initWithAttributes: (NSDictionary *)attributes
 {
-  [super init];
+  self = [super init];
+  if (nil == self)
+    return nil;
 
   server_info = [attributes mutableCopy];
   event_queue = [[NSMutableArray allocWithZone: [self zone]]

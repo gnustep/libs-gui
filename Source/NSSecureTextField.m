@@ -97,6 +97,9 @@
 - (id) initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
+  if (nil == self)
+    return nil;
+
   [self setEchosBullets: YES];
 
   return self;
@@ -216,6 +219,9 @@
 - (id) initWithCoder: (NSCoder *)decoder
 {
   self = [super initWithCoder: decoder];
+  if (nil == self)
+    return nil;
+
   if ([decoder allowsKeyedCoding])
     {
       _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"];
@@ -298,7 +304,9 @@
   GSSimpleSecureLayoutManager *m;
 
   /* Perform the normal init.  */
-  [super initWithFrame: frameRect  textContainer: aTextContainer];
+  self = [super initWithFrame: frameRect  textContainer: aTextContainer];
+  if (nil == self)
+    return nil;
 
   /* Then, replace the layout manager with a
    * GSSimpleSecureLayoutManager.  */

@@ -196,9 +196,12 @@ setPath(NSBrowser *browser, NSString *path)
   // minimum size we want it to have.  Then, we resize it at the 
   // comfortable size of (384, 426).
   //
-  [super initWithContentRect: NSMakeRect (100, 100, 308, 317)
-	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
-	 backing: 2 defer: YES];
+  self = [super initWithContentRect: NSMakeRect (100, 100, 308, 317)
+                          styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
+                            backing: 2 defer: YES];
+  if (nil == self)
+    return nil;
+
   [self setMinSize: [self frame].size];
 
   r = NSMakeRect (0, 0, 308, 317);
@@ -709,7 +712,9 @@ selectCellWithString: (NSString*)title
 // complicated initializations, you get a simple panel from super.
 -(id) init
 {
-  [self _initWithoutGModel];
+  self = [self _initWithoutGModel];
+  if (nil == self)
+    return nil;
 
 /*
  * All these are set automatically  
@@ -1473,6 +1478,8 @@ selectCellWithString: (NSString*)title
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   // TODO
   return self;

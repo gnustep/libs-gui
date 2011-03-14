@@ -231,6 +231,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 			    backing: NSBackingStoreRetained
 			      defer: NO
 			     screen: nil];
+  if (nil == self)
+    return nil;
+
   [self setTitle: _(@"Colors")];
   [self setBecomesKeyOnlyIfNeeded: YES];
   [self setContentMinSize: contentRect.size];
@@ -710,7 +713,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
 
   return self;
 }

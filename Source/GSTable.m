@@ -65,7 +65,10 @@
 {
   int i;
   
-  [super init];
+  self = [super init];
+  if (nil == self)
+    return nil;
+
   [super setAutoresizesSubviews: NO];
   if (!(rows > 0))
     {
@@ -134,11 +137,13 @@
 
   return self;
 }
+
 -(id) init
 {
   return [self initWithNumberOfRows: 2
 	       numberOfColumns: 2];
 }
+
 -(void) dealloc 
 {
   NSZoneFree (NSDefaultMallocZone (), _jails);
@@ -153,11 +158,13 @@
   NSZoneFree (NSDefaultMallocZone (), _havePrisoner);
   [super dealloc];
 }
+
 - (void) setAutoresizesSubviews: (BOOL)flag
 {
   NSLog (@"Warning: attempt to setAutoresizesSubviews for a GSTable!\n");
   return;
 }
+
 //
 // Setting Border.
 //
@@ -169,16 +176,19 @@
   [self setMaxYBorder: aBorder];
 
 }
+
 -(void) setXBorder: (float)aBorder
 {
   [self setMinXBorder: aBorder];
   [self setMaxXBorder: aBorder];
 }
+
 -(void) setYBorder: (float)aBorder
 {
   [self setMinYBorder: aBorder];
   [self setMaxYBorder: aBorder];
 }
+
 -(void) setMinXBorder: (float)aBorder
 {  
   float borderChange;
@@ -202,6 +212,7 @@
 
   _minXBorder = aBorder;
 }
+
 -(void) setMaxXBorder: (float)aBorder
 {
   float borderChange;
@@ -242,6 +253,7 @@
 
   _minYBorder = aBorder;
 }
+
 -(void) setMaxYBorder: (float)aBorder
 {
   float borderChange;
@@ -258,6 +270,7 @@
 
   _maxYBorder = aBorder;
 }
+
 // 
 // Adding Views 
 // 
@@ -273,6 +286,7 @@
 	minYMargin: 0
 	maxYMargin: 0];  	    
 }
+
 -(void) putView: (NSView *)aView
 	  atRow: (int)row
 	 column: (int)column
@@ -286,6 +300,7 @@
 	minYMargin: margins	 
 	maxYMargin: margins];  	    
 }
+
 -(void) putView: (NSView *)aView
 	  atRow: (int)row
 	 column: (int)column
@@ -300,6 +315,7 @@
 	minYMargin: yMargins	 
 	maxYMargin: yMargins];  	    
 }
+
 // The other methods are only wrappers for this one.
 -(void) putView: (NSView *)aView
 	  atRow: (int)row
@@ -496,6 +512,7 @@
 {
   return _minimumSize;
 } 
+
 //
 // Resizing 
 //
@@ -529,6 +546,7 @@
   [self _updateWholeTable];
   [super setFrameSize: _minimumSize];
 }
+
 //
 // Adding Rows and Columns
 // These should be used to add more rows and columns to the GSTable. 
@@ -574,6 +592,7 @@
   _minRowDimension[_numberOfRows - 1] = 0;
   
 }
+
 // TODO: -(void) insertRow: (int)row;
 // TODO: -(void) removeRow: (int)row;
 -(void) addColumn
@@ -652,6 +671,7 @@
       _expandColumn[aColumn] = aFlag;
     }
 }
+
 -(BOOL) isXResizingEnabledForColumn: (int)aColumn
 {
   if (aColumn > (_numberOfColumns - 1)) 
@@ -666,6 +686,7 @@
     }
   return _expandColumn[aColumn];
 }
+
 -(void) setYResizingEnabled: (BOOL)aFlag
 		     forRow: (int)aRow
 {
@@ -690,6 +711,7 @@
       _expandRow[aRow] = aFlag;
     }
 }
+
 -(BOOL) isYResizingEnabledForRow: (int)aRow
 {
   if (aRow > (_numberOfRows - 1)) 
@@ -704,6 +726,7 @@
     }
   return _expandRow[aRow];
 }
+
 //
 // Getting Row and Column Number
 //
@@ -711,10 +734,12 @@
 {
   return _numberOfRows;
 }
+
 -(int) numberOfColumns
 {
   return _numberOfColumns;
 }
+
 //
 // NSCoding protocol
 //
@@ -790,7 +815,10 @@
 {
   int i;
       
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return self;
+
   [super setAutoresizesSubviews: NO];
 
   if ([aDecoder allowsKeyedCoding])
@@ -1066,7 +1094,6 @@
     }
 }
 
-
 //
 // After computing new theoretical sizes/positions,
 // use the following methods to update the real table view
@@ -1089,6 +1116,7 @@
 	}
     }
 }
+
 -(void) _updateColumnSize: (int)column
 {
   int i;
@@ -1103,6 +1131,7 @@
 	}
     }
 }
+
 -(void) _updateRowOrigin: (int)row
 { 
   int i;
@@ -1118,6 +1147,7 @@
 	}
     }
 }
+
 -(void) _updateColumnOrigin: (int)column
 {
   int i;
@@ -1132,6 +1162,7 @@
 	}
     }
 }
+
 -(void) _updateWholeTable
 {
   int i,j;
@@ -1151,6 +1182,5 @@
       }
 }
 @end
-
 
 

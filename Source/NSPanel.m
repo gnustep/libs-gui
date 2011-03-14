@@ -205,7 +205,10 @@
 {
   BOOL	flag;
 
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       // Nothing to do here, for keyed coding this is handled by NSWindowTemplate.

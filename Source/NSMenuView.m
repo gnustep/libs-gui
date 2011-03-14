@@ -188,8 +188,8 @@ static NSMapTable *viewInfo = 0;
 
 - (id) initAsTearOff
 {
-  [self initWithFrame: NSZeroRect];
-  if (!self)
+  self = [self initWithFrame: NSZeroRect];
+  if (nil == self)
     return nil;
         
   if (_attachedMenu)
