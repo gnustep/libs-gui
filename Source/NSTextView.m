@@ -5623,6 +5623,14 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
 	      [menu insertItem: [NSMenuItem separatorItem] atIndex: i];
 	      [[menu itemAtIndex: i] setTag: GSSpellingSuggestionMenuItemTag];
 	    }
+	  else
+	    {
+	      [menu insertItemWithTitle: _(@"No Suggestions") action:(SEL)0 keyEquivalent:@"" atIndex:0];
+	      [[menu itemAtIndex: 0] setTag: GSSpellingSuggestionMenuItemTag];
+	      [[menu itemAtIndex: 0] setEnabled: NO];
+	      [menu insertItem: [NSMenuItem separatorItem] atIndex: 1];
+	      [[menu itemAtIndex: 1] setTag: GSSpellingSuggestionMenuItemTag];
+	    }
 	}
     }
 
