@@ -50,6 +50,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSMatrix.h"
+#import "AppKit/NSMenu.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSSavePanel.h"
@@ -231,6 +232,14 @@ setPath(NSBrowser *browser, NSString *path)
   [_browser setMinColumnWidth: 140];
   [_topView addSubview: _browser];
   [_browser release];
+  
+  _showsHiddenFilesMenu = [[NSMenu alloc] initWithTitle: @""];
+  [_showsHiddenFilesMenu insertItemWithTitle: _(@"Show Hidden Files") action:@selector(_toggleShowsHiddenFiles:) keyEquivalent:@"" atIndex:0];
+  [[_showsHiddenFilesMenu itemAtIndex: 0] setTarget: self];
+  [[_showsHiddenFilesMenu itemAtIndex: 0] setState: [self showsHiddenFiles]];
+  [_browser setMenu: _showsHiddenFilesMenu];
+  [_showsHiddenFilesMenu release];
+
 
   r = NSMakeRect (8, 39, 291, 21);
   _form = [NSForm new];
@@ -374,6 +383,12 @@ setPath(NSBrowser *browser, NSString *path)
 	NSFilenamesPboardType, nil]];
 
   return self;
+}
+
+- (void) _toggleShowsHiddenFiles: (id)sender
+{
+  NSMenuItem *menuItem = (NSMenuItem*)sender;
+  [self setShowsHiddenFiles: ![menuItem state]];
 }
 
 - (void) _getOriginalSize
@@ -1434,6 +1449,21 @@ selectCellWithString: (NSString*)title
   _isExtensionHidden = flag;
 }
 
+- (BOOL) showsHiddenFiles
+{
+  return _showsHiddenFiles;
+}
+
+- (void) setShowsHiddenFiles: (BOOL) flag
+{
+  if (flag != _showsHiddenFiles)
+    {
+      _showsHiddenFiles = flag;
+      [[_showsHiddenFilesMenu itemAtIndex: 0] setState: flag];
+      [self _reloadBrowser];
+    }
+}
+
 - (BOOL) isExpanded
 {
   // FIXME
@@ -1631,8 +1661,10 @@ createRowsForColumn: (int)column
   {
     NSString *h;
     NSArray *hiddenFiles = nil;
-    BOOL gsSavePanelHideDotFiles;
     
+    // FIXME: Use NSFileManager to tell us what files are hidden/non-hidden
+    // rather than having it hardcoded here
+
     if ([files containsObject: @".hidden"] == YES)
       {
 	/* We need to remove files listed in the xxx/.hidden file.  */
@@ -1641,19 +1673,13 @@ createRowsForColumn: (int)column
 	hiddenFiles = [h componentsSeparatedByString: @"\n"];
       }
 
-    /* We need to remove files starting with `.' (dot), but only if
-       the user asked for it in the defaults.  Perhaps we could add a
-       button turning on/off display of hidden files ?  */
+    /* Alse remove files starting with `.' (dot) */
 
-    /* NB: GWorkspace is using this same user default to determine
-       whether to hide or not dot files.  */
-    gsSavePanelHideDotFiles = [[NSUserDefaults standardUserDefaults]
-				boolForKey: @"GSFileBrowserHideDotFiles"];
-    
     /* Now copy the files array into a mutable array - but only if
        strictly needed.  */
-    if (hiddenFiles != nil  ||  gsSavePanelHideDotFiles)
+    if (!_showsHiddenFiles)
       {
+	int j;
 	/* We must make a mutable copy of the array because the API
 	   says that NSFileManager -directoryContentsAtPath: return a
 	   NSArray, not a NSMutableArray, so we shouldn't expect it to
@@ -1666,22 +1692,20 @@ createRowsForColumn: (int)column
 	    [mutableFiles removeObjectsInArray: hiddenFiles];
 	  }
 	
-	if (gsSavePanelHideDotFiles)
+	
+	/* Don't use i which is unsigned.  */
+	j = [mutableFiles count] - 1;
+	
+	while (j >= 0)
 	  {
-	    /* Don't use i which is unsigned.  */
-	    int j = [mutableFiles count] - 1;
+	    NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
 	    
-	    while (j >= 0)
+	    if ([file hasPrefix: @"."])
 	      {
-		NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
-		
-		if ([file hasPrefix: @"."])
-		  {
-		    /* NSLog (@"Removing dot file %@", file); */
-		    [mutableFiles removeObjectAtIndex: j];
-		  }
-		j--;
+		/* NSLog (@"Removing dot file %@", file); */
+		[mutableFiles removeObjectAtIndex: j];
 	      }
+	    j--;
 	  }
 	
 	files = mutableFiles;

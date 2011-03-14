@@ -79,6 +79,7 @@ enum {
   BOOL _canCreateDirectories;
   BOOL _canSelectHiddenExtension;
   BOOL _isExtensionHidden;
+  BOOL _showsHiddenFiles;
 
   BOOL _delegateHasCompareFilter;
   BOOL _delegateHasShowFilenameFilter;
@@ -89,6 +90,8 @@ enum {
 
   // YES when we stopped because the user pressed 'OK'
   BOOL _OKButtonPressed;
+
+  NSMenu *_showsHiddenFilesMenu;
 }
 
 /*
@@ -119,6 +122,10 @@ enum {
 - (BOOL) canSelectHiddenExtension;
 - (BOOL) isExtensionHidden;
 - (void) setExtensionHidden: (BOOL) flag;
+
+- (BOOL) showsHiddenFiles;
+- (void) setShowsHiddenFiles: (BOOL) flag;
+
 #endif
 
 /*

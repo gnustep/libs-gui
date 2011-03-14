@@ -1,5 +1,15 @@
 2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSSavePanel.m:
+	* Headers/AppKit/NSSavePanel.h: Implement -showsHiddenFiles
+	and -setShowsHiddenFiles:. Add a context menu to the browser
+	to allow toggling this setting.
+
+	NOTE: It defaults to not showing hidden files, and no longer
+	uses the GSFileBrowserHideDotFiles user default.
+
+2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSPrintPanel.m:
 	* Printing/GSCUPS/GSCUPSPrintOperation.m:
 	* Printing/GSLPR/GSLPRPrintOperation.m: Allow saving a print
