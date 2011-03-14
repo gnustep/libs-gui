@@ -73,6 +73,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPasteboard.h"
@@ -576,6 +577,8 @@ static NSCharacterSet *smartRightChars;
    text on the pasteboard. */
 static NSString *NSSmartPastePboardType = @"NSSmartPastePboardType";
 
+static NSMenu *textViewMenu;
+
 /**** Misc. class methods ****/
 
 +(void) initialize
@@ -629,6 +632,17 @@ static NSDictionary *defaultTypingAttributes;
   return defaultTypingAttributes;
 }
 
++ (NSMenu *) defaultMenu
+{
+  if (!textViewMenu)
+    {
+      textViewMenu = [[NSMenu alloc] initWithTitle: @""];
+      [textViewMenu insertItemWithTitle: _(@"Cut") action:@selector(cut:) keyEquivalent:@"x" atIndex:0];
+      [textViewMenu insertItemWithTitle: _(@"Copy") action:@selector(copy:) keyEquivalent:@"c" atIndex:1];
+      [textViewMenu insertItemWithTitle: _(@"Paste") action:@selector(paste:) keyEquivalent:@"v" atIndex:2];
+    }
+  return textViewMenu;
+}
 
 /**** Initialization ****/
 
@@ -5485,6 +5499,86 @@ other than copy/paste or dragging. */
 
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
+}
+
+static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
+
+- (void) _acceptGuess: (id)sender
+{
+  NSString *guess = [(NSMenuItem*)sender title];
+  [[self textStorage] replaceCharactersInRange: [self selectedRange]
+				    withString: guess];
+}
+
+- (void) rightMouseDown: (NSEvent *)theEvent
+{
+  int i;
+  NSMenu *menu = [[self class] defaultMenu];
+  NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+  NSUInteger index = [self _characterIndexForPoint: point
+				   respectFraction: NO]; 
+
+  if (_tf.is_selectable == NO)
+    return;
+
+  if (!_layoutManager)
+    return;
+  
+  for (i=[[menu itemArray] count]-1; i>=0; --i)
+    {
+      NSMenuItem *item = [menu itemAtIndex: i];
+      if ([item tag] == GSSpellingSuggestionMenuItemTag)
+	{
+	  [menu removeItemAtIndex: i];
+	}
+    }
+
+  if (!(index >= [self selectedRange].location &&
+	index <= NSMaxRange([self selectedRange])))
+    {
+      NSRange wordRange = [self selectionRangeForProposedRange: NSMakeRange(index, 0)
+						   granularity: NSSelectByWord];
+
+      [self setSelectedRange: wordRange
+		    affinity: [self selectionAffinity]
+	      stillSelecting: NO];
+    }
+
+  if (NSEqualRanges([self selectedRange],
+		    [self selectionRangeForProposedRange: NSMakeRange([self selectedRange].location, 0)
+					     granularity: NSSelectByWord]))
+    {
+      // Possibly show spelling suggestions
+      
+      NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
+      NSString *word = [[self string] substringWithRange: [self selectedRange]];
+      if ([sp checkSpellingOfString: word startingAt: 0].location != NSNotFound)
+	{
+	  /*NSArray *guesses = [sp guessesForWordRange: wordRange
+	    inString: [self string]
+	    language: [sp language]
+	    inSpellDocumentWithTag: [self spellCheckerDocumentTag]];*/
+	  NSArray *guesses = [sp guessesForWord: word];
+      
+	  if ([guesses count] > 0)
+	    {
+	      for (i=0; i < [guesses count] && i < 5; i++)
+		{
+		  NSString *guess = [guesses objectAtIndex: i];
+
+		  [menu insertItemWithTitle: guess action:@selector(_acceptGuess:) keyEquivalent:@"" atIndex:i];
+		  [[menu itemAtIndex: i] setTarget: self];
+		  [[menu itemAtIndex: i] setTag: GSSpellingSuggestionMenuItemTag];
+		}
+	      [menu insertItem: [NSMenuItem separatorItem] atIndex: i];
+	      [[menu itemAtIndex: i] setTag: GSSpellingSuggestionMenuItemTag];
+	    }
+	}
+    }
+
+  [NSMenu popUpContextMenu: menu 
+		 withEvent: theEvent
+		   forView: self]; 
 }
 
 - (void) keyDown: (NSEvent *)theEvent

@@ -2294,12 +2294,28 @@ this file describes this.
 
   if (_temporaryAttributes != nil && (mask & NSTextStorageEditedCharacters) != 0)
     {
+      int i;
+      NSArray *attrs;
       NSRange oldRange = NSMakeRange(range.location, range.length - lengthChange);
 
       NSString *replacementString = [[GSDummyMutableString alloc] initWithLength: range.length];
       [_temporaryAttributes replaceCharactersInRange: oldRange
 					  withString: replacementString];
       [replacementString release];
+      
+      // In addition, clear any temporary attributes that may have been extended
+      // over the affected range
+
+      if (range.length > 0)
+	{
+	  attrs = [[self temporaryAttributesAtCharacterIndex: range.location
+					      effectiveRange: NULL] allKeys];
+	  for (i=0; i<[attrs count]; i++)
+	    {
+	      [self removeTemporaryAttribute: [attrs objectAtIndex: i]
+			   forCharacterRange: range];
+	    }
+	}
     }
 
   [self invalidateGlyphsForCharacterRange: invalidatedRange

@@ -1,5 +1,13 @@
 2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSLayoutManager.m: Clear temporary attributes
+	on the modified range when informed of a change in the text
+	storage
+	* Source/NSTextView.m: Add a context menu with spelling
+	suggestions and cut/copy/paste
+
+2011-03-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSSavePanel.m:
 	* Headers/AppKit/NSSavePanel.h: Implement -showsHiddenFiles
 	and -setShowsHiddenFiles:. Add a context menu to the browser
