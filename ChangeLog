@@ -1,5 +1,10 @@
 2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/AppKit/NSSavePanel.h: Add OS 10.6 #ifdef around
+	new showsHiddenFiles methods
+
+2011-03-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m: Add a message in the context menu
 	if there are no spelling suggestions
 	

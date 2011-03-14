@@ -122,10 +122,11 @@ enum {
 - (BOOL) canSelectHiddenExtension;
 - (BOOL) isExtensionHidden;
 - (void) setExtensionHidden: (BOOL) flag;
+#endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (BOOL) showsHiddenFiles;
 - (void) setShowsHiddenFiles: (BOOL) flag;
-
 #endif
 
 /*
