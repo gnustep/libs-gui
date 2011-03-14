@@ -456,9 +456,6 @@ HEADERS_INSTALL = ${APPKIT_HEADERS} \
 
 # Resources
 RESOURCE_SET_NAME = libgui-resources
-# Defined twice, one for old gnustep-makes, one for new ones.  In the long
-# run, keep only the new xxx_INSTALL_DIR one.
-libgui-resources_RESOURCE_FILES_INSTALL_DIR = Library/Libraries/Resources/gnustep-gui
 libgui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(libgnustep-gui_INTERFACE_VERSION)/Resources
 libgui-resources_RESOURCE_DIRS =
 libgui-resources_RESOURCE_FILES = Info-gnustep.plist

@@ -31,9 +31,6 @@ include ../Version
 libgnustep-gui_INTERFACE_VERSION=$(GNUSTEP_GUI_MAJOR_VERSION).$(GNUSTEP_GUI_MINOR_VERSION)
 
 RESOURCE_SET_NAME = gui-resources
-# Defined twice, one for old gnustep-makes, one for new ones.  In the long
-# run, keep only the new xxx_INSTALL_DIR one.
-gui-resources_RESOURCE_FILES_INSTALL_DIR = Library/Libraries/Resources/gnustep-gui
 gui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(libgnustep-gui_INTERFACE_VERSION)/Resources
 gui-resources_LANGUAGES = English Italian Lojban Esperanto German French Spanish
 gui-resources_LOCALIZED_RESOURCE_FILES = Localizable.strings
