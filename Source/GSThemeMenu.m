@@ -62,8 +62,8 @@
   GSWindowDecorationView *wv = [window windowView];
   if ([window menu] == nil && menu != nil)
     {
-      NSData *data = [NSArchiver archivedDataWithRootObject: menu]; // copy the view...
-      NSMenu *newMenu = [NSUnarchiver unarchiveObjectWithData: data];
+      // NSData *data = [NSArchiver archivedDataWithRootObject: menu]; // copy the view...
+      NSMenu *newMenu = [menu copy]; // [NSUnarchiver unarchiveObjectWithData: data];
       NSMenuView *menuView = nil;
 
       /* 

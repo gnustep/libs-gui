@@ -1,3 +1,8 @@
+2011-03-16 06:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeMenu.m: Use copy in setMenu:forWindow: instead of
+	NSArchiver.
+
 2011-03-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* ColorPickers/GSNamedColorPicker.m
