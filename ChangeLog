@@ -1,5 +1,9 @@
 2011-03-16  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSComboBoxCell.m: Correct imports.
+
+2011-03-16  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSOutlineView.m (-_didChangeSortDescriptors:),
 	* Source/NSTableView.m (-_didChangeSortDescriptors:): Send the
 	message to the data source not the delegate.

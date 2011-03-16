@@ -34,7 +34,6 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
-//#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -45,7 +44,7 @@
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSPanel.h"
-//#import "AppKit/NSScreen.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
