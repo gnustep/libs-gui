@@ -1714,10 +1714,10 @@ Also returns the child index relative to this parent. */
 
 - (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors
 {
-  if ([_delegate 
+  if ([_dataSource 
 	respondsToSelector: @selector(outlineView:sortDescriptorsDidChange:)])
     {
-      [_delegate outlineView: self sortDescriptorsDidChange: oldSortDescriptors];
+      [_dataSource outlineView: self sortDescriptorsDidChange: oldSortDescriptors];
     }
 }
 

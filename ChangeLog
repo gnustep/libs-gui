@@ -1,3 +1,9 @@
+2011-03-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m (-_didChangeSortDescriptors:),
+	* Source/NSTableView.m (-_didChangeSortDescriptors:): Send the
+	message to the data source not the delegate.
+
 2011-03-16 06:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Use copy in setMenu:forWindow: instead of

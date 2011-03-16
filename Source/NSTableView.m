@@ -6475,10 +6475,10 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors
 {
-  if ([_delegate 
+  if ([_dataSource 
 	respondsToSelector: @selector(tableView:sortDescriptorsDidChange:)])
     {
-      [_delegate tableView: self sortDescriptorsDidChange: oldSortDescriptors];
+      [_dataSource tableView: self sortDescriptorsDidChange: oldSortDescriptors];
     }
 }
 
