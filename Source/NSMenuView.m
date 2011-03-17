@@ -1628,7 +1628,7 @@ static NSMapTable *viewInfo = 0;
                     setHighlightedItemIndex: -1];
                   
                   candidateMenuResult = [[candidateMenu menuRepresentation]
-                           trackWithEvent: original];
+                           _trackWithEvent: original];
                   return candidateMenuResult;
                 }
 
@@ -1642,7 +1642,7 @@ static NSMapTable *viewInfo = 0;
                   BOOL subMenuResult;
 
                   subMenuResult
-                    = [[self attachedMenuView] trackWithEvent: original];
+                    = [[self attachedMenuView] _trackWithEvent: original];
                   if (subMenuResult
                     && wasTransient == [_attachedMenu isTransient])
                     {
@@ -1676,8 +1676,8 @@ static NSMapTable *viewInfo = 0;
                           index != [mainWindowMenuView highlightedItemIndex])
                         {
 		          [self setHighlightedItemIndex: -1];
-		          return [[[[NSApp mainWindow] menu] menuRepresentation]
-			       trackWithEvent: original];
+		          return [mainWindowMenuView
+			       _trackWithEvent: original];
                         }
 		    }
 		}

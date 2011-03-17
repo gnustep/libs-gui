@@ -1,5 +1,10 @@
 2011-03-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenuView.m (-_trackWithEvent:): Use _trackWithEvent:
+	instead of trackWithEvent: to have just one mouse capture call.
+
+2011-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSOutlineView.m (-namesOfPromisedFilesDroppedAtDestination:),
 	* Source/NSTableView.m
 	(-namesOfPromisedFilesDroppedAtDestination:): Implement this drag
