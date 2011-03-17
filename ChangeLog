@@ -1,3 +1,10 @@
+2011-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m (-namesOfPromisedFilesDroppedAtDestination:),
+	* Source/NSTableView.m
+	(-namesOfPromisedFilesDroppedAtDestination:): Implement this drag
+	and drop support method.
+
 2011-03-16  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSComboBoxCell.m: Correct imports.

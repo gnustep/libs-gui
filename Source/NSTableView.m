@@ -5348,6 +5348,21 @@ This method is deprecated, use -columnIndexesInRect:. */
   return _verticalMotionDrag;
 }
 
+- (NSArray*) namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+{
+  if ([_dataSource respondsToSelector:
+                    @selector(tableView:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:)])
+    {
+      return [_dataSource tableView: self
+                          namesOfPromisedFilesDroppedAtDestination: dropDestination
+                          forDraggedRowsWithIndexes: _selectedRows];
+    }
+  else
+    {
+      return nil;
+    }
+}
+
 /*
  * Encoding/Decoding
  */

@@ -1445,6 +1445,21 @@ Also returns the child index relative to this parent. */
   return YES;
 }
 
+- (NSArray*) namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+{
+  if ([_dataSource respondsToSelector:
+                    @selector(outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:)])
+    {
+      return [_dataSource outlineView: self
+                          namesOfPromisedFilesDroppedAtDestination: dropDestination
+                          forDraggedRowsWithIndexes: _selectedRows];
+    }
+  else
+    {
+      return nil;
+    }
+}
+
 // Autosave methods...
 - (void) setAutosaveName: (NSString *)name
 {
