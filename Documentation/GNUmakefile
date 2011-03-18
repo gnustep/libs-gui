@@ -36,14 +36,14 @@ SUBPROJECTS = General GuiUser manual
 
 # The text documents to be generated
 DOCUMENT_TEXT_NAME = \
-install news readme announce bugs
+INSTALL NEWS README ANNOUNCE BUGS
 
 gnustep-gui_TEXI_FILES = \
 version.texi 
 gnustep-gui_DOC_INSTALL_DIR = Developer/Gui/Manual
 GuiUser_DOC_INSTALL_DIR = User/Gui
 
-TOP_DOC_FILES = install news readme announce bugs
+TOP_DOC_FILES = INSTALL NEWS README ANNOUNCE BUGS
 
 INSTALL_TEXI_FILES = version.texi
 INSTALL_TEXT_MAIN = install.texi
