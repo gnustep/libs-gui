@@ -1,3 +1,10 @@
+2011-03-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrintPanel.m:
+	* Panels/Spanish.lproj/GSPrintPanel.gorm:
+	* Panels/English.lproj/GSPrintPanel.gorm: Tweak the print panel to
+	allow the user to choose the printer
+
 2011-03-18  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Documentation/GNUmakefile (DOCUMENT_TEXT_NAME, TOP_DOC_FILES):

@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "_pickedPrinter:",
 	    "orderFrontFontPanel:"
 	);
 	Super = NSObject;
@@ -10,11 +11,12 @@
 	Actions = (
 	    "_pickedButton:",
 	    "_pickedPage:",
-	    "_pickedPrintOp:"
+	    "_pickedPrintOp:",
+	    "_pickedPrinter:"
 	);
 	Outlets = (
-	    _optionPanel,
-	    _panel
+	    "_optionPanel",
+	    "_panel"
 	);
 	Super = NSPanel;
     };

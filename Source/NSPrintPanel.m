@@ -316,6 +316,16 @@ static NSPrintPanel *shared_instance;
   [NSApp stopModalWithCode: (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton];
 }
 
+- (void) _pickedPrinter: (id)sender
+{
+  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo]; 
+  NSString *name = [sender titleOfSelectedItem];
+  NSPrinter *printer = [NSPrinter printerWithName: name];
+ 
+  [info setPrinter: printer];
+  [self updateFromPrintInfo];
+}
+
 - (void) _pickedPage: (id)sender
 {
   id pageMatrix = CONTROL(self, NSPPPageChoiceMatrix);
@@ -381,7 +391,23 @@ static NSPrintPanel *shared_instance;
   dict = [info dictionary];
 
   /* Setup printer information */
-  [CONTROL(self, NSPPNameField) setStringValue: [printer name] ];
+  {
+    NSArray *printerNames = [NSPrinter printerNames];
+    NSInteger i;
+    NSPopUpButton *button = CONTROL(self, NSPPNameField);
+    [button removeAllItems];
+    
+    for (i=0; i<[printerNames count]; i++)
+      {
+      NSString *printerName = [printerNames objectAtIndex: i];
+      [button addItemWithTitle: printerName];
+      if ([[printer name] isEqual: printerName])
+	{
+	  [button selectItemAtIndex: i];
+	}
+    }
+  }
+
   [CONTROL(self, NSPPNoteField) setStringValue: [printer note] ];
   [CONTROL(self, NSPPStatusField) setStringValue: @"Idle" ];
 
