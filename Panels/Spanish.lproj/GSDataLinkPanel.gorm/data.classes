@@ -23,14 +23,14 @@
 	    "pickedBreakAllLinks:"
 	);
 	Outlets = (
-	    _updateModeButton,
-	    _breakAllLinksButton,
-	    _breakLinkButton,
-	    _updateDestinationButton,
-	    _openSourceButton,
-	    _lastUpdateField,
-	    _sourceField,
-	    _updateView
+	    "_updateModeButton",
+	    "_breakAllLinksButton",
+	    "_breakLinkButton",
+	    "_updateDestinationButton",
+	    "_openSourceButton",
+	    "_lastUpdateField",
+	    "_sourceField",
+	    "_updateView"
 	);
 	Super = NSPanel;
     };

@@ -65,7 +65,7 @@
 	Actions = (
 	);
 	Outlets = (
-	    _pageLayoutController
+	    "_pageLayoutController"
 	);
 	Super = NSView;
     };
@@ -77,7 +77,7 @@
 	    "pickedUnits:"
 	);
 	Outlets = (
-	    _controller
+	    "_controller"
 	);
 	Super = NSPanel;
     };

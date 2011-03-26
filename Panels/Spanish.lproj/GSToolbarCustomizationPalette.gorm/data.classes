@@ -15,12 +15,12 @@
 	    "size:"
 	);
 	Outlets = (
-	    _customizationWindow,
-	    _customizationView,
-	    _defaultTemplateView,
-	    _sizeCheckBox,
-	    _displayPopup,
-	    _doneButton
+	    "_customizationWindow",
+	    "_customizationView",
+	    "_defaultTemplateView",
+	    "_sizeCheckBox",
+	    "_displayPopup",
+	    "_doneButton"
 	);
 	Super = NSObject;
     };

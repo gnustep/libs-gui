@@ -1,3 +1,12 @@
+2011-03-25 German Arias <german@xelalug.org>
+
+	* Panels/Spanish.lproj/GSDataLinkPanel.gorm:
+	* Panels/Spanish.lproj/GSPageLayout.gorm:
+	* Panels/Spanish.lproj/GSToolbarCustomizationPalette.gorm:
+	* Panels/Spanish.lproj/GSPrintPanel.gorm:
+	* Panels/Spanish.lproj/GSFindPanel.gorm: Tweak size of some
+	elements for improve the presentation.
+
 2011-03-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSPrintPanel.m:
