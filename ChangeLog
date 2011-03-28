@@ -1,6 +1,7 @@
 2011-03-28 Riccardo Mottola <rm@gnu.org>
 
-	* Source/NSSearchFieldCell.m:
+	* Source/NSSearchFieldCell.m,
+	* Source/NSTextView.m:
 	Remove c99-ism
 
 	* Source/NSSpeechSynthesizer.m:

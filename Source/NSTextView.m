@@ -1518,9 +1518,10 @@ to make sure syncing is handled properly in all cases.
 
   if (_tf.continuous_spell_checking && !flag)
     {
-      _tf.continuous_spell_checking = 0;
-
       const NSRange allRange = NSMakeRange(0, [[self string] length]);
+
+      _tf.continuous_spell_checking = 0;
+      
       [_layoutManager removeTemporaryAttribute: @"NSTextChecked"
 			     forCharacterRange: allRange];
       [_layoutManager removeTemporaryAttribute: NSSpellingStateAttributeName
@@ -6066,6 +6067,9 @@ or add guards
     }
   else
     {
+      NSRange prevNonCharacter;
+      NSRange nextNonCharacter;
+      NSRange range;
       NSCharacterSet *boundary = [[NSCharacterSet letterCharacterSet] invertedSet];
   
       if (selected.location == [[self string] length] && selected.location > 0)
@@ -6073,9 +6077,8 @@ or add guards
 	  selected.location--;
 	}
 
-      NSRange prevNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: NSBackwardsSearch range: NSMakeRange(0, selected.location)];
-      NSRange nextNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: 0 range: NSMakeRange(NSMaxRange(selected), [[self string] length] - NSMaxRange(selected))];
-      NSRange range;
+      prevNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: NSBackwardsSearch range: NSMakeRange(0, selected.location)];
+      nextNonCharacter = [[self string] rangeOfCharacterFromSet: boundary options: 0 range: NSMakeRange(NSMaxRange(selected), [[self string] length] - NSMaxRange(selected))];
   
       if (prevNonCharacter.length == 0)
 	{
