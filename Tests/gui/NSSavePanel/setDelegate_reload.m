@@ -60,6 +60,7 @@ int main(int argc, char **argv)
 	[NSApplication sharedApplication];
 
 	sp=p=[NSSavePanel savePanel];
+        [p setShowsHiddenFiles: YES];
 	[p setDirectory: [[[[[NSBundle mainBundle] bundlePath]
 		stringByDeletingLastPathComponent] stringByDeletingLastPathComponent]
 		stringByAppendingPathComponent: @"dummy"]];
