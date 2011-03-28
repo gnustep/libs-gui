@@ -1,3 +1,8 @@
+2011-03-28 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSSearchFieldCell.m:
+	Remove c99-ism
+
 2011-03-25 German Arias <german@xelalug.org>
 
 	* Panels/Spanish.lproj/GSDataLinkPanel.gorm:

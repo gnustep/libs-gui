@@ -402,6 +402,7 @@
   NSRect rect;
   NSPoint thePoint;
   NSPoint location = [event locationInWindow];
+  NSText *currentEditor;
 
   thePoint = [controlView convertPoint: location fromView: nil];
 
@@ -424,9 +425,9 @@
 				      untilMouseUp: untilMouseUp];
     }
 
-  NSText *currentEditor = ([controlView isKindOfClass:[NSControl class]]
-                              ? [(NSControl *)controlView currentEditor]
-                              : nil);
+  currentEditor = ([controlView isKindOfClass:[NSControl class]]
+		   ? [(NSControl *)controlView currentEditor]
+		   : nil);
   if (currentEditor)
     {
       [currentEditor mouseDown: event];
