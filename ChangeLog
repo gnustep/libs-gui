@@ -3,6 +3,9 @@
 	* Source/NSSearchFieldCell.m:
 	Remove c99-ism
 
+	* Source/NSSpeechSynthesizer.m:
+	Add missing import
+
 2011-03-25 German Arias <german@xelalug.org>
 
 	* Panels/Spanish.lproj/GSDataLinkPanel.gorm:

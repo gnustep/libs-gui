@@ -26,6 +26,7 @@
 */
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSDistantObject.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
