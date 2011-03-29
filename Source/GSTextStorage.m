@@ -63,7 +63,7 @@
 #define	GSI_MAP_RELEASE_VAL(M, X)	
 #define	GSI_MAP_EQUAL(M, X,Y)	[(X).obj isEqualToDictionary: (Y).obj]
 #define GSI_MAP_KTYPES	GSUNION_OBJ
-#define GSI_MAP_VTYPES	GSUNION_INT
+#define GSI_MAP_VTYPES	GSUNION_NSINT
 #define	GSI_MAP_NOCLEAN	1
 #include <GNUstepBase/GSIMap.h>
 
@@ -198,7 +198,7 @@ cacheAttributes(NSDictionary *attrs)
     }
   else
     {
-      node->value.uint++;
+      node->value.nsu++;
       attrs = RETAIN(node->key.obj);
     }
   AUNLOCK();
@@ -219,7 +219,7 @@ unCacheAttributes(NSDictionary *attrs)
       node = GSIMapNodeForKeyInBucket(&attrMap, bucket, (GSIMapKey)((id)attrs));
       if (node != 0)
 	{
-	  if (--node->value.uint == 0)
+	  if (--node->value.nsu == 0)
 	    {
 	      GSIMapRemoveNodeFromMap(&attrMap, bucket, node);
 	      GSIMapFreeNode(&attrMap, node);

@@ -1,3 +1,8 @@
+2011-03-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m:
+	Use pointer sized integers in union for 64bit safety.
+
 2011-03-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSSavePanel/setDelegate_reload.m: Switch the save
