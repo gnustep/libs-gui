@@ -1,3 +1,8 @@
+2011-03-29 German Arias <german@xelalug.org>
+
+	* Source/NSApplication.m (-hide:): Minimize all windows if
+	the AppIcon is suppressed.
+
 2011-03-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m:

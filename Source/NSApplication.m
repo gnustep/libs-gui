@@ -2429,89 +2429,100 @@ image.</p><p>See Also: -applicationIconImage</p>
 #else
   if (_app_is_hidden == NO)
     {
-      NSArray		*windows_list;
-      NSDictionary	*info;
-      NSWindow		*win;
-      NSEnumerator	*iter;
-
-      [nc postNotificationName: NSApplicationWillHideNotification
-			object: self];
-
-      if ([self keyWindow] != nil)
-        {
-          _hidden_key = [self keyWindow];
-          [_hidden_key resignKeyWindow];
-        }
-      
-      // The main window is saved for when the app is activated again.
-      // This is necessary for menu in window.
-      if ([self mainWindow] != nil)
-        {
-          _hidden_main = [self mainWindow];
-          [_hidden_main resignMainWindow];
-        }
-      
-      windows_list = GSOrderedWindows();
-      iter = [windows_list reverseObjectEnumerator];
-
-      while ((win = [iter nextObject]))
-        {
-          if ([win isVisible] == NO && ![win isMiniaturized])
-            {
-              continue;		/* Already invisible	*/
-            }
-          if ([win canHide] == NO)
-            {
-              continue;		/* Not hideable	*/
-            }
-          if (win == _app_icon_window)
-            {
-              continue;		/* can't hide the app icon.	*/
-            }
-          if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
-            {
-              continue;		/* Will be hidden by deactivation	*/
-            }
-          [_hidden addObject: win];
-          [win orderOut: self];
-        }
-      _app_is_hidden = YES;
-
-      if (YES == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (![[NSUserDefaults standardUserDefaults]
+	     boolForKey: @"GSSuppressAppIcon"])
 	{
-#if	MINI_ICON
-	  NSRect	f = [[[self mainMenu] window] frame];
-	  NSPoint	p = f.origin;
+	  NSArray		*windows_list;
+	  NSDictionary  	*info;
+	  NSWindow		*win;
+	  NSEnumerator  	*iter;
 
-	  p.y += f.size.height;
-          [_app_icon_window setFrameTopLeftPoint: p];
-	  [_app_icon_window orderFrontRegardless];
-          [_app_icon_window miniaturize: self];
+	  [nc postNotificationName: NSApplicationWillHideNotification
+	                    object: self];
+
+	  if ([self keyWindow] != nil)
+	    {
+	      _hidden_key = [self keyWindow];
+	      [_hidden_key resignKeyWindow];
+	    }
+	  
+	  // The main window is saved for when the app is activated again.
+	  // This is necessary for menu in window.
+	  if ([self mainWindow] != nil)
+	    {
+	      _hidden_main = [self mainWindow];
+	      [_hidden_main resignMainWindow];
+	    }
+	  
+	  windows_list = GSOrderedWindows();
+	  iter = [windows_list reverseObjectEnumerator];
+	  
+	  while ((win = [iter nextObject]))
+	    {
+	      if ([win isVisible] == NO && ![win isMiniaturized])
+		{
+		  continue;		/* Already invisible	*/
+		}
+	      if ([win canHide] == NO)
+		{
+		  continue;		/* Not hideable	*/
+		}
+	      if (win == _app_icon_window)
+		{
+		  continue;		/* can't hide the app icon.	*/
+		}
+	      if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+		{
+		  continue;		/* Will be hidden by deactivation	*/
+		}
+	      [_hidden addObject: win];
+	      [win orderOut: self];
+	    }
+	  _app_is_hidden = YES;
+	  
+	  if (YES == [[NSUserDefaults standardUserDefaults]
+		       boolForKey: @"GSSuppressAppIcon"])
+	    {
+#if	MINI_ICON
+	      NSRect	f = [[[self mainMenu] window] frame];
+	      NSPoint	p = f.origin;
+	      
+	      p.y += f.size.height;
+	      [_app_icon_window setFrameTopLeftPoint: p];
+	      [_app_icon_window orderFrontRegardless];
+	      [_app_icon_window miniaturize: self];
 #else
-	  [_app_icon_window orderFrontRegardless];
+	      [_app_icon_window orderFrontRegardless];
 #endif
+	    }
+	  else
+	    {
+	      [[_app_icon_window contentView] setNeedsDisplay: YES];
+	    }
+	  
+	  /*
+	   * On hiding we also deactivate the application which will make the menus
+	   * go away too.
+	   */
+	  [self deactivate];
+	  _unhide_on_activation = YES;
+	  
+	  info = [self _notificationUserInfo];
+	  [nc postNotificationName: NSApplicationDidHideNotification
+			    object: self
+		          userInfo: info];
+	  [[[NSWorkspace sharedWorkspace] notificationCenter]
+	    postNotificationName: NSApplicationDidHideNotification
+		          object: [NSWorkspace sharedWorkspace]
+		        userInfo: info];
 	}
       else
 	{
-	  [[_app_icon_window contentView] setNeedsDisplay: YES];
+	  /*Minimize all windows if there isn't an AppIcon. This isn't the
+	    most elegant solution, but avoids to loss the app if the user
+	    hide it. */
+	  [self miniaturizeAll: sender];
 	}
-
-      /*
-       * On hiding we also deactivate the application which will make the menus
-       * go away too.
-       */
-      [self deactivate];
-      _unhide_on_activation = YES;
-
-      info = [self _notificationUserInfo];
-      [nc postNotificationName: NSApplicationDidHideNotification
-			object: self
-		      userInfo: info];
-      [[[NSWorkspace sharedWorkspace] notificationCenter]
-        postNotificationName: NSApplicationDidHideNotification
-		      object: [NSWorkspace sharedWorkspace]
-		    userInfo: info];
     }
 #endif
 }
