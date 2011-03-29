@@ -57,6 +57,7 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSFormatter.h>

@@ -1,3 +1,9 @@
+2011-03-29 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSParagraphStyle.m
+	* Source/NSMatrix.m
+	Added missing import.
+	
 2011-03-29 German Arias <german@xelalug.org>
 
 	* Source/NSApplication.m (-hide:): Minimize all windows if

@@ -27,6 +27,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import "AppKit/NSParagraphStyle.h"
 
