@@ -36,6 +36,7 @@
 @class NSMapTable;
 @class NSMutableArray;
 @class NSString;
+@class NSURL;
 
 @interface NSOutlineView : NSTableView
 {
@@ -161,6 +162,17 @@
 - (BOOL) outlineView: (NSOutlineView *)outlineView 
           writeItems: (NSArray*)items 
         toPasteboard: (NSPasteboard*)pboard;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) outlineView: (NSOutlineView *)outlineView
+  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSArray *) outlineView: (NSOutlineView *)outlineView
+namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+          forDraggedItems: (NSArray *)items;
+#endif
 @end
 
 /*
@@ -271,8 +283,6 @@ willDisplayOutlineCell: (id)cell
 - (BOOL) selectionShouldChangeInOutlineView: (NSOutlineView *)outlineView;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (void) outlineView: (NSOutlineView *)outlineView
-  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
 - (void) outlineView: (NSOutlineView *)outlineView
   didClickTableColumn: (NSTableColumn *)aTableColumn;
 #endif

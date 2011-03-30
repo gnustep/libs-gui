@@ -1,9 +1,17 @@
+2011-03-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTableView.h,
+	* Headers/AppKit/NSOutlineView.h,
+	* Source/NSOutlineView.m
+	(-namesOfPromisedFilesDroppedAtDestination:): Correct declaration
+	of data source methods and the implementation in NSOutlineView.
+
 2011-03-29 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSParagraphStyle.m
 	* Source/NSMatrix.m
 	Added missing import.
-	
+
 2011-03-29 German Arias <german@xelalug.org>
 
 	* Source/NSApplication.m (-hide:): Minimize all windows if

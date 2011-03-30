@@ -1448,11 +1448,21 @@ Also returns the child index relative to this parent. */
 - (NSArray*) namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 {
   if ([_dataSource respondsToSelector:
-                    @selector(outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:)])
+                    @selector(outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedItems:)])
     {
+      int count = [_selectedRows count];
+      NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity: count];
+      unsigned int index = [_selectedRows firstIndex];
+      
+      while (index != NSNotFound)
+        {
+          [itemArray addObject: [self itemAtRow: index]];
+          index = [_selectedRows indexGreaterThanIndex: index];
+        }
+
       return [_dataSource outlineView: self
                           namesOfPromisedFilesDroppedAtDestination: dropDestination
-                          forDraggedRowsWithIndexes: _selectedRows];
+                          forDraggedItems: itemArray];
     }
   else
     {

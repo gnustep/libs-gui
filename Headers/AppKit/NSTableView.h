@@ -41,6 +41,7 @@
 @class NSTableHeaderView;
 @class NSText;
 @class NSImage;
+@class NSURL;
 
 typedef enum _NSTableViewDropOperation {
   NSTableViewDropOn,
@@ -362,10 +363,19 @@ objectValueForTableColumn: (NSTableColumn *)aTableColumn
 - (BOOL) tableView: (NSTableView*)tableView
          writeRows: (NSArray*)rows
       toPasteboard: (NSPasteboard*)pboard;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) tableView: (NSTableView*)tableView
+  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
+#endif
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL) tableView: (NSTableView*)tableView
 writeRowsWithIndexes: (NSIndexSet*)rows
       toPasteboard: (NSPasteboard*)pboard;
+- (NSArray *) tableView: (NSTableView *)aTableView
+namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+forDraggedRowsWithIndexes: (NSIndexSet *)indexSet;
 #endif
 @end
 
@@ -382,8 +392,6 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
 
 - (BOOL) selectionShouldChangeInTableView: (NSTableView *)aTableView;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (void) tableView: (NSTableView*)tableView
-  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
 - (void) tableView: (NSTableView*)tableView
 didClickTableColumn: (NSTableColumn *)tableColumn;
 - (void) tableView: (NSTableView*)tableView
