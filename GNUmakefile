@@ -64,7 +64,8 @@ ColorPickers \
 KeyBindings \
 Resources \
 Printing \
-Themes
+Themes \
+Tests
 
 # Build and install sounds, if sound support is present.
 SUBPROJECTS += $(BUILD_SOUNDS)
