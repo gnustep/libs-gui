@@ -200,7 +200,7 @@ static GSTextFinder *sharedTextFinder;
       break;
 
     default:
-      NSLog(@"Unknown find panel action (%u)", [sender tag]);
+      NSLog(@"Unknown find panel action (%ld)", (long)[sender tag]);
     }
 }
 

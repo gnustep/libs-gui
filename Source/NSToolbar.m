@@ -911,7 +911,7 @@ static GSValidationCenter *vc = nil;
 
       displayMode = (NSToolbarDisplayMode)[[config objectForKey: @"displayMode"] intValue];
       [self setDisplayMode: displayMode];
-      sizeMode = (NSToolbarDisplayMode)[[config objectForKey: @"sizeMode"] intValue];
+      sizeMode = (NSToolbarSizeMode)[[config objectForKey: @"sizeMode"] intValue];
       [self setSizeMode: sizeMode];
     }
 

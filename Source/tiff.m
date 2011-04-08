@@ -125,7 +125,7 @@ TiffHandleWrite(thandle_t handle, tdata_t buf, tsize_t count)
   if (chand->position + count > chand->size)
     {
       chand->size = chand->position + count + 1;
-      chand->data = objc_realloc(chand->data, chand->size);
+      chand->data = realloc(chand->data, chand->size);
       *(chand->outdata) = chand->data;
       if (chand->data == NULL)
 	return 0;
