@@ -169,5 +169,10 @@
   return NO; // themes that handle events in a popUpMenu should return YES
 }
 
+- (BOOL) menuShouldShowIcon
+{
+  return YES; // override whether or not to show the icon in the menu.
+}
+
 @end
 

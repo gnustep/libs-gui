@@ -274,16 +274,19 @@ static BOOL menuBarVisible = YES;
           NSMutableArray *itemsToMove;
           NSImage *ti;
           float bar;
+	  
+	  if([[GSTheme theme] menuShouldShowIcon])
+	    {
+	      ti = [[NSApp applicationIconImage] copy];
+	      if (ti == nil)
+		{
+		  ti = [[NSImage imageNamed: @"GNUstep"] copy];
+		}
+	      [ti setScalesWhenResized: YES];
+	      bar = [NSMenuView menuBarHeight] - 4;
+	      [ti setSize: NSMakeSize(bar, bar)];
+	    }
 
-          ti = [[NSApp applicationIconImage] copy];
-          if (ti == nil)
-            {
-              ti = [[NSImage imageNamed: @"GNUstep"] copy];
-            }
-          [ti setScalesWhenResized: YES];
-          bar = [NSMenuView menuBarHeight] - 4;
-          [ti setSize: NSMakeSize(bar, bar)];
-          
           itemsToMove = [NSMutableArray new];
           
           if (appMenu == nil)
@@ -309,9 +312,13 @@ static BOOL menuBarVisible = YES;
                   RELEASE (appItem);
                 }
             }
-          [appItem setImage: ti];
-          RELEASE(ti);
-          
+
+	  if([[GSTheme theme] menuShouldShowIcon])
+	    {
+	      [appItem setImage: ti];
+	      RELEASE(ti);
+	    }
+
           // Collect all simple items plus "Info" and "Services"
           for (i = 1; i < [_items count]; i++)
             {
