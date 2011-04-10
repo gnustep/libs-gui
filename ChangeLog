@@ -1,3 +1,11 @@
+2011-04-09 03:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeMenu.m: added method - (BOOL) menuShouldShowIcon
+	* Source/NSMenu.m: Call menuShouldShowIcon so that the theme
+	can determine if it should show the app icon.
+	* Headers/Additions/GNUstepGUI/GSTheme.m: add declaration for
+	menuShouldShowIcon.
+	
 2011-04-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/tiff.m,
