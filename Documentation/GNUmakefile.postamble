@@ -94,7 +94,7 @@ after-clean::
 # after-check::
 
 regenerate: $(DOCUMENT_TEXT_NAME)
-	mv $(TOP_DOC_FILES) ..
+	mv -f $(TOP_DOC_FILES) ..
 
 version.texi: ../Version
 	rm -f version.texi

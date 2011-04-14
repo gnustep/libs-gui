@@ -19,6 +19,33 @@
 	changes and other information that might help developers and users
 	migrate to using a newer version of the library.
       </p>
+
+     <section>
+      	<heading>Version 0.20.0</heading>
+	<p>A new stable release. Many improvments with Nib loading, documents and document controllers. Fixed
+	many drawing issues, particularly ones related to flipping. Much improved theming.
+	</p>
+	<deflist>
+            <term>NSOutlineView</term>
+            <desc>
+	      Use NSInteger and CGFloat in method names where appropriate.
+            </desc>
+            <term>NSDocument</term>
+            <desc>
+	      Change result type of method-saveToURL:ofType:forSaveOperation:delegate:didSaveSelector:contextInfo:
+	      from BOOL to void.
+            </desc>
+            <term>NSView</term>
+            <desc>
+	      New 10.5 methods.
+            </desc>
+            <term>NSCursor</term>
+            <desc>
+	      New 10.6 methods.
+            </desc>
+  	</deflist>
+      </section>
+
      <section>
       	<heading>Version 0.18.0</heading>
 	<p>A new stable release that has had many improvements. Many new
