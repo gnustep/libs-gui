@@ -1,3 +1,8 @@
+2011-04-17  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* configure.ac: Copy the -Wdeclaration-after-statement test from
+	base. Also adds -Wall.
+
 2011-04-14  Adam Fedor  <fedor@gnu.org>
 
 	* Version: Bumb version.
