@@ -1,3 +1,18 @@
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (-compositeToPoint:fromRect:operation:fraction:):
+	New simple implementation which calls
+	-drawAtPoint:fromRect:operation:fraction:.
+	Also respects the user space scale factor.
+	* Source/NSImage.m (-guiDrawInRect:fromRect:operation:fraction):
+	Remove a special case which called -compositeToPoint:..., which would
+	cause an infinite loop when combined with the above change.
+
+	Also avoid using -drawRepresentation:inRect: because -drawInRect:...
+	is supposed to fill the destination rect regardless of the setting
+	of -scalesWhenResized. This is a change borrowed from
+	-nativeDrawInRect:...
+
 2011-04-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-_organizeMenu): Move some code around to avoid

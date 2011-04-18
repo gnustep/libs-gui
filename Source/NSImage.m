@@ -840,61 +840,35 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                 operation: (NSCompositingOperation)op
                  fraction: (float)delta
 {
-  NS_DURING
-    { 
-      NSImageRep *rep = [self bestRepresentationForDevice: nil];
-      NSCachedImageRep *cache = nil;
+  NSGraphicsContext *ctxt = GSCurrentContext();
 
-      if (rep == nil)
-        NS_VOIDRETURN;
-
-      if (([GSCurrentContext() isDrawingToScreen] == YES)
-          && _cacheMode != NSImageCacheNever)
-        cache = [self _doImageCache: rep];
-
-      if (cache != nil)
-        {
-          NSGraphicsContext *ctxt = GSCurrentContext();
-          NSRect rect = [cache rect];
-
-          NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
-                      NSStringFromRect(rect), NSStringFromRect(srcRect));
-
-          // Move the drawing rectangle to the origin of the image rep
-          // and intersect the two rects.
-          srcRect.origin.x += rect.origin.x;
-          srcRect.origin.y += rect.origin.y;
-          rect = NSIntersectionRect(srcRect, rect);
-          
-          [ctxt GScomposite: [[cache window] gState]
-                    toPoint: aPoint
-                   fromRect: rect
-                  operation: op
-                   fraction: delta];
-        }
-      else        
-        {
-          NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-          [self drawRepresentation: rep inRect: rect];
-        }
-    }
-  NS_HANDLER
+  // Calculate the user space scale factor of the current window
+  NSView *focusView = [NSView focusView];
+  CGFloat scaleFactor = 1.0;
+  if (focusView != nil)
     {
-      NSLog(@"NSImage: compositeToPoint:fromRect:operation:fraction:"
-        @"failed due to %@: %@", 
-        [localException name], [localException reason]);
-      if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
-        {
-            NSImage *image = [_delegate imageDidNotDraw: self inRect: srcRect];
-            
-            if (image != nil)
-              [image compositeToPoint: aPoint
-                     fromRect: srcRect 
-                     operation: op
-                     fraction: delta];
-        }
+      scaleFactor = [[focusView window] userSpaceScaleFactor];
     }
-  NS_ENDHANDLER
+
+  // Set the CTM to the identity matrix with the current translation
+  // and the user space scale factor
+  {
+    NSAffineTransform *backup = [ctxt GSCurrentCTM];
+    NSAffineTransform *newTransform = [NSAffineTransform transform];
+    NSPoint translation = [backup transformPoint: aPoint];
+    [newTransform translateXBy: translation.x
+			   yBy: translation.y];
+    [newTransform scaleBy: scaleFactor];
+    
+    [ctxt GSSetCTM: newTransform];
+    
+    [self drawAtPoint: NSMakePoint(0,0)
+	     fromRect: srcRect
+	    operation: op
+	     fraction: delta];
+    
+    [ctxt GSSetCTM: backup];
+  }
 }
 
 - (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat
@@ -1153,24 +1127,6 @@ Fallback for backends other than Cairo. */
   [transform scaleXBy: dstRect.size.width / srcRect.size.width
                   yBy: dstRect.size.height / srcRect.size.height];
 
-
-  /* If the effective transform is the identity transform and there's
-     no dissolve, we can composite from our cache.  */
-
-  if (delta == 1.0)
-    {
-      NSAffineTransformStruct ts = [transform transformStruct];
-      
-      if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
-          && fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
-        {
-          [self compositeToPoint: dstRect.origin
-                fromRect: srcRect
-                operation: op];
-          return;
-        }
-    }
-
   /* We can't composite or dissolve directly from the image reps, so we
      create a temporary off-screen window large enough to hold the
      transformed image, draw the image rep there, and composite from there
@@ -1254,8 +1210,20 @@ Fallback for backends other than Cairo. */
     [ctxt1 GSSetCTM: transform];
     gState = [ctxt1 GSDefineGState];
 
-    [self drawRepresentation: [self bestRepresentationForDevice: nil]
-                      inRect: NSMakeRect(0, 0, s.width, s.height)];
+
+    /* We must not use -drawRepresentation:inRect: because the image must drawn 
+       scaled even when -scalesWhenResized is NO */
+
+    // FIXME: should the background color be filled here?
+    // If I don't I get black backgrounds on images with xlib; maybe an xlib backend bug
+    PSgsave();
+    if (_color != nil)
+      {
+	[_color set];
+	NSRectFill(NSMakeRect(0, 0, s.width, s.height));
+      }
+    [[self bestRepresentationForDevice: nil] drawInRect: NSMakeRect(0, 0, s.width, s.height)];
+    PSgrestore();
 
     /* If we're doing a dissolve, use a DestinationIn composite to lower
        the alpha of the pixels.  */
