@@ -99,24 +99,24 @@
     {
       float titleHeight = [theme titlebarHeight];
 
-      titleBarRect = NSMakeRect(0.0, _frame.size.height - titleHeight,
-	_frame.size.width, titleHeight);
+      titleBarRect = NSMakeRect(0.0, [self bounds].size.height - titleHeight,
+	[self bounds].size.width, titleHeight);
     }
   if (hasResizeBar)
     {
-      resizeBarRect = NSMakeRect(0.0, 0.0, _frame.size.width, [theme resizebarHeight]);
+      resizeBarRect = NSMakeRect(0.0, 0.0, [self bounds].size.width, [theme resizebarHeight]);
     }
   if (hasCloseButton)
     {
       closeButtonRect = NSMakeRect(
-	_frame.size.width - 15 - 4, _frame.size.height - 15 - 4, 15, 15);
+	[self bounds].size.width - 15 - 4, [self bounds].size.height - 15 - 4, 15, 15);
       [closeButton setFrame: closeButtonRect];
     }
 
   if (hasMiniaturizeButton)
     {
       miniaturizeButtonRect = NSMakeRect(
-	4, _frame.size.height - 15 - 4, 15, 15);
+	4, [self bounds].size.height - 15 - 4, 15, 15);
       [miniaturizeButton setFrame: miniaturizeButtonRect];
     }
 }
@@ -180,7 +180,7 @@
 - (void) drawRect: (NSRect)rect
 {
   [[GSTheme theme] drawWindowBorder: rect
-                   withFrame: _frame 
+                   withFrame: [self bounds] 
                    forStyleMask: [window styleMask]
                    state: inputState
                    andTitle: [window title]];

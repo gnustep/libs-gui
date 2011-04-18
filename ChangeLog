@@ -1,3 +1,8 @@
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSStandardWindowDecorationView.m: Use bounds rect instead
+	of frame rect when laying out the window parts (title bar, etc).
+
 2011-04-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Rewrote the handling of the data
