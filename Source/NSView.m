@@ -296,19 +296,26 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           [_matrixToWindow makeIdentityMatrix];
           [_matrixFromWindow makeIdentityMatrix];
         }
-      if (!_super_view)
-        {
-          _visibleRect = _bounds;
-          [_matrixToWindow makeIdentityMatrix];
-          [_matrixFromWindow makeIdentityMatrix];
-        }
       else
         {
           NSRect		superviewsVisibleRect;
-          BOOL			wasFlipped = [_super_view isFlipped];
-          NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
-          NSAffineTransformStruct     ts = [pMatrix transformStruct];
+          BOOL			wasFlipped;
+          NSAffineTransform	*pMatrix;
+          NSAffineTransformStruct     ts;
  
+	  if (_super_view != nil)
+	    {
+	      wasFlipped = [_super_view isFlipped];
+	      pMatrix = [_super_view _matrixToWindow];
+	    }
+	  else
+	    {
+	      wasFlipped = NO;
+	      pMatrix = [NSAffineTransform transform];
+           }
+	      
+	  ts = [pMatrix transformStruct];
+
           /* prepend translation */
           ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
           ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
@@ -340,10 +347,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           [_matrixFromWindow setTransformStruct: ts];
           [_matrixFromWindow invert];
 
-          superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
-                                        fromView: _super_view];
-
-          _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+	  if (_super_view != nil)
+	    {
+	      superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+					       fromView: _super_view];
+	      
+	      _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+	    }
+	  else
+	    {
+	      _visibleRect = _bounds;
+	    }
         }
       if (_rFlags.has_tooltips != 0)
         {
@@ -1605,59 +1619,44 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
 {
-  NSPoint	new;
-  NSAffineTransform	*matrix;
+  NSPoint inBase;
 
-  if (!aView)
-    aView = [[_window contentView] superview];
-  if (aView == self || aView == nil)
-    return aPoint;
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
-
-  matrix = [aView _matrixToWindow];
-  new = [matrix transformPoint: aPoint];
-
-  if (_coordinates_valid)
+  if (aView == self)
     {
-      matrix = _matrixFromWindow;
+      return aPoint;
+    }
+
+  if (aView != nil)
+    {
+      NSAssert(_window == [aView window], NSInvalidArgumentException);      
+      inBase = [[aView _matrixToWindow] transformPoint: aPoint];    
     }
   else
     {
-      matrix = [self _matrixFromWindow];
+      inBase = aPoint;
     }
-  new = [matrix transformPoint: new];
 
-  return new;
+  return [[self _matrixFromWindow] transformPoint: inBase];
 }
 
 - (NSPoint) convertPoint: (NSPoint)aPoint toView: (NSView*)aView
 {
-  NSPoint	new;
-  NSAffineTransform	*matrix;
+  NSPoint inBase;
 
-  if (aView == nil)
-    {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil)
-    {
-      return aPoint;
-    }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
+  if (aView == self)
+    return aPoint;
 
-  if (_coordinates_valid)
+  inBase = [[self _matrixFromWindow] transformPoint: aPoint];
+
+  if (aView != nil)
     {
-      matrix = _matrixToWindow;
+      NSAssert(_window == [aView window], NSInvalidArgumentException);      
+      return [[aView _matrixToWindow] transformPoint: inBase];
     }
   else
     {
-      matrix = [self _matrixToWindow];
+      return inBase;
     }
-  new = [matrix transformPoint: aPoint];  
-  matrix = [aView _matrixFromWindow];
-  new = [matrix transformPoint: new];
-
-  return new;
 }
 
 
@@ -1709,26 +1708,22 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == nil)
-    {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil || _window == nil || [aView window] == nil)
+  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
     {
       return aRect;
     }
-  NSAssert(_window == [aView window], NSInvalidArgumentException); 
 
-  matrix1 = [aView _matrixToWindow];
-
-  if (_coordinates_valid)
+  if (aView != nil)
     {
-      matrix2 = _matrixFromWindow;
+      NSAssert(_window == [aView window], NSInvalidArgumentException); 
+      matrix1 = [aView _matrixToWindow];      
     }
   else
     {
-      matrix2 = [self _matrixFromWindow];
+      matrix1 = [NSAffineTransform transform];
     }
+
+  matrix2 = [self _matrixFromWindow];
 
   return convert_rect_using_matrices(aRect, matrix1, matrix2);
 }
@@ -1745,103 +1740,76 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == nil)
-    {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil || _window == nil || [aView window] == nil)
+  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
     {
       return aRect;
     }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
 
-  if (_coordinates_valid)
+  matrix1 = [self _matrixToWindow];
+
+  if (aView != nil)
     {
-      matrix1 = _matrixToWindow;
+      NSAssert(_window == [aView window], NSInvalidArgumentException);
+      matrix2 = [aView _matrixFromWindow];
     }
   else
     {
-      matrix1 = [self _matrixToWindow];
+      matrix2 = [NSAffineTransform transform];
     }
-
-  matrix2 = [aView _matrixFromWindow];
 
   return convert_rect_using_matrices(aRect, matrix1, matrix2);
 }
 
 - (NSSize) convertSize: (NSSize)aSize fromView: (NSView*)aView
 {
-  NSSize		new;
-  NSAffineTransform	*matrix;
+  NSSize inBase;
+  NSSize inSelf;
 
-  if (aView == nil)
+  if (aView)
     {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil)
-    {
-      return aSize;
-    }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
-  matrix = [aView _matrixToWindow];
-  new = [matrix transformSize: aSize];
-  if (new.height < 0.0)
-    {
-      new.height = -new.height;
-    }
-
-  if (_coordinates_valid)
-    {
-      matrix = _matrixFromWindow;
+      NSAssert(_window == [aView window], NSInvalidArgumentException);      
+      inBase = [[aView _matrixToWindow] transformSize: aSize];
+      if (inBase.height < 0.0)
+	{
+	  inBase.height = -inBase.height;
+	} 
     }
   else
     {
-      matrix = [self _matrixFromWindow];
+      inBase = aSize;
     }
-  new = [matrix transformSize: new];
-  if (new.height < 0.0)
+
+  inSelf = [[self _matrixFromWindow] transformSize: inBase];
+  if (inSelf.height < 0.0)
     {
-      new.height = -new.height;
+      inSelf.height = -inSelf.height;
     }
-  return new;
+  return inSelf;
 }
 
 - (NSSize) convertSize: (NSSize)aSize toView: (NSView*)aView
 {
-  NSSize		new;
-  NSAffineTransform	*matrix;
+  NSSize inBase = [[self _matrixToWindow] transformSize: aSize];
+  if (inBase.height < 0.0)
+    {
+      inBase.height = -inBase.height;
+    } 
 
-  if (aView == nil)
+  if (aView)
     {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil)
-    {
-      return aSize;
-    }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
-  if (_coordinates_valid)
-    {
-      matrix = _matrixToWindow;
+      NSSize inOther;
+      NSAssert(_window == [aView window], NSInvalidArgumentException);      
+      inOther = [[aView _matrixFromWindow] transformSize: inBase];
+      if (inOther.height < 0.0)
+	{
+	  inOther.height = -inOther.height;
+	}
+      return inOther;
     }
   else
     {
-      matrix = [self _matrixToWindow];
+      return inBase;
     }
-  new = [matrix transformSize: aSize];
-  if (new.height < 0.0)
-    {
-      new.height = -new.height;
-    }
-
-  matrix = [aView _matrixFromWindow];
-  new = [matrix transformSize: new];
-  if (new.height < 0.0)
-    {
-      new.height = -new.height;
-    }
-
-  return new;
 }
 
 - (NSPoint) convertPointFromBase: (NSPoint)aPoint

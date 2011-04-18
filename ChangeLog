@@ -1,5 +1,15 @@
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSView.m (-_rebuildCoordinates): Remove assumption that
+	the window content view's superview's transformation matrix is
+	the identity matrix.
+	* Source/NSView.m (-convertPoint..., convertRect..., convertSize...):
+	Rewrite these methods to remove the same assumption as above, and
+	also call -_matrixToWindow/-_matrixFromWindow rather than accessing
+	ivars directly.
+
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSStandardWindowDecorationView.m: Use bounds rect instead
 	of frame rect when laying out the window parts (title bar, etc).
 
