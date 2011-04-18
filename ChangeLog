@@ -1,5 +1,11 @@
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSMenuView.m (-setWindowFrameForAttachingToRect:...):
+	This method mixed user space and window base coordinates in some
+	places, which I fixed.
+
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSView.m (-_rebuildCoordinates): Remove assumption that
 	the window content view's superview's transformation matrix is
 	the identity matrix.

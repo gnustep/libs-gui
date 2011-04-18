@@ -1093,7 +1093,11 @@ static NSMapTable *viewInfo = 0;
   int items = [_itemCells count];
   BOOL growHeight = YES;
   BOOL resizeCell = NO;
-  BOOL resizeScreenRect = NO;
+  CGFloat borderOffsetInBaseCoords;
+
+  // Our window needs to have a nonzero size for the
+  // -convertRect:fromView: and relatead methods to work.
+  [_window setFrame: NSMakeRect(0,0,1,1) display: NO];
 
   // Make sure the menu entries are up to date
   [self update];
@@ -1130,37 +1134,32 @@ static NSMapTable *viewInfo = 0;
             }
         }
     }
-  
-  // Convert the screen rect to our view
-  cellFrame.size = screenRect.size;
-  cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
-  cellFrame = [self convertRect: cellFrame fromView: nil];
- 
+
+  cellFrame = screenRect;
+
   /*
     we should have the calculated cell size, grow the width
     if needed to match the screenRect and vice versa
   */
-  if (cellFrame.size.width > _cellSize.width) 
+  if (cellFrame.size.width > [self convertSizeToBase: _cellSize].width) 
     {
-      _cellSize.width = cellFrame.size.width;
+      _cellSize.width = [self convertSizeFromBase: cellFrame.size].width;
       resizeCell = YES;
     }
   else
     {
-      cellFrame.size.width = _cellSize.width;
-      resizeScreenRect = YES;
+      cellFrame.size.width = [self convertSizeToBase: _cellSize].width;
     }
 
   /* certain pop-ups don't want the height resized */
-  if (growHeight && cellFrame.size.height > _cellSize.height) 
+  if (growHeight && cellFrame.size.height > [self convertSizeToBase: _cellSize].height) 
     {
-      _cellSize.height = cellFrame.size.height;
+      _cellSize.height = [self convertSizeFromBase: cellFrame.size].height;
       resizeCell = YES;
     }
   else
     {
-      cellFrame.size.height = _cellSize.height;
-      resizeScreenRect = YES;
+      cellFrame.size.height = [self convertSizeToBase: _cellSize].height;
     }
 
   /*
@@ -1170,16 +1169,13 @@ static NSMapTable *viewInfo = 0;
   if (resizeCell)
     [self sizeToFit];
 
-  if (resizeScreenRect)
-    {
-      cellFrame = [self convertRect: cellFrame toView: nil];
-    }
-
   /*
-   * Compute the frame
+   * Compute the frame. popUpFrame is in screen coordinates
    */
-  popUpFrame.origin = screenRect.origin;
-  popUpFrame.size = cellFrame.size;
+  popUpFrame = cellFrame;
+
+  borderOffsetInBaseCoords = [self convertSizeToBase: NSMakeSize(_leftBorderOffset, 0)].width;
+   
   if (items > 0)
     {
       float f;
@@ -1187,10 +1183,10 @@ static NSMapTable *viewInfo = 0;
       if (_horizontal == NO)
         {
           f = cellFrame.size.height * (items - 1);
-          popUpFrame.size.height += f + _leftBorderOffset;
+          popUpFrame.size.height += f + borderOffsetInBaseCoords;
           popUpFrame.origin.y -= f;
-          popUpFrame.size.width += _leftBorderOffset;
-          popUpFrame.origin.x -= _leftBorderOffset;
+          popUpFrame.size.width += borderOffsetInBaseCoords;
+          popUpFrame.origin.x -= borderOffsetInBaseCoords;
 
 	  // If the menu is a pull down menu the first item, which would
 	  // appear at the top of the menu, holds the title and is omitted
@@ -1314,11 +1310,19 @@ static NSMapTable *viewInfo = 0;
     }
 
   // Get the frameRect
-  r = [NSWindow frameRectForContentRect: popUpFrame
-                styleMask: [_window styleMask]];
-  
-  // Set the window frame
-  [_window setFrame: r display: NO]; 
+  {
+    NSSize contentSize = [self convertSizeFromBase: popUpFrame.size];
+    NSRect contentRect = NSMakeRect(popUpFrame.origin.x,
+				    popUpFrame.origin.y,
+				    contentSize.width,
+				    contentSize.height);
+    r = [_window frameRectForContentRect: contentRect];
+   
+
+    // Set the window frame. r should be identical to popUpFrame except with 
+    // any borders the window wanted to add.
+    [_window setFrame: r display: NO];
+  }
 }
 
 /*
