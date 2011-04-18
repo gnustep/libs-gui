@@ -1,5 +1,11 @@
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSScreen.m (-userSpaceScaleFactor):
+	Temporarily fix the scale factor at 1.0 until the remaining parts
+	of the high DPI patch are committed.
+
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (-compositeToPoint:fromRect:operation:fraction:):
 	New simple implementation which calls
 	-drawAtPoint:fromRect:operation:fraction:.

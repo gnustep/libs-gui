@@ -418,13 +418,13 @@ static NSMutableArray *screenArray = nil;
   NSSize dpi;
 
   srv = GSCurrentServer();
-  if (srv != nil)
-    {
-      dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
-      // take average for 72dpi
-      return (dpi.width + dpi.height) / 144;
-    }
-  else
+  //if (srv != nil)
+  //  {
+  //    dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
+  //    // take average for 72dpi
+  //    return (dpi.width + dpi.height) / 144;
+  //  }
+  //else
     {
       return 1.0;
     }
