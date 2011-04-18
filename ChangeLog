@@ -1,5 +1,10 @@
 2011-04-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m (-_organizeMenu): Move some code around to avoid
+	a compiler warning.
+
+2011-04-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSViewController.m (-loadView): Retain the topLevelObjects.
 
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>

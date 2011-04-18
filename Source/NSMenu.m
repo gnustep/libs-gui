@@ -272,21 +272,7 @@ static BOOL menuBarVisible = YES;
       if (_menu.horizontal == YES)
         {
           NSMutableArray *itemsToMove;
-          NSImage *ti;
-          float bar;
 	  
-	  if([[GSTheme theme] menuShouldShowIcon])
-	    {
-	      ti = [[NSApp applicationIconImage] copy];
-	      if (ti == nil)
-		{
-		  ti = [[NSImage imageNamed: @"GNUstep"] copy];
-		}
-	      [ti setScalesWhenResized: YES];
-	      bar = [NSMenuView menuBarHeight] - 4;
-	      [ti setSize: NSMakeSize(bar, bar)];
-	    }
-
           itemsToMove = [NSMutableArray new];
           
           if (appMenu == nil)
@@ -313,8 +299,18 @@ static BOOL menuBarVisible = YES;
                 }
             }
 
-	  if([[GSTheme theme] menuShouldShowIcon])
+	  if ([[GSTheme theme] menuShouldShowIcon])
 	    {
+              NSImage *ti;
+              float bar;
+	      ti = [[NSApp applicationIconImage] copy];
+	      if (ti == nil)
+		{
+		  ti = [[NSImage imageNamed: @"GNUstep"] copy];
+		}
+	      [ti setScalesWhenResized: YES];
+	      bar = [NSMenuView menuBarHeight] - 4;
+	      [ti setSize: NSMakeSize(bar, bar)];
 	      [appItem setImage: ti];
 	      RELEASE(ti);
 	    }
