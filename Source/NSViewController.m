@@ -119,6 +119,7 @@
                 [self class], _nibName);
 	}
     }
+  RETAIN(_topLevelObjects);
   RELEASE(nib);
 }
 
