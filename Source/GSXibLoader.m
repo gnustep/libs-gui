@@ -491,21 +491,16 @@
   return 4.0;
 }
 
-- (void) awakeData: (NSDictionary*)data withContext: (NSDictionary *)context
+- (void) awake: (NSArray *)rootObjects 
+   inContainer: (IBObjectContainer *)objects 
+   withContext: (NSDictionary *)context
 {
-  NSArray *rootObjects;
   NSEnumerator *en;
   id obj;
-  IBObjectContainer *objects;
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
   //id owner = [context objectForKey: NSNibOwner];
 
-  objects = [data objectForKey: @"IBDocument.Objects"];
-  [objects nibInstantiate];
-  
   // FIXME: Use the owner as first root object
-  rootObjects = [data objectForKey: @"IBDocument.RootObjects"];
-  NSDebugLog(@"rootObjects %@", rootObjects);
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
@@ -531,7 +526,10 @@
           [NSApp _setMainMenu: obj];
         }
     }
-      
+
+  // Load connections
+  [objects nibInstantiate];
+  
   // awaken all objects.
   en = [objects objectRecordEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -558,26 +556,21 @@
           unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
 	  if (unarchiver != nil)
 	    {
-              NSDictionary *root;
-              
-	      NSDebugLog(@"Invoking unarchiver");
-	      [unarchiver setObjectZone: zone];
-              root = [unarchiver decodeObjectForKey: @"root"];
-              if (root != nil)
-                {
-                  [self awakeData: root withContext: context];
-                  loaded = YES;
-                }
-	      else
-		{
-		  NSLog(@"Data not found when loading xib.");
-		}
+              NSArray *rootObjects;
+              IBObjectContainer *objects;
 
+	      NSDebugLLog(@"XIB", @"Invoking unarchiver");
+	      [unarchiver setObjectZone: zone];
+              rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
+              objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
+              NSDebugLLog(@"XIB", @"rootObjects %@", rootObjects);
+              [self awake: rootObjects inContainer: objects withContext: context];
+              loaded = YES;
               RELEASE(unarchiver);
 	    }
 	  else
 	    {
-	      NSLog(@"Could not instantiate unarchiver.");
+	      NSLog(@"Could not instantiate Xib unarchiver.");
 	    }
 	}
       else
@@ -605,7 +598,7 @@
   NSFileManager	*mgr = [NSFileManager defaultManager];
   BOOL isDir = NO;
 
-  NSDebugLog(@"Loading Xib `%@'...\n", fileName);
+  NSDebugLLog(@"XIB", @"Loading Xib `%@'...\n", fileName);
   if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
       if (isDir == NO)
@@ -773,20 +766,18 @@ didStartElement: (NSString *)elementName
       [objects setObject: element forKey: ref];
     }
 
-  if (![@"archive" isEqualToString: elementName])
+  if (![@"archive" isEqualToString: elementName] &&
+      ![@"data" isEqualToString: elementName])
     {
       // only used for the root element
       // push
       [stack addObject: currentElement];
     }
 
-  if ([@"data" isEqualToString: elementName])
+  if (![@"archive" isEqualToString: elementName])
     {
-      // only used for the element below root
-      [currentElement setElement: element forKey: @"root"];
+      currentElement = element;
     }
-
-  currentElement = element;
 }
 
 - (void) parser: (NSXMLParser *)parser
@@ -794,7 +785,8 @@ didStartElement: (NSString *)elementName
    namespaceURI: (NSString *)namespaceURI
   qualifiedName: (NSString *)qName
 {
-  if (![@"archive" isEqualToString: elementName])
+  if (![@"archive" isEqualToString: elementName] &&
+      ![@"data" isEqualToString: elementName])
     {
       // pop
       currentElement = [stack lastObject];
@@ -805,11 +797,13 @@ didStartElement: (NSString *)elementName
 - (id) objectForXib: (GSXibElement*)element
 {
   NSString *elementName;
-  NSString *key = [element attributeForKey: @"id"];
+  NSString *key;
 
   if (element == nil)
     return nil;
 
+  NSDebugLLog(@"XIB", @"decoding element %@", element);
+  key = [element attributeForKey: @"id"];
   elementName = [element type];
   if ([@"object" isEqualToString: elementName])
     {
@@ -892,6 +886,10 @@ didStartElement: (NSString *)elementName
       // pop
       currentElement = last;
 
+      if (key != nil)
+        {
+          NSDebugLLog(@"XIB", @"decoded object %@ for key %@", o, key);
+        }
       return AUTORELEASE(o);
     }
   else if ([@"string" isEqualToString: elementName])
@@ -952,16 +950,16 @@ didStartElement: (NSString *)elementName
         {
           id new = [decoded objectForKey: ref];
 
+          // FIXME: We need a marker for nil
           if (new == nil)
             {
-              // push
-              GSXibElement *last = currentElement;
-
+              //NSLog(@"Decoding reference %@", ref);
               element = [objects objectForKey: ref];
-              currentElement = element;
-
-              // pop
-              currentElement = last;
+              if (element != nil)
+                {
+                  // Decode the real object
+                  new = [self objectForXib: element];
+                }
             }
 
           return new;
@@ -999,32 +997,6 @@ didStartElement: (NSString *)elementName
         [decoded setObject: new forKey: key];
       
       return new;
-    }
-  else if ([@"data" isEqualToString: elementName])
-    {
-      NSDictionary *elements = [element elements];
-      NSEnumerator *keyEnumerator = [elements keyEnumerator];
-      NSString *nextKey;
-      GSXibElement *nextXib;
-      id nextObject;
-      NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity: 
-                                                            [elements count]];
-
-      while ((nextKey = (NSString*)[keyEnumerator nextObject]) != nil)
-        {
-          nextXib = (GSXibElement*)[elements objectForKey: nextKey];
-          nextObject = [self objectForXib: nextXib];
-          if (nextObject != nil)
-            {
-              [dict setObject: nextObject forKey: nextKey];
-            }
-          else
-            {
-              NSLog(@"nil object in data dictionary for key %@", nextKey);
-            }
-        }
-
-      return dict;
     }
   else
     {

@@ -1,3 +1,10 @@
+2011-04-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Rewrote the handling of the data
+	element. This no longer gets treated as the "root" element of the
+	XIB file. Correct reference handling. A reference may now be
+	decoded before the actual object.
+
 2011-04-17  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* configure.ac: Copy the -Wdeclaration-after-statement test from
@@ -18,7 +25,7 @@
 	can determine if it should show the app icon.
 	* Headers/Additions/GNUstepGUI/GSTheme.m: add declaration for
 	menuShouldShowIcon.
-	
+
 2011-04-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/tiff.m,
