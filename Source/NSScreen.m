@@ -35,6 +35,7 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSUserDefaults.h>
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSInterfaceStyle.h"
@@ -414,19 +415,31 @@ static NSMutableArray *screenArray = nil;
 
 - (float) userSpaceScaleFactor
 {
-  GSDisplayServer *srv;
-  NSSize dpi;
+  NSNumber *factor = [[NSUserDefaults standardUserDefaults]
+		       objectForKey: @"GSScaleFactor"];
 
-  srv = GSCurrentServer();
-  //if (srv != nil)
-  //  {
-  //    dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
-  //    // take average for 72dpi
-  //    return (dpi.width + dpi.height) / 144;
-  //  }
-  //else
+  if (factor != nil)
     {
+      return [factor floatValue];
+    }
+  else
+    {    
       return 1.0;
+
+      // FIXME: The following is commented out for now because
+      // it might cause the UI to be scaled unexpectedly.
+
+      //GSDisplayServer *srv = GSCurrentServer();
+      //if (srv != nil)
+      //{
+      //  NSSize dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
+      //  // take average for 72dpi
+      //  return (dpi.width + dpi.height) / 144;
+      //}
+      //else
+      //{
+      //  return 1.0;
+      //}
     }
 }
 

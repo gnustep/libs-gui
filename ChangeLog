@@ -1,3 +1,11 @@
+2011-04-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSScreen.m: Read -userSpaceScaleFactor from the GSScaleFactor
+	user default.
+	* Source/GSWindowDecorationView.m: Apply -[NSScreen userSpaceScaleFactor]
+	in +frameRectForContentRect and +contentRectForFrameRect, as well as
+	setting a scaled bounds size in -layout.
+
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSWindow.m: Remove unnecessary FIXMEs related to

@@ -31,6 +31,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSMenuView.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSTheme.h"
@@ -38,6 +39,14 @@
 #import "NSToolbarFrameworkPrivate.h"
 
 @implementation GSWindowDecorationView
+
+static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
+{
+  return NSMakeRect(aRect.origin.x,
+		    aRect.origin.y,
+		    aRect.size.width * factor,
+		    aRect.size.height * factor);
+}
 
 + (id<GSWindowDecorator>) windowDecorator
 {
@@ -72,7 +81,16 @@
   aRect.size.height -= t + b;
   aRect.origin.x += l;
   aRect.origin.y += b;
-  return aRect;
+ 
+  if (0 == (aStyle & NSUnscaledWindowMask))
+    {
+      // FIXME: This method should probably take a screen parameter
+      // rather than assuming the mainScreen
+      
+      CGFloat factor = [[NSScreen mainScreen] userSpaceScaleFactor]; 
+      aRect = RectWithSizeScaledByFactor(aRect, 1/factor);
+    }
+ return aRect;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
@@ -81,10 +99,20 @@
   float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
   [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
+  if (0 == (aStyle & NSUnscaledWindowMask))
+    {
+      // FIXME: This method should probably take a screen parameter
+      // rather than assuming the mainScreen
+
+      CGFloat factor = [[NSScreen mainScreen] userSpaceScaleFactor];
+      aRect = RectWithSizeScaledByFactor(aRect, factor);
+    }
+  
   aRect.size.width += l + r;
   aRect.size.height += t + b;
   aRect.origin.x -= l;
   aRect.origin.y -= b;
+
   return aRect;
 }
 
@@ -284,6 +312,13 @@
 			       newToolbarViewHeight);
       [tv setFrame: toolbarRect];
       contentViewFrame.size.height -= newToolbarViewHeight;
+    }
+
+  if (0 == ([window styleMask] & NSUnscaledWindowMask))
+    {
+      CGFloat factor = [window userSpaceScaleFactor];
+      NSRect aRect = RectWithSizeScaledByFactor([self frame], 1/factor);
+      [self setBoundsSize: aRect.size];
     }
 
   if ([windowContentView superview] == self)
