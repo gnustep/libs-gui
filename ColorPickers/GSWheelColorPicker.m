@@ -187,24 +187,24 @@
 
 -(void) regenerateImage
 {
-  NSRect frame = [self bounds];
+  NSSize size = [self convertSizeToBase: [self bounds].size];
   CGFloat cx, cy, cr;
- 
+
   [image release];
   image = nil;
 
-  cx = (frame.origin.x + frame.size.width) / 2;
-  cy = (frame.origin.y + frame.size.height) / 2;
+  cx = (size.width) / 2;
+  cy = (size.height) / 2;
 
-  cr = frame.size.width;
-  if (cr > frame.size.height)
-    cr = frame.size.height;
+  cr = size.width;
+  if (cr > size.height)
+    cr = size.height;
 
   cr = cr / 2 - 2;
 
   {
-    NSUInteger width = frame.size.width;
-    NSUInteger height = frame.size.height;
+    NSUInteger width = size.width;
+    NSUInteger height = size.height;
     NSUInteger bytesPerRow;
     NSBitmapImageRep *bmp;
     unsigned char *data;
@@ -303,7 +303,7 @@
 	  }
       }
 
-    image = [[NSImage alloc] initWithSize: frame.size];
+    image = [[NSImage alloc] initWithSize: [self bounds].size];
     [image addRepresentation: bmp];
     [bmp release];
   }

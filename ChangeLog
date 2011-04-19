@@ -1,5 +1,10 @@
 2011-04-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* ColorPickers/GSWheelColorPicker.m: Choose the color wheel bitmap size
+	by converting the bounds rect to window base coordinates
+
+2011-04-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSScreen.m: Read -userSpaceScaleFactor from the GSScaleFactor
 	user default.
 	* Source/GSWindowDecorationView.m: Apply -[NSScreen userSpaceScaleFactor]
