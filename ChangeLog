@@ -1,5 +1,14 @@
 2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSWindow.m: Remove unnecessary FIXMEs related to
+	user space scale factor
+	* Source/NSAppliation.m: Correct app icon sizing which was
+	mixing up window frame coordinates and user space coordinates
+	* Source/NSCachedImageRep.m: Add NSUnscaledWindowMask to the
+	window used internally
+
+2011-04-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSScreen.m (-userSpaceScaleFactor):
 	Temporarily fix the scale factor at 1.0 until the remaining parts
 	of the high DPI patch are committed.

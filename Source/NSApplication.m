@@ -3761,7 +3761,6 @@ struct _DelegateWrapper
 - _appIconInit
 {
   NSAppIconView	*iv;
-  NSRect iconRect;
   unsigned	mask = NSIconWindowMask;
   BOOL	suppress;
 
@@ -3780,13 +3779,19 @@ struct _DelegateWrapper
 				    defer: NO
 				   screen: nil];
 
-  iconRect = GSGetIconFrame(_app_icon_window);
-  [_app_icon_window setFrame: iconRect display: YES];
 
-  iv = [[NSAppIconView alloc] initWithFrame: iconRect]; 
-  [iv setImage: _app_icon];
-  [_app_icon_window setContentView: iv];
-  RELEASE(iv);
+
+  {
+    NSRect iconContentRect = GSGetIconFrame(_app_icon_window);
+    NSRect iconFrame = [_app_icon_window frameRectForContentRect: iconContentRect];
+    NSRect iconViewFrame = NSMakeRect(0, 0, iconContentRect.size.width, iconContentRect.size.height);
+    [_app_icon_window setFrame: iconFrame display: YES];
+
+    iv = [[NSAppIconView alloc] initWithFrame: iconViewFrame]; 
+    [iv setImage: _app_icon];
+    [_app_icon_window setContentView: iv];
+    RELEASE(iv);
+  }
 
   if (NO == suppress)
     {

@@ -2272,7 +2272,6 @@ many times.
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)aPoint
 {
-  // FIXME: Apply userSpaceScaleFactor?
   NSPoint screenPoint;
 
   screenPoint.x = _frame.origin.x + aPoint.x;
@@ -2286,7 +2285,6 @@ many times.
  */
 - (NSPoint) convertScreenToBase: (NSPoint)aPoint
 {
-  // FIXME: Apply userSpaceScaleFactor?
   NSPoint basePoint;
 
   basePoint.x = aPoint.x - _frame.origin.x;

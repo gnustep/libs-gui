@@ -92,7 +92,7 @@
   frame.origin = NSMakePoint(0,0);
   frame.size = aSize;
   win = [[GSCacheW alloc] initWithContentRect: frame
-				    styleMask: NSBorderlessWindowMask
+				    styleMask: NSBorderlessWindowMask | NSUnscaledWindowMask
 				      backing: NSBackingStoreRetained
 					defer: NO];
   self = [self initWithWindow: win rect: frame];
@@ -136,7 +136,7 @@
     }
   if (!_window)
     _window = [[GSCacheW alloc] initWithContentRect: _rect
-					  styleMask: NSBorderlessWindowMask
+					  styleMask: NSBorderlessWindowMask | NSUnscaledWindowMask
 					    backing: NSBackingStoreRetained
 					      defer: NO];
   [self setSize: _rect.size];
