@@ -256,6 +256,20 @@ static void reader_func(png_structp png_struct, png_bytep data,
     //NSLog(@"PNG file gamma: %f", file_gamma);
    } 
 
+  if (png_get_valid(png_struct, png_info, PNG_INFO_pHYs))
+  {
+    png_uint_32 xppm = png_get_x_pixels_per_meter(png_struct, png_info);
+    png_uint_32 yppm = png_get_y_pixels_per_meter(png_struct, png_info);
+
+    if (xppm != 0 && yppm != 0)
+      {
+	const CGFloat pointsPerMeter = 39.3700787 * 72.0;
+	NSSize sizeInPoints = NSMakeSize((width / (CGFloat)xppm) * pointsPerMeter,
+					 (height / (CGFloat)yppm) * pointsPerMeter);
+	[self setSize: sizeInPoints];
+      }
+  }
+
   png_destroy_read_struct(&png_struct, &png_info, &png_end_info);
 
   return self;

@@ -1,3 +1,8 @@
+2011-04-20  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSBitmapImageRep+PNG.m: Read DPI metadata in PNG files
+	and use this to set the point size of the image rep
+
 2011-04-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* ColorPickers/GSWheelColorPicker.m: Choose the color wheel bitmap size
