@@ -1059,12 +1059,13 @@ behavior precisely matches Cocoa. */
     DPSgsave(ctxt);
 
     transform = [NSAffineTransform transform];
+    [transform translateXBy: dstRect.origin.x yBy: dstRect.origin.y];
     [transform scaleXBy: dstRect.size.width / cacheSize.width
 		    yBy: dstRect.size.height / cacheSize.height];
     [transform concat];
 
     [ctxt GSdraw: gState
-         toPoint: dstRect.origin
+         toPoint: NSMakePoint(0,0)
         fromRect: srcRectInCache
        operation: op
         fraction: delta];

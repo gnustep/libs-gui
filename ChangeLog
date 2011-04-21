@@ -1,5 +1,10 @@
 2011-04-21  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (-nativeDrawInRect:...): Fix a bug in my recent change
+	here which mis-positioned images.
+
+2011-04-21  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/tiff.m:
 	* Source/nsimage-tiff.h:
 	* Source/NSBitmapImageRep.m: Read DPI metadata in TIFF files and use this
