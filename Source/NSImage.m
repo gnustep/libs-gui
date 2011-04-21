@@ -478,7 +478,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSArray *reps;
-
   if (!(self = [self init]))
     return nil;
   
@@ -1014,12 +1013,15 @@ behavior precisely matches Cocoa. */
     /* The context of the cache window */
     NSGraphicsContext *cacheCtxt;
     /* The size of the cache window that will hold the scaled image */
-    NSSize cacheSize = NSMakeSize(imgSize.width * widthScaleFactor, 
-      imgSize.height * heightScaleFactor);
-    NSRect srcRectInCache = NSMakeRect(srcRect.origin.x * widthScaleFactor, 
-                                      srcRect.origin.y * heightScaleFactor, 
-                                     srcRect.size.width * widthScaleFactor, 
-                                   srcRect.size.height * heightScaleFactor);
+    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: dstRect.size];
+    CGFloat imgToCacheWidthScaleFactor = cacheSize.width / imgSize.width;
+    CGFloat imgToCacheHeightScaleFactor = cacheSize.height / imgSize.height;
+    
+    NSRect srcRectInCache = NSMakeRect(srcRect.origin.x * imgToCacheWidthScaleFactor, 
+                                      srcRect.origin.y * imgToCacheHeightScaleFactor, 
+                                     srcRect.size.width * imgToCacheWidthScaleFactor, 
+                                   srcRect.size.height * imgToCacheHeightScaleFactor);
+    NSAffineTransform *transform;
 
     cache = [[NSCachedImageRep alloc]
                 initWithSize: cacheSize
@@ -1054,11 +1056,20 @@ behavior precisely matches Cocoa. */
     //NSLog(@"Draw in %@ from %@ from cache rect %@", NSStringFromRect(dstRect), 
     //  NSStringFromRect(srcRect), NSStringFromRect(srcRectInCache));
 
+    DPSgsave(ctxt);
+
+    transform = [NSAffineTransform transform];
+    [transform scaleXBy: dstRect.size.width / cacheSize.width
+		    yBy: dstRect.size.height / cacheSize.height];
+    [transform concat];
+
     [ctxt GSdraw: gState
          toPoint: dstRect.origin
         fromRect: srcRectInCache
        operation: op
         fraction: delta];
+
+    DPSgrestore(ctxt);
 
     [ctxt GSUndefineGState: gState];
     DESTROY(cache);

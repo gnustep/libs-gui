@@ -1,5 +1,12 @@
 2011-04-20  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (-nativeDrawInRect:...): Make the cache window
+	large enough so that detail is preserved when drawing using a scale factor
+	larger than 1. This change should only improve output quality but not
+	affect image drawing otherwise.
+
+2011-04-20  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSBitmapImageRep+PNG.m: Read DPI metadata in PNG files
 	and use this to set the point size of the image rep
 
