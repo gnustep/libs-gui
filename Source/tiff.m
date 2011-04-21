@@ -320,6 +320,26 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
 		info->photoInterp == PHOTOMETRIC_RGB ? "RGB" : "min-is-black");
     }
 
+  {
+    uint16 resolution_unit;
+    float xres, yres;
+    if (TIFFGetField(image, TIFFTAG_XRESOLUTION, &xres) 
+	&& TIFFGetField(image, TIFFTAG_YRESOLUTION, &yres))
+      {
+	TIFFGetFieldDefaulted(image, TIFFTAG_RESOLUTIONUNIT, &resolution_unit);
+	if (resolution_unit == 2) // Inch
+	  {
+	    info->xdpi = xres;
+	    info->ydpi = yres;
+	  }
+	else if (resolution_unit == 3) // Centimeter
+	  {
+	    info->xdpi = xres * 2.54;
+	    info->ydpi = yres * 2.54;
+	  }
+      }   
+  }
+
   return info;
 }
 

@@ -1,3 +1,10 @@
+2011-04-21  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/tiff.m:
+	* Source/nsimage-tiff.h:
+	* Source/NSBitmapImageRep.m: Read DPI metadata in TIFF files and use this
+	to set the point size of the image rep
+
 2011-04-20  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m (-nativeDrawInRect:...): Make the cache window

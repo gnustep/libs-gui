@@ -55,6 +55,8 @@ typedef struct {
     int     quality;	      /* compression quality (for jpeg) 1 to 255 */
     int     numImages;	      /* number of images in tiff */
     int     error;
+    float   xdpi;
+    float   ydpi;
 } NSTiffInfo; 
 
 typedef struct {
