@@ -3451,13 +3451,6 @@ afterString in order over charRange.
   NSString *string = [self string];
   unsigned length = [string length];
 
-  if (proposedCharRange.location >= length)
-    {
-      proposedCharRange.location = length;
-      proposedCharRange.length = 0;
-      return proposedCharRange;
-    }
-
   if (NSMaxRange (proposedCharRange) > length)
     {
       proposedCharRange.length = length - proposedCharRange.location;

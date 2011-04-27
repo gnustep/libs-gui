@@ -1,3 +1,12 @@
+2011-04-27  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m (-selectionRangeForProposedRange:granularity:):
+	Remove a special case which caused this method to refuse to
+	expand a range {[string length], 0}.
+	This was why the align left/center/right menu items didn't work
+	in Ink when the insertion point was at the end of a document.
+	The behaviour should match OS X now.
+
 2011-04-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/AppKit/NSSavePanel.h:
