@@ -896,15 +896,24 @@ selectCellWithString: (NSString*)title
   return _accessoryView;
 }
 
+- (void) setNameFieldStringValue:(NSString *)value
+{
+  [[_form cellAtIndex: 0] setStringValue: value];
+}
+
+- (NSString *) nameFieldStringValue
+{
+  return [[_form cellAtIndex: 0] stringValue];
+}
+
 - (void) setNameFieldLabel: (NSString *)label
 {
-  // FIXME
+  [[_form cellAtIndex: 0] setTitle: label];
 }
 
 - (NSString *) nameFieldLabel
 {
-  // FIXME
-  return _(@"Save As");
+  return [[_form cellAtIndex: 0] title];
 }
 
 - (void) setMessage: (NSString *)message

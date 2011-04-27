@@ -1,5 +1,11 @@
 2011-04-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/AppKit/NSSavePanel.h:
+	* Source/NSSavePanel.m: Implement -setNameFieldStringValue:,
+	-nameFieldStringValue, -setNameFieldLabel:, -nameFieldLabel.
+
+2011-04-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m (-setRulersVisible:): Create a horizontal ruler on
 	the scroll view if needed - this seems to be the OS X behaviour.
 

@@ -109,6 +109,11 @@ enum {
 - (void) setPrompt: (NSString *)prompt;
 - (NSString *) prompt;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) setNameFieldStringValue:(NSString *)value;
+- (NSString *) nameFieldStringValue;
+#endif
+
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setNameFieldLabel: (NSString *)label;
 - (NSString *) nameFieldLabel;
