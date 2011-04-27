@@ -1448,6 +1448,10 @@ to make sure syncing is handled properly in all cases.
   _tf.is_ruler_visible = flag;
   if (sv != nil)
     {
+      if (_tf.is_ruler_visible && ![sv hasHorizontalRuler])
+	{
+	  [sv setHasHorizontalRuler: YES];
+	}
       [sv setRulersVisible: _tf.is_ruler_visible];
     }
 }
