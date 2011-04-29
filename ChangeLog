@@ -1,3 +1,9 @@
+2011-04-28  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPopUpButtonCell.m: Override -representedObject and
+	-setRepresentedObject: with implementations that delegate the
+	call to [self selectedItem] (the NSMenuItem).
+
 2011-04-27  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m (-selectionRangeForProposedRange:granularity:):

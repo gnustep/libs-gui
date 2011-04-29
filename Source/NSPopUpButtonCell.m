@@ -783,6 +783,16 @@ static NSImage *_pbc_image[5];
   return _selectedItem;
 }
 
+- (id) representedObject
+{
+  return [[self selectedItem] representedObject];
+}
+
+- (void) setRepresentedObject: (id)object
+{
+  [[self selectedItem] setRepresentedObject: object];
+}
+
 - (int) indexOfSelectedItem
 {
   return [_menu indexOfItem: [self selectedItem]];
