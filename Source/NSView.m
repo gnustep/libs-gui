@@ -1137,13 +1137,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (scale.width != 1 || scale.height != 1)
     {
       _is_rotated_or_scaled_from_base = YES;
-
-      if (_boundsMatrix == nil)
-        {
-          _boundsMatrix = [NSAffineTransform new]; 
-        }
-      [_boundsMatrix scaleTo: scale.width : scale.height];
     }
+
+   if (_boundsMatrix == nil)
+     {
+       _boundsMatrix = [NSAffineTransform new]; 
+     }
+   [_boundsMatrix scaleTo: scale.width : scale.height];
 }
 
 - (void) setFrame: (NSRect)frameRect
@@ -1416,6 +1416,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               object: self];
         }
     }
+
+  // FIXME: Should not be called here according to Cocoa docs, but 
+  // Cocoa seems to in practice
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
@@ -1436,6 +1440,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   [self translateOriginToPoint: NSMakePoint(oldOrigin.x - newOrigin.x, 
                                             oldOrigin.y - newOrigin.y)];
+
+  // FIXME: Should not be called here according to Cocoa docs, but 
+  // Cocoa seems to in practice
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsSize: (NSSize)newSize
@@ -1473,6 +1481,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               object: self];
         }
     }
+
+  // FIXME: Should not be called here according to Cocoa docs, but 
+  // Cocoa seems to in practice
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsRotation: (float)angle

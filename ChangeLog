@@ -1,3 +1,15 @@
+2011-04-30  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSView.m (-updateBoundsMatrix):
+	Fix a bug where updateBoundsMatrix would refuse to restore a
+	view's scale to its original value, after a modified bounds rect
+	had been set.
+	* Source/NSView.m (-setBounds:, -setBoundsOrigin:, -setBoundsSize:):
+	Call [self setNeedsDisplay: YES]; at the ends of these methods.
+	While the Cocoa docs explicitly say that calling these methods
+	won't mark the view as needing redisplay, this doesn't seem to
+	be true in practice.
+
 2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSOutlineView.m: Implement -keyDown: to expand/contract
