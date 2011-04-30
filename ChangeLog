@@ -1,3 +1,8 @@
+2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m (-setTypingAttributes:) Guard against
+	nil layout manager
+
 2011-04-28  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSPopUpButtonCell.m: Override -representedObject and

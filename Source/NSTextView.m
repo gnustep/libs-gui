@@ -3231,6 +3231,9 @@ This method is for user changes; see NSTextView_actions.m.
                        NSForegroundColorAttributeName};
   int i;
 
+  if (_layoutManager == nil)
+    return;
+
   if (attrs == nil)
     {
       attrs = [[self class] defaultTypingAttributes];
