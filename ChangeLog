@@ -1,5 +1,15 @@
 2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTextView.m (-mouseDown:):
+	Add support for making selections with the mouse which span multiple
+	text views
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	Replace the complex display invalidation code with two calls to
+	-[NSLayoutManager invalidateDisplayForCharacterRange:], which will
+	take care to invalidate all necessary text views.
+
+2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m (-setTypingAttributes:) Guard against
 	nil layout manager
 

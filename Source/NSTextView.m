@@ -3652,53 +3652,8 @@ afterString in order over charRange.
 
   if (_window != nil)
     {
-      NSRange overlap;
-
-      /*
-      If this call is caused by text being deleted, oldDisplayedRange might
-      extend outside the current text. We clamp it to the current length here
-      for safety. Redisplay might be a bit off in this case, but the text
-      change will cause any missing bits to be redisplayed anyway.
-      */
-      if (oldDisplayedRange.location > length)
-	oldDisplayedRange.location = length;
-      if (NSMaxRange(oldDisplayedRange) > length)
-	oldDisplayedRange.length = length - oldDisplayedRange.location;
-
-      /* Try to optimize for overlapping ranges */
-      overlap = NSIntersectionRange (oldRange, charRange);
-      if (overlap.length)
-	{
-	  if (charRange.location != oldDisplayedRange.location)
-	    {
-	      NSRange r;
-	      r = MakeRangeFromAbs (MIN (charRange.location, 
-					 oldDisplayedRange.location),
-				    MAX (charRange.location, 
-					 oldDisplayedRange.location));
-	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
-		    avoidAdditionalLayout: YES];
-	    }
-	  if (NSMaxRange (charRange) != NSMaxRange (oldDisplayedRange))
-	    {
-	      NSRange r;
-
-	      r = MakeRangeFromAbs (MIN (NSMaxRange (charRange), 
-					 NSMaxRange (oldDisplayedRange)),
-				    MAX (NSMaxRange (charRange),
-					 NSMaxRange (oldDisplayedRange)));
-	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
-		    avoidAdditionalLayout: YES];
-	    }
-	}
-      else
-	{
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: charRange]
-		avoidAdditionalLayout: YES];
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: 
-					       oldDisplayedRange]
-		avoidAdditionalLayout: YES];
-	}
+      [_layoutManager invalidateDisplayForCharacterRange: oldDisplayedRange];
+      [_layoutManager invalidateDisplayForCharacterRange: charRange];
     }
   
   [self setSelectionGranularity: NSSelectByCharacter];
@@ -5252,7 +5207,7 @@ other than copy/paste or dragging. */
   NSSelectionGranularity granularity = NSSelectByCharacter;
   NSRange chosenRange, proposedRange;
   NSPoint point, startPoint;
-  unsigned startIndex;
+  NSUInteger startIndex, endIndex;
 
   /* If non selectable then ignore the mouse down. */
   if (_tf.is_selectable == NO)
@@ -5513,11 +5468,50 @@ other than copy/paste or dragging. */
 
 	point = [self convertPoint: [lastEvent locationInWindow]
 		  fromView: nil];
-  proposedRange = MakeRangeFromAbs([self _characterIndexForPoint: point
-                                         respectFraction: YES],
-                                   startIndex);
+
+	endIndex = [self _characterIndexForPoint: point
+				 respectFraction: YES];
+	
+	/**
+	 * If the mouse is not inside the receiver, see if it is over another
+	 * text view with the same layout manager. If so, use that text view
+	 * to compute endIndex
+	 */
+	if (![self mouse: point inRect: [self bounds]])
+	  {
+	    BOOL found = NO;
+	    // FIXME: Is there an easier way to find the view under a point?
+	    NSView *winContentView = [[self window] contentView];
+	    NSView *view = [winContentView hitTest: 
+					     [[winContentView superview] convertPoint: [lastEvent locationInWindow]
+									     fromView: nil]];
+	    for (; view != nil; view = [view superview])
+	      {
+		if ([view isKindOfClass: [NSTextView class]] && 
+		    [(NSTextView*)view layoutManager] == [self layoutManager])
+		  {
+		    found = YES;
+		    break;
+		  }
+	      }
+
+	    if (found)
+	      {
+		NSTextView *textview = (NSTextView*)view;
+		NSPoint mouse = [textview convertPoint: [lastEvent locationInWindow]
+					      fromView: nil];
+
+		endIndex = [textview _characterIndexForPoint: mouse
+					     respectFraction: YES];
+	      }
+	  }
+
+	proposedRange = MakeRangeFromAbs(endIndex,
+					 startIndex);
+
 	chosenRange = [self selectionRangeForProposedRange: proposedRange
 			granularity: granularity];
+
 	[self setSelectedRange: chosenRange  affinity: affinity
 	  stillSelecting: YES];
 
