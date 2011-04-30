@@ -858,6 +858,30 @@ static NSImage *unexpandable  = nil;
   [super mouseDown: theEvent];
 }
 
+- (void)keyDown: (NSEvent*)event
+{
+   NSString *characters = [event characters];
+
+   if ([characters length] == 1)
+     {
+       unichar c = [characters characterAtIndex: 0];
+       id item = [self itemAtRow: [self selectedRow]];
+       switch (c)
+         {
+	 case NSLeftArrowFunctionKey:
+	   [self collapseItem: item];
+	   return;
+	 case NSRightArrowFunctionKey:
+	   [self expandItem: item];
+	   return;
+	 default:
+	   break;
+	 }
+     }
+ 
+   [super keyDown: event];
+}
+
 /*
  * Drawing
  */

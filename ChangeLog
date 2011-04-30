@@ -1,5 +1,10 @@
 2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSOutlineView.m: Implement -keyDown: to expand/contract
+	items.
+
+2011-04-29  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m (-mouseDown:):
 	Add support for making selections with the mouse which span multiple
 	text views
