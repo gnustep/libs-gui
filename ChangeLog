@@ -1,5 +1,9 @@
 2011-05-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Images: Ensure all images have their DPI metadata set to 72.
+
+2011-05-01  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSLayoutManager.m
 	(-characterIndexMoving:fromCharacterIndex:originalCharacterIndex:distance:):
 	Rework this method to suport moving the insertion point between text
