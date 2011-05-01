@@ -963,7 +963,6 @@ has the same y origin and height as the line frag rect it is in.
 {
   NSRect from_rect, new_rect;
   int from_tc, new_tc;
-  int i;
   unsigned int new;
   unsigned int length = [_textStorage length];
 
@@ -973,33 +972,84 @@ has the same y origin and height as the line frag rect it is in.
 					   textContainer: &from_tc];
   if (from_tc == -1)
     {
-      NSLog(@"%s: character index not in any text container",
-	__PRETTY_FUNCTION__);
-      return from;
+      /* The from character index is not in a text container, so move the
+	 cursor to the start of the text. */
+      return 0;
     }
 
-  if (direction == GSInsertionPointMoveLeft ||
-      direction == GSInsertionPointMoveRight)
+  /* Simple case which moves one character left/right or one line up/down,
+     but supports moving between text containers. */
+  if (distance == 0.0)
     {
-      float target;
-
-      if (distance == 0.0)
+      if (direction == GSInsertionPointMoveLeft ||
+	  direction == GSInsertionPointMoveRight)
 	{
 	  new = from;
 	  if (direction == GSInsertionPointMoveLeft && new > 0)
 	    new--;
 	  if (direction == GSInsertionPointMoveRight && new < length)
 	    new++;
-
-	  [self _insertionPointRectForCharacterIndex: new
-				       textContainer: &i];
-
-	/* Don't leave the text container. */
-	if (i == from_tc)
+	  
 	  return new;
-	else
-	  return from;
 	}
+      else if (direction == GSInsertionPointMoveUp ||
+	       direction == GSInsertionPointMoveDown)
+	{
+	  int orig_tc;
+	  const float target = [self _insertionPointRectForCharacterIndex: original
+							    textContainer: &orig_tc].origin.x;
+
+	  const int delta = (direction == GSInsertionPointMoveUp) ? -1 : 1;
+
+	  /* First scan forward or backwards until we end up on a new line */
+	  for (new = from; (direction == GSInsertionPointMoveUp) ? (new >= 0) : (new <= length); new += delta)
+	    {
+	      new_rect = [self _insertionPointRectForCharacterIndex: new
+						      textContainer: &new_tc];
+	      if (new_rect.origin.y != from_rect.origin.y || new_tc != from_tc)
+		break;
+	    }
+
+	  /* We found the start of the line, now find the target character on that line. */
+	  new_rect = [self _insertionPointRectForCharacterIndex: new
+						  textContainer: &new_tc];
+	  while ((direction == GSInsertionPointMoveUp) ? (new > 0) : (new < length))
+	    {
+	      int prev_tc = new_tc;
+	      NSRect prev_rect = new_rect;
+	      new_rect = [self _insertionPointRectForCharacterIndex: new + delta
+						      textContainer: &new_tc];
+
+	      /* 'new+delta' is on a different line than the target line, so the 
+		 target character must be 'new'.*/
+	      if (new_rect.origin.y != prev_rect.origin.y || new_tc != prev_tc)
+		return new;
+
+	      /* If we pass the target point, the character we want is either
+		 'new' or 'new+delta' */
+	      if ((direction == GSInsertionPointMoveDown && NSMinX(new_rect) >= target)
+		  || (direction == GSInsertionPointMoveUp && NSMinX(new_rect) <= target))
+		{
+		  if (fabs(NSMinX(new_rect) - target) > fabs(NSMinX(prev_rect) - target))
+		    return new;
+		  
+		  return new + delta;
+		}
+
+	      new += delta;
+	    }
+	  return new;
+	}
+    }
+
+  /* The following more complex cases are for when a minimum distance is specified.
+     However, they will not move out of from's text container.
+  */
+
+  if (direction == GSInsertionPointMoveLeft ||
+      direction == GSInsertionPointMoveRight)
+    {
+      float target;
 
       /*
       This is probably very inefficient, but it shouldn't be a bottleneck,

@@ -1,3 +1,14 @@
+2011-05-01  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSLayoutManager.m
+	(-characterIndexMoving:fromCharacterIndex:originalCharacterIndex:distance:):
+	Rework this method to suport moving the insertion point between text
+	containers, for both left/right and up/down movements. However, it will
+	only have this behaviour when distance == 0.
+
+	This is part of what is needed to support moving the insertion point
+	between text views in, e.g., TextEdit when using the multi-page view.
+
 2011-04-30  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSView.m (-updateBoundsMatrix):
