@@ -1,3 +1,7 @@
+2011-05-04  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Images: Add a few more high-res images (arrows)
+
 2011-05-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSScreen.m: Use -userSpaceScaleFactor to calculate
