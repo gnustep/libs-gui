@@ -1421,35 +1421,83 @@ Fallback for backends other than Cairo. */
   return breps;
 }
 
-/* Find reps that match the resolution of the device or return the rep
-   that has the highest resolution */
+/* Find reps that match the resolution of the device or return the
+   vector reps or the reps that have the highest resolution */
 - (NSMutableArray *) _bestRep: (NSArray *)reps 
           withResolutionMatch: (NSDictionary*)deviceDescription
 {
-  NSImageRep* rep;
-  NSMutableArray *breps;
-  NSEnumerator *enumerator = [reps objectEnumerator];
-
-  /*
-  NSSize dres;
   NSValue *resolution = [deviceDescription objectForKey: NSDeviceResolution];
+  NSMutableArray *breps = [NSMutableArray array];
 
-  if (resolution)
-    dres = [resolution sizeValue];
-  else
-    dres = NSMakeSize(0, 0);
-  */
+  /* Look for exact resolution matches */
 
-  breps = [NSMutableArray array];
-  while ((rep = [enumerator nextObject]) != nil)
+  if (nil != resolution)
     {
-      /* FIXME: Not sure about checking resolution */
-      [breps addObject: rep];
+      NSSize dres = [resolution sizeValue];
+
+      NSImageRep *rep;
+      NSEnumerator *enumerator = [reps objectEnumerator];   
+      
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  NSSize size = [rep size];
+	  NSSize res = NSMakeSize(72.0 * [rep pixelsWide] / size.width,
+				  72.0 * [rep pixelsHigh] / size.height);
+	  if (NSEqualSizes(res, dres))
+	    {
+	      [breps addObject: rep];
+	    }	    
+	}
     }
+
+  /* If no exact matches found, look for vector reps */
   
-  /* If there are no matches, pass all the reps */
   if ([breps count] == 0)
-    return (NSMutableArray *)reps;
+    {
+      NSImageRep *rep;
+      NSEnumerator *enumerator = [reps objectEnumerator];    
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  if ([rep pixelsWide] == NSImageRepMatchesDevice && 
+	      [rep pixelsHigh] == NSImageRepMatchesDevice)
+	  {
+	    [breps addObject: rep];
+	  }
+	}
+    }
+
+  /* Otherwise, use the largest bitmaps */
+  
+  if ([breps count] == 0)
+    {
+      NSSize maxPixelSize = NSMakeSize(0,0);
+      NSImageRep *rep;
+      NSEnumerator *enumerator = [reps objectEnumerator];    
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  NSSize pixelSize = NSMakeSize([rep pixelsWide], [rep pixelsHigh]);
+	  if (pixelSize.width > maxPixelSize.width &&
+	      pixelSize.height > maxPixelSize.height)
+	    {
+	      maxPixelSize = pixelSize;
+	    }
+	}
+
+      enumerator = [reps objectEnumerator];
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  NSSize pixelSize = NSMakeSize([rep pixelsWide], [rep pixelsHigh]);
+	  if (NSEqualSizes(pixelSize, maxPixelSize))
+	    {
+	      [breps addObject: rep];
+	    }
+	}      
+    }
+
+  if ([breps count] == 0)
+    {
+      [breps setArray: reps];
+    }
   return breps;
 }
 

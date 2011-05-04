@@ -1,3 +1,15 @@
+2011-05-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSScreen.m: Use -userSpaceScaleFactor to calculate
+	NSDeviceResolution
+	* Source/NSImage.m: Implement -_bestRep:withResolutionMatch:
+	* Images/common_Dimple.tiff:
+	* Images/common_3DArrowRight.tiff: Add to these images
+	a second 'page' at 4x the original resolution which I drew.
+
+	If you use GSScaleFactor > 1 then the high resolution version
+	of these images should be used.
+
 2011-05-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images: Ensure all images have their DPI metadata set to 72.

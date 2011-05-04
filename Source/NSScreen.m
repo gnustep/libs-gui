@@ -274,7 +274,7 @@ static NSMutableArray *screenArray = nil;
       int			bps = 0;
       NSSize			screenResolution;
       NSString			*colorSpaceName = nil;
-      GSDisplayServer		*srv;
+      CGFloat                   scaleFactor;
 
       /*
        * This method generates a dictionary from the
@@ -294,13 +294,10 @@ static NSMutableArray *screenArray = nil;
 		  forKey: NSDeviceSize];
 
       // Add the NSDeviceResolution dictionary item
-      srv = GSCurrentServer();
-      if (srv != nil)
-	{
-	  screenResolution = [srv resolutionForScreen: _screenNumber];
-	  [devDesc setObject: [NSValue valueWithSize: screenResolution]
-		      forKey: NSDeviceResolution];
-	}
+      scaleFactor = [self userSpaceScaleFactor];
+      screenResolution = NSMakeSize(72.0 * scaleFactor, 72.0 * scaleFactor);
+      [devDesc setObject: [NSValue valueWithSize: screenResolution]
+		  forKey: NSDeviceResolution];
 
       // Add the bits per sample entry
       bps = NSBitsPerSampleFromDepth(_depth);
