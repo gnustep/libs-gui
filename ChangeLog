@@ -1,3 +1,9 @@
+2011-05-05  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Tests/gui/NSView/NSView_frame_bounds.m: Add some more tests
+	of setBoundsSize:. They are currently failing (but pass on
+	OS X).
+
 2011-05-04  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images: Add a few more high-res images (arrows)

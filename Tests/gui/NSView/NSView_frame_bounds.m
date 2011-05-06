@@ -89,6 +89,16 @@ int main(int argc, char **argv)
 	[view1 setBoundsSize: NSMakeSize(100, 100)];
 	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(-50.7107,20,141.421,141.421)) && passed;
 
+	[view1 setBoundsSize: NSMakeSize(10, 10)];
+	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(-5.07107,2,14.1421,14.1421)) && passed;
+ 
+	[view1 setBoundsRotation: 0.0];
+	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(2.82843, 0, 10, 10)) && passed;
+	
+	[view1 setBoundsSize: NSMakeSize(1, 1)];
+	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(0.282843, 0, 1, 1)) && passed;
+	
+	[view1 setBoundsRotation: -45.0];
 	[view1 setBounds: NSMakeRect(10, 10, 100, 100)];
 	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(-60.7107,10,141.421,141.421)) && passed;
 
