@@ -1,3 +1,14 @@
+2011-05-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Align
+	the point at which the image is drawn to the nearest pixel.
+
+	r32895 which reimplemented -[NSImage composite..] methods
+	on top of -[NSImage draw...] methods means that drawing
+	images with -compositeToPoint: no longer pixel-aligns
+	the image automatically. The new behaviour matches
+	Cocoa, however.
+
 011-05-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSView.m (-convertPoint:toView:): Correct this

@@ -930,6 +930,17 @@ typedef struct _GSButtonCellFlags
           position.y += size.height;
         }
 
+      /* Pixel-align the drawing point */
+      if (controlView)
+	{
+	  position = [controlView convertPointToBase: position];
+	}
+      position = NSMakePoint(round(position.x), round(position.y));
+      if (controlView)
+	{
+	  position = [controlView convertPointFromBase: position];
+	}
+
       [[GSTheme theme] drawImage: imageToDisplay
 		    inButtonCell: self
 		       withFrame: cellFrame
