@@ -1658,12 +1658,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (aView == self)
     return aPoint;
 
-  inBase = [[self _matrixFromWindow] transformPoint: aPoint];
+  inBase = [[self _matrixToWindow] transformPoint: aPoint];
 
   if (aView != nil)
     {
       NSAssert(_window == [aView window], NSInvalidArgumentException);      
-      return [[aView _matrixToWindow] transformPoint: inBase];
+      return [[aView _matrixFromWindow] transformPoint: inBase];
     }
   else
     {
