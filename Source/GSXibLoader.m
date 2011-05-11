@@ -794,6 +794,94 @@ didStartElement: (NSString *)elementName
     }
 }
 
+- (id) decodeObjectForXib: (GSXibElement*)element
+             forClassName: (NSString *)classname
+                  withKey: (NSString *)key
+{
+  GSXibElement *last;
+  Class c = [self classForClassName: classname];
+  id o, r;
+  id delegate = [self delegate];
+
+  if (c == nil)
+    {
+      c = [[self class] classForClassName: classname];
+      if (c == nil)
+        {
+          c = NSClassFromString(classname);
+          if (c == nil)
+            {
+              c = [delegate unarchiver: self
+                            cannotDecodeObjectOfClassName: classname
+                       originalClasses: nil];
+              if (c == nil)
+                {
+                  [NSException raise: NSInvalidUnarchiveOperationException
+                              format: @"[%@ -%@]: no class for name '%@'",
+                               NSStringFromClass([self class]),
+                               NSStringFromSelector(_cmd),
+                               classname];
+                }
+            }
+        }
+    }
+
+  // push
+  last = currentElement;
+  currentElement = element;
+
+  // Create instance.
+  o = [c allocWithZone: [self zone]];
+  // Make sure the object stays around, even when replaced.
+  RETAIN(o);
+  if (key != nil)
+    [decoded setObject: o forKey: key];
+  r = [o initWithCoder: self];
+  if (r != o)
+    {
+      [delegate unarchiver: self
+         willReplaceObject: o
+                withObject: r];
+      ASSIGN(o, r);
+      if (key != nil)
+        [decoded setObject: o forKey: key];
+    }
+  r = [o awakeAfterUsingCoder: self];
+  if (r != o)
+    {
+      [delegate unarchiver: self
+         willReplaceObject: o
+                withObject: r];
+      ASSIGN(o, r);
+      if (key != nil)
+        [decoded setObject: o forKey: key];
+    }
+  if (delegate != nil)
+    {
+      r = [delegate unarchiver: self didDecodeObject: o];
+      if (r != o)
+        {
+          [delegate unarchiver: self
+             willReplaceObject: o
+                    withObject: r];
+          ASSIGN(o, r);
+          if (key != nil)
+            [decoded setObject: o forKey: key];
+        }
+    }
+  // Balance the retain above
+  RELEASE(o);
+  
+  // pop
+  currentElement = last;
+  
+  if (key != nil)
+    {
+      NSDebugLLog(@"XIB", @"decoded object %@ for key %@", o, key);
+    }
+  return AUTORELEASE(o);
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   NSString *elementName;
@@ -807,90 +895,10 @@ didStartElement: (NSString *)elementName
   elementName = [element type];
   if ([@"object" isEqualToString: elementName])
     {
-      GSXibElement *last;
       NSString *classname = [element attributeForKey: @"class"];
-      Class c = [self classForClassName: classname];
-      id o, r;
-      id delegate = [self delegate];
-
-      if (c == nil)
-	{
-	  c = [[self class] classForClassName: classname];
-	  if (c == nil)
-	    {
-	      c = NSClassFromString(classname);
-	      if (c == nil)
-		{
-		  c = [delegate unarchiver: self
-                                 cannotDecodeObjectOfClassName: classname
-                            originalClasses: nil];
-		  if (c == nil)
-		    {
-		      [NSException raise:
-			NSInvalidUnarchiveOperationException
-			format: @"[%@ +%@]: no class for name '%@'",
-			NSStringFromClass([self class]),
-			NSStringFromSelector(_cmd),
-			classname];
-		    }
-		}
-	    }
-	}
-
-      // push
-      last = currentElement;
-      currentElement = element;
-
-      // Create instance.
-      o = [c allocWithZone: [self zone]];
-      // Make sure the object stays around, even when replaced.
-      RETAIN(o);
-      if (key != nil)
-        [decoded setObject: o forKey: key];
-      r = [o initWithCoder: self];
-      if (r != o)
-	{
-	  [delegate unarchiver: self
-	      willReplaceObject: o
-		     withObject: r];
-	  ASSIGN(o, r);
-          if (key != nil)
-            [decoded setObject: o forKey: key];
-	}
-      r = [o awakeAfterUsingCoder: self];
-      if (r != o)
-	{
-	  [delegate unarchiver: self
-	      willReplaceObject: o
-		     withObject: r];
-	  ASSIGN(o, r);
-          if (key != nil)
-            [decoded setObject: o forKey: key];
-	}
-      if (delegate != nil)
-	{
-	  r = [delegate unarchiver: self didDecodeObject: o];
-	  if (r != o)
-	    {
-	      [delegate unarchiver: self
-		  willReplaceObject: o
-			 withObject: r];
-              ASSIGN(o, r);
-              if (key != nil)
-                [decoded setObject: o forKey: key];
-	    }
-	}
-      // Balance the retain above
-      RELEASE(o);
-
-      // pop
-      currentElement = last;
-
-      if (key != nil)
-        {
-          NSDebugLLog(@"XIB", @"decoded object %@ for key %@", o, key);
-        }
-      return AUTORELEASE(o);
+      return [self decodeObjectForXib: element
+                         forClassName: classname
+                              withKey: key];
     }
   else if ([@"string" isEqualToString: elementName])
     {
@@ -997,6 +1005,30 @@ didStartElement: (NSString *)elementName
         [decoded setObject: new forKey: key];
       
       return new;
+    }
+  else if ([@"array" isEqualToString: elementName])
+    {
+      NSString *classname = [element attributeForKey: @"class"];
+
+      if (classname == nil)
+        {
+          classname = @"NSArray";
+        }
+      return [self decodeObjectForXib: element
+                         forClassName: classname
+                              withKey: key];
+    }
+  else if ([@"dictionary" isEqualToString: elementName])
+    {
+      NSString *classname = [element attributeForKey: @"class"];
+
+      if (classname == nil)
+        {
+          classname = @"NSDictionary";
+        }
+      return [self decodeObjectForXib: element
+                         forClassName: classname
+                              withKey: key];
     }
   else
     {

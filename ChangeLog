@@ -1,3 +1,8 @@
+2011-05-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Add support for the "array" and
+	"dictionary" elements found in newer XIB files (Version >= 8).
+
 2011-05-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/Functions.m: For functions which set the fill or stroke
