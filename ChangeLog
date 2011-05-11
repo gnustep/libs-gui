@@ -1,3 +1,10 @@
+2011-05-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/Functions.m: For functions which set the fill or stroke
+	color as part of their implementation, save/restore the graphics
+	state so that the user's fill/stroke color isn't overwritten.
+	See the PixelExactDrawing test in GSTest for an example.
+
 2011-05-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Align

@@ -409,12 +409,16 @@ void
 NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count)
 {
   int i;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
 
   for (i = 0; i < count; i++)
     {
       [colors[i] set];
       NSRectFill(rects[i]);
     }
+
+  DPSgrestore(ctxt);
 }
 
 void NSRectFillListWithGrays(const NSRect *rects, const float *grays, 
@@ -422,6 +426,7 @@ void NSRectFillListWithGrays(const NSRect *rects, const float *grays,
 {
   int i;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
 
   for (i = 0; i < count; i++)
     {
@@ -429,6 +434,8 @@ void NSRectFillListWithGrays(const NSRect *rects, const float *grays,
       DPSrectfill(ctxt,  NSMinX(rects[i]), NSMinY(rects[i]), 
 		  NSWidth(rects[i]), NSHeight(rects[i]));
     }
+
+  DPSgrestore(ctxt);
 }
 
 void NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
@@ -458,12 +465,16 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
 				       NSCompositingOperation op)
 {
   int i;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
 
   for (i = 0; i < num; i++)
     {
       [colors[i] set];
       NSRectFillUsingOperation(rects[i], op);
     }
+
+  DPSgrestore(ctxt);
 }
 
 
@@ -473,13 +484,14 @@ void NSDottedFrameRect(const NSRect aRect)
 {
   float dot_dash[] = {1.0, 1.0};
   NSGraphicsContext *ctxt = GSCurrentContext();
-
+  DPSgsave(ctxt);
   DPSsetgray(ctxt, NSBlack);
   DPSsetlinewidth(ctxt, 1.0);
   // FIXME
   DPSsetdash(ctxt, dot_dash, 2, 0.0);
   DPSrectstroke(ctxt,  NSMinX(aRect) + 0.5, NSMinY(aRect) + 0.5,
 		NSWidth(aRect) - 1.0, NSHeight(aRect) - 1.0);
+  DPSgrestore(ctxt);
 }
 
 void NSFrameRect(const NSRect aRect)
@@ -598,10 +610,11 @@ NSDrawButton(const NSRect aRect, const NSRect clipRect)
       rect = NSDrawTiledRects(aRect, clipRect,
 			       up_sides, grays, 6);
     }
-
+  DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void
@@ -615,6 +628,8 @@ NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
 		   NSLightGray, NSLightGray, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
+
+  DPSgsave(ctxt);
 
   if (GSWViewIsFlipped(ctxt) == YES)
     {
@@ -638,6 +653,7 @@ NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
   DPSsetgray(ctxt, NSLightGray);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void 
@@ -663,9 +679,11 @@ NSDrawGroove(const NSRect aRect, const NSRect clipRect)
 			       up_sides, grays, 8);
     }
 
+  DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void 
@@ -691,9 +709,11 @@ NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
 			       up_sides, grays, 8);
     }
 
+  DPSgsave(ctxt);
   DPSsetgray(ctxt, NSWhite);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void 
@@ -709,6 +729,7 @@ NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
 		   NSLightGray, NSLightGray, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
 
   if (GSWViewIsFlipped(ctxt) == YES)
     {
@@ -732,6 +753,7 @@ NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
   DPSsetgray(ctxt, NSLightGray);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void 
@@ -745,6 +767,7 @@ NSDrawLightBezel(NSRect aRect, NSRect clipRect)
   		   NSBlack, NSBlack, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
 
   if (GSWViewIsFlipped(ctxt) == YES)
     {
@@ -768,6 +791,7 @@ NSDrawLightBezel(NSRect aRect, NSRect clipRect)
   DPSsetgray(ctxt, NSWhite);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void
@@ -797,16 +821,21 @@ NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect)
 			       up_sides, grays, 6);
     }
 
+  DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
   DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
 	      NSWidth(rect), NSHeight(rect));
+  DPSgrestore(ctxt);
 }
 
 void 
 NSDrawWindowBackground(NSRect aRect)
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();  
+  DPSgsave(ctxt);
   [[NSColor windowBackgroundColor] set];
-  NSRectFill(aRect);  
+  NSRectFill(aRect);
+  DPSgrestore(ctxt);
 }
 
 float 
@@ -818,6 +847,9 @@ NSLinkFrameThickness(void)
 void 
 NSFrameLinkRect(NSRect aRect, BOOL isDestination)
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();  
+  DPSgsave(ctxt);
+
   if (isDestination)
     {
       [[NSColor redColor] set];
@@ -828,6 +860,7 @@ NSFrameLinkRect(NSRect aRect, BOOL isDestination)
     }
 
   NSFrameRectWithWidth(aRect, NSLinkFrameThickness());
+  DPSgrestore(ctxt);
 }
 
 void NSSetFocusRingStyle(NSFocusRingPlacement placement)
