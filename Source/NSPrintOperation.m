@@ -1100,6 +1100,7 @@ scaleRect(NSRect rect, double scale)
     {
       [_view drawSheetBorderWithSize: info.sheetBounds.size];
       [_view _endSheet];
+      DPSgrestore([self context]);
     }
   [_view endDocument];
 
@@ -1138,7 +1139,7 @@ scaleRect(NSRect rect, double scale)
       NSString *label;
       NSRect boundsForPage = info.sheetBounds;
 
-      if(knowsPageRange)
+      if (knowsPageRange)
 	{
 	  boundsForPage = pageRect;
 	}
@@ -1147,6 +1148,7 @@ scaleRect(NSRect rect, double scale)
       if (info.nup == 1)
         label = [NSString stringWithFormat: @"%d", currentPage];
 
+      DPSgsave(ctxt);
       [self beginPage: floor((currentPage - info.first)/info.nup)+1
             label: label
             bBox: boundsForPage
@@ -1157,7 +1159,7 @@ scaleRect(NSRect rect, double scale)
           DPStranslate(ctxt, 0, -info.paperSize.height);
         }
       
-      if(!knowsPageRange)
+      if (!knowsPageRange)
 	{
 	  /* Also offset by margins */
 	  DPStranslate(ctxt, NSMinX(info.paperBounds), NSMinY(info.paperBounds));
@@ -1232,6 +1234,7 @@ scaleRect(NSRect rect, double scale)
     {
       [self drawSheetBorderWithSize: info.sheetBounds.size];
       [self _endSheet];
+      DPSgrestore(ctxt);
     }
 }
 

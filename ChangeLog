@@ -1,4 +1,9 @@
-2011-05-11 Fred Kiefer <FredKiefer@gmx.de>
+2011-05-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m: Add an extra context save and restore
+	at the sheet level. This is a partial fix for bug #32845.
+
+2011-05-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Add support for the "array" and
 	"dictionary" elements found in newer XIB files (Version >= 8).
