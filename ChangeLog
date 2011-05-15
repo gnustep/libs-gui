@@ -1,3 +1,7 @@
+2011-05-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m: Use pointing hand cursor for links
+
 2011-05-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTableHeaderView.m: Use resize cursors

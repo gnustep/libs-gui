@@ -3901,6 +3901,53 @@ Figure out how the additional layout stuff is supposed to work.
 	{
 	  [self addCursorRect: visibleRect cursor: [NSCursor IBeamCursor]];
 	}
+
+      /**
+       * Add pointing hand cursor to any visible links
+       * FIXME: Also look for NSCursorAttributeName
+       * FIXME: Too complex, factor out common patterns into private methods
+       */
+      if (_layoutManager != nil && _textContainer != nil)
+	{
+	  NSInteger i;
+	  NSRange visibleGlyphs, visibleCharacters;
+	  const NSPoint containerOrigin = [self textContainerOrigin];
+
+	  NSRect visibleRectInContainerCoordinates = visibleRect;
+	  visibleRectInContainerCoordinates.origin.x -= containerOrigin.x;
+	  visibleRectInContainerCoordinates.origin.y -= containerOrigin.y;
+
+	  visibleGlyphs = [_layoutManager glyphRangeForBoundingRectWithoutAdditionalLayout: visibleRectInContainerCoordinates
+									   inTextContainer: _textContainer];
+	  visibleCharacters = [_layoutManager characterRangeForGlyphRange: visibleGlyphs
+							 actualGlyphRange: NULL];
+	  
+	  for (i = visibleCharacters.location; i < NSMaxRange(visibleCharacters); )
+	    {
+	      NSRange linkCharacterRange;
+	      id linkValue = [[self textStorage] attribute: NSLinkAttributeName
+						   atIndex: i
+				     longestEffectiveRange: &linkCharacterRange
+						   inRange: visibleCharacters];
+	      if (linkValue != nil)
+		{
+		  NSUInteger count, j;
+		  NSRectArray rects = [_layoutManager rectArrayForCharacterRange: linkCharacterRange
+						    withinSelectedCharacterRange: linkCharacterRange
+								 inTextContainer: _textContainer
+								       rectCount: &count];
+		  for (j = 0; j < count; j++)
+		    {
+		      NSRect rectInViewCoordinates = rects[j];
+		      rectInViewCoordinates.origin.x += containerOrigin.x;
+		      rectInViewCoordinates.origin.y += containerOrigin.y;
+		      [self addCursorRect: rectInViewCoordinates
+				   cursor: [NSCursor pointingHandCursor]];
+		    }
+		}
+	      i += linkCharacterRange.length;
+	    }  	  
+	}
     }
 }
 
