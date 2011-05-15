@@ -900,8 +900,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
- * Removes the receiver from its superviews list of subviews, by
- * invoking the superviews [-removeSubview:] method.
+ * Removes the receiver from its superviews list of subviews.
  */
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
@@ -912,10 +911,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  <p> Removes the receiver from its superviews list of subviews, by
-  invoking the superviews -removeSubview: method, and marks the
-  rectangle that the reciever occupied in the superview as needing
-  redisplay.  </p>
+  <p> Removes the receiver from its superviews list of subviews
+  and marks the rectangle that the reciever occupied in the 
+  superview as needing redisplay.  </p>
 
   <p> This is dangerous to use during display, since it alters the
   rectangles needing display. In this case, you can use the
@@ -925,7 +923,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_super_view != nil)
     {
       [_super_view setNeedsDisplayInRect: _frame];
-      [_super_view removeSubview: self];
+      [self removeFromSuperviewWithoutNeedingDisplay];
     }
 }
 

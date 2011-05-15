@@ -773,6 +773,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (self == nil)
+    {
+      return nil;
+    }
+
   if ([aDecoder allowsKeyedCoding])
     {
       [self setAutoresizesSubviews: YES];
@@ -793,7 +798,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       if ([[self subviews] count] > 0)
         {
           NSRect rect;
-
 	  id document = [aDecoder decodeObjectForKey: @"NSDocView"];
 
 	  NSAssert([document class] != [NSCustomView class],
@@ -802,14 +806,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	  rect.origin = NSZeroPoint;
 	  [document setFrame: rect];
 	  RETAIN(document); // prevent it from being released.
-	  [self removeSubview: document];
+	  [document removeFromSuperview];
 	  [self setDocumentView: document];
 	  RELEASE(document);
 	}
     }
   else
     {
-      NSView *document;
       BOOL temp;
       
       [self setAutoresizesSubviews: YES];
@@ -822,9 +825,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       
       if ([[self subviews] count] > 0)
         {
-	  document = AUTORELEASE(RETAIN([[self subviews] objectAtIndex: 0]));
-	  [self removeSubview: document];
+          NSView *document = [[self subviews] objectAtIndex: 0];
+	  RETAIN(document); // prevent it from being released.
+	  [document removeFromSuperview];
 	  [self setDocumentView: document];
+	  RELEASE(document);
 	}
     }
   return self;

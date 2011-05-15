@@ -278,7 +278,7 @@ static float scrollerWidth;
   [self tile];
 }
 
-- (void) removeSubview: (NSView *)aView
+- (void) willRemoveSubview: (NSView *)aView
 {
   if (aView == _contentView)
     {
@@ -292,7 +292,7 @@ static float scrollerWidth;
     {
       _cornerView = nil;
     }
-  [super removeSubview: aView];
+  [super willRemoveSubview: aView];
 }
 
 - (void) setHorizontalScroller: (NSScroller*)aScroller

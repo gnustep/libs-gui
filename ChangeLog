@@ -1,3 +1,17 @@
+2011-05-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-removeFromSuperview): Use
+	removeFromSuperviewWithoutNeedingDisplay.
+	* Source/GSWindowDecorationView.m: Add method [NSWindow
+	-_clearContentView] to avoid recursion when removing the content view.
+	* Source/GSWindowDecorationView.m: Replace the method
+	-removeSubview: with -willRemoveSubview:.
+	* Source/NSScrollView.m: Dito.
+	* Source/NSClipView.m (-initWithCoder:): Use -removeFromSuperview
+	instead of -removeSubview:.
+	* Source/NSMenu.m (-setMenuRepresentation:): Dito.
+	* Source/NSColorPanel.m (-setAccessoryView:): Dito.
+
 2011-05-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m: Use pointing hand cursor for links

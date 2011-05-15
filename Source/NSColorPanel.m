@@ -547,7 +547,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return;
 
   if (_accessoryView != nil)
-    [_splitView removeSubview: _accessoryView];
+    [_accessoryView removeFromSuperview];
   _accessoryView = aView;
   [_splitView addSubview: _accessoryView];
 }

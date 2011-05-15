@@ -38,6 +38,20 @@
 
 #import "NSToolbarFrameworkPrivate.h"
 
+@interface NSWindow (GSWindowDecorationView)
+- (void)_clearContentView;
+@end
+
+@implementation NSWindow (GSWindowDecorationView)
+/* This method prevents a recursion when removing the contet view of a window. 
+   The method [NSWindow -setContentView:] would again lead to a call to -willRemoveSubview:.
+*/
+- (void)_clearContentView
+{
+  _contentView = nil;
+}
+@end
+
 @implementation GSWindowDecorationView
 
 static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
@@ -229,21 +243,19 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
  * the old window will automatically disappear (this is how it works
  * on Apple too).
  */
-- (void) removeSubview: (NSView*)aView
+- (void) willRemoveSubview: (NSView*)aView
 {
-  RETAIN(aView);
   /*
    * If the content view is removed (for example, because it was added
    * to another view in another window), we must let the window know.
    * Otherwise, it would keep trying to resize/manage it as if it was
    * its content view, while it actually is now in another window!
    */
-  [super removeSubview: aView];
+  [super willRemoveSubview: aView];
   if (aView == [_window contentView])
     {
-      [_window setContentView: nil];
+      [_window _clearContentView];
     }
-  RELEASE(aView);
 }
 
 - (void) setBackgroundColor: (NSColor *)color

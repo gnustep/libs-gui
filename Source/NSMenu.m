@@ -1413,7 +1413,7 @@ static BOOL menuBarVisible = YES;
   if (_view != nil)
     {
       // remove the old representation
-      [contentView removeSubview: _view];
+      [_view removeFromSuperview];
       [_view setMenu: nil];
     }
 
