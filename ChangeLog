@@ -1,3 +1,7 @@
+2011-05-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSSplitView.m: Use resize cursors
+
 2011-05-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m: Add an extra context save and restore

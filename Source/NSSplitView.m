@@ -46,6 +46,7 @@
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSCursor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -422,6 +423,7 @@ static NSNotificationCenter *nc = nil;
   BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
   NSRect oldRect; //only one can be dragged at a time
   BOOL lit = NO;
+  NSCursor *cursor;
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -530,6 +532,7 @@ static NSNotificationCenter *nc = nil;
       /* set the default limits on the dragging */
       minCoord = NSMinY(bigRect) + divVertical;
       maxCoord = NSHeight(bigRect) + NSMinY(bigRect) - divVertical;
+      cursor = [NSCursor resizeUpDownCursor];
     }
   else
     {
@@ -538,7 +541,10 @@ static NSNotificationCenter *nc = nil;
       /* set the default limits on the dragging */
       minCoord = NSMinX(bigRect) + divHorizontal;
       maxCoord = NSWidth(bigRect) + NSMinX(bigRect) - divHorizontal;
+      cursor = [NSCursor resizeLeftRightCursor];
     }
+
+  [cursor push];
 
   /* find out what the dragging limit is */
   if (_delegate)
@@ -741,6 +747,8 @@ static NSNotificationCenter *nc = nil;
   [self _autosaveSubviewProportions];
 
   [self setNeedsDisplay: YES];
+
+  [NSCursor pop];
 
   //[self display];
 }
@@ -1230,6 +1238,46 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   SET_DELEGATE_NOTIFICATION(DidResizeSubviews);
   SET_DELEGATE_NOTIFICATION(WillResizeSubviews);
+}
+
+- (void) resetCursorRects
+{
+  NSArray *subs = [self subviews];
+  NSInteger i;
+  const NSInteger count = [subs count];
+  const NSRect visibleRect = [self visibleRect];
+  NSCursor *cursor;
+
+  if (_isVertical)
+    {
+      cursor = [NSCursor resizeLeftRightCursor];
+    }
+  else
+    {
+      cursor = [NSCursor resizeUpDownCursor];
+    }
+
+  for (i = 0; i < (count-1); i++)
+    {
+      NSView *v = [subs objectAtIndex: i];
+      NSRect divRect = [v frame];
+      if (_isVertical == NO)
+        {
+          divRect.origin.y = NSMaxY (divRect);
+          divRect.size.height = _dividerWidth;
+        }
+      else
+        {
+          divRect.origin.x = NSMaxX (divRect);
+          divRect.size.width = _dividerWidth;
+        }
+      divRect = NSIntersectionRect(divRect, visibleRect);
+
+      if (!NSEqualRects(NSZeroRect, divRect))
+	{
+	  [self addCursorRect: divRect cursor: cursor];
+	}
+    }
 }
 
 /*
