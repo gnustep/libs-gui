@@ -1,5 +1,9 @@
 2011-05-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTableHeaderView.m: Use resize cursors
+
+2011-05-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m: Use IBeam cursor if selectable
 
 2011-05-14  Eric Wasylishen  <ewasylishen@gmail.com>

@@ -41,6 +41,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSCursor.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSGraphics.h"
 #import "GSGuiPrivate.h"
@@ -170,6 +171,29 @@
 		   inView: self];
 }
 
+- (void) resetCursorRects
+{
+  if ([[self tableView] allowsColumnResizing])
+    {
+      const NSRect visibleRect = [self visibleRect];
+      NSInteger i;
+      const NSInteger count = [[[self tableView] tableColumns] count];
+
+      for (i = 0; i < (count - 1) && (count > 0); i++)
+	{
+	  NSRect resizeRect = [self headerRectOfColumn: i];
+	  resizeRect.origin.x = NSMaxX(resizeRect) - mouse_sensitivity;
+	  resizeRect.size.width = 2 * mouse_sensitivity;
+	  resizeRect = NSIntersectionRect(resizeRect, visibleRect);
+
+	  if (!NSEqualRects(NSZeroRect, resizeRect))
+	    {
+	      [self addCursorRect: resizeRect cursor: [NSCursor resizeLeftRightCursor]];
+	    }
+	}
+    }
+}
+
 /**
  * In -mouseDown we intercept the mouse event to handle the
  * colum resize and rearrangement. Resizing or moving columns
@@ -287,6 +311,8 @@
           /* Do we need to check that we already fit into this area ? 
              We should */
 
+	  [[NSCursor resizeLeftRightCursor] push];
+
           if (!liveResize)
             {
               oldHighlightRect = NSZeroRect;
@@ -374,6 +400,8 @@
                          dequeue: YES];
             }
           [NSEvent stopPeriodicEvents];
+
+	  [NSCursor pop];
 
           if (!liveResize)
             {
