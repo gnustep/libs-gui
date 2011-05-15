@@ -67,6 +67,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorPanel.h"
 #import "AppKit/NSControl.h"
+#import "AppKit/NSCursor.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFileWrapper.h"
@@ -3888,6 +3889,19 @@ Figure out how the additional layout stuff is supposed to work.
         i = r.location + r.length;
       }
   }
+}
+
+- (void) resetCursorRects
+{
+  if ([self isSelectable])
+    {
+      const NSRect visibleRect = [self visibleRect];
+
+      if (!NSEqualRects(NSZeroRect, visibleRect))
+	{
+	  [self addCursorRect: visibleRect cursor: [NSCursor IBeamCursor]];
+	}
+    }
 }
 
 -  (NSString*)view: (NSView *)view
