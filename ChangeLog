@@ -1,3 +1,13 @@
+2011-05-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+ICNS.h
+	* Source/NSBitmapImageRep+ICNS.m: New method to load all the
+	images from file. Plus a few additional changes.
+	* Source/NSBitmapImageRep.m (+imageRepsWithData:): Use new ICNS
+	method to get all images from file.
+	* Source/NSBitmapImageRep.m (+imageRepWithData:): Use
+	-initWithData: instead of +imageRepsWithData:.
+
 2011-05-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-removeFromSuperview): Use

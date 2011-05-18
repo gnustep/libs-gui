@@ -180,14 +180,7 @@
 */
 + (id) imageRepWithData: (NSData *)imageData
 {
-  NSArray* array;
-
-  array = [self imageRepsWithData: imageData];
-  if ([array count])
-    {
-      return [array objectAtIndex: 0];
-    }
-  return nil;
+  return [[self alloc] initWithData: imageData];
 }
 
 /**<p>Returns an array containing newly allocated NSBitmapImageRep
@@ -211,7 +204,7 @@
       NSBitmapImageRep *rep;
       NSArray *a;
 
-      rep=[[self alloc] _initBitmapFromPNG: imageData];
+      rep = [[self alloc] _initBitmapFromPNG: imageData];
       if (!rep)
         return [NSArray array];
       a = [NSArray arrayWithObject: rep];
@@ -224,7 +217,7 @@
       NSBitmapImageRep *rep;
       NSArray *a;
 
-      rep=[[self alloc] _initBitmapFromPNM: imageData
+      rep = [[self alloc] _initBitmapFromPNM: imageData
 			      errorMessage: NULL];
       if (!rep)
         return [NSArray array];
@@ -238,7 +231,7 @@
       NSBitmapImageRep *rep;
       NSArray *a;
 
-      rep=[[self alloc] _initBitmapFromJPEG: imageData
+      rep = [[self alloc] _initBitmapFromJPEG: imageData
 			       errorMessage: NULL];
       if (!rep)
         return [NSArray array];
@@ -252,7 +245,7 @@
       NSBitmapImageRep *rep;
       NSArray *a;
 
-      rep=[[self alloc] _initBitmapFromGIF: imageData
+      rep = [[self alloc] _initBitmapFromGIF: imageData
 			      errorMessage: NULL];
       if (!rep)
         return [NSArray array];
@@ -263,15 +256,7 @@
 
   if ([self _bitmapIsICNS: imageData])
     {
-      NSBitmapImageRep *rep;
-      NSArray *a;
-
-      rep=[[self alloc] _initBitmapFromICNS: imageData];
-      if (!rep)
-        return [NSArray array];
-      a = [NSArray arrayWithObject: rep];
-      DESTROY(rep);
-      return a;
+      return [self _imageRepsWithICNSData: imageData];
     }
 
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
@@ -298,11 +283,11 @@
   return array;
 }
 
-/** Loads only the default (first) image from the TIFF image contained in
+/** Loads only the default (first) image from the image contained in
    data. */
 - (id) initWithData: (NSData *)imageData
 {
-  TIFF 	*image;
+  TIFF *image;
 
   if (imageData == nil)
     {
@@ -328,7 +313,6 @@
   if ([isa _bitmapIsICNS: imageData])
     return [self _initBitmapFromICNS: imageData];
 
-
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
@@ -337,8 +321,9 @@
       return nil;
     }
 
-  [self _initFromTIFFImage:image number: -1];
+  [self _initFromTIFFImage: image number: -1];
   NSTiffClose(image);
+
   return self;
 }
 

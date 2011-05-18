@@ -34,6 +34,7 @@
 
 @interface NSBitmapImageRep (ICNS)
 + (BOOL) _bitmapIsICNS: (NSData *)imageData;
++ (NSArray*) _imageRepsWithICNSData: (NSData *)imageData;
 - (id) _initBitmapFromICNS: (NSData *)imageData;
 // - (NSData *) _ICNSRepresentationWithProperties: (NSDictionary *) properties;
 @end

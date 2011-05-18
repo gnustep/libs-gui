@@ -307,6 +307,11 @@ static int icns_init_image_for_type(icns_type_t iconType,
   icns_icon_info_t info;
 
   info = icns_get_image_info_for_type(iconType);
+  if (info.iconChannels == 0)
+    {
+      return 1;
+    }
+
   return icns_init_image(info.iconWidth, info.iconHeight, info.iconChannels,
                          info.iconDepth, imageOut);
 }
@@ -477,6 +482,66 @@ typedef struct pixel_t
   return NO;
 }
 
+- (id) _initBitmapFromICNSImage: (icns_image_t*)iconImage
+{
+  unsigned int iconWidth = 0, iconHeight = 0;
+  unsigned int rgbBufferPos = 0;
+  unsigned int rgbBufferSize = 0;
+  unsigned char *rgbBuffer = NULL; /* image converted to rgb */
+  int i = 0, j = 0;
+  int imageChannels = 0;
+  int sPP = 4;
+
+  iconWidth = iconImage->imageWidth;
+  iconHeight = iconImage->imageHeight;
+
+  // allocate the buffer...
+  rgbBufferSize = iconHeight * (iconWidth * sizeof(unsigned char) * sPP);
+  rgbBuffer = NSZoneMalloc([self zone],  rgbBufferSize); 
+  if (rgbBuffer == NULL)
+    {
+      NSLog(@"Couldn't allocate memory for image data from ICNS.");
+      RELEASE(self);
+      return nil;
+    }
+
+  imageChannels = iconImage->imageChannels;
+  rgbBufferPos = 0;
+  for (i = 0; i < iconHeight; i++)
+    {
+      for (j = 0; j < iconWidth; j++)
+        {
+          pixel_t *src_rgb_pixel;
+	  
+          src_rgb_pixel = (pixel_t *)&(iconImage->imageData[i*iconWidth*imageChannels+j*imageChannels]);
+          
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->r;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->g;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->b;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->a;
+        }
+    }
+  
+  /* initialize self */
+  [self initWithBitmapDataPlanes: &rgbBuffer
+        pixelsWide: iconWidth
+        pixelsHigh: iconHeight
+        bitsPerSample: 8
+        samplesPerPixel: sPP
+        hasAlpha: YES
+        isPlanar: NO
+        colorSpaceName: NSCalibratedRGBColorSpace
+        // FIXME: Not sure whether this format is pre-multiplied
+        bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
+        bytesPerRow: iconWidth * sPP
+        bitsPerPixel: 8 * sPP];
+  
+  _imageData = [[NSData alloc] initWithBytesNoCopy: rgbBuffer
+                               length: rgbBufferSize];
+
+  return self;
+}
+
 - (id) _initBitmapFromICNS: (NSData *)imageData
 {
   int                     error = 0;
@@ -486,17 +551,10 @@ typedef struct pixel_t
   unsigned long           dataOffset = 0;
   icns_byte_t            *data = NULL;
   icns_type_t             typeStr = ICNS_NULL_TYPE;
-  unsigned int            iconWidth = 0, iconHeight = 0;
   icns_image_t            iconImage;
-  int                     sPP = 4;
-  unsigned char          *rgbBuffer = NULL; /* image converted to rgb */
-  unsigned int            rgbBufferPos = 0;
-  unsigned int            rgbBufferSize = 0;
-  int                     i = 0, j = 0;
-  int                     imageChannels = 0;
 
   error = icns_import_family_data(size, bytes, &iconFamily);
-  if(error != ICNS_STATUS_OK)
+  if (error != ICNS_STATUS_OK)
     {
       NSLog(@"Error reading ICNS data.");
       RELEASE(self);
@@ -514,10 +572,8 @@ typedef struct pixel_t
       
       memcpy(&element, (data + dataOffset), 8);
       
-      //
       // Temporarily limit to 48 until we can find a way to 
       // utilize the other representations in the icns file.
-      // 
       if (icns_types_equal(element.elementType, ICNS_48x48_32BIT_DATA) 
           || (icns_types_equal(typeStr, ICNS_NULL_TYPE) 
                && (icns_types_equal(element.elementType, ICNS_32x32_32BIT_DATA) 
@@ -543,59 +599,72 @@ typedef struct pixel_t
       return nil;
     }
 
-  iconWidth = iconImage.imageWidth;
-  iconHeight = iconImage.imageHeight;
-
-  // allocate the buffer...
-  rgbBufferSize = iconHeight * (iconWidth * sizeof(unsigned char) * sPP);
-  rgbBuffer = NSZoneMalloc([self zone],  rgbBufferSize); 
-  if (rgbBuffer == NULL)
-    {
-      NSLog(@"Couldn't allocate memory for image data from ICNS.");
-      RELEASE(self);
-      icns_free_image(&iconImage);
-      free(iconFamily);
-      return nil;
-    }
-
-  imageChannels = iconImage.imageChannels;
-  rgbBufferPos = 0;
-  for (i = 0; i < iconHeight; i++)
-    {
-      for (j = 0; j < iconWidth; j++)
-        {
-          pixel_t	*src_rgb_pixel;
-	  
-          src_rgb_pixel = (pixel_t *)&(iconImage.imageData[i*iconWidth*imageChannels+j*imageChannels]);
-          
-          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->r;
-          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->g;
-          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->b;
-          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->a;
-        }
-    }
-  
+  self = [self _initBitmapFromICNSImage: &iconImage];
   icns_free_image(&iconImage);
   free(iconFamily);
 
-  /* initialize self */
-  [self initWithBitmapDataPlanes: &rgbBuffer
-        pixelsWide: iconWidth
-        pixelsHigh: iconHeight
-        bitsPerSample: 8
-        samplesPerPixel: sPP
-        hasAlpha: YES
-        isPlanar: NO
-        colorSpaceName: NSCalibratedRGBColorSpace
-        // FIXME: Not sure whether this format is pre-multiplied
-        bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
-        bytesPerRow: iconWidth * sPP
-        bitsPerPixel: 8 * sPP];
-  
-  _imageData = [[NSData alloc] initWithBytesNoCopy: rgbBuffer
-                               length: rgbBufferSize];
-
   return self;
+}
+
++ (NSArray*) _imageRepsWithICNSData: (NSData *)imageData
+{
+  NSMutableArray *array = [NSMutableArray array];
+  int             error = 0;
+  int             size = [imageData length];
+  icns_byte_t    *bytes = (icns_byte_t *)[imageData bytes];
+  icns_family_t  *iconFamily = NULL;
+  unsigned long   dataOffset = 0;
+  icns_byte_t    *data = NULL;
+
+  error = icns_import_family_data(size, bytes, &iconFamily);
+  if (error != ICNS_STATUS_OK)
+    {
+      NSLog(@"Error reading ICNS data.");
+      RELEASE(self);
+      return array;
+    }
+
+  // skip the header...
+  dataOffset = sizeof(icns_type_t) + sizeof(icns_size_t);
+  data = (icns_byte_t *)iconFamily;
+
+  // read each icon...
+  while (((dataOffset + 8) < iconFamily->resourceSize))
+    {
+      icns_element_t element;
+      icns_type_t typeStr = ICNS_NULL_TYPE;
+      icns_image_t iconImage;
+      
+      memcpy(&element, (data + dataOffset), 8);
+      memcpy(&typeStr, &(element.elementType), 4);
+
+      // extract the image...
+      memset(&iconImage, 0, sizeof(icns_image_t));
+      error = icns_get_image32_with_mask_from_family(iconFamily,
+                                                     typeStr,
+                                                     &iconImage);
+      //NSLog(@"Read image %c %c %c %c result %d size %d", typeStr.c[0], typeStr.c[1], typeStr.c[2], typeStr.c[3], error, element.elementSize);
+      if (!error)
+        {
+          NSBitmapImageRep* imageRep;
+
+          imageRep = [[self alloc] _initBitmapFromICNSImage: &iconImage];
+          if (imageRep)
+            {
+              [array addObject: imageRep];
+              RELEASE(imageRep);
+            }
+          
+          icns_free_image(&iconImage);
+        }
+
+      // next...
+      dataOffset += element.elementSize;
+    }
+  
+  free(iconFamily);
+
+  return array;
 }
 
 @end
