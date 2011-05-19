@@ -178,6 +178,9 @@ PACKAGE_SCOPE
 - (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
 			   context: (void*)context;
 - (NSArray*) subviews;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) setSubviews: (NSArray *)newSubviews;
+#endif
 - (NSView*) superview;
 - (NSWindow*) window;
 - (void) viewWillMoveToSuperview: (NSView*)newSuper;

@@ -1056,6 +1056,59 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+- (void) setSubviews: (NSArray *)newSubviews
+{
+  NSEnumerator *en;
+  NSView *aView;
+  NSMutableArray *uniqNew = [NSMutableArray array];
+  
+  if (nil == newSubviews)
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Setting nil as new subviews."];
+    }
+
+  // Use a copy as we remove from the subviews array
+  en = [[NSArray arrayWithArray: _sub_views] objectEnumerator];
+  while ((aView = [en nextObject]))
+    {
+      if (NO == [newSubviews containsObject: aView])
+        {
+          [aView removeFromSuperview];
+        }
+    }
+  
+  en = [newSubviews objectEnumerator];
+  while ((aView = [en nextObject]))
+    {
+      id supersub = [aView superview];
+
+      if (supersub != nil && supersub != self)
+        {
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Superviews of new subviews must be either nil or receiver."];
+        }
+      
+      if ([uniqNew containsObject: aView])
+        {
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Duplicated new subviews."];
+        }
+      
+      if (NO == [_sub_views containsObject: aView])
+        {
+          [self addSubview: aView];
+        }
+      
+      [uniqNew addObject: aView];
+    }
+  
+  ASSIGN(_sub_views, uniqNew);
+
+  // The order of the subviews may have changed
+  [self setNeedsDisplay: YES];
+}
+
 - (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
 			   context: (void*)context
 {
