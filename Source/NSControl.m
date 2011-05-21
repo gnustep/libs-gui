@@ -206,6 +206,15 @@ static NSNotificationCenter *nc;
   return [[self selectedCell] intValue];
 }
 
+/** <p>Returns the value of the NSControl's selected cell as int.</p>
+    <p>See Also: -setIntegerValue: [NSCell-integerValue] -floatValue -doubleValue
+    -stringValue</p>
+ */
+- (NSInteger) integerValue
+{
+  return [[self selectedCell] integerValue];
+}
+
 /** <p>Returns the value of the NSControl's selected cell as NSString.</p>
     <p>See Also: -setStringValue: [NSCell-stringValue] -intValue -floatValue
     -doubleValue -stringValue</p>
@@ -280,6 +289,26 @@ static NSNotificationCenter *nc;
     }
 }
 
+/** <p>Sets the value of the NSControl's selected cell to int.
+    If the selected cell is an action cell, it marks self for display.</p>
+    <p>See Also: -integerValue [NSCell-setIntegerValue:] -setDoubleValue: 
+    -setFloatValue: -setStringValue:</p>
+ */
+- (void) setIntegerValue: (NSInteger)anInt
+{
+  NSCell *selected = [self selectedCell];
+  BOOL wasEditing = [self abortEditing];
+
+  [selected setIntegerValue: anInt];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+}
+
 /** <p>Sets the value of the NSControl's selected cell to NSString.
     If the selected cell is an action cell, it marks self for display.</p>
     <p>See Also: -stringValue [NSCell-setStringValue:] -setIntValue:
@@ -343,12 +372,22 @@ static NSNotificationCenter *nc;
 }
 
 /**<p>Sets the NSControl's selected cell to the sender's float int.</p>
-   <p>See Also: [NSCell-takeDoubleValueFrom:] -takeDoubleValueFrom: 
+   <p>See Also: [NSCell-takeIntValueFrom:] -takeDoubleValueFrom: 
    -takeFloatValueFrom: -takeStringValueFrom:</p> 
 */
 - (void) takeIntValueFrom: (id)sender
 {
   [[self selectedCell] takeIntValueFrom: sender];
+  [self setNeedsDisplay: YES];
+}
+
+/**<p>Sets the NSControl's selected cell to the sender's float int.</p>
+   <p>See Also: [NSCell-takeIntegerValueFrom:] -takeDoubleValueFrom: 
+   -takeFloatValueFrom: -takeStringValueFrom:</p> 
+*/
+- (void) takeIntegerValueFrom: (id)sender
+{
+  [[self selectedCell] takeIntegerValueFrom: sender];
   [self setNeedsDisplay: YES];
 }
 

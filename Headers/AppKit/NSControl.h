@@ -84,6 +84,12 @@
 - (void) setIntValue: (int)anInt;
 - (int) intValue;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSInteger) integerValue;
+- (void) setIntegerValue: (NSInteger)anInt;
+- (void) takeIntegerValueFrom: (id)sender;
+#endif
+
 - (void) setStringValue: (NSString *)aString;
 - (NSString *) stringValue;
 
