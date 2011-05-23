@@ -1,3 +1,9 @@
+2011-05-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tools/say/GNUmakefile
+	* Tools/say/say.m: Clean these up a bit to correctly compile wiht
+	gcc 4.6.
+
 2011-05-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSControl.h:

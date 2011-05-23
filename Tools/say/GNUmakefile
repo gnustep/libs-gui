@@ -17,7 +17,7 @@ say_INCLUDE_DIRS += -I../../Headers -I../../Headers/Additions
 say_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR) \
 	-L/usr/local/lib 
 
-say_OBJCFLAGS += -std=c99 -g -Werror
+#say_OBJCFLAGS += -std=c99 -g -Werror
 say_LDFLAGS += -lgnustep-gui
 
 -include GNUmakefile.preamble
