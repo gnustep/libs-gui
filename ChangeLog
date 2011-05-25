@@ -1,3 +1,15 @@
+2011-05-25 11:19 David Chisnall <theraven@gna.org>
+
+	* libs/gui/trunk/Source/NSBezierPath.m,
+	  libs/gui/trunk/Source/NSFont.m,
+	  libs/gui/trunk/Source/NSParagraphStyle.m:
+	 Change direct references to the isa pointer to calls to
+	 object_getClass(). In discussion with Steve Naroff (before he left Apple)
+	 it was decided that the isa pointer should be regarded as an
+	 implementation detail and not part of the language, so direct references
+	 to it are deprecated (on OS X).  This gives the runtime a bit more
+	 freedom to do secret isa-swizzling tricks.
+
 2011-05-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tools/say/GNUmakefile
