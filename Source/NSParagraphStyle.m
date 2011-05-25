@@ -125,7 +125,7 @@
 
   if (anObject == self)
     return NSOrderedSame;
-  if (anObject == nil || ([anObject isKindOfClass: self->isa] == NO))
+  if (anObject == nil || ([anObject isKindOfClass: object_getClass(self)] == NO))
     return NSOrderedAscending;
   loc = ((NSTextTab*)anObject)->_location;
   if (_location < loc)
@@ -148,7 +148,7 @@
 {
   if (anObject == self)
     return YES;
-  if ([anObject isKindOfClass: self->isa] == NO)
+  if ([anObject isKindOfClass: object_getClass(self)] == NO)
     return NO;
   else if (((NSTextTab*)anObject)->_tabStopType != _tabStopType)
     return NO;

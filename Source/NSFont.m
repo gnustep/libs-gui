@@ -85,7 +85,7 @@ globalFontMap.
 -(BOOL) isEqual: (id)other
 {
   GSFontMapKey *o;
-  if (![other isKindOfClass: isa])
+  if (![other isKindOfClass: object_getClass(self)])
     return NO;
   o = other;
   if (hash != o->hash || screenFont != o->screenFont || role != o->role
@@ -925,7 +925,7 @@ static void setNSFont(NSString *key, NSFont *font)
 {
   if (anObject == self)
     return YES;
-  if ([anObject isKindOfClass: self->isa] == NO)
+  if ([anObject isKindOfClass: object_getClass(self)] == NO)
     return NO;
   if ([[anObject fontName] isEqual: fontName] == NO)
     return NO;

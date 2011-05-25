@@ -572,7 +572,7 @@ typedef struct _PathElement
 //
 - (NSBezierPath *)bezierPathByFlatteningPath
 {
-  NSBezierPath *path = [isa bezierPath];
+  NSBezierPath *path = [object_getClass(self) bezierPath];
   NSBezierPathElement type;
   NSPoint pts[3];
   NSPoint coeff[4];
@@ -631,7 +631,7 @@ typedef struct _PathElement
 
 - (NSBezierPath *) bezierPathByReversingPath
 {
-  NSBezierPath *path = [isa bezierPath];
+  NSBezierPath *path = [object_getClass(self) bezierPath];
   NSBezierPathElement type, last_type;
   NSPoint pts[3];
   NSPoint p, cp1, cp2;
@@ -2073,7 +2073,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
   PathElement elem;
   int i, count;
 
-  if (![aPath isKindOfClass: isa])
+  if (![aPath isKindOfClass: object_getClass(self)])
     {
       [super appendBezierPath: aPath];
       return;
