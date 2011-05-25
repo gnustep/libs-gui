@@ -1,3 +1,7 @@
+2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSLayoutManager.m: Add a FIXME note
+
 2011-05-25 11:19 David Chisnall <theraven@gna.org>
 
 	* libs/gui/trunk/Source/NSBezierPath.m,

@@ -455,6 +455,8 @@ container? necessary? */
 {
   NSRange r1, r2;
 
+  // FIXME: should accept {NSNotFound, 0} for selCharRange to ignore that parameter
+
   /* TODO: we can actually do better than this by using the insertion point
   positioning behavior */
   r1 = [self glyphRangeForCharacterRange: charRange
