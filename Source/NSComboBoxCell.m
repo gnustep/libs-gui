@@ -261,9 +261,9 @@ static GSComboWindow *gsWindow = nil;
   if (num > max)
     num = max;
    
-  [self setFrame: NSMakeRect(0, 0, popUpWidth, 
+  [self setFrame: [self frameRectForContentRect: NSMakeRect(0, 0, popUpWidth, 
      2 * bsize.height + (itemHeight + intercellSpacing.height) * (num - 1)
-     + itemHeight) display: NO];
+     + itemHeight)] display: NO];
 }
 
 - (void) positionWithComboBoxCell: (NSComboBoxCell *)comboBoxCell

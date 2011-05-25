@@ -1,5 +1,10 @@
 2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSComboBoxCell.m: Correct positioning of popup window when
+	a scale factor is in use.
+
+2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSLayoutManager.m: Add a FIXME note
 
 2011-05-25 11:19 David Chisnall <theraven@gna.org>
