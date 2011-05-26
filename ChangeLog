@@ -1,5 +1,21 @@
 2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSLayoutManager.m:
+	* Source/NSGraphicsContext.m:
+	* Headers/AppKit/DPSOperators.h:
+	* Headers/AppKit/NSGraphicsContext.h:
+	* Headers/Additions/GNUstepGUI/GSMethodTable.h:
+	New GSShowGlyphsWithAdvances, which replaces
+	GSShowGlyphs as the primitive text drawing method.
+	(used by -[NSLayoutManager drawGlyphsForGlyphRange:atPoint:])
+
+	Requires r33121 in -back.
+
+	Note that the advances aren't actually used by -back yet so
+	text output should be unchanged.
+
+2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSComboBoxCell.m: Correct positioning of popup window when
 	a scale factor is in use.
 

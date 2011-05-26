@@ -169,6 +169,11 @@ static inline void
 GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
 __attribute__((unused));
 
+static inline void
+GSShowGlyphsWithAdvances(GSCTXT *ctxt, const NSGlyph * glyphs, const NSSize * advances, size_t length)
+__attribute__((unused));
+
+
 
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
@@ -698,6 +703,13 @@ GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
 {
   (ctxt->methods->GSShowGlyphs__)
     (ctxt, @selector(GSShowGlyphs: :), glyphs, length);
+}
+
+static inline void
+GSShowGlyphsWithAdvances(GSCTXT *ctxt, const NSGlyph * glyphs, const NSSize * advances, size_t length)
+{
+  (ctxt->methods->GSShowGlyphsWithAdvances__)
+    (ctxt, @selector(GSShowGlyphsWithAdvances: :), glyphs, advances, length); 
 }
 
 

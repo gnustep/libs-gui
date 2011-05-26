@@ -561,6 +561,8 @@ NSGraphicsContext	*GSCurrentContext(void)
     GET_IMP(@selector(GSShowText::));
   methodTable.GSShowGlyphs__ =
     GET_IMP(@selector(GSShowGlyphs::));
+  methodTable.GSShowGlyphsWithAdvances__ =
+    GET_IMP(@selector(GSShowGlyphsWithAdvances:::));
 
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
@@ -1074,6 +1076,13 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Paints the glyphs using the current font. (Quartz). */
 - (void) GSShowGlyphs: (const NSGlyph *)glyphs : (size_t) length
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/** Paints the glyphs with the specified advances using the current font.
+    (Quartz). */
+- (void) GSShowGlyphsWithAdvances: (const NSGlyph *)glyphs : (const NSSize *)advances : (size_t) length
 {
   [self subclassResponsibility: _cmd];
 }

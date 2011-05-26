@@ -1487,6 +1487,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
  
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
+  NSSize advancementbuf[GBUF_SIZE];
   int gbuf_len, gbuf_size;
   NSPoint gbuf_point = NSZeroPoint;
 
@@ -1579,7 +1580,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	  if (gbuf_len)
 	    {
 	      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-	      GSShowGlyphs(ctxt, gbuf, gbuf_len);
+	      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
 	      DPSnewpath(ctxt);
 	      gbuf_len = 0;
 	    }
@@ -1608,7 +1609,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	  if (gbuf_len)
 	    {
 	      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-	      GSShowGlyphs(ctxt, gbuf, gbuf_len);
+	      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
 	      DPSnewpath(ctxt);
 	      gbuf_len = 0;
 	    }
@@ -1649,7 +1650,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	      if (gbuf_len)
 		{
 		  DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-		  GSShowGlyphs(ctxt, gbuf, gbuf_len);
+		  GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
 		  DPSnewpath(ctxt);
 		  gbuf_len = 0;
 		}
@@ -1720,12 +1721,14 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 		  if (gbuf_len == gbuf_size)
 		    {
 		      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-		      GSShowGlyphs(ctxt, gbuf, gbuf_size);
+		      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_size);
 		      DPSnewpath(ctxt);
 		      gbuf_len = 0;
 		      gbuf_point = p;
 		    }
-		  gbuf[gbuf_len++] = glyph->g;
+		  gbuf[gbuf_len] = glyph->g;
+		  advancementbuf[gbuf_len] = [f advancementForGlyph: glyph->g];
+		  gbuf_len++;
 		}
 	    }
 	  p.x += [f advancementForGlyph: glyph->g].width;
@@ -1737,7 +1740,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 printf("%i at (%g %g) 4\n", gbuf_len, gbuf_point.x, gbuf_point.y);
 for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
       DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-      GSShowGlyphs(ctxt, gbuf, gbuf_len);
+      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
       DPSnewpath(ctxt);
     }
 

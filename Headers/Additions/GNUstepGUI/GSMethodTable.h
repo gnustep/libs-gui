@@ -112,6 +112,8 @@ typedef struct {
         (NSGraphicsContext*, SEL, const char *, size_t);
   void (*GSShowGlyphs__)
         (NSGraphicsContext*, SEL, const NSGlyph *, size_t);
+  void (*GSShowGlyphsWithAdvances__)
+        (NSGraphicsContext*, SEL, const NSGlyph *, const NSSize *, size_t);
 
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
