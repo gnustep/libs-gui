@@ -1013,7 +1013,8 @@ behavior precisely matches Cocoa. */
     /* The context of the cache window */
     NSGraphicsContext *cacheCtxt;
     /* The size of the cache window that will hold the scaled image */
-    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: dstRect.size];
+    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: imgSize];
+
     CGFloat imgToCacheWidthScaleFactor = cacheSize.width / imgSize.width;
     CGFloat imgToCacheHeightScaleFactor = cacheSize.height / imgSize.height;
     
@@ -1024,7 +1025,7 @@ behavior precisely matches Cocoa. */
     NSAffineTransform *transform;
 
     cache = [[NSCachedImageRep alloc]
-                initWithSize: cacheSize
+                initWithSize: NSMakeSize(ceil(cacheSize.width), ceil(cacheSize.height))
                        depth: [[NSScreen mainScreen] depth]
                     separate: YES
                        alpha: YES];
@@ -1033,7 +1034,7 @@ behavior precisely matches Cocoa. */
     cacheCtxt = GSCurrentContext();
 
     /* Clear the cache window surface */
-    DPScompositerect(cacheCtxt, 0, 0, cacheSize.width, cacheSize.height, NSCompositeClear);
+    DPScompositerect(cacheCtxt, 0, 0, ceil(cacheSize.width), ceil(cacheSize.height), NSCompositeClear);
     gState = [cacheCtxt GSDefineGState];
 
     //NSLog(@"Draw in cache size %@", NSStringFromSize(cacheSize));
@@ -1047,7 +1048,7 @@ behavior precisely matches Cocoa. */
     if (delta != 1.0)
       {
         DPSsetalpha(cacheCtxt, delta);
-        DPScompositerect(cacheCtxt, 0, 0, cacheSize.width, cacheSize.height,
+        DPScompositerect(cacheCtxt, 0, 0, ceil(cacheSize.width), ceil(cacheSize.height),
                          NSCompositeDestinationIn);
       }
 
@@ -1060,8 +1061,8 @@ behavior precisely matches Cocoa. */
 
     transform = [NSAffineTransform transform];
     [transform translateXBy: dstRect.origin.x yBy: dstRect.origin.y];
-    [transform scaleXBy: dstRect.size.width / cacheSize.width
-		    yBy: dstRect.size.height / cacheSize.height];
+    [transform scaleXBy: dstRect.size.width / srcRectInCache.size.width
+    		    yBy: dstRect.size.height / srcRectInCache.size.height];
     [transform concat];
 
     [ctxt GSdraw: gState

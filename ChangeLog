@@ -1,3 +1,9 @@
+2011-05-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (-nativeDrawInRect:...): Fix drawing images
+	with a source rect smaller than the entire image. This was a mistake
+	left by my last commit to this method.
+
 2011-05-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m:
