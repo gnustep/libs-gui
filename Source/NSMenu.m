@@ -39,6 +39,7 @@
 #import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSGarbageCollector.h>
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSNotification.h>
@@ -577,7 +578,11 @@ static BOOL menuBarVisible = YES;
     {
       [self setVersion: 1];
       nc = [NSNotificationCenter defaultCenter];
-      menuZone = NSCreateZone(0, 0, YES);
+      // If we're not running in GC mode, create a new zone
+      if ([NSGarbageCollector defaultCollector] == nil)
+        {
+          menuZone = NSCreateZone(0, 0, YES);
+        }
     }
 }
 
