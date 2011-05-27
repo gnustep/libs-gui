@@ -1,3 +1,29 @@
+2011-05-27 12:42  David Chisnall <theraven@gna.org>
+
+	* Source/Functions.m,
+	* Source/NSAnimation.m,
+	* Source/NSApplication.m,
+	* Source/NSAttributedString.m,
+	* Source/NSBitmapImageRep.m,
+	* Source/NSComboBoxCell.m,
+	* Source/NSFileWrapper.m,
+	* Source/NSInputManager.m,
+	* Source/NSPrinter.m,
+	* Source/NSProgressIndicator.m,
+	* Source/NSWindow.m,
+	* TextConverters/RTF/RTFProducer.m,
+	* Tools/GSspell.m,
+	* Tools/make_services.m,
+	* Tools/set_show_service.m:
+	Turn release messages sent to autorelease pools into drain messages. No
+	functionality change in non-GC mode, in GC mode it invokes a quick GC pass
+	to try to delete the short-lived objects.
+	  
+	Also deleted some [pool release] lines just before exit() or
+	return-from-main statements. These cause objects to be swapped in and
+	destructors to be run to no benefit (the OS will reclaim this memory
+	without requiring stuff to be swapped in when the process exits).
+
 2011-05-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSplitView.h
