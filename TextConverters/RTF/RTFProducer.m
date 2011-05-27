@@ -1188,7 +1188,7 @@
 
       [self _setAttributesOfLastRun: attributes];
 
-      RELEASE(pool);
+      [pool drain];
     }
 
   [self _setAttributesOfLastRun: nil]; // cleanup, should be unneccessary

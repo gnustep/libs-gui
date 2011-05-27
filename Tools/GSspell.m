@@ -533,6 +533,6 @@ int main(int argc, char** argv)
     }
   RELEASE(aSpellChecker);
   RELEASE(aServer);
-  RELEASE(_pool);
+  [_pool drain];
   return 0;
 }

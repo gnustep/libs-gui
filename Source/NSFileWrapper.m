@@ -148,7 +148,7 @@
       self = [self initSymbolicLinkWithDestination: 
                  [fm pathContentOfSymbolicLinkAtPath: path]];
     }
-  RELEASE(arp);
+  [arp drain];
   return self;
 }
 

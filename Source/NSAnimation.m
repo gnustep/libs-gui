@@ -1156,7 +1156,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   [self _gs_startAnimationInOwnLoop];
   NSDebugMLLog(@"NSAnimationThread",
                @"End of %@", [NSThread currentThread]);
-  RELEASE(pool);
+  [pool drain];
   _isThreaded = NO;
 }
 
@@ -1181,11 +1181,11 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
           d = [loop limitDateForMode: NSAnimationBlockingRunLoopMode];
           if (d == nil)
             {
-              RELEASE(pool);
+              [pool drain];
               break;	// No inputs and no timers.
             }
           [NSThread sleepUntilDate: d];
-          RELEASE(pool);
+          [pool drain];
         }
     }
 }

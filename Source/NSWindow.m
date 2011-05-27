@@ -2699,7 +2699,7 @@ resetCursorRectsForView(NSView *theView)
 	  GSRemoveIcon(mini);
 	}
 
-      RELEASE(pool);
+      [pool drain];
       RELEASE(self);
     }
 }

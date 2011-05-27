@@ -855,7 +855,7 @@ static NSMutableDictionary* printerCache;
   */
 
   // Release the local autoreleasePool
-  RELEASE(subpool);
+  [subpool drain];
 
 
 //Sometimes it's good to see the tables...

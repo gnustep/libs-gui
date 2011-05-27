@@ -2438,7 +2438,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                   //[new setColor: c atX: i y: j];
                   setC(new, setCSel, c, i, j);
                 }
-              RELEASE(pool);
+              [pool drain];
             }
         }
 

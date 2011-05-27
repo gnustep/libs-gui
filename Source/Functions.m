@@ -90,7 +90,7 @@ NSApplicationMain(int argc, const char **argv)
 
   DESTROY(NSApp);
 
-  RELEASE(pool);
+  [pool drain];
 
   return 0;
 }

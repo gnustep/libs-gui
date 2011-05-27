@@ -120,7 +120,6 @@ main(int argc, char** argv, char **env_c)
   if (proc == nil)
     {
       NSLog(@"unable to get process information!");
-      [pool release];
       exit(EXIT_SUCCESS);
     }
 
@@ -204,7 +203,7 @@ main(int argc, char** argv, char **env_c)
     {
       if (verbose > 0)
 	NSLog(@"couldn't create %@", usrRoot);
-      [pool release];
+      [pool drain];
       exit(EXIT_FAILURE);
     }
 
@@ -264,7 +263,6 @@ main(int argc, char** argv, char **env_c)
 	{
 	  if (verbose > 0)
 	    NSLog(@"couldn't write %@", str);
-	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
     }
@@ -289,12 +287,10 @@ main(int argc, char** argv, char **env_c)
 	{
 	  if (verbose > 0)
 	    NSLog(@"couldn't write %@", str);
-	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
     }
 
-  [pool release];
   exit(EXIT_SUCCESS);
 }
 
@@ -763,7 +759,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
 	    }
 	}
     }
-  [arp release];
+  [arp drain];
 }
 
 static void
@@ -815,7 +811,7 @@ scanDynamic(NSMutableDictionary *services, NSString *path)
 	  NSLog(@"bad app info - %@", infPath);
 	}
     }
-  [arp release];
+  [arp drain];
 }
 
 static void
@@ -890,7 +886,7 @@ scanServices(NSMutableDictionary *services, NSString *path)
 	    }
 	}
     }
-  [arp release];
+  [arp drain];
 }
 
 static NSMutableArray*

@@ -1595,7 +1595,7 @@ static NSMutableDictionary *cachedCSets = nil;
         }
     }
   
-  RELEASE(pool);
+  [pool drain];
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range

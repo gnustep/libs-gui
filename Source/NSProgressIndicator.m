@@ -114,7 +114,7 @@
 
       [self animate: self];
       [NSThread sleepForTimeInterval: _animationDelay];
-      RELEASE(pool);
+      [pool drain];
     }
 }
 

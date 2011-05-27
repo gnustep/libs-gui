@@ -464,7 +464,7 @@ static NSInputManager *currentInputManager = nil;
        }
   }
 
-  RELEASE (pool);
+  [pool drain];
   
   return self;
 }

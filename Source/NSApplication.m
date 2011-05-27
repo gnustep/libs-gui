@@ -770,7 +770,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
       nc = [NSNotificationCenter defaultCenter];
-      RELEASE(pool);
+      [pool drain];
     }
 }
 
@@ -780,7 +780,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   CREATE_AUTORELEASE_POOL(pool);
 
   [inv invoke];
-  RELEASE(pool);
+  [pool drain];
 }
 
 /**
@@ -915,7 +915,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   /* We are the end of responder chain.  */
   [self setNextResponder: nil];
 
-  RELEASE(_app_init_pool);
+  [_app_init_pool drain];
 }
 
 
@@ -1919,7 +1919,7 @@ See Also: -runModalForWindow:
 	      [self stopModal];
 	    }
 	}
-      RELEASE (pool);
+      [pool drain];
     }
 
   NSAssert(_session == theSession, @"Session was changed while running");

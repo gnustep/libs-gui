@@ -441,7 +441,7 @@ static GSComboWindow *gsWindow = nil;
     
   _stopped = NO;
     
-  RELEASE(pool);
+  [pool drain];
 }
 
 // onWindow notifications

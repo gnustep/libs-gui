@@ -54,7 +54,6 @@ main(int argc, char** argv, char **env)
   if (proc == nil)
     {
       NSLog(@"unable to get process information!\n");
-      [pool release];
       exit(EXIT_SUCCESS);
     }
 
@@ -93,7 +92,7 @@ main(int argc, char** argv, char **env)
     }
 
   NSLog(@"Nothing to do.\n");
-  RELEASE(pool);
+  [pool drain];
   return(1);
 }
 
