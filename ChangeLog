@@ -1,3 +1,10 @@
+2011-05-27 14:08  David Chisnall <theraven@gna.org>
+
+	* libs/gui/trunk/Source/NSMenu.m:
+	Don't create a zone in GC mode (detected at run time). This avoids a
+	warning when starting GUI apps in GC mode, but should have no real effect
+	on functionality.
+
 2011-05-27 12:42  David Chisnall <theraven@gna.org>
 
 	* Source/Functions.m,
