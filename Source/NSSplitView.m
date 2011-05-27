@@ -74,7 +74,6 @@ static NSNotificationCenter *nc = nil;
       _draggedBarWidth = 8; // default bigger than dividerThickness
       _isVertical = NO;
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
-      ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
 
       _never_displayed_before = YES;
@@ -1190,7 +1189,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (BOOL) isOpaque
 {
-  return YES;
+  return (_backgroundColor != nil);
 }
 
 - (void) resizeSubviewsWithOldSize: (NSSize) oldSize
@@ -1280,13 +1279,30 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
 }
 
+- (NSColor*) dividerColor
+{
+  return _dividerColor;
+}
+
+- (NSSplitViewDividerStyle) dividerStyle
+{
+  // FIXME
+  return NSSplitViewDividerStyleThick;
+}
+
+- (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle
+{
+  // FIXME
+}
+
 /*
  * NSCoding protocol
  */
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: _isVertical forKey: @"NSIsVertical"];
       [aCoder encodeObject: _autosaveName forKey: @"NSAutosaveName"];
@@ -1316,7 +1332,11 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
- 
+  if (self == nil)
+    {
+      return nil;
+    }
+
   if ([aDecoder allowsKeyedCoding])
     {
       id subview = nil;
@@ -1335,7 +1355,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       _dividerWidth = [self dividerThickness];
       _draggedBarWidth = 8; // default bigger than dividerThickness
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
-      ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
       _never_displayed_before = YES;
       _is_pane_splitter = YES;
@@ -1419,11 +1438,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   ASSIGN(_backgroundColor, aColor);
-}
-
-- (NSColor*) dividerColor
-{
-  return _dividerColor;
 }
 
 - (void) setDividerColor: (NSColor*) aColor

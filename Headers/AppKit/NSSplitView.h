@@ -34,6 +34,14 @@
 
 @class NSImage, NSColor, NSNotification;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+enum {
+  NSSplitViewDividerStyleThick = 1,
+  NSSplitViewDividerStyleThin = 2,
+};
+typedef NSInteger NSSplitViewDividerStyle;
+#endif
+
 @interface NSSplitView : NSView
 {
   id	      _delegate;
@@ -71,6 +79,10 @@
 - (CGFloat) maxPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex;
 - (CGFloat) minPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex;
 - (void) setPosition: (CGFloat)position ofDividerAtIndex: (NSInteger)dividerIndex;
+
+- (NSColor *) dividerColor;
+- (NSSplitViewDividerStyle) dividerStyle;
+- (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle;
 #endif
 
 @end
@@ -87,9 +99,7 @@
 - (NSImage *) dimpleImage;
 - (NSColor *) backgroundColor;
 - (void) setBackgroundColor: (NSColor *)aColor;
-- (NSColor *) dividerColor;
 - (void) setDividerColor: (NSColor *)aColor;
-
 @end
 #endif 
 
@@ -122,6 +132,22 @@ constrainMinCoordinate: (float)proposedMin
 	ofSubviewAt: (int)offset;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSRect) splitView: (NSSplitView *)splitView
+additionalEffectiveRectOfDividerAtIndex: (NSInteger)dividerIndex;
+
+- (NSRect) splitView: (NSSplitView *)splitView
+       effectiveRect: (NSRect)proposedEffectiveRect
+        forDrawnRect: (NSRect)drawnRect
+    ofDividerAtIndex: (NSInteger)dividerIndex;
+
+- (BOOL) splitView: (NSSplitView *)splitView 
+shouldCollapseSubview: (NSView *)subview
+forDoubleClickOnDividerAtIndex: (NSInteger)dividerIndex;
+
+- (BOOL) splitView: (NSSplitView *)splitView
+shouldHideDividerAtIndex: (NSInteger)dividerIndex;
+#endif
 @end
 
 /* Notifications */

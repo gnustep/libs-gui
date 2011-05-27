@@ -1,3 +1,9 @@
+2011-05-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSplitView.h
+	* Source/NSSplitView.m: Declare a few MacOSX 10.5 methods and make
+	the background transparent by default.
+
 2011-05-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m (-nativeDrawInRect:...): Fix drawing images
