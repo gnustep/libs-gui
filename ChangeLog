@@ -1,3 +1,8 @@
+2011-05-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Use rint
+	instead of round.
+
 2011-05-27 14:08  David Chisnall <theraven@gna.org>
 
 	* libs/gui/trunk/Source/NSMenu.m:
