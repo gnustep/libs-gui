@@ -1,3 +1,11 @@
+2011-05-29 20:34-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GNUmakefile: Remove NSManagedObjectContext.[hm] from compile
+	* Source/NSManagedObjectContext.h
+	* Source/NSManagedObjectContext.m: Delete
+	* Source/NSObjectController.m: Remove #import and add @class 
+	declaration.
+
 2011-05-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Use rint

@@ -38,6 +38,8 @@
 #import "AppKit/NSKeyValueBinding.h"
 #import "GSBindingHelpers.h"
 
+@class NSManagedObjectContext;
+
 @interface _NSManagedProxy : NSObject
 {
   NSString *_entity_name_key;

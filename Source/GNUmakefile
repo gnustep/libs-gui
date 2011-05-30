@@ -110,7 +110,6 @@ NSKeyValueBinding.m \
 NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
-NSManagedObjectContext.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuView.m \
