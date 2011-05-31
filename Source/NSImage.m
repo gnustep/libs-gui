@@ -1518,9 +1518,7 @@ Fallback for backends other than Cairo. */
   max_rep = nil;
   while ((rep = [enumerator nextObject]) != nil)
     {
-      int rep_bps = 0;
-      if ([rep respondsToSelector: @selector(bitsPerPixel)])
-        rep_bps = [(NSBitmapImageRep *)rep bitsPerPixel];
+      int rep_bps = [rep bitsPerSample];
       if (rep_bps > max_bps)
         {
           max_bps = rep_bps;
@@ -1608,7 +1606,22 @@ Fallback for backends other than Cairo. */
       reps = [self _bestRep: reps withColorMatch: deviceDescription];
     }
   reps = [self _bestRep: reps withBpsMatch: deviceDescription];
-  /* Pick an arbitrary representation if there is more than one */
+  /* If we have more than one match check for a representation whose size
+   * matches the image size exactly. Otherwise, arbitrarily choose the last
+   * representation. */
+  if ([reps count] > 1)
+    {
+      NSImageRep *rep;
+      NSEnumerator *enumerator = [reps objectEnumerator];
+
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  if (NSEqualSizes(_size, [rep size]) == YES)
+	    {
+	      return rep;
+	    }
+	}
+    }
   return [reps lastObject];
 }
 
