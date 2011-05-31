@@ -1,3 +1,8 @@
+2011-05-31 Riccardo Mottola <rm@gnu.org>
+
+	* Images/common_Miniaturize.tiff
+	Revert image but with correct dpi of 72.
+
 2011-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-orderWindow:relativeTo:): Take care of hide
