@@ -1,5 +1,19 @@
 2011-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-orderWindow:relativeTo:): Take care of hide
+	on deactivate windows.
+	* Source/NSWindow.m (-setHidesOnDeactivate:): Hide/unhide receiver
+	when the flag is changed and the application is not active.
+
+	* Source/NSWindow.m (-_isWindowInactive:, _setWindow:inactivate:):
+	New private NSApplication category to support management of hide
+	on deactivate windows.
+
+	* Source/NSApplication.m (-deactivate): Fix order of actions when
+	hiding inactive windows.
+
+2011-05-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSImage.m (-bestRepresentationForDevice): Prefer
 	returning an image representation whose size matches the image
 	size exactly.

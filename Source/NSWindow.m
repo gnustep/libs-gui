@@ -124,6 +124,11 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (id) _initWithScreenNumber: (int)screen;
 @end
 
+@interface NSApplication(Inactive)
+- (BOOL) _isWindowInactive: (NSWindow *)window;
+- (void) _setWindow: (NSWindow *)window inactive: (BOOL)inactive;
+@end
+
 
 /*
  * Category for internal methods (for use only within the NSWindow class itself
@@ -1716,7 +1721,7 @@ many times.
     {
       /* Windows need to be constrained when displayed or resized - but only
          titled windows are constrained. Also, and this is the tricky part,
-         don't constrain if we are merely unhidding the window or if it's
+         don't constrain if we are merely unhiding the window or if it's
          already visible and is just being reordered. */
       if ((_styleMask & NSTitledWindowMask)
           && [NSApp isHidden] == NO
@@ -1732,6 +1737,14 @@ many times.
           [self _initBackendWindow];
           display = YES;
         }
+    }
+
+  /* If a hide on deactivate window is explicitly ordered in or out while
+     the application is not active, remove it from the list of inactive
+     windows. */
+  if ([self hidesOnDeactivate] && ![NSApp isActive])
+    {
+      [NSApp _setWindow: self inactive: NO];
     }
 
   // Draw content before backend window ordering
@@ -1841,6 +1854,28 @@ many times.
   if (flag != _f.hides_on_deactivate)
     {
       _f.hides_on_deactivate = flag;
+      if (![NSApp isActive])
+	{
+	  if (flag)
+	    {
+	      if (_f.visible)
+		{
+		  /* Order is important here. We must first order out the window
+		     and then add it to the inactive list, since -orderOut:
+		     removes the receiver from the inactive list. */
+		  [self orderOut: nil];
+		  [NSApp _setWindow: self inactive: YES];
+		}
+	    }
+	  else
+	    {
+	      if ([NSApp _isWindowInactive: self])
+		{
+		  [NSApp _setWindow: self inactive: NO];
+		  [self orderFront: nil];
+		}
+	    }
+	}
     }
 }
 
@@ -5529,6 +5564,25 @@ current key view.<br />
 - (id) _futureFirstResponder
 {
   return _futureFirstResponder;
+}
+@end
+
+@implementation NSApplication(Inactive)
+- (BOOL) _isWindowInactive: (NSWindow *)window
+{
+  return [_inactive containsObject: window];
+}
+
+- (void) _setWindow: (NSWindow *)window inactive: (BOOL)inactive
+{
+  if (inactive)
+    {
+      [_inactive addObject: window];
+    }
+  else
+    {
+      [_inactive removeObject: window];
+    }
 }
 @end
 

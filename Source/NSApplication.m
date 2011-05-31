@@ -1433,8 +1433,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           
           if ([win hidesOnDeactivate] == YES)
             {
-              [_inactive addObject: win];
+	      /* NB Order is important here. When a hide on deactivate window
+		 is ordered out while the application is inactive, it gets
+		 removed from the _inactive list. Therefore, we must first
+		 order out the window and then add it to the _inactive list. */
               [win orderOut: self];
+              [_inactive addObject: win];
             }
         }
       
