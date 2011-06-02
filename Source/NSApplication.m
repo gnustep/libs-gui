@@ -368,7 +368,7 @@ struct _NSModalSession {
 };
  
 @interface NSApplication (Private)
-- _appIconInit;
+- (void) _appIconInit;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -986,10 +986,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) finishLaunching
 {
-  NSBundle		*mainBundle = [NSBundle mainBundle];
-  NSDictionary		*infoDict = [mainBundle infoDictionary];
   NSDocumentController	*sdc;
-  NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSString		*filePath;
   NSArray		*windows_list;
@@ -997,40 +994,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   unsigned		i;
   BOOL			hadDuplicates = NO;
   BOOL			didAutoreopen = NO;
-  NSImage		*image = nil;
   NSArray               *files = nil;
-
-  appIconFile = [infoDict objectForKey: @"NSIcon"];
-  if (appIconFile && ![appIconFile isEqual: @""])
-    {
-      image = [NSImage imageNamed: appIconFile];
-    }
-
-  // Try to look up the icns file.
-  appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
-  if (appIconFile && ![appIconFile isEqual: @""])
-    {
-      image = [NSImage imageNamed: appIconFile];
-    }
-
-  if (image == nil)
-    {
-      image = [NSImage imageNamed: @"GNUstep"];
-    }
-  else
-    {
-      /* Set the new image to be named 'NSApplicationIcon' ... to do that we
-       * must first check that any existing image of the same name has its
-       * name removed.
-       */
-      [(NSImage*)[NSImage imageNamed: @"NSApplicationIcon"] setName: nil];
-      // We need to copy the image as we may have a proxy here
-      image = AUTORELEASE([image copy]);
-      [image setName: @"NSApplicationIcon"];
-    }
-
-  [self setApplicationIconImage: image];
-  [self _appIconInit];
 
   /* post notification that launch will finish */
   [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
@@ -3762,11 +3726,14 @@ struct _DelegateWrapper
 
 @implementation	NSApplication (Private)
 
-- _appIconInit
+- (void) _appIconInit
 {
+  NSDictionary	*infoDict;
+  NSString	*appIconFile;
+  NSImage	*image = nil;
   NSAppIconView	*iv;
   unsigned	mask = NSIconWindowMask;
-  BOOL	suppress;
+  BOOL  	suppress;
 
   suppress = [[NSUserDefaults standardUserDefaults]
     boolForKey: @"GSSuppressAppIcon"];
@@ -3776,6 +3743,37 @@ struct _DelegateWrapper
       mask = NSMiniaturizableWindowMask;
     }
 #endif
+
+  infoDict = [[NSBundle mainBundle] infoDictionary];
+  appIconFile = [infoDict objectForKey: @"NSIcon"];
+  if (appIconFile && ![appIconFile isEqual: @""])
+    {
+      image = [NSImage imageNamed: appIconFile];
+    }
+
+  // Try to look up the icns file.
+  appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
+  if (appIconFile && ![appIconFile isEqual: @""])
+    {
+      image = [NSImage imageNamed: appIconFile];
+    }
+
+  if (image == nil)
+    {
+      image = [NSImage imageNamed: @"GNUstep"];
+    }
+  else
+    {
+      /* Set the new image to be named 'NSApplicationIcon' ... to do that we
+       * must first check that any existing image of the same name has its
+       * name removed.
+       */
+      [(NSImage*)[NSImage imageNamed: @"NSApplicationIcon"] setName: nil];
+      // We need to copy the image as we may have a proxy here
+      image = AUTORELEASE([image copy]);
+      [image setName: @"NSApplicationIcon"];
+    }
+  [self setApplicationIconImage: image];
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
@@ -3803,7 +3801,6 @@ struct _DelegateWrapper
        */
       [_app_icon_window orderFrontRegardless];
     }
-  return self;
 }
 
 - (NSDictionary*) _notificationUserInfo

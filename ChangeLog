@@ -1,3 +1,12 @@
+2011-06-02  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSApplication.m (-finishLaunching): Move creation of the
+	app icon from here ...
+	* Source/NSApplication.m (-_appIconInit):
+	* Source/Functions.m (NSApplicationMain): ... to here so that
+	applications get a proper app icon under WindowMaker even when
+	their main nib contains visible at launch time windows.
+
 2011-05-31 Riccardo Mottola <rm@gnu.org>
 
 	* Images/common_Miniaturize.tiff
