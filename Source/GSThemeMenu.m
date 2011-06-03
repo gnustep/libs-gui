@@ -62,16 +62,9 @@
   GSWindowDecorationView *wv = [window windowView];
   if ([window menu] == nil && menu != nil)
     {
-      NSData *data = [NSArchiver archivedDataWithRootObject: menu];   // 
-      NSMenu *newMenu = [NSUnarchiver unarchiveObjectWithData: data]; // [menu copy];
+      // NSData *data = [NSArchiver archivedDataWithRootObject: menu];   // 
+      NSMenu *newMenu = [menu copy];
       NSMenuView *menuView = nil;
-
-      /* 
-       * NOTE: The reason the copy or copyWithZone method is not used here is because
-       * it doesn't make a deep copy of the menu.  A deep copy is needed in order to
-       * allow the individual menu items to be used in multiple menus at one time without
-       * interfering with one another's state.  
-       */ 
 
       /* 
        * Set the new menu

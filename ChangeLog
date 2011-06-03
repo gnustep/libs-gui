@@ -1,9 +1,15 @@
+2011-06-03 00:55-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeMenu.m: Revert last change, since it will,
+	per discussion with Fred, cause issues.
+	* Source/NSMenuItem.m: Temporary fix for crash.
+
 2011-06-02 16:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Use NSArchiver to copy menu instead of
 	copy.  Add comment to explain why this is done.  The
 	copy method causes all of the NSMenu instances to share
-	NSMenuItems.  This appears to be causing a crash when the 
+	NSMenuItems.  This appears to be causing a crash when the
 	menu updates.
 
 2011-06-02  Wolfgang Lux  <wolfgang.lux@gmail.com>
