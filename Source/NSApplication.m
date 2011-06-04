@@ -996,6 +996,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   BOOL			didAutoreopen = NO;
   NSArray               *files = nil;
 
+  [self _appIconInit];
+
   /* post notification that launch will finish */
   [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
       object: self];

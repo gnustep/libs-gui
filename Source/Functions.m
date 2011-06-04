@@ -45,10 +45,6 @@
 
 char **NSArgv = NULL;
 
-@interface NSApplication(Private)
-- (void) _appIconInit;
-@end
-
 /*
  * Main initialization routine for the GNUstep GUI Library Apps
  */
@@ -79,11 +75,6 @@ NSApplicationMain(int argc, const char **argv)
     }
   [appClass sharedApplication];
 
-  /* NB Create the app icon before any other window; otherwise the app icon
-     window will not be mapped by WindowMaker and the user will not get the
-     proper application menu. */
-  [NSApp _appIconInit];
-  
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
     {

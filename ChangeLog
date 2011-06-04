@@ -1,3 +1,10 @@
+2011-06-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/Functions.m (NSApplicationMain):
+	* Source/NSApplication.m (-finishLaunching): Revert to creating
+	the app icon in finishLaunching, since existing applications that
+	do not use NSApplicationMain otherwise won't get an app icon.
+
 2011-06-03 00:55-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeMenu.m: Revert last change, since it will,
