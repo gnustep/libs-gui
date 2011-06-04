@@ -1,5 +1,10 @@
 2011-06-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSApplication.m (-_init, -finishLaunching): Create the
+	app icon in NSApplication -_init as suggested by Fred.
+
+2011-06-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/Functions.m (NSApplicationMain):
 	* Source/NSApplication.m (-finishLaunching): Revert to creating
 	the app icon in finishLaunching, since existing applications that

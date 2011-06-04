@@ -915,6 +915,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   /* We are the end of responder chain.  */
   [self setNextResponder: nil];
 
+  /* Create our app icon.
+     NB We are doing this here because WindowMaker will not map the app icon
+     window unless it is the very first window being mapped. */
+  [self _appIconInit];
+
   [_app_init_pool drain];
 }
 
@@ -995,8 +1000,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   BOOL			hadDuplicates = NO;
   BOOL			didAutoreopen = NO;
   NSArray               *files = nil;
-
-  [self _appIconInit];
 
   /* post notification that launch will finish */
   [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
