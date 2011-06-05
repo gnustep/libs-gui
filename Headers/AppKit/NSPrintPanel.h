@@ -35,7 +35,12 @@
 
 #import <AppKit/NSPanel.h>
 
+@class NSArray;
+@class NSMutableArray;
+@class NSSet;
+@class NSString;
 @class NSView;
+@class NSViewController;
 @class NSPrintInfo;
 
 enum {
@@ -65,12 +70,41 @@ enum {
   NSPPOptionOKButton	= 40
 };
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+@protocol NSPrintPanelAccessorizing
+- (NSSet *) keyPathsForValuesAffectingPreview;
+- (NSArray *) localizedSummaryItems;
+@end
+
+enum {
+  NSPrintPanelShowsCopies = 0x01,
+  NSPrintPanelShowsPageRange = 0x02,
+  NSPrintPanelShowsPaperSize = 0x04,
+  NSPrintPanelShowsOrientation = 0x08,
+  NSPrintPanelShowsScaling = 0x10,
+  NSPrintPanelShowsPageSetupAccessory = 0x100,
+  NSPrintPanelShowsPreview = 0x20000
+};
+typedef NSInteger NSPrintPanelOptions;
+
+NSString *NSPrintPanelAccessorySummaryItemNameKey;
+NSString *NSPrintPanelAccessorySummaryItemDescriptionKey;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+NSString *NSPrintPhotoJobStyleHint;
+#endif
+
 @interface NSPrintPanel : NSPanel
 {
   id _panel;
   id _optionPanel;
-  id _accessoryView;
-  id _savePath;
+  NSView *_accessoryView;
+  NSString *_savePath;
+  NSPrintInfo *_printInfo;
+  NSMutableArray *_accessoryControllers;
+  NSString *_jobStyleHint;
+  NSString *_helpAnchor;
+  NSPrintPanelOptions _options;
   int _picked;
   NSRange _pages; //this may also be removed
 }
@@ -83,13 +117,32 @@ enum {
 //
 // Customizing the Panel 
 //
+#if OS_API_VERSION(GS_API_NONE, MAC_OS_X_VERSION_10_5)
 - (void)setAccessoryView:(NSView *)aView;
 - (NSView *)accessoryView;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSArray *) accessoryControllers;
+- (void) addAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController;
+- (void) removeAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController;
+
+- (NSString *) defaultButtonTitle;
+- (void) setDefaultButtonTitle: (NSString *)defaultButtonTitle;
+
+- (NSPrintPanelOptions) options;
+- (void) setOptions: (NSPrintPanelOptions)options;
+
+- (NSString *) helpAnchor;
+- (void) setHelpAnchor: (NSString *)helpAnchor;
+
+- (NSPrintInfo *) printInfo;
+- (NSInteger) runModalWithPrintInfo: (NSPrintInfo *)printInfo;
+#endif
 
 //
 // Running the Panel 
 //
-- (int) runModal;
+- (NSInteger) runModal;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) beginSheetWithPrintInfo: (NSPrintInfo *)printInfo 
                   modalForWindow: (NSWindow *)docWindow 
@@ -98,6 +151,12 @@ enum {
                      contextInfo: (void *)contextInfo;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSString *) jobStyleHint;
+- (void) setJobStyleHint: (NSString *)hint;
+#endif
+
+#if OS_API_VERSION(GS_API_NONE, MAC_OS_X_VERSION_10_5)
 //
 // Updating the Panel's Display 
 //
@@ -110,7 +169,7 @@ enum {
 //
 - (void)updateFromPrintInfo;
 - (void)finalWritePrintInfo;
-
+#endif
 @end
 
 //

@@ -1,3 +1,10 @@
+2011-06-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSPrintPanel.h,
+	* Source/NSPrintPanel.m: Add newer methods and ivars for these.
+	* Source/NSPrintOperation.m: User newer NSPrintPanel interfaces.
+	* Source/externs.m: Define a few strings for NSPrintPanel.
+
 2011-06-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-_init, -finishLaunching): Create the

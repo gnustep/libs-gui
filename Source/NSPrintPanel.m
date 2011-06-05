@@ -49,11 +49,16 @@
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSPrinting.h"
 
-static NSPrintPanel *shared_instance;
+static NSPrintPanel *shared_instance = nil;
 
 #define GSPANELNAME @"GSPrintPanel"
 
 #define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
+
+@interface NSPrintPanel (GSPrivate)
+- (void)_updateFromPrintInfo: (NSPrintInfo*)info;
+- (void)_finalWritePrintInfo: (NSPrintInfo*)info;
+@end
 
 /**
   <unit>
@@ -110,10 +115,8 @@ static NSPrintPanel *shared_instance;
 //
 - (id) init
 {
-  int style =  NSTitledWindowMask;
-  NSRect frame = NSMakeRect(300, 300, 420, 350);
-  return [self initWithContentRect: frame
-			 styleMask: style
+  return [self initWithContentRect: NSMakeRect(300, 300, 420, 350)
+			 styleMask: NSTitledWindowMask
 			   backing: NSBackingStoreBuffered
 			     defer: YES];
 }
@@ -137,6 +140,11 @@ static NSPrintPanel *shared_instance;
   if (self == nil)
     return nil;
 
+  /* Set the title */
+  [self setTitle: _(@"Print Panel")];
+
+  _accessoryControllers = [[NSMutableArray alloc] init];
+
   // self will come from a bundle, to get the panel from the GUI library 
   // we have to select that bundle explicitly
   panel = [GSGuiBundle() pathForNibResource: GSPANELNAME];
@@ -155,9 +163,6 @@ static NSPrintPanel *shared_instance;
 		      @"OK", NULL, NULL);
       return nil;
     }
-
-  /* Set the title */
-  [self setTitle: _(@"Print Panel")];
 
   /* Transfer the objects to us. FIXME: There must be a way to 
      instantiate the panel directly */
@@ -187,7 +192,11 @@ static NSPrintPanel *shared_instance;
   RELEASE(_accessoryView);
   RELEASE(_savePath);
   RELEASE(_optionPanel);
-  
+  RELEASE(_printInfo);
+  RELEASE(_accessoryControllers);
+  RELEASE(_jobStyleHint);
+  RELEASE(_helpAnchor);
+
   [super dealloc];
 }
 
@@ -197,7 +206,7 @@ static NSPrintPanel *shared_instance;
 /** <p>Sets the accessory view for the print panel to aView</p>
     <p>See Also: -accessoryView</p>
  */
-- (void)setAccessoryView:(NSView *)aView
+- (void) setAccessoryView: (NSView *)aView
 {
   ASSIGN(_accessoryView, aView);
 }
@@ -205,9 +214,73 @@ static NSPrintPanel *shared_instance;
 /** <p>Returns the accessory view for the print panel </p>
     <p>See Also: -setAccessoryView:</p>
  */
-- (NSView *)accessoryView
+- (NSView *) accessoryView
 {
   return _accessoryView;
+}
+
+- (NSArray *) accessoryControllers
+{
+  return _accessoryControllers;
+}
+
+- (void) addAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController
+{
+  [_accessoryControllers addObject: accessoryController];
+}
+
+- (void) removeAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController
+{
+  [_accessoryControllers removeObjectIdenticalTo: accessoryController];
+}
+
+- (NSString *) defaultButtonTitle
+{
+  NSButton *defaultButton = CONTROL(self, NSOKButton);
+
+  return [defaultButton title];
+}
+
+- (void) setDefaultButtonTitle: (NSString *)defaultButtonTitle
+{
+  NSButton *defaultButton = CONTROL(self, NSOKButton);
+
+  [defaultButton setTitle: defaultButtonTitle];
+}
+
+- (NSPrintPanelOptions) options
+{
+  return _options;
+}
+
+- (void) setOptions: (NSPrintPanelOptions)options
+{
+  _options = options;
+}
+
+- (NSString *) jobStyleHint
+{
+  return _jobStyleHint;
+}
+
+- (void) setJobStyleHint: (NSString *)hint
+{
+  ASSIGN(_jobStyleHint, hint);
+}
+
+- (NSString *) helpAnchor
+{
+  return _helpAnchor;
+}
+
+- (void) setHelpAnchor: (NSString *)helpAnchor
+{
+  ASSIGN(_helpAnchor, helpAnchor);
+}
+
+- (NSPrintInfo *) printInfo
+{
+  return _printInfo;
 }
 
 //
@@ -220,13 +293,23 @@ static NSPrintPanel *shared_instance;
    itself out after the modal session is finished. You must do that
    yourself.
 */
-- (int)runModal
+- (NSInteger)runModal
 {
-  int ret;
+  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
+  return [self runModalWithPrintInfo: info];
+}
+
+- (NSInteger) runModalWithPrintInfo: (NSPrintInfo *)printInfo
+{
+  NSInteger ret;
 
   _picked = NSOKButton;
+  ASSIGN(_printInfo, printInfo);
+  // Set the values from printInfo
+  [self _updateFromPrintInfo: _printInfo];
   ret = [NSApp runModalForWindow: self];
   [_optionPanel orderOut: self];
+  DESTROY(_printInfo);
   /* Don't order ourselves out, let the NSPrintOperation do that */
   return ret;
 }
@@ -238,15 +321,18 @@ static NSPrintPanel *shared_instance;
 		     contextInfo: (void *)contextInfo
 {
   _picked = NSOKButton;
+  ASSIGN(_printInfo, printInfo);
+  // Set the values from printInfo
+  [self _updateFromPrintInfo: _printInfo];
   [NSApp beginSheet: self
          modalForWindow: docWindow
          modalDelegate: delegate
          didEndSelector: didEndSelector
          contextInfo: contextInfo];
   [_optionPanel orderOut: self];
+  DESTROY(_printInfo);
   [self orderOut: self];
 }
-
 
 - (BOOL) _getSavePath
 {
@@ -268,6 +354,9 @@ static NSPrintPanel *shared_instance;
 {
   int tag = [sender tag];
 
+  // FIXME
+  [self _finalWritePrintInfo: _printInfo];
+
   if (tag == NSPPSaveButton)
     {
       _picked = NSPPSaveButton;
@@ -282,7 +371,7 @@ static NSPrintPanel *shared_instance;
     {
       _picked = NSPPPreviewButton;
     }
-  else if (tag ==NSFaxButton)
+  else if (tag == NSFaxButton)
     {
       _picked = NSFaxButton;
       NSRunAlertPanel(_(@"Sorry"), _(@"Faxing of print file not implemented"), 
@@ -318,12 +407,11 @@ static NSPrintPanel *shared_instance;
 
 - (void) _pickedPrinter: (id)sender
 {
-  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo]; 
   NSString *name = [sender titleOfSelectedItem];
   NSPrinter *printer = [NSPrinter printerWithName: name];
  
-  [info setPrinter: printer];
-  [self updateFromPrintInfo];
+  [_printInfo setPrinter: printer];
+  [self _updateFromPrintInfo: _printInfo];
 }
 
 - (void) _pickedPage: (id)sender
@@ -353,7 +441,7 @@ static NSPrintPanel *shared_instance;
 - (void)pickedButton:(id)sender
 {
   NSLog(@"[NSPrintPanel -pickedButton:] method depreciated");
-  [self pickedButton: sender];
+  [self _pickedButton: sender];
 }
 
 /** This method has been depreciated. It doesn't do anything useful.
@@ -379,13 +467,37 @@ static NSPrintPanel *shared_instance;
 */
 - (void)updateFromPrintInfo
 {
+  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
+
+  [self _updateFromPrintInfo: info];
+}
+
+/** Saves information set by the user in the receiver's panel 
+   in the NSPrintInfo object from the current NSPrintOperation.
+*/
+- (void)finalWritePrintInfo
+{
+  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
+
+  [self _finalWritePrintInfo: info];
+}
+
+/* Private method for NSPrintOperation */
+- (void) _setStatusStringValue: (NSString *)string
+{
+  [CONTROL(self, NSPPStatusField) setStringValue: string ];
+}
+@end
+
+@implementation NSPrintPanel (GSPrivate)
+- (void)_updateFromPrintInfo: (NSPrintInfo*)info
+{
   id control;
   int layout;
   double scale;
   NSString *str;
   NSPrinter *printer;
   NSDictionary *dict;
-  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
 
   printer = [info printer];
   dict = [info dictionary];
@@ -528,15 +640,11 @@ static NSPrintPanel *shared_instance;
     }
   else
     [control addItemWithTitle: _(@"Unknown")];
-
 }
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 
-/** Saves information set by the user in the receiver's panel 
-   in the NSPrintInfo object from the current NSPrintOperation.
-*/
-- (void)finalWritePrintInfo
+- (void)_finalWritePrintInfo: (NSPrintInfo*)info
 {
   id control;
   double scale;
@@ -546,7 +654,7 @@ static NSPrintPanel *shared_instance;
   NSPrinter *printer;
   NSMutableDictionary *dict;
   NSMutableDictionary *features;
-  NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
+
   dict = [info dictionary];
   printer = [info printer];
   features = [dict objectForKey: NSPrintJobFeatures];
@@ -683,12 +791,5 @@ static NSPrintPanel *shared_instance;
 
   NSDebugLLog(@"NSPrinting", 
 	      @"Final info dictionary ----\n %@ \n --------------", dict);
-
-}
-
-/* Private method for NSPrintOperation */
-- (void) _setStatusStringValue: (NSString *)string
-{
-  [CONTROL(self, NSPPStatusField) setStringValue: string ];
 }
 @end

@@ -353,6 +353,11 @@ NSString  *NSPrintPreviewJob = @"PrintPreviewJob";
 NSString  *NSPrintSaveJob = @"PrintSaveJob";
 NSString  *NSPrintSpoolJob = @"PrintSpoolJob";
 
+// Print Panel
+NSString *NSPrintPanelAccessorySummaryItemNameKey = @"AccessorySummaryItemName";
+NSString *NSPrintPanelAccessorySummaryItemDescriptionKey = @"AccessorySummaryItemDescription";
+NSString *NSPrintPhotoJobStyleHint = @"PhotoJobStyle";
+
 // NSSplitView notifications
 NSString *NSSplitViewDidResizeSubviewsNotification =
 @"NSSplitViewDidResizeSubviewsNotification";

@@ -502,8 +502,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
       
       [panel setAccessoryView: _accessory_view];
       [self _setupPrintInfo];
-      [panel updateFromPrintInfo];
-      button = [panel runModal];
+      button = [panel runModalWithPrintInfo: _print_info];
       [panel setAccessoryView: nil];
 
       if (button != NSOKButton)
@@ -511,7 +510,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
           [self cleanUpOperation];
           return NO;
         }
-      [panel finalWritePrintInfo];
     }
 
   result = NO;
@@ -549,7 +547,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   */
   [panel setAccessoryView: _accessory_view];
   [self _setupPrintInfo];
-  [panel updateFromPrintInfo];
   [panel beginSheetWithPrintInfo: _print_info 
                   modalForWindow: docWindow 
                         delegate: self 
@@ -714,8 +711,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
   if (returnCode == NSOKButton)
     {
-      NSPrintPanel *panel = [self printPanel];
-      [panel finalWritePrintInfo];
       if ([self _runOperation])
         success = [self deliverResult];
     }
