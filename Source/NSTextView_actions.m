@@ -565,6 +565,17 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self insertText: @"\t"];
 }
 
+- (void) insertContainerBreak: (id)sender
+{
+  unichar ch = NSFormFeedCharacter;
+  [self insertText: [NSString stringWithCharacters: &ch length: 1]];
+}
+
+- (void) insertLineBreak: (id)sender
+{
+  unichar ch = NSLineSeparatorCharacter;
+  [self insertText: [NSString stringWithCharacters: &ch length: 1]];
+}
 
 - (void) deleteForward: (id)sender
 {

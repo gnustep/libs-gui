@@ -1843,10 +1843,47 @@ static NSMutableDictionary *cachedCSets = nil;
 - (void) setBaseWritingDirection: (NSWritingDirection)writingDirection
                            range: (NSRange)range
 {
-	[self setAttributes: [NSDictionary dictionaryWithObject: 
-                                             [NSNumber numberWithInt: writingDirection]
-                                           forKey: @"WritingDirection"]
-              range: range];
+  id value;
+  unsigned loc = range.location;
+  
+  if (NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -setBaseWritingDirection: range: "];
+    }
+
+  while (loc < NSMaxRange(range))
+    {
+      BOOL copiedStyle = NO;
+      NSRange effRange;
+      NSRange newRange;
+
+      value = [self attribute: NSParagraphStyleAttributeName
+		      atIndex: loc
+	       effectiveRange: &effRange];
+      newRange = NSIntersectionRange(effRange, range);
+
+      if (value == nil)
+	{
+	  value = [NSMutableParagraphStyle defaultParagraphStyle];
+	}
+      else
+	{
+	  value = [value mutableCopy];
+	  copiedStyle = YES;
+	}
+
+      [value setBaseWritingDirection: writingDirection];
+
+      [self addAttribute: NSParagraphStyleAttributeName
+		   value: value
+		   range: newRange];
+      if (copiedStyle == YES)
+	{
+	  RELEASE(value);
+	}
+      loc = NSMaxRange(effRange);
+    }
 }
 
 @end
