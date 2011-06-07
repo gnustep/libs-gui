@@ -562,7 +562,7 @@ static Class imageClass;
   copy->_representedObject = RETAIN(_representedObject);
   copy->_submenu = [_submenu copy];
   copy->_toolTip = RETAIN(_toolTip);
-  copy->_target = RETAIN(_target);
+  copy->_target = _target;
 
   return copy;
 }
