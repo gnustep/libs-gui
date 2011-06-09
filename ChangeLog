@@ -1,11 +1,17 @@
+2011-06-09 13:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSTheme.m: Move notifications handling code to
+	setTheme: instead and add code which deactivates the notifications
+	and then starts listening again after activate is called.
+
 2011-06-09 13:43-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/GSTheme.m: Move call to listen to default changes to 
-	activate instead of +initialize. 
+	* Source/GSTheme.m: Move call to listen to default changes to
+	activate instead of +initialize.
 
 2011-06-07 07:40-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSMenuItem.m: Remove temporary fix. 
+	* Source/NSMenuItem.m: Remove temporary fix.
 
 2011-06-06 Fred Kiefer <FredKiefer@gmx.de>
 

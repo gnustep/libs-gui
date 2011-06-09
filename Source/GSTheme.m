@@ -413,11 +413,26 @@ typedef	struct {
     }
   if (theme != theTheme)
     {
+      /*
+       * Remove any previous observers...
+       */
+      [[NSNotificationCenter defaultCenter]
+	removeObserver: self];
+
       [theTheme deactivate];
       DESTROY(currentThemeName);
       ASSIGN (theTheme, theme);
       [theTheme activate];
       ASSIGN(currentThemeName, [theTheme name]);
+
+      /*
+       * Listen to notifications...
+       */ 
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(defaultsDidChange:)
+	       name: NSUserDefaultsDidChangeNotification
+	     object: nil];
     }
 }
 
@@ -609,16 +624,6 @@ typedef	struct {
     {
       [[[window contentView] superview] setNeedsDisplay: YES];
     }
-
-  /*
-   * Listen to notifications
-   */ 
-  [[NSNotificationCenter defaultCenter]
-	addObserver: [self class]
-	   selector: @selector(defaultsDidChange:)
-	       name: NSUserDefaultsDidChangeNotification
-	     object: nil];
-  
 }
 
 - (NSArray*) authors
