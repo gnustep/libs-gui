@@ -47,13 +47,13 @@
 
 #else /* !HAVE_LIBICNS */
 /*
-  The following code is a drop in replacement for libicns. It may be used
-  when the library is not available or unsuited due to its licence (Currently
-  GPL 2). This code was mostly build based on the documentation found at 
+  The following code is a drop in replacement for libicns.
+  It may be used when the library is not available. 
+  This code was mostly build based on the documentation found at 
   http://icns.sourceforge.net/apidocs.html. It also includes icns decoding 
   ideas based on code in mySTEP.
   Only limited formats are implemented and some errors still exist.
- */
+*/
 
 typedef unsigned char icns_byte_t;
 // must be a 32 bit integer

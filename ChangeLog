@@ -1,5 +1,10 @@
 2011-06-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBitmapImageRep+ICNS.m: Remove comment about libicns
+	being GPL, it is now LGPL 2.1.
+
+2011-06-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView_actions.m (-moveLeftAndModifySelection:,
 	-moveRightAndModifySelection:, -moveWordLeft:,
 	-moveWordLeftAndModifySelection:, -moveWordRight:,
