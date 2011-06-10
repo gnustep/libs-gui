@@ -1,3 +1,11 @@
+2011-06-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView_actions.m (-moveLeftAndModifySelection:,
+	-moveRightAndModifySelection:, -moveWordLeft:,
+	-moveWordLeftAndModifySelection:, -moveWordRight:,
+	-moveWordRightAndModifySelection:, -setBaseWritingDirection:range:):
+	Add basic implementation for these methods.
+
 2011-06-09 13:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSTheme.m: Move notifications handling code to

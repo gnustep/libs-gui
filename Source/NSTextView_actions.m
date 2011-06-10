@@ -986,6 +986,25 @@ check if there was a reason for that.
     }
 }
 
+- (void) moveLeftAndModifySelection: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveForwardAndModifySelection: sender];
+    }
+  else
+    {
+        [self moveBackwardAndModifySelection: sender];
+    }
+}
+
 - (void) moveRight: (id)sender
 {
   NSRange range = [self selectedRange];
@@ -1006,6 +1025,24 @@ check if there was a reason for that.
     }
 }
 
+- (void) moveRightAndModifySelection: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveBackwardAndModifySelection: sender];
+    }
+  else
+    {
+        [self moveForwardAndModifySelection: sender];
+    }
+}
 
 - (void) moveBackward: (id)sender
 {
@@ -1098,6 +1135,82 @@ check if there was a reason for that.
 			      forward: YES];
   [self _moveTo: newLocation
 	 select: YES];
+}
+
+- (void) moveWordLeft: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveWordForward: sender];
+    }
+  else
+    {
+        [self moveWordBackward: sender];
+    }
+}
+
+- (void) moveWordLeftAndModifySelection: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveWordForwardAndModifySelection: sender];
+    }
+  else
+    {
+        [self moveWordBackwardAndModifySelection: sender];
+    }
+}
+
+- (void) moveWordRight: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveWordBackward: sender];
+    }
+  else
+    {
+        [self moveWordForward: sender];
+    }
+}
+
+- (void) moveWordRightAndModifySelection: (id)sender
+{
+  NSParagraphStyle *parStyle;
+  NSWritingDirection writingDirection;
+  
+  parStyle = [[self typingAttributes]
+	  	objectForKey: NSParagraphStyleAttributeName];
+  writingDirection = [parStyle baseWritingDirection];
+  
+  if (writingDirection == NSWritingDirectionRightToLeft)
+    {
+        [self moveWordBackwardAndModifySelection: sender];
+    }
+  else
+    {
+        [self moveWordForwardAndModifySelection: sender];
+    }
 }
 
 - (void) moveToBeginningOfDocument: (id)sender
@@ -1563,7 +1676,10 @@ and layout is left-to-right */
 - (void) setBaseWritingDirection: (NSWritingDirection)direction
                            range: (NSRange)range
 {
-  // FIXME
+  if (!_tf.is_rich_text)
+    return;
+
+  [_textStorage setBaseWritingDirection: direction range: range];
 }
 
 - (void) toggleBaseWritingDirection: (id)sender
