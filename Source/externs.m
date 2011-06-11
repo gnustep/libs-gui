@@ -329,6 +329,7 @@ NSString *NSPrintJobFeatures = @"PrintJobFeatures";
 NSString *NSPrintLastPage = @"PrintLastPage";
 NSString *NSPrintLeftMargin = @"PrintLeftMargin";
 NSString *NSPrintManualFeed = @"PrintManualFeed";
+NSString *NSPrintMustCollate = @"PrintMustCollate";
 NSString *NSPrintOrientation = @"PrintOrientation";
 NSString *NSPrintPagesPerSheet = @"PrintPagesPerSheet";
 NSString *NSPrintPaperFeed = @"PrintPaperFeed";
@@ -343,6 +344,13 @@ NSString *NSPrintTopMargin = @"PrintTopMargin";
 NSString *NSPrintHorizontalPagination = @"PrintHorizontalPagination";
 NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
 NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
+NSString *NSPrintPagesAcross = @"PrintPagesAcross";
+NSString *NSPrintPagesDown = @"PrintPagesDown";
+NSString *NSPrintTime = @"PrintTime";
+NSString *NSPrintDetailedErrorReporting = @"PrintDetailedErrorReporting";
+NSString *NSPrintFaxNumber = @"PrintFaxNumber";
+NSString *NSPrintPrinterName = @"PrintPrinterName";
+NSString *NSPrintHeaderAndFooter = @"PrintHeaderAndFooter";
 
 NSString *NSPrintPageDirection = @"NSPrintPageDirection";
 

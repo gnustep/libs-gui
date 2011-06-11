@@ -159,6 +159,7 @@ APPKIT_EXPORT NSString *NSPrintJobFeatures;
 APPKIT_EXPORT NSString *NSPrintLastPage;
 APPKIT_EXPORT NSString *NSPrintLeftMargin;
 APPKIT_EXPORT NSString *NSPrintManualFeed;
+APPKIT_EXPORT NSString *NSPrintMustCollate;
 APPKIT_EXPORT NSString *NSPrintOrientation;
 APPKIT_EXPORT NSString *NSPrintPackageException;
 APPKIT_EXPORT NSString *NSPrintPagesPerSheet;
@@ -173,6 +174,16 @@ APPKIT_EXPORT NSString *NSPrintScalingFactor;
 APPKIT_EXPORT NSString *NSPrintTopMargin;
 APPKIT_EXPORT NSString *NSPrintVerticalPagination;
 APPKIT_EXPORT NSString *NSPrintVerticallyCentered;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSPrintPagesAcross;
+APPKIT_EXPORT NSString *NSPrintPagesDown;
+APPKIT_EXPORT NSString *NSPrintTime;
+APPKIT_EXPORT NSString *NSPrintDetailedErrorReporting;
+APPKIT_EXPORT NSString *NSPrintFaxNumber;
+APPKIT_EXPORT NSString *NSPrintPrinterName;
+APPKIT_EXPORT NSString *NSPrintHeaderAndFooter;
+#endif
 
 //
 // Additional (GNUstep) keys
