@@ -493,6 +493,14 @@ NSString *NSWorkspaceWillPowerOffNotification =
 @"NSWorkspaceWillPowerOffNotification";
 NSString *NSWorkspaceWillUnmountNotification =
 @"NSWorkspaceWillUnmountNotification";
+NSString *NSWorkspaceDidWakeNotification =
+@"NSWorkspaceDidWakeNotification";
+NSString *NSWorkspaceSessionDidBecomeActiveNotification =
+@"NSWorkspaceSessionDidBecomeActiveNotification";
+NSString *NSWorkspaceSessionDidResignActiveNotification =
+@"NSWorkspaceSessionDidResignActiveNotification";
+NSString *NSWorkspaceWillSleepNotification =
+@"NSWorkspaceWillSleepNotification";
 
 /*
  *	NSStringDrawing NSAttributedString additions

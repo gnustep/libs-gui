@@ -1423,6 +1423,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return NO;
 }
 
+- (BOOL) setIcon: (NSImage *)image
+         forFile: (NSString *)fullPath
+         options: (NSWorkspaceIconCreationOptions)options
+{
+  // FIXME
+  return NO;
+}
+
 /**
  * Tracking Changes to the File System
  */
@@ -1563,6 +1571,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
+- (NSString *) absolutePathForAppBundleWithIdentifier: (NSString *)bundleIdentifier
+{
+  // TODO: full implementation
+  return [self fullPathForApplication: bundleIdentifier];
+}
+
 - (BOOL) launchAppWithBundleIdentifier: (NSString *)bundleIdentifier
 			       options: (NSWorkspaceLaunchOptions)options 
 	additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor 
@@ -1572,6 +1586,16 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return [self launchApplication: bundleIdentifier
 			showIcon: YES
 		      autolaunch: NO];
+}
+
+- (BOOL) openURLs: (NSArray *)urls
+withAppBundleIdentifier: (NSString *)bundleIdentifier
+          options: (NSWorkspaceLaunchOptions)options
+additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor
+launchIdentifiers: (NSArray **)identifiers
+{
+  // FIXME
+  return NO;
 }
 
 /**
@@ -1952,6 +1976,37 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NS_ENDHANDLER
 
   return 0;
+}
+
+- (BOOL) filenameExtension: (NSString *)filenameExtension 
+            isValidForType: (NSString*)typeName
+{
+  // FIXME
+  return [filenameExtension isEqualToString: typeName];
+}
+
+- (NSString *) localizedDescriptionForType: (NSString *)typeName
+{
+  // FIXME
+  return typeName;
+}
+
+- (NSString *) preferredFilenameExtensionForType: (NSString *)typeName
+{
+  // FIXME
+  return typeName;
+}
+
+- (BOOL) type: (NSString *)firstTypeName conformsToType: (NSString *)secondTypeName
+{
+  // FIXME
+  return [firstTypeName isEqualToString: secondTypeName];
+}
+
+- (NSString *) typeOfFile: (NSString *)absoluteFilePath error: (NSError **)outError
+{
+  // FIXME
+  return [absoluteFilePath pathExtension];
 }
 
 @end

@@ -1,5 +1,11 @@
 2011-06-11 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSWorkspace.h,
+	* Source/NSWorkspace.m: Add a few MacOSX methods with dummy implementations.
+	* Source/externs.m: Add new notification strings for NSWorkspace.
+
+2011-06-11 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSKeyValueBinding.h
 	* Source/NSPopUpButton.m
 	* Source/NSMatrix.m

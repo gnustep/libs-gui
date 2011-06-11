@@ -63,6 +63,14 @@ enum {
 typedef NSUInteger NSWorkspaceLaunchOptions;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+enum {
+  NSExcludeQuickDrawElementsIconCreationOption = 1 << 1,
+  NSExclude10_4ElementsIconCreationOption = 1 << 2
+};
+
+typedef NSUInteger NSWorkspaceIconCreationOptions;
+#endif
 
 @interface NSWorkspace : NSObject
 {
@@ -126,6 +134,11 @@ typedef NSUInteger NSWorkspaceLaunchOptions;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) isFilePackageAtPath: (NSString*)fullPath;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) setIcon: (NSImage *)image
+         forFile: (NSString *)fullPath
+         options: (NSWorkspaceIconCreationOptions)options;
+#endif
 
 //
 // Tracking Changes to the File System
@@ -151,6 +164,7 @@ typedef NSUInteger NSWorkspaceLaunchOptions;
 		autolaunch: (BOOL)autolaunch;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSString *) absolutePathForAppBundleWithIdentifier: (NSString *)bundleIdentifier;
 // TODO: implement NSAppleEventDescriptor in gnustep-base
 typedef void NSAppleEventDescriptor;
 
@@ -158,9 +172,25 @@ typedef void NSAppleEventDescriptor;
 			       options: (NSWorkspaceLaunchOptions)options 
 	additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor 
 		      launchIdentifier: (NSNumber **)identifier;
+- (BOOL) openURLs: (NSArray *)urls
+withAppBundleIdentifier: (NSString *)bundleIdentifier
+          options: (NSWorkspaceLaunchOptions)options
+additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor
+launchIdentifiers: (NSArray **)identifiers;
 #endif
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL) filenameExtension: (NSString *)filenameExtension 
+            isValidForType: (NSString*)typeName;
+- (NSString *) localizedDescriptionForType: (NSString *)typeName;
+- (NSString *) preferredFilenameExtensionForType: (NSString *)typeName;
+- (BOOL) type: (NSString *)firstTypeName 
+conformsToType: (NSString *)secondTypeName;
+- (NSString *) typeOfFile: (NSString *)absoluteFilePath 
+                    error: (NSError **)outError;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (NSDictionary*) activeApplication;
 - (NSArray*) launchedApplications;
 #endif
@@ -264,6 +294,12 @@ APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;
 APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;
 APPKIT_EXPORT NSString *NSWorkspaceWillPowerOffNotification;
 APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSWorkspaceDidWakeNotification;
+APPKIT_EXPORT NSString *NSWorkspaceSessionDidBecomeActiveNotification;
+APPKIT_EXPORT NSString *NSWorkspaceSessionDidResignActiveNotification;
+APPKIT_EXPORT NSString *NSWorkspaceWillSleepNotification;
+#endif
 
 //
 // Workspace File Type Globals 
