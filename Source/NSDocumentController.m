@@ -41,6 +41,7 @@
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSOpenPanel.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSWorkspace.h"
@@ -246,6 +247,8 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 	      allTypes = [[NSArray alloc] initWithObjects: valid count: nValid];
 	    }
 	}
+
+      [self exposeBinding: @"autosavingDelay"];
     }
 }
 

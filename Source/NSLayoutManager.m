@@ -109,8 +109,10 @@ first. Remaining cases, highest priority first:
 #import <Foundation/NSException.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSLayoutManager.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSRulerMarker.h"
@@ -118,7 +120,6 @@ first. Remaining cases, highest priority first:
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/DPSOperators.h"
-#import "AppKit/NSBezierPath.h"
 
 #import "GNUstepGUI/GSLayoutManager_internal.h"
 
@@ -2057,6 +2058,17 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 
 
 @implementation NSLayoutManager
+
+/*
+ * Class methods
+ */
++ (void) initialize
+{
+  if (self == [NSLayoutManager class])
+    {
+      [self exposeBinding: @"hyphenationFactor"];
+    }
+}
 
 -(void) insertTextContainer: (NSTextContainer *)aTextContainer
 		    atIndex: (unsigned int)index

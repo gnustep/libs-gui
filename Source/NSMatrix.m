@@ -59,6 +59,8 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSFormatter.h>
 #import <Foundation/NSDebug.h>
@@ -71,6 +73,7 @@
 #import "AppKit/NSCursor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSWindow.h"
 
@@ -219,6 +222,8 @@ static SEL getSel;
       defaultCellClass = [NSActionCell class];
       //
       nc = [NSNotificationCenter defaultCenter];
+
+      [self exposeBinding: NSSelectedTagBinding];
     }
 }
 
@@ -1191,6 +1196,7 @@ static SEL getSel;
 
 - (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
 {
+  [self willChangeValueForKey: NSSelectedTagBinding];
   if (aCell)
     {
       NSRect cellFrame;
@@ -1236,6 +1242,7 @@ static SEL getSel;
       _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
     }
+  [self didChangeValueForKey: NSSelectedTagBinding];
 }
 
 - (void) selectCell: (NSCell *)aCell
@@ -3882,6 +3889,30 @@ static SEL getSel;
 	      
 	    }
 	}
+    }
+}
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedTagBinding])
+    {
+      [self selectCellWithTag: [anObject integerValue]];
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedTagBinding])
+    {
+      return [NSNumber numberWithInteger: [self selectedTag]];
+    }
+  else
+    {
+      return [super valueForKey: aKey];
     }
 }
 

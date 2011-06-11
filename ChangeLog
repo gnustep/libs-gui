@@ -1,3 +1,13 @@
+2011-06-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h
+	* Source/NSPopUpButton.m
+	* Source/NSMatrix.m
+	* Source/NSLayoutManager.m
+	* Source/NSTextView.m
+	* Source/NSDocumentController.m
+	* Source/externs.m: Add a few key value bindings.
+
 2011-06-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+ICNS.m: Remove comment about libicns

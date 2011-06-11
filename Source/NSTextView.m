@@ -73,6 +73,7 @@
 #import "AppKit/NSFileWrapper.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSLayoutManager.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
@@ -599,6 +600,8 @@ static NSMenu *textViewMenu;
 	      [NSCharacterSet punctuationCharacterSet]];
       smartRightChars = [temp copy];
       [temp release];
+
+      [self exposeBinding: NSEditableBinding];
     }
 }
 
