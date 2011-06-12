@@ -159,6 +159,11 @@ Interface for a bunch of internal methods that need to be cleaned up.
 - (void) _textDidChange: (NSNotification*)notif;
 - (void) _textCheckingTimerFired: (NSTimer *)t;
 
+/*
+ * helper method for ruler view
+ */
+- (void) _becomeRulerClient;
+- (void) _resignRulerClient;
 @end
 
 
@@ -309,7 +314,6 @@ Interface for a bunch of internal methods that need to be cleaned up.
 @interface NSTextStorage(NSTextViewUndoSupport)
 - (void) _undoTextChange: (NSTextViewUndoObject *)anObject;
 @end
-
 
 /**** Misc. helpers and stuff ****/
 
@@ -1445,6 +1449,7 @@ to make sure syncing is handled properly in all cases.
 - (void) setRulerVisible: (BOOL)flag
 {
   NSScrollView *sv;
+  NSRulerView *rv;
 
   NSTEXTVIEW_SYNC;
 
@@ -1457,6 +1462,18 @@ to make sure syncing is handled properly in all cases.
 	  [sv setHasHorizontalRuler: YES];
 	}
       [sv setRulersVisible: _tf.is_ruler_visible];
+      if (self == [_window firstResponder] &&
+          (rv = [sv horizontalRulerView]) != nil)
+       {
+          if (flag)
+            {
+              [rv setClientView: self];
+            }
+          else
+            {
+              [rv setClientView: nil];
+            }
+        }
     }
 }
 
@@ -1630,6 +1647,7 @@ to make sure syncing is handled properly in all cases.
 
 
   /* Add any clean-up stuff here */
+  [self _resignRulerClient];
 
   if ([self shouldDrawInsertionPoint])
     {
@@ -1668,6 +1686,7 @@ started (in another text view attached to the same layout manager). */
 
   /* Note: Notifications (NSTextBeginEditingNotification etc) are sent
   the first time the user tries to edit us. */
+  [self _becomeRulerClient];
 
   /* Draw selection, update insertion point */
   if ([self shouldDrawInsertionPoint])
@@ -4457,8 +4476,6 @@ shouldRemoveMarker: (NSRulerMarker *)marker
       makers = [_layoutManager rulerMarkersForTextView: self
 			       paragraphStyle: paraStyle
 			       ruler: rv];
-      // TODO This is not the correct place to call this.
-      [rv setClientView: self];
       [rv setMarkers: makers];
     }
 }
@@ -6180,6 +6197,32 @@ or add guards
 	}
 
       [self _scheduleTextCheckingTimer];
+    }
+}
+
+- (void) _becomeRulerClient
+{
+  NSScrollView *sv;
+  NSRulerView *rv;
+
+  if (_tf.uses_ruler && _tf.is_ruler_visible &&
+      (sv = [self enclosingScrollView]) != nil && 
+      (rv = [sv horizontalRulerView]) != nil)
+    {
+      [rv setClientView: self];
+    }
+}
+
+- (void) _resignRulerClient
+{
+  NSScrollView *sv;
+  NSRulerView *rv;
+
+  if (_tf.uses_ruler && _tf.is_ruler_visible &&
+      (sv = [self enclosingScrollView]) != nil && 
+      (rv = [sv horizontalRulerView]) != nil)
+    {
+      [rv setClientView: nil];
     }
 }
 

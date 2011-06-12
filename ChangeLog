@@ -1,3 +1,10 @@
+2011-06-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m: Add methods -_becomeRulerClient and
+	-_resignRulerClient to set self as the ruler client and to resign
+	from that. These get called when self becomes first responder or
+	resigns from first responder.
+
 2011-06-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPrintInfo.h,
