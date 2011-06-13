@@ -579,59 +579,74 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_wrapperType];
-  // Dont store the file name
-  [aCoder encodeObject: _preferredFilename];
-  [aCoder encodeObject: _fileAttributes];
-  [aCoder encodeObject: _wrapperData];
-  [aCoder encodeObject: _iconImage];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self serializedRepresentation] forKey: @"NSFileWrapperData"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_wrapperType];
+      // Dont store the file name
+      [aCoder encodeObject: _preferredFilename];
+      [aCoder encodeObject: _fileAttributes];
+      [aCoder encodeObject: _wrapperData];
+      [aCoder encodeObject: _iconImage];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int wrapperType;
-  NSString *preferredFilename;
-  NSDictionary *fileAttributes;
-  id wrapperData;
-  NSImage *iconImage;
-
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &wrapperType];
-  // Dont restore the file name
-  preferredFilename = [aDecoder decodeObject];
-  fileAttributes = [aDecoder decodeObject];
-  wrapperData = [aDecoder decodeObject];
-  iconImage = [aDecoder decodeObject];
-
-  switch (wrapperType)
+  if ([aDecoder allowsKeyedCoding])
     {
-    case GSFileWrapperRegularFileType: 
-      {
-	self = [self initRegularFileWithContents: wrapperData];
-        break;
-      }
-    case GSFileWrapperSymbolicLinkType: 
-      {
-	self = [self initSymbolicLinkWithDestination: wrapperData];
-        break;
-      }
-    case GSFileWrapperDirectoryType: 
-      {
-	self = [self initDirectoryWithFileWrappers: wrapperData];
-	break;
-      }
+       NSData *data = [aDecoder decodeObjectForKey: @"NSFileWrapperData"];
+       return [self initWithSerializedRepresentation: data];
     }
-  
-  if (preferredFilename != nil)
+  else
     {
-      [self setPreferredFilename: preferredFilename];
-    }
-  if (fileAttributes != nil)
-    {
-      [self setFileAttributes: fileAttributes];
-    }
-  if (iconImage != nil)
-    {
-      [self setIcon: iconImage];
+      int wrapperType;
+      NSString *preferredFilename;
+      NSDictionary *fileAttributes;
+      id wrapperData;
+      NSImage *iconImage;
+      
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &wrapperType];
+      // Dont restore the file name
+      preferredFilename = [aDecoder decodeObject];
+      fileAttributes = [aDecoder decodeObject];
+      wrapperData = [aDecoder decodeObject];
+      iconImage = [aDecoder decodeObject];
+      
+      switch (wrapperType)
+        {
+        case GSFileWrapperRegularFileType: 
+          {
+            self = [self initRegularFileWithContents: wrapperData];
+            break;
+          }
+        case GSFileWrapperSymbolicLinkType: 
+          {
+            self = [self initSymbolicLinkWithDestination: wrapperData];
+            break;
+          }
+        case GSFileWrapperDirectoryType: 
+          {
+            self = [self initDirectoryWithFileWrappers: wrapperData];
+            break;
+          }
+        }
+      
+      if (preferredFilename != nil)
+        {
+          [self setPreferredFilename: preferredFilename];
+        }
+      if (fileAttributes != nil)
+        {
+          [self setFileAttributes: fileAttributes];
+        }
+      if (iconImage != nil)
+        {
+          [self setIcon: iconImage];
+        }
     }
   return self;
 }

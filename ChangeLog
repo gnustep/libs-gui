@@ -1,3 +1,7 @@
+2011-06-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFileWrapper.m: Add keyed coding.
+
 2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSBitmapImageRep.m: Reduce floating-point error in the
