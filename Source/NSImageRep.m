@@ -521,5 +521,17 @@ implement, so we can't do that. */
   return self;
 }
 
+- (NSString*)description
+{
+  return [NSString stringWithFormat: @"<%@: %p size: %@ pixelsWide: %d pixelsHigh: %d colorSpaceName: %@ bps: %d>",
+		   [self class],
+		   self,
+		   NSStringFromSize([self size]),
+		   (int)[self pixelsWide],
+		   (int)[self pixelsHigh],
+		   [self colorSpaceName],
+		   (int)[self bitsPerSample]];
+}
+
 @end
 
