@@ -1915,10 +1915,11 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   [_properties setObject: [NSNumber numberWithFloat: _comp_factor]
                   forKey: NSImageCompressionFactor];
 
-  if (info->xdpi > 0 && info->ydpi > 0)
+  if (info->xdpi > 0 && info->xdpi != 72 &&
+      info->ydpi > 0 && info->ydpi != 72)
     {
-      NSSize pointSize = NSMakeSize((info->width / info->xdpi) * 72.0,
-				    (info->height / info->ydpi) * 72.0);
+      NSSize pointSize = NSMakeSize((double)info->width * (72.0 / (double)info->xdpi),
+				    (double)info->height * (72.0 / (double)info->ydpi));
       [self setSize: pointSize];
     }
 

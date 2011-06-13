@@ -1,5 +1,11 @@
 2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSBitmapImageRep.m: Reduce floating-point error in the
+	expression which computes image point size using DPI and pixel size
+	(for TIFF images.)
+
+2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImageRep.m (-description): Implement -description to
 	aid debugging.
 
