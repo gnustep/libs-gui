@@ -486,7 +486,14 @@ static NSPrintInfo *sharedPrintInfo = nil;
       [dict removeObjectForKey: NSPrintPrinter];
     }
            
-  [aCoder encodePropertyList: dict];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: dict forKey: @"NSAttributes"];
+    }
+  else
+    {
+      [aCoder encodePropertyList: dict];
+    }
   RELEASE(dict);
 }
 
@@ -494,8 +501,14 @@ static NSPrintInfo *sharedPrintInfo = nil;
 {
   NSMutableDictionary *dict;
  
-  dict = [aDecoder decodePropertyList];
-  
+  if ([aDecoder allowsKeyedCoding])
+    {
+      dict = [aDecoder decodeObjectForKey: @"NSAttributes"];
+    }
+  else
+    {
+      dict = [aDecoder decodePropertyList];
+    }
   return [self initWithDictionary: dict];
 }
 
