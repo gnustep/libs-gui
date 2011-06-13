@@ -1394,66 +1394,156 @@ Fallback for backends other than Cairo. */
     }
 }
 
-/* Determine if the device is color or gray scale and find the reps of
-   the same type
+/* Determine the number of color components in the device and
+   filter out reps with a different number of color components.
+   
+   If the device lacks a color space name, all reps are treated
+   as matching.
+
+   If a rep lacks a color space name, it is assumed to match the
+   device.
+
+   WARNING: Be careful not to inadvertently mix greyscale and color
+   representations in a TIFF. The greyscale representations
+   will never be selected as a best rep unless you are drawing on
+   a greyscale surface, or all reps in the TIFF are greyscale. 
 */
 - (NSMutableArray *) _bestRep: (NSArray *)reps 
                withColorMatch: (NSDictionary*)deviceDescription
 {
-  int colors = 3;
-  NSImageRep* rep;
-  NSMutableArray *breps;
-  NSEnumerator *enumerator = [reps objectEnumerator];
-  NSString *colorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
-  
-  if (colorSpace != nil)
-    colors = NSNumberOfColorComponents(colorSpace);
-  
-  breps = [NSMutableArray array];
-  while ((rep = [enumerator nextObject]) != nil)
-    {
-      if ([rep colorSpaceName] || abs(NSNumberOfColorComponents([rep colorSpaceName]) - colors) <= 1)
-        [breps addObject: rep];
-    }
-  
-  /* If there are no matches, pass all the reps */
-  if ([breps count] == 0)
-    return (NSMutableArray *)reps;
-  return breps;
-}
-
-/* Find reps that match the resolution of the device or return the
-   vector reps or the reps that have the highest resolution */
-- (NSMutableArray *) _bestRep: (NSArray *)reps 
-          withResolutionMatch: (NSDictionary*)deviceDescription
-{
-  NSValue *resolution = [deviceDescription objectForKey: NSDeviceResolution];
   NSMutableArray *breps = [NSMutableArray array];
+  NSString *deviceColorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
 
-  /* Look for exact resolution matches */
-
-  if (nil != resolution)
+  if (deviceColorSpace != nil)
     {
-      NSSize dres = [resolution sizeValue];
-
+      NSUInteger deviceColors = NSNumberOfColorComponents(deviceColorSpace);
+      NSEnumerator *enumerator = [reps objectEnumerator];  
       NSImageRep *rep;
-      NSEnumerator *enumerator = [reps objectEnumerator];   
-      
       while ((rep = [enumerator nextObject]) != nil)
 	{
-	  NSSize size = [rep size];
-	  NSSize res = NSMakeSize(72.0 * [rep pixelsWide] / size.width,
-				  72.0 * [rep pixelsHigh] / size.height);
-	  if (NSEqualSizes(res, dres))
+	  if ([rep colorSpaceName] == nil || 
+	      NSNumberOfColorComponents([rep colorSpaceName]) == deviceColors)
 	    {
 	      [breps addObject: rep];
-	    }	    
+	    }
 	}
     }
 
-  /* If no exact matches found, look for vector reps */
-  
+  /* If there are no matches, pass all the reps */
   if ([breps count] == 0)
+    {
+      [breps setArray: reps]; 
+    }
+
+  return breps;
+}
+
+/**
+ * Returns YES if x in an integer multiple of y
+ */
+static BOOL GSIsMultiple(CGFloat x, CGFloat y)
+{
+  // FIXME: Test when CGFloat is float and make sure this test isn't
+  // too strict due to floating point rounding errors.
+  return (x/y) == floor(x/y);
+}
+
+/**
+ * Returns YES if there exist integers p and q such that
+ * (baseSize.width * p == size.width) && (baseSize.height * q == size.height)
+ */
+static BOOL GSSizeIsIntegerMultipleOfSize(NSSize size, NSSize baseSize)
+{
+  return NSEqualSizes(size, baseSize) ||
+    (GSIsMultiple(size.width, baseSize.width) &&
+     GSIsMultiple(size.height, baseSize.height));
+}
+
+static NSSize GSResolutionOfImageRep(NSImageRep *rep)
+{
+  return NSMakeSize(72.0 * (CGFloat)[rep pixelsWide] / [rep size].width,
+		    72.0 * (CGFloat)[rep pixelsHigh] / [rep size].height);
+}
+
+/* Find reps that match the resolution (DPI) of the device (including integer
+   multiples of the device resplition if [self multipleResolutionMatching]
+   is YES).
+   
+   If there are no DPI matches, use any available vector reps if
+   [self usesEPSOnResolutionMismatch] is YES. Otherwise, use the bitmap reps
+   that have the highest DPI.
+*/
+- (NSMutableArray *) _bestRep: (NSArray *)reps 
+          withResolutionMatch: (NSDictionary*)deviceDescription
+{
+  NSMutableArray *breps = [NSMutableArray array];
+
+  NSValue *resolution = [deviceDescription objectForKey: NSDeviceResolution];
+
+  // 1. Look for exact resolution matches, or integer multiples if permitted.
+
+  if (nil != resolution)
+    {
+      const NSSize dres = [resolution sizeValue];
+      
+      if (![self matchesOnMultipleResolution])
+	{
+	  NSImageRep *rep;
+	  NSEnumerator *enumerator = [reps objectEnumerator];   
+	  
+	  while ((rep = [enumerator nextObject]) != nil)
+	    {
+	      if (NSEqualSizes(GSResolutionOfImageRep(rep), dres))
+		{
+		  [breps addObject: rep];
+		}
+	    }
+	}
+      else // [self matchesOnMultipleResolution]
+	{
+	  NSMutableArray *integerMultiples = [NSMutableArray array];
+	  NSSize closestRes = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
+	  NSImageRep *rep;
+	  NSEnumerator *enumerator;
+	  
+	  // Iterate through the reps, keeping track of which ones
+	  // have a resolution which is an integer multiple of the device
+	  // res, and keep track of the cloest resolution
+
+	  enumerator = [reps objectEnumerator];
+	  while ((rep = [enumerator nextObject]) != nil)
+	    {
+	      const NSSize repRes = GSResolutionOfImageRep(rep);
+	      if (GSSizeIsIntegerMultipleOfSize(repRes, dres))
+		{
+		  const NSSize repResDifference = NSMakeSize(fabs(repRes.width - dres.width),
+							     fabs(repRes.height - dres.height));
+		  const NSSize closestResolutionDifference = NSMakeSize(fabs(closestRes.width - dres.width),
+									fabs(closestRes.height - dres.height));
+		  if (repResDifference.width < closestResolutionDifference.width &&
+		      repResDifference.height < closestResolutionDifference.height)
+		    {
+		      closestRes = repRes;
+		    }
+		  [integerMultiples addObject: rep];
+		}
+	    }
+
+	  enumerator = [integerMultiples objectEnumerator];
+	  while ((rep = [enumerator nextObject]) != nil)
+	    {
+	      const NSSize repRes = GSResolutionOfImageRep(rep);
+	      if (NSEqualSizes(repRes, closestRes))
+		{
+		  [breps addObject: rep];
+		}
+	    }
+	}
+    }
+
+  // 2. If no exact matches found, use vector reps, if they are preferred
+  
+  if ([breps count] == 0 && [self usesEPSOnResolutionMismatch])
     {
       NSImageRep *rep;
       NSEnumerator *enumerator = [reps objectEnumerator];    
@@ -1467,74 +1557,108 @@ Fallback for backends other than Cairo. */
 	}
     }
 
-  /* Otherwise, use the largest bitmaps */
+  // 3. If there are still no matches, use all of the bitmaps with the highest
+  // resolution (DPI)
   
   if ([breps count] == 0)
     {
-      NSSize maxPixelSize = NSMakeSize(0,0);
+      NSSize maxRes = NSMakeSize(0,0);
       NSImageRep *rep;
-      NSEnumerator *enumerator = [reps objectEnumerator];    
-      while ((rep = [enumerator nextObject]) != nil)
-	{
-	  NSSize pixelSize = NSMakeSize([rep pixelsWide], [rep pixelsHigh]);
-	  if (pixelSize.width > maxPixelSize.width &&
-	      pixelSize.height > maxPixelSize.height)
-	    {
-	      maxPixelSize = pixelSize;
-	    }
-	}
+      NSEnumerator *enumerator;
+
+      // Determine maxRes
 
       enumerator = [reps objectEnumerator];
       while ((rep = [enumerator nextObject]) != nil)
 	{
-	  NSSize pixelSize = NSMakeSize([rep pixelsWide], [rep pixelsHigh]);
-	  if (NSEqualSizes(pixelSize, maxPixelSize))
+	  const NSSize res = GSResolutionOfImageRep(rep);
+	  if (res.width > maxRes.width &&
+	      res.height > maxRes.height)
+	    {
+	      maxRes = res;
+	    }
+	}
+
+      // Use all reps with maxRes
+      enumerator = [reps objectEnumerator];
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  const NSSize res = GSResolutionOfImageRep(rep);
+	  if (NSEqualSizes(res, maxRes))
 	    {
 	      [breps addObject: rep];
 	    }
 	}      
     }
 
+  // 4. If there are still none, use all available reps.
+  // Note that this handles using vector reps in the case where there are 
+  // no bitmap reps, but [self usesEPSOnResolutionMismatch] is NO.
+
   if ([breps count] == 0)
     {
       [breps setArray: reps];
     }
+
   return breps;
 }
 
-/* Find reps that match the bps of the device or return the rep that
-   has the highest bps */
+/* Find the reps that match the bitsPerSample of the device,
+   or if none match exactly, return all that have the highest bitsPerSample.
+
+   If the device lacks a bps, all reps are treated as matching.
+
+   If a rep has NSImageRepMatchesDevice as its bps, it is treated as matching.
+*/
 - (NSMutableArray *) _bestRep: (NSArray *)reps 
                  withBpsMatch: (NSDictionary*)deviceDescription
 {
-  NSImageRep* rep, *max_rep;
-  NSMutableArray *breps;
-  NSEnumerator *enumerator = [reps objectEnumerator];
-  int bps = [[deviceDescription objectForKey: NSDeviceBitsPerSample] intValue];
-  int max_bps;
+  NSMutableArray *breps = [NSMutableArray array];
+  NSNumber *bpsValue = [deviceDescription objectForKey: NSDeviceBitsPerSample];
 
-  breps = [NSMutableArray array];
-  max_bps = 0;
-  max_rep = nil;
-  while ((rep = [enumerator nextObject]) != nil)
+  if (bpsValue != nil)
     {
-      int rep_bps = [rep bitsPerSample];
-      if (rep_bps > max_bps)
-        {
-          max_bps = rep_bps;
-          max_rep = rep;
-        }
-      if (rep_bps == bps)
-        [breps addObject: rep];
-    }
-  
+      NSInteger deviceBps = [bpsValue integerValue];
+      NSInteger maxBps = -1;
+      BOOL haveDeviceBps = NO;
+      NSImageRep *rep;
+      NSEnumerator *enumerator;
 
-  if ([breps count] == 0 && max_rep != nil)
-    [breps addObject: max_rep];
+      // Determine maxBps
+
+      enumerator = [reps objectEnumerator];
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  if ([rep bitsPerSample] > maxBps)
+	    {
+	      maxBps = [rep bitsPerSample];
+	    }
+	  if ([rep bitsPerSample] == deviceBps)
+	    {
+	      haveDeviceBps = YES;
+	    }
+	}
+
+      // Use all reps with deviceBps if haveDeviceBps is YES,
+      // otherwise use all reps with maxBps
+      enumerator = [reps objectEnumerator];
+      while ((rep = [enumerator nextObject]) != nil)
+	{
+	  if ([rep bitsPerSample] == NSImageRepMatchesDevice ||
+	      (!haveDeviceBps && [rep bitsPerSample] == maxBps) ||
+	      (haveDeviceBps && [rep bitsPerSample] == deviceBps))
+	    {
+	      [breps addObject: rep];
+	    }
+	}
+    }
 
   /* If there are no matches, pass all the reps */
   if ([breps count] == 0)
-    return (NSMutableArray *)reps;
+    {
+      [breps setArray: reps]; 
+    }
+
   return breps;
 }
 
@@ -1606,6 +1730,7 @@ Fallback for backends other than Cairo. */
       reps = [self _bestRep: reps withColorMatch: deviceDescription];
     }
   reps = [self _bestRep: reps withBpsMatch: deviceDescription];
+
   /* If we have more than one match check for a representation whose size
    * matches the image size exactly. Otherwise, arbitrarily choose the last
    * representation. */
