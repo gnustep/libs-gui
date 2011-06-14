@@ -805,11 +805,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) compositeToPoint: (NSPoint)aPoint 
                 operation: (NSCompositingOperation)op
 {
-  // Might not be computed up to now
-  NSSize size = [self size];
-  NSRect rect = NSMakeRect(0, 0, size.width, size.height);
-
-  [self compositeToPoint: aPoint fromRect: rect operation: op];
+  [self compositeToPoint: aPoint
+		fromRect: NSZeroRect
+	       operation: op
+		fraction: 1.0];
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
@@ -817,21 +816,19 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                 operation: (NSCompositingOperation)op
 {
   [self compositeToPoint: aPoint 
-        fromRect: aRect 
-        operation: op
-        fraction: 1.0];
+		fromRect: aRect
+	       operation: op
+		fraction: 1.0];
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
                 operation: (NSCompositingOperation)op
                  fraction: (float)delta
 {
-  NSSize size = [self size];
-
   [self compositeToPoint: aPoint 
-        fromRect: NSMakeRect(0, 0, size.width, size.height) 
-        operation: op 
-        fraction: delta];
+		fromRect: NSZeroRect
+	       operation: op 
+		fraction: delta];
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
@@ -861,7 +858,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     
     [ctxt GSSetCTM: newTransform];
     
-    [self drawAtPoint: NSMakePoint(0,0)
+    [self drawAtPoint: NSMakePoint(0, 0)
 	     fromRect: srcRect
 	    operation: op
 	     fraction: delta];
@@ -872,11 +869,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat
 {
-  NSSize size = [self size];
-
   [self dissolveToPoint: aPoint 
-        fromRect: NSMakeRect(0, 0, size.width, size.height)
-        fraction: aFloat];
+	       fromRect: NSZeroRect
+	       fraction: aFloat];
 }
 
 - (void) dissolveToPoint: (NSPoint)aPoint
@@ -884,9 +879,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                 fraction: (float)aFloat
 {
   [self compositeToPoint: aPoint
-        fromRect: aRect
-        operation: NSCompositeSourceOver
-        fraction: aFloat];
+		fromRect: aRect
+	       operation: NSCompositeSourceOver
+		fraction: aFloat];
 }
 
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
@@ -924,11 +919,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
            operation: (NSCompositingOperation)op
             fraction: (float)delta
 {
-  [self drawInRect: NSMakeRect(point.x, point.y, srcRect.size.width,
-                               srcRect.size.height)
-        fromRect: srcRect
-        operation: op
-        fraction: delta];
+  [self drawInRect: NSMakeRect(point.x, point.y, srcRect.size.width, srcRect.size.height)
+	  fromRect: srcRect
+	 operation: op
+	  fraction: delta];
 }
 
 /* New code path that delegates as much as possible to the backend and whose 
