@@ -3075,7 +3075,7 @@ Returns YES iff any scrolling was done.
 
   if (s != nil)
     {
-      NSRect	vRect = [self visibleRect];
+      NSRect	vRect = [s documentVisibleRect];
       NSPoint	aPoint = vRect.origin;
       // Ok we assume that the rectangle is origined at the bottom left
       // and goes to the top and right as it grows in size for the naming
@@ -3084,6 +3084,8 @@ Returns YES iff any scrolling was done.
 
       if (vRect.size.width == 0 && vRect.size.height == 0)
 	return NO;
+
+      aRect = [self convertRect: aRect toView: [s documentView]];
 
       // Find the differences on each side.
       ldiff = NSMinX(vRect) - NSMinX(aRect);
@@ -3101,7 +3103,7 @@ Returns YES iff any scrolling was done.
 
       if (aPoint.x != vRect.origin.x || aPoint.y != vRect.origin.y)
 	{
-	  aPoint = [self convertPoint: aPoint toView: s];
+	  aPoint = [[s documentView] convertPoint: aPoint toView: s];
 	  [s scrollToPoint: aPoint];
 	  return YES;
 	}

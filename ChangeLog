@@ -1,5 +1,10 @@
 2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSView.m (-scrollRectToVisible:): Work when the receiver
+	isn't partially visible in the clip view.
+
+2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m: Completely overhaul the best rep selection.
 	It should now be very close to the algorithm described in the cocoa
 	drawing guide, and fixes numerous bugs with the old code.
