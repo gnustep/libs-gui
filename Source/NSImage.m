@@ -1086,7 +1086,14 @@ Fallback for backends other than Cairo. */
   s = [self size];
 
   if (NSEqualRects(srcRect, NSZeroRect))
-    srcRect = NSMakeRect(0, 0, s.width, s.height);
+    {
+      srcRect.size = s;
+      /* For -drawAtPoint:fromRect:operation:fraction: used with a zero rect */
+      if (NSEqualSizes(dstRect.size, NSZeroSize))
+        {
+          dstRect.size = s;
+        }
+    }
 
   if (!dstRect.size.width || !dstRect.size.height
     || !srcRect.size.width || !srcRect.size.height)
