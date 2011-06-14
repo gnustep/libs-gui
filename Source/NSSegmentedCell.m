@@ -51,8 +51,6 @@
 
 - (BOOL) isSelected;
 - (void) setSelected: (BOOL)flag;
-- (BOOL) isSelected;
-- (void) setSelected: (BOOL)flag;
 - (NSMenu *) menu;
 - (void) setMenu: (NSMenu *)menu;
 - (NSString *) label;
@@ -643,6 +641,7 @@
       NSUInteger i;
 
       _selected_segment = -1;
+      _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
       if ([aDecoder containsValueForKey: @"NSSegmentImages"])
         ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSSegmentImages"]);
       else
@@ -655,13 +654,19 @@
 	}
 
       if ([aDecoder containsValueForKey: @"NSSelectedSegment"])
-        [self setSelectedSegment: [aDecoder decodeIntForKey: @"NSSelectedSegment"]];
+        {
+          _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"];
+          if (_selected_segment != -1)
+            [self setSelectedSegment: _selected_segment];
+        }
 
       _segmentCellFlags._style = [aDecoder decodeIntForKey: @"NSSegmentStyle"];
     }
   else
     {
       int style;
+
+      _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
       ASSIGN(_items,[aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
       if (_selected_segment != -1)

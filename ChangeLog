@@ -1,3 +1,8 @@
+2011-06-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSegmentedCell.m (-initWithCoder:): Protect against
+	selected segment being -1.
+
 2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m: Implement -bestRepresentationForRect:context:hints:,
