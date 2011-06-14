@@ -1,5 +1,11 @@
 2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTextView.m (-scrollRangeToVisible:): Work with ranges
+	outside the receiver (in a situation with multiple NSTextView's
+	connected to a layout manager)
+
+2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSView.m (-scrollRectToVisible:): Work when the receiver
 	isn't partially visible in the clip view.
 

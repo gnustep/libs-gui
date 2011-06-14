@@ -2860,6 +2860,7 @@ Scroll so that the beginning of the range is visible.
   NSView *cv;
   float width;
   NSPoint p0, p1;
+  NSRange ourCharRange;
 
   /*
   Make sure that our size is up-to-date. If the scroll is in response to
@@ -2873,6 +2874,29 @@ Scroll so that the beginning of the range is visible.
 
   if (_layoutManager == nil)
     return;
+
+  /* See if the requested range lies outside of the receiver. If so
+   * forward the call to the appropriate text view.
+   */
+  ourCharRange = [_layoutManager characterRangeForGlyphRange: [_layoutManager glyphRangeForTextContainer:
+										[self textContainer]]
+					    actualGlyphRange: NULL];
+
+  if (NSMaxRange(aRange) < ourCharRange.location ||
+      aRange.location > NSMaxRange(ourCharRange))
+    {
+      NSTextContainer *tc = [_layoutManager textContainerForGlyphAtIndex:
+					      [_layoutManager glyphRangeForCharacterRange: aRange
+								     actualCharacterRange: NULL].location
+							  effectiveRange: NULL];
+      NSTextView *tv = [tc textView];
+
+      if (tv != self)
+	{
+	  [tv scrollRangeToVisible: aRange];
+	  return;
+	}
+    }
 
   if (aRange.length > 0)
     {
