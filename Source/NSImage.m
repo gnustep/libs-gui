@@ -1016,7 +1016,7 @@ behavior precisely matches Cocoa. */
                                       srcRect.origin.y * imgToCacheHeightScaleFactor, 
                                      srcRect.size.width * imgToCacheWidthScaleFactor, 
                                    srcRect.size.height * imgToCacheHeightScaleFactor);
-    NSAffineTransform *transform;
+    NSAffineTransform *transform, *backup;
 
     cache = [[NSCachedImageRep alloc]
                 initWithSize: NSMakeSize(ceil(cacheSize.width), ceil(cacheSize.height))
@@ -1051,7 +1051,7 @@ behavior precisely matches Cocoa. */
     //NSLog(@"Draw in %@ from %@ from cache rect %@", NSStringFromRect(dstRect), 
     //  NSStringFromRect(srcRect), NSStringFromRect(srcRectInCache));
 
-    DPSgsave(ctxt);
+    backup = [ctxt GSCurrentCTM];
 
     transform = [NSAffineTransform transform];
     [transform translateXBy: dstRect.origin.x yBy: dstRect.origin.y];
@@ -1065,7 +1065,7 @@ behavior precisely matches Cocoa. */
        operation: op
         fraction: delta];
 
-    DPSgrestore(ctxt);
+    [ctxt GSSetCTM: backup];
 
     [ctxt GSUndefineGState: gState];
     DESTROY(cache);

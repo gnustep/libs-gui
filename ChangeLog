@@ -1,5 +1,12 @@
 2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m: Remove unnecessary DPSgsave/DPSgrestore I added
+	earlier in -nativeDrawInRect:... and replace them with saving/restoring
+	the transformation matrix. The DPSgsave/DPSgrestore were causing problems
+	when drawing images with a non-rectangular clipping area.
+
+2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m: Tidy the -composite*/-dissolve* methods
 
 2011-06-13  Eric Wasylishen  <ewasylishen@gmail.com>
