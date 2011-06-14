@@ -934,8 +934,10 @@ behavior precisely matches Cocoa. */
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSSize imgSize = [self size];
+  NSSize repSize;
   float widthScaleFactor;
   float heightScaleFactor;
+  NSImageRep *rep;
 
   if (NSEqualRects(srcRect, NSZeroRect))
     {
@@ -946,6 +948,16 @@ behavior precisely matches Cocoa. */
           dstRect.size = imgSize;
         }
     }
+  
+  // Choose a rep to use
+
+  rep = [self bestRepresentationForRect: dstRect
+				context: nil
+				  hints: nil];
+  repSize = [rep size];
+
+  if (rep == nil)
+      return;
 
   if (!dstRect.size.width || !dstRect.size.height
     || !srcRect.size.width || !srcRect.size.height)
@@ -978,7 +990,7 @@ behavior precisely matches Cocoa. */
       DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
                   dstRect.size.width, dstRect.size.height);
       DPSscale(ctxt, widthScaleFactor, heightScaleFactor);
-      [self drawRepresentation: [self bestRepresentationForDevice: nil]
+      [self drawRepresentation: rep
             inRect: NSMakeRect(p.x, p.y, imgSize.width, imgSize.height)];
       DPSgrestore(ctxt);
 
@@ -1007,7 +1019,7 @@ behavior precisely matches Cocoa. */
     /* The context of the cache window */
     NSGraphicsContext *cacheCtxt;
     /* The size of the cache window that will hold the scaled image */
-    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: imgSize];
+    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: repSize];
 
     CGFloat imgToCacheWidthScaleFactor = cacheSize.width / imgSize.width;
     CGFloat imgToCacheHeightScaleFactor = cacheSize.height / imgSize.height;
@@ -1035,7 +1047,7 @@ behavior precisely matches Cocoa. */
 
     /* We must not use -drawRepresentation:inRect: because the image must drawn 
        scaled even when -scalesWhenResized is NO */
-    [[self bestRepresentationForDevice: nil] 
+    [rep
       drawInRect: NSMakeRect(0, 0, cacheSize.width, cacheSize.height)];
     /* If we're doing a dissolve, use a DestinationIn composite to lower
        the alpha of the pixels.  */
@@ -1699,7 +1711,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
     }
 }
 
-- (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
+- (NSArray *) _bestRepresentationsForDevice: (NSDictionary*)deviceDescription
 {
   NSMutableArray *reps = [self _representationsWithCachedImages: NO];
   
@@ -1732,6 +1744,13 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
     }
   reps = [self _bestRep: reps withBpsMatch: deviceDescription];
 
+  return reps;
+}
+
+- (NSImageRep *) bestRepresentationForDevice: (NSDictionary*)deviceDescription
+{
+  NSArray *reps = [self _bestRepresentationsForDevice: deviceDescription];
+
   /* If we have more than one match check for a representation whose size
    * matches the image size exactly. Otherwise, arbitrarily choose the last
    * representation. */
@@ -1749,6 +1768,43 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	}
     }
   return [reps lastObject];
+}
+
+- (NSImageRep *) bestRepresentationForRect: (NSRect)rect
+				   context: (NSGraphicsContext *)context
+				     hints: (NSDictionary *)deviceDescription
+{
+  NSArray *reps = [self _bestRepresentationsForDevice: deviceDescription];
+  const NSSize desiredSize = rect.size;
+  NSImageRep *bestRep = nil;
+
+  // Pick the smallest rep that is greater than or equal to the
+  // desired size.
+
+  {
+    NSSize bestSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
+    NSImageRep *rep;
+    NSEnumerator *enumerator = [reps objectEnumerator];   
+    while ((rep = [enumerator nextObject]) != nil)
+      {
+	const NSSize repSize = [rep size];
+	if ((repSize.width >= desiredSize.width) &&
+	    (repSize.height >= desiredSize.height) &&
+	    (repSize.width < bestSize.width) &&
+	    (repSize.height < bestSize.height))
+	  {
+	    bestSize = repSize;
+	    bestRep = rep;
+	  }
+      }
+  }
+  
+  if (bestRep == nil)
+    {
+      bestRep = [reps lastObject];
+    }
+  
+  return bestRep;
 }
 
 - (NSArray *) representations

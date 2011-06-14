@@ -1,5 +1,12 @@
 2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m: Implement -bestRepresentationForRect:context:hints:,
+	which chooses the smallest rep larger than or equal to the provided size.
+
+	Modify -nativeDrawInRect:... to use the above method for choosing a rep.
+
+2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (-guiDrawInRect:...): Handle dstRect with a zero size
 
 2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>

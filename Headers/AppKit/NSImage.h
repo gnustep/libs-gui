@@ -284,6 +284,17 @@ typedef enum {
  *  place and finds the best representation.
  */
 - (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Finds the best representation for drawing in the specified rect.
+ * 
+ * context and hints are currently ignored.
+ */
+- (NSImageRep *)bestRepresentationForRect: (NSRect)rect
+				  context: (NSGraphicsContext *)context
+				    hints: (NSDictionary *)hints;
+#endif
+
 - (NSArray*) representations;
 
 /** Remove the NSImageRep imageRep from the NSImage's representations 
