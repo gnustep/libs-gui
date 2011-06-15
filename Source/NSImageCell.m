@@ -172,7 +172,7 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 }
 
 static inline NSSize
-scaleProportionally(NSSize imageSize, NSRect canvasRect)
+scaleProportionally(NSSize imageSize, NSRect canvasRect, BOOL scaleUpOrDown)
 {
   float ratio;
 
@@ -180,11 +180,8 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   ratio = MIN(NSWidth(canvasRect) / imageSize.width,
 	      NSHeight(canvasRect) / imageSize.height);
   
-  /* According to the API (see NSScaleProportionally), we should never
-   * scale images up; we only scale them down.  If you want your image
-   * to scale both up and down, you should use NSScaleToFit.
-   */
-  if (ratio < 1.0)
+  /* Only scale down, unless scaleUpOrDown is YES */
+  if (ratio < 1.0 || scaleUpOrDown)
     {
       imageSize.width *= ratio;
       imageSize.height *= ratio;
@@ -215,7 +212,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
       case NSScaleProportionally:
         {
           NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-          imageSize = scaleProportionally (realImageSize, cellFrame);
+          imageSize = scaleProportionally (realImageSize, cellFrame, NO);
           break;
         }
       case NSScaleToFit:
@@ -230,6 +227,12 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
           NSDebugLLog(@"NSImageCell", @"NSScaleNone");
           imageSize = realImageSize;
           break;
+        }
+      case NSImageScaleProportionallyUpOrDown:
+        {
+	  NSDebugLLog(@"NSImageCell", @"NSImageScaleProportionallyUpOrDown");
+	  imageSize = scaleProportionally (realImageSize, cellFrame, YES);
+	  break;
         }
     }
 

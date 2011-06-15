@@ -47,9 +47,13 @@
  *  or down) to fit exactly in the cell size.</p>
  */
 typedef enum {
-    NSScaleProportionally = 0,
-    NSScaleToFit,
-    NSScaleNone
+  NSScaleProportionally = 0,
+  NSScaleToFit = 1,
+  NSScaleNone = 2,
+  NSImageScaleProportionallyDown = 0,
+  NSImageScaleAxesIndependently = 1,
+  NSImageScaleNone = 2,
+  NSImageScaleProportionallyUpOrDown = 3
 } NSImageScaling;
 
 /**
