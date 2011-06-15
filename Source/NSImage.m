@@ -1094,6 +1094,7 @@ Fallback for backends other than Cairo. */
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
   NSSize s;
+  NSImageRep *rep;
 
   s = [self size];
 
@@ -1106,6 +1107,15 @@ Fallback for backends other than Cairo. */
           dstRect.size = s;
         }
     }
+
+  // Choose a rep to use
+
+  rep = [self bestRepresentationForRect: dstRect
+				context: nil
+				  hints: nil];
+
+  if (rep == nil)
+      return;
 
   if (!dstRect.size.width || !dstRect.size.height
     || !srcRect.size.width || !srcRect.size.height)
@@ -1139,7 +1149,7 @@ Fallback for backends other than Cairo. */
       DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
                   dstRect.size.width, dstRect.size.height);
       DPSscale(ctxt, fx, fy);
-      [self drawRepresentation: [self bestRepresentationForDevice: nil]
+      [self drawRepresentation: rep
             inRect: NSMakeRect(p.x, p.y, s.width, s.height)];
       DPSgrestore(ctxt);
 
@@ -1248,7 +1258,7 @@ Fallback for backends other than Cairo. */
 	[_color set];
 	NSRectFill(NSMakeRect(0, 0, s.width, s.height));
       }
-    [[self bestRepresentationForDevice: nil] drawInRect: NSMakeRect(0, 0, s.width, s.height)];
+    [rep drawInRect: NSMakeRect(0, 0, s.width, s.height)];
     PSgrestore();
 
     /* If we're doing a dissolve, use a DestinationIn composite to lower

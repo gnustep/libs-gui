@@ -1,3 +1,8 @@
+2011-06-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m: Use -bestRepresentationForRect:context:hints: in
+	-guiDrawInRect:... as well.
+
 2011-06-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSegmentedCell.m (-initWithCoder:): Protect against
