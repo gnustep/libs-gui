@@ -1,5 +1,21 @@
 2011-06-16  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* common_ArrowDown.tiff:
+	* common_ArrowRight.tiff:
+	* common_ArrowUp.tiff:
+	* common_3DArrowDown.tiff:
+	* common_ArrowDownH.tiff:
+	* common_ArrowLeft.tiff:
+	* common_ArrowLeftH.tiff:
+	* common_3DArrowLeft.tiff:
+	* common_ArrowUpH.tiff:
+	* common_3DArrowUp.tiff:
+	* common_ArrowRightH.tiff:
+	* common_3DArrowRight.tiff: Ensure both sub-images have the same
+	colorspace
+
+2011-06-16  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Images/common_3DArrowRightH.tiff: Add high-res version
 
 2011-06-15  Eric Wasylishen  <ewasylishen@gmail.com>
