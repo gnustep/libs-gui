@@ -795,10 +795,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   RETAIN(aView);
   [aView removeFromSuperview];
-  if (aView->_coordinates_valid)
-    {
-      (*invalidateImp)(aView, invalidateSel);
-    }
 
   // Do this after the removeFromSuperview, as aView may already 
   // be a subview and the index could change.
@@ -995,10 +991,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
        */
       RETAIN(newView);
       [newView removeFromSuperview];
-      if (newView->_coordinates_valid)
-	{
-	  (*invalidateImp)(newView, invalidateSel);
-	}
       [newView _viewWillMoveToWindow: _window];
       [newView _viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
@@ -1034,10 +1026,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	   */
 	  RETAIN(newView);
 	  [newView removeFromSuperview];
-	  if (newView->_coordinates_valid)
-	    {
-	      (*invalidateImp)(newView, invalidateSel);
-	    }
 	  index = [_sub_views indexOfObjectIdenticalTo: oldView];
 	  [oldView removeFromSuperview];
 	  [newView _viewWillMoveToWindow: _window];
@@ -1144,57 +1132,34 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) willRemoveSubview: (NSView *)subview
 {}
 
-- (NSSize)_computeScale
+static NSSize _computeScale(NSSize fs, NSSize bs)
 {
   NSSize scale;
 
-  if (_bounds.size.width == 0)
+  if (bs.width == 0)
     {
-      if (_frame.size.width == 0)
+      if (fs.width == 0)
         scale.width = 1;
       else
         scale.width = FLT_MAX;
     }
   else
     {
-      scale.width = _frame.size.width / _bounds.size.width;
+      scale.width = fs.width / bs.width;
     }
-  if (_bounds.size.height == 0)
+  if (bs.height == 0)
     {
-      if (_frame.size.height == 0)
+      if (fs.height == 0)
         scale.height = 1;
       else
         scale.height = FLT_MAX;
     }
   else
     {
-      scale.height = _frame.size.height / _bounds.size.height;
+      scale.height = fs.height / bs.height;
     }
 
   return scale;
-}
-
-- (void) _updateBoundsMatrix
-{
-  NSSize scale;
-  
-  NSDebugLLog(@"NSView", @"%@ updateBoundsMatrix", self);
-
-  // FIXME: The computation here is wrong when there is a rotation involved.
-  if (_is_rotated_from_base)
-    return;
-
-  scale = [self _computeScale];
-  if (scale.width != 1 || scale.height != 1)
-    {
-      _is_rotated_or_scaled_from_base = YES;
-    }
-
-   if (_boundsMatrix == nil)
-     {
-       _boundsMatrix = [NSAffineTransform new]; 
-     }
-   [_boundsMatrix scaleTo: scale.width : scale.height];
 }
 
 - (void) setFrame: (NSRect)frameRect
@@ -1231,7 +1196,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           if (_is_rotated_or_scaled_from_base == YES)
             {
-              //[self _updateBoundsMatrix];
               NSAffineTransform *matrix;
               NSRect frame = _frame;
 
@@ -1265,11 +1229,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (NSEqualPoints(_frame.origin, newOrigin) == NO)
     {
+      _frame.origin = newOrigin;
+
       if (_coordinates_valid)
         {
           (*invalidateImp)(self, invalidateSel);
         }
-      _frame.origin = newOrigin;
       [self resetCursorRects];
       if (_post_frame_changes)
         {
@@ -1294,11 +1259,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (NSEqualSizes(_frame.size, newSize) == NO)
     {
       NSSize old_size = _frame.size;
-
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
 
       if (_is_rotated_or_scaled_from_base)
         {
@@ -1329,6 +1289,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           _frame.size = _bounds.size = newSize;
         }
+
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
       if (_post_frame_changes)
@@ -1352,14 +1317,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           _frameMatrix = [NSAffineTransform new];
         }
 
+      [_frameMatrix rotateByDegrees: angle - oldAngle];
+      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+
       if (_coordinates_valid)
         {
           (*invalidateImp)(self, invalidateSel);
         }
-
-      [_frameMatrix rotateByDegrees: angle - oldAngle];
-      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-      [self _updateBoundsMatrix];
       [self resetCursorRects];
       if (_post_frame_changes)
         {
@@ -1419,17 +1383,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       NSAffineTransform *matrix;
       NSPoint oldOrigin;
+      NSSize scale;
   
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
       if (_boundsMatrix == nil)
         {
           _boundsMatrix = [NSAffineTransform new]; 
-          oldOrigin = NSMakePoint(NSMinX(_bounds), NSMinY(_bounds));
         }
-      else
+
+      // Adjust scale
+      scale = _computeScale(_frame.size, aRect.size);
+      if (scale.width != 1 || scale.height != 1)
+        {
+          _is_rotated_or_scaled_from_base = YES;
+        }
+      [_boundsMatrix scaleTo: scale.width : scale.height];
         {
           matrix = [_boundsMatrix copy];
           [matrix invert];
@@ -1438,10 +1405,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         }
       [_boundsMatrix translateXBy: oldOrigin.x - aRect.origin.x 
                      yBy: oldOrigin.y - aRect.origin.y];      
-      if (_is_rotated_from_base)
+      if (!_is_rotated_from_base)
         {
-          // Ignore scaling
-
+          // Adjust bounds
+          _bounds = aRect;
+        }
+      else
+        {
           // Adjust bounds
           NSRect frame = _frame;
 
@@ -1451,15 +1421,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           [matrix boundingRectFor: frame result: &_bounds];
           RELEASE(matrix);
        }
-      else
+
+      if (_coordinates_valid)
         {
-          // Adjust bounds
-          _bounds = aRect;
-
-          // FIXME: Adjust scale
-          [self _updateBoundsMatrix];
+          (*invalidateImp)(self, invalidateSel);
         }
-
       [self resetCursorRects];
       if (_post_bounds_changes)
         {
@@ -1499,6 +1465,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsSize: (NSSize)newSize
 {
+  NSSize scale;
+
   NSDebugLLog(@"NSView", @"%@ setBoundsSize: %@", self, 
               NSStringFromSize(newSize));
 
@@ -1512,27 +1480,45 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  // This may seem strange, but Cocoa only adjusts the bounds, when there
-  // is no rotation
+
+  scale = _computeScale(_frame.size, newSize);
+  if (scale.width != 1 || scale.height != 1)
+    {
+      _is_rotated_or_scaled_from_base = YES;
+    }
+  
+  if (_boundsMatrix == nil)
+    {
+      _boundsMatrix = [NSAffineTransform new]; 
+    }
+  [_boundsMatrix scaleTo: scale.width : scale.height];
   if (!_is_rotated_from_base)
     {
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
       _bounds.size = newSize;
-
-      // FIXME: Adjust scale
-      [self _updateBoundsMatrix];
-
-      [self resetCursorRects];
-      if (_post_bounds_changes)
-        {
-          [nc postNotificationName: NSViewBoundsDidChangeNotification
-              object: self];
-        }
+    }
+  else
+    {
+      NSAffineTransform *matrix;
+      NSRect frame = _frame;
+      
+      frame.origin = NSMakePoint(0, 0);
+      matrix = [_boundsMatrix copy];
+      [matrix invert];
+      [matrix boundingRectFor: frame result: &_bounds];
+      RELEASE(matrix);               
     }
 
+  if (_coordinates_valid)
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  [self resetCursorRects];
+  if (_post_bounds_changes)
+    {
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+                        object: self];
+    }
+  
   // FIXME: Should not be called here according to Cocoa docs, but 
   // Cocoa seems to in practice
   [self setNeedsDisplay: YES];
@@ -1549,10 +1535,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               NSStringFromPoint(point));
   if (NSEqualPoints(NSZeroPoint, point) == NO)
     {
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
       if (_boundsMatrix == nil)
         {
           _boundsMatrix = [NSAffineTransform new];
@@ -1563,6 +1545,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _bounds.origin.x -= point.x;
       _bounds.origin.y -= point.y;
 
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
       [self resetCursorRects];
       if (_post_bounds_changes)
         {
@@ -1586,10 +1572,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           NSWarnMLog(@"given negative height", 0);
           newSize.height = 0;
         }
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
 
       if (_boundsMatrix == nil)
         {
@@ -1604,6 +1586,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       _is_rotated_or_scaled_from_base = YES;
 
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
       [self resetCursorRects];
       if (_post_bounds_changes)
         {
@@ -1621,10 +1607,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSRect frame = _frame;
       
       frame.origin = NSMakePoint(0, 0);
-      if (_coordinates_valid)
-        {
-          (*invalidateImp)(self, invalidateSel);
-        }
       if (_boundsMatrix == nil)
         {
           _boundsMatrix = [NSAffineTransform new]; 
@@ -1638,6 +1620,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
       [self resetCursorRects];
       if (_post_bounds_changes)
         {
