@@ -1709,6 +1709,7 @@ static NSString *processName = nil;
   // action to open recent document by tag index
   NSURL *url;
   int idx = [sender tag];
+  NSError *err = nil;
 
   if (idx < 0 || idx >= [_recent_documents count])
     {
@@ -1730,7 +1731,10 @@ static NSString *processName = nil;
             return;
         }
     }
-  [self openDocumentWithContentsOfURL: url display: YES];
+
+  [self openDocumentWithContentsOfURL: url display: YES error: &err];
+  if (err)
+    [self presentError: err];
 }
 
 @end

@@ -1,5 +1,10 @@
 2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSDocumentController.m (-_openRecentDocument:): Use most
+	current method to display document.
+
+2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (-setBounds:, -setBoundsSize:): Rewrite of this
 	methods plus a few helpers. We pass now all the frame/bounds test cases.
 	* Source/NSView.m (-_viewWillMoveToWindow:): Move the invalidation of the
