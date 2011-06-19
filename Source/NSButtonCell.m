@@ -339,6 +339,14 @@ typedef struct _GSButtonCellFlags
 {
   ASSIGNCOPY(_contents, aString);
   _cell.contents_is_attributed_string = NO;
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
+    }
 }
 
 /**<p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
@@ -401,6 +409,14 @@ typedef struct _GSButtonCellFlags
 {
   ASSIGNCOPY(_contents, aString);
   _cell.contents_is_attributed_string = YES;
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
+    }
 }
 
 - (void)setTitleWithMnemonic:(NSString *)aString
@@ -469,6 +485,14 @@ typedef struct _GSButtonCellFlags
 - (void) setAlternateImage: (NSImage*)anImage
 {
   ASSIGN(_altImage, anImage);
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
+    }
 }
 
 /**<p>Sets the image position. The GNUstep implementation depends only on 
@@ -496,6 +520,14 @@ typedef struct _GSButtonCellFlags
   else
     {
       _cell.type = NSImageCellType;
+    }
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
     }
 }
 

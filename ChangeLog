@@ -1,5 +1,11 @@
 2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSButtonCell.m (-setTitle:, -setAttributedTitle:,
+	-setAlternateImage:, -setImagePosition:): Update the control to
+	reflect the changes.
+
+2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocumentController.m (-_openRecentDocument:): Use most
 	current method to display document.
 
