@@ -1,3 +1,11 @@
+2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSOpenPanel.h
+	* Headers/AppKit/NSSavePanel.h
+	* Source/NSSavePanel.m
+	* Source/NSOpenPanel.m: Change all the runModal:... methods to
+	return an NSInteger.
+
 2011-06-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m (-scrollRangeToVisible:): Fix to support scrolling

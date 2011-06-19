@@ -1094,7 +1094,7 @@ selectCellWithString: (NSString*)title
   NSCancelButton (if the user clicks the Cancel button).</p>
   <p>See Also: -runModalForDirectory:file:</p>
  */
-- (int) runModal
+- (NSInteger) runModal
 {
   return [self runModalForDirectory: nil file: @""];
 }
@@ -1109,7 +1109,7 @@ selectCellWithString: (NSString*)title
   selected directory or as a last resort, the current working directory.</p>
   <p>See Also: -runModal</p>
  */
-- (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
+- (NSInteger) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
   [self _setupForDirectory: path file: filename];
   if ([filename length] > 0)
@@ -1117,9 +1117,9 @@ selectCellWithString: (NSString*)title
   return [NSApp runModalForWindow: self];
 }
 
-- (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)filename
-	    relativeToWindow: (NSWindow*)window
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)filename
+                  relativeToWindow: (NSWindow*)window
 {
   [self _setupForDirectory: path file: filename];
   if ([filename length] > 0)

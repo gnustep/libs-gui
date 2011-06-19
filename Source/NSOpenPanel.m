@@ -448,7 +448,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
    types.</p>
    <p>See Also: -runModalForDirectory:file:types: and -allowedFileTypes</p>
 */
-- (int) runModal
+- (NSInteger) runModal
 {
   return [self runModalForTypes: [self allowedFileTypes]];
 }
@@ -457,7 +457,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
    (or last selected), and filtering for files that have the specified types.</p>
    <p>See Also: -runModalForDirectory:file:types:</p>
 */
-- (int) runModalForTypes: (NSArray *)fileTypes
+- (NSInteger) runModalForTypes: (NSArray *)fileTypes
 {
   return [self runModalForDirectory: nil
 			       file: @""
@@ -470,19 +470,19 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     the open panel is the last directory selected.</p>
     <p>See Also: -runModalForTypes:</p>
 */
-- (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)name
-		       types: (NSArray *)fileTypes
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)name
+                             types: (NSArray *)fileTypes
 {
   [self _setupForTypes: fileTypes];
   return [self runModalForDirectory: path 
 			       file: name];  
 }
 
-- (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)name
-		       types: (NSArray *)fileTypes
-	    relativeToWindow: (NSWindow*)window
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)name
+                             types: (NSArray *)fileTypes
+                  relativeToWindow: (NSWindow*)window
 {
   [self _setupForTypes: fileTypes];
   return [self runModalForDirectory: path 
@@ -505,6 +505,25 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 		 modalDelegate: delegate
 		didEndSelector: didEndSelector
 		   contextInfo: contextInfo];
+}
+
+- (void) beginForDirectory: (NSString *)path
+                      file: (NSString *)filename
+                     types: (NSArray *)fileTypes
+          modelessDelegate: (id)modelessDelegate
+            didEndSelector: (SEL)didEndSelector
+               contextInfo: (void *)contextInfo
+{
+  // FIXME: This should be modeless
+  [self _setupForTypes: fileTypes];
+  [self _setupForDirectory: path file: filename];
+  if ([filename length] > 0)
+    [_okButton setEnabled: YES];
+  [NSApp beginSheet: self
+	 modalForWindow: nil
+	 modalDelegate: modelessDelegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
 }
 
 - (void) ok: (id)sender

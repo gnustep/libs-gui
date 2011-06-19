@@ -53,16 +53,16 @@
 + (NSOpenPanel *) openPanel;
 
 // Running an NSOpenPanel 
-- (int) runModalForTypes: (NSArray *)fileTypes;
-- (int) runModalForDirectory: (NSString *)path
-                        file: (NSString *)name
-                       types: (NSArray *)fileTypes;
+- (NSInteger) runModalForTypes: (NSArray *)fileTypes;
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)name
+                             types: (NSArray *)fileTypes;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)name
-		       types: (NSArray *)fileTypes
-	    relativeToWindow: (NSWindow*)window;
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)name
+                             types: (NSArray *)fileTypes
+                  relativeToWindow: (NSWindow*)window;
 - (void) beginSheetForDirectory: (NSString *)path
 			   file: (NSString *)name
 			  types: (NSArray *)fileTypes
@@ -71,9 +71,16 @@
 		 didEndSelector: (SEL)didEndSelector
 		    contextInfo: (void *)contextInfo;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) beginForDirectory: (NSString *)absoluteDirectoryPath
+                      file: (NSString *)filename
+                     types: (NSArray *)fileTypes
+          modelessDelegate: (id)modelessDelegate
+            didEndSelector: (SEL)didEndSelector
+               contextInfo: (void *)contextInfo;
+#endif
 
 - (NSArray *) filenames;
-
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSArray *) URLs; 
 #endif
@@ -83,7 +90,7 @@
 - (BOOL) canChooseFiles;
 - (void) setCanChooseDirectories: (BOOL)flag;
 - (void) setCanChooseFiles: (BOOL)flag;
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
 - (void) setResolvesAliases: (BOOL)flag; 
 - (BOOL) resolvesAliases; 
 #endif

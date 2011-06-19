@@ -114,15 +114,17 @@ enum {
 - (NSString *) nameFieldStringValue;
 #endif
 
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setNameFieldLabel: (NSString *)label;
 - (NSString *) nameFieldLabel;
 - (void) setMessage: (NSString *)message;
 - (NSString *) message;
+#endif
 
 /*
  * Hidding extensions
  */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (void) setCanSelectHiddenExtension: (BOOL) flag;
 - (BOOL) canSelectHiddenExtension;
 - (BOOL) isExtensionHidden;
@@ -137,8 +139,8 @@ enum {
 /*
  * Setting Directory and File Type
  */
-- (NSString *) requiredFileType;
 - (void) setDirectory: (NSString *)path;
+- (NSString *) requiredFileType;
 - (void) setRequiredFileType: (NSString *)fileType;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
@@ -161,13 +163,13 @@ enum {
 /*
  * Running the NSSavePanel
  */
-- (int) runModalForDirectory: (NSString *)path file: (NSString *)filename;
-- (int) runModal;
+- (NSInteger) runModal;
+- (NSInteger) runModalForDirectory: (NSString *)path file: (NSString *)filename;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)filename
-	    relativeToWindow: (NSWindow*)window;
+- (NSInteger) runModalForDirectory: (NSString *)path
+                              file: (NSString *)filename
+                  relativeToWindow: (NSWindow*)window;
 - (void) beginSheetForDirectory: (NSString *)path
 			   file: (NSString *)filename
 		 modalForWindow: (NSWindow *)docWindow
