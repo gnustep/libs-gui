@@ -2885,11 +2885,24 @@ Scroll so that the beginning of the range is visible.
   if (NSMaxRange(aRange) < ourCharRange.location ||
       aRange.location > NSMaxRange(ourCharRange))
     {
-      NSTextContainer *tc = [_layoutManager textContainerForGlyphAtIndex:
-					      [_layoutManager glyphRangeForCharacterRange: aRange
-								     actualCharacterRange: NULL].location
+      // FIXME: The following snippet could be refactored to a method called 
+      // _textContainerForCharacterRange:effectiveCharacterRange:
+      NSTextContainer *tc;
+      NSTextView *tv;
+      NSUInteger glyphIndex = [_layoutManager glyphRangeForCharacterRange: aRange
+						     actualCharacterRange: NULL].location;
+
+      // If we are asked to scroll to the empty range at the end of the string,
+      // adjust the glyph index to be the last glyph, instead of one after the last glyph
+      if (![_layoutManager isValidGlyphIndex: glyphIndex] && 
+	  [_layoutManager isValidGlyphIndex: glyphIndex - 1])
+	{
+	  glyphIndex--;
+	}
+
+      tc = [_layoutManager textContainerForGlyphAtIndex: glyphIndex
 							  effectiveRange: NULL];
-      NSTextView *tv = [tc textView];
+      tv = [tc textView];
 
       if (tv != self)
 	{

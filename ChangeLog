@@ -1,3 +1,10 @@
+2011-06-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m (-scrollRangeToVisible:): Fix to support scrolling
+	to the empty range at the end of a document (i.e. {[string length], 0}).
+	This fixes the scrolling when you repeatedly hit RETURN in TextEdit to
+	create new pages (in wrap to page mode).
+
 2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m (-setTitle:, -setAttributedTitle:,
