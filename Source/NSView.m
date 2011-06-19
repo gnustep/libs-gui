@@ -394,6 +394,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   BOOL old_allocate_gstate;
 
   [self viewWillMoveToWindow: newWindow];
+  if (_coordinates_valid)
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  if (_rFlags.has_currects != 0)
+    {
+      [self discardCursorRects];
+    }
+
   if (newWindow == _window)
     {
       return;
@@ -406,14 +415,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self releaseGState];
   _allocate_gstate = old_allocate_gstate;
 
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  if (_rFlags.has_currects != 0)
-    {
-      [self discardCursorRects];
-    }
   if (_rFlags.has_draginfo)
     {
       NSArray *t = GSGetDragTypes(self);

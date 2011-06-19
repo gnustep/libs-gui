@@ -2,6 +2,9 @@
 
 	* Source/NSView.m (-setBounds:, -setBoundsSize:): Rewrite of this
 	methods plus a few helpers. We pass now all the frame/bounds test cases.
+	* Source/NSView.m (-_viewWillMoveToWindow:): Move the invalidation of the
+	coordinate transformations and the cursor rects before the window
+	test. Remove calls to coordinate invalidation from other places.
 
 2011-06-16  Eric Wasylishen  <ewasylishen@gmail.com>
 
