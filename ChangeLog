@@ -1,3 +1,9 @@
+2011-06-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSPrintPanel.h: Add missing APPKIT_EXPORT for new
+	strings.
+	Bug point out by Bluna Ratimonkey <object@gmail.com>.
+
 2011-06-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSOpenPanel.h

@@ -87,11 +87,11 @@ enum {
 };
 typedef NSInteger NSPrintPanelOptions;
 
-NSString *NSPrintPanelAccessorySummaryItemNameKey;
-NSString *NSPrintPanelAccessorySummaryItemDescriptionKey;
+APPKIT_EXPORT NSString *NSPrintPanelAccessorySummaryItemNameKey;
+APPKIT_EXPORT NSString *NSPrintPanelAccessorySummaryItemDescriptionKey;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-NSString *NSPrintPhotoJobStyleHint;
+APPKIT_EXPORT NSString *NSPrintPhotoJobStyleHint;
 #endif
 
 @interface NSPrintPanel : NSPanel
