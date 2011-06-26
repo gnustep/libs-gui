@@ -725,6 +725,58 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
+- (void) deleteToEndOfParagraph: (id)sender
+{
+  NSRange range = [self rangeForUserTextChange];
+  NSDictionary *attributes;
+
+  if (range.location == NSNotFound)
+    {
+      return;
+    }
+
+  /* If the selection is not empty delete it, otherwise delete up to
+     the next paragraph end from the insertion point or the delete the
+     paragraph end itself when the insertion point is already at the
+     end of the paragraph. */
+  if (range.length == 0)
+    {
+      NSUInteger start, end, contentsEnd;
+
+      [[_textStorage string] getParagraphStart: &start
+					   end: &end
+				   contentsEnd: &contentsEnd
+				      forRange: range];
+      if (range.location == contentsEnd)
+	{
+	  range = NSMakeRange(contentsEnd, end - contentsEnd);
+	}
+      else
+	{
+	  range.length = contentsEnd - range.location;
+	}
+      if (range.length == 0)
+	{
+	  return;
+	}
+    }
+
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  ASSIGN(killBuffer, [[_textStorage string] substringWithRange: range]);
+  attributes = RETAIN([_textStorage attributesAtIndex: range.location
+				       effectiveRange: NULL]);
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self setTypingAttributes: attributes];
+  RELEASE(attributes);
+  [self didChangeText];
+}
+
 - (void) yank: (id)sender
 {
   [self insertText: killBuffer];

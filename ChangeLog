@@ -1,5 +1,10 @@
 2011-06-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView_actions.m (-deleteToEndOfParagraph:):
+	Implement method, which was introduced in OS X 10.3.
+
+2011-06-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView_actions.m (-deleteToEndOfLine:): Fix
 	implementation to work in the same way as under Emacs and OS X.
 	In particular, the action now deletes the newline character when
