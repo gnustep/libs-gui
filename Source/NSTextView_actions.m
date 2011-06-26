@@ -677,9 +677,6 @@ static NSNumber *float_plus_one(NSNumber *cur)
 - (void) deleteToEndOfLine: (id)sender
 {
   NSRange range = [self rangeForUserTextChange];
-  NSRange linerange;
-  unsigned maxRange;
-  unsigned endCorrection = 0;
   NSDictionary *attributes;
 
   if (range.location == NSNotFound)
@@ -687,38 +684,30 @@ static NSNumber *float_plus_one(NSNumber *cur)
       return;
     }
 
-  linerange = [[_textStorage string] lineRangeForRange: 
-					 NSMakeRange(range.location, 0)];
-  maxRange = NSMaxRange (linerange);
-  
-  if (maxRange == range.location)
+  /* If the selection is not empty delete it, otherwise delete up to the
+     next line end from the insertion point or the delete the line end
+     itself when the insertion point is already at the end of the line. */
+  if (range.length == 0)
     {
-      return;
-    }
+      NSUInteger start, end, contentsEnd;
 
-  // Only delete the linebreak, if the line is empty.
-  if (linerange.length > 1)
-    {
-      // Treat the last line special, as it does not have to end in a leine break.
-      if (maxRange == [_textStorage length])
-        {
-	  unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
-	  if (u == '\n'  ||  u == '\r')
-	    {
-	      endCorrection = 1;
-	    }
-	  else
-	    {
-	      endCorrection = 0;
-	    }
+      [[_textStorage string] getLineStart: &start
+				      end: &end
+			      contentsEnd: &contentsEnd
+				 forRange: range];
+      if (range.location == contentsEnd)
+	{
+	  range = NSMakeRange(contentsEnd, end - contentsEnd);
 	}
       else
-        {
-	  endCorrection = 1;
+	{
+	  range.length = contentsEnd - range.location;
+	}
+      if (range.length == 0)
+	{
+	  return;
 	}
     }
-
-  range = NSMakeRange(range.location, maxRange - range.location - endCorrection);
 
   if (![self shouldChangeTextInRange: range  replacementString: @""])
     {
