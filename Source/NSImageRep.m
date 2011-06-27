@@ -44,6 +44,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/DPSOperators.h"
+#import "GNUstepGUI/GSGhostscriptImageRep.h"
 
 static NSMutableArray *imageReps = nil;
 static Class NSImageRep_class = NULL;
@@ -59,7 +60,7 @@ static Class NSImageRep_class = NULL;
       NSImageRep_class = self;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
       [imageReps addObject: [NSBitmapImageRep class]];
-      //[imageReps addObject: [NSEPSImageRep class]];
+      [imageReps addObject: [GSGhostscriptImageRep class]];
     }
 }
 
