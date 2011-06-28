@@ -1265,8 +1265,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         {
           if (_boundsMatrix == nil)
             {
-              float sx = _bounds.size.width  / _frame.size.width;
-              float sy = _bounds.size.height / _frame.size.height;
+              CGFloat sx = _bounds.size.width  / _frame.size.width;
+              CGFloat sy = _bounds.size.height / _frame.size.height;
               
               _frame.size = newSize;
               _bounds.size.width  = _frame.size.width  * sx;
@@ -1305,9 +1305,9 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     }
 }
 
-- (void) setFrameRotation: (float)angle
+- (void) setFrameRotation: (CGFloat)angle
 {
-  float oldAngle = [self frameRotation];
+  CGFloat oldAngle = [self frameRotation];
 
   if (oldAngle != angle)
     {
@@ -1525,7 +1525,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   [self setNeedsDisplay: YES];
 }
 
-- (void) setBoundsRotation: (float)angle
+- (void) setBoundsRotation: (CGFloat)angle
 {
   [self rotateByAngle: angle - [self boundsRotation]];
 }
@@ -1600,7 +1600,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     }
 }
 
-- (void) rotateByAngle: (float)angle
+- (void) rotateByAngle: (CGFloat)angle
 {
   if (angle != 0.0)
     {
@@ -1962,8 +1962,8 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
    */
   if (options > 0)
     {
-      float change = superViewFrameSize.width - oldSize.width;
-      float changePerOption = change / options;
+      CGFloat change = superViewFrameSize.width - oldSize.width;
+      CGFloat changePerOption = change / options;
 
       if (_autoresizingMask & NSViewWidthSizable)
 	{ 
@@ -1993,8 +1993,8 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
    */
   if (options > 0)
     {
-      float change = superViewFrameSize.height - oldSize.height;
-      float changePerOption = change / options;
+      CGFloat change = superViewFrameSize.height - oldSize.height;
+      CGFloat changePerOption = change / options;
       
       if (_autoresizingMask & NSViewHeightSizable)
 	{
@@ -3067,7 +3067,7 @@ Returns YES iff any scrolling was done.
       // Ok we assume that the rectangle is origined at the bottom left
       // and goes to the top and right as it grows in size for the naming
       // of these variables
-      float ldiff, rdiff, tdiff, bdiff;
+      CGFloat ldiff, rdiff, tdiff, bdiff;
 
       if (vRect.size.width == 0 && vRect.size.height == 0)
 	return NO;
@@ -3988,12 +3988,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 /*
  * Pagination
  */
-- (void) adjustPageHeightNew: (float*)newBottom
-			 top: (float)oldTop
-		      bottom: (float)oldBottom
-		       limit: (float)bottomLimit
+- (void) adjustPageHeightNew: (CGFloat*)newBottom
+			 top: (CGFloat)oldTop
+		      bottom: (CGFloat)oldBottom
+		       limit: (CGFloat)bottomLimit
 {
-  float bottom = oldBottom;
+  CGFloat bottom = oldBottom;
 
   if (_rFlags.has_subviews)
     {
@@ -4004,7 +4004,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	{
           // FIXME: We have to convert this values for the subclass
 
-	  float oTop, oBottom, oLimit;
+	  CGFloat oTop, oBottom, oLimit;
 	  /* Don't ask me why, but gcc-2.91.66 crashes if we use
 	     NSMakePoint in the following expressions.  We avoid this
 	     compiler internal bug by using an auxiliary aPoint
@@ -4040,12 +4040,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   *newBottom = bottom;
 }
 
-- (void) adjustPageWidthNew: (float*)newRight
-		       left: (float)oldLeft
-		      right: (float)oldRight
-		      limit: (float)rightLimit
+- (void) adjustPageWidthNew: (CGFloat*)newRight
+		       left: (CGFloat)oldLeft
+		      right: (CGFloat)oldRight
+		      limit: (CGFloat)rightLimit
 {
-  float right = oldRight;
+  CGFloat right = oldRight;
 
   if (_rFlags.has_subviews)
     {
@@ -4058,7 +4058,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 	  /* See comments in adjustPageHeightNew:top:bottom:limit:
 	     about why code is structured in this funny way.  */
-	  float oLeft, oRight, oLimit;
+	  CGFloat oLeft, oRight, oLimit;
 	  /* Don't ask me why, but gcc-2.91.66 crashes if we use
 	     NSMakePoint in the following expressions.  We avoid this
 	     compiler internal bug by using an auxiliary aPoint
@@ -4094,9 +4094,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   *newRight = right;
 }
 
-- (float) heightAdjustLimit
+- (CGFloat) heightAdjustLimit
 {
-  return 0;
+  return 0.0;
 }
 
 - (BOOL) knowsPagesFirst: (int*)firstPageNum last: (int*)lastPageNum
@@ -4143,9 +4143,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return NSZeroRect;
 }
 
-- (float) widthAdjustLimit
+- (CGFloat) widthAdjustLimit
 {
-  return 0;
+  return 0.0;
 }
 
 /*
@@ -4796,7 +4796,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return _frame;
 }
 
-- (float) boundsRotation
+- (CGFloat) boundsRotation
 {
   if (_boundsMatrix != nil)
     {
@@ -4806,7 +4806,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return 0.0;
 }
 
-- (float) frameRotation
+- (CGFloat) frameRotation
 {
   if (_frameMatrix != nil)
     {

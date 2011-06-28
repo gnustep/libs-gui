@@ -45,11 +45,11 @@
 #if GS_API_VERSION(GS_API_NONE, 011500)
 @interface NSAffineTransform (GNUstep)
 - (void) translateToPoint: (NSPoint)point;
-- (void) scaleTo: (float)sx : (float)sy;
+- (void) scaleTo: (CGFloat)sx : (CGFloat)sy;
 - (void) makeIdentityMatrix;
-- (float) rotationAngle;
+- (CGFloat) rotationAngle;
 - (void) setFrameOrigin: (NSPoint)point;
-- (void) setFrameRotation: (float)angle;
+- (void) setFrameRotation: (CGFloat)angle;
 
 /* Deprecated: use -invert  */
 - (void) inverse;

@@ -913,7 +913,7 @@ scaleRect(NSRect rect, double scale)
   wlimit = [_view widthAdjustLimit];
   for (i = first; i <= last; i++)
     {
-      float newVal, limitVal;
+      CGFloat newVal, limitVal;
       pageRect = [self _rectForPage: i info: info xpage: &xpage ypage: &ypage];
       limitVal = NSMaxY(pageRect) - hlimit * NSHeight(pageRect);
       [_view adjustPageHeightNew: &newVal

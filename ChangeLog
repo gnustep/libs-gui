@@ -1,3 +1,14 @@
+2011-06-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDragView.m (-init): Set the window background colour to clear.
+	* Headers/AppKit/NSAffineTransform.h,
+	* Headers/AppKit/NSView.h,
+	* Source/NSAffineTransform.m,
+	* Source/NSPrintOperation.m,
+	* Source/NSView.m: Use CGFlaot instead of float.
+	* Tests/gui/NSView/NSView_bounds_scale.m: New test file that
+	currently fails.
+
 2011-06-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSGhostscriptImageRep.m:

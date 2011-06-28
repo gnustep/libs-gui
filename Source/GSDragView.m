@@ -151,6 +151,7 @@ static	GSDragView *sharedDragView = nil;
       [dragCell setBordered: NO];
       
       [sharedDragWindow setContentView: self];
+      [sharedDragWindow setBackgroundColor: [NSColor clearColor]];
       // Kept alive by the window
       RELEASE(self);
     }

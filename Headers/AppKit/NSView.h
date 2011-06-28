@@ -201,26 +201,26 @@ PACKAGE_SCOPE
 /*
  * Modifying the Frame Rectangle
  */
-- (float) frameRotation;
+- (CGFloat) frameRotation;
 - (NSRect) frame;
 - (void) setFrame: (NSRect)frameRect;
 - (void) setFrameOrigin: (NSPoint)newOrigin;
-- (void) setFrameRotation: (float)angle;
+- (void) setFrameRotation: (CGFloat)angle;
 - (void) setFrameSize: (NSSize)newSize;
 
 /*
  * Modifying the Coordinate System
  */
-- (float) boundsRotation;
+- (CGFloat) boundsRotation;
 - (NSRect) bounds;
 - (void) setBounds: (NSRect)aRect;
 - (void) setBoundsOrigin: (NSPoint)newOrigin;
-- (void) setBoundsRotation: (float)angle;
+- (void) setBoundsRotation: (CGFloat)angle;
 - (void) setBoundsSize: (NSSize)newSize;
 
 - (void) translateOriginToPoint: (NSPoint)point;
 - (void) scaleUnitSquareToSize: (NSSize)newSize;
-- (void) rotateByAngle: (float)angle;
+- (void) rotateByAngle: (CGFloat)angle;
 
 - (BOOL) isFlipped;
 - (BOOL) isRotatedFromBase;
@@ -520,15 +520,15 @@ PACKAGE_SCOPE
 /*
  * Pagination
  */
-- (void) adjustPageHeightNew: (float*)newBottom
-                         top: (float)oldTop
-                      bottom: (float)oldBottom
-                       limit: (float)bottomLimit;
-- (void) adjustPageWidthNew: (float*)newRight
-                       left: (float)oldLeft
-                      right: (float)oldRight
-                      limit: (float)rightLimit;
-- (float) heightAdjustLimit;
+- (void) adjustPageHeightNew: (CGFloat*)newBottom
+                         top: (CGFloat)oldTop
+                      bottom: (CGFloat)oldBottom
+                       limit: (CGFloat)bottomLimit;
+- (void) adjustPageWidthNew: (CGFloat*)newRight
+                       left: (CGFloat)oldLeft
+                      right: (CGFloat)oldRight
+                      limit: (CGFloat)rightLimit;
+- (CGFloat) heightAdjustLimit;
 - (BOOL) knowsPagesFirst: (int*)firstPageNum
                     last: (int*)lastPageNum;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
@@ -536,7 +536,7 @@ PACKAGE_SCOPE
 #endif
 - (NSPoint) locationOfPrintRect: (NSRect)aRect;
 - (NSRect) rectForPage: (int)page;
-- (float) widthAdjustLimit;
+- (CGFloat) widthAdjustLimit;
 
 /*
  * Writing Conforming PostScript

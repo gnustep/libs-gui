@@ -58,7 +58,7 @@
 
  */
 
-static const float pi = 3.1415926535897932384626434;
+static const CGFloat pi = 3.1415926535897932384626434;
 
 @implementation NSAffineTransform (GUIAdditions)
 
@@ -108,15 +108,15 @@ static const float pi = 3.1415926535897932384626434;
 
 @implementation NSAffineTransform (GNUstep)
 
-- (void) scaleTo: (float)sx : (float)sy
+- (void) scaleTo: (CGFloat)sx : (CGFloat)sy
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
 
   /* If it's rotated.  */
   if (B != 0  ||  C != 0)
     {
       // FIXME: This case does not handle shear.
-      float angle = [self rotationAngle];
+      CGFloat angle = [self rotationAngle];
 
       // Keep the translation and add scaling
       A = sx; B = 0;
@@ -146,22 +146,22 @@ static const float pi = 3.1415926535897932384626434;
 
 - (void) setFrameOrigin: (NSPoint)point
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
-  float dx = point.x - TX;
-  float dy = point.y - TY;
+  NSAffineTransformStruct matrix = [self transformStruct];
+  CGFloat dx = point.x - TX;
+  CGFloat dy = point.y - TY;
 
   [self translateXBy: dx yBy: dy];
 }
 
-- (void) setFrameRotation: (float)angle
+- (void) setFrameRotation: (CGFloat)angle
 {
   [self rotateByDegrees: angle - [self rotationAngle]];
 }
 
-- (float) rotationAngle
+- (CGFloat) rotationAngle
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
-  float rotationAngle = atan2(-C, A);
+  NSAffineTransformStruct matrix = [self transformStruct];
+  CGFloat rotationAngle = atan2(-C, A);
 
   rotationAngle *= 180.0 / pi;
   if (rotationAngle < 0.0)
@@ -218,16 +218,16 @@ static const float pi = 3.1415926535897932384626434;
 {
   NSAffineTransformStruct matrix = [self transformStruct];
   /* Shortcuts of the usual rect values */
-  float x = rect.origin.x;
-  float y = rect.origin.y;
-  float width = rect.size.width;
-  float height = rect.size.height;
-  float xc[3];
-  float yc[3];
-  float min_x;
-  float max_x;
-  float min_y;
-  float max_y;
+  CGFloat x = rect.origin.x;
+  CGFloat y = rect.origin.y;
+  CGFloat width = rect.size.width;
+  CGFloat height = rect.size.height;
+  CGFloat xc[3];
+  CGFloat yc[3];
+  CGFloat min_x;
+  CGFloat max_x;
+  CGFloat min_y;
+  CGFloat max_y;
   int i;
 
   max_x = A * x + C * y + TX;
