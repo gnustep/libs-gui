@@ -506,7 +506,7 @@
     rowBytes = ceil((float)width * _bitsPerPixel / 8);
   _bytesPerRow = rowBytes;
 
-  _imagePlanes = NSZoneMalloc([self zone], sizeof(unsigned char*) * MAX_PLANES);
+  _imagePlanes = NSAllocateCollectable(sizeof(unsigned char*) * MAX_PLANES, 0);
   if (planes) 
     {
       unsigned int i;

@@ -69,7 +69,7 @@
 
 static NSDictionary	*blank;
 static NSLock		*attrLock = nil;
-static GSIMapTable_t	attrMap;
+static __strong GSIMapTable_t	attrMap;
 static SEL		lockSel;
 static SEL		unlockSel;
 static IMP		lockImp;
