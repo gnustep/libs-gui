@@ -125,7 +125,7 @@ APPKIT_EXPORT NSString *NSAnimationTriggerOrderOut;
   /* GSIArray<NSAnimationProgress> */ void *_progressMarks; // Array
   unsigned int _nextMark;                 // The next mark to be reached
                                           //   = count if no next mark
-  NSNumber **_cachedProgressMarkNumbers;  // Cached values used by
+  __strong NSNumber **_cachedProgressMarkNumbers;  // Cached values used by
   unsigned _cachedProgressMarkNumberCount;//   [-progressMarks]
   BOOL _isCachedProgressMarkNumbersValid;
 
