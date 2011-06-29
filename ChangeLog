@@ -1,3 +1,11 @@
+2011-06-29 15:39 David Chisnall <theraven@gna.org>
+
+	* libs/gui/trunk/Headers/AppKit/NSEvent.h,
+	  libs/gui/trunk/Headers/AppKit/NSMatrix.h: Fix AppKit headers to
+	  allow inclusion in ARC mode. Since ARC requires the non-fragile
+	  ABI, a better solution would be to simply not expose any of these
+	  ivars with the non-fragile ABI.
+
 2011-06-28  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSImageMagickImageRep.h:
