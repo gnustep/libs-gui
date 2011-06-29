@@ -352,6 +352,23 @@ if test "$have_ungif" = no -o "${enable_libgif}" = yes; then
 fi
 
 #--------------------------------------------------------------------
+# Find ImageMagick
+#--------------------------------------------------------------------
+
+AC_ARG_ENABLE(imagemagick, 
+  [  --disable-imagemagick        Disable ImageMagick support],,
+  enable_imagemagick=yes)
+AS_IF([test "$enable_imagemagick" = "yes"], [
+   PKG_CHECK_MODULES([IMAGEMAGICK], [MagickCore],
+    [
+	GRAPHIC_CFLAGS="$IMAGEMAGICK_CFLAGS $GRAPHIC_CFLAGS"
+        GRAPHIC_LFLAGS="$IMAGEMAGICK_LIBS $GRAPHIC_LFLAGS"
+	AC_DEFINE([HAVE_IMAGEMAGICK], [1], [Have ImageMagick])
+    ],
+    [AC_DEFINE([HAVE_IMAGEMAGICK], [0], [Don't have ImageMagick])])
+])
+
+#--------------------------------------------------------------------
 # Check for the spelling lib, for the built-in spell checker...
 # Note: you might want to disable aspell on MacOSX, as it linkes in
 # Apple's libobjc.A, screwing up the links to the GNU libobjc.

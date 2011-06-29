@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `getmntinfo' function. */
 #undef HAVE_GETMNTINFO
 
+/* Have ImageMagick */
+#undef HAVE_IMAGEMAGICK
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -48,9 +51,6 @@
 /* Define to 1 if you have the `png' library (-lpng). */
 #undef HAVE_LIBPNG
 
-/* Define to 1 if you have the <libpng/png.h> header file. */
-#undef HAVE_LIBPNG_PNG_H
-
 /* Define to 1 if you have the `tiff' library (-ltiff). */
 #undef HAVE_LIBTIFF
 
@@ -65,6 +65,9 @@
 
 /* Define to 1 if you have the <mntent.h> header file. */
 #undef HAVE_MNTENT_H
+
+/* Define to 1 if you have the <png.h> header file. */
+#undef HAVE_PNG_H
 
 /* Define to 1 if you have the `rint' function. */
 #undef HAVE_RINT

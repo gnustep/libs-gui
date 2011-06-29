@@ -215,6 +215,7 @@ GSHorizontalTypesetter.m \
 GSGhostscriptImageRep.m \
 GSGormLoading.m \
 GSIconManager.m \
+GSImageMagickImageRep.m \
 GSNibLoading.m \
 GSTheme.m \
 GSThemeDrawing.m \

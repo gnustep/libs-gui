@@ -1,3 +1,11 @@
+2011-06-28  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSImageMagickImageRep.h:
+	* Source/GNUmakefile:
+	* Source/NSImageRep.m:
+	* Source/GSImageMagickImageRep.m:
+	* configure.ac: New ImageMagick-based NSBitmapImageRep subclass
+
 2011-06-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSDragView.m (-init): Set the window background colour to clear.
