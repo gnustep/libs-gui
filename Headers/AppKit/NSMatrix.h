@@ -51,7 +51,7 @@ typedef enum _NSMatrixMode {
 
 @interface NSMatrix : NSControl <NSCoding>
 {
-  id		**_cells;
+  __strong id		**_cells;
   BOOL		**_selectedCells;
   int		_maxRows;
   int		_maxCols;

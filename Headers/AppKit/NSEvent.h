@@ -244,8 +244,8 @@ enum
       struct
         {
           BOOL     repeat;
-          NSString *char_keys;
-          NSString *unmodified_keys;
+          __unsafe_unretained NSString *char_keys;
+          __unsafe_unretained NSString *unmodified_keys;
           unsigned short key_code;
         } key;
       struct
