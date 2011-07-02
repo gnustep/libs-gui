@@ -1,3 +1,8 @@
+2011-07-02 15:33-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTableView.m: Modifications to initWithCoder: and
+	encodeWithCoder: to handle _sortDescriptors in .gorm files.
+
 2011-07-02 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSSliderCell.m:
@@ -63,6 +68,7 @@
 	In particular, the action now deletes the newline character when
 	the insertion point is at the end of a line.
 
+>>>>>>> .r33429
 2011-06-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPrintPanel.h: Add missing APPKIT_EXPORT for new
