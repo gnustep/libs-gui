@@ -1485,6 +1485,8 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
   */
   NSColor *defaultTextColor = [NSColor textColor];
   NSColor *selectedTextColor = defaultTextColor;
+  NSColor *link_color = nil;
+  id linkValue;
  
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
@@ -1543,6 +1545,18 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
   run_color = [attributes valueForKey: NSForegroundColorAttributeName];
   if (run_color == nil)
     run_color = defaultTextColor;
+
+  linkValue = [attributes objectForKey: NSLinkAttributeName];
+  if (linkValue != nil)
+    {
+      if (link_color == nil)
+	{
+	  NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
+	  link_color = [link_attributes valueForKey: NSForegroundColorAttributeName];
+	}
+      if (link_color != nil)
+	run_color = link_color;
+    }
 
   if (selectedGlyphRange.length > 0)
     {
@@ -1639,6 +1653,19 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	    {
 	      run_color = defaultTextColor;
 	    }
+
+	  linkValue = [attributes objectForKey: NSLinkAttributeName];
+	  if (linkValue != nil)
+	      {
+		if (link_color == nil)
+		  {
+		    NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
+		    link_color = [link_attributes valueForKey: NSForegroundColorAttributeName];
+		  }
+		if (link_color != nil)
+		  run_color = link_color;
+	      }
+
 	  glyph = glyph_run->glyphs;
 
 	  /* If the font has changed or the color has changed (and we are
@@ -1752,14 +1779,37 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
   {
     const NSRange characterRange = [self characterRangeForGlyphRange: range
 						    actualGlyphRange: NULL];
+    id linkUnderlineValue = nil;
 
     for (i=characterRange.location; i<NSMaxRange(characterRange); )
       {
 	NSRange underlinedCharacterRange;
-	id underlineValue = [[self textStorage] attribute: NSUnderlineStyleAttributeName
-						  atIndex: i
-				    longestEffectiveRange: &underlinedCharacterRange
-						  inRange: characterRange];
+	NSRange linkCharacterRange;
+	id underlineValue = nil;
+
+	linkValue = [_textStorage attribute: NSLinkAttributeName
+				    atIndex: i
+		      longestEffectiveRange: &linkCharacterRange
+				    inRange: characterRange];
+	if (linkValue != nil)
+	  {
+	    if (linkUnderlineValue == nil)
+	      {
+		NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
+		linkUnderlineValue = [link_attributes valueForKey: NSUnderlineStyleAttributeName];
+	      }
+	    underlineValue = linkUnderlineValue;
+	    underlinedCharacterRange = linkCharacterRange;
+	  }
+	else
+	  {
+	    underlineValue = [_textStorage attribute: NSUnderlineStyleAttributeName
+					     atIndex: i
+			       longestEffectiveRange: &underlinedCharacterRange
+					     inRange: characterRange];
+	    underlinedCharacterRange = NSIntersectionRange(underlinedCharacterRange, 
+							   linkCharacterRange);
+	  }
 	if (underlineValue != nil && [underlineValue integerValue] != NSUnderlineStyleNone)
 	  {
 	    const NSRange underlinedGylphRange = [self glyphRangeForCharacterRange: underlinedCharacterRange
@@ -1916,6 +1966,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
   // contiguous regions with the same underline color.
 
   NSUInteger i;
+  NSColor *link_color = nil;
   const NSRange characterRange = [self characterRangeForGlyphRange: underlineRange
 						  actualGlyphRange: NULL];
 
@@ -1926,56 +1977,84 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
       return;
     }
 
-  for (i=characterRange.location; i<NSMaxRange(characterRange); )
+  for (i = characterRange.location; i < NSMaxRange(characterRange); )
     {
       NSRange underlineColorCharacterRange, foregroundColorCharacterRange, rangeToDraw;
-      NSColor *underlineColor = (NSColor*)[[self textStorage] attribute: NSUnderlineColorAttributeName
-								atIndex: i
-						  longestEffectiveRange: &underlineColorCharacterRange
-								inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
-      NSColor *foregroundColor = (NSColor*)[[self textStorage] attribute: NSForegroundColorAttributeName
-								 atIndex: i
-						   longestEffectiveRange: &foregroundColorCharacterRange
-								 inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
-      /*NSLog(@"asked to underline '%@'. at %d, ul color is %@ (%@) and fg color is %@ (%@)", [[[self textStorage] string] substringWithRange: characterRange],
-	    i,
-	    underlineColor,
-	    NSStringFromRange(underlineColorCharacterRange),
-	    foregroundColor,
-	    NSStringFromRange(foregroundColorCharacterRange));*/
+      NSColor *underlineColor = nil;
+      NSRange glyphRangeToDraw;
+      NSRange linkCharacterRange;
+      id linkValue;
+
+      linkValue = [_textStorage attribute: NSLinkAttributeName
+				  atIndex: i
+		    longestEffectiveRange: &linkCharacterRange
+				  inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
+      if (linkValue != nil)
+	{
+	  if (link_color == nil)
+	    {
+	      NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
+	      link_color = [link_attributes valueForKey: NSForegroundColorAttributeName];
+	    }
+	  if (link_color != nil)
+	    underlineColor = link_color;
+
+	  underlineColorCharacterRange = linkCharacterRange;
+	}
+      else
+	{
+	  underlineColor = (NSColor*)[[self textStorage] 
+				       attribute: NSUnderlineColorAttributeName
+					 atIndex: i
+				       longestEffectiveRange: &underlineColorCharacterRange
+					 inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
+	  underlineColorCharacterRange = NSIntersectionRange(underlineColorCharacterRange, 
+							     linkCharacterRange);
+	}
 
       if (underlineColor != nil)
 	{
 	  [underlineColor set];
+	  rangeToDraw = underlineColorCharacterRange;
 	}
-      else if (foregroundColor != nil)
+      else
 	{
-	  [foregroundColor set];
-	}
-      else 
-	{
-	  [[NSColor textColor] set];
-	}
+	  NSColor *foregroundColor = (NSColor*)[[self textStorage] 
+						 attribute: NSForegroundColorAttributeName
+						   atIndex: i
+						 longestEffectiveRange: &foregroundColorCharacterRange
+						   inRange: NSMakeRange(i, NSMaxRange(characterRange)-i)];
 
-      // Draw the smaller range
-      rangeToDraw = underlineColorCharacterRange.length < foregroundColorCharacterRange.length ?
-	underlineColorCharacterRange : foregroundColorCharacterRange;
+	  if (foregroundColor != nil)
+	    {
+	      [foregroundColor set];
+	    }
+	  else 
+	    {
+	      [[NSColor textColor] set];
+	    }
+
+	  // Draw the smaller range
+	  rangeToDraw = underlineColorCharacterRange.length < foregroundColorCharacterRange.length ?
+	    underlineColorCharacterRange : foregroundColorCharacterRange;
+	}
       
-      // do the actual underline
-      {
-
-	  const NSRange glyphRangeToDraw = [self glyphRangeForCharacterRange: rangeToDraw
-						       actualCharacterRange: NULL];
-
+      glyphRangeToDraw = [self glyphRangeForCharacterRange: rangeToDraw
+				      actualCharacterRange: NULL];
+      if (glyphRangeToDraw.length > 0)
+	{
+	  // do the actual underline
+	  
 	  // FIXME: find the largest font within the range to underline
-	  NSFont *largestFont = [self effectiveFontForGlyphAtIndex: glyphRangeToDraw.location // NOTE: GS private method
-						     range: NULL];
+	  // NOTE: GS private method
+	  NSFont *largestFont = [self effectiveFontForGlyphAtIndex: glyphRangeToDraw.location
+							     range: NULL];
 
 	  const CGFloat underlineWidth = [largestFont pointSize] * 
 	    (((type & NSUnderlineStyleDouble) != 0) ? 0.05 : 0.07);
 	  
 	  NSPoint start = [self locationForGlyphAtIndex: glyphRangeToDraw.location];
-	  NSPoint end = [self locationForGlyphAtIndex: NSMaxRange(glyphRangeToDraw) - 1]; //FIXME: check length > 0
+	  NSPoint end = [self locationForGlyphAtIndex: NSMaxRange(glyphRangeToDraw) - 1];
 
 	  // FIXME: remove this hack lowers the underline slightly
 	  start.y += [largestFont pointSize] * 0.07;
