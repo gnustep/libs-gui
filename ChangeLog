@@ -1,3 +1,8 @@
+2011-07-02 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSSliderCell.m:
+	Fix tick marks with circular sliders.
+
 2011-06-29  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSOutlineView.m: Implement left arrow key moving selection

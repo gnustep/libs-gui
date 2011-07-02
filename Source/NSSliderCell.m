@@ -662,13 +662,20 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   return _allowsTickMarkValuesOnly;
 }
 
+/* verified on Cocoa that a circular slider with one tick has two values: 0, 50 */
 - (double) closestTickMarkValueToValue: (double)aValue
 {
   double d, f;
+  int effectiveTicks;
 
   if (_numberOfTickMarks == 0)
     return aValue;
-  else if (_numberOfTickMarks == 1)
+
+  effectiveTicks = _numberOfTickMarks;
+  if (_type == NSCircularSlider)
+    effectiveTicks++;
+
+  if (effectiveTicks == 1)
     return (_maxValue + _minValue) / 2;
 
   if (aValue < _minValue)
@@ -681,8 +688,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
 
   d = _maxValue - _minValue;
-  f = ((aValue - _minValue)  * (_numberOfTickMarks - 1)) / d;
-  f = ((rint(f) * d) / (_numberOfTickMarks - 1)) + _minValue;
+  f = ((aValue - _minValue)  * (effectiveTicks - 1)) / d;
+  f = ((rint(f) * d) / (effectiveTicks - 1)) + _minValue;
 
   return f;
 }
@@ -782,7 +789,12 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   if (index <= 0)
     return _minValue;
 
-  return _minValue + index * (_maxValue - _minValue) / (_numberOfTickMarks - 1);
+  if (_type == NSCircularSlider)
+    return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
+  if (_type == NSLinearSlider)
+    return _minValue + index * (_maxValue - _minValue) / (_numberOfTickMarks - 1);
+
+  return 0.0;
 }
 
 - (BOOL) trackMouse: (NSEvent*)theEvent
