@@ -1,3 +1,8 @@
+2011-06-29  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSOutlineView.m: Implement left arrow key moving selection
+	to parent node when the current item is collapsed.
+
 2011-06-29 15:41 David Chisnall <theraven@gna.org>
 
 	* libs/gui/trunk/Source/GSTextStorage.m,
@@ -14,7 +19,7 @@
 	  ivars with the non-fragile ABI.
 
 2011-06-28  Eric Wasylishen  <ewasylishen@gmail.com>
-
+	
 	* Headers/Additions/GNUstepGUI/GSImageMagickImageRep.h:
 	* Source/GNUmakefile:
 	* Source/NSImageRep.m:

@@ -869,8 +869,24 @@ static NSImage *unexpandable  = nil;
        switch (c)
          {
 	 case NSLeftArrowFunctionKey:
-	   [self collapseItem: item];
-	   return;
+	   {
+	     if ([self isItemExpanded: item])
+	       {
+		 [self collapseItem: item];
+	       }
+	     else
+	       {
+		 id parent = [self parentForItem: item];
+		 if (parent != nil)
+		   {
+		     NSInteger parentRow = [self rowForItem: parent];
+		     [self selectRow: parentRow
+			   byExtendingSelection: NO];
+		     [self scrollRowToVisible: parentRow];
+		   }
+	       }
+	     return;
+	   }
 	 case NSRightArrowFunctionKey:
 	   [self expandItem: item];
 	   return;
