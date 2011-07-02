@@ -670,7 +670,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
   if (_numberOfTickMarks == 0)
     return aValue;
-
+  
   effectiveTicks = _numberOfTickMarks;
   if (_type == NSCircularSlider)
     effectiveTicks++;
@@ -690,6 +690,10 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   d = _maxValue - _minValue;
   f = ((aValue - _minValue)  * (effectiveTicks - 1)) / d;
   f = ((rint(f) * d) / (effectiveTicks - 1)) + _minValue;
+
+  /* never return the maximum value, tested on Apple */
+  if (_type == NSCircularSlider && (f >= _maxValue))
+    f = _minValue;
 
   return f;
 }

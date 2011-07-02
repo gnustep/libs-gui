@@ -1,3 +1,8 @@
+2011-07-03 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSSliderCell.m:
+	Circular sliders never return the maximum value, tested on Apple.
+
 2011-07-02 15:33-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSTableView.m: Modifications to initWithCoder: and
