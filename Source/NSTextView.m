@@ -5679,7 +5679,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
   NSMenu *menu = [[self class] defaultMenu];
   NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   NSUInteger index = [self _characterIndexForPoint: point
-				   respectFraction: NO]; 
+				   respectFraction: YES]; 
 
   if (_tf.is_selectable == NO)
     return;

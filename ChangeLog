@@ -1,5 +1,10 @@
 2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTextView.m: Use respectFraction: YES when deciding whether
+	to do a word selection upon a right click
+
+2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* TextConverters/RTF/RTFProducer.m: Writing of NSLinkAttributeName; reading
 	is still to be implemented.
 
