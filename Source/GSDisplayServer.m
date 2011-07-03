@@ -507,6 +507,15 @@ GSCurrentServer(void)
   return NSMakeSize(64.0, 64.0);
 }
 
+/** 
+ * Returns a screenshot of the specified rectangle of the specified screen.
+ * The mouse cursor should be ommitted from the returned image.
+ */
+- (NSImage *) contentsOfScreen: (int)screen inRect: (NSRect)rect
+{
+  return nil;
+}
+
 @end
 
 /* ----------------------------------------------------------------------- */

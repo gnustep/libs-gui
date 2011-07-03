@@ -113,6 +113,9 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (NSImage *) iconTileImage;
 - (NSSize) iconSize;
 
+/* Screen capture */ 
+- (NSImage *) contentsOfScreen: (int)screen inRect: (NSRect)rect;
+
 @end
 
 /* ----------------------------------------------------------------------- */

@@ -1,5 +1,11 @@
 2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSDisplayServer.m:
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Add a new API for taking
+	screenshots: -contentsOfScreen:inRect:
+
+2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTextView.m: Use respectFraction: YES when deciding whether
 	to do a word selection upon a right click
 
