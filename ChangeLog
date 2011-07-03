@@ -1,5 +1,10 @@
 2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* TextConverters/RTF/RTFProducer.m: Writing of NSLinkAttributeName; reading
+	is still to be implemented.
+
+2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSMenuView.m: Allow any mouse up (left/right/other)
 	to choose a menu item.
 

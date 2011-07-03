@@ -708,6 +708,10 @@
       else if ([attributeName isEqualToString: NSFontAttributeName])
         {
         }
+      else if ([attributeName isEqualToString: NSLinkAttributeName])
+	{
+	  [result appendString: @"}}"];
+	}
       else
         {
           NSLog(@"(removal) Missing handling of '%@' attributes.",
@@ -1083,6 +1087,29 @@
 		}
             }
         }
+      else if ([attributeName isEqualToString: NSLinkAttributeName])
+	{
+	  id dest = [attributesToAdd objectForKey:
+              NSLinkAttributeName];
+
+	  NSString *destString = @"";
+
+	  if ([dest isKindOfClass: [NSURL class]])
+	    {
+	      destString = [dest absoluteString];
+	    }
+	  else if ([dest isKindOfClass: [NSString class]])
+	    {
+	      destString = [[NSURL URLWithString: dest] absoluteString];
+	    }
+
+	  // NOTE: RTF control characters (backslash, curly braces)
+	  // will be escaped by -absoluteString, so the result is safe to 
+	  // concatenate into the RTF stream
+
+	  [result appendString: 
+		    [NSString stringWithFormat: @"{\\field{\\*\\fldinst HYPERLINK \"%@\"}{\\fldrslt ", dest]];
+	}
       else
         {
           NSLog(@"(addition) Missing handling of '%@' attributes.",
