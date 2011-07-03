@@ -516,6 +516,8 @@ this happens when layout has been invalidated, and when we are resized.
   [self updateInsertionPointStateAndRestartTimer:
     [self shouldDrawInsertionPoint]];
   [self _updateInputMethodState];
+  /* In case any sections of text with custom cursors were moved */
+  [[self window] invalidateCursorRectsForView: self];
 }
 
 - (void) _layoutManagerDidInvalidateLayout
