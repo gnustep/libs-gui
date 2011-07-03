@@ -1,3 +1,14 @@
+2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSMenuView.m: Allow any mouse up (left/right/other)
+	to choose a menu item.
+
+2011-07-02  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m (-_updateState:): Invalidate cursor rects
+	so the cursor rects over links, for example, are updated when
+	text is edited.
+
 2011-07-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:,

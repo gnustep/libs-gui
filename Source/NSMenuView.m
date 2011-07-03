@@ -1445,7 +1445,6 @@ static NSMapTable *viewInfo = 0;
   int firstIndex = -1;
   NSEvent *original;
   NSEventType type;
-  NSEventType end;
 
   /*
    * The original event is unused except to determine whether the method
@@ -1457,40 +1456,21 @@ static NSMapTable *viewInfo = 0;
 
   type = [event type];
 
-  if (type == NSRightMouseDown || type == NSRightMouseDragged)
+  eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
+  eventMask |= NSRightMouseDownMask;
+  eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
+  eventMask |= NSOtherMouseDownMask;
+  eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  eventMask |= NSLeftMouseDownMask;
+  
+  /*We need know if the user press a modifier key to close the menu
+    when the menu is in a window*/
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+      NSWindows95InterfaceStyle)
     {
-      end = NSRightMouseUp;
-      eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
-      eventMask |= NSRightMouseDownMask;
+      eventMask |= NSFlagsChangedMask;
     }
-  else if (type == NSOtherMouseDown || type == NSOtherMouseDragged)
-    {
-      end = NSOtherMouseUp;
-      eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
-      eventMask |= NSOtherMouseDownMask;
-    }
-  else if (type == NSLeftMouseDown || type == NSLeftMouseDragged)
-    {
-      end = NSLeftMouseUp;
-      eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-      eventMask |= NSLeftMouseDownMask;
-
-      /*We need know if the user press a modifier key to close the menu
-	when the menu is in a window*/
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-	  NSWindows95InterfaceStyle)
-	{
-	  eventMask |= NSFlagsChangedMask;
-	}
-    }
-  else
-    {
-      NSLog (@"Unexpected event: %d during event tracking in NSMenuView", type);
-      end = NSLeftMouseUp;
-      eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-      eventMask |= NSLeftMouseDownMask;
-    }
-
+  
   /* We attempt to mimic Mac OS X behavior for pop up menus. If the user
      presses the mouse button over a pop up button and then drags the mouse
      over the menu, the menu is closed when the user releases the mouse. On the
@@ -1518,7 +1498,9 @@ static NSMapTable *viewInfo = 0;
 	  return NO;
 	}
 
-      if (type == end)
+      if (type == NSLeftMouseUp ||
+	  type == NSRightMouseUp ||
+	  type == NSOtherMouseUp)
         {
           shouldFinish = YES;
         }
@@ -1713,7 +1695,9 @@ static NSMapTable *viewInfo = 0;
         dequeue: YES];
       type = [event type];
     }
-  while (type != end || shouldFinish == NO);
+  while ((type != NSLeftMouseUp &&
+	  type != NSRightMouseUp &&
+	  type != NSOtherMouseUp) || shouldFinish == NO);
 
   /*
    * Ok, we released the mouse
@@ -1869,6 +1853,11 @@ static NSMapTable *viewInfo = 0;
 }
 
 - (void) rightMouseDown: (NSEvent*) theEvent
+{
+  [self mouseDown: theEvent];
+}
+
+- (void) otherMouseDown: (NSEvent*) theEvent
 {
   [self mouseDown: theEvent];
 }
