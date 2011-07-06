@@ -99,6 +99,12 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have the <unicode/uchar.h> header file. */
+#undef HAVE_UNICODE_UCHAR_H
+
+/* Define to 1 if you have the <unicode/ustring.h> header file. */
+#undef HAVE_UNICODE_USTRING_H
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 

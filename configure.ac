@@ -23,6 +23,9 @@
 # Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 # Boston, MA 02110-1301, USA.
 #
+
+builtin(include, config/icu.m4)dnl
+
 AC_INIT
 AC_CONFIG_SRCDIR([Source/NSApplication.m])
 
@@ -367,6 +370,31 @@ AS_IF([test "$enable_imagemagick" = "yes"], [
     ],
     [AC_DEFINE([HAVE_IMAGEMAGICK], [0], [Don't have ImageMagick])])
 ])
+
+#--------------------------------------------------------------------
+# Check for International Components for Unicode
+# See DEPENDENCIES POLICY at the start of thsi file.
+#--------------------------------------------------------------------
+HAVE_ICU=0
+AC_ARG_ENABLE(icu,
+  [  --disable-icu		Disable International Components for Unicode],,
+  enable_icu=yes)
+
+if test $enable_icu = yes; then
+  AC_CHECK_ICU(4.0, have_icu=yes, have_icu=no)
+  if test "$have_icu" = "yes"; then
+    AC_MSG_RESULT(yes)
+    AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
+    LIBS="$LIBS $ICU_LIBS"
+    LDFLAGS="$LDFLAGS $ICU_LDFLAGS"
+    LDIR_FLAGS="$LDIR_FLAGS $ICU_LDFLAGS"
+    HAVE_ICU=1
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN([The International Components for Unicode (ICU) development headers and libraries do not appear to be available on this system.])
+  fi
+fi
+AC_SUBST(HAVE_ICU)
 
 #--------------------------------------------------------------------
 # Check for the spelling lib, for the built-in spell checker...

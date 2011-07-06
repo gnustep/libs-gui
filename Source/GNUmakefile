@@ -201,6 +201,7 @@ GSServicesManager.m \
 tiff.m \
 externs.m \
 linking.m \
+GSCharacterPanel.m \
 GSDragView.m \
 GSFontInfo.m \
 GSTable.m \

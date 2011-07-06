@@ -1,3 +1,18 @@
+2011-07-06  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* configure:
+	* Source/NSFontPanel.m:
+	* Source/GNUmakefile:
+	* Source/GSCharacterPanel.m:
+	* configure.ac:
+	* Headers/Additions/GNUstepGUI/GSCharacterPanel.h:
+	* Headers/Additions/GNUstepGUI/config.h.in:
+	* ChangeLog:
+	* config:
+	* config/icu.m4:
+	Add a new character picker panel. It's accessible
+	via a button in the font panel.
+
 2011-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSDisplayServer.m:

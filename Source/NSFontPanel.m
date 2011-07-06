@@ -47,6 +47,7 @@
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSButton.h"
 #import "AppKit/NSBox.h"
+#import "GNUstepGUI/GSCharacterPanel.h"
 
 #import "GSGuiPrivate.h"
 
@@ -516,6 +517,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSRect revertButtonRect = {{83, 8}, {71, 24}};
   NSRect previewButtonRect = {{162, 8}, {71, 24}};
   NSRect setButtonRect = {{241, 8}, {71, 24}};
+  NSRect characterPanelButtonRect = {{8, 8}, {24, 24}};
   NSView *v;
   NSView *topArea;
   NSView *bottomArea;
@@ -531,6 +533,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSButton *revertButton;
   NSButton *previewButton;
   NSButton *setButton;
+  NSButton *characterPanelButton;
   NSBox *slash;
 
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
@@ -718,6 +721,21 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [self setDefaultButtonCell: [setButton cell]];
   RELEASE(setButton);
 
+  // Character Panel button
+  {
+    NSString *label;
+    unichar labelchars[2] = {0x03b1, 0x03b2}; // alpha, beta
+    label = [[[NSString alloc] initWithCharacters: labelchars
+					   length: 2] autorelease];
+
+    characterPanelButton = [[NSButton alloc] initWithFrame: characterPanelButtonRect];
+    [characterPanelButton setTitle: label];
+    [characterPanelButton setAction: @selector(characterPanel:)];
+    [characterPanelButton setTarget: self];
+    [bottomArea addSubview: characterPanelButton];
+    RELEASE(characterPanelButton);
+  }
+
   // set up the next key view chain
   [familyBrowser setNextKeyView: faceBrowser];
   [faceBrowser setNextKeyView: sizeField];
@@ -820,6 +838,11 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
    */
   [self setPanelFont: _panelFont
 	  isMultiple: _multiple];
+}
+
+- (void) characterPanel: (id)sender
+{
+  [[GSCharacterPanel sharedCharacterPanel] orderFront: nil];
 }
 
 - (NSFont *) _fontForSelection: (NSFont *)fontObject
