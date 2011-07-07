@@ -1934,7 +1934,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  int		options = 0;
+  CGFloat	options = 0.0;
   NSSize	superViewFrameSize;
   NSRect        newFrame = _frame;
 
@@ -1949,56 +1949,56 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
    * determine if and how the X axis can be resized
    */
   if (_autoresizingMask & NSViewWidthSizable)
-    options++;
+    options += newFrame.size.width;
 
   if (_autoresizingMask & NSViewMinXMargin)
-    options++;
+    options += newFrame.origin.x;
 
   if (_autoresizingMask & NSViewMaxXMargin)
-    options++;
+    options += oldSize.width - newFrame.origin.x - newFrame.size.width;
 
   /*
    * adjust the X axis if any X options are set in the mask
    */
-  if (options > 0)
+  if (options > 0.0)
     {
       CGFloat change = superViewFrameSize.width - oldSize.width;
       CGFloat changePerOption = change / options;
 
       if (_autoresizingMask & NSViewWidthSizable)
 	{ 
-          newFrame.size.width += changePerOption;
+          newFrame.size.width += changePerOption * newFrame.size.width;
 	}
       if (_autoresizingMask & NSViewMinXMargin)
 	{
-	  newFrame.origin.x += changePerOption;
+	  newFrame.origin.x += changePerOption * newFrame.origin.x;
 	}
     }
 
   /*
    * determine if and how the Y axis can be resized
    */
-  options = 0;
+  options = 0.0;
   if (_autoresizingMask & NSViewHeightSizable)
-    options++;
+    options += newFrame.size.height;
 
   if (_autoresizingMask & NSViewMinYMargin)
-    options++;
+    options += newFrame.origin.y;
 
   if (_autoresizingMask & NSViewMaxYMargin)
-    options++;
+    options += oldSize.height - newFrame.origin.y - newFrame.size.height;
 
   /*
    * adjust the Y axis if any Y options are set in the mask
    */
-  if (options > 0)
+  if (options > 0.0)
     {
       CGFloat change = superViewFrameSize.height - oldSize.height;
       CGFloat changePerOption = change / options;
       
       if (_autoresizingMask & NSViewHeightSizable)
 	{
-          newFrame.size.height += changePerOption;
+          newFrame.size.height += changePerOption * newFrame.size.height;
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
@@ -2006,14 +2006,14 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	    {
 	      if (_autoresizingMask & NSViewMaxYMargin)
 		{
-		  newFrame.origin.y += changePerOption;
+		  newFrame.origin.y += changePerOption * newFrame.origin.y;
 		}
 	    }
 	  else
 	    {
 	      if (_autoresizingMask & NSViewMinYMargin)
 		{
-		  newFrame.origin.y += changePerOption;
+		  newFrame.origin.y += changePerOption * newFrame.origin.y;
 		}
 	    }
 	}

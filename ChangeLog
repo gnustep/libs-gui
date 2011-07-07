@@ -1,3 +1,8 @@
+2011-07-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-resizeWithOldSuperviewSize): Reimplement to
+	resize proportionally as Cocoa does.
+
 2011-07-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSCharacterPanel.m: Double click inserts character into
