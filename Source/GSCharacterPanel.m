@@ -259,7 +259,7 @@ static NSIndexSet *CodepointsWithNameContainingSubstring(NSString *str)
 
 - (NSString *)characterForRow: (NSInteger)row
 {
-  if (row > 0 && row < [visibleCodepoints count])
+  if (row >= 0 && row < [visibleCodepoints count])
     {
       UChar32 utf32 = [self codepointAtVisibleRow: row];
       UChar utf16buf[2];
