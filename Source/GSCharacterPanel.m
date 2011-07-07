@@ -31,6 +31,7 @@
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSAutoreleasePool.h>
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSTableView.h"
@@ -186,6 +187,8 @@ static NSIndexSet *CodepointsWithNameContainingSubstring(NSString *str)
       [table setRowHeight: 32];
       [table setDataSource: self];
       [table setDelegate: self];
+      [table setTarget: self];
+      [table setDoubleAction: @selector(doubleClickRow:)];
 
       // Allow dragging out of the application
       [table setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
@@ -271,6 +274,20 @@ static NSIndexSet *CodepointsWithNameContainingSubstring(NSString *str)
 					    length: utf16bufLength] autorelease];
     }
   return @"";
+}
+
+- (void) doubleClickRow: (id)sender
+{
+  NSWindow *mainWindow = [NSApp mainWindow];
+  NSResponder *firstResponder = [mainWindow firstResponder];
+  NSString *str = [self characterForRow: [table clickedRow]];
+
+  [firstResponder insertText: str];
+}
+
+- (BOOL) tableView: (NSTableView *)aTable shouldEditTableColumn: (NSTableColumn *)aColumn row: (NSInteger)row
+{
+  return NO;
 }
 
 // NSTableViewDataSource protocol

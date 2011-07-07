@@ -1,5 +1,10 @@
 2011-07-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSCharacterPanel.m: Double click inserts character into
+	main window
+
+2011-07-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSCharacterPanel.m (-characterForRow:): Fix off-by-1 error
 
 2011-07-06  Eric Wasylishen  <ewasylishen@gmail.com>
