@@ -1,6 +1,11 @@
 2011-07-06  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Tests/gui/NSView/NSView_autoresize_and_rounding.m:
+	More autoresizing test cases
+
+2011-07-06  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Tests/gui/NSView/NSView_autoresize_and_rounding.m:
 	Add a test for NSView autoresizing and rounding
 
 2011-07-06  Eric Wasylishen  <ewasylishen@gmail.com>
