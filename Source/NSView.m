@@ -1163,6 +1163,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   return scale;
 }
 
+- (void) _setFrameAndClearAutoresizingError: (NSRect)frameRect
+{
+  _frame = frameRect;
+  _autoresizingFrameError = NSZeroRect;
+}
+
 - (void) setFrame: (NSRect)frameRect
 {
   BOOL	changedOrigin = NO;
@@ -1191,7 +1197,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   
   if (changedSize == YES || changedOrigin == YES)
     {
-      _frame = frameRect;
+      [self _setFrameAndClearAutoresizingError: frameRect];
 
       if (changedSize == YES)
         {
@@ -1230,12 +1236,14 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 {
   if (NSEqualPoints(_frame.origin, newOrigin) == NO)
     {
-      _frame.origin = newOrigin;
+      NSRect newFrame = _frame;
+      newFrame.origin = newOrigin;
 
       if (_coordinates_valid)
         {
           (*invalidateImp)(self, invalidateSel);
         }
+      [self _setFrameAndClearAutoresizingError: newFrame];
       [self resetCursorRects];
       if (_post_frame_changes)
         {
@@ -1247,6 +1255,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 
 - (void) setFrameSize: (NSSize)newSize
 {
+  NSRect newFrame = _frame;
   if (newSize.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -1268,7 +1277,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
               CGFloat sx = _bounds.size.width  / _frame.size.width;
               CGFloat sy = _bounds.size.height / _frame.size.height;
               
-              _frame.size = newSize;
+              newFrame.size = newSize;
+	      [self _setFrameAndClearAutoresizingError: newFrame];
               _bounds.size.width  = _frame.size.width  * sx;
               _bounds.size.height = _frame.size.height * sy;
             }
@@ -1277,7 +1287,9 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
               NSAffineTransform *matrix;
               NSRect frame;
               
-              _frame.size = newSize;
+              newFrame.size = newSize;
+	      [self _setFrameAndClearAutoresizingError: newFrame];
+
               frame = _frame;
               frame.origin = NSMakePoint(0, 0);
               matrix = [_boundsMatrix copy];
@@ -1288,7 +1300,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       else
         {
-          _frame.size = _bounds.size = newSize;
+          newFrame.size = _bounds.size = newSize;
+	  [self _setFrameAndClearAutoresizingError: newFrame];
         }
 
       if (_coordinates_valid)
@@ -1941,6 +1954,14 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   if (_autoresizingMask == NSViewNotSizable)
     return;
 
+  if (!NSEqualRects(NSZeroRect, _autoresizingFrameError))
+    {
+      newFrame.origin.x -= _autoresizingFrameError.origin.x;
+      newFrame.origin.y -= _autoresizingFrameError.origin.y;
+      newFrame.size.width -= _autoresizingFrameError.size.width;
+      newFrame.size.height -= _autoresizingFrameError.size.height;
+    }
+
   superViewFrameSize = NSMakeSize(0,0);
   if (_super_view)
     superViewFrameSize = [_super_view frame].size;
@@ -2019,7 +2040,23 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 	}
     }
 
-  [self setFrame: newFrame];
+
+  NSRect newFrameRounded = newFrame;
+
+  /**
+   * Perform rounding to pixel-align the frame if we are not rotated
+   */
+  if (![self isRotatedFromBase] && [self superview] != nil)
+    {
+      newFrameRounded = [[self superview] centerScanRect: newFrameRounded];
+    }
+
+  [self setFrame: newFrameRounded];
+
+  _autoresizingFrameError.origin.x = (newFrameRounded.origin.x - newFrame.origin.x);
+  _autoresizingFrameError.origin.y = (newFrameRounded.origin.y - newFrame.origin.y);
+  _autoresizingFrameError.size.width = (newFrameRounded.size.width - newFrame.size.width);
+  _autoresizingFrameError.size.height = (newFrameRounded.size.height - newFrame.size.height);
 }
 
 - (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect

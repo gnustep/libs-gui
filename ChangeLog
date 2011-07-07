@@ -1,3 +1,9 @@
+2011-07-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSView.h:
+	* Source/NSView.m (-resizeWithOldSuperviewSize): Pixel-align
+	view frame when autoresizing.
+
 2011-07-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-resizeWithOldSuperviewSize): Reimplement to

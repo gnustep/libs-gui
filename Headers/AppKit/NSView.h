@@ -151,6 +151,7 @@ PACKAGE_SCOPE
 
   unsigned int _autoresizingMask;
   NSFocusRingType _focusRingType;
+  NSRect _autoresizingFrameError;
 }
 
 /*
