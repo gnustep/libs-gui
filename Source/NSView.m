@@ -2015,8 +2015,9 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  NSSize	superViewFrameSize;
-  NSRect        newFrame = _frame;
+  NSSize superViewFrameSize;
+  NSRect newFrame = _frame;
+  NSRect newFrameRounded;
 
   if (_autoresizingMask == NSViewNotSizable)
     return;
@@ -2053,7 +2054,7 @@ static void autoresize(CGFloat oldContainerSize,
 	       flipped ? (_autoresizingMask & NSViewMinYMargin) : (_autoresizingMask & NSViewMaxYMargin));
   }
 
-  NSRect newFrameRounded = newFrame;
+  newFrameRounded = newFrame;
 
   /**
    * Perform rounding to pixel-align the frame if we are not rotated
