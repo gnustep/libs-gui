@@ -37,6 +37,7 @@ int main(int argc, char **argv)
 	CREATE_AUTORELEASE_POOL(arp);
 
 	NSWindow *window;
+	NSView *container;
 	NSView *view1;
 	int passed = 1;
 
@@ -46,8 +47,11 @@ int main(int argc, char **argv)
 		backing: NSBackingStoreRetained
 		defer: YES];
 
+	container = [[NSView alloc] initWithFrame: NSMakeRect(0,0,100,100)];
+	[[window contentView] addSubview: container];
+
 	view1 = [[NSView alloc] initWithFrame: NSMakeRect(10,10,10,10)];
-	[[window contentView] addSubview: view1];
+	[container addSubview: view1];
 
 	/**
 	 * Basic autoresizing test
@@ -57,11 +61,11 @@ int main(int argc, char **argv)
 
 	[view1 setAutoresizingMask: NSViewNotSizable];
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
-	[window setContentSize: NSMakeSize(50, 100)];
+	[container setFrameSize: NSMakeSize(50, 100)];
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
-	[window setContentSize: NSMakeSize(200, 100)];
+	[container setFrameSize: NSMakeSize(200, 100)];
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];	
+	[container setFrameSize: NSMakeSize(100, 100)];	
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
 
 	// NSViewWidthSizable
@@ -69,28 +73,28 @@ int main(int argc, char **argv)
 	[view1 setFrame: NSMakeRect(10,10,10,10)];
 	[view1 setAutoresizingMask: NSViewWidthSizable];
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
-	[window setContentSize: NSMakeSize(96, 100)];
+	[container setFrameSize: NSMakeSize(96, 100)];
 	passed = CHECK(view1, NSMakeRect(10,10,6,10)) && passed;
-	[window setContentSize: NSMakeSize(200, 100)];
+	[container setFrameSize: NSMakeSize(200, 100)];
 	passed = CHECK(view1, NSMakeRect(10,10,110,10)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];	
+	[container setFrameSize: NSMakeSize(100, 100)];	
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
 
 	// NSViewWidthSizable | NSViewMaxXMargin
 
 	[view1 setFrame: NSMakeRect(0,0,33,33)];
 	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewMaxXMargin];
-	[window setContentSize: NSMakeSize(200, 100)];
+	[container setFrameSize: NSMakeSize(200, 100)];
 	passed = CHECK(view1, NSMakeRect(0,0,66,33)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	// NSViewWidthSizable | NSViewMinXMargin
 
 	[view1 setFrame: NSMakeRect(50,0,25,25)];
 	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin];
-	[window setContentSize: NSMakeSize(175, 100)];
+	[container setFrameSize: NSMakeSize(175, 100)];
 	passed = CHECK(view1, NSMakeRect(100,0,50,25)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	pass(passed,"NSView autoresizing works");
 	
@@ -104,9 +108,9 @@ int main(int argc, char **argv)
 	passed = 1;
 	[view1 setFrame: NSMakeRect(50,0,0,25)];
 	[view1 setAutoresizingMask: NSViewWidthSizable];
-	[window setContentSize: NSMakeSize(133, 100)];
+	[container setFrameSize: NSMakeSize(133, 100)];
 	passed = CHECK(view1, NSMakeRect(50,0,33,25)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 	
 	// Test that if NSViewWidthSizable | NSViewMinXMargin is set,
 	// and the view has width of 0, extra space is given to the margin
@@ -114,37 +118,37 @@ int main(int argc, char **argv)
 
 	[view1 setFrame: NSMakeRect(50,0,0,35)];
 	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin];
-	[window setContentSize: NSMakeSize(133, 100)];
+	[container setFrameSize: NSMakeSize(133, 100)];
 	passed = CHECK(view1, NSMakeRect(83,0,0,35)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	// Test a {0, 0} sized window with NSViewWidthSizable | NSViewHeightSizable
 
-	[window setContentSize: NSMakeSize(0,0)];
+	[container setFrameSize: NSMakeSize(0,0)];
 	[view1 setFrame: NSMakeRect(0,0,0,0)];
 	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-	[window setContentSize: NSMakeSize(4,4)];
+	[container setFrameSize: NSMakeSize(4,4)];
 	passed = CHECK(view1, NSMakeRect(0,0,4,4)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	// Test a {0, 0} sized window with NSMinXMargin | NSViewWidthSizable
 
-	[window setContentSize: NSMakeSize(0,0)];
+	[container setFrameSize: NSMakeSize(0,0)];
 	[view1 setFrame: NSMakeRect(0,0,0,0)];
 	[view1 setAutoresizingMask: NSViewMinXMargin | NSViewWidthSizable];
-	[window setContentSize: NSMakeSize(6,6)];
+	[container setFrameSize: NSMakeSize(6,6)];
 	passed = CHECK(view1, NSMakeRect(3,0,3,0)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	// Test a {0, 0} sized window with all autoresizing flags set on the view
 
-	[window setContentSize: NSMakeSize(0,0)];
+	[container setFrameSize: NSMakeSize(0,0)];
 	[view1 setFrame: NSMakeRect(0,0,0,0)];
 	[view1 setAutoresizingMask: NSViewMinXMargin | NSViewWidthSizable | NSViewMaxXMargin |
 	       NSViewMinYMargin | NSViewHeightSizable | NSViewMaxYMargin];
-	[window setContentSize: NSMakeSize(9,9)];
+	[container setFrameSize: NSMakeSize(9,9)];
 	passed = CHECK(view1, NSMakeRect(3,3,3,3)) && passed;
-	[window setContentSize: NSMakeSize(100, 100)];
+	[container setFrameSize: NSMakeSize(100, 100)];
 
 	pass(passed,"NSView autoresizing corner cases work");
 
@@ -166,18 +170,18 @@ int main(int argc, char **argv)
 	// width and height of the window works as expected.
 
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
-	[window setContentSize: NSMakeSize(50, 50)]; // reduce to 50%
+	[container setFrameSize: NSMakeSize(50, 50)]; // reduce to 50%
 	passed = CHECK(view1, NSMakeRect(5,5,5,5)) && passed;
 
-	[window setContentSize: NSMakeSize(100, 100)]; // restore
+	[container setFrameSize: NSMakeSize(100, 100)]; // restore
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;
 
-	[window setContentSize: NSMakeSize(33, 33)]; // reduce to 33%
+	[container setFrameSize: NSMakeSize(33, 33)]; // reduce to 33%
 	// NOTE: Frame should be rounded from NSMakeRect(3.3,3.3,3.3,3.3) to
 	// NSMakeRect(3,3,3,3)
 	passed = CHECK(view1, NSMakeRect(3,3,3,3)) && passed;
 
-	[window setContentSize: NSMakeSize(100, 100)]; // restore
+	[container setFrameSize: NSMakeSize(100, 100)]; // restore
 	// NOTE: The following shows that the precision lost in the rounding
 	// shown in the previous test was saved by the view
 	passed = CHECK(view1, NSMakeRect(10,10,10,10)) && passed;

@@ -1,5 +1,10 @@
 2011-07-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Tweak the test
+	so it doesn't try to set the window size to {0,0}
+
+2011-07-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Add some more
 	test cases for when the view's width is 0
 
