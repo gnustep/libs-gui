@@ -92,8 +92,62 @@ int main(int argc, char **argv)
 	passed = CHECK(view1, NSMakeRect(100,0,50,25)) && passed;
 	[window setContentSize: NSMakeSize(100, 100)];
 
-
 	pass(passed,"NSView autoresizing works");
+	
+	/**
+	 * Corner case tests, involving widths of 0, etc.
+	 */
+	
+	// Test that a view with a width of 0 can be expanded
+	// if it only has NSViewWidthSizable
+
+	passed = 1;
+	[view1 setFrame: NSMakeRect(50,0,0,25)];
+	[view1 setAutoresizingMask: NSViewWidthSizable];
+	[window setContentSize: NSMakeSize(133, 100)];
+	passed = CHECK(view1, NSMakeRect(50,0,33,25)) && passed;
+	[window setContentSize: NSMakeSize(100, 100)];
+	
+	// Test that if NSViewWidthSizable | NSViewMinXMargin is set,
+	// and the view has width of 0, extra space is given to the margin
+	// not the width
+
+	[view1 setFrame: NSMakeRect(50,0,0,35)];
+	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin];
+	[window setContentSize: NSMakeSize(133, 100)];
+	passed = CHECK(view1, NSMakeRect(83,0,0,35)) && passed;
+	[window setContentSize: NSMakeSize(100, 100)];
+
+	// Test a {0, 0} sized window with NSViewWidthSizable | NSViewHeightSizable
+
+	[window setContentSize: NSMakeSize(0,0)];
+	[view1 setFrame: NSMakeRect(0,0,0,0)];
+	[view1 setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+	[window setContentSize: NSMakeSize(4,4)];
+	passed = CHECK(view1, NSMakeRect(0,0,4,4)) && passed;
+	[window setContentSize: NSMakeSize(100, 100)];
+
+	// Test a {0, 0} sized window with NSMinXMargin | NSViewWidthSizable
+
+	[window setContentSize: NSMakeSize(0,0)];
+	[view1 setFrame: NSMakeRect(0,0,0,0)];
+	[view1 setAutoresizingMask: NSViewMinXMargin | NSViewWidthSizable];
+	[window setContentSize: NSMakeSize(6,6)];
+	passed = CHECK(view1, NSMakeRect(3,0,3,0)) && passed;
+	[window setContentSize: NSMakeSize(100, 100)];
+
+	// Test a {0, 0} sized window with all autoresizing flags set on the view
+
+	[window setContentSize: NSMakeSize(0,0)];
+	[view1 setFrame: NSMakeRect(0,0,0,0)];
+	[view1 setAutoresizingMask: NSViewMinXMargin | NSViewWidthSizable | NSViewMaxXMargin |
+	       NSViewMinYMargin | NSViewHeightSizable | NSViewMaxYMargin];
+	[window setContentSize: NSMakeSize(9,9)];
+	passed = CHECK(view1, NSMakeRect(3,3,3,3)) && passed;
+	[window setContentSize: NSMakeSize(100, 100)];
+
+	pass(passed,"NSView autoresizing corner cases work");
+
 
 	/**
 	 * Rounding test
