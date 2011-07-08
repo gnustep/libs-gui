@@ -1,5 +1,12 @@
 2011-07-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSView.m (-resizeWithOldSuperviewSize:): Factor out
+	autoresizing logic into a function. Add an extra code path to handle
+	when the flexible space is 0, which behaves like the old version
+	of the code (it divides the available space evenly).
+
+2011-07-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Tweak the test
 	so it doesn't try to set the window size to {0,0}
 

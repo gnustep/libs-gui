@@ -1945,9 +1945,76 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     }
 }
 
+static void autoresize(CGFloat oldContainerSize,
+		       CGFloat newContainerSize,
+		       CGFloat *contentPositionInOut,
+		       CGFloat *contentSizeInOut,
+		       BOOL minMarginFlexible,
+		       BOOL sizeFlexible,
+		       BOOL maxMarginFlexible)
+{
+  const CGFloat change = newContainerSize - oldContainerSize;
+  const CGFloat oldContentSize = *contentSizeInOut;
+  const CGFloat oldContentPosition = *contentPositionInOut;
+  CGFloat flexibleSpace = 0.0;
+
+  // See how much flexible space we have to distrube the change over
+
+  if (sizeFlexible)
+    flexibleSpace += oldContentSize;
+
+  if (minMarginFlexible)
+    flexibleSpace += oldContentPosition;
+
+  if (maxMarginFlexible)
+    flexibleSpace += oldContainerSize - oldContentPosition - oldContentSize;
+
+
+  if (flexibleSpace == 0.0)
+    {
+      /**
+       * In this code path there is no flexible space so we divide 
+       * the available space equally among the flexible portions of the view
+       */
+      int subdivisions = (sizeFlexible ? 1 : 0) +
+	(minMarginFlexible ? 1 : 0) +
+	(maxMarginFlexible ? 1 : 0);
+
+      if (subdivisions > 0)
+	{
+	  const CGFloat changePerOption = change / subdivisions;
+	  
+	  if (sizeFlexible)
+	    { 
+	      *contentSizeInOut += changePerOption;
+	    }
+	  if (minMarginFlexible)
+	    {
+	      *contentPositionInOut += changePerOption;
+	    }
+	}
+    }
+  else if (flexibleSpace > 0.0)
+    {
+      /**
+       * In this code path we distribute the change proportionately
+       * over the flexible spaces
+       */
+      const CGFloat changePerPoint = change / flexibleSpace;
+
+      if (sizeFlexible)
+	{ 
+          *contentSizeInOut += changePerPoint * oldContentSize;
+	}
+      if (minMarginFlexible)
+	{
+	  *contentPositionInOut += changePerPoint * oldContentPosition;
+	}
+    }
+}
+
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  CGFloat	options = 0.0;
   NSSize	superViewFrameSize;
   NSRect        newFrame = _frame;
 
@@ -1966,80 +2033,25 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   if (_super_view)
     superViewFrameSize = [_super_view frame].size;
 
-  /*
-   * determine if and how the X axis can be resized
-   */
-  if (_autoresizingMask & NSViewWidthSizable)
-    options += newFrame.size.width;
+  autoresize(oldSize.width,
+	     superViewFrameSize.width,
+	     &newFrame.origin.x,
+	     &newFrame.size.width,
+	     (_autoresizingMask & NSViewMinXMargin),	     
+	     (_autoresizingMask & NSViewWidthSizable),
+	     (_autoresizingMask & NSViewMaxXMargin));
 
-  if (_autoresizingMask & NSViewMinXMargin)
-    options += newFrame.origin.x;
+  {
+    const BOOL flipped = (_super_view && [_super_view isFlipped]);
 
-  if (_autoresizingMask & NSViewMaxXMargin)
-    options += oldSize.width - newFrame.origin.x - newFrame.size.width;
-
-  /*
-   * adjust the X axis if any X options are set in the mask
-   */
-  if (options > 0.0)
-    {
-      CGFloat change = superViewFrameSize.width - oldSize.width;
-      CGFloat changePerOption = change / options;
-
-      if (_autoresizingMask & NSViewWidthSizable)
-	{ 
-          newFrame.size.width += changePerOption * newFrame.size.width;
-	}
-      if (_autoresizingMask & NSViewMinXMargin)
-	{
-	  newFrame.origin.x += changePerOption * newFrame.origin.x;
-	}
-    }
-
-  /*
-   * determine if and how the Y axis can be resized
-   */
-  options = 0.0;
-  if (_autoresizingMask & NSViewHeightSizable)
-    options += newFrame.size.height;
-
-  if (_autoresizingMask & NSViewMinYMargin)
-    options += newFrame.origin.y;
-
-  if (_autoresizingMask & NSViewMaxYMargin)
-    options += oldSize.height - newFrame.origin.y - newFrame.size.height;
-
-  /*
-   * adjust the Y axis if any Y options are set in the mask
-   */
-  if (options > 0.0)
-    {
-      CGFloat change = superViewFrameSize.height - oldSize.height;
-      CGFloat changePerOption = change / options;
-      
-      if (_autoresizingMask & NSViewHeightSizable)
-	{
-          newFrame.size.height += changePerOption * newFrame.size.height;
-	}
-      if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
-	{
-	  if (_super_view && [_super_view isFlipped])
-	    {
-	      if (_autoresizingMask & NSViewMaxYMargin)
-		{
-		  newFrame.origin.y += changePerOption * newFrame.origin.y;
-		}
-	    }
-	  else
-	    {
-	      if (_autoresizingMask & NSViewMinYMargin)
-		{
-		  newFrame.origin.y += changePerOption * newFrame.origin.y;
-		}
-	    }
-	}
-    }
-
+    autoresize(oldSize.height,
+	       superViewFrameSize.height,
+	       &newFrame.origin.y,
+	       &newFrame.size.height,
+	       flipped ? (_autoresizingMask & NSViewMaxYMargin) : (_autoresizingMask & NSViewMinYMargin),
+	       (_autoresizingMask & NSViewHeightSizable),
+	       flipped ? (_autoresizingMask & NSViewMinYMargin) : (_autoresizingMask & NSViewMaxYMargin));
+  }
 
   NSRect newFrameRounded = newFrame;
 
