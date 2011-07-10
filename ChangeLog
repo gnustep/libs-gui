@@ -1,3 +1,9 @@
+2011-07-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSGhostscriptImageRep.m: Remove hardcoded path to gs
+	executable. First try GSGhostscriptExecutablePath default, then
+	try running "$SHELL -c which gs" to get the path.
+
 2011-07-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSView.m (-resizeWithOldSuperviewSize:): Factor out

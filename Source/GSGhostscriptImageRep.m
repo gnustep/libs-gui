@@ -28,9 +28,14 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSAffineTransform.h>
+#import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSString.h>
 #import <Foundation/NSTask.h>
+#import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSImageRep.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSGraphicsContext.h"
@@ -89,6 +94,49 @@
   return types;
 }
 
+- (NSString *) _ghostscriptExecutablePath
+{
+  NSString *result = nil;
+
+  result = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSGhostscriptExecutablePath"];
+  if (result == nil)
+    {
+      NS_DURING
+	{
+	  NSTask *task = [[[NSTask alloc] init] autorelease];
+	  NSPipe *outputPipe = [NSPipe pipe];
+	  NSFileHandle *outputHandle = [outputPipe fileHandleForReading];
+	  NSString *shellLaunchPath = [[[NSProcessInfo processInfo] environment] objectForKey: @"SHELL"];
+	  NSData *resultData;
+	  
+	  [task setLaunchPath: shellLaunchPath];
+	  [task setArguments: [NSArray arrayWithObjects: @"-c", @"which gs", nil]];
+	  [task setStandardOutput: outputPipe];
+	  [task launch];
+	  
+	  resultData = [outputHandle readDataToEndOfFile];
+	  [outputHandle closeFile];
+
+	  if (resultData != nil && [resultData length] > 0)
+	    {
+	      // FIXME: How do we know which encoding the data will be in?
+	      result = [[[NSString alloc] initWithBytes: [resultData bytes]
+						 length: [resultData length]
+					       encoding: NSUTF8StringEncoding] autorelease];
+	      
+	      result = [result stringByTrimmingCharactersInSet:
+				 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	    }
+	}
+      NS_HANDLER
+	{
+	}
+      NS_ENDHANDLER
+    }
+
+  return result;
+}
+
 - (NSData *) _pngWithGhostscriptData: (NSData *)psData atResolution: (CGFloat)res
 {
   NSTask *task = [[[NSTask alloc] init] autorelease];
@@ -96,30 +144,37 @@
   NSPipe *outputPipe = [NSPipe pipe];
   NSFileHandle *inputHandle = [inputPipe fileHandleForWriting];
   NSFileHandle *outputHandle = [outputPipe fileHandleForReading];
-  NSData *result;
+  NSData *result = nil;
+  NSString *launchPath = [self _ghostscriptExecutablePath];
 
-  // FIXME: Parameterize
-  [task setLaunchPath: @"/usr/bin/gs"];
-  [task setArguments: [NSArray arrayWithObjects: @"-dSAFER",
-			       @"-q",
-			       @"-o",
-			       @"-", // Write output image to stdout
-			       @"-sDEVICE=pngalpha",
-			       [NSString stringWithFormat: @"-r%d", (int)res],
-			       @"-dTextAlphaBits=4",
-			       @"-dGraphicsAlphaBits=4",
-			       @"-dDOINTERPOLATE",
-			       @"-", // Read input from stdin
-			       nil]];
-  [task setStandardInput: inputPipe];
-  [task setStandardOutput: outputPipe];
-  [task launch];
-
-  [inputHandle writeData: psData];
-  [inputHandle closeFile];
-
-  result = [outputHandle readDataToEndOfFile];
-  [outputHandle closeFile];
+  NS_DURING
+    {
+      [task setLaunchPath: launchPath];
+      [task setArguments: [NSArray arrayWithObjects: @"-dSAFER",
+				   @"-q",
+				   @"-o",
+				   @"-", // Write output image to stdout
+				   @"-sDEVICE=pngalpha",
+				   [NSString stringWithFormat: @"-r%d", (int)res],
+				   @"-dTextAlphaBits=4",
+				   @"-dGraphicsAlphaBits=4",
+				   @"-dDOINTERPOLATE",
+				   @"-", // Read input from stdin
+				   nil]];
+      [task setStandardInput: inputPipe];
+      [task setStandardOutput: outputPipe];
+      [task launch];
+      
+      [inputHandle writeData: psData];
+      [inputHandle closeFile];
+      
+      result = [outputHandle readDataToEndOfFile];
+      [outputHandle closeFile];
+    }
+  NS_HANDLER
+    {
+    }
+  NS_ENDHANDLER
 
   return result;
 }
