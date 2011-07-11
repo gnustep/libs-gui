@@ -1,3 +1,7 @@
+2011-07-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSColorPanel.m (-_magnify:): Preliminary implementation
+
 2011-07-10  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:): Fix for the bug where

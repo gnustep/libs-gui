@@ -29,6 +29,7 @@
 #import "config.h"
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSLock.h>
 #import <Foundation/NSNotification.h>
@@ -41,6 +42,7 @@
 #import "AppKit/NSColorPicker.h"
 #import "AppKit/NSColorPicking.h"
 #import "AppKit/NSColorWell.h"
+#import "AppKit/NSCursor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -48,9 +50,12 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSSlider.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/IMLoading.h"
+
 
 #import "GSGuiPrivate.h"
 
@@ -83,6 +88,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (void) _setupPickers;
 - (void) _showNewPicker: (id)sender;
 - (id) _initWithoutGModel;
+- (void) _magnify: (id)sender;
 @end
 
 @implementation NSColorPanel (PrivateMethods)
@@ -363,9 +369,45 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     [NSApp sendAction: _action to: _target from: self];  
 }
 
-- (void) _maginify: (id) sender
+- (void) _magnify: (id) sender
 {
-  NSLog(@"Magnification is not implemented");
+  NSEvent *currentEvent;
+
+  [self _captureMouse: self];
+  [[NSCursor crosshairCursor] push];
+
+  NS_DURING
+    {
+      do {
+	NSPoint mouseLoc;
+	NSImage *img;
+	
+	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
+					  untilDate: [NSDate distantFuture]
+					     inMode: NSEventTrackingRunLoopMode
+					    dequeue: YES];
+	
+	mouseLoc = [self convertBaseToScreen: [self mouseLocationOutsideOfEventStream]];
+	
+	img = [GSCurrentServer() contentsOfScreen: [[self screen] screenNumber]
+					   inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
+	
+	if (img != nil)
+	  {
+	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
+	    NSColor *color = [rep colorAtX: 0 y: 0];
+	    [self setColor: color];
+	  }
+      } while ([currentEvent type] != NSLeftMouseUp && 
+	       [currentEvent type] != NSLeftMouseDown);
+    }
+  NS_HANDLER
+    {
+    }
+  NS_ENDHANDLER
+    
+  [NSCursor pop];
+  [self _releaseMouse: self];
 }
 
 - (void) _updatePicker: (id) sender
