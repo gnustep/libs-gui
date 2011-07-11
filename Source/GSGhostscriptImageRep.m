@@ -134,7 +134,7 @@
 	  if (!warned)
 	    {
 	      warned = YES;
-	      NSWarnLog(@"An error occurred while determining the Ghostscript executable path. If you would like to use Ghostscript you can set the GSGhostscriptExecutablePath user default to the full path to the gs executable.");
+	      NSLog(@"An error occurred while determining the Ghostscript executable path. If you would like to use Ghostscript you can set the GSGhostscriptExecutablePath user default to the full path to the gs executable.");
 	    }
 	}
       NS_ENDHANDLER
@@ -176,10 +176,20 @@
       
       result = [outputHandle readDataToEndOfFile];
       [outputHandle closeFile];
+
+      if (![task isRunning] && [task terminationStatus] != 0)
+	{
+	  NSLog(@"Ghostscript returned exit status %d", [task terminationStatus]);
+	}
     }
   NS_HANDLER
     {
-      NSWarnLog(@"An error occurred while attempting to invoke Ghostscript at the following path: %@", launchPath);
+      static BOOL warned = NO;
+      if (!warned)
+	{
+	  warned = YES;
+	  NSLog(@"An error occurred while attempting to invoke Ghostscript at the following path: %@", launchPath);
+	}
     }
   NS_ENDHANDLER
 
