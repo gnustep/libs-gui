@@ -47,6 +47,7 @@
 #import "AppKit/NSWorkspace.h"
 #import "NSDocumentFrameworkPrivate.h"
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 
 static NSString *NSTypesKey             = @"NSTypes";
 static NSString *NSNameKey              = @"NSName";
@@ -327,6 +328,9 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
 - (void) dealloc
 {
+  // Remove all key value bindings for this object.
+  [GSKeyValueBinding unbindAllForObject: self];
+
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver: self];
   RELEASE (_documents);
   RELEASE (_recent_documents);

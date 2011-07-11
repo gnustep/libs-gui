@@ -1,3 +1,9 @@
+2011-07-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocumentController.m (-dealloc),
+	* Source/NSWindow.m (-dealloc),
+	* Source/NSLayoutManager.m (-dealloc): Unbind key bindings.
+
 2011-07-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSColorPanel.m (-_magnify:): Preliminary implementation

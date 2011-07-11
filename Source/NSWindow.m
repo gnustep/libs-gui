@@ -76,17 +76,17 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWindowController.h"
-#import "GSBindingHelpers.h"
 #import "AppKit/PSOperators.h"
+
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSTrackingRect.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSWindowDecorationView.h"
+#import "GSBindingHelpers.h"
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
 #import "NSToolbarFrameworkPrivate.h"
-
-#import <GNUstepGUI/GSWindowDecorationView.h>
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -754,6 +754,9 @@ many times.
 
 - (void) dealloc
 {
+  // Remove all key value bindings for this object.
+  [GSKeyValueBinding unbindAllForObject: self];
+
   DESTROY(_toolbar);
   [nc removeObserver: self];
   [[self class] _removeAutodisplayedWindow: self];

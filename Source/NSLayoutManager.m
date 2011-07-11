@@ -122,6 +122,7 @@ first. Remaining cases, highest priority first:
 #import "AppKit/DPSOperators.h"
 
 #import "GNUstepGUI/GSLayoutManager_internal.h"
+#import "GSBindingHelpers.h"
 
 
 @interface NSLayoutManager (spelling)
@@ -2180,6 +2181,9 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 
 -(void) dealloc
 {
+  // Remove all key value bindings for this object.
+  [GSKeyValueBinding unbindAllForObject: self];
+
   DESTROY(_typingAttributes);
   DESTROY(_temporaryAttributes);
   [super dealloc];
