@@ -1,5 +1,10 @@
 2011-07-11 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImage.m (-nativeDrawInRect:...): Compute the rep size
+	after the nil test.
+
+2011-07-11 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocumentController.m (-dealloc),
 	* Source/NSWindow.m (-dealloc),
 	* Source/NSLayoutManager.m (-dealloc): Unbind key bindings.

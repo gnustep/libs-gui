@@ -934,7 +934,6 @@ behavior precisely matches Cocoa. */
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSSize imgSize = [self size];
-  NSSize repSize;
   float widthScaleFactor;
   float heightScaleFactor;
   NSImageRep *rep;
@@ -954,8 +953,6 @@ behavior precisely matches Cocoa. */
   rep = [self bestRepresentationForRect: dstRect
 				context: nil
 				  hints: nil];
-  repSize = [rep size];
-
   if (rep == nil)
       return;
 
@@ -1018,6 +1015,7 @@ behavior precisely matches Cocoa. */
     int gState;
     /* The context of the cache window */
     NSGraphicsContext *cacheCtxt;
+    NSSize repSize = [rep size];
     /* The size of the cache window that will hold the scaled image */
     NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: repSize];
 
