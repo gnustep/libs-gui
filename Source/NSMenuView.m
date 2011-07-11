@@ -1456,6 +1456,26 @@ static NSMapTable *viewInfo = 0;
 
   type = [event type];
 
+  /**
+   * The following event tracking run loop can run for a long time, during
+   * which new windows (for submenus) are created and put on screen. The 
+   * window manager might not place the menus where we ask them to be placed 
+   * (e.g. Metacity will move menus so they don't overlap the GNOME 
+   * top-of-screen panel).
+   *
+   * The mechanism which updates an NSWindow's frame when an external force 
+   * (such as the window manager) moves a window is an NSAppKitDefined event.
+   * Since we need the frames of the menu windows to be accurate to know which 
+   * menu item the cursor is actually over, and since we are running our own 
+   * event loop and the NSAppKitDefined events aren't handled for us, we need
+   * to request them ourselves and forward them to the relevant window.
+   *
+   * NOTE: While it seems messy to have to handle these events, Cocoa doesn't
+   * handle them automatically either for code which goes in to an event
+   * tracking loop.
+   */
+  eventMask |= NSAppKitDefinedMask;
+
   eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
   eventMask |= NSRightMouseDownMask;
   eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
@@ -1689,11 +1709,19 @@ static NSMapTable *viewInfo = 0;
           lastLocation = location;
         }
 
-      event = [NSApp nextEventMatchingMask: eventMask
-        untilDate: theDistantFuture
-        inMode: NSEventTrackingRunLoopMode
-        dequeue: YES];
-      type = [event type];
+      do
+	{
+	  event = [NSApp nextEventMatchingMask: eventMask
+				     untilDate: theDistantFuture
+					inMode: NSEventTrackingRunLoopMode
+				       dequeue: YES];
+	  type = [event type];
+	  if (type == NSAppKitDefined)
+	    {
+	      [[event window] sendEvent: event];
+	    }
+	}
+      while (type == NSAppKitDefined);
     }
   while ((type != NSLeftMouseUp &&
 	  type != NSRightMouseUp &&

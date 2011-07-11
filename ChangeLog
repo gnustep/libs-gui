@@ -1,5 +1,12 @@
 2011-07-10  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSMenuView.m (-_trackWithEvent:): Fix for the bug where
+	the highlighted menu item can be offset from the mouse pointer
+	location when menu windows are moved by the window manager. See
+	detailed comment in the code for more info.
+
+2011-07-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSGhostscriptImageRep.m: Remove hardcoded path to gs
 	executable. First try GSGhostscriptExecutablePath default, then
 	try running "$SHELL -c which gs" to get the path.
