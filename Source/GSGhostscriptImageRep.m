@@ -94,50 +94,61 @@
   return types;
 }
 
-- (NSString *) _ghostscriptExecutablePath
+- (NSString *) _ghostscriptExecutablePathUsingWhich
 {
   NSString *result = nil;
 
-  result = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSGhostscriptExecutablePath"];
+  NS_DURING
+    {
+      NSTask *task = [[[NSTask alloc] init] autorelease];
+      NSPipe *outputPipe = [NSPipe pipe];
+      NSFileHandle *outputHandle = [outputPipe fileHandleForReading];
+      NSString *shellLaunchPath = [[[NSProcessInfo processInfo] environment] objectForKey: @"SHELL"];
+      NSData *resultData;
+      
+      [task setLaunchPath: shellLaunchPath];
+      [task setArguments: [NSArray arrayWithObjects: @"-c", @"which gs", nil]];
+      [task setStandardOutput: outputPipe];
+      [task launch];
+      
+      resultData = [outputHandle readDataToEndOfFile];
+      [outputHandle closeFile];
+      
+      if (resultData != nil && [resultData length] > 0)
+	{
+	  // FIXME: How do we know which encoding the data will be in?
+	  result = [[[NSString alloc] initWithBytes: [resultData bytes]
+					     length: [resultData length]
+					   encoding: NSUTF8StringEncoding] autorelease];
+	  
+	  result = [result stringByTrimmingCharactersInSet:
+			     [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	}
+    }
+  NS_HANDLER
+    {
+      NSLog(@"An error occurred while determining the Ghostscript executable path. If you would like to use Ghostscript you can set the GSGhostscriptExecutablePath user default to the full path to the gs executable.");
+    }
+  NS_ENDHANDLER
+
+  return result;
+}
+
+- (NSString *) _ghostscriptExecutablePath
+{
+  NSString *result = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSGhostscriptExecutablePath"];
+
   if (result == nil)
     {
-      NS_DURING
-	{
-	  NSTask *task = [[[NSTask alloc] init] autorelease];
-	  NSPipe *outputPipe = [NSPipe pipe];
-	  NSFileHandle *outputHandle = [outputPipe fileHandleForReading];
-	  NSString *shellLaunchPath = [[[NSProcessInfo processInfo] environment] objectForKey: @"SHELL"];
-	  NSData *resultData;
-	  
-	  [task setLaunchPath: shellLaunchPath];
-	  [task setArguments: [NSArray arrayWithObjects: @"-c", @"which gs", nil]];
-	  [task setStandardOutput: outputPipe];
-	  [task launch];
-	  
-	  resultData = [outputHandle readDataToEndOfFile];
-	  [outputHandle closeFile];
+      static NSString *resultOfWhich = nil;
 
-	  if (resultData != nil && [resultData length] > 0)
-	    {
-	      // FIXME: How do we know which encoding the data will be in?
-	      result = [[[NSString alloc] initWithBytes: [resultData bytes]
-						 length: [resultData length]
-					       encoding: NSUTF8StringEncoding] autorelease];
-	      
-	      result = [result stringByTrimmingCharactersInSet:
-				 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	    }
-	}
-      NS_HANDLER
+      // Only invoke 'which' once
+      if (resultOfWhich == nil)
 	{
-	  static BOOL warned = NO;
-	  if (!warned)
-	    {
-	      warned = YES;
-	      NSLog(@"An error occurred while determining the Ghostscript executable path. If you would like to use Ghostscript you can set the GSGhostscriptExecutablePath user default to the full path to the gs executable.");
-	    }
+	  ASSIGN(resultOfWhich, [self _ghostscriptExecutablePathUsingWhich]);
 	}
-      NS_ENDHANDLER
+
+      result = resultOfWhich;
     }
 
   return result;

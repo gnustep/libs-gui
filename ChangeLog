@@ -1,5 +1,9 @@
 2011-07-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSGhostscriptImageRep.m: Only invoke 'which' once.
+
+2011-07-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSGhostscriptImageRep.m: Change to NSLog, only log
 	a warning the first time invoking ghostscript throws an exception,
 	and log a message if it returns a nonzero exit status.
