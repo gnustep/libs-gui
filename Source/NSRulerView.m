@@ -42,8 +42,7 @@
 #import "AppKit/NSRulerView.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSStringDrawing.h"
-
-DEFINE_RINT_IF_MISSING
+#import "GSGuiPrivate.h"
 
 #define MIN_LABEL_DISTANCE 40
 #define MIN_MARK_DISTANCE 5
@@ -581,9 +580,9 @@ static NSMutableDictionary *units = nil;
         }
     
       /* calculate number of small marks in each bigger mark */
-      _marksToMidMark = rint([self _stepForIndex: convIndex + 1]);
+      _marksToMidMark = GSRoundTowardsInfinity([self _stepForIndex: convIndex + 1]);
       _marksToBigMark = _marksToMidMark 
-                      * rint([self _stepForIndex: convIndex + 2]);
+                      * GSRoundTowardsInfinity([self _stepForIndex: convIndex + 2]);
     
       /* Calculate distance between labels.
          It must not be less than MIN_LABEL_DISTANCE. */
@@ -595,7 +594,7 @@ static NSMutableDictionary *units = nil;
         }
 
       /* number of small marks between two labels */
-      _marksToLabel = rint(_labelDistance / _markDistance);
+      _marksToLabel = GSRoundTowardsInfinity(_labelDistance / _markDistance);
 
       /* format of labels */
       if (_labelDistance / _unitToRuler >= 1)

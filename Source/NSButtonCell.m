@@ -59,8 +59,6 @@
 
 #include <math.h>
 
-DEFINE_RINT_IF_MISSING
-
 typedef struct _GSButtonCellFlags 
 {
 #if GS_WORDS_BIGENDIAN == 1
@@ -969,7 +967,7 @@ typedef struct _GSButtonCellFlags
 	{
 	  position = [controlView convertPointToBase: position];
 	}
-      position = NSMakePoint(rint(position.x), rint(position.y));
+      position = NSMakePoint(GSRoundTowardsInfinity(position.x), GSRoundTowardsInfinity(position.y));
       if (controlView)
 	{
 	  position = [controlView convertPointFromBase: position];

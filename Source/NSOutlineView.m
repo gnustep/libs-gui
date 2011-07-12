@@ -59,6 +59,7 @@
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
 
+#import "GSGuiPrivate.h"
 #include <math.h>
 
 static NSNotificationCenter *nc = nil;
@@ -1282,9 +1283,9 @@ Also returns the child index relative to this parent. */
   /* _bounds.origin is (0, 0) when the outline view is not clipped.
    * When the view is scrolled, _bounds.origin.y returns the scrolled height. */
   verticalQuarterPosition =
-    rint(((p.y + _bounds.origin.y) / _rowHeight) * 4.);
+    GSRoundTowardsInfinity(((p.y + _bounds.origin.y) / _rowHeight) * 4.);
   horizontalHalfPosition =
-    rint(((p.x + _bounds.origin.y) / _indentationPerLevel) * 2.);
+    GSRoundTowardsInfinity(((p.x + _bounds.origin.y) / _indentationPerLevel) * 2.);
 
   /* We add an extra quarter to shift the insertion row below the hovered row. */
   row = (verticalQuarterPosition + 1) / 4;
@@ -1323,7 +1324,7 @@ Also returns the child index relative to this parent. */
     {
       NSInteger minInsertionLevel = levelAfter;
       NSInteger maxInsertionLevel = levelBefore;
-      NSInteger pointerInsertionLevel = rint((float)horizontalHalfPosition / 2.);
+      NSInteger pointerInsertionLevel = GSRoundTowardsInfinity((float)horizontalHalfPosition / 2.);
 
       /* Save positions to avoid executing this code when the general
        * position of the mouse is unchanged.

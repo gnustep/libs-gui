@@ -56,7 +56,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "GNUstepGUI/GSTheme.h"
 
-DEFINE_RINT_IF_MISSING
+#import "GSGuiPrivate.h"
 
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
@@ -1667,7 +1667,7 @@ static NSTextFieldCell *titleCell;
         {
           float f = [sender floatValue];
 
-          [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
+          [self scrollColumnToVisible: GSRoundTowardsInfinity(f * _lastColumnLoaded)];
         }
         break;
       

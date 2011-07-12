@@ -1,3 +1,15 @@
+2011-07-12  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSGuiPrivate.h: New rounding rounding function
+	GSRoundTowardsInfinity which is simply floor(x+0.5)
+	* Source/NSBrowser.m:
+	* Source/NSSliderCell.m:
+	* Source/NSButtonCell.m:
+	* Source/NSClipView.m:
+	* Source/NSOutlineView.m:
+	* Source/NSRulerView.m:
+	Switch rint[f] to GSRoundTowardsInfinity
+
 2011-07-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSGhostscriptImageRep.m: Only invoke 'which' once.

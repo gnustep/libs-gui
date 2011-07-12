@@ -32,6 +32,7 @@
 
 #import <Foundation/NSBundle.h>
 #include "GNUstepBase/preface.h"
+#include <math.h>
 
 /*
  * Return the gnustep-gui bundle used to load gnustep-gui resources.
@@ -70,6 +71,22 @@ static inline NSString *GSGuiLocalizedString (NSString *key, NSString *comment)
 # undef NSLocalizedString
 #endif
 #define NSLocalizedString(key,comment) GSGuiLocalizedString (key, comment)
+
+/**
+ * Rounds to the nearest integer, and in the case of ties, round to the 
+ * larger integer. This is the recommended rounding function for rounding
+ * graphics points.
+ *
+ * For example:
+ * GSRoundTowardsInfinity(0.8) == 1.0
+ * GSRoundTowardsInfinity(0.5) == 1.0
+ * GSRoundTowardsInfinity(0.1) == 0.0
+ * GSRoundTowardsInfinity(-2.5) == -2.0
+ */
+static inline CGFloat GSRoundTowardsInfinity(CGFloat x)
+{
+  return floor(x + 0.5);
+}
 
 #endif /* _GNUstep_H_GSGuiPrivate */
 

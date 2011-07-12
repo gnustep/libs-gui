@@ -44,8 +44,6 @@
 
 #include <math.h>
 
-DEFINE_RINT_IF_MISSING
-
 @interface NSClipView (Private)
 - (void) _scrollToPoint: (NSPoint)aPoint;
 @end
@@ -444,8 +442,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   */
   if (_copiesOnScroll)
     {
-      new.x = _bounds.origin.x + (rint(new.x - _bounds.origin.x));
-      new.y = _bounds.origin.y + (rint(new.y - _bounds.origin.y));
+      new.x = _bounds.origin.x + (GSRoundTowardsInfinity(new.x - _bounds.origin.x));
+      new.y = _bounds.origin.y + (GSRoundTowardsInfinity(new.y - _bounds.origin.y));
     }
 
   return new;
