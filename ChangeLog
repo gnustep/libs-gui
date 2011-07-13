@@ -1,5 +1,10 @@
 2011-07-12  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSImageMagickImageRep.m: Log warnings from ImageMagick
+	instead of giving up.
+
+2011-07-12  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSGuiPrivate.h: New rounding rounding function
 	GSRoundTowardsInfinity which is simply floor(x+0.5)
 	* Source/NSBrowser.m:

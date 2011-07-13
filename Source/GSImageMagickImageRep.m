@@ -34,6 +34,7 @@
 #import <Foundation/NSData.h>
 #import <Foundation/NSTask.h>
 #import <Foundation/NSProcessInfo.h>
+#import <GNUstepBase/NSDebug+GNUstepBase.h>
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSPasteboard.h"
@@ -124,23 +125,25 @@
 
   images = BlobToImage(imageinfo, [data bytes], [data length], exception);
 
-  if (exception->severity == UndefinedException)
+  if (exception->severity != UndefinedException)
     {
-      for (image = images; image != NULL; image = image->next)
+      NSWarnLog(@"ImageMagick: %s", GetLocaleExceptionMessage(exception->severity, exception->reason));
+    }
+  
+  for (image = images; image != NULL; image = image->next)
+    {
+      NSBitmapImageRep *bmp = [[self class] imageRepWithImageMagickImage: image];
+      if (bmp != nil)
 	{
-	  NSBitmapImageRep *bmp = [[self class] imageRepWithImageMagickImage: image];
-	  if (bmp != nil)
-	    {
-	      [reps addObject: bmp];
-	    }
-
-	  if (!allImages)
-	    {
-	      break;
-	    }
+	  [reps addObject: bmp];
+	}
+      
+      if (!allImages)
+	{
+	  break;
 	}
     }
-
+  
   DestroyExceptionInfo(exception);
   DestroyImageInfo(imageinfo);
   DestroyImage(images);
