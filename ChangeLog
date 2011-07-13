@@ -1,3 +1,9 @@
+2011-07-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSColorPanel.m: Make a magnifying glass cursor when using
+	the magnifying glass color picker. back/x11 isn't displaying
+	the cursor at the moment.
+
 2011-07-13 German Arias <german@xelalug.org>
 
 	* Resources/Spanish.lproj/Localizable.strings: More strings.
