@@ -146,7 +146,10 @@
   
   DestroyExceptionInfo(exception);
   DestroyImageInfo(imageinfo);
-  DestroyImage(images);
+  if (images != NULL)
+    {
+      DestroyImage(images);
+    }
 
   return reps;
 }

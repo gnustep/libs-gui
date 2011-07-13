@@ -1,5 +1,10 @@
 2011-07-12  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSImageMagickImageRep.m: Don't call DestroyImage on a
+	NULL image
+
+2011-07-12  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSImageMagickImageRep.m: Log warnings from ImageMagick
 	instead of giving up.
 
