@@ -40,6 +40,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSSearchField.h"
 #import "GNUstepGUI/GSCharacterPanel.h"
+#import "GSGuiPrivate.h"
 
 #if defined(HAVE_UNICODE_UCHAR_H) && defined(HAVE_UNICODE_USTRING_H)
 

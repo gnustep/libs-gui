@@ -21,6 +21,10 @@ add comments above this one
 /* File: ../Source/NSDocumentController.m:969 */
 "Quit" = "Salir";
 
+/* File: ../Source/NSPageLayout.m:981 */
+/* File: ../Source/GSCharacterPanel.m:164 */
+"Name" = "Nombre";
+
 /* File: ../Source/NSAlert.m:1510 */
 /* File: ../Source/NSDocument.m:456 */
 /* File: ../Source/NSDocument.m:791 */
@@ -98,6 +102,13 @@ add comments above this one
 /* File: ../Source/GSThemeInspector.m:140 */
 "Version: %@" = "Versi\U00F3n: %@";
 
+/*** Strings from ../Source/GSCharacterPanel.m ***/
+/* File: ../Source/GSCharacterPanel.m:145 */
+"Character Panel" = "Panel de Caracteres";
+/* File: ../Source/GSCharacterPanel.m:173 */
+"Code Point" = "C\U00F3digo";
+/* File: ../Source/GSCharacterPanel.m:182 */
+"Unicode Block" = "Bloque Unicode";
 
 /*** Strings from ../Source/NSPrintOperation.m ***/
 /* File: ../Source/NSPrintOperation.m:680 */
@@ -130,8 +141,6 @@ add comments above this one
 /* File: ../Source/NSPageLayout.m:754 */
 /* File: ../Source/NSPageLayout.m:756 */
 "(none)" = "(ninguno)";
-/* File: ../Source/NSPageLayout.m:981 */
-"Name" = "Nombre";
 /* File: ../Source/NSPageLayout.m:982 */
 "Dimensions" = "Dimensiones";
 /* File: ../Source/NSPageLayout.m:983 */
