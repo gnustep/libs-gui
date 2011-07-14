@@ -1,3 +1,21 @@
+2011-07-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSound.m
+	* Source/GSWindowDecorationView.m
+	* Source/NSMatrix.m
+	* Source/NSBitmapImageRep.m
+	* Source/NSForm.m
+	* Source/GSHorizontalTypesetter.m
+	* Source/NSMovie.m
+	* Source/NSFontDescriptor.m
+	* Source/NSImage.m
+	* Source/NSScrollView.m
+	* Source/NSCell.m
+	* Source/NSBrowserCell.m
+	* Source/GSDragView.m
+	* Source/NSDocument.m: Replace direct use of the isa pointer with
+	a call to object_getClass().
+
 2011-07-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSColorPanel.m: Make a magnifying glass cursor when using

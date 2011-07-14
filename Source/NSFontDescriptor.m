@@ -83,7 +83,7 @@
 
   [m addEntriesFromDictionary: attributes];
 
-  new = [isa fontDescriptorWithFontAttributes: m];
+  new = [object_getClass(self) fontDescriptorWithFontAttributes: m];
   RELEASE(m);
 
   return new;
@@ -184,7 +184,7 @@
 
 - (id) copyWithZone: (NSZone *)z
 {
-  NSFontDescriptor *f = [isa allocWithZone: z];
+  NSFontDescriptor *f = [object_getClass(self) allocWithZone: z];
 
   if (f != nil)
     {

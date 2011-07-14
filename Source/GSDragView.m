@@ -141,7 +141,7 @@ static	GSDragView *sharedDragView = nil;
   if (self != nil)
     {
       NSRect winRect = {{0, 0}, {DWZ, DWZ}};
-      NSWindow *sharedDragWindow = [[[isa windowClass] alloc]
+      NSWindow *sharedDragWindow = [[[object_getClass(self) windowClass] alloc]
                                      initWithContentRect: winRect
                                                styleMask: NSBorderlessWindowMask
                                                  backing: NSBackingStoreNonretained

@@ -155,8 +155,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       window = w;
       // Content rect will be everything apart from the border
       // that is including menu, toolbar and the like.
-      contentRect = [isa contentRectForFrameRect: frame
-                          styleMask: [w styleMask]];
+      contentRect = [object_getClass(self) 
+                        contentRectForFrameRect: frame
+                        styleMask: [w styleMask]];
     }
   return self;
 }
@@ -184,8 +185,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
                          styleMask: (unsigned int)aStyle
 {
-  NSRect content = [isa contentRectForFrameRect: aRect
-                          styleMask: aStyle];
+  NSRect content = [object_getClass(self) 
+                       contentRectForFrameRect: aRect
+                       styleMask: aStyle];
   NSToolbar *tb = [_window toolbar];
 
   if ([_window menu] != nil)
@@ -228,8 +230,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       aRect.size.height += [tv _heightFromLayout];
     }
 
-  return [isa frameRectForContentRect: aRect
-              styleMask: aStyle];
+  return [object_getClass(self) frameRectForContentRect: aRect
+                                              styleMask: aStyle];
 }
 
 /* If the contentView is removed from the window we must make sure the
@@ -286,8 +288,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   NSView *windowContentView = [_window contentView];
 
   frame.origin = NSZeroPoint;
-  contentViewFrame = [isa contentRectForFrameRect: frame
-                          styleMask: [window styleMask]];
+  contentViewFrame = [object_getClass(self)
+                         contentRectForFrameRect: frame
+                         styleMask: [window styleMask]];
 
   if (hasMenu)
     {
@@ -346,8 +349,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   NSRect windowContentFrame;
 
   contentRect.size.height += difference;
-  windowFrame = [isa frameRectForContentRect: contentRect
-                     styleMask: [window styleMask]];
+  windowFrame = [object_getClass(self)
+                    frameRectForContentRect: contentRect
+                    styleMask: [window styleMask]];
 
   // Set the local frame without changing the contents view
   windowContentFrame = windowFrame;
@@ -377,8 +381,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   _autoresizes_subviews = NO;
   [super setFrame: frameRect];
 
-  contentRect = [isa contentRectForFrameRect: frameRect
-                      styleMask: [window styleMask]];
+  contentRect = [object_getClass(self)
+                    contentRectForFrameRect: frameRect
+                    styleMask: [window styleMask]];
 
   // Safety Check.
   [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];

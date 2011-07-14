@@ -274,7 +274,7 @@ static NSFont *_leafFont;
       backColor = [self highlightColorInView: controlView];
       [backColor set];
       if (!_browsercell_is_leaf)
-	branch_image = [isa highlightedBranchImage];
+	branch_image = [object_getClass(self) highlightedBranchImage];
       cell_image = [self alternateImage];
     }
   else
@@ -282,7 +282,7 @@ static NSFont *_leafFont;
       backColor = [cvWin backgroundColor];
       [backColor set];
       if (!_browsercell_is_leaf)
-	branch_image = [isa branchImage];
+	branch_image = [object_getClass(self) branchImage];
       cell_image = [self image];
     }
   

@@ -177,8 +177,8 @@ static NSColor *dtxtCol;
   //_cell.state = 0;
   //_cell.line_break_mode = NSLineBreakByWordWrapping;
   _action_mask = NSLeftMouseUpMask;
-  _menu = [isa defaultMenu];
-  [self setFocusRingType: [isa defaultFocusRingType]];
+  _menu = [object_getClass(self) defaultMenu];
+  [self setFocusRingType: [object_getClass(self) defaultFocusRingType]];
 
   return self;
 }
@@ -208,8 +208,8 @@ static NSColor *dtxtCol;
   //_cell.is_selectable = NO;
   //_cell.line_break_mode = NSLineBreakByWordWrapping;
   _action_mask = NSLeftMouseUpMask;
-  _menu = [isa defaultMenu];
-  [self setFocusRingType: [isa defaultFocusRingType]];
+  _menu = [object_getClass(self) defaultMenu];
+  [self setFocusRingType: [object_getClass(self) defaultFocusRingType]];
 
   return self;
 }

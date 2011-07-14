@@ -1250,7 +1250,7 @@ originalContentsURL: (NSURL *)orig
 
 - (NSArray *) writableTypesForSaveOperation: (NSSaveOperationType)op
 {
-  NSArray *types = [isa writableTypes];
+  NSArray *types = [object_getClass(self) writableTypes];
   NSMutableArray *muTypes;
   int i, len;
 

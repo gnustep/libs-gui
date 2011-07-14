@@ -249,7 +249,7 @@ static SEL getSel;
 {
   return [self initWithFrame: NSZeroRect
 		        mode: NSRadioModeMatrix
-		   cellClass: [isa cellClass]
+		   cellClass: [object_getClass(self) cellClass]
 		numberOfRows: 0
 	     numberOfColumns: 0];
 }
@@ -263,7 +263,7 @@ static SEL getSel;
 {
   return [self initWithFrame: frameRect
 		        mode: NSRadioModeMatrix
-		   cellClass: [isa cellClass]
+		   cellClass: [object_getClass(self) cellClass]
 		numberOfRows: 0
 	     numberOfColumns: 0];
 }
@@ -2894,7 +2894,7 @@ static SEL getSel;
       
       if (_cellPrototype == nil)
         {
-          [self setCellClass: [isa cellClass]];
+          [self setCellClass: [object_getClass(self) cellClass]];
         }
       
       [aDecoder decodeValueOfObjCType: @encode (int) at: &rows];

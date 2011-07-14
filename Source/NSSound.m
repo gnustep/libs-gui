@@ -332,7 +332,7 @@ static inline void _loadNSSoundPlugIns (void)
 
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
-  if ([isa canInitWithPasteboard: pasteboard] == YES)
+  if ([object_getClass(self) canInitWithPasteboard: pasteboard] == YES)
     {
       /* FIXME: Should this be @"NSGeneralPboardType" or @"NSSoundPboardType"?
            Apple also defines "NSString *NSSoundPboardType". */

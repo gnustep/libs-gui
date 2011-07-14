@@ -95,7 +95,7 @@
   NSData* data;
 
   type = [pasteboard availableTypeFromArray: 
-			 [isa movieUnfilteredPasteboardTypes]];
+			 [object_getClass(self) movieUnfilteredPasteboardTypes]];
   if (type == nil)
     {
       //NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];

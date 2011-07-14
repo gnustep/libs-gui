@@ -1210,7 +1210,7 @@ restart: ;
       we create a new instance and let it handle the call. */
       GSHorizontalTypesetter *temp;
 
-      temp = [[isa alloc] init];
+      temp = [[object_getClass(self) alloc] init];
       ret = [temp layoutGlyphsInLayoutManager: layoutManager
 			      inTextContainer: textContainer
 			 startingAtGlyphIndex: glyphIndex

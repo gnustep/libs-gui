@@ -2189,7 +2189,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   ext = [[fileName pathExtension] lowercaseString];
   if (!ext)
     return NO;
-  array = [isa imageFileTypes];
+  array = [object_getClass(self) imageFileTypes];
   if ([array indexOfObject: ext] == NSNotFound)
     return NO;
 

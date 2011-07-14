@@ -959,7 +959,7 @@ static float scrollerWidth;
   _hasHorizRuler = flag;
   if (_hasHorizRuler && _horizRuler == nil)
     {
-      _horizRuler = [[isa rulerViewClass] alloc];
+      _horizRuler = [[object_getClass(self) rulerViewClass] alloc];
       _horizRuler = [_horizRuler initWithScrollView: self 
                                  orientation: NSHorizontalRuler];
     }
@@ -1010,7 +1010,7 @@ static float scrollerWidth;
   _hasVertRuler = flag;
   if (_hasVertRuler && _vertRuler == nil)
     {
-      _vertRuler = [[isa rulerViewClass] alloc];
+      _vertRuler = [[object_getClass(self) rulerViewClass] alloc];
       _vertRuler = [_vertRuler initWithScrollView: self 
                                orientation: NSVerticalRuler];
     }

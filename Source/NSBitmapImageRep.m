@@ -295,22 +295,22 @@
       return nil;
     }
 
-  if ([isa _bitmapIsPNG: imageData])
+  if ([object_getClass(self) _bitmapIsPNG: imageData])
     return [self _initBitmapFromPNG: imageData];
 
-  if ([isa _bitmapIsPNM: imageData])
+  if ([object_getClass(self) _bitmapIsPNM: imageData])
     return [self _initBitmapFromPNM: imageData
 		       errorMessage: NULL];
 
-  if ([isa _bitmapIsJPEG: imageData])
+  if ([object_getClass(self) _bitmapIsJPEG: imageData])
     return [self _initBitmapFromJPEG: imageData
 			errorMessage: NULL];
 
-  if ([isa _bitmapIsGIF: imageData])
+  if ([object_getClass(self) _bitmapIsGIF: imageData])
     return [self _initBitmapFromGIF: imageData
 		       errorMessage: NULL];
 
-  if ([isa _bitmapIsICNS: imageData])
+  if ([object_getClass(self) _bitmapIsICNS: imageData])
     return [self _initBitmapFromICNS: imageData];
 
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
