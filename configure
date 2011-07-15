@@ -614,8 +614,6 @@ ICU_LIBS
 ICU_CONFIG
 IMAGEMAGICK_LIBS
 IMAGEMAGICK_CFLAGS
-PKG_CONFIG_LIBDIR
-PKG_CONFIG_PATH
 PKG_CONFIG
 HAVE_LIBPNG_CONFIG
 EGREP
@@ -711,8 +709,6 @@ LIBS
 CPPFLAGS
 CPP
 PKG_CONFIG
-PKG_CONFIG_PATH
-PKG_CONFIG_LIBDIR
 IMAGEMAGICK_CFLAGS
 IMAGEMAGICK_LIBS'
 
@@ -1366,10 +1362,6 @@ Some influential environment variables:
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
   PKG_CONFIG  path to pkg-config utility
-  PKG_CONFIG_PATH
-              directories to add to pkg-config's search path
-  PKG_CONFIG_LIBDIR
-              path overriding pkg-config's built-in search path
   IMAGEMAGICK_CFLAGS
               C compiler flags for IMAGEMAGICK, overriding pkg-config
   IMAGEMAGICK_LIBS
@@ -5434,10 +5426,6 @@ fi
 
 
 
-
-
-
-
 if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
 	if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
@@ -5550,6 +5538,7 @@ $as_echo "yes" >&6; }
 $as_echo "no" >&6; }
 		PKG_CONFIG=""
 	fi
+
 fi
 if test "$enable_imagemagick" = "yes"; then :
 
@@ -5594,8 +5583,6 @@ fi
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
         _pkg_short_errors_supported=yes
@@ -5610,12 +5597,12 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$IMAGEMAGICK_PKG_ERRORS" >&5
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
 $as_echo "#define HAVE_IMAGEMAGICK 0" >>confdefs.h
 
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 $as_echo "#define HAVE_IMAGEMAGICK 0" >>confdefs.h
 
@@ -5752,9 +5739,7 @@ fi
 
 done
 
-    LIBS="$LIBS $ICU_LIBS"
-    LDFLAGS="$LDFLAGS $ICU_LDFLAGS"
-    LDIR_FLAGS="$LDIR_FLAGS $ICU_LDFLAGS"
+    GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
     HAVE_ICU=1
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5

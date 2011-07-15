@@ -385,9 +385,7 @@ if test $enable_icu = yes; then
   if test "$have_icu" = "yes"; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
-    LIBS="$LIBS $ICU_LIBS"
-    LDFLAGS="$LDFLAGS $ICU_LDFLAGS"
-    LDIR_FLAGS="$LDIR_FLAGS $ICU_LDFLAGS"
+    GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
     HAVE_ICU=1
   else
     AC_MSG_RESULT(no)

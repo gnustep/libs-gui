@@ -1,5 +1,12 @@
 2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* configure.ac:
+	* configure: Fix the ICU test so the library search path and
+	flags are added to GRAPHIC_LFLAGS; this fixes the build on
+	Windows
+
+2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSColorPanel.m: Remove code for generating a dynamic
 	magnifying glass cursor; it flickers on X11.
 
