@@ -1,3 +1,8 @@
+2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSColorPanel.m: Remove code for generating a dynamic
+	magnifying glass cursor; it flickers on X11.
+
 2011-07-15  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSGuiPrivate.h: remove reference to obsolete preface.h

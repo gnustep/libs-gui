@@ -370,55 +370,22 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     [NSApp sendAction: _action to: _target from: self];  
 }
 
-- (NSImage *) _magnifyingGlassImageWithScreenshot: (NSImage*)screenshot
-{
-	NSImage *result;
-	NSGraphicsContext *ctx;
-	NSImageInterpolation oldInterpolation;
-	const NSRect glassFrame = NSMakeRect(3,11,19,18);
-	const NSSize imageSize = NSMakeSize(32, 32); // These metrics are for Images/MagnifyGlass.tiff
-	
-	result = [[[NSImage alloc] initWithSize: imageSize] autorelease];
-	[result lockFocus];
-	
-	ctx = [NSGraphicsContext currentContext];
-	
-	// 1. draw the screenshot, clipped so it lies within the circle part of 
-	// the magnifying glass and with no interpolation
-	[ctx saveGraphicsState];
-	[[NSBezierPath bezierPathWithOvalInRect: glassFrame] addClip];
-	oldInterpolation = [ctx imageInterpolation];
-	[ctx setImageInterpolation: NSImageInterpolationNone];
-	[screenshot drawInRect: glassFrame
-		      fromRect: NSZeroRect
-		     operation: NSCompositeSourceOver
-		      fraction: 1.0];
-	[ctx setImageInterpolation: oldInterpolation];
-	[ctx restoreGraphicsState];
-	
-	// 2. draw the magnifying glass over top
-	[[NSImage imageNamed: @"MagnifyGlass"] drawInRect: NSMakeRect(0, 0, imageSize.width, imageSize.height)
-						 fromRect: NSZeroRect
-						operation: NSCompositeSourceOver
-						 fraction: 1.0];
-	
-	[result unlockFocus];
-	return result;
-}
-
-- (NSCursor *) _magnifyingGlassCursorWithScreenshot: (NSImage*)screenshot
-{
-  return [[[NSCursor alloc] initWithImage: [self _magnifyingGlassImageWithScreenshot: screenshot]
-				  hotSpot: NSMakePoint(13, 13)] autorelease];
-}
-
 - (void) _magnify: (id) sender
 {
   NSEvent *currentEvent;
+  NSCursor *cursor;
 
   [self _captureMouse: self];
 
-  [[self _magnifyingGlassCursorWithScreenshot: nil] push];
+  /**
+   * There was code here to dynamically generate a magnifying glass
+   * cursor with a magnified portion of the screenshot in it,
+   * but changing the cursor rapidly on X seems to cause flicker,
+   * so we just use a plain magnifying glass. (dynamic code is in r33543)
+   */
+  cursor = [[[NSCursor alloc] initWithImage: [NSImage imageNamed: @"MagnifyGlass"]
+					      hotSpot: NSMakePoint(12, 13)] autorelease];
+  [cursor push];
 
   NS_DURING
     {
@@ -434,21 +401,21 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 	mouseLoc = [self convertBaseToScreen: [self mouseLocationOutsideOfEventStream]];
 	
 	img = [GSCurrentServer() contentsOfScreen: [[self screen] screenNumber]
-					   inRect: NSMakeRect(mouseLoc.x - 4, mouseLoc.y - 4, 9, 9)];
+					   inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
 	
 	if (img != nil)
 	  {
 	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
-	    NSColor *color = [rep colorAtX: 5 y: 5];
+	    NSColor *color = [rep colorAtX: 0 y: 0];
 	    [self setColor: color];
-
-	    [[self _magnifyingGlassCursorWithScreenshot: img] set];
 	  }
       } while ([currentEvent type] != NSLeftMouseUp && 
 	       [currentEvent type] != NSLeftMouseDown);
     }
   NS_HANDLER
     {
+      NSLog(@"Exception occurred in -[NSColorPanel _magnify:]: %@",
+	    localException);
     }
   NS_ENDHANDLER
     
