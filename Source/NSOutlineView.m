@@ -866,33 +866,39 @@ static NSImage *unexpandable  = nil;
    if ([characters length] == 1)
      {
        unichar c = [characters characterAtIndex: 0];
-       id item = [self itemAtRow: [self selectedRow]];
-       switch (c)
-         {
-	 case NSLeftArrowFunctionKey:
-	   {
-	     if ([self isItemExpanded: item])
+
+       NSIndexSet *selected = [self selectedRowIndexes];
+       NSInteger i;
+       for (i = [selected firstIndex]; i != NSNotFound; i = [selected indexGreaterThanIndex: i])
+	 {
+	   id item = [self itemAtRow: i];
+	   switch (c)
+	     {
+	     case NSLeftArrowFunctionKey:
 	       {
-		 [self collapseItem: item];
-	       }
-	     else
-	       {
-		 id parent = [self parentForItem: item];
-		 if (parent != nil)
+		 if ([self isItemExpanded: item])
 		   {
-		     NSInteger parentRow = [self rowForItem: parent];
-		     [self selectRow: parentRow
-			   byExtendingSelection: NO];
-		     [self scrollRowToVisible: parentRow];
+		     [self collapseItem: item];
 		   }
+		 else
+		   {
+		     id parent = [self parentForItem: item];
+		     if (parent != nil)
+		       {
+			 NSInteger parentRow = [self rowForItem: parent];
+			 [self selectRow: parentRow
+			       byExtendingSelection: NO];
+			 [self scrollRowToVisible: parentRow];
+		       }
+		   }
+		 return;
 	       }
-	     return;
-	   }
-	 case NSRightArrowFunctionKey:
-	   [self expandItem: item];
-	   return;
-	 default:
-	   break;
+	     case NSRightArrowFunctionKey:
+	       [self expandItem: item];
+	       return;
+	     default:
+	       break;
+	     }
 	 }
      }
  

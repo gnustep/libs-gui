@@ -1,3 +1,8 @@
+2011-07-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSOutlineView.m: Allow collapsing or expanding multiple
+	rows at a time using the arrow keys
+
 2011-07-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSound.m
