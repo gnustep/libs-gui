@@ -31,7 +31,7 @@
 #define _GNUstep_H_GSGuiPrivate
 
 #import <Foundation/NSBundle.h>
-#include "GNUstepBase/preface.h"
+#include "GNUstepBase/GSConfig.h"
 #include <math.h>
 
 /*

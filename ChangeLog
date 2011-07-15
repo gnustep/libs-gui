@@ -1,3 +1,7 @@
+2011-07-15  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSGuiPrivate.h: remove reference to obsolete preface.h
+
 2011-07-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSOutlineView.m: Allow collapsing or expanding multiple
