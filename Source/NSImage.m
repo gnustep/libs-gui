@@ -1017,16 +1017,38 @@ behavior precisely matches Cocoa. */
     NSGraphicsContext *cacheCtxt;
     NSSize repSize = [rep size];
     /* The size of the cache window that will hold the scaled image */
-    NSSize cacheSize = [[ctxt GSCurrentCTM] transformSize: repSize];
+    NSSize cacheSize;
 
-    CGFloat imgToCacheWidthScaleFactor = cacheSize.width / imgSize.width;
-    CGFloat imgToCacheHeightScaleFactor = cacheSize.height / imgSize.height;
+    CGFloat imgToCacheWidthScaleFactor;
+    CGFloat imgToCacheHeightScaleFactor;;
     
-    NSRect srcRectInCache = NSMakeRect(srcRect.origin.x * imgToCacheWidthScaleFactor, 
-                                      srcRect.origin.y * imgToCacheHeightScaleFactor, 
-                                     srcRect.size.width * imgToCacheWidthScaleFactor, 
-                                   srcRect.size.height * imgToCacheHeightScaleFactor);
+    NSRect srcRectInCache;
     NSAffineTransform *transform, *backup;
+
+    if (([rep pixelsWide] == NSImageRepMatchesDevice &&
+	 [rep pixelsHigh] == NSImageRepMatchesDevice) &&
+	(dstRect.size.width > repSize.width ||
+	 dstRect.size.height > repSize.height))
+      {
+	cacheSize = [[ctxt GSCurrentCTM] transformSize: dstRect.size];
+      }
+    else
+      {
+	cacheSize = [[ctxt GSCurrentCTM] transformSize: repSize];
+      }
+
+    if (cacheSize.width < 0)
+      cacheSize.width *= -1;
+    if (cacheSize.height < 0)
+      cacheSize.height *= -1;
+
+    imgToCacheWidthScaleFactor = cacheSize.width / imgSize.width;
+    imgToCacheHeightScaleFactor = cacheSize.height / imgSize.height;
+    
+    srcRectInCache = NSMakeRect(srcRect.origin.x * imgToCacheWidthScaleFactor, 
+				srcRect.origin.y * imgToCacheHeightScaleFactor, 
+				srcRect.size.width * imgToCacheWidthScaleFactor, 
+				srcRect.size.height * imgToCacheHeightScaleFactor);
 
     cache = [[NSCachedImageRep alloc]
                 initWithSize: NSMakeSize(ceil(cacheSize.width), ceil(cacheSize.height))

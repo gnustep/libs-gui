@@ -1,5 +1,14 @@
 2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (-nativeDrawInRect:...): Fix two bugs
+	demonstrated in GSTest:
+	- drawing an image in a flipped view with -drawInRect:... wasn't
+	  working, and
+	- drawing a vector rep in a dest rect larger than the point
+	  size of the rep was resulting in blurry output.
+
+2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* configure.ac:
 	* configure: Fix the ICU test so the library search path and
 	flags are added to GRAPHIC_LFLAGS; this fixes the build on
