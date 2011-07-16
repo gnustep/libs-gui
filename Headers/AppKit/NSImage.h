@@ -353,6 +353,17 @@ typedef enum {
 	   fraction: (float)delta;
 #endif 
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+
+- (void) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta
+     respectFlipped: (BOOL)respectFlipped
+	      hints: (NSDictionary*)hints;
+
+#endif
+
 //
 // Determining How the Image is Drawn 
 //

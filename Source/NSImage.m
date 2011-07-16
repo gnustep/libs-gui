@@ -1318,6 +1318,49 @@ Fallback for backends other than Cairo. */
   }
 }
 
+- (void) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta
+     respectFlipped: (BOOL)respectFlipped
+	      hints: (NSDictionary*)hints
+{
+  NSAffineTransform *backup = nil;
+  NSGraphicsContext *ctx = GSCurrentContext();
+  BOOL compensateForFlip = (respectFlipped && [ctx isFlipped]);
+
+  // FIXME: Hints are currently ignored
+
+  if (compensateForFlip)
+    {
+      CGFloat height;
+      NSAffineTransform *newXform;
+
+      height = dstRect.size.height != 0 ?
+	dstRect.size.height : [self size].height;
+
+      backup = [ctx GSCurrentCTM];
+
+      newXform = [backup copy];
+      [newXform translateXBy: dstRect.origin.x yBy: dstRect.origin.y + height];
+      [newXform scaleXBy: 1 yBy: -1];
+      [ctx GSSetCTM: newXform];
+      [newXform release];
+
+      dstRect.origin = NSMakePoint(0, 0);
+    }
+
+  [self drawInRect: dstRect
+	  fromRect: srcRect
+	 operation: op
+	  fraction: delta];
+
+  if (compensateForFlip)
+    {
+      [ctx GSSetCTM: backup];
+    }
+}
+
 - (void) addRepresentation: (NSImageRep *)imageRep
 {
   GSRepData *repd;

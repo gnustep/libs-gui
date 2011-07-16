@@ -1,5 +1,10 @@
 2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m: Implement
+	-[NSImage drawInRect:fromRect:operation:fraction:respectFlipped:hints:]
+
+2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (-nativeDrawInRect:...): Fix two bugs
 	demonstrated in GSTest:
 	- drawing an image in a flipped view with -drawInRect:... wasn't
