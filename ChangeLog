@@ -1,3 +1,9 @@
+2011-07-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSGhostscriptImageRep.m: Search for gs by enumerating directories
+	in PATH rather than calling 'which'. Also search for gswin32c.exe for
+	Windows.
+
 2011-07-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m: Implement

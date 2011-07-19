@@ -32,6 +32,7 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTask.h>
@@ -94,44 +95,56 @@
   return types;
 }
 
-- (NSString *) _ghostscriptExecutablePathUsingWhich
-{
-  NSString *result = nil;
+// Locating Ghostscript
 
-  NS_DURING
+- (NSString *) _PATHSeparator
+{
+  NSProcessInfo *pinfo = [NSProcessInfo processInfo];
+  const NSInteger os = [pinfo operatingSystem];
+  
+  if (os == NSWindowsNTOperatingSystem ||
+      os == NSWindows95OperatingSystem)
     {
-      NSTask *task = [[[NSTask alloc] init] autorelease];
-      NSPipe *outputPipe = [NSPipe pipe];
-      NSFileHandle *outputHandle = [outputPipe fileHandleForReading];
-      NSString *shellLaunchPath = [[[NSProcessInfo processInfo] environment] objectForKey: @"SHELL"];
-      NSData *resultData;
-      
-      [task setLaunchPath: shellLaunchPath];
-      [task setArguments: [NSArray arrayWithObjects: @"-c", @"which gs", nil]];
-      [task setStandardOutput: outputPipe];
-      [task launch];
-      
-      resultData = [outputHandle readDataToEndOfFile];
-      [outputHandle closeFile];
-      
-      if (resultData != nil && [resultData length] > 0)
+      return @";";
+    }
+  else
+    {
+      return @":";
+    }
+}
+
+- (NSArray *) _PATHDirectories
+{
+  NSProcessInfo *pinfo = [NSProcessInfo processInfo];
+  NSString *PATH = [[pinfo environment] objectForKey: @"PATH"];  
+  NSString *separator = [self _PATHSeparator];
+
+  if (PATH != nil)
+    {
+      return [PATH componentsSeparatedByString: separator];
+    }
+  else
+    {
+      return [NSArray array];
+    }
+}
+
+- (NSString *) _pathForExecutable: (NSString *)executable
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSArray *PATHDirectories = [self _PATHDirectories];
+  NSEnumerator *enumerator = [PATHDirectories objectEnumerator];
+  id object;
+
+  while ((object = [enumerator nextObject]) != nil)
+    {
+      NSString *path = [object stringByAppendingPathComponent: executable];
+      if ([fm isExecutableFileAtPath: path])
 	{
-	  // FIXME: How do we know which encoding the data will be in?
-	  result = [[[NSString alloc] initWithBytes: [resultData bytes]
-					     length: [resultData length]
-					   encoding: NSUTF8StringEncoding] autorelease];
-	  
-	  result = [result stringByTrimmingCharactersInSet:
-			     [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	  return path;
 	}
     }
-  NS_HANDLER
-    {
-      NSLog(@"An error occurred while determining the Ghostscript executable path. If you would like to use Ghostscript you can set the GSGhostscriptExecutablePath user default to the full path to the gs executable.");
-    }
-  NS_ENDHANDLER
-
-  return result;
+  return nil;
 }
 
 - (NSString *) _ghostscriptExecutablePath
@@ -140,19 +153,34 @@
 
   if (result == nil)
     {
-      static NSString *resultOfWhich = nil;
-
-      // Only invoke 'which' once
-      if (resultOfWhich == nil)
+      static BOOL searched = NO;
+      static NSString *resultOfSearch = nil;
+      
+      // Only search PATH once.
+      if (!searched)
 	{
-	  ASSIGN(resultOfWhich, [self _ghostscriptExecutablePathUsingWhich]);
+	  searched = YES;
+
+	  ASSIGN(resultOfSearch, [self _pathForExecutable: @"gs"]);
+	  
+	  if (resultOfSearch == nil)
+	    {
+	      ASSIGN(resultOfSearch, [self _pathForExecutable: @"gswin32c.exe"]);
+	    }
+
+	  if (resultOfSearch == nil)
+	    {
+	      NSLog(@"GNUstep was unable to locate the Ghostscript executable in your PATH. If you would like to use Ghostscript to render PDF, PS, or PS images, please set the GSGhostscriptExecutablePath user default to the full path to the gs executable or ensure Ghostscript is installed and located in your PATH.");
+	    }
 	}
 
-      result = resultOfWhich;
+      result = resultOfSearch;
     }
 
   return result;
 }
+
+// Launching Ghostscript
 
 - (NSData *) _pngWithGhostscriptData: (NSData *)psData atResolution: (CGFloat)res
 {
@@ -176,6 +204,8 @@
 				   @"-dTextAlphaBits=4",
 				   @"-dGraphicsAlphaBits=4",
 				   @"-dDOINTERPOLATE",
+				   @"-dFirstPage=1",
+				   @"-dLastPage=1", // pngalpha device can only print 1 page
 				   @"-", // Read input from stdin
 				   nil]];
       [task setStandardInput: inputPipe];
