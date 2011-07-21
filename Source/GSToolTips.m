@@ -570,6 +570,11 @@ static BOOL		restoreMouseMoved;
   NSRect		rect;
   NSMutableDictionary	*attributes;
 
+  if (nil == toolTipString)
+    {
+      toolTipString = @"";
+    }
+
   if (timer != nil)
     {
       if ([timer isValid])

@@ -1,5 +1,9 @@
 2011-07-21  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSToolTips.m (-_timedOut:): Guard against nil tooltip string
+
+2011-07-21  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSButtonCell.m (-title): Return @"" instead of nil
 	* Source/NSButtonCell.m (-alternateTitle): Return @"" instead of nil
 	* Source/NSButtonCell.m (-attributedAlternateTitle): Use
