@@ -1,3 +1,9 @@
+2011-07-20  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTextView.m (-view:stringForToolTip:point:userData:):
+	Ensure this returns an NSString, even if NSToolTipAttributeName
+	is set to something else (it calls -description on the value).
+
 2011-07-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSGhostscriptImageRep.m: Search for gs by enumerating directories

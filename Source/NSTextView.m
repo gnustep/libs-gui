@@ -4023,6 +4023,7 @@ Figure out how the additional layout stuff is supposed to work.
       {
         NSPoint origin;
         NSUInteger startIndex;
+	id value;
 
         // Origin is in window coordinate space
         origin = rect->rectangle.origin;
@@ -4037,9 +4038,17 @@ Figure out how the additional layout stuff is supposed to work.
         startIndex = [self _characterIndexForPoint: point
                                               respectFraction: NO];
         // Look up what the tooltip text should be.
-        return [_textStorage attribute: NSToolTipAttributeName
-                               atIndex: startIndex
-                        effectiveRange: NULL];
+        value = [_textStorage attribute: NSToolTipAttributeName
+				atIndex: startIndex
+			 effectiveRange: NULL];
+
+	// The value of NSToolTipAttributeName should be an NSString,
+	// but we deal with it being something else too.
+	if (![value isKindOfClass: [NSString class]])
+	  {
+	    value = [value description];
+	  }
+	return value;
       }
   END_FOR_IN(_tracking_rects)
   return nil;
