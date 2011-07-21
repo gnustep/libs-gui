@@ -1282,7 +1282,14 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
         return [menuItem title];
     }
 
-  return _label;
+  if (nil != _label)
+    {
+      return _label;
+    }
+  else
+    {
+      return @"";
+    }
 }
 
 - (NSSize) maxSize

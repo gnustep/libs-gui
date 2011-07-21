@@ -1,3 +1,24 @@
+2011-07-21  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSButtonCell.m (-title): Return @"" instead of nil
+	* Source/NSButtonCell.m (-alternateTitle): Return @"" instead of nil
+	* Source/NSButtonCell.m (-attributedAlternateTitle): Use
+	[self alternateTitle] instead of accessing _altContents directly to guard
+	against _altContents being nil
+	* Source/NSButtonCell.m (-attributedTitle): Don't return nil. Use
+	[self title] instead of accessing _contents directly to guard against
+	_contents being nil
+	* Source/NSButtonCell.m (-keyEquivalent): Return @"" instead of nil
+	* Source/NSButtonCell.m (-encodeWithCoder):
+	For keyEquivelant and alternateTitle, now that the methods never return
+	nil, instead of checking if they return nil to decide whether to encode them,
+	check if the string length is > 0.
+	* Source/NSToolbarItem.m (-label): Return @"" instead of nil.
+	* Source/NSCell.m (-stringValue): Return @"" instead of nil
+	* Source/NSCell.m (-attributedStringValue): Don't return nil. Use
+	[self stringValue] instead of accessing _contents directly to guard against
+	_contents being nil.
+
 2011-07-20  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m (-view:stringForToolTip:point:userData:):

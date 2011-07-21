@@ -316,6 +316,11 @@ static NSColor *dtxtCol;
  */
 - (NSString*) stringValue
 {
+  if (nil == _contents)
+    {
+      return @"";
+    }
+
   if (_cell.contents_is_attributed_string == NO)
     {
       // If we have a formatter this is also the string of the _object_value
@@ -1019,7 +1024,8 @@ static NSColor *dtxtCol;
     }
 
   /* In all other cases */
-  if (_cell.contents_is_attributed_string)
+  if (_cell.contents_is_attributed_string &&
+      nil != _contents)
     {
       return (NSAttributedString *)_contents;
     }
@@ -1029,7 +1035,7 @@ static NSColor *dtxtCol;
       NSAttributedString *attrStr;
 
       dict = [self _nonAutoreleasedTypingAttributes];
-      attrStr = [[NSAttributedString alloc] initWithString: _contents 
+      attrStr = [[NSAttributedString alloc] initWithString: [self stringValue]
                                             attributes: dict];
       RELEASE(dict);
       return AUTORELEASE(attrStr);

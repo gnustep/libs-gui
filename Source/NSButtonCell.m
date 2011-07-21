@@ -200,6 +200,11 @@ typedef struct _GSButtonCellFlags
  */
 - (NSString*) title
 {
+  if (nil == _contents)
+    {
+      return @"";
+    }
+
   if (_cell.contents_is_attributed_string == NO)
     {
       // If we have a formatter this is also the string of the _object_value
@@ -216,7 +221,14 @@ typedef struct _GSButtonCellFlags
  */
 - (NSString*) alternateTitle
 {
-  return _altContents;
+  if (_altContents != nil)
+    {
+      return _altContents;
+    }
+  else
+    {
+      return @"";
+    }
 }
 
 - (int) cellAttribute: (NSCellAttribute)aParameter
@@ -371,7 +383,7 @@ typedef struct _GSButtonCellFlags
   NSAttributedString *attrStr;
 
   dict = [self _nonAutoreleasedTypingAttributes];
-  attrStr = [[NSAttributedString alloc] initWithString: _altContents 
+  attrStr = [[NSAttributedString alloc] initWithString: [self alternateTitle]
                                         attributes: dict];
   RELEASE(dict);
 
@@ -386,7 +398,8 @@ typedef struct _GSButtonCellFlags
 
 - (NSAttributedString *)attributedTitle
 {
-  if (_cell.contents_is_attributed_string)
+  if (_cell.contents_is_attributed_string &&
+      nil != _contents)
     {
       return (NSAttributedString *)_contents;
     }
@@ -396,7 +409,7 @@ typedef struct _GSButtonCellFlags
       NSAttributedString *attrStr;
 
       dict = [self _nonAutoreleasedTypingAttributes];
-      attrStr = [[NSAttributedString alloc] initWithString: _contents 
+      attrStr = [[NSAttributedString alloc] initWithString: [self title]
                                             attributes: dict];
       RELEASE(dict);
       return AUTORELEASE(attrStr);
@@ -562,7 +575,14 @@ typedef struct _GSButtonCellFlags
  */
 - (NSString*) keyEquivalent
 {
-  return _keyEquivalent;
+  if (nil == _keyEquivalent)
+    {
+      return @"";
+    }
+  else
+    {
+      return _keyEquivalent;
+    }
 }
 
 /**<p>Returns the NSFont of the key equivalent.</p>
@@ -1545,7 +1565,7 @@ typedef struct _GSButtonCellFlags
       NSImage *image = [self image];
       NSButtonImageSource *bi = nil;
 
-      if ([self keyEquivalent] != nil)
+      if ([[self keyEquivalent] length] > 0)
         {
           [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
         }
@@ -1553,7 +1573,7 @@ typedef struct _GSButtonCellFlags
         {
           [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
         }
-      if ([self alternateTitle] != nil)
+      if ([[self alternateTitle] length] > 0)
         {
           [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
         }
