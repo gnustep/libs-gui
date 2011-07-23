@@ -1,5 +1,10 @@
 2011-07-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tests/gui/NSView/NSView_visibleRect.m: New test.
+	* Tests/gui/NSView/scrollRectToVisible.m: Use an NSWindow.
+
+2011-07-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (autoresize): Handle negative flexible space.
 	Patch by Tim Schmielau <gnustep@chmielau.orangehome.co.uk>
 	* Tests/gui/NSView/NSView_bounds_scale.m: More detailed testing.

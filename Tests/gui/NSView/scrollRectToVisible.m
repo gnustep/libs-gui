@@ -6,7 +6,9 @@ copyright 2004 Alexander Malmberg <alexander@malmberg.org>
 
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSClipView.h>
+#include <AppKit/NSWindow.h>
 
 #define TEST(r,s) \
 	if (!NSEqualRects([v visibleRect],r)) \
@@ -22,10 +24,17 @@ copyright 2004 Alexander Malmberg <alexander@malmberg.org>
 
 int main(int argc, char **argv)
 {
+  NSWindow *window;
 	CREATE_AUTORELEASE_POOL(arp);
 	NSClipView *cv=[[NSClipView alloc] initWithFrame: NSMakeRect(0,0,10,10)];
 	NSView *v=[[NSView alloc] initWithFrame: NSMakeRect(0,0,100,100)];
 	[cv setDocumentView: v];
+  [NSApplication sharedApplication];
+  window = [[NSWindow alloc] initWithContentRect: NSMakeRect(100,100,200,200)
+                                       styleMask: NSClosableWindowMask
+                                         backing: NSBackingStoreRetained
+                                           defer: YES];
+  [[window contentView] addSubview: cv];
 
 	/* Initial position. */
 	TEST(NSMakeRect(0,0,10,10),"1")
