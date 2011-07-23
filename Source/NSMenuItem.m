@@ -29,10 +29,11 @@
 */ 
 
 #import "config.h"
-#import <Foundation/NSUserDefaults.h>
-#import <Foundation/NSDictionary.h>
+#import <Foundation/NSAttributedString.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSUserDefaults.h>
 
 #import "AppKit/NSCell.h"
 #import "AppKit/NSEvent.h"

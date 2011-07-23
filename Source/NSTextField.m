@@ -32,6 +32,7 @@
 
 #include "config.h"
 
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSFormatter.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>

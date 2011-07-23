@@ -1970,7 +1970,7 @@ static void autoresize(CGFloat oldContainerSize,
     flexibleSpace += oldContainerSize - oldContentPosition - oldContentSize;
 
 
-  if (flexibleSpace == 0.0)
+  if (flexibleSpace <= 0.0)
     {
       /**
        * In this code path there is no flexible space so we divide 
@@ -1994,7 +1994,7 @@ static void autoresize(CGFloat oldContainerSize,
 	    }
 	}
     }
-  else if (flexibleSpace > 0.0)
+  else
     {
       /**
        * In this code path we distribute the change proportionately

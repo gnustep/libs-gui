@@ -51,6 +51,8 @@
 
 - (BOOL) isSelected;
 - (void) setSelected: (BOOL)flag;
+- (BOOL) isEnabled;
+- (void) setEnabled: (BOOL)flag;
 - (NSMenu *) menu;
 - (void) setMenu: (NSMenu *)menu;
 - (NSString *) label;

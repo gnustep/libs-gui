@@ -25,6 +25,7 @@
  Boston, MA 02110-1301, USA.
  */ 
 
+#import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"

@@ -32,8 +32,10 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDecimalNumber.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSNumberFormatter.h>
 #import <Foundation/NSUserDefaults.h>
+
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSTextField.h"
