@@ -35,6 +35,7 @@
 #include <math.h>
 #include <float.h>
 
+#import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSScanner.h>
@@ -52,6 +53,7 @@
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSUndoManager.h>
 
+#import "AppKit/NSAnimation.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSButton.h"
 #import "AppKit/NSButtonCell.h"
@@ -129,6 +131,25 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (void) _setWindow: (NSWindow *)window inactive: (BOOL)inactive;
 @end
 
+@interface GSWindowAnimationDelegate : NSObject
+{
+}
+@end
+
+@implementation GSWindowAnimationDelegate
+- (void) animationDidEnd: (NSAnimation *)animation
+{
+  AUTORELEASE(animation);
+}
+
+- (void) animationDidStop: (NSAnimation *)animation
+{
+  AUTORELEASE(animation);
+}
+
+@end
+
+static GSWindowAnimationDelegate *animationDelegate;
 
 /*
  * Category for internal methods (for use only within the NSWindow class itself
@@ -1958,57 +1979,35 @@ many times.
           display: (BOOL)displayFlag
           animate: (BOOL)animationFlag
 {
-  if (animationFlag)
+  if (animationFlag && !NSEqualRects(_frame, frameRect))
     {
       // time that the resize is expected to take in seconds
       NSTimeInterval resizeTime;
-      // velocity
-      NSRect v;
-      // time parameter
-      float t;
-      float tdiff;
-        
-      v.origin.x = _frame.origin.x - frameRect.origin.x;
-      v.origin.y = _frame.origin.y - frameRect.origin.y;
-      v.size.width = _frame.size.width - frameRect.size.width;
-      v.size.height = _frame.size.height - frameRect.size.height;
+      NSArray *animations;
+      NSViewAnimation *viewAnimation;
 
       resizeTime = [self animationResizeTime: frameRect];
-      tdiff = 0.1 / resizeTime;
-
-      [NSEvent startPeriodicEventsAfterDelay: 0 withPeriod: 0.02];
-      t = 1.0;
-      while (t > 0.0)
+      animations = [NSArray arrayWithObject:
+                              [NSDictionary dictionaryWithObjectsAndKeys:
+                                              self, NSViewAnimationTargetKey,
+                                                  [NSValue valueWithRect: frameRect], NSViewAnimationEndFrameKey, 
+                                            nil]];
+      viewAnimation = [[NSViewAnimation alloc] initWithViewAnimations: animations];
+      [viewAnimation setAnimationBlockingMode: NSAnimationNonblocking];
+      [viewAnimation setDuration: resizeTime];
+      if (animationDelegate == nil)
         {
-          NSEvent *theEvent = [NSApp nextEventMatchingMask: NSPeriodicMask
-                                     untilDate: [NSDate distantFuture]
-                                     inMode: NSEventTrackingRunLoopMode
-                                     dequeue: YES];
-          
-          if ([theEvent type] == NSPeriodic)
-            {
-              NSRect newFrame;
-          
-              t -= tdiff;
-              if (t <= 0.0)
-                {
-                  break;
-                }
-
-              // move
-              newFrame.origin.x = frameRect.origin.x + v.origin.x * t;
-              newFrame.origin.y = frameRect.origin.y + v.origin.y * t;
-              // strech
-              newFrame.size.width = frameRect.size.width + v.size.width * t;
-              newFrame.size.height = frameRect.size.height + v.size.height * t;
-
-              [self setFrame: newFrame display: displayFlag];
-            }
+          animationDelegate = [[GSWindowAnimationDelegate alloc] init];
         }
-      [NSEvent stopPeriodicEvents];
+      // The delegate handles the release of the viewAnimation
+      [viewAnimation setDelegate: animationDelegate];
+      [viewAnimation startAnimation];
+      //AUTORELEASE(viewAnimation);
     }
-
-  [self setFrame: frameRect display: displayFlag];
+  else
+    {
+      [self setFrame: frameRect display: displayFlag];
+    }
 }
 
 - (NSTimeInterval) animationResizeTime: (NSRect)newFrame
@@ -2033,9 +2032,9 @@ many times.
 
   // Find the biggest difference
   maxDiff = abs(newFrame.origin.x - _frame.origin.x);
-  maxDiff = MAX(maxDiff, newFrame.origin.y - _frame.origin.y);
-  maxDiff = MAX(maxDiff, newFrame.size.width - _frame.size.width);
-  maxDiff = MAX(maxDiff, newFrame.size.height - _frame.size.height);
+  maxDiff = MAX(maxDiff, abs(newFrame.origin.y - _frame.origin.y));
+  maxDiff = MAX(maxDiff, abs(newFrame.size.width - _frame.size.width));
+  maxDiff = MAX(maxDiff, abs(newFrame.size.height - _frame.size.height));
 
   return (maxDiff * resizeTime) / 150;
 }

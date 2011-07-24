@@ -1445,8 +1445,8 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
 - (void) dealloc
 {
-  RELEASE(_viewAnimations);
-  RELEASE(_viewAnimationDesc);
+  DESTROY(_viewAnimations);
+  DESTROY(_viewAnimationDesc);
   [super dealloc];
 }
 
