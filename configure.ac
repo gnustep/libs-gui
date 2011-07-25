@@ -247,7 +247,7 @@ if test $enable_png = yes; then
     CFLAGS="$PNG_CFLAGS ${CFLAGS}"
     LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
     AC_CHECK_HEADERS(png.h)
-    AC_SEARCH_LIBS(png_sig_cmp)
+    AC_CHECK_LIB(png, png_sig_cmp)
     if test "$ac_cv_search_png_sig_cmp" != no; then
       GRAPHIC_CFLAGS="$PNG_CFLAGS $GRAPHIC_CFLAGS"
       GRAPHIC_LFLAGS="$PNG_LDFLAGS $GRAPHIC_LFLAGS"

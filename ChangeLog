@@ -1,3 +1,10 @@
+2011-07-25 Riccardo Mottola <rm@gnu.org>
+
+	* configure.ac:
+	* configure:
+	Check for png with CHECK and not SEARCH lib to avoid position problems
+	in the linker flags (windows is sesnitive)
+
 2011-07-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAnimation.m (NSViewAnimation -dealloc): Use DESTROY
