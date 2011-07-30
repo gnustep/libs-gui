@@ -421,22 +421,17 @@ static NSMutableArray *screenArray = nil;
     }
   else
     {    
-      return 1.0;
-
-      // FIXME: The following is commented out for now because
-      // it might cause the UI to be scaled unexpectedly.
-
-      //GSDisplayServer *srv = GSCurrentServer();
-      //if (srv != nil)
-      //{
-      //  NSSize dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
-      //  // take average for 72dpi
-      //  return (dpi.width + dpi.height) / 144;
-      //}
-      //else
-      //{
-      //  return 1.0;
-      //}
+      GSDisplayServer *srv = GSCurrentServer();
+      if (srv != nil)
+      {
+        NSSize dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
+        // average the width and height
+        return (dpi.width + dpi.height) / 144.0;
+      }
+      else
+      {
+        return 1.0;
+      }
     }
 }
 

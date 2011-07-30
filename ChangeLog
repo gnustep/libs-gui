@@ -1,3 +1,13 @@
+2011-07-30 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSScreen.m (-userSpaceScaleFactor): Use the DPI
+	from the display server instead of ignoring it and assuming 72.
+
+	The X11 server was changed to always return 72 for now, so there
+	is no change in behaviour on X.
+
+	On Windows we do use the system DPI/scale factor now.
+
 2011-07-25 Riccardo Mottola <rm@gnu.org>
 
 	* configure.ac:
