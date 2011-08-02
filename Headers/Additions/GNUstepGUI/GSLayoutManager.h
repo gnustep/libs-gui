@@ -159,6 +159,16 @@ If characters have been edited, lengthChange has the text length delta.
 	changeInLength: (int)lengthChange
 	invalidatedRange: (NSRange)invalidatedRange;
 
+/**
+ * GNUstep extension
+ */
+- (void) insertGlyphs: (const NSGlyph*)glyph_list
+     withAdvancements: (const NSSize*)advancements
+               length: (NSUInteger)length
+forStartingGlyphAtIndex: (NSUInteger)glyph
+       characterIndex: (NSUInteger)index;
+
+
 @end
 
 
@@ -216,6 +226,11 @@ invalid (extends beyond the end of glyphs). */
 /* Return the first character for the glyph at glyphIndex.
 (NSRangeException?) */
 - (unsigned int) characterIndexForGlyphAtIndex: (unsigned int)glyphIndex;
+
+/**
+ * GNUstep extension
+ */
+- (NSSize) advancementForGlyphAtIndex: (unsigned int)glyphIndex;
 
 /* Returns the range of glyphs for the characters in charRange. If
 actualRange isn't NULL, the exact range of characters for the glyphs in the

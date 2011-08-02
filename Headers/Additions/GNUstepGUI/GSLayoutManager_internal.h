@@ -91,6 +91,8 @@ typedef struct
   unsigned int soft:1;
   unsigned int elasitc:1;
   unsigned int bidilevel:7; // Need to support 0..61
+
+  NSSize advancement;
 } glyph_t;
 
 

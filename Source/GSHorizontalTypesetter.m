@@ -250,6 +250,9 @@ the last time or not, we wouldn't need to clear the cache every time */
 
       g->dont_show = NO;
       g->outside_line_frag = NO;
+
+      // FIXME: This assumes the layout manager implements this GNUstep extension
+      g->size = [curLayoutManager advancementForGlyphAtIndex: cache_base + cache_length];
     }
 }
 
@@ -683,17 +686,6 @@ restart: ;
     
     NSFont *f = cache->font;
 
-    /*
-    TODO: This is kindof ugly, but -advancementForGlyph: is responsible for
-    ~10% of execution time when handling huge amounts of text (according to
-    profiling, 2004-08-09). Would be cleaner to get rid of the font/fontInfo
-    indirection.
-    */
-    id fontInfo =  [f fontInfo];
-    NSSize (*advancementForGlyph)(id, SEL, NSGlyph)
-      = (NSSize(*)(id, SEL, NSGlyph))[fontInfo methodForSelector:
-	  @selector(advancementForGlyph:)];
-
     float f_ascender = [f ascender], f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
@@ -771,9 +763,6 @@ restart: ;
 	  {
 	    float new_height;
 	    f = g->font;
-	    fontInfo = [f fontInfo];
-	    advancementForGlyph = (NSSize(*)(id, SEL, NSGlyph))
-	      [fontInfo methodForSelector: @selector(advancementForGlyph:)];
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
@@ -983,9 +972,6 @@ restart: ;
 
 	    last_p = g->pos = p;
 	    /* Only the width is used. */
-	    g->size = advancementForGlyph(fontInfo,
-					  @selector(advancementForGlyph:),
-					  g->g);
 	    p.x += g->size.width;
 	  }
 

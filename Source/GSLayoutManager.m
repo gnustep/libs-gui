@@ -990,6 +990,43 @@ Fills in all glyph holes up to last. only looking at levels below level
   return cpos + r->glyphs[glyphIndex - pos].char_offset;
 }
 
+/**
+ * GNUstep extension
+ */
+- (NSSize) advancementForGlyphAtIndex: (unsigned int)glyphIndex
+{
+  glyph_run_t *r;
+  unsigned int pos, cpos;
+
+  if (glyphs->glyph_length <= glyphIndex)
+    {
+      [self _generateGlyphsUpToGlyph: glyphIndex];
+      if (glyphs->glyph_length <= glyphIndex)
+        {
+          [NSException raise: NSRangeException
+                       format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+          return NSMakeSize(0,0);
+        }
+    }
+
+  r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
+  if (!r)
+    {
+      [NSException raise: NSRangeException
+                   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return NSMakeSize(0,0);
+    }
+
+  if (r->head.glyph_length <= glyphIndex - pos)
+    {
+      [NSException raise: NSRangeException
+		  format: @"%s internal error!", __PRETTY_FUNCTION__];
+      return NSMakeSize(0,0);
+    }
+
+  return r->glyphs[glyphIndex - pos].advancement;
+}
+
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
                        actualGlyphRange: (NSRange *)actualGlyphRange
 {
@@ -3130,7 +3167,11 @@ has).
   return _textStorage;
 }
 
+/**
+ * GNUstep extension
+ */
 - (void) insertGlyphs: (const NSGlyph*)glyph_list
+     withAdvancements: (const NSSize*)advancements
                length: (NSUInteger)length
 forStartingGlyphAtIndex: (NSUInteger)glyph
        characterIndex: (NSUInteger)index
@@ -3172,8 +3213,39 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
       // We expect to get a nominal glyph run
       g->char_offset = i + index - cpos;
       g->g = glyph_list[i];
+      g->advancement = advancements[i];
       g++;
     }
+}
+
+- (void) insertGlyphs: (const NSGlyph*)glyph_list
+               length: (NSUInteger)length
+forStartingGlyphAtIndex: (NSUInteger)glyph
+       characterIndex: (NSUInteger)index
+{
+  glyph_run_t *run;
+  int i;
+  unsigned int gpos, cpos;
+  NSSize advances[length];
+
+  run = run_for_character_index(index, glyphs, &gpos, &cpos);
+  if (!run)
+    {
+      [NSException raise: NSRangeException
+                   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+    
+  for (i=0; i<length; i++)
+    {
+      advances[i] = [run->font advancementForGlyph: glyph_list[i]];
+    }
+
+  [self insertGlyphs: glyph_list
+    withAdvancements: advances
+	      length: length
+	forStartingGlyphAtIndex: glyph
+      characterIndex: index];
 }
 
 - (NSUInteger) layoutOptions
