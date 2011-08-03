@@ -1,5 +1,10 @@
 2011-08-02  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Images/common_RadioOn.tiff:
+	* Images/common_RadioOff.tiff: Add high-dpi versions
+
+2011-08-02  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSLayoutManager.m:
 	* Source/GSHorizontalTypesetter.m:
 	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h:
