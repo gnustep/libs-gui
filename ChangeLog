@@ -1,3 +1,9 @@
+2011-08-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (+initialize): Don't create the default menu
+	zone as we never use it and a change in base made this an
+	expensive operation.
+
 2011-08-02  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images/common_RadioOn.tiff:
