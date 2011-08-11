@@ -1508,6 +1508,9 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   [_boundsMatrix scaleTo: scale.width : scale.height];
   if (!_is_rotated_from_base)
     {
+      scale = _computeScale(_bounds.size, newSize);
+      _bounds.origin.x = _bounds.origin.x / scale.width;
+      _bounds.origin.y = _bounds.origin.y / scale.height;
       _bounds.size = newSize;
     }
   else
@@ -1593,7 +1596,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [_boundsMatrix scaleXBy: newSize.width yBy: newSize.height];
       // Adjust bounds
-      _bounds.origin.x  = _bounds.origin.x  / newSize.width;
+      _bounds.origin.x = _bounds.origin.x / newSize.width;
       _bounds.origin.y = _bounds.origin.y / newSize.height;
       _bounds.size.width  = _bounds.size.width  / newSize.width;
       _bounds.size.height = _bounds.size.height / newSize.height;

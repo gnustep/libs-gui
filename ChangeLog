@@ -1,3 +1,7 @@
+2011-08-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBoundsSize:): Adjust the origin as well.
+
 2011-08-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (+initialize): Don't create the default menu
