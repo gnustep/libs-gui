@@ -8,10 +8,6 @@
  */
 @interface GSSpeechEngine : NSObject
 /**
- * Returns a new instance of the default speech engine.
- */
-+ (GSSpeechEngine*)defaultSpeechEngine;
-/**
  * Begin speaking the specified string.
  */
 - (void)startSpeaking: (NSString*)aString notifyWhenDone: (id)aDelegate;
@@ -47,4 +43,10 @@
  * used to notify the original caller.
  */
 - (void)didFinishSpeaking: (BOOL)didFinish;
+@end
+@interface GSSpeechEngine (Default)
+/**
+ * Returns a new instance of the default speech engine.
+ */
++ (GSSpeechEngine*)defaultSpeechEngine;
 @end
