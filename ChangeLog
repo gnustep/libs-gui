@@ -1,3 +1,9 @@
+2011-08-11 10:57  theraven
+
+	* libs/gui/trunk/Tools/speech/GSSpeechEngine.h: Move the
+	  +defaultSpeechServer method into a category interface, to silence
+	  a clang warning.
+
 2011-08-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBoundsSize:): Adjust the origin as well.
