@@ -1,5 +1,10 @@
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (GSResolutionOfImageRep): Specify behaviour when the
+	rep has a size of zero, or is a vector rep. Prevent division by 0.
+
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (-nativeDrawInRect:...): Deal with a zero rep size
 	* Source/NSCustomImageRep.m:
 	- Don't retain the delegate (matching OS X)

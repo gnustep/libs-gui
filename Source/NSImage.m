@@ -1550,10 +1550,30 @@ static BOOL GSSizeIsIntegerMultipleOfSize(NSSize size, NSSize baseSize)
      GSIsMultiple(size.height, baseSize.height));
 }
 
+/**
+ * Returns {0, 0} if the image rep doesn't have a size set,
+ * or the pixelsWide or pixelsHigh are NSImageRepMatchesDevice
+ */
 static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 {
-  return NSMakeSize(72.0 * (CGFloat)[rep pixelsWide] / [rep size].width,
-		    72.0 * (CGFloat)[rep pixelsHigh] / [rep size].height);
+  const int pixelsWide = [rep pixelsWide];
+  const int pixelsHigh = [rep pixelsHigh];
+  const NSSize repSize = [rep size];
+
+  if (repSize.width == 0 || repSize.height == 0)
+    {
+      return NSMakeSize(0, 0);
+    }
+  else if (pixelsWide == NSImageRepMatchesDevice ||
+	   pixelsHigh == NSImageRepMatchesDevice)
+    {
+      return NSMakeSize(0, 0);
+    }
+  else
+    {
+      return NSMakeSize(72.0 * (CGFloat)pixelsWide / repSize.width,
+			72.0 * (CGFloat)pixelsHigh / repSize.height);
+    }
 }
 
 /* Find reps that match the resolution (DPI) of the device (including integer
