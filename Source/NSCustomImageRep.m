@@ -40,7 +40,9 @@
 @implementation NSCustomImageRep
 
 /**<p> Initializes a new NSCustomImageRep with. When a -draw message is
-   recieved it send aSelector message to the delegate anObject.</p>
+   recieved it send aSelector message to the delegate anObject.
+   The delegate is not retained, so it is the caller's responsibility
+   to ensure the delegate remains valid for the life of the receiver.</p>
    <p>See Also: -delegate -drawSelector [NSImageRep-draw]</p>
  */
 - (id) initWithDrawSelector: (SEL)aSelector
@@ -49,15 +51,13 @@
   if ( ! ( self = [super init] ) ) 
     return nil;
 
-  /* WARNING: Retaining the delegate may or may not create a cyclic graph */
-  _delegate = RETAIN(anObject);
+  _delegate = anObject;
   _selector = aSelector;
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(_delegate);
   [super dealloc];
 }
 
@@ -104,8 +104,6 @@
   ctxt = GSCurrentContext();
   if (aPoint.x != 0 || aPoint.y != 0)
     {
-      if ([[ctxt focusView] isFlipped])
-	aPoint.y -= _size.height;
       ctm = GSCurrentCTM(ctxt);
       DPStranslate(ctxt, aPoint.x, aPoint.y);
       reset = 1;
@@ -135,8 +133,7 @@
   // if either is zero, don't scale at all.
   if (_size.width == 0 || _size.height == 0)
     {
-      scale = NSMakeSize(NSWidth(aRect), 
-			 NSHeight(aRect));
+      scale = NSMakeSize(1, 1); 
     }
   else
     {
@@ -144,8 +141,6 @@
 			 NSHeight(aRect) / _size.height);
     }
 
-  if ([[ctxt focusView] isFlipped])
-    aRect.origin.y -= NSHeight(aRect);
   ctm = GSCurrentCTM(ctxt);
   DPStranslate(ctxt, NSMinX(aRect), NSMinY(aRect));
   DPSscale(ctxt, scale.width, scale.height);
@@ -158,7 +153,8 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  
+
+  // FIXME: Should this be changed to encodeConditionalObject: ?
   [aCoder encodeObject: _delegate];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_selector];
 }

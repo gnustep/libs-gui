@@ -1,3 +1,12 @@
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (-nativeDrawInRect:...): Deal with a zero rep size
+	* Source/NSCustomImageRep.m:
+	- Don't retain the delegate (matching OS X)
+	- Remove unnecessary flip checks from -drawAtPoint: and -drawInRect:
+	  to match the code in NSImageRep
+	- Fix a mistake when setting the ctm scale factor
+
 2011-08-11 10:57  theraven
 
 	* libs/gui/trunk/Tools/speech/GSSpeechEngine.h: Move the

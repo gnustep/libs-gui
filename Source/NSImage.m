@@ -1025,6 +1025,11 @@ behavior precisely matches Cocoa. */
     NSRect srcRectInCache;
     NSAffineTransform *transform, *backup;
 
+    if (NSEqualSizes(repSize, NSZeroSize))
+      {
+	repSize = dstRect.size;
+      }
+
     if (([rep pixelsWide] == NSImageRepMatchesDevice &&
 	 [rep pixelsHigh] == NSImageRepMatchesDevice) &&
 	(dstRect.size.width > repSize.width ||
