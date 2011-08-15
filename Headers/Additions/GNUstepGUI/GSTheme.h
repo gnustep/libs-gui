@@ -287,7 +287,17 @@ APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
  */
 APPKIT_EXPORT  NSString        *GSColorWell;
 
-
+/**
+ * Structure to describe the size of top/bottom/left/right margins inside
+ * a button
+ */
+typedef struct GSThemeMargins
+{
+  CGFloat left;
+  CGFloat right;
+  CGFloat top;
+  CGFloat bottom;
+} GSThemeMargins;
 
 /**
  * This defines how the values in a tile array should be used when
@@ -732,9 +742,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /**
  * Amount by which the button is inset by the border.
  */
-- (NSSize) buttonBorderForCell: (NSCell*)cell
-			 style: (int)style 
-                         state: (GSThemeControlState)state;
+- (GSThemeMargins) buttonMarginsForCell: (NSCell*)cell
+				  style: (int)style 
+				  state: (GSThemeControlState)state;
 
 /** 
  * Draws the indicator (normally a dotted rectangle) to show that

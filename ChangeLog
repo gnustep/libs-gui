@@ -1,5 +1,21 @@
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: New GSThemeMargins struct.
+	Rename buttonBorderForCell:style:state: to buttonMarginsForCell:style:state:
+	and return the top/bottom/left/right margins instead of just two values.
+	(This is a theme API break.)
+	* Source/GSThemeDrawing.m: Implement buttonMarginsForCell:style:state:.
+	Also reduce the top and left margin of the default button by 1 pt, to
+	better reflect the button's appearance.
+	* Source/GSGuiPrivate.h: Add a GSRoundTowardsNegativeInfinity function
+	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Round the image
+	position down and to the right, as this seems to look the best.
+	* Source/NSButtonCell.m (-cellSize): Call new buttonMarginsForCell: method
+	* Source/NSButtonCell.m (-drawingRectForBounds:): Call new
+	buttonMarginsForCell: method
+
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (GSResolutionOfImageRep): Specify behaviour when the
 	rep has a size of zero, or is a vector rep. Prevent division by 0.
 

@@ -966,37 +966,51 @@ typedef struct _GSButtonCellFlags
   // Draw image
   if (imageToDisplay != nil)
     {
-      NSSize size;
-      NSPoint position;
-      
-      size = [imageToDisplay size];
-      position.x = MAX(NSMidX(cellFrame) - (size.width / 2.), 0.);
-      position.y = MAX(NSMidY(cellFrame) - (size.height / 2.), 0.);
-      
+      const NSSize size = [imageToDisplay size];
+
+      /* Calculate an offset from the cellFrame origin */
+     
+      NSPoint offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
+				 (NSHeight(cellFrame) - size.height) / 2.0);
+
+      /* Pixel-align the offset */      
+
+      if (controlView)
+	{
+	  NSPoint inBase = [controlView convertPointToBase: offset];
+	  
+	  // By convention we will round down and to the right.
+	  // With the standard button design this looks good
+	  // because the bottom and right edges of the button look 'heavier'
+	  // so if the image's center must be offset from the button's geometric
+	  // center, it looks beter if it's closer to the 'heavier' part
+	  
+	  inBase.x = GSRoundTowardsInfinity(inBase.x);
+	  inBase.y = [controlView isFlipped] ? 
+	    GSRoundTowardsInfinity(inBase.y) :
+	    GSRoundTowardsNegativeInfinity(inBase.y);
+	  
+	  offset = [controlView convertPointFromBase: inBase];
+	}
+
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
       if ([controlView isFlipped])
-        {
-          position.y += size.height;
-        }
-
-      /* Pixel-align the drawing point */
-      if (controlView)
 	{
-	  position = [controlView convertPointToBase: position];
-	}
-      position = NSMakePoint(GSRoundTowardsInfinity(position.x), GSRoundTowardsInfinity(position.y));
-      if (controlView)
-	{
-	  position = [controlView convertPointFromBase: position];
+	  offset.y += size.height;
 	}
 
-      [[GSTheme theme] drawImage: imageToDisplay
-		    inButtonCell: self
-		       withFrame: cellFrame
-		        position: position];
+      {
+	const NSPoint position = NSMakePoint(cellFrame.origin.x + offset.x,
+					     cellFrame.origin.y + offset.y);
+
+	[[GSTheme theme] drawImage: imageToDisplay
+		      inButtonCell: self
+			 withFrame: cellFrame
+			  position: position];
+      }
     }
 }
 
@@ -1300,7 +1314,7 @@ typedef struct _GSButtonCellFlags
 - (NSSize) cellSize
 {
   NSSize s;
-  NSSize borderSize;
+  GSThemeMargins border;
   unsigned mask;
   NSImage *imageToDisplay;
   NSAttributedString *titleToDisplay;
@@ -1400,13 +1414,18 @@ typedef struct _GSButtonCellFlags
           buttonState = GSThemeSelectedState;
         }
 
-      borderSize = [[GSTheme theme] buttonBorderForCell: self
-						  style: _bezel_style 
-                                                  state: buttonState];
+      border = [[GSTheme theme] buttonMarginsForCell: self
+					       style: _bezel_style 
+					       state: buttonState];
     }
   else
-    borderSize = NSZeroSize;
-
+    {
+      border.left = 0;
+      border.top = 0;
+      border.right = 0;
+      border.bottom = 0;
+    }
+      
   /* Add an additional 6 pixels horizontally so that the text is not
    * too near the boundaries of the button.  Without them, autosized
    * buttons look too tiny and crammed.  This might be made
@@ -1419,12 +1438,13 @@ typedef struct _GSButtonCellFlags
   if ((_cell.is_bordered && (_cell.image_position != NSImageOnly))
       || _cell.is_bezeled)
     {
-      borderSize.width += 6;
+      border.left += 6;
+      border.right += 6;
     }
 
   // Add border size
-  s.width += 2 * borderSize.width;
-  s.height += 2 * borderSize.height;
+  s.width += border.left + border.right;
+  s.height += border.top + border.bottom;
 
   return s;
 }
@@ -1433,7 +1453,7 @@ typedef struct _GSButtonCellFlags
 {
   if (_cell.is_bordered)
     {
-      NSSize borderSize;
+      GSThemeMargins border;
       unsigned mask;
       GSThemeControlState buttonState = GSThemeNormalState;
       NSRect interiorFrame;
@@ -1464,10 +1484,16 @@ typedef struct _GSButtonCellFlags
           buttonState = GSThemeSelectedState;
         }
 
-      borderSize = [[GSTheme theme] buttonBorderForCell: self
-						  style: _bezel_style 
-                                                  state: buttonState];
-      interiorFrame = NSInsetRect(theRect, borderSize.width, borderSize.height);
+      border = [[GSTheme theme] buttonMarginsForCell: self
+					       style: _bezel_style 
+					       state: buttonState];
+
+      interiorFrame = theRect;
+      interiorFrame.origin.x += border.left;
+      interiorFrame.size.width -= border.left + border.right;
+      interiorFrame.origin.y += ([_control_view isFlipped] ? 
+				 border.top : border.bottom);
+      interiorFrame.size.height -= border.bottom + border.top;
 
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
       if (mask & NSPushInCellMask)

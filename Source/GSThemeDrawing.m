@@ -189,12 +189,13 @@
     }
 }
 
-- (NSSize) buttonBorderForCell: (NSCell*)cell
-			 style: (int)style 
-			 state: (GSThemeControlState)state
+- (GSThemeMargins) buttonMarginsForCell: (NSCell*)cell
+				  style: (int)style 
+				  state: (GSThemeControlState)state
 {
   GSDrawTiles	*tiles = nil;
   NSString	*name = [self nameForElement: cell];
+  GSThemeMargins margins;
 
   if (name == nil)
     {
@@ -214,36 +215,48 @@
 	  case NSRoundRectBezelStyle:
 	  case NSTexturedRoundedBezelStyle:
 	  case NSRoundedBezelStyle:
-	    return NSMakeSize(5, 5);
+	    margins.left = 5; margins.top = 5; margins.right = 5; margins.bottom = 5;
+	    return margins;
 	  case NSTexturedSquareBezelStyle:
-	    return NSMakeSize(3, 3);
+	    margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+	    return margins;
 	  case NSSmallSquareBezelStyle:
 	  case NSRegularSquareBezelStyle:
 	  case NSShadowlessSquareBezelStyle:
-	    return NSMakeSize(2, 2);
+	    margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
+	    return margins;
 	  case NSThickSquareBezelStyle:
-	    return NSMakeSize(3, 3);
+	    margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+	    return margins;
 	  case NSThickerSquareBezelStyle:
-	    return NSMakeSize(4, 4);
+	    margins.left = 4; margins.top = 4; margins.right = 4; margins.bottom = 4;
+	    return margins;
 	  case NSCircularBezelStyle:
-	    return NSMakeSize(5, 5);
+	    margins.left = 5; margins.top = 5; margins.right = 5; margins.bottom = 5;
+	    return margins;
 	  case NSHelpButtonBezelStyle:
-	    return NSMakeSize(2, 2);
+	    margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
+	    return margins;
 	  case NSDisclosureBezelStyle:
 	  case NSRoundedDisclosureBezelStyle:
 	  case NSRecessedBezelStyle:
 	    // FIXME
-	    return NSMakeSize(0, 0);
+	    margins.left = 0; margins.top = 0; margins.right = 0; margins.bottom = 0;
+	    return margins;
 	  default:
-	    return NSMakeSize(3, 3);
+	    margins.left = 2; margins.top = 2; margins.right = 3; margins.bottom = 3;
+	    return margins;
 	}
     }
   else
     {
-      // FIXME: We assume the button's top and right padding are the same as
-      // its bottom and left.
-      return NSMakeSize(tiles->contentRect.origin.x,
-                        tiles->contentRect.origin.y);
+      // FIXME: Move this code to a method in GSDrawTiles?
+      // FIXME: Not correct, need to get the content area of the draw tiles
+      margins.left = tiles->rects[TileCL].size.width;
+      margins.top = tiles->rects[TileTM].size.height;
+      margins.right = tiles->rects[TileCR].size.width;
+      margins.bottom = tiles->rects[TileBM].size.height;
+      return margins;
     }
 }
 

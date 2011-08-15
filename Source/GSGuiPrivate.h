@@ -88,5 +88,20 @@ static inline CGFloat GSRoundTowardsInfinity(CGFloat x)
   return floor(x + 0.5);
 }
 
+/**
+ * Rounds to the nearest integer, and in the case of ties, round to the 
+ * smaller integer.
+ *
+ * For example:
+ * GSRoundTowardsNegativeInfinity(0.8) == 1.0
+ * GSRoundTowardsNegativeInfinity(0.5) == 0.0
+ * GSRoundTowardsNegativeInfinity(0.1) == 0.0
+ * GSRoundTowardsNegativeInfinity(-2.5) == -3.0
+ */
+static inline CGFloat GSRoundTowardsNegativeInfinity(CGFloat x)
+{
+  return ceil(x - 0.5);
+}
+
 #endif /* _GNUstep_H_GSGuiPrivate */
 
