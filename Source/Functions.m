@@ -32,12 +32,14 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSProcessInfo.h>
 
+#import "GSGuiPrivate.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
@@ -342,6 +344,165 @@ void NSDrawBitmap(NSRect rect,
 
   [ctxt GSDrawImage: rect : bitmap];
   RELEASE(bitmap);
+}
+
+/**
+ * Tiles an image in a rect, starting from the lower-left-hand corner
+ */
+static void GSDrawRepeatingImage(NSRect aRect, NSImage *image, NSCompositingOperation op,
+				 CGFloat fraction, BOOL flipped)
+{
+  const NSSize imageSize = [image size];
+  if (imageSize.width <= 0 ||
+      imageSize.height <= 0)
+    {
+      return;
+    }
+
+  [NSGraphicsContext saveGraphicsState];
+  NSRectClip(aRect); 
+  
+  {
+    const NSInteger numHorizontal = ceil(aRect.size.width / imageSize.width);
+    const NSInteger numVertical = ceil(aRect.size.height / imageSize.height);
+    NSInteger x, y;
+    
+    if (numHorizontal > 0 && numVertical > 0)
+      {
+	for (x = 0; x < numHorizontal; x++)
+	  {
+	    for (y = 0; y < numVertical; y++)
+	      {
+		NSRect drawRect;
+		drawRect.size = imageSize;
+		drawRect.origin.x = aRect.origin.x + (x * imageSize.width);
+		drawRect.origin.y = flipped ? (NSMaxY(aRect) - (y * imageSize.height))
+		  : (aRect.origin.y + (y * imageSize.height));
+
+		[image drawInRect: drawRect
+			 fromRect: NSZeroRect
+			operation: op
+			 fraction: fraction
+		   respectFlipped: YES
+			    hints: nil];
+	      }
+	  }
+      }
+  }
+
+  [NSGraphicsContext restoreGraphicsState];
+}
+
+void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
+			 NSImage *topRight, NSImage *centerLeft,
+			 NSImage *centerMiddle, NSImage *centerRight,
+			 NSImage *bottomLeft, NSImage *bottomMiddle,
+			 NSImage *bottomRight, NSCompositingOperation op,
+			 CGFloat fraction, BOOL flipped)
+{
+  // FIXME: round in device coordinate system
+  aRect = NSMakeRect(GSRoundTowardsInfinity(aRect.origin.x),
+		     GSRoundTowardsInfinity(aRect.origin.y),
+		     GSRoundTowardsInfinity(aRect.size.width),
+		     GSRoundTowardsInfinity(aRect.size.height));
+  
+  [NSGraphicsContext saveGraphicsState];
+
+  // Protects against the case when the smallest source image is larger than aRect
+  NSRectClip(aRect); 
+
+  {
+    NSRect topLeftRect;
+    NSRect topMiddleRect;
+    NSRect topRightRect;
+    NSRect centerLeftRect;
+    NSRect centerMiddleRect;
+    NSRect centerRightRect;
+    NSRect bottomLeftRect; 
+    NSRect bottomMiddleRect;
+    NSRect bottomRightRect;
+
+    // These two images are the only sizes we use in addition to aRect
+    topLeftRect.size = [topLeft size];
+    bottomRightRect.size = [bottomRight size];
+
+    // Fill in the rest of the sizes
+    topMiddleRect.size = NSMakeSize(MAX(0, aRect.size.width - 
+					topLeftRect.size.width - 
+					bottomRightRect.size.width),
+				    topLeftRect.size.height);
+    topRightRect.size = NSMakeSize(bottomRightRect.size.width,
+				   topLeftRect.size.height);
+    centerLeftRect.size = NSMakeSize(topLeftRect.size.width,
+				     MAX(0, aRect.size.height - 
+					 topLeftRect.size.height - 
+					 bottomRightRect.size.height));
+    centerMiddleRect.size = NSMakeSize(topMiddleRect.size.width,
+				       centerLeftRect.size.height);
+    centerRightRect.size = NSMakeSize(topRightRect.size.width,
+				      centerLeftRect.size.height);
+    bottomLeftRect.size = NSMakeSize(topLeftRect.size.width,
+				     bottomRightRect.size.height);
+    bottomMiddleRect.size = NSMakeSize(centerMiddleRect.size.width,
+				       bottomRightRect.size.height);
+
+    // Now fill in the positions
+
+    if (flipped)
+      {
+	topLeftRect.origin = aRect.origin;
+	topMiddleRect.origin = NSMakePoint(NSMaxX(topLeftRect),
+					   aRect.origin.y);
+	topRightRect.origin = NSMakePoint(NSMaxX(topMiddleRect),
+					  aRect.origin.y);
+	centerLeftRect.origin = NSMakePoint(aRect.origin.x,
+					    NSMaxY(topLeftRect));
+	centerMiddleRect.origin = NSMakePoint(NSMaxX(topLeftRect),
+					      NSMaxY(topLeftRect));
+	centerRightRect.origin = NSMakePoint(NSMaxX(topMiddleRect),
+					     NSMaxY(topMiddleRect));
+	bottomLeftRect.origin = NSMakePoint(aRect.origin.x,
+					    NSMaxY(centerLeftRect));
+	bottomMiddleRect.origin = NSMakePoint(NSMaxX(centerLeftRect),
+					      NSMaxY(centerLeftRect));
+	bottomRightRect.origin = NSMakePoint(NSMaxX(centerMiddleRect),
+					     NSMaxY(centerMiddleRect));
+      }
+    else
+      {
+	bottomLeftRect.origin = aRect.origin;
+	bottomMiddleRect.origin = NSMakePoint(NSMaxX(bottomLeftRect),
+					   aRect.origin.y);
+	bottomRightRect.origin = NSMakePoint(NSMaxX(bottomMiddleRect),
+					  aRect.origin.y);
+	centerLeftRect.origin = NSMakePoint(aRect.origin.x,
+					    NSMaxY(bottomLeftRect));
+	centerMiddleRect.origin = NSMakePoint(NSMaxX(bottomLeftRect),
+					      NSMaxY(bottomLeftRect));
+	centerRightRect.origin = NSMakePoint(NSMaxX(bottomMiddleRect),
+					     NSMaxY(bottomMiddleRect));
+	topLeftRect.origin = NSMakePoint(aRect.origin.x,
+					 NSMaxY(centerLeftRect));
+	topMiddleRect.origin = NSMakePoint(NSMaxX(centerLeftRect),
+					   NSMaxY(centerLeftRect));
+	topRightRect.origin = NSMakePoint(NSMaxX(centerMiddleRect),
+					  NSMaxY(centerMiddleRect));
+      }
+	
+    // Draw the images left-to-right, bottom-to-top
+
+    [bottomLeft drawInRect: bottomLeftRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
+    GSDrawRepeatingImage(bottomMiddleRect, bottomMiddle, op, fraction, flipped);
+    [bottomRight drawInRect: bottomRightRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];   
+    GSDrawRepeatingImage(centerLeftRect, centerLeft, op, fraction, flipped);
+    GSDrawRepeatingImage(centerMiddleRect, centerMiddle, op, fraction, flipped);
+    GSDrawRepeatingImage(centerRightRect, centerRight, op, fraction, flipped);
+    [topLeft drawInRect: topLeftRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
+    GSDrawRepeatingImage(topMiddleRect, topMiddle, op, fraction, flipped);
+    [topRight drawInRect: topRightRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
+  }
+
+  [NSGraphicsContext restoreGraphicsState]; // Restore clipping region
 }
 
 /*

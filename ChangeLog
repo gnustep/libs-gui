@@ -1,5 +1,10 @@
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/Functions.m:
+	* Headers/AppKit/NSGraphics.h: NSDrawNinePartImage implementation
+
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h: New GSThemeMargins struct.
 	Rename buttonBorderForCell:style:state: to buttonMarginsForCell:style:state:
 	and return the top/bottom/left/right margins instead of just two values.

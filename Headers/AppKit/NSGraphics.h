@@ -176,6 +176,14 @@ APPKIT_EXPORT void NSDrawBitmap(NSRect rect,
                                 NSString *colorSpaceName,
                                 const unsigned char *const data[5]);
 
+APPKIT_EXPORT void
+NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
+		    NSImage *topRight, NSImage *centerLeft,
+		    NSImage *centerMiddle, NSImage *centerRight,
+		    NSImage *bottomLeft, NSImage *bottomMiddle,
+		    NSImage *bottomRight, NSCompositingOperation op,
+		    CGFloat fraction, BOOL flipped);
+
 static inline void
 NSBeep(void)
 {
