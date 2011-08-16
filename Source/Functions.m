@@ -453,7 +453,7 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 	topLeftRect.origin = aRect.origin;
 	topMiddleRect.origin = NSMakePoint(NSMaxX(topLeftRect),
 					   aRect.origin.y);
-	topRightRect.origin = NSMakePoint(NSMaxX(topMiddleRect),
+	topRightRect.origin = NSMakePoint(NSMaxX(aRect) - NSWidth(topRightRect),
 					  aRect.origin.y);
 	centerLeftRect.origin = NSMakePoint(aRect.origin.x,
 					    NSMaxY(topLeftRect));
@@ -462,19 +462,19 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 	centerRightRect.origin = NSMakePoint(NSMaxX(topMiddleRect),
 					     NSMaxY(topMiddleRect));
 	bottomLeftRect.origin = NSMakePoint(aRect.origin.x,
-					    NSMaxY(centerLeftRect));
+					    NSMaxY(aRect) - NSHeight(bottomLeftRect));
 	bottomMiddleRect.origin = NSMakePoint(NSMaxX(centerLeftRect),
 					      NSMaxY(centerLeftRect));
-	bottomRightRect.origin = NSMakePoint(NSMaxX(centerMiddleRect),
-					     NSMaxY(centerMiddleRect));
+	bottomRightRect.origin = NSMakePoint(NSMaxX(aRect) - NSWidth(bottomRightRect),
+					     NSMaxY(aRect) - NSHeight(bottomRightRect));
       }
     else
       {
 	bottomLeftRect.origin = aRect.origin;
 	bottomMiddleRect.origin = NSMakePoint(NSMaxX(bottomLeftRect),
-					   aRect.origin.y);
-	bottomRightRect.origin = NSMakePoint(NSMaxX(bottomMiddleRect),
-					  aRect.origin.y);
+					      aRect.origin.y);
+	bottomRightRect.origin = NSMakePoint(NSMaxX(aRect) - NSWidth(bottomRightRect),
+					     aRect.origin.y);
 	centerLeftRect.origin = NSMakePoint(aRect.origin.x,
 					    NSMaxY(bottomLeftRect));
 	centerMiddleRect.origin = NSMakePoint(NSMaxX(bottomLeftRect),
@@ -482,11 +482,11 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 	centerRightRect.origin = NSMakePoint(NSMaxX(bottomMiddleRect),
 					     NSMaxY(bottomMiddleRect));
 	topLeftRect.origin = NSMakePoint(aRect.origin.x,
-					 NSMaxY(centerLeftRect));
+					 NSMaxY(aRect) - NSHeight(topLeftRect));
 	topMiddleRect.origin = NSMakePoint(NSMaxX(centerLeftRect),
 					   NSMaxY(centerLeftRect));
-	topRightRect.origin = NSMakePoint(NSMaxX(centerMiddleRect),
-					  NSMaxY(centerMiddleRect));
+	topRightRect.origin = NSMakePoint(NSMaxX(aRect) - NSWidth(topRightRect),
+					  NSMaxY(aRect) - NSHeight(topRightRect));
       }
 	
     // Draw the images left-to-right, bottom-to-top

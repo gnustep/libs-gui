@@ -1,5 +1,10 @@
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/Functions.m (NSDrawNinePartImage): Bugfix when drawing with
+	not enough space
+
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/Functions.m (NSDrawNinePartImage): Bugfix in flipped drawing code
 
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
