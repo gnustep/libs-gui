@@ -376,7 +376,7 @@ static void GSDrawRepeatingImage(NSRect aRect, NSImage *image, NSCompositingOper
 		NSRect drawRect;
 		drawRect.size = imageSize;
 		drawRect.origin.x = aRect.origin.x + (x * imageSize.width);
-		drawRect.origin.y = flipped ? (NSMaxY(aRect) - (y * imageSize.height))
+		drawRect.origin.y = flipped ? (NSMaxY(aRect) - ((y + 1) * imageSize.height))
 		  : (aRect.origin.y + (y * imageSize.height));
 
 		[image drawInRect: drawRect

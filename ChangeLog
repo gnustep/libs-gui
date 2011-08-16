@@ -1,5 +1,9 @@
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/Functions.m (NSDrawNinePartImage): Bugfix in flipped drawing code
+
+2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/Functions.m:
 	* Headers/AppKit/NSGraphics.h: NSDrawNinePartImage implementation
 
