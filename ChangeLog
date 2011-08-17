@@ -1,3 +1,8 @@
+2011-08-17  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/Functions.m (NSDrawNinePartImage): Pixel-align drawing rect using
+	-[NSView centerScanRect]
+
 2011-08-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/Functions.m (NSDrawNinePartImage): Bugfix when drawing with

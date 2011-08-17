@@ -400,11 +400,12 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 			 NSImage *bottomRight, NSCompositingOperation op,
 			 CGFloat fraction, BOOL flipped)
 {
-  // FIXME: round in device coordinate system
-  aRect = NSMakeRect(GSRoundTowardsInfinity(aRect.origin.x),
-		     GSRoundTowardsInfinity(aRect.origin.y),
-		     GSRoundTowardsInfinity(aRect.size.width),
-		     GSRoundTowardsInfinity(aRect.size.height));
+  NSView *focusView = [NSView focusView];
+
+  if (nil != focusView)
+    {
+      aRect = [focusView centerScanRect: aRect];
+    }
   
   [NSGraphicsContext saveGraphicsState];
 
