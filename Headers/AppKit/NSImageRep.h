@@ -34,6 +34,7 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
+#import <AppKit/NSGraphicsContext.h>
 
 @class NSString;
 @class NSArray;
@@ -147,6 +148,14 @@ enum {
 - (BOOL)draw;
 - (BOOL)drawAtPoint:(NSPoint)aPoint;
 - (BOOL)drawInRect:(NSRect)aRect;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (BOOL) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta
+     respectFlipped: (BOOL)respectFlipped
+	      hints: (NSDictionary*)hints;
+#endif
 
 //
 // Managing NSImageRep Subclasses 

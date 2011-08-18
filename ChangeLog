@@ -1,3 +1,14 @@
+2011-08-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSImageRep.h: Add
+	-drawInRect:fromRect:operation:fraction:respectFlipped:hints: method
+	* Source/NSImage.m:
+	* Source/NSImageRep.m: Refactor drawing code from NSImage to NSImageRep.
+	This should cause no functionlity change, but it lets NSImageRep
+	subclasses implement more efficient versions of -drawInRect:fromRect:...
+	method that don't involve the wasteful drawing the image in a temporary
+	offscreen window and then drawing from there on to the destination surface.
+
 2011-08-17  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/Functions.m (NSDrawNinePartImage): Pixel-align drawing rect using

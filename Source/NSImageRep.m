@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <string.h>
+#import <Foundation/NSAffineTransform.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSValue.h>
@@ -36,14 +37,19 @@
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSDebug.h>
+#import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSImageRep.h"
 #import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSCachedImageRep.h"
 #import "AppKit/NSEPSImageRep.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/DPSOperators.h"
+#import "AppKit/PSOperators.h"
 #import "GNUstepGUI/GSGhostscriptImageRep.h"
 #import "GNUstepGUI/GSImageMagickImageRep.h"
 
@@ -489,6 +495,316 @@ implement, so we can't do that. */
   ok = [self draw];
   GSSetCTM(ctxt, ctm);
   return ok;
+}
+
+/* New code path that delegates as much as possible to the backend and whose 
+behavior precisely matches Cocoa. */
+- (void) nativeDrawInRect: (NSRect)dstRect
+                 fromRect: (NSRect)srcRect
+                operation: (NSCompositingOperation)op
+                 fraction: (float)delta
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  /* An intermediate image used to scale the image to be drawn as needed */
+  NSCachedImageRep *cache;
+  /* The scaled image graphics state we used as the source from which we 
+     draw into the destination (the current graphics context)*/
+  int gState;
+  /* The context of the cache window */
+  NSGraphicsContext *cacheCtxt;
+  const NSSize repSize = [self size];
+  /* The size of the cache window */
+  NSSize cacheSize;
+  
+  CGFloat repToCacheWidthScaleFactor;
+  CGFloat repToCacheHeightScaleFactor;
+  
+  NSRect srcRectInCache;
+  NSAffineTransform *transform, *backup;
+  
+  // FIXME: Revisit this calculation of cache size
+
+  if (([self pixelsWide] == NSImageRepMatchesDevice &&
+       [self pixelsHigh] == NSImageRepMatchesDevice) &&
+      (dstRect.size.width > repSize.width ||
+       dstRect.size.height > repSize.height))
+    {
+      cacheSize = [[ctxt GSCurrentCTM] transformSize: dstRect.size];
+    }
+  else
+    {
+      cacheSize = [[ctxt GSCurrentCTM] transformSize: repSize];
+    }
+  
+  if (cacheSize.width < 0)
+    cacheSize.width *= -1;
+  if (cacheSize.height < 0)
+    cacheSize.height *= -1;
+  
+  repToCacheWidthScaleFactor = cacheSize.width / repSize.width;
+  repToCacheHeightScaleFactor = cacheSize.height / repSize.height;
+  
+  srcRectInCache = NSMakeRect(srcRect.origin.x * repToCacheWidthScaleFactor, 
+			      srcRect.origin.y * repToCacheHeightScaleFactor, 
+			      srcRect.size.width * repToCacheWidthScaleFactor, 
+			      srcRect.size.height * repToCacheHeightScaleFactor);
+  
+  cache = [[NSCachedImageRep alloc]
+                initWithSize: NSMakeSize(ceil(cacheSize.width), ceil(cacheSize.height))
+                       depth: [[NSScreen mainScreen] depth]
+                    separate: YES
+                       alpha: YES];
+  
+  [[[cache window] contentView] lockFocus];
+  cacheCtxt = GSCurrentContext();
+  
+  /* Clear the cache window surface */
+  DPScompositerect(cacheCtxt, 0, 0, ceil(cacheSize.width), ceil(cacheSize.height), NSCompositeClear);
+  gState = [cacheCtxt GSDefineGState];
+  
+  //NSLog(@"Draw in cache size %@", NSStringFromSize(cacheSize));
+  
+  [self drawInRect: NSMakeRect(0, 0, cacheSize.width, cacheSize.height)];
+
+  [[[cache window] contentView] unlockFocus];
+  
+  //NSLog(@"Draw in %@ from %@ from cache rect %@", NSStringFromRect(dstRect), 
+  //  NSStringFromRect(srcRect), NSStringFromRect(srcRectInCache));
+  
+  backup = [ctxt GSCurrentCTM];
+  
+  transform = [NSAffineTransform transform];
+  [transform translateXBy: dstRect.origin.x yBy: dstRect.origin.y];
+  [transform scaleXBy: dstRect.size.width / srcRectInCache.size.width
+		  yBy: dstRect.size.height / srcRectInCache.size.height];
+  [transform concat];
+  
+  [ctxt GSdraw: gState
+       toPoint: NSMakePoint(0,0)
+      fromRect: srcRectInCache
+     operation: op
+      fraction: delta];
+  
+  [ctxt GSSetCTM: backup];
+  
+  [ctxt GSUndefineGState: gState];
+  DESTROY(cache);
+}
+
+/* Old code path that can probably partially be merged with the new native implementation.
+Fallback for backends other than Cairo. */
+- (void) guiDrawInRect: (NSRect)dstRect
+              fromRect: (NSRect)srcRect
+             operation: (NSCompositingOperation)op
+              fraction: (float)delta
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *transform;
+  NSSize repSize;
+
+  repSize = [self size];
+
+  /* Figure out what the effective transform from rep space to
+     'window space' is.  */
+  transform = [ctxt GSCurrentCTM];
+
+  [transform scaleXBy: dstRect.size.width / srcRect.size.width
+                  yBy: dstRect.size.height / srcRect.size.height];
+
+  /* We can't composite or dissolve directly from the image reps, so we
+     create a temporary off-screen window large enough to hold the
+     transformed image, draw the image rep there, and composite from there
+     to the destination.
+
+     Optimization: Since we do the entire image at once, we might need a
+     huge buffer.  If this starts hurting too much, there are a couple of
+     things we could do to:
+
+
+     1. Take srcRect into account and only process the parts of the image
+     we really need.
+     2. Take the clipping path into account.  Desirable, especially if we're
+     being drawn as lots of small strips in a scrollview.  We don't have
+     the clipping path here, though.
+     3. Allocate a permanent but small buffer and process the image
+     piecewise.
+
+     */
+  {
+    NSCachedImageRep *cache;
+    NSAffineTransformStruct ts;
+    NSPoint p;
+    double x0, y0, x1, y1, w, h;
+    int gState;
+    NSGraphicsContext *ctxt1;
+
+    /* Figure out how big we need to make the window that'll hold the
+       transformed image.  */
+    p = [transform transformPoint: NSMakePoint(0, repSize.height)];
+    x0 = x1 = p.x;
+    y0 = y1 = p.y;
+
+    p = [transform transformPoint: NSMakePoint(repSize.width, 0)];
+    x0 = MIN(x0, p.x);
+    y0 = MIN(y0, p.y);
+    x1 = MAX(x1, p.x);
+    y1 = MAX(y1, p.y);
+
+    p = [transform transformPoint: NSMakePoint(repSize.width, repSize.height)];
+    x0 = MIN(x0, p.x);
+    y0 = MIN(y0, p.y);
+    x1 = MAX(x1, p.x);
+    y1 = MAX(y1, p.y);
+
+    p = [transform transformPoint: NSMakePoint(0, 0)];
+    x0 = MIN(x0, p.x);
+    y0 = MIN(y0, p.y);
+    x1 = MAX(x1, p.x);
+    y1 = MAX(y1, p.y);
+
+    x0 = floor(x0);
+    y0 = floor(y0);
+    x1 = ceil(x1);
+    y1 = ceil(y1);
+
+    w = x1 - x0;
+    h = y1 - y0;
+
+    /* This is where we want the origin of image space to be in our
+       window.  */
+    p.x -= x0;
+    p.y -= y0;
+
+    cache = [[NSCachedImageRep alloc]
+                initWithSize: NSMakeSize(w, h)
+                       depth: [[NSScreen mainScreen] depth]
+                    separate: YES
+                       alpha: YES];
+
+    [[[cache window] contentView] lockFocus];
+    // The context of the cache window
+    ctxt1 = GSCurrentContext();
+    DPScompositerect(ctxt1, 0, 0, w, h, NSCompositeClear);
+
+    /* Set up the effective transform.  We also save a gState with this
+       transform to make it easier to do the final composite.  */
+    ts = [transform transformStruct];
+    ts.tX = p.x;
+    ts.tY = p.y;
+    [transform setTransformStruct: ts];
+    [ctxt1 GSSetCTM: transform];
+    gState = [ctxt1 GSDefineGState];
+
+    {
+      // Hack for xlib. Without it, transparent parts of images are black
+      [[NSColor clearColor] set];
+      NSRectFill(NSMakeRect(0, 0, repSize.width, repSize.height));
+    }
+
+    [self drawInRect: NSMakeRect(0, 0, repSize.width, repSize.height)];
+
+    /* If we're doing a dissolve, use a DestinationIn composite to lower
+       the alpha of the pixels.  */
+    if (delta != 1.0)
+      {
+        DPSsetalpha(ctxt1, delta);
+        DPScompositerect(ctxt1, 0, 0, repSize.width, repSize.height,
+                         NSCompositeDestinationIn);
+      }
+
+    [[[cache window] contentView] unlockFocus];
+
+    DPScomposite(ctxt, srcRect.origin.x, srcRect.origin.y,
+                 srcRect.size.width, srcRect.size.height, gState,
+                 dstRect.origin.x, dstRect.origin.y, op);
+
+    [ctxt GSUndefineGState: gState];
+
+    DESTROY(cache);
+  }
+}
+
+/**
+ * Fallback implementation for subclasses which don't implement their
+ * own direct drawing
+ * TODO: explain how -draw, -drawInRect:, -drawAtPoint: clear their background
+ */
+- (BOOL) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta
+     respectFlipped: (BOOL)respectFlipped
+	      hints: (NSDictionary*)hints
+{
+  NSAffineTransform *backup = nil;
+  NSGraphicsContext *ctx = GSCurrentContext();
+  const BOOL compensateForFlip = (respectFlipped && [ctx isFlipped]);
+  const NSSize repSize = [self size];
+
+  // Handle abbreviated parameters
+
+  if (NSEqualRects(srcRect, NSZeroRect))
+    {
+      srcRect.size = repSize;
+    }
+  if (NSEqualSizes(dstRect.size, NSZeroSize))
+    {
+      dstRect.size = repSize;
+    }
+
+  if (dstRect.size.width <= 0 || dstRect.size.height <= 0
+    || srcRect.size.width <= 0 || srcRect.size.height <= 0)
+    return NO;
+
+  // Clip to image bounds
+
+  if (srcRect.origin.x < 0)
+    srcRect.origin.x = 0;
+  if (srcRect.origin.y < 0)
+    srcRect.origin.y = 0;
+  if (NSMaxX(srcRect) > repSize.width)
+    srcRect.size.width = repSize.width - srcRect.origin.x;
+  if (NSMaxY(srcRect) > repSize.height)
+    srcRect.size.height = repSize.height - srcRect.origin.y;
+
+  // FIXME: Hints are currently ignored
+
+  // Compensate for flip
+
+  if (compensateForFlip)
+    {
+      NSAffineTransform *newXform;
+
+      backup = [ctx GSCurrentCTM];
+
+      newXform = [backup copy];
+      [newXform translateXBy: dstRect.origin.x yBy: dstRect.origin.y + dstRect.size.height];
+      [newXform scaleXBy: 1 yBy: -1];
+      [ctx GSSetCTM: newXform];
+      [newXform release];
+
+      dstRect.origin = NSMakePoint(0, 0);
+    }
+
+  // Draw
+
+  if ([ctx supportsDrawGState])
+  {
+    [self nativeDrawInRect: dstRect fromRect: srcRect operation: op fraction: delta];
+  }
+  else
+  {
+    [self guiDrawInRect: dstRect fromRect: srcRect operation: op fraction: delta];
+  }
+
+  // Undo flip compensation
+
+  if (compensateForFlip)
+    {
+      [ctx GSSetCTM: backup];
+    }
+
+  return YES;
 }
 
 // NSCopying protocol
