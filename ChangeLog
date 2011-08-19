@@ -1,3 +1,17 @@
+2011-08-19  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m: Reinstate use of the cached image rep, but only
+	on backends supporting GSdraw: (cairo).  This means we don't have to
+	create a window for every call to draw an image, and gives me a 5-10x
+	speedup for image drawing.
+	* Source/NSCachedImageRep.m: Implement private method
+	-nativeDrawInRect:.. which is called by NSImageRep's
+	-drawInRect:fromRect:..., and efficiently draw the cached rep
+	using GSdraw:. Also make some changes so cached image reps can have a
+	DPI != 72.
+	* Headers/AppKit/NSCachedImageRep.h: New private init method that lets
+	you specify diferent pixel size and point size.
+
 2011-08-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/AppKit/NSImageRep.h: Add

@@ -46,6 +46,17 @@
 //
 // Initializing an NSCachedImageRep 
 //
+
+/**
+ * GNUstep extension
+ */
+- (id) initWithSize: (NSSize)aSize
+	 pixelsWide: (int)pixelsWide
+	 pixelsHigh: (NSInteger)pixelsHigh
+	      depth: (int)aDepth
+	   separate: (BOOL)separate
+	      alpha: (BOOL)alpha;
+
 - (id)initWithSize:(NSSize)aSize
 	     depth:(NSWindowDepth)aDepth
 	  separate:(BOOL)separate

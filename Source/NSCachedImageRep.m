@@ -81,29 +81,47 @@
     sharing it with other images. </p>
  */
 - (id) initWithSize: (NSSize)aSize
-	      depth: (NSWindowDepth)aDepth
+	 pixelsWide: (int)pixelsWide
+	 pixelsHigh: (NSInteger)pixelsHigh
+	      depth: (int)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha
 {
   NSWindow	*win;
-  NSRect	frame;
 
   // FIXME: Only create new window when separate is YES
-  frame.origin = NSMakePoint(0,0);
-  frame.size = aSize;
-  win = [[GSCacheW alloc] initWithContentRect: frame
+  win = [[GSCacheW alloc] initWithContentRect: NSMakeRect(0, 0, pixelsWide, pixelsHigh)
 				    styleMask: NSBorderlessWindowMask | NSUnscaledWindowMask
 				      backing: NSBackingStoreRetained
 					defer: NO];
-  self = [self initWithWindow: win rect: frame];
+ 
+  [[win contentView] setBoundsSize: NSMakeSize(aSize.width, aSize.height)];
+  
+  self = [self initWithWindow: win rect: NSMakeRect(0, 0, aSize.width, aSize.height)];
   RELEASE(win);
   if (!self)
     return nil;
-
+  
   [self setAlpha: alpha];
   [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
-
+  [self setSize: aSize];
+  [self setPixelsWide: pixelsWide];
+  [self setPixelsHigh: pixelsHigh];
+ 
   return self;
+}
+
+- (id) initWithSize: (NSSize)aSize
+	      depth: (int)aDepth
+	   separate: (BOOL)separate
+	      alpha: (BOOL)alpha
+{
+  return [self initWithSize: aSize
+		 pixelsWide: aSize.width
+		 pixelsHigh: aSize.height
+		      depth: aDepth
+		   separate: separate
+		      alpha: alpha];
 }
 
 /** <p>Initializes and returns a new NSCachedImageRep into a NSWindow 
@@ -169,44 +187,59 @@
   return _window;
 }
 
+
 - (BOOL) draw
 {
-/*
-  FIXME: Horrible hack to get drawing on a scaled or rotated
-  context correct. We need another interface with the backend 
-  to do it properly.
-*/
+  // FIXME: Could re-implement
+  // Drawing of NSCachedImageRep is only supported by using
+  // -drawInRect:fromRect:operation:fraction:respectFlipped:hints: for now.
+  return NO;
+}
+
+/**
+ * Overridden private NSImageRep method called for backends supporting
+ * drawGState. This is an efficient implementation which boils down to
+ * cairo calls to set the source surface, clip, and paint.
+ */
+- (void) nativeDrawInRect: (NSRect)dstRect
+                 fromRect: (NSRect)srcRect
+                operation: (NSCompositingOperation)op
+                 fraction: (float)delta
+{
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSAffineTransform *transform;
-  NSAffineTransformStruct ts;
+  NSWindow *window = [self window];
+  int gState = [window gState];
+  NSAffineTransform *transform, *backup;
+  NSRect winSrcRect;
 
-  // Is there anything to draw?
-  if (NSIsEmptyRect(_rect))
-    return YES;
+  // Convert srcRect from rep coordinate space to window base coordinate space
+  {
+    CGFloat repToWinWidthScaleFactor = [window frame].size.width / [self size].width;
+    CGFloat repToWinHeightScaleFactor = [window frame].size.height / [self size].height;
+    
+    winSrcRect = NSMakeRect(srcRect.origin.x * repToWinWidthScaleFactor,
+			    srcRect.origin.y * repToWinHeightScaleFactor,
+			    srcRect.size.width * repToWinWidthScaleFactor,
+			    srcRect.size.height * repToWinHeightScaleFactor);
+  }
 
-  transform = [ctxt GSCurrentCTM];
-  ts = [transform transformStruct];
-      
-  if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
-      && fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
-    {
-      PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-                  [_window gState], 0, 0, NSCompositeSourceOver);
-    }
-  else
-    {
-      NSView *view = [_window contentView];
-      NSBitmapImageRep *rep;
-
-      [view lockFocus];
-      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: _rect];
-      [view unlockFocus];
-      
-      [rep draw];
-      RELEASE(rep);
-    }
-
-  return YES;
+  //NSLog(@"Using NSCachedImageRep nativeDrawInRect: fast path for %@", self);
+  
+  backup = [ctxt GSCurrentCTM];
+  
+  transform = [NSAffineTransform transform];
+  [transform translateXBy: dstRect.origin.x yBy: dstRect.origin.y];
+  [transform scaleXBy: dstRect.size.width / winSrcRect.size.width
+		  yBy: dstRect.size.height / winSrcRect.size.height];
+  [transform concat];
+  
+  [ctxt GSdraw: gState
+       toPoint: NSMakePoint(0,0)
+      fromRect: winSrcRect
+     operation: op
+      fraction: delta];
+  
+  [ctxt GSSetCTM: backup];
 }
 
 // NSCoding protocol

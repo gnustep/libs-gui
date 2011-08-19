@@ -961,6 +961,22 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 				  hints: hints];
   if (rep == nil)
     return;
+
+  // Try to cache / get a cached version of the best rep
+  
+  /** 
+   * We only use caching on backends that can efficiently draw a rect from the cache
+   * onto the current graphics context respecting the CTM, which is currently cairo.
+   */
+  if (_cacheMode != NSImageCacheNever &&
+      [ctxt supportsDrawGState])
+    {
+      NSCachedImageRep *cache = [self _doImageCache: rep];
+      if (cache != nil)
+	{
+	  rep = cache;
+	}
+    }
   
   repSize = [rep size];
   
@@ -975,9 +991,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 			    srcRect.size.height * imgToRepHeightScaleFactor);
   }
   
-  // FIXME: Insert caching code here which gets the cached
-  // copy of rep and draws from that, if caching is enabled.
-
   // FIXME: Draw background?
   
   [rep drawInRect: dstRect
@@ -1052,6 +1065,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
         imageRep = [self bestRepresentationForDevice: nil];
 
       repd = [self _cacheForRep: imageRep];
+      if (repd == nil)
+	return;
+
       imageRep = repd->rep;
 
       window = [(NSCachedImageRep *)imageRep window];
@@ -1917,13 +1933,17 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 - (NSCachedImageRep *) _doImageCache: (NSImageRep *)rep
 {
   GSRepData *repd;
+  NSCachedImageRep *cache;
 
   repd = [self _cacheForRep: rep];
-  rep = repd->rep;
-  if ([rep isKindOfClass: cachedClass] == NO)
+  if (repd == nil)
+    return nil;
+
+  cache = (NSCachedImageRep*)(repd->rep);
+  if ([cache isKindOfClass: cachedClass] == NO)
     return nil;
   
-  NSDebugLLog(@"NSImage", @"Cached image rep is %p", rep);
+  NSDebugLLog(@"NSImage", @"Cached image rep is %p", cache);
   /*
    * if the cache is not valid, it's background color will not exist
    * and we must draw the background then render from the original
@@ -1931,16 +1951,16 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
    */
   if (repd->bg == nil) 
     {
-      [self lockFocusOnRepresentation: rep];
+      [self lockFocusOnRepresentation: cache];
       [self drawRepresentation: repd->original 
-            inRect: NSMakeRect(0, 0, _size.width, _size.height)];
+            inRect: [cache rect]];
       [self unlockFocus];
       
       NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
-                  rep, repd->bg);
+                  cache, repd->bg);
     }
   
-  return (NSCachedImageRep *)rep;
+  return cache;
 }
 
 - (GSRepData*) _cacheForRep: (NSImageRep*)rep
@@ -2033,17 +2053,37 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
         {     
           NSImageRep *cacheRep = nil;
           GSRepData *repd;
-          NSSize imageSize = [self size];
+	  NSSize imageSize = [self size];
+          NSSize repSize = [rep size];
+	  int pixelsWide, pixelsHigh;
 
-          if (imageSize.width == 0 || imageSize.height == 0)
+          if (repSize.width == 0 || repSize.height == 0)
+	    repSize = imageSize;
+	  
+          if (repSize.width == 0 || repSize.height == 0)
             return nil;
+
+	  pixelsWide = [rep pixelsWide];
+	  pixelsHigh = [rep pixelsHigh];
+
+	  if (pixelsWide == NSImageRepMatchesDevice ||
+	      pixelsHigh == NSImageRepMatchesDevice)
+	    {
+	      // FIXME: Since the cached rep must be a bitmap,
+	      // we must rasterize vector reps at a particular DPI.
+	      // Here we hardcode 72, but we should choose the DPI more intelligently.
+	      pixelsWide = repSize.width; 
+	      pixelsHigh = repSize.height;
+	    }
 
           // Create a new cached image rep without any contents.
           cacheRep = [[cachedClass alloc] 
-                         initWithSize: imageSize
-                         depth: [[NSScreen mainScreen] depth]
-                         separate: _flags.cacheSeparately
-                         alpha: [rep hasAlpha]];
+                         initWithSize: repSize
+			   pixelsWide: pixelsWide
+			   pixelsHigh: pixelsHigh
+				depth: [[NSScreen mainScreen] depth]
+			     separate: _flags.cacheSeparately
+				alpha: [rep hasAlpha]];
           repd = [GSRepData new];
           repd->rep = cacheRep;
           repd->original = rep;
