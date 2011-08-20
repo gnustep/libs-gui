@@ -1,3 +1,9 @@
+2011-08-20  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (-setSize:): Don't invalidate the cache anymore,
+	because we now cache the entire representation and not the rep scaled
+	to the image's size.
+
 2011-08-19  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m: Reinstate use of the cached image rep, but only

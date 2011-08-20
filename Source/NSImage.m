@@ -602,14 +602,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) setSize: (NSSize)aSize
 {
-  // Optimized as this is called very often from NSImageCell
-  if (NSEqualSizes(_size, aSize))
-    return;
-
   _size = aSize;
   _flags.sizeWasExplicitlySet = YES;
-
-  [self recache];
 }
 
 - (NSSize) size
