@@ -1891,10 +1891,10 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   NSArray *array;
 
   array = [NSImageRep imageRepsWithContentsOfFile: fileName];
-  if (array)
+  if (array || ([array count] > 0))
     [self addRepresentations: array];
 
-  return (array) ? YES : NO;
+  return (array || ([array count] > 0)) ? YES : NO;
 }
 
 - (BOOL) _useFromFile: (NSString *)fileName
