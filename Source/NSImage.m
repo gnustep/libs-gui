@@ -1870,14 +1870,16 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   if (rep && [rep respondsToSelector: @selector(imageRepsWithData:)])
     {
       NSArray* array;
+
       array = [rep imageRepsWithData: data];
-      if (array)
+      if (array && ([array count] > 0))
         ok = YES;
       [self addRepresentations: array];
     }
   else if (rep)
     {
       NSImageRep* image;
+
       image = [rep imageRepWithData: data];
       if (image)
         ok = YES;
@@ -1891,10 +1893,10 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   NSArray *array;
 
   array = [NSImageRep imageRepsWithContentsOfFile: fileName];
-  if (array || ([array count] > 0))
+  if (array)
     [self addRepresentations: array];
 
-  return (array || ([array count] > 0)) ? YES : NO;
+  return (array && ([array count] > 0)) ? YES : NO;
 }
 
 - (BOOL) _useFromFile: (NSString *)fileName

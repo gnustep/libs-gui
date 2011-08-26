@@ -1,3 +1,8 @@
+2011-08-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m ( _loadFromFile): Correct last commit.
+	* Source/NSImage.m ( _loadFromData): Use similar check here.
+
 2011-08-25 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSImage.m ( _loadFromFile):
