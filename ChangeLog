@@ -1,3 +1,9 @@
+2011-08-28 Christopher Armstrong <carmstrong@fastmail.com.au>
+	* Source/GSHorizontalTypesetter.m: Split declaration of struct
+	GSHorizontalTypesetter_glyph_cache_s and struct
+	GSHorizontalTypesetter_line_frag_s from their typedefs to compile
+	under clang.
+
 2011-08-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m ( _loadFromFile): Correct last commit.

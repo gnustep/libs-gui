@@ -99,7 +99,7 @@ cache fairly aggressively without having to worry about memory consumption.
 #define CACHE_STEP 192
 
 
-typedef struct GSHorizontalTypesetter_glyph_cache_s
+struct GSHorizontalTypesetter_glyph_cache_s
 {
   /* These fields are filled in by the caching: */
   NSGlyph g;
@@ -119,8 +119,8 @@ typedef struct GSHorizontalTypesetter_glyph_cache_s
   NSPoint pos;    /* relative to the line's baseline */
   NSSize size;    /* height is used only for attachments */
   BOOL dont_show, outside_line_frag;
-} glyph_cache_t;
-
+};
+typedef struct GSHorizontalTypesetter_glyph_cache_s glyph_cache_t;
 
 /* TODO: if we could know whether the layout manager had been modified since
 the last time or not, we wouldn't need to clear the cache every time */
@@ -312,13 +312,13 @@ including gi will have been cached.
 }
 
 
-typedef struct GSHorizontalTypesetter_line_frag_s
+struct GSHorizontalTypesetter_line_frag_s
 {
   NSRect rect;
   float last_used;
   unsigned int last_glyph; /* last_glyph+1, actually */
-} line_frag_t;
-
+};
+typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
 
 -(void) fullJustifyLine: (line_frag_t *)lf : (int)num_line_frags
 {
