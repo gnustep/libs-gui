@@ -82,7 +82,7 @@
  */
 - (id) initWithSize: (NSSize)aSize
 	 pixelsWide: (int)pixelsWide
-	 pixelsHigh: (NSInteger)pixelsHigh
+	 pixelsHigh: (int)pixelsHigh
 	      depth: (int)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha
@@ -187,13 +187,43 @@
   return _window;
 }
 
-
 - (BOOL) draw
 {
-  // FIXME: Could re-implement
-  // Drawing of NSCachedImageRep is only supported by using
-  // -drawInRect:fromRect:operation:fraction:respectFlipped:hints: for now.
-  return NO;
+/*
+  Horrible hack to get drawing on a scaled or rotated
+  context correct. Only used on backends not supporting GSdraw:
+  (art/xlib backend).
+*/
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *transform;
+  NSAffineTransformStruct ts;
+  // Is there anything to draw?
+  if (NSIsEmptyRect(_rect))
+    return YES;
+
+  transform = [ctxt GSCurrentCTM];
+  ts = [transform transformStruct];
+      
+  if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
+      && fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
+    {
+      PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+                  [_window gState], 0, 0, NSCompositeSourceOver);
+    }
+  else
+    {
+      NSView *view = [_window contentView];
+      NSBitmapImageRep *rep;
+
+      [view lockFocus];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: _rect];
+      [view unlockFocus];
+      
+      [rep draw];
+      RELEASE(rep);
+    }
+
+  return YES;
 }
 
 /**

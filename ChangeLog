@@ -1,3 +1,8 @@
+2011-08-29  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSCachedImageRep.m: Restore the implementation of -draw
+	because libart/xlib need it.
+
 2011-08-28 Christopher Armstrong <carmstrong@fastmail.com.au>
 	* Source/GSHorizontalTypesetter.m: Split declaration of struct
 	GSHorizontalTypesetter_glyph_cache_s and struct

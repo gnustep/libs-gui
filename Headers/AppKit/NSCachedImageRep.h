@@ -52,7 +52,7 @@
  */
 - (id) initWithSize: (NSSize)aSize
 	 pixelsWide: (int)pixelsWide
-	 pixelsHigh: (NSInteger)pixelsHigh
+	 pixelsHigh: (int)pixelsHigh
 	      depth: (int)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha;
