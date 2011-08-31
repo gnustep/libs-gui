@@ -2325,9 +2325,13 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   NSEnumerator *iterator;
   NSWindow *current;
-  NSImage	*old_app_icon = _app_icon;
-  NSSize miniWindowSize = [GSCurrentServer() iconSize];
-  NSSize imageSize = [anImage size];
+  NSImage *old_app_icon = _app_icon;
+  NSSize miniWindowSize;
+  NSSize imageSize;
+
+  // Ignore attempts to set nil as the icon image.
+  if (nil == anImage)
+    return;
 
   RETAIN(old_app_icon);
 
@@ -2336,12 +2340,14 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   [_app_icon setScalesWhenResized: YES];
 
+  miniWindowSize = [GSCurrentServer() iconSize];
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
     {
       miniWindowSize = NSMakeSize(48, 48);
     }
 
   // restrict size when the icon is larger than the mini window.
+  imageSize = [_app_icon size];
   if (imageSize.width > miniWindowSize.width
     || imageSize.height > miniWindowSize.height)
     {

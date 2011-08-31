@@ -1,3 +1,8 @@
+2011-08-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-setApplicationIconImage): Ignore this
+	call when the image is nil.
+
 2011-08-29  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSCachedImageRep.m: Restore the implementation of -draw
