@@ -123,9 +123,7 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
   proxy = GSContactApplication(spellServicePath, port, finishBy);
   if (proxy == nil)
     {
-      NSRunAlertPanel(nil,
-	@"Failed to contact spell checker for language '%@'",
-	@"Continue", nil, nil, language);
+      NSLog(@"Failed to contact spell checker for language '%@'", language);
     }
   else
     {
