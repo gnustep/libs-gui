@@ -45,7 +45,6 @@
 
 @interface NSOpenPanel : NSSavePanel <NSCoding>
 {
-  NSArray *_fileTypes;
   BOOL _canChooseDirectories;
   BOOL _canChooseFiles;
 }

@@ -100,7 +100,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (BOOL) _shouldShowExtension: (NSString *)extension
 {
   if (_canChooseFiles == NO ||
-      (_fileTypes != nil && [_fileTypes containsObject: extension] == NO))
+      (_allowedFileTypes != nil && [_allowedFileTypes containsObject: extension] == NO))
     return NO;
 
   return YES;
@@ -211,16 +211,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [super _setupForDirectory: path file: filename];
 }
 
-- (void) _setupForTypes: (NSArray *)fileTypes
-{
-  if (_fileTypes != fileTypes)
-    {
-      BOOL reload = ![_fileTypes isEqual: fileTypes];
-      ASSIGN (_fileTypes, fileTypes);
-      if (reload)
-	[self _reloadBrowser];
-    }
-}
 @end
 
 /** 
@@ -270,12 +260,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [_gs_gui_open_panel _resetDefaults];
 
   return _gs_gui_open_panel;
-}
-
-- (void) dealloc
-{
-  TEST_RELEASE(_fileTypes);
-  [super dealloc];
 }
 
 - (id) init
@@ -474,7 +458,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
                               file: (NSString *)name
                              types: (NSArray *)fileTypes
 {
-  [self _setupForTypes: fileTypes];
+  [self setAllowedFileTypes: fileTypes];
   return [self runModalForDirectory: path 
 			       file: name];  
 }
@@ -484,7 +468,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
                              types: (NSArray *)fileTypes
                   relativeToWindow: (NSWindow*)window
 {
-  [self _setupForTypes: fileTypes];
+  [self setAllowedFileTypes: fileTypes];
   return [self runModalForDirectory: path 
 			       file: name
 		   relativeToWindow: window];

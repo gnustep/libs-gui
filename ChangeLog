@@ -1,3 +1,15 @@
+2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSOpenPanel.m: Use the NSSavePanel _allowedFileTypes ivar
+	in place of the _fileTypes ivar. Replace calls to _setupForTypes: with
+	-setAllowedFileTypes:.
+	* Headers/AppKit/NSOpenPanel.h: Remove now unused _fileTypes ivar
+	* Source/NSSavePanel.m: Treat directories whose names have extensions
+	in the _allowedFileTypes array as file packages.
+	Previously, we only relied on -[NSWorkspace isFilePackageAtPath:],
+	to determine if a director is a file package, which only considers the
+	info.plists of installed applications.
+
 2011-09-06  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSView.m (_setNeedsDisplayInRect_real:): Enlarge

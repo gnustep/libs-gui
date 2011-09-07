@@ -1784,7 +1784,8 @@ createRowsForColumn: (int)column
       if (exists && (!isDir || !HAS_PATH_PREFIX(_directory, pathAndFile)))
 	{
 	  if (isDir && !_treatsFilePackagesAsDirectories
-	      && [ws isFilePackageAtPath: pathAndFile])
+	      && ([ws isFilePackageAtPath: pathAndFile]
+		  || [_allowedFileTypes containsObject: extension]))
 	    {
 	      isDir = NO;
 	    }
