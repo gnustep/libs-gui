@@ -2027,14 +2027,13 @@ static NSColor *dtxtCol;
             size = [_cell_image size];
             position.x = MAX(NSMidX(drawingRect) - (size.width/2.),0.);
             position.y = MAX(NSMidY(drawingRect) - (size.height/2.),0.);
-            /*
-             * Images are always drawn with their bottom-left corner
-             * at the origin so we must adjust the position to take
-             * account of a flipped view.
-             */
-            if ([controlView isFlipped])
-              position.y += size.height;
-            [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+
+            [_cell_image drawInRect: NSMakeRect(position.x, position.y, size.width, size.height)
+			   fromRect: NSZeroRect
+			  operation: NSCompositeSourceOver
+			   fraction: 1.0
+		     respectFlipped: YES
+			      hints: nil];
           }
         break;
 

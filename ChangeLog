@@ -1,5 +1,14 @@
 2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Simplify a bit
+	bit by using
+	-[NSImage drawInRect:fromRect:operation:fraction:respectFlipped:hints:]
+	* Source/NSCell.m (-drawInteriorWithFrame:inView:): Switch from
+	-[NSImage compositeToPoint...] to
+	-[NSImage drawInRect:fromRect:operation:fraction:respectFlipped:hints:]
+
+2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSOpenPanel.m: Use the NSSavePanel _allowedFileTypes ivar
 	in place of the _fileTypes ivar. Replace calls to _setupForTypes: with
 	-setAllowedFileTypes:.

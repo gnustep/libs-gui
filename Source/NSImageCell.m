@@ -195,7 +195,6 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect, BOOL scaleUpOrDown)
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
   NSSize  imageSize, realImageSize;
-  NSAffineTransform *xform = nil;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
@@ -277,29 +276,16 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect, BOOL scaleUpOrDown)
         break;
     }
 
-  // account for flipped views
-  if (is_flipped && controlView != nil)
-    {
-      xform = [NSAffineTransform transform];
-      [xform translateXBy: 0 yBy: [controlView bounds].size.height];
-      [xform scaleXBy: 1 yBy: -1];
-      [xform concat];
-      position.y = [controlView bounds].size.height - position.y - imageSize.height;
-    }
-
   // draw!
   [_cell_image drawInRect: NSMakeRect(position.x, position.y,
                                       imageSize.width, imageSize.height)
                fromRect: NSMakeRect(0, 0, realImageSize.width,
                                     realImageSize.height)
                operation: NSCompositeSourceOver
-               fraction: 1.0];
+               fraction: 1.0
+	   respectFlipped: YES
+		    hints: nil];
 
-  if (is_flipped && controlView != nil)
-    {
-      [xform invert];
-      [xform concat];
-    }
 }
 
 - (NSSize) cellSize
