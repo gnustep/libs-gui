@@ -47,6 +47,17 @@
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
+@implementation NSApplication (CharacterPanel)
+
+- (void) orderFrontCharacterPalette: (id)sender
+{
+  [[GSCharacterPanel sharedCharacterPanel] orderFront: sender];
+}
+
+@end
+
+
+
 @interface GSVerticallyCenteredTextFieldCell : NSTextFieldCell
 {
 }

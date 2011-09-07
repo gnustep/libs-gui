@@ -842,7 +842,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 - (void) characterPanel: (id)sender
 {
-  [[GSCharacterPanel sharedCharacterPanel] orderFront: nil];
+  [[NSApplication sharedApplication] orderFrontCharacterPalette: sender];
 }
 
 - (NSFont *) _fontForSelection: (NSFont *)fontObject

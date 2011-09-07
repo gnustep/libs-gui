@@ -1,5 +1,10 @@
 2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSCharacterPanel.m: Implement -[NSApplication orderFrontCharacterPalette:]
+	* Source/NSFontPanel.m: Use NSApplication method to order front character palette
+
+2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Simplify a bit
 	bit by using
 	-[NSImage drawInRect:fromRect:operation:fraction:respectFlipped:hints:]
