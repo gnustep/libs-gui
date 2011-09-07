@@ -2816,6 +2816,13 @@ in the main thread.
       _invalidRect = invalidRect;
       if (firstOpaque == self)
         {
+	  /**
+	   * Enlarge (if necessary) _invalidRect so it lies on integral device pixels 
+	   */
+	  const NSRect inBase =  [self convertRectToBase: _invalidRect];
+	  const NSRect inBaseRounded = NSIntegralRect(inBase);
+	  _invalidRect = [self convertRectFromBase: inBaseRounded];
+
           [_window setViewsNeedDisplay: YES];
         }
       else

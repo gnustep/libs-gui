@@ -1,3 +1,8 @@
+2011-09-06  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSView.m (_setNeedsDisplayInRect_real:): Enlarge
+	(if necessary) _invalidRect so it lies on integral device pixels.
+
 2011-08-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-setApplicationIconImage): Ignore this
