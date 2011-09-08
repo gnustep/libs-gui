@@ -730,6 +730,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
     characterPanelButton = [[NSButton alloc] initWithFrame: characterPanelButtonRect];
     [characterPanelButton setTitle: label];
+    [characterPanelButton setToolTip: _(@"Character Panel")];
     [characterPanelButton setAction: @selector(characterPanel:)];
     [characterPanelButton setTarget: self];
     [bottomArea addSubview: characterPanelButton];

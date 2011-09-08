@@ -1,5 +1,9 @@
 2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSFontPanel.m: Add a tooltip on the character panel button
+
+2011-09-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSSpellChecker.m: Use NSLog rather than a popup alert when the spell
 	server can't be contacted; otherwise the user may be spammed with a series
 	of popups if automatic spellchecking (underlining) is turned on, but
