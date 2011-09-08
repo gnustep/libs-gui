@@ -1,3 +1,9 @@
+2011-09-08  Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSImage.m: Correction for call to function NSEqualSizes.
+	It was mistyped as "NSSizesEqual" which was producing a link-time
+	error.
+
 2011-09-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m: Throw an exception if you attempt to lock focus on an image with
