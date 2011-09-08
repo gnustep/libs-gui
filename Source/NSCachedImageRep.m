@@ -89,6 +89,14 @@
 {
   NSWindow	*win;
 
+  if (aSize.width <= 0 || aSize.height <= 0 ||
+      pixelsWide <= 0 || pixelsHigh <= 0)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSCachedImageRep created with size %@ pixelsWide %d pixelsHigh %d",
+		   NSStringFromSize(aSize), pixelsWide, pixelsHigh];
+    }
+
   // FIXME: Only create new window when separate is YES
   win = [[GSCacheW alloc] initWithContentRect: NSMakeRect(0, 0, pixelsWide, pixelsHigh)
 				    styleMask: NSBorderlessWindowMask | NSUnscaledWindowMask

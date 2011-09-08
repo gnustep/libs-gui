@@ -1055,6 +1055,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSWindow *window;
       GSRepData *repd;
 
+      if (NSSizesEqual(NSZeroSize, [self size]))
+        [NSException raise: NSImageCacheException
+                     format: @"Cannot lock focus on image with size (0, 0)"];
+
       if (imageRep == nil)
         imageRep = [self bestRepresentationForDevice: nil];
 
