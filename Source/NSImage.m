@@ -2054,27 +2054,40 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
           NSImageRep *cacheRep = nil;
           GSRepData *repd;
 	  NSSize imageSize = [self size];
-          NSSize repSize = [rep size];
+          NSSize repSize;
 	  int pixelsWide, pixelsHigh;
 
-          if (repSize.width == 0 || repSize.height == 0)
-	    repSize = imageSize;
-	  
-          if (repSize.width == 0 || repSize.height == 0)
-            return nil;
-
-	  pixelsWide = [rep pixelsWide];
-	  pixelsHigh = [rep pixelsHigh];
-
-	  if (pixelsWide == NSImageRepMatchesDevice ||
-	      pixelsHigh == NSImageRepMatchesDevice)
+	  if (rep != nil)
 	    {
-	      // FIXME: Since the cached rep must be a bitmap,
-	      // we must rasterize vector reps at a particular DPI.
-	      // Here we hardcode 72, but we should choose the DPI more intelligently.
-	      pixelsWide = repSize.width; 
-	      pixelsHigh = repSize.height;
+	      repSize = [rep size];
+
+	      if (repSize.width <= 0 || repSize.height <= 0)
+		repSize = imageSize;
+
+	      pixelsWide = [rep pixelsWide];
+	      pixelsHigh = [rep pixelsHigh];
+	      
+	      if (pixelsWide == NSImageRepMatchesDevice ||
+		  pixelsHigh == NSImageRepMatchesDevice)
+		{
+		  // FIXME: Since the cached rep must be a bitmap,
+		  // we must rasterize vector reps at a particular DPI.
+		  // Here we hardcode 72, but we should choose the DPI more intelligently.
+		  pixelsWide = repSize.width; 
+		  pixelsHigh = repSize.height;
+		}
 	    }
+	  else // e.g. when there are no representations at all
+	    {
+	      repSize = imageSize;
+	      // FIXME: assumes 72 DPI. Also truncates, not sure if that is a problem.
+	      pixelsWide = imageSize.width;
+	      pixelsHigh = imageSize.height;
+	    }
+	  
+          if (repSize.width <= 0 || repSize.height <= 0 ||
+	      pixelsWide <= 0 || pixelsHigh <= 0)
+            return nil;
 
           // Create a new cached image rep without any contents.
           cacheRep = [[cachedClass alloc] 
@@ -2086,7 +2099,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 				alpha: [rep hasAlpha]];
           repd = [GSRepData new];
           repd->rep = cacheRep;
-          repd->original = rep;
+          repd->original = rep; // may be nil!
           [_reps addObject: repd]; 
           RELEASE(repd); /* Retained in _reps array. */
 

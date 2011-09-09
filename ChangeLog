@@ -1,3 +1,8 @@
+2011-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (_cacheForRep:): Don't assume rep is non-nil. This should fix
+	locking focus on an image with no representations.
+
 2011-09-08  Gregory Casamento <greg.casamento@gmail.com>
 
 	* Source/NSImage.m: Correction for call to function NSEqualSizes.
