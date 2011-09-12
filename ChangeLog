@@ -1,3 +1,9 @@
+2011-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m (+initialize, -valueForKey:,
+	-setValue:forKey:): Add support for the bindings NSFontNameBinding
+	and NSFontSizeBinding.
+
 2011-09-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m (_cacheForRep:): Don't assume rep is non-nil. This should fix

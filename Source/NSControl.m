@@ -32,13 +32,18 @@
 
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSValue.h>
 #import "AppKit/NSActionCell.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSControl.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSFontManager.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
@@ -77,6 +82,12 @@ static NSNotificationCenter *nc;
       [self exposeBinding: NSEnabledBinding];
       [self exposeBinding: NSAlignmentBinding];
       [self exposeBinding: NSFontBinding];
+      [self exposeBinding: NSFontNameBinding];
+      [self setKeys: [NSArray arrayWithObject: NSFontBinding] 
+            triggerChangeNotificationsForDependentKey: NSFontNameBinding];
+      [self exposeBinding: NSFontSizeBinding];
+      [self setKeys: [NSArray arrayWithObject: NSFontBinding] 
+            triggerChangeNotificationsForDependentKey: NSFontSizeBinding];
      }
 }
 
@@ -1077,6 +1088,40 @@ static NSNotificationCenter *nc;
              toObject: anObject
              withKeyPath: keyPath
              options: options];
+    }
+}
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSFontNameBinding])
+    {
+      [self setFont: [[NSFontManager sharedFontManager] convertFont: [self font] 
+                                                             toFace: anObject]];
+    }
+  else if ([aKey isEqual: NSFontSizeBinding])
+    {
+      [self setFont: [[NSFontManager sharedFontManager] convertFont: [self font]
+                                                             toSize: [anObject doubleValue]]];
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSFontNameBinding])
+    {
+      return [[self font] fontName];
+    }
+  else if ([aKey isEqual: NSFontSizeBinding])
+    {
+      return [NSNumber numberWithDouble: (double)[[self font] pointSize]];
+    }
+  else
+    {
+      return [super valueForKey: aKey];
     }
 }
 
