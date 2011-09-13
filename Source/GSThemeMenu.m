@@ -37,6 +37,7 @@
 #import "GNUstepGUI/GSWindowDecorationView.h"
 
 #import "NSToolbarFrameworkPrivate.h"
+#import "GSGuiPrivate.h"
 
 @interface NSWindow (Private)
 - (GSWindowDecorationView *) windowView;
@@ -85,20 +86,26 @@
     }
   else
     {
-      NSMenu *m = [window menu];
-      // NSMenuView *menuView = nil;
-
-      [m update];      
-      /*
-      menuView = [m menuRepresentation];
-      if (menuView != nil)
+      /* We copy "Windows" menu, since this can't be updated
+       * with calling -update:. However, with this way if the
+       * menus have a different name this will not work (for
+       * example "Window" instead "Windows"). So the programmer
+       * must be careful here.
+       */
+      
+      NSMenuItem *windowsItem, *oldWindowsItem;
+      NSMenu *newWindowsMenu;
+      
+      windowsItem = [menu itemWithTitle: _(@"Windows")];
+      if (windowsItem != nil && [windowsItem hasSubmenu])
 	{
-	  [menu close];
-	  [menuView setHorizontal: YES];
-	  [wv addMenuView: menuView];
-	  [menuView sizeToFit];
+	  //Get the new "Windows" menu
+	  newWindowsMenu = [[windowsItem submenu] copy];
+	  
+	  //Set this menu into the menu in this window
+	  oldWindowsItem = [[window menu] itemWithTitle: _(@"Windows")];
+	  [oldWindowsItem setSubmenu: newWindowsMenu];
 	}
-      */
     }
 }
 

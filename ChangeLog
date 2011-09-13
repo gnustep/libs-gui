@@ -1,3 +1,8 @@
+2011-09-12 German Arias <german@xelalug.org>
+
+	* Source/GSThemeMenu.m (-setMenu:forWindow:): Improvements to 
+	menu in window.
+
 2011-09-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m (+initialize, -valueForKey:,
