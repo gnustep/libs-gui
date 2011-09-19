@@ -86,6 +86,17 @@ static NSMapTable *viewInfo = 0;
 /* A menu's title is an instance of this class */
 @class NSButton;
 
+@interface NSMenu (Private)
+- (void) _attachMenu: (NSMenu*)aMenu;
+@end
+
+@implementation NSMenu (Private)
+- (void) _attachMenu: (NSMenu*)aMenu
+{
+  _attachedMenu = aMenu;
+}
+@end
+
 @interface NSMenuView (Private)
 - (BOOL) _rootIsHorizontal: (BOOL*)isAppMenu;
 @end
@@ -548,6 +559,8 @@ static NSMapTable *viewInfo = 0;
   else
     {
       [attachedMenu close];
+      // Unselect the active item
+      [self setHighlightedItemIndex: -1];
     }
 }
 
@@ -577,7 +590,11 @@ static NSMapTable *viewInfo = 0;
   else
     {
       NSDebugLLog (@"NSMenu",  @"Will open normal: %@", attachableMenu);
-      [attachableMenu display];
+      // FIXME: Only resize when needed
+      [attachableMenu sizeToFit];
+      [[attachableMenu window] setFrameOrigin: [self locationForSubmenu: attachableMenu]];
+      [_attachedMenu _attachMenu: attachableMenu];
+      [[attachableMenu window] orderFrontRegardless];
     }
 }
 
