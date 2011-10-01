@@ -1413,13 +1413,6 @@ static NSMapTable *viewInfo = 0;
   NSInterfaceStyle style =
     NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
   
-  /*If we have menu in window, close the menu after select
-    an option*/
-  if (style == NSWindows95InterfaceStyle)
-    {
-      [[[[NSApp mainWindow] menu] attachedMenu] close];
-    }
-  
   if (indexOfActionToExecute >= 0
       && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
       [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
@@ -1450,6 +1443,7 @@ static NSMapTable *viewInfo = 0;
 }
 
 - (BOOL) _trackWithEvent: (NSEvent*)event
+        startingMenuView: (NSMenuView*)mainWindowMenuView
 {
   unsigned eventMask = NSPeriodicMask;
   NSDate *theDistantFuture = [NSDate distantFuture];
@@ -1525,13 +1519,12 @@ static NSMapTable *viewInfo = 0;
     }
   do
     {
-      /*Close the menu if the user press a modifier key and menu
-	is in a window*/
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-	  NSWindows95InterfaceStyle && type == NSFlagsChanged)
+      /* Close the menu if the user press a modifier key and menu
+         is in a window */
+      if (mainWindowMenuView != nil && type == NSFlagsChanged)
 	{
 	  [self setHighlightedItemIndex: -1];
-	  [[[[NSApp mainWindow] menu] attachedMenu] close];
+	  [[[mainWindowMenuView menu] attachedMenu] close];
 	  return NO;
 	}
 
@@ -1541,6 +1534,7 @@ static NSMapTable *viewInfo = 0;
         {
           shouldFinish = YES;
         }
+
       if (type == NSPeriodic || event == original)
         {
           NSPoint location;
@@ -1577,7 +1571,6 @@ static NSMapTable *viewInfo = 0;
                 || pointerLoc.y == screenFrame.size.height)
                 [_attachedMenu shiftOnScreen];
             }
-
 
           /*
            * 2 - Check if we have to reset the justAttachedNewSubmenu
@@ -1636,22 +1629,22 @@ static NSMapTable *viewInfo = 0;
                 && NSMouseInRect (locationInScreenCoordinates,
                   [[candidateMenu window] frame], NO))
                 {
-                  BOOL        candidateMenuResult;
+                  BOOL candidateMenuResult;
+                  NSMenuView *subMenuView = [[candidateMenu attachedMenu] menuRepresentation];
 
                   // The call to fetch attachedMenu is not needed. But putting
                   // it here avoids flicker when we go back to an ancestor 
                   // menu and the attached menu is already correct.
-                  [[[candidateMenu attachedMenu] menuRepresentation]
-                    detachSubmenu];
+                  [subMenuView detachSubmenu];
                   
                   // Reset highlighted index for this menu.
                   // This way if we return to this submenu later there 
                   // won't be a highlighted item.
-                  [[[candidateMenu attachedMenu] menuRepresentation]
-                    setHighlightedItemIndex: -1];
+                  [subMenuView setHighlightedItemIndex: -1];
                   
                   candidateMenuResult = [[candidateMenu menuRepresentation]
-                           _trackWithEvent: original];
+                                          _trackWithEvent: original
+                                          startingMenuView: mainWindowMenuView];
                   return candidateMenuResult;
                 }
 
@@ -1665,7 +1658,8 @@ static NSMapTable *viewInfo = 0;
                   BOOL subMenuResult;
 
                   subMenuResult
-                    = [[self attachedMenuView] _trackWithEvent: original];
+                    = [[self attachedMenuView] _trackWithEvent: original
+                                              startingMenuView: mainWindowMenuView];
                   if (subMenuResult
                     && wasTransient == [_attachedMenu isTransient])
                     {
@@ -1674,18 +1668,13 @@ static NSMapTable *viewInfo = 0;
                   return subMenuResult;
                 }
 	      
-	      /*We track the menu correctly when this is located
-		in a window*/
-	      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-		  NSWindows95InterfaceStyle &&
-		  ![[self menu] isTransient] &&
-		  ![[self menu] _ownedByPopUp])
+	      /* We track the menu correctly when this is located
+		in a window */
+	      if (mainWindowMenuView != nil)
 		{
                   // If the user moves the mouse into the main window
                   // horizontal menu, start tracking again.
-                  NSWindow *mainWindow = [NSApp mainWindow];
-                  NSMenuView *mainWindowMenuView = [[mainWindow menu]
-                    menuRepresentation];
+                  NSWindow *mainWindow = [mainWindowMenuView window];
                   NSPoint locationInMainWindow = [mainWindow 
                     convertScreenToBase: locationInScreenCoordinates];
 		  if ([mainWindowMenuView 
@@ -1700,7 +1689,8 @@ static NSMapTable *viewInfo = 0;
                         {
 		          [self setHighlightedItemIndex: -1];
 		          return [mainWindowMenuView
-			       _trackWithEvent: original];
+                                   _trackWithEvent: original
+                                   startingMenuView: mainWindowMenuView];
                         }
 		    }
 		}
@@ -1809,8 +1799,19 @@ static NSMapTable *viewInfo = 0;
   // Before executing the action, uncapture the mouse
   [_window _releaseMouse: self];
 
-  if([self _executeItemAtIndex: indexOfActionToExecute
-	   removeSubmenu: subMenusNeedRemoving] == NO)
+  /* If we have menu in window, close the menu after select
+    an option */
+  if (mainWindowMenuView != nil)
+    {
+      if (self != mainWindowMenuView)
+        {
+          [mainWindowMenuView setHighlightedItemIndex: -1];
+        }
+      [[[mainWindowMenuView menu] attachedMenu] close];
+    }
+
+  if ([self _executeItemAtIndex: indexOfActionToExecute
+                  removeSubmenu: subMenusNeedRemoving] == NO)
     {
       return NO;
     }
@@ -1833,12 +1834,22 @@ static NSMapTable *viewInfo = 0;
 - (BOOL) trackWithEvent: (NSEvent*)event
 {
   BOOL result = NO;
+  NSMenuView *mainWindowMenuView = nil;
+
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
+      NSWindows95InterfaceStyle &&
+      ![[self menu] isTransient] &&
+      ![[self menu] _ownedByPopUp])
+    {
+      mainWindowMenuView = self;
+    }
 
   // Capture the mouse so we get clicks outside the menus and
   // GNUstep windows.
   [_window _captureMouse: self];
   NS_DURING
-    result = [self _trackWithEvent: event];
+    result = [self _trackWithEvent: event
+                  startingMenuView: mainWindowMenuView];
   NS_HANDLER
     [_window _releaseMouse: self];
     [localException raise];

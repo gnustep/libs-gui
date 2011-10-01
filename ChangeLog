@@ -1,6 +1,11 @@
 2011-10-01 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/GSThemeMenu.m,
+	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:,
+	-trackWithEvent:): Started rewrite that simplifies menu tracking code.
+
+2011-10-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m,
 	* Source/GSThemeMenu.m,
 	* Source/GSWindowDecorationView.m: Rewrite of the in-window menu handling.
 
