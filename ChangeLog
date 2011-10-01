@@ -1,6 +1,12 @@
+2011-10-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSThemeMenu.m,
+	* Source/GSThemeMenu.m,
+	* Source/GSWindowDecorationView.m: Rewrite of the in-window menu handling.
+
 2011-09-12 German Arias <german@xelalug.org>
 
-	* Source/GSThemeMenu.m (-setMenu:forWindow:): Improvements to 
+	* Source/GSThemeMenu.m (-setMenu:forWindow:): Improvements to
 	menu in window.
 
 2011-09-12 Fred Kiefer <FredKiefer@gmx.de>

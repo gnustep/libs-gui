@@ -294,7 +294,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
   if (hasMenu)
     {
-      NSMenuView *menuView;
+      NSMenuView *menuView = nil;
       GSTheme *theme = [GSTheme theme];
       float menuBarHeight = [theme menuHeightForWindow: _window];
       NSRect menuRect = 
@@ -302,8 +302,17 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 		   (NSMaxY(contentRect) + 1) - menuBarHeight,  
 		   contentViewFrame.size.width, 
 		   menuBarHeight);
-
-      menuView = [[_window menu] menuRepresentation];
+      NSEnumerator *e = [[self subviews] objectEnumerator];
+      NSView *v;
+      
+      while ((v = [e nextObject]) != nil)
+        {
+          if ([v isKindOfClass: [NSMenuView class]] == YES)
+            {
+              menuView = (NSMenuView *)v;
+              break;
+            }
+        }
       [menuView setFrame: menuRect];
       contentViewFrame.size.height -= menuBarHeight;
     }

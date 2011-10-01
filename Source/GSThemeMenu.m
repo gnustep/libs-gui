@@ -61,52 +61,29 @@
        forWindow: (NSWindow *)window
 {
   GSWindowDecorationView *wv = [window windowView];
-  if ([window menu] == nil && menu != nil)
-    {
-      // NSData *data = [NSArchiver archivedDataWithRootObject: menu];   // 
-      NSMenu *newMenu = [menu copy];
-      NSMenuView *menuView = nil;
 
-      /* 
-       * Set the new menu
-       */
-      [window _setMenu: newMenu];
+  // protect against stupid calls from updateAllWindowsWithMenu:
+  if ([window menu] == menu)
+    return;
 
-      /*
-       * And transfer the new menu representation to the window decoration view.
-       */
-      menuView = [newMenu menuRepresentation];
-      if (menuView != nil)
-	{
-	  [menu close];
-	  [menuView setHorizontal: YES];
-	  [wv addMenuView: menuView];
-	  [menuView sizeToFit];
-	}
-    }
-  else
-    {
-      /* We copy "Windows" menu, since this can't be updated
-       * with calling -update:. However, with this way if the
-       * menus have a different name this will not work (for
-       * example "Window" instead "Windows"). So the programmer
-       * must be careful here.
-       */
-      
-      NSMenuItem *windowsItem, *oldWindowsItem;
-      NSMenu *newWindowsMenu;
-      
-      windowsItem = [menu itemWithTitle: _(@"Windows")];
-      if (windowsItem != nil && [windowsItem hasSubmenu])
-	{
-	  //Get the new "Windows" menu
-	  newWindowsMenu = [[windowsItem submenu] copy];
-	  
-	  //Set this menu into the menu in this window
-	  oldWindowsItem = [[window menu] itemWithTitle: _(@"Windows")];
-	  [oldWindowsItem setSubmenu: newWindowsMenu];
-	}
-    }
+  // Prevent recursion
+  [window _setMenu: menu];
+
+  // Remove any possible old menu view
+  [wv removeMenuView];
+
+  //NSLog(@"Adding menu %@ to window %@", menu, window);
+  if (menu != nil)
+  {
+    NSMenuView *menuView = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+
+    [menuView setMenu: menu];
+    [menuView setHorizontal: YES];
+    [menuView setInterfaceStyle: NSWindows95InterfaceStyle];
+    [wv addMenuView: menuView];
+    [menuView sizeToFit];
+    RELEASE(menuView);
+  } 
 }
 
 - (void) rightMouseDisplay: (NSMenu *)menu
