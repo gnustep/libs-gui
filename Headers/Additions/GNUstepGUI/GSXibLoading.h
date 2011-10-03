@@ -33,6 +33,7 @@
 #import <Foundation/NSKeyedArchiver.h>
 
 @class NSString, NSDictionary, NSArray, NSMutableDictionary, NSMutableArray;
+@class NSNibBindingConnector;
 
 // Hack: This allows the class name FirstResponder in NSCustomObject and
 // correctly returns nil as the corresponding object.
