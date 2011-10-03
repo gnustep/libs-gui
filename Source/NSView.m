@@ -4697,8 +4697,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		   NSInternalInconsistencyException);
 	  NSAssert([sub window] == nil,
 		   NSInternalInconsistencyException);
-	  NSAssert([sub superview] == nil,
-		   NSInternalInconsistencyException);
+          NSAssert([sub superview] == nil,
+                   NSInternalInconsistencyException);
 	  [sub _viewWillMoveToWindow: _window];
 	  [sub _viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
@@ -4712,7 +4712,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	}
 
       // the superview...
-      [aDecoder decodeObjectForKey: @"NSSuperview"];
+      //[aDecoder decodeObjectForKey: @"NSSuperview"];
     }
   else
     {

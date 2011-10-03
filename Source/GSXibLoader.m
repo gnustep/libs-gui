@@ -288,6 +288,35 @@
 
 @end
 
+@implementation IBBindingConnection
+
+- (void) dealloc
+{
+  DESTROY(connector);
+  [super dealloc];
+}
+
+- (id) initWithCoder: (NSCoder*)coder
+{
+  self = [super initWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"connector"])
+        {
+          ASSIGN(connector, [coder decodeObjectForKey: @"connector"]);
+        }
+    }
+
+  return self;
+}
+
+- (void) establishConnection
+{
+  [connector establishConnection];
+}
+
+@end
+
 @implementation IBConnectionRecord
 
 - (id) initWithCoder: (NSCoder*)coder
@@ -892,6 +921,16 @@ didStartElement: (NSString *)elementName
 
   NSDebugLLog(@"XIB", @"decoding element %@", element);
   key = [element attributeForKey: @"id"];
+  if (key != nil)
+    {
+      id new = [decoded objectForKey: key];
+      if (new != nil)
+        {
+          // The object was already decoded as a reference
+          return new;
+        }
+    }
+
   elementName = [element type];
   if ([@"object" isEqualToString: elementName])
     {

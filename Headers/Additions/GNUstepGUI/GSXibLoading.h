@@ -84,6 +84,12 @@
 }
 @end
 
+@interface IBBindingConnection: IBConnection
+{
+  NSNibBindingConnector *connector;
+}
+@end
+
 @interface IBConnectionRecord: NSObject
 {
   IBConnection *connection;

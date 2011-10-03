@@ -1,3 +1,11 @@
+2011-10-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-initWithCoder:): Don't decode super view.
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add class IBBindingConnection.
+	* Source/GSXibLoader.m: Implement IBBindingConnection.
+	* Source/GSXibLoader.m (-objectForXib:): Return a previously
+	decoded object instead of a new one if available.
+
 2011-10-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:,
