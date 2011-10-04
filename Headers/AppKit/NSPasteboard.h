@@ -35,6 +35,10 @@
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 @class NSString;
 @class NSArray;
 @class NSData;
@@ -300,5 +304,8 @@ APPKIT_EXPORT NSString *NSCreateFilenamePboardType(NSString *fileType);
 APPKIT_EXPORT NSString *NSGetFileType(NSString *pboardType);
 APPKIT_EXPORT NSArray *NSGetFileTypes(NSArray *pboardTypes);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif // _GNUstep_H_NSPasteboard

@@ -41,6 +41,10 @@
 
 #import <AppKit/NSResponder.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 @class NSArray;
 @class NSAutoreleasePool;
 @class NSDate;
@@ -684,5 +688,9 @@ NSShowSystemInfoPanel(NSDictionary *options);
  * The NSApp global variable.
  */
 APPKIT_EXPORT NSApplication	*NSApp;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif // _GNUstep_H_NSApplication

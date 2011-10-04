@@ -1,7 +1,15 @@
+2011-10-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSApplication.h,
+	* Headers/AppKit/NSPasteboard.h,
+	* Headers/AppKit/NSInterfaceStyle.h,
+	* Headers/AppKit/NSGraphics.h: Bracket in 'extern "C"' for C++.
+	Patch by Julian Mayer <julian@corecode.at>.
+
 2011-10-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSPanel.h: Bracket in 'extern "C"' for C++
-	
+
 2011-10-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-initWithCoder:): Don't decode super view.

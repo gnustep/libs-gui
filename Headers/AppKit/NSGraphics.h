@@ -35,6 +35,10 @@
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/AppKitDefines.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 @class NSString;
 @class NSColor;
 @class NSGraphicsContext;
@@ -262,6 +266,10 @@ typedef enum _NSFocusRingPlacement
 } NSFocusRingPlacement;
 
 void NSSetFocusRingStyle(NSFocusRingPlacement placement);
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #endif /* __NSGraphics_h__ */

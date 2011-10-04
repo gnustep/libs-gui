@@ -29,6 +29,10 @@
 #define _GNUstep_H_NSInterfaceStyle
 #import <GNUstepBase/GSVersionMacros.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
 #import <AppKit/AppKitDefines.h>
@@ -61,6 +65,8 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder);
 
 #endif // GS_API_MACOSX
 
+#if defined(__cplusplus)
+}
+#endif
+
 #endif // _GNUstep_H_NSInterfaceStyle
-
-
