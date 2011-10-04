@@ -83,11 +83,19 @@ typedef enum {
   int _dash_count;
   float _dash_phase;
   float *_dash_pattern;
-  BOOL _shouldRecalculateBounds;
   NSRect _bounds;
   NSRect _controlPointBounds;
-  BOOL _cachesBezierPath;
   NSImage *_cacheImage;
+#ifndef	_IN_NSBEZIERPATH_M
+#define	GSIArray	void*
+#endif
+  GSIArray _pathElements;
+#ifndef	_IN_NSBEZIERPATH_M
+#undef	GSIArray
+#endif
+  BOOL _cachesBezierPath;
+  BOOL _shouldRecalculateBounds;
+  BOOL _flat;
 }
 
 //

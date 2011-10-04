@@ -1,5 +1,10 @@
 2011-10-04 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSBezierPath.h,
+	* Source/NSBezierPath.m: Rewrote NSBezierPath to allow subclasses.
+
+2011-10-04 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSApplication.h,
 	* Headers/AppKit/NSPasteboard.h,
 	* Headers/AppKit/NSInterfaceStyle.h,
