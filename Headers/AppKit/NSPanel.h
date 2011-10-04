@@ -33,6 +33,10 @@
 
 #import <AppKit/NSWindow.h>
 
+#if	defined(__cplusplus)
+extern "C" {
+#endif
+
 @class NSString;
 
 enum {
@@ -190,5 +194,9 @@ APPKIT_EXPORT int GSRunExceptionPanel(NSString *title,
 // Release an Attention Panel
 //
 APPKIT_EXPORT void NSReleaseAlertPanel(id panel);
+
+#if	defined(__cplusplus)
+}
+#endif
 
 #endif // _GNUstep_H_NSPanel
