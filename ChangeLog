@@ -1,5 +1,13 @@
 2011-10-06 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImage.m (-lockFocusOnRepresentation:): Draw the
+	representation into the new cache. Use NSRectFillUsingOperation
+	instead of PScompositerect.
+	* Source/NSImage.m (-drawRepresentation:inRect:): Use DPS
+	operations instead of PS operations.
+
+2011-10-06 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSProgressIndicator.m (-encodeWithCoder:, initWithCoder:)
 	The flag isDisplayedWhenStopped is stored negated.
 

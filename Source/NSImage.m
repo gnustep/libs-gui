@@ -51,7 +51,7 @@
 #import "AppKit/NSScreen.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/PSOperators.h"
+#import "AppKit/DPSOperators.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GSThemePrivate.h"
 
@@ -863,8 +863,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
   BOOL r;
+  NSGraphicsContext *ctxt = GSCurrentContext();
 
-  PSgsave();
+  DPSgsave(ctxt);
 
   if (_color != nil)
     {
@@ -885,7 +886,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   else
     r = [imageRep drawInRect: aRect];
 
-  PSgrestore();
+  DPSgrestore(ctxt);
 
   return r;
 }
@@ -1076,6 +1077,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       [_lockedView lockFocus];
       if (repd->bg == nil) 
         {
+          NSRect fillrect = NSMakeRect(0, 0, _size.width, _size.height);
+
           // Clear the background of the cached image, as it is not valid
           if ([_color alphaComponent] < 1.0)
             {
@@ -1086,18 +1089,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                  implemented correctly in all backends yet (as of 
                  2002-08-23). Also, this will work with both the Quartz-
                  and DPS-model.) */
-              PScompositerect(0, 0, _size.width, _size.height,
-                              NSCompositeClear);
+              NSRectFillUsingOperation(fillrect, NSCompositeClear);
             }
 
           repd->bg = [_color copy];
-          if (_color != nil)
-            {
-              // Won't be needed when drawRepresentation: gets called, 
-              // but we never know.
-              [_color set];
-              NSRectFill(NSMakeRect(0, 0, _size.width, _size.height));
-            }
       
           if ([repd->bg alphaComponent] == 1.0)
             {
@@ -1108,6 +1103,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
               [imageRep setOpaque: [repd->original isOpaque]];
             }
 
+          // Fill with background colour and draw repesentation
+          [self drawRepresentation: repd->original
+                            inRect: fillrect];
         }
     }
 }
@@ -1952,8 +1950,6 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   if (repd->bg == nil) 
     {
       [self lockFocusOnRepresentation: cache];
-      [self drawRepresentation: repd->original 
-            inRect: [cache rect]];
       [self unlockFocus];
       
       NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
