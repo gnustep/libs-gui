@@ -1,3 +1,8 @@
+2011-10-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSProgressIndicator.m (-encodeWithCoder:, initWithCoder:)
+	The flag isDisplayedWhenStopped is stored negated.
+
 2011-10-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSBezierPath.h,
@@ -943,7 +948,7 @@
 	Turn release messages sent to autorelease pools into drain messages. No
 	functionality change in non-GC mode, in GC mode it invokes a quick GC pass
 	to try to delete the short-lived objects.
-	  
+
 	Also deleted some [pool release] lines just before exit() or
 	return-from-main statements. These cause objects to be swapped in and
 	destructors to be run to no benefit (the OS will reclaim this memory
