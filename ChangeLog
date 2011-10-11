@@ -1,5 +1,10 @@
 2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSColor.m: Add alpha handling to keyed-coding/decoding.
+	Should fix bug #34501.
+
+2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m(currentVersion, -encodeWithCoder:,
 	-initWithCoder:): Archive missing attributes in non-keyed
 	mode. This required updating the NSTextView version to 4.

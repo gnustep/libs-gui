@@ -1426,6 +1426,7 @@ systemColorWithName(NSString *name)
 	      [scanner scanFloat: &red];
 	      [scanner scanFloat: &green];
 	      [scanner scanFloat: &blue];
+	      [scanner scanFloat: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -1462,6 +1463,7 @@ systemColorWithName(NSString *name)
 				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
 	      [scanner scanFloat: &white];
+	      [scanner scanFloat: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -1500,6 +1502,7 @@ systemColorWithName(NSString *name)
 	      [scanner scanFloat: &yellow];
 	      [scanner scanFloat: &magenta];
 	      [scanner scanFloat: &black];
+	      [scanner scanFloat: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -2219,8 +2222,15 @@ static	NSRecursiveLock		*namedColorLock = nil;
         {
 	  [aCoder encodeInt: 4 forKey: @"NSColorSpace"];
 	}
-      // FIXME: Missing handling of alpha value
-      str = [[NSString alloc] initWithFormat: @"%f", _white_component];
+
+      if (_alpha_component == 1.0)
+        {
+          str = [[NSString alloc] initWithFormat: @"%f", _white_component];
+        }
+      else
+        {
+          str = [[NSString alloc] initWithFormat: @"%f %f", _white_component, _alpha_component];
+        }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 	      length: [str cStringLength] 
 	      forKey: @"NSWhite"];
@@ -2526,10 +2536,19 @@ static	NSRecursiveLock		*namedColorLock = nil;
     {
       NSString *str;
 
-      // FIXME: Missing handling of alpha value
       [aCoder encodeInt: 5 forKey: @"NSColorSpace"];
-      str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
-	_magenta_component, _yellow_component, _black_component];
+      if (_alpha_component == 1.0)
+        {
+          str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
+                                  _magenta_component, _yellow_component,
+                                  _black_component];
+        }
+      else
+        {
+          str = [[NSString alloc] initWithFormat: @"%f %f %f %f %f", _cyan_component, 
+                                  _magenta_component, _yellow_component,
+                                  _black_component, _alpha_component];
+        }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 		   length: [str cStringLength] 
 		   forKey: @"NSCYMK"];
@@ -2819,9 +2838,17 @@ static	NSRecursiveLock		*namedColorLock = nil;
         {
 	  [aCoder encodeInt: 2 forKey: @"NSColorSpace"];
 	}
-      // FIXME: Missing handling of alpha value
-      str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
-			      _green_component, _blue_component];
+
+      if (_alpha_component == 1.0)
+        {
+          str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
+                                  _green_component, _blue_component];
+        }
+      else
+        {
+          str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _red_component, 
+                                  _green_component, _blue_component, _alpha_component];
+        }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 	      length: [str cStringLength] 
 	      forKey: @"NSRGB"];
