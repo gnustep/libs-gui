@@ -1,3 +1,10 @@
+2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m(currentVersion, -encodeWithCoder:,
+	-initWithCoder:): Archive missing attributes in non-keyed
+	mode. This required updating the NSTextView version to 4.
+	Should fix bug #33884.
+
 2011-10-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (-lockFocusOnRepresentation:): Draw the

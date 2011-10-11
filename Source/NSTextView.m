@@ -317,7 +317,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 /**** Misc. helpers and stuff ****/
 
-static const int currentVersion = 3;
+static const int currentVersion = 4;
 
 static BOOL noLayoutManagerException(void)
 {
@@ -863,22 +863,31 @@ that makes decoding and encoding compatible with the old code.
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _tf.is_ruler_visible;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      
       [aCoder encodeObject: _backgroundColor];
       [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
       [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-      
       flag = _tf.smart_insert_delete;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _tf.allows_undo;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+      // version 3
       flag = _tf.uses_find_panel;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+      // version 2
       [aCoder encodeObject: _insertionPointColor];
       [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
       flag = [_textContainer widthTracksTextView];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = [_textContainer heightTracksTextView];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+      // version 4
+      [aCoder encodeObject: _defaultParagraphStyle];
+      [aCoder encodeObject: _markedTextAttributes];
+      [aCoder encodeObject: _linkTextAttributes];
+      flag = _tf.continuous_spell_checking;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
     }
 }
@@ -964,6 +973,12 @@ that makes decoding and encoding compatible with the old code.
 	  NSTextContainer *container = [aDecoder decodeObjectForKey: @"NSTextContainer"];
 	  [container setTextView: self];
         }
+      else
+        {
+	  NSTextContainer *container = [self buildUpTextNetwork: _frame.size];
+	  [container setTextView: self];
+        }
+
       //@"NSDragTypes"
 
       if (_tf.owns_text_network && _textStorage != nil)
@@ -979,9 +994,8 @@ that makes decoding and encoding compatible with the old code.
       int version = [aDecoder versionForClassName: 
 				  @"NSTextView"];
 
-      /* Common stuff for version 1 and 2. */
+      /* Common stuff for all versions. */
       _delegate  = [aDecoder decodeObject];
-
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.is_field_editor = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1004,15 +1018,14 @@ that makes decoding and encoding compatible with the old code.
       _tf.uses_ruler = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.is_ruler_visible = flag;
-      
       _backgroundColor  = RETAIN([aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
       [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-  
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.smart_insert_delete = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.allows_undo = flag;
+
       if (version >= 3)
 	{
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1033,12 +1046,20 @@ that makes decoding and encoding compatible with the old code.
 	  _insertionPointColor  = RETAIN([aDecoder decodeObject]);
 	  [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
 	  [aTextContainer setContainerSize: containerSize];
-
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
 	  [aTextContainer setWidthTracksTextView: flag];
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
 	  [aTextContainer setHeightTracksTextView: flag];
 	}
+
+      if (version >= 4)
+        {
+	  _defaultParagraphStyle  = RETAIN([aDecoder decodeObject]);
+	  _markedTextAttributes  = RETAIN([aDecoder decodeObject]);
+	  _linkTextAttributes  = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _tf.continuous_spell_checking = flag;
+        }
     }
 
   _dragTargetLocation = NSNotFound;
