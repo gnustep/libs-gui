@@ -1,5 +1,12 @@
 2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSScrollView.m (-encodeWithCoder:, -initWithCoder:):
+	Correct keyed encoding and decoding of flags. NIB files created
+	from GNUstep will need to be recreated.
+	Should fix bug #34498.
+
+2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColor.m: Add alpha handling to keyed-coding/decoding.
 	Should fix bug #34501.
 

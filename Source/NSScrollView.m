@@ -1454,7 +1454,6 @@ static float scrollerWidth;
   if ([aCoder allowsKeyedCoding])
     {
       unsigned long flags = 0;
-      GSScrollViewFlags scrollViewFlags;
 
       [aCoder encodeObject: _horizScroller forKey: @"NSHScroller"];
       [aCoder encodeObject: _vertScroller forKey: @"NSVScroller"];
@@ -1466,12 +1465,13 @@ static float scrollerWidth;
           [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
         }
 
-      scrollViewFlags.hasVScroller = _hasVertScroller;
-      scrollViewFlags.hasHScroller = _hasHorizScroller;
-      scrollViewFlags.border = _borderType;
-      scrollViewFlags.__unused4 = 0;
-      scrollViewFlags.__unused1 = 0;
-      memcpy((void *)&flags, (void *)&scrollViewFlags,sizeof(unsigned long));
+      flags = _borderType;
+      if (_hasVertScroller)
+        flags |= 16;
+      if (_hasHorizScroller)
+        flags |= 32;
+      if (_autohidesScrollers)
+        flags |= 512;
 
       [aCoder encodeInt: flags forKey: @"NSsFlags"];
     }
@@ -1540,25 +1540,11 @@ static float scrollerWidth;
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
           int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
-          GSScrollViewFlags scrollViewFlags;
-	  
-	  //
-	  // Do a memory copy here since the compiler errors out on casts from
-	  // scalar (int/float/long) types to structs.
-	  //
-          memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 
-          _hasVertScroller = scrollViewFlags.hasVScroller;
-          _hasHorizScroller = scrollViewFlags.hasHScroller;
-          // TODO: Enable once we encode the next values in 
-          // -encodeWithCoder:, but not before otherwise we read random memory.
-          //_autohidesScrollers = scrollViewFlags.autohidesScrollers;
-          //_scrollsDynamically = (!scrollViewFlags.nonDynamic);
-          //_rulersVisible = scrollViewFlags.showRulers;
-          //_hasHorizRuler = scrollViewFlags.hasHRuler;
-          //_hasVertRuler = scrollViewFlags.hasVRuler;
-          // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
-          _borderType = scrollViewFlags.border;
+          _borderType = flags & 3;
+          _hasVertScroller = (flags & 16) == 16;
+          _hasHorizScroller = (flags & 32) == 32;
+          _autohidesScrollers = (flags & 512) == 512;
         }
 
       /* FIXME: This should only happen when we load a Mac NIB file.
