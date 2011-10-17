@@ -952,6 +952,10 @@ didStartElement: (NSString *)elementName
                                                   encoding: NSUTF8StringEncoding]);
         }
 
+      // empty strings are not nil!
+      if (new == nil)
+        new = @"";
+
       if (key != nil)
         [decoded setObject: new forKey: key];
       
@@ -960,6 +964,15 @@ didStartElement: (NSString *)elementName
   else if ([@"int" isEqualToString: elementName])
     {
       id new = [NSNumber numberWithInt: [[element value] intValue]];
+
+      if (key != nil)
+        [decoded setObject: new forKey: key];
+      
+      return new;
+    }
+  else if ([@"real" isEqualToString: elementName])
+    {
+      id new = [NSNumber numberWithFloat: [[element value] floatValue]];
 
       if (key != nil)
         [decoded setObject: new forKey: key];

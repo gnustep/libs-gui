@@ -1,4 +1,9 @@
-2011-10-11 Fred Kiefer <FredKiefer@gmx.de>
+2011-10-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m (-objectForXib:): Add type "real" and
+	handle empty strings.
+
+2011-10-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScrollView.m (-encodeWithCoder:, -initWithCoder:):
 	Correct keyed encoding and decoding of flags. NIB files created
