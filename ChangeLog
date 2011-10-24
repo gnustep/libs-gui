@@ -1,3 +1,14 @@
+2011-10-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBox.m (-initWithCoder:): Rearrange order of keyed
+	decoding.
+	* Source/GSNibLoading.m: Warn about missing custom resources.
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add class IBToolTipAttribute.
+	* Source/GSXibLoader.m: Add decoding of type "boolean". Fix
+	decoding of "real", "integer" and "dictionary". Add handling of
+	flattenedProperties to determine which windows should be visible.
+	Store all top level obejcts in array.
+
 2011-10-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m (-objectForXib:): Add type "real" and

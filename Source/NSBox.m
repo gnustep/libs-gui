@@ -527,11 +527,6 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSView *contentView = [aDecoder decodeObjectForKey: @"NSContentView"];
-      NSCell *titleCell = [aDecoder decodeObjectForKey: @"NSTitleCell"];
-
-      [self setContentView: contentView];
-      ASSIGN(_cell, titleCell);
       if ([aDecoder containsValueForKey: @"NSBoxType"])
         {
           int boxType = [aDecoder decodeIntForKey: @"NSBoxType"];
@@ -558,6 +553,18 @@
       if ([aDecoder containsValueForKey: @"NSOffsets"])
         {
           [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTitleCell"])
+        {
+          NSCell *titleCell = [aDecoder decodeObjectForKey: @"NSTitleCell"];
+          
+          ASSIGN(_cell, titleCell);
+        }
+      if ([aDecoder containsValueForKey: @"NSContentView"])
+        {
+          NSView *contentView = [aDecoder decodeObjectForKey: @"NSContentView"];
+
+          [self setContentView: contentView];
         }
     }
   else

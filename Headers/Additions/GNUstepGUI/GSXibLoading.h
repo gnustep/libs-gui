@@ -98,6 +98,14 @@
 }
 @end
 
+@interface IBToolTipAttribute: NSObject
+{
+  NSString *name;
+  id object;
+  NSString *toolTip;
+}
+@end
+
 @interface IBObjectRecord: NSObject
 {
   int objectID;
@@ -106,6 +114,7 @@
   id parent;
 }
 - (id) object;
+- (NSInteger) objectID;
 @end
 
 @interface IBMutableOrderedSet: NSObject
@@ -113,6 +122,7 @@
   NSArray *orderedObjects;
 }
 - (NSArray *)orderedObjects;
+- (id) objectWithObjectID: (NSInteger)objID;
 @end
 
 @interface IBObjectContainer: NSObject <NSCoding>
@@ -127,7 +137,6 @@
   int maxID;
 }
 - (id) nibInstantiate;
-- (NSEnumerator *) objectRecordEnumerator;
 @end
 
 @interface GSXibElement: NSObject
@@ -156,6 +165,9 @@
   GSXibElement *currentElement;
   NSMutableDictionary *decoded;
 }
+
+- (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element;
+- (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element;
 @end
 
 #endif

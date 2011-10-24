@@ -48,6 +48,10 @@
 - (void) _setMainMenu: (NSMenu*)aMenu;
 @end
 
+@interface NSCustomObject (NibCompatibility)
+- (void) setRealObject: (id)obj;
+@end
+
 @implementation FirstResponder
 
 + (id) allocWithZone: (NSZone*)zone
@@ -360,6 +364,44 @@
 
 @end
 
+@implementation IBToolTipAttribute
+
+- (id) initWithCoder: (NSCoder*)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"name"])
+        {
+          name = [coder decodeObjectForKey: @"name"];
+        }
+      if ([coder containsValueForKey: @"object"])
+        {
+          ASSIGN(object, [coder decodeObjectForKey: @"object"]);
+        }
+      if ([coder containsValueForKey: @"toolTip"])
+        {
+          ASSIGN(toolTip, [coder decodeObjectForKey: @"toolTip"]);
+        }
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  DESTROY(name);
+  DESTROY(object);
+  DESTROY(toolTip);
+  [super dealloc];
+}
+
+@end
+
 @implementation IBObjectRecord
 
 - (id) initWithCoder: (NSCoder*)coder
@@ -405,6 +447,11 @@
   return object;
 }
 
+- (NSInteger) objectID
+{
+  return objectID;
+}
+
 @end
 
 @implementation IBMutableOrderedSet
@@ -436,6 +483,23 @@
 {
   return orderedObjects;
 }
+
+- (id) objectWithObjectID: (NSInteger)objID
+{
+  NSEnumerator *en;
+  IBObjectRecord *obj;
+
+  en = [orderedObjects objectEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
+      if ([obj objectID] == objID)
+        {
+          return [obj object];
+        }
+    }
+  return nil;
+}
+
 @end
 
 @implementation IBObjectContainer
@@ -451,6 +515,10 @@
       if ([coder containsValueForKey: @"objectRecords"])
         {
           ASSIGN(objectRecords, [coder decodeObjectForKey: @"objectRecords"]);
+        }
+      if ([coder containsValueForKey: @"flattenedProperties"])
+        {
+          ASSIGN(flattenedProperties, [coder decodeObjectForKey: @"flattenedProperties"]);
         }
       // We could load more data here, but we currently don't need it.
     }
@@ -484,6 +552,7 @@
 {
   NSEnumerator *en;
   id obj;
+  NSString *key;
 
   en = [connectionRecords objectEnumerator];
   // iterate over connections, instantiate, and then establish them.
@@ -493,12 +562,45 @@
       [obj establishConnection];
     }
 
-  return self;
-}
+  // awaken all objects.
+  en = [[objectRecords orderedObjects] objectEnumerator];
+  while ((obj = [en nextObject]) != nil)
+    {
+      obj = [obj object];
+      if ([obj respondsToSelector: @selector(awakeFromNib)])
+        {
+          [obj awakeFromNib];
+        }
+    }
 
-- (NSEnumerator *) objectRecordEnumerator
-{
-  return [[objectRecords orderedObjects] objectEnumerator];
+  // Activate windows
+  en = [flattenedProperties keyEnumerator];
+  while ((key = [en nextObject]) != nil)
+    {
+      if ([key hasSuffix: @"visibleAtLaunch"])
+        {
+          id value = [flattenedProperties objectForKey: key];
+          
+          if ([value boolValue] == YES)
+            {
+              NSInteger objID = [key integerValue];
+
+              obj = [objectRecords objectWithObjectID: objID];
+              if ([obj respondsToSelector: @selector(nibInstantiate)])
+                {
+                  obj = [obj nibInstantiate];
+                }
+
+              if ([obj isKindOfClass: [NSWindow class]])
+                {
+                  // bring visible windows to front...
+                  [(NSWindow *)obj orderFront: self];
+                }
+            }
+        }
+    }
+
+  return self;
 }
 
 @end
@@ -527,55 +629,43 @@
   NSEnumerator *en;
   id obj;
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
-  //id owner = [context objectForKey: NSNibOwner];
+  id owner = [context objectForKey: NSNibOwner];
 
-  // FIXME: Use the owner as first root object
+  // Use the owner as first root object
+  [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
       if ([obj respondsToSelector: @selector(nibInstantiate)])
         {
           obj = [obj nibInstantiate];
+        }
+
+      if (obj != nil)
+        {
           [topLevelObjects addObject: obj];
+          // All top level objects must be released by the caller to avoid
+          // leaking, unless they are going to be released by other nib
+          // objects on behalf of the owner.
           RETAIN(obj);
         }
 
-      // instantiate all windows and fill in the top level array.
-      if ([obj isKindOfClass: [NSWindow class]])
-        {
-          // bring visible windows to front...
-          //if ([obj isVisible])
-            {
-              [(NSWindow *)obj orderFront: self];
-            }
-        }
-      else if ([obj isKindOfClass: [NSMenu class]])
+      if ([obj isKindOfClass: [NSMenu class]])
         {
           // add the menu...
           [NSApp _setMainMenu: obj];
         }
     }
 
-  // Load connections
+  // Load connections and awaken objects
   [objects nibInstantiate];
-  
-  // awaken all objects.
-  en = [objects objectRecordEnumerator];
-  while ((obj = [en nextObject]) != nil)
-    {
-      obj = [obj object];
-      if ([obj respondsToSelector: @selector(awakeFromNib)])
-        {
-          [obj awakeFromNib];
-        }
-    }
 }
 
 - (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 {
-  BOOL		loaded = NO;
+  BOOL loaded = NO;
   NSKeyedUnarchiver *unarchiver = nil;
 
   NS_DURING
@@ -719,8 +809,8 @@
 - (NSString*) description
 {
   return [NSString stringWithFormat: 
-                     @"GSXibElement <%@> attrs (%@) elements [%@] %@", 
-                   type, attributes, elements, value, nil];
+                     @"GSXibElement <%@> attrs (%@) elements [%@] values [%@] %@", 
+                   type, attributes, elements, values, value, nil];
 }
 
 @end
@@ -823,13 +913,9 @@ didStartElement: (NSString *)elementName
     }
 }
 
-- (id) decodeObjectForXib: (GSXibElement*)element
-             forClassName: (NSString *)classname
-                  withKey: (NSString *)key
+- (id) allocObjectForClassName: (NSString *)classname
 {
-  GSXibElement *last;
   Class c = [self classForClassName: classname];
-  id o, r;
   id delegate = [self delegate];
 
   if (c == nil)
@@ -855,26 +941,44 @@ didStartElement: (NSString *)elementName
         }
     }
 
+  // Create instance.
+  return [c allocWithZone: [self zone]];
+ }
+
+- (id) decodeObjectForXib: (GSXibElement*)element
+             forClassName: (NSString *)classname
+                   withID: (NSString *)objID
+{
+  GSXibElement *last;
+  id o, r;
+  id delegate = [self delegate];
+
+  // Create instance.
+  o = [self allocObjectForClassName: classname];
+  // Make sure the object stays around, even when replaced.
+  RETAIN(o);
+  if (objID != nil)
+    [decoded setObject: o forKey: objID];
+
   // push
   last = currentElement;
   currentElement = element;
 
-  // Create instance.
-  o = [c allocWithZone: [self zone]];
-  // Make sure the object stays around, even when replaced.
-  RETAIN(o);
-  if (key != nil)
-    [decoded setObject: o forKey: key];
   r = [o initWithCoder: self];
+
+  // pop
+  currentElement = last;
+  
   if (r != o)
     {
       [delegate unarchiver: self
          willReplaceObject: o
                 withObject: r];
       ASSIGN(o, r);
-      if (key != nil)
-        [decoded setObject: o forKey: key];
+      if (objID != nil)
+        [decoded setObject: o forKey: objID];
     }
+
   r = [o awakeAfterUsingCoder: self];
   if (r != o)
     {
@@ -882,9 +986,10 @@ didStartElement: (NSString *)elementName
          willReplaceObject: o
                 withObject: r];
       ASSIGN(o, r);
-      if (key != nil)
-        [decoded setObject: o forKey: key];
+      if (objID != nil)
+        [decoded setObject: o forKey: objID];
     }
+
   if (delegate != nil)
     {
       r = [delegate unarchiver: self didDecodeObject: o];
@@ -894,36 +999,100 @@ didStartElement: (NSString *)elementName
              willReplaceObject: o
                     withObject: r];
           ASSIGN(o, r);
-          if (key != nil)
-            [decoded setObject: o forKey: key];
+          if (objID != nil)
+            [decoded setObject: o forKey: objID];
+        }
+    }
+
+  // Balance the retain above
+  RELEASE(o);
+  
+  if (objID != nil)
+    {
+      NSDebugLLog(@"XIB", @"decoded object %@ for id %@", o, objID);
+    }
+
+  return AUTORELEASE(o);
+}
+
+/*
+  This method is a copy of decodeObjectForXib:forClassName:withKey:
+  The only difference being in the way we decode the object and the 
+  missing context switch.
+ */
+- (id) decodeDictionaryForXib: (GSXibElement*)element
+                 forClassName: (NSString *)classname
+                       withID: (NSString *)objID
+{
+  id o, r;
+  id delegate = [self delegate];
+
+  // Create instance.
+  o = [self allocObjectForClassName: classname];
+  // Make sure the object stays around, even when replaced.
+  RETAIN(o);
+  if (objID != nil)
+    [decoded setObject: o forKey: objID];
+
+  r = [o initWithDictionary: [self _decodeDictionaryOfObjectsForElement: element]];
+  if (r != o)
+    {
+      [delegate unarchiver: self
+         willReplaceObject: o
+                withObject: r];
+      ASSIGN(o, r);
+      if (objID != nil)
+        [decoded setObject: o forKey: objID];
+    }
+
+  r = [o awakeAfterUsingCoder: self];
+  if (r != o)
+    {
+      [delegate unarchiver: self
+         willReplaceObject: o
+                withObject: r];
+      ASSIGN(o, r);
+      if (objID != nil)
+        [decoded setObject: o forKey: objID];
+    }
+
+  if (delegate != nil)
+    {
+      r = [delegate unarchiver: self didDecodeObject: o];
+      if (r != o)
+        {
+          [delegate unarchiver: self
+             willReplaceObject: o
+                    withObject: r];
+          ASSIGN(o, r);
+          if (objID != nil)
+            [decoded setObject: o forKey: objID];
         }
     }
   // Balance the retain above
   RELEASE(o);
   
-  // pop
-  currentElement = last;
-  
-  if (key != nil)
+  if (objID != nil)
     {
-      NSDebugLLog(@"XIB", @"decoded object %@ for key %@", o, key);
+      NSDebugLLog(@"XIB", @"decoded object %@ for id %@", o, objID);
     }
+
   return AUTORELEASE(o);
 }
 
 - (id) objectForXib: (GSXibElement*)element
 {
   NSString *elementName;
-  NSString *key;
+  NSString *objID;
 
   if (element == nil)
     return nil;
 
   NSDebugLLog(@"XIB", @"decoding element %@", element);
-  key = [element attributeForKey: @"id"];
-  if (key != nil)
+  objID = [element attributeForKey: @"id"];
+  if (objID)
     {
-      id new = [decoded objectForKey: key];
+      id new = [decoded objectForKey: objID];
       if (new != nil)
         {
           // The object was already decoded as a reference
@@ -937,7 +1106,7 @@ didStartElement: (NSString *)elementName
       NSString *classname = [element attributeForKey: @"class"];
       return [self decodeObjectForXib: element
                          forClassName: classname
-                              withKey: key];
+                               withID: objID];
     }
   else if ([@"string" isEqualToString: elementName])
     {
@@ -956,8 +1125,8 @@ didStartElement: (NSString *)elementName
       if (new == nil)
         new = @"";
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
     }
@@ -965,17 +1134,8 @@ didStartElement: (NSString *)elementName
     {
       id new = [NSNumber numberWithInt: [[element value] intValue]];
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
-      
-      return new;
-    }
-  else if ([@"real" isEqualToString: elementName])
-    {
-      id new = [NSNumber numberWithFloat: [[element value] floatValue]];
-
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
     }
@@ -983,8 +1143,8 @@ didStartElement: (NSString *)elementName
     {
       id new = [NSNumber numberWithDouble: [[element value] doubleValue]];
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
     }
@@ -992,11 +1152,40 @@ didStartElement: (NSString *)elementName
     {
       id new = [NSNumber numberWithBool: [[element value] boolValue]];
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
+    }
+  else if ([@"integer" isEqualToString: elementName])
+    {
+      NSString *value = [element attributeForKey: @"value"];
+      id new = [NSNumber numberWithInteger: [value integerValue]];
 
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
+    }
+  else if ([@"real" isEqualToString: elementName])
+    {
+      NSString *value = [element attributeForKey: @"value"];
+      id new = [NSNumber numberWithFloat: [value floatValue]];
+
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
+    }
+  else if ([@"boolean" isEqualToString: elementName])
+    {
+      NSString *value = [element attributeForKey: @"value"];
+      id new = [NSNumber numberWithBool: [value boolValue]];
+
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
     }
   else if ([@"reference" isEqualToString: elementName])
     {
@@ -1033,17 +1222,8 @@ didStartElement: (NSString *)elementName
     {
       id new = [element value];
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
-      
-      return new;
-    }
-  else if ([@"integer" isEqualToString: elementName])
-    {
-      id new = [NSNumber numberWithInteger: [[element value] integerValue]];
-
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
     }
@@ -1053,8 +1233,8 @@ didStartElement: (NSString *)elementName
                            allowLossyConversion: NO];
       new = [GSMimeDocument decodeBase64: new];
 
-      if (key != nil)
-        [decoded setObject: new forKey: key];
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
       
       return new;
     }
@@ -1068,7 +1248,7 @@ didStartElement: (NSString *)elementName
         }
       return [self decodeObjectForXib: element
                          forClassName: classname
-                              withKey: key];
+                               withID: objID];
     }
   else if ([@"dictionary" isEqualToString: elementName])
     {
@@ -1078,9 +1258,10 @@ didStartElement: (NSString *)elementName
         {
           classname = @"NSDictionary";
         }
-      return [self decodeObjectForXib: element
-                         forClassName: classname
-                              withKey: key];
+
+      return [self decodeDictionaryForXib: element
+                             forClassName: classname
+                                   withID: objID];
     }
   else
     {
@@ -1092,7 +1273,14 @@ didStartElement: (NSString *)elementName
 
 - (id) _decodeArrayOfObjectsForKey: (NSString*)aKey
 {
-  NSArray *values = [currentElement values];
+  // FIXME: This is wrong but the only way to keep the code for
+  // [NSArray-initWithCoder:] working
+  return [self _decodeArrayOfObjectsForElement: currentElement];
+}
+
+- (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element
+{
+  NSArray *values = [element values];
   int max = [values count];
   id list[max];
   int i;
@@ -1105,6 +1293,27 @@ didStartElement: (NSString *)elementName
     }
 
   return [NSArray arrayWithObjects: list count: max];
+}
+
+- (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element
+{
+  NSDictionary *elements = [element elements];
+  NSEnumerator *en;
+  NSString *key;
+  NSMutableDictionary *dict;
+
+  dict = [[NSMutableDictionary alloc] init];
+  en = [elements keyEnumerator];
+  while ((key = [en nextObject]) != nil)
+    {
+      id obj = [self objectForXib: [elements objectForKey: key]];
+      if (obj == nil)
+        NSLog(@"No object for %@ at key %@", [elements objectForKey: key], key);
+      else
+        [dict setObject: obj forKey: key];
+    }
+
+  return AUTORELEASE(dict);
 }
 
 - (BOOL) containsValueForKey: (NSString*)aKey

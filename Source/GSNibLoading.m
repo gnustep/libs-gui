@@ -1239,11 +1239,21 @@ static BOOL _isInInterfaceBuilder = NO;
           realObject = RETAIN([NSImage imageNamed: _resourceName]);
         }
 
-      // if an object has been substituted, then release the placeholder.
-      if (realObject != nil)
+      if (realObject == nil)
         {
-          RELEASE(self);
+          NSLog(@"Could not load NSCustomResource %@ for class %@", _resourceName, _className);
+          // Use a default instead of the missing object
+          if ([_className isEqual: @"NSSound"])
+            {
+              realObject = RETAIN([NSSound soundNamed: @"Ping"]);
+            }
+          else if ([_className isEqual: @"NSImage"])
+            {
+              realObject  = RETAIN([NSImage imageNamed: @"GNUstep"]);
+            }
         }
+      // The object has been substituted, release the placeholder.
+      RELEASE(self);
     }
   else
     {
