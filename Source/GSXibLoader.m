@@ -211,6 +211,44 @@
   [super dealloc];
 }
 
+- (NSString *) label
+{
+  return label;
+}
+
+- (id) source
+{
+  return source;
+}
+
+- (id) destination
+{
+  return destination;
+}
+
+- (NSNibConnector *) nibConnector
+{
+  NSString *tag = [self label];
+  NSRange colonRange = [tag rangeOfString: @":"];
+  unsigned int location = colonRange.location;
+  NSNibConnector *result = nil;
+
+  if(location == NSNotFound)
+    {
+      result = [[NSNibOutletConnector alloc] init];
+    }
+  else
+    {
+      result = [[NSNibControlConnector alloc] init];
+    }
+
+  [result setDestination: [self destination]];
+  [result setSource: [self source]];
+  [result setLabel: [self label]];
+  
+  return result;
+}
+
 - (id) nibInstantiate
 {
   if ([source respondsToSelector: @selector(nibInstantiate)])
@@ -351,6 +389,11 @@
   [super dealloc];
 }
 
+- (IBConnection *) connection
+{
+  return connection;
+}
+
 - (id) nibInstantiate
 {
   ASSIGN(connection, [connection nibInstantiate]);
@@ -445,6 +488,11 @@
 - (id) object
 {
   return object;
+}
+
+- (id) parent
+{
+  return parent;
 }
 
 - (NSInteger) objectID
@@ -546,6 +594,16 @@
   DESTROY(localizations);
   DESTROY(sourceID);
   [super dealloc];
+}
+
+- (NSEnumerator *) connectionRecordEnumerator
+{
+  return [connectionRecords objectEnumerator];
+}
+
+- (NSEnumerator *) objectRecordEnumerator
+{
+  return [[objectRecords orderedObjects] objectEnumerator];
 }
 
 - (id) nibInstantiate

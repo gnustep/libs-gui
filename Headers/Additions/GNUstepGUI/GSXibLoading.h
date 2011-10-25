@@ -71,6 +71,10 @@
   id source;
   id destination;
 }
+- (NSString *) label;
+- (id) source;
+- (id) destination;
+- (NSNibConnector *) nibConnector;
 - (id) nibInstantiate;
 - (void) establishConnection;
 @end
@@ -96,6 +100,7 @@
   IBConnection *connection;
   int connectionID;
 }
+- (IBConnection *) connection;
 @end
 
 @interface IBToolTipAttribute: NSObject
@@ -114,6 +119,7 @@
   id parent;
 }
 - (id) object;
+- (id) parent;
 - (NSInteger) objectID;
 @end
 
@@ -137,6 +143,8 @@
   int maxID;
 }
 - (id) nibInstantiate;
+- (NSEnumerator *) connectionRecordEnumerator;
+- (NSEnumerator *) objectRecordEnumerator;
 @end
 
 @interface GSXibElement: NSObject

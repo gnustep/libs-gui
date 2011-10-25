@@ -1,3 +1,8 @@
+2011-10-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
+	* Source/GSXibLoader.m: Integrate method used in Gorm.
+
 2011-10-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBox.m (-initWithCoder:): Rearrange order of keyed
