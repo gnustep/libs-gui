@@ -1,5 +1,10 @@
 2011-10-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m: Draw a question mark centered in the bezel
+	for NSHelpButtonBezelStyle
+
+2011-10-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSBitmapImageRep.m:
 	* Source/NSColor.m:
 	* Source/GSThemeTools.m:

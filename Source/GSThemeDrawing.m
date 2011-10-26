@@ -153,8 +153,24 @@
 	    break;
 	  case NSCircularBezelStyle:
 	    frame = NSInsetRect(frame, 3, 3);
-	  case NSHelpButtonBezelStyle:
 	    [self drawCircularBezel: frame withColor: color]; 
+	    break;
+	  case NSHelpButtonBezelStyle:
+	    [self drawCircularBezel: frame withColor: color];
+	    {
+	      NSDictionary *attributes = [NSDictionary dictionaryWithObject: [NSFont controlContentFontOfSize: 0]
+								     forKey: NSFontAttributeName];
+	      NSAttributedString *questionMark = [[[NSAttributedString alloc]
+						    initWithString: _(@"?")
+							attributes: attributes] autorelease];
+
+	      NSRect textRect;
+	      textRect.size = [questionMark size];
+	      textRect.origin.x = NSMidX(frame) - (textRect.size.width / 2);
+	      textRect.origin.y = NSMidY(frame) - (textRect.size.height / 2);
+
+	      [questionMark drawInRect: textRect];
+	    }
 	    break;
 	  case NSDisclosureBezelStyle:
 	  case NSRoundedDisclosureBezelStyle:
