@@ -2373,7 +2373,6 @@ static NSColor *dtxtCol;
       cFlags |= (_action_mask & NSLeftMouseUpMask) ?  0 : 0x20;
       cFlags |= [self wraps] ?  0x40 : 0;
       cFlags |= (_action_mask & NSLeftMouseDraggedMask) ?  0x100 : 0;
-      cFlags |= ([self lineBreakMode] << 12);
       cFlags |= (_action_mask & NSLeftMouseDownMask) ?  0x40000 : 0;
       cFlags |= [self isContinuous] ? 0x80000 : 0;
       cFlags |= [self isScrollable] ? 0x100000 : 0; 
@@ -2389,6 +2388,7 @@ static NSColor *dtxtCol;
       
       // flags part 2
       cFlags2 |= ([self controlTint] << 5);
+      cFlags2 |= ([self lineBreakMode] << 9);
       cFlags2 |= ([self controlSize] << 17);
       cFlags2 |= [self sendsActionOnEndEditing] ? 0x400000 : 0;
       cFlags2 |= [self allowsMixedState] ? 0x1000000 : 0;
@@ -2531,7 +2531,6 @@ static NSColor *dtxtCol;
           [self setWraps: ((cFlags & 0x40) != 0x40)];
           if ((cFlags & 0x100) == 0x100)
             mask |= NSLeftMouseDraggedMask;
-          [self setLineBreakMode: ((cFlags & 0x7000) >> 12)];
           if ((cFlags & 0x40000) == 0x40000)
             mask |= NSLeftMouseDownMask;
           if ((cFlags & 0x80000) == 0x80000)
@@ -2554,6 +2553,7 @@ static NSColor *dtxtCol;
       
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
+	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
           [self setSendsActionOnEndEditing: ((cFlags2 & 0x400000) == 0x400000)];
           [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];

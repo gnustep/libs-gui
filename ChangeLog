@@ -1,3 +1,9 @@
+2011-10-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSCell.m: Read/write NSLineBreakMode from the bits masked off
+	by 0xE00 in NSCellFlags2. The previous location they were being
+	read/written from was giving bogus values such as 7.
+
 2011-10-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m: Draw a question mark centered in the bezel
