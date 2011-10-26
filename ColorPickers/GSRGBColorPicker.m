@@ -63,7 +63,7 @@
 
 - (void)setColor:(NSColor *)color
 {
-  float red, green, blue, alpha;
+  CGFloat red, green, blue, alpha;
   NSColor *c;
 
   if (updating)

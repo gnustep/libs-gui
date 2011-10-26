@@ -782,7 +782,7 @@ withRepeatedImage: (NSImage*)image
 - (id) initWithNinePatchImage: (NSImage*)image
 {
   int i;
-  float r,g,b,a;
+  CGFloat r,g,b,a;
   int x1 = -1;
   int x2 = -1;
   int y1 = -1;

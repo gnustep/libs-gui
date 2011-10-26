@@ -433,7 +433,7 @@
 
 - (void)setColor:(NSColor *)color
 {
-  float hue, saturation, brightness, alpha;
+  CGFloat hue, saturation, brightness, alpha;
   NSColor *c;
 
   c = [color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];

@@ -63,7 +63,7 @@
 
 - (void)setColor:(NSColor *)color
 {
-  float white, alpha;
+  CGFloat white, alpha;
   NSColor *c;
 
   if (updating)

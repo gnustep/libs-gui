@@ -78,79 +78,79 @@ static Class	NSColorClass;
 
 @interface GSWhiteColor : NSColor
 {
-  float _white_component;
-  float _alpha_component;
+  CGFloat _white_component;
+  CGFloat _alpha_component;
 }
 
 @end
 
 @interface GSDeviceWhiteColor : GSWhiteColor
 
-- (NSColor*) initWithDeviceWhite: (float)white
-			   alpha: (float)alpha;
+- (NSColor*) initWithDeviceWhite: (CGFloat)white
+			   alpha: (CGFloat)alpha;
 
 @end
 
 @interface GSCalibratedWhiteColor : GSWhiteColor
 
-- (NSColor*) initWithCalibratedWhite: (float)white
-			       alpha: (float)alpha;
+- (NSColor*) initWithCalibratedWhite: (CGFloat)white
+			       alpha: (CGFloat)alpha;
 
 @end
 
 @interface GSDeviceCMYKColor : NSColor
 {
-  float _cyan_component;
-  float _magenta_component;
-  float _yellow_component;
-  float _black_component;
-  float _alpha_component;
+  CGFloat _cyan_component;
+  CGFloat _magenta_component;
+  CGFloat _yellow_component;
+  CGFloat _black_component;
+  CGFloat _alpha_component;
 }
 
-- (NSColor*) initWithDeviceCyan: (float)cyan
-			magenta: (float)magenta
-			 yellow: (float)yellow
-			  black: (float)black
-			  alpha: (float)alpha;
+- (NSColor*) initWithDeviceCyan: (CGFloat)cyan
+			magenta: (CGFloat)magenta
+			 yellow: (CGFloat)yellow
+			  black: (CGFloat)black
+			  alpha: (CGFloat)alpha;
 
 @end
 
 @interface GSRGBColor : NSColor
 {
-  float _red_component;
-  float _green_component;
-  float _blue_component;
-  float _hue_component;
-  float _saturation_component;
-  float _brightness_component;
-  float _alpha_component;
+  CGFloat _red_component;
+  CGFloat _green_component;
+  CGFloat _blue_component;
+  CGFloat _hue_component;
+  CGFloat _saturation_component;
+  CGFloat _brightness_component;
+  CGFloat _alpha_component;
 }
 
 @end
 
 @interface GSDeviceRGBColor : GSRGBColor
 
-- (NSColor*) initWithDeviceRed: (float)red
-			 green: (float)green
-			  blue: (float)blue
-			 alpha: (float)alpha;
-- (NSColor*) initWithDeviceHue: (float)hue
-		    saturation: (float)saturation
-		    brightness: (float)brightness
-			 alpha: (float)alpha;
+- (NSColor*) initWithDeviceRed: (CGFloat)red
+			 green: (CGFloat)green
+			  blue: (CGFloat)blue
+			 alpha: (CGFloat)alpha;
+- (NSColor*) initWithDeviceHue: (CGFloat)hue
+		    saturation: (CGFloat)saturation
+		    brightness: (CGFloat)brightness
+			 alpha: (CGFloat)alpha;
 
 @end
 
 @interface GSCalibratedRGBColor : GSRGBColor
 
-- (NSColor*) initWithCalibratedRed: (float)red
-			     green: (float)green
-			      blue: (float)blue
-			     alpha: (float)alpha;
-- (NSColor*) initWithCalibratedHue: (float)hue
-			saturation: (float)saturation
-			brightness: (float)brightness
-			     alpha: (float)alpha;
+- (NSColor*) initWithCalibratedRed: (CGFloat)red
+			     green: (CGFloat)green
+			      blue: (CGFloat)blue
+			     alpha: (CGFloat)alpha;
+- (NSColor*) initWithCalibratedHue: (CGFloat)hue
+			saturation: (CGFloat)saturation
+			brightness: (CGFloat)brightness
+			     alpha: (CGFloat)alpha;
 @end
 
 // FIXME: This is not described in the specification
@@ -189,16 +189,16 @@ void initSystemColors(void)
   
   // Set up a dictionary containing the names of all the system colors
   // as keys and with colors in string format as values.
-  white = [NSString stringWithFormat: @"%f %f %f",
-		    NSWhite, NSWhite, NSWhite];
-  lightGray = [NSString stringWithFormat: @"%f %f %f",
-			NSLightGray, NSLightGray, NSLightGray];
-  gray = [NSString stringWithFormat: @"%f %f %f",
-		   NSGray, NSGray, NSGray];
-  darkGray = [NSString stringWithFormat: @"%f %f %f",
-		       NSDarkGray, NSDarkGray, NSDarkGray];
-  black = [NSString stringWithFormat: @"%f %f %f",
-		    NSBlack, NSBlack, NSBlack];
+  white = [NSString stringWithFormat: @"%g %g %g",
+		    (double)NSWhite, (double)NSWhite, (double)NSWhite];
+  lightGray = [NSString stringWithFormat: @"%g %g %g",
+			(double)NSLightGray, (double)NSLightGray, (double)NSLightGray];
+  gray = [NSString stringWithFormat: @"%g %g %g",
+		   (double)NSGray, (double)NSGray, (double)NSGray];
+  darkGray = [NSString stringWithFormat: @"%g %g %g",
+		       (double)NSDarkGray, (double)NSDarkGray, (double)NSDarkGray];
+  black = [NSString stringWithFormat: @"%g %g %g",
+		    (double)NSBlack, (double)NSBlack, (double)NSBlack];
   
   colorStrings = [[NSMutableDictionary alloc]
 		     initWithObjectsAndKeys:
@@ -337,10 +337,10 @@ systemColorWithName(NSString *name)
    name, with hue, saturation, brightness and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithCalibratedHue: (float)hue
-			 saturation: (float)saturation
-			 brightness: (float)brightness
-			      alpha: (float)alpha
++ (NSColor*) colorWithCalibratedHue: (CGFloat)hue
+			 saturation: (CGFloat)saturation
+			 brightness: (CGFloat)brightness
+			      alpha: (CGFloat)alpha
 {
   id color;
 
@@ -358,10 +358,10 @@ systemColorWithName(NSString *name)
    name, with red, green, blue and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithCalibratedRed: (float)red
-			      green: (float)green
-			       blue: (float)blue
-			      alpha: (float)alpha
++ (NSColor*) colorWithCalibratedRed: (CGFloat)red
+			      green: (CGFloat)green
+			       blue: (CGFloat)blue
+			      alpha: (CGFloat)alpha
 {
   id color;
 
@@ -378,8 +378,8 @@ systemColorWithName(NSString *name)
    name, with red, green, blue and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithCalibratedWhite: (float)white
-				alpha: (float)alpha
++ (NSColor*) colorWithCalibratedWhite: (CGFloat)white
+				alpha: (CGFloat)alpha
 {
   id color;
 
@@ -409,11 +409,11 @@ systemColorWithName(NSString *name)
    name, with cyan, magenta, yellow, black and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithDeviceCyan: (float)cyan
-			 magenta: (float)magenta
-			  yellow: (float)yellow
-			   black: (float)black
-			   alpha: (float)alpha
++ (NSColor*) colorWithDeviceCyan: (CGFloat)cyan
+			 magenta: (CGFloat)magenta
+			  yellow: (CGFloat)yellow
+			   black: (CGFloat)black
+			   alpha: (CGFloat)alpha
 {
   id color;
 
@@ -432,10 +432,10 @@ systemColorWithName(NSString *name)
    name, with hue, saturation, brightness and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithDeviceHue: (float)hue
-		     saturation: (float)saturation
-		     brightness: (float)brightness
-			  alpha: (float)alpha
++ (NSColor*) colorWithDeviceHue: (CGFloat)hue
+		     saturation: (CGFloat)saturation
+		     brightness: (CGFloat)brightness
+			  alpha: (CGFloat)alpha
 {
   id color;
 
@@ -452,10 +452,10 @@ systemColorWithName(NSString *name)
    name, with red, green, blue and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithDeviceRed: (float)red
-			  green: (float)green
-			   blue: (float)blue
-			  alpha: (float)alpha
++ (NSColor*) colorWithDeviceRed: (CGFloat)red
+			  green: (CGFloat)green
+			   blue: (CGFloat)blue
+			  alpha: (CGFloat)alpha
 {
   id color;
 
@@ -472,8 +472,8 @@ systemColorWithName(NSString *name)
    name, with red, green, blue and alpha as specified. Valid values
    are the range 0.0 to 1.0. Out of range values will be clipped.</p>
 */
-+ (NSColor*) colorWithDeviceWhite: (float)white
-			    alpha: (float)alpha
++ (NSColor*) colorWithDeviceWhite: (CGFloat)white
+			    alpha: (CGFloat)alpha
 {
   id color;
 
@@ -907,11 +907,11 @@ systemColorWithName(NSString *name)
  Raises a NSInternalInconsistencyException if the NSColor is not a CYMK color
  </p>
  */
-- (void) getCyan: (float*)cyan
-	 magenta: (float*)magenta
-	  yellow: (float*)yellow
-	   black: (float*)black
-	   alpha: (float*)alpha
+- (void) getCyan: (CGFloat*)cyan
+	 magenta: (CGFloat*)magenta
+	  yellow: (CGFloat*)yellow
+	   black: (CGFloat*)black
+	   alpha: (CGFloat*)alpha
 {
   [NSException raise: NSInternalInconsistencyException
     format: @"Called getCyan:magenta:yellow:black:alpha: on non-CMYK colour"];
@@ -921,10 +921,10 @@ systemColorWithName(NSString *name)
  Raises a NSInternalInconsistencyException if the NSColor is not a RGB color
  </p>
  */
-- (void) getHue: (float*)hue
-     saturation: (float*)saturation
-     brightness: (float*)brightness
-	  alpha: (float*)alpha
+- (void) getHue: (CGFloat*)hue
+     saturation: (CGFloat*)saturation
+     brightness: (CGFloat*)brightness
+	  alpha: (CGFloat*)alpha
 {
   [NSException raise: NSInternalInconsistencyException
     format: @"Called getHue:saturation:brightness:alpha: on non-RGB colour"];
@@ -934,10 +934,10 @@ systemColorWithName(NSString *name)
  Raises a NSInternalInconsistencyException if the NSColor is not a RGB color
  </p>
  */
--(void) getRed: (float*)red
-	  green: (float*)green
-	   blue: (float*)blue
-	  alpha: (float*)alpha
+-(void) getRed: (CGFloat*)red
+	  green: (CGFloat*)green
+	   blue: (CGFloat*)blue
+	  alpha: (CGFloat*)alpha
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called getRed:green:blue:alpha: on non-RGB colour"];
@@ -947,8 +947,8 @@ systemColorWithName(NSString *name)
  Raises a NSInternalInconsistencyException if the NSColor is not a 
  greyscale color</p>
  */
-- (void) getWhite: (float*)white
-	    alpha: (float*)alpha
+- (void) getWhite: (CGFloat*)white
+	    alpha: (CGFloat*)alpha
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called getWhite:alpha: on non-grayscale colour"];
@@ -969,7 +969,7 @@ systemColorWithName(NSString *name)
 
 /** <p>Returns the alpha component. </p>
  */
-- (float) alphaComponent
+- (CGFloat) alphaComponent
 {
   return 1.0;
 }
@@ -977,7 +977,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the black component. Raises a NSInternalInconsistencyException
     if NSColor is not a CMYK color.</p>
  */
-- (float) blackComponent
+- (CGFloat) blackComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called blackComponent on non-CMYK colour"];
@@ -987,7 +987,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the blue component. Raises a NSInternalInconsistencyException
     if NSColor is not a RGB color.</p>
  */
-- (float) blueComponent
+- (CGFloat) blueComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called blueComponent on non-RGB colour"];
@@ -997,7 +997,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the brightness component. Raises a 
     NSInternalInconsistencyException if NSColor space is not a RGB color</p>
 */
-- (float) brightnessComponent
+- (CGFloat) brightnessComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called brightnessComponent on non-RGB colour"];
@@ -1021,7 +1021,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the cyan component. Raises a  NSInternalInconsistencyException 
     if NSColor is not a CYMK color</p>
 */
-- (float) cyanComponent
+- (CGFloat) cyanComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called cyanComponent on non-CMYK colour"];
@@ -1031,7 +1031,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the green component. Raises a  NSInternalInconsistencyException 
     if NSColor is not a RGB color</p>
 */
-- (float) greenComponent
+- (CGFloat) greenComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called greenComponent on non-RGB colour"];
@@ -1041,7 +1041,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the hue component. Raises a  NSInternalInconsistencyException 
     if NSColor is not a RGB color</p>
 */
-- (float) hueComponent
+- (CGFloat) hueComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called hueComponent on non-RGB colour"];
@@ -1065,7 +1065,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the magenta component. Raises a  
     NSInternalInconsistencyException  if NSColor is not a CMYK color</p>
 */
-- (float) magentaComponent
+- (CGFloat) magentaComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called magentaComponent on non-CMYK colour"];
@@ -1075,7 +1075,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the red component. Raises a NSInternalInconsistencyException  
     if NSColor is not a RGB color</p>
 */
-- (float) redComponent
+- (CGFloat) redComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called redComponent on non-RGB colour"];
@@ -1085,7 +1085,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the saturation component. Raises a
     NSInternalInconsistencyException if NSColor is not a RGB color</p>
 */
-- (float) saturationComponent
+- (CGFloat) saturationComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called saturationComponent on non-RGB colour"];
@@ -1095,7 +1095,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the white component. Raises a NSInternalInconsistencyException  
     if NSColor is not a grayscale color</p>
 */
-- (float) whiteComponent
+- (CGFloat) whiteComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called whiteComponent on non-grayscale colour"];
@@ -1112,7 +1112,7 @@ systemColorWithName(NSString *name)
 /** <p>Returns the yellow component. Raises a NSInternalInconsistencyException
     if NSColor is not a RGB color</p>
 */
-- (float) yellowComponent
+- (CGFloat) yellowComponent
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Called yellowComponent on non-CMYK colour"];
@@ -1161,8 +1161,8 @@ systemColorWithName(NSString *name)
 }
 
 + (NSColor *) colorWithColorSpace: (NSColorSpace *)space
-                       components: (const float *)comp
-                            count: (int)number
+                       components: (const CGFloat *)comp
+                            count: (NSInteger)number
 {
   // FIXME
   if (space == [NSColorSpace genericRGBColorSpace] && (number == 4)) 
@@ -1267,7 +1267,7 @@ systemColorWithName(NSString *name)
 - (NSUInteger) hash
 {
   int nums = [self numberOfComponents];
-  float floats[nums];
+  CGFloat floats[nums];
   NSUInteger	h = 0;
   unsigned	i;
 
@@ -1279,14 +1279,14 @@ systemColorWithName(NSString *name)
   return h;
 }
 
-- (int) numberOfComponents
+- (NSInteger) numberOfComponents
 {
   [NSException raise: NSInternalInconsistencyException
     format: @"Called numberOfComponents on non-standard colour"];
   return 0;
 }
 
-- (void) getComponents: (float *)components
+- (void) getComponents: (CGFloat *)components
 {
   [NSException raise: NSInternalInconsistencyException
     format: @"Called getComponents: on non-standard colour"];
@@ -1295,12 +1295,12 @@ systemColorWithName(NSString *name)
 //
 // Changing the Color
 //
-- (NSColor*) blendedColorWithFraction: (float)fraction
+- (NSColor*) blendedColorWithFraction: (CGFloat)fraction
 			      ofColor: (NSColor*)aColor
 {
   NSColor *myColor = [self colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
   NSColor *other = [aColor colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-  float mr, mg, mb, ma, or, og, ob, oa, red, green, blue, alpha;
+  CGFloat mr, mg, mb, ma, or, og, ob, oa, red, green, blue, alpha;
 
   if (fraction <= 0.0)
     {
@@ -1329,18 +1329,18 @@ systemColorWithName(NSString *name)
 					alpha: alpha];
 }
 
-- (NSColor*) colorWithAlphaComponent: (float)alpha
+- (NSColor*) colorWithAlphaComponent: (CGFloat)alpha
 {
   return self;
 }
 
-- (NSColor*) highlightWithLevel: (float)level
+- (NSColor*) highlightWithLevel: (CGFloat)level
 {
   return [self blendedColorWithFraction: level
 			        ofColor: [NSColorClass highlightColor]];
 }
 
-- (NSColor*) shadowWithLevel: (float)level
+- (NSColor*) shadowWithLevel: (CGFloat)level
 {
   return [self blendedColorWithFraction: level
 			        ofColor: [NSColorClass shadowColor]];
@@ -1409,10 +1409,10 @@ systemColorWithName(NSString *name)
         {
 	  NSUInteger length;
 	  const uint8_t *data;
-	  float red = 0.0;
-	  float green = 0.0;
-	  float blue = 0.0;
-	  float alpha = 1.0;
+	  double red = 0.0;
+	  double green = 0.0;
+	  double blue = 0.0;
+	  double alpha = 1.0;
 	  NSString *str;
 	  NSScanner *scanner;
 	  
@@ -1423,10 +1423,10 @@ systemColorWithName(NSString *name)
 	      str = [[NSString alloc] initWithCString: (const char*)data 
 				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanFloat: &red];
-	      [scanner scanFloat: &green];
-	      [scanner scanFloat: &blue];
-	      [scanner scanFloat: &alpha];
+	      [scanner scanDouble: &red];
+	      [scanner scanDouble: &green];
+	      [scanner scanDouble: &blue];
+	      [scanner scanDouble: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -1450,8 +1450,8 @@ systemColorWithName(NSString *name)
         {
 	  NSUInteger length;
 	  const uint8_t *data;
-	  float white = 0.0;
-	  float alpha = 1.0;
+	  double white = 0.0;
+	  double alpha = 1.0;
 	  NSString *str;
 	  NSScanner *scanner;
 	  
@@ -1462,8 +1462,8 @@ systemColorWithName(NSString *name)
 	      str = [[NSString alloc] initWithCString: (const char*)data 
 				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanFloat: &white];
-	      [scanner scanFloat: &alpha];
+	      [scanner scanDouble: &white];
+	      [scanner scanDouble: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -1483,11 +1483,11 @@ systemColorWithName(NSString *name)
         {
 	  NSUInteger length;
 	  const uint8_t *data;
-	  float cyan = 0.0;
-	  float yellow = 0.0;
-	  float magenta = 0.0;
-	  float black = 0.0;
-	  float alpha = 1.0;
+	  double cyan = 0.0;
+	  double yellow = 0.0;
+	  double magenta = 0.0;
+	  double black = 0.0;
+	  double alpha = 1.0;
 	  NSString *str;
 	  NSScanner *scanner;
 	  
@@ -1498,11 +1498,11 @@ systemColorWithName(NSString *name)
 	      str = [[NSString alloc] initWithCString: (const char*)data 
 				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanFloat: &cyan];
-	      [scanner scanFloat: &yellow];
-	      [scanner scanFloat: &magenta];
-	      [scanner scanFloat: &black];
-	      [scanner scanFloat: &alpha];
+	      [scanner scanDouble: &cyan];
+	      [scanner scanDouble: &yellow];
+	      [scanner scanDouble: &magenta];
+	      [scanner scanDouble: &black];
+	      [scanner scanDouble: &alpha];
 	      RELEASE(scanner);
 	      RELEASE(str);
 	    }
@@ -1667,7 +1667,7 @@ systemColorWithName(NSString *name)
     {
       NSDictionary	*dict;
       NSString		*space;
-      float		alpha;
+      CGFloat		alpha;
 
       dict = [str propertyList];
       if (dict == nil)
@@ -1682,18 +1682,18 @@ systemColorWithName(NSString *name)
 	}
       else
 	{
-	  alpha = [str floatValue];
+	  alpha = [str doubleValue];
 	}
 
       if ([space isEqual: NSCalibratedWhiteColorSpace])
 	{
-	  float	white = [[dict objectForKey: @"W"] floatValue];
+	  CGFloat white = [[dict objectForKey: @"W"] doubleValue];
 
 	  return [self colorWithCalibratedWhite: white alpha: alpha];
 	}
       if ([space isEqual: NSCalibratedBlackColorSpace])
 	{
-	  float	white = [[dict objectForKey: @"W"] floatValue];
+	  CGFloat white = [[dict objectForKey: @"W"] doubleValue];
 
 	  return [self colorWithCalibratedWhite: white
 					  alpha: alpha];
@@ -1702,9 +1702,9 @@ systemColorWithName(NSString *name)
 	{
 	  if ([dict objectForKey: @"H"] != nil)
 	    {
-	      float	hue = [[dict objectForKey: @"H"] floatValue];
-	      float	saturation = [[dict objectForKey: @"S"] floatValue];
-	      float	brightness = [[dict objectForKey: @"B"] floatValue];
+	      CGFloat	hue = [[dict objectForKey: @"H"] doubleValue];
+	      CGFloat	saturation = [[dict objectForKey: @"S"] doubleValue];
+	      CGFloat	brightness = [[dict objectForKey: @"B"] doubleValue];
 
 	      return [self colorWithCalibratedHue: hue
 				       saturation: saturation
@@ -1713,9 +1713,9 @@ systemColorWithName(NSString *name)
 	    }
 	  else
 	    {
-	      float	red = [[dict objectForKey: @"R"] floatValue];
-	      float	green = [[dict objectForKey: @"G"] floatValue];
-	      float	blue = [[dict objectForKey: @"B"] floatValue];
+	      CGFloat	red = [[dict objectForKey: @"R"] doubleValue];
+	      CGFloat	green = [[dict objectForKey: @"G"] doubleValue];
+	      CGFloat	blue = [[dict objectForKey: @"B"] doubleValue];
 
 	      return [self colorWithCalibratedRed: red
 					    green: green
@@ -1725,10 +1725,10 @@ systemColorWithName(NSString *name)
 	}
       if ([space isEqual: NSDeviceCMYKColorSpace])
 	{
-	  float	cyan = [[dict objectForKey: @"C"] floatValue];
-	  float	magenta = [[dict objectForKey: @"M"] floatValue];
-	  float	yellow = [[dict objectForKey: @"Y"] floatValue];
-	  float	black = [[dict objectForKey: @"B"] floatValue];
+	  CGFloat	cyan = [[dict objectForKey: @"C"] doubleValue];
+	  CGFloat	magenta = [[dict objectForKey: @"M"] doubleValue];
+	  CGFloat	yellow = [[dict objectForKey: @"Y"] doubleValue];
+	  CGFloat	black = [[dict objectForKey: @"B"] doubleValue];
 
 	  return [self colorWithDeviceCyan: cyan
 				   magenta: magenta
@@ -1747,12 +1747,12 @@ systemColorWithName(NSString *name)
     }
   else if (str != nil)
     {
-      float		r, g, b;
+      double		r, g, b;
       NSScanner *scanner = [[NSScanner alloc] initWithString: str];
 
-      if ([scanner scanFloat: &r] &&
-	  [scanner scanFloat: &g] &&
-	  [scanner scanFloat: &b] &&
+      if ([scanner scanDouble: &r] &&
+	  [scanner scanDouble: &g] &&
+	  [scanner scanDouble: &b] &&
 	  [scanner isAtEnd])
 	{
 	  RELEASE(scanner);
@@ -2053,23 +2053,23 @@ static	NSRecursiveLock		*namedColorLock = nil;
 // Grayscale colours
 @implementation GSWhiteColor
 
-- (float) alphaComponent
+- (CGFloat) alphaComponent
 {
   return _alpha_component;
 }
 
-- (float) whiteComponent
+- (CGFloat) whiteComponent
 {
   return _white_component;
 }
 
-- (void) getComponents: (float *)components;
+- (void) getComponents: (CGFloat *)components;
 {
   components[0] = _white_component;
   components[1] = _alpha_component;
 }
 
-- (int) numberOfComponents
+- (NSInteger) numberOfComponents
 {
   return 2;
 }
@@ -2084,14 +2084,14 @@ static	NSRecursiveLock		*namedColorLock = nil;
    */
   desc = [NSMutableString stringWithCapacity: 128];
   [desc appendFormat: @"{ ColorSpace = \"%@\";", [self colorSpaceName]];
-  [desc appendFormat: @" W = \"%f\";", _white_component];
-  [desc appendFormat: @" Alpha = \"%f\"; }", _alpha_component];
+  [desc appendFormat: @" W = \"%g\";", (double)_white_component];
+  [desc appendFormat: @" Alpha = \"%g\"; }", (double)_alpha_component];
 
   return desc;
 }
 
-- (void) getWhite: (float*)white
-	    alpha: (float*)alpha
+- (void) getWhite: (CGFloat*)white
+	    alpha: (CGFloat*)alpha
 {
   // Only set what is wanted
   if (white)
@@ -2113,7 +2113,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return YES;
 }
 
-- (NSColor*) colorWithAlphaComponent: (float)alpha
+- (NSColor*) colorWithAlphaComponent: (CGFloat)alpha
 {
   GSWhiteColor *aCopy;
 
@@ -2199,7 +2199,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
 - (void) set
 {
   // This should be in GSDeviceWhiteColor, but is here to keep old code working
-  NSDebugLLog(@"NSColor", @"Gray %f\n", _white_component);
+  NSDebugLLog(@"NSColor", @"Gray %g\n", (double)_white_component);
   PSsetgray(_white_component);
   // Should we check the ignore flag here?
   PSsetalpha(_alpha_component);
@@ -2225,11 +2225,11 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
       if (_alpha_component == 1.0)
         {
-          str = [[NSString alloc] initWithFormat: @"%f", _white_component];
+          str = [[NSString alloc] initWithFormat: @"%g", (double)_white_component];
         }
       else
         {
-          str = [[NSString alloc] initWithFormat: @"%f %f", _white_component, _alpha_component];
+          str = [[NSString alloc] initWithFormat: @"%g %g", (double)_white_component, (double)_alpha_component];
         }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 	      length: [str cStringLength] 
@@ -2238,17 +2238,21 @@ static	NSRecursiveLock		*namedColorLock = nil;
     }
   else 
     {
+      float white = _white_component;
+      float alpha = _alpha_component;
       [aCoder encodeObject: [self colorSpaceName]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_white_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &white];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &alpha];
     }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_white_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_alpha_component];
-
+  float white, alpha;
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &white];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &alpha];
+  _white_component = white;
+  _alpha_component = alpha;
   return self;
 }
 
@@ -2261,8 +2265,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSDeviceWhiteColorSpace;
 }
 
-- (NSColor*) initWithDeviceWhite: (float)white
-			   alpha: (float)alpha
+- (NSColor*) initWithDeviceWhite: (CGFloat)white
+			   alpha: (CGFloat)alpha
 {
   if (white < 0.0) white = 0.0;
   else if (white > 1.0) white = 1.0;
@@ -2284,8 +2288,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSCalibratedWhiteColorSpace;
 }
 
-- (NSColor*) initWithCalibratedWhite: (float)white
-			       alpha: (float)alpha
+- (NSColor*) initWithCalibratedWhite: (CGFloat)white
+			       alpha: (CGFloat)alpha
 {
   if (white < 0.0) white = 0.0;
   else if (white > 1.0) white = 1.0;
@@ -2302,11 +2306,11 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
 @implementation GSDeviceCMYKColor
 
-- (NSColor*) initWithDeviceCyan: (float)cyan
-			magenta: (float)magenta
-			 yellow: (float)yellow
-			  black: (float)black
-			  alpha: (float)alpha
+- (NSColor*) initWithDeviceCyan: (CGFloat)cyan
+			magenta: (CGFloat)magenta
+			 yellow: (CGFloat)yellow
+			  black: (CGFloat)black
+			  alpha: (CGFloat)alpha
 {
   if (cyan < 0.0) cyan = 0.0;
   else if (cyan > 1.0) cyan = 1.0;
@@ -2336,32 +2340,32 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSDeviceCMYKColorSpace;
 }
 
-- (float) alphaComponent
+- (CGFloat) alphaComponent
 {
   return _alpha_component;
 }
 
-- (float) blackComponent
+- (CGFloat) blackComponent
 {
   return _black_component;
 }
 
-- (float) cyanComponent
+- (CGFloat) cyanComponent
 {
   return _cyan_component;
 }
 
-- (float) magentaComponent
+- (CGFloat) magentaComponent
 {
   return _magenta_component;
 }
 
-- (float) yellowComponent
+- (CGFloat) yellowComponent
 {
   return _yellow_component;
 }
 
-- (void) getComponents: (float *)components;
+- (void) getComponents: (CGFloat *)components;
 {
   components[0] = _cyan_component;
   components[1] = _magenta_component;
@@ -2370,7 +2374,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
   components[4] = _alpha_component;
 }
 
-- (int) numberOfComponents
+- (NSInteger) numberOfComponents
 {
   return 5;
 }
@@ -2385,20 +2389,20 @@ static	NSRecursiveLock		*namedColorLock = nil;
    */
   desc = [NSMutableString stringWithCapacity: 128];
   [desc appendFormat: @"{ ColorSpace = \"%@\";", [self colorSpaceName]];
-  [desc appendFormat: @" C = \"%f\";", _cyan_component];
-  [desc appendFormat: @" M = \"%f\";", _magenta_component];
-  [desc appendFormat: @" Y = \"%f\";", _yellow_component];
-  [desc appendFormat: @" K = \"%f\";", _black_component];
-  [desc appendFormat: @" Alpha = \"%f\"; }", _alpha_component];
+  [desc appendFormat: @" C = \"%g\";", (double)_cyan_component];
+  [desc appendFormat: @" M = \"%g\";", (double)_magenta_component];
+  [desc appendFormat: @" Y = \"%g\";", (double)_yellow_component];
+  [desc appendFormat: @" K = \"%g\";", (double)_black_component];
+  [desc appendFormat: @" Alpha = \"%g\"; }", (double)_alpha_component];
 
   return desc;
 }
 
-- (void) getCyan: (float*)cyan
-	 magenta: (float*)magenta
-	  yellow: (float*)yellow
-	   black: (float*)black
-	   alpha: (float*)alpha
+- (void) getCyan: (CGFloat*)cyan
+	 magenta: (CGFloat*)magenta
+	  yellow: (CGFloat*)yellow
+	   black: (CGFloat*)black
+	   alpha: (CGFloat*)alpha
 {
   // Only set what is wanted
   if (cyan)
@@ -2429,7 +2433,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return YES;
 }
 
-- (NSColor*) colorWithAlphaComponent: (float)alpha
+- (NSColor*) colorWithAlphaComponent: (CGFloat)alpha
 {
   GSDeviceCMYKColor *aCopy;
 
@@ -2517,9 +2521,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
 - (void) set
 {
-  NSDebugLLog(@"NSColor", @"CMYK %f %f %f %f\n",
-	      _cyan_component, _magenta_component,
-	      _yellow_component, _black_component);
+  NSDebugLLog(@"NSColor", @"CMYK %g %g %g %g\n",
+	      (double)_cyan_component, (double)_magenta_component,
+	      (double)_yellow_component, (double)_black_component);
   PSsetcmykcolor(_cyan_component, _magenta_component,
 		 _yellow_component, _black_component);
 
@@ -2539,15 +2543,15 @@ static	NSRecursiveLock		*namedColorLock = nil;
       [aCoder encodeInt: 5 forKey: @"NSColorSpace"];
       if (_alpha_component == 1.0)
         {
-          str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
-                                  _magenta_component, _yellow_component,
-                                  _black_component];
+          str = [[NSString alloc] initWithFormat: @"%g %g %g %g", (double)_cyan_component, 
+                                  (double)_magenta_component, (double)_yellow_component,
+                                  (double)_black_component];
         }
       else
         {
-          str = [[NSString alloc] initWithFormat: @"%f %f %f %f %f", _cyan_component, 
-                                  _magenta_component, _yellow_component,
-                                  _black_component, _alpha_component];
+          str = [[NSString alloc] initWithFormat: @"%g %g %g %g %g", (double)_cyan_component, 
+                                  (double)_magenta_component, (double)_yellow_component,
+                                  (double)_black_component, (double)_alpha_component];
         }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 		   length: [str cStringLength] 
@@ -2556,22 +2560,35 @@ static	NSRecursiveLock		*namedColorLock = nil;
     }
   else 
     {
+      float c = _cyan_component;
+      float m = _magenta_component;
+      float y = _yellow_component;
+      float k = _black_component;
+      float a = _alpha_component;
       [aCoder encodeObject: [self colorSpaceName]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_cyan_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_magenta_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_yellow_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_black_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &c];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &m];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &y];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &k];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &a];
     }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_cyan_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_magenta_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_yellow_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_black_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_alpha_component];
+  // FIXME: Implement keyed decoding!
+
+  float c, m, y, k, a;
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &c];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &m];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &y];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &k];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &a];
+  _cyan_component = c;
+  _magenta_component = m;
+  _yellow_component = y;
+  _black_component = k;
+  _alpha_component = a;
 
   return self;
 }
@@ -2581,42 +2598,42 @@ static	NSRecursiveLock		*namedColorLock = nil;
 // RGB/HSB colours
 @implementation GSRGBColor
 
-- (float) alphaComponent
+- (CGFloat) alphaComponent
 {
   return _alpha_component;
 }
 
-- (float) redComponent
+- (CGFloat) redComponent
 {
   return _red_component;
 }
 
-- (float) greenComponent
+- (CGFloat) greenComponent
 {
   return _green_component;
 }
 
-- (float) blueComponent
+- (CGFloat) blueComponent
 {
   return _blue_component;
 }
 
-- (float) hueComponent
+- (CGFloat) hueComponent
 {
   return _hue_component;
 }
 
-- (float) saturationComponent
+- (CGFloat) saturationComponent
 {
   return _saturation_component;
 }
 
-- (float) brightnessComponent
+- (CGFloat) brightnessComponent
 {
   return _brightness_component;
 }
 
-- (void) getComponents: (float *)components;
+- (void) getComponents: (CGFloat *)components;
 {
   components[0] = _red_component;
   components[1] = _green_component;
@@ -2624,15 +2641,15 @@ static	NSRecursiveLock		*namedColorLock = nil;
   components[3] = _alpha_component;
 }
 
-- (int) numberOfComponents
+- (NSInteger) numberOfComponents
 {
   return 4;
 }
 
-- (void) getHue: (float*)hue
-     saturation: (float*)saturation
-     brightness: (float*)brightness
-	  alpha: (float*)alpha
+- (void) getHue: (CGFloat*)hue
+     saturation: (CGFloat*)saturation
+     brightness: (CGFloat*)brightness
+	  alpha: (CGFloat*)alpha
 {
   // Only set what is wanted
   if (hue)
@@ -2645,10 +2662,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
     *alpha = _alpha_component;
 }
 
-- (void) getRed: (float*)red
-	  green: (float*)green
-	   blue: (float*)blue
-	  alpha: (float*)alpha
+- (void) getRed: (CGFloat*)red
+	  green: (CGFloat*)green
+	   blue: (CGFloat*)blue
+	  alpha: (CGFloat*)alpha
 {
   // Only set what is wanted
   if (red)
@@ -2676,7 +2693,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return YES;
 }
 
-- (NSColor*) colorWithAlphaComponent: (float)alpha
+- (NSColor*) colorWithAlphaComponent: (CGFloat)alpha
 {
   GSRGBColor *aCopy;
 
@@ -2770,8 +2787,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
    *	consisting of the three component values in a quoted string.
    */
   if (_alpha_component == 1.0)
-    return [NSString stringWithFormat: @"%f %f %f",
-	_red_component, _green_component, _blue_component];
+    return [NSString stringWithFormat: @"%g %g %g",
+		     (double)_red_component, (double)_green_component, (double)_blue_component];
 
   /*
    *	For more complex color values - we encode information in a dictionary
@@ -2779,10 +2796,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
    */
   desc = [NSMutableString stringWithCapacity: 128];
   [desc appendFormat: @"{ ColorSpace = \"%@\";", [self colorSpaceName]];
-  [desc appendFormat: @" R = \"%f\";", _red_component];
-  [desc appendFormat: @" G = \"%f\";", _green_component];
-  [desc appendFormat: @" B = \"%f\";", _blue_component];
-  [desc appendFormat: @" Alpha = \"%f\"; }", _alpha_component];
+  [desc appendFormat: @" R = \"%g\";", (double)_red_component];
+  [desc appendFormat: @" G = \"%g\";", (double)_green_component];
+  [desc appendFormat: @" B = \"%g\";", (double)_blue_component];
+  [desc appendFormat: @" Alpha = \"%g\"; }", (double)_alpha_component];
   return desc;
 }
 
@@ -2791,8 +2808,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
   /* This should only be in GSDeviceRGBColor,
    * but is here to keep old code working.
    */
-  NSDebugLLog(@"NSColor", @"RGB %f %f %f\n", _red_component,
-	      _green_component, _blue_component);
+  NSDebugLLog(@"NSColor", @"RGB %g %g %g\n", (double)_red_component,
+	      (double)_green_component, (double)_blue_component);
   PSsetrgbcolor(_red_component, _green_component,
 		_blue_component);
   // Should we check the ignore flag here?
@@ -2802,7 +2819,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
 - (void) setFill
 {
   int num = [self numberOfComponents];
-  float values[num];
+  CGFloat values[num];
   NSGraphicsContext *ctxt = GSCurrentContext();
   
   [ctxt GSSetFillColorspace: [self colorSpace]];
@@ -2813,7 +2830,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
 - (void) setStroke
 {
   int num = [self numberOfComponents];
-  float values[num];
+  CGFloat values[num];
   NSGraphicsContext *ctxt = GSCurrentContext();
   
   [ctxt GSSetStrokeColorspace: [self colorSpace]];
@@ -2841,13 +2858,14 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
       if (_alpha_component == 1.0)
         {
-          str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
-                                  _green_component, _blue_component];
+          str = [[NSString alloc] initWithFormat: @"%g %g %g", (double)_red_component, 
+                                  (double)_green_component, (double)_blue_component];
         }
       else
         {
-          str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _red_component, 
-                                  _green_component, _blue_component, _alpha_component];
+          str = [[NSString alloc] initWithFormat: @"%g %g %g %g", (double)_red_component, 
+                                  (double)_green_component, (double)_blue_component,
+				  (double)_alpha_component];
         }
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
 	      length: [str cStringLength] 
@@ -2856,27 +2874,41 @@ static	NSRecursiveLock		*namedColorLock = nil;
     }
   else 
     {
+      float red = _red_component;
+      float green = _green_component;
+      float blue = _blue_component;
+      float hue = _hue_component;
+      float saturation = _saturation_component;
+      float brightness = _brightness_component;
+      float alpha = _alpha_component;
       [aCoder encodeObject: [self colorSpaceName]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_red_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_green_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_blue_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_hue_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_saturation_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_brightness_component];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &red];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &green];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &blue];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &hue];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &saturation];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &brightness];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &alpha];
     }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_red_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_green_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_blue_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_hue_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_saturation_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_brightness_component];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_alpha_component];
-
+  float red, green, blue, hue, saturation, brightness, alpha;
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &red];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &green];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &blue];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &hue];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &saturation];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &brightness];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &alpha];
+  _red_component = red;
+  _green_component = green;
+  _blue_component = blue;
+  _hue_component = hue;
+  _saturation_component = saturation;
+  _brightness_component = brightness;
+  _alpha_component = alpha;
   return self;
 }
 
@@ -2889,10 +2921,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSDeviceRGBColorSpace;
 }
 
-- (NSColor*) initWithDeviceRed: (float)red
-			 green: (float)green
-			  blue: (float)blue
-			 alpha: (float)alpha
+- (NSColor*) initWithDeviceRed: (CGFloat)red
+			 green: (CGFloat)green
+			  blue: (CGFloat)blue
+			 alpha: (CGFloat)alpha
 {
   if (red < 0.0) red = 0.0;
   else if (red > 1.0) red = 1.0;
@@ -2907,9 +2939,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
   _blue_component = blue;
 
   {
-    float r = _red_component;
-    float g = _green_component;
-    float b = _blue_component;
+    CGFloat r = _red_component;
+    CGFloat g = _green_component;
+    CGFloat b = _blue_component;
 
     if (r == g && r == b)
       {
@@ -2958,10 +2990,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return self;
 }
 
-- (NSColor*) initWithDeviceHue: (float)hue
-		    saturation: (float)saturation
-		    brightness: (float)brightness
-			 alpha: (float)alpha;
+- (NSColor*) initWithDeviceHue: (CGFloat)hue
+		    saturation: (CGFloat)saturation
+		    brightness: (CGFloat)brightness
+			 alpha: (CGFloat)alpha;
 {
   if (hue < 0.0) hue = 0.0;
   else if (hue > 1.0) hue = 1.0;
@@ -2994,9 +3026,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
 	  case 4: R = K; G = M; B = V; break;
 	  case 5: R = V; G = M; B = N; break;
       }
-    _red_component = (float)R;
-    _green_component = (float)G;
-    _blue_component = (float)B;
+    _red_component = (CGFloat)R;
+    _green_component = (CGFloat)G;
+    _blue_component = (CGFloat)B;
   }
 
   if (alpha < 0.0) alpha = 0.0;
@@ -3015,10 +3047,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSCalibratedRGBColorSpace;
 }
 
-- (NSColor*) initWithCalibratedRed: (float)red
-			     green: (float)green
-			      blue: (float)blue
-			     alpha: (float)alpha
+- (NSColor*) initWithCalibratedRed: (CGFloat)red
+			     green: (CGFloat)green
+			      blue: (CGFloat)blue
+			     alpha: (CGFloat)alpha
 {
   if (red < 0.0) red = 0.0;
   else if (red > 1.0) red = 1.0;
@@ -3033,9 +3065,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
   _blue_component = blue;
 
   {
-    float r = _red_component;
-    float g = _green_component;
-    float b = _blue_component;
+    CGFloat r = _red_component;
+    CGFloat g = _green_component;
+    CGFloat b = _blue_component;
 
     if (r == g && r == b)
       {
@@ -3084,10 +3116,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return self;
 }
 
-- (NSColor*) initWithCalibratedHue: (float)hue
-			saturation: (float)saturation
-			brightness: (float)brightness
-			     alpha: (float)alpha;
+- (NSColor*) initWithCalibratedHue: (CGFloat)hue
+			saturation: (CGFloat)saturation
+			brightness: (CGFloat)brightness
+			     alpha: (CGFloat)alpha;
 {
   if (hue < 0.0) hue = 0.0;
   else if (hue > 1.0) hue = 1.0;
@@ -3120,9 +3152,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
 	  case 4: R = K; G = M; B = V; break;
 	  case 5: R = V; G = M; B = N; break;
       }
-    _red_component = (float)R;
-    _green_component = (float)G;
-    _blue_component = (float)B;
+    _red_component = (CGFloat)R;
+    _green_component = (CGFloat)G;
+    _blue_component = (CGFloat)B;
   }
 
   if (alpha < 0.0) alpha = 0.0;

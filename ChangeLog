@@ -1,3 +1,18 @@
+2011-10-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSBitmapImageRep.m:
+	* Source/NSColor.m:
+	* Source/GSThemeTools.m:
+	* Source/NSGraphicsContext.m:
+	* Headers/AppKit/NSColor.h:
+	* Headers/AppKit/NSGraphicsContext.h:
+	* ColorPickers/GSGrayColorPicker.m:
+	* ColorPickers/GSCMYKColorPicker.m:
+	* ColorPickers/GSWheelColorPicker.m:
+	* ColorPickers/GSRGBColorPicker.m:
+	* ColorPickers/GSHSBColorPicker.m: Migrate float to CGFloat in
+	NSColor
+
 2011-10-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h,

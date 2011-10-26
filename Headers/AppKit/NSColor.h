@@ -71,33 +71,33 @@ typedef enum _NSControlSize {
 //
 // Creating an NSColor from Component Values
 //
-+ (NSColor *)colorWithCalibratedHue:(float)hue
-			 saturation:(float)saturation
-			 brightness:(float)brightness
-			      alpha:(float)alpha;
-+ (NSColor *)colorWithCalibratedRed:(float)red
-			      green:(float)green
-			       blue:(float)blue
-			      alpha:(float)alpha;
-+ (NSColor *)colorWithCalibratedWhite:(float)white
-				alpha:(float)alpha;
++ (NSColor *)colorWithCalibratedHue:(CGFloat)hue
+			 saturation:(CGFloat)saturation
+			 brightness:(CGFloat)brightness
+			      alpha:(CGFloat)alpha;
++ (NSColor *)colorWithCalibratedRed:(CGFloat)red
+			      green:(CGFloat)green
+			       blue:(CGFloat)blue
+			      alpha:(CGFloat)alpha;
++ (NSColor *)colorWithCalibratedWhite:(CGFloat)white
+				alpha:(CGFloat)alpha;
 + (NSColor *)colorWithCatalogName:(NSString *)listName
 			colorName:(NSString *)colorName;
-+ (NSColor *)colorWithDeviceCyan:(float)cyan
-			 magenta:(float)magenta
-			  yellow:(float)yellow
-			   black:(float)black
-			   alpha:(float)alpha;
-+ (NSColor *)colorWithDeviceHue:(float)hue
-		     saturation:(float)saturation
-		     brightness:(float)brightness
-			  alpha:(float)alpha;
-+ (NSColor *)colorWithDeviceRed:(float)red
-			  green:(float)green
-			   blue:(float)blue
-			  alpha:(float)alpha;
-+ (NSColor *)colorWithDeviceWhite:(float)white
-			    alpha:(float)alpha;
++ (NSColor *)colorWithDeviceCyan:(CGFloat)cyan
+			 magenta:(CGFloat)magenta
+			  yellow:(CGFloat)yellow
+			   black:(CGFloat)black
+			   alpha:(CGFloat)alpha;
++ (NSColor *)colorWithDeviceHue:(CGFloat)hue
+		     saturation:(CGFloat)saturation
+		     brightness:(CGFloat)brightness
+			  alpha:(CGFloat)alpha;
++ (NSColor *)colorWithDeviceRed:(CGFloat)red
+			  green:(CGFloat)green
+			   blue:(CGFloat)blue
+			  alpha:(CGFloat)alpha;
++ (NSColor *)colorWithDeviceWhite:(CGFloat)white
+			    alpha:(CGFloat)alpha;
 
 //
 // Creating an NSColor With Preset Components
@@ -127,41 +127,41 @@ typedef enum _NSControlSize {
 //
 // Retrieving a Set of Components
 //
-- (void)getCyan:(float *)cyan
-	magenta:(float *)magenta
-	 yellow:(float *)yellow
-	  black:(float *)black
-	  alpha:(float *)alpha;	
-- (void)getHue:(float *)hue
-    saturation:(float *)saturation
-    brightness:(float *)brightness
-	 alpha:(float *)alpha;
-- (void)getRed:(float *)red
-	 green:(float *)green
-	  blue:(float *)blue
-	 alpha:(float *)alpha;
-- (void)getWhite:(float *)white
-	   alpha:(float *)alpha;
+- (void)getCyan:(CGFloat *)cyan
+	magenta:(CGFloat *)magenta
+	 yellow:(CGFloat *)yellow
+	  black:(CGFloat *)black
+	  alpha:(CGFloat *)alpha;	
+- (void)getHue:(CGFloat *)hue
+    saturation:(CGFloat *)saturation
+    brightness:(CGFloat *)brightness
+	 alpha:(CGFloat *)alpha;
+- (void)getRed:(CGFloat *)red
+	 green:(CGFloat *)green
+	  blue:(CGFloat *)blue
+	 alpha:(CGFloat *)alpha;
+- (void)getWhite:(CGFloat *)white
+	   alpha:(CGFloat *)alpha;
 
 //
 // Retrieving Individual Components
 //
-- (float)alphaComponent;
-- (float)blackComponent;
-- (float)blueComponent;
-- (float)brightnessComponent;
+- (CGFloat)alphaComponent;
+- (CGFloat)blackComponent;
+- (CGFloat)blueComponent;
+- (CGFloat)brightnessComponent;
 - (NSString *)catalogNameComponent;
 - (NSString *)colorNameComponent;
-- (float)cyanComponent;
-- (float)greenComponent;
-- (float)hueComponent;
+- (CGFloat)cyanComponent;
+- (CGFloat)greenComponent;
+- (CGFloat)hueComponent;
 - (NSString *)localizedCatalogNameComponent;
 - (NSString *)localizedColorNameComponent;
-- (float)magentaComponent;
-- (float)redComponent;
-- (float)saturationComponent;
-- (float)whiteComponent;
-- (float)yellowComponent;
+- (CGFloat)magentaComponent;
+- (CGFloat)redComponent;
+- (CGFloat)saturationComponent;
+- (CGFloat)whiteComponent;
+- (CGFloat)yellowComponent;
 
 //
 // Converting to Another Color Space
@@ -173,20 +173,20 @@ typedef enum _NSControlSize {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 // + (NSColor *)colorWithCIColor:(CIColor *)color;
 + (NSColor *)colorWithColorSpace:(NSColorSpace *)space
-					   components:(const float *)comp
-							count:(int)number;
+					   components:(const CGFloat *)comp
+							count:(NSInteger)number;
 - (NSColorSpace *)colorSpace;
 - (NSColor *)colorUsingColorSpace:(NSColorSpace *)space;
-- (void)getComponents:(float *)components;
-- (int)numberOfComponents;
+- (void)getComponents:(CGFloat *)components;
+- (NSInteger)numberOfComponents;
 #endif
 
 //
 // Changing the Color
 //
-- (NSColor *)blendedColorWithFraction:(float)fraction
+- (NSColor *)blendedColorWithFraction:(CGFloat)fraction
 			      ofColor:(NSColor *)aColor;
-- (NSColor *)colorWithAlphaComponent:(float)alpha;
+- (NSColor *)colorWithAlphaComponent:(CGFloat)alpha;
 
 //
 // Copying and Pasting
@@ -208,8 +208,8 @@ typedef enum _NSControlSize {
 //
 // Changing the color
 //
-- (NSColor*) highlightWithLevel: (float)level;
-- (NSColor*) shadowWithLevel: (float)level;
+- (NSColor*) highlightWithLevel: (CGFloat)level;
+- (NSColor*) shadowWithLevel: (CGFloat)level;
 
 + (NSColor*)colorWithPatternImage:(NSImage*)image;
 + (NSColor*)colorForControlTint:(NSControlTint)controlTint;

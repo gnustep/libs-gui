@@ -919,10 +919,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
 		{
       unsigned int ir, ig, ib, ia;
-      float fr, fg, fb, fa;
-      float scale;
+      CGFloat fr, fg, fb, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
           // This order depends on the bitmap format
@@ -986,10 +986,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
            || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
 		{
       unsigned int iw, ia;
-      float fw, fa;
-      float scale;
+      CGFloat fw, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
           // FIXME: This order depends on the bitmap format
@@ -1038,10 +1038,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
            || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
     {
       unsigned int ib, ia;
-      float fw, fa;
-      float scale;
+      CGFloat fw, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
           // This order depends on the bitmap format
@@ -1087,10 +1087,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
     {
       unsigned int ic, im, iy, ib, ia;
-      float fc, fm, fy, fb, fa;
-      float scale;
+      CGFloat fc, fm, fy, fb, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
           // This order depends on the bitmap format
@@ -1177,10 +1177,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
     {
       unsigned int ir, ig, ib, ia;
-      float fr, fg, fb, fa;
-      float scale;
+      CGFloat fr, fg, fb, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       [conv getRed: &fr green: &fg blue: &fb alpha: &fa];
       if(_hasAlpha)
         {
@@ -1231,10 +1231,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
            || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
 		{
       unsigned int iw, ia;
-      float fw, fa;
-      float scale;
+      CGFloat fw, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       [conv getWhite: &fw alpha: &fa];
       if (_hasAlpha)
         {
@@ -1270,10 +1270,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
            || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
     {
       unsigned int iw, ia;
-      float fw, fa;
-      float scale;
+      CGFloat fw, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       [conv getWhite: &fw alpha: &fa];
       if (_hasAlpha)
         {
@@ -1308,10 +1308,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
     {
       unsigned int ic, im, iy, ib, ia;
-      float fc, fm, fy, fb, fa;
-      float scale;
+      CGFloat fc, fm, fy, fb, fa;
+      CGFloat scale;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       [conv getCyan: &fc magenta: &fm yellow: &fy black: &fb alpha: &fa];
       if(_hasAlpha)
         {
@@ -1988,10 +1988,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
   else
     {
-      float scale;
-      float alpha;
+      CGFloat scale;
+      CGFloat alpha;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       for (y = 0; y < _pixelsHigh; y++)
         {
           for (x = 0; x < _pixelsWide; x++)
@@ -2073,10 +2073,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
   else
     {
-      float scale;
-      float alpha;
+      CGFloat scale;
+      CGFloat alpha;
 
-      scale = (float)((1 << _bitsPerSample) - 1);
+      scale = (CGFloat)((1 << _bitsPerSample) - 1);
       for (y = 0; y < _pixelsHigh; y++)
         {
           unsigned int a;
@@ -2091,7 +2091,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                     alpha = scale / a;
                     for (i = start; i < end; i++)
                       {
-                        float new = pixelData[i] * alpha;
+                        CGFloat new = pixelData[i] * alpha;
                         
                         if (new > scale)
                           {
@@ -2164,15 +2164,15 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           IMP setP = [new methodForSelector: setPSel];
           unsigned int pixelData[5];
           int x, y;
-          float _scale;
-          float scale;
+          CGFloat _scale;
+          CGFloat scale;
 
           NSDebugLLog(@"NSImage", @"Converting %@ bitmap data", _colorSpace);
 
           if (_bitsPerSample != bps)
             {
-              _scale = (float)((1 << _bitsPerSample) - 1);
-              scale = (float)((1 << bps) - 1);
+              _scale = (CGFloat)((1 << _bitsPerSample) - 1);
+              scale = (CGFloat)((1 << bps) - 1);
             }
           else
             {
@@ -2185,7 +2185,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
               for (x = 0; x < _pixelsWide; x++)
                 {
                   unsigned int iv[4], ia;
-                  float fv[4], fa;
+                  CGFloat fv[4], fa;
                   int i;
 
                  //[self getPixel: pixelData atX: x y: y];
@@ -2304,8 +2304,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           IMP setP = [new methodForSelector: setPSel];
           unsigned int pixelData[4];
           int x, y;
-          float _scale;
-          float scale;
+          CGFloat _scale;
+          CGFloat scale;
           int max = (1 << bps) - 1;
           BOOL isWhite = [_colorSpace isEqualToString: NSCalibratedWhiteColorSpace] 
               || [_colorSpace isEqualToString: NSDeviceWhiteColorSpace];
@@ -2314,8 +2314,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
           if (_bitsPerSample != bps)
             {
-              _scale = (float)((1 << _bitsPerSample) - 1);
-              scale = (float)((1 << bps) - 1);
+              _scale = (CGFloat)((1 << _bitsPerSample) - 1);
+              scale = (CGFloat)((1 << bps) - 1);
             }
           else
             {
@@ -2328,7 +2328,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
               for (x = 0; x < _pixelsWide; x++)
                 {
                   unsigned int iv, ia;
-                  float fv, fa;
+                  CGFloat fv, fa;
 
                  //[self getPixel: pixelData atX: x y: y];
                   getP(self, getPSel, pixelData, x, y);
