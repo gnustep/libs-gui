@@ -180,7 +180,7 @@
 */
 + (id) imageRepWithData: (NSData *)imageData
 {
-  return [[self alloc] initWithData: imageData];
+  return AUTORELEASE([[self alloc] initWithData: imageData]);
 }
 
 /**<p>Returns an array containing newly allocated NSBitmapImageRep
@@ -275,7 +275,8 @@
       imageRep = [[self alloc] _initFromTIFFImage: image number: i];
       if (imageRep)
 	{
-	  [array addObject: AUTORELEASE(imageRep)];
+	  [array addObject: imageRep];
+          RELEASE(imageRep);
 	}
     }
   NSTiffClose(image);
