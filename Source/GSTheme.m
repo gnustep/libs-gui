@@ -86,6 +86,7 @@ NSString        *GSMenuHorizontalBackground = @"GSMenuHorizontalBackground";
 NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";
 NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
 NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
+NSString        *GSMenuSeparatorItem = @"GSMenuSeparatorItem";
 
 // Progress indicator part names
 NSString        *GSProgressIndicatorBarDeterminate 

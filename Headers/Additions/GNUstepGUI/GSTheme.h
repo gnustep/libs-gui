@@ -276,6 +276,7 @@ APPKIT_EXPORT  NSString        *GSMenuHorizontalBackground;
 APPKIT_EXPORT  NSString        *GSMenuVerticalBackground;
 APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
 APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
+APPKIT_EXPORT  NSString        *GSMenuSeparatorItem;
 
 /*
  * Progress Indicator part names.
@@ -897,6 +898,34 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
+/**
+ * <p>Returns the color used to draw a separator line in a menu.</p>
+ *
+ * <p>By default, looks up the color named <em>menuSeparatorItemColor</em>, 
+ * otherwise returns the black color.</p>
+ *
+ * <p>The returned color is used by 
+ * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom color.</p>
+ */
+- (NSColor *) menuSeparatorItemColor;
+/**
+ * <p>Draws a separator between normal menu items in a menu.</p>
+ *
+ * <p>Each separator corresponds to a menu item that returns YES to 
+ * -isSeparatorItem</p>
+ *
+ * <p>You can provide an image tile named <em>GSMenuSeparatoritem</em> to 
+ * draw the separator.</br>
+ * Can be overriden in subclasses to customize the drawing.</p>
+ *
+ * <p>See also -menuSeparatorItemColor</p>
+ */
+- (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
+                                withFrame: (NSRect)cellFrame
+                                   inView: (NSView *)controlView
+                             isHorizontal: (BOOL)isHorizontal;
 /**
  * Returns the class used to create the title bar in the given menu view.
  *

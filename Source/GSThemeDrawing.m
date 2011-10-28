@@ -908,6 +908,52 @@
     }
 }
 
+- (NSColor *) menuSeparatorItemColor
+{
+  NSColor *color = [self colorNamed: @"menuSeparatorItemColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor blackColor];
+    }
+  return color;
+}
+
+- (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
+                                withFrame: (NSRect)cellFrame
+                                   inView: (NSView *)controlView
+                             isHorizontal: (BOOL)isHorizontal
+{
+  GSDrawTiles *tiles = [self tilesNamed: GSMenuSeparatorItem state: GSThemeNormalState];
+ 
+  if (tiles == nil)
+    {
+      NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+     
+      if (style == NSMacintoshInterfaceStyle || style == NSWindows95InterfaceStyle)
+        {
+          NSBezierPath *path = [NSBezierPath bezierPath];
+          NSPoint start = NSMakePoint(3, cellFrame.size.height / 2 + 
+				         cellFrame.origin.y);
+          NSPoint end = NSMakePoint(cellFrame.size.width - 3, 
+	                            cellFrame.size.height / 2 + cellFrame.origin.y);
+
+          [[NSColor blackColor] set];
+
+          [path moveToPoint: start];
+          [path lineToPoint: end];
+
+          [path stroke];
+        }
+    }
+  else
+    {
+      [self fillRect: cellFrame
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
+}
+
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView
 {
   return [GSTitleView class];

@@ -753,34 +753,10 @@ static NSString *commandKeyString = @"#";
 - (void) drawSeparatorItemWithFrame:(NSRect)cellFrame
                             inView:(NSView *)controlView
 {
-  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-  if (style == NSMacintoshInterfaceStyle
-      || style == NSWindows95InterfaceStyle)
-    {
-      NSBezierPath *path = [NSBezierPath bezierPath];
-      NSPoint start = NSMakePoint(3, cellFrame.size.height/2 + 
-				  cellFrame.origin.y);
-      NSPoint end   = NSMakePoint(cellFrame.size.width - 3, 
-				  cellFrame.size.height/2 + 
-				  cellFrame.origin.y);
-
-      [[NSColor blackColor] set];
-
-      [path moveToPoint: start];
-      [path lineToPoint: end];
-
-      [path stroke];
-      /*
-      NSRect lineFrame = NSMakeRect(cellFrame.origin.x,
-				    cellFrame.origin.y 
-				    + cellFrame.size.height/2,
-				    cellFrame.size.width,
-				    1);
-      NSBox *line = [[NSBox alloc] initWithFrame: lineFrame];
-      [controlView addSubview:line];
-      RELEASE(line);
-      */
-    }
+  [[GSTheme theme] drawSeparatorItemForMenuItemCell: self
+                                          withFrame: cellFrame
+                                             inView: controlView
+                                       isHorizontal: [_menuView isHorizontal]]; 
 }
 
 - (void) drawStateImageWithFrame: (NSRect)cellFrame
