@@ -1,18 +1,24 @@
+2011-10-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButton.m,
+	* Source/NSMatrix.m,
+	* Source/NSControl.m: Remove useless KVB code.
+
 2011-10-31 Gregory Casamento <greg.casamento@gmail.com>
 
-	* Source/NSTableColumn.m: (+initialize, -initWithCoder:, 
-	-encodeWithCoder:): Updated version to 3.  Added encoding for 
+	* Source/NSTableColumn.m: (+initialize, -initWithCoder:,
+	-encodeWithCoder:): Updated version to 3.  Added encoding for
 	sort descriptor in encodeWithCoder:, added decoding for version 3
 	to initWithCoder:
-	
+
 2011-10-28  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
-	* Source/GSTheme.m: 
-	* Source/GSThemeDrawing.m (-menuSeparatorItemColor, 
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m (-menuSeparatorItemColor,
 	-drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:):
 	* Source/NSMenuItemCell.m (-drawSeparatorItemWithFrame:inView:):
-	Made separator menu item themable, by moving the drawing code from 
+	Made separator menu item themable, by moving the drawing code from
 	NSMenuItemCell to a new method in GSThemeDrawing.
 
 2011-10-27 Fred Kiefer <FredKiefer@gmx.de>
@@ -697,7 +703,7 @@
 	  ivars with the non-fragile ABI.
 
 2011-06-28  Eric Wasylishen  <ewasylishen@gmail.com>
-	
+
 	* Headers/Additions/GNUstepGUI/GSImageMagickImageRep.h:
 	* Source/GNUmakefile:
 	* Source/NSImageRep.m:
@@ -1008,7 +1014,7 @@
 	* Source/GNUmakefile: Remove NSManagedObjectContext.[hm] from compile
 	* Source/NSManagedObjectContext.h
 	* Source/NSManagedObjectContext.m: Delete
-	* Source/NSObjectController.m: Remove #import and add @class 
+	* Source/NSObjectController.m: Remove #import and add @class
 	declaration.
 
 2011-05-29 Fred Kiefer <FredKiefer@gmx.de>
@@ -1945,7 +1951,7 @@
 2011-02-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSLayoutManager.m:
-	* Headers/AppKit/NSLayoutManager.h: Preliminary implementation of 
+	* Headers/AppKit/NSLayoutManager.h: Preliminary implementation of
 	underlining
 
 2011-02-21 Fred Kiefer <FredKiefer@gmx.de>
@@ -2181,7 +2187,7 @@
 	* Source/NSSearchFieldCell.m
 	(-_openPopup:): Switch to use an actual NSPopUpButtonCell when
 	popping up the menu. Handle selected item in search menu properly.
-	(-_searchForRecent:): Display and select search text after user 
+	(-_searchForRecent:): Display and select search text after user
 	selects a recent search term.
 	(-drawWithFrame:inView:, -textDidChange:, -clearSearch:): Only show
 	cancel button when field is not empty.
@@ -2206,18 +2212,18 @@
 	in NSIconWindow.  Check for GSSuppressAppIcon and order the window
 	ONLY if the app icon window is supposed to be displayed, otherwise
 	do not do anything with it.   I observed issues with this
-	functionality while testing the GNOME theme the app icon would 
-	periodically show even when the default mentioned above was set to 
+	functionality while testing the GNOME theme the app icon would
+	periodically show even when the default mentioned above was set to
 	YES.
 
 2011-01-15 23:50-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSMenuView.m: Fix to previous change to 
-	[NSMenuView trackWithEvent:].  
+	* Source/NSMenuView.m: Fix to previous change to
+	[NSMenuView trackWithEvent:].
 	Assign attachedMenu to local variable and test for nil
 	prior to entering the code to close the menu when tracking
-	the mouse for normal menus.  Previous version of this code 
-	was causing menu items owned by pull downs (NSPopUpButton) to 
+	the mouse for normal menus.  Previous version of this code
+	was causing menu items owned by pull downs (NSPopUpButton) to
 	close prior to mouse up event.
 
 2011-01-15 German Arias <german@xelalug.org>
@@ -2283,7 +2289,7 @@
 	* Source/NSSavePanel.m: (-_initWithoutGModel): added
 	code near the and to close the current menu when in Win95
 	mode.  If this doesn't happen the menu remains open
-	and allows the user to drag the window around while the 
+	and allows the user to drag the window around while the
 	menu remains in it's old position.
 
 2011-01-09 German Arias <german@xelalug.org>
@@ -2299,11 +2305,11 @@
 	Close the menu in window if user press a modifier key.
 	And improvements for don't lose the mouse tracking
 	in a menu in window.
-	
+
 2011-01-06 German Arias <german@xelalug.org>
 
 	* Source/NSMenuView.m (-locationForSubmenu:, -trackWithEvent:):
-	Fixed the tracking of mouse at horizontal menu.	
+	Fixed the tracking of mouse at horizontal menu.
 
 2011-01-04  Doug Simons  <doug.simons@testplant.com>
 
@@ -2311,7 +2317,7 @@
 	Fix cancel button to correctly clear the field and send action.
 	Fix -textDidChange: to correctly send action rather than popping up
 	the menu on each keystroke (when sendsWholeSearchString is false).
-	 
+
 
 2011-01-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
@@ -2455,7 +2461,7 @@
 2010-12-29 12:31-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenuItemCell.m: Implement drawing a line in the menu
-	separator item for the Windows95 and Mac modes. 
+	separator item for the Windows95 and Mac modes.
 
 2010-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
@@ -2549,7 +2555,7 @@
 
 2010-12-27 02:12-EST Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/GSThemeMenu.m: Added implementation for 
+	* Source/GSThemeMenu.m: Added implementation for
 	updateAllWindowsWithMenu:, updateMenu:forWindow:, altered
 	implementation for setMenu:forWindow:, added private method
 	_setMenu: to set the current menu on the window.
@@ -2627,7 +2633,7 @@
 	* Images/common_SwitchOff.tiff
 	* Images/common_SwitchOn.tiff
 	Match NeXT 15x15 dimension and tweak the check alpha.
-	
+
 2010-12-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-finishLaunching): Don't make an
@@ -2645,23 +2651,23 @@
 	* Images/common_Desktop.tiff
 	* Images/GNUmakefile
 	Added handling of a Desktop icon (and added the icon itself).
-	
+
 2010-11-27  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSTableView
 	header and view.
-	* Source/NSTableView.m: Added call in to drawing methods in 
+	* Source/NSTableView.m: Added call in to drawing methods in
 	GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
 
 2010-11-27  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSTableHeaderView
 	drawTableHeaderRect:inView:.
-	* Source/NSTableHeaderView.m: Added call in to drawing methods in 
+	* Source/NSTableHeaderView.m: Added call in to drawing methods in
 	GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
 
 2010-11-27 Riccardo Mottola
@@ -2677,17 +2683,17 @@
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSTableHeaderCell view.
-	* Source/NSTableHeaderCell.m: Added call in 
+	* Source/NSTableHeaderCell.m: Added call in
 	tableHeaderCellDrawingRectForBounds: to drawing methods in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
 
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added methods to draw NSSliderCell view.
-	* Source/NSSliderCell.m: Added call in drawKnobInCell:... and 
+	* Source/NSSliderCell.m: Added call in drawKnobInCell:... and
 	drawBarInside:.. to drawing methods in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
 
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
@@ -2695,41 +2701,41 @@
 	* Source/GSThemeDrawing.m: Added method to draw NSScrollView view.
 	* Source/NSScrollView.m: Added call in drawRect: to new drawing method
 	in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
-	
+
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added method to draw NSBrowser view.
 	* Source/NSMenuView.m: Added call in drawRect: to new drawing method
 	in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
-	
+
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added method to draw NSBrowser view.
 	* Source/NSBrowser.m: Added call in drawRect: to new drawing method
 	in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
-	
+
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added method to draw NSScroller view.
 	* Source/NSScroller.m: Added call in drawRect: to new drawing method
 	in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
-	
+
 2010-11-26  Gregory John Casamento  <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Added method to draw tab view.
 	* Source/NSTabView.m: Added call in drawRect: to new drawing method
 	in GSTheme.
-	* Headers/Additions/GNUstepGUI/GSTheme.h: 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Added declaration for new method.
-	
+
 2010-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-performClose:): Do not discard close

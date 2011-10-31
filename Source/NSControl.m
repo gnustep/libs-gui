@@ -83,11 +83,7 @@ static NSNotificationCenter *nc;
       [self exposeBinding: NSAlignmentBinding];
       [self exposeBinding: NSFontBinding];
       [self exposeBinding: NSFontNameBinding];
-      [self setKeys: [NSArray arrayWithObject: NSFontBinding] 
-            triggerChangeNotificationsForDependentKey: NSFontNameBinding];
       [self exposeBinding: NSFontSizeBinding];
-      [self setKeys: [NSArray arrayWithObject: NSFontBinding] 
-            triggerChangeNotificationsForDependentKey: NSFontSizeBinding];
      }
 }
 
@@ -1057,8 +1053,6 @@ static NSNotificationCenter *nc;
       GSKeyValueBinding *kvb;
 
       [self unbind: binding];
-      // FIXME: We could also do the mapping via 
-      // setKeys:triggerChangeNotificationsForDependentKey:
       kvb = [[GSKeyValueBinding alloc] initWithBinding: @"objectValue"
                                               withName: NSValueBinding
                                               toObject: anObject

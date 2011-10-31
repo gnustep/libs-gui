@@ -66,11 +66,7 @@ Class _nspopupbuttonCellClass = 0;
 
       [self exposeBinding: NSSelectedIndexBinding];
       [self exposeBinding: NSSelectedObjectBinding];
-      [self setKeys: [NSArray arrayWithObject: NSSelectedIndexBinding] 
-            triggerChangeNotificationsForDependentKey: NSSelectedObjectBinding];
       [self exposeBinding: NSSelectedTagBinding];
-      [self setKeys: [NSArray arrayWithObject: NSSelectedIndexBinding] 
-            triggerChangeNotificationsForDependentKey: NSSelectedTagBinding];
    } 
 }
 
@@ -270,9 +266,7 @@ this to return nil to indicate that we have no context menu.
 
 - (void) selectItem: (id <NSMenuItem>)anObject
 {
-  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItem: anObject];
-  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -282,9 +276,7 @@ this to return nil to indicate that we have no context menu.
  */
 - (void) selectItemAtIndex: (int)index
 {
-  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItemAtIndex: index];
-  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -295,9 +287,7 @@ this to return nil to indicate that we have no context menu.
  */
 - (void) selectItemWithTitle: (NSString*)title
 {
-  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItemWithTitle: title];
-  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 

@@ -1196,7 +1196,6 @@ static SEL getSel;
 
 - (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
 {
-  [self willChangeValueForKey: NSSelectedTagBinding];
   if (aCell)
     {
       NSRect cellFrame;
@@ -1242,7 +1241,6 @@ static SEL getSel;
       _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
     }
-  [self didChangeValueForKey: NSSelectedTagBinding];
 }
 
 - (void) selectCell: (NSCell *)aCell
