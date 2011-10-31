@@ -60,64 +60,42 @@ int main(int argc, char **argv)
 	[NSApplication sharedApplication];
 
 	sp=p=[NSSavePanel savePanel];
-        [p setShowsHiddenFiles: YES];
+        [p setShowsHiddenFiles: NO];
 	[p setDirectory: [[[[[NSBundle mainBundle] bundlePath]
 		stringByDeletingLastPathComponent] stringByDeletingLastPathComponent]
 		stringByAppendingPathComponent: @"dummy"]];
-#if 0
-	[p makeKeyAndOrderFront: nil];
-	[p setDelegate: [Delegate self]];
-	{
-		NSButton *b=[[NSButton alloc] initWithFrame: NSMakeRect(0,0,50,50)];
-		[b setTitle: @"Click me"];
-		[b setTarget: [Delegate self]];
-		[b setAction: @selector(foo)];
-		[p setAccessoryView: b];
-	}
-//	[p validateVisibleColumns];
-	[p runModal];
-#else
-
-	b=((NSSavePanel_ivars *)p)->_browser;
-	m=[b matrixInColumn: [b lastColumn]];
-	pass([m numberOfRows] == 3
-	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
-	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"]
-	     && [[[m cellAtRow: 2 column: 0] stringValue] isEqual: @".svn"],
-		"browser initially contains all files");
-
-	[p setDelegate: [Delegate self]];
 
 	b=((NSSavePanel_ivars *)p)->_browser;
 	m=[b matrixInColumn: [b lastColumn]];
 	pass([m numberOfRows] == 2
 	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
-	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @".svn"],
-		"browser is reloaded after -setDelegate:");
+	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
+		"browser initially contains all files");
 
+	[p setDelegate: [Delegate self]];
+	b=((NSSavePanel_ivars *)p)->_browser;
+	m=[b matrixInColumn: [b lastColumn]];
+	pass([m numberOfRows] == 1
+	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
+		"browser is reloaded after -setDelegate:");
 
 	/* Not really a -setDelegate: issue, but the other methods involved are
 	   documented as doing the wrong thing.  */
 	[p setDelegate: nil];
 	b=((NSSavePanel_ivars *)p)->_browser;
 	m=[b matrixInColumn: [b lastColumn]];
-	pass([m numberOfRows] == 3
+	pass([m numberOfRows] == 2
 	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
-	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"]
-	     && [[[m cellAtRow: 2 column: 0] stringValue] isEqual: @".svn"],
+	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
 		"browser contains all files after resetting delegate");
 
 	[b scrollColumnsLeftBy: [b lastColumn]];
 	[p setDelegate: [Delegate self]];
 	b=((NSSavePanel_ivars *)p)->_browser;
 	m=[b matrixInColumn: [b lastColumn]];
-	pass([m numberOfRows] == 2
-	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
-	     && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @".svn"],
+	pass([m numberOfRows] == 1
+	     && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
 		"browser is reloaded after -setDelegate: (2)");
-#endif
-
-//	[p validateVisibleColumns];
 
 	[arp release];
 	return 0;
