@@ -1,5 +1,10 @@
 2011-10-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m (-_popUpItemAction:): Inform bindings
+	of the control view that the value has changed.
+
+2011-10-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSNibLoading.m ([NSNibConnector-nibInstantiate]): Add
 	this method.
 	* Source/GSXibLoader.m ([IBBindingConnection-nibInstantiate):

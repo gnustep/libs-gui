@@ -33,12 +33,14 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSBindingHelpers.h"
 
 /* The image to use in a specific popupbutton depends on type and
  * preferred edge; that is, _pbc_image[0] if it is a
@@ -1333,6 +1335,27 @@ static NSImage *_pbc_image[5];
   int index = [_menu indexOfItem:sender];
   if (index != NSNotFound)
     [self selectItemAtIndex:index];
+
+  if (_control_view)
+    {
+      GSKeyValueBinding *theBinding;
+
+      theBinding = [GSKeyValueBinding getBinding: NSSelectedIndexBinding 
+                                       forObject: _control_view];
+      if (theBinding != nil)
+        [theBinding reverseSetValueFor: NSSelectedIndexBinding];
+
+      theBinding = [GSKeyValueBinding getBinding: NSSelectedTagBinding 
+                                       forObject: _control_view];
+      if (theBinding != nil)
+        [theBinding reverseSetValueFor: NSSelectedTagBinding];
+
+      theBinding = [GSKeyValueBinding getBinding: NSSelectedObjectBinding 
+                                       forObject: _control_view];
+      if (theBinding != nil)
+        [theBinding reverseSetValueFor: NSSelectedObjectBinding];
+    }
+
   [NSApp sendAction: [self action] to: [self target] from: self];
 }
 
