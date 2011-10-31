@@ -1573,6 +1573,20 @@ static BOOL _isInInterfaceBuilder = NO;
   [self setSource: [instantiator instantiateObject: _src]];
   [self setDestination: [instantiator instantiateObject: _dst]];
 }
+
+- (id) nibInstantiate
+{
+  if ([_src respondsToSelector: @selector(nibInstantiate)])
+    {
+      [self setSource: [_src nibInstantiate]];
+    }
+  if ([_dst respondsToSelector: @selector(nibInstantiate)])
+    {
+      [self setDestination: [_dst nibInstantiate]];
+    }
+  return self;
+}
+
 @end
 
 @implementation NSNibControlConnector (NibCompatibility)

@@ -52,6 +52,10 @@
 - (void) setRealObject: (id)obj;
 @end
 
+@interface NSNibConnector (NibCompatibility)
+- (id) nibInstantiate;
+@end
+
 @implementation FirstResponder
 
 + (id) allocWithZone: (NSZone*)zone
@@ -341,6 +345,9 @@
 - (id) initWithCoder: (NSCoder*)coder
 {
   self = [super initWithCoder: coder];
+  if (self == nil)
+    return nil;
+
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"connector"])
@@ -350,6 +357,12 @@
     }
 
   return self;
+}
+
+- (id) nibInstantiate
+{
+  [connector nibInstantiate];
+  return [super nibInstantiate];
 }
 
 - (void) establishConnection
