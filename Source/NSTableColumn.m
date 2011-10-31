@@ -85,7 +85,7 @@
 + (void) initialize
 {
   if (self == [NSTableColumn class])
-    [self setVersion: 2];
+    [self setVersion: 3];
 }
 
 /*
@@ -493,6 +493,8 @@ to YES. */
       
       [aCoder encodeObject: _headerCell];
       [aCoder encodeObject: _dataCell];
+
+      [aCoder encodeObject: _sortDescriptorPrototype];
     }
 }
 
@@ -565,7 +567,19 @@ to YES. */
       if (!self)
         return nil;
 
-     if (version == 2)
+      if (version == 3)
+	{
+          _identifier = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+          _headerCell = RETAIN([aDecoder decodeObject]);
+          _dataCell   = RETAIN([aDecoder decodeObject]);
+	  _sortDescriptorPrototype = RETAIN([aDecoder decodeObject]);
+	}
+      else if (version == 2)
         {
           _identifier = RETAIN([aDecoder decodeObject]);
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];

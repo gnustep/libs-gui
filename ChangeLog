@@ -1,3 +1,10 @@
+2011-10-31 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTableColumn.m: (+initialize, -initWithCoder:, 
+	-encodeWithCoder:): Updated version to 3.  Added encoding for 
+	sort descriptor in encodeWithCoder:, added decoding for version 3
+	to initWithCoder:
+	
 2011-10-28  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
