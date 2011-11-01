@@ -365,9 +365,6 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (void) _apply: (id) sender
 {
   // This is currently not used
-  [NSApp sendAction: @selector(changeColor:) to: nil from: self];
-  if ((_action) && (_target != nil))
-    [NSApp sendAction: _action to: _target from: self];  
 }
 
 - (void) _magnify: (id) sender
@@ -745,7 +742,12 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   if ([self showsAlpha])
     [_alphaSlider setFloatValue: [aColor alphaComponent] * MAX_ALPHA_VALUE];
 
-  if (_isContinuous && (_action) && (_target != nil))
+  // FIXME: to support [self isContinuous] the API between color pickers
+  // and NSColorPanel needs some changes. Currently the color panel is
+  // always continuous
+
+  [NSApp sendAction: @selector(changeColor:) to: nil from: self];
+  if ((_action) && (_target != nil))
     [NSApp sendAction: _action to: _target from: self];  
 
   [[NSNotificationCenter defaultCenter]

@@ -1,5 +1,15 @@
 2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSColorPanel.m: Always send action and colorChanged: when
+	the color changes. NSColorPanel is always "continuous" for now...
+	to support -isContinuous == NO, we need to augment the API between
+	the color panel and the pickers so they can send a message when
+	the mouse is released.
+	* Source/NSTextView.m: Change typing attributes in response to
+	colorChanged:
+
+2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSView.m: centerScanRect patch from Sebastian Reitenbach.
 	Note that this makes the NSView autoresizing and rounding test pass,
 	but the new centerScanRect test I just added fail.

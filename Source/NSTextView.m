@@ -3175,7 +3175,18 @@ This method is for user changes; see NSTextView_actions.m.
   NSColor *aColor = (NSColor *)[sender color];
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
-  if (aRange.location == NSNotFound)
+  // FIXME: support undo
+
+  /* Set typing attributes */
+  if (_layoutManager)
+    {
+      [_layoutManager->_typingAttributes setObject: aColor
+					    forKey: NSForegroundColorAttributeName];
+      [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+					object: _notifObject];
+    }
+
+  if (aRange.location == NSNotFound || aRange.length == 0)
     return;
 
   if (![self shouldChangeTextInRange: aRange
