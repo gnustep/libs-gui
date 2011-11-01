@@ -1,3 +1,8 @@
+2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Add
+	centerScanRect test
+
 2011-10-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSSavePanel/setDelegate_reload.m: Switch the save panel to

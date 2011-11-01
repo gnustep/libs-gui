@@ -13,24 +13,32 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSTextView.h>
 
+BOOL rects_almost_equal(NSRect r1, NSRect r2) {
+  if (fabs(r1.origin.x - r2.origin.x)>0.001
+      || fabs(r1.origin.y - r2.origin.y)>0.001
+      || fabs(r1.size.width - r2.size.width)>0.001
+      || fabs(r1.size.height - r2.size.height)>0.001)
+    {
+      printf("(1) expected frame (%g %g)+(%g %g), got (%g %g)+(%g %g)\n",
+	     r2.origin.x, r2.origin.y, r2.size.width, r2.size.height,
+	     r1.origin.x, r1.origin.y, r1.size.width, r1.size.height);
+
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
+}
+
 int CHECK(NSView *view, NSRect frame)
 {
-	NSRect r;
-
-	r = [view frame];
-	if (fabs(r.origin.x - frame.origin.x)>0.001
-	 || fabs(r.origin.y - frame.origin.y)>0.001
-	 || fabs(r.size.width - frame.size.width)>0.001
-	 || fabs(r.size.height - frame.size.height)>0.001)
-	{
-		printf("(1) expected frame (%g %g)+(%g %g), got (%g %g)+(%g %g)\n",
-			frame.origin.x, frame.origin.y, frame.size.width, frame.size.height,
-			r.origin.x, r.origin.y, r.size.width, r.size.height);
-
-		return 0;
-	}
-	return 1;
+	NSRect r = [view frame];
+	return rects_almost_equal(r, frame);
 }
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -193,6 +201,27 @@ int main(int argc, char **argv)
 	passed = CHECK(view1, NSMakeRect(1.5, 1.5, 1.5, 1.5)) && passed;
 
 	pass(passed,"NSView autoresize rounding works");
+
+	// Test centerScanRect
+
+	{
+	  NSView *view2 = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+	  
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.5, 0.5, 100, 100)],
+				  NSMakeRect(1, 1, 100, 100)),
+	       "centerScanRect works 1");
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.9, 0.9, 99.9, 99.9)],
+				  NSMakeRect(1, 1, 100, 100)),
+	       "centerScanRect works 2");       
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.9, 0.9, 99.4, 99.4)],
+				  NSMakeRect(1, 1, 99, 99)),
+	       "centerScanRect works 3");
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.4, 0.4, 99.4, 99.4)],
+				  NSMakeRect(0, 0, 100, 100)),
+	       "centerScanRect works 4");
+
+	  [view2 release];
+	}
 
 	DESTROY(arp);
 	return 0;
