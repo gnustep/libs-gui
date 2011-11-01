@@ -1667,10 +1667,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       aRect.size.height = -aRect.size.height;
     }
 
-  aRect.origin.x = floor(aRect.origin.x);
-  aRect.origin.y = floor(aRect.origin.y);
-  aRect.size.width = floor(aRect.size.width);
-  aRect.size.height = floor(aRect.size.height);
+  aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
+  aRect.origin.y = GSRoundTowardsInfinity(aRect.origin.y);
+  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
+  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];

@@ -1,5 +1,11 @@
 2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSView.m: centerScanRect patch from Sebastian Reitenbach.
+	Note that this makes the NSView autoresizing and rounding test pass,
+	but the new centerScanRect test I just added fail.
+
+2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Add
 	centerScanRect test
 
