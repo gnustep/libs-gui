@@ -1,3 +1,7 @@
+2011-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTabView.m: Add some bindings for NSTabView.
+
 2011-11-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSColorPanel.m: Always send action and colorChanged: when

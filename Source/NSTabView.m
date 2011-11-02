@@ -26,18 +26,22 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSValue.h>
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
+#import "AppKit/NSFontManager.h"
 #import "AppKit/NSForm.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/PSOperators.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSBindingHelpers.h"
 
 @implementation NSTabView
 
@@ -49,6 +53,11 @@
   if (self == [NSTabView class])
     {
       [self setVersion: 2];
+
+      [self exposeBinding: NSSelectedIndexBinding];
+      [self exposeBinding: NSFontBinding];
+      [self exposeBinding: NSFontNameBinding];
+      [self exposeBinding: NSFontSizeBinding];
     }
 }
 
@@ -254,7 +263,8 @@
       if (selectedView != nil)
         {
           [self addSubview: selectedView];
-	  [selectedView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+          // FIXME: We should not change this mask
+          [selectedView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
           [_window makeFirstResponder: [_selected initialFirstResponder]];
         }
@@ -476,7 +486,14 @@
   
   if (anItem != nil  &&  ![anItem isEqual: _selected])
     {
+      GSKeyValueBinding *theBinding;
+
       [self selectTabViewItem: anItem];
+
+      theBinding = [GSKeyValueBinding getBinding: NSSelectedIndexBinding 
+                                       forObject: self];
+      if (theBinding != nil)
+        [theBinding reverseSetValueFor: NSSelectedIndexBinding];
     }
 }
 
@@ -557,6 +574,14 @@
         {
           [self setFont: [aDecoder decodeObjectForKey: @"NSFont"]];
         }
+      if ([aDecoder containsValueForKey: @"NSTvFlags"])
+        {
+          int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+
+          [self setControlTint: ((vFlags & 0x70000000) >> 28)];
+          [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
+          [self setTabViewType: (vFlags & 0x00000007)];
+        }
       if ([aDecoder containsValueForKey: @"NSTabViewItems"])
         {
           ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
@@ -566,15 +591,6 @@
           [self selectTabViewItem: [aDecoder decodeObjectForKey: 
                                                  @"NSSelectedTabViewItem"]];
         }
-      if ([aDecoder containsValueForKey: @"NSTvFlags"])
-        {
-          int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-
-          [self setControlTint: ((vFlags & 0x70000000) >> 28)];
-          [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
-          [self setTabViewType: (vFlags & 0x00000007)];
-        }
-      [self setAutoresizesSubviews: YES];
     }
   else
     {
@@ -619,5 +635,48 @@
       _selected = [_items objectAtIndex: _selected_item];
     }
   return self;
+}
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedIndexBinding])
+    {
+      [self selectTabViewItemAtIndex: [anObject intValue]];
+    }
+  else if ([aKey isEqual: NSFontNameBinding])
+    {
+      [self setFont: [[NSFontManager sharedFontManager] convertFont: [self font] 
+                                                             toFace: anObject]];
+    }
+  else if ([aKey isEqual: NSFontSizeBinding])
+    {
+      [self setFont: [[NSFontManager sharedFontManager] convertFont: [self font]
+                                                             toSize: [anObject doubleValue]]];
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedIndexBinding])
+    {
+      return [NSNumber numberWithInt: [self indexOfTabViewItem: 
+                                              [self selectedTabViewItem]]];
+    }
+  else if ([aKey isEqual: NSFontNameBinding])
+    {
+      return [[self font] fontName];
+    }
+  else if ([aKey isEqual: NSFontSizeBinding])
+    {
+      return [NSNumber numberWithDouble: (double)[[self font] pointSize]];
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 @end
