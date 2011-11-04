@@ -348,10 +348,25 @@ new_label (NSString *value)
 
   if (nil_or_not_of_class (authors, [NSArray class]))
     {
-      authors = value_from_info_plist_for_key (@"Authors");
-      
-      // if (nil_or_not_of_class (authors, [NSArray class]))
-      //   authors = [NSArray arrayWithObject: @"Unknown"];
+      if ([authors isKindOfClass: [NSString class]])
+	{
+	  authors = [NSArray arrayWithObject: authors];
+	}
+      else
+	{
+	  authors = value_from_info_plist_for_key (@"Authors");
+	  if (nil_or_not_of_class (authors, [NSArray class]))
+	    {
+	      if ([authors isKindOfClass: [NSString class]])
+		{
+		  authors = [NSArray arrayWithObject: authors];
+		}
+	      else
+		{
+		  authors = [NSArray arrayWithObject: @"Unknown"];
+		}
+	    }
+	}
     }
   /* URL */
   if (dictionary)
