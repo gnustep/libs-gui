@@ -458,6 +458,44 @@
 
 @end
 
+@implementation IBInitialTabViewItemAttribute
+
+- (id) initWithCoder: (NSCoder*)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"name"])
+        {
+          name = [coder decodeObjectForKey: @"name"];
+        }
+      if ([coder containsValueForKey: @"object"])
+        {
+          ASSIGN(object, [coder decodeObjectForKey: @"object"]);
+        }
+      if ([coder containsValueForKey: @"initialTabViewItem"])
+        {
+          ASSIGN(initialTabViewItem, [coder decodeObjectForKey: @"initialTabViewItem"]);
+        }
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  DESTROY(name);
+  DESTROY(object);
+  DESTROY(initialTabViewItem);
+  [super dealloc];
+}
+
+@end
+
 @implementation IBObjectRecord
 
 - (id) initWithCoder: (NSCoder*)coder

@@ -111,6 +111,14 @@
 }
 @end
 
+@interface IBInitialTabViewItemAttribute: NSObject
+{
+  NSString *name;
+  id object;
+  id initialTabViewItem;
+}
+@end
+
 @interface IBObjectRecord: NSObject
 {
   int objectID;
