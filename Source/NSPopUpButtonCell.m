@@ -425,8 +425,8 @@ static NSImage *_pbc_image[5];
   //[anItem setAction: [self action]];
   //[anItem setTarget: [self target]];
   // Or
-  //[anItem setAction: @selector(_popUpItemAction:)];
-  //[anItem setTarget: self];
+  [anItem setAction: @selector(_popUpItemAction:)];
+  [anItem setTarget: self];
 
   // Select the new item if there isn't any selection.
   if (_selectedItem == nil)
@@ -1332,9 +1332,9 @@ static NSImage *_pbc_image[5];
 - (void) _popUpItemAction: (id)sender
 {
   // first, if sender is one of our items, set it as our selected item
-  int index = [_menu indexOfItem:sender];
+  int index = [_menu indexOfItem: sender];
   if (index != NSNotFound)
-    [self selectItemAtIndex:index];
+    [self selectItemAtIndex: index];
 
   if (_control_view)
     {

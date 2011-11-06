@@ -1,3 +1,8 @@
+2011-11-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m (-insertItemWithTitle:atIndex:): Set
+	the action on the menu item to -_popUpItemAction:.
+
 2011-11-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
