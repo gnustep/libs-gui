@@ -1,3 +1,10 @@
+2011-11-06  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSBitmapImageRep+PNG.m:
+	HACK: PNG can not represent 72DPI exactly. If the pixels-per-meter value is
+	near 72DPI, assume it is exactly 72 DPI. Note that the same problem occurrs
+	at 144DPI, or 288DPI... so don't use PNG for resolution independent graphics.
+
 2011-11-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-insertItemWithTitle:atIndex:): Set

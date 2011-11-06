@@ -266,6 +266,19 @@ static void reader_func(png_structp png_struct, png_bytep data,
 	const CGFloat pointsPerMeter = 39.3700787 * 72.0;
 	NSSize sizeInPoints = NSMakeSize((width / (CGFloat)xppm) * pointsPerMeter,
 					 (height / (CGFloat)yppm) * pointsPerMeter);
+
+	// HACK: PNG can not represent 72DPI exactly. If the ppm value is near 72DPI,
+	// assume it is exactly 72 DPI. Note that the same problem occurrs at 144DPI...
+	// so don't use PNG for resolution independent graphics.
+	if (xppm  == 2834 || xppm == 2835)
+	  {
+	    sizeInPoints.width = width;
+	  }
+	if (yppm == 2834 || yppm == 2835)
+	  {
+	    sizeInPoints.height = height;
+	  }
+
 	[self setSize: sizeInPoints];
       }
   }
