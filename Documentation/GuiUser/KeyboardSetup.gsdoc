@@ -54,7 +54,10 @@
 	  sometimes called AltGr) as <var>ALTERNATE</var>.  As a
 	  special exception, if <code>Alt_R</code> is not bound to any
 	  key on your keyboard, GNUstep will try to use
-	  <code>Mode_switch</code> for <var>ALTERNATE</var> instead.
+	  <code>Mode_switch</code> for <var>ALTERNATE</var> instead. 
+          Some X server map AltGr onto <code>ISO_Level3_Shift</code>. 
+          To allow for this the second code <var>ALTERNATE</var> is 
+          bound to this key.
 	</p>
 	<p>
 	  If this layout does not work for you, because your keyboard
@@ -136,7 +139,7 @@
 	    <code>Alt_R</code> (or <code>Mode_switch</code> if there is no <code>Alt_R</code>)
 	  </item>
 	  <item> GSSecondAlternateKey
-	    <code>NoSymbol</code>
+	    <code>ISO_Level3_Shift</code>
 	  </item>
 	</list>
 
