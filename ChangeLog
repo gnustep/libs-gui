@@ -1,3 +1,8 @@
+2011-11-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorWell.m (-objectValue, -setObjectValue:,
+	-takeObjectValueFrom:): Add these missing methods.
+
 2011-11-06  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSBitmapImageRep+PNG.m:

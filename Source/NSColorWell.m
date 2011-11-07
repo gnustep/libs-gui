@@ -392,6 +392,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     }
 }
 
+- (id) objectValue
+{
+  return [self color];
+}
+
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
   NSPasteboard *pb = [sender draggingPasteboard];
@@ -448,6 +453,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     }
 }
 
+- (void) setObjectValue: (id)anObject
+{
+  [self setColor: anObject];
+}
+
 - (void) setTarget: (id)target
 {
   _target = target;
@@ -488,6 +498,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 	  [self sendAction: _action to: _target];
 	}
     }
+}
+
+- (void) takeObjectValueFrom: (id)sender
+{
+  [self takeColorFrom: sender];
 }
 
 - (id) target
