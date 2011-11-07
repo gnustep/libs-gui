@@ -1,5 +1,11 @@
 2011-11-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSKeyValueBinding.m
+	([GSKeyValueBinding-transformValue:withOptions:]): Don't use @""
+	when no null placeholder is defined.
+
+2011-11-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColorWell.m (-objectValue, -setObjectValue:,
 	-takeObjectValueFrom:): Add these missing methods.
 

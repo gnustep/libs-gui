@@ -414,10 +414,6 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     {
       placeholder = [options objectForKey:
         NSNullPlaceholderBindingOption];
-      if (placeholder == nil)
-        {
-          placeholder = @"";
-        }
       return placeholder;
     }
 
