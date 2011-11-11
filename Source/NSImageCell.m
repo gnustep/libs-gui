@@ -36,6 +36,12 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
+@interface NSCell (Private)
+- (NSSize) _scaleImageWithSize: (NSSize)imageSize
+                   toFitInSize: (NSSize)canvasSize
+                   scalingType: (NSImageScaling)scalingType;
+@end
+
 @implementation NSImageCell
 
 //
@@ -171,25 +177,6 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
     return NSMinY(outerRect);
 }
 
-static inline NSSize
-scaleProportionally(NSSize imageSize, NSRect canvasRect, BOOL scaleUpOrDown)
-{
-  float ratio;
-
-  /* Get the smaller ratio and scale the image size by it.  */
-  ratio = MIN(NSWidth(canvasRect) / imageSize.width,
-	      NSHeight(canvasRect) / imageSize.height);
-  
-  /* Only scale down, unless scaleUpOrDown is YES */
-  if (ratio < 1.0 || scaleUpOrDown)
-    {
-      imageSize.width *= ratio;
-      imageSize.height *= ratio;
-    }
-
-  return imageSize;
-}
-
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   NSPoint	position;
@@ -205,35 +192,9 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect, BOOL scaleUpOrDown)
   cellFrame = [self drawingRectForBounds: cellFrame];
 
   realImageSize = [_cell_image size];
-
-  switch (_imageScaling)
-    {
-      case NSScaleProportionally:
-        {
-          NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-          imageSize = scaleProportionally (realImageSize, cellFrame, NO);
-          break;
-        }
-      case NSScaleToFit:
-        {
-          NSDebugLLog(@"NSImageCell", @"NSScaleToFit");
-          imageSize = cellFrame.size;
-          break;
-        }
-      default:
-      case NSScaleNone:
-        {
-          NSDebugLLog(@"NSImageCell", @"NSScaleNone");
-          imageSize = realImageSize;
-          break;
-        }
-      case NSImageScaleProportionallyUpOrDown:
-        {
-	  NSDebugLLog(@"NSImageCell", @"NSImageScaleProportionallyUpOrDown");
-	  imageSize = scaleProportionally (realImageSize, cellFrame, YES);
-	  break;
-        }
-    }
+  imageSize = [self _scaleImageWithSize: realImageSize
+			    toFitInSize: cellFrame.size
+			    scalingType: _imageScaling];
 
   switch (_imageAlignment)
     {

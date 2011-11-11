@@ -118,6 +118,29 @@ enum {
   NSMixedState			= -1
 };
 
+/**
+ *  <p>Enumeration of the ways that you can display an image in an
+ *  NSImageCell.  The available ones are:</p>
+ *  <p><code>NSScaleNone</code>: The image is always displayed with
+ *  its natural size.  If it's bigger than the cell size, it is
+ *  cropped.</p>
+ *  <p><code>NSScaleProportionally</code>: If the image is bigger
+ *  than the cell size, it is displayed in its natural size.  If it
+ *  is smaller than the cell size, it is resized down proportionally
+ *  to fit the cell size.</p>
+ *  <p><code>NSScaleToFit</code>: The image is always resized (up
+ *  or down) to fit exactly in the cell size.</p>
+ */
+typedef enum {
+  NSScaleProportionally = 0,
+  NSScaleToFit = 1,
+  NSScaleNone = 2,
+  NSImageScaleProportionallyDown = 0,
+  NSImageScaleAxesIndependently = 1,
+  NSImageScaleNone = 2,
+  NSImageScaleProportionallyUpOrDown = 3
+} NSImageScaling;
+
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes

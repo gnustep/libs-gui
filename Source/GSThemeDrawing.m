@@ -803,25 +803,6 @@
     }
 }
 
-- (void) drawImage: (NSImage *)image
-      inButtonCell: (NSButtonCell *) cell 
-	 withFrame: (NSRect) aRect
-	  position: (NSPoint) position
-{
-  BOOL enabled = [cell isEnabled];
-  BOOL dims = [cell imageDimsWhenDisabled];
-
-  if (!enabled && dims)
-    {
-      [image dissolveToPoint: position fraction: 0.5];
-    }
-  else
-    {
-      [image compositeToPoint: position 
-	            operation: NSCompositeSourceOver];
-    }
-}
-
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect

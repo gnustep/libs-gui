@@ -106,6 +106,12 @@ typedef struct _GSButtonCellFlags
 #endif
 } GSButtonCellFlags;
 
+@interface NSCell (Private)
+- (NSSize) _scaleImageWithSize: (NSSize)imageSize
+                   toFitInSize: (NSSize)canvasSize
+                   scalingType: (NSImageScaling)scalingType;
+@end
+
 /**<p> TODO Description</p>
  */
 @implementation NSButtonCell
@@ -137,6 +143,7 @@ typedef struct _GSButtonCellFlags
   _keyEquivalent = @"";
   _altContents = @"";
   _gradient_type = NSGradientNone;
+  [self setImageScaling: NSImageScaleNone];
 
   return self;
 }
@@ -478,6 +485,16 @@ typedef struct _GSButtonCellFlags
 - (NSCellImagePosition) imagePosition
 {
   return _cell.image_position;
+}
+
+- (NSImageScaling) imageScaling
+{
+  return _imageScaling;
+}
+
+- (void) setImageScaling: (NSImageScaling)scaling
+{
+  _imageScaling = scaling;
 }
 
 - (void) setImage: (NSImage *)anImage
@@ -966,14 +983,26 @@ typedef struct _GSButtonCellFlags
   // Draw image
   if (imageToDisplay != nil)
     {
-      const NSSize size = [imageToDisplay size];
+      NSSize size = [self _scaleImageWithSize: [imageToDisplay size]
+				  toFitInSize: cellFrame.size
+				  scalingType: _imageScaling];
+
+      /* Pixel-align size */
+
+      if (controlView)
+	{
+	  NSSize sizeInBase = [controlView convertSizeToBase: size];
+	  sizeInBase.width = GSRoundTowardsInfinity(sizeInBase.width);
+	  sizeInBase.height = GSRoundTowardsInfinity(sizeInBase.height);
+	  size = [controlView convertSizeFromBase: sizeInBase];
+	}
 
       /* Calculate an offset from the cellFrame origin */
      
       NSPoint offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
 				 (NSHeight(cellFrame) - size.height) / 2.0);
 
-      /* Pixel-align the offset */      
+      /* Pixel-align the offset */
 
       if (controlView)
 	{
@@ -993,24 +1022,21 @@ typedef struct _GSButtonCellFlags
 	  offset = [controlView convertPointFromBase: inBase];
 	}
 
-      /*
-       * Images are always drawn with their bottom-left corner at the origin
-       * so we must adjust the position to take account of a flipped view.
-       */
-      if ([controlView isFlipped])
-	{
-	  offset.y += size.height;
-	}
+      /* Draw the image */
 
-      {
-	const NSPoint position = NSMakePoint(cellFrame.origin.x + offset.x,
-					     cellFrame.origin.y + offset.y);
-
-	[[GSTheme theme] drawImage: imageToDisplay
-		      inButtonCell: self
-			 withFrame: cellFrame
-			  position: position];
-      }
+      const NSRect rect = NSMakeRect(cellFrame.origin.x + offset.x,
+				     cellFrame.origin.y + offset.y,
+				     size.width,
+				     size.height);
+      const CGFloat fraction = (![self isEnabled] &&
+				[self imageDimsWhenDisabled]) ? 0.5 : 1.0;
+      
+      [imageToDisplay drawInRect: rect
+			fromRect: NSZeroRect
+		       operation: NSCompositeSourceOver
+			fraction: fraction
+		  respectFlipped: YES
+			   hints: nil];
     }
 }
 
@@ -1642,6 +1668,23 @@ typedef struct _GSButtonCellFlags
       bFlags2 |= [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
       bFlags2 |= (([self bezelStyle] & 0x7) | (([self bezelStyle] & 0x18) << 2));
       bFlags2 |= [self keyEquivalentModifierMask] << 8;
+
+      switch ([self imageScaling])
+	{
+	case NSImageScaleProportionallyDown:
+	  bFlags2 |= (2 << 6);
+	  break;
+	case NSImageScaleAxesIndependently:
+	  bFlags2 |= (3 << 6);
+	  break;
+	case NSImageScaleNone:
+	default:
+	  break;
+	case NSImageScaleProportionallyUpOrDown:
+	  bFlags2 |= (1 << 6);
+	  break;
+	}
+
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
 
       // alternate image encoding...
@@ -1793,6 +1836,7 @@ typedef struct _GSButtonCellFlags
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
+	  NSUInteger imageScale;
           int bFlags2;
 
           bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
@@ -1800,6 +1844,24 @@ typedef struct _GSButtonCellFlags
           [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
           [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) & 
                                                NSDeviceIndependentModifierFlagsMask)];
+
+	  switch (bFlags2 & (3 << 6))
+	    {
+	    case 2:
+	      imageScale = NSImageScaleProportionallyDown;
+	      break;
+	    case 3:
+	      imageScale = NSImageScaleAxesIndependently;
+	      break;
+	    case 0:
+	    default:
+	      imageScale = NSImageScaleNone;
+	      break;
+	    case 1:
+	      imageScale = NSImageScaleProportionallyUpOrDown;
+	      break;
+	    }
+	  [self setImageScaling: imageScale];
         }
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {
@@ -1882,6 +1944,8 @@ typedef struct _GSButtonCellFlags
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
           _shows_border_only_while_mouse_inside = tmp;
         }
+      // Not encoded in non-keyed archive
+      _imageScaling = NSImageScaleNone;
     }
 
   // Hack to correct a Gorm problem, there "\n" is used instead of "\r".

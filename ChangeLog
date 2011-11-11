@@ -1,3 +1,23 @@
+2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSImageCell.h:
+	* Headers/AppKit/NSCell.h: Move NSImageScaling constants to NSCell
+	* Source/NSImageCell.m:
+	* Source/NSCell.m: Refactor the image scaling logic to a private
+	method in NSCell, -_scaleImageWithSize:toFitInSize:scalingType:
+	which can be share by NSImageCell, NSButtonCell, and any other
+	cell classes that need it.
+	* Source/NSButtonCell.m:
+	* Headers/AppKit/NSButtonCell.h: Implement -imageScaling and
+	-setImageScaling methods. 
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Remove the
+	-drawImage:inButtonCell:withFrame:position: API intended
+	to let themes substitute images right before drawing,
+	as IMHO it's the wrong place to hook in new images (by
+	the time this method was caleld, sizing/positionging
+	was already done).
+
 2011-11-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Better handling for flattened properties

@@ -3015,4 +3015,66 @@ static NSColor *dtxtCol;
     }
 }
 
+/**
+ * Private method used by NSImageCell and NSButtonCell for calculating
+ * scaled image size
+ */
+
+static inline NSSize
+scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
+{
+  CGFloat ratio;
+
+  if (imageSize.width <= 0
+      || imageSize.height <= 0)
+    {
+      return NSMakeSize(0, 0);
+    }
+
+  /* Get the smaller ratio and scale the image size by it.  */
+  ratio = MIN(canvasSize.width / imageSize.width,
+	      canvasSize.height / imageSize.height);
+  
+  /* Only scale down, unless scaleUpOrDown is YES */
+  if (ratio < 1.0 || scaleUpOrDown)
+    {
+      imageSize.width *= ratio;
+      imageSize.height *= ratio;
+    }
+
+  return imageSize;
+}
+
+- (NSSize) _scaleImageWithSize: (NSSize)imageSize
+                   toFitInSize: (NSSize)canvasSize
+		   scalingType: (NSImageScaling)scalingType
+{
+  NSSize result;
+  switch (scalingType)
+    {
+    case NSImageScaleProportionallyDown: // == NSScaleProportionally
+      {
+	result = scaleProportionally (imageSize, canvasSize, NO);
+	break;
+      }
+    case NSImageScaleAxesIndependently: // == NSScaleToFit
+      {
+	result = canvasSize;
+	break;
+      }
+    default:
+    case NSImageScaleNone: // == NSScaleNone
+      {
+	result = imageSize;
+	break;
+      }
+    case NSImageScaleProportionallyUpOrDown:
+      {
+	result = scaleProportionally (imageSize, canvasSize, YES);
+	break;
+      }
+    }
+  return result;
+}
+
 @end

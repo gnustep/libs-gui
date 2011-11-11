@@ -877,16 +877,6 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                          roundedLeft: (BOOL)roundedLeft
                         roundedRight: (BOOL)roundedRight;
 
-/**
- * In some themes it may be necessary to override the drawing 
- * of an image a button cell and replace it with a rendered 
- * version (from the native theme).
- */
-- (void) drawImage: (NSImage *)image
-      inButtonCell: (NSButtonCell *) cell 
-	 withFrame: (NSRect) aRect
-          position: (NSPoint) position;
-
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect

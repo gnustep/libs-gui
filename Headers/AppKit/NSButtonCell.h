@@ -136,6 +136,7 @@ typedef enum _NSGradientType {
 #define _image_dims_when_disabled _cell.subclass_bool_two
 #define _shows_border_only_while_mouse_inside _cell.subclass_bool_three
 #define _mouse_inside _cell.subclass_bool_four
+  NSImageScaling _imageScaling;
 }
 
 //
@@ -165,6 +166,10 @@ typedef enum _NSGradientType {
 - (NSCellImagePosition)imagePosition;
 - (void)setAlternateImage: (NSImage *)anImage;
 - (void)setImagePosition: (NSCellImagePosition)aPosition;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSImageScaling)imageScaling;
+- (void)setImageScaling:(NSImageScaling)scaling;
+#endif
 
 //
 // Setting the Repeat Interval 
