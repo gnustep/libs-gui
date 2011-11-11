@@ -1,3 +1,8 @@
+2011-11-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Better handling for flattened properties
+	to set the tool tips of an object.
+
 2011-11-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSKeyValueBinding.m

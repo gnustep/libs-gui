@@ -2,7 +2,7 @@
 
    <abstract>Xib (Cocoa XML) model loader</abstract>
 
-   Copyright (C) 2010 Free Software Foundation, Inc.
+   Copyright (C) 2010, 2011 Free Software Foundation, Inc.
 
    Written by: Fred Kiefer <FredKiefer@gmx.de>
    Created: March 2010
@@ -215,7 +215,7 @@
   [super dealloc];
 }
 
-- (NSString *) label
+- (NSString*) label
 {
   return label;
 }
@@ -230,7 +230,7 @@
   return destination;
 }
 
-- (NSNibConnector *) nibConnector
+- (NSNibConnector*) nibConnector
 {
   NSString *tag = [self label];
   NSRange colonRange = [tag rangeOfString: @":"];
@@ -402,7 +402,7 @@
   [super dealloc];
 }
 
-- (IBConnection *) connection
+- (IBConnection*) connection
 {
   return connection;
 }
@@ -421,6 +421,11 @@
 @end
 
 @implementation IBToolTipAttribute
+
+- (NSString*) toolTip
+{
+  return toolTip;
+}
 
 - (id) initWithCoder: (NSCoder*)coder
 {
@@ -578,7 +583,7 @@
   [super dealloc];
 }
 
-- (NSArray *)orderedObjects
+- (NSArray*)orderedObjects
 {
   return orderedObjects;
 }
@@ -603,7 +608,7 @@
 
 @implementation IBObjectContainer
 
-- (id) initWithCoder:(NSCoder *)coder
+- (id) initWithCoder: (NSCoder*)coder
 {
   if ([coder allowsKeyedCoding])
     {
@@ -647,24 +652,47 @@
   [super dealloc];
 }
 
-- (NSEnumerator *) connectionRecordEnumerator
+- (NSEnumerator*) connectionRecordEnumerator
 {
   return [connectionRecords objectEnumerator];
 }
 
-- (NSEnumerator *) objectRecordEnumerator
+- (NSEnumerator*) objectRecordEnumerator
 {
   return [[objectRecords orderedObjects] objectEnumerator];
+}
+
+- (NSDictionary*) propertiesForObjectID: (int)objectID
+{
+  NSEnumerator *en;
+  NSString *idString;
+  NSString *key;
+  NSMutableDictionary *properties;
+  int idLength;
+
+  idString = [NSString stringWithFormat: @"%d.", objectID];
+  idLength = [idString length];
+  properties = [[NSMutableDictionary alloc] init];
+  en = [flattenedProperties keyEnumerator];
+  while ((key = [en nextObject]) != nil)
+    {
+      if ([key hasPrefix: idString])
+        {
+          id value = [flattenedProperties objectForKey: key];
+          [properties setObject: value forKey: [key substringFromIndex: idLength]];
+        }
+    }
+
+  return AUTORELEASE(properties);
 }
 
 - (id) nibInstantiate
 {
   NSEnumerator *en;
   id obj;
-  NSString *key;
 
-  en = [connectionRecords objectEnumerator];
   // iterate over connections, instantiate, and then establish them.
+  en = [connectionRecords objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
       [obj nibInstantiate];
@@ -675,37 +703,48 @@
   en = [[objectRecords orderedObjects] objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      obj = [obj object];
-      if ([obj respondsToSelector: @selector(awakeFromNib)])
-        {
-          [obj awakeFromNib];
-        }
-    }
+      id realObj;
+      NSDictionary *properties;
+      id value;
 
-  // Activate windows
-  en = [flattenedProperties keyEnumerator];
-  while ((key = [en nextObject]) != nil)
-    {
-      if ([key hasSuffix: @"visibleAtLaunch"])
+      realObj = [obj object];
+      if ([realObj respondsToSelector: @selector(nibInstantiate)])
         {
-          id value = [flattenedProperties objectForKey: key];
-          
+          realObj = [realObj nibInstantiate];
+        }
+
+      properties = [self propertiesForObjectID: [obj objectID]];
+      NSDebugLLog(@"XIB", @"object %d props %@", [obj objectID], properties);
+
+      //value = [properties objectForKey: @"windowTemplate.maxSize"];
+      //value = [properties objectForKey: @"CustomClassName"];
+
+      // Activate windows
+      value = [properties objectForKey: @"NSWindowTemplate.visibleAtLaunch"];
+      if (value != nil)
+        {
           if ([value boolValue] == YES)
             {
-              NSInteger objID = [key integerValue];
-
-              obj = [objectRecords objectWithObjectID: objID];
-              if ([obj respondsToSelector: @selector(nibInstantiate)])
-                {
-                  obj = [obj nibInstantiate];
-                }
-
-              if ([obj isKindOfClass: [NSWindow class]])
+              if ([realObj isKindOfClass: [NSWindow class]])
                 {
                   // bring visible windows to front...
-                  [(NSWindow *)obj orderFront: self];
+                  [(NSWindow *)realObj orderFront: self];
                 }
             }
+        }
+
+      // Tool tips
+      value = [properties objectForKey: @"IBAttributePlaceholdersKey"];
+      if (value != nil)
+        {
+          IBToolTipAttribute *tta = [(NSDictionary*)value objectForKey: @"ToolTip"];
+
+          [realObj setToolTip: [tta toolTip]];
+        }
+
+      if ([realObj respondsToSelector: @selector(awakeFromNib)])
+        {
+          [realObj awakeFromNib];
         }
     }
 
@@ -721,7 +760,7 @@
 
 @implementation GSXibLoader
 
-+ (NSString *)type
++ (NSString*) type
 {
   return @"xib";
 }
@@ -821,7 +860,7 @@
   return loaded;
 }
 
-- (NSData *) dataForFile: (NSString *)fileName
+- (NSData*) dataForFile: (NSString*)fileName
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
   BOOL isDir = NO;
@@ -963,17 +1002,17 @@
   [super dealloc];
 }
 
-- (void) parser: (NSXMLParser *)parser
-foundCharacters: (NSString *)string
+- (void) parser: (NSXMLParser*)parser
+foundCharacters: (NSString*)string
 {
   [currentElement setValue: string];
 }
 
-- (void) parser: (NSXMLParser *)parser
-didStartElement: (NSString *)elementName
-   namespaceURI: (NSString *)namespaceURI
-  qualifiedName: (NSString *)qualifiedName
-     attributes: (NSDictionary *)attributeDict
+- (void) parser: (NSXMLParser*)parser
+didStartElement: (NSString*)elementName
+   namespaceURI: (NSString*)namespaceURI
+  qualifiedName: (NSString*)qualifiedName
+     attributes: (NSDictionary*)attributeDict
 {
   GSXibElement *element = [[GSXibElement alloc] initWithType: elementName
                                            andAttributes: attributeDict];
@@ -1008,10 +1047,10 @@ didStartElement: (NSString *)elementName
     }
 }
 
-- (void) parser: (NSXMLParser *)parser
-  didEndElement: (NSString *)elementName
-   namespaceURI: (NSString *)namespaceURI
-  qualifiedName: (NSString *)qName
+- (void) parser: (NSXMLParser*)parser
+  didEndElement: (NSString*)elementName
+   namespaceURI: (NSString*)namespaceURI
+  qualifiedName: (NSString*)qName
 {
   if (![@"archive" isEqualToString: elementName] &&
       ![@"data" isEqualToString: elementName])
@@ -1022,7 +1061,7 @@ didStartElement: (NSString *)elementName
     }
 }
 
-- (id) allocObjectForClassName: (NSString *)classname
+- (id) allocObjectForClassName: (NSString*)classname
 {
   Class c = [self classForClassName: classname];
   id delegate = [self delegate];
@@ -1055,8 +1094,8 @@ didStartElement: (NSString *)elementName
  }
 
 - (id) decodeObjectForXib: (GSXibElement*)element
-             forClassName: (NSString *)classname
-                   withID: (NSString *)objID
+             forClassName: (NSString*)classname
+                   withID: (NSString*)objID
 {
   GSXibElement *last;
   id o, r;
@@ -1130,8 +1169,8 @@ didStartElement: (NSString *)elementName
   missing context switch.
  */
 - (id) decodeDictionaryForXib: (GSXibElement*)element
-                 forClassName: (NSString *)classname
-                       withID: (NSString *)objID
+                 forClassName: (NSString*)classname
+                       withID: (NSString*)objID
 {
   id o, r;
   id delegate = [self delegate];
