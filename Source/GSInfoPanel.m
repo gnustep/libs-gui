@@ -412,13 +412,10 @@ new_label (NSString *value)
   /*
    * Create GUI Objects 
    */
-  f = NSZeroRect;
-  if (icon != nil)
-    {
-      f.size = [icon size];
-    }
+  f = NSMakeRect(0, 0, 48, 48);
 
   iconButton = AUTORELEASE([[NSButton alloc] initWithFrame: f]); 
+  [[iconButton cell] setImageScaling: NSImageScaleProportionallyUpOrDown];
   [iconButton setImage: icon];
   [iconButton setBordered: NO];
   [iconButton setImagePosition: NSImageOnly];

@@ -1,5 +1,12 @@
 2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSInfoPanel.m: Fix app icon button size at 48x48 and use
+	NSImageScaleProportionallyUpOrDown.
+	This prevents icons with large sizes (e.g. 512x512 pixel) from
+	making the info panel really big.
+
+2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/AppKit/NSImageCell.h:
 	* Headers/AppKit/NSCell.h: Move NSImageScaling constants to NSCell
 	* Source/NSImageCell.m:
