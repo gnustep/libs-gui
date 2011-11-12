@@ -755,7 +755,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) setScalesWhenResized: (BOOL)flag
 {
-  _flags.scalable = flag;
+  // FIXME: This currently breaks NSImage.
+  // See the test case in GSTest/Image-test that uses this method.
+
+  // _flags.scalable = flag;
 }
 
 - (BOOL) scalesWhenResized

@@ -1,5 +1,14 @@
 2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (-setScalesWhenResized:): Disable this method
+	as it is currently broken on the cairo backend.
+	* Source/NSApplication.m (-setApplicationIconImage:): Don't
+	use call -setScalesWhenResized:, because if it worked as it is
+	supposed to, it would scale all icon reps down to 48x48,
+	making large icon sizes useless.
+
+2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSInfoPanel.m: Fix app icon button size at 48x48 and use
 	NSImageScaleProportionallyUpOrDown.
 	This prevents icons with large sizes (e.g. 512x512 pixel) from

@@ -2338,8 +2338,6 @@ image.</p><p>See Also: -applicationIconImage</p>
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
-  [_app_icon setScalesWhenResized: YES];
-
   miniWindowSize = [GSCurrentServer() iconSize];
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
     {
