@@ -438,6 +438,7 @@ setKeyEquivalent(NSButton *button)
   [icoButton setBordered: NO];
   [icoButton setEnabled: NO];
   [[icoButton cell] setImageDimsWhenDisabled: NO];
+  [[icoButton cell] setImageScaling: NSImageScaleProportionallyUpOrDown];
   [icoButton setImagePosition: NSImageOnly];
   image = [[NSApplication sharedApplication] applicationIconImage];
   [icoButton setImage: image];

@@ -1,5 +1,10 @@
 2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSAlert.m: Use NSImageScaleProportionallyUpOrDown on
+	app icon button cell.
+
+2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (-setScalesWhenResized:): Disable this method
 	as it is currently broken on the cairo backend.
 	* Source/NSApplication.m (-setApplicationIconImage:): Don't
