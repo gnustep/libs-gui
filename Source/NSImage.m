@@ -1487,7 +1487,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   NSArray *reps = [self _bestRepresentationsForDevice: deviceDescription];
 
   /* If we have more than one match check for a representation whose size
-   * matches the image size exactly. Otherwise, arbitrarily choose the last
+   * matches the image size exactly. Otherwise, arbitrarily choose the first
    * representation. */
   if ([reps count] > 1)
     {
@@ -1502,7 +1502,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	    }
 	}
     }
-  return [reps lastObject];
+  return [reps objectAtIndex: 0];
 }
 
 - (NSImageRep *) bestRepresentationForRect: (NSRect)rect

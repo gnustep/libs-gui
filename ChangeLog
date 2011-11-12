@@ -1,5 +1,11 @@
 2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (-bestRepresentationForDevice:): When
+	all other matching criteria fail, use the first image instead
+	of the last (arbitrary, but seems to match cocoa.)
+
+2011-11-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSAlert.m: Use NSImageScaleProportionallyUpOrDown on
 	app icon button cell.
 
