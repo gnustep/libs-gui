@@ -31,6 +31,7 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSNull.h>
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSUserDefaultsController.h"
 
@@ -87,7 +88,19 @@ static id shared = nil;
       // We need to cache the values we return to be able to 
       // report changes to them when the defaults change.
       if (value)
-        [values setObject: value forKey: key];
+        {
+          [values setObject: value forKey: key];
+        }
+      else
+        {
+          // Use a marker for missing values
+          [values setObject: [NSNull null] forKey: key];
+        }
+    }
+  else if ([[NSNull null] isEqual: value])
+    {
+      // filter out our marker value
+      return nil;
     }
 
   return value;
