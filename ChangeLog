@@ -1,5 +1,10 @@
 2011-11-13 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImage.m (-bestRepresentationForDevice:): Fix last
+	change for the case where there are no representations for the image.
+
+2011-11-13 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSUserDefaultsController.m
 	([GSUserDefaultsHelper-valueForKey:]) Use a marker for values
 	being nil. This should fix bug #34790.

@@ -1502,7 +1502,16 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	    }
 	}
     }
-  return [reps objectAtIndex: 0];
+  
+  
+  if ([reps count] > 0)
+    {
+      return [reps objectAtIndex: 0];
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (NSImageRep *) bestRepresentationForRect: (NSRect)rect
