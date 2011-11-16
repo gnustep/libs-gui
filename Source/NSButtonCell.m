@@ -983,6 +983,9 @@ typedef struct _GSButtonCellFlags
   // Draw image
   if (imageToDisplay != nil)
     {
+      NSPoint offset;
+      NSRect rect;
+      CGFloat fraction;
       NSSize size = [self _scaleImageWithSize: [imageToDisplay size]
 				  toFitInSize: cellFrame.size
 				  scalingType: _imageScaling];
@@ -999,7 +1002,7 @@ typedef struct _GSButtonCellFlags
 
       /* Calculate an offset from the cellFrame origin */
      
-      NSPoint offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
+      offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
 				 (NSHeight(cellFrame) - size.height) / 2.0);
 
       /* Pixel-align the offset */
@@ -1024,12 +1027,12 @@ typedef struct _GSButtonCellFlags
 
       /* Draw the image */
 
-      const NSRect rect = NSMakeRect(cellFrame.origin.x + offset.x,
-				     cellFrame.origin.y + offset.y,
-				     size.width,
-				     size.height);
-      const CGFloat fraction = (![self isEnabled] &&
-				[self imageDimsWhenDisabled]) ? 0.5 : 1.0;
+      rect = NSMakeRect(cellFrame.origin.x + offset.x,
+   		        cellFrame.origin.y + offset.y,
+			size.width,
+			size.height);
+      fraction = (![self isEnabled] &&
+		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
       
       [imageToDisplay drawInRect: rect
 			fromRect: NSZeroRect

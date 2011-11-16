@@ -1,3 +1,8 @@
+2011-11-17 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSButtonCell.m:
+	Minor compiler compatibility.
+
 2011-11-16  Quentin Mathe <quentin.mathe@gmail.com>
 
 	Improved the menu theming to support some common menu look variations.
