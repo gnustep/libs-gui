@@ -877,11 +877,80 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                          roundedLeft: (BOOL)roundedLeft
                         roundedRight: (BOOL)roundedRight;
 
+/**
+ * <p>Returns the color used to draw a menu view background.</p>
+ *
+ * <p>By default, looks up the color named <em>menuBackgroundColor</em>, 
+ * otherwise returns the window background color.</p>
+ *
+ * <p>The returned color is used by 
+ * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom color.</p>
+ */
+- (NSColor *) menuBackgroundColor;
+/**
+ * <p>Returns the color used to draw a menu item background.</p>
+ *
+ * The menu item background is drawn atop the menu background.
+ *
+ * <p>By default, looks up the color named <em>menuItemBackgroundColor</em>, 
+ * otherwise returns the control background color.<br />
+ * When selected or highlighted, the background color is provided by 
+ * [NSColor+selectedMenuItemColor].</p>
+ *
+ * <p>The returned value used by 
+ * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal: 
+ * and [NSMenuItemCell-backgroundColor].</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom color.</p>
+ */
+- (NSColor *) menuItemBackgroundColor;
+- (NSColor *) menuBarBackgroundColor;
+- (NSColor *) menuBarBorderColor;
+/**
+ * <p>Returns the color used to draw a menu view border.</p>
+ *
+ * <p>By default, looks up the color named <em>menuBorderColor</em>, 
+ * otherwise returns the dark gray color.</p>
+ *
+ * <p>The returned color is used by 
+ * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom color.</p>
+ */
+- (NSColor *) menuBorderColor;
+/**
+ * <p>Returns a color to draw each edge in a menu view border.</p>
+ *
+ * <p>By default, returns -menuBorderColor for the upper and left edges of a  
+ * vertical menu, or for the bottom edge of a horizontal one.</p>
+ *
+ * <p>The returned edge color is used by 
+ * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom color per edge.</p>
+ */
+- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge 
+                        isHorizontal: (BOOL)horizontal;
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect
                         horizontal: (BOOL)horizontal;
-
+/**
+ * <p>Returns whether the menu item border should be drawn or not.</p>
+ *
+ * <p>By default, returns [NSMenuItemCell-isBordered] value. The value is NO 
+ * when the menu is horizontal, YES when vertical.</p>
+ *
+ * <p>The returned value used by 
+ * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses.</p>
+ */
+- (BOOL) drawsBorderForMenuItemCell: (NSMenuItemCell *)cell 
+                              state: (GSThemeControlState)state
+                       isHorizontal: (BOOL)horizontal;
 // menu item cell drawing method
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
                                       withFrame: (NSRect)cellFrame
@@ -889,28 +958,57 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
 /**
+ * <p>Draws the menu item title.</p>
+ *
+ * <p>Can be overriden to customize the text font, size and position.<br />
+ * You can use <code>[[cell menuItem] title]</code> to get the title.</p>
+ *
+ * <p>The title color is mapped to the theme state as described below:</p>
+ * <deflist>
+ * <item>GSThemeSelectedState</item><desc>[NSColor+selectedMenuItemTextColor]</desc>
+ * <item>GSThemeDisabledState</item><desc>[NSColor+controlTextColor] or 
+ * [NSColor+disabledControlTextColor]</desc>
+ * </deflist>
+ */
+- (void) drawTitleForMenuItemCell: (NSMenuItemCell *)cell
+                        withFrame: (NSRect)cellFrame
+                           inView: (NSView *)controlView
+                            state: (GSThemeControlState)state
+                     isHorizontal: (BOOL)isHorizontal;
+/**
  * <p>Returns the color used to draw a separator line in a menu.</p>
  *
- * <p>By default, looks up the color named <em>menuSeparatorItemColor</em>, 
- * otherwise returns the black color.</p>
+ * <p>By default, looks up the color named <em>menuSeparatorColor</em>, 
+ * otherwise returns nil.</p>
  *
  * <p>The returned color is used by 
  * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
  * 
  * <p>Can be overriden in subclasses to return a custom color.</p>
  */
-- (NSColor *) menuSeparatorItemColor;
+- (NSColor *) menuSeparatorColor;
+/**
+ * <p>Returns the left and right inset used to draw a separator line in a menu.</p>
+ *
+ * <p>By default, returns 3.0.</p>
+ *
+ * <p>The returned color is used by 
+ * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
+ * 
+ * <p>Can be overriden in subclasses to return a custom value.</p>
+ */
+- (CGFloat) menuSeparatorInset;
 /**
  * <p>Draws a separator between normal menu items in a menu.</p>
  *
  * <p>Each separator corresponds to a menu item that returns YES to 
  * -isSeparatorItem</p>
  *
- * <p>You can provide an image tile named <em>GSMenuSeparatoritem</em> to 
+ * <p>You can provide an image tile named <em>GSMenuSeparatorItem</em> to 
  * draw the separator.</br>
  * Can be overriden in subclasses to customize the drawing.</p>
  *
- * <p>See also -menuSeparatorItemColor</p>
+ * <p>See also -menuSeparatorColor and -menuSeparatorInset</p>
  */
 - (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
                                 withFrame: (NSRect)cellFrame

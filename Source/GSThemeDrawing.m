@@ -803,6 +803,75 @@
     }
 }
 
+- (NSColor *) menuBackgroundColor
+{
+  NSColor *color = [self colorNamed: @"menuBackgroundColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor windowBackgroundColor];
+    }
+  return color;
+}
+
+- (NSColor *) menuItemBackgroundColor
+{
+  NSColor *color = [self colorNamed: @"menuItemBackgroundColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor controlBackgroundColor];
+    }
+  return color;
+}
+
+- (NSColor *) menuBorderColor
+{
+  NSColor *color = [self colorNamed: @"menuBorderColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor darkGrayColor];
+    }
+  return color;
+}
+
+- (NSColor *) menuBarBackgroundColor
+{
+  NSColor *color = [self colorNamed: @"menuBarBackgroundColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [self menuBackgroundColor];
+    }
+  return color;
+}
+
+- (NSColor *) menuBarBorderColor
+{
+  NSColor *color = [self colorNamed: @"menuBarBorderColor"
+                              state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [self menuBorderColor];
+    }
+  return color;
+}
+
+- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge isHorizontal: (BOOL)horizontal
+{
+  if (horizontal && edge == NSMinYEdge)
+    {
+      return [self menuBorderColor];
+    }
+  else if (edge == NSMinXEdge || edge == NSMaxYEdge)
+    {
+      // Draw the dark gray upper left lines.
+      return [self menuBorderColor];
+    }
+  return nil;
+}
+
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect
@@ -814,25 +883,15 @@
  
   if (tiles == nil)
     {
-     NSRectEdge sides[2]; 
-     float      grays[] = {NSDarkGray, NSDarkGray};
+      NSRectEdge sides[4] = { NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge }; 
+      NSColor *colors[] = {[self menuBorderColorForEdge: NSMinXEdge isHorizontal: horizontal], 
+                           [self menuBorderColorForEdge: NSMaxYEdge isHorizontal: horizontal], 
+                           [self menuBorderColorForEdge: NSMaxXEdge isHorizontal: horizontal],
+                           [self menuBorderColorForEdge: NSMinYEdge isHorizontal: horizontal]};
 
-     [[NSColor windowBackgroundColor] set];
-     NSRectFill(NSIntersectionRect(bounds, dirtyRect));
-
-     if (horizontal == YES)
-        {
-          sides[0] = NSMinYEdge;
-          sides[1] = NSMinYEdge;
-          NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
-        }
-      else
-        {
-          sides[0] = NSMinXEdge;
-          sides[1] = NSMaxYEdge;
-          // Draw the dark gray upper left lines.
-          NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
-        }
+      [[self menuBackgroundColor] set];
+      NSRectFill(NSIntersectionRect(bounds, dirtyRect));
+      NSDrawColorTiledRects(bounds, dirtyRect, sides, colors, 4);
     }
   else
     {
@@ -840,6 +899,13 @@
            withTiles: tiles
           background: [NSColor clearColor]];
     }
+}
+
+- (BOOL) drawsBorderForMenuItemCell: (NSMenuItemCell *)cell 
+                              state: (GSThemeControlState)state
+                       isHorizontal: (BOOL)horizontal
+{
+  return [cell isBordered];
 }
 
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
@@ -854,7 +920,6 @@
  
   if (tiles == nil)
     {
- 
       NSColor	*backgroundColor = [cell backgroundColor];
 
       if (isHorizontal)
@@ -869,8 +934,12 @@
       [backgroundColor set];
       NSRectFill(cellFrame);
 
-      if (![cell isBordered])
-	return;
+      if (![self drawsBorderForMenuItemCell: cell 
+                                      state: state 
+                               isHorizontal: isHorizontal])
+        {
+          return;
+        }
 
       if (state == GSThemeSelectedState)
 	{
@@ -889,15 +958,24 @@
     }
 }
 
-- (NSColor *) menuSeparatorItemColor
+- (NSColor *) menuSeparatorColor
 {
-  NSColor *color = [self colorNamed: @"menuSeparatorItemColor"
+  NSColor *color = [self colorNamed: @"menuSeparatorColor"
                               state: GSThemeNormalState];
-  if (color == nil)
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+
+  // TODO: Remove the style check... Windows theming should be in a subclass 
+  // probably
+  if (color == nil && style == NSWindows95InterfaceStyle)
     {
       color = [NSColor blackColor];
     }
   return color;
+}
+
+- (CGFloat) menuSeparatorInset
+{
+  return 3.0;
 }
 
 - (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
@@ -909,23 +987,20 @@
  
   if (tiles == nil)
     {
-      NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-     
-      if (style == NSMacintoshInterfaceStyle || style == NSWindows95InterfaceStyle)
-        {
-          NSBezierPath *path = [NSBezierPath bezierPath];
-          NSPoint start = NSMakePoint(3, cellFrame.size.height / 2 + 
-				         cellFrame.origin.y);
-          NSPoint end = NSMakePoint(cellFrame.size.width - 3, 
-	                            cellFrame.size.height / 2 + cellFrame.origin.y);
+      NSBezierPath *path = [NSBezierPath bezierPath];
+      CGFloat inset = [self menuSeparatorInset];
+      NSPoint start = NSMakePoint(inset, cellFrame.size.height / 2 + 
+				         cellFrame.origin.y + 0.5);
+      NSPoint end = NSMakePoint(cellFrame.size.width - inset, 
+	                        cellFrame.size.height / 2 + cellFrame.origin.y + 0.5);
 
-          [[NSColor blackColor] set];
+      [[self menuSeparatorColor] set];
 
-          [path moveToPoint: start];
-          [path lineToPoint: end];
+      [path setLineWidth: 0.0];
+      [path moveToPoint: start];
+      [path lineToPoint: end];
 
-          [path stroke];
-        }
+      [path stroke];
     }
   else
     {
@@ -933,6 +1008,16 @@
            withTiles: tiles
           background: [NSColor clearColor]];
     }
+}
+
+- (void) drawTitleForMenuItemCell: (NSMenuItemCell *)cell
+                        withFrame: (NSRect)cellFrame
+                           inView: (NSView *)controlView
+                            state: (GSThemeControlState)state
+                     isHorizontal: (BOOL)isHorizontal
+{
+  [cell _drawText: [[cell menuItem] title]
+          inFrame: [cell titleRectForBounds: cellFrame]];
 }
 
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView

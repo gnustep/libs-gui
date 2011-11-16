@@ -393,6 +393,7 @@ typedef	struct {
       cls = self;
     }
   instance = [[cls alloc] initWithBundle: bundle];
+  NSLog(@"Instantiated %@ from %@ in %@", instance, cls, [bundle bundlePath]);
   return AUTORELEASE(instance);
 }
 

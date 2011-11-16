@@ -1,3 +1,25 @@
+2011-11-16  Quentin Mathe <quentin.mathe@gmail.com>
+
+	Improved the menu theming to support some common menu look variations.
+	Fixed bug #34792 too.
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Source/GSTheme.m
+	* Source/GSThemeDrawing.m 
+	(-menuBackgroundColor, -menuItemBackgroundColor, -menuBorderColor
+	-menuBorderColorForEdge:isHorizontal:, 
+	-drawsBorderForMenuItemCell:state:isHorizontal:, 
+	-drawTitleForMenuItemCell:withFrame:inView:state:isHorizontal:, 
+	-menuSeparatorInset): Added.
+	(-menuBarBackgroundColor, -menuBarBorderColor): Added but not yet used.
+	(-menuSeparatorColor): Renamed -menuSeparatorItemColor.
+	* Source/NSMenuItemCell.m 
+	(-backgroundColor:): Changed to get the background color from 
+	-menuItemBackgroundColor.
+	(-themeControlState): Added.
+	(-drawTitleWithFrame:inView:): Moved drawing code to GSTheme.
+	Made separator menu item themable, by moving the drawing code from
+	NSMenuItemCell to a new method in GSThemeDrawing.
+
 2011-11-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (-bestRepresentationForDevice:): Fix last

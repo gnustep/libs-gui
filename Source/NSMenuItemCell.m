@@ -163,6 +163,7 @@ static NSString *commandKeyString = @"#";
       state = GSThemeSelectedState;
     }
 
+  // TODO: Make the color lookup simpler.
   color = [[GSTheme theme] colorNamed: @"NSMenuItem" state: state];
   if (color == nil)
     {
@@ -172,7 +173,7 @@ static NSString *commandKeyString = @"#";
 	}
       else
 	{
-	  color = [NSColor controlBackgroundColor];
+	  color = [[GSTheme theme] menuItemBackgroundColor];
 	}
     }
 
@@ -657,11 +658,7 @@ static NSString *commandKeyString = @"#";
     }
 }
 
-//
-// Drawing.
-//
-- (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
-                                   inView: (NSView *)controlView
+- (GSThemeControlState) themeControlState
 {
   unsigned mask;
   GSThemeControlState state = GSThemeNormalState;
@@ -695,10 +692,19 @@ static NSString *commandKeyString = @"#";
       state = GSThemeSelectedState;
     }
 
+  return state;
+}
+
+//
+// Drawing.
+//
+- (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+                                   inView: (NSView *)controlView
+{
   [[GSTheme theme] drawBorderAndBackgroundForMenuItemCell: self
                    withFrame: cellFrame
                    inView: controlView
-                   state: state
+                   state: [self themeControlState]
                    isHorizontal: [_menuView isHorizontal]];
 }
 
@@ -792,8 +798,11 @@ static NSString *commandKeyString = @"#";
 - (void) drawTitleWithFrame: (NSRect)cellFrame
                      inView: (NSView *)controlView
 {
-  [self _drawText: [_menuItem title]
-        inFrame: [self titleRectForBounds: cellFrame]];
+  [[GSTheme theme] drawTitleForMenuItemCell: self 
+                                  withFrame: cellFrame
+                                     inView: controlView
+                                      state: [self themeControlState]
+                               isHorizontal: [_menuView isHorizontal]];
 }
 
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
