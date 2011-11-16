@@ -3,7 +3,6 @@
 	Improved the menu theming to support some common menu look variations.
 	Fixed bug #34792 too.
 	* Headers/Additions/GNUstepGUI/GSTheme.h
-	* Source/GSTheme.m
 	* Source/GSThemeDrawing.m 
 	(-menuBackgroundColor, -menuItemBackgroundColor, -menuBorderColor
 	-menuBorderColorForEdge:isHorizontal:, 
