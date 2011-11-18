@@ -510,7 +510,13 @@ static GSValidationCenter *vc = nil;
   ASSIGN(_identifier, identifier);
   
   _items = [[NSMutableArray alloc] init];
-    
+  
+  // Only set when loaded from a nib
+  _interfaceBuilderItemsByIdentifier = nil;
+  _interfaceBuilderAllowedItemIdentifiers = nil;
+  _interfaceBuilderDefaultItemIdentifiers = nil;
+  _interfaceBuilderSelectableItemIdentifiers = nil;
+
   toolbarModel = [self _toolbarModel];
   
   if (toolbarModel != nil)
@@ -542,6 +548,53 @@ static GSValidationCenter *vc = nil;
   return self;
 }
 
+- (NSArray *) _identifiersForItems: (NSArray*)items
+{
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [items count]];
+  NSEnumerator *e = [items objectEnumerator];
+  NSToolbarItem *item;
+
+  if (items == nil)
+    return nil;
+
+  while ((item = [e nextObject]) != nil)
+    {
+      [result addObject: [item itemIdentifier]];
+    }
+  return result;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  self = [super initWithCoder: aCoder];
+
+  _identifier = [[aCoder decodeObjectForKey:@"NSToolbarIdentifier"] retain];
+  _items = [[NSMutableArray alloc] init];
+  
+  _configurationDictionary = nil;
+  _customizationPaletteIsRunning = NO;
+
+  ASSIGN(_interfaceBuilderItemsByIdentifier, [aCoder decodeObjectForKey: @"NSToolbarIBIdentifiedItems"]);
+  ASSIGN(_interfaceBuilderAllowedItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBAllowedItems"]]);
+  ASSIGN(_interfaceBuilderDefaultItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBDefaultItems"]]);
+  ASSIGN(_interfaceBuilderSelectableItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBSelectableItems"]]);
+
+  // Store in list of toolbars
+  [toolbars addObject: self];
+
+  [self setAllowsUserCustomization: [aCoder decodeBoolForKey: @"NSToolbarAllowsUserCustomization"]];
+  [self setAutosavesConfiguration: [aCoder decodeBoolForKey: @"NSToolbarAutosavesConfiguration"]];
+  [self setDisplayMode: [aCoder decodeIntForKey: @"NSToolbarDisplayMode"]]; 
+  [self setShowsBaselineSeparator: [aCoder decodeBoolForKey: @"NSToolbarShowsBaselineSeparator"]];
+  [self setSizeMode: [aCoder decodeIntForKey: @"NSToolbarSizeMode"]];
+  [self setVisible: [aCoder decodeBoolForKey: @"NSToolbarPrefersToBeShown"]];
+  [self setDelegate: [aCoder decodeObjectForKey: @"NSToolbarDelegate"]];
+ 
+   return self;
+}
+
+//FIXME: encodeWithCoder
+
 - (void) dealloc
 { 
   //NSLog(@"Toolbar dealloc %@", self);
@@ -553,6 +606,11 @@ static GSValidationCenter *vc = nil;
   RELEASE(_configurationDictionary);
   RELEASE(_items);
 
+  DESTROY(_interfaceBuilderItemsByIdentifier);
+  DESTROY(_interfaceBuilderAllowedItemIdentifiers);
+  DESTROY(_interfaceBuilderDefaultItemIdentifiers);
+  DESTROY(_interfaceBuilderSelectableItemIdentifiers);
+
   if (_delegate != nil)
     {
       [nc removeObserver: _delegate  name: nil  object: self];
@@ -563,7 +621,7 @@ static GSValidationCenter *vc = nil;
 }
 
 // FIXME: Hack
-- (void) release
+- (oneway void) release
 { 
   // When a toolbar has no external references any more, it's necessary 
   // to remove the toolbar from the master list, so that it
@@ -759,13 +817,22 @@ static GSValidationCenter *vc = nil;
     {
       #define CHECK_REQUIRED_METHOD(selector_name) \
       if (![_delegate respondsToSelector: @selector(selector_name)]) \
-        [NSException raise: NSInternalInconsistencyException \
-                    format: @"delegate does not respond to %@",@#selector_name]
+	  [NSException raise: NSInternalInconsistencyException		\
+		      format: @"delegate does not respond to %@",@#selector_name]
 
-      CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
-        willBeInsertedIntoToolbar:); 
-      CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
-      CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
+      if (_interfaceBuilderItemsByIdentifier == nil)
+	{
+	  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
+				willBeInsertedIntoToolbar:);
+	}
+      if (_interfaceBuilderAllowedItemIdentifiers == nil)
+	{
+	  CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
+	}
+      if (_interfaceBuilderDefaultItemIdentifiers == nil)
+	{
+	  CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
+	}
 
       #define SET_DELEGATE_NOTIFICATION(notif_name) \
       if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
@@ -780,18 +847,37 @@ static GSValidationCenter *vc = nil;
   [self _build];
 }
 
+- (NSArray *) _selectableItemIdentifiers
+{
+  NSArray *selectableIdentifiers = nil;
+
+  if (_delegate != nil &&
+      [_delegate respondsToSelector: @selector(toolbarSelectableItemIdentifiers:)])
+    {
+      selectableIdentifiers = [_delegate toolbarSelectableItemIdentifiers: self];
+      if (selectableIdentifiers == nil)
+	{
+	  NSLog(@"Toolbar delegate returns no such selectable item identifiers");
+	}
+    }
+  
+  if (selectableIdentifiers == nil)
+    {
+      selectableIdentifiers = _interfaceBuilderSelectableItemIdentifiers;
+    }
+
+  return selectableIdentifiers;
+}
+
 - (void) setSelectedItemIdentifier: (NSString *)identifier
 {
   NSArray *selectedItems;
   NSArray *itemsToSelect;
   NSEnumerator *e;
   NSToolbarItem *item;
-  NSArray *selectableIdentifiers = nil;
+  NSArray *selectableIdentifiers;
   BOOL updated = NO;
-  
-  if (_delegate == nil)
-    return;  
-  
+    
   //  First, we have to deselect the previous selected toolbar items 
   selectedItems = [[self items] objectsWithValue: [self selectedItemIdentifier] 
                                           forKey: @"_itemIdentifier"];
@@ -801,25 +887,11 @@ static GSValidationCenter *vc = nil;
       [item _setSelected: NO];
     }   
    
-   if ([_delegate respondsToSelector:
-     @selector(toolbarSelectableItemIdentifiers:)]) 
-     {
-       selectableIdentifiers = 
-         [_delegate toolbarSelectableItemIdentifiers: self]; 
-     }
-   else
-     {
-       NSLog(@"Toolbar delegate does not respond to %@", 
-         @selector(toolbarSelectableItemIdentifiers:));
-       return;
-     }
-   
-   if (selectableIdentifiers == nil)
-     {
-       NSLog(@"Toolbar delegate returns no such selectable item identifiers");
-       return;
-     }
-   
+  selectableIdentifiers = [self _selectableItemIdentifiers];
+
+  if (selectableIdentifiers == nil)
+    return;
+       
    itemsToSelect = [_items objectsWithValue: identifier 
                                      forKey: @"_itemIdentifier"]; 
    e = [itemsToSelect objectEnumerator];
@@ -888,6 +960,18 @@ static GSValidationCenter *vc = nil;
 
 // Private methods
 
+- (NSArray *) _defaultItemIdentifiers
+{
+  if (_delegate != nil)
+    {        
+      return [_delegate toolbarDefaultItemIdentifiers:self];
+    }
+  else
+    {
+      return _interfaceBuilderDefaultItemIdentifiers;
+    }
+}
+
 /*
  * Toolbar build :
  * will use the delegate when there is no toolbar model
@@ -920,13 +1004,7 @@ static GSValidationCenter *vc = nil;
 
   RELEASE(_items);
   _items = [[NSMutableArray alloc] init];
-  
-  if (_delegate == nil)
-    {
-      _build = NO;
-      return;
-    }
-    
+      
   toolbarModel = [self _toolbarModel];
   
   wantedItemIdentifiers = [self _itemsFromConfig];
@@ -938,9 +1016,14 @@ static GSValidationCenter *vc = nil;
 	    [[toolbarModel items] valueForKey: @"_itemIdentifier"];
 	}
       else
-	{        
-	  wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
+	{
+	  wantedItemIdentifiers = [self _defaultItemIdentifiers];
 	}
+    }
+  if (wantedItemIdentifiers == nil)
+    {
+      _build = NO;
+      return;      
     }
     
   e = [wantedItemIdentifiers objectEnumerator];
@@ -1104,7 +1187,7 @@ static GSValidationCenter *vc = nil;
   return nil;
 }
 
-- (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent
+- (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar: (BOOL)insert
 {
   NSToolbarItem *item = nil;
   
@@ -1116,10 +1199,21 @@ static GSValidationCenter *vc = nil;
      [itemIdent isEqual: NSToolbarCustomizeToolbarItemIdentifier] ||
      [itemIdent isEqual: NSToolbarPrintItemIdentifier])
     {
-      item = [[NSToolbarItem alloc] initWithItemIdentifier: itemIdent];
+      item = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
     }
-    
-  return AUTORELEASE(item);
+ 
+  if (item == nil && _delegate != nil)
+    {
+      item = [_delegate toolbar: self itemForItemIdentifier: itemIdent
+				  willBeInsertedIntoToolbar: insert];
+    }
+
+  if (item == nil && _interfaceBuilderItemsByIdentifier)
+    {
+      item = [_interfaceBuilderItemsByIdentifier objectForKey: itemIdent];
+    }
+   
+  return item;
 }
 
 
@@ -1141,40 +1235,35 @@ static GSValidationCenter *vc = nil;
         [toolbar signature]; \
     } \
 
+- (NSArray *) _allowedItemIdentifiers
+{
+  if (_delegate)
+    {
+      return [_delegate toolbarAllowedItemIdentifiers: self];
+    }
+  else
+    {
+      return _interfaceBuilderAllowedItemIdentifiers;
+    }
+}
+
 - (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
                                atIndex: (int)index 
                              broadcast: (BOOL)broadcast
 {
   NSToolbarItem *item = nil;
-  NSArray *allowedItems;
-  
-  if (_delegate == nil)
-    return;
-  
-  allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
+  NSArray *allowedItems = [self _allowedItemIdentifiers];
   
   if ([allowedItems containsObject: itemIdentifier])
     {
-      item = [self _toolbarItemForIdentifier: itemIdentifier];
-      if (item == nil)
-        {
-          item = 
-            [_delegate toolbar: self itemForItemIdentifier: itemIdentifier
-                                 willBeInsertedIntoToolbar: YES];
-        }
+      item = [self _toolbarItemForIdentifier: itemIdentifier willBeInsertedIntoToolbar: YES];
       
       if (item != nil)
         {
-          NSArray *selectableItems;
+          NSArray *selectableItems = [self _selectableItemIdentifiers];
           
-          if ([_delegate respondsToSelector:
-            @selector(toolbarSelectableItemIdentifiers:)]) 
-            {
-              selectableItems = 
-                [_delegate toolbarSelectableItemIdentifiers: self]; 
-              if ([selectableItems containsObject: itemIdentifier])
-                [item _setSelectable: YES];
-            }
+          if ([selectableItems containsObject: itemIdentifier])
+	    [item _setSelectable: YES];
           
           [nc postNotificationName: NSToolbarWillAddItemNotification 
                             object: self
@@ -1450,5 +1539,7 @@ static GSValidationCenter *vc = nil;
   
   [self validateVisibleItems];
 }
+
+
 
 @end

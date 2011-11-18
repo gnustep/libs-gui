@@ -278,7 +278,6 @@
   NSString *identifier = nil;
   NSToolbarDisplayMode tag = [toolbar displayMode];
   NSToolbarSizeMode size = [toolbar sizeMode];
-  id delegate = [toolbar delegate];
   NSView *toolbarView;
   NSRect toolbarFrame;
   NSPoint bottomCenter;
@@ -299,38 +298,22 @@
       [_sizeCheckBox setState: NSOffState];
     }
   
-  if (delegate == nil)
-    {
-      NSLog(@"The toolbar %@ needs a delegate to allow customization", 
-        toolbar);
-      return;
-    }
-
-  itemIdentifiers = [delegate toolbarAllowedItemIdentifiers: toolbar];
+  itemIdentifiers = [toolbar _allowedItemIdentifiers];
   e = [itemIdentifiers objectEnumerator];
   while ((identifier = [e nextObject]) != nil)
     {
-      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier];      
-      if(item == nil)
-	{
-	  item = [delegate toolbar: toolbar 
-			   itemForItemIdentifier: identifier
-			   willBeInsertedIntoToolbar: NO];
-	}  
+      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier
+				     willBeInsertedIntoToolbar: NO];
+      NSLog(@"item %@ for ident %@", item, identifier);
       [_allowedItems addObject: item]; 
     }
 
-  itemIdentifiers = [delegate toolbarDefaultItemIdentifiers: toolbar];
+  itemIdentifiers = [toolbar _defaultItemIdentifiers];
   e = [itemIdentifiers objectEnumerator];
   while ((identifier = [e nextObject]) != nil)
     {
-      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier];      
-      if(item == nil)
-	{
-	  item = [delegate toolbar: toolbar 
-			   itemForItemIdentifier: identifier
-			   willBeInsertedIntoToolbar: NO];
-	}  
+      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier
+				     willBeInsertedIntoToolbar: NO];      
       [_defaultItems addObject: item];
     }
 

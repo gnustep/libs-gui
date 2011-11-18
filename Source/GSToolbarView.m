@@ -151,7 +151,6 @@ static int draggedItemIndex = NSNotFound;
     {
       return [self overflowMenu];
     }
-    
   return nil;
 }
 
@@ -327,7 +326,7 @@ static int draggedItemIndex = NSNotFound;
   NSToolbarItem *item = [[info draggingSource] toolbarItem];
   NSString *identifier = [item itemIdentifier];
   NSToolbar *toolbar = [self toolbar];
-  NSArray *allowedItemIdentifiers = [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
+  NSArray *allowedItemIdentifiers = [toolbar _allowedItemIdentifiers];
   int newIndex; 
     
   // don't accept any dragging if the customization palette isn't running for this toolbar
@@ -888,5 +887,15 @@ static int draggedItemIndex = NSNotFound;
 {
   NSLog(@"Use of deprecated method %@", NSStringFromSelector(_cmd));
 }
+
+- (NSMenu *) menuForEvent: (NSEvent *)event 
+{
+  NSMenu *menu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
+  NSMenuItem *customize = [menu insertItemWithTitle: _(@"Customize Toolbar") action:@selector(runCustomizationPalette:) keyEquivalent:@"" atIndex:0];
+  [customize setTarget: _toolbar];
+  return menu;
+}
+
+
 
 @end

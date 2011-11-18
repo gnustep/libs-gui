@@ -479,6 +479,11 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
 
+      if ([_viewClass isKindOfClass: [NSToolbar class]])
+	{
+	  [_realObject setToolbar: _viewClass];
+	}
+	  
       [_view _fixSubviews];
 
       // FIXME What is the point of calling -setFrame:display: here? It looks

@@ -92,6 +92,10 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
   BOOL _customizationPaletteIsRunning;
   BOOL _showsBaselineSeparator;
   BOOL _build;
+  NSDictionary *_interfaceBuilderItemsByIdentifier;
+  NSArray *_interfaceBuilderAllowedItemIdentifiers;
+  NSArray *_interfaceBuilderDefaultItemIdentifiers;
+  NSArray *_interfaceBuilderSelectableItemIdentifiers;
 }
 
 // Instance methods

@@ -94,7 +94,6 @@
          toIndex: (int)newIndex 
          broadcast: (BOOL)broacast;
 - (void) _performRemoveItem: (NSToolbarItem *)item; // Used by drag setup
-- (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent;
 - (NSToolbar *) _toolbarModel;
 - (void) _validate: (NSWindow *)observedWindow;
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
@@ -111,6 +110,13 @@
 // Deprecated
 - (void) setUsesStandardBackgroundColor: (BOOL)standard;
 - (BOOL) usesStandardBackgroundColor;
+
+// Delegate wrappers
+- (NSArray *) _allowedItemIdentifiers;
+- (NSArray *) _defaultItemIdentifiers;
+- (NSArray *) _selectableItemIdentifiers;
+- (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar: (BOOL)insert;
+
 @end
 
 @interface GSWindowDecorationView (ToolbarPrivate)

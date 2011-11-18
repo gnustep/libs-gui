@@ -929,12 +929,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
  */
 
 // ---- NSToolbarSeparatorItemIdentifier
-@interface GSToolbarSeparatorItem : NSToolbarItem
+@interface NSToolbarSeparatorItem : NSToolbarItem
 {
 }
 @end
 
-@implementation GSToolbarSeparatorItem
+@implementation NSToolbarSeparatorItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   self = [super initWithItemIdentifier: itemIdentifier];
@@ -977,12 +977,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 @end
 
 // ---- NSToolbarSpaceItemIdentifier
-@interface GSToolbarSpaceItem : NSToolbarItem
+@interface NSToolbarSpaceItem : NSToolbarItem
 {
 }
 @end
 
-@implementation GSToolbarSpaceItem
+@implementation NSToolbarSpaceItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 { 
   self = [super initWithItemIdentifier: itemIdentifier];
@@ -1007,12 +1007,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 @end
 
 // ---- NSToolbarFlexibleSpaceItemIdentifier
-@interface GSToolbarFlexibleSpaceItem : NSToolbarItem
+@interface NSToolbarFlexibleSpaceItem : NSToolbarItem
 {
 }
 @end
 
-@implementation GSToolbarFlexibleSpaceItem
+@implementation NSToolbarFlexibleSpaceItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   self = [super initWithItemIdentifier: itemIdentifier];
@@ -1167,25 +1167,25 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   // GNUstep predefined toolbar items
   if ([itemIdentifier isEqualToString: NSToolbarSeparatorItemIdentifier] 
-      && [self isKindOfClass: [GSToolbarSeparatorItem class]] == NO)
+      && [self isKindOfClass: [NSToolbarSeparatorItem class]] == NO)
     {
       RELEASE(self);
-      return [[GSToolbarSeparatorItem alloc] 
+      return [[NSToolbarSeparatorItem alloc] 
                  initWithItemIdentifier: itemIdentifier];
     }
   else if ([itemIdentifier isEqualToString: NSToolbarSpaceItemIdentifier]
-           && [self isKindOfClass: [GSToolbarSpaceItem class]] == NO)
+           && [self isKindOfClass: [NSToolbarSpaceItem class]] == NO)
     {
       RELEASE(self);
-      return [[GSToolbarSpaceItem alloc] 
+      return [[NSToolbarSpaceItem alloc] 
                  initWithItemIdentifier: itemIdentifier];
     }
   else if ([itemIdentifier 
                isEqualToString: NSToolbarFlexibleSpaceItemIdentifier] 
-           && [self isKindOfClass: [GSToolbarFlexibleSpaceItem class]] == NO)
+           && [self isKindOfClass: [NSToolbarFlexibleSpaceItem class]] == NO)
     {
       RELEASE(self);
-      return [[GSToolbarFlexibleSpaceItem alloc] 
+      return [[NSToolbarFlexibleSpaceItem alloc] 
                  initWithItemIdentifier: itemIdentifier];
     }
   else if ([itemIdentifier 
@@ -1645,4 +1645,39 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   return [NSString stringWithFormat: @"<%@ - <%@>>",[super description],[self itemIdentifier]];
 }
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  self = [self initWithItemIdentifier: [aCoder decodeObjectForKey:@"NSToolbarItemIdentifier"]];
+
+  if ([aCoder containsValueForKey: @"NSToolbarItemTarget"])
+    [self setTarget: [aCoder decodeObjectForKey:@"NSToolbarItemTarget"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemAction"])
+    [self setAction: NSSelectorFromString([aCoder decodeObjectForKey:@"NSToolbarItemAction"])];
+  if ([aCoder containsValueForKey: @"NSToolbarItemToolTip"])
+    [self setToolTip: [aCoder decodeObjectForKey:@"NSToolbarItemToolTip"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemTag"])
+    [self setTag: [aCoder decodeIntForKey:@"NSToolbarItemTag"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemImage"])
+    [self setImage: [aCoder decodeObjectForKey:@"NSToolbarItemImage"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemEnabled"])
+    [self setEnabled: [aCoder decodeBoolForKey:@"NSToolbarItemEnabled"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemPaletteLabel"])
+    [self setPaletteLabel: [aCoder decodeObjectForKey:@"NSToolbarItemPaletteLabel"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemLabel"])
+    [self setLabel: [aCoder decodeObjectForKey:@"NSToolbarItemLabel"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemMinSize"])
+    [self setMinSize: NSSizeFromString([aCoder decodeObjectForKey:@"NSToolbarItemMinSize"])];
+  if ([aCoder containsValueForKey: @"NSToolbarItemMaxSize"])
+    [self setMaxSize: NSSizeFromString([aCoder decodeObjectForKey:@"NSToolbarItemMaxSize"])];
+  if ([aCoder containsValueForKey: @"NSToolbarItemAutovalidates"])
+    [self setAutovalidates: [aCoder decodeBoolForKey:@"NSToolbarItemAutovalidates"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemVisibilityPriority"])
+    [self setVisibilityPriority: [aCoder decodeIntForKey:@"NSToolbarItemVisibilityPriority"]];
+  if ([aCoder containsValueForKey: @"NSToolbarItemView"])
+    [self setView: [aCoder decodeObjectForKey: @"NSToolbarItemView"]];
+
+  return self;
+}
+
 @end
