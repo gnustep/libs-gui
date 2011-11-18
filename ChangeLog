@@ -1,3 +1,15 @@
+2011-11-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSNibLoading.m:
+	* Source/NSToolbar.m:
+	* Source/GSToolbarCustomizationPalette.m:
+	* Source/GSToolbarView.m:
+	* Source/NSToolbarItem.m:
+	* Source/NSToolbarFrameworkPrivate.h:
+	* Headers/AppKit/NSToolbar.h: Implement -initWithCoder: for
+	NSToolbar. This required a bit more work that usual because
+	toolbars created with -initWithCoder can operate without a delegate.
+
 2011-11-17 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSButtonCell.m:
