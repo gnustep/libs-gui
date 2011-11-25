@@ -1,3 +1,9 @@
+2011-11-25 20:27  theraven
+
+	* libs/gui/trunk/Headers/AppKit/NSApplication.h: NSAutoreleasePool*
+	  -> id in NSApplication.h, so the header can be used in ARC code
+	  (which prohibits explicit references to NSAutoreleasePool).
+
 2011-11-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images/nsmapping.strings: Add a few more mappings, including
