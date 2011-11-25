@@ -46,7 +46,6 @@ extern "C" {
 #endif
 
 @class NSArray;
-@class NSAutoreleasePool;
 @class NSDate;
 @class NSError;
 @class NSException;
@@ -156,7 +155,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
      a single exception (which is why it is stored here as an ivar): the
      -terminate: method will destroy this autorelease pool before exiting
      the program.  */
-  NSAutoreleasePool     *_runLoopPool;
+  id             _runLoopPool;
 }
 
 /*
