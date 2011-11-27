@@ -122,6 +122,7 @@
 #import <AppKit/NSAffineTransform.h>
 #import <AppKit/NSArrayController.h>
 #import <AppKit/NSBezierPath.h>
+#import <AppKit/NSColorSpace.h>
 #import <AppKit/NSComboBox.h>
 #import <AppKit/NSComboBoxCell.h>
 #import <AppKit/NSController.h>
