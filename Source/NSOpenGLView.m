@@ -212,9 +212,12 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 
 - (void) _frameChanged: (NSNotification *) aNot
 {
-  [[self openGLContext] makeCurrentContext];
-  [self update];
-  [self reshape];
+  if (prepared)
+    {
+      [[self openGLContext] makeCurrentContext];
+      [self update];
+      [self reshape];
+    }
 }
 
 /* FIXME: this should be done in [lockFocus] or [lockFocusInRect:].

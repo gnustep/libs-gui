@@ -1,10 +1,16 @@
 2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSOpenGLView.m (-_frameChanged:): Don't send -reshape
+	before -prepareOpenGL.
+	Patch by Julian Mayer <julian@corecode.at>.
+
+2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/AppKit.h: Add NSColorSpace.h. This fixes bug #34913.
 
-2011-11-28 Gregory Casamento <greg.casamento@gmail.com> 
+2011-11-28 Gregory Casamento <greg.casamento@gmail.com>
 
-	* Source/NSTextView.m: Add code to set the default 
+	* Source/NSTextView.m: Add code to set the default
 	of 5.0 in the -buildUpTextNetwork method.
 	* Source/NSTextContainer.m: In -lineFragmentForProposedRect:...
 	add _lineFragmentPadding to min and subtract from max to
