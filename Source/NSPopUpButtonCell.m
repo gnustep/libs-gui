@@ -204,6 +204,7 @@ static NSImage *_pbc_image[5];
       [self setMenuView: nil];
     }
   
+  // FIXME: Select the first or last item?
   [self selectItemAtIndex: [_menu numberOfItems] - 1];
   [self synchronizeTitleAndSelectedItem];
 }
@@ -1233,6 +1234,11 @@ static NSImage *_pbc_image[5];
           
           [self setAltersStateOfSelectedItem: alters];
         }
+      if ([aDecoder containsValueForKey: @"NSPullDown"])
+        {
+	  BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
+	  [self setPullsDown: pullDown];
+	}
       if ([aDecoder containsValueForKey: @"NSUsesItemFromMenu"])
         {
           BOOL usesItem = [aDecoder decodeBoolForKey: @"NSUsesItemFromMenu"];
@@ -1256,13 +1262,17 @@ static NSImage *_pbc_image[5];
         {
 	  int selectedIdx = [aDecoder decodeIntForKey: 
 					@"NSSelectedIndex"];
-	  [self selectItem: [self itemAtIndex: selectedIdx]];
+	  [self selectItemAtIndex: selectedIdx];
 	}
-      if ([aDecoder containsValueForKey: @"NSPullDown"])
+      else
         {
-	  BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
-	  [self setPullsDown: pullDown];
-	}
+	  [self selectItemAtIndex: 0];
+        }
+      if ([aDecoder containsValueForKey: @"NSMenuItem"])
+        {
+          NSMenuItem *item = [aDecoder decodeObjectForKey: @"NSMenuItem"];
+          [self setMenuItem: item];
+        }
     }
   else
     {

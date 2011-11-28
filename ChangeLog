@@ -1,5 +1,10 @@
 2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m (-initWithCoder:): If no selection
+	index is given select the first item. This should fix bug #34923.
+
+2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-buildUpTextNetwork:): Move setting the
 	default line framgent padding from here ...
 	* Source/NSTextContainer.m (-initWithContainerSize:): ... to here.
