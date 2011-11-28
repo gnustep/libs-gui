@@ -2,6 +2,18 @@
 
 	* Headers/AppKit/AppKit.h: Add NSColorSpace.h. This fixes bug #34913.
 
+2011-11-28 Gregory Casamento <greg.casamento@gmail.com> 
+
+	* Source/NSTextView.m: Add code to set the default 
+	of 5.0 in the -buildUpTextNetwork method.
+	* Source/NSTextContainer.m: In -lineFragmentForProposedRect:...
+	add _lineFragmentPadding to min and subtract from max to
+	shift the line fragment rectangle.
+	* Source/NSLayoutManager.m: In -insertionPointRectForCharacterIndex:..
+	add the padding to the initial position of the insertion point
+	so that before there is anything in the text container, the cursor
+	is sitting at the correct position.
+
 2011-11-25 20:27  theraven
 
 	* libs/gui/trunk/Headers/AppKit/NSApplication.h: NSAutoreleasePool*

@@ -956,6 +956,11 @@ has the same y origin and height as the line frag rect it is in.
   if (i == -1 || textcontainers[i].textContainer != textContainer)
     return NSZeroRect;
 
+  if(cindex == 0)
+    {
+      r.origin.x += [textContainer lineFragmentPadding];
+    }
+
   return r;
 }
 

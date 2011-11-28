@@ -107,7 +107,7 @@ use bounds rectangle instead of frame? */
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;
-  _lineFragmentPadding = 0.0;
+  _lineFragmentPadding = 0.0; 
   _observingFrameChanges = NO;
   _widthTracksTextView = NO;
   _heightTracksTextView = NO;
@@ -364,8 +364,8 @@ framework intact.
   miny = NSMinY(proposedRect);
   maxy = NSMaxY(proposedRect);
 
-  cminx = NSMinX(_containerRect);
-  cmaxx = NSMaxX(_containerRect);
+  cminx = NSMinX(_containerRect) + _lineFragmentPadding;
+  cmaxx = NSMaxX(_containerRect) - _lineFragmentPadding;
   cminy = NSMinY(_containerRect);
   cmaxy = NSMaxY(_containerRect);
 
