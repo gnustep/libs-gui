@@ -697,7 +697,6 @@ If a text view is added to an empty text network, it keeps its attributes.
   RELEASE(layoutManager);
 
   textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
-  [textContainer setLineFragmentPadding: 5.0]; // Tests on Cocoa indicate the default value is 5.
   [layoutManager addTextContainer: textContainer];
   RELEASE(textContainer);
 

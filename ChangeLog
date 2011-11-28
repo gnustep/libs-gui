@@ -1,5 +1,11 @@
 2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m (-buildUpTextNetwork:): Move setting the
+	default line framgent padding from here ...
+	* Source/NSTextContainer.m (-initWithContainerSize:): ... to here.
+
+2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSOpenGLView.m (-_frameChanged:): Don't send -reshape
 	before -prepareOpenGL.
 	Patch by Julian Mayer <julian@corecode.at>.

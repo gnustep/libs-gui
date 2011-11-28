@@ -107,7 +107,8 @@ use bounds rectangle instead of frame? */
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;
-  _lineFragmentPadding = 0.0; 
+  // Tests on Cocoa indicate the default value is 5.
+  _lineFragmentPadding = 5.0; 
   _observingFrameChanges = NO;
   _widthTracksTextView = NO;
   _heightTracksTextView = NO;
