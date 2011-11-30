@@ -1,3 +1,10 @@
+2011-11-28 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTextView.m (-buildUpTextNetwork:):
+	* Source/NSTextContainer.m (-initWithContainerSize:):
+	revert previous change by Fred since it was causing labels
+	and textfields to also be shifted which is not correct.
+
 2011-11-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-initWithCoder:): If no selection
