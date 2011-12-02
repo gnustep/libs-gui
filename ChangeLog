@@ -1,3 +1,8 @@
+2011-12-02 German Arias <german@xelalug.org>
+
+	* Source/NSAlert.m (-_setupPanel): Verify if there is error
+	information to be displayed.
+
 2011-12-02  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-buildUpTextNetwork:):

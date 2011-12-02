@@ -2002,7 +2002,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
       [panel setTitleBar: title
              icon: _icon
              title: _message_text != nil ? _message_text : _(@"Alert")
-	     message: _informative_text];
+	     message: _informative_text != nil ? _informative_text : _(@"No information")];
       [panel setButtons: _buttons];
     }
 }
