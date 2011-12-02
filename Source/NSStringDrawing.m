@@ -133,6 +133,7 @@ static void init_string_drawing(void)
       [layoutManager release];
       textContainer = [[NSTextContainer alloc]
 			initWithContainerSize: NSMakeSize(10, 10)];
+      [textContainer setLineFragmentPadding: 0];
       [layoutManager addTextContainer: textContainer];
       [textContainer release];
       

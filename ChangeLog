@@ -1,3 +1,11 @@
+2011-12-02  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-buildUpTextNetwork:):
+	* Source/NSTextContainer.m (-initWithContainerSize):
+	* Source/NSStringDrawing.m (init_string_drawing):
+	Reinstate Fred's change with the additional correction to the
+	string drawing code he proposed on the mailing list.
+
 2011-12-01  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTextView.m
