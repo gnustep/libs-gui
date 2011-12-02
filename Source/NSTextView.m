@@ -6201,7 +6201,8 @@ or add guards
       const NSRect visibleRect = [self visibleRect];
       if (!NSEqualRects(visibleRect, _lastCheckedRect))
 	{
-	   if (NSEqualRects(visibleRect, [[_textCheckingTimer userInfo] rectValue]))
+	   if (nil != _textCheckingTimer 
+	       && NSEqualRects(visibleRect, [[_textCheckingTimer userInfo] rectValue]))
 	     {
 	       return;
 	     }
