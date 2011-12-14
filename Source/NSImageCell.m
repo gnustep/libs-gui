@@ -182,6 +182,7 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
   NSSize  imageSize, realImageSize;
+  NSRect rect;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
@@ -237,9 +238,16 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
         break;
     }
 
+  rect = NSMakeRect(position.x, position.y,
+		    imageSize.width, imageSize.height);
+
+  if (nil != controlView)
+    {
+      rect = [controlView centerScanRect: rect];
+    }
+
   // draw!
-  [_cell_image drawInRect: NSMakeRect(position.x, position.y,
-                                      imageSize.width, imageSize.height)
+  [_cell_image drawInRect: rect
                fromRect: NSMakeRect(0, 0, realImageSize.width,
                                     realImageSize.height)
                operation: NSCompositeSourceOver
