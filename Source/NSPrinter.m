@@ -516,7 +516,7 @@ static NSMutableDictionary* printerCache;
 {
   NSString *result;
   NSScanner *bits;
-  float x1, y1, x2, y2;
+  double x1, y1, x2, y2;
 
   result = [self stringForKey: key 
                       inTable: table];
@@ -525,10 +525,10 @@ static NSMutableDictionary* printerCache;
     return NSZeroRect;
 
   bits = [NSScanner scannerWithString: result];
-  if ([bits scanFloat: &x1] && 
-      [bits scanFloat: &y1] &&
-      [bits scanFloat: &x2] &&
-      [bits scanFloat: &y2])
+  if ([bits scanDouble: &x1] && 
+      [bits scanDouble: &y1] &&
+      [bits scanDouble: &x2] &&
+      [bits scanDouble: &y2])
     {
       return NSMakeRect(x1, y1, x2-x1, y2-y1);
     }
@@ -540,7 +540,7 @@ static NSMutableDictionary* printerCache;
 {
   NSString *result;
   NSScanner *bits;
-  float x, y;
+  double x, y;
 
   result = [self stringForKey: key 
                       inTable: table];
@@ -549,8 +549,8 @@ static NSMutableDictionary* printerCache;
     return NSZeroSize;
 
   bits = [NSScanner scannerWithString: result];
-  if ([bits scanFloat: &x] && 
-      [bits scanFloat: &y])
+  if ([bits scanDouble: &x] && 
+      [bits scanDouble: &y])
     {
       return NSMakeSize(x,y);
     }

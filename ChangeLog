@@ -1,4 +1,14 @@
-2011-11-17  Eric Wasylishen  <ewasylishen@gmail.com>
+2011-12-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrinter.m:
+	* Source/NSPrintOperation.m:
+	* Source/NSPageLayout.m:
+	* Source/NSPrintInfo.m:
+	* Headers/AppKit/NSPrintInfo.h: Migrate printing code to CGFloat
+	or double.
+	* Source/NSTextView.m: Rewrite -adjustPageHeightNew:top:bottom:limit:
+
+2011-12-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
        * Source/NSImageCell.m: if drawing on a view use -centerScanRect:
 	to pixel align the drawing rect.

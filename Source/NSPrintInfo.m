@@ -214,14 +214,14 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Managing the Printing Rectangle 
 //
-- (float) bottomMargin
+- (CGFloat) bottomMargin
 {
-  return [(NSNumber *)[_info objectForKey: NSPrintBottomMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintBottomMargin] doubleValue];
 }
 
-- (float) leftMargin
+- (CGFloat) leftMargin
 {
-  return [(NSNumber *)[_info objectForKey: NSPrintLeftMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintLeftMargin] doubleValue];
 }
 
 - (NSPrintingOrientation) orientation
@@ -245,20 +245,20 @@ static NSPrintInfo *sharedPrintInfo = nil;
   return [val sizeValue];
 }
 
-- (float) rightMargin
+- (CGFloat) rightMargin
 {
-  return [(NSNumber *)[_info objectForKey: NSPrintRightMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintRightMargin] doubleValue];
 }
 
-- (void) setBottomMargin: (float)value
+- (void) setBottomMargin: (CGFloat)value
 {
-  [_info setObject: [NSNumber numberWithFloat: value]
+  [_info setObject: [NSNumber numberWithDouble: value]
             forKey: NSPrintBottomMargin];
 }
 
-- (void) setLeftMargin: (float)value
+- (void) setLeftMargin: (CGFloat)value
 {
-  [_info setObject: [NSNumber numberWithFloat: value]
+  [_info setObject: [NSNumber numberWithDouble: value]
             forKey: NSPrintLeftMargin];
 }
 
@@ -274,7 +274,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
   if ((mode == NSPortraitOrientation && size.width > size.height)
       || (mode == NSLandscapeOrientation && size.width < size.height))
     {
-      float tmp = size.width;
+      CGFloat tmp = size.width;
       size.width = size.height;
       size.height = tmp;
       [_info setObject: [NSValue valueWithSize: size] 
@@ -307,21 +307,21 @@ static NSPrintInfo *sharedPrintInfo = nil;
          forKey: NSPrintOrientation];
 }
 
-- (void) setRightMargin: (float)value
+- (void) setRightMargin: (CGFloat)value
 {
-  [_info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithDouble:value]
             forKey:NSPrintRightMargin];
 }
 
-- (void) setTopMargin: (float)value
+- (void) setTopMargin: (CGFloat)value
 {
-  [_info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithDouble:value]
             forKey:NSPrintTopMargin];
 }
 
-- (float) topMargin
+- (CGFloat) topMargin
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintTopMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintTopMargin] doubleValue];
 }
 
 - (NSRect) imageablePageBounds
@@ -341,7 +341,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
           || (NSLandscapeOrientation == mode
               && pageBounds.size.width < pageBounds.size.height))
         {
-          float tmp;
+          CGFloat tmp;
 
           tmp = pageBounds.origin.x;
           pageBounds.origin.x = pageBounds.origin.y;

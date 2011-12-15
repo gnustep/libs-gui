@@ -63,7 +63,7 @@
 #import "GSGuiPrivate.h"
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
-#define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]
+#define NSFNUMBER(a) [NSNumber numberWithDouble: (a)]
 
 /*
  * When a view gets printed it may need to be split up into segments, if the 
@@ -760,7 +760,6 @@ scaleRect(NSRect rect, double scale)
   NSNumber *value;
 
   dict = [_print_info dictionary];
-
   info->paperSize = [_print_info paperSize];
   info->orient = [_print_info orientation];
   value = [dict objectForKey: NSPrintScalingFactor];
@@ -838,7 +837,7 @@ scaleRect(NSRect rect, double scale)
    */
   if (((int)(info->nup / 2) & 0x1) == 1)
     {
-      float tmp;
+      CGFloat tmp;
       if (info->orient == NSLandscapeOrientation)
         info->nupScale = 
           info->paperSize.width/(2*info->paperSize.height);
@@ -855,7 +854,7 @@ scaleRect(NSRect rect, double scale)
     }
   else if (info->nup > 1)
     {
-      info->nupScale = 2.0 / (float)info->nup;
+      info->nupScale = 2.0 / (CGFloat)info->nup;
     }
 
   if ([[dict objectForKey: NSPrintPageDirection] isEqual: @"Columns"])
@@ -1119,7 +1118,7 @@ scaleRect(NSRect rect, double scale)
 {
   int currentPage;
   int numberOnSheet;
-  float xoffset, yoffset, scale;
+  CGFloat xoffset, yoffset, scale;
   NSPoint location;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];

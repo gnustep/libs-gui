@@ -76,20 +76,20 @@ typedef enum _NSPrintingPaginationMode {
 // Managing the Printing Rectangle 
 //
 + (NSSize)sizeForPaperName:(NSString *)name;
-- (float)bottomMargin;
-- (float)leftMargin;
+- (CGFloat)bottomMargin;
+- (CGFloat)leftMargin;
 - (NSPrintingOrientation)orientation;
 - (NSString *)paperName;
 - (NSSize)paperSize;
-- (float)rightMargin;
-- (void)setBottomMargin:(float)value;
-- (void)setLeftMargin:(float)value;
+- (CGFloat)rightMargin;
+- (void)setBottomMargin:(CGFloat)value;
+- (void)setLeftMargin:(CGFloat)value;
 - (void)setOrientation:(NSPrintingOrientation)mode;
 - (void)setPaperName:(NSString *)name;
 - (void)setPaperSize:(NSSize)size;
-- (void)setRightMargin:(float)value;
-- (void)setTopMargin:(float)value;
-- (float)topMargin;
+- (void)setRightMargin:(CGFloat)value;
+- (void)setTopMargin:(CGFloat)value;
+- (CGFloat)topMargin;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (NSRect)imageablePageBounds;
 #endif

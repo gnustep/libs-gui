@@ -4218,12 +4218,12 @@ Figure out how the additional layout stuff is supposed to work.
 
 /**** Pagination *****/
 
-- (void) adjustPageHeightNew: (float*)newBottom
-			 top: (float)oldTop
-		      bottom: (float)oldBottom
-		       limit: (float)bottomLimit
+- (void) adjustPageHeightNew: (CGFloat*)newBottom
+			 top: (CGFloat)oldTop
+		      bottom: (CGFloat)oldBottom
+		       limit: (CGFloat)bottomLimit
 {
-  // FIXME: This assumes we are printing a vertical column
+  BOOL needsToMoveBottom = NO;
 
   NSRect proposedPage = NSMakeRect([self bounds].origin.x,
 				   oldTop,
@@ -4233,6 +4233,8 @@ Figure out how the additional layout stuff is supposed to work.
   NSRange pageGlyphRange = [_layoutManager glyphRangeForBoundingRect: proposedPage
 						     inTextContainer: _textContainer];
 
+  CGFloat actualTextBottom = oldBottom; // the maximum Y value of text less than oldBottom
+
   NSInteger i;
   for (i = NSMaxRange(pageGlyphRange) - 1; i >= (NSInteger)pageGlyphRange.location; )
     {
@@ -4240,20 +4242,34 @@ Figure out how the additional layout stuff is supposed to work.
       NSRect lineFragRect = [_layoutManager lineFragmentRectForGlyphAtIndex: i
 						      effectiveRange: &lineFragGlyphRange];
 
-      if (NSContainsRect(proposedPage, lineFragRect))
+      if (NSMaxY(lineFragRect) <= NSMaxY(proposedPage))
 	{
-	  *newBottom = NSMaxY(lineFragRect);
-	  return;
+	  actualTextBottom = NSMaxY(lineFragRect);
+	  break;
+	}
+      else
+	{
+	  // We encountered a visible glyph fragment which extents below
+	  // the bottom of the page
+	  needsToMoveBottom = YES;
 	}
 
       i = lineFragGlyphRange.location - 1;
     }
 
-  NSLog(@"Error -[NSTextView adjustPageHeightNew:top:bottom:limit:] failed to find a line fragment completely inside the page");
-  *newBottom = oldBottom;
+  if (needsToMoveBottom)
+    {
+      *newBottom = actualTextBottom;
+    }
+  else
+    {
+      *newBottom = oldBottom;
+    }
+
+  // FIXME: Do we need a special case so text attachments aren't split in half?
 }
 
-- (float)heightAdjustLimit
+- (CGFloat)heightAdjustLimit
 {
   return 1.0;
 }

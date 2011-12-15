@@ -825,7 +825,7 @@ enum {
   if (scaleNumber == nil)
     {
       NSLog(@"NSPrintScalingFactor was nil in NSPrintInfo");
-      scaleNumber = [NSNumber numberWithFloat: 100.0];
+      scaleNumber = [NSNumber numberWithDouble: 100.0];
     }
   else
     {
@@ -875,16 +875,16 @@ enum {
      customPaper = [customPapers objectForKey: paperName];
 
      number = [customPaper objectForKey: @"TopMargin"];
-     [_printInfo setTopMargin: [number floatValue]];
+     [_printInfo setTopMargin: [number doubleValue]];
 
      number = [customPaper objectForKey: @"BottomMargin"];
-     [_printInfo setBottomMargin: [number floatValue]];
+     [_printInfo setBottomMargin: [number doubleValue]];
 
      number = [customPaper objectForKey: @"LeftMargin"];
-     [_printInfo setLeftMargin: [number floatValue]];
+     [_printInfo setLeftMargin: [number doubleValue]];
 
      number = [customPaper objectForKey: @"RightMargin"];
-     [_printInfo setRightMargin: [number floatValue]];
+     [_printInfo setRightMargin: [number doubleValue]];
 
      size = [[customPaper objectForKey: @"PaperSize"] sizeValue];
      [_printInfo setPaperSize: size];
