@@ -230,7 +230,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
   /* Ivar to store the location where text is going to be inserted during
    * a DnD operation.
    */
-  unsigned int _dragTargetLocation;
+  NSUInteger _dragTargetLocation;
 
   /* Ivar used to implement coalescing of undo operations */
   id _undoObject;

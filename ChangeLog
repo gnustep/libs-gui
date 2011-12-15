@@ -1,5 +1,10 @@
 2011-12-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/AppKit/NSTextView.h: Change _dragTargetLocation to NSUInteger
+	because NSNotFound no longer fits in unsigned int on 64-bit
+
+2011-12-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSPrintPanel.m:
 	Move _finalWritePrintInfo: call to the end of _pickedButton:. This
 	fixes the save and preview buttons for me.
