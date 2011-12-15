@@ -354,9 +354,6 @@ static NSPrintPanel *shared_instance = nil;
 {
   int tag = [sender tag];
 
-  // FIXME
-  [self _finalWritePrintInfo: _printInfo];
-
   if (tag == NSPPSaveButton)
     {
       _picked = NSPPSaveButton;
@@ -402,6 +399,10 @@ static NSPrintPanel *shared_instance = nil;
     {
       NSLog(@"Print panel buttonAction: from unknown sender - x%p\n", sender);
     }
+
+  // FIXME
+  [self _finalWritePrintInfo: _printInfo];
+
   [NSApp stopModalWithCode: (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton];
 }
 

@@ -1,3 +1,9 @@
+2011-12-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrintPanel.m:
+	Move _finalWritePrintInfo: call to the end of _pickedButton:. This
+	fixes the save and preview buttons for me.
+
 2011-12-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSPrinter.m:
