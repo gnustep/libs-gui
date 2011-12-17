@@ -749,7 +749,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) removeTabStop: (NSTextTab*)anObject
 {
-  unsigned	i = [_tabStops indexOfObject: anObject];
+  NSUInteger i = [_tabStops indexOfObject: anObject];
 
   if (i != NSNotFound)
     [_tabStops removeObjectAtIndex: i];

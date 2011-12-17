@@ -779,7 +779,7 @@ static NSColor *dtxtCol;
    implementation. (Currently they match the Cocoa values but they are
    quite strange)</p> <p>See Also: -state</p>
  */
-- (void) setState: (int)value
+- (void) setState: (NSInteger)value
 {
   /* We do exactly as in macosx when value is not NSOnState,
    * NSOffState, NSMixedState, even if their behaviour (value < 0 ==>
@@ -804,7 +804,7 @@ static NSColor *dtxtCol;
 /**<p>Returns the NSCell's state</p>
  <p>See Also: -setState: </p>
 */
-- (int) state
+- (NSInteger) state
 {
   return _cell.state;
 }
@@ -823,7 +823,7 @@ static NSColor *dtxtCol;
     }
 }
 
-- (int) nextState
+- (NSInteger) nextState
 {
   switch (_cell.state)
     {
@@ -1390,7 +1390,7 @@ static NSColor *dtxtCol;
 
 - (NSString*) mnemonic
 {
-  unsigned int location = [self mnemonicLocation];
+  NSUInteger location = [self mnemonicLocation];
   NSString *c = [self title];
 
   if ((location == NSNotFound) || location >= [c length])
@@ -1399,12 +1399,12 @@ static NSColor *dtxtCol;
   return [c substringWithRange: NSMakeRange (location, 1)];
 }
 
-- (void) setMnemonicLocation: (unsigned int)location 
+- (void) setMnemonicLocation: (NSUInteger)location 
 {
   _cell.mnemonic_location = location;
 }
 
-- (unsigned int) mnemonicLocation
+- (NSUInteger) mnemonicLocation
 {
   return _cell.mnemonic_location;
 }

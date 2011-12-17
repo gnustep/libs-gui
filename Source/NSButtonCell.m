@@ -449,20 +449,20 @@ typedef struct _GSButtonCellFlags
   return @"";
 }
 
-- (unsigned)alternateMnemonicLocation
+- (NSUInteger)alternateMnemonicLocation
 {
   // TODO
   return NSNotFound;
 }
 
-- (void)setAlternateMnemonicLocation:(unsigned)location
+- (void)setAlternateMnemonicLocation:(NSUInteger)location
 {
   // TODO
 }
 
 - (void)setAlternateTitleWithMnemonic:(NSString *)aString
 {
-  unsigned int location = [aString rangeOfString: @"&"].location;
+  NSUInteger location = [aString rangeOfString: @"&"].location;
 
   [self setAlternateTitle: [aString stringByReplacingString: @"&"
                                     withString: @""]];
@@ -616,7 +616,7 @@ typedef struct _GSButtonCellFlags
     0.</p><p>See Also: -setKeyEquivalentModifierMask:
     -keyEquivalent [NSButton-performKeyEquivalent:]</p>
  */
-- (unsigned int) keyEquivalentModifierMask
+- (NSUInteger) keyEquivalentModifierMask
 {
   return _keyEquivalentModifierMask;
 }
@@ -639,7 +639,7 @@ typedef struct _GSButtonCellFlags
     <p>See Also: -keyEquivalentModifierMask  
     -setKeyEquivalent: [NSButton-performKeyEquivalent:]</p>
 */
-- (void) setKeyEquivalentModifierMask: (unsigned int)mask
+- (void) setKeyEquivalentModifierMask: (NSUInteger)mask
 {
   _keyEquivalentModifierMask = mask;
 }
@@ -738,7 +738,7 @@ typedef struct _GSButtonCellFlags
    NSChangeBackgroundCellMask</p>
    <p>See Also : -setHighlightsBy:</p>
  */
-- (int) highlightsBy
+- (NSInteger) highlightsBy
 {
   return _highlightsByMask;
 }
@@ -748,12 +748,12 @@ typedef struct _GSButtonCellFlags
    NSChangeBackgroundCellMask</p>
    <p>See Also : -highlightsBy</p>
  */
-- (void) setHighlightsBy: (int)mask
+- (void) setHighlightsBy: (NSInteger)mask
 {
   _highlightsByMask = mask;
 }
 
-- (void) setShowsStateBy: (int)mask
+- (void) setShowsStateBy: (NSInteger)mask
 {
   _showAltStateMask = mask;
 }
@@ -819,7 +819,7 @@ typedef struct _GSButtonCellFlags
     }
 }
 
-- (int) showsStateBy
+- (NSInteger) showsStateBy
 {
   return _showAltStateMask;
 }

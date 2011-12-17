@@ -123,9 +123,9 @@ typedef enum _NSGradientType {
   NSString *_keyEquivalent;
   NSFont *_keyEquivalentFont;
   NSSound *_sound;
-  unsigned int _keyEquivalentModifierMask;
-  unsigned int _highlightsByMask;
-  unsigned int _showAltStateMask;
+  NSUInteger _keyEquivalentModifierMask;
+  NSInteger _highlightsByMask;
+  NSInteger _showAltStateMask;
   float _delayInterval;
   float _repeatInterval;
   NSBezelStyle _bezel_style;
@@ -154,8 +154,8 @@ typedef enum _NSGradientType {
 - (void)setAttributedTitle: (NSAttributedString *)aString;
 - (void)setTitleWithMnemonic: (NSString *)aString;
 - (NSString *)alternateMnemonic;
-- (unsigned)alternateMnemonicLocation;
-- (void)setAlternateMnemonicLocation: (unsigned)location;
+- (NSUInteger)alternateMnemonicLocation;
+- (void)setAlternateMnemonicLocation: (NSUInteger)location;
 - (void)setAlternateTitleWithMnemonic: (NSString *)aString;
 #endif
 
@@ -184,9 +184,9 @@ typedef enum _NSGradientType {
 //
 - (NSString *)keyEquivalent;
 - (NSFont *)keyEquivalentFont;
-- (unsigned int)keyEquivalentModifierMask;
+- (NSUInteger)keyEquivalentModifierMask;
 - (void)setKeyEquivalent: (NSString *)key;
-- (void)setKeyEquivalentModifierMask: (unsigned int)mask;
+- (void)setKeyEquivalentModifierMask: (NSUInteger)mask;
 - (void)setKeyEquivalentFont: (NSFont *)fontObj;
 - (void)setKeyEquivalentFont: (NSString *)fontName 
 			size: (float)fontSize;
@@ -221,11 +221,11 @@ typedef enum _NSGradientType {
 //
 // Modifying Graphic Attributes 
 //
-- (int)highlightsBy;
-- (void)setHighlightsBy: (int)mask;
-- (void)setShowsStateBy: (int)mask;
+- (NSInteger)highlightsBy;
+- (void)setHighlightsBy: (NSInteger)mask;
+- (void)setShowsStateBy: (NSInteger)mask;
 - (void)setButtonType: (NSButtonType)buttonType;
-- (int)showsStateBy;
+- (NSInteger)showsStateBy;
 
 //
 // Sound

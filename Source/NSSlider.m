@@ -365,17 +365,17 @@ static Class cellClass;
   return [_cell closestTickMarkValueToValue: aValue];
 }
 
-- (int) indexOfTickMarkAtPoint: (NSPoint)point
+- (NSInteger) indexOfTickMarkAtPoint: (NSPoint)point
 {
   return [_cell indexOfTickMarkAtPoint: point];
 }
 
-- (int) numberOfTickMarks
+- (NSInteger) numberOfTickMarks
 {
   return [_cell numberOfTickMarks];
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
 {
   return [_cell rectOfTickMarkAtIndex: index];
 }
@@ -385,7 +385,7 @@ static Class cellClass;
   [_cell setAllowsTickMarkValuesOnly: flag];
 }
 
-- (void) setNumberOfTickMarks: (int)numberOfTickMarks
+- (void) setNumberOfTickMarks: (NSInteger)numberOfTickMarks
 {
  [_cell setNumberOfTickMarks: numberOfTickMarks];
 }
@@ -400,7 +400,7 @@ static Class cellClass;
   return [_cell tickMarkPosition];
 }
 
-- (double) tickMarkValueAtIndex: (int)index
+- (double) tickMarkValueAtIndex: (NSInteger)index
 {
   return [_cell tickMarkValueAtIndex: index];
 }

@@ -699,9 +699,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   return f;
 }
 
-- (int) indexOfTickMarkAtPoint: (NSPoint)point
+- (NSInteger) indexOfTickMarkAtPoint: (NSPoint)point
 {
-  int i;
+  NSInteger i;
 
   for (i = 0; i < _numberOfTickMarks; i++)
     {
@@ -714,12 +714,12 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   return NSNotFound;
 }
 
-- (int) numberOfTickMarks
+- (NSInteger) numberOfTickMarks
 {
   return _numberOfTickMarks;
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
 {
   NSRect rect = _trackRect;
   float d;
@@ -754,7 +754,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   _allowsTickMarkValuesOnly = flag;
 }
 
-- (void) setNumberOfTickMarks: (int)numberOfTickMarks
+- (void) setNumberOfTickMarks: (NSInteger)numberOfTickMarks
 {
   _numberOfTickMarks = numberOfTickMarks;
   if ((_control_view != nil) &&  
@@ -779,7 +779,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   return _tickMarkPosition;
 }
 
-- (double) tickMarkValueAtIndex: (int)index
+- (double) tickMarkValueAtIndex: (NSInteger)index
 {
   if ((index < 0) || (index >= _numberOfTickMarks))
     {

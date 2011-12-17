@@ -777,7 +777,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	 positioned: (NSWindowOrderingMode)place
 	 relativeTo: (NSView*)otherView
 {
-  unsigned	index;
+  NSUInteger index;
 
   if (aView == nil)
     {

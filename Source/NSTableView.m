@@ -447,7 +447,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int last = [_selectedRows lastIndex];
+		      NSUInteger last = [_selectedRows lastIndex];
 
 		      if (last == NSNotFound)
 			{
@@ -505,7 +505,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 
 		      if (first == NSNotFound)
 			{
@@ -556,7 +556,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 
 		  if (first == NSNotFound)
 		    {
@@ -604,7 +604,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int last = [_selectedRows lastIndex];
+		  NSUInteger last = [_selectedRows lastIndex];
 
 		  if (last == NSNotFound)
 		    {
@@ -707,7 +707,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int last = [_selectedRows lastIndex];
+		      NSUInteger last = [_selectedRows lastIndex];
 
 		      if (last == NSNotFound)
 			{
@@ -757,7 +757,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 
 		      if (first == NSNotFound)
 			{
@@ -797,7 +797,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 
 		  if (first == NSNotFound)
 		    {
@@ -836,7 +836,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int last = [_selectedRows lastIndex];
+		  NSUInteger last = [_selectedRows lastIndex];
 
 		  if (last == NSNotFound)
 		    {
@@ -994,7 +994,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int last = [_selectedRows lastIndex];
+		      NSUInteger last = [_selectedRows lastIndex];
 		      
 		      if (last == NSNotFound)
 		        {
@@ -1045,7 +1045,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 
 		      if (first == NSNotFound)
 			{
@@ -1085,7 +1085,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 
 		  if (first == NSNotFound)
 		    {
@@ -1124,7 +1124,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int last = [_selectedRows lastIndex];
+		  NSUInteger last = [_selectedRows lastIndex];
 
 		  if (last == NSNotFound)
 		    {
@@ -1193,7 +1193,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int last = [_selectedRows lastIndex];
+		      NSUInteger last = [_selectedRows lastIndex];
 
 		      if (last == NSNotFound)
 		        {
@@ -1251,7 +1251,7 @@ static void computeNewSelection
 		    }
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 
 		      if (first == NSNotFound)
 			{
@@ -1299,7 +1299,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1348,7 +1348,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int last = [_selectedRows lastIndex];
+		  NSUInteger last = [_selectedRows lastIndex];
 
 		  if (last == NSNotFound)
 		    {
@@ -1390,7 +1390,7 @@ static void computeNewSelection
 		}
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1414,7 +1414,7 @@ static void computeNewSelection
 		}
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1453,7 +1453,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-			unsigned int first = [_selectedRows firstIndex];
+			NSUInteger first = [_selectedRows firstIndex];
 			
 			if (first == NSNotFound)
 			  {
@@ -1509,7 +1509,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 		  
 		      if (first == NSNotFound)
 		        {
@@ -1584,7 +1584,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1634,7 +1634,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1678,7 +1678,7 @@ static void computeNewSelection
 		}
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1704,7 +1704,7 @@ static void computeNewSelection
 		}
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		  
 		  if (first == NSNotFound)
 		    {
@@ -1745,7 +1745,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 		  
 		      if (first == NSNotFound)
 		        {
@@ -1803,7 +1803,7 @@ static void computeNewSelection
 
 		  if (*_selectedRow == -1)
 		    {
-		      unsigned int first = [_selectedRows firstIndex];
+		      NSUInteger first = [_selectedRows firstIndex];
 		      
 		      if (first == NSNotFound)
 		        {
@@ -1879,7 +1879,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		    
 		  if (first == NSNotFound)
 		    {
@@ -1930,7 +1930,7 @@ static void computeNewSelection
 
 	      if (*_selectedRow == -1)
 		{
-		  unsigned int first = [_selectedRows firstIndex];
+		  NSUInteger first = [_selectedRows firstIndex];
 		    
 		  if (first == NSNotFound)
 		    {
@@ -2705,7 +2705,7 @@ byExtendingSelection: (BOOL)flag
 {
   BOOL empty = ([indexes firstIndex] == NSNotFound);
   BOOL changed = NO;
-  unsigned int col;
+  NSUInteger col;
   
   if (!_selectingColumns)
     {
@@ -2788,7 +2788,7 @@ byExtendingSelection: (BOOL)flag
 {
   BOOL empty = ([indexes firstIndex] == NSNotFound);
   BOOL changed = NO;
-  unsigned int row;
+  NSUInteger row;
   
   if (_selectingColumns)
     {
@@ -2894,8 +2894,8 @@ byExtendingSelection: (BOOL)flag
 
   if (_selectedColumn == columnIndex)
     {
-      unsigned int less = [_selectedColumns indexLessThanIndex: columnIndex];
-      unsigned int greater = [_selectedColumns indexGreaterThanIndex: columnIndex];
+      NSUInteger less = [_selectedColumns indexLessThanIndex: columnIndex];
+      NSUInteger greater = [_selectedColumns indexGreaterThanIndex: columnIndex];
 
       if (less == NSNotFound)
         {
@@ -2951,8 +2951,8 @@ byExtendingSelection: (BOOL)flag
 
   if (_selectedRow == rowIndex)
     {
-      unsigned int less = [_selectedRows indexLessThanIndex: rowIndex];
-      unsigned int greater = [_selectedRows indexGreaterThanIndex: rowIndex];
+      NSUInteger less = [_selectedRows indexLessThanIndex: rowIndex];
+      NSUInteger greater = [_selectedRows indexGreaterThanIndex: rowIndex];
 
       if (less == NSNotFound)
         {
@@ -4814,7 +4814,7 @@ This method is deprecated, use -columnIndexesInRect:. */
      selected rows below the new end of the table */
   if (!_selectingColumns)
     {
-      int row = [_selectedRows lastIndex];
+      NSUInteger row = [_selectedRows lastIndex];
       
       if (row == NSNotFound)
         {
@@ -4822,7 +4822,7 @@ This method is deprecated, use -columnIndexesInRect:. */
             {
               /* We shouldn't allow empty selection - try
                  selecting the last row */
-              int lastRow = _numberOfRows - 1;
+              NSInteger lastRow = _numberOfRows - 1;
 		      
               if (lastRow > -1)
                 {
@@ -5278,7 +5278,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) setHighlightedTableColumn: (NSTableColumn *)aTableColumn
 {
-  int tableColumnIndex;
+  NSUInteger tableColumnIndex;
 
   tableColumnIndex = [_tableColumns indexOfObject: aTableColumn];
 
@@ -6650,7 +6650,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (NSArray *) _indexSetToArray: (NSIndexSet*)indexSet
 {
   NSMutableArray *array = [NSMutableArray array];
-  unsigned int index = [indexSet firstIndex];
+  NSUInteger index = [indexSet firstIndex];
       
   while (index != NSNotFound)
     {
@@ -6715,7 +6715,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) _unselectAllRows
 {
   /* Compute rect to redraw to clear the old row selection */
-  unsigned int row = [_selectedRows firstIndex];
+  NSUInteger row = [_selectedRows firstIndex];
       
   while (row != NSNotFound)
     {
@@ -6734,7 +6734,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) _unselectAllColumns
 {
   /* Compute rect to redraw to clear the old column selection */
-  unsigned int column = [_selectedColumns firstIndex];
+  NSUInteger column = [_selectedColumns firstIndex];
       
   while (column != NSNotFound)
     {

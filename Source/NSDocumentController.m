@@ -1346,7 +1346,7 @@ static BOOL _shouldClose = YES;
 
 - (void) noteNewRecentDocumentURL: (NSURL *)anURL
 {
-  unsigned index = [_recent_documents indexOfObject: anURL];
+  NSUInteger index = [_recent_documents indexOfObject: anURL];
   NSMutableArray *a;
 
   if (index != NSNotFound)

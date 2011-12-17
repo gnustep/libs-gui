@@ -127,22 +127,22 @@
   _style = style;
 }
 
-- (int) numberOfMajorTickMarks
+- (NSInteger) numberOfMajorTickMarks
 {
   return _numberOfMajorTickMarks;
 }
 
-- (void) setNumberOfMajorTickMarks: (int)count
+- (void) setNumberOfMajorTickMarks: (NSInteger)count
 {
   _numberOfMajorTickMarks = count;
 }
 
-- (int) numberOfTickMarks
+- (NSInteger) numberOfTickMarks
 {
   return _numberOfTickMarks;
 }
 
-- (void) setNumberOfTickMarks: (int)count
+- (void) setNumberOfTickMarks: (NSInteger)count
 {
   _numberOfTickMarks = count;
 }
@@ -157,7 +157,7 @@
   _tickMarkPosition = pos;
 }
 
-- (double) tickMarkValueAtIndex: (int)index
+- (double) tickMarkValueAtIndex: (NSInteger)index
 {
   if ((index < 0) || (index >= _numberOfTickMarks))
     {
@@ -168,7 +168,7 @@
   return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
 {
   NSRect cellRect = NSZeroRect;
   float frameWidth = _cellFrame.size.width;
@@ -193,7 +193,7 @@
   // If major tick marks fit with even spacing
   else if ((_numberOfTickMarks -1) % (_numberOfMajorTickMarks - 1) == 0)
     {
-      int minorTicksPerMajor = (_numberOfTickMarks - 1) / (_numberOfMajorTickMarks - 1);
+      NSInteger minorTicksPerMajor = (_numberOfTickMarks - 1) / (_numberOfMajorTickMarks - 1);
 
       // If index is a major tick mark
       if (index % minorTicksPerMajor == 0)

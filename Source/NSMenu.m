@@ -909,7 +909,7 @@ static BOOL menuBarVisible = YES;
  */
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  int index;
+  NSUInteger index;
 
   index = [_items indexOfObjectIdenticalTo: anObject];
 

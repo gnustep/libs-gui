@@ -49,15 +49,15 @@
 //
 - (void)setButtonType:(NSButtonType)aType;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)setHighlightsBy:(int)aType;
-- (void)setShowsStateBy:(int)aType;
+- (void)setHighlightsBy:(NSInteger)aType;
+- (void)setShowsStateBy:(NSInteger)aType;
 #endif
 
 //
 // Setting the State 
 //
-- (void)setState:(int)value;
-- (int)state;
+- (void)setState:(NSInteger)value;
+- (NSInteger)state;
 - (BOOL)allowsMixedState;
 - (void)setAllowsMixedState: (BOOL)flag;
 - (void)setNextState;
@@ -118,9 +118,9 @@
 // Setting the Key Equivalent 
 //
 - (NSString *)keyEquivalent;
-- (unsigned int)keyEquivalentModifierMask;
+- (NSUInteger)keyEquivalentModifierMask;
 - (void)setKeyEquivalent:(NSString *)aKeyEquivalent;
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask;
+- (void)setKeyEquivalentModifierMask:(NSUInteger)mask;
 
 //
 // Handling Events and Action Messages 

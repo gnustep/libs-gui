@@ -234,10 +234,10 @@
 {
   NSString *tag = [self label];
   NSRange colonRange = [tag rangeOfString: @":"];
-  unsigned int location = colonRange.location;
+  NSUInteger location = colonRange.location;
   NSNibConnector *result = nil;
 
-  if(location == NSNotFound)
+  if (location == NSNotFound)
     {
       result = [[NSNibOutletConnector alloc] init];
     }

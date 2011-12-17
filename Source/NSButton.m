@@ -99,12 +99,12 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
-- (void)setHighlightsBy:(int)aType
+- (void)setHighlightsBy:(NSInteger)aType
 {
   [_cell setHighlightsBy:aType];
 }
 
-- (void)setShowsStateBy:(int)aType
+- (void)setShowsStateBy:(NSInteger)aType
 {
   [_cell setShowsStateBy:aType];
 }
@@ -130,7 +130,7 @@ static id buttonCellClass = nil;
 /**<p>Sets the NSButtonCell's state to <var>value</var> and marks
    self for display.</p><p>See Also: -state [NSButtonCell-setState:]</p> 
  */
-- (void) setState: (int)value
+- (void) setState: (NSInteger)value
 {
   [_cell setState: value];
   [self setNeedsDisplay: YES];
@@ -139,7 +139,7 @@ static id buttonCellClass = nil;
 /** <p>Returns the NSButtonCell's state.</p>
    <p>See Also: -setState: [NSButtonCell-state]</p> 
 */
-- (int) state
+- (NSInteger) state
 {
   return [_cell state];
 }
@@ -410,7 +410,7 @@ static id buttonCellClass = nil;
     NSCommandKeyMask.</p><p>See Also: -setKeyEquivalentModifierMask:
     -keyEquivalent [NSButtonCell-setKeyEquivalentModifierMask:]</p>
  */
-- (unsigned int) keyEquivalentModifierMask
+- (NSUInteger) keyEquivalentModifierMask
 {
   return [_cell keyEquivalentModifierMask];
 }
@@ -434,7 +434,7 @@ static id buttonCellClass = nil;
     -setKeyEquivalent: -performKeyEquivalent:
     [NSButtonCell-setKeyEquivalentModifierMask:]</p>
 */
-- (void) setKeyEquivalentModifierMask: (unsigned int)mask
+- (void) setKeyEquivalentModifierMask: (NSUInteger)mask
 {
   [_cell setKeyEquivalentModifierMask: mask];
 }
@@ -515,9 +515,9 @@ static id buttonCellClass = nil;
 
       if ([keyEquivalent length] > 0 && [keyEquivalent isEqualToString: [anEvent charactersIgnoringModifiers]])
         {
-          unsigned int	mask = [self keyEquivalentModifierMask];
-          unsigned int modifiers = [anEvent modifierFlags];
-          unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+          NSUInteger	mask = [self keyEquivalentModifierMask];
+          NSUInteger modifiers = [anEvent modifierFlags];
+          NSUInteger relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
           /* Take shift key into account only for control keys and arrow and function keys */
           if ((modifiers & NSFunctionKeyMask)
               || [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]])

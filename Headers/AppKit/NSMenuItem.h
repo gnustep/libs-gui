@@ -152,7 +152,7 @@
    Returns the key equivalent mask.
    </p>
  */
-- (unsigned int) keyEquivalentModifierMask;
+- (NSUInteger) keyEquivalentModifierMask;
 
 /**
    <p>
@@ -168,7 +168,7 @@
  */
 - (NSImage*) mixedStateImage;
 - (NSString*) mnemonic;
-- (unsigned) mnemonicLocation;
+- (NSUInteger) mnemonicLocation;
 
 /**
    <p>
@@ -235,7 +235,7 @@
    key equivalent requires ALT, Control or other key modifiers.
    </p>
  */
-- (void) setKeyEquivalentModifierMask: (unsigned int)mask;
+- (void) setKeyEquivalentModifierMask: (NSUInteger)mask;
 
 /**
    <p> Sets the menu which this item belongs to.   This method does not retain the
@@ -250,7 +250,7 @@
    </p>
  */
 - (void) setMixedStateImage: (NSImage*)image;
-- (void) setMnemonicLocation: (unsigned) location;
+- (void) setMnemonicLocation: (NSUInteger) location;
 
 /**
    <p>
@@ -278,7 +278,7 @@
    Sets the state of the the receiver.
    </p>
  */
-- (void) setState: (int)state;
+- (void) setState: (NSInteger)state;
 
 /**
    <p>
@@ -319,7 +319,7 @@
    Returns the state of the receiver.
    </p>
  */
-- (int) state;
+- (NSInteger) state;
 /**
    <p>
    Returns the attached submenu.
@@ -357,7 +357,7 @@
    Returns the user defined key equivalent modifier.
    </p>
  */
-- (unsigned int) userKeyEquivalentModifierMask;
+- (NSUInteger) userKeyEquivalentModifierMask;
 
 /**
    <p>
@@ -373,16 +373,16 @@
   NSMenu *_menu;
   NSString *_title;
   NSString *_keyEquivalent;
-  unsigned int _keyEquivalentModifierMask;
-  unsigned _mnemonicLocation;
-  int _state;
+  NSUInteger _keyEquivalentModifierMask;
+  NSUInteger _mnemonicLocation;
+  NSInteger _state;
   NSImage *_image;
   NSImage *_onStateImage;
   NSImage *_offStateImage;
   NSImage *_mixedStateImage;
   id _target;
   SEL _action;
-  int _tag;
+  NSInteger _tag;
   id _representedObject;
   NSMenu *_submenu;
   BOOL _enabled;

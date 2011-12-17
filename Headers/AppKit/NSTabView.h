@@ -54,17 +54,17 @@ typedef enum {
   BOOL _draws_background;
   BOOL _truncated_label;
   id _delegate;
-  int _selected_item;
+  NSInteger _selected_item;
 }
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem
-		  atIndex:(int)index;
+		  atIndex:(NSInteger)index;
 - (void)removeTabViewItem:(NSTabViewItem *)tabViewItem;
-- (int)indexOfTabViewItem:(NSTabViewItem *)tabViewItem;
-- (int)indexOfTabViewItemWithIdentifier:(id)identifier;
-- (int)numberOfTabViewItems;
+- (NSInteger)indexOfTabViewItem:(NSTabViewItem *)tabViewItem;
+- (NSInteger)indexOfTabViewItemWithIdentifier:(id)identifier;
+- (NSInteger)numberOfTabViewItems;
 
-- (NSTabViewItem *)tabViewItemAtIndex:(int)index;
+- (NSTabViewItem *)tabViewItemAtIndex:(NSInteger)index;
 - (NSArray *)tabViewItems;
 
 - (void)selectFirstTabViewItem:(id)sender;
@@ -72,7 +72,7 @@ typedef enum {
 - (void)selectNextTabViewItem:(id)sender;
 - (void)selectPreviousTabViewItem:(id)sender;
 - (void)selectTabViewItem:(NSTabViewItem *)tabViewItem;
-- (void)selectTabViewItemAtIndex:(int)index;
+- (void)selectTabViewItemAtIndex:(NSInteger)index;
 - (void)selectTabViewItemWithIdentifier:(id)identifier;
 - (void)takeSelectedTabViewItemFromSender:(id)sender;
 - (NSTabViewItem*) selectedTabViewItem;

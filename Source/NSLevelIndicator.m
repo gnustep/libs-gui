@@ -103,22 +103,22 @@ static Class cellClass;
   [_cell setCriticalValue: val];
 }
 
-- (int) numberOfMajorTickMarks
+- (NSInteger) numberOfMajorTickMarks
 {
   return [_cell numberOfMajorTickMarks];
 }
 
-- (void) setNumberOfMajorTickMarks: (int)count
+- (void) setNumberOfMajorTickMarks: (NSInteger)count
 {
   [_cell setNumberOfMajorTickMarks: count];
 }
 
-- (int) numberOfTickMarks
+- (NSInteger) numberOfTickMarks
 {
   return [_cell numberOfTickMarks];
 }
 
-- (void) setNumberOfTickMarks: (int)count
+- (void) setNumberOfTickMarks: (NSInteger)count
 {
   [_cell setNumberOfTickMarks: count];
 }
@@ -133,12 +133,12 @@ static Class cellClass;
   [_cell setTickMarkPosition:pos];
 }
 
-- (double) tickMarkValueAtIndex: (int)index
+- (double) tickMarkValueAtIndex: (NSInteger)index
 {
   return [_cell tickMarkValueAtIndex:index];
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
 {
   return [_cell rectOfTickMarkAtIndex:index];
 }

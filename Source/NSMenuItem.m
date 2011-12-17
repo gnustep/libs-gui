@@ -163,7 +163,7 @@ static Class imageClass;
   if (userKeyEquivalent)
     {
       // check for leading symbols representing modifier flags: @, ~, $, ^
-      unsigned int modifierMask = 0;
+      NSUInteger modifierMask = 0;
       while ([userKeyEquivalent length] > 1)
         {
           if ([userKeyEquivalent hasPrefix:@"@"])
@@ -292,7 +292,7 @@ static Class imageClass;
     return _keyEquivalent;
 }
 
-- (void) setKeyEquivalentModifierMask: (unsigned int)mask
+- (void) setKeyEquivalentModifierMask: (NSUInteger)mask
 {
   if (_keyEquivalentModifierMask == mask)
     return; // no change
@@ -300,7 +300,7 @@ static Class imageClass;
   [_menu itemChanged: self];
 }
 
-- (unsigned int) keyEquivalentModifierMask
+- (NSUInteger) keyEquivalentModifierMask
 {
   return _keyEquivalentModifierMask;
 }
@@ -318,13 +318,13 @@ static Class imageClass;
   return userKeyEquivalent;
 }
 
-- (unsigned int) userKeyEquivalentModifierMask
+- (NSUInteger) userKeyEquivalentModifierMask
 {
   // FIXME
   return NSCommandKeyMask;
 }
 
-- (void) setMnemonicLocation: (unsigned)location
+- (void) setMnemonicLocation: (NSUInteger)location
 {
   if (_mnemonicLocation == location)
     return; // no change
@@ -333,7 +333,7 @@ static Class imageClass;
   [_menu itemChanged: self];
 }
 
-- (unsigned) mnemonicLocation
+- (NSUInteger) mnemonicLocation
 {
   if (_mnemonicLocation != 255)
     return _mnemonicLocation;
@@ -351,7 +351,7 @@ static Class imageClass;
 
 - (void) setTitleWithMnemonic: (NSString*)stringWithAmpersand
 {
-  unsigned int location = [stringWithAmpersand rangeOfString: @"&"].location;
+  NSUInteger location = [stringWithAmpersand rangeOfString: @"&"].location;
 
   [self setTitle: [stringWithAmpersand stringByReplacingString: @"&"
 				       withString: @""]];
@@ -375,7 +375,7 @@ static Class imageClass;
   return _image;
 }
 
-- (void) setState: (int)state
+- (void) setState: (NSInteger)state
 {
   if (_state == state)
     return;
@@ -385,7 +385,7 @@ static Class imageClass;
   [_menu itemChanged: self];
 }
 
-- (int) state
+- (NSInteger) state
 {
   return _state;
 }

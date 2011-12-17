@@ -1095,7 +1095,7 @@ static GSComboWindow *gsWindow = nil;
    }
  else
    {
-     int i = [_popUpList indexOfObject: object];
+     NSInteger i = [_popUpList indexOfObject: object];
 
      if (i == NSNotFound)
        i = -1;
@@ -1850,7 +1850,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 - (void) _selectCompleted
 {
   NSString *more;
-  unsigned int index = NSNotFound;
+  NSUInteger index = NSNotFound;
 
   more = [self completedString: [self stringValue]];
   if (_usesDataSource)

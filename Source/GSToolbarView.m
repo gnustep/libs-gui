@@ -66,7 +66,7 @@ static const int ClippedItemsViewWidth = 28;
 // Internal
 static const int current_version = 1;
 
-static int draggedItemIndex = NSNotFound;
+static NSInteger draggedItemIndex = NSNotFound;
 
 /*
  * Toolbar related code
@@ -341,7 +341,7 @@ static int draggedItemIndex = NSNotFound;
       if (![item allowsDuplicatesInToolbar])
         {
           NSArray *items = [toolbar items];
-          int index;
+          NSInteger index;
           for (index=0; index<[items count]; index++)
             {
               NSToolbarItem *anItem = [items objectAtIndex:index];

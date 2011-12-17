@@ -110,7 +110,7 @@
   NSColor *c = [color colorUsingColorSpaceName: NSNamedColorSpace];
   NSString *list;
   NSString *name;
-  unsigned int index;
+  NSUInteger index;
 
   if (c == nil)
     return;

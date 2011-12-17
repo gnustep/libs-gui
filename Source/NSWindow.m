@@ -278,9 +278,9 @@ has blocked and waited for events.
 - (void) _lossOfKeyOrMainWindow
 {
   NSArray *windowList = GSOrderedWindows();
-  unsigned pos = [windowList indexOfObjectIdenticalTo: self];
-  unsigned c = [windowList count];
-  unsigned i;
+  NSUInteger pos = [windowList indexOfObjectIdenticalTo: self];
+  NSUInteger c = [windowList count];
+  NSUInteger i;
 
   // Don't bother when application is closing.
   if ([NSApp isRunning] == NO)

@@ -2498,9 +2498,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
   if (selectingColumns == NO)
     {
-      int selectedRowsCount;
-      int row;
-      int startingRow, endingRow;
+      NSInteger selectedRowsCount;
+      NSUInteger row;
+      NSInteger startingRow, endingRow;
 
       selectedRowsCount = [selectedRows count];      
       if (selectedRowsCount == 0)
@@ -2542,9 +2542,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
   else // Selecting columns
     {
-      unsigned int selectedColumnsCount;
-      unsigned int column;
-      int startingColumn, endingColumn;
+      NSUInteger selectedColumnsCount;
+      NSUInteger column;
+      NSInteger startingColumn, endingColumn;
       
       selectedColumnsCount = [selectedColumns count];
       

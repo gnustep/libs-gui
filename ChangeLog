@@ -1,3 +1,37 @@
+2011-12-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSliderCell.h
+	* Headers/AppKit/NSLevelIndicator.h
+	* Headers/AppKit/NSButtonCell.h
+	* Headers/AppKit/NSButton.h
+	* Headers/AppKit/NSMenuItem.h
+	* Headers/AppKit/NSLevelIndicatorCell.h
+	* Headers/AppKit/NSSlider.h
+	* Headers/AppKit/NSTabView.h
+	* Headers/AppKit/NSCell.h
+	* Source/NSSliderCell.m
+	* Source/NSLevelIndicator.m
+	* Source/NSButtonCell.m
+	* Source/NSButton.m
+	* Source/NSMenu.m
+	* Source/NSMenuItem.m
+	* Source/NSLevelIndicatorCell.m
+	* Source/GSToolbarView.m
+	* Source/NSComboBoxCell.m
+	* Source/NSToolbarItem.m
+	* Source/NSSlider.m
+	* Source/NSTabView.m
+	* Source/NSCell.m
+	* Source/NSWindow.m
+	* Source/NSDocumentController.m
+	* Source/NSTableView.m
+	* Source/NSOutlineView.m
+	* Source/NSParagraphStyle.m
+	* Source/NSPopUpButtonCell.m
+	* Source/NSView.m: Replace some occurences of int with NSInteger
+	and unsigned with NSUInteger. This allows to recompile gui on 64
+	bit systems after the change in base to NSNotFound.
+
 2011-12-16 Riccardo Mottola <rm@gnu.org>
 
 	* Panels/English.lproj/GSPrintPanel.gorm

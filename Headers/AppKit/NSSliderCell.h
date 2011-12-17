@@ -59,7 +59,7 @@ typedef enum _NSSliderType
   NSRect	_trackRect;
   BOOL		_isVertical;
   BOOL          _allowsTickMarkValuesOnly;
-  int           _numberOfTickMarks;
+  NSInteger     _numberOfTickMarks;
   NSTickMarkPosition _tickMarkPosition;
   NSSliderType		_type;
 }
@@ -107,14 +107,14 @@ typedef enum _NSSliderType
 // ticks
 - (BOOL) allowsTickMarkValuesOnly;
 - (double) closestTickMarkValueToValue: (double)aValue;
-- (int) indexOfTickMarkAtPoint: (NSPoint)point;
-- (int) numberOfTickMarks;
-- (NSRect) rectOfTickMarkAtIndex: (int)index;
+- (NSInteger) indexOfTickMarkAtPoint: (NSPoint)point;
+- (NSInteger) numberOfTickMarks;
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index;
 - (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
-- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+- (void) setNumberOfTickMarks: (NSInteger)numberOfTickMarks;
 - (void) setTickMarkPosition: (NSTickMarkPosition)position;
 - (NSTickMarkPosition) tickMarkPosition;
-- (double) tickMarkValueAtIndex: (int)index;
+- (double) tickMarkValueAtIndex: (NSInteger)index;
 #endif
 
 @end

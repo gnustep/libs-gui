@@ -50,8 +50,8 @@ typedef enum _NSLevelIndicatorStyle
   double _maxValue;
   double _warningValue;
   double _criticalValue;
-  int _numberOfMajorTickMarks;
-  int _numberOfTickMarks;
+  NSInteger _numberOfMajorTickMarks;
+  NSInteger _numberOfTickMarks;
   NSLevelIndicatorStyle _style;
   NSTickMarkPosition _tickMarkPosition;
   NSRect _cellFrame;
@@ -72,14 +72,14 @@ typedef enum _NSLevelIndicatorStyle
 
 - (NSLevelIndicatorStyle)style;
 - (void)setLevelIndicatorStyle:(NSLevelIndicatorStyle)style;
-- (int)numberOfMajorTickMarks;
-- (void)setNumberOfMajorTickMarks:(int)count;
-- (int)numberOfTickMarks;
-- (void)setNumberOfTickMarks:(int)count;
+- (NSInteger)numberOfMajorTickMarks;
+- (void)setNumberOfMajorTickMarks:(NSInteger)count;
+- (NSInteger)numberOfTickMarks;
+- (void)setNumberOfTickMarks:(NSInteger)count;
 - (NSTickMarkPosition)tickMarkPosition;
 - (void)setTickMarkPosition:(NSTickMarkPosition) pos;
-- (double)tickMarkValueAtIndex:(int)index;
-- (NSRect)rectOfTickMarkAtIndex:(int)index;
+- (double)tickMarkValueAtIndex:(NSInteger)index;
+- (NSRect)rectOfTickMarkAtIndex:(NSInteger)index;
 
 @end
 

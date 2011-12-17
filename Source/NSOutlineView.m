@@ -1497,9 +1497,9 @@ Also returns the child index relative to this parent. */
   if ([_dataSource respondsToSelector:
                     @selector(outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedItems:)])
     {
-      int count = [_selectedRows count];
+      NSUInteger count = [_selectedRows count];
       NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity: count];
-      unsigned int index = [_selectedRows firstIndex];
+      NSUInteger index = [_selectedRows firstIndex];
       
       while (index != NSNotFound)
         {
@@ -1838,9 +1838,9 @@ Also returns the child index relative to this parent. */
 - (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard
 {
-  int count = [rows count];
+  NSUInteger count = [rows count];
   NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity: count];
-  unsigned int index = [rows firstIndex];
+  NSUInteger index = [rows firstIndex];
 
   while (index != NSNotFound)
     {
@@ -2049,7 +2049,7 @@ Also returns the child index relative to this parent. */
 
 - (void)_closeItem: (id)item
 {
-  int i, numChildren;
+  NSUInteger i, numChildren;
   NSMutableArray *removeAll = [NSMutableArray array];
 
   [self _collectItemsStartingWith: item into: removeAll];
@@ -2073,7 +2073,7 @@ Also returns the child index relative to this parent. */
 
 - (void)_openItem: (id)item
 {
-  int i, insertionPoint, numChildren, numDescendants;
+  NSUInteger i, insertionPoint, numChildren, numDescendants;
   id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
@@ -2110,7 +2110,7 @@ Also returns the child index relative to this parent. */
       // Add all of the children...
       if ([self isItemExpanded: child])
         {
-          int i, numItems;
+          NSUInteger i, numItems;
           NSMutableArray *insertAll = [NSMutableArray array];
 
           [self _collectItemsStartingWith: child into: insertAll];
@@ -2132,7 +2132,7 @@ Also returns the child index relative to this parent. */
 
 - (void) _removeChildren: (id)startitem
 {
-  int i, numChildren;
+  NSUInteger i, numChildren;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray;
 
@@ -2154,7 +2154,7 @@ Also returns the child index relative to this parent. */
 - (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)numItems
 {
   BOOL selectionDidChange = NO;
-  int rowIndex, nextIndex;
+  NSUInteger rowIndex, nextIndex;
 
   // check for trivial case
   if (numItems == 0)
@@ -2206,8 +2206,8 @@ Also returns the child index relative to this parent. */
 	      /* If the item at _selectedRow was removed, we arbitrarily choose
 	       * another selected item (if there is still any). The policy
 	       * implemented below chooses the index most close to item. */
-	      int r1 = [_selectedRows indexLessThanIndex: rowIndex];
-	      int r2 = [_selectedRows indexGreaterThanOrEqualToIndex: rowIndex];
+	      NSUInteger r1 = [_selectedRows indexLessThanIndex: rowIndex];
+	      NSUInteger r2 = [_selectedRows indexGreaterThanOrEqualToIndex: rowIndex];
 	      if (r1 != NSNotFound && r2 != NSNotFound)
 		{
 		  _selectedRow = (rowIndex - r1) <= (r2 - rowIndex) ? r1 : r2;

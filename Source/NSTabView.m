@@ -101,7 +101,7 @@
 }
 
 - (void) insertTabViewItem: (NSTabViewItem*)tabViewItem
-                   atIndex: (int)index
+                   atIndex: (NSInteger)index
 {
   [tabViewItem _setTabView: self];
   [_items insertObject: tabViewItem atIndex: index];
@@ -154,15 +154,15 @@
   [self setNeedsDisplay: YES];
 }
 
-- (int) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
+- (NSInteger) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
 {
   return [_items indexOfObject: tabViewItem];
 }
 
-- (int) indexOfTabViewItemWithIdentifier: (id)identifier
+- (NSInteger) indexOfTabViewItemWithIdentifier: (id)identifier
 {
-  unsigned howMany = [_items count];
-  unsigned i;
+  NSUInteger howMany = [_items count];
+  NSUInteger i;
 
   for (i = 0; i < howMany; i++)
     {
@@ -175,12 +175,12 @@
   return NSNotFound;
 }
 
-- (int) numberOfTabViewItems
+- (NSInteger) numberOfTabViewItems
 {
   return [_items count];
 }
 
-- (NSTabViewItem*) tabViewItemAtIndex: (int)index
+- (NSTabViewItem*) tabViewItemAtIndex: (NSInteger)index
 {
   return [_items objectAtIndex: index];
 }
@@ -280,7 +280,7 @@
     }
 }
 
-- (void) selectTabViewItemAtIndex: (int)index
+- (void) selectTabViewItemAtIndex: (NSInteger)index
 {
   if (index < 0 || index >= [_items count])
     [self selectTabViewItem: nil];
@@ -290,14 +290,14 @@
 
 - (void) selectTabViewItemWithIdentifier: (id)identifier 
 {
-  int index = [self indexOfTabViewItemWithIdentifier: identifier];
+  NSInteger index = [self indexOfTabViewItemWithIdentifier: identifier];
 
   [self selectTabViewItemAtIndex: index];
 }
 
 - (void) takeSelectedTabViewItemFromSender: (id)sender
 {
-  int index = -1;
+  NSInteger index = -1;
 
   if ([sender respondsToSelector: @selector(indexOfSelectedItem)] == YES)
     {
@@ -305,9 +305,9 @@
     }
   else if ([sender isKindOfClass: [NSMatrix class]] == YES)
     {
-      int cols = [sender numberOfColumns];
-      int row = [sender selectedRow];
-      int col = [sender selectedColumn];
+      NSInteger cols = [sender numberOfColumns];
+      NSInteger row = [sender selectedRow];
+      NSInteger col = [sender selectedColumn];
 
       if (row >= 0 && col >= 0)
         {
@@ -464,8 +464,8 @@
  */
 - (NSTabViewItem*) tabViewItemAtPoint: (NSPoint)point
 {
-  int howMany = [_items count];
-  int i;
+  NSInteger howMany = [_items count];
+  NSInteger i;
 
   for (i = 0; i < howMany; i++)
     {

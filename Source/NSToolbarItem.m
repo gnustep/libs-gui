@@ -261,7 +261,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSImage *image = [[NSImage alloc] initWithSize: viewSize];
       NSCell *cell = [self cell];
       NSPasteboard *pboard;
-      int index = NSNotFound;
+      NSInteger index = NSNotFound;
           
       // Prepare the drag
       
@@ -753,7 +753,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSSize viewSize = [self frame].size;
       NSImage *image = [[NSImage alloc] initWithSize: viewSize];
       NSPasteboard *pboard;
-      int index = NSNotFound;
+      NSInteger index = NSNotFound;
       
       // Prepare the drag
       

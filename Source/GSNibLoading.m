@@ -1604,7 +1604,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
 {
   NSRange colonRange = [_tag rangeOfString: @":"];
-  unsigned int location = colonRange.location;
+  NSUInteger location = colonRange.location;
   
   if (location == NSNotFound)
     {
@@ -2024,7 +2024,7 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
   NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
-  int i = [nameValues indexOfObject: name];
+  NSUInteger i = [nameValues indexOfObject: name];
   id result = nil;
 
   if (i != NSNotFound)

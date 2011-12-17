@@ -49,14 +49,14 @@
 - (double) criticalValue;
 - (void) setCriticalValue: (double) val;
 
-- (int) numberOfMajorTickMarks;
-- (int) numberOfTickMarks;
-- (NSRect) rectOfTickMarkAtIndex: (int)index;
-- (void) setNumberOfMajorTickMarks: (int)count;
-- (void) setNumberOfTickMarks: (int)count;
+- (NSInteger) numberOfMajorTickMarks;
+- (NSInteger) numberOfTickMarks;
+- (NSRect) rectOfTickMarkAtIndex: (NSInteger)index;
+- (void) setNumberOfMajorTickMarks: (NSInteger)count;
+- (void) setNumberOfTickMarks: (NSInteger)count;
 - (void) setTickMarkPosition: (NSTickMarkPosition)pos;
 - (NSTickMarkPosition) tickMarkPosition;
-- (double) tickMarkValueAtIndex: (int)index;
+- (double) tickMarkValueAtIndex: (NSInteger)index;
 
 @end
 

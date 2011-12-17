@@ -556,7 +556,7 @@ typedef	struct {
 		      forName: @"GSThemeDomain"];
       if ([searchList containsObject: @"GSThemeDomain"] == NO)
 	{
-	  unsigned	index;
+	  NSUInteger index;
 
 	  /*
 	   * Higher priority than GSConfigDomain and NSRegistrationDomain,

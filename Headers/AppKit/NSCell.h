@@ -267,11 +267,11 @@ typedef enum {
 //
 // Setting the NSCell's State 
 //
-- (void)setState:(int)value;
-- (int)state;
+- (void)setState:(NSInteger)value;
+- (NSInteger)state;
 - (BOOL)allowsMixedState;
 - (void)setAllowsMixedState:(BOOL)flag;
-- (int)nextState;
+- (NSInteger)nextState;
 - (void)setNextState;
 
 //
@@ -378,8 +378,8 @@ typedef enum {
 - (BOOL)showsFirstResponder;
 - (void)setTitleWithMnemonic:(NSString *)aString;
 - (NSString *)mnemonic;
-- (void)setMnemonicLocation:(unsigned int)location;
-- (unsigned int)mnemonicLocation;
+- (void)setMnemonicLocation:(NSUInteger)location;
+- (NSUInteger)mnemonicLocation;
 - (BOOL)refusesFirstResponder;
 - (void)setRefusesFirstResponder:(BOOL)flag;
 
