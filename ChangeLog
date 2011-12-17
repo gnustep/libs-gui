@@ -9,6 +9,7 @@
 	* Headers/AppKit/NSSlider.h
 	* Headers/AppKit/NSTabView.h
 	* Headers/AppKit/NSCell.h
+	* Headers/AppKit/NSDrawer.h
 	* Source/NSSliderCell.m
 	* Source/NSLevelIndicator.m
 	* Source/NSButtonCell.m
@@ -16,7 +17,6 @@
 	* Source/NSMenu.m
 	* Source/NSMenuItem.m
 	* Source/NSLevelIndicatorCell.m
-	* Source/GSToolbarView.m
 	* Source/NSComboBoxCell.m
 	* Source/NSToolbarItem.m
 	* Source/NSSlider.m
@@ -28,9 +28,17 @@
 	* Source/NSOutlineView.m
 	* Source/NSParagraphStyle.m
 	* Source/NSPopUpButtonCell.m
-	* Source/NSView.m: Replace some occurences of int with NSInteger
+	* Source/NSView.m
+	* Source/NSDrawer.m
+	* Source/GSNibLoading.m
+	* Source/GSXibLoader.m
+	* Source/GSToolbarView.m
+	* Source/GSTheme.m
+	* Source/GSThemeDrawing.m
+	* ColorPickers/GSNamedColorPicker.m:
+	Replace some occurences of int with NSInteger
 	and unsigned with NSUInteger. This allows to recompile gui on 64
-	bit systems after the change in base to NSNotFound.
+	bit systems after the change to NSNotFound in base.
 
 2011-12-16 Riccardo Mottola <rm@gnu.org>
 

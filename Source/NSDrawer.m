@@ -57,7 +57,7 @@ static NSNotificationCenter *nc = nil;
   NSRect   _latestParentFrame;
   BOOL     _wasOpen;
 }
-- (NSRect) frameFromParentWindowFrameInState:(int)state;
+- (NSRect) frameFromParentWindowFrameInState:(NSInteger)state;
 
 // open/close
 - (void) openOnEdge;
@@ -151,15 +151,15 @@ static NSNotificationCenter *nc = nil;
   return _container;
 }
 
-- (NSRect) frameFromParentWindowFrameInState:(int)state
+- (NSRect) frameFromParentWindowFrameInState:(NSInteger)state
 {
   NSRect newFrame = [_parentWindow frame];
-  float totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
+  CGFloat totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
   NSRectEdge edge = [_drawer preferredEdge];
   BOOL opened = (state == NSDrawerOpenState || state == NSDrawerOpeningState);
   NSSize size = [_parentWindow frame].size; // [_drawer maxContentSize];
   NSRect windowContentRect = [[_parentWindow contentView] frame];
-  float windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height; // FIXME: This should probably add the toolbar height too, if the window has a toolbar
+  CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height; // FIXME: This should probably add the toolbar height too, if the window has a toolbar
   
   if (edge == NSMinXEdge) // left
     {
@@ -364,10 +364,10 @@ static NSNotificationCenter *nc = nil;
   NSTimeInterval slideDelay = 0.03;
   NSDate *nextStop = [NSDate dateWithTimeIntervalSinceNow:slideDelay];
   int count = 10;
-  float deltaX = (newFrame.origin.x - frame.origin.x) / count;
-  float deltaY = (newFrame.origin.y - frame.origin.y) / count;
-  float deltaW = (newFrame.size.width - frame.size.width) / count;
-  float deltaH = (newFrame.size.height - frame.size.height) / count;
+  CGFloat deltaX = (newFrame.origin.x - frame.origin.x) / count;
+  CGFloat deltaY = (newFrame.origin.y - frame.origin.y) / count;
+  CGFloat deltaW = (newFrame.size.width - frame.size.width) / count;
+  CGFloat deltaH = (newFrame.size.height - frame.size.height) / count;
   while (count--)
     {
       frame.origin.x += deltaX;
@@ -660,7 +660,7 @@ static NSNotificationCenter *nc = nil;
   return [[_drawerWindow contentView] frame].size;
 }
 
-- (float) leadingOffset
+- (CGFloat) leadingOffset
 {
   return _leadingOffset;
 }
@@ -699,7 +699,7 @@ static NSNotificationCenter *nc = nil;
   [_drawerWindow setContentSize: size];
 }
 
-- (void) setLeadingOffset: (float)offset
+- (void) setLeadingOffset: (CGFloat)offset
 {
   _leadingOffset = offset;
 }
@@ -714,12 +714,12 @@ static NSNotificationCenter *nc = nil;
   _minContentSize = size;
 }
 
-- (void) setTrailingOffset: (float)offset
+- (void) setTrailingOffset: (CGFloat)offset
 {
   _trailingOffset = offset;
 }
 
-- (float) trailingOffset
+- (CGFloat) trailingOffset
 {
   return _trailingOffset;
 }
@@ -796,7 +796,7 @@ static NSNotificationCenter *nc = nil;
   SET_DELEGATE_NOTIFICATION(WillOpen);
 }
 
-- (int) state
+- (NSInteger) state
 {
   return _state;
 }

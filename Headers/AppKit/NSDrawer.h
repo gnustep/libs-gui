@@ -55,9 +55,9 @@ enum {
   NSSize _maxContentSize;
   NSSize _minContentSize;
   NSSize _contentSize;
-  float _leadingOffset;
-  float _trailingOffset;
-  int _state;
+  CGFloat _leadingOffset;
+  CGFloat _trailingOffset;
+  NSInteger _state;
 }
 
 // Creation
@@ -74,15 +74,15 @@ enum {
 
 // Managing Size
 - (NSSize) contentSize;
-- (float) leadingOffset;
+- (CGFloat) leadingOffset;
 - (NSSize) maxContentSize;
 - (NSSize) minContentSize;
 - (void) setContentSize: (NSSize)size;
-- (void) setLeadingOffset: (float)offset;
+- (void) setLeadingOffset: (CGFloat)offset;
 - (void) setMaxContentSize: (NSSize)size;
 - (void) setMinContentSize: (NSSize)size;
-- (void) setTrailingOffset: (float)offset;
-- (float) trailingOffset;
+- (void) setTrailingOffset: (CGFloat)offset;
+- (CGFloat) trailingOffset;
 
 // Managing Edge
 - (NSRectEdge) edge;
@@ -98,7 +98,7 @@ enum {
 // Delegation and State
 - (id) delegate;
 - (void) setDelegate: (id)anObject;
-- (int) state;
+- (NSInteger) state;
 
 @end
 
