@@ -1,3 +1,12 @@
+2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSBrowserCell.m (-image, -setImage:): Override NSCell
+	implementation so these methods work without requiring the
+	cell to be an image cell.
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): Don't
+	draw background. Remove -(void) isOpaque { return YES; }. Also
+	pixel-align images and use modern -drawInRect: method.
+
 2011-12-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m (-_openItem:): Changed i fron NSUInteger

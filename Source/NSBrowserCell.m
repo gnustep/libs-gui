@@ -174,6 +174,24 @@ static NSFont *_leafFont;
   ASSIGN(_alternateImage, anImage);
 }
 
+- (NSImage*) image
+{
+  /**
+   * NSCell implementation requires our type to be an image cell which
+   * is not desirable for NSBrowserCell. See also comment in setType:
+   */
+  return _cell_image;
+}
+
+- (void) setImage: (NSImage*)anImage
+{
+  /**
+   * NSCell implementation changes our type to an image cell which
+   * is not desirable for NSBrowserCell. See also comment in setType:
+   */
+  ASSIGN (_cell_image, anImage);
+}
+
 - (NSColor *)highlightColorInView: (NSView *)controlView
 {
   return [_colorClass selectedControlColor];
@@ -266,47 +284,42 @@ static NSFont *_leafFont;
   NSRect	title_rect = cellFrame;
   NSImage	*branch_image = nil;
   NSImage	*cell_image = nil;
-  NSColor	*backColor;
-  NSWindow      *cvWin = [controlView window];
 
   if (_cell.is_highlighted || _cell.state)
     {
-      backColor = [self highlightColorInView: controlView];
-      [backColor set];
       if (!_browsercell_is_leaf)
 	branch_image = [object_getClass(self) highlightedBranchImage];
       cell_image = [self alternateImage];
     }
   else
     {
-      backColor = [cvWin backgroundColor];
-      [backColor set];
       if (!_browsercell_is_leaf)
 	branch_image = [object_getClass(self) branchImage];
       cell_image = [self image];
     }
   
-  // Clear the background
-  NSRectFill(cellFrame);	
-
   // Draw the branch image if there is one
   if (branch_image) 
     {
-      NSSize size;
-      NSPoint position;
+      NSRect imgRect;
 
-      size = [branch_image size];
-      position.x = MAX(NSMaxX(title_rect) - size.width - 4.0, 0.);
-      position.y = MAX(NSMidY(title_rect) - (size.height/2.), 0.);
-      /*
-       * Images are always drawn with their bottom-left corner at the origin
-       * so we must adjust the position to take account of a flipped view.
-       */
-      if ([controlView isFlipped])
-	position.y += size.height;
-      [branch_image compositeToPoint: position operation: NSCompositeSourceOver];
+      imgRect.size = [branch_image size];
+      imgRect.origin.x = MAX(NSMaxX(title_rect) - imgRect.size.width - 4.0, 0.);
+      imgRect.origin.y = MAX(NSMidY(title_rect) - (imgRect.size.height/2.), 0.);
 
-      title_rect.size.width -= size.width + 8;
+      if (controlView != nil)
+	{
+	  imgRect = [controlView centerScanRect: imgRect];
+	}
+
+      [branch_image drawInRect: imgRect
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
+      title_rect.size.width -= imgRect.size.width + 8;
     }
 
   // Skip 2 points from the left border
@@ -316,28 +329,31 @@ static NSFont *_leafFont;
   // Draw the cell image if there is one
   if (cell_image) 
     {
-      NSSize size;
-      NSPoint position;
+      NSRect imgRect;
       
-      size = [cell_image size];
-      position.x = NSMinX(title_rect);
-      position.y = MAX(NSMidY(title_rect) - (size.height/2.),0.);
-      if ([controlView isFlipped])
-	position.y += size.height;
-      [cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+      imgRect.size = [cell_image size];
+      imgRect.origin.x = NSMinX(title_rect);
+      imgRect.origin.y = MAX(NSMidY(title_rect) - (imgRect.size.height/2.),0.);
 
-      title_rect.origin.x += size.width + 4;
-      title_rect.size.width -= size.width + 4;
+      if (controlView != nil)
+	{
+	  imgRect = [controlView centerScanRect: imgRect];
+	}
+
+      [cell_image drawInRect: imgRect
+		    fromRect: NSZeroRect
+		   operation: NSCompositeSourceOver
+		    fraction: 1.0
+	      respectFlipped: YES
+		       hints: nil];
+
+      title_rect.origin.x += imgRect.size.width + 4;
+      title_rect.size.width -= imgRect.size.width + 4;
    }
 
   // Draw the body of the cell
   [self _drawAttributedText: [self attributedStringValue]
 	inFrame: title_rect];
-}
-
-- (BOOL) isOpaque
-{
-  return YES;
 }
 
 /*
