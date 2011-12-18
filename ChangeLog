@@ -1,5 +1,10 @@
 2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTableHeaderView.m (-initWithCoder:): Remove unneeded
+	"_tableView = nil" which was causing a problem with my xib file.
+
+2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSBrowserCell.m (-image, -setImage:): Override NSCell
 	implementation so these methods work without requiring the
 	cell to be an image cell.

@@ -815,7 +815,12 @@
   if (self == nil)
       return nil;
 
-  _tableView = nil;
+  // NOTE: some xib's can have unintuitive load orders where
+  // the above -initWithCoder: call causes the receiver's assocaited
+  // table view to be loaded, which calls -[self setTableView:].
+  // So at this point, _tableView might already have been set,
+  // so we must not set it to nil here.
+
   _resizedColumn = -1;
 
   return self;
