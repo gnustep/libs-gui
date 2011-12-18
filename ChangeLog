@@ -1,3 +1,8 @@
+2011-12-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m (-_openItem:): Changed i fron NSUInteger
+	to NSInteger.
+
 2011-12-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSliderCell.h

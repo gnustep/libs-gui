@@ -2073,7 +2073,8 @@ Also returns the child index relative to this parent. */
 
 - (void)_openItem: (id)item
 {
-  NSUInteger i, insertionPoint, numChildren, numDescendants;
+  NSUInteger insertionPoint, numChildren, numDescendants;
+  NSInteger i;
   id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
@@ -2110,15 +2111,16 @@ Also returns the child index relative to this parent. */
       // Add all of the children...
       if ([self isItemExpanded: child])
         {
-          NSUInteger i, numItems;
+          NSUInteger numItems;
+          NSInteger j;
           NSMutableArray *insertAll = [NSMutableArray array];
 
           [self _collectItemsStartingWith: child into: insertAll];
           numItems = [insertAll count];
           numDescendants += numItems;
-          for (i = numItems-1; i >= 0; i--)
+          for (j = numItems-1; j >= 0; j--)
             {
-              [_items insertObject: [insertAll objectAtIndex: i]
+              [_items insertObject: [insertAll objectAtIndex: j]
                       atIndex: insertionPoint];
             }
         }
