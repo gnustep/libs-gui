@@ -1,5 +1,15 @@
 2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTableView.m (-_isCellEditableColumn:row:): Tweak
+	criteria for determining cell editability::
+	- the delegate (if present) must say YES
+	- and the cell itself must return YES for isEditable
+	- and the table column must return YES for isEditable
+	Previously you could edit cells that returned NO for
+	isEditable if the column they were in was editable.
+
+2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTableHeaderView.m (-initWithCoder:): Remove unneeded
 	"_tableView = nil" which was causing a problem with my xib file.
 

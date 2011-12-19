@@ -6530,17 +6530,15 @@ For a more detailed explanation, -setSortDescriptors:. */
 			   row: (int) rowIndex
 		     
 {
-  NSTableColumn *tableColumn;
+  NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
+  NSCell *cell = [tableColumn dataCellForRow: rowIndex];
+  
+  BOOL cellIsEditable = [cell isEditable];
+  BOOL columnIsEditable = [tableColumn isEditable];
+  BOOL delegateAllowsEditing = [self _shouldEditTableColumn: tableColumn 
+							row: rowIndex];
 
-  tableColumn = [_tableColumns objectAtIndex: columnIndex];
-  // If the column is editable, the cell always is
-  if ([tableColumn isEditable])
-    {
-      // otherwise ask the delegate, if any.
-      return [self _shouldEditTableColumn: tableColumn row: rowIndex];
-    }
-
-  return NO;
+  return cellIsEditable && columnIsEditable && delegateAllowsEditing;
 }
 
 - (void) _willDisplayCell: (NSCell*)cell
