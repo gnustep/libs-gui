@@ -283,19 +283,19 @@ static NSFont *_leafFont;
 {
   NSRect	title_rect = cellFrame;
   NSImage	*branch_image = nil;
-  NSImage	*cell_image = nil;
+  NSImage	*cell_image = [self image];
 
   if (_cell.is_highlighted || _cell.state)
     {
       if (!_browsercell_is_leaf)
 	branch_image = [object_getClass(self) highlightedBranchImage];
-      cell_image = [self alternateImage];
+      if (nil != [self alternateImage])
+	  cell_image = [self alternateImage];
     }
   else
     {
       if (!_browsercell_is_leaf)
 	branch_image = [object_getClass(self) branchImage];
-      cell_image = [self image];
     }
   
   // Draw the branch image if there is one

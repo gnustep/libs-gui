@@ -1,5 +1,10 @@
 2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:):
+	When highlighted, use -image if -alternateImage is nil.
+
+2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTableView.m (-_isCellEditableColumn:row:): Tweak
 	criteria for determining cell editability::
 	- the delegate (if present) must say YES
