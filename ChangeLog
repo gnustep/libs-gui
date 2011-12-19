@@ -1,5 +1,10 @@
 2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
+	Set file icons on browser cells in the open/save panels.
+
+2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:):
 	When highlighted, use -image if -alternateImage is nil.
 

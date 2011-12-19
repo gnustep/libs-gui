@@ -1818,7 +1818,15 @@ createRowsForColumn: (int)column
 
 	  cell = [matrix cellAtRow: addedRows column: 0];
 	  [cell setStringValue: file];
-	  
+
+	  {
+	    NSImage *icon = [[ws iconForFile: pathAndFile] copy];
+	    const CGFloat rowHeight = 16; // FIXME:
+	    [icon setSize: NSMakeSize(rowHeight, rowHeight)];
+	    [cell setImage: icon];
+	    [icon release];
+	  }
+
 	  if (isDir)
 	    [cell setLeaf: NO];
 	  else
