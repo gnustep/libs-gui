@@ -1,3 +1,8 @@
+2011-12-20  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:):
+	Restore code to draw the background when the cell is highligted
+
 2011-12-18  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):

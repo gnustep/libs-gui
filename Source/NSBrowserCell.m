@@ -291,11 +291,17 @@ static NSFont *_leafFont;
 	branch_image = [object_getClass(self) highlightedBranchImage];
       if (nil != [self alternateImage])
 	  cell_image = [self alternateImage];
+
+      // If we are highlighted, fill the background
+      [[self highlightColorInView: controlView] setFill];
+      NSRectFill(cellFrame);
     }
   else
     {
       if (!_browsercell_is_leaf)
 	branch_image = [object_getClass(self) branchImage];
+
+      // (Don't fill the background)
     }
   
   // Draw the branch image if there is one
