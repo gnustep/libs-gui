@@ -1821,8 +1821,8 @@ createRowsForColumn: (int)column
 
 	  {
 	    NSImage *icon = [[ws iconForFile: pathAndFile] copy];
-	    const CGFloat rowHeight = 16; // FIXME:
-	    [icon setSize: NSMakeSize(rowHeight, rowHeight)];
+	    CGFloat iconSize = [cell cellSize].height - 1;
+	    [icon setSize: NSMakeSize(iconSize, iconSize)];
 	    [cell setImage: icon];
 	    [icon release];
 	  }
