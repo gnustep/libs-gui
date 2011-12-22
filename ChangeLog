@@ -1,3 +1,14 @@
+2011-12-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m (-_print): Remove unused variable.
+	* Source/GSLayoutManager.m (-_generateRunsToCharacter:): Remove
+	unused variable.
+	* Source/NSToolbar.m (-initWithCoder:): Don't call non-exisiting
+	super method.
+	* Source/GSNibLoading.m (-nibInstantiate): Add type cast for toolbar.
+	* TextConverters/RTF/RTFProducer.m (-_addAttributesString:): Use
+	destString instead of dest when writing the NSLinkAttributeName.
+
 2011-12-20  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:):

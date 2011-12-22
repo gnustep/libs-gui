@@ -481,7 +481,8 @@ static BOOL _isInInterfaceBuilder = NO;
 
       if ([_viewClass isKindOfClass: [NSToolbar class]])
 	{
-	  [_realObject setToolbar: _viewClass];
+          // FIXME: No idea what is going on here
+	  [_realObject setToolbar: (NSToolbar*)_viewClass];
 	}
 	  
       [_view _fixSubviews];

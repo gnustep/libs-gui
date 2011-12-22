@@ -498,7 +498,6 @@ Private method used internally by GSLayoutManager for sanity checking.
 -(void) _generateRunsToCharacter: (unsigned int)last
 {
   glyph_run_head_t *context[SKIP_LIST_DEPTH];
-  int positions[SKIP_LIST_DEPTH];
   glyph_run_head_t *h;
   unsigned int pos;
   unsigned int length;
@@ -518,7 +517,6 @@ Private method used internally by GSLayoutManager for sanity checking.
     {
       while (h->next) pos += h->char_length, h = h->next;
       context[level - 1] = h;
-      positions[level - 1] = pos;
       h++;
     }
   h--;

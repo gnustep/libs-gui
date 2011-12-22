@@ -1108,7 +1108,7 @@
 	  // concatenate into the RTF stream
 
 	  [result appendString: 
-		    [NSString stringWithFormat: @"{\\field{\\*\\fldinst HYPERLINK \"%@\"}{\\fldrslt ", dest]];
+		    [NSString stringWithFormat: @"{\\field{\\*\\fldinst HYPERLINK \"%@\"}{\\fldrslt ", destString]];
 	}
       else
         {
@@ -1186,13 +1186,11 @@
 {
   NSString *string;
   NSMutableString *result;
-  unsigned loc;
   unsigned length;
   NSRange effectiveRange;
 
   string = [text string];
   result = (NSMutableString *)[NSMutableString string];
-  loc = 0;
   length = [string length];
   effectiveRange = NSMakeRange(0, 0);
 

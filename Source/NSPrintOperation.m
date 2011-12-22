@@ -1026,10 +1026,9 @@ scaleRect(NSRect rect, double scale)
     {
       /* Calculate page rects we aren't processing to catch up to the
          first page we are */
-      NSRect pageRect;
-      pageRect = [self _adjustPagesFirst: 1
-                                   last: _currentPage - 1 
-                                   info: &info];
+      [self _adjustPagesFirst: 1
+                         last: _currentPage - 1 
+                         info: &info];
     }
 
   /* Print the header information */
