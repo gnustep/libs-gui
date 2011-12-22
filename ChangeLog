@@ -1,3 +1,8 @@
+2011-12-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-setFieldEditor:): Use different values for
+	both cases.
+
 2011-12-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
