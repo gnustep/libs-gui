@@ -1,12 +1,3 @@
-2011-12-23  Eric Wasylishen  <ewasylishen@gmail.com>
-
-	* Source/NSView.m (-beginPageInRect:atPlacement:): Always translate
-	by the placement value. Previously, we would translate only if the
-	rect parameter was empty, which doesn't make sense to me.
-	This fixes the bug where the last page of a document printed from
-	Ink/TextEdit was incorrectly positioned at the bottom of the
-	printed page.
-
 2011-12-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-setFieldEditor:): Use different values for
