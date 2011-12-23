@@ -4482,7 +4482,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 
   /* Translate to placement */
-  if ((location.x != 0 || location.y != 0) && NSIsEmptyRect(aRect) == YES)
+  if ((location.x != 0 || location.y != 0))
     DPStranslate(ctxt, location.x, location.y);
 
   // FIXME: Need to place this correctly. Maybe it isn't needed at all, 
