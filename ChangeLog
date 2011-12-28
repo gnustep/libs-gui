@@ -1,3 +1,7 @@
+2011-12-27 German Arias <german@xelalug.org>
+
+	* Resources/Spanish.lproj/Localizable.strings: Update.
+
 2011-12-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-setFieldEditor:): Use different values for
