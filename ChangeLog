@@ -1,3 +1,10 @@
+2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-resizeSubviewsWithOldSize:): Adjust
+	minimum and maximum sizes to ensure that the minimum size is not
+	greater than the current size and the maximum size is not smaller
+	than the current size.
+
 2011-12-27 German Arias <german@xelalug.org>
 
 	* Resources/Spanish.lproj/Localizable.strings: Update.

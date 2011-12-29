@@ -1994,6 +1994,22 @@ before this TODO can be removed
     }
 }
 
+- (void) resizeSubviewsWithOldSize: (NSSize)oldSize
+{
+  NSSize curSize = [self frame].size;
+
+  if (_minSize.width > curSize.width)
+    _minSize.width = curSize.width;
+  if (_minSize.height > curSize.height)
+    _minSize.height = curSize.height;
+
+  if (_maxSize.width < curSize.width)
+    _maxSize.width = curSize.width;
+  if (_maxSize.height < curSize.height)
+    _maxSize.height = curSize.height;
+
+  [super resizeSubviewsWithOldSize: oldSize];
+}
 
 
 /**** Text container origin ****/
