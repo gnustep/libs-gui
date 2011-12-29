@@ -1,5 +1,11 @@
 2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSLayoutManager.m (-_insertionPointRectFor...,
+	-insertionPintRect...): Get the insertion point rectangle right
+	for character index 0.
+
+2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-resizeSubviewsWithOldSize:): Adjust
 	minimum and maximum sizes to ensure that the minimum size is not
 	greater than the current size and the maximum size is not smaller

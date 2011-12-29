@@ -872,7 +872,13 @@ has the same y origin and height as the line frag rect it is in.
 
 	  /* will be -1 if there are no text containers */
 	  *textContainer = num_textcontainers - 1;
-	  return NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
+	  r = NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
+	  if (num_textcontainers > 0)
+	    {
+	      tc = textcontainers + num_textcontainers - 1;
+	      r.origin.x += [tc->textContainer lineFragmentPadding];
+	    }
+	  return r;
 	}
       fraction_through = 1.0;
     }
@@ -955,11 +961,6 @@ has the same y origin and height as the line frag rect it is in.
 				   textContainer: &i];
   if (i == -1 || textcontainers[i].textContainer != textContainer)
     return NSZeroRect;
-
-  if(cindex == 0)
-    {
-      r.origin.x += [textContainer lineFragmentPadding];
-    }
 
   return r;
 }
