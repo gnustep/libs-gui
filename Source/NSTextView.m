@@ -718,7 +718,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
 /* Designated initializer. */
 - (id) initWithFrame: (NSRect)frameRect
-      textContainer: (NSTextContainer *)container
+       textContainer: (NSTextContainer *)container
 {
   self = [super initWithFrame: frameRect];
   if (!self)
@@ -729,7 +729,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   _minSize = frameRect.size;
   _maxSize = NSMakeSize(frameRect.size.width, GSHUGE);
-  _textContainerInset = NSMakeSize(2, 0);
+  _textContainerInset = NSZeroSize;
 
   ASSIGN(_insertionPointColor, [NSColor textColor]);
   ASSIGN(_backgroundColor, [NSColor textBackgroundColor]);
@@ -1405,14 +1405,12 @@ to make sure syncing is handled properly in all cases.
     {
       [self setHorizontallyResizable: NO]; /* TODO: why? */
       [self setVerticallyResizable: NO];
-      [self setTextContainerInset: NSMakeSize(0,0)]; /* TODO: this is kind of ugly */
       [_textContainer setLineFragmentPadding: 0];
     }
   else
     {
       [self setHorizontallyResizable: NO]; /* TODO: why? */
       [self setVerticallyResizable: YES];
-      [self setTextContainerInset: NSMakeSize(2,0)];
       [_textContainer setLineFragmentPadding: 5.0];
     }
   _tf.is_field_editor = flag;

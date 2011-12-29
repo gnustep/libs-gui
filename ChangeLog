@@ -1,5 +1,11 @@
 2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m(-initWithFrame:textContainer:,
+	-setFieldEditor:): Change the default text container inset to
+	(0,0) to reduce blank space around text.
+
+2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSLayoutManager.m (-_insertionPointRectFor...,
 	-insertionPintRect...): Get the insertion point rectangle right
 	for character index 0.
