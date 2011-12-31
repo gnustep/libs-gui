@@ -1,3 +1,10 @@
+2011-12-31  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrintOperation.m (_print): Fix read of uninitialized
+	variable, which was breaking printing of wrap-to-page mode in
+	TextEdit. TODO: Run the printing code through valgrind, there is
+	a lot of suspicious code.
+
 2011-12-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m(-initWithFrame:textContainer:,

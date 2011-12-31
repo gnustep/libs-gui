@@ -940,7 +940,7 @@ scaleRect(NSRect rect, double scale)
 {
   int i, dir;
   BOOL knowsPageRange, allPages;
-  NSRange viewPageRange;
+  NSRange viewPageRange = NSMakeRange(1, 0);
   NSMutableDictionary *dict;
   NSNumber *value;
   page_info_t info;
