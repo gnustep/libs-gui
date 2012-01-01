@@ -1,3 +1,10 @@
+2012-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSLayoutManager.m (-characterIndexMoving:...): Fix two
+	incorrect comparisons which were causing range exceptions when
+	moving the cursor up in the first line and down in the last line
+	of a NSTextView, respectively.
+
 2011-12-31  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSPrintOperation.m (_print): Fix read of uninitialized

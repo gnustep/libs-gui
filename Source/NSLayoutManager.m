@@ -1012,7 +1012,7 @@ has the same y origin and height as the line frag rect it is in.
 	  const int delta = (direction == GSInsertionPointMoveUp) ? -1 : 1;
 
 	  /* First scan forward or backwards until we end up on a new line */
-	  for (new = from; (direction == GSInsertionPointMoveUp) ? (new >= 0) : (new <= length); new += delta)
+	  for (new = from; (direction == GSInsertionPointMoveUp) ? (new > 0) : (new < length); new += delta)
 	    {
 	      new_rect = [self _insertionPointRectForCharacterIndex: new
 						      textContainer: &new_tc];
