@@ -910,6 +910,12 @@ static NSMutableDictionary* printerCache;
   [inclusionSet addObject: ppdPath];
 
   ppdString = [NSString stringWithContentsOfFile: ppdPath];
+  if (nil == ppdString)
+    {
+      // The file isn't readable
+      [NSException raise: NSPPDParseException
+                  format: @"PPD file '%@' isn't readable", ppdPath];
+    }
 
   // Set up the scanner - Appending a newline means that it should be
   // able to process the last line correctly

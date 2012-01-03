@@ -1,3 +1,8 @@
+2012-01-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrinter.m (-loadPPDAtPath:...inclusionSet:): Raise an
+	exception if PPD file cannot be read.
+
 2012-01-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSLayoutManager.m (-characterIndexMoving:...): Fix two
