@@ -1,3 +1,10 @@
+2012-01-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m (+imageUnfilteredFileTypes, +imageFileTypes,
+	+imageUnfilteredPasteboardTypes, +imagePasteboardTypes,
+	+initialize, +_clearFileTypeCaches): Cache the file type results
+	for the image reps and clear the cache when these change.
+
 2012-01-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrinter.m (-loadPPDAtPath:...inclusionSet:): Raise an

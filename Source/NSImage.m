@@ -34,8 +34,9 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
-#import <Foundation/NSLock.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
@@ -122,6 +123,11 @@ static NSDictionary		*nsmapping = nil;
 static NSColor			*clearColor = nil;
 static Class cachedClass = 0;
 static Class bitmapClass = 0;
+// Cache for the supported file types
+static NSArray *imageUnfilteredFileTypes = nil;
+static NSArray *imageFileTypes = nil;
+static NSArray *imageUnfilteredPasteboardTypes = nil;
+static NSArray *imagePasteboardTypes = nil;
 
 static NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
@@ -179,6 +185,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       clearColor = RETAIN([NSColor clearColor]);
       cachedClass = [NSCachedImageRep class];
       bitmapClass = [NSBitmapImageRep class];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	selector: @selector(_clearFileTypeCaches)
+	name: NSImageRepRegistryChangedNotification
+	object: [NSImageRep class]];
       [imageLock unlock];
     }
 }
@@ -1806,26 +1817,46 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 
 + (NSArray *) imageUnfilteredFileTypes
 {
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-                                @selector(imageUnfilteredFileTypes));
+  if (nil == imageUnfilteredFileTypes)
+    {
+      ASSIGN(imageUnfilteredFileTypes, 
+             iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+                                    @selector(imageUnfilteredFileTypes)));
+    }
+  return imageUnfilteredFileTypes;
 }
 
 + (NSArray *) imageFileTypes
 {
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-                                @selector(imageFileTypes));
+  if (nil == imageFileTypes)
+    {
+      ASSIGN(imageFileTypes,
+             iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+                                    @selector(imageFileTypes)));
+    }
+  return imageFileTypes;
 }
 
 + (NSArray *) imageUnfilteredPasteboardTypes
 {
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-                                @selector(imageUnfilteredPasteboardTypes));
+  if (nil == imageUnfilteredPasteboardTypes)
+    {
+      ASSIGN(imageUnfilteredPasteboardTypes,
+             iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+                                    @selector(imageUnfilteredPasteboardTypes)));
+    }
+  return imageUnfilteredPasteboardTypes;
 }
 
 + (NSArray *) imagePasteboardTypes
 {
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-                                @selector(imagePasteboardTypes));
+  if (nil == imagePasteboardTypes)
+    {
+      ASSIGN(imagePasteboardTypes,
+             iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+                                    @selector(imagePasteboardTypes)));
+    }
+  return imagePasteboardTypes;
 }
 
 @end
@@ -1874,6 +1905,14 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
 @implementation NSImage (Private)
     
++ (void) _clearFileTypeCaches
+{
+  RELEASE(imageUnfilteredFileTypes);
+  RELEASE(imageFileTypes);
+  RELEASE(imageUnfilteredPasteboardTypes);
+  RELEASE(imagePasteboardTypes);
+}
+
 - (BOOL)_loadFromData: (NSData *)data
 {
   BOOL ok;
