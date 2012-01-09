@@ -153,6 +153,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 }
 
 @interface NSImage (Private)
++ (void) _clearFileTypeCaches;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
