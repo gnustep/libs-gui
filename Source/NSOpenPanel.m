@@ -113,87 +113,40 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   if (column == -1)
     return;
 
+  if (_delegateHasSelectionDidChange) 
+    {
+      [_delegate panelSelectionDidChange: self];
+    }
+
   matrix = [_browser matrixInColumn: column];
 
-  if ([_browser allowsMultipleSelection])
+  // Validate selection
+
+  BOOL selectionValid = YES;
+
+  NSArray *selectedCells = [matrix selectedCells];
+  NSEnumerator *e = [selectedCells objectEnumerator];
+  id o;
+  while ((o = [e nextObject]) != nil)
     {
-      NSArray  *selectedCells;
-
-      selectedCells = [matrix selectedCells];
-
-      if ([selectedCells count] <= 1)
+      if ((![o isLeaf] && !_canChooseDirectories) ||
+	  ([o isLeaf] && !_canChooseFiles))
 	{
-	  if (_canChooseDirectories == NO ||
-	     [[matrix selectedCell] isLeaf] == YES)
-	    [super _selectTextInColumn: column];
-	  else
-	    [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
+	  selectionValid = NO;
 	}
-      else
-	{
-	  [_form abortEditing];
-	  [[_form cellAtIndex: 0] setStringValue: @""];
-	  [_form setNeedsDisplay: YES];
-	  [_okButton setEnabled: YES];
-	}
+    }
+  [_okButton setEnabled: selectionValid];
+  
+  // Set form label
+
+  if ([selectedCells count] > 1)
+    {
+      [[_form cellAtIndex: 0] setStringValue: @""];
     }
   else
     {
-      if (_canChooseDirectories == NO || [[matrix selectedCell] isLeaf] == YES)
-	[super _selectTextInColumn: column];
-      else
-	[self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-    }
-}
-
-- (void) _selectCellName: (NSString *)title
-{
-  NSString           *cellString;
-  NSArray            *cells;
-  NSMatrix           *matrix;
-  NSComparisonResult  result;
-  NSRange             range;
-  int                 i, titleLength, cellLength, numberOfCells;
-
-  matrix = [_browser matrixInColumn: [_browser lastColumn]];
-  if ([matrix selectedCell])
-    return;
-
-  titleLength = [title length];
-  if (!titleLength)
-    {
-      [_okButton setEnabled: _canChooseDirectories];
-      return;
-    }
-
-  range.location = 0;
-  range.length = titleLength;
-
-  cells = [matrix cells];
-  numberOfCells = [cells count];
-
-  for (i = 0; i < numberOfCells; i++)
-    {
-      cellString = [[matrix cellAtRow: i column: 0] stringValue];
-
-      cellLength = [cellString length];
-      if (cellLength < titleLength)
-	continue;
-
-      result = [self _compareFilename: [cellString substringWithRange: range]
-                                 with: title];
-
-      if (result == NSOrderedSame)
-	{
-	  [matrix selectCellAtRow: i column: 0];
-	  [matrix scrollCellToVisibleAtRow: i column: 0];
-	  [_okButton setEnabled: YES];
-	  return;
-	}
-      else if (result == NSOrderedDescending)
-	break;
-    }
-  [_okButton setEnabled: NO];
+      [[_form cellAtIndex: 0] setStringValue: [[matrix selectedCell] stringValue]];
+    }  
 }
 
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename

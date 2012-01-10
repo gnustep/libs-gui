@@ -1,5 +1,11 @@
 2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSOpenPanel.m: Rewrite/simplify selection handling,
+	fix bug reported by Riccardo where OK button is disabled when
+	selecting directories after selecting a file.
+
+2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSGhostscriptImageRep.m: Add missing ASSIGN
 
 2012-01-09  Eric Wasylishen  <ewasylishen@gmail.com>
