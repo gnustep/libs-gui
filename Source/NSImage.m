@@ -155,9 +155,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches;
++ (NSString *) _pathForImageNamed: (NSString *)aName;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
+- (BOOL) _resetAndUseFromFile: (NSString *)fileName;
 - (GSRepData*) _cacheForRep: (NSImageRep*)rep;
 - (NSCachedImageRep*) _doImageCache: (NSImageRep *)rep;
 - (void) themeDidActivate: (NSNotification*)notif;
@@ -197,115 +199,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
-+ (NSString *) pathForImageNamed: (NSString *)aName
-{
-  [imageLock lock];
-
-  NSString	*realName = [nsmapping objectForKey: aName];
-  NSString	*ext;
-  NSString	*path = nil;
-  NSBundle	*main_bundle;
-  NSArray	*array;
-  
-  if (realName == nil)
-    {
-      realName = aName;
-    }
-  
-  // FIXME: This should use [NSBundle pathForImageResource], but this will 
-  // only allow imageUnfilteredFileTypes.
-  /* If there is no image with that name, search in the main bundle */
-  main_bundle = [NSBundle mainBundle];
-  ext = [realName pathExtension];
-  if (ext != nil && [ext length] == 0)
-    {
-      ext = nil;
-    }
-
-  /* Check if extension is one of the image types */
-  array = [self imageFileTypes];
-  if (ext != nil && [array indexOfObject: ext] != NSNotFound)
-    {
-      /* Extension is one of the image types
-	 So remove from the name */
-      realName = [realName stringByDeletingPathExtension];
-    }
-  else
-    {
-      /* Otherwise extension is not an image type
-	 So leave it alone */
-      ext = nil;
-    }
-  
-  /* First search locally */
-  if (ext)
-    path = [main_bundle pathForResource: realName ofType: ext];
-  else 
-    {
-      id o, e;
-      
-      e = [array objectEnumerator];
-      while ((o = [e nextObject]))
-	{
-	  path = [main_bundle pathForResource: realName 
-				       ofType: o];
-	  if (path != nil && [path length] != 0)
-	    break;
-	}
-    }
-  
-  /* Second search on theme bundle */
-  if (!path)
-    {
-      if (ext)
-	path = [[[GSTheme theme] bundle] pathForResource: realName
-						  ofType: ext
-					     inDirectory: @"ThemeImages"];
-      else 
-	{
-	  id o, e;
-	  
-	  e = [array objectEnumerator];
-	  while ((o = [e nextObject]))
-	    {
-	      path = [[[GSTheme theme] bundle] pathForResource: realName 
-							ofType: o
-						   inDirectory: @"ThemeImages"];
-	      if (path != nil && [path length] != 0)
-		break;
-	    }
-	}
-    }
-  
-  /* If not found then search in system */
-  if (!path)
-    {
-      if (ext)
-	{
-	  path = [NSBundle pathForLibraryResource: realName
-					   ofType: ext
-				      inDirectory: @"Images"];
-	}
-      else 
-	{
-	  id o, e;
-	  
-	  e = [array objectEnumerator];
-	  while ((o = [e nextObject]))
-	    {
-	      path = [NSBundle pathForLibraryResource: realName
-					       ofType: o
-					  inDirectory: @"Images"];
-	      if (path != nil && [path length] != 0)
-		break;
-	    }
-	}
-    }
-  
-  [imageLock unlock];
-  return path;
-}
-
 + (id) imageNamed: (NSString *)aName
 {
   NSImage   *image;
@@ -319,7 +212,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   image = (NSImage*)[nameDict objectForKey: aName];
   if (image == nil)
     {
-      NSString  *path = [self pathForImageNamed: aName];
+      NSString  *path = [self _pathForImageNamed: aName];
 
       if ([path length] != 0) 
         {
@@ -1930,6 +1823,112 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   RELEASE(imagePasteboardTypes);
 }
 
++ (NSString *) _pathForImageNamed: (NSString *)aName
+{
+  NSString	*realName = [nsmapping objectForKey: aName];
+  NSString	*ext;
+  NSString	*path = nil;
+  NSBundle	*main_bundle;
+  NSArray	*array;
+  
+  if (realName == nil)
+    {
+      realName = aName;
+    }
+  
+  // FIXME: This should use [NSBundle pathForImageResource], but this will 
+  // only allow imageUnfilteredFileTypes.
+  /* If there is no image with that name, search in the main bundle */
+  main_bundle = [NSBundle mainBundle];
+  ext = [realName pathExtension];
+  if (ext != nil && [ext length] == 0)
+    {
+      ext = nil;
+    }
+
+  /* Check if extension is one of the image types */
+  array = [self imageFileTypes];
+  if (ext != nil && [array indexOfObject: ext] != NSNotFound)
+    {
+      /* Extension is one of the image types
+	 So remove from the name */
+      realName = [realName stringByDeletingPathExtension];
+    }
+  else
+    {
+      /* Otherwise extension is not an image type
+	 So leave it alone */
+      ext = nil;
+    }
+  
+  /* First search locally */
+  if (ext)
+    path = [main_bundle pathForResource: realName ofType: ext];
+  else 
+    {
+      id o, e;
+      
+      e = [array objectEnumerator];
+      while ((o = [e nextObject]))
+	{
+	  path = [main_bundle pathForResource: realName 
+				       ofType: o];
+	  if (path != nil && [path length] != 0)
+	    break;
+	}
+    }
+  
+  /* Second search on theme bundle */
+  if (!path)
+    {
+      if (ext)
+	path = [[[GSTheme theme] bundle] pathForResource: realName
+						  ofType: ext
+					     inDirectory: @"ThemeImages"];
+      else 
+	{
+	  id o, e;
+	  
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
+	    {
+	      path = [[[GSTheme theme] bundle] pathForResource: realName 
+							ofType: o
+						   inDirectory: @"ThemeImages"];
+	      if (path != nil && [path length] != 0)
+		break;
+	    }
+	}
+    }
+  
+  /* If not found then search in system */
+  if (!path)
+    {
+      if (ext)
+	{
+	  path = [NSBundle pathForLibraryResource: realName
+					   ofType: ext
+				      inDirectory: @"Images"];
+	}
+      else 
+	{
+	  id o, e;
+	  
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
+	    {
+	      path = [NSBundle pathForLibraryResource: realName
+					       ofType: o
+					  inDirectory: @"Images"];
+	      if (path != nil && [path length] != 0)
+		break;
+	    }
+	}
+    }
+  
+  return path;
+}
+
 - (BOOL)_loadFromData: (NSData *)data
 {
   BOOL ok;
@@ -1990,6 +1989,17 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   ASSIGN(_fileName, fileName);
   _flags.syncLoad = YES;
   return YES;
+}
+
+- (BOOL) _resetAndUseFromFile: (NSString *)fileName
+{
+  [_reps removeAllObjects];
+  
+  if (!_flags.sizeWasExplicitlySet)
+    {
+      _size = NSZeroSize;
+    }
+  return [self _useFromFile: fileName];
 }
 
 // Cache the bestRepresentation.  If the bestRepresentation is not itself
@@ -2174,15 +2184,11 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
 - (void) themeDidActivate: (NSNotification *)notif
 {
-  NSString *newPath = [[self class] pathForImageNamed: _name];
+  NSString *newPath = [[self class] _pathForImageNamed: _name];
   if (newPath != nil && 
       ![newPath isEqual: _fileName])
     {
-      // FIXME: Factor out into a private method for loading
-      // a new path into an existing NSImage instance?
-      [_reps removeAllObjects];
-      _size = NSZeroSize;
-      [self _useFromFile: newPath];
+      [self _resetAndUseFromFile: newPath];
     }
 }
 

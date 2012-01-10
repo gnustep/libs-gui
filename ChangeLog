@@ -1,5 +1,14 @@
 2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m (+pathForImageNamed:): Add underscore and
+	move to private category. Also remove use of lock as it is
+	unnecessary
+	* Source/NSImage.m: (-themeDidActivate:): Extract method
+	_resetAndUseFromFile:. Don't reset _size if
+	flags.sizeWasExplicitlySet was true.
+
+2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSOpenPanel.m: Rewrite/simplify selection handling,
 	fix bug reported by Riccardo where OK button is disabled when
 	selecting directories after selecting a file.
