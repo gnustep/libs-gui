@@ -37,7 +37,6 @@
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSLock.h>
 #import <Foundation/NSNotification.h>
-#import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
@@ -154,7 +153,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 }
 
 @interface NSImage (Private)
-+ (void) _clearFileTypeCaches;
++ (void) _clearFileTypeCaches: (NSNotification*)notif;
++ (void) _themeDidActivate: (NSNotification*)notif;
 + (NSString *) _pathForImageNamed: (NSString *)aName;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
@@ -162,7 +162,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) _resetAndUseFromFile: (NSString *)fileName;
 - (GSRepData*) _cacheForRep: (NSImageRep*)rep;
 - (NSCachedImageRep*) _doImageCache: (NSImageRep *)rep;
-- (void) themeDidActivate: (NSNotification*)notif;
 @end
 
 @implementation NSImage
@@ -192,9 +191,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       bitmapClass = [NSBitmapImageRep class];
       [[NSNotificationCenter defaultCenter]
 	addObserver: self
-	selector: @selector(_clearFileTypeCaches)
-	name: NSImageRepRegistryChangedNotification
-	object: [NSImageRep class]];
+	   selector: @selector(_clearFileTypeCaches:)
+	       name: NSImageRepRegistryChangedNotification
+	     object: [NSImageRep class]];
+      
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(_themeDidActivate:)
+	       name: GSThemeDidActivateNotification
+	     object: nil];  
       [imageLock unlock];
     }
 }
@@ -224,7 +229,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
               AUTORELEASE(image);
               image->_flags.archiveByName = YES;
             }
-          image = (NSImage*)[nameDict objectForKey: aName];
         }
     }
   IF_NO_GC([[image retain] autorelease]);
@@ -482,11 +486,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       /* We retain self in case removing from the dictionary releases us */
       IF_NO_GC([[self retain] autorelease]);
-      [nameDict removeObjectForKey: _name];
-
-      [[NSNotificationCenter defaultCenter] removeObserver: self
-						      name: GSThemeDidActivateNotification
-						    object: nil]; 
+      [nameDict removeObjectForKey: _name]; 
       DESTROY(_name);
     }
   
@@ -501,11 +501,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   ASSIGN(_name, aName);
 
   [nameDict setObject: self forKey: _name];
-
-  [[NSNotificationCenter defaultCenter] addObserver: self
-					   selector: @selector(themeDidActivate:)
-					       name: GSThemeDidActivateNotification
-					     object: nil];  
   
   [imageLock unlock];
   return YES;
@@ -1815,12 +1810,31 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
 @implementation NSImage (Private)
     
-+ (void) _clearFileTypeCaches
++ (void) _clearFileTypeCaches: (NSNotification*)notif
 {
   RELEASE(imageUnfilteredFileTypes);
   RELEASE(imageFileTypes);
   RELEASE(imageUnfilteredPasteboardTypes);
   RELEASE(imagePasteboardTypes);
+}
+
++ (void) _themeDidActivate: (NSNotification *)notif
+{
+  [imageLock lock];
+
+  NSImage *o;
+  NSEnumerator *e = [[nameDict allValues] objectEnumerator];
+  while ((o = (NSImage*)[e nextObject]) != nil)
+    {
+      NSString *newPath = [self _pathForImageNamed: o->_name];
+      if (newPath != nil && 
+	  ![newPath isEqual: o->_fileName])
+	{
+	  [o _resetAndUseFromFile: newPath];
+	}
+    }
+ 
+  [imageLock unlock];
 }
 
 + (NSString *) _pathForImageNamed: (NSString *)aName
@@ -2179,16 +2193,6 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
           return repd;
         }
-    }
-}
-
-- (void) themeDidActivate: (NSNotification *)notif
-{
-  NSString *newPath = [[self class] _pathForImageNamed: _name];
-  if (newPath != nil && 
-      ![newPath isEqual: _fileName])
-    {
-      [self _resetAndUseFromFile: newPath];
     }
 }
 

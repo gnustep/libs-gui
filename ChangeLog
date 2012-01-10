@@ -1,5 +1,19 @@
 2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImage.m: Remove duplicate #import
+	* Source/NSImage.m: Correct _clearFileTypeCaches notification
+	method to take a NSNotification* parameter.
+	* Soure/NSImage.m (themeDidActivate:): Move to a class method,
+	and move the GSThemeDidActivateNotification subscription
+	to +[NSImage initialize]. Now the +_themeDidActivate: updates
+	all images by looking at all the values in nameDict. This should
+	function exactly the same as before, but seems to be quite a bit
+	faster due to fewer notifications being sent (?)
+	* Source/NSImage.m (+imageNamed:): Remove redundant fetch from
+	nameDict pointed out by Fred
+
+2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSImage.m (+pathForImageNamed:): Add underscore and
 	move to private category. Also remove use of lock as it is
 	unnecessary
