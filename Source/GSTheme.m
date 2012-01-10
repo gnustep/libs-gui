@@ -206,12 +206,6 @@ GSStringFromBorderType(NSBorderType borderType)
     }
 }
 
-
-
-@interface	NSImage (GSTheme)
-+ (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;
-@end
-
 @interface	GSTheme (Private)
 - (void) _revokeOwnerships;
 @end
@@ -446,10 +440,7 @@ typedef	struct {
 {
   NSUserDefaults	*defs;
   NSMutableArray	*searchList;
-  NSArray		*imagePaths;
   NSEnumerator		*enumerator;
-  NSString		*imagePath;
-  NSArray		*imageTypes;
   NSDictionary		*infoDict;
   NSWindow		*window;
   GSThemeControlState	state;
@@ -463,79 +454,6 @@ typedef	struct {
     {
       [_extraColors[state] release];
       _extraColors[state] = nil;
-    }
-
-  /*
-   * We step through all the bundle image resources and load them in
-   * to memory, setting their names so that they are visible to
-   * [NSImage+imageNamed:] and storing them in our local array.
-   */
-  imageTypes = [_imageClass imageFileTypes];
-  imagePaths = [_bundle pathsForResourcesOfType: nil
-				    inDirectory: @"ThemeImages"];
-  enumerator = [imagePaths objectEnumerator];
-  while ((imagePath = [enumerator nextObject]) != nil)
-    {
-      NSString	*ext = [imagePath pathExtension];
-
-      if (ext != nil && [imageTypes containsObject: ext] == YES)
-        {
-	  NSImage	*image;
-	  NSString	*imageName;
-
-	  imageName = [imagePath lastPathComponent];
-	  imageName = [imageName stringByDeletingPathExtension];
-
-	  image = [_images objectForKey: imageName];
-	  if (image == nil)
-	    {
-	      image = [[_imageClass alloc] initWithContentsOfFile: imagePath];
-	      if (image == nil)
-		{
-		  NSLog(@"GSTheme failed to load %@ from %@",
-		    imageName, imagePath);
-		}
-	      else
-		{
-		  NSImage	*old;
-
-		  /* OK, we have loaded a new image, so we cache it for the
-		   * lifetime of the theme, and we also make a record of
-		   * any previous/default image of the same name.
-		   */
-		  [_images setObject: image forKey: imageName];
-		  RELEASE(image);
-		  old = [NSImage imageNamed: imageName];
-		  if (old == nil)
-		    {
-		      /* This could potentially be a real problem ... if the
-		       * image from the current theme with this name is used
-		       * and the theme is unloaded, what happens when the
-		       * app tries to draw using the proxy to the unloaded
-		       * image?
-		       * To avoid that possibility, we save the new image
-		       * as if it were the old one ... so when the theme is
-		       * unloaded the old image persists.
-		       */
-		      [_oldImages setObject: image forKey: imageName];
-		    }
-		  else
-		    {
-		      /* Store the actual image, not the proxy.
-		       */
-		      old = [(id)old _resource];
-		      [_oldImages setObject: old forKey: imageName];
-		    }
-		}
-	    }
-
-	  /* We try to ensure that our new image can be found by name.
-	   */
-	  if (image != nil && [[image name] isEqualToString: imageName] == NO)
-	    {
-	      [NSImage _setImage: image name: imageName];
-	    }
-	}
     }
 
   /*
@@ -757,10 +675,6 @@ typedef	struct {
 
 - (void) deactivate
 {
-  NSEnumerator	*enumerator;
-  NSImage	*image;
-  NSString	*name;
-
   NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
 
   /* Tell everything that we will become inactive.
@@ -782,30 +696,6 @@ typedef	struct {
 	  method_setImplementation(m->mth, m->old);
 	}
     }
-
-  /* Unload all images created by this theme.
-   */
-  enumerator = [_images objectEnumerator];
-  while ((image = [enumerator nextObject]) != nil)
-    {
-      [image setName: nil];
-    }
-  [_images removeAllObjects];
-
-  /* Restore old images in NSImage's lookup dictionary so that the app
-   * still has images to draw.
-   * The remove all cached bundle images from both NSImage's name dictionary
-   * and our cache dictionary, so that we can be sure we reload afresh
-   * when re-activated (in case the images on disk changed ... eg by a
-   * theme editor modifying the theme).
-   */
-  enumerator = [_oldImages keyEnumerator];
-  while ((name = [enumerator nextObject]) != nil)
-    {
-      image = [_oldImages objectForKey: name];
-      [NSImage _setImage: image name: name];
-    }
-  [_oldImages removeAllObjects];
 
   [self _revokeOwnerships];
 

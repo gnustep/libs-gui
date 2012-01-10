@@ -1,3 +1,22 @@
+2012-01-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m: Remove code which sets and unsets images
+	on theme activation/deactivation.
+	* Source/NSImage.m (+imageNamed:): Factor out code for finding
+	the path for a name to a separate method, +pathForImageNamed.
+	The code is unchanged otherwise, except for fixing the retrieval
+	of images from the theme bundle, which was broken.
+	* Source/NSImage.m (-setName:): Remove code for creating theme
+	proxy. Subscribe/unscribe to theme change notification when
+	the receiver is added/removed from the name dictionary.
+	* Source/NSImage.m (-themeDidActivate:): Method called in
+	response to a GSThemeDidActivateNotification on images with
+	a name set. It does a path lookup in the same way that
+	+imageNamed: would, and checks if the path has changed due
+	to the theme change. If it has, all reps are discarded and
+	the image at the new path is loaded. This avoids the need for
+	the theme proxy objects.
+
 2012-01-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (+imageUnfilteredFileTypes, +imageFileTypes,

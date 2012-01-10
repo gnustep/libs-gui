@@ -37,6 +37,7 @@
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSLock.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
@@ -159,6 +160,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) _loadFromFile: (NSString *)fileName;
 - (GSRepData*) _cacheForRep: (NSImageRep*)rep;
 - (NSCachedImageRep*) _doImageCache: (NSImageRep *)rep;
+- (void) themeDidActivate: (NSNotification*)notif;
 @end
 
 @implementation NSImage
@@ -195,10 +197,119 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
++ (NSString *) pathForImageNamed: (NSString *)aName
+{
+  [imageLock lock];
+
+  NSString	*realName = [nsmapping objectForKey: aName];
+  NSString	*ext;
+  NSString	*path = nil;
+  NSBundle	*main_bundle;
+  NSArray	*array;
+  
+  if (realName == nil)
+    {
+      realName = aName;
+    }
+  
+  // FIXME: This should use [NSBundle pathForImageResource], but this will 
+  // only allow imageUnfilteredFileTypes.
+  /* If there is no image with that name, search in the main bundle */
+  main_bundle = [NSBundle mainBundle];
+  ext = [realName pathExtension];
+  if (ext != nil && [ext length] == 0)
+    {
+      ext = nil;
+    }
+
+  /* Check if extension is one of the image types */
+  array = [self imageFileTypes];
+  if (ext != nil && [array indexOfObject: ext] != NSNotFound)
+    {
+      /* Extension is one of the image types
+	 So remove from the name */
+      realName = [realName stringByDeletingPathExtension];
+    }
+  else
+    {
+      /* Otherwise extension is not an image type
+	 So leave it alone */
+      ext = nil;
+    }
+  
+  /* First search locally */
+  if (ext)
+    path = [main_bundle pathForResource: realName ofType: ext];
+  else 
+    {
+      id o, e;
+      
+      e = [array objectEnumerator];
+      while ((o = [e nextObject]))
+	{
+	  path = [main_bundle pathForResource: realName 
+				       ofType: o];
+	  if (path != nil && [path length] != 0)
+	    break;
+	}
+    }
+  
+  /* Second search on theme bundle */
+  if (!path)
+    {
+      if (ext)
+	path = [[[GSTheme theme] bundle] pathForResource: realName
+						  ofType: ext
+					     inDirectory: @"ThemeImages"];
+      else 
+	{
+	  id o, e;
+	  
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
+	    {
+	      path = [[[GSTheme theme] bundle] pathForResource: realName 
+							ofType: o
+						   inDirectory: @"ThemeImages"];
+	      if (path != nil && [path length] != 0)
+		break;
+	    }
+	}
+    }
+  
+  /* If not found then search in system */
+  if (!path)
+    {
+      if (ext)
+	{
+	  path = [NSBundle pathForLibraryResource: realName
+					   ofType: ext
+				      inDirectory: @"Images"];
+	}
+      else 
+	{
+	  id o, e;
+	  
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
+	    {
+	      path = [NSBundle pathForLibraryResource: realName
+					       ofType: o
+					  inDirectory: @"Images"];
+	      if (path != nil && [path length] != 0)
+		break;
+	    }
+	}
+    }
+  
+  [imageLock unlock];
+  return path;
+}
+
 + (id) imageNamed: (NSString *)aName
 {
-  NSImage	*image;
- 
+  NSImage   *image;
+
   /* 2009-09-10 changed operation of nsmapping so that the loaded
    * image is stored under the key 'aName', not under the mapped
    * name.  That way the image is created with the correct name and
@@ -206,105 +317,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
    */
   [imageLock lock];
   image = (NSImage*)[nameDict objectForKey: aName];
-  if (image == nil || [(id)image _resource] == nil)
+  if (image == nil)
     {
-      NSString	*realName = [nsmapping objectForKey: aName];
-      NSString	*ext;
-      NSString	*path = nil;
-      NSBundle	*main_bundle;
-      NSArray	*array;
-
-      if (realName == nil)
-	{
-          realName = aName;
-	}
- 
-      // FIXME: This should use [NSBundle pathForImageResource], but this will 
-      // only allow imageUnfilteredFileTypes.
-      /* If there is no image with that name, search in the main bundle */
-      main_bundle = [NSBundle mainBundle];
-      ext = [realName pathExtension];
-      if (ext != nil && [ext length] == 0)
-        {
-          ext = nil;
-        }
-
-      /* Check if extension is one of the image types */
-      array = [self imageFileTypes];
-      if (ext != nil && [array indexOfObject: ext] != NSNotFound)
-        {
-          /* Extension is one of the image types
-             So remove from the name */
-          realName = [realName stringByDeletingPathExtension];
-        }
-      else
-        {
-          /* Otherwise extension is not an image type
-             So leave it alone */
-          ext = nil;
-        }
-
-      /* First search locally */
-      if (ext)
-        path = [main_bundle pathForResource: realName ofType: ext];
-      else 
-        {
-          id o, e;
-
-          e = [array objectEnumerator];
-          while ((o = [e nextObject]))
-            {
-              path = [main_bundle pathForResource: realName 
-					   ofType: o];
-              if (path != nil && [path length] != 0)
-                break;
-            }
-        }
-
-      /* Second search on theme bundle */
-      if (!path)
-	{
-	  if (ext)
-	    path = [[[GSTheme theme] bundle] pathForResource: realName ofType: ext];
-	  else 
-	    {
-	      id o, e;
-	      
-	      e = [array objectEnumerator];
-	      while ((o = [e nextObject]))
-		{
-		  path = [[[GSTheme theme] bundle] pathForResource: realName 
-				                            ofType: o];
-		  if (path != nil && [path length] != 0)
-		    break;
-		}
-	    }
-	}
-
-      /* If not found then search in system */
-      if (!path)
-        {
-          if (ext)
-            {
-              path = [NSBundle pathForLibraryResource: realName
-                                               ofType: ext
-                                          inDirectory: @"Images"];
-            }
-          else 
-            {
-              id o, e;
-
-              e = [array objectEnumerator];
-              while ((o = [e nextObject]))
-                {
-                  path = [NSBundle pathForLibraryResource: realName
-						   ofType: o
-                                              inDirectory: @"Images"];
-                  if (path != nil && [path length] != 0)
-                    break;
-                }
-            }
-        }
+      NSString  *path = [self pathForImageNamed: aName];
 
       if ([path length] != 0) 
         {
@@ -362,7 +377,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   ASSIGN(_color, clearColor);
   _cacheMode = NSImageCacheDefault;
-  
+
   return self;
 }
 
@@ -549,8 +564,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
  */
 - (BOOL) setName: (NSString *)aName
 {
-  GSThemeProxy	*proxy = nil;
-  
   [imageLock lock];
 
   /* The name is already set... nothing to do.
@@ -564,7 +577,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   /* If the new name is already in use by another image,
    * we must do nothing.
    */
-  if (aName != nil && [[nameDict objectForKey: aName] _resource] != nil)
+  if (aName != nil && [nameDict objectForKey: aName] != nil)
     {
       [imageLock unlock];
       return NO;
@@ -577,6 +590,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       /* We retain self in case removing from the dictionary releases us */
       IF_NO_GC([[self retain] autorelease]);
       [nameDict removeObjectForKey: _name];
+
+      [[NSNotificationCenter defaultCenter] removeObserver: self
+						      name: GSThemeDidActivateNotification
+						    object: nil]; 
       DESTROY(_name);
     }
   
@@ -589,14 +606,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 
   ASSIGN(_name, aName);
-  
-  if ((proxy = [nameDict objectForKey: _name]) == nil)
-    {
-      proxy = [GSThemeProxy alloc];
-      [nameDict setObject: proxy forKey: _name];
-      [proxy release]; 
-    }
-  [proxy _setResource: self];
+
+  [nameDict setObject: self forKey: _name];
+
+  [[NSNotificationCenter defaultCenter] addObserver: self
+					   selector: @selector(themeDidActivate:)
+					       name: GSThemeDidActivateNotification
+					     object: nil];  
   
   [imageLock unlock];
   return YES;
@@ -2156,53 +2172,18 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
     }
 }
 
-@end
-
-@implementation	NSImage (GSTheme)
-
-/* This method is used by the theming system to replace a named image
- * without disturbing the proxy ... so that all views and cells using
- * the named image are automatically updated to use the new image.
- * This is the counterpart to the -setName: method, which replaces the
- * proxy (to change a named image without updating the image used by
- * existing views and cells).
- */
-+ (NSImage*) _setImage: (NSImage*)image name: (NSString*)name
+- (void) themeDidActivate: (NSNotification *)notif
 {
-  GSThemeProxy	*proxy = nil;
-  
-  NSAssert([image isKindOfClass: [NSImage class]], NSInvalidArgumentException);
-  NSAssert(![image isProxy], NSInvalidArgumentException);
-  NSAssert([name isKindOfClass: [NSString class]], NSInvalidArgumentException);
-  NSAssert([name length] > 0, NSInvalidArgumentException);
-  NSAssert([image name] == nil, NSInvalidArgumentException);
-
-  [imageLock lock];
-  ASSIGNCOPY(image->_name, name);
-  if ((proxy = [nameDict objectForKey: image->_name]) == nil)
+  NSString *newPath = [[self class] pathForImageNamed: _name];
+  if (newPath != nil && 
+      ![newPath isEqual: _fileName])
     {
-      proxy = [GSThemeProxy alloc];
-      [nameDict setObject: proxy forKey: image->_name];
-      [proxy release]; 
+      // FIXME: Factor out into a private method for loading
+      // a new path into an existing NSImage instance?
+      [_reps removeAllObjects];
+      _size = NSZeroSize;
+      [self _useFromFile: newPath];
     }
-  else
-    {
-      /* Remove the name from the old image.
-       */
-      DESTROY(((NSImage*)[proxy _resource])->_name);
-    }
-  [proxy _setResource: image];
-  IF_NO_GC([[proxy retain] autorelease]);
-
-  /* Force the image to be archived by name.  This prevents
-   * problems such as when/if gorm is being used with a theme
-   * active, it will not save the image which was loaded
-   * here and will, instead save the name so that the proper
-   * image gets loaded in the future.
-   */
-  image->_flags.archiveByName = YES;
-
-  [imageLock unlock];
-  return (NSImage*)proxy;
 }
+
 @end
