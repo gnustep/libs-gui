@@ -259,7 +259,7 @@
       return nil;
     }
 
- _bitmap = [NSBitmapImageRep imageRepWithData: pngData];
+  ASSIGN(_bitmap, [NSBitmapImageRep imageRepWithData: pngData]);
  
   [self setSize: [_bitmap size]];
   [self setAlpha: [_bitmap hasAlpha]];

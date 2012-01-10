@@ -1,3 +1,7 @@
+2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSGhostscriptImageRep.m: Add missing ASSIGN
+
 2012-01-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m: Remove code which sets and unsets images
