@@ -1812,10 +1812,10 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
     
 + (void) _clearFileTypeCaches: (NSNotification*)notif
 {
-  RELEASE(imageUnfilteredFileTypes);
-  RELEASE(imageFileTypes);
-  RELEASE(imageUnfilteredPasteboardTypes);
-  RELEASE(imagePasteboardTypes);
+  DESTROY(imageUnfilteredFileTypes);
+  DESTROY(imageFileTypes);
+  DESTROY(imageUnfilteredPasteboardTypes);
+  DESTROY(imagePasteboardTypes);
 }
 
 + (void) _themeDidActivate: (NSNotification *)notif
