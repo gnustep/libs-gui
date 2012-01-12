@@ -381,7 +381,10 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   NSPoint p = [self convertPoint: [event locationInWindow] fromView: nil];
 
   if (NSPointInRect(p, contentRect))
-    return;
+    {
+      [super mouseDown: event];
+      return;
+    }
 
   if (NSPointInRect(p, titleBarRect))
     {
@@ -394,6 +397,8 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
       [self resizeWindowStartingWithEvent: event];
       return;
     }
+
+  [super mouseDown: event];
 }
 
 - (void) setFrame: (NSRect)frameRect
