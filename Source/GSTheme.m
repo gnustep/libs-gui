@@ -231,7 +231,6 @@ GSStringFromBorderType(NSBorderType borderType)
 @implementation GSTheme
 
 static GSTheme			*defaultTheme = nil;
-static NSString			*currentThemeName = nil;
 static GSTheme			*theTheme = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
@@ -273,10 +272,17 @@ typedef	struct {
 
   defs = [NSUserDefaults standardUserDefaults];
   name = [defs stringForKey: @"GSTheme"];
-  if (name != currentThemeName && [name isEqual: currentThemeName] == NO)
+  if (0 == [name length])
+    {
+      name = @"GNUstep";
+    }
+  else if ([[name pathExtension] isEqual: @"theme"])
+    {
+      name = [name stringByDeletingPathExtension];
+    }
+  if (NO == [[name lastPathComponent] isEqual: [theTheme name]])
     {
       [self setTheme: [self loadThemeNamed: name]];
-      ASSIGN(currentThemeName, name);	// Don't try to load again.
     }
 }
 
@@ -288,13 +294,12 @@ typedef	struct {
       null = RETAIN([NSNull null]);
       defaultTheme = [[self alloc] initWithBundle: nil];
       ASSIGN(theTheme, defaultTheme);
-      ASSIGN(currentThemeName, [defaultTheme name]);
       names = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
 	NSIntMapValueCallBacks, 0);
+      /* Establish the theme specified by the user defaults (if any);
+       */
+      [self defaultsDidChange: nil];
     }
-  /* Establish the theme specified by the user defaults (if any);
-   */
-  [self defaultsDidChange: nil];
 }
 
 + (GSTheme*) loadThemeNamed: (NSString*)aName
@@ -304,7 +309,11 @@ typedef	struct {
   GSTheme	*instance;
   NSString	*theme;
 
-  if ([aName length] == 0)
+  if ([[aName pathExtension] isEqual: @"theme"])
+    {
+      aName = [aName stringByDeletingPathExtension];
+    }
+  if ([aName length] == 0 || [[aName lastPathComponent] isEqual: @"GNUstep"])
     {
       return defaultTheme;
     }
@@ -316,21 +325,17 @@ typedef	struct {
   else
     {
       aName = [aName lastPathComponent];
+    }
 
-      /* Ensure that the theme name has the 'theme' extension.
-       */
-      if ([[aName pathExtension] isEqualToString: @"theme"] == YES)
-	{
-	  theme = aName;
-	}
-      else
-	{
-	  theme = [aName stringByAppendingPathExtension: @"theme"];
-	}
-      if ([theme isEqualToString: @"GNUstep.theme"] == YES)
-	{
-	  return defaultTheme;
-	}
+  /* Ensure that the theme name has the 'theme' extension.
+   */
+  if ([[aName pathExtension] isEqualToString: @"theme"] == YES)
+    {
+      theme = aName;
+    }
+  else
+    {
+      theme = [aName stringByAppendingPathExtension: @"theme"];
     }
 
   bundle = [themes objectForKey: theme];
@@ -415,10 +420,8 @@ typedef	struct {
 	removeObserver: self];
 
       [theTheme deactivate];
-      DESTROY(currentThemeName);
       ASSIGN (theTheme, theme);
       [theTheme activate];
-      ASSIGN(currentThemeName, [theTheme name]);
 
       /*
        * Listen to notifications...

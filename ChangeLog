@@ -1,3 +1,8 @@
+2011-01-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Clean up and simplify theme switching based on
+	defaults system values.
+
 2012-01-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSStandardWindowDecorationView.m (-mouseDown:): Pass the

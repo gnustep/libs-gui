@@ -133,7 +133,7 @@
       <p>
 	While many themes can be created without subclassing GSTheme,
 	there are some cases where writing code is necessary (most
-	notably when interfacing to a native themeing engine for some
+	notably when interfacing to a native theming engine for some
 	platform in order to make a GNUstep app have a native look).<br />
 	In these cases the subclass should follow certain rules in order
 	to operate cleanly and efficiently:
@@ -160,17 +160,17 @@
 	  with versions stored in the theme bundle.<br />
 	  If a subclass wishes to dynamically provide these resources rather
 	  than supplying them as static information in the bundle, it may
-	  update the in-memory information after the normal opertation has
+	  update the in-memory information after the normal operation has
 	  taken place.  This should be done by the theme registering itsself
 	  as an observer of GSThemeWillActivateNotification and adding the
-	  resources just before the theme bocomes active.<br />
+	  resources just before the theme becomes active.<br />
 	  Cleanup may be done in response to a GSThemeWillDeactivateNotification
 	  (called before the default cleanup) or a
 	  GSThemeDidDeactivateNotification (called after the default cleanup).
 	</desc>
         <term>Versioning</term>
 	<desc>
-	  With a theme which contains opnly static resources, versioning is
+	  With a theme which contains only static resources, versioning is
 	  not much of an issue, but with a code-based theme (ie where you
 	  subclass GSTheme) versioning does become very important.  This is
 	  because, while you can load code from a bundle, you can't unload
@@ -460,7 +460,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>This method is called automatically when the receiver is made into
  * the currently active theme by the +setTheme: method. Subclasses may
  * override it to perform startup operations, however, the method is not
- * really intended to be overridden, and subcasses should generally
+ * really intended to be overridden, and subclasses should generally
  * handle activation work in response to the GSThemeWillActivatenotification
  * posted by this method.
  * </p>
@@ -475,7 +475,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>Finally, this method marks all windows in the application as needing
  * update ... so they will draw themselves with the new theme information.
  * </p>
- * <p>NB. If a GSTheme subclass is integrating to an external native themeing
+ * <p>NB. If a GSTheme subclass is integrating to an external native theming
  * mechanism in order to make GNUstep apps look like native apps, then the
  * external theme may change dynamically and the GSTheme subclass may need
  * to change the GNUstep application to reflect this change.  When this
@@ -547,7 +547,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * sends a GSThemeDidDeactivateNotification to allow other parts of the
  * GUI library to update themselves.
  * </p>
- * <p>NB. If a GSTheme subclass is integrating to an external native themeing
+ * <p>NB. If a GSTheme subclass is integrating to an external native theming
  * mechanism in order to make GNUstep apps look like native apps, then the
  * external theme may change dynamically and the GSTheme subclass may need
  * to change the GNUstep application to reflect this change.  When this
@@ -602,14 +602,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  *     <deflist>
  *       <term>FileName</term>
  *       <desc>Name of the file (within the GSThemeTiles directory in the
- *       bundle) in which the image for this tile is tored.
+ *       bundle) in which the image for this tile is stored.
  *       </desc>
  *       <term>HorizontalDivision</term>
- *       <desc>The offet along the X-axis used to divide the image into
+ *       <desc>The offset along the X-axis used to divide the image into
  *       columns of tiles.
  *       </desc>
  *       <term>VerticalDivision</term>
- *       <desc>The offet along the Y-axis used to divide the image into
+ *       <desc>The offer along the Y-axis used to divide the image into
  *       rows of tiles.
  *       </desc>
  *     </deflist>
@@ -623,7 +623,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSString*) name;
 
-/** Returns the name used to locate theming resources for a particular gui
+/** Returns the name used to locate theming resources for a particular GUI
  * element.  If no name has been set for the particular object this method
  * returns nil.
  */
@@ -649,7 +649,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) setName: (NSString*)aString;
 
 /** Set the name that is used to identify theming resources for a particular
- * control or other gui element.  This is used so that where an element is
+ * control or other GUI element.  This is used so that where an element is
  * part of a control it can be displayed differently from the same class of
  * element used outside that control.<br />
  * Supplying a nil value for aString simply removes any name setting for
@@ -673,13 +673,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * and the authors of the theme.
  * </p>
  * <p>The code managing this object (if any) must be prepared to have the
- * content view of the window reparented into another window for display
+ * content view of the window re-parented into another window for display
  * on screen.
  * </p>
  */
 - (NSWindow*) themeInspector;
 
-/** Removes the name tile images from cahce, forcing re-creation next
+/** Removes the name tile images from cache, forcing re-creation next
  * time the named tiles are required.<br />
  * Passing nil for aName removes all named tiles.<br />
  * Passing a negative value for elementState applies to all caches.
@@ -699,7 +699,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * The elementState argument specifies the state for which tiles are
  * requested.
  * See the -colorNamed:state: method for determining colors to be
- * used for drawing specific gui elements.
+ * used for drawing specific GUI elements.
  */
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
 		      state: (GSThemeControlState)elementState;
@@ -715,7 +715,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Theme drawing methods.<br />
  * Methods which return information/resources are generally expected
  * (ie unless explicitly documented otherwise) to be returning something
- * which persists until the mewthod is called again or until the current
+ * which persists until the method is called again or until the current
  * theme is deactivated (whichever comes first).<br />
  * This means that drawing code should <strong>not</strong> need to
  * retain/release any returned object (the theme is responsible for
@@ -822,7 +822,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (float) defaultScrollerWidth;
 
 /** 
- * Method fors toolbar theming.
+ * Method for toolbar theming.
  */
 - (NSColor *) toolbarBackgroundColor;
 - (NSColor *) toolbarBorderColor;
@@ -886,7 +886,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overriden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color.</p>
  */
 - (NSColor *) menuBackgroundColor;
 /**
@@ -903,7 +903,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal: 
  * and [NSMenuItemCell-backgroundColor].</p>
  * 
- * <p>Can be overriden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color.</p>
  */
 - (NSColor *) menuItemBackgroundColor;
 - (NSColor *) menuBarBackgroundColor;
@@ -917,7 +917,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overriden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color.</p>
  */
 - (NSColor *) menuBorderColor;
 /**
@@ -929,7 +929,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned edge color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overriden in subclasses to return a custom color per edge.</p>
+ * <p>Can be overridden in subclasses to return a custom color per edge.</p>
  */
 - (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge 
                         isHorizontal: (BOOL)horizontal;
@@ -946,7 +946,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned value used by 
  * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal:</p>
  * 
- * <p>Can be overriden in subclasses.</p>
+ * <p>Can be overridden in subclasses.</p>
  */
 - (BOOL) drawsBorderForMenuItemCell: (NSMenuItemCell *)cell 
                               state: (GSThemeControlState)state
@@ -960,7 +960,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /**
  * <p>Draws the menu item title.</p>
  *
- * <p>Can be overriden to customize the text font, size and position.<br />
+ * <p>Can be overridden to customize the text font, size and position.<br />
  * You can use <code>[[cell menuItem] title]</code> to get the title.</p>
  *
  * <p>The title color is mapped to the theme state as described below:</p>
@@ -984,7 +984,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
  * 
- * <p>Can be overriden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color.</p>
  */
 - (NSColor *) menuSeparatorColor;
 /**
@@ -995,7 +995,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
  * 
- * <p>Can be overriden in subclasses to return a custom value.</p>
+ * <p>Can be overridden in subclasses to return a custom value.</p>
  */
 - (CGFloat) menuSeparatorInset;
 /**
@@ -1006,7 +1006,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  *
  * <p>You can provide an image tile named <em>GSMenuSeparatorItem</em> to 
  * draw the separator.</br>
- * Can be overriden in subclasses to customize the drawing.</p>
+ * Can be overridden in subclasses to customize the drawing.</p>
  *
  * <p>See also -menuSeparatorColor and -menuSeparatorInset</p>
  */
@@ -1140,7 +1140,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 		       inRect: (NSRect)border 
 		     withClip: (NSRect)clip;
 
-/** Draw a grey bezel border */
+/** Draw a gray bezel border */
 - (NSRect) drawGrayBezel: (NSRect)border withClip: (NSRect)clip;
 
 /** Draw a groove border */
@@ -1155,7 +1155,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 @end
 
 /**
- * Low level drawiong methods ... themes may use these for drawing,
+ * Low level drawing methods ... themes may use these for drawing,
  * but should not normally override them.
  */
 @interface	GSTheme (LowLevelDrawing)
