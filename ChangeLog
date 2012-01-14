@@ -1,5 +1,17 @@
 2011-01-14  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSTheme.m:
+	* Source/NSImage.m:
+	Attempt to get image support working as documented again ... restore
+	code in GSTheme to set up new named images on activation and restore
+	originals on deactivation (rather than doing everything in a
+	notification handler at the wrong point).
+	Honor +imageClass as the class to load new images again.
+	Hopefully this will get the windows and gnome
+	themes working again (though I dn't use either).
+
+2011-01-14  Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSTheme.m: Clean up and simplify theme switching based on
 	defaults system values.
 
@@ -10,7 +22,8 @@
 
 2012-01-11 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSImage.m (+_clearFileTypeCaches): Use DESTROY instead of RELEASE.
+	* Source/NSImage.m (+_clearFileTypeCaches): Use DESTROY instead
+	of RELEASE.
 	Patch by Philippe Roussel <p.o.roussel@free.fr>.
 
 2012-01-10  Eric Wasylishen  <ewasylishen@gmail.com>

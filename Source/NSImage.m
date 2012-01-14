@@ -154,7 +154,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
-+ (void) _themeDidActivate: (NSNotification*)notif;
++ (void) _setImagePath: (NSString*)path name: (NSString*)name;
 + (NSString *) _pathForImageNamed: (NSString *)aName;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
@@ -194,12 +194,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	   selector: @selector(_clearFileTypeCaches:)
 	       name: NSImageRepRegistryChangedNotification
 	     object: [NSImageRep class]];
-      
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(_themeDidActivate:)
-	       name: GSThemeDidActivateNotification
-	     object: nil];  
       [imageLock unlock];
     }
 }
@@ -221,13 +215,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       if ([path length] != 0) 
         {
-          image = [[self allocWithZone: NSDefaultMallocZone()]
-                initByReferencingFile: path];
+	  image = [[[[GSTheme theme] imageClass] alloc]
+	    initByReferencingFile: path];
           if (image != nil)
             {
               [image setName: aName];
-              AUTORELEASE(image);
               image->_flags.archiveByName = YES;
+              AUTORELEASE(image);
             }
         }
     }
@@ -455,9 +449,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 /* This methd sets the name of an image, updating the global name dictionary
  * to point to the image (or removing an image from the dictionary if the
  * new name is nil).
- * The images are actually accessed via proxy objects, so that when a
- * new system image is set (using [NSImage+_setImage:name:]), the proxy
- * for that image just starts using the new version.
  */
 - (BOOL) setName: (NSString *)aName
 {
@@ -1818,22 +1809,41 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   DESTROY(imagePasteboardTypes);
 }
 
-+ (void) _themeDidActivate: (NSNotification *)notif
++ (void) _setImagePath: (NSString*)path name: (NSString*)name
 {
-  [imageLock lock];
+  NSImage	*image;
 
-  NSImage *o;
-  NSEnumerator *e = [[nameDict allValues] objectEnumerator];
-  while ((o = (NSImage*)[e nextObject]) != nil)
+  [imageLock lock];
+  image = (NSImage*)[nameDict objectForKey: name];
+  if (nil == image && nil != path)
     {
-      NSString *newPath = [self _pathForImageNamed: o->_name];
-      if (newPath != nil && 
-	  ![newPath isEqual: o->_fileName])
+      /* There was no existing image with the given name ...
+       * create a new one.
+       */
+      image = [[[[GSTheme theme] imageClass] alloc]
+	initByReferencingFile: path];
+      if (image != nil)
 	{
-	  [o _resetAndUseFromFile: newPath];
+	  [image setName: name];
+	  image->_flags.archiveByName = YES;
+	  AUTORELEASE(image);
+	}
+      [image setName: name];
+    }
+  else
+    {
+      if (nil == path)
+	{
+	  path = [self _pathForImageNamed: name];
+	}
+      if (path != nil && ![path isEqual: image->_fileName])
+	{
+	  /* Reset the existing image to use the contents of
+	   * the specified file.
+	   */
+	  [image _resetAndUseFromFile: path];
 	}
     }
- 
   [imageLock unlock];
 }
 
@@ -1845,7 +1855,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   NSBundle	*main_bundle;
   NSArray	*array;
   
-  if (realName == nil)
+  if (nil == realName)
     {
       realName = aName;
     }
@@ -1889,29 +1899,6 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 				       ofType: o];
 	  if (path != nil && [path length] != 0)
 	    break;
-	}
-    }
-  
-  /* Second search on theme bundle */
-  if (!path)
-    {
-      if (ext)
-	path = [[[GSTheme theme] bundle] pathForResource: realName
-						  ofType: ext
-					     inDirectory: @"ThemeImages"];
-      else 
-	{
-	  id o, e;
-	  
-	  e = [array objectEnumerator];
-	  while ((o = [e nextObject]))
-	    {
-	      path = [[[GSTheme theme] bundle] pathForResource: realName 
-							ofType: o
-						   inDirectory: @"ThemeImages"];
-	      if (path != nil && [path length] != 0)
-		break;
-	    }
 	}
     }
   

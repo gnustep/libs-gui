@@ -206,6 +206,10 @@ GSStringFromBorderType(NSBorderType borderType)
     }
 }
 
+@interface	NSImage (Private)
++ (void) _setImagePath: (NSString*)path name: (NSString*)name;
+@end
+
 @interface	GSTheme (Private)
 - (void) _revokeOwnerships;
 @end
@@ -240,8 +244,7 @@ typedef	struct {
   NSBundle		*bundle;
   NSColorList		*colors;
   NSColorList		*extraColors[GSThemeSelectedState+1];
-  NSMutableDictionary	*images;
-  NSMutableDictionary	*oldImages;
+  NSMutableSet		*imageNames;
   NSMutableDictionary	*tiles[GSThemeSelectedState+1];
   NSMutableSet		*owned;
   NSImage		*icon;
@@ -255,8 +258,7 @@ typedef	struct {
 #define	_bundle			_internal->bundle
 #define	_colors			_internal->colors
 #define	_extraColors		_internal->extraColors
-#define	_images			_internal->images
-#define	_oldImages		_internal->oldImages
+#define	_imageNames		_internal->imageNames
 #define	_tiles			_internal->tiles
 #define	_owned			_internal->owned
 #define	_icon			_internal->icon
@@ -444,6 +446,9 @@ typedef	struct {
   NSUserDefaults	*defs;
   NSMutableArray	*searchList;
   NSEnumerator		*enumerator;
+  NSArray		*imagePaths;
+  NSString		*imagePath;
+  NSArray		*imageTypes;
   NSDictionary		*infoDict;
   NSWindow		*window;
   GSThemeControlState	state;
@@ -457,6 +462,30 @@ typedef	struct {
     {
       [_extraColors[state] release];
       _extraColors[state] = nil;
+    }
+
+  /*
+   * We step through all the bundle image resources and load them in
+   * to memory, setting their names so that they are visible to
+   * [NSImage+imageNamed:] and storing them in our local array.
+   */
+  imageTypes = [_imageClass imageFileTypes];
+  imagePaths = [_bundle pathsForResourcesOfType: nil
+				    inDirectory: @"ThemeImages"];
+  enumerator = [imagePaths objectEnumerator];
+  while ((imagePath = [enumerator nextObject]) != nil)
+    {
+      NSString	*ext = [imagePath pathExtension];
+
+      if (ext != nil && [imageTypes containsObject: ext] == YES)
+        {
+	  NSString	*imageName;
+
+	  imageName = [imagePath lastPathComponent];
+	  imageName = [imageName stringByDeletingPathExtension];
+	  [_imageNames addObject: imageName];
+	  [NSImage _setImagePath: imagePath name: imageName];
+	}
     }
 
   /*
@@ -678,6 +707,9 @@ typedef	struct {
 
 - (void) deactivate
 {
+  NSEnumerator	*enumerator;
+  NSString	*imageName;
+
   NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
 
   /* Tell everything that we will become inactive.
@@ -699,6 +731,15 @@ typedef	struct {
 	  method_setImplementation(m->mth, m->old);
 	}
     }
+
+  /* Unload all images created by this theme.
+   */
+  enumerator = [_imageNames objectEnumerator];
+  while ((imageName = [enumerator nextObject]) != nil)
+    {
+      [NSImage _setImagePath: nil name: imageName];
+    }
+  [_imageNames removeAllObjects];
 
   [self _revokeOwnerships];
 
@@ -723,8 +764,7 @@ typedef	struct {
 	}
       RELEASE(_bundle);
       RELEASE(_colors);
-      RELEASE(_images);
-      RELEASE(_oldImages);
+      RELEASE(_imageNames);
       RELEASE(_icon);
       [self _revokeOwnerships];
       RELEASE(_overrides);
@@ -793,8 +833,7 @@ typedef	struct {
   _reserved = NSZoneCalloc ([self zone], 1, sizeof(internal));
 
   ASSIGN(_bundle, bundle);
-  _images = [NSMutableDictionary new];
-  _oldImages = [NSMutableDictionary new];
+  _imageNames = [NSMutableSet new];
   for (state = 0; state <= GSThemeSelectedState; state++)
     {
       _tiles[state] = [NSMutableDictionary new];
