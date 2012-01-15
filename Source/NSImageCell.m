@@ -246,12 +246,14 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
       rect = [controlView centerScanRect: rect];
     }
 
+  CGFloat fraction = [self isEnabled] ? 1.0 : 0.5;
+
   // draw!
   [_cell_image drawInRect: rect
                fromRect: NSMakeRect(0, 0, realImageSize.width,
                                     realImageSize.height)
                operation: NSCompositeSourceOver
-               fraction: 1.0
+               fraction: fraction
 	   respectFlipped: YES
 		    hints: nil];
 
