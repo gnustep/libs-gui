@@ -116,6 +116,7 @@
   _headerCell = [[NSTableHeaderCell alloc] init];
   _dataCell = [[NSTextFieldCell alloc] init];
   [_dataCell setLineBreakMode: NSLineBreakByTruncatingTail];
+  [_dataCell setEditable: YES];
   _headerToolTip = nil;
 
   _sortDescriptorPrototype = nil;

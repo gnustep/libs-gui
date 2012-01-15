@@ -1,3 +1,8 @@
+2012-01-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTableColumn.m (-initWithIdentifier:): Make data
+	cell editable by default.
+
 2011-01-14  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
