@@ -160,29 +160,29 @@ static Class imageCellClass;
 
 - (BOOL) allowsCutCopyPaste
 {
-  return _allowsCutCopyPaste;
+  return _ivflags.allowsCutCopyPaste;
 }
 
 - (void) setAllowsCutCopyPaste: (BOOL)flag
 {
-  _allowsCutCopyPaste = flag;
+  _ivflags.allowsCutCopyPaste = flag;
 }
 
 - (void) delete: (id)sender
 {
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     [self setImage: nil];
 }
 
 - (void) deleteBackward: (id)sender
 {
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     [self setImage: nil];
 }
 
 - (void) copy: (id)sender
 {
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     {
       NSImage *anImage = [self image];
 
@@ -201,7 +201,7 @@ static Class imageCellClass;
 
 - (void) cut: (id)sender
 {
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     {
       [self copy: sender];
       [self setImage: nil];
@@ -210,7 +210,7 @@ static Class imageCellClass;
 
 - (void) paste: (id)sender
 {
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     {
       // paste from pasteboard
       NSPasteboard *pboard = [NSPasteboard generalPasteboard];
@@ -228,7 +228,7 @@ static Class imageCellClass;
 {
   SEL action = [anItem action];
 
-  if (_allowsCutCopyPaste)
+  if ([self allowsCutCopyPaste])
     {
       if (sel_isEqual(action, @selector(cut:)) ||
           sel_isEqual(action, @selector(copy:)) ||
@@ -307,7 +307,7 @@ static Class imageCellClass;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  if ([self isEditable])
+  if ([self initiatesDrag])
     {
       NSPasteboard *pboard;
       NSImage *anImage = [self image];
@@ -418,3 +418,16 @@ static Class imageCellClass;
 
 @end
 
+@implementation NSImageView (GNUstep)
+
+- (BOOL)initiatesDrag
+{
+  return _ivflags.initiatesDrag;
+}
+
+- (void)setInitiatesDrag: (BOOL)flag
+{
+  _ivflags.initiatesDrag = flag;
+}
+
+@end

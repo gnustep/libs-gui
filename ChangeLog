@@ -1,3 +1,9 @@
+2012-01-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSImageView.h,
+	* Source/NSImageView.m: Protect image drag with new ivar that gets
+	set via a new GNUstep extension method.
+
 2012-01-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:):

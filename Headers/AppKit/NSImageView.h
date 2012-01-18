@@ -1,4 +1,4 @@
-/*
+/* -*-objc-*-
    NSImageView.h
 
    Copyright (C) 1996 Free Software Foundation, Inc.
@@ -36,7 +36,11 @@
 {
   id _target;
   SEL _action;
-  BOOL _allowsCutCopyPaste;
+  struct GSImageViewFlagsType { 
+    // total 32 bits.  30 bits left.
+    unsigned allowsCutCopyPaste: 1;
+    unsigned initiatesDrag: 1;
+  } _ivflags;
 }
 
 - (NSImage *)image;
@@ -62,4 +66,13 @@
 
 @end
 
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
+// 
+// Methods that are GNUstep extensions
+//
+@interface NSImageView (GNUstep)
+- (BOOL)initiatesDrag;
+- (void)setInitiatesDrag: (BOOL)flag;
+@end
+#endif
 #endif /* _GNUstep_H_NSImageView */
