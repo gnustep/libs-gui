@@ -193,7 +193,6 @@ first. Remaining cases, highest priority first:
 {
   NSRange r;
   NSPoint p;
-  NSFont *f;
   NSUInteger i;
 
   r = [self rangeOfNominallySpacedGlyphsContainingIndex: glyphIndex
@@ -206,20 +205,40 @@ first. Remaining cases, highest priority first:
     }
 
   i = r.location;
-  f = [self effectiveFontForGlyphAtIndex: i
-	    range: &r];
-  /* TODO: this is rather inefficient and doesn't deal with non-shown
-  glyphs */
-  for (; i < glyphIndex; i++)
+
+  if (i == glyphIndex)
     {
-      if (i == r.location + r.length)
-	{
-	  f = [self effectiveFontForGlyphAtIndex: i
-		    range: &r];
-	}
-      p.x += [f advancementForGlyph: [self glyphAtIndex: i]].width;
+      return p;
     }
-  return p;
+
+  // Keep incrementing i and adding to p until i == glyphIndex
+
+  // FIXME: This seems to work, but verify it is correct --Eric
+  while (1)
+    {
+      glyph_run_t *run;
+      unsigned int pos;
+
+      run = run_for_glyph_index(i, glyphs, &pos, NULL);
+      if (!run)
+	{
+	  [NSException raise: NSRangeException
+		      format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+	  return NSMakePoint(0,0);
+	}
+      
+      for (; i < pos + run->head.glyph_length && i < glyphIndex; i++)
+	{
+	  NSSize adv = run->glyphs[i - pos].advancement;
+	  p.x += adv.width;
+	  p.y += adv.height;
+	}
+
+      if (i == glyphIndex)
+	{
+	  return p;
+	}
+    }
 }
 
 
@@ -1461,329 +1480,360 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
                               layoutManager: self];
 }
 
--(void) drawGlyphsForGlyphRange: (NSRange)range
-			atPoint: (NSPoint)containerOrigin
+/**
+ * Returns an attributed string without a backing string, whose
+ * character indices correspond to glyph indicies in the text storage, and
+ * sets the NSForegroundColorAttributeName for every glyph. This basically
+ * "flattens" all of the different attributes that can affect text color.
+ *
+ * FIXME: Introduce a private class to use instead of NSAttributedString,
+ * and use it for temporary attributes as well.
+ * 
+ * FIXME: Factor out copy & pasted code to iterate through attributes in
+ * an attributed string.
+ */
+- (NSAttributedString*) textColorsForGlyphRange: (NSRange)range
 {
-  int i, j;
-  textcontainer_t *tc;
-  linefrag_t *lf;
-  linefrag_point_t *lp;
+  NSMutableAttributedString *result;
+  NSTextView *tv = [self firstTextView];
+  const NSRange charRange = [self characterRangeForGlyphRange: range
+					     actualGlyphRange: NULL];
 
-  NSPoint p;
-  unsigned int g;
+  {
+    NSString *dummyString = [[GSDummyMutableString alloc] initWithLength: NSMaxRange(range)];
+    result = [[[NSMutableAttributedString alloc] initWithString: dummyString] autorelease];
+    [dummyString release];
+  }
 
-  NSDictionary *attributes;
-  NSFont *f;
-  NSColor *color, *run_color;
-  NSRange selectedGlyphRange;
-  BOOL currentGlyphIsSelected;
+  // NOTE: The order in which we build result determines the precedence
+  // of the different attributes
 
-  glyph_run_t *glyph_run;
-  unsigned int glyph_pos, char_pos;
-  glyph_t *glyph;
-
-  NSGraphicsContext *ctxt = GSCurrentContext();
-
-  /*
-  For performance, it might (if benchmarks or profiling backs it up) be
-  worthwhile to cache this across calls to this method. However, this
-  color can change at runtime, so care would have to be taken to keep the
-  cache in sync with the actual color.
-  */
-  NSColor *defaultTextColor = [NSColor textColor];
-  NSColor *selectedTextColor = defaultTextColor;
-  NSColor *link_color = nil;
-  id linkValue;
- 
-#define GBUF_SIZE 16 /* TODO: tweak */
-  NSGlyph gbuf[GBUF_SIZE];
-  NSSize advancementbuf[GBUF_SIZE];
-  int gbuf_len, gbuf_size;
-  NSPoint gbuf_point = NSZeroPoint;
-
-  if (!range.length)
-    return;
-  [self _doLayoutToGlyph: range.location + range.length - 1];
-
-  /* Find the selected range of glyphs as it overlaps with the range we
-   * are about to display.
-   */
-  if (_selected_range.length == 0)
+  // Set the default color
+  [result addAttribute: NSForegroundColorAttributeName
+		 value: [NSColor textColor]
+		 range: range];
+  
+  // Apply selected text color if range intersects any selections
+  if (tv != nil)
     {
-      selectedGlyphRange.location = 0;
-      selectedGlyphRange.length = 0;
-    }
-  else
-    {
-      selectedGlyphRange = [self glyphRangeForCharacterRange: _selected_range
-	actualCharacterRange: 0];
-    }
-  selectedGlyphRange = NSIntersectionRange(selectedGlyphRange, range);
-
-  if ([ctxt isDrawingToScreen])
-    gbuf_size = GBUF_SIZE;
-  else
-    gbuf_size = 1;
-
-  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
-    if (tc->pos + tc->length > range.location)
-      break;
-  if (i == num_textcontainers)
-    {
-      NSLog(@"%s: can't find text container for glyph (internal error)", __PRETTY_FUNCTION__);
-      return;
-    }
-
-  if (range.location + range.length > tc->pos + tc->length)
-    range.length = tc->pos + tc->length - range.location;
-
-  LINEFRAG_FOR_GLYPH(range.location);
-
-  j = 0;
-  lp = lf->points;
-  while (lp->pos + lp->length < range.location)
-    lp++, j++;
-
-  glyph_run = run_for_glyph_index(lp->pos, glyphs, &glyph_pos, &char_pos);
-  currentGlyphIsSelected = NSLocationInRange(lp->pos, selectedGlyphRange);
-  glyph = glyph_run->glyphs + lp->pos - glyph_pos;
-  attributes = [_textStorage attributesAtIndex: char_pos
-				effectiveRange: NULL];
-  run_color = [attributes valueForKey: NSForegroundColorAttributeName];
-  if (run_color == nil)
-    run_color = defaultTextColor;
-
-  linkValue = [attributes objectForKey: NSLinkAttributeName];
-  if (linkValue != nil)
-    {
-      if (link_color == nil)
-	{
-	  NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
-	  link_color = [link_attributes valueForKey: NSForegroundColorAttributeName];
-	}
-      if (link_color != nil)
-	run_color = link_color;
-    }
-
-  if (selectedGlyphRange.length > 0)
-    {
-      /* Get the text view's color setting for selected text as we will
-       * be needing to draw some selected glyphs.
-       */
-      selectedTextColor = [[[self textViewForBeginningOfSelection]
-	selectedTextAttributes] objectForKey: NSForegroundColorAttributeName];
-
-      /* FIXME ... should we fall back to using selectedTextColor or 
-       * defaultTextColor?
-       */
+      NSColor *selectedTextColor = [[tv selectedTextAttributes]
+				       objectForKey: NSForegroundColorAttributeName];
       if (selectedTextColor == nil)
 	{
 	  selectedTextColor = [NSColor selectedTextColor];
 	}
+      
+      {
+	NSEnumerator *selRanges = [[tv selectedRanges] objectEnumerator];
+	NSValue *selRangeValue;
+	while ((selRangeValue = [selRanges nextObject]) != nil)
+	  {
+	    const NSRange selGlyphRange = [self glyphRangeForCharacterRange: [selRangeValue rangeValue]
+						       actualCharacterRange: NULL];
+	    const NSRange intersectingSelGlyphRange = 
+	      NSIntersectionRange(range, selGlyphRange);
+	    if (intersectingSelGlyphRange.length > 0)
+	      {
+		[result addAttribute: NSForegroundColorAttributeName
+			       value: selectedTextColor
+			       range: intersectingSelGlyphRange];
+	      }
+	  }
+      }
     }
 
-  color = (currentGlyphIsSelected ? selectedTextColor : run_color);
-  [color set];
-  f = glyph_run->font;
-  [f set];
+  // Apply any requested colors in the text storage
+  {
+    NSInteger i;
+    
+    for (i=charRange.location; i<NSMaxRange(charRange); )
+      {
+	NSRange colorRange;
+	id colorValue = [[self textStorage] attribute: NSForegroundColorAttributeName
+					      atIndex: i
+				longestEffectiveRange: &colorRange
+					      inRange: range];
+	if (colorValue != nil)
+	  {
+	    const NSRange colorGlyphRange = [self glyphRangeForCharacterRange: colorRange
+							 actualCharacterRange: NULL];
+	    [result addAttribute: NSForegroundColorAttributeName
+			   value: colorValue
+			   range: colorGlyphRange];
+	  }
+	i += colorRange.length;
+      }
+  }
 
-  p = lp->p;
-  p.x += lf->rect.origin.x + containerOrigin.x;
-  p.y += lf->rect.origin.y + containerOrigin.y;
-  gbuf_len = 0;
-  for (g = lp->pos; g < range.location + range.length; g++, glyph++)
+  // Apply any requested colors in the temporary attributes
+  {
+    NSInteger i;
+    
+    for (i=charRange.location; i<NSMaxRange(charRange); )
+      {
+	NSRange colorRange;
+	id colorValue = [self temporaryAttribute: NSForegroundColorAttributeName
+				atCharacterIndex: i
+			   longestEffectiveRange: &colorRange
+					 inRange: range];
+	if (colorValue != nil)
+	  {
+	    const NSRange colorGlyphRange = [self glyphRangeForCharacterRange: colorRange
+							 actualCharacterRange: NULL];
+	    [result addAttribute: NSForegroundColorAttributeName
+			   value: colorValue
+			   range: colorGlyphRange];
+	  }
+	i += colorRange.length;
+      }
+  }
+ 
+  // Apply link text color to any links
+  if (tv != nil)
     {
-      if (currentGlyphIsSelected != NSLocationInRange(g, selectedGlyphRange))
+      NSColor *linkTextColor = 
+	[[tv linkTextAttributes] objectForKey: NSForegroundColorAttributeName];
+      
+      if (linkTextColor != nil)
 	{
-	  /* When we change between drawing selected and unselected glyphs
-	   * we must flush any glyphs from the buffer and change trhe color
-	   * we use for the text.
-	   */
-	  if (gbuf_len)
-	    {
-	      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-	      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
-	      DPSnewpath(ctxt);
-	      gbuf_len = 0;
-	    }
-	  if (currentGlyphIsSelected == YES)
-	    {
-	      currentGlyphIsSelected = NO;
-	      if (color != run_color)
-	        {
-		  color = run_color;
-		  [color set];
-		}
-	    }
-	  else
-	    {
-	      currentGlyphIsSelected = YES;
-	      if (color != selectedTextColor)
-	        {
-		  color = selectedTextColor;
-		  [color set];
-		}
-	    }
-	}
-
-      if (g == lp->pos + lp->length)
-	{
-	  if (gbuf_len)
-	    {
-	      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-	      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
-	      DPSnewpath(ctxt);
-	      gbuf_len = 0;
-	    }
-	  j++;
-	  lp++;
-	  if (j == lf->num_points)
-	    {
-	      i++;
-	      lf++;
-	      j = 0;
-	      lp = lf->points;
-	    }
-	  p = lp->p;
-	  p.x += lf->rect.origin.x + containerOrigin.x;
-	  p.y += lf->rect.origin.y + containerOrigin.y;
-	}
-      if (g == glyph_pos + glyph_run->head.glyph_length)
-	{
-	  glyph_pos += glyph_run->head.glyph_length;
-	  char_pos += glyph_run->head.char_length;
-	  glyph_run = (glyph_run_t *)glyph_run->head.next;
-	  attributes = [_textStorage attributesAtIndex: char_pos
-				     effectiveRange: NULL];
-	  run_color = [attributes valueForKey: NSForegroundColorAttributeName];
-	  if (run_color == nil)
-	    {
-	      run_color = defaultTextColor;
-	    }
-
-	  linkValue = [attributes objectForKey: NSLinkAttributeName];
-	  if (linkValue != nil)
+	  // Find links in the text storage
+	  {
+	    NSInteger i;
+	    
+	    for (i=charRange.location; i<NSMaxRange(charRange); )
 	      {
-		if (link_color == nil)
+		NSRange colorRange;
+		id linkValue = [[self textStorage] attribute: NSLinkAttributeName
+						     atIndex: i
+				       longestEffectiveRange: &colorRange
+						     inRange: range];
+		if (linkValue != nil)
 		  {
-		    NSDictionary *link_attributes = [[self firstTextView] linkTextAttributes];
-		    link_color = [link_attributes valueForKey: NSForegroundColorAttributeName];
+		    const NSRange colorGlyphRange = [self glyphRangeForCharacterRange: colorRange
+								 actualCharacterRange: NULL];
+		    [result addAttribute: NSForegroundColorAttributeName
+				   value: linkTextColor
+				   range: colorGlyphRange];
 		  }
-		if (link_color != nil)
-		  run_color = link_color;
+		i += colorRange.length;
+	      }
+	  }
+	  
+	  // Find links in the temporary attributes
+	  {
+	    NSInteger i;
+	    
+	    for (i=charRange.location; i<NSMaxRange(charRange); )
+	      {
+		NSRange colorRange;
+		id linkValue = [self temporaryAttribute: NSLinkAttributeName
+				       atCharacterIndex: i
+				  longestEffectiveRange: &colorRange
+						inRange: range];
+		if (linkValue != nil)
+		  {
+		    const NSRange colorGlyphRange = [self glyphRangeForCharacterRange: colorRange
+								 actualCharacterRange: NULL];
+		    [result addAttribute: NSForegroundColorAttributeName
+				   value: linkTextColor
+				   range: colorGlyphRange];
+		  }
+		i += colorRange.length;
+	      }
+	  }
+
+	  // Done finding links.
+	}
+    }
+
+  return result;
+}
+
+- (void) _drawRange: (NSRange)runrange inRun: (glyph_run_t*)r
+{
+  NSGlyph gbuf[runrange.length];
+  NSSize abuf[runrange.length];
+
+  // FIXME: run structure should store these arrays directly
+
+  unsigned int i;
+  for (i=0; i<runrange.length; i++)
+    {
+      gbuf[i] = r->glyphs[i+runrange.location].g;
+      abuf[i] = r->glyphs[i+runrange.location].advancement;
+    }
+
+  [r->font set];
+
+  // FIXME: verify that this advances the drawing location
+  GSShowGlyphsWithAdvances(GSCurrentContext(), gbuf, abuf, runrange.length);
+}
+
+-(void) drawGlyphsForGlyphRange: (NSRange)range
+			atPoint: (NSPoint)containerOrigin
+{
+  if (range.length == 0)
+    return;
+
+  // Draw the glyphs
+
+  [self _generateGlyphsUpToGlyph: NSMaxRange(range) - 1];
+  [self _doLayoutToGlyph: NSMaxRange(range) - 1];
+
+  {
+    // Setup
+
+    NSGraphicsContext *ctxt = GSCurrentContext();
+
+    NSAttributedString *colors = [self textColorsForGlyphRange: range];
+    
+    textcontainer_t *tc;
+    
+    {
+      int i;
+      for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+	if (tc->pos + tc->length > range.location)
+	  break;
+      assert(i != num_textcontainers);
+    }
+
+    //
+    //   Things that determine the chunks of text we draw:
+    //   - colors
+    //   - run boundaries
+    //   - "line fragment positions"
+    //   - line fragments
+
+    unsigned int pos = range.location;
+
+    unsigned int nextColorChange = pos;
+    unsigned int nextRunBoundary = pos;
+    unsigned int nextLineFragmentPosition = pos;
+    unsigned int nextLineFragment = pos;
+
+    // State kept up-to-date during the loop:
+
+    // - current run:
+    glyph_run_t *run = NULL;
+    // - glyph range of current run:
+    NSRange runRange = NSMakeRange(0, 0);
+    // - current line fragment
+    int linefragIndex = -1;
+    // - gaphics context color
+    // - graphics context position
+
+    while (pos < NSMaxRange(range))
+      {
+	if (pos == nextColorChange)
+	  {
+	    NSRange colorRange;
+	    NSColor *color = [colors attribute: NSForegroundColorAttributeName
+				       atIndex: pos
+				     longestEffectiveRange: &colorRange
+				       inRange: range];
+
+	    [color set];
+
+	    // update nextColorChange
+	    nextColorChange = NSMaxRange(colorRange);
+	  }
+	if (pos == nextRunBoundary)
+	  {
+	    unsigned int runLocation;
+	    run = run_for_glyph_index(pos, glyphs, &runLocation, NULL);
+	    if (run == NULL)
+	      {
+		NSLog(@"Warning, run_for_glyph_index %d was null", pos);
+		return;
+	      }
+	    runRange = NSMakeRange(runLocation, run->head.glyph_length);
+
+	    // update nextRunBoundary
+	    nextRunBoundary = NSMaxRange(runRange);
+	  }
+	if (pos == nextLineFragment)
+	  {
+	    if (linefragIndex == -1)
+	      {
+		linefrag_t *lf;
+		int i;
+		for (i = tc->num_linefrags - 1, lf = tc->linefrags + i; i >= 0; i--, lf--)
+		  {
+		    if (lf->pos <= pos)
+		      break;
+		  }
+		assert(i >= 0);
+		linefragIndex = i;
+	      }
+	    else
+	      {
+		linefragIndex++;
 	      }
 
-	  glyph = glyph_run->glyphs;
+	    linefrag_t *lf = tc->linefrags + linefragIndex;
 
-	  /* If the font has changed or the color has changed (and we are
-	   * not drawing using the selected text color) then we must flush
-	   * any buffered glyphs and set the new font and color.
-	   */
-	  if (glyph_run->font != f
-	    || (currentGlyphIsSelected == NO && run_color != color))
-	    {
-	      if (gbuf_len)
-		{
-		  DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-		  GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
-		  DPSnewpath(ctxt);
-		  gbuf_len = 0;
-		}
-	      if (f != glyph_run->font)
-		{
-		  f = glyph_run->font;
-		  [f set];
-		}
-	      if (currentGlyphIsSelected == NO && run_color != color)
-		{
-		  color = run_color;
-		  [color set];
-		}
-	    }
-	}
-      if (!glyph->isNotShown && glyph->g && glyph->g != NSControlGlyph)
+	    assert(lf->pos == pos);
+
+	    DPSmoveto(ctxt, containerOrigin.x + lf->rect.origin.x,
+			  containerOrigin.y + lf->rect.origin.y);
+		
+
+	    nextLineFragment = lf->pos + lf->length;
+
+	    if (lf->num_points > 0)
+	      {
+		linefrag_point_t *point = &(lf->points[0]);
+		nextLineFragmentPosition = point->pos;
+	      }
+	    else
+	      nextLineFragmentPosition = nextLineFragment;
+	  }
+	if (pos == nextLineFragmentPosition)
+	  {
+	    linefrag_t *lf = tc->linefrags + linefragIndex;
+
+	    assert(lf->num_points > 0);
+
+	    linefrag_point_t *point;
+	    int i;
+	    for (i=0, point = lf->points; i<lf->num_points; i++, point = lf->points + i)
+	      {
+		if (point->pos <= pos && point->pos + point->length > pos)
+		  break;
+	      }
+	    assert (i < lf->num_points);
+
+	    DPSmoveto(ctxt, containerOrigin.x + lf->rect.origin.x + point->p.x,
+			  containerOrigin.y + lf->rect.origin.y + point->p.y);
+
+	    nextLineFragmentPosition = point->pos + point->length;
+	  }
+
+	// Calculate the maximum number of glpyhs we can draw in this iteration
+	unsigned int len = MIN(MIN(MIN(nextColorChange,
+				       nextRunBoundary),
+				     nextLineFragmentPosition),
+			       nextLineFragment) - pos;
+	
+	// At this point the graphics context is set up
+	// for us to draw.
 	{
-	  if (glyph->g == GSAttachmentGlyph)
-	    {
-	      if (g >= range.location)
-		{
-		  unsigned int char_index =
-		    [self characterRangeForGlyphRange: NSMakeRange(g, 1)
-				     actualGlyphRange: NULL].location;
-		  NSObject<NSTextAttachmentCell> *cell = [[_textStorage attribute: NSAttachmentAttributeName
-			atIndex: char_index
-			effectiveRange: NULL] attachmentCell];
-		  NSRect cellFrame;
-
-		  cellFrame.origin = p;
-		  cellFrame.size = attachmentSize(lf, g);
-		  cellFrame.origin.y -= cellFrame.size.height;
-
-		  /* Silently ignore if we don't have any size information for
-		     it. */
-		  if (NSEqualSizes(cellFrame.size, NSMakeSize(-1.0, -1.0)))
-		    continue;
-
-		  /* Drawing the cell might mess up our state, so we reset
-		  the font and color afterwards. */
-		  /* TODO:
-		  optimize this?
-		  collect attachments and draw them in bunches of eg. 4?
-
-		  probably not worth effort. better to optimize font and
-		  color setting :)
-
-		  should they really be drawn in our coordinate system?
-		  */
-		  [self showAttachmentCell: (NSCell*)cell
-				    inRect: cellFrame
-                            characterIndex: char_index];
-		  [f set];
-		  [color set];
-		}
-	      continue;
-	    }
-	  if (g >= range.location)
-	    {
-	      if (!gbuf_len)
-		{
-		  gbuf[0] = glyph->g;
-		  gbuf_point = p;
-		  gbuf_len = 1;
-		}
-	      else
-		{
-		  if (gbuf_len == gbuf_size)
-		    {
-		      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-		      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_size);
-		      DPSnewpath(ctxt);
-		      gbuf_len = 0;
-		      gbuf_point = p;
-		    }
-		  gbuf[gbuf_len] = glyph->g;
-		  advancementbuf[gbuf_len] = [f advancementForGlyph: glyph->g];
-		  gbuf_len++;
-		}
-	    }
-	  p.x += [f advancementForGlyph: glyph->g].width;
+	  NSRange drawRange = NSMakeRange(pos, len);
+	  assert(pos >= runRange.location);
+	  NSRange rangeInRun = NSMakeRange(drawRange.location - runRange.location,
+					   drawRange.length);
+	  assert(rangeInRun.length > 0);
+	  [self _drawRange: rangeInRun inRun: run];
 	}
-    }
-  if (gbuf_len)
-    {
-/*int i;
-printf("%i at (%g %g) 4\n", gbuf_len, gbuf_point.x, gbuf_point.y);
-for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
-      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-      GSShowGlyphsWithAdvances(ctxt, gbuf, advancementbuf, gbuf_len);
-      DPSnewpath(ctxt);
-    }
 
-#undef GBUF_SIZE
+	pos += len;
+    }
+  }
 
   // Draw underline where necessary
   // FIXME: Also draw strikeout
   {
+    NSInteger i, j;
     const NSRange characterRange = [self characterRangeForGlyphRange: range
 						    actualGlyphRange: NULL];
     id linkUnderlineValue = nil;
@@ -1793,6 +1843,7 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 	NSRange underlinedCharacterRange;
 	NSRange linkCharacterRange;
 	id underlineValue = nil;
+	id linkValue;
 
 	linkValue = [_textStorage attribute: NSLinkAttributeName
 				    atIndex: i

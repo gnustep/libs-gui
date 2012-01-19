@@ -223,6 +223,11 @@ invalid (extends beyond the end of glyphs). */
 - (unsigned int) getGlyphs: (NSGlyph *)glyphArray
 	range: (NSRange)glyphRange;
 
+// GNUstep extension
+- (unsigned int) getGlyphs: (NSGlyph *)glyphArray
+	      advancements: (NSSize *)advancementArray
+		     range: (NSRange)glyphRange;
+
 /* Return the first character for the glyph at glyphIndex.
 (NSRangeException?) */
 - (unsigned int) characterIndexForGlyphAtIndex: (unsigned int)glyphIndex;

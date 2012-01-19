@@ -890,11 +890,12 @@ Fills in all glyph holes up to last. only looking at levels below level
     }
 }
 
+// GNUstep extension
 - (unsigned int) getGlyphs: (NSGlyph *)glyphArray
+	      advancements: (NSSize *)advancementArray
                      range: (NSRange)glyphRange
 {
   glyph_run_t *r;
-  NSGlyph *g;
   unsigned int pos;
   unsigned int num;
   unsigned int i, j, k;
@@ -924,7 +925,6 @@ Fills in all glyph holes up to last. only looking at levels below level
       return 0;
     }
 
-  g = glyphArray;
   num = 0;
 
   while (1)
@@ -943,7 +943,10 @@ Fills in all glyph holes up to last. only looking at levels below level
       /* TODO? only "displayed" glyphs */
       for (i = j; i < k; i++)
         {
-          *g++ = r->glyphs[i].g;
+	  if (glyphArray)
+	    glyphArray[num] = r->glyphs[i].g;
+	  if (advancementArray)
+	    advancementArray[num] = r->glyphs[i].advancement;
           num++;
         }
 
@@ -954,6 +957,12 @@ Fills in all glyph holes up to last. only looking at levels below level
     }
 
   return num;
+}
+
+- (unsigned int) getGlyphs: (NSGlyph *)glyphArray
+                     range: (NSRange)glyphRange
+{
+  return [self getGlyphs: glyphArray advancements: NULL range: glyphRange];
 }
 
 - (unsigned int) characterIndexForGlyphAtIndex: (unsigned int)glyphIndex
