@@ -1,3 +1,8 @@
+2012-01-19 Riccardo Mottola <rm@gnu.org>
+
+	*Source/NSCell.m:
+	Copy contents before setting it [setObjectValue]
+
 2012-01-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSImageView.h,

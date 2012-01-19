@@ -2,7 +2,7 @@
 
    <abstract>The abstract cell class</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2012 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -342,19 +342,19 @@ static NSColor *dtxtCol;
     {
       if (object == nil || [object isKindOfClass: [NSString class]] == YES)
         {
-          newContents = object;
+          newContents = [object copy];
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
         }
       else if ([object isKindOfClass: [NSAttributedString class]] == YES)
         {
-          newContents = object;
+          newContents = [object copy];
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
       else if ([_object_value respondsToSelector: @selector(attributedStringValue)])
         {
-          newContents = [_object_value attributedStringValue];
+          newContents = [[_object_value attributedStringValue] copy]; //is this copy necessary?
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
@@ -362,7 +362,7 @@ static NSColor *dtxtCol;
         {
           // If the thing that was assigned is not a string, but 
           // responds to stringValue then get that.
-          newContents = [_object_value stringValue];
+          newContents = [[_object_value stringValue] copy]; //is this copy necessary?
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
         }
