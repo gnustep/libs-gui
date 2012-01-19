@@ -1,3 +1,9 @@
+2012-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setStringValue:, setObjectValue:): Always use
+	ASSIGNCOPY for the contents. This fixes memory leak of last
+	commit.
+
 2012-01-19 Riccardo Mottola <rm@gnu.org>
 
 	*Source/NSCell.m:

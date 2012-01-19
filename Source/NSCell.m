@@ -342,19 +342,19 @@ static NSColor *dtxtCol;
     {
       if (object == nil || [object isKindOfClass: [NSString class]] == YES)
         {
-          newContents = [object copy];
+          newContents = object;
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
         }
       else if ([object isKindOfClass: [NSAttributedString class]] == YES)
         {
-          newContents = [object copy];
+          newContents = object;
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
       else if ([_object_value respondsToSelector: @selector(attributedStringValue)])
         {
-          newContents = [[_object_value attributedStringValue] copy]; //is this copy necessary?
+          newContents = [_object_value attributedStringValue];
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
@@ -362,7 +362,7 @@ static NSColor *dtxtCol;
         {
           // If the thing that was assigned is not a string, but 
           // responds to stringValue then get that.
-          newContents = [[_object_value stringValue] copy]; //is this copy necessary?
+          newContents = [_object_value stringValue];
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
         }
@@ -387,7 +387,7 @@ static NSColor *dtxtCol;
         }
     }
 
-  ASSIGN (_contents, newContents);
+  ASSIGNCOPY(_contents, newContents);
 }
 
 
@@ -484,7 +484,7 @@ static NSColor *dtxtCol;
         }
       else
         {
-          ASSIGN (_contents, aString);
+          ASSIGNCOPY(_contents, aString);
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = NO;
         }
