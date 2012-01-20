@@ -1,3 +1,7 @@
+2012-01-20 German Arias <german@xelalug.org>
+
+	* Source/GSInfoPanel.m (-initWithDictionary:): Fix bug #35335.
+
 2012-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setStringValue:, setObjectValue:): Always use
