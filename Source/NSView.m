@@ -1447,10 +1447,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
               object: self];
         }
     }
-
-  // FIXME: Should not be called here according to Cocoa docs, but 
-  // Cocoa seems to in practice
-  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
@@ -1471,10 +1467,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     }
   [self translateOriginToPoint: NSMakePoint(oldOrigin.x - newOrigin.x, 
                                             oldOrigin.y - newOrigin.y)];
-
-  // FIXME: Should not be called here according to Cocoa docs, but 
-  // Cocoa seems to in practice
-  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsSize: (NSSize)newSize
@@ -1535,10 +1527,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       [nc postNotificationName: NSViewBoundsDidChangeNotification
                         object: self];
     }
-  
-  // FIXME: Should not be called here according to Cocoa docs, but 
-  // Cocoa seems to in practice
-  [self setNeedsDisplay: YES];
 }
 
 - (void) setBoundsRotation: (CGFloat)angle

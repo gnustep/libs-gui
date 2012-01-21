@@ -1,3 +1,15 @@
+2012-01-21  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSView.m (-setBounds:, -setBoundsOrigin:, -setBoundsSize:):
+	Revert a portion of r32955 which I committed last april but I now
+	see was a mistake, and I just discovered is breaking the  copy-on-scroll
+	behaviour of NSClipView - we end up always redrawing the entire visible
+	portion of the document view right now.
+
+	In r32955 I added [self setNeedsDisplay: YES] calls to these methods
+	even though these are documented explicitly as not marking the view for
+	needing display. Approved by Fred for commit during the code freeze.
+
 2012-01-20 German Arias <german@xelalug.org>
 
 	* Source/GSInfoPanel.m (-initWithDictionary:): Fix bug #35335.
