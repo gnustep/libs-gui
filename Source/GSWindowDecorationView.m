@@ -558,7 +558,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 	  [RETAIN(v) removeFromSuperviewWithoutNeedingDisplay];
 	  
 	  [self changeWindowHeight: -(menubarHeight)];  
-	  return AUTORELEASE(v);
+	  return (NSMenuView *)AUTORELEASE(v);
 	}
     }
 

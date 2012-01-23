@@ -47,7 +47,7 @@
   NSAttributedString *text;
   NSMutableDictionary *fontDict;
   NSMutableDictionary *colorDict;
-  NSMutableDictionary *docDict;
+  NSDictionary *docDict;
   NSMutableArray *attachments;
 
   NSColor *fgColor;

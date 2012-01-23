@@ -714,7 +714,7 @@
         }
 
       properties = [self propertiesForObjectID: [obj objectID]];
-      NSDebugLLog(@"XIB", @"object %d props %@", [obj objectID], properties);
+      NSDebugLLog(@"XIB", @"object %ld props %@", (long)[obj objectID], properties);
 
       //value = [properties objectForKey: @"windowTemplate.maxSize"];
       //value = [properties objectForKey: @"CustomClassName"];

@@ -144,7 +144,7 @@ typedef enum {
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
-  NSString *_contents;
+  id _contents;
   NSImage *_cell_image;
   NSFont *_font;
   id _object_value;

@@ -1,4 +1,23 @@
-2012-01-21  Eric Wasylishen  <ewasylishen@gmail.com>
+2012-01-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarFrameworkPrivate.h,
+	* Headers/AppKit/NSMatrix.h: Remove duplicated method declarations.
+	* TextConverters/RTF/RTFProducer.h: Change docDict to NSDictionary.
+	* Source/GSTheme.m,
+	* Source/GSWindowDecorationView.m: Add missing type cast.
+	* Headers/AppKit/NSCell.h,
+	* Source/NSCell.m,
+	* Source/NSButtonCell.m: Change _contents to id.
+	* Source/GSNibLoading.m: Add missing import.
+	* Source/NSPasteboard.m: Declare release as oneway.
+	* Source/GSNibLoader.m: Change class to NSKeyedUnarchiver.
+	* Source/GSXibLoader.m: Use correct printf type specifier.
+	* Headers/AppKit/NSBitmapImageRep.h,
+	* Source/NSBitmapImageRep.m: Change _imageData to NSData.
+	Fix clang compiler warnings as reported by Sebastian Reitenbach
+	<sebastia@l00-bugdead-prods.de>.
+
+2012-01-21 Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSView.m (-setBounds:, -setBoundsOrigin:, -setBoundsSize:):
 	Revert a portion of r32955 which I committed last april but I now

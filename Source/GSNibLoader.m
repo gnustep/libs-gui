@@ -70,7 +70,7 @@
     {
       if (data != nil)
 	{
-	  NSUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] 
+	  NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] 
 			 initForReadingWithData: data];
 	  if (unarchiver != nil)
 	    {

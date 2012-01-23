@@ -215,7 +215,7 @@ typedef struct _GSButtonCellFlags
   if (_cell.contents_is_attributed_string == NO)
     {
       // If we have a formatter this is also the string of the _object_value
-      return _contents;
+      return (NSString *)_contents;
     }
   else
     {

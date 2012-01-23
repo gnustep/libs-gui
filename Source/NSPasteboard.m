@@ -638,7 +638,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  NSPasteboard	*p;
+  NSPasteboard	*p = nil;
   id		val = [aCoder decodeObject];
 
   if ([val isKindOfClass: [NSData class]] == YES)
@@ -656,8 +656,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       p = [NSPasteboard pasteboardByFilteringTypesInPasteboard: val];
     }
 
-  ASSIGN(self, p);
-  return self;
+  RELEASE(self);
+  return RETAIN(p);
 }
 
 /**
@@ -1499,7 +1499,7 @@ static  NSMapTable              *mimeMap = NULL;
  *	is the pasteboards dictionary, remove us from that dictionary
  *	as well.
  */
-- (void) release
+- (oneway void) release
 {
   if ([self retainCount] == 2)
     {

@@ -66,6 +66,7 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSScreen.h"
 #import "AppKit/NSSound.h"
+#import "AppKit/NSToolbar.h"
 #import "GNUstepGUI/GSInstantiator.h"
 #import "GSGuiPrivate.h"
 

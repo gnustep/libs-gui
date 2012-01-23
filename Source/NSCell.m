@@ -324,7 +324,7 @@ static NSColor *dtxtCol;
   if (_cell.contents_is_attributed_string == NO)
     {
       // If we have a formatter this is also the string of the _object_value
-      return _contents;
+      return (NSString *)_contents;
     }
   else
     {
@@ -2991,26 +2991,55 @@ static NSColor *dtxtCol;
       contents = [_formatter editingStringForObjectValue: _object_value];
       if (contents == nil)
         {
-          contents = _contents;
+          // We cannot call the stringValue method as this will call
+          // validateEditing in NSActionCell subclasses
+          if (nil == _contents)
+            {
+              contents = @"";
+            }
+
+          if (_cell.contents_is_attributed_string == NO)
+            {
+              contents = (NSString *)_contents;
+            }
+          else
+            {
+              contents = [(NSAttributedString *)_contents string];
+            }
         }
       if (![contents isEqualToString: [textObject string]])
 	[textObject setText: contents];
     }
   else
     {
+      NSString *contents; 
+
+      if (nil == _contents)
+        {
+          contents = @"";
+        }
+
       if (_cell.contents_is_attributed_string == NO)
         {
-	  if (![_contents isEqualToString:[textObject string]])
-	    [textObject setText: _contents];
+          contents = (NSString *)_contents;
         }
       else
         {
-	  // FIXME what about attribute changes?
-          NSRange range = NSMakeRange(0, [[textObject string] length]);
-	  if (![[(NSAttributedString *)_contents string] isEqualToString:
-		 [textObject string]])
-	    [textObject replaceCharactersInRange: range
-			withAttributedString: (NSAttributedString *)_contents];
+          contents = [(NSAttributedString *)_contents string];
+        }
+      if (![contents isEqualToString: [textObject string]])
+        {
+          if (_cell.contents_is_attributed_string == NO)
+            {
+              [textObject setText: contents];
+            }
+          else
+            {
+              // FIXME what about attribute changes?
+              NSRange range = NSMakeRange(0, [[textObject string] length]);
+              [textObject replaceCharactersInRange: range
+                              withAttributedString: (NSAttributedString *)_contents];
+            }
         }
     }
 }

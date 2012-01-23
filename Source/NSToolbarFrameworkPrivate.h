@@ -90,9 +90,6 @@
          atIndex: (int)index 
          broadcast: (BOOL)broadcast;
 - (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex;
-- (void) _moveItemFromIndex: (int)index 
-         toIndex: (int)newIndex 
-         broadcast: (BOOL)broacast;
 - (void) _performRemoveItem: (NSToolbarItem *)item; // Used by drag setup
 - (NSToolbar *) _toolbarModel;
 - (void) _validate: (NSWindow *)observedWindow;

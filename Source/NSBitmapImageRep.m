@@ -519,26 +519,27 @@
     }
   else
     {
-      unsigned char* bits;
-      long length;
+      unsigned char *bits;
+      NSUInteger length;
       unsigned int i;
 
       // No image data was given, allocate it.
-      length = (long)((_isPlanar) ? _numColors : 1) * _bytesPerRow * 
+      length = (NSUInteger)((_isPlanar) ? _numColors : 1) * _bytesPerRow * 
 	  _pixelsHigh * sizeof(unsigned char);
+      // Create a mutable data object although we never use it as such
       _imageData = [[NSMutableData alloc] initWithLength: length];
-      bits = [_imageData mutableBytes];
+      bits = (unsigned char *)[_imageData bytes];
       _imagePlanes[0] = bits;
       if (_isPlanar) 
 	{
-	  for (i=1; i < _numColors; i++) 
-	    _imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
-	  for (i= _numColors; i < MAX_PLANES; i++) 
+	  for (i = 1; i < _numColors; i++) 
+	    _imagePlanes[i] = bits + i * _bytesPerRow * _pixelsHigh;
+	  for (i = _numColors; i < MAX_PLANES; i++) 
 	    _imagePlanes[i] = NULL;
 	}
       else
 	{
-	  for (i= 1; i < MAX_PLANES; i++) 
+	  for (i = 1; i < MAX_PLANES; i++) 
 	    _imagePlanes[i] = NULL;
 	}      
     }
@@ -1766,21 +1767,21 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
   else
     {
-      unsigned char* bits;
+      unsigned char *bits;
       unsigned int i;
 
-      bits = [copy->_imageData mutableBytes];
+      bits = (unsigned char *)[copy->_imageData bytes];
       copy->_imagePlanes[0] = bits;
       if (_isPlanar) 
 	{
-	  for (i=1; i < _numColors; i++) 
-	    copy->_imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
-	  for (i= _numColors; i < MAX_PLANES; i++) 
+	  for (i = 1; i < _numColors; i++) 
+	    copy->_imagePlanes[i] = bits + i * _bytesPerRow * _pixelsHigh;
+	  for (i = _numColors; i < MAX_PLANES; i++) 
 	    copy->_imagePlanes[i] = NULL;
 	}
       else
 	{
-	  for (i= 1; i < MAX_PLANES; i++) 
+	  for (i = 1; i < MAX_PLANES; i++) 
 	    copy->_imagePlanes[i] = NULL;
 	}
     }

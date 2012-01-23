@@ -290,7 +290,6 @@ typedef enum _NSMatrixMode {
 		 to: (id)anObject
 	forAllCells: (BOOL)flag;
 - (void) sendDoubleAction;
-- (void) setErrorAction: (SEL)aSelector;
 
 /*
  * Handling Event and Action Messages 

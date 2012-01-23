@@ -670,7 +670,7 @@ typedef	struct {
 	    }
 	  if (_extraColors[elementState] == nil)
 	    {
-	      _extraColors[elementState] = [null retain];
+	      _extraColors[elementState] = (id)[null retain];
 	    }
 	}
       if (_extraColors[elementState] != (id)null)

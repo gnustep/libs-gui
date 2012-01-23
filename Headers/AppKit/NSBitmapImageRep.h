@@ -133,7 +133,7 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
   NSMutableDictionary   *_properties;
   BOOL			_isPlanar;
   unsigned char		**_imagePlanes;
-  NSMutableData		*_imageData;
+  NSData		*_imageData;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
   NSBitmapFormat  _format;
 #else
