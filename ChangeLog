@@ -1,3 +1,10 @@
+2012-01-23 Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSClipView.m (-constrainScrollPoint:): Restore old code
+	which correctly rounded the scroll point to an integer point in
+	device-space. It seems the correct code was commented out in 2002,
+	perhaps as a performance optimisation?
+
 2012-01-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarFrameworkPrivate.h,
