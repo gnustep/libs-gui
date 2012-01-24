@@ -36,12 +36,14 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSGlyphGenerator.h"
 #import "AppKit/NSLayoutManager.h"
 #import "AppKit/NSSecureTextField.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSFontInfo.h"
 
 // the Unicode code point for a bullet
 #define BULLET 0x2022
@@ -52,6 +54,13 @@
 }
 - (void) setEchosBullets:(BOOL)flag;
 - (BOOL) echosBullets;
+@end
+
+@interface GSSimpleSecureGlyphGenerator : NSGlyphGenerator
+@end
+
+@interface NSGlyphGenerator (Private)
+- (NSFont *) fontForCharactersWithAttributes: (NSDictionary *)attributes;
 @end
 
 @interface GSSimpleSecureLayoutManager : NSLayoutManager
@@ -248,6 +257,46 @@
 }
 @end
 
+@implementation GSSimpleSecureGlyphGenerator
+- (void) generateGlyphsForGlyphStorage: (id <NSGlyphStorage>)storage
+             desiredNumberOfCharacters: (NSUInteger)num
+                            glyphIndex: (NSUInteger*)glyph
+                        characterIndex: (NSUInteger*)index
+{
+  NSGlyph glyphs[num];
+  NSGlyph gl;
+  NSAttributedString *attrstr = [storage attributedString];
+  GSFontInfo *fi;
+  int i;
+  NSRange maxRange = NSMakeRange(*index, num);
+  NSRange curRange;
+  NSDictionary *attributes;
+
+  attributes = [attrstr attributesAtIndex: *index
+                        longestEffectiveRange: &curRange
+                        inRange: maxRange];
+  fi = [[self fontForCharactersWithAttributes: attributes] fontInfo];
+  if (!fi)
+    {
+      [NSException raise: NSGenericException
+                   format: @"Glyph generation with no font."];
+      return;
+    }
+
+  gl = [fi glyphForCharacter: BULLET];
+  for (i = 0; i < num; i++)
+    {
+      glyphs[i] = gl;
+    }
+
+  [storage insertGlyphs: glyphs
+                 length: num
+           forStartingGlyphAtIndex: *glyph
+         characterIndex: *index];
+}
+
+@end
+
 @implementation GSSimpleSecureLayoutManager
 
 - (BOOL) echosBullets
@@ -265,28 +314,8 @@
 {
   if ([self echosBullets])
     {
-       /*
-        * FIXME: Rather stupid way of drawing bullets, but better than nothing
-        * at all. Works well enough for secure text fields.
-        * This also doesn't belong into this method, rather we should do
-        * the replacement during glyph generation. This gets currently done
-        * in [GSLayoutManager _generateGlyphsForRun:at:], but should be done
-        * in an NSTypesetter subclass. Only with this in place it seems
-        * possible to implement bullet echoing.
-        */
-       unichar buf[] = {BULLET};
-       NSString *string = [NSString stringWithCharacters: buf length: 1];
-       NSFont *font = [_typingAttributes objectForKey: NSFontAttributeName];
-       double width = [font widthOfString: string];
-       int i;
-
-       for (i = glyphRange.location; i <= NSMaxRange (glyphRange); i++)
-         {
-           NSPoint p = NSMakePoint (containerOrigin.x + (i - 1) * width,
-                                    containerOrigin.y);
-
-           [string drawAtPoint: p withAttributes: _typingAttributes];
-         }
+      [super drawGlyphsForGlyphRange: glyphRange
+                             atPoint: containerOrigin];
     }
   else
     {
@@ -302,6 +331,7 @@
        textContainer: (NSTextContainer*)aTextContainer
 {
   GSSimpleSecureLayoutManager *m;
+  GSSimpleSecureGlyphGenerator *g;
 
   /* Perform the normal init.  */
   self = [super initWithFrame: frameRect  textContainer: aTextContainer];
@@ -311,6 +341,9 @@
   /* Then, replace the layout manager with a
    * GSSimpleSecureLayoutManager.  */
   m = [[GSSimpleSecureLayoutManager alloc] init];
+  g = [[GSSimpleSecureGlyphGenerator alloc] init];
+  [m setGlyphGenerator: g];
+  RELEASE(g);
   [[self textContainer] replaceLayoutManager: m];
   RELEASE(m);
 
