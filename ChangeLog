@@ -1,3 +1,8 @@
+2012-01-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSClipView (-constrainScrollPoint:): Revert last change
+	until after the release.
+
 2012-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSecureTextField.m: Add GSSimpleSecureGlyphGenerator and
