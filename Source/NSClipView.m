@@ -255,7 +255,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       return;
     }
       
-  if (_copiesOnScroll && _window && [_window gState])
+  // FIXME: Re-enable after release
+  if (NO) //_copiesOnScroll && _window && [_window gState])
     {
       /* Copy the portion of the view that is common before and after
          scrolling.  Then, document view needs to redraw the remaining

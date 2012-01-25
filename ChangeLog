@@ -1,6 +1,10 @@
+2012-01-25  Eric Wasylishen  <ericwa@ericwa-MacBook>
+
+	* Source/NSClipView.m: Disable copy-on-scroll until after release
+
 2012-01-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
-	* Source/NSClipView (-constrainScrollPoint:): Revert last change
+	* Source/NSClipView.m (-constrainScrollPoint:): Revert last change
 	until after the release.
 
 2012-01-24 Fred Kiefer <FredKiefer@gmx.de>
