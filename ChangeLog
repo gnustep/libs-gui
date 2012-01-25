@@ -1,4 +1,9 @@
-2012-01-25  Eric Wasylishen  <ericwa@ericwa-MacBook>
+2012-01-25  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSImage.m (+imageNamed:): Don't try to look up path
+	if called with nil (just return nil).
+
+2012-01-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSClipView.m: Disable copy-on-scroll until after release
 

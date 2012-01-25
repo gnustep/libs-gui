@@ -209,7 +209,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
    */
   [imageLock lock];
   image = (NSImage*)[nameDict objectForKey: aName];
-  if (image == nil)
+  if (image == nil && aName != nil)
     {
       NSString  *path = [self _pathForImageNamed: aName];
 
