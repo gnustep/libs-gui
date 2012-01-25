@@ -4597,6 +4597,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker
       makers = [_layoutManager rulerMarkersForTextView: self
 			       paragraphStyle: paraStyle
 			       ruler: rv];
+      [rv setClientView:self];
       [rv setMarkers: makers];
     }
 }

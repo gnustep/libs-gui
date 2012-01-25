@@ -1,3 +1,10 @@
+2012-01-25 Doug Simons  <doug.simons@testplant.com>
+
+	* Source/NSTextView.m (-updateRuler): Call setClientView: before
+	calling setMarkers: to fix a problem when a textView's text is
+	set or changed when the textView is not the first responder,
+	such as at windowControllerDidLoadNib: time.
+
 2012-01-25  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSImage.m (+imageNamed:): Don't try to look up path
