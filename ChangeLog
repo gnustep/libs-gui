@@ -1,5 +1,11 @@
 2012-01-26 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m (-performActionForItemAtIndex:): Check for the
+	popup button cell and its action, before checking for the item
+	action. This caused a problem due to NIB decoding changes.
+
+2012-01-26 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-updateRuler): Replace last change with one
 	that checks whether the text view is the client view of the ruler
 	and only sets the markers in that case.
