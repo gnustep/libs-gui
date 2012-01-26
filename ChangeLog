@@ -1,3 +1,9 @@
+2012-01-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-updateRuler): Replace last change with one
+	that checks whether the text view is the client view of the ruler
+	and only sets the markers in that case.
+
 2012-01-25 Doug Simons  <doug.simons@testplant.com>
 
 	* Source/NSTextView.m (-updateRuler): Call setClientView: before

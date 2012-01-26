@@ -4577,7 +4577,8 @@ shouldRemoveMarker: (NSRulerMarker *)marker
   /* Update ruler view only if told so */
   if (_tf.uses_ruler && _tf.is_ruler_visible &&
       (sv = [self enclosingScrollView]) != nil && 
-      (rv = [sv horizontalRulerView]) != nil)
+      (rv = [sv horizontalRulerView]) != nil &&
+      [rv clientView] == self)
     {
       NSParagraphStyle *paraStyle;
       NSArray *makers;
@@ -4597,7 +4598,6 @@ shouldRemoveMarker: (NSRulerMarker *)marker
       makers = [_layoutManager rulerMarkersForTextView: self
 			       paragraphStyle: paraStyle
 			       ruler: rv];
-      [rv setClientView:self];
       [rv setMarkers: makers];
     }
 }
