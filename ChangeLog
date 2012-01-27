@@ -1,3 +1,8 @@
+2012-01-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Images/common_ToolbarClippedItemsMark.tiff: Revert to an older
+	version, scaled up to 48x48.
+
 2012-01-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-performActionForItemAtIndex:): Check for the
