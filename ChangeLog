@@ -1,3 +1,8 @@
+2012-01-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-setMain:): Remove the in-window menu when
+	switching to a theme without that.
+
 2012-01-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Images/common_ToolbarClippedItemsMark.tiff: Revert to an older

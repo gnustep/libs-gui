@@ -2011,41 +2011,35 @@ static BOOL menuBarVisible = YES;
           [self setMenuRepresentation: newRep];
           [self _organizeMenu];
           RELEASE(newRep);
-          if (newStyle == NSWindows95InterfaceStyle)
+          if (oldStyle == NSWindows95InterfaceStyle)
             {
-              /* Put menu in the main window for microsoft style.
+              /* Remove the menu from all main windows.
                */
-              [[NSApp mainWindow] setMenu: self];
-            }
-          else if ([[NSApp mainWindow] menu] == self)
-            {
-              /* Remove the menu from the main window.
-               */
-              [[NSApp mainWindow] setMenu: nil];
+              [[GSTheme theme] updateAllWindowsWithMenu: nil];
             }
         }
       
       /* Adjust the menu window to suit the menu view unless the menu
        * is being displayed in the application main window.
        */
-      if ([[NSApp mainWindow] menu] != self)
+      if (newStyle != NSWindows95InterfaceStyle)
         {
           [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
           [[self window] setLevel: NSMainMenuWindowLevel];
           [self _setGeometry];
           [self sizeToFit];
         }
+      else
+	{
+          /* Put menu in all main windows for microsoft style.
+           */
+	  [[GSTheme theme] updateAllWindowsWithMenu: self];
+	}
       
       if ([NSApp isActive])
         {
           [self display];
         }
-
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
-	  NSWindows95InterfaceStyle)
-	{
-	  [[GSTheme theme] updateAllWindowsWithMenu: self];
-	}
     }
   else 
     {
