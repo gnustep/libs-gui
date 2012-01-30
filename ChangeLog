@@ -1,3 +1,10 @@
+2012-01-30 Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GNUmakefile: Remove GSGhostscriptImageRep from the build
+	* Source/NSImageRep.m: Remove GSGhostscriptImageRep
+	* configure.ac: Disable ImageMagic by default
+	* configure: Regenerate
+
 2012-01-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-setMain:): Remove the in-window menu when

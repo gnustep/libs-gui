@@ -1345,7 +1345,7 @@ Optional Features:
   --disable-png           Disable PNG support
   --disable-ungif         Disable libungif-based GIF support
   --enable-libgif         Enable libgif-based GIF support
-  --disable-imagemagick        Disable ImageMagick support
+  --enable-imagemagick        Enable ImageMagick support
   --disable-icu		Disable International Components for Unicode
   --disable-aspell        Disable aspell for spellchecker
   --disable-sound          Disable sound
@@ -5425,8 +5425,6 @@ fi
 # Check whether --enable-imagemagick was given.
 if test "${enable_imagemagick+set}" = set; then :
   enableval=$enable_imagemagick;
-else
-  enable_imagemagick=yes
 fi
 
 
@@ -5549,7 +5547,7 @@ $as_echo "no" >&6; }
 		PKG_CONFIG=""
 	fi
 fi
-if test "$enable_imagemagick" = "yes"; then :
+if test "x$enable_imagemagick" = "xyes"; then :
 
 
 pkg_failed=no

@@ -213,7 +213,6 @@ GSTextFinder.m \
 GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
-GSGhostscriptImageRep.m \
 GSGormLoading.m \
 GSIconManager.m \
 GSImageMagickImageRep.m \

@@ -359,9 +359,8 @@ fi
 #--------------------------------------------------------------------
 
 AC_ARG_ENABLE(imagemagick, 
-  [  --disable-imagemagick        Disable ImageMagick support],,
-  enable_imagemagick=yes)
-AS_IF([test "$enable_imagemagick" = "yes"], [
+  [  --enable-imagemagick        Enable ImageMagick support])
+AS_IF([test "x$enable_imagemagick" = "xyes"], [
    PKG_CHECK_MODULES([IMAGEMAGICK], [MagickCore],
     [
 	GRAPHIC_CFLAGS="$IMAGEMAGICK_CFLAGS $GRAPHIC_CFLAGS"

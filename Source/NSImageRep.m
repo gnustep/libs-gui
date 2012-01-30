@@ -50,7 +50,6 @@
 #import "AppKit/NSScreen.h"
 #import "AppKit/DPSOperators.h"
 #import "AppKit/PSOperators.h"
-#import "GNUstepGUI/GSGhostscriptImageRep.h"
 #import "GNUstepGUI/GSImageMagickImageRep.h"
 
 static NSMutableArray *imageReps = nil;
@@ -67,7 +66,6 @@ static Class NSImageRep_class = NULL;
       NSImageRep_class = self;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 4];
       [imageReps addObject: [NSBitmapImageRep class]];
-      [imageReps addObject: [GSGhostscriptImageRep class]];
 #if HAVE_IMAGEMAGICK
       [imageReps addObject: [GSImageMagickImageRep class]];
 #endif
