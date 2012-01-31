@@ -1,5 +1,10 @@
 2012-01-30 Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Only
+	draw at 50% opacity if no bezel is set for cocoa compatibility.
+
+2012-01-30 Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Images/common_ToolbarClippedItemsMark.tiff: Revert to older
 	version because 48x48 scaled version looks too big. Also add
 	high-DPI version.
