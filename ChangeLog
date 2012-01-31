@@ -1,5 +1,11 @@
 2012-01-30 Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Images/common_ToolbarClippedItemsMark.tiff: Revert to older
+	version because 48x48 scaled version looks too big. Also add
+	high-DPI version.
+
+2012-01-30 Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GNUmakefile: Remove GSGhostscriptImageRep from the build
 	* Source/NSImageRep.m: Remove GSGhostscriptImageRep
 	* configure.ac: Disable ImageMagic by default
