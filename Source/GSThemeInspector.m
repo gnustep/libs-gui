@@ -178,7 +178,7 @@ static GSThemeInspector	*sharedInspector = nil;
       [content addSubview: s];
       RELEASE(s);
 
-      r = [[s documentView] frame];
+      r = [[s contentView] bounds];
       v = [[NSTextView alloc] initWithFrame: r];
       [v setBackgroundColor: [self backgroundColor]];
       [v setHorizontallyResizable: YES];
