@@ -27,6 +27,7 @@
 */
 
 #import "AppKit/NSImageView.h"
+#import "AppKit/NSClipView.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextContainer.h"
@@ -200,4 +201,3 @@ static GSThemeInspector	*sharedInspector = nil;
 }
 
 @end
-
