@@ -1,3 +1,8 @@
+2012-02-01 Riccardo Mottola <rm@gnu.org>
+
+	* Source/GSThemePanel:
+	centerScanRect button to avoid blurring
+
 2012-02-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSThemeInspector.m: Add missing include.
@@ -133,6 +138,11 @@
 	* Source/NSCell.m (-setStringValue:, setObjectValue:): Always use
 	ASSIGNCOPY for the contents. This fixes memory leak of last
 	commit.
+
+2012-01-19 Riccardo Mottola <rm@gnu.org>
+
+	*Source/NSCell.m:
+	Add missing autoreleases.
 
 2012-01-19 Riccardo Mottola <rm@gnu.org>
 

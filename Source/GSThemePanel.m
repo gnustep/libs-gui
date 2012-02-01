@@ -2,7 +2,7 @@
 
    <abstract>Theme management utility</abstract>
 
-   Copyright (C) 2008 Free Software Foundation, Inc.
+   Copyright (C) 2008-2012 Free Software Foundation, Inc.
 
    Author: Richard Frith-Macdonald <rfm@gnu.org>
    Date: 2007-2008
@@ -200,6 +200,7 @@ static GSThemePanel	*sharedPanel = nil;
       frame = [button frame];
       frame.origin.x = ([bottomView frame].size.width - frame.size.width) / 2;
       frame.origin.y = ([bottomView frame].size.height - frame.size.height) / 2;
+      frame = [bottomView centerScanRect: frame];
       [button setFrame: frame];
     }
   else
