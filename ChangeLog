@@ -1,5 +1,13 @@
 2012-02-01 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBitmapImageRep.m (-initWithFocusedViewRect:): Return
+	nil if the image data is empty. This could lead to an exception
+	alter on.
+	* Source/NSImage.m (-TIFFRepresentationUsingCompression:factor:,
+	-TIFFRepresentation): Deal with -initWithFocusedViewRect: returning nil.
+
+2012-02-01 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenu.m (-setMain:): Rearrange code to avoid duplicate
 	menu for in-window menu themes.
 

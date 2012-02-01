@@ -345,7 +345,7 @@
       return nil;
     }
   _imageData = RETAIN([dict objectForKey: @"Data"]);
-  if (_imageData == nil)
+  if (_imageData == nil || [_imageData length] == 0)
     {
       NSLog(@"NSBitmapImageRep initWithFocusedViewRect: failed");
       RELEASE(self);

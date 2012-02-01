@@ -1491,9 +1491,12 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
                        NSMakeRect(0.0, 0.0, size.width, size.height)];
       [self unlockFocus];
-      [self addRepresentation: rep];
-      data = [rep TIFFRepresentation];
-      RELEASE(rep);
+      if (nil != rep)
+        {
+          [self addRepresentation: rep];
+          data = [rep TIFFRepresentation];
+          RELEASE(rep);
+        }
     }
 
   return data;
@@ -1519,9 +1522,12 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
                        NSMakeRect(0.0, 0.0, size.width, size.height)];
       [self unlockFocus];
-      [self addRepresentation: rep];
-      data = [rep TIFFRepresentationUsingCompression: comp factor: aFloat];
-      RELEASE(rep);
+      if (nil != rep)
+        {
+          [self addRepresentation: rep];
+          data = [rep TIFFRepresentationUsingCompression: comp factor: aFloat];
+          RELEASE(rep);
+        }
     }
 
   return data;
