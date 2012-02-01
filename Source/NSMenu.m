@@ -1997,6 +1997,16 @@ static BOOL menuBarVisible = YES;
         {
           NSMenuView *newRep;
 
+          if (oldStyle == NSWindows95InterfaceStyle)
+            {
+              /* Remove the menu from all main windows.
+               */
+              [[GSTheme theme] updateAllWindowsWithMenu: nil];
+            }
+          if (newStyle == NSWindows95InterfaceStyle)
+            {
+              [self close];
+            }
           newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
           if (newStyle == NSMacintoshInterfaceStyle
               || newStyle == NSWindows95InterfaceStyle)
@@ -2011,11 +2021,11 @@ static BOOL menuBarVisible = YES;
           [self setMenuRepresentation: newRep];
           [self _organizeMenu];
           RELEASE(newRep);
-          if (oldStyle == NSWindows95InterfaceStyle)
+          if (newStyle == NSWindows95InterfaceStyle)
             {
-              /* Remove the menu from all main windows.
+              /* Put menu in all main windows for microsoft style.
                */
-              [[GSTheme theme] updateAllWindowsWithMenu: nil];
+              [[GSTheme theme] updateAllWindowsWithMenu: self];
             }
         }
       
@@ -2028,22 +2038,15 @@ static BOOL menuBarVisible = YES;
           [[self window] setLevel: NSMainMenuWindowLevel];
           [self _setGeometry];
           [self sizeToFit];
-        }
-      else
-	{
-          /* Put menu in all main windows for microsoft style.
-           */
-	  [[GSTheme theme] updateAllWindowsWithMenu: self];
-	}
-      
-      if ([NSApp isActive])
-        {
-          [self display];
+
+          if ([NSApp isActive])
+            {
+              [self display];
+            }
         }
     }
   else 
     {
-      [self close];
       [[self window] setLevel: NSSubmenuWindowLevel];
     }
 }

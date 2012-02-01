@@ -1,5 +1,10 @@
 2012-02-01 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m (-setMain:): Rearrange code to avoid duplicate
+	menu for in-window menu themes.
+
+2012-02-01 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSThemeInspector.m (-update:): Don't get the frame from a
 	non-existing view.
 
