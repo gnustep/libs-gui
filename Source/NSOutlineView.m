@@ -125,6 +125,8 @@ static NSImage *unexpandable  = nil;
 - (void) _closeItem: (id)item;
 - (void) _removeChildren: (id)startitem;
 - (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)n;
+- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
+                                 row: (int) rowIndex;
 @end
 
 @interface	NSOutlineView (Private)
@@ -963,7 +965,7 @@ static NSImage *unexpandable  = nil;
       id item = [self itemAtRow: rowIndex];
 
       tb = [_tableColumns objectAtIndex: i];
-      cell = [tb dataCellForRow: rowIndex];
+      cell = [self _dataCellForTableColumn: tb row: rowIndex];
       if (i == _editedColumn && rowIndex == _editedRow)
         [cell _setInEditing: YES];
       [self _willDisplayCell: cell
@@ -1577,7 +1579,7 @@ Also returns the child index relative to this parent. */
   // Prepare the cell
   tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
-  _editedCell = [[tb dataCellForRow: rowIndex] copy];
+  _editedCell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
 
   [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
@@ -2235,6 +2237,25 @@ Also returns the child index relative to this parent. */
     {
       [self _postSelectionDidChangeNotification];
     }
+}
+
+- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
+                                 row: (int) rowIndex
+{
+  NSCell *cell = nil;
+  if ([_delegate respondsToSelector:
+		@selector(outlineView:dataCellForTableColumn:item:)])
+    {
+      id item = [self itemAtRow: rowIndex];
+      cell = [_delegate outlineView: self
+			dataCellForTableColumn: tb
+			       item: item];
+    }
+  if (cell == nil)
+    {
+      cell = [tb dataCellForRow: rowIndex];
+    }
+  return cell;
 }
 
 @end

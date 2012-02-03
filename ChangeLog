@@ -1,3 +1,12 @@
+2012-02-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSOutlineView.h:
+	* Source/NSOutlineView.m: Add support for
+	outlineView:dataCellForTableColumn:item: delegate method
+	* Headers/AppKit/NSTableView.h:
+	* Source/NSTableView.m: Add support for
+	tableView:dataCellForTableColumn:row: delegate method
+
 2012-02-03  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.22.0

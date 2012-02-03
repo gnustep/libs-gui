@@ -1979,6 +1979,8 @@ static void computeNewSelection
 - (void) _editNextCellAfterRow:(int)row inColumn:(int)column;
 - (void) _autosaveTableColumns;
 - (void) _autoloadTableColumns;
+- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
+                                 row: (int) rowIndex;
 @end
 
 
@@ -3315,7 +3317,7 @@ byExtendingSelection: (BOOL)flag
   // Prepare the cell
   tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
-  _editedCell = [[tb dataCellForRow: rowIndex] copy];
+  _editedCell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
 
   [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
@@ -3423,7 +3425,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   /* we should copy the cell here, as we do on editing.
      otherwise validation on a cell being edited could
      cause the cell we are selecting to get it's objectValue */
-  cell = [[tb dataCellForRow: rowIndex] copy];
+  cell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
   originalValue = RETAIN([self _objectValueForTableColumn: tb
 		  			row: rowIndex]);
   [cell setObjectValue: originalValue]; 
@@ -3782,7 +3784,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      NSCell *cell;
 		      
 		      tb = [_tableColumns objectAtIndex: _clickedColumn];
-		      cell = [tb dataCellForRow: _clickedRow];
+		      cell = [self _dataCellForTableColumn: tb row: _clickedRow];
 		      
 		      [self _trackCellAtColumn: _clickedColumn
 				row: _clickedRow
@@ -4746,7 +4748,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       width = [[tb headerCell] cellSize].width;
       for (row = 0; row < _numberOfRows; row++)
 	{
-	  cell = [tb dataCellForRow: row];
+	  cell = [self _dataCellForTableColumn: tb row: row];
 	  [cell setObjectValue: [_dataSource tableView: self
 					     objectValueForTableColumn: tb
 					     row: row]]; 
@@ -5691,7 +5693,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   for (i = 0; i < _numberOfColumns; i++)
     {
       tb = [_tableColumns objectAtIndex: i];
-      if ([tb dataCellForRow: -1] == aCell)
+      if ([self _dataCellForTableColumn: tb row: -1] == aCell)
 	{
 	  [self setNeedsDisplayInRect: [self rectOfColumn: i]];
 	}
@@ -5716,7 +5718,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 	  for (j = firstVisibleRow; j < lastVisibleRow; j++)
 	    {
-	      if ([tb dataCellForRow: j] == aCell)
+	      if ([self _dataCellForTableColumn: tb row: j] == aCell)
 		{
 		  rowRect = [self rectOfRow: j];
 		  [self setNeedsDisplayInRect:
@@ -6011,6 +6013,24 @@ This method is deprecated, use -columnIndexesInRect:. */
 	    }
 	}
     }
+}
+
+- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
+                                 row: (int) rowIndex
+{
+  NSCell *cell = nil;
+  if ([_delegate respondsToSelector:
+		@selector(tableView:dataCellForTableColumn:row:)])
+    {
+      cell = [_delegate tableView: self
+			dataCellForTableColumn: tb
+			      row: rowIndex];
+    }
+  if (cell == nil)
+    {
+      cell = [tb dataCellForRow: rowIndex];
+    }
+  return cell;
 }
 
 - (void) superviewFrameChanged: (NSNotification*)aNotification
@@ -6531,7 +6551,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 		     
 {
   NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
-  NSCell *cell = [tableColumn dataCellForRow: rowIndex];
+  NSCell *cell = [self _dataCellForTableColumn: tableColumn row: rowIndex];
   
   BOOL cellIsEditable = [cell isEditable];
   BOOL columnIsEditable = [tableColumn isEditable];

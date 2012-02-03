@@ -410,6 +410,11 @@ shouldSelectTableColumn: (NSTableColumn *)aTableColumn;
    willDisplayCell: (id)aCell 
     forTableColumn: (NSTableColumn *)aTableColumn
 	       row: (int)rowIndex;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSCell *) tableView: (NSTableView *)aTableView 
+dataCellForTableColumn: (NSTableColumn *)aTableColumn
+		   row: (int)rowIndex;
+#endif
 - (void) tableViewColumnDidMove: (NSNotification *)aNotification;
 - (void) tableViewColumnDidResize: (NSNotification *)aNotification;
 - (void) tableViewSelectionDidChange: (NSNotification *)aNotification;

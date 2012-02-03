@@ -268,6 +268,13 @@ shouldSelectTableColumn: (NSTableColumn *)tableColumn;
       willDisplayCell: (id)cell
        forTableColumn: (NSTableColumn *)tableColumn
                  item: (id)item;  
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSCell *) outlineView: (NSOutlineView *)outlineView 
+  dataCellForTableColumn: (NSTableColumn *)aTableColumn
+		    item: (id)item;
+#endif
+
 /**
  * Called when the given cell in the outline column is about to be displayed.  This method is
  * useful for making last second modifications to what will be shown.
