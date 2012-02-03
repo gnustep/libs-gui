@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.20.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.22.0 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -28,17 +28,29 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.20.0'
+1.2 Noteworthy changes in version `0.22.0'
 ==========================================
 
-A new stable release. Many improvments with Nib loading, documents and
-document controllers. Fixed many drawing issues, particularly ones
-related to flipping. Much improved theming.
+New features include:
+   * This version is binary incompatible with previous versions due to
+     the change of NSNotFound in GNUstep base.
+
+   * Support for drawing the GUI with a scale factor, for high-DPI
+     monitors.
+
+   * Character panel
+
+   * Color picker "Magnifier" tool, for grabbing the color of arbitrary
+     parts of the screen
+
+   Many NSImage improvements (Mac OS X 10.6 drawing methods, better
+selection of image reps, better support for icons). Many bugfixes,
+including in Xib loading, printing, and NSView geometry.
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.20.0.tar.gz distribution file has been placed at
+The gstep-gui-0.22.0.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation
