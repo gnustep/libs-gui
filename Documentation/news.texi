@@ -9,25 +9,25 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
-@section Noteworthy changes in trunk
+@section Noteworthy changes in version @samp{0.22.0}
 
 New features include:
 @itemize @bullet
+@item This version is binary incompatible with previous versions due to the change of NSNotFound in GNUstep base.
 @item Support for drawing the GUI with a scale factor, for high-DPI monitors.
 @item Character panel
 @item Color picker ``Magnifier'' tool, for grabbing the color of arbitrary parts of the screen
-@item Many new image formats supported for reading using Ghostscript and ImageMagick
 @end itemize
 
 Many NSImage improvements (Mac OS X 10.6 drawing methods, better selection of image reps, better support for icons). Many bugfixes, including in Xib loading, printing, and NSView geometry.
+
+@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.20.0}
 
 A new stable release. Many improvments with Nib loading, documents and
 document controllers. Fixed many drawing issues, particularly
 ones related to flipping. Much improved theming.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.19.0}
 
