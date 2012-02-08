@@ -203,6 +203,7 @@ implement, so we can't do that. */
 {
   NSString *ext;
   Class rep;
+  NSData* data;
 
   // Is the file extension already the file type?
   ext = [filename pathExtension];
@@ -210,7 +211,6 @@ implement, so we can't do that. */
     {
       /* With no extension, we can't tell the type from the file name.
       Use the data instead. */
-      NSData *data;
       data = [NSData dataWithContentsOfFile: filename];
       return [self _imageRepsWithData: data];
     }
@@ -227,20 +227,45 @@ implement, so we can't do that. */
   else
     return nil;
 
-  {
-    NSData* data;
+  // filter non-native types to native format
+  if (![[rep imageUnfilteredFileTypes] containsObject: ext])
+    {
+      NSPasteboard *p = [NSPasteboard pasteboardByFilteringFile: filename];
+      NSArray *nativeTypes = [rep imageUnfilteredFileTypes];
+      NSMutableArray *ptypes = [NSMutableArray arrayWithCapacity: [nativeTypes count]];
+      NSEnumerator *enumerator = [nativeTypes objectEnumerator];
+      NSString *type;
 
-    data = [NSData dataWithContentsOfFile: filename];
-    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+      // Convert the native types to pasteboard types
+      while ((type = [enumerator nextObject]) != nil)
+        {
+          NSString *type2 = NSCreateFileContentsPboardType(type);
+          [ptypes addObject: type2];
+        }
+
+      type = [p availableTypeFromArray: ptypes];
+      data = [p dataForType: type];
+      NSDebugLLog(@"NSImage", @"Filtering data for %@ from %@ of type %@ to %@", filename, p, type, data);
+    }
+  else
+    {
+      data = [NSData dataWithContentsOfFile: filename];
+    }
+
+  if (nil == data)
+    return nil;
+
+  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+    {
       return [rep imageRepsWithData: data];
-    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-      {
-	NSImageRep *imageRep = [rep imageRepWithData: data];
-
-	if (imageRep != nil)
-	  return [NSArray arrayWithObject: imageRep];
-      }
-  }
+    }
+  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+    {
+      NSImageRep *imageRep = [rep imageRepWithData: data];
+      
+      if (imageRep != nil)
+        return [NSArray arrayWithObject: imageRep];
+    }
 
   return nil;
 }
@@ -339,8 +364,35 @@ implement, so we can't do that. */
 
 + (NSArray *) imageFileTypes
 {
-  // FIXME: We should check what conversions are defined by services.
-  return [self imageUnfilteredFileTypes];
+  NSArray *nativeTypes = [self imageUnfilteredFileTypes];
+  NSEnumerator *enumerator = [nativeTypes objectEnumerator];
+  NSMutableArray *filteredTypes = [[NSMutableArray alloc] initWithCapacity: 
+                                                            [nativeTypes count]];
+  NSString *type;
+  
+  while ((type = [enumerator nextObject]) != nil)
+    {
+      NSEnumerator *enum2 = [[NSPasteboard typesFilterableTo: 
+                                             NSCreateFileContentsPboardType(type)]
+                              objectEnumerator];
+      NSString *type2;
+
+      while ((type2 = [enum2 nextObject]) != nil)
+        {
+          NSString *fileType = NSGetFileType(type2);
+          
+          if (nil != fileType)
+            {
+              type2 = fileType;
+            }
+          if ([filteredTypes indexOfObject: type2] == NSNotFound)
+            {
+              [filteredTypes addObject: type2];
+            }
+        }
+    }
+
+  return AUTORELEASE(filteredTypes);
 }
 
 + (NSArray *) imagePasteboardTypes

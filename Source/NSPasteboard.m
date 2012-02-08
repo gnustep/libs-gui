@@ -747,36 +747,40 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	  [sender setData: [NSData data] forType: type];
 	  return;	// Not the name of a file to filter.
 	}
-      if (data != nil)
-	{
-	  d = data;
-	}
-      else if (file != nil)
-	{
-	  d = [NSData dataWithContentsOfFile: file];
-	}
-      else
-	{
-	  d = [pboard dataForType: fromType];
-	}
 
-      o = [NSDeserializer deserializePropertyListFromData: d
-					mutableContainers: NO];
-      if ([o isKindOfClass: [NSString class]] == YES)
+      if (file != nil)
 	{
-	  filename = o;
-	}
-      else if ([o isKindOfClass: [NSArray class]] == YES
-	&& [o count] > 0
-	&& [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
-	{
-	  filename = [o objectAtIndex: 0];
+	  filename = file;
 	}
       else
-	{
-	  [sender setData: [NSData data] forType: type];
-	  return;	// Not the name of a file to filter.
-	}
+        {
+          if (data != nil)
+            {
+              d = data;
+            }
+          else
+            {
+              d = [pboard dataForType: fromType];
+            }
+          
+          o = [NSDeserializer deserializePropertyListFromData: d
+                                            mutableContainers: NO];
+          if ([o isKindOfClass: [NSString class]] == YES)
+            {
+              filename = o;
+            }
+          else if ([o isKindOfClass: [NSArray class]] == YES
+                   && [o count] > 0
+                   && [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
+            {
+              filename = [o objectAtIndex: 0];
+            }
+          else
+            {
+              [sender setData: [NSData data] forType: type];
+              return;	// Not the name of a file to filter.
+            }
+        }
 
       /*
        * Set up and launch task to filter the named file.
@@ -1139,12 +1143,12 @@ static  NSMapTable              *mimeMap = NULL;
     {
       originalTypes = [NSArray arrayWithObjects:
 	NSCreateFilenamePboardType(ext),
-	NSFilenamePboardType,
+	NSFilenamesPboardType,
 	nil];
     }
   else
     {
-      originalTypes = [NSArray arrayWithObject: NSFilenamePboardType];
+      originalTypes = [NSArray arrayWithObject: NSFilenamesPboardType];
     }
   types = [GSFiltered _typesFilterableFrom: originalTypes];
   p = (GSFiltered*)[GSFiltered pasteboardWithUniqueName];

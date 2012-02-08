@@ -1,3 +1,12 @@
+2012-02-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (+pasteboardByFilteringFile:): Correct
+	typo in Richard's change.
+	* Source/NSPasteboard.m (-pasteboard:provideDataForType:): Use the
+	file name directly instead of reading the file contents.
+	* Source/NSImageRep.m (+imageRepsWithContentsOfFile:, +imageFileTypes):
+	Start working on filter service support for images.
+
 2012-02-08  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: ([+pasteboardByFilteringFile:]) fixed to
