@@ -216,7 +216,7 @@
       At runtime, you use [NSApplication-setServicesProvider:] to specify
       the object which implements the method to perform the service,
       or, if you are providing the service from a process other than a
-      gui application, you use the NSRegisterServicesProvider() function.
+      GUI application, you use the NSRegisterServicesProvider() function.
     </p>
     <p>
       Your Info.plist should contain an array named <code>NSServices</code>
@@ -416,7 +416,7 @@
       by using one of the methods +pasteboardByFilteringData:ofType:,
       +pasteboardByFilteringFile: or +pasteboardByFilteringTypesInPasteboard:
       as the pasteboard system will automatically invoke any available
-      filter to convert the data in the pastebaord to any required
+      filter to convert the data in the pasteboard to any required
       type as long as a conversion can be done using a single filter.
     </p>
   </section>
@@ -432,10 +432,10 @@
     </p>
     <p>
       In most cases, such situations are handled by server processes
-      rather than gui applications, thus avoiding all the overheads
-      of a gui application ... linking with the gui library and
+      rather than GUI applications, thus avoiding all the overheads
+      of a GUI application ... linking with the GUI library and
       using the windowing system etc.  On occasion you may actually
-      want the services to use facilities from the gui library
+      want the services to use facilities from the GUI library
       (such as the [NSPasteboard] or [NSWorkspace] class).
     </p>
     <p>
@@ -1069,7 +1069,7 @@ static  NSMapTable              *mimeMap = NULL;
 + (NSPasteboard*) generalPasteboard
 {
   static NSPasteboard *generalPboard = nil;
-  // call pasteboardWithName: every time, to update server conniction if needed
+  // call pasteboardWithName: every time, to update server connection if needed
   NSPasteboard *currentGeneralPboard = [self pasteboardWithName: NSGeneralPboard];
   if (!generalPboard) // getting it for the first time
     {
@@ -1131,20 +1131,20 @@ static  NSMapTable              *mimeMap = NULL;
 + (NSPasteboard*) pasteboardByFilteringFile: (NSString*)filename
 {
   GSFiltered	*p;
-  NSString		*ext = [filename pathExtension];
-  NSArray		*types;
-  NSArray		*originalTypes;
+  NSString	*ext = [filename pathExtension];
+  NSArray	*types;
+  NSArray	*originalTypes;
 
   if ([ext length] > 0)
     {
       originalTypes = [NSArray arrayWithObjects:
-	NSCreateFileContentsPboardType(ext),
-	NSFileContentsPboardType,
+	NSCreateFilenamePboardType(ext),
+	NSFilenamePboardType,
 	nil];
     }
   else
     {
-      originalTypes = [NSArray arrayWithObject: NSFileContentsPboardType];
+      originalTypes = [NSArray arrayWithObject: NSFilenamePboardType];
     }
   types = [GSFiltered _typesFilterableFrom: originalTypes];
   p = (GSFiltered*)[GSFiltered pasteboardWithUniqueName];
@@ -1478,7 +1478,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 /**
  * Pasteboards sent over DO should always be copied so that a local
- * instance is created to communicate with the pastebaord server.
+ * instance is created to communicate with the pasteboard server.
  */
 - (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
 {
