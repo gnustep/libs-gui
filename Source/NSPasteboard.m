@@ -770,8 +770,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
               filename = o;
             }
           else if ([o isKindOfClass: [NSArray class]] == YES
-                   && [o count] > 0
-                   && [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
+	    && [o count] > 0
+	    && [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
             {
               filename = [o objectAtIndex: 0];
             }
@@ -1073,17 +1073,13 @@ static  NSMapTable              *mimeMap = NULL;
 + (NSPasteboard*) generalPasteboard
 {
   static NSPasteboard *generalPboard = nil;
+  NSPasteboard *currentGeneralPboard;
+
   // call pasteboardWithName: every time, to update server connection if needed
-  NSPasteboard *currentGeneralPboard = [self pasteboardWithName: NSGeneralPboard];
-  if (!generalPboard) // getting it for the first time
+  currentGeneralPboard = [self pasteboardWithName: NSGeneralPboard];
+  if (currentGeneralPboard != generalPboard)
     {
-      // add an extra retain to keep it from being released and recreated in every release pool
-      generalPboard = [currentGeneralPboard retain];
-    }
-  else if (currentGeneralPboard != generalPboard)
-    {
-      [generalPboard release];
-      generalPboard = [currentGeneralPboard retain];
+      ASSIGN(generalPboard, currentGeneralPboard);
     }
   return generalPboard;
 }
@@ -1551,7 +1547,7 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
-- (BOOL)writeObjects: (NSArray*)objects
+- (BOOL) writeObjects: (NSArray*)objects
 {
   // FIXME: not implemented
   return NO;
