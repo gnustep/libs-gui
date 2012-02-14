@@ -50,7 +50,7 @@ static NSMutableDictionary *validateService(NSDictionary *service, NSString* pat
 static NSString		*appsName = @".GNUstepAppList";
 static NSString		*cacheName = @".GNUstepServices";
 
-static	int verbose = 0;
+static	int verbose = 1;
 static	NSMutableDictionary	*serviceMap;
 static	NSMutableArray		*filterList;
 static	NSMutableSet		*filterSet;
@@ -162,7 +162,6 @@ main(int argc, char** argv, char **env_c)
 	}
       if ([[args objectAtIndex: index] isEqual: @"--test"])
 	{
-	  verbose = YES;
 	  while (++index < [args count])
 	    {
 	      NSString		*file = [args objectAtIndex: index];
@@ -1080,17 +1079,47 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
       NSArray		*ret;
       BOOL		notPresent = NO;
 
+      snd = [result objectForKey: @"NSSendTypes"];
+      ret = [result objectForKey: @"NSReturnTypes"];
       str = [result objectForKey: @"NSInputMechanism"];
       if (str != nil)
 	{
-	  if ([str isEqualToString: @"NSUnixStdio"] == NO
-	    && [str isEqualToString: @"NSMapFile"] == NO
-	    && [str isEqualToString: @"NSIdentity"] == NO)
-	  {
-	    if (verbose > 0)
-	      NSLog(@"NSServices entry %u bad input mechanism - %@", pos, path);
-	    return nil;
-	  }
+	  if ([str isEqualToString: @"NSUnixStdio"] == YES
+	    || [str isEqualToString: @"NSMapFile"] == YES)
+	    {
+	      unsigned	i = [snd count];
+
+	      while (i-- > 0)
+		{
+		  NSString	*type;
+
+		  str = [snd objectAtIndex: i];
+		  /* For UNIX I/O or file mapping, the send type must be a
+		   * filename ... which means it must either be the generic
+		   * filenames pasteboard type, or one of the pasteboard
+		   * types corresponding to names for a particular file type.
+		   */
+		  if (NO == [str isEqual: @"NSFilenamesPboardType"]
+		    && NO == [str hasPrefix: @"NSTypedFilenamesPboardType:"])
+		    {
+		      if (verbose > 0)
+			{
+			  NSLog(@"NSServices entry %u bad NSSendTypes "
+			    @"(must be file names types) - %@",
+			    pos, path);
+			}
+		    }
+		}
+	    }
+	  else if ([str isEqualToString: @"NSIdentity"] == NO)
+	    {
+	      if (verbose > 0)
+		{
+		  NSLog(@"NSServices entry %u bad input mechanism - %@",
+		    pos, path);
+		}
+	      return nil;
+	    }
 	}
       else if ([result objectForKey: @"NSPortName"] == nil)
 	{
@@ -1099,8 +1128,6 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	  return nil;
 	}
 
-      snd = [result objectForKey: @"NSSendTypes"];
-      ret = [result objectForKey: @"NSReturnTypes"];
       if ([snd count] == 0 || [ret count] == 0)
 	{
 	  if (verbose > 0)

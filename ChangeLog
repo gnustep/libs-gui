@@ -1,3 +1,13 @@
+2012-02-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Use an NSMapTable to store pasteboards so we
+	don't have to do the nasty retain count hack to deallocate them.
+	Fix encoding so that filter meta-pasteboards are sent to gpbs by
+	reference rather than bycopy.  Add special proxy to avoid data objects
+	being copied to/from pasteboard server when created by filters.
+	* Tools/make_services.m: Fix buggy initialisation of 'verbose' setting.
+	Add check/warning if filter service has non-filename send types.
+
 2012-02-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPasteboard.m (+pasteboardByFilteringFile:): Correct

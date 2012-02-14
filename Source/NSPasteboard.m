@@ -556,6 +556,64 @@
 static NSString	*contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 
+/* This is a proxy used to send objects over DO by reference when they
+ * would normally be copied.
+ * The idea is to use such a proxy when a filter sends data to a pasteboard.
+ * Since the filtered data will only be used in the process which sets up
+ * the filter, there's no point sending it on a round trip to the
+ * pasteboard server and back ... instead we encode a GSByrefObject, which
+ * appears as a proxy/reference on the remote system (pasteboard server)
+ * but when the pasteboard server sends it back it decodes locally as the
+ * original data object.
+ */
+@interface GSByrefObject : NSObject
+{
+  NSObject	*target;
+}
++ (id) byrefWithObject: (NSObject*)object;
+@end
+
+@implementation	GSByrefObject
+
++ (id) byrefWithObject: (NSObject*)object
+{
+  GSByrefObject	*b = [GSByrefObject new];
+  b->target = [object retain];
+  return [b autorelease];
+}
+
+- (void) dealloc
+{
+  [target release];
+  [super dealloc];
+}
+
+- (void) forwardInvocation: (NSInvocation*)anInvocation
+{
+  [anInvocation invokeWithTarget: target];
+}
+
+- (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
+{
+  if (class_respondsToSelector(object_getClass(self), aSelector))
+    {
+      return [super methodSignatureForSelector: aSelector];
+    }
+  return [target methodSignatureForSelector: aSelector];
+}
+
+/* Encode this proxy as a reference to its target.
+ * That way when the reference is passed back to this process it
+ * will decode as the original target object rather than the proxy.
+ */
+- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
+{
+  return [NSDistantObject proxyWithLocal: target
+			      connection: [aCoder connection]];
+}
+
+@end
+
 /*
  * A pasteboard class for lazily filtering data
  */
@@ -612,52 +670,6 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
   DESTROY(data);
   DESTROY(pboard);
   [super dealloc];
-}
-
-/**
- * GSFiltered instances are encoded differently from standard pasteboards,
- * they have no names and are instead represented by whatever it is they
- * are filtering.
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  if (data != nil)
-    {
-      [aCoder encodeObject: data];
-      [aCoder encodeObject: [originalTypes lastObject]];
-    }
-  else if (file != nil)
-    {
-      [aCoder encodeObject: file];
-    }
-  else
-    {
-      [aCoder encodeObject: pboard];
-    }
-}
-
-- (id) initWithCoder: (NSCoder*)aCoder
-{
-  NSPasteboard	*p = nil;
-  id		val = [aCoder decodeObject];
-
-  if ([val isKindOfClass: [NSData class]] == YES)
-    {
-      NSString	*s = [aCoder decodeObject];
-
-      p = [NSPasteboard pasteboardByFilteringData: val ofType: s];
-    }
-  else if ([val isKindOfClass: [NSString class]] == YES)
-    {
-      p = [NSPasteboard pasteboardByFilteringFile: val];
-    }
-  else
-    {
-      p = [NSPasteboard pasteboardByFilteringTypesInPasteboard: val];
-    }
-
-  RELEASE(self);
-  return RETAIN(p);
 }
 
 /**
@@ -734,6 +746,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       NSString		*path;
       NSData		*d;
       NSPipe		*p;
+      NSFileHandle	*h;
       NSTask		*t;
       id		o;
 
@@ -800,8 +813,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * Read all the data that the task writes.
        */
-      while ((d = [[p fileHandleForReading] availableData]) != nil
-	&& [d length] > 0)
+      h = [p fileHandleForReading];
+      while ([(d = [h availableData]) length] > 0)
 	{
 	  [m appendData: d];
 	}
@@ -811,7 +824,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * And send it on.
        */
-      [sender setData: m forType: type];
+      [sender setData: [GSByrefObject byrefWithObject: m] forType: type];
     }
   else if ([mechanism isEqualToString: @"NSMapFile"] == YES)
     {
@@ -852,7 +865,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 
       d = [NSData dataWithContentsOfFile: filename];
 
-      [sender setData: d forType: type];
+      [sender setData: [GSByrefObject byrefWithObject: d] forType: type];
     }
   else if ([mechanism isEqualToString: @"NSIdentity"] == YES)
     {
@@ -872,7 +885,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	{
 	  NSData	*d = [pboard dataForType: type];
 
-	  [sender setData: d forType: type];
+	  [sender setData: [GSByrefObject byrefWithObject: d] forType: type];
 	}
     }
   else
@@ -1012,7 +1025,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * Finally, make it available.
        */
-      [sender setData: [tmp dataForType: type] forType: type];
+      [sender setData: [GSByrefObject byrefWithObject: [tmp dataForType: type]]
+	      forType: type];
     }
 }
 
@@ -1062,7 +1076,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 @implementation NSPasteboard
 
 static	NSRecursiveLock		*dictionary_lock = nil;
-static	NSMutableDictionary	*pasteboards = nil;
+static	NSMapTable		*pasteboards = 0;
 static	id<GSPasteboardSvr>	the_server = nil;
 static  NSMapTable              *mimeMap = NULL;
 
@@ -1091,7 +1105,8 @@ static  NSMapTable              *mimeMap = NULL;
       // Initial version
       [self setVersion: 1];
       dictionary_lock = [[NSRecursiveLock alloc] init];
-      pasteboards = [[NSMutableDictionary alloc] initWithCapacity: 8];
+      pasteboards = NSCreateMapTable (NSObjectMapKeyCallBacks,
+	NSNonRetainedObjectMapValueCallBacks, 0);
     }
 }
 
@@ -1420,9 +1435,21 @@ static  NSMapTable              *mimeMap = NULL;
 
 - (void) dealloc
 {
-  RELEASE(target);
-  RELEASE(name);
+  DESTROY(target);
+  [dictionary_lock lock];
+  if (NSMapGet(pasteboards, (void*)name) == (void*)self)
+    {
+      NSMapRemove(pasteboards, (void*)name);
+    }
+  DESTROY(name);
+  [dictionary_lock unlock];
   [super dealloc];
+}
+
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"%@ %@ %p",
+    [super description], name, target];
 }
 
 /**
@@ -1472,7 +1499,10 @@ static  NSMapTable              *mimeMap = NULL;
     }
   [target releaseGlobally];
   [dictionary_lock lock];
-  [pasteboards removeObjectForKey: name];
+  if (NSMapGet(pasteboards, (void*)name) == (void*)self)
+    {
+      NSMapRemove(pasteboards, (void*)name);
+    }
   [dictionary_lock unlock];
 }
 
@@ -1486,33 +1516,16 @@ static  NSMapTable              *mimeMap = NULL;
     {
       return self;	// Always encode bycopy.
     }
-  if ([self class] == [GSFiltered class])
-    {
-      return self;	// Always encode bycopy.
-    }
-  return [super replacementObjectForPortCoder: aCoder];
-}
 
-/*
- *	Hack to ensure correct release of NSPasteboard objects -
- *	If we are released such that the only thing retaining us
- *	is the pasteboards dictionary, remove us from that dictionary
- *	as well.
- */
-- (oneway void) release
-{
-  if ([self retainCount] == 2)
-    {
-      [dictionary_lock lock];
-      if ([self retainCount] == 2)
-        {
-          [super retain];
-          [pasteboards removeObjectForKey: name];
-          [super release];
-        }
-      [dictionary_lock unlock];
-    }
-  [super release];
+/* But ... if this is actually a filter rather than a 'real' pasteboard,
+ * we don't want it copied to the pasteboard server.
+ */ 
+ if ([self class] == [GSFiltered class])
+   {
+     return [super replacementObjectForPortCoder: aCoder];
+   }
+
+  return [super replacementObjectForPortCoder: aCoder];
 }
 
 /**
@@ -2086,7 +2099,7 @@ description, [cmd stringByDeletingLastPathComponent]);
   NSPasteboard	*p = nil;
 
   [dictionary_lock lock];
-  p = [pasteboards objectForKey: aName];
+  p = (NSPasteboard*)NSMapGet(pasteboards, (void*)aName);
   if (p != nil)
     {
       /*
@@ -2101,8 +2114,7 @@ description, [cmd stringByDeletingLastPathComponent]);
        */
       if (p->target != (id)aTarget)
 	{
-	  AUTORELEASE(p->target);
-	  p->target = RETAIN((id)aTarget);
+	  ASSIGN(p->target, (id)aTarget);
 	}
     }
   else
@@ -2114,18 +2126,11 @@ description, [cmd stringByDeletingLastPathComponent]);
       p = [self alloc];
       if (p != nil)
 	{
-	  p->target = RETAIN((id)aTarget);
-	  p->name = RETAIN(aName);
-	  [pasteboards setObject: p forKey: aName];
-	  AUTORELEASE(p);
+	  ASSIGN(p->target, (id)aTarget);
+	  ASSIGNCOPY(p->name, aName);
+	  NSMapInsert(pasteboards, (void*)p, (void*)p->name);
+	  [p autorelease];
 	}
-      /*
-       * The AUTORELEASE ensures that the NSPasteboard object we are
-       * returning will be released once our caller has finished with it.
-       * This is necessary so that our RELEASE method will be called to
-       * remove the NSPasteboard from the 'pasteboards' array when it is not
-       * needed any more.
-       */
     }
   p->changeCount = [p->target changeCount];
   [dictionary_lock unlock];
