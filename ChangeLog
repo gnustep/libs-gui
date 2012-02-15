@@ -1,3 +1,9 @@
+2012-02-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m
+	(-_convertToFormatBitsPerSample:...bitsPerPixel:): Correct
+	handling of black data.
+
 2012-02-08  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Use an NSMapTable to store pasteboards so we

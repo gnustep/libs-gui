@@ -484,6 +484,8 @@
                     bytesPerRow: (int)rowBytes
                    bitsPerPixel: (int)pixelBits
 {
+  NSDebugLLog(@"NSImage", @"Creating bitmap image with pw %d ph %d bps %d spp %d alpha %d, planar %d cs %@",
+              width, height, bps, spp, alpha, isPlanar, colorSpaceName);
   if (!bps || !spp || !width || !height) 
     {
       [NSException raise: NSInvalidArgumentException
@@ -753,7 +755,7 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
   long int offset;
   long int line_offset;
 
-	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+  if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
       // outside
       return;
@@ -781,7 +783,7 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
         }
     }
   else
-		{
+    {
       if (_bitsPerSample == 8)
         {
           offset = (_bitsPerPixel * x) / 8 + line_offset;
@@ -800,7 +802,7 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
               offset += _bitsPerSample;
             }
         }
-		}
+    }
 }
 
 static void
@@ -2308,7 +2310,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           int x, y;
           CGFloat _scale;
           CGFloat scale;
-          int max = (1 << bps) - 1;
+          int max = (1 << _bitsPerSample) - 1;
           BOOL isWhite = [_colorSpace isEqualToString: NSCalibratedWhiteColorSpace] 
               || [_colorSpace isEqualToString: NSDeviceWhiteColorSpace];
 
