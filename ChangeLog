@@ -1,3 +1,8 @@
+2012-02-16  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/AppKit/NSGraphics.h: Add missing declaration for
+	NSFrameRectWithWidthUsingOperation
+
 2012-02-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m

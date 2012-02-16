@@ -160,6 +160,8 @@ APPKIT_EXPORT void NSDottedFrameRect(NSRect aRect);
     </p>  */
 APPKIT_EXPORT void NSFrameRect(const NSRect aRect); 
 APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
+APPKIT_EXPORT void NSFrameRectWithWidthUsingOperation(const NSRect aRect, float frameWidth, 
+						      NSCompositingOperation op);
 
 APPKIT_EXPORT NSColor* NSReadPixel(NSPoint location);
 
