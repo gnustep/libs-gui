@@ -1,3 +1,11 @@
+2012-02-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSGraphicsContext.h: Extend the enumerator
+	NSCompositingOperation with the GNUstep specifc value
+	GSCompositeHighlight.
+	* Source/Functions.m (NSHighlightRect): Use GSCompositeHighlight
+	instead of NSCompositeHighlight.
+
 2012-02-16  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/AppKit/NSGraphics.h: Add missing declaration for

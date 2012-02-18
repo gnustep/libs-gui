@@ -97,6 +97,9 @@ typedef enum _NSCompositingOperation
   NSCompositeHighlight,
   NSCompositePlusLighter
 
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
+  , GSCompositeHighlight = 100
+#endif
 } NSCompositingOperation;
 
 typedef int NSWindowDepth;

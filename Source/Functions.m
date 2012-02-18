@@ -523,7 +523,7 @@ void NSHighlightRect(NSRect aRect)
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
 		   NSWidth(aRect), NSHeight(aRect), 
-		   NSCompositeHighlight);
+		   GSCompositeHighlight);
 }
 
 void NSRectClip(NSRect aRect)
