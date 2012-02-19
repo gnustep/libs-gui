@@ -1310,17 +1310,18 @@ static BOOL menuBarVisible = YES;
       [_popUpButtonCell selectItemAtIndex: index];
     }
 
-  if (_popUpButtonCell != nil && (action = [_popUpButtonCell action]) != NULL)
+  if ((action = [item action]) != NULL)
     {
       [NSApp sendAction: action
-                     to: [_popUpButtonCell target]
-                   from: [_popUpButtonCell controlView]];
+	     to: [item target]
+	     from: item];
     }
-  else if ((action = [item action]) != NULL)
+  else if (_popUpButtonCell != nil)
     {
-      [NSApp sendAction: action
-                     to: [item target]
-                   from: item];
+      if ((action = [_popUpButtonCell action]) != NULL)
+	[NSApp sendAction: action
+	       to: [_popUpButtonCell target]
+	       from: [_popUpButtonCell controlView]];
     }
 
   [nc postNotificationName: NSMenuDidSendActionNotification

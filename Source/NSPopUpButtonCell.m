@@ -1366,7 +1366,7 @@ static NSImage *_pbc_image[5];
         [theBinding reverseSetValueFor: NSSelectedObjectBinding];
     }
 
-  [NSApp sendAction: [self action] to: [self target] from: self];
+  [NSApp sendAction: [self action] to: [self target] from: _control_view];
 }
 
 @end

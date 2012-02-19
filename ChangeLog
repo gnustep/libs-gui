@@ -1,3 +1,14 @@
+2012-02-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenu.m (-performActionForItemAtIndex:): Revert change
+	from r34642. The action of a pop up menu item once again is chosen
+	in preference to the action of the pop up button itself. This is
+	how it has always worked on OS X.
+
+	* Source/NSPopUpButtonCell.m (_popUpItemAction): Fix sender of the
+	pop up button's action. It is now the pop up button itself and not
+	the pop up button cell.
+
 2012-02-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSGraphicsContext.h: Extend the enumerator
