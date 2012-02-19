@@ -1,5 +1,12 @@
 2012-02-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSOpenPanel.m (-beginSheetForDirectory:...,
+	-beginForDirectory:...): Replace calls to -_setupForTypes: by
+	-setAllowedFileTypes:, as the former was removed from the super
+	class NSSavePanel.
+
+2012-02-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSMenu.m (-performActionForItemAtIndex:): Revert change
 	from r34642. The action of a pop up menu item once again is chosen
 	in preference to the action of the pop up button itself. This is

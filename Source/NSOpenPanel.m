@@ -81,7 +81,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (void) _selectCellName: (NSString *)title;
 - (void) _selectTextInColumn: (int)column;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
-- (void) _setupForTypes: (NSArray *)fileTypes; /* I'm cheating here... */
 - (BOOL) _shouldShowExtension: (NSString *)extension;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end
@@ -435,7 +434,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 		 didEndSelector: (SEL)didEndSelector
 		    contextInfo: (void *)contextInfo
 {
-  [self _setupForTypes: fileTypes];
+  [self setAllowedFileTypes: fileTypes];
   [self beginSheetForDirectory: path
 			  file: name
 		modalForWindow: docWindow
@@ -452,7 +451,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
                contextInfo: (void *)contextInfo
 {
   // FIXME: This should be modeless
-  [self _setupForTypes: fileTypes];
+  [self setAllowedFileTypes: fileTypes];
   [self _setupForDirectory: path file: filename];
   if ([filename length] > 0)
     [_okButton setEnabled: YES];
