@@ -4654,7 +4654,7 @@ current key view.<br />
   if ([_wv hasMenu])
     {
       float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
-      fRect.size.height -= menuBarHeight;
+      fRect.size.height += menuBarHeight;
       fRect.origin.y -= menuBarHeight;
     }
 

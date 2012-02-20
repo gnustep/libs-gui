@@ -1,3 +1,8 @@
+2012-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-setFrameFromString:): Correct bug in
+	handling of in-window menus.
+
 2012-02-19  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSOpenPanel.m (-beginSheetForDirectory:...,
