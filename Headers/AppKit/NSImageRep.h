@@ -145,6 +145,14 @@ enum {
 //
 // Drawing the Image 
 //
+
+/**
+ * Primitive method which must be overridden by subclasses to
+ * perform their drawing. They should draw inside a rectangle
+ * with an origin at (0, 0) and a size equal to the
+ * receiver's size, and they should entirely fill this rectangle,
+ * overwriting the destination alpha as well.
+ */
 - (BOOL)draw;
 - (BOOL)drawAtPoint:(NSPoint)aPoint;
 - (BOOL)drawInRect:(NSRect)aRect;
