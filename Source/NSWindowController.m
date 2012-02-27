@@ -110,14 +110,15 @@
   ASSIGN(_window_frame_autosave_name, @"");
   _wcFlags.should_cascade = YES;
   //_wcFlags.should_close_document = NO;
+  _owner = self;
 
   [self setWindow: window];
   if (_window != nil)
     {
       [self _windowDidLoad];
+      [self setDocument: nil];
     }
 
-  [self setDocument: nil];
   return self;
 }
 

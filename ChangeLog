@@ -1,3 +1,8 @@
+2012-02-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindowController.m (-initWithWindow:): Set the owner to
+	self and only call setDocument: if we have an actual window.
+
 2012-02-24  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/AppKit/NSImageRep.h: Add comment clarifying that -draw
