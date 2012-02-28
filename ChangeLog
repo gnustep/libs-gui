@@ -1,3 +1,9 @@
+2012-02-27  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSMenuItemCell.m (-titleRectForBounds:): Keep title rect
+	inside cell bounds, to prevent drawing text outside of a
+	NSPopUpButtonCell which has a label that is too long to fit.
+
 2012-02-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindowController.m (-initWithWindow:): Set the owner to
