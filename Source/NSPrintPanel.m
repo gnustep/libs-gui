@@ -36,6 +36,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSBox.h"
 #import "AppKit/NSForm.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
@@ -334,13 +335,45 @@ static NSPrintPanel *shared_instance = nil;
   [self orderOut: self];
 }
 
+- (void) _changeSaveType: (id)sender
+{ 
+  NSString *ext = [[sender selectedItem] representedObject];
+  [(NSSavePanel *)[sender window] setAllowedFileTypes: [NSArray arrayWithObject: ext]];
+}
+
+- (NSBox *) _savePanelAccessory
+{
+  NSRect accessoryFrame = NSMakeRect(0,0,380,70);
+  NSRect spaFrame = NSMakeRect(115,14,150,22);
+  
+  NSBox *save_panel_accessory = [[[NSBox alloc] initWithFrame: accessoryFrame] autorelease];
+  [save_panel_accessory setTitle: _(@"File Type")];
+  [save_panel_accessory setAutoresizingMask: 
+			   NSViewWidthSizable | NSViewHeightSizable];
+  NSPopUpButton *spa_button = [[NSPopUpButton alloc] initWithFrame: spaFrame];
+  [spa_button setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable | NSViewMinYMargin |
+	       NSViewMaxYMargin | NSViewMinXMargin | NSViewMaxXMargin];
+  [spa_button setTarget: self];
+  [spa_button setAction: @selector(_changeSaveType:)];
+  [spa_button addItemWithTitle: @"PDF"];
+  [[spa_button itemAtIndex: 0] setRepresentedObject: @"pdf"];
+  [spa_button addItemWithTitle: @"PostScript"];
+  [[spa_button itemAtIndex: 1] setRepresentedObject: @"ps"];
+  [spa_button selectItemAtIndex: 0];
+  [save_panel_accessory addSubview: spa_button];
+  [spa_button release];
+
+  return save_panel_accessory;
+}
+
 - (BOOL) _getSavePath
 {
   int result;
   NSSavePanel *sp;
 
   sp = [NSSavePanel savePanel];
-  [sp setAllowedFileTypes: [NSArray arrayWithObjects: @"pdf", @"ps", nil]];
+  [sp setAllowedFileTypes: [NSArray arrayWithObjects: @"pdf", nil]];
+  [sp setAccessoryView: [self _savePanelAccessory]];
   result = [sp runModal];
   if (result == NSOKButton)
     {
@@ -793,4 +826,5 @@ static NSPrintPanel *shared_instance = nil;
   NSDebugLLog(@"NSPrinting", 
 	      @"Final info dictionary ----\n %@ \n --------------", dict);
 }
+
 @end

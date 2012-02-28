@@ -1,3 +1,8 @@
+2012-02-28  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSPrintPanel.m: Add file type chooser (PDF, PostScript)
+	to save panel
+
 2012-02-27  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSMenuItemCell.m (-titleRectForBounds:): Keep title rect
