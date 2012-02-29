@@ -1,3 +1,9 @@
+2012-02-29 10:31-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTreeController.h
+	* Headers/AppKit/NSTreeNode.h
+	* Source/NSTreeController.m: Add tree controller skeleton.
+
 2012-02-29 10:25-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GNUmakefile: Add GSXibLoading.m file to GNUmakefile.
