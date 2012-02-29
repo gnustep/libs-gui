@@ -183,6 +183,7 @@ NSToolbarItem.m \
 NSToolbarItemGroup.m \
 NSTokenField.m \
 NSTokenFieldCell.m \
+NSTreeController.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSViewController.m \
@@ -239,7 +240,8 @@ GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
 GSXibLoader.m \
-GSHelpAttachment.m
+GSXibLoading.m \
+GSHelpAttachment.m 
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -386,6 +388,7 @@ NSToolbarItem.h \
 NSToolbarItemGroup.h \
 NSTokenField.h \
 NSTokenFieldCell.h \
+NSTreeController.h \
 NSUserDefaultsController.h \
 NSView.h \
 NSViewController.h \

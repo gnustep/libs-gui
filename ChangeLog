@@ -1,3 +1,10 @@
+2012-02-29 10:25-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GNUmakefile: Add GSXibLoading.m file to GNUmakefile.
+	* Source/GSXibLoading.m: Add some classes which I found
+	are relevant to Xib loading: IBAccessibilityAttribute,
+	IBUserDefinedRuntimeAttributesPlaceholder.
+
 2012-02-28  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSPrintPanel.m: Add file type chooser (PDF, PostScript)
