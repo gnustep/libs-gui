@@ -1,3 +1,13 @@
+2012-03-05  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSMenuItemCell.m (-titleRectForBounds:): Attempted fix
+	for bug 35702.
+	Don't use [_menuView imageAndTitleWidth] or
+	_titleWidth in calculating the size to put the title in. In other
+	words, -titleRectForBounds: will now return the available space
+	for the title, rather than the rect that the title text is
+	predicted to use up.
+
 2012-02-29 10:31-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTreeController.h

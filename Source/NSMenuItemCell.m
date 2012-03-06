@@ -565,8 +565,7 @@ static NSString *commandKeyString = @"#";
     {
       // Calculate the image part of cell frame from NSMenuView
       cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-      cellFrame.size.width = MIN(cellFrame.size.width - [_menuView imageAndTitleOffset],
-				 [_menuView imageAndTitleWidth]);
+      cellFrame.size.width = cellFrame.size.width - [_menuView imageAndTitleOffset];
 
       switch (_cell.image_position)
         {
@@ -580,13 +579,11 @@ static NSString *commandKeyString = @"#";
 
           case NSImageLeft:
             cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
-            cellFrame.size.width = MIN(cellFrame.size.width - (_imageWidth + GSCellTextImageXDist),
-				       _titleWidth);
+            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
             break;
 
           case NSImageRight:
-            cellFrame.size.width = MIN(cellFrame.size.width - (_imageWidth + GSCellTextImageXDist),
-				       _titleWidth);
+            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
             break;
 
           case NSImageBelow:
