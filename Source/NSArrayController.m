@@ -27,18 +27,35 @@
 */
 
 
+#import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSIndexSet.h>
+#import <Foundation/NSPredicate.h>
+#import <Foundation/NSSortDescriptor.h>
 #import <Foundation/NSString.h>
+
 #import "AppKit/NSArrayController.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 
 @implementation NSArrayController
+
++ (void) initialize
+{
+  if (self == [NSArrayController class])
+    {
+      [self exposeBinding: @"contentArray"];
+    }
+}
 
 - (id) initWithContent: (id)content
 {
   if ((self = [super initWithContent: content]) != nil)
     {
-      _arrange_objects = [[NSMutableArray alloc] init];
+      _arranged_objects = [content copy];
+      [self setSelectsInsertedObjects: YES];
     }
 
   return self;
@@ -53,31 +70,53 @@
   return self;
 }
 
+- (void) dealloc
+{
+  DESTROY(_arranged_objects);
+  DESTROY(_selection_indexes);
+  DESTROY(_sort_descriptors);
+  DESTROY(_filter_predicate);
+  [super dealloc];
+}
+
 - (void) addObject: (id)obj
 {
   [_content addObject: obj];
-  [_arrange_objects addObject: obj];
+  if ([self automaticallyRearrangesObjects])
+    {
+      [self rearrangeObjects];
+    }
 }
 
 - (void) addObjects: (NSArray*)obj
 {
   [_content addObjectsFromArray: obj];
+  if ([self automaticallyRearrangesObjects])
+    {
+      [self rearrangeObjects];
+    }
   if ([self selectsInsertedObjects])
     {
-      [_arrange_objects addObjectsFromArray: obj];
+      [self addSelectedObjects: obj];
     }
 }
 
 - (void) removeObject: (id)obj
 {
   [_content removeObject: obj];
-  [_arrange_objects removeObject: obj];
+  if ([self automaticallyRearrangesObjects])
+    {
+      [self rearrangeObjects];
+    }
 }
 
 - (void) removeObjects: (NSArray*)obj
 {
   [_content removeObjectsInArray: obj];
-  [_arrange_objects removeObjectsInArray: obj];
+  if ([self automaticallyRearrangesObjects])
+    {
+      [self rearrangeObjects];
+    }
 }
 
 - (BOOL) canInsert
@@ -93,161 +132,233 @@
   RELEASE(new);
 }
 
+- (NSIndexSet*) _indexSetForObjects: (NSArray*)objects
+{
+  NSMutableIndexSet *tmp = [NSMutableIndexSet new];
+  id<NSFastEnumeration> enumerator = objects;
+
+  FOR_IN (id, obj, enumerator)
+  {
+    NSUInteger index = [_arranged_objects indexOfObject: obj];
+    if (NSNotFound != index)
+      {
+        [tmp addIndex: index];
+      }
+  }
+  END_FOR_IN(enumerator)
+
+  return AUTORELEASE(tmp);
+}
+
 - (BOOL) addSelectedObjects: (NSArray*)obj
 {
-  // TODO
-  return NO;
+  return [self addSelectionIndexes: [self _indexSetForObjects: obj]];
 }
 
 - (BOOL) addSelectionIndexes: (NSIndexSet*)idx
 {
-  // TODO
-  return NO;
+  NSMutableIndexSet *tmp = AUTORELEASE([_selection_indexes mutableCopy]);
+
+  [tmp addIndexes: idx];
+  return [self setSelectionIndexes: tmp];
 }
 
 - (BOOL) setSelectedObjects: (NSArray*)obj
 {
-  // TODO
-  return NO;
+  return [self setSelectionIndexes: [self _indexSetForObjects: obj]];
 }
 
-- (BOOL) setSelectionIndex: (unsigned int)idx
+- (BOOL) setSelectionIndex: (NSUInteger)idx
 {
-  // TODO
-  return NO;
+  return [self setSelectionIndexes: 
+                 [NSIndexSet indexSetWithIndex: idx]];
 }
 
 - (BOOL) setSelectionIndexes: (NSIndexSet*)idx
 {
-  // TODO
-  return NO;
+  if ([_selection_indexes isEqual: idx])
+    {
+      return NO;
+    }
+  else
+    {
+      ASSIGNCOPY(_selection_indexes, idx);
+      return YES;
+    }
 }
 
 - (BOOL) removeSelectedObjects: (NSArray*)obj
 {
-  // TODO
-  return NO;
+  return [self removeSelectionIndexes: [self _indexSetForObjects: obj]];
 }
 
 - (BOOL) removeSelectionIndexes: (NSIndexSet*)idx
 {
-  // TODO
-  return NO;
-}
+  NSMutableIndexSet *tmp = AUTORELEASE([_selection_indexes mutableCopy]);
 
-- (void) selectNext: (id)sender
-{
-  // TODO
-  return;
+  [tmp removeIndexes: idx];
+  return [self setSelectionIndexes: tmp];
 }
-
-- (void) selectPrevious: (id)sender
-{
-  // TODO
-  return;
-}
-
-- (NSArray*) selectedObjects
-{
-  // TODO
-  return nil;
-}
-
-- (unsigned int) selectionIndex
-{
-  // TODO
-  return -1;
-}
-
-- (NSIndexSet*) selectionIndexes
-{
-  // TODO
-  return nil;
-}
-
 
 - (BOOL) canSelectNext
 {
-  // TODO
-  return NO;
+  NSUInteger cur = [self selectionIndex];
+
+  if ((cur == NSNotFound) || (cur + 1 == [_content count]))
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
 }
 
 - (BOOL) canSelectPrevious
 {
-  // TODO
-  return NO;
+  NSUInteger cur = [self selectionIndex];
+
+  if ((cur == NSNotFound) || (cur == 0))
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
+}
+
+- (void) selectNext: (id)sender
+{
+  NSUInteger cur = [self selectionIndex];
+
+  [self setSelectionIndexes: 
+          [NSIndexSet indexSetWithIndex: cur + 1]];
+}
+
+- (void) selectPrevious: (id)sender
+{
+  NSUInteger cur = [self selectionIndex];
+
+  [self setSelectionIndexes: 
+          [NSIndexSet indexSetWithIndex: cur - 1]];
+}
+
+- (NSArray*) selectedObjects
+{
+  // We make the selection work on the arranged objects
+  return [_arranged_objects objectsAtIndexes: _selection_indexes];
+}
+
+- (NSUInteger) selectionIndex
+{
+  return [_selection_indexes firstIndex];
+}
+
+- (NSIndexSet*) selectionIndexes
+{
+  return AUTORELEASE([_selection_indexes copy]);
 }
 
 - (BOOL) avoidsEmptySelection
 {
-  // TODO
-  return NO;
+  return _acflags.avoids_empty_selection;
 }
 
 - (void) setAvoidsEmptySelection: (BOOL)flag
 {
-  // TODO
-  return;
+  _acflags.avoids_empty_selection = flag;
 }
 
 - (BOOL) preservesSelection
 {
-  // TODO
-  return NO;
+  return _acflags.preserves_selection;
 }
 
 - (void) setPreservesSelection: (BOOL)flag
 {
-  // TODO
-  return;
+  _acflags.preserves_selection = flag;
+}
+
+- (BOOL) alwaysUsesMultipleValuesMarker;
+{
+  return _acflags.always_uses_multiple_values_marker;
+}
+
+- (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag;
+{
+  _acflags.always_uses_multiple_values_marker = flag;
+}
+
+- (BOOL) clearsFilterPredicateOnInsertion;
+{
+  return _acflags.clears_filter_predicate_on_insertion;
+}
+
+- (void) setClearsFilterPredicateOnInsertion: (BOOL)flag;
+{
+  _acflags.clears_filter_predicate_on_insertion = flag;
+}
+
+- (BOOL) automaticallyRearrangesObjects;
+{
+  return _acflags.automatically_rearranges_objects;
+}
+
+- (void) setAutomaticallyRearrangesObjects: (BOOL)flag;
+{
+  _acflags.automatically_rearranges_objects = flag;
 }
 
 - (BOOL) selectsInsertedObjects
 {
-  // TODO
-  return NO;
+  return _acflags.selects_inserted_objects;
 }
 
 - (void) setSelectsInsertedObjects: (BOOL)flag
 {
-  // TODO
-  return;
+  _acflags.selects_inserted_objects = flag;
 }
-
 
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
-  // TODO
-  return nil;
+  NSArray *temp = [obj filteredArrayUsingPredicate: _filter_predicate];
+  
+  return [temp sortedArrayUsingDescriptors: _sort_descriptors];
 }
 
 - (id) arrangedObjects
 {
-  // TODO
-  return nil;
+  return _arranged_objects;
 }
 
 - (void) rearrangeObjects
 {
-  // TODO
-  return;
+  ASSIGN(_arranged_objects, [self arrangeObjects: _content]);
 }
 
 - (void) setSortDescriptors: (NSArray*)desc
 {
-  // TODO
-  return;
+  ASSIGNCOPY(_sort_descriptors, desc);
 }
 
 - (NSArray*) sortDescriptors
 {
-  // TODO
-  return nil;
+  return AUTORELEASE([_sort_descriptors copy]);
 }
 
+- (void) setFilterPredicate: (NSPredicate*)filterPredicate
+{
+  ASSIGN(_filter_predicate, filterPredicate);
+}
+
+- (NSPredicate*) filterPredicate
+{
+  return _filter_predicate;
+}
 
 - (void) insertObject: (id)obj 
-atArrangedObjectIndex: (unsigned int)idx
+atArrangedObjectIndex: (NSUInteger)idx
 {
   // TODO
   return;
@@ -260,16 +371,88 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   return;
 }
 
-- (void) removeObjectAtArrangedObjectIndex: (unsigned int)idx
+- (void) removeObjectAtArrangedObjectIndex: (NSUInteger)idx
 {
-  // TODO
-  return;
+  [self removeObject: [_arranged_objects objectAtIndex: idx]];
 }
 
 - (void) removeObjectsAtArrangedObjectIndexes: (NSIndexSet*)idx
 {
-  // TODO
-  return;
+  [self removeObjects: [_arranged_objects objectsAtIndexes: idx]];
+}
+
+- (void)bind: (NSString *)binding 
+    toObject: (id)anObject
+ withKeyPath: (NSString *)keyPath
+     options: (NSDictionary *)options
+{
+  if ([binding isEqual: @"contentArray"])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
+                                              withName: binding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding 
+         toObject: anObject 
+      withKeyPath: keyPath 
+          options: options];
+    }
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{ 
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: [self avoidsEmptySelection] forKey: @"NSAvoidsEmptySelection"];
+      [coder encodeBool: [self preservesSelection] forKey: @"NSPreservesSelection"];
+      [coder encodeBool: [self selectsInsertedObjects] forKey: @"NSSelectsInsertedObjects"];
+    }
+  else
+    {
+    }
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{ 
+  if ((self = [super initWithCoder: coder]) == nil)
+    {
+      return nil;
+    }
+
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
+        {
+          [self setAvoidsEmptySelection: 
+                [coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
+        }
+      if ([coder containsValueForKey: @"NSPreservesSelection"])
+        {
+          [self setPreservesSelection: 
+                [coder decodeBoolForKey: @"NSPreservesSelection"]];
+        }
+      if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
+        {
+          [self setSelectsInsertedObjects: 
+                [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+        }
+    }
+  else
+    {
+    }
+
+  return self; 
 }
 
 @end

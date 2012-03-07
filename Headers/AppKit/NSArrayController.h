@@ -31,21 +31,32 @@
 
 #import <AppKit/NSObjectController.h>
 
-#if OS_API_VERSION(100300,GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3,GS_API_LATEST)
 
 @class NSArray;
+@class NSMutableArray;
 @class NSIndexSet;
+@class NSPredicate;
 
 @interface NSArrayController : NSObjectController
 {
-  NSMutableArray *_arrange_objects;
-  NSArray *_sort_descriptors;
+  NSMutableArray *_arranged_objects;
   NSIndexSet *_selection_indexes;
-  BOOL _avoids_empty_Selection;
-  BOOL _preserves_selection;
+  NSArray *_sort_descriptors;
+  NSPredicate *_filter_predicate;
+  struct GSArrayControllerFlagsType { 
+    unsigned always_uses_multiple_values_marker: 1;
+    unsigned automatically_rearranges_objects: 1;
+    unsigned avoids_empty_selection: 1;
+    unsigned clears_filter_predicate_on_insertion: 1;
+    unsigned preserves_selection: 1;
+    unsigned selects_inserted_objects: 1;
+  } _acflags;
 }
 
+- (void) addObject: (id)obj;
 - (void) addObjects: (NSArray*)obj;
+- (void) removeObject: (id)obj;
 - (void) removeObjects: (NSArray*)obj;
 - (BOOL) canInsert;
 - (void) insert: (id)sender;
@@ -53,36 +64,50 @@
 - (BOOL) addSelectedObjects: (NSArray*)obj;
 - (BOOL) addSelectionIndexes: (NSIndexSet*)idx;
 - (BOOL) setSelectedObjects: (NSArray*)obj;
-- (BOOL) setSelectionIndex: (unsigned int)idx;
+- (BOOL) setSelectionIndex: (NSUInteger)idx;
 - (BOOL) setSelectionIndexes: (NSIndexSet*)idx;
 - (BOOL) removeSelectedObjects: (NSArray*)obj;
 - (BOOL) removeSelectionIndexes: (NSIndexSet*)idx;
+- (BOOL) canSelectNext;
+- (BOOL) canSelectPrevious;
 - (void) selectNext: (id)sender;
 - (void) selectPrevious: (id)sender;
 - (NSArray*) selectedObjects;
-- (unsigned int) selectionIndex;
+- (NSUInteger) selectionIndex;
 - (NSIndexSet*) selectionIndexes;
 
-- (BOOL) canSelectNext;
-- (BOOL) canSelectPrevious;
 - (BOOL) avoidsEmptySelection;
 - (void) setAvoidsEmptySelection: (BOOL)flag;
 - (BOOL) preservesSelection;
 - (void) setPreservesSelection: (BOOL)flag;
 - (BOOL) selectsInsertedObjects;
 - (void) setSelectsInsertedObjects: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) alwaysUsesMultipleValuesMarker;
+- (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag;
+- (BOOL) clearsFilterPredicateOnInsertion;
+- (void) setClearsFilterPredicateOnInsertion: (BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL) automaticallyRearrangesObjects;
+- (void) setAutomaticallyRearrangesObjects: (BOOL)flag;
+#endif
 
 - (NSArray*) arrangeObjects: (NSArray*)obj;
 - (id) arrangedObjects;
 - (void) rearrangeObjects;
 - (void) setSortDescriptors: (NSArray*)desc;
 - (NSArray*) sortDescriptors;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setFilterPredicate: (NSPredicate*)filterPredicate;
+- (NSPredicate*) filterPredicate;
+#endif
 
 - (void) insertObject: (id)obj 
-atArrangedObjectIndex: (unsigned int)idx;
+atArrangedObjectIndex: (NSUInteger)idx;
 - (void) insertObjects: (NSArray*)obj 
 atArrangedObjectIndexes: (NSIndexSet*)idx;
-- (void) removeObjectAtArrangedObjectIndex: (unsigned int)idx;
+- (void) removeObjectAtArrangedObjectIndex: (NSUInteger)idx;
 - (void) removeObjectsAtArrangedObjectIndexes: (NSIndexSet*)idx;
 
 @end

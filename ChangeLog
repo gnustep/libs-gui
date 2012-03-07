@@ -1,3 +1,10 @@
+2012-03-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSObjectController.m: Complete encoding/decoding methods.
+	* Headers/AppKit/NSArrayController.h,
+	* Source/NSArrayController.m: Add some implementation to this
+	class.
+
 2012-03-05  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSMenuItemCell.m (-titleRectForBounds:): Attempted fix

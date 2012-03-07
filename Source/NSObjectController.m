@@ -145,6 +145,8 @@
       [coder encodeBool: _is_editable forKey: @"NSEditable"];
       [coder encodeBool: _automatically_prepares_content forKey: @"NSAutomaticallyPreparesContent"];
       [coder encodeObject: _managed_proxy forKey: @"_NSManagedProxy"];
+      [coder encodeObject: NSStringFromClass([self objectClass])
+                   forKey: @"NSObjectClassName"];
     }
   else
     {
@@ -175,6 +177,11 @@
 	  _is_editable = [coder decodeBoolForKey: @"NSEditable"];
 	  _automatically_prepares_content = [coder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
 	  ASSIGN(_managed_proxy, [coder decodeObjectForKey: @"_NSManagedProxy"]);
+          if ([coder containsValueForKey: @"NSObjectClassName"])
+            {
+              NSString *className = [coder decodeObjectForKey: @"NSObjectClassName"];
+              [self setObjectClass: NSClassFromString(className)];
+            }
 	}
       else
 	{
