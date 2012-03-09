@@ -1,5 +1,17 @@
 2012-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTableView.m:
+	* Source/GSNibLoading.m: Move -[coder setClassName: @"_NSCornerView"
+	forClass: [GSTableCornerView class]] call from
+	-[NSTableView initWithCoder:] to GSNibLoading, because corner views
+	can be encountered before hitting -[NSTableView initWithCoder:]
+
+2012-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSClipView.m: Re-enable copy-on-scroll
+
+2012-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSWindow.m: Only invoke -prepareForDragOperation: if the
 	most recent -draggingEntered: or -draggingUpdated: call returned
 	something other than NSDragOperationNone.

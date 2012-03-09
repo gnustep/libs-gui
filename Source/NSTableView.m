@@ -5573,8 +5573,6 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
         }
 
-      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] 
-                            forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSCornerView"])
         {
 	  NSView *aView = [aDecoder decodeObjectForKey: @"NSCornerView"];

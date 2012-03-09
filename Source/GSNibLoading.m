@@ -1738,6 +1738,9 @@ static BOOL _isInInterfaceBuilder = NO;
       NSArray *accessibilityOidsKeys = nil;
       NSArray *accessibilityOidsValues = nil;
 
+      [(NSKeyedUnarchiver *)coder setClass: NSClassFromString(@"GSTableCornerView")
+			      forClassName: @"_NSCornerView"];
+
       //
       // Get root, font, framwork and oid. 
       // Retain objects since NSKeyedUnarchiver autoreleases unarchived objects.
