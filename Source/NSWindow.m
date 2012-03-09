@@ -4210,7 +4210,8 @@ resetCursorRectsForView(NSView *theView)
             case GSAppKitDraggingDrop:
               NSDebugLLog(@"NSDragging", @"GSAppKitDraggingDrop");
               dragInfo = [GSServerForWindow(self) dragInfo];
-              if (_lastDragView && _f.accepts_drag)
+              if (_lastDragView && _f.accepts_drag
+		  && _lastDragOperationMask != NSDragOperationNone)
                 {
                   action = YES;
                   GSPerformDragSelector(_lastDragView,

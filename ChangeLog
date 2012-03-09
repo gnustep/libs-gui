@@ -1,3 +1,13 @@
+2012-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSWindow.m: Only invoke -prepareForDragOperation: if the
+	most recent -draggingEntered: or -draggingUpdated: call returned
+	something other than NSDragOperationNone.
+	* Source/NSOutlineView.m (-draggingUpdated:): Save the drag operation
+	value returned from the data source in a static variable.
+	Previously it was fetched once and then discarded, so all drags were
+	being mistakenly permitted.
+
 2012-03-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSObjectController.m: Complete encoding/decoding methods.

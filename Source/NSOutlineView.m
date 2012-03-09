@@ -69,6 +69,7 @@ const int NSOutlineViewDropOnItemIndex = -1;
 
 static int lastVerticalQuarterPosition;
 static int lastHorizontalHalfPosition;
+static NSDragOperation dragOperation;
 
 static NSRect oldDraggingRect;
 static id oldDropItem;
@@ -1087,6 +1088,7 @@ static NSImage *unexpandable  = nil;
   oldDropItem = currentDropItem = nil;
   oldDropIndex = currentDropIndex = -1;
   lastVerticalQuarterPosition = -1;
+  dragOperation = NSDragOperationCopy;
   oldDraggingRect = NSMakeRect(0.,0., 0., 0.);
   return NSDragOperationCopy;
 }
@@ -1283,7 +1285,7 @@ Also returns the child index relative to this parent. */
    * when the pointer is between two rows and the bottom row is a parent.
    */
   NSInteger level;
-  NSDragOperation dragOperation = [sender draggingSourceOperationMask];
+
 
   ASSIGN(lastDragUpdate, [NSDate date]);
   //NSLog(@"draggingUpdated");
@@ -1423,18 +1425,23 @@ Also returns the child index relative to this parent. */
           [self setNeedsDisplayInRect: oldDraggingRect];
           [self displayIfNeeded];
 
-          if (currentDropIndex != NSOutlineViewDropOnItemIndex && currentDropItem != nil)
-            {
-              [self drawDropAboveIndicatorWithDropItem: currentDropItem atRow: row childDropIndex: currentDropIndex];
-            }
-          else if (currentDropIndex == NSOutlineViewDropOnItemIndex && currentDropItem == nil)
-            {
-              [self drawDropOnRootIndicator];
-            }
-          else
-            {
-              [self drawDropOnIndicatorWithDropItem: currentDropItem];
-            }
+	  if (dragOperation != NSDragOperationNone)
+	    {
+	      if (currentDropIndex != NSOutlineViewDropOnItemIndex && currentDropItem != nil)
+		{
+		  [self drawDropAboveIndicatorWithDropItem: currentDropItem 
+						     atRow: row
+					    childDropIndex: currentDropIndex];
+		}
+	      else if (currentDropIndex == NSOutlineViewDropOnItemIndex && currentDropItem == nil)
+		{
+		  [self drawDropOnRootIndicator];
+		}
+	      else
+		{
+		  [self drawDropOnIndicatorWithDropItem: currentDropItem];
+		}
+	    }
 
           [_window flushWindow];
           [self unlockFocus];
