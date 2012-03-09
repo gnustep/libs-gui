@@ -255,8 +255,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       return;
     }
       
-  // FIXME: Re-enable after release
-  if (NO) //_copiesOnScroll && _window && [_window gState])
+  if (_copiesOnScroll && _window && [_window gState])
     {
       /* Copy the portion of the view that is common before and after
          scrolling.  Then, document view needs to redraw the remaining
@@ -425,28 +424,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
      do the scrolling, the difference is an integer and so we can copy
      the image translating it by an integer in device space - and not
      by a float. */
-  /*
+  
   new = [self convertPoint: new  toView: nil];
-  new.x = (int)new.x;
-  new.y = (int)new.y;
+  new.x = GSRoundTowardsInfinity(new.x);
+  new.y = GSRoundTowardsInfinity(new.y);
   new = [self convertPoint: new  fromView: nil];
-  */
-
-  /*
-     We don't make it an integer this way anymore.
-     This is not needed when _copiesOnScroll is not set.
-     If _copiesOnScroll is set, we make sure the difference between old
-     position and new position is an integer so we can copy the image 
-     easily. 
-     FIXME: Why should this help? If the value is integral in user space this does 
-     not mean anything in device space.
-  */
-  if (_copiesOnScroll)
-    {
-      new.x = _bounds.origin.x + (GSRoundTowardsInfinity(new.x - _bounds.origin.x));
-      new.y = _bounds.origin.y + (GSRoundTowardsInfinity(new.y - _bounds.origin.y));
-    }
-
   return new;
 }
 
