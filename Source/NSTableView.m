@@ -37,6 +37,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSFormatter.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSSortDescriptor.h>
@@ -52,6 +53,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
@@ -65,6 +67,7 @@
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSBindingHelpers.h"
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;
@@ -1992,6 +1995,9 @@ static void computeNewSelection
     {
       [self setVersion: currentVersion];
       nc = [NSNotificationCenter defaultCenter];
+      // FIXME
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
     }
 }
 
@@ -2296,22 +2302,31 @@ static void computeNewSelection
   const SEL sel_a = @selector (numberOfRowsInTableView:);
   const SEL sel_b = @selector (tableView:objectValueForTableColumn:row:);
   const SEL sel_c = @selector(tableView:setObjectValue:forTableColumn:row:);
-  if (anObject && [anObject respondsToSelector: sel_a] == NO) 
-    {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"Data Source doesn't respond to numberOfRowsInTableView:"];
+  GSKeyValueBinding *theBinding;
+
+  // If we have content binding the data source is used only
+  // like a delegate
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+                                  forObject: self];
+  if (theBinding == nil)
+    { 
+      if (anObject && [anObject respondsToSelector: sel_a] == NO) 
+        {
+          [NSException 
+            raise: NSInternalInconsistencyException 
+            format: @"Data Source doesn't respond to numberOfRowsInTableView:"];
+        }
+      
+      if (anObject && [anObject respondsToSelector: sel_b] == NO) 
+        {
+          /* This method isn't required.
+             [NSException raise: NSInternalInconsistencyException 
+             format: @"Data Source doesn't respond to "
+             @"tableView:objectValueForTableColumn:row:"];
+          */  
+        }
     }
-  
-  if (anObject && [anObject respondsToSelector: sel_b] == NO) 
-    {
-/* This method isn't required.
-      [NSException raise: NSInternalInconsistencyException 
-		   format: @"Data Source doesn't respond to "
-		   @"tableView:objectValueForTableColumn:row:"];
-*/  
-    }
-  
+
   _dataSource_editable = [anObject respondsToSelector: sel_c];
 
   /* We do *not* retain the dataSource, it's like a delegate */
@@ -2731,7 +2746,7 @@ byExtendingSelection: (BOOL)flag
        * This is not just a speed up, it prevents us from sending
        * a NSTableViewSelectionDidChangeNotification.
        * This behaviour is required by the specifications */
-      if ([_selectedColumns isEqualToIndexSet: indexes])
+      if ([_selectedColumns isEqual: indexes])
         {
 	  if (!empty)
 	    {
@@ -2814,7 +2829,7 @@ byExtendingSelection: (BOOL)flag
        * This is not just a speed up, it prevents us from sending
        * a NSTableViewSelectionDidChangeNotification.
        * This behaviour is required by the specifications */
-      if ([_selectedRows isEqualToIndexSet: indexes])
+      if ([_selectedRows isEqual: indexes])
         {
 	  if (!empty)
 	    {
@@ -3892,7 +3907,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
       if (startedPeriodicEvents == YES)
 	[NSEvent stopPeriodicEvents];
 
-      if (![_selectedRows isEqualToIndexSet: oldSelectedRows])
+      if (![_selectedRows isEqual: oldSelectedRows])
 	{
 	  [self _postSelectionDidChangeNotification];
 	}
@@ -6576,8 +6591,16 @@ For a more detailed explanation, -setSortDescriptors:. */
 			      row: (int) index
 {
   id result = nil;
+  GSKeyValueBinding *theBinding;
 
-  if ([_dataSource respondsToSelector:
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+                                   forObject: tb];
+  if (theBinding != nil)
+    {
+      return [(NSArray *)[theBinding sourceValueFor: NSValueBinding]
+                 objectAtIndex: index];
+    }
+  else if ([_dataSource respondsToSelector:
 		    @selector(tableView:objectValueForTableColumn:row:)])
     {
       result = [_dataSource tableView: self
@@ -6608,7 +6631,26 @@ For a more detailed explanation, -setSortDescriptors:. */
  */
 - (int) _numRows
 {
-  return [_dataSource numberOfRowsInTableView:self];
+  GSKeyValueBinding *theBinding;
+
+  // If we have content binding the data source is used only
+  // like a delegate
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+                                   forObject: self];
+  if (theBinding != nil)
+    {
+      return [(NSArray *)[theBinding sourceValueFor: NSContentBinding] count];
+    }
+  else if ([_dataSource respondsToSelector:
+		    @selector(numberOfRowsInTableView:)])
+    {
+      return [_dataSource numberOfRowsInTableView:self];
+    }
+  else
+    {
+      // FIXME
+      return 0;
+    }
 }
 
 - (BOOL) _isDraggingSource
@@ -6764,6 +6806,70 @@ For a more detailed explanation, -setSortDescriptors:. */
     }	  
   [_selectedColumns removeAllIndexes];
   _selectedColumn = -1;  
+}
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      // Reload data
+      [self reloadData];
+      NSLog(@"Setting TV content to %@", anObject);
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      if (_selectingColumns)
+        {
+          if (nil == anObject)
+            {
+              [self _unselectAllColumns];
+            }
+          else
+            {
+              return [self selectColumnIndexes: anObject
+                          byExtendingSelection: NO];
+            }
+        }
+      else
+        {
+          if (nil == anObject)
+            {
+              [self _unselectAllRows];
+            }
+          else
+            {
+              return [self selectRowIndexes: anObject
+                       byExtendingSelection: NO];
+            }
+        }
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      if (_selectingColumns)
+        {
+          return [self selectedColumnIndexes];
+        }
+      else
+        {
+          return [self selectedRowIndexes];
+        }
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 
 @end

@@ -59,7 +59,10 @@
                options: (NSDictionary *)options
             fromObject: (id)source;
 - (void) setValueFor: (NSString *)binding;
+- (void) reverseSetValue: (id)value;
 - (void) reverseSetValueFor: (NSString *)binding;
+- (id) destinationValue;
+- (id) sourceValueFor: (NSString *)binding;
 
 /* Transforms the value with a value transformer, if specified and available,
  * and takes care of any placeholders

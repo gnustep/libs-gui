@@ -48,7 +48,7 @@
 
 + (void) exposeBinding: (NSString *)binding
 {
-  [GSKeyValueBinding exposeBinding:  binding forClass: [self class]];
+  [GSKeyValueBinding exposeBinding: binding forClass: [self class]];
 }
 
 - (NSArray *) exposedBindings
@@ -76,10 +76,10 @@
   return [NSString class];
 }
 
-- (void)bind: (NSString *)binding 
-    toObject: (id)anObject
- withKeyPath: (NSString *)keyPath
-     options: (NSDictionary *)options
+- (void) bind: (NSString *)binding 
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
 {
   if ((anObject == nil)
       || (keyPath == nil))
@@ -319,7 +319,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   [super dealloc];
 }
 
-- (void) setValueFor: (NSString *)binding 
+- (id) destinationValue
 {
   id newValue;
   id dest;
@@ -329,26 +329,38 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   dest = [info objectForKey: NSObservedObjectKey];
   keyPath = [info objectForKey: NSObservedKeyPathKey];
   options = [info objectForKey: NSOptionsKey];
-
   newValue = [dest valueForKeyPath: keyPath];
-  newValue = [self transformValue: newValue withOptions: options];
-  [src setValue: newValue forKey: binding];
+  return [self transformValue: newValue withOptions: options];
+}
+
+- (id) sourceValueFor: (NSString *)binding
+{
+  id newValue;
+  NSDictionary *options;
+
+  options = [info objectForKey: NSOptionsKey];
+  newValue = [src valueForKeyPath: binding];
+  return [self reverseTransformValue: newValue withOptions: options];
+}
+
+- (void) setValueFor: (NSString *)binding 
+{
+  [src setValue: [self destinationValue] forKey: binding];
+}
+
+- (void) reverseSetValue: (id)value
+{
+  NSString *keyPath;
+  id dest;
+
+  keyPath = [info objectForKey: NSObservedKeyPathKey];
+  dest = [info objectForKey: NSObservedObjectKey];
+  [dest setValue: value forKeyPath: keyPath];
 }
 
 - (void) reverseSetValueFor: (NSString *)binding
 {
-  id newValue;
-  id dest;
-  NSString *keyPath;
-  NSDictionary *options;
-
-  dest = [info objectForKey: NSObservedObjectKey];
-  keyPath = [info objectForKey: NSObservedKeyPathKey];
-  options = [info objectForKey: NSOptionsKey];
-
-  newValue = [src valueForKeyPath: binding];
-  newValue = [self reverseTransformValue: newValue withOptions: options];
-  [dest setValue: newValue forKeyPath: keyPath];
+  [self reverseSetValue: [self sourceValueFor: binding]];
 }
 
 - (void) observeValueForKeyPath: (NSString *)keyPath
@@ -508,7 +520,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   if (!objectTable)
     return;
 
- [bindingLock lock];
+  [bindingLock lock];
   bindings = (NSDictionary *)NSMapGet(objectTable, (void *)src);
   if (!bindings)
     return;

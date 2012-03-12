@@ -1,3 +1,14 @@
+2012-03-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h,
+	* Source/externs.m: Additional binding names.
+	* Source/GSBindingHelpers.h,
+	* Source/NSKeyValueBinding.m: Additional helper methods.
+	* Source/NSObjectController.m: Use helper methods.
+	* Source/NSArrayController.m: Signal when the arranged objects change.
+	* Source/NSTableColumn.m,
+	* Source/NSTableView.m: First attempt at support for content binding.
+
 2012-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSTableView.m:

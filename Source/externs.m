@@ -676,6 +676,8 @@ NSString *NSValueTransformerNameBindingOption = @"NSValueTransformerName";
 NSString *NSValueTransformerBindingOption = @"NSValueTransformer";
  
 NSString *NSAlignmentBinding = @"alignment";
+NSString *NSContentArrayBinding = @"contentArray";
+NSString *NSContentBinding = @"content";
 NSString *NSContentObjectBinding = @"contentObject";
 NSString *NSEditableBinding = @"editable";
 NSString *NSEnabledBinding = @"enabled";
@@ -686,6 +688,7 @@ NSString *NSHiddenBinding = @"hidden";
 NSString *NSSelectedIndexBinding = @"selectedIndex";
 NSString *NSSelectedObjectBinding = @"selectedObject";
 NSString *NSSelectedTagBinding = @"selectedTag";
+NSString *NSSelectionIndexesBinding = @"selectionIndexes";
 NSString *NSTextColorBinding = @"textColor";
 NSString *NSTitleBinding = @"title";
 NSString *NSToolTipBinding = @"toolTip";

@@ -63,12 +63,15 @@
 */  
 
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSSortDescriptor.h>
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableView.h"
+#import "GSBindingHelpers.h"
 
 /**
   <p>
@@ -85,7 +88,11 @@
 + (void) initialize
 {
   if (self == [NSTableColumn class])
-    [self setVersion: 3];
+    {
+      [self setVersion: 3];
+      [self exposeBinding: NSValueBinding];
+      [self exposeBinding: NSEnabledBinding];
+    }
 }
 
 /*
@@ -127,11 +134,14 @@
 
 - (void) dealloc
 {
-  RELEASE (_headerCell);
-  RELEASE (_headerToolTip);
-  RELEASE (_dataCell);
-  RELEASE (_sortDescriptorPrototype);
-  TEST_RELEASE (_identifier);
+  // Remove all key value bindings for this view.
+  [GSKeyValueBinding unbindAllForObject: self];
+
+  RELEASE(_headerCell);
+  RELEASE(_headerToolTip);
+  RELEASE(_dataCell);
+  RELEASE(_sortDescriptorPrototype);
+  TEST_RELEASE(_identifier);
   [super dealloc];
 }
 
@@ -599,4 +609,37 @@ to YES. */
   return self;
 }
 
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSValueBinding])
+    {
+      // FIXME
+      // Reload data
+    }
+  else if ([aKey isEqual: NSEnabledBinding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSValueBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSEnabledBinding])
+    {
+      // FIXME
+      return [NSNumber numberWithBool: YES];
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
+}
 @end

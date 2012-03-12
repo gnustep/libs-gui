@@ -201,19 +201,22 @@
 
 - (void) setContent: (id)content
 {
-  NSMutableArray *selection;
+  if (content != _content)
+    {
+      NSMutableArray *selection;
 
-  ASSIGN(_content, content);
-  if (content)
-    {
-        selection = [[NSMutableArray alloc] initWithObjects: &content count: 1];
+      ASSIGN(_content, content);
+      if (content)
+        {
+          selection = [[NSMutableArray alloc] initWithObjects: &content count: 1];
+        }
+      else
+        {
+          selection = [[NSMutableArray alloc] init];
+        }
+      ASSIGN(_selection, selection);
+      RELEASE(selection);
     }
-  else
-    {
-      selection = [[NSMutableArray alloc] init];
-    }
-  ASSIGN(_selection, selection);
-  RELEASE(selection);
 }
 
 - (void)bind: (NSString *)binding 
@@ -221,7 +224,7 @@
  withKeyPath: (NSString *)keyPath
      options: (NSDictionary *)options
 {
-  if ([binding isEqual:NSContentObjectBinding])
+  if ([binding isEqual: NSContentObjectBinding])
     {
       GSKeyValueBinding *kvb;
 
@@ -290,16 +293,13 @@
 
 - (void) addObject: (id)obj
 {
-  NSDictionary * bindingInfo = [self infoForBinding: NSContentObjectBinding];
+  GSKeyValueBinding *theBinding;
 
   [self setContent: obj];
-  if (bindingInfo)
-    {
-      // Change the relationship of the object that our content is bound to.
-      id masterObject = [bindingInfo objectForKey: NSObservedObjectKey];
-      NSString * keyPath = [bindingInfo objectForKey: NSObservedKeyPathKey];
-      [masterObject setValue: obj forKeyPath: keyPath];
-    }
+  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding 
+                                   forObject: self];
+  if (theBinding != nil)
+    [theBinding reverseSetValueFor: @"content"];
 }
 
 - (void) remove: (id)sender
@@ -314,16 +314,13 @@
 {
   if (obj == [self content])
     {
-      NSDictionary * bindingInfo = [self infoForBinding: NSContentObjectBinding];
+      GSKeyValueBinding *theBinding;
 
       [self setContent: nil];
-      if (bindingInfo)
-        {
-          // Change the relationship of the object that our content is bound to.
-          id masterObject = [bindingInfo objectForKey: NSObservedObjectKey];
-          NSString * keyPath = [bindingInfo objectForKey: NSObservedKeyPathKey];
-          [masterObject setValue: nil forKeyPath: keyPath];
-        }
+      theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding 
+                                       forObject: self];
+      if (theBinding != nil)
+        [theBinding reverseSetValueFor: @"content"];
     }
 }
 

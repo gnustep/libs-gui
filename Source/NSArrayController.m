@@ -31,6 +31,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSPredicate.h>
 #import <Foundation/NSSortDescriptor.h>
 #import <Foundation/NSString.h>
@@ -46,7 +47,7 @@
 {
   if (self == [NSArrayController class])
     {
-      [self exposeBinding: @"contentArray"];
+      [self exposeBinding: NSContentArrayBinding];
     }
 }
 
@@ -54,7 +55,7 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
-      _arranged_objects = [content copy];
+      [self rearrangeObjects];
       [self setSelectsInsertedObjects: YES];
     }
 
@@ -122,6 +123,12 @@
 - (BOOL) canInsert
 {
   return YES;
+}
+
+- (void) setContent: (id)content
+{
+  [super setContent: content];
+  [self rearrangeObjects];
 }
 
 - (void) insert: (id)sender
@@ -334,7 +341,9 @@
 
 - (void) rearrangeObjects
 {
+  [self willChangeValueForKey: @"arrangedObjects"];
   ASSIGN(_arranged_objects, [self arrangeObjects: _content]);
+  [self didChangeValueForKey: @"arrangedObjects"];
 }
 
 - (void) setSortDescriptors: (NSArray*)desc
@@ -360,15 +369,15 @@
 - (void) insertObject: (id)obj 
 atArrangedObjectIndex: (NSUInteger)idx
 {
-  // TODO
-  return;
+  // FIXME
+  [self addObject: obj];
 }
 
 - (void) insertObjects: (NSArray*)obj 
 atArrangedObjectIndexes: (NSIndexSet*)idx
 {
-  // TODO
-  return;
+  // FIXME
+  [self addObjects: obj];
 }
 
 - (void) removeObjectAtArrangedObjectIndex: (NSUInteger)idx
@@ -386,7 +395,7 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
  withKeyPath: (NSString *)keyPath
      options: (NSDictionary *)options
 {
-  if ([binding isEqual: @"contentArray"])
+  if ([binding isEqual: NSContentArrayBinding])
     {
       GSKeyValueBinding *kvb;
 
@@ -406,6 +415,18 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
          toObject: anObject 
       withKeyPath: keyPath 
           options: options];
+    }
+}
+
+- (Class) valueClassForBinding: (NSString *)binding
+{
+  if ([binding isEqual: NSContentArrayBinding])
+    {
+      return [NSArray class];
+    }
+  else
+    {
+      return [super valueClassForBinding: binding];
     }
 }
 
