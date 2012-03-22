@@ -1,3 +1,11 @@
+2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m (-toolbarBorderColor): Change default to
+	[NSColor darkGrayColor]
+	* Source/NSToolbar.m (-initWithIdentifier:): Call
+	[self setShowsBaselineSeparator: YES] by default so the toolbar has
+	a bottom border.
+
 2012-03-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,

@@ -541,6 +541,7 @@ static GSValidationCenter *vc = nil;
     }
   
   _delegate = nil;
+  [self setShowsBaselineSeparator: YES];
   
   // Store in list of toolbars
   [toolbars addObject: self];

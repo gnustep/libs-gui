@@ -534,7 +534,7 @@
                 state: GSThemeNormalState];
   if (color == nil)
     {
-      color = [NSColor grayColor];
+      color = [NSColor darkGrayColor];
     }
   return color;
 }
