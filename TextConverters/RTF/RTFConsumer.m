@@ -284,7 +284,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) appendString: (NSString*)string;
 - (void) appendHelpLink: (NSString*)fileName marker: (NSString *)markerName;
 - (void) appendHelpMarker: (NSString*)markerName;
-
+- (void) reset;
 @end
 
 @implementation RTFConsumer
@@ -424,6 +424,13 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   return self;
 }
 
+- (void) reset
+{
+  [super reset];
+  [documentAttributes setValue: NSRTFDTextDocumentType
+			forKey: NSDocumentTypeDocumentAttribute];
+}
+
 - (void) dealloc
 {
   RELEASE(files);
@@ -532,6 +539,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
       result = [[NSMutableAttributedString alloc] init];
     }
   ASSIGN(documentAttributes, [NSMutableDictionary dictionary]);
+  [documentAttributes setValue: NSRTFTextDocumentType
+			forKey: NSDocumentTypeDocumentAttribute];
   ASSIGN(fonts, [NSMutableDictionary dictionary]);
   ASSIGN(attrs, [NSMutableArray array]);
   ASSIGN(colours, [NSMutableArray array]);
