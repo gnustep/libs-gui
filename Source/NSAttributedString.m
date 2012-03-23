@@ -845,7 +845,8 @@ create_error(int code, NSString* desc)
       if (dict != NULL)
 	{
 	  *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				  NSPlainTextDocumentType,  NSDocumentTypeDocumentAttribute,
+				  NSPlainTextDocumentType, NSDocumentTypeDocumentAttribute,
+			 [NSNumber numberWithUnsignedInteger: encoding], NSCharacterEncodingDocumentAttribute,
 				nil];
 	}
 

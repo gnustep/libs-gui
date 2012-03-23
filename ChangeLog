@@ -1,5 +1,12 @@
 2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSAttributedString.m
+	(-initWithData:options:documentAttributes:error:): Set
+	NSCharacterEncodingDocumentAttribute in the documentAttributes dict
+	when reading plain text.
+
+2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* TextConverters/RTF/RTFConsumer.m: Set NSDocumentTypeDocumentAttribute
 
 2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
