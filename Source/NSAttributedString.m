@@ -797,11 +797,7 @@ create_error(int code, NSString* desc)
     }
   if (type == nil)
     {
-      if (error)
-	*error = create_error(0, NSLocalizedString(@"No type specified for data.",
-						   @"Error description"));
-      RELEASE(self);
-      return nil;
+      type = NSPlainTextDocumentType;
     }
 
   converter = converter_class(type, NO);
@@ -828,6 +824,30 @@ create_error(int code, NSString* desc)
 				      intValue];
       NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
       NSString *str;
+
+      if (encoding == GSUndefinedEncoding)
+	{
+	  encoding = NSUTF8StringEncoding;
+
+	  if ([data length] >= 2)
+	    {	
+	      static const unichar byteOrderMark = 0xFEFF;
+	      static const unichar byteOrderMarkSwapped = 0xFFFE;
+	      const unichar firstChar = ((const unichar *)[data bytes])[0];
+	      if (firstChar == byteOrderMark
+		  || firstChar == byteOrderMarkSwapped)
+		{
+		  encoding = NSUnicodeStringEncoding;
+		}
+	    }
+	}
+
+      if (dict != NULL)
+	{
+	  *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				  NSPlainTextDocumentType,  NSDocumentTypeDocumentAttribute,
+				nil];
+	}
 
       str = [[NSString alloc] initWithData: data 
                               encoding: encoding];

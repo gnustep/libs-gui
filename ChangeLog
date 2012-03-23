@@ -1,5 +1,12 @@
 2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSAttributedString.m
+	(-initWithData:options:documentAttributes:error:): Fixes for TextEdit.
+	If no type is provided, assume plain text. If no encoding is provided,
+	assume UTF-8 unless a UTF-16 BOM is detected.
+
+2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (-toolbarBorderColor): Change default to
 	[NSColor darkGrayColor]
 	* Source/NSToolbar.m (-initWithIdentifier:): Call
