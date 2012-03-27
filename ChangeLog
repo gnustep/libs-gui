@@ -1,3 +1,12 @@
+2012-03-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSToolTips.m (-mouseEntered:): When calling the owner's
+	view:stringForToolTip:point:userData: method, make the point
+	relative to the view's coordinate system (tested on OS X) instead
+	of relative to the tracking rect (as before.)
+	* Source/GSToolTips.m (-_timedOut:): Fix a crash caused by
+	invalidating the timer and then using its userInfo object.
+
 2012-03-22  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSAttributedString.m

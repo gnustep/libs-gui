@@ -290,13 +290,9 @@ static BOOL		restoreMouseMoved;
   if ([[provider object] respondsToSelector:
     @selector(view:stringForToolTip:point:userData:)] == YES)
     {
-      // According to the Apple docs, the point is relative to the tracking
-      // rectangle
-      NSPoint p = [theEvent locationInWindow];
-      NSPoint origin = 
-        [view convertRect: [provider viewRect] toView: nil].origin;
-      p.x -= origin.x;
-      p.y -= origin.y;
+      // From testing on OS X, point is in the view's coordinate system
+      NSPoint p = [view convertPoint: [theEvent locationInWindow]
+			    fromView: nil];
       toolTipString = [[provider object] view: view
 			     stringForToolTip: [theEvent trackingNumber]
 					point: p
@@ -562,7 +558,7 @@ static BOOL		restoreMouseMoved;
 /* The delay timed out -- display the tooltip */
 - (void) _timedOut: (NSTimer *)aTimer
 {
-  NSString		*toolTipString = [aTimer userInfo];
+  NSString		*toolTipString;
   NSAttributedString	*toolTipText = nil;
   NSSize		textSize;
   NSPoint		mouseLocation = [NSEvent mouseLocation];
@@ -570,6 +566,11 @@ static BOOL		restoreMouseMoved;
   NSRect		rect;
   NSMutableDictionary	*attributes;
 
+  // retain and autorelease the timer's userinfo because we
+  // may  invalidate the timer (which releases the userinfo),
+  // but need the userinfo object to remain valid for the
+  // remainder of this method.
+  toolTipString = [[[aTimer userInfo] retain] autorelease];
   if (nil == toolTipString)
     {
       toolTipString = @"";
