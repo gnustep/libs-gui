@@ -2997,15 +2997,17 @@ static NSColor *dtxtCol;
             {
               contents = @"";
             }
-
-          if (_cell.contents_is_attributed_string == NO)
-            {
-              contents = (NSString *)_contents;
-            }
-          else
-            {
-              contents = [(NSAttributedString *)_contents string];
-            }
+	  else
+	    {
+	      if (_cell.contents_is_attributed_string == NO)
+		{
+		  contents = (NSString *)_contents;
+		}
+	      else
+		{
+		  contents = [(NSAttributedString *)_contents string];
+		}
+	    }
         }
       if (![contents isEqualToString: [textObject string]])
 	[textObject setText: contents];
@@ -3018,15 +3020,17 @@ static NSColor *dtxtCol;
         {
           contents = @"";
         }
-
-      if (_cell.contents_is_attributed_string == NO)
-        {
-          contents = (NSString *)_contents;
-        }
       else
-        {
-          contents = [(NSAttributedString *)_contents string];
-        }
+	{
+	  if (_cell.contents_is_attributed_string == NO)
+	    {
+	      contents = (NSString *)_contents;
+	    }
+	  else
+	    {
+	      contents = [(NSAttributedString *)_contents string];
+	    }
+	}
       if (![contents isEqualToString: [textObject string]])
         {
           if (_cell.contents_is_attributed_string == NO)
