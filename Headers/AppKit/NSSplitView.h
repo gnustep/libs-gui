@@ -148,6 +148,11 @@ forDoubleClickOnDividerAtIndex: (NSInteger)dividerIndex;
 - (BOOL) splitView: (NSSplitView *)splitView
 shouldHideDividerAtIndex: (NSInteger)dividerIndex;
 #endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (BOOL) splitView: (NSSplitView *)splitView
+shouldAdjustSizeOfSubview: (NSView *)view;
+#endif
 @end
 
 /* Notifications */

@@ -1,5 +1,11 @@
 2012-03-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/AppKit/NSSplitView.h:
+	* Source/NSSplitView.m: Add support for
+	splitView:shouldAdjustSizeOfSubview: delegate method.
+
+2012-03-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Images: Add NSAddTemplate.tiff
 	* Images/GNUmakefile: Update
 

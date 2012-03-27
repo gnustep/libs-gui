@@ -766,6 +766,17 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+- (BOOL) _shouldAdjustSubviewAtIndex: (NSUInteger)index
+{
+  if (_delegate != nil
+      && [_delegate respondsToSelector: @selector(splitView:shouldAdjustSizeOfSubview:)])
+    {
+      return [_delegate splitView: self
+			shouldAdjustSizeOfSubview: [[self subviews] objectAtIndex: index]];
+    }
+  return YES;
+}
+
 - (void) adjustSubviews
 {
   /* Try to load the autosaved view proportions, if any; if there are
@@ -779,13 +790,20 @@ static NSNotificationCenter *nc = nil;
   NSPoint newPoint;
   unsigned i;
   BOOL autoloading = NO;
+  double proportionsTotal = 1.0;
   double proportions[count];
+  BOOL shouldAdjust[count];
 
   if (count == 0)
     return;
 
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
-      object: self];
+      object: self];  
+
+  for (i = 0; i < (count - 1); i++)
+    {
+      shouldAdjust[i] = [self _shouldAdjustSubviewAtIndex: i];
+    }
 
   /* Try loading the autosaved view proportions.  We store the
    * proportions between the size of each view and the size of the
@@ -864,6 +882,18 @@ static NSNotificationCenter *nc = nil;
         }
     }
 
+  // For any subviews we aren't resizing, subtract their
+  // proportion from the total
+
+  for (i = 0; i < (count - 1); i++)
+    {
+      if (!shouldAdjust[i])
+	{
+	  proportionsTotal -= proportions[i];
+	}
+    }
+  
+
   if (_isVertical == NO)
     {
       float newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
@@ -875,7 +905,14 @@ static NSNotificationCenter *nc = nil;
           
           if (i < (count - 1))
             {
-              newHeight = proportions[i] * newTotal;
+	      if (shouldAdjust[i])
+		{
+		  newHeight = (proportions[i] / proportionsTotal) * newTotal;
+		}
+	      else
+		{
+		  newHeight = NSHeight([views[i] frame]);
+		}
             }
           else
             {
@@ -900,7 +937,14 @@ static NSNotificationCenter *nc = nil;
           
           if (i < (count - 1))
             {
-              newWidth = proportions[i] * newTotal;
+	      if (shouldAdjust[i])
+		{
+		  newWidth = (proportions[i] / proportionsTotal) * newTotal;
+		}
+	      else
+		{
+		  newWidth = NSWidth([views[i] frame]);
+		}
             }
           else
             {
