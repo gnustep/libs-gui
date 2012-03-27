@@ -1,5 +1,10 @@
 2012-03-26  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Images: Add NSAddTemplate.tiff
+	* Images/GNUmakefile: Update
+
+2012-03-26  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSToolTips.m (-mouseEntered:): When calling the owner's
 	view:stringForToolTip:point:userData: method, make the point
 	relative to the view's coordinate system (tested on OS X) instead
