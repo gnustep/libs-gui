@@ -19,7 +19,9 @@ int main(int argc, char **argv)
       passed = 0;
     }
 
+  testHopeful = YES;
   pass(passed, "NSView -visibleRect works");
+  testHopeful = NO;
 
   DESTROY(arp);
   return 0;

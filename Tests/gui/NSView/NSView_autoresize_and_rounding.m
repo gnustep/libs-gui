@@ -207,6 +207,7 @@ int main(int argc, char **argv)
 	{
 	  NSView *view2 = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
 	  
+          testHopeful = YES;
 	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.5, 0.5, 100, 100)],
 				  NSMakeRect(1, 1, 100, 100)),
 	       "centerScanRect works 1");
@@ -219,6 +220,7 @@ int main(int argc, char **argv)
 	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.4, 0.4, 99.4, 99.4)],
 				  NSMakeRect(0, 0, 100, 100)),
 	       "centerScanRect works 4");
+          testHopeful = NO;
 
 	  [view2 release];
 	}

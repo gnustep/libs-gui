@@ -1,3 +1,11 @@
+2012-03-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tests/gui/NSSavePanel/setDelegate_reload.m,
+	* Tests/gui/NSView/NSView_autoresize_and_rounding.m,
+	* Tests/gui/NSView/NSView_bounds_scale.m,
+	* Tests/gui/NSView/NSView_visibleRect.m: Mark all failing tests as
+	dashed hopes to prepare for Jenkins.
+
 2012-03-27  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSCell.m (_updateFieldEditor:): Fix what I presume is

@@ -185,7 +185,9 @@ int main(int argc, char **argv)
   passed = CHECK(view1, NSMakeRect(20,20,100,100),(NSRect) {{98.0652, 68.0415}, {67.7554, 84.7252}}) && passed;
   passed = CHECK_BOUNDS_ROTATION(view1, 30) && passed;
   
+  testHopeful = YES;
   pass(passed,"NSView -scaleUnitSquareToSize works");
+  testHopeful = NO;
 
   DESTROY(arp);
   return 0;
