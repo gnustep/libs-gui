@@ -52,6 +52,11 @@ static Class imageClass;
 
 @implementation GSMenuSeparator
 
+- (Class) classForCoder
+{
+  return [NSMenuItem class];
+}
+
 - (id) init
 {
   self = [super initWithTitle: @"-----------"

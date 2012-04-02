@@ -1,3 +1,8 @@
+2012-04-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuItem.m (GSMenuSeparator -classForCoder): Add
+	missing method to get separator coding correct.
+
 2012-03-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSSavePanel/setDelegate_reload.m,
