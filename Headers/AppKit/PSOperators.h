@@ -420,13 +420,15 @@ PSsetrgbcolor(float r, float g, float b)
 }
 
 static inline void
-PScountwindowlist(int d, int *c)
+PScountwindowlist(int __attribute__((unused)) d, int __attribute__((unused)) *c)
 {
   // dummy implementation for now... GJC
 }
 
 static inline void
-PSwindowlist(int d, int c, int *array)
+PSwindowlist(int __attribute__((unused)) d,
+             int __attribute__((unused)) c,
+             int __attribute__((unused)) *array)
 {
   // dummy implementation for now... GJC
 }

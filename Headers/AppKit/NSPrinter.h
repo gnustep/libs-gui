@@ -152,7 +152,7 @@ typedef enum _NSPrinterTableStatus {
 //
 - (void) encodeWithCoder: (NSCoder*) aCoder;
 
-- initWithCoder: (NSCoder*) aDecoder;
+- (id)initWithCoder: (NSCoder*) aDecoder;
 
 @end
 
