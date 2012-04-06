@@ -1,3 +1,13 @@
+2012-04-06 12:26  theraven
+
+	* libs/gui/trunk/Headers/AppKit/NSColorWell.h,
+	  libs/gui/trunk/Headers/AppKit/NSPrinter.h,
+	  libs/gui/trunk/Headers/AppKit/PSOperators.h: Add explicit return
+	  types to a couple of methods and __attribute__((unused)) to
+	  some functions with empty bodies so people don't get compiler
+	  warnings from
+	  importing AppKit.h
+
 2012-04-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItem.m (GSMenuSeparator -classForCoder): Add
