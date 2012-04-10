@@ -1,3 +1,10 @@
+2012-04-10 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
+	* Source/NSTabView.m
+	* Headers/AppKit/NSTabView.h
+	  some int/NSInteger to NSUInteger changes to better
+	  match return values of methods
+
 2012-04-06 12:26  theraven
 
 	* libs/gui/trunk/Headers/AppKit/NSColorWell.h,

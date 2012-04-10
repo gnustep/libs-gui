@@ -123,7 +123,7 @@
 
 - (void) removeTabViewItem: (NSTabViewItem*)tabViewItem
 {
-  unsigned i = [_items indexOfObject: tabViewItem];
+  NSUInteger i = [_items indexOfObject: tabViewItem];
   
   if (i == NSNotFound)
     return;
@@ -202,7 +202,7 @@
 
 - (void) selectNextTabViewItem: (id)sender
 {
-  if ((_selected_item != NSNotFound) && ((unsigned)(_selected_item + 1) < [_items count]))
+  if ((_selected_item != NSNotFound) && ((_selected_item + 1) < [_items count]))
     {
       [self selectTabViewItemAtIndex: _selected_item + 1];
     }
@@ -550,7 +550,7 @@
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       [aCoder encodeConditionalObject: _delegate];
-      [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
+      [aCoder encodeValueOfObjCType: "I" at: &_selected_item];
     }
 }
 
@@ -631,7 +631,7 @@
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       _delegate = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
+      [aDecoder decodeValueOfObjCType: "I" at: &_selected_item];
       _selected = [_items objectAtIndex: _selected_item];
     }
   return self;
