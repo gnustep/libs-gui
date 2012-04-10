@@ -52,7 +52,7 @@
 {
   if (self == [NSTabView class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
 
       [self exposeBinding: NSSelectedIndexBinding];
       [self exposeBinding: NSFontBinding];
@@ -550,7 +550,7 @@
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       [aCoder encodeConditionalObject: _delegate];
-      [aCoder encodeValueOfObjCType: "I" at: &_selected_item];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_selected_item];
     }
 }
 
@@ -631,7 +631,16 @@
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       _delegate = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: "I" at: &_selected_item];
+      if (version < 3)
+        {
+	  int tmp;
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &tmp];
+          _selected_item = tmp;
+	}
+      else
+	{
+          [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_selected_item];
+	}
       _selected = [_items objectAtIndex: _selected_item];
     }
   return self;
