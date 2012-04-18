@@ -242,7 +242,7 @@ if test $enable_png = yes; then
   # use libpng-config if available
   AC_CHECK_PROG(HAVE_LIBPNG_CONFIG, [libpng-config], yes)
   if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
-    PNG_CFLAGS="`libpng-config --cflags`"
+    PNG_CFLAGS="`libpng-config --I_opts`"
     PNG_LDFLAGS="`libpng-config --ldflags`"
     CFLAGS="$PNG_CFLAGS ${CFLAGS}"
     LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
