@@ -953,7 +953,9 @@ static NSString			*_rootPath = @"/";
        * Try any OpenURL service available.
        */
       pb = [NSPasteboard pasteboardWithUniqueName];
-      [url writeToPasteboard: pb];
+      [pb declareTypes: [NSArray arrayWithObject: NSURLPboardType]
+                         owner: nil];
+     [url writeToPasteboard: pb];
       return NSPerformService(@"OpenURL", pb);
     }
 }

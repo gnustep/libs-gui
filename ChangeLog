@@ -1,6 +1,14 @@
 2012-04-24 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSPasteboard.m (NSURL-writeToPasteboard:): Declare the	type.
+	* Source/NSPasteboard.m (NSURL-writeToPasteboard:): Revert the
+	last change.
+	* Source/NSWorkspace.m (-openURL:): Declare the URL pasteboard
+	type here.
+	Change suggested by Wolfgang Lux  <wolfgang.lux@gmail.com>.
+
+2012-04-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (NSURL-writeToPasteboard:): Declare the type.
 	Patch by Andreas Schik <andreas.schik@web.de>.
 
 2012-04-19 Riccardo Mottola <rm@gnu.org>

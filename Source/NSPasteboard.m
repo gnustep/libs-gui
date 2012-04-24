@@ -2292,8 +2292,6 @@ description, [cmd stringByDeletingLastPathComponent]);
  */
 - (void) writeToPasteboard: (NSPasteboard *)pasteBoard
 {
-  [pasteBoard declareTypes: [NSArray arrayWithObject: NSURLPboardType]
-                     owner: nil];
   [pasteBoard setString: [self absoluteString]
 		forType: NSURLPboardType];
 }
