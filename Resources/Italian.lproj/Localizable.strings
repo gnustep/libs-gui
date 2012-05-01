@@ -2,6 +2,7 @@
  * Date: September 2002
  * Translator: Maurizio Boriani <baux@gnu.org>
  * Date: April 2006
+ * Trnalsator: Riccardo Mottola <rm@gnu.org>
  */
 
 /***
@@ -88,26 +89,22 @@ add comments above this one
 /* File: ../Source/GSHelpManagerPanel.m:70 */
 /* Flag: untranslated */
 /* File: ../Source/NSHelpPanel.m:153 */
-/* Flag: untranslated */
-"Help" = "Help";
+"Help" = "Aiuto";
 
 /* File: ../Source/GSInfoPanel.m:192 */
 /* Flag: untranslated */
 /* File: ../Source/GSInfoPanel.m:465 */
-/* Flag: untranslated */
-"Current theme" = "Current theme";
+"Current theme" = "Tema corrente";
 
 /* File: ../Source/GSThemePanel.m:192 */
 /* Flag: untranslated */
 /* File: ../Source/GSThemePanel.m:232 */
-/* Flag: untranslated */
-"Revert default theme" = "Revert default theme";
+"Revert default theme" = "Ripristina tema predefinito";
 
 /* File: ../Source/GSThemePanel.m:196 */
 /* Flag: untranslated */
 /* File: ../Source/GSThemePanel.m:227 */
-/* Flag: untranslated */
-"Make this the default theme" = "Make this the default theme";
+"Make this the default theme" = "Imposta come tema predefinito";
 
 /* File: ../Source/NSAttributedString.m:768 */
 /* Comment: Error description */
@@ -128,14 +125,12 @@ add comments above this one
 /* File: ../Source/NSColorPanel.m:227 */
 /* Flag: untranslated */
 /* File: ../Source/NSToolbarItem.m:1050 */
-/* Flag: untranslated */
-"Colors" = "Colors";
+"Colors" = "Colori";
 
 /* File: ../Source/NSPageLayout.m:754 */
 /* Flag: untranslated */
 /* File: ../Source/NSPageLayout.m:756 */
-/* Flag: untranslated */
-"(none)" = "(none)";
+"(none)" = "(nessuno)";
 
 /* File: ../Source/NSPageLayout.m:989 */
 /* Flag: untranslated */
@@ -144,8 +139,7 @@ add comments above this one
 /* File: ../Source/NSPrintPanel.m:454 */
 /* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:500 */
-/* Flag: untranslated */
-"Unknown" = "Unknown";
+"Unknown" = "Sconosciuto";
 
 /* File: ../Source/NSPrintPanel.m:467 */
 /* Flag: untranslated */
@@ -158,8 +152,7 @@ add comments above this one
 /* File: ../Source/NSSavePanel.m:236 */
 /* Flag: untranslated */
 /* File: ../Source/NSSavePanel.m:413 */
-/* Flag: untranslated */
-"Name:" = "Name:";
+"Name:" = "Nome:";
 
 /* File: ../Source/NSSavePanel.m:1246 */
 /* Flag: untranslated */
@@ -180,24 +173,19 @@ add comments above this one
 = "Copyright Information Not Available";
 
 /* File: ../Source/GSInfoPanel.m:434 */
-/* Flag: untranslated */
-"Author: " = "Author: ";
+"Author: " = "Autore: ";
 
 /* File: ../Source/GSInfoPanel.m:438 */
-/* Flag: untranslated */
-"Authors: " = "Authors: ";
+"Authors: " = "Autori: ";
 
 /* File: ../Source/GSThemeInspector.m:140 */
-/* Flag: untranslated */
-"Version: %@" = "Version: %@";
+"Version: %@" = "Versione: %@";
 
 /* File: ../Source/GSThemePanel.m:114 */
-/* Flag: untranslated */
-"Themes" = "Themes";
+"Themes" = "Temi";
 
 /* File: ../Source/NSAlert.m:1898 */
-/* Flag: untranslated */
-"Alert" = "Alert";
+"Alert" = "Attenzione";
 
 /* File: ../Source/NSAttributedString.m:759 */
 /* Comment: Error description */
@@ -212,8 +200,7 @@ add comments above this one
 
 /* File: ../Source/NSAttributedString.m:864 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"Could not load data from URL." = "Could not load data from URL.";
+"Could not load data from URL." = "Impossibile caricare dati dall'URL.";
 
 /* File: ../Source/NSColorPanel.m:289 */
 /* Flag: untranslated */
@@ -226,17 +213,14 @@ add comments above this one
 
 /* File: ../Source/NSColorSpace.m:137 */
 /* Comment: color space */
-/* Flag: untranslated */
-"Grayscale" = "Grayscale";
+"Grayscale" = "Scala di grigi";
 
 /* File: ../Source/NSColorSpace.m:139 */
 /* Comment: color space */
-/* Flag: untranslated */
 "RGB" = "RGB";
 
 /* File: ../Source/NSColorSpace.m:141 */
 /* Comment: color space */
-/* Flag: untranslated */
 "CMYK" = "CMYK";
 
 /* File: ../Source/NSColorSpace.m:143 */
@@ -294,12 +278,11 @@ add comments above this one
 "Typeface" = "Typeface";
 
 /* File: ../Source/NSMenu.m:236 */
-/* Flag: untranslated */
-"Services" = "Services";
+"Services" = "Servizi";
 
 /* File: ../Source/NSOpenPanel.m:92 */
 /* Flag: untranslated */
-"Open" = "Open";
+"Open" = "Apri";
 
 /* File: ../Source/NSPageLayout.m:981 */
 /* Flag: untranslated */
@@ -318,36 +301,28 @@ add comments above this one
 "Scale" = "Scale";
 
 /* File: ../Source/NSPageLayout.m:985 */
-/* Flag: untranslated */
-"Top Margin" = "Top Margin";
+"Top Margin" = "Margine Superiore";
 
 /* File: ../Source/NSPageLayout.m:986 */
-/* Flag: untranslated */
-"Bottom Margin" = "Bottom Margin";
+"Bottom Margin" = "Margine Inferiore";
 
 /* File: ../Source/NSPageLayout.m:987 */
-/* Flag: untranslated */
-"Left Margin" = "Left Margin";
+"Left Margin" = "Margine Sinistro";
 
 /* File: ../Source/NSPageLayout.m:988 */
-/* Flag: untranslated */
-"Right Margin" = "Right Margin";
+"Right Margin" = "Margine Destro";
 
 /* File: ../Source/NSPageLayout.m:1038 */
-/* Flag: untranslated */
-"Portrait" = "Portrait";
+"Portrait" = "Verticale";
 
 /* File: ../Source/NSPageLayout.m:1042 */
-/* Flag: untranslated */
-"Landscape" = "Landscape";
+"Landscape" = "Orizzontale";
 
 /* File: ../Source/NSPrintOperation.m:680 */
-/* Flag: untranslated */
-"Error" = "Error";
+"Error" = "Errore";
 
 /* File: ../Source/NSPrintOperation.m:680 */
-/* Flag: untranslated */
-"Printing error: %@" = "Printing error: %@";
+"Printing error: %@" = "Errore di stampa: %@";
 
 /* File: ../Source/NSPrintPanel.m:169 */
 /* Flag: untranslated */
@@ -428,7 +403,7 @@ add comments above this one
 /*** Strings from ../Source/GSPrintOperation.m ***/
 /* File: ../Source/GSPrintOperation.m:158 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
-= "Errore nell'esecuzione dell'applicazione Anteprima '%@' Dovresti settare l'applicativo predefinito in NSPreviewApp defaults";
+= "Errore nell'esecuzione dell'applicazione Anteprima '%@' Dovresti impostare l'applicativo predefinito in NSPreviewApp defaults";
 
 
 /*** Strings from ../Source/NSApplication.m ***/
@@ -439,10 +414,10 @@ add comments above this one
 = "Il backend a %@ non contiene la classe GSBackend";
 /* File: ../Source/NSApplication.m:310 */
 "Can't create NSBundle object for backend at path %@"
-= "Non si riesce a creare l'oggetto NSBundle per il backend a %@";
+= "Impossibile a creare l'oggetto NSBundle per il backend a %@";
 /* File: ../Source/NSApplication.m:315 */
 "Can't load object file from backend at path %@"
-= "Non si riesce a caricare il file oggetto dal backend a %@";
+= "Impossibile caricare il file oggetto dal backend a %@";
 /* File: ../Source/NSApplication.m:999 */
 "Cannot load the main model file '%@'"
 = "Non \U00E8 possibile caricare il model file principale '%@'";
@@ -536,6 +511,6 @@ add comments above this one
 = "Il file '%@' in '%@' esiste. Vuoi sostituirlo?";
 /* File: ../Source/NSSavePanel.m:1319 */
 "The path '%@' is not a directory."
-= "Il percorso non '%@' non e' una directory.";
+= "Il percorso non '%@' non è una directory.";
 /* File: ../Source/NSSavePanel.m:1299 */
-"Yes" = "Si";
+"Yes" = "Sì";
