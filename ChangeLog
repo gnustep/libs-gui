@@ -1,3 +1,8 @@
+2012-05-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Add some (currently unused) helper code
+	for class substitution in flattenedProperties.
+
 2012-04-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPasteboard.m (NSURL-writeToPasteboard:): Revert the

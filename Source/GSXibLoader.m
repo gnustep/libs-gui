@@ -612,17 +612,25 @@
 {
   if ([coder allowsKeyedCoding])
     {
-      if ([coder containsValueForKey: @"connectionRecords"])
+      if ([coder containsValueForKey: @"sourceID"])
         {
-          ASSIGN(connectionRecords, [coder decodeObjectForKey: @"connectionRecords"]);
+          ASSIGN(sourceID, [coder decodeObjectForKey: @"sourceID"]);
+        }
+      if ([coder containsValueForKey: @"maxID"])
+        {
+          maxID = [coder decodeIntForKey: @"maxID"];
+        }
+      if ([coder containsValueForKey: @"flattenedProperties"])
+        {
+          ASSIGN(flattenedProperties, [coder decodeObjectForKey: @"flattenedProperties"]);
         }
       if ([coder containsValueForKey: @"objectRecords"])
         {
           ASSIGN(objectRecords, [coder decodeObjectForKey: @"objectRecords"]);
         }
-      if ([coder containsValueForKey: @"flattenedProperties"])
+      if ([coder containsValueForKey: @"connectionRecords"])
         {
-          ASSIGN(flattenedProperties, [coder decodeObjectForKey: @"flattenedProperties"]);
+          ASSIGN(connectionRecords, [coder decodeObjectForKey: @"connectionRecords"]);
         }
       // We could load more data here, but we currently don't need it.
     }
@@ -684,6 +692,35 @@
     }
 
   return AUTORELEASE(properties);
+}
+
+/*
+  Returns a dictionary of the custom class names keyed on the objectIDs.
+ */
+- (NSDictionary*) customClassNames
+{
+  NSMutableDictionary *properties;
+  int i;
+
+  properties = [[NSMutableDictionary alloc] init];
+  // We have special objects at -3, -2, -1 and 0
+  for (i = -3; i < maxID; i++)
+    {
+      NSString *idString;
+      id value;
+
+      idString = [NSString stringWithFormat: @"%d.CustomClassName", i];
+      value = [flattenedProperties objectForKey: idString];
+      if (value)
+        {
+          NSString *key;
+
+          key = [NSString stringWithFormat: @"%d", i];
+          [properties setObject: value forKey: key];
+        }
+    }
+
+  return properties;
 }
 
 - (id) nibInstantiate
@@ -1462,6 +1499,32 @@ didStartElement: (NSString*)elementName
     }
 
   return AUTORELEASE(dict);
+}
+
+/*
+  Extension method to decode the object id of an object referenced by its key.
+ */
+- (NSString *) decodeReferenceForKey: (NSString*)aKey
+{
+  GSXibElement *element = [currentElement elementForKey: aKey];
+  NSString *objID;
+
+  if (element == nil)
+    return nil;
+
+  objID = [element attributeForKey: @"id"];
+  if (objID)
+    {
+      return objID;
+    }
+
+  objID = [element attributeForKey: @"ref"];
+  if (objID)
+    {
+      return objID;
+    }
+
+  return nil;
 }
 
 - (BOOL) containsValueForKey: (NSString*)aKey
