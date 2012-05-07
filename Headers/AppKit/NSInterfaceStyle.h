@@ -49,13 +49,7 @@ typedef	enum {
   /*
    * GNUstep specific. Blame: Michael Hanni.
    */ 
-  GSWindowMakerInterfaceStyle = 4,
-
-  /*
-   * GNUstep specific style for native menus.
-   */
-  GSNativeInterfaceStyle = 5
-
+  GSWindowMakerInterfaceStyle = 4
 } NSInterfaceStyle;
 
 APPKIT_EXPORT NSString	*NSInterfaceStyleDefault;

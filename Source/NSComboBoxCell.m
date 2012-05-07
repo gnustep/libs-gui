@@ -1546,6 +1546,13 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       [coder encodeBool: [self hasVerticalScroller] forKey: @"NSHasVerticalScroller"];
       [coder encodeInt: [self numberOfVisibleItems] forKey: @"NSVisibleItemCount"];
+      [coder encodeBool: [self completes] forKey: @"NSCompletes"];
+      [coder encodeDouble: _intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
+      [coder encodeDouble: _intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
+      [coder encodeDouble: [self itemHeight] forKey: @"NSRowHeight"];
+      [coder encodeBool: [self usesDataSource] forKey: @"NSUsesDataSource"];
+      [coder encodeObject: [self dataSource] forKey: @"NSDataSource"];
+      [coder encodeObject: _popUpList forKey: @"NSPopUpListData"];
     }
   else
     {
@@ -1579,8 +1586,6 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   if ([aDecoder allowsKeyedCoding])
     {
       //id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
-      // FIXME: This does not match the way GNUstep currently implements
-      // the list of popup items.
       //id table = [aDecoder decodeObjectForKey: @"NSTableView"];
 
       if ([aDecoder containsValueForKey: @"NSHasVerticalScroller"])
@@ -1593,16 +1598,50 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	  [self setNumberOfVisibleItems: [aDecoder decodeIntForKey: 
 						       @"NSVisibleItemCount"]];
 	}
+      if ([aDecoder containsValueForKey: @"NSCompletes"])
+        {
+          [self setCompletes: [aDecoder decodeBoolForKey: @"NSCompletes"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSIntercellSpacingWidth"])
+        {
+          _intercellSpacing.width = [aDecoder decodeDoubleForKey: 
+                                                @"NSIntercellSpacingWidth"];
+        }
+      if ([aDecoder containsValueForKey: @"NSIntercellSpacingHeight"])
+        {
+          _intercellSpacing.height = [aDecoder decodeDoubleForKey: 
+                                                 @"NSIntercellSpacingHeight"];
+        }
+      if ([aDecoder containsValueForKey: @"NSRowHeight"])
+        {
+	  [self setItemHeight: [aDecoder decodeDoubleForKey: 
+                                           @"NSRowHeight"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSUsesDataSource"])
+        {
+          [self setUsesDataSource: [aDecoder decodeBoolForKey: 
+                                               @"NSUsesDataSource"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSDataSource"])
+        {
+          [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSPopUpListData"])
+        {
+          ASSIGN(_popUpList, [aDecoder decodeObjectForKey: @"NSPopUpListData"]);
+        }
     }
   else
     {
       BOOL dummy;
-      id previouslyEncodedButton;
       
       if ([aDecoder versionForClassName: @"NSComboBoxCell"] < 2)
-        [aDecoder decodeValueOfObjCType: @encode(id) at: &previouslyEncodedButton];
-      // In previous version we decode _buttonCell, we just discard the decoded value here
-      
+        {
+          // In previous version we decode _buttonCell, we just discard the decoded value here
+          id previouslyEncodedButton;
+          [aDecoder decodeValueOfObjCType: @encode(id) at: &previouslyEncodedButton];
+        }
+
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_popUpList];
       RETAIN(_popUpList);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
