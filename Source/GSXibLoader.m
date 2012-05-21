@@ -48,12 +48,27 @@
 - (void) _setMainMenu: (NSMenu*)aMenu;
 @end
 
+@interface NSMenu (XibCompatibility)
+- (BOOL) _isMainMenu;
+@end
+
 @interface NSCustomObject (NibCompatibility)
 - (void) setRealObject: (id)obj;
 @end
 
 @interface NSNibConnector (NibCompatibility)
 - (id) nibInstantiate;
+@end
+
+@implementation NSMenu (XibCompatibility)
+
+- (BOOL) _isMainMenu
+{
+  if (_name)
+    return [_name isEqualToString:@"_NSMainMenu"];
+  return NO;
+}
+
 @end
 
 @implementation FirstResponder
@@ -835,7 +850,8 @@
           RETAIN(obj);
         }
 
-      if ([obj isKindOfClass: [NSMenu class]])
+      if (([obj isKindOfClass: [NSMenu class]]) &&
+          ([obj _isMainMenu]))
         {
           // add the menu...
           [NSApp _setMainMenu: obj];

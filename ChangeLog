@@ -1,3 +1,12 @@
+2012-05-21 Marcian Lytwyn <Marcian.Lytwyn@Advcsi.com>
+
+	* Source/GSXibLoader.m:
+	Added NSMenu (XibCompatibility) category with method: _isMainMenu
+	Added NSMenu (XibCompatibility) category implementation.
+        Modified setting main menu in awake:inContainer:withContext:
+	Fixes bug #36427
+	Committed by: gcasa
+
 2012-05-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSInterfaceStyle.h: Remove
