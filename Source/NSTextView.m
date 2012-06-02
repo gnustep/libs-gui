@@ -6388,8 +6388,15 @@ or add guards
 		replacementString: (string ? (NSString*)[string string]
 					   : (NSString*)@"")])
     {
-      [tv replaceCharactersInRange: range
-	      withAttributedString: string];
+      if ([string length] > 0)
+	{
+	  [aTextStorage replaceCharactersInRange: range
+			    withAttributedString: string];
+	}
+      else
+	{
+	  [aTextStorage replaceCharactersInRange: range withString: @""];
+	}
       range.length = [string length];
       if ([[tv undoManager] isUndoing])
 	[tv setSelectedRange: range];

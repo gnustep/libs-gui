@@ -1,5 +1,10 @@
 2012-06-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-performUndo): Update text storage directly
+	when undoing text changes.
+
+2012-06-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Tools/GSspell.m (-spellerForLanguage:): Force aspell to return
 	suggested words with UTF-8 encoding.
 
