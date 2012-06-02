@@ -365,6 +365,7 @@ aspell_dictionaries()
 	{
 	  AspellConfig *config = new_aspell_config();
 	  aspell_config_replace(config, "lang", [dictLang UTF8String]);
+	  aspell_config_replace(config, "encoding", "UTF-8");
 	  speller = to_aspell_speller(new_aspell_speller(config));
 	  [spellers setObject: [NSValue valueWithPointer: speller]
 		       forKey: language];
