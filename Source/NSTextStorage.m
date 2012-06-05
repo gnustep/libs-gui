@@ -61,6 +61,8 @@ static NSNotificationCenter *nc = nil;
 - (void) dealloc
 {
   [self setDelegate: nil];
+  [_layoutManagers makeObjectsPerformSelector: @selector(setTextStorage:)
+				   withObject: nil];
   RELEASE (_layoutManagers);
   [super dealloc];
 }

@@ -1,3 +1,13 @@
+2012-06-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSLayoutManager.m (-dealloc): Set layout manager of every
+	text container to nil to avoid dangling pointer in case the text
+	container is retained elsewhere.
+
+	* Source/NSTextStorage.m (-dealloc): Set text storage of every
+	layout manager to nil to avoid dangling pointer in case the layout
+	manager is retained elsewhere.
+
 2012-06-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-performUndo): Update text storage directly

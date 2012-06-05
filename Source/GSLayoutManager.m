@@ -2918,6 +2918,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   [self _freeLayout];
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
+      [tc->textContainer setLayoutManager: nil];
       [tc->textContainer release];
     }
   free(textcontainers);
