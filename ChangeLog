@@ -1,5 +1,10 @@
 2012-06-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Tests/gui/TextSystem/deallocation.m: Add new test to verify
+	proper deallocation of text network elements.
+
+2012-06-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSLayoutManager.m (-dealloc): Set layout manager of every
 	text container to nil to avoid dangling pointer in case the text
 	container is retained elsewhere.
