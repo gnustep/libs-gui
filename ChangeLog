@@ -1,3 +1,9 @@
+2012-06-07  German A. Arias  <german@xelalug.org>
+
+	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Use an
+	intermediate frame before call -layout. This fix bugs #36419 and
+	#36586.
+
 2012-06-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Tests/gui/TextSystem/deallocation.m: Add new test to verify
