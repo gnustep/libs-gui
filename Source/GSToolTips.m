@@ -29,6 +29,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSUserDefaults.h>
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
@@ -558,6 +559,7 @@ static BOOL		restoreMouseMoved;
 /* The delay timed out -- display the tooltip */
 - (void) _timedOut: (NSTimer *)aTimer
 {
+  CGFloat               size;
   NSString		*toolTipString;
   NSAttributedString	*toolTipText = nil;
   NSSize		textSize;
@@ -603,8 +605,16 @@ static BOOL		restoreMouseMoved;
       [self _endDisplay];
     }
 
+  size = [[NSUserDefaults standardUserDefaults]
+	   floatForKey: @"NSToolTipsFontSize"];
+
+  if (size <= 0)
+    {
+      size = 10.0;
+    }
+
   attributes = [NSMutableDictionary dictionary];
-  [attributes setObject: [NSFont toolTipsFontOfSize: 10.0]
+  [attributes setObject: [NSFont toolTipsFontOfSize: size]
 		 forKey: NSFontAttributeName];
   toolTipText =
     [[NSAttributedString alloc] initWithString: toolTipString
