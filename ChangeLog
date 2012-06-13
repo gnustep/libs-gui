@@ -1,3 +1,8 @@
+2012-06-13  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSplitView.m (adjustSubviews): Use centerScanRect to
+	give subviews pixel-aligned frames.
+
 2012-06-07  German A. Arias  <german@xelalug.org>
 
 	* Source/GSToolTips.m (_timedOut:): Use the font size specified

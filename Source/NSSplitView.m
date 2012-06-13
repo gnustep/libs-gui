@@ -786,8 +786,6 @@ static NSNotificationCenter *nc = nil;
   NSArray *subs = [self subviews];
   unsigned count = [subs count];
   NSView *views[count];
-  NSSize newSize;
-  NSPoint newPoint;
   unsigned i;
   BOOL autoloading = NO;
   double proportionsTotal = 1.0;
@@ -901,6 +899,7 @@ static NSNotificationCenter *nc = nil;
 
       for (i = 0; i < count; i++)
         {
+	  NSRect newRect;
           float newHeight;
           
           if (i < (count - 1))
@@ -920,10 +919,10 @@ static NSNotificationCenter *nc = nil;
                * space.  */
               newHeight = NSHeight(_bounds) - running;
             }
-          newSize = NSMakeSize(NSWidth(_bounds), newHeight);
-          newPoint = NSMakePoint(0.0, running);
+	  newRect = NSMakeRect(0.0, running, NSWidth(_bounds), newHeight);
+	  newRect = [self centerScanRect: newRect];
           running += newHeight + _dividerWidth;
-          [views[i] setFrame: NSMakeRect(newPoint.x, newPoint.y, newSize.width, newSize.height)];
+          [views[i] setFrame: newRect];
         }
     }
   else
@@ -933,6 +932,7 @@ static NSNotificationCenter *nc = nil;
 
       for (i = 0; i < count; i++)
         {
+	  NSRect newRect;
           float newWidth;
           
           if (i < (count - 1))
@@ -950,10 +950,10 @@ static NSNotificationCenter *nc = nil;
             {
               newWidth = NSWidth(_bounds) - running;
             }
-          newSize = NSMakeSize(newWidth, NSHeight(_bounds));
-          newPoint = NSMakePoint(running, 0.0);
+	  newRect = NSMakeRect(running, 0.0, newWidth, NSHeight(_bounds));
+	  newRect = [self centerScanRect: newRect];
           running += newWidth + _dividerWidth;
-          [views[i] setFrame: NSMakeRect(newPoint.x, newPoint.y, newSize.width, newSize.height)];
+          [views[i] setFrame: newRect];
         }
     }
 
