@@ -1,3 +1,8 @@
+2012-06-15  German A. Arias  <german@xelalug.org>
+
+	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Revert
+	last change while found the real problem.
+
 2012-06-13  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSplitView.m (adjustSubviews): Use centerScanRect to

@@ -372,20 +372,10 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   orgWindowFrame = [window frame];
   windowFrame.origin.y = orgWindowFrame.origin.y + orgWindowFrame.size.height - windowFrame.size.height;
   windowFrame.origin.x = orgWindowFrame.origin.x;
-  /* FIXME: Make an intermediate frame to set in the window before call -layout.
-   * Later we will set a frame with the correct dimensions. This intermediate
-   * frame only differs on the width (subtract 1). This ensure the correct
-   * behaviour of the in-window menu. Even when I'm not sure why.
-   */
-  windowFrame.size.width -= 1;
 
-  // then resize the window with the intermediate frame and call -layout
+  // then resize the window
   [window setFrame: windowFrame display: YES];
   [self layout];
-
-  // Now resize the window to correct width
-  windowFrame.size.width += 1;
-  [window setFrame: windowFrame display: YES];
 }
 
 /*
