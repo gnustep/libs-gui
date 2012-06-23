@@ -1,3 +1,7 @@
+2012-06-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFontDescriptor.m: Small consistency updates.
+
 2012-06-15  German A. Arias  <german@xelalug.org>
 
 	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Revert
