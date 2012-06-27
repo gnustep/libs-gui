@@ -119,6 +119,7 @@ static NSMutableArray *screenArray = nil;
       [screenArray addObject: screen];
       RELEASE(screen);
     }
+  NSLog(@"NSScreen:screens: %@", screenArray);
 
   return [NSArray arrayWithArray: screenArray];
 }
@@ -257,6 +258,15 @@ static NSMutableArray *screenArray = nil;
 {
   return _frame;
 }
+
+- (NSString*)description
+{
+  NSMutableString *description = [NSMutableString stringWithString:[super description]];
+  [description appendFormat:@"number: %ld\n",(long)_screenNumber];
+  [description appendFormat:@"frame: %@\n",NSStringFromRect(_frame)];
+  return([[description copy] autorelease]);
+}
+
 
 /**
  * <p>

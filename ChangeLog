@@ -1,5 +1,16 @@
 2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 
+	* Source/NSWindow.m - Fix [NSWindow screen] method according
+	  to documented behavior (return screen that window show up
+	  the most or nil).  Fix [NSWindow setFrameFromString] to account for
+	  possible nil screen on input frame and throw window on main screen
+	  in this case.  This is to fix an issue with windows not properly
+	  showing up when moved to another monitor during multi-monitor 
+	  usage and then the extra monitor(s) are removed.
+	* Source/NSScreen.m - Added -description method for more information.
+	  
+2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
 	*** NSOpenSavePanelDelegate ***
 	* Headers/AppKit/NSSavePanel.h - Added NSOpenSavePanelDelegate
 	  protocol definition
