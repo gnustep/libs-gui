@@ -1,3 +1,21 @@
+2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* Headers/AppKit/NSSavePanel.h - Added NSOpenSavePanelDelegate
+	  protocol definition
+	* Source/NSSavePanel.m - Qualify delegate method(s) with
+	  id<NSOpenSavePanelDelegate>
+	* Headers/AppKit/NSControl.h - Added NSControlTextEditingDelegate
+	  protocol definition
+	* Headers/AppKit/NSTextField.h - Added NSTextFieldDelegate
+	  protocol definition
+	* Source/NSTextField.m - Qualify delegate method(s) with
+	  id<NSTextFieldDelegate>
+	* Headers/AppKit/NSFontPanel.h - NSFontPanel assigns itself as a
+	  delegate to a NSTextField object and must declare that it
+	  conforms to NSTextFieldDelegate protocol. Added a forward
+	  declaration for NSTextFieldDelegate and added NSTextFieldDelegate
+	  on class interface definition.
+
 2012-06-15  German A. Arias  <german@xelalug.org>
 
 	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Revert
