@@ -246,7 +246,7 @@ static Class textFieldCellClass;
 /** <p>Sets the delegate to <var>anObject</var>.</p>
     <p>See Also: -delegate</p>
 */
-- (void) setDelegate: (id)anObject
+- (void) setDelegate: (id<NSTextFieldDelegate>)anObject
 {
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
@@ -266,7 +266,7 @@ static Class textFieldCellClass;
 /** <p>Returns the delegate object.</p>
     <p>See Also: -setDelegate:</p>
 */
-- (id) delegate
+- (id<NSTextFieldDelegate>) delegate
 {
   return _delegate;
 }

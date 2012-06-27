@@ -40,6 +40,8 @@
 @class NSBrowser;
 @class NSTextField;
 
+@protocol NSTextFieldDelegate;
+
 enum {
   NSFPPreviewButton,
   NSFPRevertButton,
@@ -55,7 +57,7 @@ enum {
   NSFPSizeBrowser
 };
 
-@interface NSFontPanel : NSPanel <NSCoding>
+@interface NSFontPanel : NSPanel <NSCoding, NSTextFieldDelegate>
 {
   // Attributes
   NSFont *_panelFont;
