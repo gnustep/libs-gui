@@ -1,9 +1,12 @@
 2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 
+	*** NSOpenSavePanelDelegate ***
 	* Headers/AppKit/NSSavePanel.h - Added NSOpenSavePanelDelegate
 	  protocol definition
 	* Source/NSSavePanel.m - Qualify delegate method(s) with
 	  id<NSOpenSavePanelDelegate>
+	
+	*** NSOpenSavePanelDelegate ***
 	* Headers/AppKit/NSControl.h - Added NSControlTextEditingDelegate
 	  protocol definition
 	* Headers/AppKit/NSTextField.h - Added NSTextFieldDelegate
