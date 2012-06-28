@@ -35,6 +35,8 @@
 @class GSTable, NSSlider, NSTextField;
 @class NSBox, NSButtonCell, NSMatrix;
 
+@protocol NSTextFieldDelegate;
+
 @interface GSStandardColorPicker: NSColorPicker <NSColorPickingCustom>
 {
   GSTable *baseView;
@@ -50,7 +52,7 @@
 
 @end
 
-@interface GSStandardCSColorPicker: NSColorPicker <NSColorPickingCustom>
+@interface GSStandardCSColorPicker: NSColorPicker <NSColorPickingCustom, NSTextFieldDelegate>
 {
   GSTable *baseView;;
 

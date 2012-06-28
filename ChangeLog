@@ -1,3 +1,10 @@
+2012-06-28  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* ColorPickers/GSNamedColorPicker.m
+	  GSNamedColorPicker needs to conform to NSTtextFieldDelegate
+	* ColorPickers/GSStandardColorPicker.h
+	  GSStandardCSColorPicker needs to conform to NSTextFieldDelegate
+
 2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 
 	* Source/NSWindow.m - Fix [NSWindow screen] method according
@@ -17,7 +24,7 @@
 	* Source/NSSavePanel.m - Qualify delegate method(s) with
 	  id<NSOpenSavePanelDelegate>
 	
-	*** NSOpenSavePanelDelegate ***
+	*** NSControlTextEditingDelegate ***
 	* Headers/AppKit/NSControl.h - Added NSControlTextEditingDelegate
 	  protocol definition
 	* Headers/AppKit/NSTextField.h - Added NSTextFieldDelegate

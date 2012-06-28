@@ -27,7 +27,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-@interface GSNamedColorPicker: NSColorPicker <NSColorPickingCustom>
+@interface GSNamedColorPicker: NSColorPicker <NSColorPickingCustom, NSTextFieldDelegate>
 {
   NSView *baseView;
   NSComboBox *cb;
