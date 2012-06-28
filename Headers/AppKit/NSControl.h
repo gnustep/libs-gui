@@ -44,23 +44,6 @@
 @class NSEvent;
 @class NSTextView;
 
-@protocol NSControlTextEditingDelegate <NSObject>
-#if defined(__OBJC2__)
-@optional
-- (BOOL)control:(NSControl*)control didFailToFormatString:(NSString*)formatString errorDescription:(NSString*)error;
-- (void)control:(NSControl*)control didFailToValidatePartialString:(NSString*)string errorDescription:(NSString*)error;
-- (BOOL)control:(NSControl*)control isValidObject:(id)object;
-- (BOOL)control:(NSControl*)control textShouldBeginEditing:(NSText*)fieldEditor;
-- (BOOL)control:(NSControl*)control textShouldEndEditing:(NSText*)fieldEditor;
-- (NSArray*)control:(NSControl*)control textView:(NSTextView*)textView
-                                     completions:(NSArray*)words
-                             forPartialWordRange:(NSRange)charRange
-                             indexOfSelectedItem:(NSInteger*)index;
-- (BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)command;
-#endif
-@end
-
-
 @interface NSControl : NSView
 {
   // Attributes
@@ -217,7 +200,13 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 //
 // Methods Implemented by the Delegate
 //
-@interface NSObject (NSControlDelegate)
+@protocol NSControlTextEditingDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
+@interface NSObject (NSControlTextEditingDelegate)
+#endif
 - (BOOL) control: (NSControl *)control  isValidObject:(id)object;
 
 - (BOOL) control: (NSControl *)control
@@ -227,9 +216,7 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
   textShouldEndEditing: (NSText *)fieldEditor;
 
 - (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
-
 - (void) controlTextDidEndEditing: (NSNotification *)aNotification;
-
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 
 - (BOOL) control: (NSControl *)control 
@@ -254,5 +241,10 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 
 @end
 
+@interface NSObject (NSControlDelegate)
+- (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
+- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
+- (void) controlTextDidChange: (NSNotification *)aNotification;
+@end
 
 #endif // _GNUstep_H_NSControl

@@ -58,8 +58,12 @@ enum {
 };
  
 @protocol NSOpenSavePanelDelegate <NSObject>
-#if defined(__OBJC2__)
+#ifdef __OBJC2__
 @optional
+#else
+@end
+@interface NSObject (NSOpenSavePanelDelegate)
+#endif
 - (BOOL)panel:(id)sender shouldEnableURL:(NSURL*)url;
 - (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError **)error;
 - (void)panel:(id)sender didChangeToDirectoryURL:(NSURL*)url;
@@ -75,7 +79,6 @@ enum {
                         with:(NSString*)name2
                caseSensitive:(BOOL)caseSensitive;
 - (BOOL)panel:(id)sender shouldShowFilename:(NSString*)filename;
-#endif
 @end
 
 
