@@ -46,7 +46,7 @@
 @interface NSTextField : NSControl
 {
   // Attributes
-  id<NSTextFieldDelegate> _delegate;
+  id _delegate;
   SEL _error_action;
   NSText *_text_object;
 }
