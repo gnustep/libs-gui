@@ -765,6 +765,43 @@ static NSString			*_rootPath = @"/";
 /*
  * Opening Files
  */
+- (BOOL) _openUnknown: (NSString*)fullPath
+{
+  NSString *tool = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSUnknownFileTool"];
+  NSString *launchPath;
+
+  if ((tool == nil) || (launchPath = [NSTask launchPathForTool: tool]) == nil)
+    {
+#ifdef __MINGW32__
+      // Maybe we should rather use "Explorer.exe /e, " as the tool name
+      unichar *buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
+      [fullPath getCharacters: buffer range: NSMakeRange(0, [fullPath length])];
+      buffer[[fullPath length]] = 0;
+      BOOL success = (ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
+                                    NULL, SW_SHOWNORMAL) > 32);
+      free(buffer);
+      return success;
+#else
+      // Fall back to xdg-open
+      launchPath = [NSTask launchPathForTool: @"xdg-open"];
+#endif
+    }
+
+  if (launchPath)
+    {
+      NSTask * task = [NSTask launchedTaskWithLaunchPath: launchPath
+                                               arguments: [NSArray arrayWithObject: fullPath]];
+      if (task != nil)
+        {
+          [task waitUntilExit];
+          if ([task terminationStatus] == 0)
+            return YES;
+        }
+    }
+
+  return NO;
+}
+
 - (BOOL) openFile: (NSString*)fullPath
 {
   return [self openFile: fullPath withApplication: nil];
@@ -820,8 +857,15 @@ static NSString			*_rootPath = @"/";
   
       if ([self _extension: ext role: nil app: &appName] == NO)
         {
-	  NSWarnLog(@"No known applications for file extension '%@'", ext);
-	  return NO;
+          if ([self _openUnknown: fullPath])
+            {
+              return YES;
+            }
+          else
+            {
+              NSWarnLog(@"No known applications for file extension '%@'", ext);
+              return NO;
+            }
 	}
     }
 
@@ -883,8 +927,15 @@ static NSString			*_rootPath = @"/";
   ext = [fullPath pathExtension];
   if ([self _extension: ext role: nil app: &appName] == NO)
     {
-      NSWarnLog(@"No known applications for file extension '%@'", ext);
-      return NO;
+      if ([self _openUnknown: fullPath])
+        {
+          return YES;
+        }
+      else
+        {
+          NSWarnLog(@"No known applications for file extension '%@'", ext);
+          return NO;
+        }
     }
 
   app = [self _connectApplication: appName];
@@ -928,7 +979,7 @@ static NSString			*_rootPath = @"/";
       appName = [self getBestAppInRole: nil forScheme: [url scheme]];
       if (appName != nil)
 	{
-	  id		app;
+	  id app;
 
 	  /* Now try to get the application to open the URL.
 	   */
@@ -956,7 +1007,14 @@ static NSString			*_rootPath = @"/";
       [pb declareTypes: [NSArray arrayWithObject: NSURLPboardType]
                          owner: nil];
      [url writeToPasteboard: pb];
-      return NSPerformService(@"OpenURL", pb);
+     if (NSPerformService(@"OpenURL", pb))
+       {
+         return YES;
+       }
+     else
+       {
+         return [self _openUnknown: [url absoluteString]];
+       }
     }
 }
 

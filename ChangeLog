@@ -1,3 +1,14 @@
+2012-06-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWorkspace.m (-_openUnknown:): New method that starts an
+	operation system specific application for files or URL that could
+	not be handled by GNUstep applications. Based on patch by Julian
+	Mayer <julian@corecode.at>.
+	* Source/NSWorkspace.m (-openFile:withApplication:andDeactivate:,
+	-openTempFile:, -openURL:): Use this new method.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document the new
+	setting GSUnknownFileTool that allows to define a default application.
+
 2012-06-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFontDescriptor.m: Small consistency updates.
