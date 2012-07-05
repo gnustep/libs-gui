@@ -33,8 +33,13 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+/* IBOutlet and IBAction are now built-in macros in recent Clang */
+#if !defined(IBOutlet)
 #define IBOutlet
+#endif
+#if !defined(IBAction)
 #define IBAction void
+#endif
 #endif
 
 #endif

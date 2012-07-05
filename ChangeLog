@@ -1,3 +1,8 @@
+2012-07-05  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Headers/AppKit/NSNibDeclarations.h: Fixed recent Clang warnings when 
+	compiling applications about IBOutlet and IBAction being already defined.
+
 2012-06-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWorkspace.m (-_openUnknown:): New method that starts an
