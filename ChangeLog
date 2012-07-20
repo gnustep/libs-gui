@@ -1,3 +1,11 @@
+2012-07-20 14:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSImage.m: -[NSImage initWithCoder:]
+	Some XIB files have image representations encoded
+	via NSURL.  When this happens it causes the XIB not to be loaded at
+	all since the image rep fails to load and causes the xib loading
+	process to fail.
+
 2012-07-05  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/AppKit/NSNibDeclarations.h: Fixed recent Clang warnings when 

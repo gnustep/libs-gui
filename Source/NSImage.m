@@ -1652,7 +1652,22 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           // element which is an array with a first element 0 and than the image rep.  
           reps = [coder decodeObjectForKey: @"NSReps"];
           reps = [reps objectAtIndex: 0];
-          [self addRepresentation: [reps objectAtIndex: 1]];
+	  id rep = [reps objectAtIndex: 1];
+	  if([rep isKindOfClass:[NSImageRep class]])
+	    { 
+	      [self addRepresentation: rep];
+	    }
+	  else
+	    {
+	      if([rep isKindOfClass:[NSURL class]])
+		{
+		  rep = [NSImageRep imageRepWithContentsOfURL:rep];
+		  if(rep != nil)
+		    {
+		      [self addRepresentation: rep];
+		    }
+		}
+	    }
         }
       if ([coder containsValueForKey: @"NSSize"])
         {
