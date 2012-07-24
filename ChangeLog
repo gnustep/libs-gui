@@ -1,3 +1,10 @@
+2012-07-24 06:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSImage.m: -[NSImage initWithCoder:] an extension to
+	the previous change.  If the URL doesn't load then try to load
+	the image in the NSURL as a "named" image in resources so that
+	the developer of the app has a way to provide this image.
+
 2012-07-20 14:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSImage.m: -[NSImage initWithCoder:]
@@ -8,7 +15,7 @@
 
 2012-07-05  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Headers/AppKit/NSNibDeclarations.h: Fixed recent Clang warnings when 
+	* Headers/AppKit/NSNibDeclarations.h: Fixed recent Clang warnings when
 	compiling applications about IBOutlet and IBAction being already defined.
 
 2012-06-29  Fred Kiefer <FredKiefer@gmx.de>
