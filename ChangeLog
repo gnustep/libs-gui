@@ -1,5 +1,10 @@
 2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView_actions.m (-yank:): Don't call -insertText: at
+	all when the kill buffer is empty.
+
+2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSApplication.m (-run): Also catch and eventually handle
 	exceptions that are thrown in code executed by the run loop itself.
 
