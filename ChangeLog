@@ -1,3 +1,9 @@
+2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSHorizontalTypesetter.m (-layoutGlyphsInLayoutManager:...):
+	Rethrow exception which isn't handled (and possibly can't be
+	handled in any reasonable way).
+
 2012-07-24 06:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSImage.m: -[NSImage initWithCoder:] an extension to
