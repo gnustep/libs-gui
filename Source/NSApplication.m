@@ -1549,18 +1549,18 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       IF_NO_GC(_runLoopPool = [arpClass new]);
 
-      e = [self nextEventMatchingMask: NSAnyEventMask
-		untilDate: distantFuture
-		inMode: NSDefaultRunLoopMode
-		dequeue: YES];
-      
-      if (e != nil)
-	{
-	  NSEventType	type = [e type];
+      // Catch and report any uncaught exceptions.
+      NS_DURING
+	{	  	  
+	  e = [self nextEventMatchingMask: NSAnyEventMask
+				untilDate: distantFuture
+				   inMode: NSDefaultRunLoopMode
+				  dequeue: YES];
 
-	  // Catch and report any uncaught exceptions.
-	  NS_DURING
-	    {	  	  
+	  if (e != nil)
+	    {
+	      NSEventType	type = [e type];
+
 	      [self sendEvent: e];
 
 	      // update (en/disable) the services menu's items
@@ -1570,13 +1570,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		  [_main_menu update];
 		}
 	    }
-	  NS_HANDLER
-	    {
-	      [self _handleException: localException];
-	    }
-	  NS_ENDHANDLER;
 	}
-      
+      NS_HANDLER
+	{
+	  [self _handleException: localException];
+	}
+      NS_ENDHANDLER;
+
       DESTROY (_runLoopPool);
     }
 

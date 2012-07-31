@@ -1,5 +1,10 @@
 2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSApplication.m (-run): Also catch and eventually handle
+	exceptions that are thrown in code executed by the run loop itself.
+
+2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSHorizontalTypesetter.m (-layoutGlyphsInLayoutManager:...):
 	Rethrow exception which isn't handled (and possibly can't be
 	handled in any reasonable way).
