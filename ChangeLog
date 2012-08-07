@@ -1,5 +1,11 @@
 2012-08-06 Riccardo Mottola <rm@gnu.org>
 
+	* Source/GSServicesManager.m
+	Do not call openFile: if only one file is supplied, as noted in 10.3 release notes.
+	(Thanks to Wolfgang for looking it up)
+
+2012-08-06 Riccardo Mottola <rm@gnu.org>
+
 	* Source/NSApplication.m
 	* Source/GSServicesManager.m
 	Implement openFiles: delegate

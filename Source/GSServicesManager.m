@@ -596,11 +596,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   id    del = [NSApp delegate];
   
-  if ([files count] == 1)
-    {
-      [self application: theApp openFile: [files objectAtIndex:0]];
-    }
-  else if ([del respondsToSelector: _cmd])
+  if ([del respondsToSelector: _cmd])
     {
       [del application: theApp openFiles: files];
     }
