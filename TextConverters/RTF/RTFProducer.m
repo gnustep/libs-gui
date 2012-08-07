@@ -888,12 +888,18 @@
         }
       else if ([attributeName isEqualToString: NSUnderlineStyleAttributeName])
         {
-	  NSInteger styleMask = [[attributesToAdd objectForKey: NSUnderlineStyleAttributeName] integerValue];
+	  NSInteger styleMask = [[attributesToAdd objectForKey:
+              NSUnderlineStyleAttributeName] integerValue];
 
 	  if ((styleMask & NSUnderlineByWordMask) == NSUnderlineByWordMask)
 	    {
 	      [result appendString: @"\\ulw"];
 	    }
+
+          if (styleMask == NSUnderlineStyleNone)
+            {
+              [result appendString: @"\\ulnone"];
+            }
 	  else if ((styleMask & NSUnderlineStyleDouble) == NSUnderlineStyleDouble)
 	    {
 	      [result appendString: @"\\uldb"];
