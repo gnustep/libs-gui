@@ -1,3 +1,9 @@
+2012-08-06 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSApplication.m
+	* Source/GSServicesManager.m
+	Implement openFiles: delegate
+
 2012-07-31  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView_actions.m (-yank:): Don't call -insertText: at

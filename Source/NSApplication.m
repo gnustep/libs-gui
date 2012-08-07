@@ -1120,12 +1120,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   if ((files = [self _openFiles]) != nil)
     {
-      NSEnumerator *en = [files objectEnumerator];
-
-      while ((filePath = (NSString *)[en nextObject]) != nil)
-	{
-	  [_listener application: self openFile: filePath];
-	}
+      [_listener application: self openFiles: files];
     } 
   else if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil
     || (filePath = [defs stringForKey: @"NSOpen"]) != nil)
@@ -3555,6 +3550,7 @@ struct _DelegateWrapper
  *   <item>application:shouldTerminateAfterLastWindowClosed:</item>
  *   <item>application:shouldOpenUntitledFile:</item>
  *   <item>application:openFile:</item>
+ *   <item>application:openFiles:</item>
  *   <item>application:openFileWithoutUI:</item>
  *   <item>application:openTempFile:</item>
  *   <item>application:openUntitledFile:</item>
