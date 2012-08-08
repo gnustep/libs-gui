@@ -1,3 +1,10 @@
+2012-08-08  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* Source/NSFont.m
+	  Temp fix for missing font causing all widgets to have incorrect
+    and mis-selected font. Cairo/win32 issue - needs to be
+    resolved.
+
 2012-06-28  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 
 	* ColorPickers/GSNamedColorPicker.m
