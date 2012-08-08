@@ -46,6 +46,7 @@
 #import "AppKit/NSView.h"
 #import "GNUstepGUI/GSFontInfo.h"
 
+#include <GNUstepGUI/GSDisplayServer.h>
 
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
@@ -861,6 +862,18 @@ static void setNSFont(NSString *key, NSFont *font)
                                             screenFont: screen]);
             }
         }
+      else if (fontInfo == nil)
+        {
+            Class cls = NSClassFromString(@"WIN32Server");
+            if (cls && [GSCurrentServer() isKindOfClass: cls])
+              {
+                // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
+                fontInfo = RETAIN([GSFontInfo fontInfoForFontName:@"Arial"
+                                              matrix: fontMatrix
+                                              screenFont: screen]);
+              }
+        }
+
       if (fontInfo == nil)
         {
           DESTROY(fontName);
