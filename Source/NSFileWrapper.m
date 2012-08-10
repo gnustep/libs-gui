@@ -203,7 +203,10 @@
           NSEnumerator *enumerator = [_wrapperData keyEnumerator];
           NSString *key;
 
-          [fm createDirectoryAtPath: path attributes: _fileAttributes];
+          [fm createDirectoryAtPath: path
+        withIntermediateDirectories: YES
+                         attributes: _fileAttributes
+                              error: NULL];
           while ((key = (NSString*)[enumerator nextObject]))
             {
               NSString *newPath =

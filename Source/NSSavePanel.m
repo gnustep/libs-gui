@@ -1336,7 +1336,10 @@ selectCellWithString: (NSString*)title
 
       if (result == NSAlertDefaultReturn)
 	{
-	  if ([_fm createDirectoryAtPath: filename attributes: nil] == NO)
+	  if ([_fm createDirectoryAtPath: filename
+             withIntermediateDirectories: YES
+                              attributes: nil
+                                   error: NULL] == NO)
 	    {
 	      NSRunAlertPanel(_(@"Save"),
 		_(@"The directory '%@' could not be created."),
