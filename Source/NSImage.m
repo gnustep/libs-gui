@@ -1661,13 +1661,14 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	    {
 	      if([rep isKindOfClass:[NSURL class]])
 		{
+      NSURL *tmp = [[rep copy] autorelease];
 		  rep = [NSImageRep imageRepWithContentsOfURL:rep];
 
 		  // If we are unable to resolved the URL, try to get it from the 
 		  // resources folder.
 		  if(rep == nil)
 		    {
-		      NSString *fileName = [[rep absoluteString] lastPathComponent];
+		      NSString *fileName = [[tmp absoluteString] lastPathComponent];
 		      NSString *path = [[NSBundle mainBundle] pathForImageResource:fileName];
 		      rep = [NSImageRep imageRepWithContentsOfFile:path];
 		    }
