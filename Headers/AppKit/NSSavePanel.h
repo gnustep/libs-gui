@@ -56,6 +56,31 @@ enum {
   NSFileHandlingPanelDiskButton,
   NSFileHandlingPanelDiskEjectButton
 };
+ 
+@protocol NSOpenSavePanelDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
+@interface NSObject (NSOpenSavePanelDelegate)
+#endif
+- (BOOL)panel:(id)sender shouldEnableURL:(NSURL*)url;
+- (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError **)error;
+- (void)panel:(id)sender didChangeToDirectoryURL:(NSURL*)url;
+- (NSString *)panel:(id)sender userEnteredFilename:(NSString*)filename confirmed:(BOOL)flag;
+- (void)panel:(id)sender willExpand:(BOOL)expand;
+- (void)panelSelectionDidChange:(id)sender;
+
+// Deprecated in 10.6...
+- (BOOL)panel:(id)sender isValidFilename:(NSString*)filename;
+- (void)panel:(id)sender directoryDidChange:(NSString*)path;
+ - (NSComparisonResult)panel:(id)sender
+             compareFilename:(NSString*)name1
+                        with:(NSString*)name2
+               caseSensitive:(BOOL)caseSensitive;
+- (BOOL)panel:(id)sender shouldShowFilename:(NSString*)filename;
+@end
+
 
 @interface NSSavePanel : NSPanel
 {

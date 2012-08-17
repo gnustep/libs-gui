@@ -1,3 +1,59 @@
+2012-08-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	Merged changes from gnustep_testplant_branch branch.
+
+	* Source/NSImage.m (-initWithCoder:): Adopt to coding standard.
+	* Source/NSScreen.m (-description): Simplify code.
+	* Source/NSWindow.m (-screen): Only recompute the screen if the
+	frame isn't fully covered by the current screen.
+	* Headers/AppKit/NSFontPanel.h: Import NSTextField to have the
+	NSTextFieldDelegate protocol defined.
+	* Headers/AppKit/NSControl.h: remove the three now duplicated
+	methods from NSControlTextEditingDelegate.
+
+2012-08-14  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* Source/NSImage.m (-initWithCoder:): Fix bug in last commit.
+	* Source/NSWindow.m (-
+2012-06-28  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* ColorPickers/GSNamedColorPicker.m
+	  GSNamedColorPicker needs to conform to NSTtextFieldDelegate
+	* ColorPickers/GSStandardColorPicker.h
+	  GSStandardCSColorPicker needs to conform to NSTextFieldDelegate
+
+2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	* Source/NSWindow.m - Fix [NSWindow screen] method according
+	  to documented behavior (return screen that window show up
+	  the most or nil).  Fix [NSWindow setFrameFromString] to account for
+	  possible nil screen on input frame and throw window on main screen
+	  in this case.  This is to fix an issue with windows not properly
+	  showing up when moved to another monitor during multi-monitor
+	  usage and then the extra monitor(s) are removed.
+	* Source/NSScreen.m - Added -description method for more information.
+
+2012-06-27  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+	*** NSOpenSavePanelDelegate ***
+	* Headers/AppKit/NSSavePanel.h - Added NSOpenSavePanelDelegate
+	  protocol definition
+	* Source/NSSavePanel.m - Qualify delegate method(s) with
+	  id<NSOpenSavePanelDelegate>
+
+	*** NSControlTextEditingDelegate ***
+	* Headers/AppKit/NSControl.h - Added NSControlTextEditingDelegate
+	  protocol definition
+	* Headers/AppKit/NSTextField.h - Added NSTextFieldDelegate
+	  protocol definition
+	* Source/NSTextField.m - Qualify delegate method(s) with
+	  id<NSTextFieldDelegate>
+	* Headers/AppKit/NSFontPanel.h - NSFontPanel assigns itself as a
+	  delegate to a NSTextField object and must declare that it
+	  conforms to NSTextFieldDelegate protocol. Added a forward
+	  declaration for NSTextFieldDelegate and added NSTextFieldDelegate
+	  on class interface definition.
+
 2012-08-10  Richard Frith-Macdonald <rfm@gnu.org>
 
         * Source/NSColorList.m:

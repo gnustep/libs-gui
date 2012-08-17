@@ -164,6 +164,7 @@ static GSWindowAnimationDelegate *animationDelegate;
 
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
+- (NSScreen *) _screenForFrame: (NSRect)frame;
 @end
 
 @implementation NSWindow (GNUstepPrivate)
@@ -378,11 +379,40 @@ has blocked and waited for events.
 {
   return _wv;
 }
- 
+
+/* Support method to properly implement the 'screen' method for NSWindow.
+   According to documentation the 'screen' method should return the screen
+   that the window "show up the most or nil".  This method supports the 'screen'
+   method and internal requests for the correct 'screen' based on the
+   supplied frame request.
+*/
+- (NSScreen *) _screenForFrame: (NSRect)frame
+{
+  NSInteger  largest   = 0;
+  NSArray   *screens   = [NSScreen screens];
+  NSInteger  index     = 0;
+  NSScreen  *theScreen = nil;
+
+  for (index = 0; index < [screens count]; ++index)
+    {
+      NSScreen  *screen = [screens objectAtIndex: index];
+      NSRect     sframe = [screen frame];
+      NSRect     iframe = NSIntersectionRect(frame, sframe);
+      NSInteger  isize  = NSWidth(iframe) * NSHeight(iframe);
+      if (isize > largest)
+        {
+          largest   = isize;
+          theScreen = screen;
+        }
+    }
+  NSDebugLLog(@"NSWindow", @"%s: frame: %@ screen: %@ size: %ld\n", __PRETTY_FUNCTION__,
+              NSStringFromRect(frame), theScreen, (long)largest);
+
+  return theScreen;
+}
+
 @end
 
-
-
 
 @interface NSMiniWindow : NSWindow
 @end
@@ -1073,9 +1103,9 @@ many times.
   if (style == NSWindows95InterfaceStyle)
     {
       if([self canBecomeMainWindow])
-	{
-	  [self setMenu: [NSApp mainMenu]];
-	}
+        {
+          [self setMenu: [NSApp mainMenu]];
+        }
     }
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
@@ -2553,6 +2583,18 @@ many times.
 /** Returns the screen the window is on. */
 - (NSScreen *) screen
 {
+  // Only recompute the screen if the current screen
+  // doesn't contain the whole window.
+  // FIXME: Containing half the window would be enough
+  if (_screen != nil)
+    {
+      NSRect sframe = [_screen frame];
+      if (NSContainsRect(sframe, _frame))
+        {
+          return _screen;
+        }
+    }
+  ASSIGN(_screen, [self _screenForFrame: _frame]);
   return _screen;
 }
 
@@ -4603,6 +4645,7 @@ current key view.<br />
   NSRect sRect;
   NSRect fRect;
   int value;
+  NSScreen *screen;
 
   /*
    * Scan in the window frame (flipped coordinate system).
@@ -4638,11 +4681,13 @@ current key view.<br />
   /*
    * Check that the window will come up on screen
    */
+#if 0 // Not valid since screen frame x/y values can be negative...
   if (fRect.origin.x + fRect.size.width < 0)
   {
     NSLog(@"Bad screen frame  - window is off screen");  
-	return;
+    return;
   }
+#endif
 
   // if toolbar is showing, adjust saved frame to add the toolbar back in
   if ([_toolbar isVisible])
@@ -4694,8 +4739,19 @@ current key view.<br />
    * The screen rectangle gives the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
-  nRect = [[self screen] visibleFrame];
-  
+  screen = [self _screenForFrame: fRect];
+
+  // Check whether a portion is showing somewhere...
+  if (screen == nil)
+    {
+      // If the window doesn't show up on any screen then we need
+      // to move it so it can be seen and assign it to the main
+      // screen...
+      screen = [NSScreen mainScreen];
+      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
+    }
+  nRect = [screen visibleFrame];
+
   /*
    * If the new screen drawable area has moved relative to the one in
    * which the window was saved, adjust the window position accordingly.
@@ -4725,9 +4781,9 @@ current key view.<br />
        * If height of the window goes above the screen height, then adjust the window down.
        */
       if ((fRect.size.height + fRect.origin.y) > nRect.size.height)
-	{
-	  fRect.origin.y = nRect.size.height - fRect.size.height; 
-	}
+      {
+        fRect.origin.y = nRect.size.height - fRect.size.height; 
+      }
     }
 
   // FIXME: Is this check needed?
@@ -4744,6 +4800,9 @@ current key view.<br />
                                   toSize: fRect.size];
         }
     }
+
+  // Make sure we are using the new screen we are applying to...
+  ASSIGN(_screen, screen);
 
   /*
    * Set frame.
@@ -4781,6 +4840,7 @@ current key view.<br />
 {
   NSRect fRect;
   NSRect sRect;
+  NSString *autosaveString;
 
   fRect = _frame;
 
@@ -4804,12 +4864,15 @@ current key view.<br />
    * the window could be placed (ie a rectangle excluding the dock).
    */
   sRect = [[self screen] visibleFrame];
+  autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
+                               (int)fRect.origin.x, (int)fRect.origin.y,
+                               (int)fRect.size.width, (int)fRect.size.height,
+                               (int)sRect.origin.x, (int)sRect.origin.y,
+                               (int)sRect.size.width, (int)sRect.size.height];
+  NSDebugLLog(@"NSWindow", @"%s:autosaveName: %@ frame string: %@", __PRETTY_FUNCTION__,
+              _autosaveName, autosaveString);
 
-  return [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
-    (int)fRect.origin.x, (int)fRect.origin.y,
-    (int)fRect.size.width, (int)fRect.size.height,
-    (int)sRect.origin.x, (int)sRect.origin.y,
-    (int)sRect.size.width, (int)sRect.size.height];
+  return autosaveString;
 }
 
 /*

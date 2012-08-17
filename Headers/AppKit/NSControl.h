@@ -200,7 +200,13 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 //
 // Methods Implemented by the Delegate
 //
-@interface NSObject (NSControlDelegate)
+@protocol NSControlTextEditingDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
+@interface NSObject (NSControlTextEditingDelegate)
+#endif
 - (BOOL) control: (NSControl *)control  isValidObject:(id)object;
 
 - (BOOL) control: (NSControl *)control
@@ -208,12 +214,6 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 
 - (BOOL) control: (NSControl *)control
   textShouldEndEditing: (NSText *)fieldEditor;
-
-- (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
-
-- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
-
-- (void) controlTextDidChange: (NSNotification *)aNotification;
 
 - (BOOL) control: (NSControl *)control 
   didFailToFormatString: (NSString *)string 
@@ -237,5 +237,10 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 
 @end
 
+@interface NSObject (NSControlDelegate)
+- (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
+- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
+- (void) controlTextDidChange: (NSNotification *)aNotification;
+@end
 
 #endif // _GNUstep_H_NSControl

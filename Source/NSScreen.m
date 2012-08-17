@@ -258,6 +258,14 @@ static NSMutableArray *screenArray = nil;
   return _frame;
 }
 
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"%@ number: %ld frame: %@", 
+                   [super description], (long)_screenNumber,
+                   NSStringFromRect(_frame)];
+}
+
+
 /**
  * <p>
  * This method generates a dictionary containing information

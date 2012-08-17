@@ -40,6 +40,9 @@
 @class NSText;
 @class NSCursor;
 
+@protocol NSTextFieldDelegate <NSControlTextEditingDelegate>
+@end
+
 @interface NSTextField : NSControl
 {
   // Attributes
@@ -72,8 +75,8 @@
 //
 // Assigning a Delegate 
 //
-- (void)setDelegate:(id)anObject;
-- (id)delegate;
+- (void)setDelegate:(id<NSTextFieldDelegate>)anObject;
+- (id<NSTextFieldDelegate>)delegate;
 
 //
 // Modifying Graphic Attributes 

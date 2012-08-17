@@ -1407,7 +1407,12 @@ selectCellWithString: (NSString*)title
     }
 }
 
-- (void) setDelegate: (id)aDelegate
+- (id<NSOpenSavePanelDelegate>) delegate
+{
+  return [super delegate];
+}
+
+- (void) setDelegate: (id<NSOpenSavePanelDelegate>)aDelegate
 {
   if ([aDelegate respondsToSelector:
 		   @selector(panel:compareFilename:with:caseSensitive:)])
