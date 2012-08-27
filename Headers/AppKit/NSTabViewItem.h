@@ -52,6 +52,7 @@ typedef enum {
   NSView *_first_responder;
   NSTabView *_tabview;
   NSRect _rect; // cached
+  NSString *_toolTip;
 }
 - (id) initWithIdentifier:(id)identifier;
 

@@ -1,3 +1,9 @@
+2012-08-27 11:44-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTabViewItem.h: Add _toolTip ivar.
+	* Source/NSTabViewItem.m: Add setToolTip:/toolTip methods.  These
+	methods were added in 10.6.
+
 2012-08-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	Merged changes from gnustep_testplant_branch branch.

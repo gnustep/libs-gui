@@ -276,4 +276,14 @@
   return _label;
 }
 
+- (void) setToolTip: (NSString *)toolTip
+{
+  ASSIGN(_toolTip,toolTip);
+}
+
+- (NSString *)toolTip
+{
+  return _toolTip;
+}
+
 @end
