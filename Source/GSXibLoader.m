@@ -35,6 +35,8 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSXMLParser.h>
+#import <Foundation/NSXMLDocument.h>
+#import <Foundation/NSXMLElement.h>
 #import	<GNUstepBase/GSMime.h>
 
 #import "AppKit/NSApplication.h"
@@ -571,6 +573,15 @@
   return objectID;
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@, %@, %@, %d>",
+		   [self className],
+		   object,
+		   parent,
+		   objectID];
+}
+
 @end
 
 @implementation IBMutableOrderedSet
@@ -1018,15 +1029,84 @@
 
 @implementation GSXibKeyedUnarchiver
 
+- (NSData *) _preProcessXib: (NSData *)data
+{
+  NSData *result = nil;
+  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
+							options:0
+							  error:NULL];
+  if(document != nil)
+    {
+      NSArray *customClassNodes = [document nodesForXPath:@"//dictionary[@key=\"flattenedProperties\"]/"
+					    @"string[contains(@key,\"CustomClassName\")]"
+						    error:NULL];
+      if([customClassNodes count] > 0)
+	{
+	  NSArray *objectRecords = nil;
+	  NSEnumerator *en = [customClassNodes objectEnumerator];
+	  id node = nil;
+
+	  while((node = [en nextObject]) != nil)
+	    {
+	      NSXMLNode *keyNode = [node attributeForName:@"key"];
+	      NSString *keyValue = [[keyNode stringValue] stringByReplacingOccurrencesOfString:@".CustomClassName"
+										    withString:@""];
+	      NSString *className = [node stringValue];
+	      NSString *objectRecordXpath = nil;
+
+	      objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
+					    @"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
+					    keyValue];
+
+	      objectRecords = [document nodesForXPath:objectRecordXpath
+						error:NULL];
+	      NSString *refId = nil;
+	      if([objectRecords count] > 0)
+		{
+		  id record = nil;
+		  en = [objectRecords objectEnumerator];
+		  while((record = [en nextObject]) != nil)
+		    {
+		      if([[[record attributeForName:@"key"] stringValue] isEqualToString:@"object"])
+			{
+			  NSArray *classNodes = nil;
+			  id classNode = nil;
+			  NSString *refXpath = nil;
+
+			  refId = [[record attributeForName:@"ref"] stringValue];
+			  // NSLog(@"Reference Id = %@",refId);			  
+			  refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
+			  classNodes = [document nodesForXPath:refXpath
+							 error:NULL];
+			  if([classNodes count] > 0)
+			    {
+			      classNode = [classNodes objectAtIndex:0];
+			      // NSLog(@"%@",classNode);
+			      [[classNode attributeForName:@"class"] setStringValue:className];
+			      // NSLog(@"Changed %@",classNode);
+			      result = [document XMLData];
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  return result;
+}
+
 - (id) initForReadingWithData: (NSData*)data
 {
   NSXMLParser *theParser;
+
+  NSData *theData = [self _preProcessXib: data];
 
   objects = [[NSMutableDictionary alloc] init];
   stack = [[NSMutableArray alloc] init];
   decoded = [[NSMutableDictionary alloc] init];
 
-  theParser = [[NSXMLParser alloc] initWithData: data];
+  theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];
       
   NS_DURING
@@ -1051,7 +1131,7 @@
   DESTROY(objects);
   DESTROY(stack);
   DESTROY(decoded);
-  
+
   [super dealloc];
 }
 
@@ -1116,8 +1196,10 @@ didStartElement: (NSString*)elementName
 
 - (id) allocObjectForClassName: (NSString*)classname
 {
-  Class c = [self classForClassName: classname];
+  Class c = nil;
   id delegate = [self delegate];
+
+  c = [self classForClassName: classname];
 
   if (c == nil)
     {

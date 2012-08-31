@@ -22,6 +22,12 @@
 @interface IBAccessibilityAttribute : NSObject <NSCoding>
 @end
 
+@interface IBNSLayoutConstraint : NSObject <NSCoding>
+@end
+
+@interface IBLayoutConstant : NSObject <NSCoding>
+@end
+
 @implementation IBUserDefinedRuntimeAttributesPlaceholder
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -91,4 +97,28 @@
   return self;
 }
 
+@end
+
+@implementation IBNSLayoutConstraint
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // Do nothing...
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  return self;
+}
+@end
+
+@implementation IBLayoutConstant
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // Do nothing...
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  return self;
+}
 @end

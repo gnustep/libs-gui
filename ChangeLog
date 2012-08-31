@@ -1,3 +1,10 @@
+2012-08-31 12:09-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibLoader.m: Add _preProcessXib: method to perform
+	custom class substitutions when loading a XIB file.
+	* Source/GSXibLoading.m: Add stub classes for IBNSLayoutConstraint
+	and IBNSLayoutConstant so that these can now be loaded.
+
 2012-08-27 11:44-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTabViewItem.h: Add _toolTip ivar.
