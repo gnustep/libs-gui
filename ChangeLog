@@ -1,3 +1,7 @@
+2012-08-31 16:33-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibLoader.m: Cover case where there are no changes.
+
 2012-08-31 15:01-EDT Gregory John Casamento <greg.casamento@gmail.com>
 	Original changes by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 	merged from gnustep_testplant_branch.

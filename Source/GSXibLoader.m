@@ -1031,7 +1031,7 @@
 
 - (NSData *) _preProcessXib: (NSData *)data
 {
-  NSData *result = nil;
+  NSData *result = data;
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
 							options:0
 							  error:NULL];
