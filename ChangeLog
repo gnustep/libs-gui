@@ -1,3 +1,8 @@
+2012-08-31 12:57-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibLoader.m
+	* Source/GSXibLoading.m: Merge from trunk of new XIB fixes.
+
 2012-08-08  Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 
 	* Source/NSFont.m
