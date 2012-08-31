@@ -165,6 +165,9 @@ enum {
  * Setting Directory and File Type
  */
 - (void) setDirectory: (NSString *)path;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) setDirectoryURL: (NSURL*)url;
+#endif
 - (NSString *) requiredFileType;
 - (void) setRequiredFileType: (NSString *)fileType;
 

@@ -936,7 +936,7 @@ selectCellWithString: (NSString*)title
 {
   NSString *standardizedPath = [path stringByStandardizingPath];
   BOOL	   isDir;
-  
+
   if (standardizedPath 
       && [_fm fileExistsAtPath: standardizedPath 
 	      isDirectory: &isDir] 
@@ -945,6 +945,14 @@ selectCellWithString: (NSString*)title
       ASSIGN (_directory, standardizedPath);
       setPath(_browser, _directory);
     }
+}
+/** <p>Sets the current path name in the Save panel's browser. 
+    The path argument must be an absolute path name.</p>
+    <p>See Also: -directory</p>
+ */
+- (void) setDirectoryURL: (NSURL*)url
+{
+  [self setDirectory: [url path]];
 }
 
 /**<p> Specifies the type, a file name extension to be appended to 
@@ -1096,7 +1104,7 @@ selectCellWithString: (NSString*)title
  */
 - (NSInteger) runModal
 {
-  return [self runModalForDirectory: nil file: @""];
+  return [self runModalForDirectory: [self directory] file: [self filename]];
 }
 
 /**<p> Initializes the panel to the directory specified by path and,
@@ -1336,10 +1344,7 @@ selectCellWithString: (NSString*)title
 
       if (result == NSAlertDefaultReturn)
 	{
-	  if ([_fm createDirectoryAtPath: filename
-             withIntermediateDirectories: YES
-                              attributes: nil
-                                   error: NULL] == NO)
+	  if ([_fm createDirectoryAtPath: filename attributes: nil] == NO)
 	    {
 	      NSRunAlertPanel(_(@"Save"),
 		_(@"The directory '%@' could not be created."),

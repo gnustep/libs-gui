@@ -1,3 +1,11 @@
+2012-08-31 15:01-EDT Gregory John Casamento <greg.casamento@gmail.com>
+	Original changes by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+	merged from gnustep_testplant_branch.
+
+	* Headers/AppKit/NSSavePanel.h
+	* Source/NSSavePanel.m: Added implementation for directory method
+	from 10.6.
+
 2012-08-31 12:09-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Add _preProcessXib: method to perform
