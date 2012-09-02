@@ -1048,7 +1048,7 @@
 
 	  while((node = [en nextObject]) != nil)
 	    {
-	      NSXMLNode *keyNode = [node attributeForName:@"key"];
+	      id keyNode = [node attributeForKey:@"key"];
 	      NSString *keyValue = [[keyNode stringValue] stringByReplacingOccurrencesOfString:@".CustomClassName"
 										    withString:@""];
 	      NSString *className = [node stringValue];
