@@ -1064,8 +1064,8 @@
 	      if([objectRecords count] > 0)
 		{
 		  id record = nil;
-		  en = [objectRecords objectEnumerator];
-		  while((record = [en nextObject]) != nil)
+		  NSEnumerator *oen = [objectRecords objectEnumerator];
+		  while((record = [oen nextObject]) != nil)
 		    {
 		      if([[[record attributeForName:@"key"] stringValue] isEqualToString:@"object"])
 			{
@@ -1084,13 +1084,13 @@
 			      // NSLog(@"%@",classNode);
 			      [[classNode attributeForName:@"class"] setStringValue:className];
 			      // NSLog(@"Changed %@",classNode);
-			      result = [document XMLData];
 			    }
 			}
 		    }
 		}
 	    }
 	}
+      result = [document XMLData];
     }
 
   return result;
