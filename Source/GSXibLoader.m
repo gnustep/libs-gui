@@ -1048,7 +1048,7 @@
 
 	  while((node = [en nextObject]) != nil)
 	    {
-	      id keyNode = [node attributeForKey:@"key"];
+	      id keyNode = [node attributeForName:@"key"];
 	      NSString *keyValue = [[keyNode stringValue] stringByReplacingOccurrencesOfString:@".CustomClassName"
 										    withString:@""];
 	      NSString *className = [node stringValue];
