@@ -249,6 +249,18 @@
 
   return self;
 }
+
+- (NSString *)toolTip
+{
+  return _toolTip;
+}
+
+- (void) setToolTip:(NSString *)newToolTip
+{
+  // FIXME: Need to find out how to link this to display
+  ASSIGN(_toolTip, newToolTip);
+}
+
 @end
 
 @implementation NSTabViewItem (GNUstep)
