@@ -1,3 +1,8 @@
+2012-09-02  German A. Arias  <german@xelalug.org>
+
+	* Source/GSToolTips.m (_timedOut:): Don't display the tooltip
+	window (GSTTPanel) if the tooltip is nil or is an empty string.
+
 2012-09-02 13:56-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Correct issue with reuse of enumerator.

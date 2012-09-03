@@ -573,9 +573,10 @@ static BOOL		restoreMouseMoved;
   // but need the userinfo object to remain valid for the
   // remainder of this method.
   toolTipString = [[[aTimer userInfo] retain] autorelease];
-  if (nil == toolTipString)
+  if ( (nil == toolTipString) ||
+       ([toolTipString isEqualToString: @""]) )
     {
-      toolTipString = @"";
+      return;
     }
 
   if (timer != nil)
