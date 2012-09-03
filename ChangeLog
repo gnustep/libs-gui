@@ -1,3 +1,9 @@
+2012-09-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (_screenForFrame:): Fix bug where this method
+	was returning nil when the frame had zero width or height. This
+	could destroy a valid screen attribute of a window.
+
 2012-09-02  German A. Arias  <german@xelalug.org>
 
 	* Source/GSToolTips.m (_timedOut:): Don't display the tooltip
