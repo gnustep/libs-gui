@@ -1,3 +1,11 @@
+2012-09-03 21:37-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibLoader.m: Changes by Marcian Lyttwyn to correct
+	issue with when a xib contains an array instead of a dictionary in
+	flattenedProperties.  Changes by myself to implement custom class
+	cell support so that the cell class changes along with the
+	control class when unarchiving.
+
 2012-09-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (_screenForFrame:): Fix bug where this method
@@ -9,6 +17,7 @@
 	* Source/GSToolTips.m (_timedOut:): Don't display the tooltip
 	window (GSTTPanel) if the tooltip is nil or is an empty string.
 
+>>>>>>> .r35509
 2012-09-02 13:56-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Correct issue with reuse of enumerator.
