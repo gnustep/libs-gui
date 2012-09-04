@@ -63,6 +63,7 @@
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -116,6 +117,9 @@ static NSColor *dtxtCol;
                name: NSSystemColorsDidChangeNotification
              object: nil];
       [self _systemColorsChanged: nil];
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+      [self exposeBinding: NSTitleBinding];
+#endif
     }
 }
 
