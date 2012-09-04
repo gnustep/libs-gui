@@ -1128,11 +1128,36 @@
                               refId = [[record attributeForName:@"ref"] stringValue];
                               refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
                               classNodes = [document nodesForXPath:refXpath
-                                     error:NULL];
+							     error:NULL];
                               if([classNodes count] > 0)
                                 {
-                                  classNode = [classNodes objectAtIndex:0];
-                                  [[classNode attributeForName:@"class"] setStringValue:className];
+				  id classAttr = nil;
+				  Class cls = NSClassFromString(className);
+
+				  classNode = [classNodes objectAtIndex:0];
+				  classAttr = [classNode attributeForName:@"class"];
+				  [classAttr setStringValue:className];
+				  
+				  if(cls != nil)
+				    {
+				      if([cls respondsToSelector:@selector(cellClass)])
+					{
+					  NSArray *cellNodes = nil;
+					  id cellNode = nil;
+					  id cellClass = [cls cellClass];
+					  NSString *cellXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
+					  cellNodes = [document nodesForXPath:cellXpath
+									error:NULL];
+					  if([cellNodes count] > 0) 
+					    {
+					      NSString *cellClassString = NSStringFromClass(cellClass);
+					      id cellAttr = nil;					      
+					      cellNode = [cellNodes objectAtIndex:0];
+					      cellAttr = [cellNode attributeForName:@"class"];
+					      [cellAttr setStringValue:cellClassString];
+					    }
+					}
+				    }
                                 }
                             }
                         }
