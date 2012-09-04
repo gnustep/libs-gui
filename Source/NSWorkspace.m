@@ -246,7 +246,15 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     {
       [file writeToFile: path atomically: YES];
     }
-  [lock unlock];
+  NS_DURING
+    {
+      [lock unlock];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"NSWorkspace lock: %@", localException);
+    }
+  NS_ENDHANDLER
 
   if (active == YES)
     {
