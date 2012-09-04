@@ -108,6 +108,11 @@ typedef enum _NSTableViewColumnAutoresizingStyle
   NSArray           *_sortDescriptors;
 
   /*
+   * Ivars Acting as Control... 
+   */
+  BOOL   _isValidating;
+
+  /*
    * Ivars Acting as Cache 
    */
   int    _numberOfRows;
