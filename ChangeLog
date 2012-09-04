@@ -1,3 +1,9 @@
+2012-09-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-ok:): Restore ability to create nested
+	directories, which was removed without reason during the last
+	change of NSSavePanel.
+
 2012-09-03 22:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Remove test code.
@@ -21,7 +27,6 @@
 	* Source/GSToolTips.m (_timedOut:): Don't display the tooltip
 	window (GSTTPanel) if the tooltip is nil or is an empty string.
 
->>>>>>> .r35509
 2012-09-02 13:56-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Correct issue with reuse of enumerator.
