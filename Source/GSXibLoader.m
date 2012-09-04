@@ -1058,8 +1058,10 @@
                 {
                   NSString     *key  = [[node attributeForName:@"key"] stringValue];
                   if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
-                    [customClassDict setObject:[node stringValue] forKey:key];
-                }
+		    {
+		      [customClassDict setObject:[node stringValue] forKey:key];
+		    }
+		}
             }
         }
       else
@@ -1082,9 +1084,8 @@
                       id key = [[xmlKeys objectAtIndex:index] stringValue];
                       if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
                         {
-                          NSString *obj = [[xmlObjs objectAtIndex:index] stringValue];
-                          if ([obj isEqualToString:@"NSSecureTextField"] == NO) // SKIP FOR NOW!!!
-                            [customClassDict setObject:[[xmlObjs objectAtIndex:index] stringValue] forKey:key];
+                          // NSString *obj = [[xmlObjs objectAtIndex:index] stringValue];
+			  [customClassDict setObject:[[xmlObjs objectAtIndex:index] stringValue] forKey:key];
                         }
                     }
                 }

@@ -1,3 +1,7 @@
+2012-09-03 22:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibLoader.m: Remove test code.
+
 2012-09-03 21:37-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXibLoader.m: Changes by Marcian Lyttwyn to correct
