@@ -1104,7 +1104,7 @@ selectCellWithString: (NSString*)title
  */
 - (NSInteger) runModal
 {
-  return [self runModalForDirectory: [self directory] file: [self filename]];
+  return [self runModalForDirectory: [self directory] file: @""];
 }
 
 /**<p> Initializes the panel to the directory specified by path and,
