@@ -781,8 +781,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (aView == nil)
     {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"Adding a nil subview"];
+      return;
     }
   if ([self isDescendantOf: aView])
     {
