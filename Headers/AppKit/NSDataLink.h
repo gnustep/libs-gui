@@ -92,6 +92,7 @@ APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
     unsigned   isDirty:1;
     unsigned   willOpenSource:1;
     unsigned   willUpdate:1;
+    unsigned   isMarker:1;
   } _flags;
 }
 
