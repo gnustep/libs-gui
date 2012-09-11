@@ -1,3 +1,17 @@
+2012-09-11 00:08-EDT Gregory John Casamento <greg.casamento@gmail.com>
+	Merged from the TestPlant brach.  Changes by Marcian Llytwyn
+
+	* Headers/AppKit/NSTableView.h: Add _isValidating
+	* Source/NSCell.m (+initialize): Expose title binding.
+	* Source/NSOpenPanel.m (-runModal): Use _directory if it is set.
+	* Source/NSTableView.m (-validateEditing): Check _isValidating to
+	prevent recursive calls into validateEditing.
+	* Source/NSTabView.m (-initWithCoder:): Set _selected_item to
+	NSNotFound.
+	* Source/NSView.m (-addSubview:): Do not throw an exception when
+	adding a nil subview, just ignore it.  This matches behavior on
+	Cocoa.
+
 2012-09-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSavePanel.m (-ok:): Restore ability to create nested

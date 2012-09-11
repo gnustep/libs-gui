@@ -2007,6 +2007,7 @@ static void computeNewSelection
 
 - (void) _initDefaults
 {
+  _isValidating     = NO;
   _drawsGrid        = YES;
   _rowHeight        = 16.0;
   _intercellSpacing = NSMakeSize (5.0, 2.0);
@@ -3207,13 +3208,16 @@ byExtendingSelection: (BOOL)flag
 
 - (void) validateEditing
 {
-  if (_textObject)
+  if (_textObject && (_isValidating == NO))
     {
       NSFormatter *formatter;
       NSString *string;
       id newObjectValue = nil;
       BOOL validatedOK = YES;
 
+      // Avoid potential recursive sequences...
+      _isValidating = YES;
+      
       formatter = [_editedCell formatter];
       string = AUTORELEASE([[_textObject text] copy]);
 
@@ -3272,6 +3276,9 @@ byExtendingSelection: (BOOL)flag
                     row: _editedRow];
             }
         }
+
+      // Avoid potential recursive sequences...
+      _isValidating = NO;
     }
 }
 

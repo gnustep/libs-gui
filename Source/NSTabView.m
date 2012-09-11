@@ -558,6 +558,8 @@
 {
   self = [super initWithCoder: aDecoder];
 
+  _selected_item = NSNotFound;
+
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSAllowTruncatedLabels"])

@@ -395,7 +395,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 */
 - (NSInteger) runModalForTypes: (NSArray *)fileTypes
 {
-  return [self runModalForDirectory: nil
+  return [self runModalForDirectory: [self directory]
 			       file: @""
 			      types: fileTypes];
 }

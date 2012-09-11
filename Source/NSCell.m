@@ -63,6 +63,8 @@
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -116,6 +118,9 @@ static NSColor *dtxtCol;
                name: NSSystemColorsDidChangeNotification
              object: nil];
       [self _systemColorsChanged: nil];
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+      [self exposeBinding: NSTitleBinding];
+#endif
     }
 }
 
@@ -216,6 +221,8 @@ static NSColor *dtxtCol;
 
 - (void) dealloc
 {
+  // Remove all key value bindings for this object.
+  [GSKeyValueBinding unbindAllForObject: self];
   TEST_RELEASE (_contents);
   TEST_RELEASE (_cell_image);
   TEST_RELEASE (_font);
