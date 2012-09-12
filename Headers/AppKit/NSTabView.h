@@ -54,7 +54,6 @@ typedef enum {
   BOOL _draws_background;
   BOOL _truncated_label;
   id _delegate;
-  NSUInteger _selected_item;
 }
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem
