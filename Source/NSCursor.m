@@ -503,6 +503,20 @@ backgroundColorHint:(NSColor *)bg
     {
       [GSCurrentServer() setcursor: _cid];
     }
+  else
+    {
+      /*
+       * No image? This is odd, so we set an standard
+       * cursor image (GSArrowCursor).
+       */
+      void *c = NULL;
+      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+      if (c != NULL)
+	{
+	  [self _setCid: c];
+	  [GSCurrentServer() setcursor: _cid];
+	}
+    }
 }
 
 /** <p>Sets whether if the cursor is set on -mouseEntered:.
