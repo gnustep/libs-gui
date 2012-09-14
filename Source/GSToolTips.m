@@ -547,6 +547,7 @@ static BOOL		restoreMouseMoved;
     }
   if (window != nil)
     {
+      [window setFrame: NSZeroRect display: NO];
       [window orderOut:self];
     }
   if (restoreMouseMoved == YES)

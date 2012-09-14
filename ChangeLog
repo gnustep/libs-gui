@@ -1,5 +1,14 @@
 2012-09-13  German A. Arias  <german@xelalug.org>
 
+	* Source/GSToolTips.m (-_endDisplay): Set NSZeroRect as frame before
+	order out the tooltip window. This prevents ugly rectangles in
+	some desktops.
+	* Source/GSDragView.m (-_clearupWindow): Set NSZeroRect as frame before
+	order out the GSRawWindow. This prevents ugly rectangles in
+	some desktops.
+
+2012-09-13  German A. Arias  <german@xelalug.org>
+
 	* Source/NSCursor.m (-set): Set an standard cursor image (GSArrowCursor)
 	if there is no image available.
 
