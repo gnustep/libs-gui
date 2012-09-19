@@ -99,6 +99,10 @@ typedef enum _NSBoxType
 - (NSBoxType)boxType;
 - (void)setBoxType:(NSBoxType)aType;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSColor*)fillColor;
+- (void)setFillColor:(NSColor*)newFillColor;
+#endif
 
 //
 // Setting and Placing the Content View 

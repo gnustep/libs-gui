@@ -149,6 +149,16 @@
     }
 }
 
+- (NSColor*) fillColor
+{
+  return [_window backgroundColor];
+}
+
+- (void) setFillColor:(NSColor*)fillColor
+{
+  [_window setBackgroundColor: fillColor];
+}
+
 /**<p>Sets the title cell to <var>aString</var>, resizes the content
    view frame if needed and marks self for display.</p>
    <p>Warning: This method does not implement the Cocoa behaviour</p>
