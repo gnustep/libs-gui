@@ -1,5 +1,12 @@
 2012-09-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSCursor.m (+initialize, +pop, -push, -set): Fix memory
+	management for cursors. In particular prevent the current cursor
+	from being deallocated when client code releases the last
+	reference to it.
+
+2012-09-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSApplication.m (-targetForAction:, _targetForAction:window:,
 	_targetForAction:keyWindow:mainWindow:): Make sure actions can be
 	sent to the dialog window of a modal session even if another panel

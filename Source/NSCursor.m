@@ -63,10 +63,10 @@ static NSMutableDictionary *cursorDict = nil;
 
       // Initialize class variables
       NSCursor_class = self;
-      gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
+      gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 1];
       gnustep_gui_hidden_until_move = NO;
       cursorDict = [NSMutableDictionary new]; 
-      [[self arrowCursor] push];
+      [[self arrowCursor] set];
     }
 }
 
@@ -109,13 +109,14 @@ static NSMutableDictionary *cursorDict = nil;
   /*
    * The object we pop is the current cursor
    */
-  if ([gnustep_gui_cursor_stack count] > 1)
+  if ([gnustep_gui_cursor_stack count] > 0)
     {
+      NSCursor *c = RETAIN([gnustep_gui_cursor_stack lastObject]);
       [gnustep_gui_cursor_stack removeLastObject];
-      gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
       NSDebugLLog(@"NSCursor", @"Cursor pop");
-      [gnustep_gui_current_cursor set];
+      [c set];
+      RELEASE(c);
     }
 }
 
@@ -489,7 +490,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) push
 {
-  [gnustep_gui_cursor_stack addObject: self];
+  [gnustep_gui_cursor_stack addObject: gnustep_gui_current_cursor];
   [self set];
   NSDebugLLog(@"NSCursor", @"Cursor push %p", _cid);
 }
@@ -498,7 +499,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) set
 {
-  gnustep_gui_current_cursor = self;
+  ASSIGN(gnustep_gui_current_cursor, self);
   if (_cid)
     {
       [GSCurrentServer() setcursor: _cid];
