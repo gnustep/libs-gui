@@ -2257,13 +2257,13 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
          modal dialog panel work.
        */
       NSWindow *toolbarWindow =
-          [[[(NSToolbarItem *)sender toolbar] _toolbarView] window];
+	[[[(NSToolbarItem *)sender toolbar] _toolbarView] window];
       NSWindow *keyWindow = [self keyWindow];
       if (keyWindow != toolbarWindow)
         keyWindow = nil;
       return [self _targetForAction: theAction
-                   keyWindow: keyWindow
-                   mainWindow: toolbarWindow];
+			  keyWindow: keyWindow
+			 mainWindow: toolbarWindow];
     }
   else
     {
@@ -2282,9 +2282,18 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  */
 - (id) targetForAction: (SEL)aSelector
 {
+  /* During a modal session actions must not be sent to the main window of
+   * the application, but rather to the dialog window of the modal session.
+   * Note that the modal session window is not necessarily the key window,
+   * as a panel with worksWhenModal = YES, e.g., the font panel, can still
+   * become key window during a modal session.
+   */
+  NSWindow *mainWindow = [self mainWindow];
+  if (_session != 0)
+    mainWindow = _session->window;
   return [self _targetForAction: aSelector
-	       keyWindow: [self keyWindow]
-	       mainWindow: [self mainWindow]];
+		      keyWindow: [self keyWindow]
+		     mainWindow: mainWindow];
 }
 
 
@@ -3859,74 +3868,77 @@ struct _DelegateWrapper
 }
 
 - (id) _targetForAction: (SEL)aSelector
+	         window: (NSWindow *)window
+{
+  id resp, delegate;
+  NSDocumentController *sdc;
+  
+  if (window == nil)
+    {
+      return nil;
+    }
+
+  /* traverse the responder chain including the window's delegate */
+  resp = [window firstResponder];
+  while (resp != nil && resp != self)
+    {
+      if ([resp respondsToSelector: aSelector])
+	{
+	  return resp;
+	}
+      if (resp == window)
+	{
+	  delegate = [window delegate];
+	  if ([delegate respondsToSelector: aSelector])
+	    {
+	      return delegate;
+	    }
+	}
+      resp = [resp nextResponder];
+    }
+
+  /* in a document based app try the window's document */
+  sdc = [NSDocumentController sharedDocumentController];
+  if ([[sdc documentClassNames] count] > 0)
+    {
+      resp = [sdc documentForWindow: window];
+
+      if (resp != nil && [resp respondsToSelector: aSelector])
+	{
+	  return resp;
+	}
+    }
+
+  /* nothing found */
+  return nil;
+}
+
+- (id) _targetForAction: (SEL)aSelector
 	      keyWindow: (NSWindow *)keyWindow
 	     mainWindow: (NSWindow *)mainWindow
 {
-  NSDocumentController	*sdc;
-  id resp, delegate;
-  NSWindow *window;
+  NSDocumentController *sdc;
+  id resp;
 
   if (aSelector == NULL)
-      return nil;
+    return nil;
 
-  /* if we have a key window, start looking in its responder chain, ... */
-  if (keyWindow != nil)
+  /* start looking in the key window's responder chain */
+  resp = [self _targetForAction: aSelector window: keyWindow];
+  if (resp != nil)
     {
-      window = keyWindow;
-    }
-  /* ... otherwise in the main window's responder chain */
-  else
-    {
-      if (_session != 0)
-	return nil;
-      window = mainWindow;
+      return resp;
     }
 
-  if (window != nil)
+  /* next check the main window's responder chain (provided it is not
+   * the key window) */
+  if (mainWindow != keyWindow)
     {
-      NSDocumentController	*sdc;
-
-      /* traverse the responder chain including the window's delegate */
-      resp = [window firstResponder];
-      while (resp != nil && resp != self)
-        {
-	  if ([resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
-	  if (resp == window)
-	    {
-	      delegate = [window delegate];
-	      if ([delegate respondsToSelector: aSelector])
-	        {
-		  return delegate;
-		}
-	    }
-	  resp = [resp nextResponder];
+      resp = [self _targetForAction: aSelector window: mainWindow];
+      if (resp != nil)
+	{
+	  return resp;
 	}
-
-      /* in a document based app try the window's document */
-      sdc = [NSDocumentController sharedDocumentController];
-      if ([[sdc documentClassNames] count] > 0)
-        {
-	  resp = [sdc documentForWindow: window];
-
-	  if (resp != nil && [resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
-	}
-    }
-
-  /* if we've found no target in the key window start over without key window */
-  if (keyWindow != nil)
-    {
-      if (_session != 0)
-	return nil;
-      if (mainWindow != nil && mainWindow != keyWindow)
-	return [self _targetForAction: aSelector
-		     keyWindow: nil
-		     mainWindow: mainWindow];
     }
 
   /* try the shared application imstance and its delegate */
@@ -3940,26 +3952,25 @@ struct _DelegateWrapper
       return _delegate;
     }
 
-  /* 
-   * Try the NSApplication's responder list to determine if any of them 
+  /* Try the NSApplication's responder list to determine if any of them 
    * respond to the selector.
    */
   resp = [self nextResponder];
-  while(resp != nil)
+  while (resp != nil)
     {
-      if([resp respondsToSelector: aSelector])
+      if ([resp respondsToSelector: aSelector])
 	{
 	  return resp;
 	}
       resp = [resp nextResponder];
     }
 
-  /* as a last resort in a document based app, try the document controller */
+  /* as last resort in a document based app, try the document controller */
   sdc = [NSDocumentController sharedDocumentController];
   if ([[sdc documentClassNames] count] > 0
     && [sdc respondsToSelector: aSelector])
     {
-      return [NSDocumentController sharedDocumentController];
+      return sdc;
     }
 
   /* give up */
