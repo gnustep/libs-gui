@@ -42,6 +42,7 @@
 @class NSNotification;
 @class NSString;
 @class GSLayoutManager;
+@class NSFont;
 
 /*
  * When edit:range:changeInLength: is called, it takes a mask saying
@@ -131,6 +132,12 @@ enum
  * End a set of changes, and calls processEditing.
  */
 - (void) endEditing;
+
+/*
+ * Attributes for string...
+*/
+- (NSFont*) font;
+- (void) setFont: (NSFont*)font;
 
 /*
  * The delegate can use the following methods when it receives a
