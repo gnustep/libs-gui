@@ -141,6 +141,7 @@ PACKAGE_SCOPE
   BOOL _is_rotated_from_base;
   BOOL _is_rotated_or_scaled_from_base;
   BOOL _post_frame_changes;
+  BOOL _posting_frame_changes;
   BOOL _post_bounds_changes;
   BOOL _autoresizes_subviews;
   BOOL _coordinates_valid;

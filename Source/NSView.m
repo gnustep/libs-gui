@@ -1223,10 +1223,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      if (_post_frame_changes)
+      if (_post_frame_changes && (_posting_frame_changes == NO))
         {
+          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
+          _posting_frame_changes = NO;
         }
     }
 }
@@ -1244,10 +1246,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self _setFrameAndClearAutoresizingError: newFrame];
       [self resetCursorRects];
-      if (_post_frame_changes)
+      if (_post_frame_changes && (_posting_frame_changes == NO))
         {
+          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
+          _posting_frame_changes = NO;
         }
     }
 }
@@ -1309,10 +1313,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      if (_post_frame_changes)
+      if (_post_frame_changes && (_posting_frame_changes == NO))
         {
+          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
+          _posting_frame_changes = NO;
         }
     }
 }
