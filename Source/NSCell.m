@@ -1991,6 +1991,14 @@ static NSColor *dtxtCol;
   return nil;
 }
 
+/** Although not documented, Apple XIBs allow specifying a tool tip on an NSCell
+ it's unclear exactly where that tooltip should be set/applied
+ but not responding makes XIBs unloadable */
+- (void) setToolTip: (NSString *) toolTip
+{
+    return nil;
+}
+
 /**<p>This method is used by subclasses to specify the control view.</p>
  */
 - (void) setControlView: (NSView*)view
