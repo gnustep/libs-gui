@@ -1996,7 +1996,7 @@ static NSColor *dtxtCol;
  but not responding makes XIBs unloadable */
 - (void) setToolTip: (NSString *) toolTip
 {
-    return nil;
+    return;
 }
 
 /**<p>This method is used by subclasses to specify the control view.</p>
