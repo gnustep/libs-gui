@@ -1273,12 +1273,25 @@ many times.
     }
 }
 
+static NSString *
+titleWithRepresentedFilename(NSString *representedFilename)
+{
+  return [NSString stringWithFormat: @"%@  --  %@", 
+		   [representedFilename lastPathComponent],
+		   [[representedFilename stringByDeletingLastPathComponent]
+		     stringByAbbreviatingWithTildeInPath]];
+}
+
+- (BOOL) _hasTitleWithRepresentedFilename
+{
+  NSString *aString = titleWithRepresentedFilename (_representedFilename);
+  return [_windowTitle isEqualToString: aString];
+}
+
 - (void) setTitleWithRepresentedFilename: (NSString*)aString
 {
   [self setRepresentedFilename: aString];
-  aString = [NSString stringWithFormat:
-    @"%@  --  %@", [aString lastPathComponent],
-    [aString stringByDeletingLastPathComponent]];
+  aString = titleWithRepresentedFilename(aString);
   if ([_windowTitle isEqual: aString] == NO)
     {
       ASSIGNCOPY(_windowTitle, aString);
@@ -1836,17 +1849,9 @@ many times.
           _f.has_opened = YES;
           if (_f.menu_exclude == NO)
             {
-              BOOL        isFileName;
-              NSString *aString;
-              
-              aString = [NSString stringWithFormat: @"%@  --  %@", 
-		[_representedFilename lastPathComponent],
-		[_representedFilename stringByDeletingLastPathComponent]];
-              isFileName = [_windowTitle isEqual: aString]; 
-
               [NSApp addWindowsItem: self
                      title: _windowTitle
-                     filename: isFileName];
+                     filename: [self _hasTitleWithRepresentedFilename]];
             }
         }
       if ([self isKeyWindow] == YES)
@@ -4556,17 +4561,9 @@ current key view.<br />
         }
       else if (_f.has_opened == YES && flag == NO)
         {
-          BOOL        isFileName;
-          NSString *aString;
-          
-          aString = [NSString stringWithFormat: @"%@  --  %@",
-                            [_representedFilename lastPathComponent],
-                  [_representedFilename stringByDeletingLastPathComponent]];
-          isFileName = [_windowTitle isEqual: aString];
-
           [NSApp addWindowsItem: self
                           title: _windowTitle
-                       filename: isFileName];
+                       filename: [self _hasTitleWithRepresentedFilename]];
         }
     }
 }

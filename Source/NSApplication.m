@@ -383,6 +383,10 @@ struct _NSModalSession {
 - (NSMenu *) _dockMenu;
 @end
 
+@interface NSWindow (TitleWithRepresentedFilename)
+- (BOOL) _hasTitleWithRepresentedFilename;
+@end
+
 @interface NSWindow (ApplicationPrivate)
 - (void) setAttachedSheet: (id) sheet;
 @end
@@ -3141,15 +3145,9 @@ image.</p><p>See Also: -applicationIconImage</p>
 
       if (found == NO)
 	{
-	  NSString	*t = [aWindow title];
-	  NSString	*f = [aWindow representedFilename];
-
-	  f = [NSString stringWithFormat: @"%@  --  %@",
-	  				  [f lastPathComponent],
-					  [f stringByDeletingLastPathComponent]];
 	  [self changeWindowsItem: aWindow
-			    title: t
-			 filename: [t isEqual: f]];
+			    title: [aWindow title]
+			 filename: [aWindow _hasTitleWithRepresentedFilename]];
 	}
     }
 }
@@ -3201,15 +3199,9 @@ image.</p><p>See Also: -applicationIconImage</p>
 	if (([win isExcludedFromWindowsMenu] == NO)
 	    && ([win isVisible] || [win isMiniaturized]))
 	  {
-	    NSString	*t = [win title];
-	    NSString	*f = [win representedFilename];
-
-	    f = [NSString stringWithFormat: @"%@  --  %@",
-                                         [f lastPathComponent],
-                                         [f stringByDeletingLastPathComponent]];
 	    [self changeWindowsItem: win
-		  title: t
-		  filename: [t isEqual: f]];
+			      title: [win title]
+			   filename: [win _hasTitleWithRepresentedFilename]];
 	  }
       }
   }
@@ -3867,8 +3859,7 @@ struct _DelegateWrapper
   [_listener application: self openFile: filePath];
 }
 
-- (id) _targetForAction: (SEL)aSelector
-	         window: (NSWindow *)window
+- (id) _targetForAction: (SEL)aSelector window: (NSWindow *)window
 {
   id resp, delegate;
   NSDocumentController *sdc;

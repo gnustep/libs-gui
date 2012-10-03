@@ -1,3 +1,11 @@
+2012-10-03  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (titleWithRepresentedFilename,
+	-_hasTitleWithRepresentedFilename, -setTitleWithRepresentedFilename,
+	-orderWindow:relativeTo:, -setExcludedFromWindowsMenu:):
+	* Source/NSApplication.m (-updateWindowsItem:, -setWindowsMenu:):
+	Abbreviate home directory in window titles.
+
 2012-09-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSCursor.m (+initialize, +pop, -push, -set): Fix memory
