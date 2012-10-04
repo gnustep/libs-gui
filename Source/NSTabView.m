@@ -42,6 +42,12 @@
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
+#import "NSViewPrivate.h"
+
+@interface NSTabViewItem (KeyViewLoop)
+- (void) _setUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView;
+- (NSView *) _lastKeyView;
+@end
 
 @implementation NSTabView
 
@@ -82,6 +88,9 @@
 {
   RELEASE(_items);
   RELEASE(_font);
+  // Reset the _selected attribute to prevent crash when -dealloc calls
+  // -setNextKeyView:
+  _selected = nil;
   [super dealloc];
 }
 
@@ -262,11 +271,23 @@
 
       if (selectedView != nil)
         {
+	  NSView *firstResponder;
+
           [self addSubview: selectedView];
           // FIXME: We should not change this mask
-          [selectedView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+          [selectedView setAutoresizingMask:
+	    NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
-          [_window makeFirstResponder: [_selected initialFirstResponder]];
+	  firstResponder = [_selected initialFirstResponder];
+	  if (firstResponder == nil)
+	    {
+	      firstResponder = [_selected view];
+	      [_selected setInitialFirstResponder: firstResponder];
+	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
+		_original_nextKeyView];
+	    }
+	  [self setNextKeyView: firstResponder];
+          [_window makeFirstResponder: firstResponder];
         }
       
       /* Will need to redraw tabs and content area. */
@@ -690,4 +711,64 @@
       return [super valueForKey: aKey];
     }
 }
+@end
+
+@implementation NSTabViewItem (KeyViewLoop)
+
+- (void) _setUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView
+{
+  [self setInitialFirstResponder: [self view]];
+  [[self view] _setUpKeyViewLoopWithNextKeyView: nextKeyView];
+}
+
+- (NSView *) _lastKeyView
+{
+  NSView *keyView = [self initialFirstResponder];
+  NSView *itemView = [self view];
+  NSView *lastKeyView = nil;
+  NSMutableArray *views = // cycle protection
+    [[NSMutableArray alloc] initWithCapacity: 1 + [[itemView subviews] count]];
+
+  if (keyView == nil && itemView != nil)
+    {
+      [self _setUpKeyViewLoopWithNextKeyView: itemView];
+    }
+  while ([keyView isDescendantOf: itemView] && ![views containsObject: keyView])
+    {
+      [views addObject: keyView];
+      lastKeyView = keyView;
+      keyView = [keyView nextKeyView];
+    }
+  [views release];
+  return lastKeyView;
+}
+
+@end
+
+@implementation NSTabView (KeyViewLoop)
+
+- (void) _setUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView
+{
+  [_items makeObjectsPerform: @selector(_setUpKeyViewLoopWithNextKeyView:)
+		  withObject: nextKeyView];
+  if (_selected)
+    {
+      [super setNextKeyView: [_selected initialFirstResponder]];
+    }
+  [self setNextKeyView: nextKeyView];
+}
+
+- (void) setNextKeyView: (NSView *)nextKeyView
+{
+  _original_nextKeyView = nextKeyView;
+  if (_selected)
+    {
+      [[_selected _lastKeyView] setNextKeyView: nextKeyView];
+    }
+  else
+    {
+      [super setNextKeyView: nextKeyView];
+    }
+}
+
 @end

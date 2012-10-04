@@ -55,6 +55,7 @@ typedef enum {
   BOOL _truncated_label;
   id _delegate;
   NSUInteger _selected_item;
+  NSView *_original_nextKeyView;
 }
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem

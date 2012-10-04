@@ -89,6 +89,7 @@
 #import "GSToolTips.h"
 #import "GSIconManager.h"
 #import "NSToolbarFrameworkPrivate.h"
+#import "NSViewPrivate.h"
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -1551,6 +1552,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
       if ((!_firstResponder) || (_firstResponder == self))
         {
+	  if (!_initialFirstResponder)
+	    {
+	      [self recalculateKeyViewLoop];
+	    }
           if (_initialFirstResponder)
             {
               [self makeFirstResponder: _initialFirstResponder];
@@ -4367,7 +4372,7 @@ resetCursorRectsForView(NSView *theView)
           _f.selectionDirection =  NSSelectingNext;
           [(id)theView selectText: self];
           _f.selectionDirection =  NSDirectSelection;
-              }
+        }
     }
 }
 
@@ -4464,7 +4469,7 @@ resetCursorRectsForView(NSView *theView)
         {
           return;
         }
-       if ([theView respondsToSelector:@selector(selectText:)])
+      if ([theView respondsToSelector:@selector(selectText:)])
         {
           _f.selectionDirection =  NSSelectingPrevious;
           [(id)theView selectText: self];
@@ -4504,8 +4509,10 @@ current key view.<br />
 
 - (void) recalculateKeyViewLoop
 {
-// FIXME
-// Should be called from NSView viewWillMoveToWindow
+// Should be called from NSView viewWillMoveToWindow (but only if
+// -autorecalculatesKeyViewLoop returns YES)
+  [_contentView _setUpKeyViewLoopWithNextKeyView: _contentView];
+  [self setInitialFirstResponder: [_contentView nextValidKeyView]];
 }
 
 

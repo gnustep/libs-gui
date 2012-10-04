@@ -1,5 +1,28 @@
 2012-10-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	Improve keyboard navigation by automatically computing a key view
+	loop for a window (and tab view item). This implicit key view is
+	created when a window is made key and does not have an explicit
+	key view loop, which is detected by checking the initial first
+	responder of the window.
+
+	* Source/NSViewPrivate.h: New header declaring auxiliary key view
+	loop methods.
+
+	* Source/NSWindow.m (-becomeKeyWindow, -recalculateKeyViewLoop):
+	* Source/NSView.m (-_setUpKeyViewLooopWithNextKeyView:,
+	-_recursiveSetUpKeyViewLoopWithNextKeyView:, -_viewWillMoveToWindow:,
+	cmpFrame()):
+	* Source/NSControl.m (-_setUpKeyViewLoopWithNextKeyView:):
+	* Source/NSTabView.m (-dealloc, -selectTabViewItem:, -setNextKeyView:,
+	_setUpKeyViewLoopWithNextKeyView:): Implement code to
+	automatically recalculate the key view loop of a window.
+
+ 	* Headers/AppKit/NSTabView.h: Add new member to maintain the
+	original next key view of a tab view.
+
+2012-10-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSClipView.m (-setDocumentView:, -setNextKeyView:):
 	Adjust key view loop when adding a new document view.
 
