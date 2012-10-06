@@ -3448,6 +3448,7 @@ resetCursorRectsForView(NSView *theView)
     return;
   if (theView->_rFlags.has_trkrects)
     {
+      BOOL isFlipped = [theView isFlipped];
       NSArray *tr = theView->_tracking_rects;
       unsigned count = [tr count];
 
@@ -3458,8 +3459,11 @@ resetCursorRectsForView(NSView *theView)
         {
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
+	  NSPoint lastPoint = _lastPoint;
           unsigned i;
 
+	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
+	  loc = [theView convertPoint: loc fromView: nil];
           [tr getObjects: rects];
 
           for (i = 0; i < count; ++i)
@@ -3471,9 +3475,9 @@ resetCursorRectsForView(NSView *theView)
               if ([r isValid] == NO)
                 continue;
               /* Check mouse at last point */
-              last = NSMouseInRect(_lastPoint, r->rectangle, NO);
+              last = NSMouseInRect(lastPoint, r->rectangle, isFlipped);
               /* Check mouse at current point */
-              now = NSMouseInRect(loc, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, isFlipped);
 
               if ((!last) && (now))                // Mouse entered event
                 {

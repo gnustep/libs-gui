@@ -1,3 +1,17 @@
+2012-10-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (-_checkTrackingRectangles:forEvent:):
+	Tracking rectangles now use the coordinate system of their views,
+	as they do under Cocoa.
+
+	* Source/GSToolTips.h (-rebuild): Remove.
+	* Source/GSToolTips.m (-rebuild): Remove.
+	* Source/NSView.m (-_rebuildCoordinates): No need to recompute
+	tool tip tracking rectangles.
+
+	* Source/GSToolTips.m (GSTTProvider): Remove view rectangles from
+	GSTTProvider class. They are no longer used.
+
 2012-10-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	Improve keyboard navigation by automatically computing a key view

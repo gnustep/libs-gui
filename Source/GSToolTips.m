@@ -63,13 +63,11 @@
 {
   id		object;
   void		*data;
-  NSRect	viewRect;
 }
 - (void*) data;
-- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r;
+- (id) initWithObject: (id)o userData: (void*)d;
 - (id) object;
 - (void) setObject: (id)o;
-- (NSRect) viewRect;
 @end
 
 @implementation	GSTTProvider
@@ -82,10 +80,9 @@
   [self setObject: nil];
   [super dealloc];
 }
-- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
+- (id) initWithObject: (id)o userData: (void*)d
 {
   data = d;
-  viewRect = r;
   [self setObject: o];
   return self;
 }
@@ -115,10 +112,6 @@
        */
       object = [[object description] copy];
     }
-}
-- (NSRect) viewRect
-{
-  return viewRect;
 }
 @end
 
@@ -233,8 +226,7 @@ static BOOL		restoreMouseMoved;
     }
 
   provider = [[GSTTProvider alloc] initWithObject: anObject
-					 userData: data
-					     rect: aRect];
+					 userData: data];
   tag = [view addTrackingRect: aRect
                         owner: self
                      userData: provider
@@ -350,35 +342,6 @@ static BOOL		restoreMouseMoved;
   [window setFrameOrigin: origin];
 }
 
-- (void) rebuild
-{
-  NSEnumerator		*enumerator;
-  GSTrackingRect	*rect;
-
-  enumerator = [((NSViewPtr)view)->_tracking_rects objectEnumerator];
-  while ((rect = [enumerator nextObject]) != nil)
-    {
-      if (rect->owner == self)
-        {
-          GSTTProvider		*provider = (GSTTProvider *)rect->user_data;
-	  NSRect		frame;
-
-	  if (rect->tag == toolTipTag)
-	    {
-	      frame = [view bounds];
-	    }
-	  else
-	    {
-	      // FIXME is this the thing to do with tooltips other than
-	      // the main one (which we know should cover the whole view)?
-	      frame = [provider viewRect];
-	    }
-	  frame = [view convertRect: frame toView: nil];
-	  [rect reset: frame inside: NO];
-	}
-    }
-}
-
 - (void) removeAllToolTips
 {
   NSEnumerator		*enumerator;
@@ -461,8 +424,7 @@ static BOOL		restoreMouseMoved;
 
 	  rect = [view bounds];
 	  provider = [[GSTTProvider alloc] initWithObject: string
-						 userData: nil
-						     rect: rect];
+						 userData: nil];
 	  toolTipTag = [view addTrackingRect: rect
 				       owner: self
 				    userData: provider

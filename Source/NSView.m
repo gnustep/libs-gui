@@ -360,12 +360,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	      _visibleRect = _bounds;
 	    }
         }
-      if (_rFlags.has_tooltips != 0)
-        {
-          GSToolTips	*tt = [GSToolTips tipsForView: self];
-
-          [tt rebuild];
-        }
     }
 }
 
