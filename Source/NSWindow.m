@@ -2067,7 +2067,12 @@ many times.
 
 - (void) center
 {
-  NSSize screenSize = [[self screen] visibleFrame].size;
+  NSScreen *screen = [self screen];
+  // if not visible on any screen, center on the main screen
+  if (!screen) {
+	screen = [NSScreen mainScreen];
+  }
+  NSSize screenSize = [screen visibleFrame].size;
   NSPoint origin = _frame.origin;
 
   origin.x = (screenSize.width - _frame.size.width) / 2;

@@ -1,3 +1,7 @@
+2012-10-08  Doug Simons <doug.simons@testplant.com>
+
+        * NSWindow.m: Center on the main screen if window is off screen.
+
 2012-09-04  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source/NSWorkspace.m: Log if we have a distributed lock error instead of raise fatally.
