@@ -49,6 +49,7 @@
 - (NSView *) _lastKeyView;
 @end
 
+
 @implementation NSTabView
 
 /*
@@ -76,8 +77,7 @@
       // setup variables  
       ASSIGN(_items, [NSMutableArray array]);
       ASSIGN(_font, [NSFont systemFontOfSize: 0]);
-      _selected_item = NSNotFound;
-      //_selected = nil;
+      _selected = nil;
       //_truncated_label = NO;
     }
 
@@ -112,15 +112,17 @@
 - (void) insertTabViewItem: (NSTabViewItem*)tabViewItem
                    atIndex: (NSInteger)index
 {
+  if (tabViewItem == nil)
+    return;
+  
   [tabViewItem _setTabView: self];
   [_items insertObject: tabViewItem atIndex: index];
+  
+  // If this is the first inserted then select it...
+  if ([_items count] == 1)
+    [self selectTabViewItem: tabViewItem];
 
-  if ((_selected_item != NSNotFound) && (index <= _selected_item))
-    {
-      _selected_item++;
-    }
-
-  if ([_delegate respondsToSelector: 
+  if ([_delegate respondsToSelector:
     @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
       [_delegate tabViewDidChangeNumberOfTabViewItems: self];
@@ -132,35 +134,33 @@
 
 - (void) removeTabViewItem: (NSTabViewItem*)tabViewItem
 {
-  NSUInteger i = [_items indexOfObject: tabViewItem];
+  NSUInteger i = [self indexOfTabViewItem: tabViewItem];
   
   if (i == NSNotFound)
     return;
 
-  if ([tabViewItem isEqual: _selected])
-    {
-      // We cannot call [self selectTabViewItem: nil] here as the delegate might refuse this
-      [[_selected view] removeFromSuperview];
-      _selected = nil;
-      _selected_item = NSNotFound;
-    }
-
+  // Do this BEFORE removing from array...in case it gets released...
+  [tabViewItem _setTabView:nil];
   [_items removeObjectAtIndex: i];
 
-  if ((_selected_item != NSNotFound) && (i <= _selected_item))
+  if (tabViewItem == _selected)
     {
-      _selected_item--;
+      if ([_items count] == 0)
+        {
+          [self selectTabViewItem: nil];
+        }
+      else
+        {
+          // Select a new tab index...
+          NSUInteger newIndex = ((i < [_items count]) ? i : (i-1));
+          [self selectTabViewItem: [_items objectAtIndex: newIndex]];
+        }
     }
-
-  if ([_delegate respondsToSelector: 
-    @selector(tabViewDidChangeNumberOfTabViewItems:)])
+  
+  if ([_delegate respondsToSelector: @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
       [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
-
-  /* TODO (Optimize) - just mark the tabs rect as needing redisplay unless
-                       removed tab was selected */
-  [self setNeedsDisplay: YES];
 }
 
 - (NSInteger) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
@@ -211,43 +211,44 @@
 
 - (void) selectNextTabViewItem: (id)sender
 {
-  if ((_selected_item != NSNotFound) && ((_selected_item + 1) < [_items count]))
+  NSUInteger selected_item = [self indexOfTabViewItem:_selected];
+  if (selected_item != NSNotFound)
     {
-      [self selectTabViewItemAtIndex: _selected_item + 1];
+      [self selectTabViewItemAtIndex: selected_item + 1];
     }
 }
 
 - (void) selectPreviousTabViewItem: (id)sender
 {
-  if ((_selected_item != NSNotFound) && (_selected_item > 0))
+  NSUInteger selected_item = [self indexOfTabViewItem:_selected];
+  if (selected_item != NSNotFound)
     {
-      [self selectTabViewItemAtIndex: _selected_item - 1];
+      [self selectTabViewItemAtIndex: selected_item - 1];
     }
 }
 
 - (NSTabViewItem*) selectedTabViewItem
 {
-  // FIXME: Why not just return _selected?
-  if (_selected_item == NSNotFound || [_items count] == 0)
-    return nil;
-  return [_items objectAtIndex: _selected_item];
+  return _selected;
 }
 
 - (void) selectTabViewItem: (NSTabViewItem*)tabViewItem
 {
   BOOL canSelect = YES;
+  NSView *selectedView = nil;
 
-  if ([_delegate respondsToSelector: 
-    @selector(tabView: shouldSelectTabViewItem:)])
+  if ([_delegate respondsToSelector: @selector(tabView: shouldSelectTabViewItem:)])
     {
-      canSelect = [_delegate tabView: self
-                shouldSelectTabViewItem: tabViewItem];
+      canSelect = [_delegate tabView: self shouldSelectTabViewItem: tabViewItem];
     }
-
+  
   if (canSelect)
     {
-      NSView *selectedView;
-
+      if ([_delegate respondsToSelector: @selector(tabView: willSelectTabViewItem:)])
+        {
+          [_delegate tabView: self willSelectTabViewItem: tabViewItem];
+        }
+      
       if (_selected != nil)
         {
           [_selected _setTabState: NSBackgroundTab];
@@ -255,6 +256,7 @@
           /* NB: If [_selected view] is nil this does nothing, which
              is fine.  */
           [[_selected view] removeFromSuperview];
+	  _selected = nil;
         }
 
       if ([_delegate respondsToSelector: 
@@ -507,12 +509,10 @@
   
   if (anItem != nil  &&  ![anItem isEqual: _selected])
     {
-      GSKeyValueBinding *theBinding;
-
       [self selectTabViewItem: anItem];
 
-      theBinding = [GSKeyValueBinding getBinding: NSSelectedIndexBinding 
-                                       forObject: self];
+      GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSSelectedIndexBinding
+                                                          forObject: self];
       if (theBinding != nil)
         [theBinding reverseSetValueFor: NSSelectedIndexBinding];
     }
@@ -565,21 +565,20 @@
     }
   else
     {
+      NSUInteger selected_item = [self indexOfTabViewItem:_selected];
       [aCoder encodeObject: _items];
       [aCoder encodeObject: _font];
       [aCoder encodeValueOfObjCType: @encode(int) at: &_type];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       [aCoder encodeConditionalObject: _delegate];
-      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_selected_item];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &selected_item];
     }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
-  _selected_item = NSNotFound;
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -654,17 +653,21 @@
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       _delegate = [aDecoder decodeObject];
+      
+      NSUInteger selected_item = NSNotFound;
       if (version < 3)
         {
-	  int tmp;
+          int tmp;
           [aDecoder decodeValueOfObjCType: @encode(int) at: &tmp];
-          _selected_item = tmp;
-	}
+          selected_item = tmp;
+        }
       else
-	{
-          [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_selected_item];
-	}
-      _selected = [_items objectAtIndex: _selected_item];
+      {
+        [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &selected_item];
+      }
+      
+      if (selected_item != NSNotFound)
+        _selected = [_items objectAtIndex: selected_item];
     }
   return self;
 }

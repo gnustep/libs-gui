@@ -55,7 +55,9 @@
 @end
 
 @interface NSCustomObject (NibCompatibility)
+- (id) realObject;
 - (void) setRealObject: (id)obj;
+- (NSString *)className;
 @end
 
 @interface NSNibConnector (NibCompatibility)
@@ -841,6 +843,19 @@
   id obj;
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
   id owner = [context objectForKey: NSNibOwner];
+  id first = nil;
+  id app   = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
+  
+  // Get the file's owner and NSApplication object references...
+  if ([[(NSCustomObject*)[rootObjects objectAtIndex: 1] className] isEqualToString: @"FirstResponder"])
+    first = [(NSCustomObject*)[rootObjects objectAtIndex: 1] realObject];
+  else
+    NSLog(@"%s:first responder missing\n", __PRETTY_FUNCTION__);
+
+  if ([[(NSCustomObject*)[rootObjects objectAtIndex: 2] className] isEqualToString: @"NSApplication"])
+    app = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
+  else
+    NSLog(@"%s:NSApplication missing\n", __PRETTY_FUNCTION__);
 
   // Use the owner as first root object
   [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
@@ -858,7 +873,9 @@
           // All top level objects must be released by the caller to avoid
           // leaking, unless they are going to be released by other nib
           // objects on behalf of the owner.
-          RETAIN(obj);
+          // IGNORE file's owner, first responder and NSApplication instances...
+          if ((obj != owner) && (obj != first) && (obj != app))
+            RETAIN(obj);
         }
 
       if (([obj isKindOfClass: [NSMenu class]]) &&
@@ -1175,8 +1192,14 @@
 - (id) initForReadingWithData: (NSData*)data
 {
   NSXMLParser *theParser;
+  NSData *theData = data;
 
-  NSData *theData = [self _preProcessXib: data];
+  // If we are in the interface builder app, do not replace
+  // the existing classes with their custom subclasses.
+  if([NSClassSwapper isInInterfaceBuilder] == NO)
+    {
+      theData = [self _preProcessXib: data];
+    }
 
   objects = [[NSMutableDictionary alloc] init];
   stack = [[NSMutableArray alloc] init];

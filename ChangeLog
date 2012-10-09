@@ -1,3 +1,9 @@
+2012-10-07 02:12-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTabView.h
+	* Source/GSXibLoader.m
+	* Source/NSTabView.m: Merge changes from TestPlant branch
+
 2012-10-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-_checkTrackingRectangles:forEvent:):
@@ -12,6 +18,7 @@
 	* Source/GSToolTips.m (GSTTProvider): Remove view rectangles from
 	GSTTProvider class. They are no longer used.
 
+>>>>>>> .r35660
 2012-10-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	Improve keyboard navigation by automatically computing a key view
