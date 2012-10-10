@@ -3524,7 +3524,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   ++t;
 
-  aRect = [self convertRect: aRect toView: nil];
   m = [[rectClass alloc] initWithRect: aRect
 				  tag: t
 				owner: anObject

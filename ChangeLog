@@ -1,3 +1,9 @@
+2012-10-10  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSView.m (addTrackingRect:owner:userData:assumeInside:):
+	Remove translation of tracking rectangle coordinates, which is no
+	longer needed (and incorrect).
+
 2012-10-07 02:12-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTabView.h
