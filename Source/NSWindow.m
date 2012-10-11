@@ -1750,6 +1750,7 @@ many times.
 {
   GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
+  BOOL redisplay = NO;
 
   if (YES == [[NSUserDefaults standardUserDefaults]
     boolForKey: @"GSBackgroundApp"])
@@ -1790,6 +1791,8 @@ many times.
           [self _initBackendWindow];
           display = YES;
         }
+      else
+        redisplay = (_f.visible == NO);
     }
 
   /* If a hide on deactivate window is explicitly ordered in or out while
@@ -1800,12 +1803,12 @@ many times.
       [NSApp _setWindow: self inactive: NO];
     }
 
+#if 1
   // Draw content before backend window ordering
   if (display)
-    [_wv display];
-  else if (place != NSWindowOut)
-    [_wv displayIfNeeded];
-
+    [self display];
+#endif
+  
   /* The backend will keep us below the current key window unless we
      force it not too */
   if ((otherWin == 0 
@@ -1815,9 +1818,10 @@ many times.
     otherWin = -1;
     
   [srv orderwindow: place : otherWin : _windowNum];
-  if (display)
+  
+  if (redisplay)
     [self display];
-
+  
   if (place != NSWindowOut)
     {
       /*
@@ -1838,10 +1842,10 @@ many times.
               BOOL        isFileName;
               NSString *aString;
               
-              aString = [NSString stringWithFormat: @"%@  --  %@", 
-		[_representedFilename lastPathComponent],
-		[_representedFilename stringByDeletingLastPathComponent]];
-              isFileName = [_windowTitle isEqual: aString]; 
+              aString = [NSString stringWithFormat: @"%@  --  %@",
+                         [_representedFilename lastPathComponent],
+                         [_representedFilename stringByDeletingLastPathComponent]];
+              isFileName = [_windowTitle isEqual: aString];
 
               [NSApp addWindowsItem: self
                      title: _windowTitle
@@ -1854,6 +1858,11 @@ many times.
           [srv setinputfocus: _windowNum];
         }
       _f.visible = YES;
+#if 1
+      [self displayIfNeeded];
+#else
+//      [self display];
+#endif
     }
   else if ([self isOneShot])
     {
@@ -2370,7 +2379,7 @@ many times.
 
 - (void) display
 {
-  if (_gstate == 0 || _f.visible == NO)
+  if (_gstate == 0)
     return;
 
   [_wv display];
@@ -2385,9 +2394,7 @@ many times.
 
   if (_f.views_need_display)
     {
-      [_wv displayIfNeeded];
-      [self discardCachedImage];
-      _f.views_need_display = NO;
+      [self display];
     }
 }
 
@@ -5695,3 +5702,4 @@ NSWindow* GSWindowWithNumber(int num)
     return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);
   return nil;
 }
+
