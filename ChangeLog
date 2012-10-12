@@ -1,3 +1,9 @@
+2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSInfoPanel.m (value_from_info_plist_for_key):  Use
+	NSBundle method to get the info dictionary.
+	Patch by: Luboš Doležel <lubos@dolezel.info>
+
 2012-10-10  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSView.m (addTrackingRect:owner:userData:assumeInside:):
@@ -24,7 +30,6 @@
 	* Source/GSToolTips.m (GSTTProvider): Remove view rectangles from
 	GSTTProvider class. They are no longer used.
 
->>>>>>> .r35660
 2012-10-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	Improve keyboard navigation by automatically computing a key view
