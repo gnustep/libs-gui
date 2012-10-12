@@ -1,5 +1,10 @@
 2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSToolTips.m: Use separate view to draw tooltip text.
+	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSInfoPanel.m (value_from_info_plist_for_key):  Use
 	NSBundle method to get the info dictionary.
 	Patch by: Luboš Doležel <lubos@dolezel.info>

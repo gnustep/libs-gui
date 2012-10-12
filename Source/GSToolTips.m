@@ -115,6 +115,51 @@
 }
 @end
 
+@interface GSTTView : NSView
+{
+  NSAttributedString *_text;
+}
+
+- (void)setText: (NSAttributedString *)text;
+@end
+ 	  	 
+@implementation GSTTView
+- (id) initWithFrame: (NSRect)frameRect
+{
+  self = [super initWithFrame: frameRect];
+  if (self)
+    {
+      [self setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+    }
+  return self;
+}
+
+- (void) setText: (NSAttributedString *)text
+{
+  if (_text != text)
+    {
+      ASSIGN(_text, text);
+      [self setNeedsDisplay: YES];
+    }
+}
+ 	  	 
+- (void) drawRect: (id)dirtyRect
+{
+  if (_text)
+    {
+      NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
+      NSColor *black = [NSColor blackColor];
+      NSColor *colors[] = {black, black, black, black};
+      NSRect bounds = [self bounds];
+      NSRect frame = [self frame];
+      NSRect textRect = NSInsetRect(frame, 2, 2);
+
+      NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
+      [_text drawInRect: textRect];
+    }
+}
+@end
+
 @interface GSTTPanel : NSPanel
 // Tooltip panel that will not try to become main or key
 - (BOOL) canBecomeKeyWindow;
@@ -123,6 +168,22 @@
 @end
 
 @implementation GSTTPanel
+
+- (id) initWithContentRect: (NSRect)contentRect
+                 styleMask: (unsigned int)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag;
+{
+  self = [super initWithContentRect: contentRect
+                          styleMask: aStyle
+                            backing: bufferingType
+                              defer: flag];
+  if (self)
+    {
+      [self setContentView: [[[GSTTView alloc] initWithFrame: contentRect] autorelease]];
+    }
+  return self;
+}
 
 - (BOOL) canBecomeKeyWindow 
 {
@@ -138,7 +199,6 @@
 
 
 @interface	GSToolTips (Private)
-- (void) _drawText: (NSAttributedString *)text;
 - (void) _endDisplay;
 - (void) _timedOut: (NSTimer *)timer;
 @end
@@ -155,8 +215,10 @@ typedef NSView* NSViewPtr;
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
-static GSTTPanel		*window = nil; // Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
-static BOOL   isOpening = NO; // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
+// Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
+static GSTTPanel	*window = nil;
+// Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
+static BOOL   isOpening = NO;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
@@ -467,26 +529,6 @@ static BOOL		restoreMouseMoved;
 
 @implementation	GSToolTips (Private)
 
-- (void) _drawText: (NSAttributedString *)text
-{
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
-  NSColor    *black = [NSColor blackColor];
-  NSColor    *colors[] = {black, black, black, black};
-  NSRect     bounds = [[window contentView] bounds];
-  NSRect     textRect;
-
-  textRect = [window frame];
-  textRect.origin.x = 2;
-  textRect.origin.y = -2;
-
-  [[window contentView] lockFocus];
-
-  [text drawInRect: textRect];
-  NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
-
-  [[window contentView] unlockFocus];
-}
-
 - (void) _endDisplay
 {
   if (isOpening)
@@ -623,11 +665,9 @@ static BOOL		restoreMouseMoved;
   offset.width = rect.origin.x - mouseLocation.x;
 
   isOpening = YES;
-  [window setFrame:rect display:NO];
+  [(GSTTView*)([window contentView]) setText: toolTipText];
+  [window setFrame: rect display: NO];
   [window orderFront: nil];
-  [window display];
-  [self _drawText: toolTipText];
-  [window flushWindow];
   isOpening = NO;
 
   RELEASE(toolTipText);
