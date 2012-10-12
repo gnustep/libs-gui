@@ -1,5 +1,11 @@
 2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSComboBoxCell.m (-textDidChange:):
+	Handle nil string from delegate completed string processing
+	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
+2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSToolTips.m: Use separate view to draw tooltip text.
 	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
 

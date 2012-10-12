@@ -1253,7 +1253,7 @@ static GSComboWindow *gsWindow = nil;
 
   if (_usesDataSource)
     {
-      if (_dataSource == NO)
+      if (_dataSource == nil)
         {
 	  NSLog(@"%@: No data source currently specified", self);
 	}
@@ -1749,7 +1749,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
         && _prevSelectedRange.location < selectedRange.location)
         {
           more = [self completedString: myString];
-          if ([more isEqualToString: myString] == NO)
+          if ((more != nil) && [more isEqualToString: myString] == NO)
             {
 	      [textObject setString: more];
 	      location = myStringLength;
