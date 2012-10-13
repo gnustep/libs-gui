@@ -804,7 +804,10 @@
         {
           IBToolTipAttribute *tta = [(NSDictionary*)value objectForKey: @"ToolTip"];
 
-          [realObj setToolTip: [tta toolTip]];
+          if ([realObj respondsToSelector: @selector(setToolTip:)])
+            {
+              [realObj setToolTip: [tta toolTip]];
+            }
         }
 
       if ([realObj respondsToSelector: @selector(awakeFromNib)])
@@ -844,7 +847,7 @@
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
   id owner = [context objectForKey: NSNibOwner];
   id first = nil;
-  id app   = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
+  id app   = nil;
   
   // Get the file's owner and NSApplication object references...
   if ([[(NSCustomObject*)[rootObjects objectAtIndex: 1] className] isEqualToString: @"FirstResponder"])

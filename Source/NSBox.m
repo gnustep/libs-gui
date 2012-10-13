@@ -72,7 +72,6 @@
   NSView *cv;
 
   self = [super initWithFrame: frameRect];
-
   if (!self)
     return self;
 
@@ -80,6 +79,8 @@
   [_cell setAlignment: NSCenterTextAlignment];
   [_cell setBordered: NO];
   [_cell setEditable: NO];
+  [self setTitleFont: [NSFont systemFontOfSize:
+                                [NSFont smallSystemFontSize]]];
   _offsets.width = 5;
   _offsets.height = 5;
   _border_rect = _bounds;
@@ -451,8 +452,17 @@
 //
 - (void) drawRect: (NSRect)rect
 {
-  NSColor *color = [_window backgroundColor];
+  NSColor *color;
+
   rect = NSIntersectionRect(_bounds, rect);
+  if (_box_type == NSBoxCustom)
+    {
+      color = _fill_color;
+    }
+  else
+    {
+      color = [_window backgroundColor];
+    }
   // Fill inside
   [color set];
   NSRectFill(rect);
@@ -463,8 +473,16 @@
       case NSNoBorder: 
 	break;
       case NSLineBorder: 
-	[[NSColor controlDarkShadowColor] set];
-	NSFrameRect(_border_rect);
+        if (_box_type == NSBoxCustom)
+          {
+            [_border_color set];
+            NSFrameRectWithWidth(_border_rect, _border_width);
+          }
+        else
+          {
+            [[NSColor controlDarkShadowColor] set];
+            NSFrameRect(_border_rect);
+          }
 	break;
       case NSBezelBorder:
 	[[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
@@ -490,7 +508,64 @@
 
 - (BOOL) isOpaque
 {
-  return YES;
+  if (_box_type == NSBoxCustom)
+    {
+      return !_transparent;
+    }
+  else
+    {
+      return YES;
+    }
+}
+
+- (NSColor*) fillColor
+{
+  return _fill_color;
+}
+
+- (void) setFillColor: (NSColor*)newFillColor
+{
+  ASSIGN(_fill_color, newFillColor);
+}
+
+- (NSColor*) borderColor
+{
+  return _border_color;
+}
+
+- (void) setBorderColor: (NSColor*)newBorderColor
+{
+  ASSIGN(_border_color, newBorderColor);
+}
+
+- (CGFloat) borderWidth
+{
+  return _border_width;
+}
+
+- (void) setBorderWidth: (CGFloat)borderWidth
+{
+  _border_width = borderWidth;
+}
+
+- (CGFloat) cornerRadius
+{
+  return _corner_radius;
+}
+
+- (void) setCornerRadius: (CGFloat)cornerRadius
+{
+  _corner_radius = cornerRadius;
+}
+
+- (BOOL) isTransparent
+{
+  return _transparent;
+}
+
+- (void) setTransparent: (BOOL)transparent
+{
+  _transparent = transparent;
 }
 
 //
@@ -507,7 +582,7 @@
       [aCoder encodeInt: [self borderType] forKey: @"NSBorderType"];
       [aCoder encodeInt: [self boxType] forKey: @"NSBoxType"];
       [aCoder encodeInt: [self titlePosition] forKey: @"NSTitlePosition"];
-      [aCoder encodeBool: NO forKey: @"NSTransparent"];
+      [aCoder encodeBool: _transparent forKey: @"NSTransparent"];
       [aCoder encodeSize: [self contentViewMargins] forKey: @"NSOffsets"];
     }
   else
@@ -548,7 +623,7 @@
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
         {
-          //Bool transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
+          _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
         }
       if ([aDecoder containsValueForKey: @"NSOffsets"])
         {

@@ -2081,9 +2081,14 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (void) center
 {
-  NSSize screenSize = [[self screen] visibleFrame].size;
+  NSScreen *screen = [self screen];
+  NSSize screenSize;
   NSPoint origin = _frame.origin;
 
+  if (screen == nil) {
+    screen = [NSScreen mainScreen];
+  }
+  screenSize = [screen visibleFrame].size;
   origin.x = (screenSize.width - _frame.size.width) / 2;
   origin.y = (screenSize.height - _frame.size.height) / 2;
 

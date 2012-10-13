@@ -34,6 +34,7 @@
 #import <AppKit/NSView.h>
 
 @class NSString;
+@class NSColor;
 @class NSFont;
 
 /** Title positioning of an NSBox:
@@ -64,6 +65,9 @@ typedef enum _NSBoxType
   NSBoxSecondary,
   NSBoxSeparator,
   NSBoxOldStyle
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+  , NSBoxCustom
+#endif
 } NSBoxType;
 #endif
 
@@ -78,6 +82,12 @@ typedef enum _NSBoxType
   NSBorderType _border_type;
   NSTitlePosition _title_position;
   NSBoxType _box_type;
+  // Only used when the type is NSBoxCustom
+  NSColor *_fill_color;
+  NSColor *_border_color;
+  CGFloat _border_width;
+  CGFloat _corner_radius;
+  BOOL _transparent;
 }
 
 //
@@ -116,6 +126,19 @@ typedef enum _NSBoxType
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 -(NSSize) minimumSize;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSColor*)fillColor;
+- (void)setFillColor:(NSColor*)newFillColor;
+- (NSColor*)borderColor;
+- (void)setBorderColor:(NSColor*)newBorderColor;
+- (CGFloat)borderWidth;
+- (void)setBorderWidth:(CGFloat)borderWidth;
+- (CGFloat)cornerRadius;
+- (void)setCornerRadius:(CGFloat)cornerRadius;
+- (BOOL)isTransparent;
+- (void)setTransparent:(BOOL)transparent;
 #endif
 @end
 

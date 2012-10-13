@@ -42,6 +42,7 @@
 @class NSNotification;
 @class NSString;
 @class GSLayoutManager;
+@class NSFont;
 
 /*
  * When edit:range:changeInLength: is called, it takes a mask saying
@@ -179,6 +180,14 @@ enum
 - (void) textStorageWillProcessEditing: (NSNotification*)notification;
 - (void) textStorageDidProcessEditing: (NSNotification*)notification;
 
+@end
+
+@interface NSTextStorage (Scripting)
+/*
+ * Attributes for string...
+*/
+- (NSFont*) font;
+- (void) setFont: (NSFont*)font;
 @end
 
 /**** Notifications ****/

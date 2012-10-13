@@ -380,3 +380,22 @@ static NSNotificationCenter *nc = nil;
 }
 
 @end
+
+@implementation NSTextStorage (Scripting)
+
+- (NSFont*) font
+{
+  return [self attribute: NSFontAttributeName atIndex: 0 effectiveRange: NULL];
+}
+
+- (void) setFont: (NSFont*)font
+{
+  if (font != nil)
+    {
+      [self addAttribute: NSFontAttributeName
+		   value: font
+		   range: NSMakeRange(0, [self length])];
+    }
+}
+
+@end

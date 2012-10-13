@@ -1,3 +1,19 @@
+2012-10-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSBox.h,
+	* Source/NSBox.m: Add 10.5 methods for custom drawn boxes.
+	* Source/GSXibLoader.m (IBObjectContainer nibInstantiate): Check
+	whether the object responds to setToolTip: before calling it.
+
+	Merge changes from testplant branch:
+	* Headers/AppKit/NSTabViewItem.h: Declare tooltip methods.
+	* Source/NSTabViewItem.m: Move tooltip methods to correct category.
+	* Headers/AppKit/NSTextStorage.h,
+	* Source/NSTextStorage.m: Add font/setFont methods to NSTextStorage
+	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+        * NSWindow.m (-center): Center on the main screen if window is off screen.
+	Patch by Doug Simons <doug.simons@testplant.com>
+
 2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSComboBoxCell.m (-textDidChange:):

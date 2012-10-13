@@ -198,6 +198,16 @@
   RELEASE(attr);
 }
 
+- (void) setToolTip: (NSString*)toolTip
+{
+  ASSIGN(_toolTip, toolTip);
+}
+
+- (NSString*) toolTip
+{
+  return _toolTip;
+}
+
 // NSCoding protocol.
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -274,16 +284,6 @@
 {
   // FIXME: What is the algo to truncate?
   return _label;
-}
-
-- (void) setToolTip: (NSString *)toolTip
-{
-  ASSIGN(_toolTip,toolTip);
-}
-
-- (NSString *)toolTip
-{
-  return _toolTip;
 }
 
 @end
