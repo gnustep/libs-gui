@@ -1658,10 +1658,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
   NSTabViewType type = [(NSTabView *)view tabViewType];
 
-  // Make sure some tab is selected
-  if (!selected && howMany > 0)
-    [(NSTabView *)view selectFirstTabViewItem: nil];
-
   DPSgsave(ctxt);
 
   switch (type)

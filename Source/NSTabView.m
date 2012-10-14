@@ -468,6 +468,12 @@
 
 - (void) drawRect: (NSRect)rect
 {
+  // Make sure some tab is selected
+  if ((_selected == nil) && ([_items count] > 0))
+    {
+      [self selectFirstTabViewItem: nil];
+    }
+
   [[GSTheme theme] drawTabViewRect: rect
 		   inView: self
 		   withItems: _items

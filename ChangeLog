@@ -1,3 +1,9 @@
+2012-10-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSThemeDrawing.m (-drawTabViewRect:...selectedItem:),
+	* Source/NSTabView.m (-drawRect:): Move the select logic from
+	theme into normal code.
+
 2012-10-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSBox.h,
