@@ -1,3 +1,9 @@
+2012-10-15 18:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSButtonCell.m: Implementation for change request
+	bug#37233.   Button should now show the return image "common_ret"
+	and "common_retH" when return/enter is the key equivalent.
+
 2012-10-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSThemeDrawing.m (-drawTabViewRect:...selectedItem:),
