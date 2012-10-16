@@ -623,6 +623,9 @@
  */
 - (void) setTitle: (NSString*)aTitle;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSSize) size;
+#endif
 - (void) sizeToFit;
 
 - (void) submenuAction: (id)sender;

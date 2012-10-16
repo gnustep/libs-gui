@@ -1480,6 +1480,13 @@ static BOOL menuBarVisible = YES;
   return _menu.changedMessagesEnabled;
 }
 
+- (NSSize) size
+{
+  if (_view)
+    return [_view frame].size;
+  return NSZeroSize;
+}
+
 - (void) sizeToFit
 {
   NSRect oldWindowFrame;
