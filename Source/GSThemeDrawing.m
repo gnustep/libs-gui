@@ -77,6 +77,23 @@
 @end
 
 @implementation	GSTheme (Drawing)
+- (void) setKeyEquivalent: (NSString *)key 
+            forButtonCell: (NSButtonCell *)cell
+{
+  if([cell image] == nil && ([key isEqualToString:@"\r"] ||
+			     [key isEqualToString:@"\n"]))
+    { 
+      [cell setImagePosition: NSImageRight];
+      [cell setImage: [NSImage imageNamed:@"common_ret"]];
+      [cell setAlternateImage: [NSImage imageNamed:@"common_retH"]];
+    }
+  else if([key isEqualToString:@"\r"] == NO &&
+	  [key isEqualToString:@"\n"] == NO)
+    {
+      [cell setImage: nil];
+      [cell setAlternateImage: nil];
+    }
+}
 
 - (void) drawButton: (NSRect)frame 
                  in: (NSCell*)cell 

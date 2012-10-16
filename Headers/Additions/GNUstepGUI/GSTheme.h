@@ -731,6 +731,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 @interface	GSTheme (Drawing)
 
 /**
+ * Allows the theme to set an image or set attributes for drawing the
+ * button differently based on the key equivalent which is set.
+ */
+- (void) setKeyEquivalent: (NSString *)key 
+            forButtonCell: (NSButtonCell *)cell;
+
+/**
  * Draws a button frame and background (not its content) for the specified
  * cell and view.
  */

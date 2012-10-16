@@ -629,21 +629,9 @@ typedef struct _GSButtonCellFlags
 */
 - (void) setKeyEquivalent: (NSString*)key
 {
+  [[GSTheme theme] setKeyEquivalent: key
+		      forButtonCell: self];
   ASSIGNCOPY(_keyEquivalent, key);
-
-  if([self image] == nil && ([_keyEquivalent isEqualToString:@"\r"] ||
-			     [_keyEquivalent isEqualToString:@"\n"]))
-    { 
-      [self setImagePosition: NSImageRight];
-      [self setImage: [NSImage imageNamed:@"common_ret"]];
-      [self setAlternateImage: [NSImage imageNamed:@"common_retH"]];
-    }
-  else
-    {
-      [self setImagePosition: NSNoImage];
-      [self setImage: nil];
-      [self setAlternateImage: nil];
-    }
 }
 
 /** <p>Sets the modifier mask of the NSButtonCell's key equivalent to

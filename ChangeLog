@@ -1,3 +1,11 @@
+2012-10-16 17:22-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declaration
+	for method setKeyEquivalent:forButtonCell:
+	* Source/GSThemeDrawing.m: Add implementation for method
+	setKeyEquivalent:forButtonCell:
+	* Source/NSButtonCell.m: Add call to new method.
+
 2012-10-15 18:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSButtonCell.m: Implementation for change request
