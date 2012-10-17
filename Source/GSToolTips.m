@@ -253,7 +253,6 @@ static BOOL		restoreMouseMoved;
   [window setExcludedFromWindowsMenu: YES];
   [window setLevel: NSStatusWindowLevel];
   [window setAutodisplay: NO];
-  [window setOneShot: YES];
   [window setTitle:@"GSToolTips"];
 }
 

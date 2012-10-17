@@ -404,7 +404,7 @@ has blocked and waited for events.
       theScreen = screen;
     }
   }
-  NSDebugLLog(@"NSWindow", @"%s: frame: %@ screen: %@ size: %ld\n", __PRETTY_FUNCTION__,
+  NSDebugMLLog(@"NSWindow", @"frame: %@ screen: %@ size: %ld\n",
               NSStringFromRect(frame), theScreen, (long)largest);
 
   return theScreen;
@@ -1803,11 +1803,9 @@ many times.
       [NSApp _setWindow: self inactive: NO];
     }
 
-#if 1
   // Draw content before backend window ordering
   if (display)
     [self display];
-#endif
   
   /* The backend will keep us below the current key window unless we
      force it not too */
@@ -1858,16 +1856,23 @@ many times.
           [srv setinputfocus: _windowNum];
         }
       _f.visible = YES;
-#if 1
       [self displayIfNeeded];
-#else
-//      [self display];
-#endif
     }
+#ifndef __MINGW32__
   else if ([self isOneShot])
     {
       [self _terminateBackendWindow];
     }
+#else
+  else // TEMPORARY PATCH UNTIL CAIRO BACKEND FIXED ON WINDOWS
+    {
+      id defaultsUseOneShot = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSUseOneShotWindows"];
+      if ((defaultsUseOneShot == nil) || ([defaultsUseOneShot boolValue] == NO) || [self isOneShot])
+      {
+        [self _terminateBackendWindow];
+      }
+    }
+#endif
 }
 
 - (void) resignKeyWindow
@@ -2074,20 +2079,37 @@ many times.
   return (maxDiff * resizeTime) / 150;
 }
 
-- (void) center
+- (NSRect) _centerFrame: (NSRect)frame onScreen: (NSScreen*)theScreen
+{
+  NSRect centeredFrame = frame;
+  
+  if ((NSEqualRects(frame, NSZeroRect) == NO) && theScreen)
+  {
+    NSSize screenSize = [theScreen visibleFrame].size;
+    
+    centeredFrame.origin.x = (screenSize.width - centeredFrame.size.width) / 2;
+    centeredFrame.origin.y = (screenSize.height - centeredFrame.size.height) / 2;
+  }
+  
+  return centeredFrame;
+}
+
+- (NSRect) _centerFrame: (NSRect)frame
 {
   NSScreen *screen = [self screen];
+  
   // if not visible on any screen, center on the main screen
-  if (!screen) {
-	screen = [NSScreen mainScreen];
-  }
-  NSSize screenSize = [screen visibleFrame].size;
-  NSPoint origin = _frame.origin;
+  if (!screen)
+    screen = [NSScreen mainScreen];
+  
+  return [self _centerFrame:frame onScreen:screen];
+}
 
-  origin.x = (screenSize.width - _frame.size.width) / 2;
-  origin.y = (screenSize.height - _frame.size.height) / 2;
+- (void) center
+{
+  NSRect newFrame = [self _centerFrame: _frame];
 
-  [self setFrameOrigin: origin];
+  [self setFrameOrigin: newFrame.origin];
 }
 
 /**
@@ -2379,7 +2401,7 @@ many times.
 
 - (void) display
 {
-  if (_gstate == 0)
+  if (_gstate == 0 || _f.visible == NO)
     return;
 
   [_wv display];
@@ -2389,9 +2411,6 @@ many times.
 
 - (void) displayIfNeeded
 {
-  if (_gstate == 0 || _f.visible == NO)
-    return;
-
   if (_f.views_need_display)
     {
       [self display];
@@ -4685,21 +4704,6 @@ current key view.<br />
   }
 #endif
 
-  // if toolbar is showing, adjust saved frame to add the toolbar back in
-  if ([_toolbar isVisible])
-    {
-      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
-      fRect.size.height += toolbarHeight;
-      fRect.origin.y -= toolbarHeight;
-    }
-  // if window has a menu, adjust saved frame to add the menu back in
-  if ([_wv hasMenu])
-    {
-      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
-      fRect.size.height += menuBarHeight;
-      fRect.origin.y -= menuBarHeight;
-    }
-
   /*
    * Scan in the frame for the area the window was placed in in screen.
    */
@@ -4730,6 +4734,52 @@ current key view.<br />
       return;
     }
   sRect.size.height = value;
+  
+#if defined(__MINGW__)
+  // Finally, this is for handling possible frame errors due to MSWindows sending
+  // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
+  // backend but since they were stored before, if the application was quit with
+  // minimized windows the stored frames in defaults are corrupted and windows are
+  // potentially never seen in subsequent application runs...
+  // There's only so much we can do to try to restore this information and this
+  // section may need to be updated as we test further...
+  if ((fabs(fRect.origin.x) > 32000.00) || (fabs(fRect.origin.y) > 32000.00))
+  {
+    // Center in screen...
+    fRect = [self _centerFrame: fRect onScreen: [NSScreen mainScreen]];
+    
+    // This additional check potentially needed if application restarted multiple
+    // times after the above sequence causing corrupted width/height values...
+    // We'll try using the minimum size set but this may not be valid...
+    NSSize minSize = [self minSize];
+    if ((minSize.width < 100) || (minSize.height < 100))
+      minSize = NSMakeSize(100, 100);
+    
+    // Adjust if necessary...
+    if (fRect.size.width < minSize.width)
+      fRect.size.width = minSize.width;
+    if (fRect.size.height < minSize.height)
+      fRect.size.height = minSize.height;
+    
+    // Also - screen rectangle could be corrupted and completely meaningless...
+    sRect = [[NSScreen mainScreen] visibleFrame];
+  }
+#endif
+  
+  // if toolbar is showing, adjust saved frame to add the toolbar back in
+  if ([_toolbar isVisible])
+  {
+    float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+    fRect.size.height += toolbarHeight;
+    fRect.origin.y -= toolbarHeight;
+  }
+  // if window has a menu, adjust saved frame to add the menu back in
+  if ([_wv hasMenu])
+  {
+    float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+    fRect.size.height += menuBarHeight;
+    fRect.origin.y -= menuBarHeight;
+  }
 
   /*
    * The screen rectangle gives the area of the screen in which
@@ -4744,7 +4794,7 @@ current key view.<br />
       // to move it so it can be seen and assign it to the main
       // screen...
       screen = [NSScreen mainScreen];
-      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
+      NSDebugMLLog(@"NSWindow", @"re-assigning to main screen\n");
     }
   nRect = [screen visibleFrame];
 
@@ -4756,6 +4806,7 @@ current key view.<br />
     {
       fRect.origin.x += nRect.origin.x - sRect.origin.x;
       fRect.origin.y += nRect.origin.y - sRect.origin.y;
+      NSWarnMLog(@"NSEqualPoints: %@\n", NSStringFromRect(fRect));
     }
 
   /*
@@ -4766,7 +4817,7 @@ current key view.<br />
   if (nRect.size.width != sRect.size.width)
     {
       fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
-        * (nRect.size.width / sRect.size.width);
+      * (nRect.size.width / sRect.size.width);
     }
   if (nRect.size.height != sRect.size.height)
     {
@@ -4781,7 +4832,7 @@ current key view.<br />
         fRect.origin.y = nRect.size.height - fRect.size.height; 
       }
     }
-
+  
   // FIXME: Is this check needed?
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure
      we don't change the size. */
@@ -4858,14 +4909,17 @@ current key view.<br />
    * The screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
-  sRect = [[self screen] visibleFrame];
+  NSScreen *myScreen = [self screen];
+  if (myScreen == nil)
+    sRect = NSZeroRect;
+  else
+    sRect = [myScreen visibleFrame];
   NSString *autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
                                (int)fRect.origin.x, (int)fRect.origin.y,
                                (int)fRect.size.width, (int)fRect.size.height,
                                (int)sRect.origin.x, (int)sRect.origin.y,
                                (int)sRect.size.width, (int)sRect.size.height];
-  NSDebugLLog(@"NSWindow", @"%s:autosaveName: %@ frame string: %@", __PRETTY_FUNCTION__,
-              _autosaveName, autosaveString);
+  NSDebugMLLog(@"NSWindow", @"autosaveName: %@ frame string: %@", _autosaveName, autosaveString);
 
   return autosaveString;
 }

@@ -355,27 +355,19 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 {
   NSRect orgWindowFrame;
   NSRect windowFrame;
-  NSRect windowContentFrame;
-
-  contentRect.size.height += difference;
-  windowFrame = [object_getClass(self)
-                    frameRectForContentRect: contentRect
-                    styleMask: [window styleMask]];
-
-  // Set the local frame without changing the contents view
-  windowContentFrame = windowFrame;
-  windowContentFrame.origin = NSZeroPoint;
-  _autoresizes_subviews = NO;
-  [super setFrame: windowContentFrame];
   
-  // Keep the top of the window at the same place
-  orgWindowFrame = [window frame];
-  windowFrame.origin.y = orgWindowFrame.origin.y + orgWindowFrame.size.height - windowFrame.size.height;
-  windowFrame.origin.x = orgWindowFrame.origin.x;
-
-  // then resize the window
-  [window setFrame: windowFrame display: YES];
-  [self layout];
+  if (difference != 0.0)
+    {
+      contentRect.size.height += difference;
+      
+      // Keep the top of the window at the same place
+      orgWindowFrame           = [window frame];
+      windowFrame              = orgWindowFrame;
+      windowFrame.origin.y     = orgWindowFrame.origin.y + orgWindowFrame.size.height - windowFrame.size.height;
+      windowFrame.origin.x     = orgWindowFrame.origin.x;
+      windowFrame.size.height += difference;
+      [window setFrame: windowFrame display: YES];
+    }
 }
 
 /*
