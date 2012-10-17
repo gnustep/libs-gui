@@ -4766,6 +4766,10 @@ current key view.<br />
   }
 #endif
   
+  // Another error is that the saved screen rectangle could be wrong i.e. zero...
+  if (NSEqualRects(sRect, NSZeroRect))
+    sRect = [[NSScreen mainScreen] visibleFrame];
+  
   // if toolbar is showing, adjust saved frame to add the toolbar back in
   if ([_toolbar isVisible])
   {
@@ -4910,10 +4914,12 @@ current key view.<br />
    * the window could be placed (ie a rectangle excluding the dock).
    */
   NSScreen *myScreen = [self screen];
+  
+  // If window doesn't show up on any screen then just include main screen frame...
   if (myScreen == nil)
-    sRect = NSZeroRect;
-  else
-    sRect = [myScreen visibleFrame];
+    myScreen = [NSScreen mainScreen];
+  sRect = [myScreen visibleFrame];
+  
   NSString *autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
                                (int)fRect.origin.x, (int)fRect.origin.y,
                                (int)fRect.size.width, (int)fRect.size.height,
