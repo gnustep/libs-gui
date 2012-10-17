@@ -1,3 +1,8 @@
+2012-10-17 08:15-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeDrawing.m: Changes per discussion with Fred.
+	Added check to make sure the image is not overriden.
+
 2012-10-16 17:22-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declaration

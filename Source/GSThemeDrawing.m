@@ -90,8 +90,12 @@
   else if([key isEqualToString:@"\r"] == NO &&
 	  [key isEqualToString:@"\n"] == NO)
     {
-      [cell setImage: nil];
-      [cell setAlternateImage: nil];
+      NSImage *cellImage = [cell image];
+      if(cellImage == [NSImage imageNamed:@"common_ret"])
+	{
+	  [cell setImage: nil];
+	  [cell setAlternateImage: nil];
+	}
     }
 }
 
