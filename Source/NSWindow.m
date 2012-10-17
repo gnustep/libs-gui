@@ -4745,9 +4745,6 @@ current key view.<br />
   // section may need to be updated as we test further...
   if ((fabs(fRect.origin.x) > 32000.00) || (fabs(fRect.origin.y) > 32000.00))
   {
-    // Center in screen...
-    fRect = [self _centerFrame: fRect onScreen: [NSScreen mainScreen]];
-    
     // This additional check potentially needed if application restarted multiple
     // times after the above sequence causing corrupted width/height values...
     // We'll try using the minimum size set but this may not be valid...
@@ -4760,6 +4757,9 @@ current key view.<br />
       fRect.size.width = minSize.width;
     if (fRect.size.height < minSize.height)
       fRect.size.height = minSize.height;
+
+    // Center in screen...
+    fRect = [self _centerFrame: fRect onScreen: [NSScreen mainScreen]];
     
     // Also - screen rectangle could be corrupted and completely meaningless...
     sRect = [[NSScreen mainScreen] visibleFrame];
