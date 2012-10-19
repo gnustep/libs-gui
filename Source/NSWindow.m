@@ -1865,6 +1865,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
           [srv setinputfocus: _windowNum];
         }
       _f.visible = YES;
+      [self displayIfNeeded];
     }
 #ifndef __MINGW32__
   else if ([self isOneShot])
