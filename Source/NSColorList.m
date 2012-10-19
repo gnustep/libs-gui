@@ -486,7 +486,9 @@ static NSColorList *themeColorList = nil;
   if (path_is_standard && ([fm fileExistsAtPath: path] == NO))
     {
       if ([fm createDirectoryAtPath: path 
-			attributes: nil])
+        withIntermediateDirectories: YES
+			 attributes: nil
+                              error: NULL])
 	{
 	  NSLog (@"Created standard directory %@", path);
 	}

@@ -49,6 +49,7 @@
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
 #import "GSBindingHelpers.h"
+#import "NSViewPrivate.h"
 
 /*
  * Class variables
@@ -1117,6 +1118,17 @@ static NSNotificationCenter *nc;
     {
       return [super valueForKey: aKey];
     }
+}
+
+@end
+
+@implementation NSControl(KeyViewLoop)
+
+- (void) _setUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView
+{
+  // Controls are expected to have no subviews
+  //NSLog(@"%@@%p -_setUpKeyViewLoopWithKeyKeyView:%@@%p", [self class], self, [nextKeyView class], nextKeyView);
+  [self setNextKeyView: nextKeyView];
 }
 
 @end

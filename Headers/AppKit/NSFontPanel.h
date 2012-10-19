@@ -33,14 +33,13 @@
 
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSFontManager.h>
+#import <AppKit/NSTextField.h> // needed for NSTextFieldDelegate
 
 @class NSFont;
 @class NSView;
 @class NSButton;
 @class NSBrowser;
 @class NSTextField;
-
-@protocol NSTextFieldDelegate;
 
 enum {
   NSFPPreviewButton,

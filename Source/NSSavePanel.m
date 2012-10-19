@@ -231,8 +231,8 @@ setPath(NSBrowser *browser, NSString *path)
   [_browser setAllowsMultipleSelection: NO];
   [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_browser setTag: NSFileHandlingPanelBrowser];
-  [_browser setAction:@selector(_selectText:)];
-  [_browser setTarget:self];
+  [_browser setAction: @selector(_selectText:)];
+  [_browser setTarget: self];
   [_browser setMinColumnWidth: 140];
   [_topView addSubview: _browser];
   [_browser release];
@@ -1104,7 +1104,7 @@ selectCellWithString: (NSString*)title
  */
 - (NSInteger) runModal
 {
-  return [self runModalForDirectory: [self directory] file: @""];
+  return [self runModalForDirectory: [self directory] file: [self filename]];
 }
 
 /**<p> Initializes the panel to the directory specified by path and,
@@ -1344,7 +1344,10 @@ selectCellWithString: (NSString*)title
 
       if (result == NSAlertDefaultReturn)
 	{
-	  if ([_fm createDirectoryAtPath: filename attributes: nil] == NO)
+	  if ([_fm createDirectoryAtPath: filename
+	     withIntermediateDirectories: YES
+			      attributes: nil
+				   error: NULL] == NO)
 	    {
 	      NSRunAlertPanel(_(@"Save"),
 		_(@"The directory '%@' could not be created."),

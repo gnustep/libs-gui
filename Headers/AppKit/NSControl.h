@@ -215,10 +215,6 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 - (BOOL) control: (NSControl *)control
   textShouldEndEditing: (NSText *)fieldEditor;
 
-- (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
-- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
-- (void) controlTextDidChange: (NSNotification *)aNotification;
-
 - (BOOL) control: (NSControl *)control 
   didFailToFormatString: (NSString *)string 
   errorDescription: (NSString *)error;

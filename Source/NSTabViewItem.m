@@ -198,6 +198,16 @@
   RELEASE(attr);
 }
 
+- (void) setToolTip: (NSString*)toolTip
+{
+  ASSIGN(_toolTip, toolTip);
+}
+
+- (NSString*) toolTip
+{
+  return _toolTip;
+}
+
 // NSCoding protocol.
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -249,18 +259,6 @@
 
   return self;
 }
-
-- (NSString *)toolTip
-{
-  return _toolTip;
-}
-
-- (void) setToolTip:(NSString *)newToolTip
-{
-  // FIXME: Need to find out how to link this to display
-  ASSIGN(_toolTip, newToolTip);
-}
-
 @end
 
 @implementation NSTabViewItem (GNUstep)

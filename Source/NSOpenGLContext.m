@@ -69,6 +69,12 @@
   return [[self _classContext] currentContext];
 }
 
+- (void *)CGLContextObj
+{
+  [self subclassResponsibility: _cmd];
+  return NULL;
+}
+
 - (void)clearDrawable
 {
   [self subclassResponsibility: _cmd];
@@ -107,15 +113,18 @@
   [self subclassResponsibility: _cmd];
 }
 
+- (id)initWithCGLContextObj:(void *)context
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
 
 - (id)initWithFormat:(NSOpenGLPixelFormat *)format 
 	shareContext:(NSOpenGLContext *)share
 {
   [self subclassResponsibility: _cmd];
-  return 0;
+  return nil;
 }
-
-
 
 - (void)makeCurrentContext
 {

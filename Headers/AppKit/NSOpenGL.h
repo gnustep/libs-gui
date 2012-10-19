@@ -102,20 +102,27 @@ typedef enum {
 
 + (void)clearCurrentContext;
 + (NSOpenGLContext *)currentContext;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void *)CGLContextObj;
+#endif
 - (void)clearDrawable;
 - (void)copyAttributesFromContext:(NSOpenGLContext *)context 
 			 withMask:(unsigned long)mask;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (void)createTexture:(unsigned long)target 
 	     fromView:(NSView*)view 
        internalFormat:(unsigned long)format;
-
 - (int)currentVirtualScreen;
+#endif
 
 - (void)flushBuffer;
 
 - (void)getValues:(long *)vals 
      forParameter:(NSOpenGLContextParameter)param;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (id)initWithCGLContextObj:(void *)context;
+#endif
 - (id)initWithFormat:(NSOpenGLPixelFormat *)format 
 	shareContext:(NSOpenGLContext *)share;
 
@@ -139,7 +146,6 @@ typedef enum {
 - (void)update;
 
 - (NSView *)view;
-
 
 @end
 

@@ -125,6 +125,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) setDocumentView: (NSView*)aView
 {
   NSNotificationCenter	*nc;
+  NSView		*nextKV;
 
   if (_documentView == aView)
     {
@@ -134,6 +135,12 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   nc = [NSNotificationCenter defaultCenter];
   if (_documentView)
     {
+      nextKV = [_documentView nextKeyView];
+      if ([nextKV isDescendantOf: _documentView])
+	{
+	  nextKV = nil;
+	}
+
       [nc removeObserver: self
 	  name: NSViewFrameDidChangeNotification
 	  object: _documentView];
@@ -151,6 +158,10 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	      object: self];
 	}
       [_documentView removeFromSuperview];
+    }
+  else
+    {
+      nextKV = [self nextKeyView];
     }
 
   /* Don't retain this since it's stored in our subviews. */
@@ -193,7 +204,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	       object: _documentView];
 
       /*
-       *  if out document view is a tableview, let it know
+       *  if our document view is a tableview, let it know
        *  when we resize
        */
       if ([_documentView isKindOfClass: [NSTableView class]])
@@ -205,9 +216,12 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	           object: self];
 	}
 
+      [self setNextKeyView: _documentView];
+      if (![_documentView nextKeyView])
+	[_documentView setNextKeyView: nextKV];
     }
-
-  /* TODO: Adjust the key view loop to include the new document view */
+  else
+    [self setNextKeyView: nextKV];
 
   [_super_view reflectScrolledClipView: self];
 }
@@ -720,6 +734,14 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
     {
       return [_window makeFirstResponder: _documentView];
     }
+}
+
+- (void) setNextKeyView: (NSView *)aView
+{
+  if (_documentView && aView != _documentView)
+    [_documentView setNextKeyView: aView];
+  else
+    [super setNextKeyView: aView];
 }
 
 /*

@@ -89,6 +89,7 @@
 #import "GSToolTips.h"
 #import "GSIconManager.h"
 #import "NSToolbarFrameworkPrivate.h"
+#import "NSViewPrivate.h"
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -164,7 +165,7 @@ static GSWindowAnimationDelegate *animationDelegate;
 
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
-- (NSScreen *) _screenForFrame:(NSRect)frame;
+- (NSScreen *) _screenForFrame: (NSRect)frame;
 @end
 
 @implementation NSWindow (GNUstepPrivate)
@@ -386,25 +387,26 @@ has blocked and waited for events.
    method and internal requests for the correct 'screen' based on the
    supplied frame request.
 */
-- (NSScreen *) _screenForFrame:(NSRect)frame
+- (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  NSInteger  largest   = 0;
+  NSInteger  largest   = -1;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;
+
   for (index = 0; index < [screens count]; ++index)
-  {
-    NSScreen  *screen = [screens objectAtIndex:index];
-    NSRect     sframe = [screen frame];
-    NSRect     iframe = NSIntersectionRect(frame, sframe);
-    NSInteger  isize  = NSWidth(iframe) * NSHeight(iframe);
-    if (isize > largest)
     {
-      largest   = isize;
-      theScreen = screen;
+      NSScreen  *screen = [screens objectAtIndex: index];
+      NSRect     sframe = [screen frame];
+      NSRect     iframe = NSIntersectionRect(frame, sframe);
+      NSInteger  isize  = NSWidth(iframe) * NSHeight(iframe);
+      if (isize > largest)
+        {
+          largest   = isize;
+          theScreen = screen;
+        }
     }
-  }
-  NSDebugMLLog(@"NSWindow", @"frame: %@ screen: %@ size: %ld\n",
+  NSDebugLLog(@"NSWindow", @"%s: frame: %@ screen: %@ size: %ld\n", __PRETTY_FUNCTION__,
               NSStringFromRect(frame), theScreen, (long)largest);
 
   return theScreen;
@@ -1272,12 +1274,25 @@ many times.
     }
 }
 
+static NSString *
+titleWithRepresentedFilename(NSString *representedFilename)
+{
+  return [NSString stringWithFormat: @"%@  --  %@", 
+		   [representedFilename lastPathComponent],
+		   [[representedFilename stringByDeletingLastPathComponent]
+		     stringByAbbreviatingWithTildeInPath]];
+}
+
+- (BOOL) _hasTitleWithRepresentedFilename
+{
+  NSString *aString = titleWithRepresentedFilename (_representedFilename);
+  return [_windowTitle isEqualToString: aString];
+}
+
 - (void) setTitleWithRepresentedFilename: (NSString*)aString
 {
   [self setRepresentedFilename: aString];
-  aString = [NSString stringWithFormat:
-    @"%@  --  %@", [aString lastPathComponent],
-    [aString stringByDeletingLastPathComponent]];
+  aString = titleWithRepresentedFilename(aString);
   if ([_windowTitle isEqual: aString] == NO)
     {
       ASSIGNCOPY(_windowTitle, aString);
@@ -1537,6 +1552,10 @@ many times.
 
       if ((!_firstResponder) || (_firstResponder == self))
         {
+	  if (!_initialFirstResponder)
+	    {
+	      [self recalculateKeyViewLoop];
+	    }
           if (_initialFirstResponder)
             {
               [self makeFirstResponder: _initialFirstResponder];
@@ -1750,7 +1769,6 @@ many times.
 {
   GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
-  BOOL redisplay = NO;
 
   if (YES == [[NSUserDefaults standardUserDefaults]
     boolForKey: @"GSBackgroundApp"])
@@ -1791,8 +1809,6 @@ many times.
           [self _initBackendWindow];
           display = YES;
         }
-      else
-        redisplay = (_f.visible == NO);
     }
 
   /* If a hide on deactivate window is explicitly ordered in or out while
@@ -1805,8 +1821,10 @@ many times.
 
   // Draw content before backend window ordering
   if (display)
-    [self display];
-  
+    [_wv display];
+  else if (place != NSWindowOut)
+    [_wv displayIfNeeded];
+
   /* The backend will keep us below the current key window unless we
      force it not too */
   if ((otherWin == 0 
@@ -1816,10 +1834,9 @@ many times.
     otherWin = -1;
     
   [srv orderwindow: place : otherWin : _windowNum];
-  
-  if (redisplay)
+  if (display)
     [self display];
-  
+
   if (place != NSWindowOut)
     {
       /*
@@ -1837,17 +1854,9 @@ many times.
           _f.has_opened = YES;
           if (_f.menu_exclude == NO)
             {
-              BOOL        isFileName;
-              NSString *aString;
-              
-              aString = [NSString stringWithFormat: @"%@  --  %@",
-                         [_representedFilename lastPathComponent],
-                         [_representedFilename stringByDeletingLastPathComponent]];
-              isFileName = [_windowTitle isEqual: aString];
-
               [NSApp addWindowsItem: self
                      title: _windowTitle
-                     filename: isFileName];
+                     filename: [self _hasTitleWithRepresentedFilename]];
             }
         }
       if ([self isKeyWindow] == YES)
@@ -1856,7 +1865,6 @@ many times.
           [srv setinputfocus: _windowNum];
         }
       _f.visible = YES;
-      [self displayIfNeeded];
     }
 #ifndef __MINGW32__
   else if ([self isOneShot])
@@ -1995,7 +2003,10 @@ many times.
 
 - (BOOL) showsResizeIndicator
 {
-  return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+        "showsResizeIndicator", "NSWindow");
+  return YES;
 }
 
 - (void) setShowsResizeIndicator: (BOOL)show
@@ -2079,37 +2090,20 @@ many times.
   return (maxDiff * resizeTime) / 150;
 }
 
-- (NSRect) _centerFrame: (NSRect)frame onScreen: (NSScreen*)theScreen
-{
-  NSRect centeredFrame = frame;
-  
-  if ((NSEqualRects(frame, NSZeroRect) == NO) && theScreen)
-  {
-    NSSize screenSize = [theScreen visibleFrame].size;
-    
-    centeredFrame.origin.x = (screenSize.width - centeredFrame.size.width) / 2;
-    centeredFrame.origin.y = (screenSize.height - centeredFrame.size.height) / 2;
-  }
-  
-  return centeredFrame;
-}
-
-- (NSRect) _centerFrame: (NSRect)frame
-{
-  NSScreen *screen = [self screen];
-  
-  // if not visible on any screen, center on the main screen
-  if (!screen)
-    screen = [NSScreen mainScreen];
-  
-  return [self _centerFrame:frame onScreen:screen];
-}
-
 - (void) center
 {
-  NSRect newFrame = [self _centerFrame: _frame];
+  NSScreen *screen = [self screen];
+  NSSize screenSize;
+  NSPoint origin = _frame.origin;
 
-  [self setFrameOrigin: newFrame.origin];
+  if (screen == nil) {
+    screen = [NSScreen mainScreen];
+  }
+  screenSize = [screen visibleFrame].size;
+  origin.x = (screenSize.width - _frame.size.width) / 2;
+  origin.y = (screenSize.height - _frame.size.height) / 2;
+
+  [self setFrameOrigin: origin];
 }
 
 /**
@@ -2411,9 +2405,14 @@ many times.
 
 - (void) displayIfNeeded
 {
+  if (_gstate == 0 || _f.visible == NO)
+    return;
+
   if (_f.views_need_display)
     {
-      [self display];
+      [_wv displayIfNeeded];
+      [self discardCachedImage];
+      _f.views_need_display = NO;
     }
 }
 
@@ -2610,7 +2609,18 @@ many times.
 /** Returns the screen the window is on. */
 - (NSScreen *) screen
 {
-  ASSIGN(_screen, [self _screenForFrame:_frame]);
+  // Only recompute the screen if the current screen
+  // doesn't contain the whole window.
+  // FIXME: Containing half the window would be enough
+  if (_screen != nil)
+    {
+      NSRect sframe = [_screen frame];
+      if (NSContainsRect(sframe, _frame))
+        {
+          return _screen;
+        }
+    }
+  ASSIGN(_screen, [self _screenForFrame: _frame]);
   return _screen;
 }
 
@@ -3454,6 +3464,7 @@ resetCursorRectsForView(NSView *theView)
     return;
   if (theView->_rFlags.has_trkrects)
     {
+      BOOL isFlipped = [theView isFlipped];
       NSArray *tr = theView->_tracking_rects;
       unsigned count = [tr count];
 
@@ -3464,8 +3475,11 @@ resetCursorRectsForView(NSView *theView)
         {
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
+	  NSPoint lastPoint = _lastPoint;
           unsigned i;
 
+	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
+	  loc = [theView convertPoint: loc fromView: nil];
           [tr getObjects: rects];
 
           for (i = 0; i < count; ++i)
@@ -3477,9 +3491,9 @@ resetCursorRectsForView(NSView *theView)
               if ([r isValid] == NO)
                 continue;
               /* Check mouse at last point */
-              last = NSMouseInRect(_lastPoint, r->rectangle, NO);
+              last = NSMouseInRect(lastPoint, r->rectangle, isFlipped);
               /* Check mouse at current point */
-              now = NSMouseInRect(loc, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, isFlipped);
 
               if ((!last) && (now))                // Mouse entered event
                 {
@@ -4378,7 +4392,7 @@ resetCursorRectsForView(NSView *theView)
           _f.selectionDirection =  NSSelectingNext;
           [(id)theView selectText: self];
           _f.selectionDirection =  NSDirectSelection;
-              }
+        }
     }
 }
 
@@ -4475,7 +4489,7 @@ resetCursorRectsForView(NSView *theView)
         {
           return;
         }
-       if ([theView respondsToSelector:@selector(selectText:)])
+      if ([theView respondsToSelector:@selector(selectText:)])
         {
           _f.selectionDirection =  NSSelectingPrevious;
           [(id)theView selectText: self];
@@ -4515,8 +4529,10 @@ current key view.<br />
 
 - (void) recalculateKeyViewLoop
 {
-// FIXME
-// Should be called from NSView viewWillMoveToWindow
+// Should be called from NSView viewWillMoveToWindow (but only if
+// -autorecalculatesKeyViewLoop returns YES)
+  [_contentView _setUpKeyViewLoopWithNextKeyView: _contentView];
+  [self setInitialFirstResponder: [_contentView nextValidKeyView]];
 }
 
 
@@ -4572,17 +4588,9 @@ current key view.<br />
         }
       else if (_f.has_opened == YES && flag == NO)
         {
-          BOOL        isFileName;
-          NSString *aString;
-          
-          aString = [NSString stringWithFormat: @"%@  --  %@",
-                            [_representedFilename lastPathComponent],
-                  [_representedFilename stringByDeletingLastPathComponent]];
-          isFileName = [_windowTitle isEqual: aString];
-
           [NSApp addWindowsItem: self
                           title: _windowTitle
-                       filename: isFileName];
+                       filename: [self _hasTitleWithRepresentedFilename]];
         }
     }
 }
@@ -4661,6 +4669,7 @@ current key view.<br />
   NSRect sRect;
   NSRect fRect;
   int value;
+  NSScreen *screen;
 
   /*
    * Scan in the window frame (flipped coordinate system).
@@ -4704,6 +4713,21 @@ current key view.<br />
   }
 #endif
 
+  // if toolbar is showing, adjust saved frame to add the toolbar back in
+  if ([_toolbar isVisible])
+    {
+      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      fRect.size.height += toolbarHeight;
+      fRect.origin.y -= toolbarHeight;
+    }
+  // if window has a menu, adjust saved frame to add the menu back in
+  if ([_wv hasMenu])
+    {
+      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+      fRect.size.height += menuBarHeight;
+      fRect.origin.y -= menuBarHeight;
+    }
+
   /*
    * Scan in the frame for the area the window was placed in in screen.
    */
@@ -4734,62 +4758,12 @@ current key view.<br />
       return;
     }
   sRect.size.height = value;
-  
-#if defined(__MINGW__)
-  // Finally, this is for handling possible frame errors due to MSWindows sending
-  // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
-  // backend but since they were stored before, if the application was quit with
-  // minimized windows the stored frames in defaults are corrupted and windows are
-  // potentially never seen in subsequent application runs...
-  // There's only so much we can do to try to restore this information and this
-  // section may need to be updated as we test further...
-  if ((fabs(fRect.origin.x) > 32000.00) || (fabs(fRect.origin.y) > 32000.00))
-  {
-    // This additional check potentially needed if application restarted multiple
-    // times after the above sequence causing corrupted width/height values...
-    // We'll try using the minimum size set but this may not be valid...
-    NSSize minSize = [self minSize];
-    if ((minSize.width < 100) || (minSize.height < 100))
-      minSize = NSMakeSize(100, 100);
-    
-    // Adjust if necessary...
-    if (fRect.size.width < minSize.width)
-      fRect.size.width = minSize.width;
-    if (fRect.size.height < minSize.height)
-      fRect.size.height = minSize.height;
-
-    // Center in screen...
-    fRect = [self _centerFrame: fRect onScreen: [NSScreen mainScreen]];
-    
-    // Also - screen rectangle could be corrupted and completely meaningless...
-    sRect = [[NSScreen mainScreen] visibleFrame];
-  }
-#endif
-  
-  // Another error is that the saved screen rectangle could be wrong i.e. zero...
-  if (NSEqualRects(sRect, NSZeroRect))
-    sRect = [[NSScreen mainScreen] visibleFrame];
-  
-  // if toolbar is showing, adjust saved frame to add the toolbar back in
-  if ([_toolbar isVisible])
-  {
-    float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
-    fRect.size.height += toolbarHeight;
-    fRect.origin.y -= toolbarHeight;
-  }
-  // if window has a menu, adjust saved frame to add the menu back in
-  if ([_wv hasMenu])
-  {
-    float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
-    fRect.size.height += menuBarHeight;
-    fRect.origin.y -= menuBarHeight;
-  }
 
   /*
    * The screen rectangle gives the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
-  NSScreen *screen = [self _screenForFrame:fRect];
+  screen = [self _screenForFrame: fRect];
 
   // Check whether a portion is showing somewhere...
   if (screen == nil)
@@ -4798,7 +4772,7 @@ current key view.<br />
       // to move it so it can be seen and assign it to the main
       // screen...
       screen = [NSScreen mainScreen];
-      NSDebugMLLog(@"NSWindow", @"re-assigning to main screen\n");
+      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
     }
   nRect = [screen visibleFrame];
 
@@ -4810,7 +4784,6 @@ current key view.<br />
     {
       fRect.origin.x += nRect.origin.x - sRect.origin.x;
       fRect.origin.y += nRect.origin.y - sRect.origin.y;
-      NSWarnMLog(@"NSEqualPoints: %@\n", NSStringFromRect(fRect));
     }
 
   /*
@@ -4821,7 +4794,7 @@ current key view.<br />
   if (nRect.size.width != sRect.size.width)
     {
       fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
-      * (nRect.size.width / sRect.size.width);
+        * (nRect.size.width / sRect.size.width);
     }
   if (nRect.size.height != sRect.size.height)
     {
@@ -4836,7 +4809,7 @@ current key view.<br />
         fRect.origin.y = nRect.size.height - fRect.size.height; 
       }
     }
-  
+
   // FIXME: Is this check needed?
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure
      we don't change the size. */
@@ -4891,6 +4864,7 @@ current key view.<br />
 {
   NSRect fRect;
   NSRect sRect;
+  NSString *autosaveString;
 
   fRect = _frame;
 
@@ -4913,19 +4887,14 @@ current key view.<br />
    * The screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
-  NSScreen *myScreen = [self screen];
-  
-  // If window doesn't show up on any screen then just include main screen frame...
-  if (myScreen == nil)
-    myScreen = [NSScreen mainScreen];
-  sRect = [myScreen visibleFrame];
-  
-  NSString *autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
+  sRect = [[self screen] visibleFrame];
+  autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
                                (int)fRect.origin.x, (int)fRect.origin.y,
                                (int)fRect.size.width, (int)fRect.size.height,
                                (int)sRect.origin.x, (int)sRect.origin.y,
                                (int)sRect.size.width, (int)sRect.size.height];
-  NSDebugMLLog(@"NSWindow", @"autosaveName: %@ frame string: %@", _autosaveName, autosaveString);
+  NSDebugLLog(@"NSWindow", @"%s:autosaveName: %@ frame string: %@", __PRETTY_FUNCTION__,
+              _autosaveName, autosaveString);
 
   return autosaveString;
 }
@@ -5762,4 +5731,3 @@ NSWindow* GSWindowWithNumber(int num)
     return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);
   return nil;
 }
-

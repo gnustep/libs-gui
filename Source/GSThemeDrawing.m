@@ -77,6 +77,27 @@
 @end
 
 @implementation	GSTheme (Drawing)
+- (void) setKeyEquivalent: (NSString *)key 
+            forButtonCell: (NSButtonCell *)cell
+{
+  if([cell image] == nil && ([key isEqualToString:@"\r"] ||
+			     [key isEqualToString:@"\n"]))
+    { 
+      [cell setImagePosition: NSImageRight];
+      [cell setImage: [NSImage imageNamed:@"common_ret"]];
+      [cell setAlternateImage: [NSImage imageNamed:@"common_retH"]];
+    }
+  else if([key isEqualToString:@"\r"] == NO &&
+	  [key isEqualToString:@"\n"] == NO)
+    {
+      NSImage *cellImage = [cell image];
+      if(cellImage == [NSImage imageNamed:@"common_ret"])
+	{
+	  [cell setImage: nil];
+	  [cell setAlternateImage: nil];
+	}
+    }
+}
 
 - (void) drawButton: (NSRect)frame 
                  in: (NSCell*)cell 
@@ -1657,10 +1678,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSColor *backgroundColour = [[view window] backgroundColor];
   BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
   NSTabViewType type = [(NSTabView *)view tabViewType];
-
-  // Make sure some tab is selected
-  if (!selected && howMany > 0)
-    [(NSTabView *)view selectFirstTabViewItem: nil];
 
   DPSgsave(ctxt);
 

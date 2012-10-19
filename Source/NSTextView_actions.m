@@ -779,7 +779,10 @@ static NSNumber *float_plus_one(NSNumber *cur)
 
 - (void) yank: (id)sender
 {
-  [self insertText: killBuffer];
+  if ([killBuffer length] > 0)
+    {
+      [self insertText: killBuffer];
+    }
 }
 
 

@@ -1501,14 +1501,24 @@ static NSString *processName = nil;
 
       if ([fm fileExistsAtPath: path isDirectory: &isDir] == NO)
         {
-          if (![fm createDirectoryAtPath: path attributes: nil])
-            return nil;
+          if (![fm createDirectoryAtPath: path
+             withIntermediateDirectories: YES
+                              attributes: nil
+                                   error: NULL])
+            {
+              return nil;
+            }
         }
       else if (isDir == NO)
         {
-          if (![fm removeFileAtPath: path handler: nil] ||
-              ![fm createDirectoryAtPath: path attributes: nil])
-            return nil;
+          if (![fm removeFileAtPath: path handler: nil]
+            || ![fm createDirectoryAtPath: path
+              withIntermediateDirectories: YES
+                               attributes: nil
+                                    error: NULL])
+            {
+              return nil;
+            }
         }
     }
 

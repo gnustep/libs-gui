@@ -80,9 +80,8 @@ typedef enum {
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (NSString *)toolTip;
-- (void) setToolTip:(NSString *)newToolTip;
+- (void)setToolTip:(NSString *)newToolTip;
 #endif
-
 @end
 
 @interface NSTabViewItem (GNUstep)
@@ -92,7 +91,6 @@ typedef enum {
 - (void)_setTabView:(NSTabView *)tabView;
 - (NSRect) _tabRect;
 - (NSString*)_truncatedLabel;
-
 @end
 
 #endif // _GNUstep_H_NSTabViewItem

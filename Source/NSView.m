@@ -77,6 +77,7 @@
 #import "GSToolTips.h"
 #import "GSBindingHelpers.h"
 #import "GSGuiPrivate.h"
+#import "NSViewPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -359,12 +360,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	      _visibleRect = _bounds;
 	    }
         }
-      if (_rFlags.has_tooltips != 0)
-        {
-          GSToolTips	*tt = [GSToolTips tipsForView: self];
-
-          [tt rebuild];
-        }
     }
 }
 
@@ -422,10 +417,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (_window != nil)
         {
           [GSDisplayServer removeDragTypes: t fromWindow: _window];
+	  if ([_window autorecalculatesKeyViewLoop])
+	    {
+	      [_window recalculateKeyViewLoop];
+	    }
         }
       if (newWindow != nil)
         {
           [GSDisplayServer addDragTypes: t toWindow: newWindow];
+	  if ([newWindow autorecalculatesKeyViewLoop])
+	    {
+	      [newWindow recalculateKeyViewLoop];
+	    }
         }
     }
   
@@ -1223,12 +1226,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      if (_post_frame_changes && (_posting_frame_changes == NO))
+      if (_post_frame_changes)
         {
-          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
-          _posting_frame_changes = NO;
         }
     }
 }
@@ -1246,12 +1247,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self _setFrameAndClearAutoresizingError: newFrame];
       [self resetCursorRects];
-      if (_post_frame_changes && (_posting_frame_changes == NO))
+      if (_post_frame_changes)
         {
-          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
-          _posting_frame_changes = NO;
         }
     }
 }
@@ -1313,12 +1312,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      if (_post_frame_changes && (_posting_frame_changes == NO))
+      if (_post_frame_changes)
         {
-          _posting_frame_changes = YES;
           [nc postNotificationName: NSViewFrameDidChangeNotification
               object: self];
-          _posting_frame_changes = NO;
         }
     }
 }
@@ -3527,7 +3524,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   ++t;
 
-  aRect = [self convertRect: aRect toView: nil];
   m = [[rectClass alloc] initWithRect: aRect
 				  tag: t
 				owner: anObject
@@ -5063,3 +5059,54 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 @end
 
+@implementation NSView(KeyViewLoop)
+
+static int
+cmpFrame(id view1, id view2, void *context)
+{
+  BOOL flippedSuperView = [(NSView *)context isFlipped];
+  NSRect frame1 = [view1 frame];
+  NSRect frame2 = [view2 frame];
+
+  if (NSMinY(frame1) < NSMinY(frame2))
+    return flippedSuperView ? NSOrderedAscending : NSOrderedDescending;
+  if (NSMaxY(frame1) > NSMaxY(frame2))
+    return flippedSuperView ? NSOrderedDescending : NSOrderedAscending;
+
+  // FIXME Should use NSMaxX in a Hebrew or Arabic locale
+  if (NSMinX(frame1) < NSMinX(frame2))
+    return NSOrderedAscending;
+  if (NSMinX(frame1) > NSMinX(frame2))
+    return NSOrderedDescending;
+  return NSOrderedSame;
+}
+
+- (void) _setUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView
+{
+  if (_rFlags.has_subviews)
+    {
+      [self _recursiveSetUpKeyViewLoopWithNextKeyView: nextKeyView];
+    }
+  else
+    {
+      [self setNextKeyView: nextKeyView];
+    }
+}
+
+- (void) _recursiveSetUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView
+{
+  NSArray *sortedViews;
+  NSView *aView;
+  NSEnumerator *e;
+
+  sortedViews = [_sub_views sortedArrayUsingFunction: cmpFrame context: self];
+  e = [sortedViews reverseObjectEnumerator];
+  while ((aView = [e nextObject]) != nil)
+    {
+      [aView _setUpKeyViewLoopWithNextKeyView: nextKeyView];
+      nextKeyView = aView;
+    }
+  [self setNextKeyView: nextKeyView];
+}
+
+@end

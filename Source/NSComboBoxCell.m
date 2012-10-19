@@ -1255,29 +1255,29 @@ static GSComboWindow *gsWindow = nil;
     {
       if (_dataSource == nil)
         {
-          NSLog(@"%@: No data source currently specified", self);
-        }
+	  NSLog(@"%@: No data source currently specified", self);
+	}
       else if ([_dataSource respondsToSelector: @selector(comboBox:completedString:)])
         {
-          return [_dataSource comboBox: (NSComboBox *)[self controlView]
-                 completedString: substring];
-        }
+	  return [_dataSource comboBox: (NSComboBox *)[self controlView] 
+		       completedString: substring];
+	}
       else if ([_dataSource respondsToSelector: @selector(comboBoxCell:completedString:)])
         {
-          return [_dataSource comboBoxCell: self completedString: substring];
-        }
+	  return [_dataSource comboBoxCell: self completedString: substring];
+	}
       else
         {
           unsigned int i;
 
           for (i = 0; i < [self numberOfItems]; i++)
             {
-              NSString *str = [self _stringValueAtIndex: i];
+	      NSString *str = [self _stringValueAtIndex: i];
 
-              if ([str length] > [substring length] && [str hasPrefix: substring])
-                return str;
-            }
-        }
+	      if ([str length] > [substring length] && [str hasPrefix: substring])
+	        return str;
+            }	
+	}
     }
   else
     {
@@ -1285,10 +1285,10 @@ static GSComboWindow *gsWindow = nil;
 
       for (i = 0; i < [_popUpList count]; i++)
         {
-          NSString *str = [[_popUpList objectAtIndex: i] description];
+	  NSString *str = [[_popUpList objectAtIndex: i] description];
 
-          if ([str length] > [substring length] && [str hasPrefix: substring])
-            return str;
+	  if ([str length] > [substring length] && [str hasPrefix: substring])
+	    return str;
         }
     }
   
@@ -1749,14 +1749,14 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
         && _prevSelectedRange.location < selectedRange.location)
         {
           more = [self completedString: myString];
-          if (more && [more isEqualToString: myString] == NO)
+          if ((more != nil) && [more isEqualToString: myString] == NO)
             {
-              [textObject setString: more];
-              location = myStringLength;
+	      [textObject setString: more];
+	      location = myStringLength;
               length = [more length] - location;
-              [textObject setSelectedRange: NSMakeRange(location, length)];
-              [textObject scrollRangeToVisible: NSMakeRange(location, length)];
-            }
+	      [textObject setSelectedRange: NSMakeRange(location, length)];
+	      [textObject scrollRangeToVisible: NSMakeRange(location, length)];
+	    }
         }
       RELEASE(myString);
     }

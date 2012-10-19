@@ -438,7 +438,6 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 /**
  * Sender requests application to open filenames.
- * <em>Not sent yet under GNUstep.</em>
  */
 - (void) application: (NSApplication*)app openFiles: (NSArray*)filenames;
 #endif

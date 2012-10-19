@@ -80,6 +80,11 @@
 {
   ASSIGN(destinationSelection,dst);
 }
+
+- (void) setIsMarker: (BOOL)flag
+{
+  _flags.isMarker = flag;
+}
 @end
 
 
@@ -161,7 +166,7 @@
 - (BOOL)addLinkAsMarker:(NSDataLink *)link
 		     at:(NSSelection *)selection
 {
-  // FIXME: Marker?
+  [link setIsMarker: YES];
   return [self addLink: link at: selection];
 }
 

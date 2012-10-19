@@ -55,12 +55,7 @@ value_from_info_plist_for_key (NSString *key)
   
   if ((d == nil) && (load_failed == NO))
     {
-      NSBundle *b;
-      NSString *f;
-
-      b = [NSBundle mainBundle];
-      f = [b pathForResource: @"Info-gnustep" ofType: @"plist"];
-      d = [NSDictionary dictionaryWithContentsOfFile: f];
+      d = [[NSBundle mainBundle] localizedInfoDictionary];
       
       if (d == nil)
 	load_failed = YES;

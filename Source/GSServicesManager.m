@@ -591,6 +591,28 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return result;
 }
 
+- (void) application: (NSApplication*)theApp
+           openFiles: (NSArray*)files
+{
+  id    del = [NSApp delegate];
+  
+  if ([del respondsToSelector: _cmd])
+    {
+      [del application: theApp openFiles: files];
+    }
+  else
+    {
+      NSString *filePath;
+      NSEnumerator *en = [files objectEnumerator];
+
+      while ((filePath = (NSString *)[en nextObject]) != nil)
+	{
+	  [self application: theApp openFile: filePath];
+	}
+    }
+}
+
+
 - (BOOL) application: (NSApplication*)theApp
    openFileWithoutUI: (NSString*)file
 {

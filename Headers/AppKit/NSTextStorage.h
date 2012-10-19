@@ -134,12 +134,6 @@ enum
 - (void) endEditing;
 
 /*
- * Attributes for string...
-*/
-- (NSFont*) font;
-- (void) setFont: (NSFont*)font;
-
-/*
  * The delegate can use the following methods when it receives a
  * notification that a change was made.  The methods tell him what
  * kind of change was made.  */
@@ -186,6 +180,14 @@ enum
 - (void) textStorageWillProcessEditing: (NSNotification*)notification;
 - (void) textStorageDidProcessEditing: (NSNotification*)notification;
 
+@end
+
+@interface NSTextStorage (Scripting)
+/*
+ * Attributes for string...
+*/
+- (NSFont*) font;
+- (void) setFont: (NSFont*)font;
 @end
 
 /**** Notifications ****/

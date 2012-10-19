@@ -94,10 +94,6 @@ GSDisplayServer *
 GSCurrentServer(void)
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-  
-  if ([NSThread currentThread] != [NSThread mainThread])
-    NSLog(@"%s:attempt to access display server on background thread: %@", __PRETTY_FUNCTION__,
-          [NSThread currentThread]);
 
   return (GSDisplayServer*) [dict objectForKey: NSCurrentServerThreadKey];
 }

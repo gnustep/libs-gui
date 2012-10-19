@@ -1991,14 +1991,6 @@ static NSColor *dtxtCol;
   return nil;
 }
 
-/** Although not documented, Apple XIBs allow specifying a tool tip on an NSCell
- it's unclear exactly where that tooltip should be set/applied
- but not responding makes XIBs unloadable */
-- (void) setToolTip: (NSString *) toolTip
-{
-    return;
-}
-
 /**<p>This method is used by subclasses to specify the control view.</p>
  */
 - (void) setControlView: (NSView*)view
@@ -2402,6 +2394,7 @@ static NSColor *dtxtCol;
       [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
       
       // flags part 2
+      cFlags2 |= (([self allowsUndo] == NO) ? 0x1000 : 0);
       cFlags2 |= ([self controlTint] << 5);
       cFlags2 |= ([self lineBreakMode] << 9);
       cFlags2 |= ([self controlSize] << 17);
@@ -2568,7 +2561,7 @@ static NSColor *dtxtCol;
       
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
-	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
+          [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
           [self setSendsActionOnEndEditing: ((cFlags2 & 0x400000) == 0x400000)];
           [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
@@ -2576,6 +2569,9 @@ static NSColor *dtxtCol;
           [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];
           [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
           [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
+
+          // These bit flags are the other way around!
+          [self setAllowsUndo: ((cFlags2 & 0x1000) != 0x1000)];
         }
       if ([aDecoder containsValueForKey: @"NSSupport"])
         {

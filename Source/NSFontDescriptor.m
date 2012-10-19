@@ -119,7 +119,7 @@
 {
   NSDictionary *traits;
 
-  traits = [_attributes objectForKey: NSFontTraitsAttribute];
+  traits = [self objectForKey: NSFontTraitsAttribute];
   if (traits == nil)
     {
       traits = [NSDictionary dictionaryWithObject: 
@@ -219,7 +219,7 @@
   return [[NSFontManager sharedFontManager] matchingFontDescriptorsFor: attributes];
 }
 
-- (NSFontDescriptor *) matchingFontDescriptorWithMandatoryKeys: (NSSet *)keys;
+- (NSFontDescriptor *) matchingFontDescriptorWithMandatoryKeys: (NSSet *)keys
 {
   NSArray *found = [self matchingFontDescriptorsWithMandatoryKeys: keys];
 
@@ -235,7 +235,7 @@
 
 - (NSAffineTransform *) matrix
 {
-  return [_attributes objectForKey: NSFontMatrixAttribute];
+  return [self objectForKey: NSFontMatrixAttribute];
 }
 
 - (id) objectForKey: (NSString *)attribute
@@ -245,11 +245,11 @@
 
 - (CGFloat) pointSize
 {
-  id size = [_attributes objectForKey: NSFontSizeAttribute];
+  id size = [self objectForKey: NSFontSizeAttribute];
 
   if (size)
     {
-      return [size floatValue];
+      return [size doubleValue];
     }
   else
     {
@@ -277,7 +277,7 @@
 {
   NSDictionary *traits;
 
-  traits = [_attributes objectForKey: NSFontTraitsAttribute];
+  traits = [self objectForKey: NSFontTraitsAttribute];
   if (traits == nil)
     {
       return 0;

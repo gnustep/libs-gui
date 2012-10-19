@@ -804,7 +804,10 @@
         {
           IBToolTipAttribute *tta = [(NSDictionary*)value objectForKey: @"ToolTip"];
 
-          [realObj setToolTip: [tta toolTip]];
+          if ([realObj respondsToSelector: @selector(setToolTip:)])
+            {
+              [realObj setToolTip: [tta toolTip]];
+            }
         }
 
       if ([realObj respondsToSelector: @selector(awakeFromNib)])
@@ -844,7 +847,7 @@
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
   id owner = [context objectForKey: NSNibOwner];
   id first = nil;
-  id app   = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
+  id app   = nil;
   
   // Get the file's owner and NSApplication object references...
   if ([[(NSCustomObject*)[rootObjects objectAtIndex: 1] className] isEqualToString: @"FirstResponder"])
@@ -1192,8 +1195,14 @@
 - (id) initForReadingWithData: (NSData*)data
 {
   NSXMLParser *theParser;
+  NSData *theData = data;
 
-  NSData *theData = [self _preProcessXib: data];
+  // If we are in the interface builder app, do not replace
+  // the existing classes with their custom subclasses.
+  if([NSClassSwapper isInInterfaceBuilder] == NO)
+    {
+      theData = [self _preProcessXib: data];
+    }
 
   objects = [[NSMutableDictionary alloc] init];
   stack = [[NSMutableArray alloc] init];

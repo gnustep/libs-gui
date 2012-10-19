@@ -629,6 +629,8 @@ typedef struct _GSButtonCellFlags
 */
 - (void) setKeyEquivalent: (NSString*)key
 {
+  [[GSTheme theme] setKeyEquivalent: key
+		      forButtonCell: self];
   ASSIGNCOPY(_keyEquivalent, key);
 }
 
@@ -1914,8 +1916,11 @@ typedef struct _GSButtonCellFlags
     {
       BOOL tmp;
       int version = [aDecoder versionForClassName: @"NSButtonCell"];
-      
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+      NSString *key = nil;
+
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &key];
+      [self setKeyEquivalent: key]; // Set the key equivalent...
+
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
