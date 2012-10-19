@@ -1,3 +1,9 @@
+2012-10-18 23:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSButtonCell.m: Correct issues when decoding a .gorm
+	file with key equivalent.  Make sure that the image is properly
+	set.
+
 2012-10-17 08:15-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemeDrawing.m: Changes per discussion with Fred.
