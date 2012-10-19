@@ -2090,19 +2090,33 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return (maxDiff * resizeTime) / 150;
 }
 
+- (NSRect) _centerFrame: (NSRect)frame onScreen: (NSScreen*)theScreen
+{
+  NSRect centeredFrame = frame;
+  
+  if (theScreen == nil)
+    theScreen = [NSScreen mainScreen];
+  
+  if ((NSEqualRects(frame, NSZeroRect) == NO) && theScreen)
+    {
+      NSSize screenSize = [theScreen visibleFrame].size;
+      
+      centeredFrame.origin.x = (screenSize.width - centeredFrame.size.width) / 2;
+      centeredFrame.origin.y = (screenSize.height - centeredFrame.size.height) / 2;
+    }
+  
+  return centeredFrame;
+}
+ 
+- (NSRect) _centerFrame: (NSRect)frame
+{
+  return [self _centerFrame:frame onScreen:[NSScreen mainScreen]];
+}
+
 - (void) center
 {
-  NSScreen *screen = [self screen];
-  NSSize screenSize;
-  NSPoint origin = _frame.origin;
-
-  if (screen == nil) {
-    screen = [NSScreen mainScreen];
-  }
-  screenSize = [screen visibleFrame].size;
-  origin.x = (screenSize.width - _frame.size.width) / 2;
-  origin.y = (screenSize.height - _frame.size.height) / 2;
-
+  NSRect frame = [self _centerFrame: _frame onScreen: [self screen]];
+  NSPoint origin = frame.origin;
   [self setFrameOrigin: origin];
 }
 
@@ -4758,6 +4772,40 @@ current key view.<br />
       return;
     }
   sRect.size.height = value;
+#if defined(__MINGW__)
+  // Finally, this is for handling possible frame errors due to MSWindows sending
+  // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
+  // backend but since they were stored before, if the application was quit with
+  // minimized windows the stored frames in defaults are corrupted and windows are
+  // potentially never seen in subsequent application runs...
+  // There's only so much we can do to try to restore this information and this
+  // section may need to be updated as we test further...
+  if ((fabs(fRect.origin.x) > 32000.00) || (fabs(fRect.origin.y) > 32000.00))
+    {
+      // This additional check potentially needed if application restarted multiple
+      // times after the above sequence causing corrupted width/height values...
+      // We'll try using the minimum size set but this may not be valid...
+      NSSize minSize = [self minSize];
+      if ((minSize.width < 100) || (minSize.height < 100))
+        minSize = NSMakeSize(100, 100);
+      
+      // Adjust if necessary...
+      if (fRect.size.width < minSize.width)
+        fRect.size.width = minSize.width;
+      if (fRect.size.height < minSize.height)
+        fRect.size.height = minSize.height;
+      
+      // Center in screen...
+      fRect = [self _centerFrame: fRect onScreen: [NSScreen mainScreen]];
+      
+      // Also - screen rectangle could be corrupted and completely meaningless...
+      sRect = [[NSScreen mainScreen] visibleFrame];
+    }
+#endif
+  
+  // Another error is that the saved screen rectangle could be wrong i.e. zero...
+  if (NSEqualRects(sRect, NSZeroRect))
+    sRect = [[NSScreen mainScreen] visibleFrame];
 
   /*
    * The screen rectangle gives the area of the screen in which
@@ -4882,12 +4930,17 @@ current key view.<br />
       fRect.size.height -= menuBarHeight;
       fRect.origin.y += menuBarHeight;
     }
+  
+  // If window doesn't show up on any screen then just include main screen frame...
+  NSScreen *myScreen = [self screen];
+  if (myScreen == nil)
+    myScreen = [NSScreen mainScreen];
 
   /*
    * The screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
-  sRect = [[self screen] visibleFrame];
+  sRect = [myScreen visibleFrame];
   autosaveString = [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
                                (int)fRect.origin.x, (int)fRect.origin.y,
                                (int)fRect.size.width, (int)fRect.size.height,
