@@ -137,7 +137,10 @@
     }
 
   path = [path stringByAppendingPathComponent: @"Resources"];
-  if (![fm createDirectoryAtPath: path attributes: nil])
+  if (![fm createDirectoryAtPath: path
+     withIntermediateDirectories: YES
+                      attributes: nil
+                           error: NULL])
     {
       NSLog(@"cannot not create bundle directory %@", path);
       return NO;

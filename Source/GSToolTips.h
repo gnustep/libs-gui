@@ -80,11 +80,6 @@
  */
 - (void) mouseMoved: (NSEvent *)theEvent;
 
-/** Rebuild rectangles. Called by NSView whenever it has to rebuild its
- * coordinate system because it has been resized, moved, or reparented.
- */
-- (void) rebuild;
-
 /** Support [NSView-removeAllToolTips]
  */
 - (void) removeAllToolTips;

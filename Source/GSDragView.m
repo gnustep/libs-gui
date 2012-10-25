@@ -417,6 +417,7 @@ static	GSDragView *sharedDragView = nil;
 
 - (void) _clearupWindow
 {
+  [_window setFrame: NSZeroRect display: NO];
   [_window orderOut: nil];
 }
 

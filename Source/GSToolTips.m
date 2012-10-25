@@ -42,7 +42,6 @@
 #import "GSToolTips.h"
 #import "GSFastEnumeration.h"
 
-
 @interface NSWindow (GNUstepPrivate)
 
 + (void) _setToolTipVisible: (GSToolTips*)t;
@@ -64,13 +63,11 @@
 {
   id		object;
   void		*data;
-  NSRect	viewRect;
 }
 - (void*) data;
-- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r;
+- (id) initWithObject: (id)o userData: (void*)d;
 - (id) object;
 - (void) setObject: (id)o;
-- (NSRect) viewRect;
 @end
 
 @implementation	GSTTProvider
@@ -83,10 +80,9 @@
   [self setObject: nil];
   [super dealloc];
 }
-- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
+- (id) initWithObject: (id)o userData: (void*)d
 {
   data = d;
-  viewRect = r;
   [self setObject: o];
   return self;
 }
@@ -117,62 +113,50 @@
       object = [[object description] copy];
     }
 }
-- (NSRect) viewRect
-{
-  return viewRect;
-}
 @end
 
 @interface GSTTView : NSView
 {
   NSAttributedString *_text;
 }
+
 - (void)setText: (NSAttributedString *)text;
 @end
-
+ 	  	 
 @implementation GSTTView
-- (id)initWithFrame:(NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
-  self = [super initWithFrame:frameRect];
+  self = [super initWithFrame: frameRect];
   if (self)
     {
-      [self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+      [self setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
     }
   return self;
 }
 
-- (void)setText:(NSAttributedString *)text
+- (void) setText: (NSAttributedString *)text
 {
   if (_text != text)
-  {
-    ASSIGN(_text, text);
-    [self setNeedsDisplay: YES];
-  }
+    {
+      ASSIGN(_text, text);
+      [self setNeedsDisplay: YES];
+    }
 }
-
-- (void)drawRect:(id)dirtyRect
+ 	  	 
+- (void) drawRect: (id)dirtyRect
 {
   if (_text)
-  {
-    NSRect  bounds    = [self bounds];
-    NSRect  frame     = [self frame];
-    NSRect  textRect  = NSInsetRect(frame, 2, 2);
-
-#if 1 // THIS DOESN'T WORK ON winlib - 2 SIDES OF THE RECT ARE MISSING!!!
-      // WILL DEBUG THIS AFTER CHECKING IN A WORKING VERSION
-    NSBezierPath *path = [NSBezierPath bezierPathWithRect:bounds];
-    [[NSColor blackColor] setStroke];
-    [path stroke];
-#else
     {
-      NSRectEdge    sides[]   = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
-      NSColor      *black     = [NSColor blackColor];
-      NSColor      *colors[]  = {black, black, black, black};
+      NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
+      NSColor *black = [NSColor blackColor];
+      NSColor *colors[] = {black, black, black, black};
+      NSRect bounds = [self bounds];
+      NSRect frame = [self frame];
+      NSRect textRect = NSInsetRect(frame, 2, 2);
+
       NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
+      [_text drawInRect: textRect];
     }
-#endif
-    [_text drawInRect: textRect];
-  }
 }
 @end
 
@@ -180,7 +164,7 @@
 // Tooltip panel that will not try to become main or key
 - (BOOL) canBecomeKeyWindow;
 - (BOOL) canBecomeMainWindow;
-- (void) setToolTipText: (NSAttributedString*)text;
+
 @end
 
 @implementation GSTTPanel
@@ -190,30 +174,29 @@
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag;
 {
-  self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
+  self = [super initWithContentRect: contentRect
+                          styleMask: aStyle
+                            backing: bufferingType
+                              defer: flag];
   if (self)
-  {
-    [self setContentView:[[[GSTTView alloc] initWithFrame: contentRect] autorelease]];
-  }
-  return(self);
+    {
+      [self setContentView: [[[GSTTView alloc] initWithFrame: contentRect] autorelease]];
+    }
+  return self;
 }
 
-- (void)setToolTipText:(NSAttributedString *)text
-{
-  [(GSTTView*)([self contentView]) setText:text];
-}
-
-- (BOOL) canBecomeKeyWindow
+- (BOOL) canBecomeKeyWindow 
 {
   return NO;
 }
 
-- (BOOL) canBecomeMainWindow
+- (BOOL) canBecomeMainWindow 
 {
   return NO;
 }
 
 @end
+
 
 @interface	GSToolTips (Private)
 - (void) _endDisplay;
@@ -232,20 +215,22 @@ typedef NSView* NSViewPtr;
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
-static GSTTPanel		*window = nil; // Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
-static BOOL   isOpening = NO; // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
+// Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
+static GSTTPanel	*window = nil;
+// Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
+static BOOL   isOpening = NO;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
 + (void) initialize
 {
   viewsMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-                              NSObjectMapValueCallBacks, 8);
+			     NSObjectMapValueCallBacks, 8);
            
   window = [[GSTTPanel alloc] initWithContentRect: NSMakeRect(0,0,100,25)
-                                        styleMask: NSBorderlessWindowMask
-                                          backing: NSBackingStoreRetained
-                                            defer: YES];
+				       styleMask: NSBorderlessWindowMask
+					 backing: NSBackingStoreRetained
+					   defer: YES];
     
   [window setBackgroundColor:
     [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
@@ -253,7 +238,6 @@ static BOOL		restoreMouseMoved;
   [window setExcludedFromWindowsMenu: YES];
   [window setLevel: NSStatusWindowLevel];
   [window setAutodisplay: NO];
-  [window setTitle:@"GSToolTips"];
 }
 
 + (void) removeTipsForView: (NSView*)aView
@@ -304,8 +288,7 @@ static BOOL		restoreMouseMoved;
     }
 
   provider = [[GSTTProvider alloc] initWithObject: anObject
-					 userData: data
-					     rect: aRect];
+					 userData: data];
   tag = [view addTrackingRect: aRect
                         owner: self
                      userData: provider
@@ -324,8 +307,8 @@ static BOOL		restoreMouseMoved;
     {
       if (rect->owner == self)
         {
-          count++;
-        }
+	  count++;
+	}
     }
   return count;
 }
@@ -421,35 +404,6 @@ static BOOL		restoreMouseMoved;
   [window setFrameOrigin: origin];
 }
 
-- (void) rebuild
-{
-  NSEnumerator		*enumerator;
-  GSTrackingRect	*rect;
-
-  enumerator = [((NSViewPtr)view)->_tracking_rects objectEnumerator];
-  while ((rect = [enumerator nextObject]) != nil)
-    {
-      if (rect->owner == self)
-        {
-          GSTTProvider		*provider = (GSTTProvider *)rect->user_data;
-          NSRect		frame;
-
-          if (rect->tag == toolTipTag)
-            {
-              frame = [view bounds];
-            }
-          else
-            {
-              // FIXME is this the thing to do with tooltips other than
-              // the main one (which we know should cover the whole view)?
-              frame = [provider viewRect];
-            }
-          frame = [view convertRect: frame toView: nil];
-          [rect reset: frame inside: NO];
-        }
-    }
-}
-
 - (void) removeAllToolTips
 {
   NSEnumerator		*enumerator;
@@ -462,10 +416,10 @@ static BOOL		restoreMouseMoved;
     {
       if (rect->owner == self)
         {
-          RELEASE((GSTTProvider*)rect->user_data);
-          rect->user_data = 0;
-                [view removeTrackingRect: rect->tag];
-        }
+	  RELEASE((GSTTProvider*)rect->user_data);
+	  rect->user_data = 0;
+          [view removeTrackingRect: rect->tag];
+	}
     }
   toolTipTag = -1;
 }
@@ -502,12 +456,12 @@ static BOOL		restoreMouseMoved;
   while ((rect = [enumerator nextObject]) != nil)
     {
       if (rect->tag == tag && rect->owner == self)
-        {
-          RELEASE((GSTTProvider*)rect->user_data);
-          rect->user_data = 0;
-          [view removeTrackingRect: tag];
-                return;
-        }
+	{
+	  RELEASE((GSTTProvider*)rect->user_data);
+	  rect->user_data = 0;
+	  [view removeTrackingRect: tag];
+          return;
+	}
     }
 }
 
@@ -517,10 +471,10 @@ static BOOL		restoreMouseMoved;
     {
       if (toolTipTag != -1)
         {
-          [self _endDisplay];
-          [self removeToolTip: toolTipTag];
-          toolTipTag = -1;
-        }
+	  [self _endDisplay];
+	  [self removeToolTip: toolTipTag];
+	  toolTipTag = -1;
+	}
     }
   else
     {
@@ -528,31 +482,30 @@ static BOOL		restoreMouseMoved;
 
       if (toolTipTag == -1)
         {
-          NSRect	rect;
+	  NSRect	rect;
 
-          rect = [view bounds];
-          provider = [[GSTTProvider alloc] initWithObject: string
-                   userData: nil
-                       rect: rect];
-          toolTipTag = [view addTrackingRect: rect
-                     owner: self
-                  userData: provider
-              assumeInside: NO];
-        }
+	  rect = [view bounds];
+	  provider = [[GSTTProvider alloc] initWithObject: string
+						 userData: nil];
+	  toolTipTag = [view addTrackingRect: rect
+				       owner: self
+				    userData: provider
+				assumeInside: NO];
+	}
       else
         {
-          NSEnumerator   	*enumerator;
-          GSTrackingRect	*rect;
+	  NSEnumerator   	*enumerator;
+	  GSTrackingRect	*rect;
 
-          enumerator = [((NSViewPtr)view)->_tracking_rects objectEnumerator];
-          while ((rect = [enumerator nextObject]) != nil)
-            {
-              if (rect->tag == toolTipTag && rect->owner == self)
-                {
-                  [((GSTTProvider*)rect->user_data) setObject: string];
-                }
-            }
-        }
+	  enumerator = [((NSViewPtr)view)->_tracking_rects objectEnumerator];
+	  while ((rect = [enumerator nextObject]) != nil)
+	    {
+	      if (rect->tag == toolTipTag && rect->owner == self)
+		{
+		  [((GSTTProvider*)rect->user_data) setObject: string];
+		}
+	    }
+	}
     }
 }
 
@@ -590,19 +543,16 @@ static BOOL		restoreMouseMoved;
   if (timer != nil && timedObject == self)
     {
       if ([timer isValid])
-        {
-          [timer invalidate];
-        }
+	{
+	  [timer invalidate];
+	}
       timer = nil;
       timedObject = nil;
     }
   if (window != nil)
     {
-#if 0
-      [window close];
-#else
+      [window setFrame: NSZeroRect display: NO];
       [window orderOut:self];
-#endif
     }
   if (restoreMouseMoved == YES)
     {
@@ -628,9 +578,10 @@ static BOOL		restoreMouseMoved;
   // but need the userinfo object to remain valid for the
   // remainder of this method.
   toolTipString = [[[aTimer userInfo] retain] autorelease];
-  if (nil == toolTipString)
+  if ( (nil == toolTipString) ||
+       ([toolTipString isEqualToString: @""]) )
     {
-      toolTipString = @"";
+      return;
     }
 
   if (timer != nil)
@@ -660,9 +611,6 @@ static BOOL		restoreMouseMoved;
       [self _endDisplay];
     }
 
-  if ((toolTipString == nil) || ([toolTipString length] == 0))
-    return;
-  
   size = [[NSUserDefaults standardUserDefaults]
 	   floatForKey: @"NSToolTipsFontSize"];
 
@@ -717,9 +665,9 @@ static BOOL		restoreMouseMoved;
   offset.width = rect.origin.x - mouseLocation.x;
 
   isOpening = YES;
-  [window setToolTipText:toolTipText];
-  [window setFrame:rect display:NO];
-  [window orderFront:self];
+  [(GSTTView*)([window contentView]) setText: toolTipText];
+  [window setFrame: rect display: NO];
+  [window orderFront: nil];
   isOpening = NO;
 
   RELEASE(toolTipText);
