@@ -361,17 +361,12 @@ static	GSDragView *sharedDragView = nil;
 {
   int win;
   
-  NSEnumerator *winEnum = [[GSServerForWindow(_window) windowlist] objectEnumerator];
-  NSNumber *winNum = nil;
-  while ((winNum = [winEnum nextObject])) {
-	NSWindow *window = GSWindowWithNumber([winNum intValue]);
-	NSRect frame = [window frame];
-	if (window != _window && NSPointInRect(mouseLocation, frame) && ![window ignoresMouseEvents])
-	{
-		return window;
-	}
-  }
-  return nil;
+  *mouseWindowRef = 0;
+  win = [GSServerForWindow(_window) findWindowAt: mouseLocation
+                                     windowRef: mouseWindowRef
+                                     excluding: [_window windowNumber]];
+
+  return GSWindowWithNumber(win);
 }
 
 @end

@@ -1,3 +1,10 @@
+2012-10-24  Doug Simons <doug.simons@testplant.com>
+
+    * Source/GSDragView.m: Revert my previous change, which failed to set the
+	mouseWindowRef for non-GNUstep windows. So we have to move the check for the
+	ignoresMouseEvents flag into the findWindowAt:windowRef:excluding: method
+	in back instead.
+
 2012-10-14  Doug Simons <doug.simons@testplant.com>
 
     * Source/GSDragView.m: Ignore any window that ignoresMouseEvents when dragging.
