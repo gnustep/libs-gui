@@ -1,3 +1,9 @@
+2012-10-26  German A. Arias  <german@xelalug.org>
+
+	* Source/GSThemeMenu.m (-setMenu:forWindow:): Revert last change. After
+	a different test I notice this really work. I don't know why my first
+	test didn't work.
+
 2012-10-25  German A. Arias  <german@xelalug.org>
 
 	* Source/GSThemeMenu.m (-setMenu:forWindow:): Remove any possible old

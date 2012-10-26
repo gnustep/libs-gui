@@ -69,6 +69,9 @@
   // Prevent recursion
   [window _setMenu: menu];
 
+  // Remove any possible old menu view
+  [wv removeMenuView];
+
   //NSLog(@"Adding menu %@ to window %@", menu, window);
   if (menu != nil)
   {
@@ -77,13 +80,6 @@
     [menuView setMenu: menu];
     [menuView setHorizontal: YES];
     [menuView setInterfaceStyle: NSWindows95InterfaceStyle];
-
-    /* Remove any possible old menu view.
-     * We do this here, because in its previous place
-     * (before if statement) doesn't work.
-     */
-    [wv removeMenuView];
-
     [wv addMenuView: menuView];
     [menuView sizeToFit];
     RELEASE(menuView);
