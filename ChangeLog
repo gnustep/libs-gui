@@ -1,3 +1,9 @@
+2012-10-25  German A. Arias  <german@xelalug.org>
+
+	* Source/GSThemeMenu.m (-setMenu:forWindow:): Remove any possible old
+	menu before set the new menu. Because in its previous place (before if
+	statement) doesn't work.
+
 2012-10-18 23:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSButtonCell.m: Correct issues when decoding a .gorm
