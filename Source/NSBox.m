@@ -455,7 +455,11 @@
   NSColor *color;
 
   rect = NSIntersectionRect(_bounds, rect);
-  if (_box_type == NSBoxCustom)
+  if (_transparent)
+    {
+      color = [NSColor clearColor];
+    }
+  else if (_box_type == NSBoxCustom)
     {
       color = _fill_color;
     }
@@ -463,6 +467,7 @@
     {
       color = [_window backgroundColor];
     }
+  
   // Fill inside
   [color set];
   NSRectFill(rect);
@@ -471,8 +476,9 @@
   switch (_border_type)
     {
       case NSNoBorder: 
-	break;
-      case NSLineBorder: 
+        break;
+        
+      case NSLineBorder:
         if (_box_type == NSBoxCustom)
           {
             [_border_color set];
@@ -483,13 +489,15 @@
             [[NSColor controlDarkShadowColor] set];
             NSFrameRect(_border_rect);
           }
-	break;
+        break;
+
       case NSBezelBorder:
-	[[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
-	break;
-      case NSGrooveBorder: 
-	[[GSTheme theme] drawGroove: _border_rect withClip: rect];
-	break;
+        [[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
+        break;
+
+      case NSGrooveBorder:
+        [[GSTheme theme] drawGroove: _border_rect withClip: rect];
+        break;
     }
 
   // Draw title
@@ -622,9 +630,13 @@
           [self setTitlePosition: titlePosition];
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
-        {
-          _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
-        }
+      {
+        _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
+      }
+      if ([aDecoder containsValueForKey: @"NSFullyTransparent"])
+      {
+        _transparent = [aDecoder decodeBoolForKey: @"NSFullyTransparent"];
+      }
       if ([aDecoder containsValueForKey: @"NSOffsets"])
         {
           [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
