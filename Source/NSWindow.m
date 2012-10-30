@@ -4773,6 +4773,7 @@ current key view.<br />
       return;
     }
   sRect.size.height = value;
+  
 #if defined(__MINGW__)
   // Finally, this is for handling possible frame errors due to MSWindows sending
   // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
@@ -4844,6 +4845,14 @@ current key view.<br />
     {
       fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
         * (nRect.size.width / sRect.size.width);
+      
+      /*
+       * If width of the window goes beyond the screen width, then adjust the window over.
+       */
+      if (NSMaxX(fRect) > nRect.size.width)
+      {
+        fRect.origin.x = (nRect.size.width - fRect.size.width);
+      }
     }
   if (nRect.size.height != sRect.size.height)
     {
