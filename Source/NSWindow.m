@@ -1971,32 +1971,39 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
   NSRect cRect;
-
-  if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
+  
+  // Adjust top left point if not on a screen...
+  CGFloat yValue = topLeftPoint.y - _frame.size.height;
+  NSRect  frame  = NSMakeRect(topLeftPoint.x, yValue, _frame.size.width, _frame.size.height);
+  if ([self _screenForFrame: frame] == nil)
+    {
+      NSScreen *screen = [NSScreen mainScreen];
+      NSRect    sFrame = [screen visibleFrame];
+      topLeftPoint     = sFrame.origin;
+    }
+  else if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
       topLeftPoint.x = NSMinX(_frame);
       topLeftPoint.y = NSMaxY(_frame);
     }
-
+  
   [self setFrameTopLeftPoint: topLeftPoint];
   cRect = [self contentRectForFrameRect: _frame];
   topLeftPoint.x = NSMinX(cRect);
   topLeftPoint.y = NSMaxY(cRect);
 
   /* make sure the new point is inside the screen */
-  if ([self screen])
+  NSScreen *screen = [self screen];
+  if (screen == nil)
+    screen = [NSScreen mainScreen];
+  NSRect screenRect  = [screen visibleFrame];
+  if (topLeftPoint.x >= NSMaxX(screenRect))
     {
-      NSRect screenRect;
-
-      screenRect = [[self screen] visibleFrame];
-      if (topLeftPoint.x >= NSMaxX(screenRect))
-        {
-          topLeftPoint.x = NSMinX(screenRect);
-        }
-      if (topLeftPoint.y <= NSMinY(screenRect))
-        {
-          topLeftPoint.y = NSMaxY(screenRect);
-        }
+      topLeftPoint.x = NSMinX(screenRect);
+    }
+  if (topLeftPoint.y <= NSMinY(screenRect))
+    {
+      topLeftPoint.y = NSMaxY(screenRect);
     }
 
   return topLeftPoint;
