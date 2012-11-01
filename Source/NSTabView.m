@@ -86,11 +86,11 @@
 
 - (void) dealloc
 {
-  RELEASE(_items);
-  RELEASE(_font);
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
   _selected = nil;
+  RELEASE(_items);
+  RELEASE(_font);
   [super dealloc];
 }
 
@@ -139,8 +139,9 @@
   if (i == NSNotFound)
     return;
 
+  RETAIN(tabViewItem);
   // Do this BEFORE removing from array...in case it gets released...
-  [tabViewItem _setTabView:nil];
+  [tabViewItem _setTabView: nil];
   [_items removeObjectAtIndex: i];
 
   if (tabViewItem == _selected)
@@ -156,6 +157,7 @@
           [self selectTabViewItem: [_items objectAtIndex: newIndex]];
         }
     }
+  RELEASE(tabViewItem);
   
   if ([_delegate respondsToSelector: @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
@@ -237,14 +239,14 @@
   BOOL canSelect = YES;
   NSView *selectedView = nil;
 
-  if ([_delegate respondsToSelector: @selector(tabView: shouldSelectTabViewItem:)])
+  if ([_delegate respondsToSelector: @selector(tabView:shouldSelectTabViewItem:)])
     {
       canSelect = [_delegate tabView: self shouldSelectTabViewItem: tabViewItem];
     }
   
   if (canSelect)
     {
-      if ([_delegate respondsToSelector: @selector(tabView: willSelectTabViewItem:)])
+      if ([_delegate respondsToSelector: @selector(tabView:willSelectTabViewItem:)])
         {
           [_delegate tabView: self willSelectTabViewItem: tabViewItem];
         }
@@ -256,21 +258,11 @@
           /* NB: If [_selected view] is nil this does nothing, which
              is fine.  */
           [[_selected view] removeFromSuperview];
-	  _selected = nil;
-        }
-
-      if ([_delegate respondsToSelector: 
-        @selector(tabView: willSelectTabViewItem:)])
-        {
-          [_delegate tabView: self willSelectTabViewItem: tabViewItem];
         }
 
       _selected = tabViewItem;
-      _selected_item = [_items indexOfObject: _selected];
       [_selected _setTabState: NSSelectedTab];
-
       selectedView = [_selected view];
-
       if (selectedView != nil)
         {
 	  NSView *firstResponder;
@@ -296,7 +288,7 @@
       [self setNeedsDisplay: YES];
       
       if ([_delegate respondsToSelector: 
-        @selector(tabView: didSelectTabViewItem:)])
+        @selector(tabView:didSelectTabViewItem:)])
         {
           [_delegate tabView: self didSelectTabViewItem: _selected];
         }

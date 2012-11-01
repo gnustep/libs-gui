@@ -1,3 +1,13 @@
+2012-10-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTabView.m (-dealloc): Reset _selected to nil at top of dealloc.
+	* Source/NSBox.m(-drawRect:, -initWithCoder:): Implement
+	transparent handling for custom boxes.
+	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+	* Source/NSTabView.m (-selectTabViewItem:): Remove duplicated code.
+	* Source/NSTabView.m (-removeTabViewItem:): Retain the item while
+	removing it.
+
 2012-10-26  German A. Arias  <german@xelalug.org>
 
 	* Source/GSThemeMenu.m (-setMenu:forWindow:): Revert last change. After

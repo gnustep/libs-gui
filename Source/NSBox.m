@@ -457,7 +457,14 @@
   rect = NSIntersectionRect(_bounds, rect);
   if (_box_type == NSBoxCustom)
     {
-      color = _fill_color;
+      if (_transparent)
+        {
+          color = [NSColor clearColor];
+        }
+      else
+        {
+          color = _fill_color;
+        }
     }
   else
     {
@@ -582,7 +589,7 @@
       [aCoder encodeInt: [self borderType] forKey: @"NSBorderType"];
       [aCoder encodeInt: [self boxType] forKey: @"NSBoxType"];
       [aCoder encodeInt: [self titlePosition] forKey: @"NSTitlePosition"];
-      [aCoder encodeBool: _transparent forKey: @"NSTransparent"];
+      [aCoder encodeBool: _transparent forKey: @"NSFullyTransparent"];
       [aCoder encodeSize: [self contentViewMargins] forKey: @"NSOffsets"];
     }
   else
@@ -623,9 +630,14 @@
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
         {
+          // On Apple this is always NO, we keep it for old GNUstep archives
           _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
         }
-      if ([aDecoder containsValueForKey: @"NSOffsets"])
+      if ([aDecoder containsValueForKey: @"NSFullyTransparent"])
+        {
+          _transparent = [aDecoder decodeBoolForKey: @"NSFullyTransparent"];
+        }
+     if ([aDecoder containsValueForKey: @"NSOffsets"])
         {
           [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
         }
