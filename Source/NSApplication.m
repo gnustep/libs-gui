@@ -4117,12 +4117,16 @@ struct _DelegateWrapper
   NSString *file = nil;
 
   [en nextObject]; // skip the first element, which is always empty...
-  while((file = [en nextObject]) != nil)
+  while ((file = [en nextObject]) != nil)
     {
-      unichar c = [file characterAtIndex: 0];
-      if(c != '-')
+      if ([file length] == 0)
+        {
+          continue;
+        }
+
+      if ([file characterAtIndex: 0] != '-')
 	{
-	  if(files == nil)
+	  if (files == nil)
 	    {
 	      files = [NSMutableArray array];
 	    }

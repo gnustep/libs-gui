@@ -1,3 +1,8 @@
+2012-11-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-_openFiles): Protect agains empty arguments.
+	Patch by Luboš Doležel <lubos@dolezel.info>
+
 2012-10-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTabView.m (-dealloc): Reset _selected to nil at top of dealloc.
