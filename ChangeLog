@@ -1,3 +1,11 @@
+2012-11-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocument.m (-_runSavePanelForSaveOperation:): Set save
+	panel accessory view before calling -prepareSavePanel: to allow
+	clients to modify the accessory view. Furthermore, don't call
+	-prepareSavePanel: if -runModalSavePanel:withAccessoryView: is
+	overridden.
+
 2012-11-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-_openFiles): Protect agains empty arguments.
