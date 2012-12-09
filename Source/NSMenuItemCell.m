@@ -526,6 +526,14 @@ static NSString *commandKeyString = @"#";
   if (_needs_sizing)
     [self calcSize];
 
+  if (_mcell_belongs_to_popupbutton && _cell.image_position)
+    {
+      // Special case: draw image on the extreme right 
+      cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+      cellFrame.size.width = _titleWidth;
+      return cellFrame;
+    }
+
   if ([_menuView isHorizontal] == YES)
     {
       /* This adjust will center us within the menubar. */
