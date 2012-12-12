@@ -64,6 +64,8 @@
   BOOL _hasHeaderView;
   BOOL _hasCornerView;
   BOOL _autohidesScrollers;
+  NSUInteger _reflectScrolledClipView_HRecursionCnt;
+  NSUInteger _reflectScrolledClipView_VRecursionCnt;
 }
 
 /* Calculating layout */

@@ -810,7 +810,7 @@ static float scrollerWidth;
   float floatValue;
   float knobProportion;
   id documentView;
-
+  
   if (aClipView != _contentView)
     {
       return;
@@ -826,80 +826,90 @@ static float scrollerWidth;
     {
       documentFrame = [documentView frame];
     }
-
-  // FIXME: Should we just hide the scroll bar or remove it?
-  if ((_autohidesScrollers)
-    && (documentFrame.size.height > clipViewBounds.size.height))
+  
+  if (_reflectScrolledClipView_VRecursionCnt == 0)
     {
-      [self setHasVerticalScroller: YES];        
-    } 
- 
-  if (_hasVertScroller)
-    {
-      if (documentFrame.size.height <= clipViewBounds.size.height)
+      _reflectScrolledClipView_VRecursionCnt++;
+      // FIXME: Should we just hide the scroll bar or remove it?
+      if ((_autohidesScrollers)
+        && (documentFrame.size.height > clipViewBounds.size.height))
         {
-          if (_autohidesScrollers)
+          [self setHasVerticalScroller: YES];        
+        } 
+     
+      if (_hasVertScroller)
+        {
+          if (documentFrame.size.height <= clipViewBounds.size.height)
             {
-              [self setHasVerticalScroller: NO];
+              if (_autohidesScrollers)
+                {
+                  [self setHasVerticalScroller: NO];
+                }
+              else
+                {
+                  [_vertScroller setEnabled: NO];
+                }
             }
           else
             {
-              [_vertScroller setEnabled: NO];
+              [_vertScroller setEnabled: YES];
+
+              knobProportion = clipViewBounds.size.height
+                / documentFrame.size.height;
+
+              floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
+                / (documentFrame.size.height - clipViewBounds.size.height);
+
+              if (![_contentView isFlipped])
+                {
+                  floatValue = 1 - floatValue;
+                }
+              [_vertScroller setFloatValue: floatValue 
+                             knobProportion: knobProportion];
             }
         }
-      else
-        {
-          [_vertScroller setEnabled: YES];
-
-          knobProportion = clipViewBounds.size.height
-            / documentFrame.size.height;
-
-          floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
-            / (documentFrame.size.height - clipViewBounds.size.height);
-
-          if (![_contentView isFlipped])
-            {
-              floatValue = 1 - floatValue;
-            }
-          [_vertScroller setFloatValue: floatValue 
-                         knobProportion: knobProportion];
-        }
+      _reflectScrolledClipView_VRecursionCnt--;
     }
-
-  if ((_autohidesScrollers)
-    && (documentFrame.size.width > clipViewBounds.size.width))
+  
+  if (_reflectScrolledClipView_HRecursionCnt == 0)
     {
-      [self setHasHorizontalScroller: YES];        
-    } 
- 
-  if (_hasHorizScroller)
-    {
-      if (documentFrame.size.width <= clipViewBounds.size.width)
+      _reflectScrolledClipView_HRecursionCnt++;
+      if ((_autohidesScrollers)
+        && (documentFrame.size.width > clipViewBounds.size.width))
         {
-          if (_autohidesScrollers)
+          [self setHasHorizontalScroller: YES];        
+        } 
+     
+      if (_hasHorizScroller)
+        {
+          if (documentFrame.size.width <= clipViewBounds.size.width)
             {
-              [self setHasHorizontalScroller: NO];
+              if (_autohidesScrollers)
+                {
+                  [self setHasHorizontalScroller: NO];
+                }
+              else
+                {
+                  [_horizScroller setEnabled: NO];
+                }
             }
           else
             {
-              [_horizScroller setEnabled: NO];
+              [_horizScroller setEnabled: YES];
+
+              knobProportion = clipViewBounds.size.width
+                / documentFrame.size.width;
+
+              floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
+                / (documentFrame.size.width - clipViewBounds.size.width);
+
+              [_horizScroller setFloatValue: floatValue
+                             knobProportion: knobProportion];
             }
         }
-      else
-        {
-          [_horizScroller setEnabled: YES];
-
-          knobProportion = clipViewBounds.size.width
-            / documentFrame.size.width;
-
-          floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
-            / (documentFrame.size.width - clipViewBounds.size.width);
-
-          [_horizScroller setFloatValue: floatValue
-                         knobProportion: knobProportion];
-        }
+      _reflectScrolledClipView_HRecursionCnt--;
     }
-
+  
   if (_hasHeaderView)
     {
       NSPoint headerClipViewOrigin;
