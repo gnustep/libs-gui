@@ -513,8 +513,7 @@ this happens when layout has been invalidated, and when we are resized.
   [self sizeToFit];
   /* TODO: we don't have to redisplay the entire view */
   [self setNeedsDisplay: YES];
-  [self updateInsertionPointStateAndRestartTimer:
-    [self shouldDrawInsertionPoint]];
+  [self updateInsertionPointStateAndRestartTimer: [self shouldDrawInsertionPoint]];
   [self _updateInputMethodState];
   /* In case any sections of text with custom cursors were moved */
   [[self window] invalidateCursorRectsForView: self];
@@ -4111,132 +4110,156 @@ Figure out how the additional layout stuff is supposed to work.
   return nil;
 }
 
+- (void) _stopInsertionTimer
+{
+  if (_insertionPointTimer)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY(_insertionPointTimer);
+    }
+}
+
+- (void) _startInsertionTimer
+{
+  if (_insertionPointTimer)
+    {
+      NSWarnMLog(@"Starting insertion timer with existing one running");
+      [self _stopInsertionTimer];
+    }
+  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                                          target: self
+                                                        selector: @selector(_blink:)
+                                                        userInfo: nil
+                                                         repeats: YES];
+  RETAIN(_insertionPointTimer);
+}
+
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
   NSRect new;
 
   if (!_layoutManager)
-    {
-      _insertionPointRect = NSZeroRect;
-      return;
-    }
-
+  {
+    _insertionPointRect = NSZeroRect;
+    return;
+  }
+  
+  // If we are in the middle of a dragging operation...
   if (_dragTargetLocation != NSNotFound)
     {
       _tf.drag_target_hijacks_insertion_point = YES;
-
+      
       new = [_layoutManager
-	      insertionPointRectForCharacterIndex: _dragTargetLocation
-	      inTextContainer: _textContainer];
-
+             insertionPointRectForCharacterIndex: _dragTargetLocation
+             inTextContainer: _textContainer];
+      
       new.origin.x += _textContainerOrigin.x;
       new.origin.y += _textContainerOrigin.y;
-
+      
       /* If the insertion would extend outside the view (e.g. because it's
-      just to the right of a character on the far right edge of the view,
-      a common case for right-aligned text), we force it back in. */
+       just to the right of a character on the far right edge of the view,
+       a common case for right-aligned text), we force it back in. */
       if (NSMaxX(new) > NSMaxX(_bounds))
-	{
-	  new.origin.x = NSMaxX(_bounds) - new.size.width;
-	}
+        {
+          new.origin.x = NSMaxX(_bounds) - new.size.width;
+        }
     }
   else if (_layoutManager->_selected_range.length > 0 ||
-      _layoutManager->_selected_range.location == NSNotFound ||
-      !restartFlag)
+           _layoutManager->_selected_range.location == NSNotFound ||
+           !restartFlag)
     {
       new = NSZeroRect;
     }
   else
     {
       new = [_layoutManager
-	      insertionPointRectForCharacterIndex: _layoutManager->_selected_range.location
-	      inTextContainer: _textContainer];
-
+             insertionPointRectForCharacterIndex: _layoutManager->_selected_range.location
+             inTextContainer: _textContainer];
+      
       new.origin.x += _textContainerOrigin.x;
       new.origin.y += _textContainerOrigin.y;
-
+      
       /* If the insertion would extend outside the view (e.g. because it's
-      just to the right of a character on the far right edge of the view,
-      a common case for right-aligned text), we force it back in. */
+       just to the right of a character on the far right edge of the view,
+       a common case for right-aligned text), we force it back in. */
       if (NSMaxX(new) > NSMaxX(_bounds))
-	{
-	  new.origin.x = NSMaxX(_bounds) - new.size.width;
-	}
+        {
+          new.origin.x = NSMaxX(_bounds) - new.size.width;
+        }
     }
-
+  
   /* Handle hijacked insertion point (either set above when entering this
-     method or during the previous call to this method) */
+   method or during the previous call to this method) */
   if (_tf.drag_target_hijacks_insertion_point)
     {
+      // Erase previous insertion point line...
       _drawInsertionPointNow = NO;
-      [self setNeedsDisplayInRect: _insertionPointRect
-	    avoidAdditionalLayout: YES];
+      [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+      
+      // Save new insertion point rectangle...
       _insertionPointRect = new;
-
+      
       if (_dragTargetLocation != NSNotFound)
         {
-	  _insertionPointRect = new;
-	  _drawInsertionPointNow = YES;
-	  [self setNeedsDisplayInRect: _insertionPointRect
-		avoidAdditionalLayout: YES];
-	}
+          // Draw insertion point line in new location...
+          _drawInsertionPointNow = YES;
+          [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+        }
       else
-	_tf.drag_target_hijacks_insertion_point = NO;
+        {
+          // Drag either completed or cancelled...
+          _tf.drag_target_hijacks_insertion_point = NO;
+        }
     }
-
+  
   /* Otherwise, draw insertion point only if there is a need to do so */
   else if ([self shouldDrawInsertionPoint] || _drawInsertionPointNow)
     {
       if (restartFlag)
         {
-	  /* Start blinking timer if not yet started */
-	  if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
-	    {
-//	      NSLog(@"Start timer");
-	      _insertionPointRect = new;
-	      _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					      target: self
-					      selector: @selector(_blink:)
-					      userInfo: nil
-					      repeats: YES];
-	      RETAIN (_insertionPointTimer);
-	    }
-	  else if (_insertionPointTimer != nil)
-	    {
-	      if (!NSEqualRects(new, _insertionPointRect))
-	        {
-		  _drawInsertionPointNow = NO;
-		  [self setNeedsDisplayInRect: _insertionPointRect
-		    avoidAdditionalLayout: YES];
-		  _insertionPointRect = new;
-		}
-	    }
-
-	  /* Ok - blinking has just been turned on.  Make sure we start
-	   * the on/off/on/off blinking from the 'on', because in that way
-	   * the user can see where the insertion point is as soon as
-	   * possible.  
-	   */
-	  _drawInsertionPointNow = YES;
-	  [self setNeedsDisplayInRect: _insertionPointRect
-		avoidAdditionalLayout: YES];
-	}
+          /* Start blinking timer if not yet started */
+          if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
+            {
+              // Save new insertion point rectangle before starting the insertion timer...
+              _insertionPointRect = new;
+              [self _startInsertionTimer];
+            }
+          else if (_insertionPointTimer != nil)
+            {
+              // Erase previous insertion point line...
+              if (!NSEqualRects(new, _insertionPointRect))
+                {
+                  _drawInsertionPointNow = NO;
+                  [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+                  
+                  // Save new insertion point rectangle...
+                  _insertionPointRect = new;
+                }
+            }
+          
+          /* Ok - blinking has just been turned on.  Make sure we start
+           * the on/off/on/off blinking from the 'on', because in that way
+           * the user can see where the insertion point is as soon as
+           * possible.
+           */
+          _drawInsertionPointNow = YES;
+          [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+        }
       else if ([self shouldDrawInsertionPoint] && (_insertionPointTimer != nil))
         {
-	  // restartFlag is set to NO when control resigns first responder
-	  // status or window resings key window status. So we invalidate
-	  // timer to  avoid extra method calls
-//	  NSLog(@"Stop timer");
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
-
-	  _drawInsertionPointNow = NO;
-	  [self setNeedsDisplayInRect: _insertionPointRect
-		avoidAdditionalLayout: YES];
-
-	  _insertionPointRect = new;
-	}
-
+          // restartFlag is set to NO when control resigns first responder
+          // status or window resings key window status. So we invalidate
+          // timer to  avoid extra method calls
+          [self _stopInsertionTimer];
+          
+          // Erase previous insertion point line...
+          _drawInsertionPointNow = NO;
+          [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+          
+          // Save new insertion point rectangle...
+          _insertionPointRect = new;
+        }
+      
       [self _updateInputMethodWithInsertionPoint: _insertionPointRect.origin];
     }
 }
@@ -4268,16 +4291,16 @@ Figure out how the additional layout stuff is supposed to work.
 						      effectiveRange: &lineFragGlyphRange];
 
       if (NSMaxY(lineFragRect) <= NSMaxY(proposedPage))
-	{
-	  actualTextBottom = NSMaxY(lineFragRect);
-	  break;
-	}
+        {
+          actualTextBottom = NSMaxY(lineFragRect);
+          break;
+        }
       else
-	{
-	  // We encountered a visible glyph fragment which extents below
-	  // the bottom of the page
-	  needsToMoveBottom = YES;
-	}
+        {
+          // We encountered a visible glyph fragment which extents below
+          // the bottom of the page
+          needsToMoveBottom = YES;
+        }
 
       i = lineFragGlyphRange.location - 1;
     }
@@ -5188,23 +5211,23 @@ other than copy/paste or dragging. */
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
-
+      
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
       dragIndex = [self _characterIndexForPoint: dragPoint
-                        respectFraction: YES];
+                                respectFraction: YES];
 
       if ([sender draggingSource] != self ||
           dragIndex <= [self selectedRange].location ||
           dragIndex >= NSMaxRange([self selectedRange]))
-	{
-	  _dragTargetLocation = dragIndex;
-	}
+      {
+        _dragTargetLocation = dragIndex;
+      }
       else
-        {
-	  _dragTargetLocation = NSNotFound;
-	  *flags = NSDragOperationNone;
-        }
+      {
+        _dragTargetLocation = NSNotFound;
+        *flags = NSDragOperationNone;
+      }
     }
   else if (_dragTargetLocation != NSNotFound)
     {
@@ -5335,11 +5358,11 @@ other than copy/paste or dragging. */
   if ([self readSelectionFromPasteboard: pboard type: type])
     {
       if (![type isEqual: NSColorPboardType])
-	{
-	  changeRange.length =
-	    [self selectedRange].location - changeRange.location;
-	  [self setSelectedRange: changeRange];
-	}
+        {
+          changeRange.length =
+            [self selectedRange].location - changeRange.location;
+          [self setSelectedRange: changeRange];
+        }
       return YES;
     }
   return NO;
@@ -5351,7 +5374,10 @@ other than copy/paste or dragging. */
 
 - (void) cleanUpAfterDragOperation
 {
-  // release drag information
+  // Cleanup information after dragging operation completes...
+  _dragTargetLocation = NSNotFound;
+  [self updateInsertionPointStateAndRestartTimer: NO];
+  [self displayIfNeeded];
 }
 
 - (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
@@ -6034,8 +6060,7 @@ or add guards
       _drawInsertionPointNow = YES;
     }
   
-  [self setNeedsDisplayInRect: _insertionPointRect
-	avoidAdditionalLayout: YES];
+  [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
   /* Because we are called by a timer which is independent of any
      event processing in the gui runloop, we need to manually update
      the window.  */

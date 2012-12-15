@@ -4301,8 +4301,8 @@ resetCursorRectsForView(NSView *theView)
             case GSAppKitDraggingDrop:
               NSDebugLLog(@"NSDragging", @"GSAppKitDraggingDrop");
               dragInfo = [GSServerForWindow(self) dragInfo];
-              if (_lastDragView && _f.accepts_drag
-		  && _lastDragOperationMask != NSDragOperationNone)
+              if (_lastDragView && _f.accepts_drag &&
+                  _lastDragOperationMask != NSDragOperationNone)
                 {
                   action = YES;
                   GSPerformDragSelector(_lastDragView,
@@ -4317,6 +4317,14 @@ resetCursorRectsForView(NSView *theView)
                     {
                       GSPerformVoidDragSelector(_lastDragView,
                         @selector(concludeDragOperation:), dragInfo);
+                    }
+                  
+                  // Check for specific cleanup after drag methods...
+                  if ([_lastDragView respondsToSelector: @selector(cleanUpAfterDragOperation)])
+                    {
+                      GSPerformVoidDragSelector(_lastDragView,
+                                                @selector(cleanUpAfterDragOperation),
+                                                dragInfo)
                     }
                 }
               _lastDragOperationMask = NSDragOperationNone;
