@@ -43,20 +43,23 @@
 #import "GSGuiPrivate.h"
 
 #if defined(HAVE_UNICODE_UCHAR_H) && defined(HAVE_UNICODE_USTRING_H)
-
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
+#endif
 
 @implementation NSApplication (CharacterPanel)
 
 - (void) orderFrontCharacterPalette: (id)sender
 {
+#if defined(HAVE_UNICODE_UCHAR_H) && defined(HAVE_UNICODE_USTRING_H)
   [[GSCharacterPanel sharedCharacterPanel] orderFront: sender];
+#endif
 }
 
 @end
 
 
+#if defined(HAVE_UNICODE_UCHAR_H) && defined(HAVE_UNICODE_USTRING_H)
 
 @interface GSVerticallyCenteredTextFieldCell : NSTextFieldCell
 {
