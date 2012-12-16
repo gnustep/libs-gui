@@ -1,3 +1,17 @@
+2012-12-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFontPanel.m (-_initWithoutGModel): Fix font panel size
+	background color - this broke when theme colors were added.
+	* Source/GSCharacterPanel.m: Compile in -[NSApplication
+	orderFrontCharacterPalette:] and do nothing instead of throwing a
+	run-time exception.
+	* Source/NSTextView.m (-_stopInsertionTimer, -_startInsertionTimer):
+	Extract this helper methods from -updateInsertionPointStateAndRestartTimer:.
+	* Source/NSTextView.m (-cleanUpAfterDragOperation): Add cleanup code to
+	cleanUpAfterDragOperation. Gets invoked from concludeDragOperation:.
+	Fix drag and drop of file objects.
+	Based on patches by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
+
 2012-12-10 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSMenuItemCell.m (titleRectForBounds)

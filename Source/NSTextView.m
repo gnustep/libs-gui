@@ -4111,6 +4111,30 @@ Figure out how the additional layout stuff is supposed to work.
   return nil;
 }
 
+- (void) _stopInsertionTimer
+{
+  if (_insertionPointTimer != nil)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY(_insertionPointTimer);
+    }
+}
+ 	  	 
+- (void) _startInsertionTimer
+{
+  if (_insertionPointTimer != nil)
+    {
+      NSWarnMLog(@"Starting insertion timer with existing one running");
+      [self _stopInsertionTimer];
+    }
+  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                                          target: self
+                                                        selector: @selector(_blink:)
+                                                        userInfo: nil
+                                                         repeats: YES];
+  RETAIN(_insertionPointTimer);
+}
+
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
   NSRect new;
@@ -4175,7 +4199,6 @@ Figure out how the additional layout stuff is supposed to work.
 
       if (_dragTargetLocation != NSNotFound)
         {
-	  _insertionPointRect = new;
 	  _drawInsertionPointNow = YES;
 	  [self setNeedsDisplayInRect: _insertionPointRect
 		avoidAdditionalLayout: YES];
@@ -4192,19 +4215,15 @@ Figure out how the additional layout stuff is supposed to work.
 	  /* Start blinking timer if not yet started */
 	  if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
 	    {
-//	      NSLog(@"Start timer");
+              // Save new insertion point rectangle before starting the insertion timer...
 	      _insertionPointRect = new;
-	      _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					      target: self
-					      selector: @selector(_blink:)
-					      userInfo: nil
-					      repeats: YES];
-	      RETAIN (_insertionPointTimer);
+              [self _startInsertionTimer];
 	    }
 	  else if (_insertionPointTimer != nil)
 	    {
 	      if (!NSEqualRects(new, _insertionPointRect))
 	        {
+                  // Erase previous insertion point line...
 		  _drawInsertionPointNow = NO;
 		  [self setNeedsDisplayInRect: _insertionPointRect
 		    avoidAdditionalLayout: YES];
@@ -4226,9 +4245,7 @@ Figure out how the additional layout stuff is supposed to work.
 	  // restartFlag is set to NO when control resigns first responder
 	  // status or window resings key window status. So we invalidate
 	  // timer to  avoid extra method calls
-//	  NSLog(@"Stop timer");
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
+          [self _stopInsertionTimer];
 
 	  _drawInsertionPointNow = NO;
 	  [self setNeedsDisplayInRect: _insertionPointRect
@@ -5347,11 +5364,15 @@ other than copy/paste or dragging. */
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
+  [self cleanUpAfterDragOperation];
 }
 
 - (void) cleanUpAfterDragOperation
 {
-  // release drag information
+  // Cleanup information after dragging operation completes...
+  _dragTargetLocation = NSNotFound;
+  [self updateInsertionPointStateAndRestartTimer: NO];
+  [self displayIfNeeded];
 }
 
 - (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
