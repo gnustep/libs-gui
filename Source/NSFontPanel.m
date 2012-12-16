@@ -642,7 +642,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [sizeField setEditable: YES];
   [sizeField setAllowsEditingTextAttributes: NO];
   [sizeField setAlignment: NSCenterTextAlignment];
-  [sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
   [sizeField setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
   [sizeField setDelegate: self];
   [sizeField setTag: NSFPSizeField];
