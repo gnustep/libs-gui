@@ -1239,7 +1239,90 @@ has the same y origin and height as the line frag rect it is in.
   return from;
 }
 
+- (void) ensureGlyphsForGlyphRange: (NSRange)glyphRange
+{
+  [self _generateGlyphsUpToGlyph: NSMaxRange(glyphRange) - 1];
+}
 
+- (void) ensureGlyphsForCharacterRange: (NSRange)charRange
+{
+  [self _generateGlyphsUpToCharacter: NSMaxRange(charRange) - 1];
+}
+
+- (void) ensureLayoutForGlyphRange: (NSRange)glyphRange
+{
+  [self _doLayoutToGlyph: NSMaxRange(glyphRange) - 1];
+}
+
+- (void) ensureLayoutForCharacterRange: (NSRange)charRange
+{
+  NSRange glyphRange;
+
+  glyphRange = [self glyphRangeForCharacterRange: charRange 
+                            actualCharacterRange: NULL];
+  [self ensureLayoutForGlyphRange: glyphRange];
+}
+
+- (void) ensureLayoutForTextContainer: (NSTextContainer*)container
+{
+  int i;
+  textcontainer_t *tc;
+  NSSize size;
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == container)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  size = [container containerSize];
+  [self _doLayoutToContainer: i
+                       point: NSMakePoint(size.width, size.height)];
+}
+
+- (void) ensureLayoutForBoundingRect: (NSRect)bounds
+                     inTextContainer: (NSTextContainer*)container
+{
+  int i;
+  textcontainer_t *tc;
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == container)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  [self _doLayoutToContainer: i
+                       point: NSMakePoint(NSMaxX(bounds), NSMaxY(bounds))];
+}
+
+- (void) invalidateLayoutForCharacterRange: (NSRange)charRange
+                      actualCharacterRange: (NSRangePointer)actualCharRange
+{
+  [self invalidateLayoutForCharacterRange: charRange
+                                   isSoft: NO
+                     actualCharacterRange: actualCharRange];
+}
+
+- (BOOL) allowsNonContiguousLayout
+{
+  return NO;
+}
+
+- (void) setAllowsNonContiguousLayout: (BOOL)flag;
+{
+}
+
+- (BOOL) hasNonContiguousLayout;
+{
+  return NO;
+}
 
 @end
 

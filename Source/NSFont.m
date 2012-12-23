@@ -784,6 +784,40 @@ static void setNSFont(NSString *key, NSFont *font)
   return self;
 }
 
+/*
+  Last fallback: If a system font was explicitly requested
+  and this font does not exist, try to replace it with the
+  corresponding font in the current setup.
+*/
+- (NSString*) _replacementFontName
+{
+  if (([fontName isEqualToString: @"Helvetica"] &&
+       ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
+      || ([fontName isEqualToString: @"LucidaGrande"]))
+    {
+      return font_roles[RoleSystemFont].defaultFont;
+    }
+  else if (([fontName isEqualToString: @"Helvetica-Bold"] &&
+            ![font_roles[RoleBoldSystemFont].defaultFont isEqualToString: @"Helvetica-Bold"])
+           || ([fontName isEqualToString: @"LucidaGrande-Bold"]))
+    {
+      return font_roles[RoleBoldSystemFont].defaultFont;
+    }
+  else if ([fontName isEqualToString: @"Courier"] &&
+           ![font_roles[RoleUserFixedPitchFont].defaultFont isEqualToString: @"Courier"])
+    {
+      return font_roles[RoleUserFixedPitchFont].defaultFont;
+    }
+  else if ([fontName hasPrefix: @"Helvetica-"] &&
+       ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
+    {
+      return [NSString stringWithFormat: @"%@-%@",
+                       font_roles[RoleSystemFont].defaultFont,
+                       [fontName substringFromIndex: 10]];
+    }
+  return nil;
+}
+
 /** <init />
  * Initializes a newly created font instance from the name and
  * information given in the fontMatrix. The fontMatrix is a standard
@@ -829,36 +863,13 @@ static void setNSFont(NSString *key, NSFont *font)
                                              screenFont: screen]);
       if ((fontInfo == nil) && (aRole == RoleExplicit))
         {
-          /*
-            Last fallback: If a system font was explicitly requested
-            and this font does not exist, try to replace it with the
-            corresponding font in the current setup.
-          */
-          if (([fontName isEqualToString: @"Helvetica"] &&
-               ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
-              || ([fontName isEqualToString: @"LucidaGrande"]))
+          NSString *replacementFontName = [self _replacementFontName];
+
+          if (replacementFontName != nil)
             {
-              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
-                                              font_roles[RoleSystemFont].defaultFont
-                                            matrix: fontMatrix
-                                            screenFont: screen]);
-            }
-          else if (([fontName isEqualToString: @"Helvetica-Bold"] &&
-                    ![font_roles[RoleBoldSystemFont].defaultFont isEqualToString: @"Helvetica-Bold"])
-                   || ([fontName isEqualToString: @"LucidaGrande-Bold"]))
-            {
-              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
-                                              font_roles[RoleBoldSystemFont].defaultFont
-                                            matrix: fontMatrix
-                                            screenFont: screen]);
-            }
-          else if ([fontName isEqualToString: @"Courier"] &&
-                   ![font_roles[RoleUserFixedPitchFont].defaultFont isEqualToString: @"Courier"])
-            {
-              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
-                                              font_roles[RoleUserFixedPitchFont].defaultFont
-                                            matrix: fontMatrix
-                                            screenFont: screen]);
+              fontInfo = RETAIN([GSFontInfo fontInfoForFontName: replacementFontName
+                                                         matrix: fontMatrix
+                                                     screenFont: screen]);
             }
         }
       if (fontInfo == nil)
