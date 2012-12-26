@@ -86,10 +86,10 @@ typedef enum {
   NSOpenGLGOResetLibrary = 504
 } NSOpenGLGlobalOption;
 
-@interface NSOpenGLPixelFormat : NSObject
+@interface NSOpenGLPixelFormat : NSObject <NSCoding>
 {
 }
-- (void)getValues:(long *)vals 
+- (void)getValues:(int *)vals 
      forAttribute:(NSOpenGLPixelFormatAttribute)attrib 
  forVirtualScreen:(int)screen;
 - (id)initWithAttributes:(NSOpenGLPixelFormatAttribute *)attribs;

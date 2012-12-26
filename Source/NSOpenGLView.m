@@ -252,12 +252,21 @@ static NSOpenGLPixelFormatAttribute attrs[] =
     }
 }
 
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
-  self = [super initWithCoder: aCoder];
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
-  // FIXME: Should set a pixel format like -init does
-  
+  if ([aDecoder allowsKeyedCoding])
+    {
+      [self setPixelFormat: [aDecoder decodeObjectForKey: @"NSPixelFormat"]];
+    }
+  else
+    {
+      [self setPixelFormat: [[self class] defaultPixelFormat]];
+    }
+ 
   [[NSNotificationCenter defaultCenter] 
     addObserver: self
     selector: @selector(_frameChanged:)

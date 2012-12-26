@@ -1,3 +1,15 @@
+2012-12-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSOpenGL.h,
+	* Source/NSOpenGLPixelFormat.m: NSOpenGLPixelFormat directly implements
+	initWithCoder so that it may marshall the pixel attributes prior to
+	initWithAttributes:. Change the getValues:... method to take an
+	int argument instead of long. GLint is mapped to int on most systems.
+	* Source/NSOpenGLContext.m: Use the format decoding to decode an OpenGL context.
+	Patch by Clint Smullen <daemonae>.
+
+	* Source/GSLayoutManager.m: Small cleanup in glyph code.
+
 2012-12-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m (-initWithName:...): Move replacement name into
