@@ -1,3 +1,19 @@
+2012-12-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: Make
+	-_invalidateEverything visible.
+	* Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:...): Call
+	-_invalidateEverything when the whole character range is invalidated.
+	* Source/NSStringDrawing.m: Remove workarounds for full layout invalidation.
+	Move initialisation check into cache_lock().
+	Extract size match code in function.
+	Put #ifdef around all statistics code.
+	Use same LARGE_SIZE value as Apple does.
+	Make the methods taking options the main ones.
+	* Source/GSHorizontalTypesetter.m (-fullJustifyLine::,
+	-rightAlignLine::, -centerAlignLine::): Don't align when the line
+	width is bigger than 1e7.
+
 2012-12-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSOpenGL.h,

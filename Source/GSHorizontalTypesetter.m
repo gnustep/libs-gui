@@ -320,6 +320,12 @@ struct GSHorizontalTypesetter_line_frag_s
 };
 typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
 
+/*
+Apple uses this as the maximum width of an NSTextContainer.
+For bigger values the width gets ignored.
+*/
+#define LARGE_SIZE 1e7
+
 -(void) fullJustifyLine: (line_frag_t *)lf : (int)num_line_frags
 {
   unsigned int i, start;
@@ -328,6 +334,11 @@ typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
   NSString *str = [curTextStorage string];
   glyph_cache_t *g;
   unichar ch;
+
+  if (lf->rect.size.width >= LARGE_SIZE)
+    {
+      return;
+    }
 
   for (start = 0; num_line_frags; num_line_frags--, lf++)
     {
@@ -361,12 +372,16 @@ typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
     }
 }
 
-
 -(void) rightAlignLine: (line_frag_t *)lf : (int)num_line_frags
 {
   unsigned int i;
   float delta;
   glyph_cache_t *g;
+
+  if (lf->rect.size.width >= LARGE_SIZE)
+    {
+      return;
+    }
 
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
@@ -382,6 +397,11 @@ typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
   unsigned int i;
   float delta;
   glyph_cache_t *g;
+
+  if (lf->rect.size.width >= LARGE_SIZE)
+    {
+      return;
+    }
 
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {

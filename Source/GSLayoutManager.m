@@ -1271,6 +1271,13 @@ places where we switch.
   [self _sanityChecks];
 //  [self _glyphDumpRuns];
 
+  if ((range.location == 0) && (range.length >= [_textStorage length]))
+    {
+      // Full invalidation
+      [self _invalidateEverything];
+      return;
+    }
+
   /*
   Find out what range we actually need to invalidate. This depends on how
   context affects glyph generation.
@@ -1869,6 +1876,12 @@ places where we switch.
   [self _invalidateLayoutFromContainer: 0];
 }
 
+-(void) _invalidateEverything
+{
+  [self _freeLayout];
+  [self _freeGlyphs];
+  [self _initGlyphs];
+}
 
 -(void) _doLayout
 {
@@ -2041,7 +2054,6 @@ places where we switch.
     }
 }
 
-
 -(void) _didInvalidateLayout
 {
   int i;
@@ -2049,7 +2061,8 @@ places where we switch.
 
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     {
-      tc->was_invalidated = NO;
+      // FIXME: This value never gets used
+      tc->was_invalidated = YES;
     }
 }
 
@@ -2609,9 +2622,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
       NSLog(@"%s: doesn't own text container", __PRETTY_FUNCTION__);
       return NSMakeRect(0, 0, 0, 0);
     }
-
-  [self _doLayoutToContainer: i];
-  tc = textcontainers + i;
+  if (!tc->complete)
+    {
+      [self _doLayoutToContainer: i];
+      tc = textcontainers + i;
+    }
 
   if (tc->usedRectValid)
     return tc->usedRect;
@@ -2746,15 +2761,16 @@ forStartOfGlyphRange: (NSRange)glyphRange
   [self _didInvalidateLayout];
 }
 
-
 - (unsigned int) firstUnlaidCharacterIndex
 {
   return layout_char;
 }
+
 - (unsigned int) firstUnlaidGlyphIndex
 {
   return layout_glyph;
 }
+
 -(void) getFirstUnlaidCharacterIndex: (unsigned int *)cindex
 			  glyphIndex: (unsigned int *)gindex
 {
@@ -2763,7 +2779,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   if (gindex)
     *gindex = [self firstUnlaidGlyphIndex];
 }
-
 
 -(void) setExtraLineFragmentRect: (NSRect)linefrag
 			usedRect: (NSRect)used
@@ -2938,16 +2953,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   [super dealloc];
 }
 
-
--(void) _invalidateEverything
-{
-  [self _freeLayout];
-
-  [self _freeGlyphs];
-  [self _initGlyphs];
-}
-
-
 /**
  * Sets the text storage for the layout manager.
  * Use -replaceTextStorage: instead as a rule. - this method is really
@@ -3045,6 +3050,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 {
   return usesScreenFonts;
 }
+
 - (void) setUsesScreenFonts: (BOOL)flag
 {
   flag = !!flag;
@@ -3091,6 +3097,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   [self _invalidateEverything];
   [self _didInvalidateLayout];
 }
+
 - (BOOL) showsInvisibleCharacters
 {
   return showsInvisibleCharacters;
@@ -3105,6 +3112,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   [self _invalidateEverything];
   [self _didInvalidateLayout];
 }
+
 - (BOOL) showsControlCharacters
 {
   return showsControlCharacters;
@@ -3136,7 +3144,6 @@ has).
   here.
   */
   [self _invalidateLayoutFromContainer: 0];
-
   [self _didInvalidateLayout];
 }
 
