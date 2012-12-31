@@ -81,7 +81,7 @@ APPKIT_EXPORT const CGFloat *NSFontIdentityMatrix;
 {
   NSString *fontName;
   CGFloat matrix[6];
-  BOOL matrixExplicitlySet;
+  BOOL matrixExplicitlySet; // unused
   BOOL screenFont;
 
   id fontInfo;

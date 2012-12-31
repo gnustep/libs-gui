@@ -50,7 +50,6 @@
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
              matrix: (const CGFloat*)fontMatrix
-                fix: (BOOL)explicitlySet
          screenFont: (BOOL)screenFont
                role: (int)role;
 + (NSFont*) _fontWithName: (NSString*)aFontName
@@ -71,7 +70,6 @@ globalFontMap.
   NSString *name;
   BOOL screenFont;
   int role;
-  int fix;
   int matrix[6];
 
   unsigned int hash;
@@ -88,8 +86,7 @@ globalFontMap.
   if (![other isKindOfClass: object_getClass(self)])
     return NO;
   o = other;
-  if (hash != o->hash || screenFont != o->screenFont || role != o->role
-      || fix != o->fix)
+  if (hash != o->hash || screenFont != o->screenFont || role != o->role)
     return NO;
   if (![name isEqualToString: o->name])
     return NO;
@@ -110,7 +107,7 @@ globalFontMap.
 @end
 
 static GSFontMapKey *
-keyForFont(NSString *name, const CGFloat *matrix, BOOL fix,
+keyForFont(NSString *name, const CGFloat *matrix, 
            BOOL screenFont, int role)
 {
   GSFontMapKey *d;
@@ -118,14 +115,13 @@ keyForFont(NSString *name, const CGFloat *matrix, BOOL fix,
   d->name = [name copy];
   d->screenFont = screenFont;
   d->role = role;
-  d->fix = fix;
   d->matrix[0] = matrix[0] * 1000;
   d->matrix[1] = matrix[1] * 1000;
   d->matrix[2] = matrix[2] * 1000;
   d->matrix[3] = matrix[3] * 1000;
   d->matrix[4] = matrix[4] * 1000;
   d->matrix[5] = matrix[5] * 1000;
-  d->hash = [d->name hash] + screenFont + role * 4 + fix * 2
+  d->hash = [d->name hash] + screenFont + role * 4
             + d->matrix[0] + d->matrix[1] + d->matrix[2] + d->matrix[3];
   return d;
 }
@@ -713,16 +709,9 @@ static void setNSFont(NSString *key, NSFont *font)
                   matrix: (const CGFloat*)fontMatrix
 {
   NSFont *font;
-  BOOL fix;
-
-  if (fontMatrix == NSFontIdentityMatrix)
-    fix = NO;
-  else
-    fix = YES;
 
   font = [placeHolder initWithName: aFontName
                             matrix: fontMatrix
-                               fix: fix
                         screenFont: NO
                               role: RoleExplicit];
 
@@ -761,7 +750,6 @@ static void setNSFont(NSString *key, NSFont *font)
 
   font = [placeHolder initWithName: aFontName
                             matrix: fontMatrix
-                               fix: NO
                         screenFont: NO
                               role: aRole];
   return AUTORELEASE(font);
@@ -828,7 +816,6 @@ static void setNSFont(NSString *key, NSFont *font)
  */
 - (id) initWithName: (NSString*)name
              matrix: (const CGFloat*)fontMatrix
-                fix: (BOOL)explicitlySet
          screenFont: (BOOL)screen
                role: (int)aRole
 {
@@ -839,7 +826,7 @@ static void setNSFont(NSString *key, NSFont *font)
   NSAssert(fontName == nil, NSInternalInconsistencyException);
 
   /* Check whether the font is cached */
-  key = keyForFont(name, fontMatrix, explicitlySet,
+  key = keyForFont(name, fontMatrix,
                    screen, aRole);
   font = (id)NSMapGet(globalFontMap, (void *)key);
   if (font == nil)
@@ -855,7 +842,6 @@ static void setNSFont(NSString *key, NSFont *font)
         }
       fontName = [name copy];
       memcpy(matrix, fontMatrix, sizeof(matrix));
-      matrixExplicitlySet = explicitlySet;
       screenFont = screen;
       role = aRole;
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
@@ -903,8 +889,7 @@ static void setNSFont(NSString *key, NSFont *font)
       GSFontMapKey *key;
 
       key = keyForFont(fontName, matrix,
-                       matrixExplicitlySet, screenFont,
-                       role);
+                       screenFont, role);
       NSMapRemove(globalFontMap, (void *)key);
       RELEASE(key);
       RELEASE(fontName);
@@ -921,9 +906,8 @@ static void setNSFont(NSString *key, NSFont *font)
   NSString *description;
 
   nameWithMatrix = [[NSString alloc] initWithFormat:
-    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %c %i", fontName,
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %i", fontName,
     matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
-    (matrixExplicitlySet == NO) ? 'N' : 'Y',
     screenFont ? 'S' : 'P',
     role];
   description = [[super description] stringByAppendingFormat: @" %@",
@@ -973,7 +957,6 @@ static void setNSFont(NSString *key, NSFont *font)
       fontMatrix[3] *= -1;
       cachedFlippedFont = [placeHolder initWithName: fontName
                                              matrix: fontMatrix
-                                                fix: YES
                                          screenFont: screenFont
                                                role: role];
     }
@@ -991,8 +974,7 @@ static BOOL flip_hack;
 //
 /** Sets the receiver as the font used for text drawing operations. If the
     current view is a flipped view, the reciever automatically flips itself
-    to display correctly in the flipped view, as long as the font was created
-    without explicitly setting the font matrix */
+    to display correctly in the flipped view */
 - (void) set
 {
   [self setInContext: GSCurrentContext()];
@@ -1000,8 +982,7 @@ static BOOL flip_hack;
 
 - (void) setInContext: (NSGraphicsContext*)context
 {
-  if (matrixExplicitlySet == NO
-    && ([[NSView focusView] isFlipped] || flip_hack))
+  if ([[NSView focusView] isFlipped] || flip_hack)
     [context GSSetFont: [[self _flippedViewFont] fontRef]];
   else
     [context GSSetFont: [self fontRef]];
@@ -1093,7 +1074,6 @@ static BOOL flip_hack;
     return self;
   return AUTORELEASE([placeHolder initWithName: fontName
                             matrix: matrix
-                               fix: matrixExplicitlySet
                         screenFont: NO
                               role: role]);
 }
@@ -1110,7 +1090,6 @@ static BOOL flip_hack;
   if (cachedScreenFont == nil)
     cachedScreenFont = [placeHolder initWithName: fontName
                             matrix: matrix
-                               fix: matrixExplicitlySet
                         screenFont: YES
                               role: role];
   return AUTORELEASE(RETAIN(cachedScreenFont));
@@ -1305,6 +1284,7 @@ static BOOL flip_hack;
       if (role == 0)
         {
           float fontMatrix[6];
+          BOOL fix = NO;
 
           fontMatrix[0] = matrix[0];
           fontMatrix[1] = matrix[1];
@@ -1314,7 +1294,7 @@ static BOOL flip_hack;
           fontMatrix[5] = matrix[5];
           [aCoder encodeObject: fontName];
           [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
-          [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+          [aCoder encodeValueOfObjCType: @encode(BOOL) at: &fix];
         }
       else if (role & 1)
         {
@@ -1363,7 +1343,6 @@ static BOOL flip_hack;
       id name;
       float fontMatrix[6];
       CGFloat cgMatrix[6];
-      BOOL fix;
       int the_role;
       
       if (version == 3)
@@ -1387,16 +1366,9 @@ static BOOL flip_hack;
           
           if (version >= 2)
             {
+              BOOL fix;
               [aDecoder decodeValueOfObjCType: @encode(BOOL)
                                            at: &fix];
-            }
-          else
-            {
-              if (fontMatrix[0] == fontMatrix[3]
-                  && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
-                fix = NO;
-              else
-                fix = YES;
             }
 
           cgMatrix[0] = fontMatrix[0];
@@ -1407,7 +1379,6 @@ static BOOL flip_hack;
           cgMatrix[5] = fontMatrix[5];
           self = [self initWithName: name
                              matrix: cgMatrix
-                                fix: fix
                          screenFont: NO
                                role: RoleExplicit];
           if (self)
