@@ -258,10 +258,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (NSAffineTransform*) _matrixFromWindow
 {
-  if (_coordinates_valid == NO)
-    {
-      [self _rebuildCoordinates];
-    }
+  [self _rebuildCoordinates];
   return _matrixFromWindow;
 }
 
@@ -274,10 +271,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (NSAffineTransform*) _matrixToWindow
 {
-  if (_coordinates_valid == NO)
-    {
-      [self _rebuildCoordinates];
-    }
+  [self _rebuildCoordinates];
   return _matrixToWindow;
 }
 
@@ -288,9 +282,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) _rebuildCoordinates
 {
-  if (_coordinates_valid == NO)
+  BOOL isFlipped = [self isFlipped];
+  BOOL lastFlipped = _rFlags.flipped_view;
+
+  if ((_coordinates_valid == NO) || (isFlipped != lastFlipped))
     {
       _coordinates_valid = YES;
+      _rFlags.flipped_view = isFlipped;
+
       if (!_window)
         {
           _visibleRect = NSZeroRect;
@@ -300,18 +299,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       else
         {
           NSRect		superviewsVisibleRect;
-          BOOL			wasFlipped;
+          BOOL			superFlipped;
           NSAffineTransform	*pMatrix;
           NSAffineTransformStruct     ts;
  
 	  if (_super_view != nil)
 	    {
-	      wasFlipped = [_super_view isFlipped];
+	      superFlipped = [_super_view isFlipped];
 	      pMatrix = [_super_view _matrixToWindow];
 	    }
 	  else
 	    {
-	      wasFlipped = NO;
+	      superFlipped = NO;
 	      pMatrix = [NSAffineTransform transform];
            }
 	      
@@ -328,7 +327,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               (*preImp)(_matrixToWindow, preSel, _frameMatrix);
             }
  
-          if ([self isFlipped] != wasFlipped)
+          if (isFlipped != superFlipped)
             {
               /*
                * The flipping process must result in a coordinate system that
@@ -2540,15 +2539,12 @@ static void autoresize(CGFloat oldContainerSize,
   if (context == wContext)
     {
       NSRect neededRect;
+      NSRect visibleRect = [self visibleRect];
 
       flush = YES;
       [_window disableFlushWindow];
-      if (_coordinates_valid == NO)
-        {
-          [self _rebuildCoordinates];
-        }
-      aRect = NSIntersectionRect(aRect, _visibleRect);
-      neededRect = NSIntersectionRect(_invalidRect, _visibleRect);
+      aRect = NSIntersectionRect(aRect, visibleRect);
+      neededRect = NSIntersectionRect(_invalidRect, visibleRect);
   
       /*
        * If the rect we are going to display contains the _invalidRect

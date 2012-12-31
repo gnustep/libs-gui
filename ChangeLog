@@ -1,5 +1,12 @@
 2012-12-31  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (-_rebuildCoordinates): Check if the flipped
+	state of the view has changed. Call this method all the times
+	instead of checking _coordinates_valid.
+	This change allows views to dynamically change their flipped state.
+
+2012-12-31  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSFont.m (-setInContext:): Remove usage of
 	matrixExplicitlySet.
 	Patch by Derek Fawcus <dfawcus@cisco.com>.

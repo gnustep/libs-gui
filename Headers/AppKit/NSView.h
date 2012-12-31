@@ -124,7 +124,7 @@ PACKAGE_SCOPE
    * Flags for internal use by NSView and it's subclasses.
    */
   struct _rFlagsType {
-    unsigned	flipped_view:1;         /* Deprecated and unused.       */ 
+    unsigned	flipped_view:1;         /* Flipped state the last time we checked. */ 
     unsigned	has_subviews:1;		/* The view has subviews.	*/
     unsigned	has_currects:1;		/* The view has cursor rects.	*/
     unsigned	has_trkrects:1;		/* The view has tracking rects.	*/
