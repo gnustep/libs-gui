@@ -167,9 +167,9 @@ static inline BOOL is_size_match(cache_t *c, int hasSize, NSSize size)
 {
   if ((!c->hasSize && !hasSize) ||
       (c->hasSize && hasSize && c->givenSize.width == size.width
-       && c->givenSize.height == size.height) ||
+       && c->givenSize.height == size.height) /* ||
       (!c->hasSize && hasSize && size.width >= NSMaxX(c->usedRect)
-       && size.height >= NSMaxY(c->usedRect)))
+      && size.height >= NSMaxY(c->usedRect))*/)
     {
       return YES;
     }
