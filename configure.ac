@@ -25,6 +25,7 @@
 #
 
 builtin(include, config/icu.m4)dnl
+builtin(include, config/pkg.m4)dnl
 
 AC_INIT
 AC_CONFIG_SRCDIR([Source/NSApplication.m])

@@ -1,3 +1,11 @@
+2013-01-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* configure.ac:
+	* config/pkg.m4: Explicitly include pkg.m4 to make sure that the
+	PKG_CHECK_MODULES macro is defined.
+
+	* configure: Regenerated.
+
 2013-01-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSStringDrawing.m(is_size_match): Disable matches
