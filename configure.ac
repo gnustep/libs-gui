@@ -355,6 +355,11 @@ if test "$have_ungif" = no -o "${enable_libgif}" = yes; then
   fi
 fi
 
+# QuantizeBuffer was removed from giflib in version 4.2 but is supposed
+# to make its return in the next release. If this function is not present
+# we disable the support to create gif image representations.
+AC_CHECK_FUNCS(QuantizeBuffer)
+
 #--------------------------------------------------------------------
 # Find ImageMagick
 #--------------------------------------------------------------------

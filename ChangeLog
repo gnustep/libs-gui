@@ -1,6 +1,18 @@
 2013-01-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* configure.ac:
+	* Headers/Additions/GNUstepGUI/config.h.in: Add check whether
+	giflib defines QuantizeBuffer.
+
+	* Source/NSBitmapImageRep+GIF.m
+	(_GIFRepresentationWithProperties:errorMessage:): Disable when
+	QuantizeBuffer is not available.
+
+	* configure: Regenerated.
+
+2013-01-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* configure.ac:
 	* config/pkg.m4: Explicitly include pkg.m4 to make sure that the
 	PKG_CHECK_MODULES macro is defined.
 

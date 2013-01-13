@@ -110,6 +110,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
+#if HAVE_QUANTIZEBUFFER
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
@@ -121,6 +122,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   [nsData appendBytes: buffer length: len];
   return len;
 }
+#endif
 
 /* -----------------------------------------------------------
    The gif loading part of NSBitmapImageRep
@@ -384,6 +386,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
+#if HAVE_QUANTIZEBUFFER
   NSMutableData         * GIFRep = nil;	// our return value
   GifFileType           * GIFFile = NULL;
   GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
@@ -534,6 +537,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   free(GIFImage);
 
   return GIFRep;
+#else
+  NSLog(@"GIF representation is not available on this system.");
+  return nil;
+#endif
 }
 
 @end
