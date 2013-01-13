@@ -538,7 +538,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 
   return GIFRep;
 #else
-  NSLog(@"GIF representation is not available on this system.");
+  SET_ERROR_MSG(@"GIFRepresentation: not available on this system");
   return nil;
 #endif
 }
@@ -555,6 +555,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (id) _initBitmapFromGIF: (NSData *)imageData
 	     errorMessage: (NSString **)errorMsg
 {
+  if (errorMsg != NULL)
+    {
+      *errorMsg = @"gif images not supported on this system";
+    }
   RELEASE(self);
   return nil;
 }
@@ -562,6 +566,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
+  if (errorMsg != NULL)
+    {
+      *errorMsg = @"GIFRepresentation: not supported on this system";
+    }
   return nil;
 }
 
