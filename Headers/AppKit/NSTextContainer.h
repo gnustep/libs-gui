@@ -74,20 +74,22 @@ whenever this happens.
 @class GSLayoutManager;
 @class NSTextView;
 
-typedef enum {
+enum {
   NSLineSweepLeft,
   NSLineSweepRight,
   NSLineSweepDown,
   NSLineSweepUp
-} NSLineSweepDirection;
+};
+typedef NSUInteger NSLineSweepDirection;
 
-typedef enum {
-  NSLineMoveLeft,
-  NSLineMoveRight,
-  NSLineMoveDown,
-  NSLineMoveUp,
-  NSLineDoesntMove
-} NSLineMovementDirection;
+enum {
+  NSLineDoesntMove,
+  NSLineMovesLeft,
+  NSLineMovesRight,
+  NSLineMovesDown,
+  NSLineMovesUp
+};
+typedef NSUInteger NSLineMovementDirection;
 
 @interface NSTextContainer : NSObject
 {

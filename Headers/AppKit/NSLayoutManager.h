@@ -183,6 +183,7 @@ GNUstep extension.
 
 - (void) invalidateLayoutForCharacterRange: (NSRange)charRange
                       actualCharacterRange: (NSRangePointer)actualCharRange;
+- (void) invalidateGlyphsOnLayoutInvalidationForGlyphRange: (NSRange)glyphRange;
 
 - (BOOL) allowsNonContiguousLayout;
 - (void) setAllowsNonContiguousLayout: (BOOL)flag;

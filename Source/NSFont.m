@@ -1118,6 +1118,12 @@ static BOOL flip_hack;
 - (CGFloat) xHeight                { return [fontInfo xHeight]; }
 - (CGFloat) defaultLineHeightForFont { return [fontInfo defaultLineHeightForFont]; }
 
+- (CGFloat) leading
+{
+  // FIXME
+  return 0.0;
+}
+
 /* Computing font metrics attributes*/
 - (CGFloat) widthOfString: (NSString*)string
 {
@@ -1239,6 +1245,39 @@ static BOOL flip_hack;
     }
 
   return i;
+}
+
+- (void) getAdvancements: (NSSizeArray)advancements
+               forGlyphs: (const NSGlyph*)glyphs
+                   count: (NSUInteger)count
+{
+  // FIXME
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      advancements[i] = [self advancementForGlyph: glyphs[i]];
+    }
+}
+
+- (void) getAdvancements: (NSSizeArray)advancements
+         forPackedGlyphs: (const void*)glyphs
+                   count: (NSUInteger)count
+{
+  // FIXME
+}
+
+- (void) getBoundingRects: (NSRectArray)bounds
+                forGlyphs: (const NSGlyph*)glyphs
+                    count: (NSUInteger)count
+{
+  // FIXME
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      bounds[i] = [self boundingRectForGlyph: glyphs[i]];
+    }
 }
 
 - (NSStringEncoding) mostCompatibleStringEncoding

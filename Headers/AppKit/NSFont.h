@@ -197,6 +197,10 @@ APPKIT_EXPORT const CGFloat *NSFontIdentityMatrix;
 - (CGFloat) xHeight;
 - (CGFloat) widthOfString: (NSString*)string;
 - (CGFloat) defaultLineHeightForFont;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (CGFloat) leading;
+
+#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSUInteger) numberOfGlyphs;
@@ -236,6 +240,17 @@ APPKIT_EXPORT const CGFloat *NSFontIdentityMatrix;
 - (int) positionsForCompositeSequence: (NSGlyph*)glyphs 
                        numberOfGlyphs: (int)numGlyphs 
                            pointArray: (NSPoint*)points;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) getAdvancements: (NSSizeArray)advancements
+               forGlyphs: (const NSGlyph*)glyphs
+                   count: (NSUInteger)count;
+- (void) getAdvancements: (NSSizeArray)advancements
+         forPackedGlyphs: (const void*)glyphs
+                   count: (NSUInteger)count;
+- (void) getBoundingRects: (NSRectArray)bounds
+                forGlyphs: (const NSGlyph*)glyphs
+                    count: (NSUInteger)count;
+#endif
 
 - (NSStringEncoding) mostCompatibleStringEncoding;
 

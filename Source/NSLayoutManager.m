@@ -1310,6 +1310,11 @@ has the same y origin and height as the line frag rect it is in.
                      actualCharacterRange: actualCharRange];
 }
 
+- (void) invalidateGlyphsOnLayoutInvalidationForGlyphRange: (NSRange)glyphRange
+{
+  // FIXME
+}
+
 - (BOOL) allowsNonContiguousLayout
 {
   return NO;

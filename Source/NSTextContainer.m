@@ -379,7 +379,7 @@ framework intact.
 
   switch (moveDir)
     {
-      case NSLineMoveLeft:
+      case NSLineMovesLeft:
         if (maxx < cminx)
           return NSZeroRect;
         if (maxx > cmaxx)
@@ -389,7 +389,7 @@ framework intact.
           }
         break;
 
-      case NSLineMoveRight:
+      case NSLineMovesRight:
         if (minx > cmaxx)
           return NSZeroRect;
         if (minx < cminx)
@@ -399,7 +399,7 @@ framework intact.
           }
         break;
 
-      case NSLineMoveDown:
+      case NSLineMovesDown:
         if (miny > cmaxy)
           return NSZeroRect;
         if (miny < cminy)
@@ -409,7 +409,7 @@ framework intact.
           }
         break;
 
-      case NSLineMoveUp:
+      case NSLineMovesUp:
         if (maxy < cminy)
           return NSZeroRect;
         if (maxy > cmaxy)

@@ -587,7 +587,7 @@ Return values 0, 1, 2 are mostly the same as from
 
       r = [curTextContainer lineFragmentRectForProposedRect: r
                             sweepDirection: NSLineSweepRight
-                            movementDirection: NSLineMoveDown
+                            movementDirection: NSLineMovesDown
                             remainingRect: &remain];
 
       if (!NSIsEmptyRect(r))
@@ -669,7 +669,7 @@ restart: ;
     {
       rect = [curTextContainer lineFragmentRectForProposedRect: remain
 			     sweepDirection: NSLineSweepRight
-			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
+			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
 			     remainingRect: &remain];
       if (NSIsEmptyRect(rect))
         break;
