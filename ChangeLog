@@ -14,7 +14,6 @@
 	* Header/AppKit/NSLayoutManager.h,
 	* Source/NSLayoutManager.m: Add one 10.5 method.
 
->>>>>>> .r36016
 2013-01-13  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* configure.ac:
