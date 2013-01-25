@@ -426,9 +426,9 @@ static NSImage *_pbc_image[5];
   //[anItem setAction: [self action]];
   //[anItem setTarget: [self target]];
   // Or
-  [anItem setAction: @selector(_popUpItemAction:)];
-  [anItem setTarget: self];
-
+  //[anItem setAction: @selector(_popUpItemAction:)];
+  //[anItem setTarget: self];
+  
   // Select the new item if there isn't any selection.
   if (_selectedItem == nil)
     {
