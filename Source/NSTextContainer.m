@@ -448,7 +448,9 @@ framework intact.
       return NSZeroRect;
     }
 
-  return NSMakeRect(minx, miny, maxx - minx, maxy - miny);
+  return NSMakeRect(minx, miny,
+                    (maxx > minx) ? maxx - minx : 0.0,
+                    (maxy > miny) ? maxy - miny : 0.0);
 }
 
 - (BOOL) isSimpleRectangularTextContainer

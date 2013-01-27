@@ -1,3 +1,9 @@
+2013-01-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextContainer.m (lineFragmentRectForProposedRect:...):
+	Prevent negative width/height from being returned.
+	Bug found by unit test from Nikolaus Schaller <hns@computer.org>.
+
 2013-01-25 12:58-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSPopUpButtonCell.m: Revert previous change.
