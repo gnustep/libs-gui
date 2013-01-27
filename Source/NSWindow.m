@@ -527,7 +527,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       NSPoint lastLocation;
       NSPoint location;
-      unsigned eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
         | NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
       NSDate *theDistantFuture = [NSDate distantFuture];
       BOOL done = NO;
@@ -710,7 +710,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -720,7 +720,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -730,7 +730,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
-                       styleMask: (unsigned int)aStyle
+                       styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -756,7 +756,7 @@ static NSNotificationCenter *nc = nil;
  */
 - (id) init
 {
-  int style;
+  NSUInteger style;
 
   style = NSTitledWindowMask | NSClosableWindowMask
           | NSMiniaturizableWindowMask | NSResizableWindowMask;
@@ -973,7 +973,7 @@ many times.
        */
       while ((type = [enumerator nextObject]) != nil)
         {
-          int i, count = [dragTypes countForObject: type];
+          NSUInteger i, count = [dragTypes countForObject: type];
           
           for (i = 0; i < count; i++)
             {
@@ -1023,7 +1023,7 @@ many times.
   </p> 
 */
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
 {
@@ -1136,7 +1136,7 @@ many times.
   </p> 
 */
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
                     screen: (NSScreen*)aScreen
@@ -1156,7 +1156,7 @@ many times.
 - (id) initWithWindowRef: (void *)windowRef
 {
   NSRect contentRect;
-  unsigned int aStyle;
+  unsigned aStyle;
   NSBackingStoreType bufferingType;
   NSScreen* aScreen;
   int screen;
@@ -1307,7 +1307,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (unsigned int) styleMask
+- (NSUInteger) styleMask
 {
   return _styleMask;
 }
@@ -1392,7 +1392,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (int) gState
+- (NSInteger) gState
 {
   if (_gstate <= 0)
     NSDebugLLog(@"NSWindow", @"gState called on deferred window");
@@ -1414,7 +1414,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   _f.is_one_shot = flag;
 }
 
-- (int) windowNumber
+- (NSInteger) windowNumber
 {
   if (_windowNum <= 0)
     NSDebugLLog(@"NSWindow", @"windowNumber called on deferred window");
@@ -1653,7 +1653,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return _f.visible;
 }
 
-- (int) level
+- (NSInteger) level
 {
   return _windowLevel;
 }
@@ -1765,7 +1765,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   is minus one, then the backend should not try to keep the window below the
   current key/main window
 */
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {
   GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
@@ -1943,7 +1943,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (void) setLevel: (int)newLevel
+- (void) setLevel: (NSInteger)newLevel
 {
   if (_windowLevel != newLevel)
     {
@@ -2424,7 +2424,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
  */
 - (void) flushWindow
 {
-  int i;
+  NSUInteger i;
 
   /*
    * If flushWindow is called while flush is disabled
@@ -2654,12 +2654,12 @@ discardCursorRectsForView(NSView *theView)
       if (theView->_rFlags.has_subviews)
         {
           NSArray *s = theView->_sub_views;
-          unsigned count = [s count];
+          NSUInteger count = [s count];
 
           if (count)
             {
               NSView *subs[count];
-              unsigned i;
+              NSUInteger i;
 
               [s getObjects: subs];
               for (i = 0; i < count; i++)
@@ -2717,12 +2717,12 @@ resetCursorRectsForView(NSView *theView)
       if (theView->_rFlags.has_subviews)
         {
           NSArray *s = theView->_sub_views;
-          unsigned count = [s count];
+          NSUInteger count = [s count];
 
           if (count)
             {
               NSView *subs[count];
-              unsigned i;
+              NSUInteger i;
 
               [s getObjects: subs];
               for (i = 0; i < count; i++)
@@ -3045,7 +3045,7 @@ resetCursorRectsForView(NSView *theView)
 }
 
 + (NSButton *) standardWindowButton: (NSWindowButton)button 
-                       forStyleMask: (unsigned int) mask
+                       forStyleMask: (NSUInteger) mask
 {
   NSButton *newButton;
 
@@ -3106,7 +3106,7 @@ resetCursorRectsForView(NSView *theView)
   _f.shows_toolbar_button = flag;
 }
 
-- (int) resizeFlags
+- (NSInteger) resizeFlags
 {
   // FIXME: The implementation is missing
   return 0;
@@ -3214,7 +3214,7 @@ resetCursorRectsForView(NSView *theView)
   return [NSApp currentEvent];
 }
 
-- (void) discardEventsMatchingMask: (unsigned int)mask
+- (void) discardEventsMatchingMask: (NSUInteger)mask
                        beforeEvent: (NSEvent*)lastEvent
 {
   [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
@@ -3422,7 +3422,7 @@ resetCursorRectsForView(NSView *theView)
   return p;
 }
 
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
 {
   return [NSApp nextEventMatchingMask: mask
                             untilDate: [NSDate distantFuture]
@@ -3430,7 +3430,7 @@ resetCursorRectsForView(NSView *theView)
                               dequeue: YES];
 }
 
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
                          untilDate: (NSDate*)expiration
                             inMode: (NSString*)mode
                            dequeue: (BOOL)deqFlag
@@ -3455,7 +3455,7 @@ resetCursorRectsForView(NSView *theView)
     {
       BOOL isFlipped = [theView isFlipped];
       NSArray *tr = theView->_tracking_rects;
-      unsigned count = [tr count];
+      NSUInteger count = [tr count];
 
       /*
        * Loop through the tracking rectangles
@@ -3465,7 +3465,7 @@ resetCursorRectsForView(NSView *theView)
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
 	  NSPoint lastPoint = _lastPoint;
-          unsigned i;
+          NSUInteger i;
 
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
 	  loc = [theView convertPoint: loc fromView: nil];
@@ -3551,12 +3551,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.has_subviews)
     {
       NSArray *sb = theView->_sub_views;
-      unsigned count = [sb count];
+      NSUInteger count = [sb count];
 
       if (count > 0)
         {
           NSView *subs[count];
-          unsigned i;
+          NSUInteger i;
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
@@ -3573,14 +3573,14 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.valid_rects)
     {
       NSArray *tr = theView->_cursor_rects;
-      unsigned count = [tr count];
+      NSUInteger count = [tr count];
 
       // Loop through cursor rectangles
       if (count > 0)
         {
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
-          unsigned i;
+          NSUInteger i;
 
           [tr getObjects: rects];
 
@@ -3641,12 +3641,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.has_subviews)
     {
       NSArray *sb = theView->_sub_views;
-      unsigned count = [sb count];
+      NSUInteger count = [sb count];
 
       if (count > 0)
         {
           NSView *subs[count];
-          unsigned i;
+          NSUInteger i;
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
@@ -5343,7 +5343,7 @@ current key view.<br />
       NSSize aSize;
       NSRect aRect;
       NSPoint p;
-      unsigned aStyle;
+      NSUInteger aStyle;
       NSBackingStoreType aBacking;
       int anInt;
       id obj;
@@ -5673,19 +5673,19 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
   return NO;
 }
 
-void NSCountWindows(int *count)
+void NSCountWindows(NSInteger *count)
 {
-  *count = (int)[[GSCurrentServer() windowlist] count];
+  *count = [[GSCurrentServer() windowlist] count];
 }
 
-void NSWindowList(int size, int list[])
+void NSWindowList(NSInteger size, NSInteger list[])
 {
   NSArray *windowList = [GSCurrentServer() windowlist];
-  unsigned i, c;
+  NSUInteger i, c;
 
   for (i = 0, c = [windowList count]; i < size && i < c; i++)
     {
-      list[i] = [[windowList objectAtIndex:i] intValue];
+      list[i] = [[windowList objectAtIndex: i] integerValue];
     }
 }
 
@@ -5693,14 +5693,14 @@ NSArray *GSOrderedWindows(void)
 {
   NSArray *window_list = [GSCurrentServer() windowlist];
   NSMutableArray *ret = [NSMutableArray array];
-  int i, c; 
+  NSUInteger i, c; 
   
   for (i = 0, c = [window_list count]; i < c; i++)
     {
-      int windowNumber = [[window_list objectAtIndex:i] intValue];
+      NSInteger windowNumber = [[window_list objectAtIndex: i] integerValue];
       NSWindow *win = GSWindowWithNumber(windowNumber);
       
-      [ret addObject:win];
+      [ret addObject: win];
     }
 
   return ret;
@@ -5714,7 +5714,7 @@ NSArray* GSAllWindows(void)
   return nil;
 }
 
-NSWindow* GSWindowWithNumber(int num)
+NSWindow* GSWindowWithNumber(NSInteger num)
 {
   if (windowmaps)
     return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);

@@ -113,8 +113,8 @@ APPKIT_EXPORT BOOL NSPlanarFromDepth(NSWindowDepth depth);
 /*
  * Functions for getting information about windows.
  */
-APPKIT_EXPORT void NSCountWindows(int *count);
-APPKIT_EXPORT void NSWindowList(int size, int list[]);
+APPKIT_EXPORT void NSCountWindows(NSInteger *count);
+APPKIT_EXPORT void NSWindowList(NSInteger size, NSInteger list[]);
 
 APPKIT_EXPORT void NSEraseRect(NSRect aRect);
 APPKIT_EXPORT void NSHighlightRect(NSRect aRect);
@@ -220,7 +220,7 @@ GSWViewIsFlipped(NSGraphicsContext *ctxt)
 
 APPKIT_EXPORT NSArray* GSOrderedWindows(void);
 APPKIT_EXPORT NSArray* GSAllWindows(void);
-APPKIT_EXPORT NSWindow* GSWindowWithNumber(int num);
+APPKIT_EXPORT NSWindow* GSWindowWithNumber(NSInteger num);
 #endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)

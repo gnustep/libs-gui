@@ -80,13 +80,13 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 
 + (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-    forStyleMask: (unsigned int)style
+    forStyleMask: (NSUInteger)style
 {
   [self subclassResponsibility: _cmd];
 }
 
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle
+			 styleMask: (NSUInteger)aStyle
 {
   float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
@@ -108,7 +108,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle
+			 styleMask: (NSUInteger)aStyle
 {
   float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
@@ -131,7 +131,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 }
 
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (unsigned int)aStyle
+		       styleMask: (NSUInteger)aStyle
 {
   [self subclassResponsibility: _cmd];
   return 0.0;
@@ -183,7 +183,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 }
 
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   NSRect content = [object_getClass(self) 
                        contentRectForFrameRect: aRect
@@ -210,7 +210,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 }
 
 - (NSRect) frameRectForContentRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   NSToolbar *tb = [_window toolbar];
 
@@ -571,13 +571,13 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 @implementation GSBackendWindowDecorationView
 
 + (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-    forStyleMask: (unsigned int)style
+    forStyleMask: (NSUInteger)style
 {
   [GSCurrentServer() styleoffsets: l : r : t : b : style];
 }
 
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (unsigned int)aStyle
+		       styleMask: (NSUInteger)aStyle
 {
   /* TODO: we could at least guess... */
   return 0.0;

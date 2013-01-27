@@ -49,7 +49,7 @@
 @implementation GSStandardWindowDecorationView
 
 + (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-    forStyleMask: (unsigned int)style
+    forStyleMask: (NSUInteger)style
 {
   GSTheme *theme = [GSTheme theme];
 
@@ -76,7 +76,7 @@
 }
 
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (unsigned int)aStyle
+		       styleMask: (NSUInteger)aStyle
 {
   float l, r, t, b, width;
 
@@ -124,7 +124,7 @@
 - (id) initWithFrame: (NSRect)frame
 	      window: (NSWindow *)w
 {
-  unsigned int styleMask;
+  NSUInteger styleMask;
 
   self = [super initWithFrame: frame window: w];
   if (!self) return nil;
@@ -229,7 +229,7 @@
 
 - (void) moveWindowStartingWithEvent: (NSEvent *)event
 {
-  unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   NSEvent *currentEvent = event;
   NSDate *distantPast = [NSDate distantPast];
   NSPoint delta, point;
@@ -303,7 +303,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 
 - (void) resizeWindowStartingWithEvent: (NSEvent *)event
 {
-  unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask | NSPeriodicMask;
+  NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask | NSPeriodicMask;
   NSEvent *currentEvent = event;
   NSDate *distantPast = [NSDate distantPast];
   NSDate *distantFuture = [NSDate distantFuture];

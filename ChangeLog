@@ -1,5 +1,23 @@
 2013-01-27  Fred Kiefer <FredKiefer@gmx.de>
 
+	* gui/Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
+	* gui/Headers/AppKit/NSActionCell.h
+	* gui/Headers/AppKit/NSAlert.h
+	* gui/Headers/AppKit/NSGraphics.h
+	* gui/Headers/AppKit/NSPanel.h
+	* gui/Headers/AppKit/NSWindow.h
+	* gui/Source/GSStandardWindowDecorationView.m
+	* gui/Source/GSToolTips.m
+	* gui/Source/GSWindowDecorationView.m
+	* gui/Source/NSActionCell.m
+	* gui/Source/NSAlert.m
+	* gui/Source/NSDrawer.m
+	* gui/Source/NSPanel.m
+	* gui/Source/NSWindow.m: First set of NSInteger/NSUInteger cleanup
+	in gui.
+
+2013-01-27  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextContainer.m (lineFragmentRectForProposedRect:...):
 	Prevent negative width/height from being returned.
 	Bug found by unit test from Nikolaus Schaller <hns@computer.org>.

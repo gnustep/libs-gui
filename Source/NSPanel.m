@@ -60,8 +60,9 @@
 			   backing: NSBackingStoreBuffered
 			     defer: NO];
 }
+
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
 {
@@ -81,6 +82,7 @@
 
   return self;
 }
+
 - (void) _initDefaults
 {
   [super _initDefaults];

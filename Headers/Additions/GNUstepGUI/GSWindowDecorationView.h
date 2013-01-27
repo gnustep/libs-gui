@@ -37,11 +37,11 @@
 - (id) newWindowDecorationViewWithFrame: (NSRect)frame
 				 window: (NSWindow *)window;
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
-       styleMask: (unsigned int)aStyle;
+       styleMask: (NSUInteger)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+			 styleMask: (NSUInteger)aStyle;
 - (float) minFrameWidthWithTitle: (NSString *)aTitle
-       styleMask: (unsigned int)aStyle;
+       styleMask: (NSUInteger)aStyle;
 @end
 
 
@@ -65,9 +65,9 @@ this, either directly, or indirectly (by using the backend).
 - (id) initWithFrame: (NSRect)frame window: (NSWindow *)w;
 
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+			 styleMask: (NSUInteger)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+			 styleMask: (NSUInteger)aStyle;
 
 - (void) layout;
 - (void) changeWindowHeight: (float)difference;

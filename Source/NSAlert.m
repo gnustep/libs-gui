@@ -199,12 +199,12 @@ static GSAlertPanel	*criticalAlertPanel = nil;
   NSTextField	*titleField;
   NSTextField	*messageField;
   NSScrollView	*scroll;
-  int		result;
+  NSInteger	result;
   BOOL          isGreen;  // we were unarchived and not resized.
 }
 
 - (id) _initWithoutGModel;
-- (int) runModal;
+- (NSInteger) runModal;
 - (void) setTitleBar: (NSString*)titleBar
 		icon: (NSImage*)icon
 	       title: (NSString*)title
@@ -219,7 +219,7 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 - (void) setButtons: (NSArray *)buttons;
 - (void) sizePanelToFit;
 - (void) buttonAction: (id)sender;
-- (int) result;
+- (NSInteger) result;
 - (BOOL) isActivePanel;
 @end
 
@@ -311,9 +311,9 @@ makeScrollViewWithRect(NSRect rect)
   return scroll;
 }
 
-- (NSButton*) _makeButtonWithRect: (NSRect)rect tag: (int)tag
+- (NSButton*) _makeButtonWithRect: (NSRect)rect tag: (NSInteger)tag
 {
-  NSButton	*button = [[NSButton alloc] initWithFrame: rect];
+  NSButton *button = [[NSButton alloc] initWithFrame: rect];
 
   [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
   [button setButtonType: NSMomentaryPushInButton];
@@ -531,7 +531,7 @@ setKeyEquivalent(NSButton *button)
   int		i;
   BOOL		needsScroll;
   BOOL		couldNeedScroll;
-  unsigned int	mask = [self styleMask];
+  NSUInteger	mask = [self styleMask];
 
   /*
    * Set size to the size of a content rectangle of a panel
@@ -785,7 +785,7 @@ setKeyEquivalent(NSButton *button)
   [NSApp stopModalWithCode: result];
 }
 
-- (int) result
+- (NSInteger) result
 {
   return result;
 }
@@ -795,7 +795,7 @@ setKeyEquivalent(NSButton *button)
   return [NSApp modalWindow] == self;
 }
 
-- (int) runModal
+- (NSInteger) runModal
 {
   if (GSCurrentThread() != GSAppKitThread)
     {
@@ -1048,13 +1048,12 @@ setKeyEquivalent(NSButton *button)
     }
 }
 
-
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
 {
-  if(NSIsEmptyRect(contentRect))
+  if (NSIsEmptyRect(contentRect))
     {
       contentRect = NSMakeRect(0,0,100,100);
     }
@@ -1063,10 +1062,9 @@ setKeyEquivalent(NSButton *button)
 		styleMask: NSBorderlessWindowMask
 		backing: bufferingType
 		defer: flag];
-
   if (self != nil)
     {
-      // 
+      // FIXME
     }
   return self;
 }
@@ -1459,7 +1457,7 @@ NSGetAlertPanel(
     defaultButton, alternateButton, otherButton);
 }
 
-int
+NSInteger
 NSRunAlertPanel(
   NSString *title,
   NSString *msg,
@@ -1470,7 +1468,7 @@ NSRunAlertPanel(
   va_list	ap;
   NSString	*message;
   GSAlertPanel	*panel;
-  int		result;
+  NSInteger	result;
 
   va_start(ap, otherButton);
   message = [NSString stringWithFormat: msg arguments: ap];
@@ -1494,7 +1492,7 @@ NSRunAlertPanel(
   return result;
 }
 
-int
+NSInteger
 NSRunLocalizedAlertPanel(
   NSString *table,
   NSString *title,
@@ -1506,7 +1504,7 @@ NSRunLocalizedAlertPanel(
   va_list	ap;
   NSString	*message;
   GSAlertPanel	*panel;
-  int		result;
+  NSInteger	result;
   NSBundle	*bundle = [NSBundle mainBundle];
 
   if (title == nil)
@@ -1562,8 +1560,7 @@ NSGetCriticalAlertPanel(
     defaultButton, alternateButton, otherButton);
 }
 
-
-int
+NSInteger
 NSRunCriticalAlertPanel(
   NSString *title,
   NSString *msg,
@@ -1574,7 +1571,7 @@ NSRunCriticalAlertPanel(
   va_list	ap;
   NSString	*message;
   GSAlertPanel	*panel;
-  int		result;
+  NSInteger	result;
 
   va_start(ap, otherButton);
   message = [NSString stringWithFormat: msg arguments: ap];
@@ -1608,7 +1605,7 @@ NSGetInformationalAlertPanel(
 }
 
 
-int
+NSInteger
 NSRunInformationalAlertPanel(
   NSString *title,
   NSString *msg,
@@ -1619,7 +1616,7 @@ NSRunInformationalAlertPanel(
   va_list       ap;
   NSString	*message;
   GSAlertPanel	*panel;
-  int		result;
+  NSInteger	result;
 
   va_start(ap, otherButton);
   message = [NSString stringWithFormat: msg arguments: ap];
@@ -1633,7 +1630,6 @@ NSRunInformationalAlertPanel(
   NSReleaseAlertPanel(panel);
   return result;
 }
-
 
 void
 NSReleaseAlertPanel(id panel)
@@ -1686,8 +1682,8 @@ void NSBeginAlertSheet(NSString *title,
   [panel close];
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
-      void (*didEnd)(id, SEL, id, int, void*);
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+      void (*didEnd)(id, SEL, id, NSInteger, void*);
+      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
         methodForSelector: didEndSelector];
       didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
     }
@@ -1725,8 +1721,8 @@ void NSBeginCriticalAlertSheet(NSString *title,
   [panel close];
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
-      void (*didEnd)(id, SEL, id, int, void*);
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+      void (*didEnd)(id, SEL, id, NSInteger, void*);
+      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
         methodForSelector: didEndSelector];
       didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
     }
@@ -1766,8 +1762,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
   [panel close];
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
-      void (*didEnd)(id, SEL, id, int, void*);
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+      void (*didEnd)(id, SEL, id, NSInteger, void*);
+      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
         methodForSelector: didEndSelector];
       didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
     }
@@ -1792,7 +1788,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 + (NSAlert *) alertWithError: (NSError *)error
 {
   NSArray *options;
-  unsigned int count;
+  NSUInteger count;
 
   options = [error localizedRecoveryOptions];
   count = [options count];
@@ -2007,7 +2003,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
     }
 }
 
-- (int) runModal
+- (NSInteger) runModal
 {
   if (GSCurrentThread() != GSAppKitThread)
     {
@@ -2044,13 +2040,13 @@ void NSBeginInformationalAlertSheet(NSString *title,
 }
 
 - (void) _alertDidEnd: (NSWindow *)sheet
-           returnCode: (int)returnCode
+           returnCode: (NSInteger)returnCode
 	  contextInfo: (void *)contextInfo
 {
   if ([_modalDelegate respondsToSelector: _didEndSelector])
     {
-      void (*didEnd)(id, SEL, id, int, void *);
-      didEnd = (void (*)(id, SEL, id, int, void *))[_modalDelegate
+      void (*didEnd)(id, SEL, id, NSInteger, void *);
+      didEnd = (void (*)(id, SEL, id, NSInteger, void *))[_modalDelegate
 	methodForSelector: _didEndSelector];
       didEnd(_modalDelegate, _didEndSelector, self, returnCode, contextInfo);
     }
@@ -2073,7 +2069,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 - (NSPanel *) userInfoPanel;
 @end
 
-int GSRunExceptionPanel(
+NSInteger GSRunExceptionPanel(
   NSString *title,
   NSException *exception,
   NSString *defaultButton,
@@ -2082,7 +2078,7 @@ int GSRunExceptionPanel(
 {
   NSString      *message;
   GSExceptionPanel  *panel;
-  int           result;
+  NSInteger      result;
 
   message = [NSString stringWithFormat: @"%@: %@",
 	  			[exception name],

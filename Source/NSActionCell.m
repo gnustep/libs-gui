@@ -353,7 +353,7 @@ static Class controlClass;
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeInt: [self tag] forKey: @"NSTag"];
+      [aCoder encodeInteger: [self tag] forKey: @"NSTag"];
       if ([self target] != nil)
 	{
 	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
@@ -384,7 +384,7 @@ static Class controlClass;
     {
       if ([aDecoder containsValueForKey: @"NSTag"])
         {
-	  [self setTag: [aDecoder decodeIntForKey: @"NSTag"]];
+	  [self setTag: [aDecoder decodeIntegerForKey: @"NSTag"]];
 	}
       if ([aDecoder containsValueForKey: @"NSTarget"])
 	{
