@@ -29,11 +29,14 @@
 
 #import "config.h"
 #import <Foundation/NSString.h>
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
 NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
+
+const double NSAppKitVersionNumber = NSAppKitVersionNumber10_4;
 
 //
 // Global Exception Strings

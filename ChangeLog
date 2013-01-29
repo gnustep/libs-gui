@@ -1,19 +1,25 @@
+2013-01-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSApplication.h
+	* Source/NSApplication.m: NSInteger/NSUInteger cleanup
+	* Source/externs.m: Add NSAppKitVersionNumber.
+
 2013-01-27  Fred Kiefer <FredKiefer@gmx.de>
 
-	* gui/Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
-	* gui/Headers/AppKit/NSActionCell.h
-	* gui/Headers/AppKit/NSAlert.h
-	* gui/Headers/AppKit/NSGraphics.h
-	* gui/Headers/AppKit/NSPanel.h
-	* gui/Headers/AppKit/NSWindow.h
-	* gui/Source/GSStandardWindowDecorationView.m
-	* gui/Source/GSToolTips.m
-	* gui/Source/GSWindowDecorationView.m
-	* gui/Source/NSActionCell.m
-	* gui/Source/NSAlert.m
-	* gui/Source/NSDrawer.m
-	* gui/Source/NSPanel.m
-	* gui/Source/NSWindow.m: First set of NSInteger/NSUInteger cleanup
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
+	* Headers/AppKit/NSActionCell.h
+	* Headers/AppKit/NSAlert.h
+	* Headers/AppKit/NSGraphics.h
+	* Headers/AppKit/NSPanel.h
+	* Headers/AppKit/NSWindow.h
+	* Source/GSStandardWindowDecorationView.m
+	* Source/GSToolTips.m
+	* Source/GSWindowDecorationView.m
+	* Source/NSActionCell.m
+	* Source/NSAlert.m
+	* Source/NSDrawer.m
+	* Source/NSPanel.m
+	* Source/NSWindow.m: First set of NSInteger/NSUInteger cleanup
 	in gui.
 
 2013-01-27  Fred Kiefer <FredKiefer@gmx.de>

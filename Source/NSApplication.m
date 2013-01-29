@@ -112,7 +112,7 @@ static NSUncaughtExceptionHandler *defaultUncaughtExceptionHandler;
 static void
 _NSAppKitUncaughtExceptionHandler (NSException *exception)
 {
-  int retVal;
+  NSInteger retVal;
 
   /* Reset the exception handler to the Base library's one, to prevent
      recursive calls to the gui one. */
@@ -339,7 +339,7 @@ gsapp_user_bundles(void)
 {
   NSUserDefaults *defs=[NSUserDefaults standardUserDefaults];
   NSArray *a=[defs arrayForKey: @"GSAppKitUserBundles"];
-  int i, c;
+  NSUInteger i, c;
   c = [a count];
   if (a == nil || c == 0)
     return;
@@ -361,8 +361,8 @@ gsapp_user_bundles(void)
  * Types
  */
 struct _NSModalSession {
-  int			runState;
-  int			entryLevel;
+  NSInteger		runState;
+  NSInteger		entryLevel;
   NSWindow		*window;
   NSModalSession	previous;
 };
@@ -438,8 +438,7 @@ NSApplication	*NSApp = nil;
   return YES;
 }
 
-
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {     
   if ([[NSUserDefaults standardUserDefaults]
 	boolForKey: @"GSSuppressAppIcon"] == NO)
@@ -637,7 +636,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       NSPoint	lastLocation;
       NSPoint	location;
-      unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 	| NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
       NSDate	*theDistantFuture = [NSDate distantFuture];
       BOOL	done = NO;
@@ -695,7 +694,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   if ([types containsObject: NSFilenamesPboardType] == YES)
     {
       NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
-      unsigned	index;
+      NSUInteger index;
 
       [NSApp activateIgnoringOtherApps: YES];
       for (index = 0; index < [names count]; index++)
@@ -999,8 +998,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSString		*filePath;
   NSArray		*windows_list;
-  unsigned		count;
-  unsigned		i;
+  NSUInteger		count;
+  NSUInteger		i;
   BOOL			hadDuplicates = NO;
   BOOL			didAutoreopen = NO;
   NSArray               *files = nil;
@@ -1262,8 +1261,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
-      unsigned		count;
-      unsigned		i;
+      NSUInteger	count;
+      NSUInteger	i;
       NSDictionary	*info;
 
      /*
@@ -1481,7 +1480,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) _handleException: (NSException *)exception
 {
-  int mask = [[NSUserDefaults standardUserDefaults] integerForKey: @"NSExceptionHandlerMask"];
+  NSInteger mask = [[NSUserDefaults standardUserDefaults] integerForKey: @"NSExceptionHandlerMask"];
 
   /**
    * If we are in debug mode, then rethrow the exception so that
@@ -1489,13 +1488,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
    **/
 
   // log the exception.
-  if(mask & NSLogUncaughtExceptionMask) 
+  if (mask & NSLogUncaughtExceptionMask) 
     {
       [self reportException: exception];
     }
 
   // allow the default handler to handle the exception.
-  if(mask & NSHandleUncaughtExceptionMask) 
+  if (mask & NSHandleUncaughtExceptionMask) 
     {
       [exception raise];
     }
@@ -1741,10 +1740,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * -stopModalWithCode: , or -abortModal , at which time -endModalSession:
  * is called automatically.
  */
-- (int) runModalForWindow: (NSWindow*)theWindow
+- (NSInteger) runModalForWindow: (NSWindow*)theWindow
 {
   NSModalSession theSession = 0;
-  int code = NSRunContinuesResponse;
+  NSInteger code = NSRunContinuesResponse;
 
   NS_DURING
     {
@@ -1815,7 +1814,7 @@ immediately.
 See Also: -runModalForWindow:
 </p>
 */
-- (int) runModalSession: (NSModalSession)theSession
+- (NSInteger) runModalSession: (NSModalSession)theSession
 {
   NSAutoreleasePool	*pool;
   GSDisplayServer	*srv;
@@ -1948,7 +1947,7 @@ See -runModalForWindow:
  * -runModalSession: to return the specified integer code.  Use this
  * or -stopModal to end a modal session in response to user input.
  */
-- (void) stopModalWithCode: (int)returnCode
+- (void) stopModalWithCode: (NSInteger)returnCode
 {
   /* According to the spec, there is no exception which is thrown
    * if we are not currently in a modal session.   While it is not
@@ -1973,8 +1972,8 @@ See -runModalForWindow:
  * <em>Not implemented under GNUstep.  Currently just centers window on the
  * screen.</em>
  */
-- (int) runModalForWindow: (NSWindow *)theWindow
-	relativeToWindow: (NSWindow *)docWindow
+- (NSInteger) runModalForWindow: (NSWindow *)theWindow
+               relativeToWindow: (NSWindow *)docWindow
 {
   // FIXME
   [theWindow orderWindow: NSWindowAbove
@@ -2000,7 +1999,7 @@ See -runModalForWindow:
 	contextInfo: (void *)contextInfo
 {
   // FIXME
-  int ret;
+  NSInteger ret;
 
   [sheet setParentWindow: docWindow];
   [docWindow setAttachedSheet: sheet];
@@ -2010,9 +2009,9 @@ See -runModalForWindow:
 
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
-      void (*didEnd)(id, SEL, id, int, void*);
+      void (*didEnd)(id, SEL, id, NSInteger, void*);
 
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
+      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate methodForSelector: 
 								 didEndSelector];
       didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
@@ -2034,7 +2033,7 @@ See -runModalForWindow:
  *  Analogous to -stopModalWithCode: for sheets.
  */
 - (void) endSheet: (NSWindow *)sheet
-       returnCode: (int)returnCode
+       returnCode: (NSInteger)returnCode
 {
   // FIXME
   [self stopModalWithCode: returnCode];
@@ -2130,7 +2129,7 @@ See -runModalForWindow:
  * See (EventType) .  Use <code>NSAnyEventMask</code> to discard everything
  * up to lastEvent.
  */
-- (void) discardEventsMatchingMask: (unsigned int)mask
+- (void) discardEventsMatchingMask: (NSUInteger)mask
 		       beforeEvent: (NSEvent *)lastEvent
 {
   DPSDiscardEvents(GSCurrentServer(), mask, lastEvent);
@@ -2142,7 +2141,7 @@ See -runModalForWindow:
  * queue, will wait for one until expiration, returning nil if none found.
  * See (EventType) for the list of masks.
  */
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
 			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
 			   dequeue: (BOOL)flag
@@ -2547,8 +2546,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (_app_is_hidden == YES)
     {
       NSDictionary	*info;
-      unsigned		count;
-      unsigned		i;
+      NSUInteger	count;
+      NSUInteger	i;
 
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
@@ -2594,14 +2593,14 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (menu)
     {
       NSArray	*itemArray;
-      unsigned	count;
-      unsigned	i;
+      NSUInteger count;
+      NSUInteger i;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
 	{
-	  id	win = [(NSMenuItem*)[itemArray objectAtIndex: i] target];
+	  id win = [(NSMenuItem*)[itemArray objectAtIndex: i] target];
 
 	  if ([win isKindOfClass: [NSWindow class]] &&
 	      [win isVisible] && ![win isMiniaturized])
@@ -2610,6 +2609,15 @@ image.</p><p>See Also: -applicationIconImage</p>
 	    }
 	}
     }
+}
+
+/*
+ * User interface validation
+ */
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
+{
+  // FIXME
+  return YES;
 }
 
 /*
@@ -2643,8 +2651,8 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
 {
-  NSArray	*window_list;
-  unsigned	i, c;
+  NSArray *window_list;
+  NSUInteger i, c;
 
   // so i suppose when flag is YES it only runs on visible windows
   if (flag)
@@ -2674,7 +2682,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (void) miniaturizeAll: sender
 {
   NSArray *window_list = [self windows];
-  unsigned i, count;
+  NSUInteger i, count;
 
   for (i = 0, count = [window_list count]; i < count; i++)
     [[window_list objectAtIndex: i] miniaturize: sender];
@@ -2710,9 +2718,9 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) updateWindows
 {
-  NSArray		*window_list = [self windows];
-  unsigned		count = [window_list count];
-  unsigned		i;
+  NSArray	*window_list = [self windows];
+  NSUInteger	count = [window_list count];
+  NSUInteger	i;
 
   _windows_need_update = NO;
   [nc postNotificationName: NSApplicationWillUpdateNotification object: self];
@@ -2738,7 +2746,7 @@ image.</p><p>See Also: -applicationIconImage</p>
  * Returns window for windowNum.  Note the window number can be obtained for
  * a window from [NSWindow-windowNumber].
  */
-- (NSWindow *) windowWithWindowNumber: (int)windowNum
+- (NSWindow *) windowWithWindowNumber: (NSInteger)windowNum
 {
   return GSWindowWithNumber(windowNum);
 }
@@ -2953,7 +2961,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (_windows_menu)
     {
       NSArray	*itemArray;
-      unsigned	count;
+      NSUInteger count;
 
       itemArray = [_windows_menu itemArray];
       count = [itemArray count];
@@ -3006,8 +3014,8 @@ image.</p><p>See Also: -applicationIconImage</p>
 		  filename: (BOOL)isFilename
 {
   NSArray	*itemArray;
-  unsigned	count;
-  unsigned	i;
+  NSUInteger	count;
+  NSUInteger	i;
   id		item;
 
   if (![aWindow isKindOfClass: [NSWindow class]])
@@ -3126,8 +3134,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (menu != nil)
     {
       NSArray	*itemArray;
-      unsigned	count;
-      unsigned	i;
+      NSUInteger count;
+      NSUInteger i;
       BOOL	found = NO;
 
       itemArray = [menu itemArray];
@@ -3169,7 +3177,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (_windows_menu != nil)
     {
       NSArray *itemArray = [_windows_menu itemArray];
-      unsigned i, count = [itemArray count];
+      NSUInteger i, count = [itemArray count];
       
       for (i = 0; i < count; i++)
 	{
@@ -3191,7 +3199,7 @@ image.</p><p>See Also: -applicationIconImage</p>
      * Now use [-changeWindowsItem:title:filename:] to build the new menu.
      */
     NSArray * windows = [self windows];
-    unsigned i, count = [windows count];
+    NSUInteger i, count = [windows count];
     for (i = 0; i < count; i++)
       {
 	NSWindow	*win = [windows objectAtIndex: i];
@@ -3310,7 +3318,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (BOOL) presentError: (NSError *)error
 {
   NSAlert *alert;
-  int result;
+  NSInteger result;
 
   error = [self willPresentError: error];
   alert = [NSAlert alertWithError: error];
@@ -3362,7 +3370,7 @@ struct _DelegateWrapper
 }
 
 - (void) _didPresentError: (NSWindow*)sheet 
-               returnCode: (int)result
+               returnCode: (NSInteger)result
               contextInfo: (void*)context
 {
   struct _DelegateWrapper *wrapper;
@@ -3654,7 +3662,7 @@ struct _DelegateWrapper
  * Cancels a request previously made through calling -requestUserAttention: .
  * Note that request is cancelled automatically if user activates the app.
  */
-- (void) cancelUserAttentionRequest: (int)request
+- (void) cancelUserAttentionRequest: (NSInteger)request
 {
   // FIXME
 }
@@ -3665,7 +3673,7 @@ struct _DelegateWrapper
  * could be either <code>NSCriticalRequest</code> (bounce endlessly) or
  * <code>NSInformationalRequest</code> (bounce for one second).
  */
-- (int) requestUserAttention: (NSRequestUserAttentionType)requestType
+- (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
   // FIXME
   return 0;
@@ -3738,7 +3746,7 @@ struct _DelegateWrapper
   NSString	*appIconFile;
   NSImage	*image = nil;
   NSAppIconView	*iv;
-  unsigned	mask = NSIconWindowMask;
+  NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
 
   suppress = [[NSUserDefaults standardUserDefaults]
