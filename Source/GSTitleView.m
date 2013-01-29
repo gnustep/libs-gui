@@ -211,9 +211,9 @@
   NSSize     titleSize;
   NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};
   NSRectEdge bottom_right[] = {NSMaxXEdge, NSMinYEdge};
-  float      blacks[] = {NSBlack, NSBlack};
-  float      grays[] = {NSLightGray, NSLightGray};
-  float      darkGrays[] = {NSDarkGray, NSDarkGray};
+  CGFloat      blacks[] = {NSBlack, NSBlack};
+  CGFloat      grays[] = {NSLightGray, NSLightGray};
+  CGFloat      darkGrays[] = {NSDarkGray, NSDarkGray};
 
   // Draw the dark gray upper left lines for menu and black for others.
   // Rectangle 1

@@ -80,11 +80,11 @@ APPKIT_EXPORT const NSWindowDepth NSTwentyFourBitRGBDepth;
 /*
  * Gray Values 
  */
-APPKIT_EXPORT const float NSBlack;
-APPKIT_EXPORT const float NSDarkGray;
-APPKIT_EXPORT const float NSWhite;
-APPKIT_EXPORT const float NSLightGray;
-APPKIT_EXPORT const float NSGray;
+APPKIT_EXPORT const CGFloat NSBlack;
+APPKIT_EXPORT const CGFloat NSDarkGray;
+APPKIT_EXPORT const CGFloat NSWhite;
+APPKIT_EXPORT const CGFloat NSLightGray;
+APPKIT_EXPORT const CGFloat NSGray;
 
 /*
  * Device Dictionary Keys 
@@ -101,12 +101,12 @@ APPKIT_EXPORT NSString *NSDeviceSize;
  */
 APPKIT_EXPORT const NSWindowDepth *NSAvailableWindowDepths(void);
 APPKIT_EXPORT NSWindowDepth NSBestDepth(NSString *colorSpace, 
-			  int bitsPerSample, int bitsPerPixel, 
+			  NSInteger bitsPerSample, NSInteger bitsPerPixel, 
 			  BOOL planar, BOOL *exactMatch);
-APPKIT_EXPORT int NSBitsPerPixelFromDepth(NSWindowDepth depth);
-APPKIT_EXPORT int NSBitsPerSampleFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT NSInteger NSBitsPerPixelFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT NSInteger NSBitsPerSampleFromDepth(NSWindowDepth depth);
 APPKIT_EXPORT NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
-APPKIT_EXPORT int NSNumberOfColorComponents(NSString *colorSpaceName);
+APPKIT_EXPORT NSInteger NSNumberOfColorComponents(NSString *colorSpaceName);
 APPKIT_EXPORT BOOL NSPlanarFromDepth(NSWindowDepth depth);
 
 
@@ -119,19 +119,21 @@ APPKIT_EXPORT void NSWindowList(NSInteger size, NSInteger list[]);
 APPKIT_EXPORT void NSEraseRect(NSRect aRect);
 APPKIT_EXPORT void NSHighlightRect(NSRect aRect);
 APPKIT_EXPORT void NSRectClip(NSRect aRect);
-APPKIT_EXPORT void NSRectClipList(const NSRect *rects, int count);
+APPKIT_EXPORT void NSRectClipList(const NSRect *rects, NSInteger count);
 APPKIT_EXPORT void NSRectFill(NSRect aRect);
-APPKIT_EXPORT void NSRectFillList(const NSRect *rects, int count);
+APPKIT_EXPORT void NSRectFillList(const NSRect *rects, NSInteger count);
 APPKIT_EXPORT void NSRectFillListWithGrays(const NSRect *rects,
-					   const float *grays,int count);
+					   const CGFloat *grays,
+                                           NSInteger count);
 
 /** Draws a set of edges of aRect.  The sides array should contain
     count edges, and grays the corresponding color.  Edges are drawn
     in the order given in the array, and subsequent edges are drawn
     inside previous edges (thus, they will never overlap).  */
 APPKIT_EXPORT NSRect NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
-			const NSRectEdge *sides,
-			const float *grays, int count);
+                                      const NSRectEdge *sides,
+                                      const CGFloat *grays,
+                                      NSInteger count);
 
 APPKIT_EXPORT void NSDrawButton(const NSRect aRect, const NSRect clipRect);
 APPKIT_EXPORT void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
@@ -159,24 +161,24 @@ APPKIT_EXPORT void NSDottedFrameRect(NSRect aRect);
     outside the given rectangle.
     </p>  */
 APPKIT_EXPORT void NSFrameRect(const NSRect aRect); 
-APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
-APPKIT_EXPORT void NSFrameRectWithWidthUsingOperation(const NSRect aRect, float frameWidth, 
+APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, CGFloat frameWidth);
+APPKIT_EXPORT void NSFrameRectWithWidthUsingOperation(const NSRect aRect, CGFloat frameWidth, 
 						      NSCompositingOperation op);
 
 APPKIT_EXPORT NSColor* NSReadPixel(NSPoint location);
 
 APPKIT_EXPORT void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, 
 					  NSRect destRect);
-APPKIT_EXPORT void NSCopyBits(int srcGstate, NSRect srcRect, 
+APPKIT_EXPORT void NSCopyBits(NSInteger srcGstate, NSRect srcRect, 
 			      NSPoint destPoint);
 
 APPKIT_EXPORT void NSDrawBitmap(NSRect rect,
-                                int pixelsWide,
-                                int pixelsHigh,
-                                int bitsPerSample,
-                                int samplesPerPixel,
-                                int bitsPerPixel,
-                                int bytesPerRow,
+                                NSInteger pixelsWide,
+                                NSInteger pixelsHigh,
+                                NSInteger bitsPerSample,
+                                NSInteger samplesPerPixel,
+                                NSInteger bitsPerPixel,
+                                NSInteger bytesPerRow,
                                 BOOL isPlanar,
                                 BOOL hasAlpha,
                                 NSString *colorSpaceName,
@@ -230,32 +232,32 @@ APPKIT_EXPORT void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globa
 
 // Rectangle drawing
 APPKIT_EXPORT NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
-					    const NSRectEdge *sides, 
-					    NSColor **colors, 
-					    int count);
+                                           const NSRectEdge *sides, 
+                                           NSColor **colors, 
+                                           NSInteger count);
 APPKIT_EXPORT void NSDrawDarkBezel(NSRect aRect, NSRect clipRect);
 APPKIT_EXPORT void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
 APPKIT_EXPORT void NSRectFillListWithColors(const NSRect *rects, 
-					     NSColor **colors, int count);
+                                            NSColor **colors, NSInteger count);
 
 APPKIT_EXPORT void NSRectFillUsingOperation(NSRect aRect, 
 					     NSCompositingOperation op);
 APPKIT_EXPORT void NSRectFillListUsingOperation(const NSRect *rects, 
-						 int count, 
-						 NSCompositingOperation op);
+                                                NSInteger count, 
+                                                NSCompositingOperation op);
 APPKIT_EXPORT void NSRectFillListWithColorsUsingOperation(const NSRect *rects,
-							   NSColor **colors, 
-							   int num, 
-							   NSCompositingOperation op);
+                                                          NSColor **colors, 
+                                                          NSInteger num, 
+                                                          NSCompositingOperation op);
 
 APPKIT_EXPORT void NSDrawWindowBackground(NSRect aRect);
 
 // Context information
-APPKIT_EXPORT void NSCountWindowsForContext(int context, int *count);
-APPKIT_EXPORT void NSWindowListForContext(int context, int size, int **list);
+APPKIT_EXPORT void NSCountWindowsForContext(NSInteger context, NSInteger *count);
+APPKIT_EXPORT void NSWindowListForContext(NSInteger context, NSInteger size, NSInteger **list);
 APPKIT_EXPORT int NSGetWindowServerMemory(int context, int *virtualMemory, 
-					   int *windowBackingMemory, 
-					   NSString **windowDumpStream);
+                                          int *windowBackingMemory, 
+                                          NSString **windowDumpStream);
 
 #endif
 

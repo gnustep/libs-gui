@@ -1359,7 +1359,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 {
   static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 				    NSMaxXEdge, NSMinYEdge};
-  float grays[3][4] =
+  CGFloat grays[3][4] =
     {{NSLightGray, NSLightGray, NSDarkGray, NSDarkGray},
     {NSWhite, NSWhite, NSDarkGray, NSDarkGray},
     {NSLightGray, NSLightGray, NSBlack, NSBlack}};

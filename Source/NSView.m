@@ -172,10 +172,10 @@ GSRemoveDragTypes(NSView* obj)
 static NSArray*
 GSSetDragTypes(NSView* obj, NSArray *types)
 {
-  unsigned	count = [types count];
+  NSUInteger	count = [types count];
   NSString	*strings[count];
   NSArray	*t;
-  unsigned	i;
+  NSUInteger	i;
 
   /*
    * Make a new array with copies of the type strings so we don't get
@@ -218,7 +218,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (_coordinates_valid == YES)
     {
-      unsigned	count;
+      NSUInteger count;
 
       _coordinates_valid = NO;
       if (_rFlags.valid_rects != 0)
@@ -231,7 +231,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           if (count > 0)
             {
               NSView*	array[count];
-              unsigned	i;
+              NSUInteger i;
               
               [_sub_views getObjects: array];
               for (i = 0; i < count; i++)
@@ -367,12 +367,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self viewDidMoveToWindow];
   if (_rFlags.has_subviews)
     {
-      unsigned	count = [_sub_views count];
+      NSUInteger count = [_sub_views count];
 
       if (count > 0)
         {
-          unsigned	i;
-          NSView	*array[count];
+          NSUInteger i;
+          NSView *array[count];
 
           [_sub_views getObjects: array];
           for (i = 0; i < count; ++i)
@@ -435,12 +435,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_rFlags.has_subviews)
     {
-      unsigned	count = [_sub_views count];
+      NSUInteger count = [_sub_views count];
 
       if (count > 0)
         {
-          unsigned	i;
-          NSView	*array[count];
+          NSUInteger i;
+          NSView *array[count];
           
           [_sub_views getObjects: array];
           for (i = 0; i < count; ++i)
@@ -635,8 +635,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) dealloc
 {
-  NSView	*tmp;
-  unsigned	count;
+  NSView *tmp;
+  NSUInteger count;
 
   // Remove all key value bindings for this view.
   [GSKeyValueBinding unbindAllForObject: self];
@@ -683,7 +683,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  tmp = GSIArrayItemAtIndex(pKV(self), count).obj;
 	  if (tmp != nil && nKV(tmp) != 0)
 	    {
-	      unsigned	otherCount = GSIArrayCount(nKV(tmp));
+	      NSUInteger otherCount = GSIArrayCount(nKV(tmp));
 	
 	      while (otherCount-- > 1)
 		{
@@ -715,7 +715,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  tmp = GSIArrayItemAtIndex(nKV(self), count).obj;
 	  if (tmp != nil && pKV(tmp) != 0)
 	    {
-	      unsigned	otherCount = GSIArrayCount(pKV(tmp));
+	      NSUInteger otherCount = GSIArrayCount(pKV(tmp));
 	
 	      while (otherCount-- > 1)
 		{
@@ -1017,7 +1017,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       else
 	{
-	  unsigned index;
+	  NSUInteger index;
 
 	  /*
 	   * Ok - the standard case - we remove the newView from wherever it
@@ -1099,7 +1099,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self setNeedsDisplay: YES];
 }
 
-- (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
+- (void) sortSubviewsUsingFunction: (NSComparisonResult (*)(id ,id ,void*))compare
 			   context: (void*)context
 {
   [_sub_views sortUsingFunction: compare context: context];
@@ -2067,7 +2067,7 @@ static void autoresize(CGFloat oldContainerSize,
 - (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
   NSRect wrect;
-  int window_gstate = 0;
+  NSInteger window_gstate = 0;
 
   if (viewIsPrinting == nil)
     {
@@ -2294,7 +2294,7 @@ static void autoresize(CGFloat oldContainerSize,
   FIXME: The above is what the OpenStep and Cocoa specification say, but 
   gState is 0 unless allocateGState has been called. 
 */
-- (int) gState
+- (NSInteger) gState
 {
   if (_allocate_gstate && (!_gstate || _renew_gstate))
     {
@@ -2576,12 +2576,12 @@ static void autoresize(CGFloat oldContainerSize,
    */
   if (_rFlags.has_subviews == YES)
     {
-      unsigned count = [_sub_views count];
+      NSUInteger count = [_sub_views count];
 
       if (count > 0)
         {
           NSView *array[count];
-          unsigned i;
+          NSUInteger i;
           
           [_sub_views getObjects: array];
 
@@ -2673,7 +2673,7 @@ static void autoresize(CGFloat oldContainerSize,
 - (BOOL) needsToDrawRect: (NSRect)aRect
 {
   const NSRect *rects;
-  int i, count;
+  NSInteger i, count;
 
   [self getRectsBeingDrawn: &rects count: &count];
   for (i = 0; i < count; i++)
@@ -2684,7 +2684,7 @@ static void autoresize(CGFloat oldContainerSize,
   return NO;
 }
 
-- (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count
+- (void) getRectsBeingDrawn: (const NSRect **)rects count: (NSInteger *)count
 {
   // FIXME
   static NSRect rect;
@@ -2987,7 +2987,7 @@ in the main thread.
   return NO;
 }
 
-- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (int *)count
+- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (NSInteger *)count
 {
   // FIXME
   if (count != NULL)
@@ -3195,7 +3195,7 @@ Returns YES iff any scrolling was done.
 {
   if (_rFlags.has_currects != 0)
     {
-      unsigned count = [_cursor_rects count];
+      NSUInteger count = [_cursor_rects count];
 
       if (count > 0)
         {
@@ -3205,7 +3205,7 @@ Returns YES iff any scrolling was done.
 	  if (_rFlags.valid_rects != 0)
 	    {
 	      NSPoint loc = _window->_lastPoint;
-	      unsigned i;
+	      NSUInteger i;
 
 	      for (i = 0; i < count; ++i)
 		{
@@ -3267,10 +3267,10 @@ Returns YES iff any scrolling was done.
 {
 }
 
-static NSView* findByTag(NSView *view, int aTag, unsigned *level)
+static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 {
-  unsigned	i, count;
-  NSArray	*sub = [view subviews];
+  NSUInteger i, count;
+  NSArray *sub = [view subviews];
 
   count = [sub count];
   if (count > 0)
@@ -3311,12 +3311,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   else if (_rFlags.has_subviews)
     {
-      unsigned	count = [_sub_views count];
+      NSUInteger count = [_sub_views count];
 
       if (count > 0)
 	{
-	  NSView	*array[count];
-	  unsigned	i;
+	  NSView *array[count];
+	  NSUInteger i;
 
 	  [_sub_views getObjects: array];
 
@@ -3336,17 +3336,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 	  if (view == nil)
 	    {
-	      unsigned	level = 0xffffffff;
+	      NSUInteger level = 0xffffffff;
 
 	      /*
-	       * Ok - do it the long way - search the while tree for each of
+	       * Ok - do it the long way - search the whole tree for each of
 	       * our descendents and see which has the closest view matching
 	       * the tag.
 	       */
 	      for (i = 0; i < count; i++)
 		{
-		  unsigned	l = 0;
-		  NSView	*v;
+		  NSUInteger l = 0;
+		  NSView *v;
 
 		  v = findByTag(array[i], aTag, &l);
 
@@ -3383,7 +3383,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (NSView*) hitTest: (NSPoint)aPoint
 {
   NSPoint p;
-  unsigned count;
   NSView *v = nil, *w;
 
   /* If not within our frame then it can't be a hit.
@@ -3416,10 +3415,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   if (_rFlags.has_subviews)
     {
+      NSUInteger count;
+
       count = [_sub_views count];
       if (count > 0)
         {
-          NSView	*array[count];
+          NSView *array[count];
 
           [_sub_views getObjects: array];
           
@@ -3451,7 +3452,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  unsigned i;
+  NSUInteger i;
 
   for (i = 0; i < [_sub_views count]; i++)
     if ([[_sub_views objectAtIndex: i] performKeyEquivalent: theEvent] == YES)
@@ -3461,7 +3462,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) performMnemonic: (NSString *)aString
 {
-  unsigned i;
+  NSUInteger i;
 
   for (i = 0; i < [_sub_views count]; i++)
     if ([[_sub_views objectAtIndex: i] performMnemonic: aString] == YES)
@@ -3476,7 +3477,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) removeTrackingRect: (NSTrackingRectTag)tag
 {
-  unsigned i, j;
+  NSUInteger i, j;
   GSTrackingRect	*m;
 
   j = [_tracking_rects count];
@@ -3507,7 +3508,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 			 assumeInside: (BOOL)flag
 {
   NSTrackingRectTag	t;
-  unsigned		i, j;
+  NSUInteger		i, j;
   GSTrackingRect	*m;
 
   t = 0;
@@ -3584,7 +3585,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (void) setNextKeyView: (NSView *)aView
 {
   NSView	*tmp;
-  unsigned	count;
+  NSUInteger	count;
 
   if (aView != nil && [aView isKindOfClass: viewClass] == NO)
     {
@@ -4183,7 +4184,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return location;
 }
 
-- (NSRect) rectForPage: (int)page
+- (NSRect) rectForPage: (NSInteger)page
 {
   return NSZeroRect;
 }
@@ -4529,7 +4530,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   if ([aCoder allowsKeyedCoding])
     {
-      int vFlags = 0;
+      NSUInteger vFlags = 0;
 
       // encoding
       [aCoder encodeConditionalObject: [self nextKeyView] 
@@ -4664,7 +4665,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
         }
       if ([aDecoder containsValueForKey: @"NSvFlags"])
         {
-          int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
+          NSUInteger vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
 	  
           // We are lucky here, Apple use the same constants
           // in the lower bits of the flags
@@ -4770,7 +4771,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _autoresizes_subviews = flag;
 }
 
-- (void) setAutoresizingMask: (unsigned int)mask
+- (void) setAutoresizingMask: (NSUInteger)mask
 {
   _autoresizingMask = mask;
 }
@@ -4786,7 +4787,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return _autoresizes_subviews;
 }
 
-- (unsigned int) autoresizingMask
+- (NSUInteger) autoresizingMask
 {
   return _autoresizingMask;
 }
@@ -5057,7 +5058,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 @implementation NSView(KeyViewLoop)
 
-static int
+static NSComparisonResult
 cmpFrame(id view1, id view2, void *context)
 {
   BOOL flippedSuperView = [(NSView *)context isFlipped];

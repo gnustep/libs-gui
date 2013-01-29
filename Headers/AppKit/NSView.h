@@ -53,8 +53,8 @@
 @class NSView;
 @class NSWindow;
 
-typedef int NSTrackingRectTag;
-typedef int NSToolTipTag;
+typedef NSInteger NSTrackingRectTag;
+typedef NSInteger NSToolTipTag;
 
 /** Describes the type of border used by an NSView.
   <list>
@@ -64,12 +64,13 @@ typedef int NSToolTipTag;
    <item>NSGrooveBorder</item>
   </list>
 */
-typedef enum _NSBorderType {
+enum _NSBorderType {
   NSNoBorder,
   NSLineBorder,
   NSBezelBorder,
   NSGrooveBorder
-} NSBorderType;
+};
+typedef NSUInteger NSBorderType;
 
 /*
  * autoresize constants which NSView uses in
@@ -115,7 +116,7 @@ PACKAGE_SCOPE
 @protected
   NSRect _invalidRect;
   NSRect _visibleRect;
-  int _gstate;
+  NSInteger _gstate;
   void *_nextKeyView;
   void *_previousKeyView;
 
@@ -149,7 +150,7 @@ PACKAGE_SCOPE
   BOOL _is_hidden;
   BOOL _in_live_resize;
 
-  unsigned int _autoresizingMask;
+  NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
 }
@@ -176,7 +177,7 @@ PACKAGE_SCOPE
 #endif
 - (void) replaceSubview: (NSView*)oldView
                    with: (NSView*)newView;
-- (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
+- (void) sortSubviewsUsingFunction: (NSComparisonResult (*)(id ,id ,void*))compare
 			   context: (void*)context;
 - (NSArray*) subviews;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
@@ -266,8 +267,8 @@ PACKAGE_SCOPE
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize;
 - (void) setAutoresizesSubviews: (BOOL)flag;
 - (BOOL) autoresizesSubviews;
-- (void) setAutoresizingMask: (unsigned int)mask;
-- (unsigned int) autoresizingMask;
+- (void) setAutoresizingMask: (NSUInteger)mask;
+- (NSUInteger) autoresizingMask;
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize;
 
 /*
@@ -328,7 +329,7 @@ PACKAGE_SCOPE
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (BOOL) wantsDefaultClipping;
 - (BOOL) needsToDrawRect: (NSRect)aRect;
-- (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count;
+- (void) getRectsBeingDrawn: (const NSRect **)rects count: (NSInteger *)count;
 
 /*
  * Live resize support
@@ -339,7 +340,7 @@ PACKAGE_SCOPE
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL) preservesContentDuringLiveResize;
-- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (int *)count;
+- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (NSInteger *)count;
 - (NSRect) rectPreservedDuringLiveResize;
 #endif
 
@@ -349,7 +350,7 @@ PACKAGE_SCOPE
  */
 - (void) allocateGState;
 - (void) releaseGState;
-- (int) gState;
+- (NSInteger) gState;
 - (void) renewGState;
 - (void) setUpGState;
 
@@ -536,7 +537,7 @@ PACKAGE_SCOPE
 - (BOOL) knowsPageRange: (NSRange*)range;
 #endif
 - (NSPoint) locationOfPrintRect: (NSRect)aRect;
-- (NSRect) rectForPage: (int)page;
+- (NSRect) rectForPage: (NSInteger)page;
 - (CGFloat) widthAdjustLimit;
 
 /*

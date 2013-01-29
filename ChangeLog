@@ -1,5 +1,18 @@
 2013-01-29  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSCell.h
+	* Headers/AppKit/NSColor.h
+	* Headers/AppKit/NSGraphics.h
+	* Headers/AppKit/NSView.h
+	* Source/Functions.m
+	* Source/GSThemeDrawing.m
+	* Source/GSTitleView.m
+	* Source/NSApplication.m
+	* Source/NSCell.m
+	* Source/NSView.m: More NSInteger/NSUInteger/CGFloat cleanup
+
+2013-01-29  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSApplication.h
 	* Source/NSApplication.m: NSInteger/NSUInteger cleanup
 	* Source/externs.m: Add NSAppKitVersionNumber.

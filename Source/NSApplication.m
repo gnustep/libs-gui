@@ -571,7 +571,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   if ([NSApp isHidden])
     {
       NSRectEdge mySides[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
-      float myGrays[] = {NSBlack, NSWhite, NSWhite, NSBlack};
+      CGFloat myGrays[] = {NSBlack, NSWhite, NSWhite, NSBlack};
       NSDrawTiledRects(NSMakeRect(4, 4, 3, 2), rect, mySides, myGrays, 4);
     }
 }
