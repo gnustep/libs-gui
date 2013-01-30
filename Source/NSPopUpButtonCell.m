@@ -393,10 +393,10 @@ static NSImage *_pbc_image[5];
  * index, it, and all items after it are advanced one position.  Index needs
  * to be within the valid range for the array of items in the popup button.
  */
-- (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
+- (void) insertItemWithTitle: (NSString *)title atIndex: (NSInteger)index
 {
   id <NSMenuItem> anItem;
-  int i, count;
+  NSInteger i, count;
   
   i = [self indexOfItemWithTitle: title];
 
@@ -448,7 +448,7 @@ static NSImage *_pbc_image[5];
  * Remove a given item based on its index, must be a valid index within the
  * range for the item array of this popup.
  */
-- (void) removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (NSInteger)index
 {
   if (index == [self indexOfSelectedItem])
     {
@@ -483,7 +483,7 @@ static NSImage *_pbc_image[5];
 /**
  * Number of items in the reciever.
  */
-- (int) numberOfItems
+- (NSInteger) numberOfItems
 {
   return [_menu numberOfItems];
 }
@@ -491,7 +491,7 @@ static NSImage *_pbc_image[5];
 /**
  * Return the index of item in the item array of the reciever.
  */
-- (int) indexOfItem: (id <NSMenuItem>)item
+- (NSInteger) indexOfItem: (id <NSMenuItem>)item
 {
   return [_menu indexOfItem: item];
 }
@@ -499,7 +499,7 @@ static NSImage *_pbc_image[5];
 /**
  * Return index of the item with the given title.
  */
-- (int) indexOfItemWithTitle: (NSString *)title
+- (NSInteger) indexOfItemWithTitle: (NSString *)title
 {
   return [_menu indexOfItemWithTitle: title];
 }
@@ -507,7 +507,7 @@ static NSImage *_pbc_image[5];
 /**
  * Return index of the item with a tag equal to aTag.
  */
-- (int) indexOfItemWithTag: (int)tag
+- (NSInteger) indexOfItemWithTag: (NSInteger)tag
 {
   return [_menu indexOfItemWithTag: tag];
 }
@@ -515,7 +515,7 @@ static NSImage *_pbc_image[5];
 /**
  * Index of the item whose menu item's representedObject is equal to obj.
  */
-- (int) indexOfItemWithRepresentedObject: (id)obj
+- (NSInteger) indexOfItemWithRepresentedObject: (id)obj
 {
   return [_menu indexOfItemWithRepresentedObject: obj];
 }
@@ -524,7 +524,7 @@ static NSImage *_pbc_image[5];
  * Index of the item in the reciever whose target and action
  * are equal to aTarget and actionSelector.
  */
-- (int) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector
+- (NSInteger) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector
 {
   return [_menu indexOfItemWithTarget: aTarget andAction: actionSelector];
 }
@@ -532,7 +532,7 @@ static NSImage *_pbc_image[5];
 /**
  * Return the item at index.
  */ 
-- (id <NSMenuItem>) itemAtIndex: (int)index
+- (id <NSMenuItem>) itemAtIndex: (NSInteger)index
 {
   if ((index >= 0) && (index < [_menu numberOfItems]))
     {
@@ -557,7 +557,7 @@ static NSImage *_pbc_image[5];
  */
 - (id <NSMenuItem>) lastItem
 {
-  int end = [_menu numberOfItems] - 1;
+  NSInteger end = [_menu numberOfItems] - 1;
 
   if (end < 0)
     return nil;
@@ -697,7 +697,7 @@ static NSImage *_pbc_image[5];
     }
 }
 
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 {
   id <NSMenuItem> anItem;
 
@@ -796,14 +796,14 @@ static NSImage *_pbc_image[5];
   [[self selectedItem] setRepresentedObject: object];
 }
 
-- (int) indexOfSelectedItem
+- (NSInteger) indexOfSelectedItem
 {
   return [_menu indexOfItem: [self selectedItem]];
 }
 
 - (void) synchronizeTitleAndSelectedItem
 {
-  int index;
+  NSInteger index;
 
   if (!_pbcFlags.usesItemFromMenu)
     return;
@@ -855,7 +855,7 @@ static NSImage *_pbc_image[5];
 /**
  * Set item title at the given index in the reciever.
  */
-- (NSString *) itemTitleAtIndex: (int)index
+- (NSString *) itemTitleAtIndex: (NSInteger)index
 {
   return [[self itemAtIndex: index] title];
 }
@@ -901,7 +901,7 @@ static NSImage *_pbc_image[5];
   NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
-  int                   selectedItem;
+  NSInteger                   selectedItem;
 
   [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
                     object: self];
@@ -1104,7 +1104,7 @@ static NSImage *_pbc_image[5];
   NSSize s;
   NSSize imageSize;
   NSSize titleSize;
-  int i, count;
+  NSInteger i, count;
   NSString *title;
   NSImage *image;
 

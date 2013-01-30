@@ -65,12 +65,12 @@
  *  version and the transient version are on the screen.
  *  A value of -1 means that no item will be highlighted.
  */
-- (void) setHighlightedItemIndex: (int)index;
+- (void) setHighlightedItemIndex: (NSInteger)index;
 
 /** Returns the currently highlighted item.  Returns -1
  *  if no item is highlighted.
  */
-- (int) highlightedItemIndex;
+- (NSInteger) highlightedItemIndex;
 
 /** This should ensure that if there is an attached
  *  submenu this submenu will be detached.
@@ -122,7 +122,7 @@
  */
 - (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu;
 
-- (void) performActionWithHighlightingForItemAtIndex: (int)index; //????
+- (void) performActionWithHighlightingForItemAtIndex: (NSInteger)index; //????
 
 /** <p>This is method is responsible for handling all events while
  *  the user is interacting with this menu.  It should pass on this
@@ -434,29 +434,29 @@
 
 /** Returns the index of item anObject.
  */
-- (int) indexOfItem: (id <NSMenuItem>)anObject;
+- (NSInteger) indexOfItem: (id <NSMenuItem>)anObject;
 
 /** Returns the index of an item with the tag aTag.
  */
-- (int) indexOfItemWithTag: (int)aTag;
+- (NSInteger) indexOfItemWithTag: (NSInteger)aTag;
 
 /** Returns the index of an item with the target anObject
  * and the actionSelector.
  */
-- (int) indexOfItemWithTarget: (id)anObject
+- (NSInteger) indexOfItemWithTarget: (id)anObject
                    andAction: (SEL)actionSelector;
 
 /** Returns the index of an item with the represented object anObject.
  */
-- (int) indexOfItemWithRepresentedObject: (id)anObject;
+- (NSInteger) indexOfItemWithRepresentedObject: (id)anObject;
 
 /** Returns the index of an item with the submenu anObject.
  */
-- (int) indexOfItemWithSubmenu: (NSMenu *)anObject;
+- (NSInteger) indexOfItemWithSubmenu: (NSMenu *)anObject;
 
 /** Returns the index of an item with the title aTitle.
  */
-- (int) indexOfItemWithTitle: (NSString *)aTitle;
+- (NSInteger) indexOfItemWithTitle: (NSString *)aTitle;
 
 /** <init/>
  */
@@ -465,7 +465,7 @@
 /** Insert newItem at position index.
  */
 - (void) insertItem: (id <NSMenuItem>)newItem
-            atIndex: (int)index;
+            atIndex: (NSInteger)index;
 
 /** Inserts a new menu item at position index.
  *  <p>See Also: 
@@ -477,7 +477,7 @@
 - (id <NSMenuItem>) insertItemWithTitle: (NSString *)aString
                                  action: (SEL)aSelector
                           keyEquivalent: (NSString *)charCode
-                                atIndex: (unsigned int)index;
+                                atIndex: (NSInteger)index;
 
 /** Returns if this menu is attached to its supermenu,
  *  return nil if it does not have a parent menu.
@@ -500,7 +500,7 @@
 
 /** Returns an item located at index.
  */
-- (id <NSMenuItem>) itemAtIndex: (int)index;
+- (id <NSMenuItem>) itemAtIndex: (NSInteger)index;
 
 /** Informs the menu that the specified item has changed.
  */
@@ -514,7 +514,7 @@
  *   <item>[(NSMenuItem)-tag]</item>
  *  </list>
  */
-- (id <NSMenuItem>) itemWithTag: (int)aTag;
+- (id <NSMenuItem>) itemWithTag: (NSInteger)aTag;
 
 /** Returns an item with aString as its title.
  */
@@ -543,7 +543,7 @@
 
 /** Returns the numbers of items on the menu
  */
-- (int) numberOfItems;
+- (NSInteger) numberOfItems;
 
 /** Simulates a mouse click on item located at index.
  *  <p>See Also:
@@ -553,7 +553,7 @@
  *   <item>-indexOfItemWithTitle:</item>
  *  </list>
  */
-- (void) performActionForItemAtIndex: (int)index;
+- (void) performActionForItemAtIndex: (NSInteger)index;
 
 /** Looks for a menu item that responds to theEvent on the receiver.  If 
  *  the receiver is a submenu, the method is performed on it.
@@ -566,7 +566,7 @@
 
 /** Removes item at position index.
  */
-- (void) removeItemAtIndex: (int)index;
+- (void) removeItemAtIndex: (NSInteger)index;
 
 /** Sets if a menu does autoenable.
  */
@@ -665,10 +665,10 @@
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 @interface NSObject (NSMenuDelegate)
 - (void) menuNeedsUpdate: (NSMenu *)menu;
-- (int) numberOfItemsInMenu: (NSMenu *)menu;
+- (NSInteger) numberOfItemsInMenu: (NSMenu *)menu;
 - (BOOL) menu: (NSMenu *)menu
    updateItem: (NSMenuItem *)item
-      atIndex: (int)index
+      atIndex: (NSInteger)index
  shouldCancel: (BOOL)shouldCancel;
 - (BOOL) menuHasKeyEquivalent: (NSMenu *)menu
                      forEvent: (NSEvent *)event

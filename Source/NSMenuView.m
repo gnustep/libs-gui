@@ -363,7 +363,7 @@ static NSMapTable *viewInfo = 0;
   return _font;
 }
 
-- (void) setHighlightedItemIndex: (int)index
+- (void) setHighlightedItemIndex: (NSInteger)index
 {
   NSMenuItemCell *aCell;
 
@@ -390,13 +390,13 @@ static NSMapTable *viewInfo = 0;
     } 
 }
 
-- (int) highlightedItemIndex
+- (NSInteger) highlightedItemIndex
 {
   return _highlightedItemIndex;
 }
 
 - (void) setMenuItemCell: (NSMenuItemCell *)cell
-          forItemAtIndex: (int)index
+          forItemAtIndex: (NSInteger)index
 {
   NSMenuItem *anItem = [_items_link objectAtIndex: index];
   
@@ -416,7 +416,7 @@ static NSMapTable *viewInfo = 0;
   [self setNeedsDisplayForItemAtIndex: index];
 }
 
-- (NSMenuItemCell*) menuItemCellForItemAtIndex: (int)index
+- (NSMenuItemCell*) menuItemCellForItemAtIndex: (NSInteger)index
 {
   if (index < [_itemCells count])
     return [_itemCells objectAtIndex: index];
@@ -564,7 +564,7 @@ static NSMapTable *viewInfo = 0;
     }
 }
 
-- (void) attachSubmenuForItemAtIndex: (int)index
+- (void) attachSubmenuForItemAtIndex: (NSInteger)index
 {
   /*
    * Transient menus are used for torn-off menus, which are already on the
@@ -962,7 +962,7 @@ static NSMapTable *viewInfo = 0;
     }
 }
 
-- (NSRect) rectOfItemAtIndex: (int)index
+- (NSRect) rectOfItemAtIndex: (NSInteger)index
 {
   if (_needsSizing == YES)
     {
@@ -1001,7 +1001,7 @@ static NSMapTable *viewInfo = 0;
     }
 }
 
-- (int) indexOfItemAtPoint: (NSPoint)point
+- (NSInteger) indexOfItemAtPoint: (NSPoint)point
 {
   unsigned howMany = [_itemCells count];
   unsigned i;
@@ -1029,7 +1029,7 @@ static NSMapTable *viewInfo = 0;
   return -1;
 }
 
-- (void) setNeedsDisplayForItemAtIndex: (int)index
+- (void) setNeedsDisplayForItemAtIndex: (NSInteger)index
 {
   NSRect aRect;
 
@@ -1102,7 +1102,7 @@ static NSMapTable *viewInfo = 0;
 - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect 
                                  onScreen: (NSScreen*)screen
                             preferredEdge: (NSRectEdge)edge
-                        popUpSelectedItem: (int)selectedItemIndex
+                        popUpSelectedItem: (NSInteger)selectedItemIndex
 {
   NSRect r;
   NSRect cellFrame;
@@ -1361,7 +1361,7 @@ static NSMapTable *viewInfo = 0;
 /*
  * Event Handling
  */
-- (void) performActionWithHighlightingForItemAtIndex: (int)index
+- (void) performActionWithHighlightingForItemAtIndex: (NSInteger)index
 {
   NSMenu     *candidateMenu = _attachedMenu;
   NSMenuView *targetMenuView;

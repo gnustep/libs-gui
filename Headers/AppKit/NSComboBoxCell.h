@@ -65,8 +65,8 @@
 - (float)itemHeight;
 - (void)setItemHeight:(float)itemHeight; 
 
-- (int)numberOfVisibleItems;
-- (void)setNumberOfVisibleItems:(int)visibleItems;
+- (NSInteger)numberOfVisibleItems;
+- (void)setNumberOfVisibleItems:(NSInteger)visibleItems;
 
 - (void)reloadData;
 - (void)noteNumberOfItemsChanged;
@@ -74,13 +74,13 @@
 - (BOOL)usesDataSource;
 - (void)setUsesDataSource:(BOOL)flag;
 
-- (void)scrollItemAtIndexToTop:(int)index;
-- (void)scrollItemAtIndexToVisible:(int)index;
+- (void)scrollItemAtIndexToTop:(NSInteger)index;
+- (void)scrollItemAtIndexToVisible:(NSInteger)index;
 
-- (void)selectItemAtIndex:(int)index;
-- (void)deselectItemAtIndex:(int)index;
-- (int)indexOfSelectedItem;
-- (int)numberOfItems;
+- (void)selectItemAtIndex:(NSInteger)index;
+- (void)deselectItemAtIndex:(NSInteger)index;
+- (NSInteger)indexOfSelectedItem;
+- (NSInteger)numberOfItems;
 
 /* These two methods can only be used when usesDataSource is YES */
 - (id)dataSource;
@@ -89,14 +89,14 @@
 /* These methods can only be used when usesDataSource is NO */
 - (void)addItemWithObjectValue:(id)object;
 - (void)addItemsWithObjectValues:(NSArray *)objects;
-- (void)insertItemWithObjectValue:(id)object atIndex:(int)index;
+- (void)insertItemWithObjectValue:(id)object atIndex:(NSInteger)index;
 - (void)removeItemWithObjectValue:(id)object;
-- (void)removeItemAtIndex:(int)index;
+- (void)removeItemAtIndex:(NSInteger)index;
 - (void)removeAllItems;
 - (void)selectItemWithObjectValue:(id)object;
-- (id)itemObjectValueAtIndex:(int)index;
+- (id)itemObjectValueAtIndex:(NSInteger)index;
 - (id)objectValueOfSelectedItem;
-- (int)indexOfItemWithObjectValue:(id)object;
+- (NSInteger)indexOfItemWithObjectValue:(id)object;
 - (NSArray *)objectValues;
 
 - (BOOL) trackMouse: (NSEvent *)theEvent 
@@ -118,10 +118,10 @@
 @end
 
 @interface NSObject (NSComboBoxCellDataSource)
-- (int)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell;
+- (NSInteger)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (id)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
-  objectValueForItemAtIndex:(int)index;
-- (unsigned int)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
+  objectValueForItemAtIndex:(NSInteger)index;
+- (NSUInteger)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
   indexOfItemWithStringValue:(NSString *)string;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* text completion */

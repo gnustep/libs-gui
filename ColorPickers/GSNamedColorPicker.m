@@ -228,18 +228,18 @@ createRowsForColumn: (NSInteger)column
 {
 }
 
-- (int) numberOfItemsInComboBox: (NSComboBox *)aComboBox
+- (NSInteger) numberOfItemsInComboBox: (NSComboBox *)aComboBox
 {
    return [lists count];
 }
 
 - (id) comboBox: (NSComboBox *)aComboBox 
-objectValueForItemAtIndex: (int)index
+objectValueForItemAtIndex: (NSInteger)index
 {
    return [(NSColorList*)[lists objectAtIndex: index] name];
 }
 
-- (unsigned int) comboBox: (NSComboBox *)aComboBox
+- (NSUInteger) comboBox: (NSComboBox *)aComboBox
 indexOfItemWithStringValue: (NSString *)string
 {
    return [lists indexOfObject: [NSColorList colorListNamed: string]];

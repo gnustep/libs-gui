@@ -710,7 +710,7 @@ static BOOL menuBarVisible = YES;
 }
 
 - (void) insertItem: (id <NSMenuItem>)newItem
-	    atIndex: (int)index
+	    atIndex: (NSInteger)index
 {
   NSNotification *inserted;
   NSDictionary   *d;
@@ -757,7 +757,7 @@ static BOOL menuBarVisible = YES;
 - (id <NSMenuItem>) insertItemWithTitle: (NSString*)aString
 			         action: (SEL)aSelector
 			  keyEquivalent: (NSString*)charCode 
-			        atIndex: (unsigned int)index
+			        atIndex: (NSInteger)index
 {
   NSMenuItem *anItem = [[NSMenuItem alloc] initWithTitle: aString
 					   action: aSelector
@@ -795,7 +795,7 @@ static BOOL menuBarVisible = YES;
   [self removeItemAtIndex: index];
 }
 
-- (void) removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (NSInteger)index
 {
   NSNotification *removed;
   NSDictionary	 *d;
@@ -827,7 +827,7 @@ static BOOL menuBarVisible = YES;
 {
   NSNotification *changed;
   NSDictionary   *d;
-  int index = [self indexOfItem: anObject];
+  NSInteger index = [self indexOfItem: anObject];
 
   if (-1 == index)
     return;
@@ -855,7 +855,7 @@ static BOOL menuBarVisible = YES;
 /*
  * Finding Menu Items
  */
-- (id <NSMenuItem>) itemWithTag: (int)aTag
+- (id <NSMenuItem>) itemWithTag: (NSInteger)aTag
 {
   unsigned i;
   unsigned count = [_items count];
@@ -885,16 +885,16 @@ static BOOL menuBarVisible = YES;
   return nil;
 }
 
-- (id <NSMenuItem>) itemAtIndex: (int)index
+- (id <NSMenuItem>) itemAtIndex: (NSInteger)index
 {
-  if (index >= (int)[_items count] || index < 0)
+  if (index >= [_items count] || index < 0)
     [NSException  raise: NSRangeException
 		 format: @"Range error in method -itemAtIndex: "];
 
   return [_items objectAtIndex: index];
 }
 
-- (int) numberOfItems
+- (NSInteger) numberOfItems
 {
   return [_items count];
 }
@@ -907,7 +907,7 @@ static BOOL menuBarVisible = YES;
 /*
  * Finding Indices of Menu Items
  */
-- (int) indexOfItem: (id <NSMenuItem>)anObject
+- (NSInteger) indexOfItem: (id <NSMenuItem>)anObject
 {
   NSUInteger index;
 
@@ -919,7 +919,7 @@ static BOOL menuBarVisible = YES;
     return index;
 }
 
-- (int) indexOfItemWithTitle: (NSString*)aTitle
+- (NSInteger) indexOfItemWithTitle: (NSString*)aTitle
 {
   id anItem;
 
@@ -929,7 +929,7 @@ static BOOL menuBarVisible = YES;
     return -1;
 }
 
-- (int) indexOfItemWithTag: (int)aTag
+- (NSInteger) indexOfItemWithTag: (NSInteger)aTag
 {
   id anItem;
 
@@ -939,7 +939,7 @@ static BOOL menuBarVisible = YES;
     return -1;
 }
 
-- (int) indexOfItemWithTarget: (id)anObject
+- (NSInteger) indexOfItemWithTarget: (id)anObject
 		    andAction: (SEL)actionSelector
 {
   unsigned i;
@@ -962,9 +962,9 @@ static BOOL menuBarVisible = YES;
   return -1;
 }
 
-- (int) indexOfItemWithRepresentedObject: (id)anObject
+- (NSInteger) indexOfItemWithRepresentedObject: (id)anObject
 {
-  int i, count = [_items count];
+  NSInteger i, count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -978,9 +978,9 @@ static BOOL menuBarVisible = YES;
   return -1;
 }
 
-- (int) indexOfItemWithSubmenu: (NSMenu *)anObject
+- (NSInteger) indexOfItemWithSubmenu: (NSMenu *)anObject
 {
-  int i, count = [_items count];
+  NSInteger i, count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -1084,14 +1084,14 @@ static BOOL menuBarVisible = YES;
         }
       else if ([_delegate respondsToSelector:@selector(numberOfItemsInMenu:)])
         {
-          int num;
+          NSInteger num;
 
           num = [_delegate numberOfItemsInMenu: self];
           if (num > 0)
             {
               BOOL cont = YES;
-              int i = 0;
-              int curr = [self numberOfItems];
+              NSInteger i = 0;
+              NSInteger curr = [self numberOfItems];
 
               while (num < curr)
                 {
@@ -1288,7 +1288,7 @@ static BOOL menuBarVisible = YES;
 //
 // Simulating Mouse Clicks
 //
-- (void)  performActionForItemAtIndex: (int)index
+- (void)  performActionForItemAtIndex: (NSInteger)index
 {
   id<NSMenuItem> item = [_items objectAtIndex: index];
   NSDictionary *d;

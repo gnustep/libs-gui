@@ -59,31 +59,31 @@
 - (void)addItemWithTitle:(NSString *)title;
 - (void)addItemsWithTitles:(NSArray *)itemTitles;
 - (void)insertItemWithTitle:(NSString *)title   
-                    atIndex:(int)index;
+                    atIndex:(NSInteger)index;
 - (void)removeAllItems;
 - (void)removeItemWithTitle:(NSString *)title;
-- (void)removeItemAtIndex:(int)index;
+- (void)removeItemAtIndex:(NSInteger)index;
 - (id <NSMenuItem>)selectedItem;
 - (NSString *)titleOfSelectedItem;
-- (int)indexOfSelectedItem;
+- (NSInteger)indexOfSelectedItem;
 - (void)selectItem:(id <NSMenuItem>)anObject;
-- (void)selectItemAtIndex:(int)index;
+- (void)selectItemAtIndex:(NSInteger)index;
 - (void)selectItemWithTitle:(NSString *)title;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL) selectItemWithTag: (NSInteger)tag;
 #endif
-- (int)numberOfItems;
+- (NSInteger)numberOfItems;
 - (NSArray *)itemArray;
-- (id <NSMenuItem>)itemAtIndex:(int)index;
-- (NSString *)itemTitleAtIndex:(int)index;
+- (id <NSMenuItem>)itemAtIndex:(NSInteger)index;
+- (NSString *)itemTitleAtIndex:(NSInteger)index;
 - (NSArray *)itemTitles;
 - (id <NSMenuItem>)itemWithTitle:(NSString *)title;
 - (id <NSMenuItem>)lastItem;
-- (int)indexOfItem:(id <NSMenuItem>)anObject;
-- (int)indexOfItemWithTag:(int)tag;
-- (int)indexOfItemWithTitle:(NSString *)title;
-- (int)indexOfItemWithRepresentedObject:(id)anObject;
-- (int)indexOfItemWithTarget:(id)target
+- (NSInteger)indexOfItem:(id <NSMenuItem>)anObject;
+- (NSInteger)indexOfItemWithTag:(NSInteger)tag;
+- (NSInteger)indexOfItemWithTitle:(NSString *)title;
+- (NSInteger)indexOfItemWithRepresentedObject:(id)anObject;
+- (NSInteger)indexOfItemWithTarget:(id)target
                    andAction:(SEL)actionSelector;
 - (void)setPreferredEdge:(NSRectEdge)edge;
 - (NSRectEdge)preferredEdge;

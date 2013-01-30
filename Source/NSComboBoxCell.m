@@ -87,10 +87,10 @@ static NSNotificationCenter *nc;
 - (void) clickItem: (id)sender;
 - (void) reloadData;
 - (void) noteNumberOfItemsChanged;
-- (void) scrollItemAtIndexToTop: (int)index;
-- (void) scrollItemAtIndexToVisible: (int)index;
-- (void) selectItemAtIndex: (int)index;
-- (void) deselectItemAtIndex: (int)index;
+- (void) scrollItemAtIndexToTop: (NSInteger)index;
+- (void) scrollItemAtIndexToVisible: (NSInteger)index;
+- (void) selectItemAtIndex: (NSInteger)index;
+- (void) deselectItemAtIndex: (NSInteger)index;
 - (void) moveUpSelection;
 - (void) moveDownSelection;
 - (void) validateSelection;
@@ -463,7 +463,7 @@ static GSComboWindow *gsWindow = nil;
   [self reloadData];
 }
 
-- (void) scrollItemAtIndexToTop: (int)index
+- (void) scrollItemAtIndexToTop: (NSInteger)index
 {
   NSRect rect;
   
@@ -471,12 +471,12 @@ static GSComboWindow *gsWindow = nil;
   [_tableView scrollPoint: rect.origin]; 
 }
 
-- (void) scrollItemAtIndexToVisible: (int)index
+- (void) scrollItemAtIndexToVisible: (NSInteger)index
 {
   [_tableView scrollRowToVisible: index];
 }
 
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 { 
   if (index < 0)
     return;
@@ -487,7 +487,7 @@ static GSComboWindow *gsWindow = nil;
   [_tableView selectRow: index byExtendingSelection: NO];     
 }
 
-- (void) deselectItemAtIndex: (int)index
+- (void) deselectItemAtIndex: (NSInteger)index
 {
   [_tableView deselectAll: self];
 }
@@ -750,7 +750,7 @@ static GSComboWindow *gsWindow = nil;
  * Returns the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (int) numberOfVisibleItems 
+- (NSInteger) numberOfVisibleItems 
 { 
   return _visibleItems; 
 }
@@ -759,7 +759,7 @@ static GSComboWindow *gsWindow = nil;
  * Sets the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (void) setNumberOfVisibleItems: (int)visibleItems
+- (void) setNumberOfVisibleItems: (NSInteger)visibleItems
 {
   if (visibleItems > 10)
     _visibleItems = visibleItems;
@@ -814,7 +814,7 @@ static GSComboWindow *gsWindow = nil;
  * <var>index</var> in the closest position relative to the top. There is no
  * need to have the list displayed when this method is invoked.
  */
-- (void) scrollItemAtIndexToTop: (int)index
+- (void) scrollItemAtIndexToTop: (NSInteger)index
 {
   [_popup scrollItemAtIndexToTop: index];
 }
@@ -824,7 +824,7 @@ static GSComboWindow *gsWindow = nil;
  * <var>index</var> visible. There is no need to have the list displayed when
  * this method is invoked. 
  */
-- (void) scrollItemAtIndexToVisible: (int)index
+- (void) scrollItemAtIndexToVisible: (NSInteger)index
 {
   [_popup scrollItemAtIndexToVisible: index];
 }
@@ -836,7 +836,7 @@ static GSComboWindow *gsWindow = nil;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center when there is a new selection different from the previous one.
  */
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 {
   // Method called by GSComboWindow when a selection is done in the table view or 
   // the browser
@@ -865,7 +865,7 @@ static GSComboWindow *gsWindow = nil;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center, when there is a new selection.
  */
-- (void) deselectItemAtIndex: (int)index
+- (void) deselectItemAtIndex: (NSInteger)index
 {
   if (_selectedItem == index)
     {
@@ -885,7 +885,7 @@ static GSComboWindow *gsWindow = nil;
  * object in the case <code>usesDataSource</code> returns YES else to the
  * default items list. 
  */
-- (int) indexOfSelectedItem
+- (NSInteger) indexOfSelectedItem
 {
   return _selectedItem;
 }
@@ -895,7 +895,7 @@ static GSComboWindow *gsWindow = nil;
  * items can be be related to the data source object in the case
  * <code>usesDataSource</code> returns YES else to the default items list.
  */
-- (int) numberOfItems
+- (NSInteger) numberOfItems
 {
   if (_usesDataSource)
     {
@@ -1002,7 +1002,7 @@ static GSComboWindow *gsWindow = nil;
  * is used when <code>usesDataSource</code> returns NO. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void) insertItemWithObjectValue: (id)object atIndex: (int)index
+- (void) insertItemWithObjectValue: (id)object atIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1042,7 +1042,7 @@ static GSComboWindow *gsWindow = nil;
  * default items list which is used when <code>usesDataSource</code> returns NO.
  * In the case <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void) removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1110,7 +1110,7 @@ static GSComboWindow *gsWindow = nil;
  * raised. In the case <code>usesDataSource</code> returns YES, this method logs
  * a warning.
  */
-- (id) itemObjectValueAtIndex: (int)index
+- (id) itemObjectValueAtIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1201,7 +1201,7 @@ static GSComboWindow *gsWindow = nil;
  * NSNotFound when there is no such value. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (int) indexOfItemWithObjectValue: (id)object
+- (NSInteger) indexOfItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
     {

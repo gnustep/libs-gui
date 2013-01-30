@@ -1088,7 +1088,7 @@ static NSTextFieldCell *titleCell;
   selectedCellsEnumerator = [selectedCells objectEnumerator];
   while ((cell = [selectedCellsEnumerator nextObject]) != nil)
     {
-      int sRow, sColumn;
+      NSInteger sRow, sColumn;
 
       if ([matrix getRow: &sRow  column: &sColumn  ofCell: cell])
         {

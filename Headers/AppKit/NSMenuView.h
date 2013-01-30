@@ -164,24 +164,24 @@
 /**
    Highlights item with at index. If index is -1 all highlighing is removed.
  */
-- (void) setHighlightedItemIndex: (int)index;
+- (void) setHighlightedItemIndex: (NSInteger)index;
 
 /**
    Returns the index of the highlighted item. Returns -1 if there is no
    highlighted item.
  */
-- (int) highlightedItemIndex;
+- (NSInteger) highlightedItemIndex;
 
 /**
    Replaces item cell at index with cell. Highlighting of item is preserved.
  */
 - (void) setMenuItemCell: (NSMenuItemCell *)cell
-          forItemAtIndex: (int)index;
+          forItemAtIndex: (NSInteger)index;
 
 /**
    Returns cell associated with item at index.
  */
-- (NSMenuItemCell *) menuItemCellForItemAtIndex: (int)index;
+- (NSMenuItemCell *) menuItemCellForItemAtIndex: (NSInteger)index;
 
 /**
    Returns menu view associated with visible attached submenu.
@@ -261,7 +261,7 @@
    Attach submenu if the item at index is a submenu. It will figure out 
    if the new submenu should be transient or not.
 */
-- (void) attachSubmenuForItemAtIndex: (int)index;
+- (void) attachSubmenuForItemAtIndex: (NSInteger)index;
 
 /***********************************************************************
  * Calculating menu geometry
@@ -333,18 +333,18 @@
    Returns frame rectangle of menu item cell. It is smaller by 1 pixel 
    in width than menu window (dark gray border).
  */
-- (NSRect) rectOfItemAtIndex: (int)index;
+- (NSRect) rectOfItemAtIndex: (NSInteger)index;
 
 /**
    Returns the index of the item below point. Returns -1 if mouse is 
    not above a menu item.
 */
-- (int) indexOfItemAtPoint: (NSPoint)point;
+- (NSInteger) indexOfItemAtPoint: (NSPoint)point;
 
 /**
    Calls setNeedsDisplayInRect: for rectangle occupied by item at index.
  */
-- (void) setNeedsDisplayForItemAtIndex: (int)index;
+- (void) setNeedsDisplayForItemAtIndex: (NSInteger)index;
 
 /**
    Returns the correct frame origin for aSubmenu based on the location
@@ -363,12 +363,12 @@
 - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
                                  onScreen: (NSScreen *)screen
                             preferredEdge: (NSRectEdge)edge
-                        popUpSelectedItem: (int)selectedItemIndex;
+                        popUpSelectedItem: (NSInteger)selectedItemIndex;
 
 /***********************************************************************
  * Event handling
  ***********************************************************************/
-- (void) performActionWithHighlightingForItemAtIndex: (int)index;
+- (void) performActionWithHighlightingForItemAtIndex: (NSInteger)index;
 
 /**
    This method is responsible for tracking the mouse while this menu

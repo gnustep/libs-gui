@@ -159,7 +159,7 @@ static NSNotificationCenter *nc;
  * Returns the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (int)numberOfVisibleItems
+- (NSInteger)numberOfVisibleItems
 {
   return [_cell numberOfVisibleItems];
 }
@@ -168,7 +168,7 @@ static NSNotificationCenter *nc;
  * Sets the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (void)setNumberOfVisibleItems:(int)visibleItems
+- (void)setNumberOfVisibleItems:(NSInteger)visibleItems
 {
   [_cell setNumberOfVisibleItems:visibleItems];
 }
@@ -222,7 +222,7 @@ static NSNotificationCenter *nc;
  * <var>index</var> in the closest position relative to the top. There is no
  * need to have the list displayed when this method is invoked.
  */
-- (void)scrollItemAtIndexToTop:(int)index
+- (void)scrollItemAtIndexToTop:(NSInteger)index
 {
   [_cell scrollItemAtIndexToTop:index];
 }
@@ -232,7 +232,7 @@ static NSNotificationCenter *nc;
  * <var>index</var> visible. There is no need to have the list displayed when
  * this method is invoked. 
  */
-- (void)scrollItemAtIndexToVisible:(int)index
+- (void)scrollItemAtIndexToVisible:(NSInteger)index
 {
   [_cell scrollItemAtIndexToVisible:index];
 }
@@ -244,7 +244,7 @@ static NSNotificationCenter *nc;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center when there is a new selection different from the previous one.
  */
-- (void)selectItemAtIndex:(int)index
+- (void)selectItemAtIndex:(NSInteger)index
 {
   [_cell selectItemAtIndex:index];
 }
@@ -255,7 +255,7 @@ static NSNotificationCenter *nc;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center, when there is a new selection.
  */
-- (void)deselectItemAtIndex:(int)index
+- (void)deselectItemAtIndex:(NSInteger)index
 {
   [_cell deselectItemAtIndex:index];
 }
@@ -266,7 +266,7 @@ static NSNotificationCenter *nc;
  * object in the case <code>usesDataSource</code> returns YES else to the
  * default items list. 
  */
-- (int)indexOfSelectedItem
+- (NSInteger)indexOfSelectedItem
 {
   return [_cell indexOfSelectedItem];
 }
@@ -276,7 +276,7 @@ static NSNotificationCenter *nc;
  * items can be be related to the data source object in the case
  * <code>usesDataSource</code> returns YES else to the default items list.
  */
-- (int)numberOfItems
+- (NSInteger)numberOfItems
 {
   return [_cell numberOfItems];
 }
@@ -332,7 +332,7 @@ static NSNotificationCenter *nc;
  * is used when <code>usesDataSource</code> returns NO. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void)insertItemWithObjectValue:(id)object atIndex:(int)index
+- (void)insertItemWithObjectValue:(id)object atIndex:(NSInteger)index
 {
   [_cell insertItemWithObjectValue:object atIndex:index];
 }
@@ -352,7 +352,7 @@ static NSNotificationCenter *nc;
  * default items list which is used when <code>usesDataSource</code> returns NO.
  * In the case <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void)removeItemAtIndex:(int)index
+- (void)removeItemAtIndex:(NSInteger)index
 {
   [_cell removeItemAtIndex:index];
 }
@@ -387,7 +387,7 @@ static NSNotificationCenter *nc;
  * raised. In the case <code>usesDataSource</code> returns YES, this method logs
  * a warning.
  */
-- (id)itemObjectValueAtIndex:(int)index
+- (id)itemObjectValueAtIndex:(NSInteger)index
 {
   return [_cell itemObjectValueAtIndex:index];
 }
@@ -408,7 +408,7 @@ static NSNotificationCenter *nc;
  * NSNotFound when there is no such value. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (int)indexOfItemWithObjectValue:(id)object
+- (NSInteger)indexOfItemWithObjectValue:(id)object
 {
   return [_cell indexOfItemWithObjectValue:object];
 }

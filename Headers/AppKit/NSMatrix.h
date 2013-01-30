@@ -101,13 +101,13 @@ typedef enum _NSMatrixMode {
 - (id) initWithFrame: (NSRect)frameRect
 		mode: (int)aMode
 	   cellClass: (Class)classId
-	numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide;
+	numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide;
 - (id) initWithFrame: (NSRect)frameRect
 		mode: (int)aMode
 	   prototype: (NSCell *)aCell
-	numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide;
+	numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide;
 
 /*
  * Setting the Selection Mode 
@@ -138,49 +138,49 @@ typedef enum _NSMatrixMode {
 - (void) addColumnWithCells: (NSArray *)cellArray;
 - (void) addRow;
 - (void) addRowWithCells: (NSArray *)cellArray;
-- (NSRect) cellFrameAtRow: (int)row
-		   column: (int)column;
+- (NSRect) cellFrameAtRow: (NSInteger)row
+		   column: (NSInteger)column;
 - (NSSize) cellSize;
-- (void) getNumberOfRows: (int *)rowCount
-		 columns: (int *)columnCount;
-- (void) insertColumn: (int)column;
-- (void) insertColumn: (int)column withCells: (NSArray *)cellArray;
-- (void) insertRow: (int)row;
-- (void) insertRow: (int)row withCells: (NSArray *)cellArray;
+- (void) getNumberOfRows: (NSInteger *)rowCount
+		 columns: (NSInteger *)columnCount;
+- (void) insertColumn: (NSInteger)column;
+- (void) insertColumn: (NSInteger)column withCells: (NSArray *)cellArray;
+- (void) insertRow: (NSInteger)row;
+- (void) insertRow: (NSInteger)row withCells: (NSArray *)cellArray;
 - (NSSize) intercellSpacing;
-- (NSCell *) makeCellAtRow: (int)row
-		    column: (int)column;
+- (NSCell *) makeCellAtRow: (NSInteger)row
+		    column: (NSInteger)column;
 - (void) putCell: (NSCell *)newCell
-	   atRow: (int)row
-	  column: (int)column;
-- (void) removeColumn: (int)column;
-- (void) removeRow: (int)row;
-- (void) renewRows: (int)newRows
-	   columns: (int)newColumns;
+	   atRow: (NSInteger)row
+	  column: (NSInteger)column;
+- (void) removeColumn: (NSInteger)column;
+- (void) removeRow: (NSInteger)row;
+- (void) renewRows: (NSInteger)newRows
+	   columns: (NSInteger)newColumns;
 - (void) setCellSize: (NSSize)aSize;
 - (void) setIntercellSpacing: (NSSize)aSize;
-- (void) sortUsingFunction: (int (*)(id element1, id element2, void *userData))comparator
+- (void) sortUsingFunction: (NSComparisonResult (*)(id element1, id element2, void *userData))comparator
 		   context: (void *)context;
 - (void) sortUsingSelector: (SEL)comparator;
-- (int) numberOfColumns;
-- (int) numberOfRows;
+- (NSInteger) numberOfColumns;
+- (NSInteger) numberOfRows;
 
 /*
  * Finding Matrix Coordinates 
  */
-- (BOOL) getRow: (int *)row
-	 column: (int *)column
+- (BOOL) getRow: (NSInteger *)row
+	 column: (NSInteger *)column
        forPoint: (NSPoint)aPoint;
-- (BOOL) getRow: (int *)row
-	 column: (int *)column
+- (BOOL) getRow: (NSInteger *)row
+	 column: (NSInteger *)column
 	 ofCell: (NSCell *)aCell;
 
 /*
  * Modifying Individual Cells 
  */
-- (void) setState: (int)value
-	    atRow: (int)row
-	   column: (int)column;
+- (void) setState: (NSInteger)value
+	    atRow: (NSInteger)row
+	   column: (NSInteger)column;
 
 /*
  * Selecting Cells 
@@ -188,24 +188,24 @@ typedef enum _NSMatrixMode {
 - (void) deselectAllCells;
 - (void) deselectSelectedCell;
 - (void) selectAll: (id)sender;
-- (void) selectCellAtRow: (int)row
-		  column: (int)column;
-- (BOOL) selectCellWithTag: (int)anInt;
+- (void) selectCellAtRow: (NSInteger)row
+		  column: (NSInteger)column;
+- (BOOL) selectCellWithTag: (NSInteger)anInt;
 - (id) selectedCell;
 - (NSArray *) selectedCells;
 - (NSInteger) selectedColumn;
 - (NSInteger) selectedRow;
-- (void) setSelectionFrom: (int)startPos
-		       to: (int)endPos
-		   anchor: (int)anchorPos
+- (void) setSelectionFrom: (NSInteger)startPos
+		       to: (NSInteger)endPos
+		   anchor: (NSInteger)anchorPos
 		highlight: (BOOL)flag;
 
 /*
  * Finding Cells 
  */
-- (id) cellAtRow: (int)row
-	  column: (int)column;
-- (id) cellWithTag: (int)anInt;
+- (id) cellAtRow: (NSInteger)row
+	  column: (NSInteger)column;
+- (id) cellWithTag: (NSInteger)anInt;
 - (NSArray *) cells;
 
 /*
@@ -224,8 +224,8 @@ typedef enum _NSMatrixMode {
  * Editing Text in Cells 
  */
 - (void) selectText: (id)sender;
-- (id) selectTextAtRow: (int)row
-		column: (int)column;
+- (id) selectTextAtRow: (NSInteger)row
+		column: (NSInteger)column;
 - (void) textDidBeginEditing: (NSNotification *)aNotification;
 - (void) textDidChange: (NSNotification *)aNotification;
 - (void) textDidEndEditing: (NSNotification *)aNotification;
@@ -262,19 +262,19 @@ typedef enum _NSMatrixMode {
  * Scrolling 
  */
 - (BOOL) isAutoscroll;
-- (void) scrollCellToVisibleAtRow: (int)row
-			   column: (int)column;
+- (void) scrollCellToVisibleAtRow: (NSInteger)row
+			   column: (NSInteger)column;
 - (void) setAutoscroll: (BOOL)flag;
 - (void) setScrollable: (BOOL)flag;
 
 /*
  * Displaying 
  */
-- (void) drawCellAtRow: (int)row
-		column: (int)column;
+- (void) drawCellAtRow: (NSInteger)row
+		column: (NSInteger)column;
 - (void) highlightCell: (BOOL)flag
-		 atRow: (int)row
-		column: (int)column;
+		 atRow: (NSInteger)row
+		column: (NSInteger)column;
 
 /*
  *Target and Action 
@@ -296,7 +296,7 @@ typedef enum _NSMatrixMode {
  */
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent;
 - (void) mouseDown: (NSEvent *)theEvent;
-- (int) mouseDownFlags;
+- (NSInteger) mouseDownFlags;
 - (BOOL) performKeyEquivalent: (NSEvent *)theEvent;
 
 /*

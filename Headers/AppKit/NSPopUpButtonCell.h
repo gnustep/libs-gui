@@ -74,7 +74,7 @@ typedef enum {
 /** 
  * Index of the currently selected item in the reciever.
  */
-- (int) indexOfSelectedItem;
+- (NSInteger) indexOfSelectedItem;
 
 /**
  * Synchronizes the title and the selected item.  This sets
@@ -90,7 +90,7 @@ typedef enum {
 /**
  * Select item at the given index.
  */
-- (void) selectItemAtIndex: (int)index;
+- (void) selectItemAtIndex: (NSInteger)index;
 
 /**
  * Select the item with the given title.
@@ -194,7 +194,7 @@ typedef enum {
  * index, it, and all items after it are advanced one position.  Index needs
  * to be within the valid range for the array of items in the popup button.
  */
-- (void) insertItemWithTitle: (NSString*)title atIndex: (int)index;
+- (void) insertItemWithTitle: (NSString*)title atIndex: (NSInteger)index;
 
 /**
  * Remove a given item based on its title.
@@ -205,7 +205,7 @@ typedef enum {
  * Remove a given item based on its index, must be a valid index within the
  * range for the item array of this popup.
  */
-- (void) removeItemAtIndex: (int)index; 
+- (void) removeItemAtIndex: (NSInteger)index; 
 
 /**
  * Purges all items from the popup.
@@ -221,38 +221,38 @@ typedef enum {
 /**
  * Number of items in the reciever.
  */
-- (int) numberOfItems;
+- (NSInteger) numberOfItems;
  
 /**
  * Return the index of item in the item array of the reciever.
  */
-- (int) indexOfItem: (id<NSMenuItem>)item;
+- (NSInteger) indexOfItem: (id<NSMenuItem>)item;
 
 /**
  * Return index of the item with the given title.
  */
-- (int) indexOfItemWithTitle: (NSString*)title;
+- (NSInteger) indexOfItemWithTitle: (NSString*)title;
 
 /**
  * Return index of the item with a tag equal to aTag.
  */
-- (int) indexOfItemWithTag: (int)tag;
+- (NSInteger) indexOfItemWithTag: (NSInteger)tag;
 
 /**
  * Index of the item whose menu item's representedObject is equal to obj.
  */
-- (int) indexOfItemWithRepresentedObject: (id)obj;
+- (NSInteger) indexOfItemWithRepresentedObject: (id)obj;
 
 /**
  * Index of the item in the reciever whose target and action
  * are equal to aTarget and actionSelector.
  */
-- (int) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector;
+- (NSInteger) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector;
 
 /**
  * Return the item at index.
  */ 
-- (id <NSMenuItem>) itemAtIndex: (int)index;
+- (id <NSMenuItem>) itemAtIndex: (NSInteger)index;
 
 /**
  * Return the item with title.
@@ -269,7 +269,7 @@ typedef enum {
 /**
  * Set item title at the given index in the reciever.
  */ 
-- (NSString*) itemTitleAtIndex: (int)index;
+- (NSString*) itemTitleAtIndex: (NSInteger)index;
 
 /**
  * Returns an array containing all of the current item titles.

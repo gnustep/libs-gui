@@ -61,14 +61,14 @@ static Class defaultCellClass = nil;
 - (id) initWithFrame: (NSRect)frameRect
                 mode: (int)aMode
            cellClass: (Class)class
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide
+        numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
                          mode: (int)aMode
                     cellClass: (Class)class
-                 numberOfRows: (int)rowsHigh
-              numberOfColumns: (int)colsWide];
+                 numberOfRows: (NSInteger)rowsHigh
+              numberOfColumns: (NSInteger)colsWide];
   if (nil == self)
     return nil;
 
@@ -79,14 +79,14 @@ static Class defaultCellClass = nil;
 - (id) initWithFrame: (NSRect)frameRect
                 mode: (int)aMode
            prototype: (NSCell*)prototype
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide
+        numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
                          mode: (int)aMode
                     prototype: (NSCell*)prototype
-                 numberOfRows: (int)rowsHigh
-              numberOfColumns: (int)colsWide];
+                 numberOfRows: (NSInteger)rowsHigh
+              numberOfColumns: (NSInteger)colsWide];
   if (nil == self)
     return nil;
 
@@ -108,7 +108,7 @@ static Class defaultCellClass = nil;
     <p>See Also: -addEntry: -removeEntryAtIndex:</p>
  */
 - (NSFormCell*) insertEntry: (NSString*)title
-                    atIndex: (int)index
+                    atIndex: (NSInteger)index
 {
   NSFormCell *new_cell = [[[object_getClass(self) cellClass] alloc] initTextCell: title];
 
@@ -122,7 +122,7 @@ static Class defaultCellClass = nil;
 /** <p>Removes the entry at index index. </p>
     <p>See Also: -insertEntry:atIndex: -addEntry:</p>
  */
-- (void) removeEntryAtIndex: (int)index
+- (void) removeEntryAtIndex: (NSInteger)index
 {
   [[NSNotificationCenter defaultCenter] 
     removeObserver: self 
@@ -134,7 +134,7 @@ static Class defaultCellClass = nil;
 
 /* Overriding this method allows decoding stuff to be inherited
    simpler by NSForm */
-- (void) putCell: (NSCell*)newCell  atRow: (int)row  column: (int)column 
+- (void) putCell: (NSCell*)newCell  atRow: (NSInteger)row  column: (NSInteger)column 
 {
   if (column > 0)
     {
@@ -167,7 +167,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setBezeled: (BOOL)flag
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the bezeled attribute to the cell prototype */
   [[self prototype] setBezeled: flag];
@@ -181,7 +181,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setBordered: (BOOL)flag
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the bordered attribute to the cell prototype */
   [[self prototype] setBordered: flag];
@@ -230,7 +230,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTitleAlignment: (NSTextAlignment)aMode
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the title alignment attribute to the cell prototype */
   [[self prototype] setTitleAlignment: aMode];
@@ -246,7 +246,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTextAlignment: (int)aMode
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the text alignment attribute to the cell prototype */
   [[self prototype] setAlignment: aMode];
@@ -260,7 +260,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTitleFont: (NSFont*)fontObject
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the title font attribute to the cell prototype */
   [[self prototype] setTitleFont: fontObject];
@@ -274,7 +274,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTextFont: (NSFont*)fontObject
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the text font attribute to the cell prototype */
   [[self prototype] setFont: fontObject];
@@ -288,7 +288,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTitleBaseWritingDirection: (NSWritingDirection)direction
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the writing direction attribute to the cell prototype */
   [[self prototype] setTitleBaseWritingDirection: direction];
@@ -302,7 +302,7 @@ static Class defaultCellClass = nil;
  */
 - (void) setTextBaseWritingDirection: (NSWritingDirection)direction
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   /* Set the writing direction attribute to the cell prototype */
   [[self prototype] setBaseWritingDirection: direction];
@@ -314,9 +314,9 @@ static Class defaultCellClass = nil;
 /**<p>Returns the index of the entry specified by aTag or -1 if aTag is not 
    found in entries.</p><p>See Also: [NSMatrix-cellAtRow:column:]</p>
  */
-- (int) indexOfCellWithTag: (int)aTag
+- (NSInteger) indexOfCellWithTag: (NSInteger)aTag
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
 
   for (i = 0; i < count; i++)
     if ([[self cellAtRow: i column: 0] tag] == aTag)
@@ -327,7 +327,7 @@ static Class defaultCellClass = nil;
 /**<p>Returns the index of the current selected entry.</p>
    <p>[NSMatrix-selectedRow]</p>
  */
-- (int) indexOfSelectedItem
+- (NSInteger) indexOfSelectedItem
 {
   return [self selectedRow];
 }
@@ -335,7 +335,7 @@ static Class defaultCellClass = nil;
 /**<p>Returns the NSFormCell at index <var>index</var></p>
    <p>See Also: [NSMatrix-cellAtRow:column:]</p>
  */
-- (id) cellAtIndex: (int)index
+- (id) cellAtIndex: (NSInteger)index
 {
   return [self cellAtRow: index column: 0];
 }
@@ -355,7 +355,7 @@ static Class defaultCellClass = nil;
 
 - (void) calcSize
 {
-  int i, count = [self numberOfRows];
+  NSInteger i, count = [self numberOfRows];
   float new_title_width = 0;
   float candidate_title_width = 0;
   NSRect rect;
@@ -389,7 +389,7 @@ static Class defaultCellClass = nil;
     <p>See Also: -cellAtIndex: [NSCell-drawWithFrame:inView:]
     [NSMatrix-cellFrameAtRow:column:]</p>
  */
-- (void) drawCellAtIndex: (int)index
+- (void) drawCellAtIndex: (NSInteger)index
 {
   id theCell = [self cellAtIndex: index];
 
@@ -397,7 +397,7 @@ static Class defaultCellClass = nil;
                   inView: self];
 }
 
-- (void) drawCellAtRow: (int)row column: (int)column
+- (void) drawCellAtRow: (NSInteger)row column: (NSInteger)column
 {
   [self drawCellAtIndex: row];
 }
@@ -405,7 +405,7 @@ static Class defaultCellClass = nil;
 /** <p>Selects the text in the entry specified by index.</p>
     <p>[NSMatrix-selectTextAtRow:column:]</p>
  */
-- (void) selectTextAtIndex: (int)index
+- (void) selectTextAtIndex: (NSInteger)index
 {
   [self selectTextAtRow: index column: 0];
 }

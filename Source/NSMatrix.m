@@ -344,8 +344,8 @@ static SEL getSel;
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
 	   cellClass: (Class)classId
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide
+        numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide
 {
   if ( ! ( self = [super initWithFrame: frameRect] ) )
     return nil;
@@ -367,8 +367,8 @@ static SEL getSel;
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
 	   prototype: (NSCell*)aCell
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide
+        numberOfRows: (NSInteger)rowsHigh
+     numberOfColumns: (NSInteger)colsWide
 {
   if (! ( self = [super initWithFrame: frameRect] ) )
     return nil;
@@ -457,7 +457,7 @@ static SEL getSel;
 /**<p>Inserts a new column at the specified column <var>column</var>.</p>
    <p>See Also: -insertColumn:withCells:</p> 
  */
-- (void) insertColumn: (int)column
+- (void) insertColumn: (NSInteger)column
 {
   [self insertColumn: column withCells: nil];
 }
@@ -467,7 +467,7 @@ static SEL getSel;
    the matrix as necessay if needed</p>
    <p>See Also: -insertColumn:</p>
  */
-- (void) insertColumn: (int)column withCells: (NSArray*)cellArray
+- (void) insertColumn: (NSInteger)column withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
   int	i = _numCols + 1;
@@ -476,10 +476,10 @@ static SEL getSel;
     {
       column = 0;
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"insert negative column (%d) in matrix", column);
+      NSLog(@"insert negative column (%d) in matrix", (int)column);
 #else
       [NSException raise: NSRangeException
-		  format: @"insert negative column (%d) in matrix", column];
+		  format: @"insert negative column (%d) in matrix", (int)column];
 #endif
     }
 
@@ -554,7 +554,7 @@ static SEL getSel;
 /**<p>Inserts a new row at index <var>row</var>.</p>
    <p>See Also: -insertRow:withCells: </p>
  */
-- (void) insertRow: (int)row
+- (void) insertRow: (NSInteger)row
 {
   [self insertRow: row withCells: nil];
 }
@@ -564,7 +564,7 @@ static SEL getSel;
    the matrix as necessay if needed</p>
    <p>See Also: -insertColumn:</p>
  */
-- (void) insertRow: (int)row withCells: (NSArray*)cellArray
+- (void) insertRow: (NSInteger)row withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
   int	i = _numRows + 1;
@@ -573,10 +573,10 @@ static SEL getSel;
     {
       row = 0;
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"insert negative row (%d) in matrix", row);
+      NSLog(@"insert negative row (%d) in matrix", (int)row);
 #else
       [NSException raise: NSRangeException
-		  format: @"insert negative row (%d) in matrix", row];
+		  format: @"insert negative row (%d) in matrix", (int)row];
 #endif
     }
 
@@ -647,8 +647,8 @@ static SEL getSel;
 /**<p>Makes and returns new cell at row <var>row</var> and 
    column <var>column</var>.</p>
  */
-- (NSCell*) makeCellAtRow: (int)row
-		   column: (int)column
+- (NSCell*) makeCellAtRow: (NSInteger)row
+		   column: (NSInteger)column
 {
   NSCell	*aCell;
 
@@ -677,8 +677,8 @@ static SEL getSel;
 /** <p>Returns the rectangle of the cell at row <var>row</var> and column
     <var>column</var></p>
  */
-- (NSRect) cellFrameAtRow: (int)row
-		   column: (int)column
+- (NSRect) cellFrameAtRow: (NSInteger)row
+		   column: (NSInteger)column
 {
   NSRect rect;
 
@@ -691,8 +691,8 @@ static SEL getSel;
 /**<p>Gets the number of rows and columns of the NSMatrix</p>
    <p>See Also: -numberOfColumns -numberOfRows</p>
  */
-- (void) getNumberOfRows: (int*)rowCount
-		 columns: (int*)columnCount
+- (void) getNumberOfRows: (NSInteger*)rowCount
+		 columns: (NSInteger*)columnCount
 {
   *rowCount = _numRows;
   *columnCount = _numCols;
@@ -704,8 +704,8 @@ static SEL getSel;
    are out of range.</p>
  */
 - (void) putCell: (NSCell*)newCell
-	   atRow: (int)row
-	  column: (int)column
+	   atRow: (NSInteger)row
+	  column: (NSInteger)column
 {
   if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     {
@@ -727,7 +727,7 @@ static SEL getSel;
 /**<p>Removes the NSMatrix's column at index <var>column</var></p>
    <p>See Also: -removeRow:</p>
  */
-- (void) removeColumn: (int)column
+- (void) removeColumn: (NSInteger)column
 {
   if (column >= 0 && column < _numCols)
     {
@@ -768,10 +768,10 @@ static SEL getSel;
   else
     {
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"remove non-existent column (%d) from matrix", column);
+      NSLog(@"remove non-existent column (%d) from matrix", (int) column);
 #else
       [NSException raise: NSRangeException
-	format: @"remove non-existent column (%d) from matrix", column];
+	format: @"remove non-existent column (%d) from matrix",  (int)column];
 #endif
     }
 }
@@ -780,7 +780,7 @@ static SEL getSel;
 /**<p>Removes the NSMatrix's row at index <var>row</var></p>
    <p>See Also: -removeColumn:</p>
  */
-- (void) removeRow: (int)row
+- (void) removeRow: (NSInteger)row
 {
   if (row >= 0 && row < _numRows)
     {
@@ -823,16 +823,16 @@ static SEL getSel;
   else
     {
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"remove non-existent row (%d) from matrix", row);
+      NSLog(@"remove non-existent row (%d) from matrix", (int)row);
 #else
       [NSException raise: NSRangeException
-		  format: @"remove non-existent row (%d) from matrix", row];
+		  format: @"remove non-existent row (%d) from matrix", (int)row];
 #endif
     }
 }
 
-- (void) renewRows: (int)newRows
-	   columns: (int)newColumns
+- (void) renewRows: (NSInteger)newRows
+	   columns: (NSInteger)newColumns
 {
   [self _renewRows: newRows columns: newColumns rowSpace: 0 colSpace: 0];
 }
@@ -853,7 +853,7 @@ static SEL getSel;
   [self sizeToCells];
 }
 
-- (void) sortUsingFunction: (int (*)(id element1, id element2,
+- (void) sortUsingFunction: (NSComparisonResult (*)(id element1, id element2,
 				   void *userData))comparator
 		   context: (void*)context
 {
@@ -919,8 +919,8 @@ static SEL getSel;
     specified NSPoint aPoint. Returns YES if aPoint is within the NSMatrix,
     NO otherwise</p>
  */ 
-- (BOOL) getRow: (int*)row
-	 column: (int*)column
+- (BOOL) getRow: (NSInteger*)row
+	 column: (NSInteger*)column
        forPoint: (NSPoint)aPoint
 {
   BOOL	betweenRows;
@@ -996,8 +996,8 @@ static SEL getSel;
     specified NSCell aCell. Returns YES if aCell is in the NSMatrix,
     NO otherwise</p>
  */ 
-- (BOOL) getRow: (int*)row
-	 column: (int*)column
+- (BOOL) getRow: (NSInteger*)row
+	 column: (NSInteger*)column
 	 ofCell: (NSCell*)aCell
 {
   int	i;
@@ -1031,9 +1031,9 @@ static SEL getSel;
     to value. If the NSMatrix's mode is NSRadioModeMatrix it deselects
     the cell currently selected if needed.</p>
  */
-- (void) setState: (int)value
-	    atRow: (int)row
-	   column: (int)column
+- (void) setState: (NSInteger)value
+	    atRow: (NSInteger)row
+	   column: (NSInteger)column
 {
   NSCell	*aCell = [self cellAtRow: row column: column];
 
@@ -1245,7 +1245,7 @@ static SEL getSel;
 
 - (void) selectCell: (NSCell *)aCell
 {
-  int row, column;
+  NSInteger row, column;
 
   if ([self getRow: &row column: &column ofCell: aCell] == YES)
     {
@@ -1264,7 +1264,7 @@ static SEL getSel;
     the cells.</p>
     <p>See Also: -deselectSelectedCell -selectTextAtRow:column:</p>    
  */
-- (void) selectCellAtRow: (int)row column: (int)column
+- (void) selectCellAtRow: (NSInteger)row column: (NSInteger)column
 {
   NSCell	*aCell;
 
@@ -1288,7 +1288,7 @@ static SEL getSel;
    NO otherwise.</p><p>See Also: -deselectSelectedCell
    -selectTextAtRow:column:</p>
  */
-- (BOOL) selectCellWithTag: (int)anInt
+- (BOOL) selectCellWithTag: (NSInteger)anInt
 {
   id	aCell;
   int	i = _numRows;
@@ -1333,9 +1333,9 @@ static SEL getSel;
   return array;
 }
 
-- (void) setSelectionFrom: (int)startPos
-		       to: (int)endPos
-		   anchor: (int)anchorPos
+- (void) setSelectionFrom: (NSInteger)startPos
+		       to: (NSInteger)endPos
+		   anchor: (NSInteger)anchorPos
 	        highlight: (BOOL)flag
 {
   /* Cells are selected from the anchor (A) to the point where the mouse
@@ -1487,8 +1487,8 @@ static SEL getSel;
    Returns nil if the <var>row</var> or <var>column</var> are out of
    range</p>    
  */
-- (id) cellAtRow: (int)row
-	  column: (int)column
+- (id) cellAtRow: (NSInteger)row
+	  column: (NSInteger)column
 {
   if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     return nil;
@@ -1498,7 +1498,7 @@ static SEL getSel;
 /**<p>Returns the cell with tag <var>anInt</var>
    Returns nil if no cell has a tag <var>anInt</var></p>    
  */
-- (id) cellWithTag: (int)anInt
+- (id) cellWithTag: (NSInteger)anInt
 {
   int	i = _numRows;
 
@@ -1589,7 +1589,7 @@ static SEL getSel;
    methods returns the selected cell if exists and selectable,
    nil otherwise</p>   
  */
-- (id) selectTextAtRow: (int)row column: (int)column
+- (id) selectTextAtRow: (NSInteger)row column: (NSInteger)column
 {
   if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     return self;
@@ -1658,7 +1658,7 @@ static SEL getSel;
 - (void) setKeyCell: (NSCell *)aCell 
 {
   BOOL isValid;
-  int row, column;
+  NSInteger row, column;
 
   isValid = [self getRow: &row  column: &column  ofCell: aCell];
 
@@ -1989,8 +1989,8 @@ static SEL getSel;
    <var>column</var> visible</p>
    <p>See Also: -scrollRectToVisible: -cellFrameAtRow:column:</p>
  */
-- (void) scrollCellToVisibleAtRow: (int)row
-			   column: (int)column
+- (void) scrollCellToVisibleAtRow: (NSInteger)row
+			   column: (NSInteger)column
 {
   [self scrollRectToVisible: [self cellFrameAtRow: row column: column]];
 }
@@ -2071,7 +2071,7 @@ static SEL getSel;
 
 - (void) drawCell: (NSCell *)aCell
 {
-  int row, column;
+  NSInteger row, column;
 
   if ([self getRow: &row  column: &column  ofCell: aCell] == YES)
     {
@@ -2083,7 +2083,7 @@ static SEL getSel;
    <p>See Also: [NSCell-drawWithFrame:inView:] -setDrawsCellBackground:
    -drawsCellBackground</p>
  */
-- (void) drawCellAtRow: (int)row column: (int)column
+- (void) drawCellAtRow: (NSInteger)row column: (NSInteger)column
 {
   NSCell *aCell = [self cellAtRow: row column: column];
 
@@ -2119,7 +2119,7 @@ static SEL getSel;
     and column <var>column</var>. and maks the cell rect for display.</p>
     <p>See Also: -setNeedsDisplayInRect: [NSCell-setHighlighted:]</p>
  */
-- (void) highlightCell: (BOOL)flag atRow: (int)row column: (int)column
+- (void) highlightCell: (BOOL)flag atRow: (NSInteger)row column: (NSInteger)column
 {
   NSCell	*aCell = [self cellAtRow: row column: column];
 
@@ -2243,8 +2243,8 @@ static SEL getSel;
 {
   BOOL mouseUpInCell = NO, onCell, scrolling = NO, mouseUp = NO;
   NSCell *mouseCell;
-  int mouseRow;
-  int mouseColumn;
+  NSInteger mouseRow;
+  NSInteger mouseColumn;
   NSPoint mouseLocation;
   NSRect mouseCellFrame;
   NSCell *originallySelectedCell = _selectedCell;
@@ -2363,8 +2363,8 @@ static SEL getSel;
 - (void) _mouseDownListMode: (NSEvent *) theEvent
 {
   NSPoint locationInWindow, mouseLocation;
-  int mouseRow, mouseColumn;
-  int mouseIndex, previousIndex = 0, anchor = 0;
+  NSInteger mouseRow, mouseColumn;
+  NSInteger mouseIndex, previousIndex = 0, anchor = 0;
   id mouseCell, previousCell = nil;
   BOOL onCell;
   BOOL isSelecting = YES;
@@ -2470,7 +2470,7 @@ static SEL getSel;
                                       dequeue: YES];
 
       NSDebugLLog(@"NSMatrix", @"matrix: got event of type: %d\n",
-                  [theEvent type]);
+                  (int)[theEvent type]);
 
       if ([theEvent type] != NSPeriodic)
         {
@@ -2488,7 +2488,7 @@ static SEL getSel;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  int row, column;
+  NSInteger row, column;
   NSPoint lastLocation = [theEvent locationInWindow];
   int clickCount;
 
@@ -2576,7 +2576,7 @@ static SEL getSel;
 
 - (void) updateCell: (NSCell*)aCell
 {
-  int		row, col;
+  NSInteger		row, col;
   NSRect	rect;
 
   if ([self getRow: &row column: &col ofCell: aCell] == NO)
@@ -3273,7 +3273,7 @@ static SEL getSel;
 /**<p>Returns the number of rows of the NSMatrix</p>
    <p>See Also: -numberOfColumns</p>
  */
-- (int) numberOfRows
+- (NSInteger) numberOfRows
 {
   return _numRows;
 }
@@ -3281,7 +3281,7 @@ static SEL getSel;
 /**<p>Returns the number of columns of the NSMatrix</p>
    <p>See Also: -numberOfRows</p>
  */
-- (int) numberOfColumns
+- (NSInteger) numberOfColumns
 {
   return _numCols;
 }
@@ -3308,7 +3308,7 @@ static SEL getSel;
   return _selectedRow;
 }
 
-- (int) mouseDownFlags
+- (NSInteger) mouseDownFlags
 {
   return mouseDownFlags;
 }
@@ -3943,20 +3943,20 @@ static SEL getSel;
   if (row < 0)
     {
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"renew negative row (%d) in matrix", row);
+      NSLog(@"renew negative row (%d) in matrix", (int)row);
 #else
       [NSException raise: NSRangeException
-		  format: @"renew negative row (%d) in matrix", row];
+		  format: @"renew negative row (%d) in matrix", (int)row];
 #endif
       row = 0;
     }
   if (col < 0)
     {
 #if	NSMATRIX_STRICT_CHECKING == 0
-      NSLog(@"renew negative column (%d) in matrix", col);
+      NSLog(@"renew negative column (%d) in matrix", (int)col);
 #else
       [NSException raise: NSRangeException
-		  format: @"renew negative column (%d) in matrix", col];
+		  format: @"renew negative column (%d) in matrix", (int)col];
 #endif
       col = 0;
     }

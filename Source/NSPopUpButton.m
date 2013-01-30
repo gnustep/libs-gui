@@ -188,7 +188,7 @@ this to return nil to indicate that we have no context menu.
     -synchronizeTitleAndSelectedItem</p>
  */
 - (void) insertItemWithTitle: (NSString*)title
-		     atIndex: (int)index
+		     atIndex: (NSInteger)index
 {
   [_cell insertItemWithTitle: title 
 		     atIndex: index];
@@ -225,7 +225,7 @@ this to return nil to indicate that we have no context menu.
     </p><p>See Also: [NSPopUpButtonCell-removeItemAtIndex:] 
     -removeAllItems -removeItemWithTitle: -synchronizeTitleAndSelectedItem</p>
 */
-- (void) removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (NSInteger)index
 {
   [_cell removeItemAtIndex: index];
 
@@ -251,7 +251,7 @@ this to return nil to indicate that we have no context menu.
 /**<p>Returns the index of the selected item</p>
    <p>See Also: [NSPopUpButtonCell-indexOfSelectedItem]</p>
  */
-- (int) indexOfSelectedItem
+- (NSInteger) indexOfSelectedItem
 {
   return [_cell indexOfSelectedItem];
 }
@@ -274,7 +274,7 @@ this to return nil to indicate that we have no context menu.
    NSPopUpButton's title with the title of the selected</p><p>See Also: 
    [NSPopUpButtonCell-selectItemAtIndex:] -synchronizeTitleAndSelectedItem</p>
  */
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 {
   [_cell selectItemAtIndex: index];
   [self synchronizeTitleAndSelectedItem];
@@ -293,7 +293,7 @@ this to return nil to indicate that we have no context menu.
 
 - (BOOL) selectItemWithTag: (NSInteger)tag
 {
-   int index = [self indexOfItemWithTag: tag];
+   NSInteger index = [self indexOfItemWithTag: tag];
 
    if (index >= 0)
      {
@@ -310,7 +310,7 @@ this to return nil to indicate that we have no context menu.
 /** <p>Returns the number of items in the item list</p>
     <p>See Also: [NSPopUpButtonCell-numberOfItems]</p>
  */
-- (int) numberOfItems
+- (NSInteger) numberOfItems
 {
   return [_cell numberOfItems];
 }
@@ -323,14 +323,14 @@ this to return nil to indicate that we have no context menu.
 /**<p>Returns the NSMenuItem at index index or nil if index is out of
    range</p><p>See Also: [NSPopUpButtonCell-itemAtIndex:] </p>
  */
-- (id <NSMenuItem>) itemAtIndex: (int)index
+- (id <NSMenuItem>) itemAtIndex: (NSInteger)index
 {
   return [_cell itemAtIndex: index];
 }
 
 /** <p>Returns the item's title at index <var>index</var></p>
  */
-- (NSString*) itemTitleAtIndex: (int)index
+- (NSString*) itemTitleAtIndex: (NSInteger)index
 {
   return [_cell itemTitleAtIndex: index];
 }
@@ -356,7 +356,7 @@ this to return nil to indicate that we have no context menu.
   return [_cell lastItem];
 }
 
-- (int) indexOfItem: (id <NSMenuItem>)anObject
+- (NSInteger) indexOfItem: (id <NSMenuItem>)anObject
 {
   return [_cell indexOfItem: anObject];
 }
@@ -366,7 +366,7 @@ this to return nil to indicate that we have no context menu.
    [NSPopUpButtonCell-indexOfItemWithTag:] -indexOfItemWithTitle:
    -indexOfItemWithRepresentedObject:</p>
 */
-- (int) indexOfItemWithTag: (int)tag
+- (NSInteger) indexOfItemWithTag: (NSInteger)tag
 {
   return [_cell indexOfItemWithTag: tag];
 }
@@ -376,17 +376,17 @@ this to return nil to indicate that we have no context menu.
    [NSPopUpButtonCell-indexOfItemWithTitle:] -indexOfItemWithTag:
    -indexOfItemWithRepresentedObject:</p>
 */
-- (int) indexOfItemWithTitle: (NSString*)title
+- (NSInteger) indexOfItemWithTitle: (NSString*)title
 {
   return [_cell indexOfItemWithTitle: title];
 }
 
-- (int) indexOfItemWithRepresentedObject: (id)anObject
+- (NSInteger) indexOfItemWithRepresentedObject: (id)anObject
 {
   return [_cell indexOfItemWithRepresentedObject: anObject];
 }
 
-- (int) indexOfItemWithTarget: (id)target
+- (NSInteger) indexOfItemWithTarget: (id)target
 		    andAction: (SEL)actionSelector
 {
   return [_cell indexOfItemWithTarget: target andAction: actionSelector];
@@ -485,7 +485,7 @@ this to return nil to indicate that we have no context menu.
 	  }
 	case ' ':
 	  {
-	    int selectedIndex;
+	    NSInteger selectedIndex;
 	    NSMenuView *menuView;
 
 	    // Beep, as on OS, and then return.
@@ -518,7 +518,7 @@ this to return nil to indicate that we have no context menu.
 	case NSUpArrowFunctionKey:
 	  {
 	    NSMenuView *menuView;
-	    int selectedIndex, numberOfItems;
+	    NSInteger selectedIndex, numberOfItems;
 
 	    menuView = [[_cell menu] menuRepresentation];
 	    selectedIndex = [menuView highlightedItemIndex];
@@ -542,7 +542,7 @@ this to return nil to indicate that we have no context menu.
 	case NSDownArrowFunctionKey:
 	  {
 	    NSMenuView *menuView;
-	    int selectedIndex, numberOfItems;
+	    NSInteger selectedIndex, numberOfItems;
 
 	    menuView = [[_cell menu] menuRepresentation];
 	    selectedIndex = [menuView highlightedItemIndex];
