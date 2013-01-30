@@ -54,6 +54,7 @@ enum {
     NSTableViewSolidHorizontalGridLineMask     = 1 << 1,
     NSTableViewDashedHorizontalGridLineMask    = 1 << 3
 };
+typedef NSUInteger NSTableViewGridLineStyle;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 typedef enum _NSTableViewColumnAutoresizingStyle
@@ -66,7 +67,6 @@ typedef enum _NSTableViewColumnAutoresizingStyle
     NSTableViewFirstColumnOnlyAutoresizingStyle
 } NSTableViewColumnAutoresizingStyle;
 #endif
-typedef NSUInteger NSTableViewGridLineStyle;
 
 
 @interface NSTableView : NSControl <NSUserInterfaceValidations>

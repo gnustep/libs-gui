@@ -269,9 +269,9 @@ static SEL getSel;
 }
 
 - (void) _privateFrame: (NSRect)frameRect
-                  mode: (int)aMode
-          numberOfRows: (int)rows
-       numberOfColumns: (int)cols
+                  mode: (NSMatrixMode)aMode
+          numberOfRows: (NSInteger)rows
+       numberOfColumns: (NSInteger)cols
 {
   _myZone = [self zone];
   [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
@@ -342,7 +342,7 @@ static SEL getSel;
    -initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</p> 
  */
 - (id) initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
+	        mode: (NSMatrixMode)aMode
 	   cellClass: (Class)classId
         numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide
@@ -365,7 +365,7 @@ static SEL getSel;
    -initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</p> 
  */
 - (id) initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
+	        mode: (NSMatrixMode)aMode
 	   prototype: (NSCell*)aCell
         numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide

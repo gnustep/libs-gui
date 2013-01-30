@@ -1471,10 +1471,10 @@ static NSTextFieldCell *titleCell;
 
 /** <p>Returns the height of column titles. The Nextish look returns 21.</p>
  */
-- (float) titleHeight
+- (CGFloat) titleHeight
 {
   // Nextish look requires 21 here
-  return 21;
+  return 21.0;
 }
 
 /** <p>Returns the bounds of the title frame for the column at index column.
@@ -1492,7 +1492,7 @@ static NSTextFieldCell *titleCell;
     {
       // Number of columns over from the first
       NSInteger nbColumn = column - _firstVisibleColumn;
-      NSInteger titleHeight = [self titleHeight];
+      CGFloat titleHeight = [self titleHeight];
       NSRect rect;
 
       // Calculate origin

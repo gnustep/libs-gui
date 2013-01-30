@@ -99,12 +99,12 @@ typedef enum _NSMatrixMode {
  */
 - (id) initWithFrame: (NSRect)frameRect;
 - (id) initWithFrame: (NSRect)frameRect
-		mode: (int)aMode
+		mode: (NSMatrixMode)aMode
 	   cellClass: (Class)classId
 	numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide;
 - (id) initWithFrame: (NSRect)frameRect
-		mode: (int)aMode
+		mode: (NSMatrixMode)aMode
 	   prototype: (NSCell *)aCell
 	numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide;

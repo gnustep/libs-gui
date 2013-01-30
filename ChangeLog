@@ -1,5 +1,59 @@
 2013-01-30  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSBrowser.h
+	* Headers/AppKit/NSFontPanel.h
+	* Headers/AppKit/NSMatrix.h
+	* Headers/AppKit/NSTableView.h
+	* Source/NSBrowser.m
+	* Source/NSFontPanel.m
+	* Source/NSMatrix.m: Small fixes to last change.
+
+2013-01-30  David Chisnall <theraven@gna.org>
+
+	* ColorPickers/GSNamedColorPicker.m
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Headers/AppKit/NSArrayController.h
+	* Headers/AppKit/NSBrowser.h
+	* Headers/AppKit/NSControl.h
+	* Headers/AppKit/NSMatrix.h
+	* Headers/AppKit/NSTableView.h
+	* Headers/AppKit/NSToolbar.h
+	* Source/GSDisplayServer.m
+	* Source/GSDragView.m
+	* Source/GSLayoutManager.m
+	* Source/GSMemoryPanel.m
+	* Source/GSNibLoading.m
+	* Source/GSTheme.m
+	* Source/GSToolTips.m
+	* Source/GSXibLoader.m
+	* Source/NSActionCell.m
+	* Source/NSAlert.m
+	* Source/NSApplication.m
+	* Source/NSBrowser.m
+	* Source/NSButtonCell.m
+	* Source/NSCell.m
+	* Source/NSColor.m
+	* Source/NSColorList.m
+	* Source/NSComboBoxCell.m
+	* Source/NSControl.m
+	* Source/NSEvent.m
+	* Source/NSFontPanel.m
+	* Source/NSGraphicsContext.m
+	* Source/NSHelpManager.m
+	* Source/NSHelpPanel.m
+	* Source/NSMatrix.m
+	* Source/NSNibBindingConnector.m
+	* Source/NSOutlineView.m
+	* Source/NSPrintPanel.m
+	* Source/NSSearchFieldCell.m
+	* Source/NSTableView.m
+	* Source/NSTextView.m
+	* Source/NSWindow.m
+	* Source/NSWorkspace.m
+	* Tools/make_services.m: Fix all current compiler warnings on FreeBSD/x86-64.
+
+2013-01-30  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/externs.m: Change predefined colour values to CGFloat.
 
 2013-01-29  Fred Kiefer <FredKiefer@gmx.de>

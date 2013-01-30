@@ -201,7 +201,7 @@ typedef enum _NSBrowserColumnResizingType
 - (void) setTitle: (NSString *)aString
 	 ofColumn: (NSInteger)column;
 - (NSRect) titleFrameOfColumn: (NSInteger)column;
-- (float) titleHeight;
+- (CGFloat) titleHeight;
 - (NSString *) titleOfColumn: (NSInteger)column;
 
 //
