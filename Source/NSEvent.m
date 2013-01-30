@@ -790,7 +790,7 @@ static const char *eventTypes[] = {
   if (version == 1)
     {
       // For the unlikely case that old events have been stored, convert them.
-      switch (event_type)
+      switch ((int)event_type)
         {
           case 0: event_type = NSLeftMouseDown; break;
           case 1: event_type = NSLeftMouseUp; break;

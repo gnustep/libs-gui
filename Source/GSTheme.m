@@ -690,7 +690,7 @@ typedef	struct {
       colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
       if (colorsPath == nil)
 	{
-	  _colors = [null retain];
+	  _colors = (id)[null retain];
 	}
       else
 	{

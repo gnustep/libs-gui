@@ -819,7 +819,7 @@ GSCurrentServer(void)
 }
 
 /** Sets the transparancy value for the whole window */
-- (void) setalpha: (float)alpha: (int) win
+- (void) setalpha: (float)alpha : (int) win
 {
   //[self subclassResponsibility: _cmd];
 }

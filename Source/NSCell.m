@@ -539,7 +539,7 @@ static NSColor *dtxtCol;
       }
     default:
       {
-        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        NSWarnLog (@"cell attribute %d not supported", (int)aParameter);
         break;
       }
     }
@@ -659,7 +659,7 @@ static NSColor *dtxtCol;
       }
     default:
       {
-        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        NSWarnLog (@"cell attribute %d not supported", (int)aParameter);
         break;
       }
     }

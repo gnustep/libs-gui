@@ -1897,7 +1897,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 - (NSButton *) addButtonWithTitle: (NSString *)aTitle
 {
   NSButton *button = [[NSButton alloc] init];
-  int count = [_buttons count];
+  NSUInteger count = [_buttons count];
 
   [button setTitle: aTitle];
   [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
@@ -2172,8 +2172,8 @@ NSInteger GSRunExceptionPanel(
   [_userInfoPanel makeKeyAndOrderFront: self];
 }
 
-- (int) browser: (id)browser
-numberOfRowsInColumn: (int)col
+- (NSInteger) browser: (id)browser
+numberOfRowsInColumn: (NSInteger)col
 {
   if (col == 0)
     return [[_userInfo allKeys] count];
@@ -2201,8 +2201,8 @@ numberOfRowsInColumn: (int)col
 
 - (void) browser: (NSBrowser *)browser
   willDisplayCell: (NSBrowserCell *)cell
-  atRow: (int)row
-  column: (int)column
+  atRow: (NSInteger)row
+  column: (NSInteger)column
 {
   if (column == 0)
     {
@@ -2295,7 +2295,7 @@ numberOfRowsInColumn: (int)col
     }
 }
 
-- (id) browser: (NSBrowser *)browser titleOfColumn: (int)column
+- (id) browser: (NSBrowser *)browser titleOfColumn: (NSInteger)column
 {
   id val;
   NSString *title;

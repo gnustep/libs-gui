@@ -1591,7 +1591,7 @@ destination point but not the content. */
 /** Generic method to draw an image into a rect. The image is defined
     by imageref, an opaque structure. Support for this method hasn't
     been implemented yet, so it should not be used anywhere. */
-- (void) GSDrawImage: (NSRect)rect: (void *)imageref
+- (void) GSDrawImage: (NSRect)rect : (void *)imageref
 {
   [self subclassResponsibility: _cmd];
 }

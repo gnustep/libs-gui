@@ -266,7 +266,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 
 @interface	_GSWorkspaceCenter: NSNotificationCenter
 {
-  NSDistributedNotificationCenter	*remote;
+  NSNotificationCenter	*remote;
 }
 - (void) _handleRemoteNotification: (NSNotification*)aNotification;
 - (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info;

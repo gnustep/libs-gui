@@ -152,7 +152,7 @@
 
       if (helpFile)
         {
-          NSString *helpstr;
+          NSAttributedString *helpstr;
 
           helpstr = [[NSAttributedString alloc] initWithPath: helpFile
 					  documentAttributes: NULL];

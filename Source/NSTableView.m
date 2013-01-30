@@ -159,7 +159,7 @@ typedef struct _tableViewFlags
 @end
 
 @interface NSTableView (EventLoopHelper)
-- (void) _trackCellAtColumn:(int)column row:(int)row withEvent:(NSEvent *)ev;
+- (void) _trackCellAtColumn:(NSInteger)column row:(NSInteger)row withEvent:(NSEvent *)ev;
 - (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent;
 @end
 
@@ -2093,12 +2093,12 @@ static void computeNewSelection
  * Table Dimensions 
  */
 
-- (int) numberOfColumns
+- (NSInteger) numberOfColumns
 {
   return _numberOfColumns;
 }
 
-- (int) numberOfRows
+- (NSInteger) numberOfRows
 {
   return _numberOfRows;
 }
@@ -2163,7 +2163,7 @@ static void computeNewSelection
   [self tile];
 }
 
-- (void) moveColumn: (int)columnIndex toColumn: (int)newIndex
+- (void) moveColumn: (NSInteger)columnIndex toColumn: (NSInteger)newIndex
 {
   /* The range of columns which need to be shifted, 
      extremes included */
@@ -2260,7 +2260,7 @@ static void computeNewSelection
 				       NSDefaultMallocZone ()]);
 }
 
-- (int) columnWithIdentifier: (id)identifier
+- (NSInteger) columnWithIdentifier: (id)identifier
 {
   NSEnumerator	*enumerator = [_tableColumns objectEnumerator];
   NSTableColumn	*tb;
@@ -2381,12 +2381,12 @@ static void computeNewSelection
   return _target;
 }
 
-- (int) clickedColumn
+- (NSInteger) clickedColumn
 {
   return _clickedColumn;
 }
 
-- (int) clickedRow
+- (NSInteger) clickedRow
 {
   return _clickedRow;
 }
@@ -2395,7 +2395,7 @@ static void computeNewSelection
  * The NSTableHeaderView calls this method when it receives a double click.
  */
 
-- (void) _sendDoubleActionForColumn: (int)columnIndex
+- (void) _sendDoubleActionForColumn: (NSInteger)columnIndex
 {
   _clickedColumn = columnIndex;
   _clickedRow = -1;
@@ -2410,7 +2410,7 @@ static void computeNewSelection
  * However we support adding a distinct column with the control key (unlike 
  * Cocoa where the user can only make column range selection).
  */
-- (void) _selectColumn: (int)columnIndex
+- (void) _selectColumn: (NSInteger)columnIndex
 	     modifiers: (unsigned int)modifiers
 {
   NSIndexSet *oldIndexes = [self selectedColumnIndexes];
@@ -2569,12 +2569,12 @@ static void computeNewSelection
 /*
  * Selecting Columns and Rows
  */
-- (void) selectColumn: (int)columnIndex 
+- (void) selectColumn: (NSInteger)columnIndex 
  byExtendingSelection: (BOOL)flag
 {
   if (columnIndex < 0 || columnIndex > _numberOfColumns)
     {
-      NSDebugLLog(@"NSTableView", @"Column index %d out of table in selectColumn", columnIndex);
+      NSDebugLLog(@"NSTableView", @"Column index %d out of table in selectColumn", (int)columnIndex);
       return;
     }
 
@@ -2641,12 +2641,12 @@ static void computeNewSelection
     }
 }
 
-- (void) selectRow: (int)rowIndex
+- (void) selectRow: (NSInteger)rowIndex
 byExtendingSelection: (BOOL)flag
 {
   if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
-      NSDebugLLog(@"NSTableView", @"Row index %d out of table in selectRow", rowIndex);
+      NSDebugLLog(@"NSTableView", @"Row index %d out of table in selectRow", (int)rowIndex);
       return;
     }
 
@@ -2890,7 +2890,7 @@ byExtendingSelection: (BOOL)flag
   return _selectedRows;  
 }
 
-- (void) deselectColumn: (int)columnIndex
+- (void) deselectColumn: (NSInteger)columnIndex
 {
   if ([_selectedColumns containsIndex: columnIndex] == NO)
     {
@@ -2950,7 +2950,7 @@ byExtendingSelection: (BOOL)flag
   [self _postSelectionDidChangeNotification];
 }
 
-- (void) deselectRow: (int)rowIndex
+- (void) deselectRow: (NSInteger)rowIndex
 {
   if ([_selectedRows containsIndex: rowIndex] == NO)
     {
@@ -3000,32 +3000,32 @@ byExtendingSelection: (BOOL)flag
   [self _postSelectionDidChangeNotification];
 }
 
-- (int) numberOfSelectedColumns
+- (NSInteger) numberOfSelectedColumns
 {
   return [_selectedColumns count];
 }
 
-- (int) numberOfSelectedRows
+- (NSInteger) numberOfSelectedRows
 {
   return [_selectedRows count];
 }
 
-- (int) selectedColumn
+- (NSInteger) selectedColumn
 {
   return _selectedColumn;
 }
 
-- (int) selectedRow
+- (NSInteger) selectedRow
 {
   return _selectedRow;
 }
 
-- (BOOL) isColumnSelected: (int)columnIndex
+- (BOOL) isColumnSelected: (NSInteger)columnIndex
 {
   return [_selectedColumns containsIndex: columnIndex];
 }
 
-- (BOOL) isRowSelected: (int)rowIndex
+- (BOOL) isRowSelected: (NSInteger)rowIndex
 {
   return [_selectedRows containsIndex: rowIndex];
 }
@@ -3166,12 +3166,12 @@ byExtendingSelection: (BOOL)flag
   return _gridColor;
 }
 
-- (void) setGridStyleMask: (unsigned int)gridType
+- (void) setGridStyleMask: (NSTableViewGridLineStyle)gridType
 {
   // FIXME
 }
 
-- (unsigned int) gridStyleMask
+- (NSTableViewGridLineStyle) gridStyleMask
 {
   // FIXME
   return 0;
@@ -3282,8 +3282,8 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
-- (void) editColumn: (int) columnIndex 
-                row: (int) rowIndex 
+- (void) editColumn: (NSInteger) columnIndex 
+                row: (NSInteger) rowIndex 
           withEvent: (NSEvent *) theEvent 
              select: (BOOL) flag
 {
@@ -3391,12 +3391,12 @@ byExtendingSelection: (BOOL)flag
   return;    
 }
 
-- (int) editedRow
+- (NSInteger) editedRow
 {
   return _editedRow;  
 }
 
-- (int) editedColumn
+- (NSInteger) editedColumn
 {
   return _editedColumn;
 }
@@ -3429,8 +3429,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return 0.01;
 }
 
-- (void) _trackCellAtColumn: (int) columnIndex
-		row: (int) rowIndex
+- (void) _trackCellAtColumn: (NSInteger) columnIndex
+		row: (NSInteger) rowIndex
 		withEvent: (NSEvent *) theEvent
 {
   NSTableColumn *tb;
@@ -4281,13 +4281,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
  * Layout 
  */
 
-- (NSRect) rectOfColumn: (int)columnIndex
+- (NSRect) rectOfColumn: (NSInteger)columnIndex
 {
   NSRect rect;
 
   if (columnIndex < 0 || columnIndex > _numberOfColumns)
     {
-      NSDebugLLog(@"NSTableView", @"Column index %d out of table in rectOfColumn", columnIndex);
+      NSDebugLLog(@"NSTableView", @"Column index %d out of table in rectOfColumn", (int)columnIndex);
       return NSZeroRect;
     }
 
@@ -4298,13 +4298,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
   return rect;
 }
 
-- (NSRect) rectOfRow: (int)rowIndex
+- (NSRect) rectOfRow: (NSInteger)rowIndex
 {
   NSRect rect;
 
   if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
-      NSDebugLLog(@"NSTableView", @"Row index %d out of table in rectOfRow", rowIndex);
+      NSDebugLLog(@"NSTableView", @"Row index %d out of table in rectOfRow", (int)rowIndex);
       return NSZeroRect;
     }
 
@@ -4376,7 +4376,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   return range;
 }
 
-- (int) columnAtPoint: (NSPoint)aPoint
+- (NSInteger) columnAtPoint: (NSPoint)aPoint
 {
   if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
     {
@@ -4394,7 +4394,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (int) rowAtPoint: (NSPoint)aPoint
+- (NSInteger) rowAtPoint: (NSPoint)aPoint
 {
   /* NB: Y coordinate system is flipped in NSTableView */
   if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
@@ -4416,8 +4416,8 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (NSRect) frameOfCellAtColumn: (int)columnIndex 
-			   row: (int)rowIndex
+- (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex 
+			   row: (NSInteger)rowIndex
 {
   NSRect frameRect;
 
@@ -4973,7 +4973,7 @@ This method is deprecated, use -columnIndexesInRect:. */
  * Drawing 
  */
 
-- (void) drawRow: (int)rowIndex clipRect: (NSRect)clipRect
+- (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)clipRect
 {
   [[GSTheme theme] drawTableViewRow: rowIndex
 		   clipRect: clipRect
@@ -5020,7 +5020,7 @@ This method is deprecated, use -columnIndexesInRect:. */
  * Scrolling 
  */
 
-- (void) scrollRowToVisible: (int)rowIndex
+- (void) scrollRowToVisible: (NSInteger)rowIndex
 {
   if (_super_view != nil)
     {
@@ -5057,7 +5057,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (void) scrollColumnToVisible: (int)columnIndex
+- (void) scrollColumnToVisible: (NSInteger)columnIndex
 {
   if (_super_view != nil)
     {
@@ -5346,7 +5346,7 @@ This method is deprecated, use -columnIndexesInRect:. */
                dragImageOffset: offset];
 }
 
-- (void) setDropRow: (int)row
+- (void) setDropRow: (NSInteger)row
       dropOperation: (NSTableViewDropOperation)operation
 {
   if (row < -1 || row > _numberOfRows 

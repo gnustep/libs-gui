@@ -266,7 +266,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	{
 	  [familyBrowser selectRow: i inColumn: 0];
 	  _family = i;
-	  ASSIGN(_faceList, [fm availableMembersOfFontFamily: family]);
+	  ASSIGN(_faceList, (NSMutableArray *)[fm availableMembersOfFontFamily: family]);
 	  [faceBrowser loadColumnZero];
 	  _face = -1;
 	}

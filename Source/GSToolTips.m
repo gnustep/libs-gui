@@ -143,7 +143,7 @@
     }
 }
  	  	 
-- (void) drawRect: (id)dirtyRect
+- (void) drawRect: (NSRect)dirtyRect
 {
   if (_text)
     {

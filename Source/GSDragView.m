@@ -108,7 +108,7 @@
   [self setExcludedFromWindowsMenu: YES];
 }
 
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {
   [super orderWindow: place relativeTo: otherWin];
   [self setLevel: NSPopUpMenuWindowLevel];

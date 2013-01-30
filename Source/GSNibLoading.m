@@ -1184,7 +1184,7 @@ static BOOL _isInInterfaceBuilder = NO;
                    NSStringFromClass([coder class])];
     }
 
-  return _view;
+  return (id)_view;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -2342,7 +2342,7 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 
   RELEASE(self);
-  return dn;
+  return (id)dn;
 }
 
 @end

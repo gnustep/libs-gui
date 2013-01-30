@@ -175,18 +175,18 @@ Interface for a bunch of internal methods that need to be cleaned up.
   NSParagraphStyle *paragraphStyle;
   unsigned int flags;
   NSColor *insertionColor;
-  NSArray *linkAttr;
-  NSArray *markAttr;
-  NSArray *selectedAttr;
+  NSDictionary *linkAttr;
+  NSDictionary *markAttr;
+  NSDictionary *selectedAttr;
   NSTextView *textView;
 }
 - (NSColor *) backgroundColor;
 - (NSParagraphStyle *) paragraphStyle;
 - (unsigned int) flags;
 - (NSColor *) insertionColor;
-- (NSArray *) linkAttributes;
-- (NSArray *) markAttributes;
-- (NSArray *) selectedAttributes;
+- (NSDictionary *) linkAttributes;
+- (NSDictionary *) markAttributes;
+- (NSDictionary *) selectedAttributes;
 - (NSTextView *) textView;
 @end
 
@@ -289,17 +289,17 @@ Interface for a bunch of internal methods that need to be cleaned up.
   return insertionColor;
 }
 
-- (NSArray *) linkAttributes
+- (NSDictionary *) linkAttributes
 {
   return linkAttr;
 }
 
-- (NSArray *) markAttributes
+- (NSDictionary *) markAttributes
 {
   return markAttr;
 }
 
-- (NSArray *) selectedAttributes
+- (NSDictionary *) selectedAttributes
 {
   return selectedAttr;
 }

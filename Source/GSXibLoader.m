@@ -1095,7 +1095,7 @@
               if ([xmlKeys count] != [xmlObjs count])
                 {
                   NSLog(@"%s:keys to objs count mismatch - keys: %d objs: %d\n", __PRETTY_FUNCTION__,
-                        [xmlKeys count], [xmlObjs count]);
+                        (int)[xmlKeys count], (int)[xmlObjs count]);
                 }
               else
                 {

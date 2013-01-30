@@ -3208,7 +3208,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
   len = glyph - gpos + length;
   if (len < 0)
     {
-      NSLog(@"Insert %d glyphs at %d for index %d", length, glyph, index);
+      NSLog(@"Insert %d glyphs at %d for index %d", (int)length, (int)glyph, (int)index);
       NSLog(@"Found gpos %d cpos %d len %d", gpos, cpos, len);
       [NSException raise: NSRangeException
                    format: @"%s glyph index out of range", __PRETTY_FUNCTION__];

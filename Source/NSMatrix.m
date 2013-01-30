@@ -3294,7 +3294,7 @@ static SEL getSel;
 /**<p>Returns the column number of the selected cell or -1 
    if no cell is selected</p><p>See Also: -selectedRow -selectedCell</p>
  */
-- (int) selectedColumn
+- (NSInteger) selectedColumn
 {
   return _selectedColumn;
 }
@@ -3303,7 +3303,7 @@ static SEL getSel;
 /**<p>Returns the row number of the selected cell or -1 
    if no cell is selected</p><p>See Also: -selectedColumn -selectedCell</p>
  */
-- (int) selectedRow
+- (NSInteger) selectedRow
 {
   return _selectedRow;
 }

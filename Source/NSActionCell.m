@@ -105,8 +105,8 @@ static Class controlClass;
 }
 
 - (void) setFloatingPointFormat: (BOOL)autoRange
-			   left: (unsigned int)leftDigits
-			  right: (unsigned int)rightDigits
+			   left: (NSUInteger)leftDigits
+			  right: (NSUInteger)rightDigits
 {
   [super setFloatingPointFormat: autoRange
 	 left: leftDigits

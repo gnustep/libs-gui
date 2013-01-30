@@ -86,7 +86,7 @@ static NSColorList *themeColorList = nil;
   if (self == [NSColorList class])
     {
       [self setVersion: 2];
-      _colorListLock = [NSRecursiveLock new];
+      _colorListLock = (NSLock *)[NSRecursiveLock new];
     }
 }
 

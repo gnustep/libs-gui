@@ -911,7 +911,7 @@ static NSImage *unexpandable  = nil;
 /*
  * Drawing
  */
-- (void) drawRow: (int)rowIndex clipRect: (NSRect)aRect
+- (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
   int startingColumn;
   int endingColumn;
@@ -1533,8 +1533,8 @@ Also returns the child index relative to this parent. */
   [self _autoloadExpandedItems];
 }
 
-- (void) editColumn: (int) columnIndex
-                row: (int) rowIndex
+- (void) editColumn: (NSInteger) columnIndex
+                row: (NSInteger) rowIndex
           withEvent: (NSEvent *) theEvent
              select: (BOOL) flag
 {

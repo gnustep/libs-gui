@@ -74,7 +74,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 
 @interface NSToolbar : NSObject
 {
-  NSMutableDictionary *_configurationDictionary;
+  NSDictionary *_configurationDictionary;
   id _delegate;
   NSString *_identifier;
   NSString *_selectedItemIdentifier;

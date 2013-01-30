@@ -1091,7 +1091,6 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
 	      while (i-- > 0)
 		{
-		  NSString	*type;
 
 		  str = [snd objectAtIndex: i];
 		  /* For UNIX I/O or file mapping, the send type must be a

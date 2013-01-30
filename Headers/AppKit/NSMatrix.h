@@ -193,8 +193,8 @@ typedef enum _NSMatrixMode {
 - (BOOL) selectCellWithTag: (int)anInt;
 - (id) selectedCell;
 - (NSArray *) selectedCells;
-- (int) selectedColumn;
-- (int) selectedRow;
+- (NSInteger) selectedColumn;
+- (NSInteger) selectedRow;
 - (void) setSelectionFrom: (int)startPos
 		       to: (int)endPos
 		   anchor: (int)anchorPos

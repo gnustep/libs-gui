@@ -1040,7 +1040,7 @@ many times.
   // FIXME: This hack is here to work around a gorm decoding problem.
   if (_windowNum)
     {
-      NSLog(@"Window already initialized %d", _windowNum);
+      NSLog(@"Window already initialized %d", (int)_windowNum);
       return self;
     }
 
@@ -3971,7 +3971,7 @@ resetCursorRectsForView(NSView *theView)
               _frame.origin.x = (float)[theEvent data1];
               _frame.origin.y = (float)[theEvent data2];
               NSDebugLLog(@"Moving", @"Move event: %d %@",
-                          _windowNum, NSStringFromPoint(_frame.origin));
+                          (int)_windowNum, NSStringFromPoint(_frame.origin));
               if (_autosaveName != nil)
                 {
                   [self saveFrameUsingName: _autosaveName];
@@ -4083,7 +4083,7 @@ resetCursorRectsForView(NSView *theView)
 		}
               if ([self canBecomeKeyWindow] == YES)
 		{
-		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
+		  NSDebugLLog(@"Focus", @"Making %d key", (int)_windowNum);
 		  [self makeKeyWindow];
 		  [self makeMainWindow];
 		  [NSApp activateIgnoringOtherApps: YES];

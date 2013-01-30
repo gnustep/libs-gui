@@ -126,7 +126,7 @@ static GSComboWindow *gsWindow = nil;
 }
 
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
+		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 {
@@ -507,7 +507,7 @@ static GSComboWindow *gsWindow = nil;
 }
 
 // Browser delegate methods
-- (int) browser: (NSBrowser *)sender numberOfRowsInColumn: (int)column
+- (NSInteger) browser: (NSBrowser *)sender numberOfRowsInColumn: (NSInteger)column
 {
   if (_cell == nil)
     return 0;
@@ -517,8 +517,8 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)aCell
-	   atRow: (int)row 
-	  column: (int)column
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column
 {
   if (_cell == nil)
     return;
@@ -528,12 +528,12 @@ static GSComboWindow *gsWindow = nil;
 }
 
 // Table view data source methods
-- (int) numberOfRowsInTableView: (NSTableView *)tv
+- (NSInteger) numberOfRowsInTableView: (NSTableView *)tv
 {
   return [_cell numberOfItems];
 }
 
-- (id) tableView: (NSTableView *)tv objectValueForTableColumn: (NSTableColumn *)tc row: (int)row
+- (id) tableView: (NSTableView *)tv objectValueForTableColumn: (NSTableColumn *)tc row: (NSInteger)row
 {
   return [_cell _stringValueAtIndex: row];
 }
@@ -551,7 +551,7 @@ static GSComboWindow *gsWindow = nil;
 // Key actions methods
 - (void) moveUpSelection
 {
-  int index = [_tableView selectedRow] - 1;
+  NSInteger index = [_tableView selectedRow] - 1;
 
   if (index > -1 && index < [_tableView numberOfRows])
     {
@@ -1666,8 +1666,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 		  inView: (NSView *)controlView
 		  editor: (NSText *)textObj 
 		delegate: (id)anObject
-		   start: (int)selStart 
-		  length: (int)selLength
+		   start: (NSInteger)selStart 
+		  length: (NSInteger)selLength
 {
   [super selectWithFrame: textCellFrameFromRect(aRect)
                   inView: controlView

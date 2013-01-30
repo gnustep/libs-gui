@@ -40,8 +40,8 @@
 {
   if((self = [super init]) != nil)
     {
-      _binding = RETAIN([NSString stringWithString: @""]);
-      _keyPath = RETAIN([NSString stringWithString: @""]);
+      _binding = @"";
+      _keyPath = @"";
       _options = RETAIN([NSMutableDictionary dictionary]);
     }
   return self;

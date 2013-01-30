@@ -40,7 +40,7 @@
 
 @interface NSArrayController : NSObjectController
 {
-  NSMutableArray *_arranged_objects;
+  NSArray *_arranged_objects;
   NSIndexSet *_selection_indexes;
   NSArray *_sort_descriptors;
   NSPredicate *_filter_predicate;

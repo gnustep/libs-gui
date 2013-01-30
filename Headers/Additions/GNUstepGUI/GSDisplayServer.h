@@ -157,7 +157,7 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (void) docedited: (int) edited : (int)win;
 - (void) setinputstate: (int)state : (int)win;
 - (void) setinputfocus: (int)win;
-- (void) setalpha: (float)alpha: (int)win;
+- (void) setalpha: (float)alpha : (int)win;
 - (void) setShadow: (BOOL)hasShadow : (int)win;
 
 - (NSPoint) mouselocation;

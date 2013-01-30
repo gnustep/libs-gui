@@ -343,7 +343,7 @@ gsapp_user_bundles(void)
   c = [a count];
   if (a == nil || c == 0)
     return;
-  NSLog(@"Loading %d user defined AppKit bundles", c);
+  NSLog(@"Loading %d user defined AppKit bundles", (int)c);
   for (i = 0; i < c; i++)
     {
       NSBundle *b = [NSBundle bundleWithPath: [a objectAtIndex: i]];

@@ -154,11 +154,11 @@ typedef enum _NSBrowserColumnResizingType
 //
 // Setting the NSBrowser's Appearance 
 //
-- (int) maxVisibleColumns;
-- (int) minColumnWidth;
+- (NSInteger) maxVisibleColumns;
+- (NSInteger) minColumnWidth;
 - (BOOL) separatesColumns;
-- (void) setMaxVisibleColumns: (int)columnCount;
-- (void) setMinColumnWidth: (int)columnWidth;
+- (void) setMaxVisibleColumns: (NSInteger)columnCount;
+- (void) setMinColumnWidth: (NSInteger)columnWidth;
 - (void) setSeparatesColumns: (BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (float) columnWidthForColumnContentWidth: (float)columnContentWidth;
@@ -169,21 +169,21 @@ typedef enum _NSBrowserColumnResizingType
 // Manipulating Columns 
 //
 - (void) addColumn;
-- (int) columnOfMatrix: (NSMatrix *)matrix;
+- (NSInteger) columnOfMatrix: (NSMatrix *)matrix;
 - (void) displayAllColumns;
-- (void) displayColumn: (int)column;
-- (int) firstVisibleColumn;
+- (void) displayColumn: (NSInteger)column;
+- (NSInteger) firstVisibleColumn;
 - (BOOL) isLoaded;
-- (int) lastColumn;
-- (int) lastVisibleColumn;
+- (NSInteger) lastColumn;
+- (NSInteger) lastVisibleColumn;
 - (void) loadColumnZero;
-- (int) numberOfVisibleColumns;
-- (void) reloadColumn: (int)column;
+- (NSInteger) numberOfVisibleColumns;
+- (void) reloadColumn: (NSInteger)column;
 - (void) selectAll: (id)sender;
-- (void) selectRow: (int)row inColumn: (int)column;
-- (int) selectedColumn;
-- (int) selectedRowInColumn: (int)column;
-- (void) setLastColumn: (int)column;
+- (void) selectRow: (NSInteger)row inColumn: (NSInteger)column;
+- (NSInteger) selectedColumn;
+- (NSInteger) selectedRowInColumn: (NSInteger)column;
+- (void) setLastColumn: (NSInteger)column;
 - (void) validateVisibleColumns;
 
 //
@@ -191,25 +191,25 @@ typedef enum _NSBrowserColumnResizingType
 //
 - (void) drawTitle: (NSString *)title
 	    inRect: (NSRect)aRect
-	  ofColumn: (int)column;
+	  ofColumn: (NSInteger)column;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void) drawTitleOfColumn: (int)column 
+- (void) drawTitleOfColumn: (NSInteger)column 
 		    inRect: (NSRect)aRect;
 #endif 
 - (BOOL) isTitled;
 - (void) setTitled: (BOOL)flag;
 - (void) setTitle: (NSString *)aString
-	 ofColumn: (int)column;
-- (NSRect) titleFrameOfColumn: (int)column;
+	 ofColumn: (NSInteger)column;
+- (NSRect) titleFrameOfColumn: (NSInteger)column;
 - (float) titleHeight;
-- (NSString *) titleOfColumn: (int)column;
+- (NSString *) titleOfColumn: (NSInteger)column;
 
 //
 // Scrolling an NSBrowser 
 //
-- (void) scrollColumnsLeftBy: (int)shiftAmount;
-- (void) scrollColumnsRightBy: (int)shiftAmount;
-- (void) scrollColumnToVisible: (int)column;
+- (void) scrollColumnsLeftBy: (NSInteger)shiftAmount;
+- (void) scrollColumnsRightBy: (NSInteger)shiftAmount;
+- (void) scrollColumnToVisible: (NSInteger)column;
 - (void) scrollViaScroller: (NSScroller *)sender;
 - (void) updateScroller;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
@@ -225,25 +225,25 @@ typedef enum _NSBrowserColumnResizingType
 //
 // Getting Matrices and Cells 
 //
-- (id) loadedCellAtRow: (int)row
-	        column: (int)column;
-- (NSMatrix *) matrixInColumn: (int)column;
+- (id) loadedCellAtRow: (NSInteger)row
+	        column: (NSInteger)column;
+- (NSMatrix *) matrixInColumn: (NSInteger)column;
 - (id) selectedCell;
-- (id) selectedCellInColumn: (int)column;
+- (id) selectedCellInColumn: (NSInteger)column;
 - (NSArray *) selectedCells;
 
 //
 // Getting Column Frames 
 //
-- (NSRect) frameOfColumn: (int)column;
-- (NSRect) frameOfInsideOfColumn: (int)column;
+- (NSRect) frameOfColumn: (NSInteger)column;
+- (NSRect) frameOfInsideOfColumn: (NSInteger)column;
 
 //
 // Manipulating Paths 
 //
 - (NSString *) path;
 - (NSString *) pathSeparator;
-- (NSString *) pathToColumn: (int)column;
+- (NSString *) pathToColumn: (NSInteger)column;
 - (BOOL) setPath: (NSString *)path;
 - (void) setPathSeparator: (NSString *)aString;
 
@@ -260,8 +260,8 @@ typedef enum _NSBrowserColumnResizingType
 - (void) setColumnResizingType:(NSBrowserColumnResizingType) type;
 - (BOOL) prefersAllColumnUserResizing;
 - (void) setPrefersAllColumnUserResizing: (BOOL)flag;
-- (float) widthOfColumn: (int)column;
-- (void) setWidth: (float)columnWidth ofColumn: (int)columnIndex;
+- (float) widthOfColumn: (NSInteger)column;
+- (void) setWidth: (float)columnWidth ofColumn: (NSInteger)columnIndex;
 
 //
 // Autosave names
@@ -287,29 +287,29 @@ typedef enum _NSBrowserColumnResizingType
 //
 @interface NSObject (NSBrowserDelegate)
 
-- (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
+- (void) browser: (NSBrowser *)sender createRowsForColumn: (NSInteger)column
   inMatrix: (NSMatrix *)matrix;
 /** Returns YES iff */
-- (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column;
-- (int) browser: (NSBrowser *)sender numberOfRowsInColumn: (int)column;
+- (BOOL) browser: (NSBrowser *)sender isColumnValid: (NSInteger)column;
+- (NSInteger) browser: (NSBrowser *)sender numberOfRowsInColumn: (NSInteger)column;
 - (BOOL) browser: (NSBrowser *)sender selectCellWithString: (NSString *)title
-  inColumn: (int)column;
-- (BOOL) browser: (NSBrowser *)sender selectRow: (int)row inColumn: (int)column;
-- (NSString *) browser: (NSBrowser *)sender titleOfColumn: (int)column;
+  inColumn: (NSInteger)column;
+- (BOOL) browser: (NSBrowser *)sender selectRow: (NSInteger)row inColumn: (NSInteger)column;
+- (NSString *) browser: (NSBrowser *)sender titleOfColumn: (NSInteger)column;
 - (void) browser: (NSBrowser *)sender
  willDisplayCell: (id)cell
-           atRow: (int)row
-          column: (int)column;
+           atRow: (NSInteger)row
+          column: (NSInteger)column;
 - (void) browserDidScroll: (NSBrowser *)sender;
 - (void) browserWillScroll: (NSBrowser *)sender;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (float) browser: (NSBrowser *)browser
- shouldSizeColumn: (int)column
+ shouldSizeColumn: (NSInteger)column
     forUserResize: (BOOL)flag
           toWidth: (float)width;
 - (float) browser: (NSBrowser *)browser
-sizeToFitWidthOfColumn: (int)column;
+sizeToFitWidthOfColumn: (NSInteger)column;
 - (void) browserColumnConfigurationDidChange: (NSNotification *)notification;
 #endif
 @end
