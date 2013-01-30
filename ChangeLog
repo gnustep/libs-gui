@@ -1,3 +1,7 @@
+2013-01-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/externs.m: Change predefined colour values to CGFloat.
+
 2013-01-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSCell.h
