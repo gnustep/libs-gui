@@ -66,6 +66,8 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSStringDrawing.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
 
@@ -1984,6 +1986,7 @@ static void computeNewSelection
 - (void) _autoloadTableColumns;
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
                                  row: (int) rowIndex;
+- (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(int)row;
 @end
 
 
@@ -5342,13 +5345,76 @@ This method is deprecated, use -columnIndexesInRect:. */
                                     event: (NSEvent*)event
                                    offset: (NSPoint*)offset
 {
-  // FIXME
-  NSArray *rowArray;
+  // FIXME: This is a workaround for the issue where cols
+  // is null when we don't expect it to be.
+  if (!cols && ([self tableColumns]) && ([[self tableColumns] count] > 0))
+    cols = [NSArray arrayWithObject:[[self tableColumns] objectAtIndex:0]];
 
-  rowArray = [self _indexSetToArray: rows];
-  return [self dragImageForRows: rowArray 
-               event: event
-               dragImageOffset: offset];
+  if (!rows || [rows count] < 1 || !cols || [cols count] < 1) 
+    {
+      // FIXME: This is here to avoid crashing, but this
+	  // scenario should never happen.
+      NSArray *rowArray;
+        
+      rowArray = [self _indexSetToArray: rows];
+      return [self dragImageForRows: rowArray
+                              event: event
+                    dragImageOffset: offset];
+    }
+    
+  // Build a string of texts, each representing a line from the tableView,
+  // separated by "\n":
+  NSString *descriptionsList = nil;
+  unsigned int index = [rows firstIndex];
+  while (index != NSNotFound)
+  {
+    NSString *draggedItemString = [self _objectStringForTableColumn:[cols objectAtIndex:0]
+                                                                row:index];
+    if (draggedItemString)
+	{
+      if (!descriptionsList)
+	    {
+          descriptionsList = [NSMutableString stringWithString:draggedItemString];
+	    }
+      else
+	    {
+          descriptionsList = [descriptionsList stringByAppendingFormat:@"\n%@", draggedItemString];
+		}
+    }
+    index = [rows indexGreaterThanIndex:index];
+  }
+  
+  if (!descriptionsList)
+    {
+      NSArray *rowArray;
+        
+      rowArray = [self _indexSetToArray: rows];
+      return [self dragImageForRows: rowArray
+                              event: event
+                    dragImageOffset: offset];
+	}
+    
+  NSAttributedString *attributedString = [[[NSAttributedString alloc] initWithString:descriptionsList] autorelease];
+	
+  NSSize boxSize = [attributedString size];
+  NSRect rect = NSMakeRect(0.0, 0.0, boxSize.width, boxSize.height);
+  NSImage *image = [[NSImage alloc] initWithSize:boxSize];
+  NSColor *bg = [NSColor whiteColor];
+    
+    
+  [image lockFocus];
+  // Filling with white color for now, transparent is showing as blackColor.
+  [bg set];
+  NSRectFill(rect);
+  [attributedString drawInRect:rect];
+  [image unlockFocus];
+    
+  // Offset the image so it sits neatly next to the mouse cursor.
+  // FIXME: Cocoa actually offsets the image to position of the mouse down.
+  offset->x = (boxSize.width / 2) + 5;
+  offset->y = (boxSize.height / -2) + 5;
+    
+  return [image autorelease];
 }
 
 - (void) setDropRow: (int)row
@@ -6056,6 +6122,24 @@ This method is deprecated, use -columnIndexesInRect:. */
       cell = [tb dataCellForRow: rowIndex];
     }
   return cell;
+}
+
+- (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(int)row
+{
+  NSString *draggedItemString = nil;
+  if ([_dataSource respondsToSelector:@selector(tableView:objectValueForTableColumn:row:)]) 
+    {
+      id draggedObject = [_dataSource tableView:self
+                      objectValueForTableColumn:column
+                                            row:row];
+      
+  	  if ([draggedObject isKindOfClass:[NSString class]]
+	    || [draggedObject isKindOfClass:[NSAttributedString class]])
+	    {
+          draggedItemString = [draggedObject description];
+		}
+    }
+  return draggedItemString;
 }
 
 - (void) superviewFrameChanged: (NSNotification*)aNotification

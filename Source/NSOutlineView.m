@@ -2265,6 +2265,27 @@ Also returns the child index relative to this parent. */
   return cell;
 }
 
+// This is used to build the drag image.
+- (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(int)row
+{
+  NSString *draggedItemString = nil;
+  if ([[self dataSource] respondsToSelector:@selector(outlineView:objectValueForTableColumn:byItem:)])
+    {
+      id item = [self itemAtRow:row];
+      id draggedObject = [[self dataSource] outlineView:self
+                              objectValueForTableColumn:column
+                                                 byItem:item];
+        
+      // Pad the string to match its indentation level:
+      int level = [self levelForRow:row];
+      NSString *pad = [@"" stringByPaddingToLength:(level*4)
+                                        withString:@" "
+                                   startingAtIndex:0];
+      draggedItemString = [pad stringByAppendingString:[draggedObject description]];
+    }
+  return draggedItemString;
+}
+
 @end
 
 @implementation	NSOutlineView (Private)
