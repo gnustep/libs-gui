@@ -160,7 +160,7 @@ typedef struct _tableViewFlags
 
 @interface NSTableView (EventLoopHelper)
 - (void) _trackCellAtColumn:(int)column row:(int)row withEvent:(NSEvent *)ev;
-- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent;
+- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent clickedRow:(NSUInteger)clickedRow;
 @end
 
 /*
@@ -3483,14 +3483,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   RELEASE(cell);
 }
 
-- (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent
+- (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent clickedRow:(NSUInteger)clickedRow
 {
   NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
   NSPoint startPoint = [self convertPoint: [theEvent locationInWindow] 
                                  fromView: nil];
+								 
+  NSIndexSet *dragRows = _selectedRows;
+  if ([_selectedRows containsIndex:clickedRow] == NO) {
+	dragRows = [NSIndexSet indexSetWithIndex:clickedRow];
+  }
 
-  if ([self canDragRowsWithIndexes: _selectedRows atPoint: startPoint]
-    && [self _writeRows: _selectedRows toPasteboard: pboard])
+  if ([self canDragRowsWithIndexes: dragRows atPoint: startPoint]
+    && [self _writeRows: dragRows toPasteboard: pboard])
     {
       NSPoint	p = NSZeroPoint;
       NSImage	*dragImage;
@@ -3498,7 +3503,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       // FIXME
       NSArray *cols = nil;
 
-      dragImage = [self dragImageForRowsWithIndexes: _selectedRows
+      dragImage = [self dragImageForRowsWithIndexes: dragRows
                         tableColumns: cols
                         event: theEvent
                         offset: &p];
@@ -3756,8 +3761,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 
 	      if (dragOperationPossible == YES)
 		{
-		  if ([_selectedRows containsIndex:_clickedRow] == NO
- 		      || (_verticalMotionDrag == NO
+		  if (/*[_selectedRows containsIndex:_clickedRow] == NO
+ 		      || */ (_verticalMotionDrag == NO
  			  && fabs(mouseLocationWin.y - initialLocation.y) > 2))
 		    {
 		      dragOperationPossible = NO;
@@ -3766,7 +3771,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
  			   || (_verticalMotionDrag
  			       && fabs(mouseLocationWin.y - initialLocation.y) >= 4))
 		    {
-		      if ([self _startDragOperationWithEvent: theEvent])
+		      if ([self _startDragOperationWithEvent: theEvent clickedRow:_clickedRow])
 			{
                           RELEASE(oldSelectedRows);
                           IF_NO_GC(DESTROY(arp));
