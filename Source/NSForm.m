@@ -59,16 +59,16 @@ static Class defaultCellClass = nil;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
-                mode: (int)aMode
+                mode: (NSMatrixMode)aMode
            cellClass: (Class)class
         numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide
 {
-  self = [super initWithFrame: (NSRect)frameRect
-                         mode: (int)aMode
-                    cellClass: (Class)class
-                 numberOfRows: (NSInteger)rowsHigh
-              numberOfColumns: (NSInteger)colsWide];
+  self = [super initWithFrame: frameRect
+                         mode: aMode
+                    cellClass: class
+                 numberOfRows: rowsHigh
+              numberOfColumns: colsWide];
   if (nil == self)
     return nil;
 
@@ -77,16 +77,16 @@ static Class defaultCellClass = nil;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
-                mode: (int)aMode
+                mode: (NSMatrixMode)aMode
            prototype: (NSCell*)prototype
         numberOfRows: (NSInteger)rowsHigh
      numberOfColumns: (NSInteger)colsWide
 {
-  self = [super initWithFrame: (NSRect)frameRect
-                         mode: (int)aMode
-                    prototype: (NSCell*)prototype
-                 numberOfRows: (NSInteger)rowsHigh
-              numberOfColumns: (NSInteger)colsWide];
+  self = [super initWithFrame: frameRect
+                         mode: aMode
+                    prototype: prototype
+                 numberOfRows: rowsHigh
+              numberOfColumns: colsWide];
   if (nil == self)
     return nil;
 
