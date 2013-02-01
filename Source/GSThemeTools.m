@@ -411,7 +411,7 @@
 {
   NSBezierPath *p = [NSBezierPath bezierPath];
   NSPoint point;
-  float radius;
+  CGFloat radius;
 
   // make smaller than enclosing frame
   cellFrame = NSInsetRect(cellFrame, 4, floor(cellFrame.size.height * 0.1875));

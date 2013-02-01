@@ -69,14 +69,14 @@ typedef struct _PathElement
 #define KAPPA 0.5522847498
 #define INVALIDATE_CACHE()   [self _invalidateCache]
 
-static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path);
+static void flatten(NSPoint coeff[], CGFloat flatness, NSBezierPath *path);
 
 static NSWindingRule default_winding_rule = NSNonZeroWindingRule;
-static float default_line_width = 1.0;
-static float default_flatness = 0.6;
+static CGFloat default_line_width = 1.0;
+static CGFloat default_flatness = 0.6;
 static NSLineJoinStyle default_line_join_style = NSMiterLineJoinStyle;
 static NSLineCapStyle default_line_cap_style = NSButtLineCapStyle;
-static float default_miter_limit = 10.0;
+static CGFloat default_miter_limit = 10.0;
 
 @interface NSBezierPath (PrivateMethods)
 - (void)_invalidateCache;
@@ -182,25 +182,25 @@ static float default_miter_limit = 10.0;
 //
 // Default path rendering parameters
 //
-+ (void)setDefaultMiterLimit:(float)limit
++ (void)setDefaultMiterLimit:(CGFloat)limit
 {
   default_miter_limit = limit;
   // Do we need this?
   PSsetmiterlimit(limit);
 }
 
-+ (float)defaultMiterLimit
++ (CGFloat)defaultMiterLimit
 {
   return default_miter_limit;
 }
 
-+ (void)setDefaultFlatness:(float)flatness
++ (void)setDefaultFlatness:(CGFloat)flatness
 {
   default_flatness = flatness;
   PSsetflat(flatness);
 }
 
-+ (float)defaultFlatness
++ (CGFloat)defaultFlatness
 {
   return default_flatness;
 }
@@ -237,13 +237,13 @@ static float default_miter_limit = 10.0;
   return default_line_join_style;
 }
 
-+ (void)setDefaultLineWidth:(float)lineWidth
++ (void)setDefaultLineWidth:(CGFloat)lineWidth
 {
   default_line_width = lineWidth;
   PSsetlinewidth(lineWidth);
 }
 
-+ (float)defaultLineWidth
++ (CGFloat)defaultLineWidth
 {
   return default_line_width;
 }
@@ -397,12 +397,12 @@ static float default_miter_limit = 10.0;
 //
 // Path rendering parameters
 //
-- (float)lineWidth
+- (CGFloat)lineWidth
 {
   return _lineWidth;
 }
 
-- (void)setLineWidth:(float)lineWidth
+- (void)setLineWidth:(CGFloat)lineWidth
 {
   _lineWidth = lineWidth;
 }
@@ -437,27 +437,27 @@ static float default_miter_limit = 10.0;
   _windingRule = windingRule;
 }
 
-- (void)setFlatness:(float)flatness
+- (void)setFlatness:(CGFloat)flatness
 {
   _flatness = flatness;
 }
 
-- (float)flatness
+- (CGFloat)flatness
 {
   return _flatness;
 }
 
-- (void)setMiterLimit:(float)limit
+- (void)setMiterLimit:(CGFloat)limit
 {
   _miterLimit = limit;
 }
 
-- (float)miterLimit
+- (CGFloat)miterLimit
 {
   return _miterLimit;
 }
 
-- (void)getLineDash:(float *)pattern count:(int *)count phase:(float *)phase
+- (void)getLineDash:(CGFloat *)pattern count:(NSInteger *)count phase:(CGFloat *)phase
 {
   // FIXME: How big is the pattern array? 
   // We assume that this value is in count!
@@ -474,10 +474,10 @@ static float default_miter_limit = 10.0;
   if (phase != NULL)
     *phase = _dash_phase;
 
-  memcpy(pattern, _dash_pattern, _dash_count * sizeof(float));
+  memcpy(pattern, _dash_pattern, _dash_count * sizeof(CGFloat));
 }
 
-- (void)setLineDash:(const float *)pattern count:(int)count phase:(float)phase
+- (void)setLineDash:(const CGFloat *)pattern count:(NSInteger)count phase:(CGFloat)phase
 {
   NSZone *myZone = [self zone];
   
@@ -494,13 +494,13 @@ static float default_miter_limit = 10.0;
     }
 
   if (_dash_pattern == NULL)
-    _dash_pattern = NSZoneMalloc(myZone, count * sizeof(float));
+    _dash_pattern = NSZoneMalloc(myZone, count * sizeof(CGFloat));
   else
-    NSZoneRealloc(myZone, _dash_pattern, count * sizeof(float));
+    NSZoneRealloc(myZone, _dash_pattern, count * sizeof(CGFloat));
 
   _dash_count = count;
   _dash_phase = phase;
-  memcpy(_dash_pattern, pattern, _dash_count * sizeof(float));
+  memcpy(_dash_pattern, pattern, _dash_count * sizeof(CGFloat));
 }
 
 //
@@ -601,7 +601,7 @@ static float default_miter_limit = 10.0;
   NSPoint pts[3];
   NSPoint coeff[4];
   NSPoint p, last_p;
-  int i, count;
+  NSInteger i, count;
   BOOL first = YES;
 
   if (_flat)
@@ -663,7 +663,7 @@ static float default_miter_limit = 10.0;
   NSBezierPathElement type, last_type;
   NSPoint pts[3];
   NSPoint p, cp1, cp2;
-  int i, j, count;
+  NSInteger i, j, count;
   BOOL closed = NO;
 
   /* Silence compiler warnings.  */
@@ -743,7 +743,7 @@ static float default_miter_limit = 10.0;
 {
   NSBezierPathElement type;
   NSPoint pts[3];
-  int i, count;
+  NSInteger i, count;
   SEL transformPointSel = @selector(transformPoint:); 
   NSPoint (*transformPointImp)(NSAffineTransform*, SEL, NSPoint);
 
@@ -792,7 +792,7 @@ static float default_miter_limit = 10.0;
 {
   NSBezierPathElement type;
   NSPoint points[3];
-  int i, count;
+  NSInteger i, count;
 
   count = [self elementCount];
   if (!count) 
@@ -842,12 +842,12 @@ static float default_miter_limit = 10.0;
 //
 // Elements
 //
-- (int) elementCount
+- (NSInteger) elementCount
 {
   return GSIArrayCount(_pathElements);
 }
 
-- (NSBezierPathElement) elementAtIndex: (int)index
+- (NSBezierPathElement) elementAtIndex: (NSInteger)index
 		      associatedPoints: (NSPoint *)points
 {
   PathElement elm = GSIArrayItemAtIndex(_pathElements, index).ext;
@@ -870,12 +870,12 @@ static float default_miter_limit = 10.0;
   return type;
 }
 
-- (NSBezierPathElement) elementAtIndex: (int)index
+- (NSBezierPathElement) elementAtIndex: (NSInteger)index
 {
   return [self elementAtIndex: index associatedPoints: NULL];
 }
 
-- (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index
+- (void)setAssociatedPoints:(NSPoint *)points atIndex:(NSInteger)index
 {
   PathElement elm = GSIArrayItemAtIndex(_pathElements, index).ext;
   NSBezierPathElement type = elm.type;
@@ -908,7 +908,7 @@ static float default_miter_limit = 10.0;
 {
   NSBezierPathElement type;
   NSPoint points[3];
-  int i, count;
+  NSInteger i, count;
 
   count = [aPath elementCount];
   for (i = 0; i < count; i++)
@@ -953,9 +953,9 @@ static float default_miter_limit = 10.0;
   [self closePath];
 }
 
-- (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count
+- (void)appendBezierPathWithPoints:(NSPoint *)points count:(NSInteger)count
 {
-  int i;
+  NSInteger i;
 
   if (!count)
     return;
@@ -1012,12 +1012,12 @@ static float default_miter_limit = 10.0;
 /* startAngle and endAngle are in degrees, counterclockwise, from the
    x axis */
 - (void) appendBezierPathWithArcWithCenter: (NSPoint)center  
-				    radius: (float)radius
-				startAngle: (float)startAngle
-				  endAngle: (float)endAngle
+				    radius: (CGFloat)radius
+				startAngle: (CGFloat)startAngle
+				  endAngle: (CGFloat)endAngle
 				 clockwise: (BOOL)clockwise
 {
-  float startAngle_rad, endAngle_rad, diff;
+  CGFloat startAngle_rad, endAngle_rad, diff;
   NSPoint p0, p1, p2, p3;
 
   /* We use the Postscript prescription for managing the angles and
@@ -1079,9 +1079,9 @@ static float default_miter_limit = 10.0;
     if ((clockwise) ? (startAngle_rad + diff >= endAngle_rad) 
 	: (startAngle_rad + diff <= endAngle_rad))
       {
-	float sin_start = sin (startAngle_rad);
-	float cos_start = cos (startAngle_rad);
-	float sign = (clockwise) ? -1.0 : 1.0;
+	CGFloat sin_start = sin (startAngle_rad);
+	CGFloat cos_start = cos (startAngle_rad);
+	CGFloat sign = (clockwise) ? -1.0 : 1.0;
 	
 	p1 = NSMakePoint (center.x 
                            + radius * (cos_start - KAPPA * sin_start * sign), 
@@ -1113,16 +1113,16 @@ static float default_miter_limit = 10.0;
 	 */
 	NSPoint ps = [self currentPoint];
 	/* tangent is the tangent of half the angle */
-	float tangent = tan ((endAngle_rad - startAngle_rad) / 2);
+	CGFloat tangent = tan ((endAngle_rad - startAngle_rad) / 2);
 	/* trad is the distance from either tangent point to the
 	   intersection of the tangents */
-	float trad = radius * tangent;
+	CGFloat trad = radius * tangent;
 	/* pt is the intersection of the tangents */
 	NSPoint pt = NSMakePoint (ps.x - trad * sin (startAngle_rad),
 				  ps.y + trad * cos (startAngle_rad));
 	/* This is F - in this expression we need to compute 
 	   (trad/radius)^2, which is simply tangent^2 */
-	float f = (4.0 / 3.0) / (1.0 + sqrt (1.0 +  (tangent * tangent)));
+	CGFloat f = (4.0 / 3.0) / (1.0 + sqrt (1.0 +  (tangent * tangent)));
 	
 	p1 = NSMakePoint (ps.x + (pt.x - ps.x) * f, ps.y + (pt.y - ps.y) * f);
 	p3 = NSMakePoint(center.x + radius * cos (endAngle_rad),
@@ -1135,9 +1135,9 @@ static float default_miter_limit = 10.0;
 }
 
 - (void) appendBezierPathWithArcWithCenter: (NSPoint)center  
-				    radius: (float)radius
-				startAngle: (float)startAngle
-				  endAngle: (float)endAngle
+				    radius: (CGFloat)radius
+				startAngle: (CGFloat)startAngle
+				  endAngle: (CGFloat)endAngle
 {
   [self appendBezierPathWithArcWithCenter: center  radius: radius
 	startAngle: startAngle  endAngle: endAngle  clockwise: NO];
@@ -1145,11 +1145,11 @@ static float default_miter_limit = 10.0;
 
 - (void) appendBezierPathWithArcFromPoint: (NSPoint)point1
 				  toPoint: (NSPoint)point2
-				   radius: (float)radius
+				   radius: (CGFloat)radius
 {
-  float x1, y1;
-  float dx1, dy1, dx2, dy2;
-  float l, a1, a2;
+  CGFloat x1, y1;
+  CGFloat dx1, dy1, dx2, dy2;
+  CGFloat l, a1, a2;
   NSPoint p;
 
   p = [self currentPoint];
@@ -1247,7 +1247,7 @@ static float default_miter_limit = 10.0;
 }
 
 - (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
-			     count:(int)count
+			     count:(NSInteger)count
 			    inFont:(NSFont *)font
 {
   [[font fontInfo] appendBezierPathWithGlyphs: glyphs
@@ -1519,11 +1519,11 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 {
   int total;
   NSBezierPathElement type;
-  int count;
+  NSInteger count;
   BOOL first;
   NSPoint pts[3];
   NSPoint first_p, last_p;
-  int i;
+  NSInteger i;
 
   /* We trace a line from (-INF, point.y) to (point) and count the
      intersections.  Simple, really. ;)
@@ -1787,9 +1787,9 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 
   if (_dash_pattern != NULL)
     {
-      float *pattern = NSZoneMalloc(zone, _dash_count * sizeof(float));
+      CGFloat *pattern = NSZoneMalloc(zone, _dash_count * sizeof(CGFloat));
 
-      memcpy(pattern, _dash_pattern, _dash_count * sizeof(float));
+      memcpy(pattern, _dash_pattern, _dash_count * sizeof(CGFloat));
       _dash_pattern = pattern;
     }
 
@@ -1980,7 +1980,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 @end // GSBezierPath
 #endif
 
-static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path)
+static void flatten(NSPoint coeff[], CGFloat flatness, NSBezierPath *path)
 {
   // Check if the Bezier path defined by the four points has the given flatness.
   // If not split it up in the middle and recurse. 

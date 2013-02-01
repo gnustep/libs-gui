@@ -2017,22 +2017,22 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
   // FIXME: setLineDash should take CGFloat
   if ((pattern & NSUnderlinePatternDot) == NSUnderlinePatternDot)
     {
-      const float dot[2] = {2.5 * thickness, 2.5 * thickness};
+      const CGFloat dot[2] = {2.5 * thickness, 2.5 * thickness};
       [path setLineDash: dot count: 2 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDash) == NSUnderlinePatternDash)
     {
-      const float dash[2] = {10 * thickness, 5 * thickness};   
+      const CGFloat dash[2] = {10 * thickness, 5 * thickness};   
       [path setLineDash: dash count: 2 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDashDot) == NSUnderlinePatternDashDot)
     {
-      const float dashdot[4] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      const CGFloat dashdot[4] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
       [path setLineDash: dashdot count: 4 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDashDotDot) == NSUnderlinePatternDashDotDot)
     {
-      const float dashdotdot[6] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      const CGFloat dashdotdot[6] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
       [path setLineDash: dashdotdot count: 6 phase: phase];
     }
 
@@ -2190,7 +2190,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 	   containerOrigin: (NSPoint)containerOrigin
 {
   NSBezierPath *path;
-  const float pattern[2] = {2.5, 1.0};
+  const CGFloat pattern[2] = {2.5, 1.0};
   NSFont *largestFont = [self effectiveFontForGlyphAtIndex: range.location // NOTE: GS private method
 						     range: NULL];
   NSPoint start = [self locationForGlyphAtIndex: range.location];
