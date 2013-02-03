@@ -1682,94 +1682,124 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 {
   NSBezierPathElement type;
   NSPoint pts[3];
-  int i, count;
-  float f;
 
-  f = [self lineWidth];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &f];
-  i = [self lineCapStyle];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &i];
-  i = [self lineJoinStyle];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &i];
-  i = [self windingRule];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &i];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
-
-  count = [self elementCount];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &count];
-  
-  for (i = 0; i < count; i++) 
+  if ([aCoder allowsKeyedCoding])
     {
-      type = [self elementAtIndex: i associatedPoints: pts];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &type];
-      switch(type) 
+      [aCoder encodeFloat: (float)_flatness forKey: @"NSFlatness"];
+    }
+  else
+    {
+      int i, count;
+      float f;
+      
+      f = [self lineWidth];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &f];
+      i = [self lineCapStyle];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &i];
+      i = [self lineJoinStyle];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &i];
+      i = [self windingRule];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &i];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
+      
+      count = [self elementCount];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &count];
+      
+      for (i = 0; i < count; i++) 
         {
-	  case NSMoveToBezierPathElement:
-	  case NSLineToBezierPathElement:
+          type = [self elementAtIndex: i associatedPoints: pts];
+          [aCoder encodeValueOfObjCType: @encode(int) at: &type];
+          switch(type) 
+            {
+            case NSMoveToBezierPathElement:
+            case NSLineToBezierPathElement:
 	      [aCoder encodePoint: pts[0]];
 	      break;
-	  case NSCurveToBezierPathElement:
+            case NSCurveToBezierPathElement:
 	      [aCoder encodePoint: pts[0]];
 	      [aCoder encodePoint: pts[1]];
 	      [aCoder encodePoint: pts[2]];
 	      break;
-	  case NSClosePathBezierPathElement:
+            case NSClosePathBezierPathElement:
 	      break;
-	  default:
+            default:
 	      break;
-	}
+            }
+        }
     }
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder
 {
-  NSBezierPathElement type;
-  NSPoint pts[3];
-  int i, count;
-  float f;
-
   // We have to init the place to store the elements
   [self init];
-
-  [aCoder decodeValueOfObjCType: @encode(float) at: &f];
-  [self setLineWidth: f];
-  [aCoder decodeValueOfObjCType: @encode(int) at: &i];
-  [self setLineCapStyle: i];
-  [aCoder decodeValueOfObjCType: @encode(int) at: &i];
-  [self setLineJoinStyle: i];
-  [aCoder decodeValueOfObjCType: @encode(int) at: &i];
-  [self setWindingRule: i];
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
   _cacheImage = nil;
   _shouldRecalculateBounds = YES;
 
-  [aCoder decodeValueOfObjCType: @encode(int) at: &count];
-
-  for (i = 0; i < count; i++) 
+  if ([aCoder allowsKeyedCoding])
     {
-      [aCoder decodeValueOfObjCType: @encode(int) at: &type];
-      switch(type) 
+      float f;
+
+      if ([aCoder containsValueForKey: @"NSFlatness"])
         {
-	  case NSMoveToBezierPathElement:
+          f = [aCoder decodeFloatForKey: @"NSFlatness"];
+          [self setFlatness: f];
+        }
+      if ([aCoder containsValueForKey: @"NSLineWidth"])
+        {
+          f = [aCoder decodeFloatForKey: @"NSLineWidth"];
+          [self setLineWidth: f];
+        }
+      if ([aCoder containsValueForKey: @"NSSegments"])
+        {
+          //NSData *d = [aCoder decodeObjectForKey: @"NSSegments"];
+        }
+    }
+  else
+    {
+      NSBezierPathElement type;
+      NSPoint pts[3];
+      int i, count;
+      float f;
+      
+      [aCoder decodeValueOfObjCType: @encode(float) at: &f];
+      [self setLineWidth: f];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &i];
+      [self setLineCapStyle: i];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &i];
+      [self setLineJoinStyle: i];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &i];
+      [self setWindingRule: i];
+      [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
+
+      [aCoder decodeValueOfObjCType: @encode(int) at: &count];
+      
+      for (i = 0; i < count; i++) 
+        {
+          [aCoder decodeValueOfObjCType: @encode(int) at: &type];
+          switch(type) 
+            {
+            case NSMoveToBezierPathElement:
 	      pts[0] = [aCoder decodePoint];
 	      [self moveToPoint: pts[0]];
 	      break;
-	  case NSLineToBezierPathElement:
+            case NSLineToBezierPathElement:
 	      pts[0] = [aCoder decodePoint];
 	      [self lineToPoint: pts[0]];
 	      break;
-	  case NSCurveToBezierPathElement:
+            case NSCurveToBezierPathElement:
 	      pts[0] = [aCoder decodePoint];
 	      pts[1] = [aCoder decodePoint];
 	      pts[2] = [aCoder decodePoint];
 	      [self curveToPoint: pts[2] controlPoint1: pts[0] controlPoint2: pts[1]];
 	      break;
-	  case NSClosePathBezierPathElement:
+            case NSClosePathBezierPathElement:
 	      [self closePath];
 	      break;
-	  default:
+            default:
 	      break;
-	}
+            }
+        }
     }
 
   return self;
