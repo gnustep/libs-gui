@@ -68,8 +68,9 @@ static const CGFloat pi = 3.1415926535897932384626434;
  */
 - (void) concat
 {
+  // FIXME Should use GSConcatCTM:
   NSAffineTransformStruct ats = [self transformStruct];
-  float floatMatrix[6];
+  CGFloat floatMatrix[6];
 
   floatMatrix[0] = ats.m11;
   floatMatrix[1] = ats.m12;

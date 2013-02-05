@@ -79,7 +79,7 @@ typedef enum _NSBackingStoreType
  *  <item> NSCompositePlusLighter</item>
  * </list>
  */
-typedef enum _NSCompositingOperation
+enum _NSCompositingOperation
 {
  
   NSCompositeClear,
@@ -100,7 +100,8 @@ typedef enum _NSCompositingOperation
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
   , GSCompositeHighlight = 100
 #endif
-} NSCompositingOperation;
+};
+typedef NSUInteger NSCompositingOperation;
 
 typedef int NSWindowDepth;
 
@@ -191,7 +192,7 @@ typedef enum _GSColorSpace
 
 + (void) restoreGraphicsState;
 + (void) saveGraphicsState;
-+ (void) setGraphicsState: (int)graphicsState;
++ (void) setGraphicsState: (NSInteger)graphicsState;
 + (void) setCurrentContext: (NSGraphicsContext*)context;
 + (NSGraphicsContext*) currentContext;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
@@ -267,16 +268,16 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentalpha: (float*)a;
-- (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k;
-- (void) DPScurrentgray: (float*)gray;
-- (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b;
-- (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b;
-- (void) DPSsetalpha: (float)a;
-- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k;
-- (void) DPSsetgray: (float)gray;
-- (void) DPSsethsbcolor: (float)h : (float)s : (float)b;
-- (void) DPSsetrgbcolor: (float)r : (float)g : (float)b;
+- (void) DPScurrentalpha: (CGFloat*)a;
+- (void) DPScurrentcmykcolor: (CGFloat*)c : (CGFloat*)m : (CGFloat*)y : (CGFloat*)k;
+- (void) DPScurrentgray: (CGFloat*)gray;
+- (void) DPScurrenthsbcolor: (CGFloat*)h : (CGFloat*)s : (CGFloat*)b;
+- (void) DPScurrentrgbcolor: (CGFloat*)r : (CGFloat*)g : (CGFloat*)b;
+- (void) DPSsetalpha: (CGFloat)a;
+- (void) DPSsetcmykcolor: (CGFloat)c : (CGFloat)m : (CGFloat)y : (CGFloat)k;
+- (void) DPSsetgray: (CGFloat)gray;
+- (void) DPSsethsbcolor: (CGFloat)h : (CGFloat)s : (CGFloat)b;
+- (void) DPSsetrgbcolor: (CGFloat)r : (CGFloat)g : (CGFloat)b;
 
 - (void) GSSetPatterColor: (NSImage*)image;
 
@@ -288,21 +289,21 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /* ----------------------------------------------------------------------- */
 /* Text operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSashow: (float)x : (float)y : (const char*)s;
-- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay 
-		      : (const char*)s;
+- (void) DPSashow: (CGFloat)x : (CGFloat)y : (const char*)s;
+- (void) DPSawidthshow: (CGFloat)cx : (CGFloat)cy : (int)c
+                      : (CGFloat)ax : (CGFloat)ay : (const char*)s;
 - (void) DPScharpath: (const char*)s : (int)b;
 - (void) appendBezierPathWithPackedGlyphs: (const char *)packedGlyphs
                                      path: (NSBezierPath*)aPath;
 - (void) DPSshow: (const char*)s;
-- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s;
-- (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size;
-- (void) DPSxyshow: (const char*)s : (const float*)numarray : (int)size;
-- (void) DPSyshow: (const char*)s : (const float*)numarray : (int)size;
+- (void) DPSwidthshow: (CGFloat)x : (CGFloat)y : (int)c : (const char*)s;
+- (void) DPSxshow: (const char*)s : (const CGFloat*)numarray : (int)size;
+- (void) DPSxyshow: (const char*)s : (const CGFloat*)numarray : (int)size;
+- (void) DPSyshow: (const char*)s : (const CGFloat*)numarray : (int)size;
 
-- (void) GSSetCharacterSpacing: (float)extra;
+- (void) GSSetCharacterSpacing: (CGFloat)extra;
 - (void) GSSetFont: (void *)fontref;
-- (void) GSSetFontSize: (float)size;
+- (void) GSSetFontSize: (CGFloat)size;
 - (NSAffineTransform *) GSGetTextCTM;
 - (NSPoint) GSGetTextPosition;
 - (void) GSSetTextCTM: (NSAffineTransform *)ctm;
@@ -318,39 +319,39 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSgrestore;
 - (void) DPSgsave;
 - (void) DPSinitgraphics;
-- (void) DPSsetgstate: (int)gst;
+- (void) DPSsetgstate: (NSInteger)gst;
 
-- (int)  GSDefineGState;
-- (void) GSUndefineGState: (int)gst;
-- (void) GSReplaceGState: (int)gst;
+- (NSInteger)  GSDefineGState;
+- (void) GSUndefineGState: (NSInteger)gst;
+- (void) GSReplaceGState: (NSInteger)gst;
 
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentflat: (float*)flatness;
+- (void) DPScurrentflat: (CGFloat*)flatness;
 - (void) DPScurrentlinecap: (int*)linecap;
 - (void) DPScurrentlinejoin: (int*)linejoin;
-- (void) DPScurrentlinewidth: (float*)width;
-- (void) DPScurrentmiterlimit: (float*)limit;
-- (void) DPScurrentpoint: (float*)x : (float*)y;
+- (void) DPScurrentlinewidth: (CGFloat*)width;
+- (void) DPScurrentmiterlimit: (CGFloat*)limit;
+- (void) DPScurrentpoint: (CGFloat*)x : (CGFloat*)y;
 - (void) DPScurrentstrokeadjust: (int*)b;
-- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset;
-- (void) DPSsetflat: (float)flatness;
-- (void) DPSsethalftonephase: (float)x : (float)y;
+- (void) DPSsetdash: (const CGFloat*)pat : (NSInteger)size : (CGFloat)offset;
+- (void) DPSsetflat: (CGFloat)flatness;
+- (void) DPSsethalftonephase: (CGFloat)x : (CGFloat)y;
 - (void) DPSsetlinecap: (int)linecap;
 - (void) DPSsetlinejoin: (int)linejoin;
-- (void) DPSsetlinewidth: (float)width;
-- (void) DPSsetmiterlimit: (float)limit;
+- (void) DPSsetlinewidth: (CGFloat)width;
+- (void) DPSsetmiterlimit: (CGFloat)limit;
 - (void) DPSsetstrokeadjust: (int)b;
 
 /* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSconcat: (const float*)m;
+- (void) DPSconcat: (const CGFloat*)m;
 - (void) DPSinitmatrix;
-- (void) DPSrotate: (float)angle;
-- (void) DPSscale: (float)x : (float)y;
-- (void) DPStranslate: (float)x : (float)y;
+- (void) DPSrotate: (CGFloat)angle;
+- (void) DPSscale: (CGFloat)x : (CGFloat)y;
+- (void) DPStranslate: (CGFloat)x : (CGFloat)y;
 
 - (NSAffineTransform *) GSCurrentCTM;
 - (void) GSSetCTM: (NSAffineTransform *)ctm;
@@ -359,32 +360,32 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 
-	       : (float)angle2;
-- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 
-		: (float)angle2;
-- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r;
+- (void) DPSarc: (CGFloat)x : (CGFloat)y : (CGFloat)r : (CGFloat)angle1 
+	       : (CGFloat)angle2;
+- (void) DPSarcn: (CGFloat)x : (CGFloat)y : (CGFloat)r : (CGFloat)angle1 
+		: (CGFloat)angle2;
+- (void) DPSarct: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 : (CGFloat)r;
 - (void) DPSclip;
 - (void) DPSclosepath;
-- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
-		   : (float)x3 : (float)y3;
+- (void) DPScurveto: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 
+		   : (CGFloat)x3 : (CGFloat)y3;
 - (void) DPSeoclip;
 - (void) DPSeofill;
 - (void) DPSfill;
 - (void) DPSflattenpath;
 - (void) DPSinitclip;
-- (void) DPSlineto: (float)x : (float)y;
-- (void) DPSmoveto: (float)x : (float)y;
+- (void) DPSlineto: (CGFloat)x : (CGFloat)y;
+- (void) DPSmoveto: (CGFloat)x : (CGFloat)y;
 - (void) DPSnewpath;
-- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury;
-- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
-		    : (float)x3 : (float)y3;
-- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h;
-- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h;
-- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h;
+- (void) DPSpathbbox: (CGFloat*)llx : (CGFloat*)lly : (CGFloat*)urx : (CGFloat*)ury;
+- (void) DPSrcurveto: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 
+		    : (CGFloat)x3 : (CGFloat)y3;
+- (void) DPSrectclip: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h;
+- (void) DPSrectfill: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h;
+- (void) DPSrectstroke: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h;
 - (void) DPSreversepath;
-- (void) DPSrlineto: (float)x : (float)y;
-- (void) DPSrmoveto: (float)x : (float)y;
+- (void) DPSrlineto: (CGFloat)x : (CGFloat)y;
+- (void) DPSrmoveto: (CGFloat)x : (CGFloat)y;
 - (void) DPSstroke;
 - (void) DPSshfill: (NSDictionary *)shaderDictionary;
 
@@ -403,23 +404,23 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h 
-		     : (int)gstateNum : (float)dx : (float)dy : (int)op;
-- (void) DPScompositerect: (float)x : (float)y : (float)w : (float)h : (int)op;
-- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
-		    : (int)gstateNum : (float)dx : (float)dy : (float)delta;
+- (void) DPScomposite: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h 
+		     : (NSInteger)gstateNum : (CGFloat)dx : (CGFloat)dy : (NSCompositingOperation)op;
+- (void) DPScompositerect: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h : (NSCompositingOperation)op;
+- (void) DPSdissolve: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h 
+		    : (NSInteger)gstateNum : (CGFloat)dx : (CGFloat)dy : (CGFloat)delta;
 
-- (void) GScomposite: (int)gstateNum 
+- (void) GScomposite: (NSInteger)gstateNum 
              toPoint: (NSPoint)aPoint
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
-	    fraction: (float)delta;
+	    fraction: (CGFloat)delta;
 - (BOOL) supportsDrawGState;
-- (void) GSdraw: (int)gstateNum
+- (void) GSdraw: (NSInteger)gstateNum
         toPoint: (NSPoint)aPoint
        fromRect: (NSRect)srcRect
       operation: (NSCompositingOperation)op
-       fraction: (float)delta;
+       fraction: (CGFloat)delta;
 - (void) GSDrawImage: (NSRect)rect : (void *)imageref;
 
 /* ----------------------------------------------------------------------- */
@@ -471,9 +472,9 @@ transform between current user space and image space for this image.</desc>
 - (NSDictionary *) GSReadRect: (NSRect)rect;
 
 /* Soon to be obsolete */
-- (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
-		     : (int) bitsPerSample : (int) samplesPerPixel 
-		     : (int) bitsPerPixel : (int) bytesPerRow : (BOOL) isPlanar
+- (void) NSDrawBitmap: (NSRect) rect : (NSInteger) pixelsWide : (NSInteger) pixelsHigh
+		     : (NSInteger) bitsPerSample : (NSInteger) samplesPerPixel 
+		     : (NSInteger) bitsPerPixel : (NSInteger) bytesPerRow : (BOOL) isPlanar
 		     : (BOOL) hasAlpha : (NSString *) colorSpaceName
 		     : (const unsigned char *const [5]) data;
 

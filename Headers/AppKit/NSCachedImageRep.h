@@ -51,9 +51,9 @@
  * GNUstep extension
  */
 - (id) initWithSize: (NSSize)aSize
-	 pixelsWide: (int)pixelsWide
-	 pixelsHigh: (int)pixelsHigh
-	      depth: (int)aDepth
+	 pixelsWide: (NSInteger)pixelsWide
+	 pixelsHigh: (NSInteger)pixelsHigh
+	      depth: (NSWindowDepth)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha;
 

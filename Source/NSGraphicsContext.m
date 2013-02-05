@@ -273,7 +273,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     }
 }
 
-+ (void) setGraphicsState: (int)graphicsState
++ (void) setGraphicsState: (NSInteger)graphicsState
 {
   /* FIXME: Need to keep a table of which context goes with a graphicState,
      or perhaps we could rely on the backend? */
@@ -782,13 +782,13 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 /** Returns the current alpha component (DPS). */
-- (void) DPScurrentalpha: (float *)a
+- (void) DPScurrentalpha: (CGFloat *)a
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the current color according to the CMYK color model (DPS). */
-- (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k 
+- (void) DPScurrentcmykcolor: (CGFloat*)c : (CGFloat*)m : (CGFloat*)y : (CGFloat*)k 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -796,19 +796,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Returns the gray-level equivalent in the current color space. The
     value may depend on the current color space and may be 0 if the
     current color space has no notion of a gray value (DPS) */
-- (void) DPScurrentgray: (float*)gray 
+- (void) DPScurrentgray: (CGFloat*)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the current color according to the HSB color model (DPS). */
-- (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b 
+- (void) DPScurrenthsbcolor: (CGFloat*)h : (CGFloat*)s : (CGFloat*)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the current color according to the RGB color model (DPS). */
-- (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b 
+- (void) DPScurrentrgbcolor: (CGFloat*)r : (CGFloat*)g : (CGFloat*)b 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -816,7 +816,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Sets the alpha drawing component. For this and other color setting
     commands that have no differentiation between fill and stroke colors,
     both the fill and stroke alpha are set (DPS). */
-- (void) DPSsetalpha: (float)a
+- (void) DPSsetalpha: (CGFloat)a
 {
   [self subclassResponsibility: _cmd];
 }
@@ -825,28 +825,28 @@ NSGraphicsContext	*GSCurrentContext(void)
     based on the indicated values. For this and other color setting
     commands that have no differentiation between fill and stroke colors,
     both the fill and stroke colors are set (DPS). */
-- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k 
+- (void) DPSsetcmykcolor: (CGFloat)c : (CGFloat)m : (CGFloat)y : (CGFloat)k 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current colorspace to Device Gray and the current gray value 
     (DPS). */
-- (void) DPSsetgray: (float)gray 
+- (void) DPSsetgray: (CGFloat)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current colorspace to Device RGB and the current color based on 
    the indicated values (DPS). */
-- (void) DPSsethsbcolor: (float)h : (float)s : (float)b 
+- (void) DPSsethsbcolor: (CGFloat)h : (CGFloat)s : (CGFloat)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current colorspace to Device RGB and the current color based on 
    the indicated values (DPS). */
-- (void) DPSsetrgbcolor: (float)r : (float)g : (float)b 
+- (void) DPSsetrgbcolor: (CGFloat)r : (CGFloat)g : (CGFloat)b 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -905,7 +905,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     approach should be more efficient that using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
-- (void) DPSashow: (float)x : (float)y : (const char *)s 
+- (void) DPSashow: (CGFloat)x : (CGFloat)y : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -916,7 +916,8 @@ NSGraphicsContext	*GSCurrentContext(void)
     Using this method should be more efficient that using -DPSshow:
     with appropriate -DPSrmoveto:: operations.
 */
-- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char *)s 
+- (void) DPSawidthshow: (CGFloat)cx : (CGFloat)cy : (int)c
+                      : (CGFloat)ax : (CGFloat)ay : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -948,7 +949,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     Using this method should be more efficient than using -DPSshow:
     with appropriate -DPSrmoveto:: operations.
 */
-- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char *)s 
+- (void) DPSwidthshow: (CGFloat)x : (CGFloat)y : (int)c : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -960,7 +961,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
-- (void) DPSxshow: (const char *)s : (const float*)numarray : (int)size 
+- (void) DPSxshow: (const char *)s : (const CGFloat*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -972,7 +973,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
-- (void) DPSxyshow: (const char *)s : (const float*)numarray : (int)size 
+- (void) DPSxyshow: (const char *)s : (const CGFloat*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -984,7 +985,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
-- (void) DPSyshow: (const char *)s : (const float*)numarray : (int)size 
+- (void) DPSyshow: (const char *)s : (const CGFloat*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -993,7 +994,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     (glyphs). This spacing is added to the normal spacing for each
     character. Units are in text-space coordinate system. (Quartz).
 */
-- (void) GSSetCharacterSpacing: (float)extra
+- (void) GSSetCharacterSpacing: (CGFloat)extra
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1006,7 +1007,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Set the font size of the current NSFont used for drawing glyphs.
     (DPS, Quartz). */
-- (void) GSSetFontSize: (float)size
+- (void) GSSetFontSize: (CGFloat)size
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1115,7 +1116,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Makes the gstate indicated by the tag gst the current gstate. Note
     that the gstate is copied, so that changes to either gstate do not
     affect the other. (DPS, Quartz). */
-- (void) DPSsetgstate: (int)gst
+- (void) DPSsetgstate: (NSInteger)gst
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1123,7 +1124,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Creates a copy of the current gstate and associates it with a tag,
     which is given in the return value. This tag can later be used in
     -DPSsetgstate: to set the gstate as being current again. (DPS, Quartz). */
-- (int)  GSDefineGState
+- (NSInteger)  GSDefineGState
 {
   [self subclassResponsibility: _cmd];
   return 0;
@@ -1132,14 +1133,14 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Disassociates the tag gst with it's gstate and destroys the gstate
     object. The tag will no longer be valid and should not be used to
     refer to the gstate again. (DPS, Quartz). */
-- (void) GSUndefineGState: (int)gst
+- (void) GSUndefineGState: (NSInteger)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Replaces the gstate refered to by the tag gst with the current
     gstate. The former gstate is destroyed. (DPS, Quartz). */
-- (void) GSReplaceGState: (int)gst
+- (void) GSReplaceGState: (NSInteger)gst
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1149,7 +1150,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /** Returns the current flattness parameter, which controls how curved
     lines are drawn. (DPS, Quartz). */
-- (void) DPScurrentflat: (float*)flatness
+- (void) DPScurrentflat: (CGFloat*)flatness
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1167,19 +1168,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 /** Returns the current line width. (DPS, Quartz). */
-- (void) DPScurrentlinewidth: (float*)width
+- (void) DPScurrentlinewidth: (CGFloat*)width
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the current linecap value. (DPS, Quartz). */
-- (void) DPScurrentmiterlimit: (float*)limit
+- (void) DPScurrentmiterlimit: (CGFloat*)limit
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the current point. (DPS, Quartz). */
-- (void) DPScurrentpoint: (float*)x : (float*)y
+- (void) DPScurrentpoint: (CGFloat*)x : (CGFloat*)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1192,19 +1193,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Set the pattern for line dashes like the Postscript setdash operator.
     (DPS, Quartz). */
-- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset
+- (void) DPSsetdash: (const CGFloat*)pat : (NSInteger)size : (CGFloat)offset
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current flattness parameter, which controls how curved
     lines are drawn. (DPS, Quartz). */
-- (void) DPSsetflat: (float)flatness
+- (void) DPSsetflat: (CGFloat)flatness
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsethalftonephase: (float)x : (float)y
+- (void) DPSsethalftonephase: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1222,13 +1223,13 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 /** Set the current line width. (DPS, Quartz). */
-- (void) DPSsetlinewidth: (float)width
+- (void) DPSsetlinewidth: (CGFloat)width
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Set the current meter limit value. (DPS, Quartz). */
-- (void) DPSsetmiterlimit: (float)limit
+- (void) DPSsetmiterlimit: (CGFloat)limit
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1243,7 +1244,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /** Concatenates the coordinate transform represented by the matrix m
     with the current coordinate transform. (DPS). */
-- (void) DPSconcat: (const float*)m
+- (void) DPSconcat: (const CGFloat*)m
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1256,19 +1257,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 /** Rotate the coordinate system. (DPS). */
-- (void) DPSrotate: (float)angle
+- (void) DPSrotate: (CGFloat)angle
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Scale the coordinate system. (DPS). */
-- (void) DPSscale: (float)x : (float)y
+- (void) DPSscale: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Translate the coordinate system. (DPS). */
-- (void) DPStranslate: (float)x : (float)y
+- (void) DPStranslate: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1298,19 +1299,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 
-	       : (float)angle2
+- (void) DPSarc: (CGFloat)x : (CGFloat)y : (CGFloat)r : (CGFloat)angle1 
+	       : (CGFloat)angle2
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 
-		: (float)angle2
+- (void) DPSarcn: (CGFloat)x : (CGFloat)y : (CGFloat)r : (CGFloat)angle1 
+		: (CGFloat)angle2
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r
+- (void) DPSarct: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 : (CGFloat)r
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1326,8 +1327,8 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
-		   : (float)x3 : (float)y3
+- (void) DPScurveto: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 
+		   : (CGFloat)x3 : (CGFloat)y3
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1358,12 +1359,12 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSlineto: (float)x : (float)y
+- (void) DPSlineto: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSmoveto: (float)x : (float)y
+- (void) DPSmoveto: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1373,28 +1374,28 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury
+- (void) DPSpathbbox: (CGFloat*)llx : (CGFloat*)lly : (CGFloat*)urx : (CGFloat*)ury
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
-		    : (float)x3 : (float)y3
+- (void) DPSrcurveto: (CGFloat)x1 : (CGFloat)y1 : (CGFloat)x2 : (CGFloat)y2 
+		    : (CGFloat)x3 : (CGFloat)y3
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h
+- (void) DPSrectclip: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h
+- (void) DPSrectfill: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h
+- (void) DPSrectstroke: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1404,12 +1405,12 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrlineto: (float)x : (float)y
+- (void) DPSrlineto: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSrmoveto: (float)x : (float)y
+- (void) DPSrmoveto: (CGFloat)x : (CGFloat)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1481,19 +1482,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 /*-------------------------------------------------------------------------*/
 /* Graphics Extension Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h 
-		     : (int)gstateNum : (float)dx : (float)dy : (int)op
+- (void) DPScomposite: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h 
+		     : (NSInteger)gstateNum : (CGFloat)dx : (CGFloat)dy : (NSCompositingOperation)op
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScompositerect: (float)x : (float)y : (float)w : (float)h : (int)op
+- (void) DPScompositerect: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h : (NSCompositingOperation)op
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
-		    : (int)gstateNum : (float)dx : (float)dy : (float)delta
+- (void) DPSdissolve: (CGFloat)x : (CGFloat)y : (CGFloat)w : (CGFloat)h 
+		    : (NSInteger)gstateNum : (CGFloat)dx : (CGFloat)dy : (CGFloat)delta
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1502,11 +1503,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   As currently not all backends support mixed composite and dissolve operations, 
   this method is here to dispatch to the best suited one implemented
  */
-- (void) GScomposite: (int)gstateNum
+- (void) GScomposite: (NSInteger)gstateNum
 	     toPoint: (NSPoint)aPoint
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
-	    fraction: (float)delta
+	    fraction: (CGFloat)delta
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1540,11 +1541,11 @@ effect on the content.
 
 Note: For the GScomposite operator, the scaling and rotation affects the 
 destination point but not the content. */
-- (void) GSdraw: (int)gstateNum
+- (void) GSdraw: (NSInteger)gstateNum
         toPoint: (NSPoint)aPoint
        fromRect: (NSRect)srcRect
       operation: (NSCompositingOperation)op
-       fraction: (float)delta
+       fraction: (CGFloat)delta
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1590,9 +1591,9 @@ destination point but not the content. */
     anywhere except in the AppKit itself. It will be replaced by the more
     flexible GSDrawImage method sometime in the future. (Quartz).
  */
-- (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
-		     : (int) bitsPerSample : (int) samplesPerPixel 
-		     : (int) bitsPerPixel : (int) bytesPerRow : (BOOL) isPlanar
+- (void) NSDrawBitmap: (NSRect) rect : (NSInteger) pixelsWide : (NSInteger) pixelsHigh
+		     : (NSInteger) bitsPerSample : (NSInteger) samplesPerPixel 
+		     : (NSInteger) bitsPerPixel : (NSInteger) bytesPerRow : (BOOL) isPlanar
 		     : (BOOL) hasAlpha : (NSString *) colorSpaceName
 		     : (const unsigned char *const [5]) data
 {

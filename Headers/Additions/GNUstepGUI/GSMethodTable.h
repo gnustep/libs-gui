@@ -43,61 +43,61 @@ typedef struct {
 /* Color operations */
 /* ----------------------------------------------------------------------- */
   void (*DPScurrentalpha_)
-        (NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, CGFloat*);
   void (*DPScurrentcmykcolor____)
-        (NSGraphicsContext*, SEL, float*, float*, float*, float*);
+        (NSGraphicsContext*, SEL, CGFloat*, CGFloat*, CGFloat*, CGFloat*);
   void (*DPScurrentgray_)
-        (NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, CGFloat*);
   void (*DPScurrenthsbcolor___)
-        (NSGraphicsContext*, SEL, float*, float*, float*);
+        (NSGraphicsContext*, SEL, CGFloat*, CGFloat*, CGFloat*);
   void (*DPScurrentrgbcolor___)
-        (NSGraphicsContext*, SEL, float*, float*, float*);
+        (NSGraphicsContext*, SEL, CGFloat*, CGFloat*, CGFloat*);
   void (*DPSsetalpha_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSsetcmykcolor____)
-        (NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSsetgray_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSsethsbcolor___)
-        (NSGraphicsContext*, SEL, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat);
   void (*DPSsetrgbcolor___)
-        (NSGraphicsContext*, SEL, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat);
 
   void (*GSSetFillColorspace_)
         (NSGraphicsContext*, SEL, NSDictionary *);
   void (*GSSetStrokeColorspace_)
         (NSGraphicsContext*, SEL, NSDictionary *);
   void (*GSSetFillColor_)
-        (NSGraphicsContext*, SEL, float *);
+        (NSGraphicsContext*, SEL, CGFloat *);
   void (*GSSetStrokeColor_)
-        (NSGraphicsContext*, SEL, float *);
+        (NSGraphicsContext*, SEL, CGFloat *);
 
 /* ----------------------------------------------------------------------- */
 /* Text operations */
 /* ----------------------------------------------------------------------- */
   void (*DPSashow___)
-        (NSGraphicsContext*, SEL, float, float, const char*);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, const char*);
   void (*DPSawidthshow______)
-        (NSGraphicsContext*, SEL, float, float, int, float, float, const char*);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, int, CGFloat, CGFloat, const char*);
   void (*DPScharpath__)
         (NSGraphicsContext*, SEL, const char*, int);
   void (*DPSshow_)
         (NSGraphicsContext*, SEL, const char*);
   void (*DPSwidthshow____)
-        (NSGraphicsContext*, SEL, float, float, int, const char*);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, int, const char*);
   void (*DPSxshow___)
-        (NSGraphicsContext*, SEL, const char*, const float*, int);
+        (NSGraphicsContext*, SEL, const char*, const CGFloat*, int);
   void (*DPSxyshow___)
-        (NSGraphicsContext*, SEL, const char*, const float*, int);
+        (NSGraphicsContext*, SEL, const char*, const CGFloat*, int);
   void (*DPSyshow___)
-        (NSGraphicsContext*, SEL, const char*, const float*, int);
+        (NSGraphicsContext*, SEL, const char*, const CGFloat*, int);
 
   void (*GSSetCharacterSpacing_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*GSSetFont_)
         (NSGraphicsContext*, SEL, NSFont*);
   void (*GSSetFontSize_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   NSAffineTransform * (*GSGetTextCTM)
         (NSGraphicsContext*, SEL);
   NSPoint (*GSGetTextPosition)
@@ -125,46 +125,46 @@ typedef struct {
   void (*DPSinitgraphics)
         (NSGraphicsContext*, SEL);
   void (*DPSsetgstate_)
-        (NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, NSInteger);
 
-  int (*GSDefineGState)
+  NSInteger (*GSDefineGState)
         (NSGraphicsContext*, SEL);
   void (*GSUndefineGState_)
-        (NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, NSInteger);
   void (*GSReplaceGState_)
-        (NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, NSInteger);
 
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
   void (*DPScurrentflat_)
-        (NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, CGFloat*);
   void (*DPScurrentlinecap_)
         (NSGraphicsContext*, SEL, int*);
   void (*DPScurrentlinejoin_)
         (NSGraphicsContext*, SEL, int*);
   void (*DPScurrentlinewidth_)
-        (NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, CGFloat*);
   void (*DPScurrentmiterlimit_)
-        (NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, CGFloat*);
   void (*DPScurrentpoint__)
-        (NSGraphicsContext*, SEL, float*, float*);
+        (NSGraphicsContext*, SEL, CGFloat*, CGFloat*);
   void (*DPScurrentstrokeadjust_)
         (NSGraphicsContext*, SEL, int*);
   void (*DPSsetdash___)
-        (NSGraphicsContext*, SEL, const float*, int, float);
+        (NSGraphicsContext*, SEL, const CGFloat*, NSInteger, CGFloat);
   void (*DPSsetflat_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSsethalftonephase__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPSsetlinecap_)
         (NSGraphicsContext*, SEL, int);
   void (*DPSsetlinejoin_)
         (NSGraphicsContext*, SEL, int);
   void (*DPSsetlinewidth_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSsetmiterlimit_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSsetstrokeadjust_)
         (NSGraphicsContext*, SEL, int);
 
@@ -172,15 +172,15 @@ typedef struct {
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
   void (*DPSconcat_)
-        (NSGraphicsContext*, SEL, const float*);
+        (NSGraphicsContext*, SEL, const CGFloat*);
   void (*DPSinitmatrix)
         (NSGraphicsContext*, SEL);
   void (*DPSrotate_)
-        (NSGraphicsContext*, SEL, float);
+        (NSGraphicsContext*, SEL, CGFloat);
   void (*DPSscale__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPStranslate__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
 
   NSAffineTransform * (*GSCurrentCTM)
         (NSGraphicsContext*, SEL);
@@ -193,17 +193,17 @@ typedef struct {
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
   void (*DPSarc_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSarcn_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSarct_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSclip)
         (NSGraphicsContext*, SEL);
   void (*DPSclosepath)
         (NSGraphicsContext*, SEL);
   void (*DPScurveto______)
-        (NSGraphicsContext*, SEL, float, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSeoclip)
         (NSGraphicsContext*, SEL);
   void (*DPSeofill)
@@ -215,27 +215,27 @@ typedef struct {
   void (*DPSinitclip)
         (NSGraphicsContext*, SEL);
   void (*DPSlineto__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPSmoveto__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPSnewpath)
         (NSGraphicsContext*, SEL);
   void (*DPSpathbbox____)
-        (NSGraphicsContext*, SEL, float*, float*, float*, float*);
+        (NSGraphicsContext*, SEL, CGFloat*, CGFloat*, CGFloat*, CGFloat*);
   void (*DPSrcurveto______)
-        (NSGraphicsContext*, SEL, float, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSrectclip____)
-        (NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSrectfill____)
-        (NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSrectstroke____)
-        (NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat);
   void (*DPSreversepath)
         (NSGraphicsContext*, SEL);
   void (*DPSrlineto__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPSrmoveto__)
-        (NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat);
   void (*DPSstroke)
         (NSGraphicsContext*, SEL);
 
@@ -262,11 +262,11 @@ typedef struct {
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
   void (*DPScomposite________)
-        (NSGraphicsContext*, SEL, float, float, float, float, int, float, float, int);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, NSInteger, CGFloat, CGFloat, NSCompositingOperation);
   void (*DPScompositerect_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, int);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, NSCompositingOperation);
   void (*DPSdissolve________)
-        (NSGraphicsContext*, SEL, float, float, float, float, int, float, float, float);
+        (NSGraphicsContext*, SEL, CGFloat, CGFloat, CGFloat, CGFloat, NSInteger, CGFloat, CGFloat, CGFloat);
 
   void (*GSDrawImage__)
         (NSGraphicsContext*, SEL, NSRect, void *);
@@ -298,12 +298,12 @@ typedef struct {
  * Render Bitmap Images
  */
   void (*NSDrawBitmap___________)(NSGraphicsContext*, SEL, NSRect rect,
-                  int pixelsWide,
-                  int pixelsHigh,
-                  int bitsPerSample,
-                  int samplesPerPixel,
-                  int bitsPerPixel,
-                  int bytesPerRow, 
+                  NSInteger pixelsWide,
+                  NSInteger pixelsHigh,
+                  NSInteger bitsPerSample,
+                  NSInteger samplesPerPixel,
+                  NSInteger bitsPerPixel,
+                  NSInteger bytesPerRow, 
                   BOOL isPlanar,
                   BOOL hasAlpha, 
                   NSString *colorSpaceName, 

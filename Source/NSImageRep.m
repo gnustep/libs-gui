@@ -433,7 +433,7 @@ implement, so we can't do that. */
 }
 
 // Specifying Information about the Representation
-- (int) bitsPerSample
+- (NSInteger) bitsPerSample
 {
   return _bitsPerSample;
 }
@@ -453,12 +453,12 @@ implement, so we can't do that. */
   return _isOpaque;
 }
 
-- (int) pixelsWide
+- (NSInteger) pixelsWide
 {
   return _pixelsWide;
 }
 
-- (int) pixelsHigh
+- (NSInteger) pixelsHigh
 {
   return _pixelsHigh;
 }
@@ -468,7 +468,7 @@ implement, so we can't do that. */
   _hasAlpha = flag;
 }
 
-- (void) setBitsPerSample: (int)anInt
+- (void) setBitsPerSample: (NSInteger)anInt
 {
   _bitsPerSample = anInt;
 }
@@ -483,12 +483,12 @@ implement, so we can't do that. */
   _isOpaque = flag;
 }
 
-- (void) setPixelsWide: (int)anInt
+- (void) setPixelsWide: (NSInteger)anInt
 {
   _pixelsWide = anInt;
 }
 
-- (void) setPixelsHigh: (int)anInt
+- (void) setPixelsHigh: (NSInteger)anInt
 {
   _pixelsHigh = anInt;
 }
@@ -552,7 +552,7 @@ behavior precisely matches Cocoa. */
 - (void) nativeDrawInRect: (NSRect)dstRect
                  fromRect: (NSRect)srcRect
                 operation: (NSCompositingOperation)op
-                 fraction: (float)delta
+                 fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   /* An intermediate image used to scale the image to be drawn as needed */
@@ -646,7 +646,7 @@ Fallback for backends other than Cairo. */
 - (void) guiDrawInRect: (NSRect)dstRect
               fromRect: (NSRect)srcRect
              operation: (NSCompositingOperation)op
-              fraction: (float)delta
+              fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
@@ -684,8 +684,8 @@ Fallback for backends other than Cairo. */
     NSCachedImageRep *cache;
     NSAffineTransformStruct ts;
     NSPoint p;
-    double x0, y0, x1, y1, w, h;
-    int gState;
+    CGFloat x0, y0, x1, y1, w, h;
+    NSInteger gState;
     NSGraphicsContext *ctxt1;
 
     /* Figure out how big we need to make the window that'll hold the
@@ -782,7 +782,7 @@ Fallback for backends other than Cairo. */
 - (BOOL) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (CGFloat)delta
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints
 {

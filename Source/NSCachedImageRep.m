@@ -81,9 +81,9 @@
     sharing it with other images. </p>
  */
 - (id) initWithSize: (NSSize)aSize
-	 pixelsWide: (int)pixelsWide
-	 pixelsHigh: (int)pixelsHigh
-	      depth: (int)aDepth
+	 pixelsWide: (NSInteger)pixelsWide
+	 pixelsHigh: (NSInteger)pixelsHigh
+	      depth: (NSWindowDepth)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha
 {
@@ -120,7 +120,7 @@
 }
 
 - (id) initWithSize: (NSSize)aSize
-	      depth: (int)aDepth
+	      depth: (NSWindowDepth)aDepth
 	   separate: (BOOL)separate
 	      alpha: (BOOL)alpha
 {
@@ -242,11 +242,11 @@
 - (void) nativeDrawInRect: (NSRect)dstRect
                  fromRect: (NSRect)srcRect
                 operation: (NSCompositingOperation)op
-                 fraction: (float)delta
+                 fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSWindow *window = [self window];
-  int gState = [window gState];
+  NSInteger gState = [window gState];
   NSAffineTransform *transform, *backup;
   NSRect winSrcRect;
 

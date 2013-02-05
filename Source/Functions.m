@@ -303,7 +303,7 @@ void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect)
 
 void NSCopyBits(NSInteger srcGstate, NSRect srcRect, NSPoint destPoint)
 {
-  float x, y, w, h;
+  CGFloat x, y, w, h;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   x = NSMinX(srcRect);
@@ -644,7 +644,7 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
 
 void NSDottedFrameRect(const NSRect aRect)
 {
-  float dot_dash[] = {1.0, 1.0};
+  CGFloat dot_dash[] = {1.0, 1.0};
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
   DPSsetgray(ctxt, NSBlack);
@@ -1003,7 +1003,7 @@ NSDrawWindowBackground(NSRect aRect)
 CGFloat 
 NSLinkFrameThickness(void)
 {
-  return 1;
+  return 1.0;
 }
 
 void 

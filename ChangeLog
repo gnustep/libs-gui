@@ -1,3 +1,26 @@
+2013-02-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSMethodTable.h
+	* Headers/AppKit/DPSOperators.h
+	* Headers/AppKit/NSCachedImageRep.h
+	* Headers/AppKit/NSGraphicsContext.h
+	* Headers/AppKit/NSImageRep.h
+	* Headers/AppKit/PSOperators.h
+	* Source/Functions.m
+	* Source/NSAffineTransform.m
+	* Source/NSCachedImageRep.m
+	* Source/NSGraphicsContext.m: Change DPS/PS functions to CGFloat
+	and NSInteger.
+
+2013-02-05  David Chisnall <theraven@gna.org>
+
+	* Source/NSMenu.m: When displaying the horizontal menu, set the
+	title of the main menu to the name of the application, not the
+	name of the process, if the info bundle contains an application
+	name.
+	* Source/NSSavePanel.m: Fix the NSBrowser delegate methods in
+	NSSavePanel to have the correct types.
+
 2013-02-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m: Started the implementation of keyed
