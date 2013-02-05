@@ -265,7 +265,12 @@ static BOOL menuBarVisible = YES;
       NSMenu *appMenu;
       id <NSMenuItem> appItem;
 
-      appTitle = [[NSProcessInfo processInfo] processName];
+      appTitle = [[[NSBundle mainBundle] localizedInfoDictionary]
+                     objectForKey: @"ApplicationName"];
+      if (nil == appTitle)
+        {
+          appTitle = [[NSProcessInfo processInfo] processName];
+        }
       appItem = [self itemWithTitle: appTitle];
       appMenu = [appItem submenu];
 
