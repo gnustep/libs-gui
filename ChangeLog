@@ -1,3 +1,11 @@
+2013-02-06  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSView.m (-encodeWithCoder:): Fixed to encode the superview 
+	conditionally as Cocoa does (Apple discusses superview encoding as a 
+	use case for conditional encoding in the Archiving related documentation).
+	View can now be archived (or copied) without having to remove the view 
+	from its hierarchy before archiving it.
+
 2013-02-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSMethodTable.h

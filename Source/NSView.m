@@ -4566,7 +4566,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       //
       if (([[self window] contentView] != self) && _super_view != nil)
         {
-          [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+          [aCoder encodeConditionalObject: _super_view forKey: @"NSSuperview"];
         }
     }
   else
