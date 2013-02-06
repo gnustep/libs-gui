@@ -67,7 +67,8 @@
 #import "GSBindingHelpers.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
-
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSSearchFieldCell.h"
 static Class colorClass;
 static Class cellClass;
 static Class fontClass;
@@ -215,7 +216,6 @@ static NSColor *dtxtCol;
   _action_mask = NSLeftMouseUpMask;
   _menu = [object_getClass(self) defaultMenu];
   [self setFocusRingType: [object_getClass(self) defaultFocusRingType]];
-
   return self;
 }
 
@@ -2232,7 +2232,13 @@ static NSColor *dtxtCol;
 
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
+  _cell.shows_first_responder = YES;
   _cell.in_editing = YES;
+  // FIXME: we need to draw the focus ring, this works but
+  // there's something wrong about telling the view to come
+  // back here and draw.
+  [controlView setKeyboardFocusRingNeedsDisplayInRect:NSMakeRect (aRect.origin.x - 2.0, aRect.origin.y - 2.0, aRect.size.width + 4.0, aRect.size.height + 4.0)];
+  NSLog(@"Edited Cell: %@", self);
 }
 
 /**<p>Ends any text editing. This method sets the text object's delegate 
@@ -2244,6 +2250,7 @@ static NSColor *dtxtCol;
   NSClipView *clipView;
 
   _cell.in_editing = NO;
+  _cell.shows_first_responder = NO;
   [textObject setString: @""];
   [textObject setDelegate: nil];
   
@@ -2255,6 +2262,9 @@ static NSColor *dtxtCol;
     }
   else
     [textObject removeFromSuperview];
+
+  // FIXME: This is brutal but clears the focus ring clean.
+  [[self controlView] setNeedsDisplay:YES];
 }
 
 /*
@@ -2939,21 +2949,31 @@ static NSColor *dtxtCol;
 // Private helper method
 - (void) _drawFocusRingWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  if (_cell.shows_first_responder
-    && [[controlView window] firstResponder] == controlView)
+  BOOL inFocus = NO;
+  inFocus = (([[controlView window] firstResponder] == controlView)
+          || ([[[controlView window] firstResponder] isKindOfClass:[NSTextView class]]
+			   && [[controlView window] fieldEditor:NO forObject:nil]!=nil
+			   && (controlView == (id)[(NSTextView *)[[controlView window] firstResponder]delegate])));
+
+    if (inFocus && [self showsFirstResponder]) // _cell.in_editing)
     {
       switch (_cell.focus_ring_type)
         {
           case NSFocusRingTypeDefault:
+          case NSFocusRingTypeExterior:
+          case NSFocusRingTypeNone:
+			// The GNUstep implementation of NSFocusRingTypeDefault draws inside
+			// the bezeled border of controls, this is not what appears to happen
+			// in Cocoa, so we force it to behave like NSFocusRingTypeExterior
             [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
                                                        cellFrame]
                              view: controlView];
             break;
-          case NSFocusRingTypeExterior:
-            [[GSTheme theme] drawFocusFrame: cellFrame
-                             view: controlView];
-            break;
-          case NSFocusRingTypeNone:
+//          case NSFocusRingTypeExterior:
+//            [[GSTheme theme] drawFocusFrame: cellFrame
+//                             view: controlView];
+//            break;
+//          case NSFocusRingTypeNone:
           default:
             break;
         } 

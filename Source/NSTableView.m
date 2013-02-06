@@ -3369,8 +3369,7 @@ byExtendingSelection: (BOOL)flag
     }
 
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
-  // FIXME: Which background color do we want here?
-  [_textObject setBackgroundColor: [NSColor selectedControlColor]];
+  [_textObject setBackgroundColor: [NSColor textBackgroundColor]];
   [_textObject setDrawsBackground: YES];
 
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];

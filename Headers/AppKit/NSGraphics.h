@@ -146,6 +146,8 @@ NSDrawBezel(const NSRect aRect, const NSRect clipRect)
   NSDrawGrayBezel(aRect, clipRect);
 }
 
+APPKIT_EXPORT void NSFocusRingFrameRect(NSRect aRect);
+
 /** Draws a rectangle along the inside of aRect.  The rectangle will be
     black, dotted (using 1 point dashes), and will have a line width
     of 1 point.  */

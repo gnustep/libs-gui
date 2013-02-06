@@ -968,7 +968,11 @@ static NSImage *unexpandable  = nil;
       tb = [_tableColumns objectAtIndex: i];
       cell = [self _dataCellForTableColumn: tb row: rowIndex];
       if (i == _editedColumn && rowIndex == _editedRow)
-        [cell _setInEditing: YES];
+	    {
+          [cell _setInEditing: YES];
+		  [cell setShowsFirstResponder:YES];
+		  [cell setFocusRingType:NSFocusRingTypeDefault];
+		}
       [self _willDisplayCell: cell
             forTableColumn: tb
             row: rowIndex];
@@ -1035,7 +1039,11 @@ static NSImage *unexpandable  = nil;
 
       [cell drawWithFrame: drawingRect inView: self];
       if (i == _editedColumn && rowIndex == _editedRow)
-        [cell _setInEditing: NO];
+	    {
+          [cell _setInEditing: NO];
+		  [cell setShowsFirstResponder:NO];
+		  [cell setFocusRingType:NSFocusRingTypeDefault];
+		}
     }
 }
 
@@ -1613,8 +1621,7 @@ Also returns the child index relative to this parent. */
     }
 
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
-  // FIXME: Which background color do we want here?
-  [_textObject setBackgroundColor: [NSColor selectedControlColor]];
+  [_textObject setBackgroundColor: [NSColor textBackgroundColor]];
   [_textObject setDrawsBackground: YES];
 
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];

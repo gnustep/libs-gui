@@ -299,7 +299,7 @@
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
-  NSDottedFrameRect(frame);
+  NSFocusRingFrameRect(frame);
 }
 
 - (void) drawWindowBackground: (NSRect) frame view: (NSView*) view
@@ -2647,7 +2647,12 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       tb = [tableColumns objectAtIndex: i];
       cell = [tb dataCellForRow: rowIndex];
       if (i == editedColumn && rowIndex == editedRow)
-	[cell _setInEditing: YES];
+	  {
+	    [cell _setInEditing: YES];
+        [cell setShowsFirstResponder:YES];
+        [cell setFocusRingType:NSFocusRingTypeDefault];
+	  }
+
       [tableView _willDisplayCell: cell
 		 forTableColumn: tb
 		 row: rowIndex];
@@ -2658,7 +2663,11 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 			       row: rowIndex];
       [cell drawWithFrame: drawingRect inView: tableView];
       if (i == editedColumn && rowIndex == editedRow)
-	[cell _setInEditing: NO];
+	  {
+	    [cell _setInEditing: NO];
+        [cell setShowsFirstResponder:NO];
+        [cell setFocusRingType:NSFocusRingTypeNone];
+	  }
     }
 }
 @end

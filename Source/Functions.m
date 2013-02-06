@@ -44,6 +44,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/DPSOperators.h"
+#import "AppKit/NSBezierPath.h"
 
 char **NSArgv = NULL;
 
@@ -642,6 +643,7 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
 
 /* Various functions for drawing bordered rectangles.  */
 
+// TODO: Should we retire NSDottedFrameRect in favor of NSFocusRingFrameRect?
 void NSDottedFrameRect(const NSRect aRect)
 {
   float dot_dash[] = {1.0, 1.0};
@@ -654,6 +656,22 @@ void NSDottedFrameRect(const NSRect aRect)
   DPSrectstroke(ctxt,  NSMinX(aRect) + 0.5, NSMinY(aRect) + 0.5,
 		NSWidth(aRect) - 1.0, NSHeight(aRect) - 1.0);
   DPSgrestore(ctxt);
+}
+
+void NSFocusRingFrameRect(const NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  [ctxt saveGraphicsState];
+  NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(NSMinX(aRect) - 1.0, NSMinY(aRect) - 1.0, NSWidth(aRect) + 2.0, NSHeight(aRect) + 2.0)
+                                                       xRadius:3
+											  		   yRadius:3];
+  [path setLineWidth:2];
+  // TODO: Use system color for the focus ring
+  //NSColor *ringColor = [NSColor keyboardFocusIndicatorColor];
+  NSColor *ringColor = [NSColor colorWithCalibratedRed:0.49 green:0.68 blue:0.85 alpha:1.0];
+  [ringColor set];
+  [path stroke];
+  [ctxt restoreGraphicsState];
 }
 
 void NSFrameRect(const NSRect aRect)
