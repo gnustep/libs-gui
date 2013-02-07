@@ -273,6 +273,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_setHomeDirectory)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelHomeButton];
+  [button setToolTip:_(@"Home")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -288,6 +289,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_mountMedia)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskButton];
+  [button setToolTip:_(@"Mount")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -303,6 +305,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_unmountMedia)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskEjectButton];
+  [button setToolTip:_(@"Unmount")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;

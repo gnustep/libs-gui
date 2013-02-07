@@ -1,3 +1,8 @@
+2013-02-07 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSSavePanel.m (initWithoutGModel):
+	Add tooltips to buttons.
+
 2013-02-06  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSView.m (-encodeWithCoder:): Fixed to encode the superview 
