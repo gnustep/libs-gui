@@ -78,8 +78,8 @@ enum {
 //
 // Running the Panel 
 //
-- (int)runModal;
-- (int)runModalWithPrintInfo:(NSPrintInfo *)printInfo;
+- (NSInteger)runModal;
+- (NSInteger)runModalWithPrintInfo:(NSPrintInfo *)printInfo;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)beginSheetWithPrintInfo:(NSPrintInfo *)printInfo
                  modalForWindow:(NSWindow *)docWindow

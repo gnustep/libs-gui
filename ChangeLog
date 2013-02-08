@@ -1,5 +1,11 @@
 2013-02-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSPageLayout.h
+	* Source/NSPageLayout.m: Change int to NSInteger.
+	Patch by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
+2013-02-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Resources/English.lproj/Localizable.strings
 	* Resources/Esperanto.lproj/Localizable.strings
 	* Resources/French.lproj/Localizable.strings
