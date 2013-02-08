@@ -482,7 +482,7 @@ add comments above this one
 /* File: ../Source/NSTextView.m:5847 */
 "No Suggestions" = "Kein Vorschlag";
 /* File: ../Source/NSTextView.m:652 */
-"Paste" = "Einfügen";
+"Paste" = "Einf\U00FCgen";
 
 
 /*** Strings from ../Source/NSToolbarItem.m ***/
