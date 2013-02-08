@@ -83,7 +83,6 @@ static inline sf_count_t dataRead (void *ptr, sf_count_t count,
                            void *user_data)
 {
   NSUInteger newPos;
-  NSRange range;
   SndfileSource *snd = (SndfileSource *)user_data;
   
   // Can't read more data that we have available...
