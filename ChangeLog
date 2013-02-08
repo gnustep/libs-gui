@@ -1,3 +1,14 @@
+2013-02-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/English.lproj/Localizable.strings
+	* Resources/Esperanto.lproj/Localizable.strings
+	* Resources/French.lproj/Localizable.strings
+	* Resources/German.lproj/Localizable.strings
+	* Resources/Italian.lproj/Localizable.strings
+	* Resources/Lojban.lproj/Localizable.strings
+	* Resources/Spanish.lproj/Localizable.strings
+	Regenerate string files. Translations are still missing.
+
 2013-02-07 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSSavePanel.m (initWithoutGModel):
@@ -5,10 +16,10 @@
 
 2013-02-06  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSView.m (-encodeWithCoder:): Fixed to encode the superview 
-	conditionally as Cocoa does (Apple discusses superview encoding as a 
+	* Source/NSView.m (-encodeWithCoder:): Fixed to encode the superview
+	conditionally as Cocoa does (Apple discusses superview encoding as a
 	use case for conditional encoding in the Archiving related documentation).
-	View can now be archived (or copied) without having to remove the view 
+	View can now be archived (or copied) without having to remove the view
 	from its hierarchy before archiving it.
 
 2013-02-05  Fred Kiefer <FredKiefer@gmx.de>

@@ -1,35 +1,35 @@
 /***
 English.lproj/Localizable.strings
-updated by make_strings 2011-01-15 12:04:36 +0100
+updated by make_strings 2013-02-08 11:57:22 +0100
 add comments above this one
 ***/
 
 
 /*** Keys found in multiple places ***/
 
-/* File: ../Source/GSNibLoading.m:192 */
+/* File: ../Source/GSNibLoading.m:193 */
 /* Comment: Info */
-/* File: ../Source/NSApplication.m:2841 */
+/* File: ../Source/NSApplication.m:2878 */
 /* Comment: Title of the Info Panel */
 /* File: ../Source/NSMenu.m:258 */
 "Info" = "Info";
 
-/* File: ../Source/GSNibLoading.m:175 */
+/* File: ../Source/GSNibLoading.m:176 */
 /* Comment: Quit */
-/* File: ../Source/NSApplication.m:3432 */
-/* File: ../Source/NSApplication.m:4142 */
-/* File: ../Source/NSDocumentController.m:1040 */
+/* File: ../Source/NSApplication.m:3442 */
+/* File: ../Source/NSApplication.m:4207 */
+/* File: ../Source/NSDocumentController.m:1049 */
 "Quit" = "Quit";
 
 /* File: ../Source/NSAlert.m:384 */
 /* File: ../Source/NSDocument.m:474 */
 /* File: ../Source/NSDocument.m:815 */
-/* File: ../Source/NSDocument.m:1658 */
-/* File: ../Source/NSDocumentController.m:946 */
-/* File: ../Source/NSDocumentController.m:978 */
-/* File: ../Source/NSSavePanel.m:303 */
-/* File: ../Source/NSSavePanel.m:1277 */
-/* File: ../Source/NSSavePanel.m:1347 */
+/* File: ../Source/NSDocument.m:1660 */
+/* File: ../Source/NSDocumentController.m:955 */
+/* File: ../Source/NSDocumentController.m:987 */
+/* File: ../Source/NSSavePanel.m:317 */
+/* File: ../Source/NSSavePanel.m:1306 */
+/* File: ../Source/NSSavePanel.m:1379 */
 "Cancel" = "Cancel";
 
 /* File: ../Source/NSAlert.m:389 */
@@ -38,110 +38,93 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:474 */
 /* File: ../Source/NSDocument.m:815 */
-/* File: ../Source/NSDocument.m:1184 */
-/* File: ../Source/NSSavePanel.m:424 */
-/* File: ../Source/NSSavePanel.m:1274 */
-/* File: ../Source/NSSavePanel.m:1313 */
-/* File: ../Source/NSSavePanel.m:1323 */
-/* File: ../Source/NSSavePanel.m:1334 */
-/* File: ../Source/NSSavePanel.m:1345 */
+/* File: ../Source/NSDocument.m:1183 */
+/* File: ../Source/NSSavePanel.m:434 */
+/* File: ../Source/NSSavePanel.m:1303 */
+/* File: ../Source/NSSavePanel.m:1342 */
+/* File: ../Source/NSSavePanel.m:1355 */
+/* File: ../Source/NSSavePanel.m:1366 */
+/* File: ../Source/NSSavePanel.m:1377 */
 "Save" = "Save";
 
-/* File: ../Source/NSDocument.m:1180 */
-/* File: ../Source/NSSavePanel.m:898 */
-"Save As" = "Save As";
-
 /* File: ../Source/GSHelpManagerPanel.m:101 */
-/* File: ../Source/NSAlert.m:1833 */
-/* File: ../Source/NSPrintOperation.m:681 */
-/* File: ../Source/NSPrintPanel.m:289 */
-/* File: ../Source/NSSavePanel.m:319 */
+/* File: ../Source/NSAlert.m:1830 */
+/* File: ../Source/NSPrintOperation.m:678 */
+/* File: ../Source/NSPrintPanel.m:408 */
+/* File: ../Source/NSSavePanel.m:333 */
 "OK" = "OK";
 
-/* File: ../Source/GSPrintOperation.m:159 */
-/* File: ../Source/NSSavePanel.m:1325 */
-/* File: ../Source/NSSavePanel.m:1336 */
+/* File: ../Source/GSPrintOperation.m:157 */
+/* File: ../Source/NSSavePanel.m:1357 */
+/* File: ../Source/NSSavePanel.m:1368 */
 "Dismiss" = "Dismiss";
 
-/* File: ../Source/GSPrintOperation.m:157 */
-/* File: ../Source/NSFontPanel.m:698 */
+/* File: ../Source/GSPrintOperation.m:155 */
+/* File: ../Source/NSFontPanel.m:706 */
 "Preview" = "Preview";
 
-/* File: ../Source/NSDocument.m:1656 */
 /* File: ../Source/NSDocument.m:1658 */
-/* File: ../Source/NSFontPanel.m:688 */
+/* File: ../Source/NSDocument.m:1660 */
+/* File: ../Source/NSFontPanel.m:696 */
 "Revert" = "Revert";
 
-/* File: ../Source/NSColorPanel.m:234 */
+/* File: ../Source/NSColorPanel.m:244 */
 /* File: ../Source/NSToolbarItem.m:1076 */
 "Colors" = "Colors";
 
 /* File: ../Source/NSPageLayout.m:979 */
 /* File: ../Source/NSPageLayout.m:1050 */
-/* File: ../Source/NSPrintPanel.m:458 */
-/* File: ../Source/NSPrintPanel.m:504 */
+/* File: ../Source/NSPrintPanel.m:630 */
+/* File: ../Source/NSPrintPanel.m:676 */
 "Unknown" = "Unknown";
 
 /* File: ../Source/GSHelpManagerPanel.m:70 */
-/* File: ../Source/NSHelpPanel.m:151 */
+/* File: ../Source/NSHelpPanel.m:154 */
 "Help" = "Help";
 
-/* File: ../Source/Functions.m:83 */
-/* Flag: untranslated */
-/* File: ../Source/NSApplication.m:999 */
-/* Flag: unmatched */
+/* File: ../Source/NSDocument.m:1109 */
+/* File: ../Source/NSPrintPanel.m:350 */
+"File Type" = "File Type";
+
+/* File: ../Source/GSCharacterPanel.m:173 */
+/* File: ../Source/NSPageLayout.m:971 */
+"Name" = "Name";
+
+/* File: ../Source/GSCharacterPanel.m:154 */
+/* File: ../Source/NSFontPanel.m:738 */
+"Character Panel" = "Character Panel";
+
+
+/*** Strings from ../Source/Functions.m ***/
+/* File: ../Source/Functions.m:85 */
 "Cannot load the main model file '%@'"
 = "Cannot load the main model file '%@'";
 
-/* File: ../Source/NSPrintPanel.m:471 */
-/* Flag: untranslated */
-/* File: ../Source/NSPrintPanel.m:606 */
-/* Flag: untranslated */
-/* File: ../Source/NSPrintPanel.m:613 */
-/* Flag: untranslated */
-"Manual" = "Manual";
 
-
-/*** Unmatched/untranslated keys ***/
-
-/* File: ../Source/GSThemeInspector.m:141 */
-/* Flag: untranslated */
-"Version: %@" = "Version: %@";
-
-/* File: ../Source/NSPrintOperation.m:680 */
-/* Flag: untranslated */
-"Error" = "Error";
-
-/* File: ../Source/NSPrintOperation.m:680 */
-/* Flag: untranslated */
-"Printing error: %@" = "Printing error: %@";
-
-/* File: ../Source/NSPrintPanel.m:160 */
-/* Flag: untranslated */
-"Print Panel" = "Print Panel";
-
-/* File: ../Source/NSSpellChecker.m:748 */
-/* Flag: untranslated */
-"Guess" = "Guess";
+/*** Strings from ../Source/GSCharacterPanel.m ***/
+/* File: ../Source/GSCharacterPanel.m:182 */
+"Code Point" = "Code Point";
+/* File: ../Source/GSCharacterPanel.m:191 */
+"Unicode Block" = "Unicode Block";
 
 
 /*** Strings from ../Source/GSInfoPanel.m ***/
-/* File: ../Source/GSInfoPanel.m:434 */
+/* File: ../Source/GSInfoPanel.m:451 */
 "Author: " = "Author: ";
-/* File: ../Source/GSInfoPanel.m:438 */
+/* File: ../Source/GSInfoPanel.m:455 */
 "Authors: " = "Authors: ";
-/* File: ../Source/GSInfoPanel.m:380 */
+/* File: ../Source/GSInfoPanel.m:396 */
 "Copyright Information Not Available"
 = "Copyright Information Not Available";
-/* File: ../Source/GSInfoPanel.m:465 */
-/* File: ../Source/GSInfoPanel.m:192 */
+/* File: ../Source/GSInfoPanel.m:482 */
+/* File: ../Source/GSInfoPanel.m:187 */
 "Current theme" = "Current theme";
-/* File: ../Source/GSInfoPanel.m:338 */
+/* File: ../Source/GSInfoPanel.m:339 */
 "Release: " = "Release: ";
 
 
 /*** Strings from ../Source/GSPrintOperation.m ***/
-/* File: ../Source/GSPrintOperation.m:158 */
+/* File: ../Source/GSPrintOperation.m:156 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
 = "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default";
 
@@ -149,25 +132,42 @@ add comments above this one
 /*** Strings from ../Source/GSTextFinder.m ***/
 /* File: ../Source/GSTextFinder.m:408 */
 "%d replaced" = "%d replaced";
-/* File: ../Source/GSTextFinder.m:332 */
 /* File: ../Source/GSTextFinder.m:381 */
+/* File: ../Source/GSTextFinder.m:332 */
 "Not found" = "Not found";
 
 
+/*** Strings from ../Source/GSThemeDrawing.m ***/
+/* File: ../Source/GSThemeDrawing.m:185 */
+"?" = "?";
+
+
+/*** Strings from ../Source/GSThemeInspector.m ***/
+/* File: ../Source/GSThemeInspector.m:141 */
+"Version: %@" = "Version: %@";
+
+
 /*** Strings from ../Source/GSThemePanel.m ***/
-/* File: ../Source/GSThemePanel.m:228 */
+/* File: ../Source/GSThemePanel.m:229 */
 /* File: ../Source/GSThemePanel.m:197 */
 "Make this the default theme" = "Make this the default theme";
-/* File: ../Source/GSThemePanel.m:233 */
 /* File: ../Source/GSThemePanel.m:193 */
+/* File: ../Source/GSThemePanel.m:234 */
 "Revert default theme" = "Revert default theme";
 /* File: ../Source/GSThemePanel.m:115 */
 "Themes" = "Themes";
 
 
+/*** Strings from ../Source/GSToolbarView.m ***/
+/* File: ../Source/GSToolbarView.m:894 */
+"Customize Toolbar" = "Customize Toolbar";
+
+
 /*** Strings from ../Source/NSAlert.m ***/
-/* File: ../Source/NSAlert.m:2003 */
+/* File: ../Source/NSAlert.m:2000 */
 "Alert" = "Alert";
+/* File: ../Source/NSAlert.m:2001 */
+"No information" = "No information";
 
 
 /*** Strings from ../Source/NSApplication.m ***/
@@ -186,66 +186,64 @@ add comments above this one
 "Critical Error in %@" = "Critical Error in %@";
 /* File: ../Source/NSApplication.m:141 */
 "Debug" = "Debug";
-/* File: ../Source/NSApplication.m:4138 */
+/* File: ../Source/NSApplication.m:4203 */
 "Hide" = "Hide";
-/* File: ../Source/NSApplication.m:1213 */
+/* File: ../Source/NSApplication.m:1198 */
 "Problem during launch app notification: %@"
 = "Problem during launch app notification: %@";
-/* File: ../Source/NSApplication.m:4132 */
+/* File: ../Source/NSApplication.m:4197 */
 "Show" = "Show";
 /* File: ../Source/NSApplication.m:304 */
 "Unable to find backend %@" = "Unable to find backend %@";
-/* File: ../Source/NSApplication.m:946 */
+/* File: ../Source/NSApplication.m:972 */
 "[NSApplication -init] called more than once"
 = "[NSApplication -init] called more than once";
-/* File: ../Source/NSApplication.m:3290 */
+/* File: ../Source/NSApplication.m:3315 */
 "reported exception - %@" = "reported exception - %@";
 
 
 /*** Strings from ../Source/NSAttributedString.m ***/
-/* File: ../Source/NSAttributedString.m:1062 */
+/* File: ../Source/NSAttributedString.m:1083 */
 /* Comment: Error description */
-/* File: ../Source/NSAttributedString.m:1039 */
+/* File: ../Source/NSAttributedString.m:1060 */
 /* Comment: Error description */
 "Could not create data for type." = "Could not create data for type.";
-/* File: ../Source/NSAttributedString.m:906 */
+/* File: ../Source/NSAttributedString.m:927 */
 /* Comment: Error description */
 "Could not load data from URL." = "Could not load data from URL.";
-/* File: ../Source/NSAttributedString.m:842 */
+/* File: ../Source/NSAttributedString.m:863 */
 /* Comment: Error description */
 "Could not load data." = "Could not load data.";
 /* File: ../Source/NSAttributedString.m:762 */
 /* Comment: Error description */
 "No data specified for data loading."
 = "No data specified for data loading.";
-/* File: ../Source/NSAttributedString.m:1012 */
-/* Comment: Error description */
-/* File: ../Source/NSAttributedString.m:802 */
+/* File: ../Source/NSAttributedString.m:1033 */
 /* Comment: Error description */
 "No type specified for data." = "No type specified for data.";
 
 
 /*** Strings from ../Source/NSBitmapImageRep.m ***/
-/* File: ../Source/NSBitmapImageRep.m:1656 */
+/* File: ../Source/NSBitmapImageRep.m:1645 */
 "CCITTFAX3 Compression" = "CCITTFAX3 Compression";
-/* File: ../Source/NSBitmapImageRep.m:1657 */
+/* File: ../Source/NSBitmapImageRep.m:1646 */
 "CCITTFAX4 Compression" = "CCITTFAX4 Compression";
-/* File: ../Source/NSBitmapImageRep.m:1659 */
+/* File: ../Source/NSBitmapImageRep.m:1648 */
 "JPEG Compression" = "JPEG Compression";
-/* File: ../Source/NSBitmapImageRep.m:1658 */
+/* File: ../Source/NSBitmapImageRep.m:1647 */
 "LZW Compression" = "LZW Compression";
-/* File: ../Source/NSBitmapImageRep.m:1660 */
+/* File: ../Source/NSBitmapImageRep.m:1649 */
 "NEXT Compression" = "NEXT Compression";
-/* File: ../Source/NSBitmapImageRep.m:1655 */
+/* File: ../Source/NSBitmapImageRep.m:1644 */
 "No Compression" = "No Compression";
-/* File: ../Source/NSBitmapImageRep.m:1662 */
+/* File: ../Source/NSBitmapImageRep.m:1651 */
 "Old JPEG Compression" = "Old JPEG Compression";
-/* File: ../Source/NSBitmapImageRep.m:1661 */
+/* File: ../Source/NSBitmapImageRep.m:1650 */
 "PackBits Compression" = "PackBits Compression";
 
 
 /*** Strings from ../Source/NSColorPanel.m ***/
-/* File: ../Source/NSColorPanel.m:298 */
+/* File: ../Source/NSColorPanel.m:308 */
 "Opacity" = "Opacity";
 
 
@@ -271,7 +269,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSDocument.m ***/
-/* File: ../Source/NSDocument.m:1657 */
+/* File: ../Source/NSDocument.m:1659 */
 "%@ has been edited.  Are you sure you want to undo changes?"
 = "%@ has been edited.  Are you sure you want to undo changes?";
 /* File: ../Source/NSDocument.m:473 */
@@ -287,51 +285,51 @@ add comments above this one
 "Could not load file %@." = "Could not load file %@.";
 /* File: ../Source/NSDocument.m:813 */
 "File Error" = "File Error";
-/* File: ../Source/NSDocument.m:1109 */
-"File Type" = "File Type";
-/* File: ../Source/NSDocument.m:141 */
 /* File: ../Source/NSDocument.m:118 */
+/* File: ../Source/NSDocument.m:141 */
 "Load failed" = "Load failed";
-/* File: ../Source/NSDocument.m:1181 */
+/* File: ../Source/NSDocument.m:1179 */
+"Save As" = "Save As";
+/* File: ../Source/NSDocument.m:1180 */
 "Save To" = "Save To";
 /* File: ../Source/NSDocument.m:569 */
 "Untitled-%d" = "Untitled-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
-/* File: ../Source/NSDocumentController.m:1673 */
+/* File: ../Source/NSDocumentController.m:1692 */
 "Clear List" = "Clear List";
-/* File: ../Source/NSDocumentController.m:1047 */
+/* File: ../Source/NSDocumentController.m:1056 */
 "Power Off" = "Power Off";
-/* File: ../Source/NSDocumentController.m:957 */
-/* File: ../Source/NSDocumentController.m:999 */
+/* File: ../Source/NSDocumentController.m:966 */
+/* File: ../Source/NSDocumentController.m:1008 */
 "Quit Anyway" = "Quit Anyway";
-/* File: ../Source/NSDocumentController.m:997 */
-/* File: ../Source/NSDocumentController.m:955 */
+/* File: ../Source/NSDocumentController.m:1006 */
+/* File: ../Source/NSDocumentController.m:964 */
 "Review Unsaved" = "Review Unsaved";
-/* File: ../Source/NSDocumentController.m:954 */
-/* File: ../Source/NSDocumentController.m:1004 */
+/* File: ../Source/NSDocumentController.m:963 */
+/* File: ../Source/NSDocumentController.m:1013 */
 "You have unsaved documents" = "You have unsaved documents";
 
 
 /*** Strings from ../Source/NSFontPanel.m ***/
-/* File: ../Source/NSFontPanel.m:1108 */
+/* File: ../Source/NSFontPanel.m:1138 */
 "Family" = "Family";
-/* File: ../Source/NSFontPanel.m:544 */
+/* File: ../Source/NSFontPanel.m:553 */
 "Font Panel" = "Font Panel";
-/* File: ../Source/NSFontPanel.m:569 */
+/* File: ../Source/NSFontPanel.m:578 */
 "Font preview" = "Font preview";
-/* File: ../Source/NSFontPanel.m:239 */
+/* File: ../Source/NSFontPanel.m:241 */
 "Multiple fonts selected" = "Multiple fonts selected";
-/* File: ../Source/NSFontPanel.m:794 */
+/* File: ../Source/NSFontPanel.m:818 */
 "NoFace" = "NoFace";
-/* File: ../Source/NSFontPanel.m:786 */
+/* File: ../Source/NSFontPanel.m:810 */
 "NoFamily" = "NoFamily";
-/* File: ../Source/NSFontPanel.m:711 */
+/* File: ../Source/NSFontPanel.m:719 */
 "Set" = "Set";
-/* File: ../Source/NSFontPanel.m:630 */
+/* File: ../Source/NSFontPanel.m:639 */
 "Size" = "Size";
-/* File: ../Source/NSFontPanel.m:1112 */
+/* File: ../Source/NSFontPanel.m:1142 */
 "Typeface" = "Typeface";
 
 
@@ -341,13 +339,13 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSOpenPanel.m ***/
-/* File: ../Source/NSOpenPanel.m:93 */
+/* File: ../Source/NSOpenPanel.m:92 */
 "Open" = "Open";
 
 
 /*** Strings from ../Source/NSPageLayout.m ***/
-/* File: ../Source/NSPageLayout.m:744 */
-/* File: ../Source/NSPageLayout.m:746 */
+/* File: ../Source/NSPageLayout.m:749 */
+/* File: ../Source/NSPageLayout.m:747 */
 "(none)" = "(none)";
 /* File: ../Source/NSPageLayout.m:976 */
 "Bottom Margin" = "Bottom Margin";
@@ -357,8 +355,6 @@ add comments above this one
 "Landscape" = "Landscape";
 /* File: ../Source/NSPageLayout.m:977 */
 "Left Margin" = "Left Margin";
-/* File: ../Source/NSPageLayout.m:971 */
-"Name" = "Name";
 /* File: ../Source/NSPageLayout.m:973 */
 "Orientation" = "Orientation";
 /* File: ../Source/NSPageLayout.m:1028 */
@@ -371,56 +367,93 @@ add comments above this one
 "Top Margin" = "Top Margin";
 
 
+/*** Strings from ../Source/NSPrintOperation.m ***/
+/* File: ../Source/NSPrintOperation.m:677 */
+"Error" = "Error";
+/* File: ../Source/NSPrintOperation.m:677 */
+"Printing error: %@" = "Printing error: %@";
+
+
 /*** Strings from ../Source/NSPrintPanel.m ***/
-/* File: ../Source/NSPrintPanel.m:173 */
+/* File: ../Source/NSPrintPanel.m:179 */
 "1 up" = "1 up";
-/* File: ../Source/NSPrintPanel.m:173 */
+/* File: ../Source/NSPrintPanel.m:179 */
 "2 up" = "2 up";
-/* File: ../Source/NSPrintPanel.m:173 */
+/* File: ../Source/NSPrintPanel.m:179 */
 "4 up" = "4 up";
-/* File: ../Source/NSPrintPanel.m:173 */
+/* File: ../Source/NSPrintPanel.m:179 */
 "6 up" = "6 up";
-/* File: ../Source/NSPrintPanel.m:174 */
+/* File: ../Source/NSPrintPanel.m:180 */
 "8 up" = "8 up";
-/* File: ../Source/NSPrintPanel.m:288 */
+/* File: ../Source/NSPrintPanel.m:407 */
 "Faxing of print file not implemented"
 = "Faxing of print file not implemented";
-/* File: ../Source/NSPrintPanel.m:288 */
+/* File: ../Source/NSPrintPanel.m:643 */
+/* File: ../Source/NSPrintPanel.m:781 */
+/* File: ../Source/NSPrintPanel.m:774 */
+"Manual" = "Manual";
+/* File: ../Source/NSPrintPanel.m:145 */
+"Print Panel" = "Print Panel";
+/* File: ../Source/NSPrintPanel.m:407 */
 "Sorry" = "Sorry";
 
 
 /*** Strings from ../Source/NSSavePanel.m ***/
-/* File: ../Source/NSSavePanel.m:239 */
-/* File: ../Source/NSSavePanel.m:423 */
+/* File: ../Source/NSSavePanel.m:276 */
+"Home" = "Home";
+/* File: ../Source/NSSavePanel.m:292 */
+"Mount" = "Mount";
+/* File: ../Source/NSSavePanel.m:433 */
+/* File: ../Source/NSSavePanel.m:250 */
 "Name:" = "Name:";
-/* File: ../Source/NSSavePanel.m:1315 */
+/* File: ../Source/NSSavePanel.m:1344 */
 "No" = "No";
-/* File: ../Source/NSSavePanel.m:1713 */
+/* File: ../Source/NSSavePanel.m:1761 */
 "Reading Directory " = "Reading Directory ";
-/* File: ../Source/NSSavePanel.m:1347 */
+/* File: ../Source/NSSavePanel.m:1379 */
 "Replace" = "Replace";
-/* File: ../Source/NSSavePanel.m:1324 */
+/* File: ../Source/NSSavePanel.m:241 */
+"Show Hidden Files" = "Show Hidden Files";
+/* File: ../Source/NSSavePanel.m:1356 */
 "The directory '%@' could not be created."
 = "The directory '%@' could not be created.";
-/* File: ../Source/NSSavePanel.m:1314 */
+/* File: ../Source/NSSavePanel.m:1343 */
 "The directory '%@' does not exist, do you want to create it?"
 = "The directory '%@' does not exist, do you want to create it?";
-/* File: ../Source/NSSavePanel.m:1346 */
+/* File: ../Source/NSSavePanel.m:1378 */
 "The file '%@' in '%@' exists. Replace it?"
 = "The file '%@' in '%@' exists. Replace it?";
-/* File: ../Source/NSSavePanel.m:1335 */
+/* File: ../Source/NSSavePanel.m:1367 */
 "The path '%@' is not a directory." = "The path '%@' is not a directory.";
-/* File: ../Source/NSSavePanel.m:1270 */
-/* File: ../Source/NSSavePanel.m:1262 */
+/* File: ../Source/NSSavePanel.m:308 */
+"Unmount" = "Unmount";
+/* File: ../Source/NSSavePanel.m:1299 */
+/* File: ../Source/NSSavePanel.m:1291 */
 "Use .%@" = "Use .%@";
-/* File: ../Source/NSSavePanel.m:1315 */
+/* File: ../Source/NSSavePanel.m:1344 */
 "Yes" = "Yes";
-/* File: ../Source/NSSavePanel.m:1269 */
+/* File: ../Source/NSSavePanel.m:1298 */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
 = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
-/* File: ../Source/NSSavePanel.m:1261 */
+/* File: ../Source/NSSavePanel.m:1290 */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
 = "You have used the extension '.%@'.\nThe standard extension is '.%@'.'";
+
+
+/*** Strings from ../Source/NSSpellChecker.m ***/
+/* File: ../Source/NSSpellChecker.m:731 */
+"Guess" = "Guess";
+
+
+/*** Strings from ../Source/NSTextView.m ***/
+/* File: ../Source/NSTextView.m:651 */
+"Copy" = "Copy";
+/* File: ../Source/NSTextView.m:650 */
+"Cut" = "Cut";
+/* File: ../Source/NSTextView.m:5847 */
+"No Suggestions" = "No Suggestions";
+/* File: ../Source/NSTextView.m:652 */
+"Paste" = "Paste";
 
 
 /*** Strings from ../Source/NSToolbarItem.m ***/
@@ -439,7 +472,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSWindow.m ***/
-/* File: ../Source/NSWindow.m:5053 */
+/* File: ../Source/NSWindow.m:5192 */
 "Hide Toolbar" = "Hide Toolbar";
-/* File: ../Source/NSWindow.m:5055 */
+/* File: ../Source/NSWindow.m:5194 */
 "Show Toolbar" = "Show Toolbar";
