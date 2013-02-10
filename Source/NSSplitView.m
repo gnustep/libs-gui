@@ -107,7 +107,7 @@ static NSNotificationCenter *nc = nil;
       NSString *splitViewKey;
       NSMutableDictionary *config;
       NSArray *subs = [self subviews];
-      unsigned count = [subs count];
+      NSUInteger count = [subs count];
       NSView *views[count];
 
       defaults = [NSUserDefaults standardUserDefaults];
@@ -120,8 +120,8 @@ static NSNotificationCenter *nc = nil;
       /* Compute the proportions and store them.  */
       if (count > 0)
         {
-          int i;
-          float oldTotal = 0.0;
+          NSUInteger i;
+          CGFloat oldTotal = 0.0;
           NSRect frames[count];
           
           for (i = 0; i < count; i++)
@@ -156,7 +156,7 @@ static NSNotificationCenter *nc = nil;
             }
         }
       
-      [defaults setObject: config  forKey: splitViewKey];
+      [defaults setObject: config forKey: splitViewKey];
       [defaults synchronize];
       RELEASE (config);
     }
@@ -324,8 +324,8 @@ static NSNotificationCenter *nc = nil;
  */
 - (void) _resize: (id) v withOldSplitView: (id) prev
    withFrame: (NSRect) r fromPoint: (NSPoint) p
-   withBigRect: (NSRect) bigRect divHorizontal: (float) divHorizontal
-   divVertical: (float) divVertical
+   withBigRect: (NSRect) bigRect divHorizontal: (CGFloat) divHorizontal
+   divVertical: (CGFloat) divVertical
 {
   NSRect r1 = NSZeroRect;
 
@@ -407,17 +407,18 @@ static NSNotificationCenter *nc = nil;
   NSEvent *e;
   NSRect r, r1, bigRect, vis;
   id v = nil, prev = nil;
-  float minCoord, maxCoord;
+  CGFloat minCoord, maxCoord;
   NSArray *subs = [self subviews];
-  int offset = 0, i, count = [subs count];
-  float divVertical, divHorizontal;
+  NSInteger offset = 0;
+  NSUInteger i, count = [subs count];
+  CGFloat divVertical, divHorizontal;
   NSDate *farAway = [NSDate distantFuture];
   NSDate *longTimeAgo = [NSDate distantPast];
-  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  NSUInteger eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
   BOOL delegateConstrains = NO;
   SEL constrainSel = @selector(splitView:constrainSplitPosition:ofSubviewAt:);
-  typedef float (*floatIMP)(id, SEL, id, float, int);
+  typedef CGFloat (*floatIMP)(id, SEL, id, CGFloat, NSInteger);
   floatIMP constrainImp = NULL;
   BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
   NSRect oldRect; //only one can be dragged at a time
@@ -548,7 +549,7 @@ static NSNotificationCenter *nc = nil;
   /* find out what the dragging limit is */
   if (_delegate)
     {
-      float delMin = minCoord, delMax = maxCoord;
+      CGFloat delMin = minCoord, delMax = maxCoord;
 
       if ([_delegate respondsToSelector:
                      @selector(splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:)])
@@ -784,9 +785,9 @@ static NSNotificationCenter *nc = nil;
    * proportionally to their current sizes.
    */
   NSArray *subs = [self subviews];
-  unsigned count = [subs count];
+  NSUInteger count = [subs count];
   NSView *views[count];
-  unsigned i;
+  NSUInteger i;
   BOOL autoloading = NO;
   double proportionsTotal = 1.0;
   double proportions[count];
@@ -798,7 +799,7 @@ static NSNotificationCenter *nc = nil;
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
       object: self];  
 
-  for (i = 0; i < (count - 1); i++)
+  for (i = 0; (i + 1) < count; i++)
     {
       shouldAdjust[i] = [self _shouldAdjustSubviewAtIndex: i];
     }
@@ -822,7 +823,7 @@ static NSNotificationCenter *nc = nil;
           /* Please note that we don't save the 'proportion' of the
            * last view; it will be set up to take exactly the
            * remaining available space.  */
-          for (i = 0; i < (count - 1); i++)
+          for (i = 0; (i + 1) < count; i++)
             {
               NSNumber	*proportion;
 	      NSString	*key;
@@ -851,7 +852,7 @@ static NSNotificationCenter *nc = nil;
    * default proportions using the current view sizes.  */
   if (autoloading == NO)
     {
-      float oldTotal = 0.0;
+      CGFloat oldTotal = 0.0;
       NSRect frames[count];
       
       for (i = 0; i < count; i++)
@@ -894,13 +895,13 @@ static NSNotificationCenter *nc = nil;
 
   if (_isVertical == NO)
     {
-      float newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
-      float running = 0.0;
+      CGFloat newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
+      CGFloat running = 0.0;
 
       for (i = 0; i < count; i++)
         {
 	  NSRect newRect;
-          float newHeight;
+          CGFloat newHeight;
           
           if (i < (count - 1))
             {
@@ -927,15 +928,15 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
-      float newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
-      float running = 0.0;
+      CGFloat newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
+      CGFloat running = 0.0;
 
       for (i = 0; i < count; i++)
         {
 	  NSRect newRect;
-          float newWidth;
+          CGFloat newWidth;
           
-          if (i < (count - 1))
+          if ((i + 1) < count)
             {
 	      if (shouldAdjust[i])
 		{
@@ -1053,7 +1054,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (CGFloat) maxPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex
 {
   NSArray *subs = [self subviews];
-  unsigned count = [subs count];
+  NSUInteger count = [subs count];
   NSView *view;
 
   if ((dividerIndex >= count - 1) || (dividerIndex < 0))
@@ -1082,7 +1083,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (CGFloat) minPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex
 {
   NSArray *subs = [self subviews];
-  unsigned count = [subs count];
+  NSUInteger count = [subs count];
   NSView *view;
 
   if ((dividerIndex >= count - 1) || (dividerIndex < 0))
@@ -1112,7 +1113,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     ofDividerAtIndex: (NSInteger)dividerIndex
 {
   NSArray *subs = [self subviews];
-  unsigned count = [subs count];
+  NSUInteger count = [subs count];
   CGFloat old_position;
   NSView *prev;
   NSView *next;
@@ -1197,7 +1198,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) drawRect: (NSRect)r
 {
   NSArray *subs = [self subviews];
-  int i, count = [subs count];
+  NSUInteger i, count = [subs count];
   id v;
   NSRect divRect;
 
@@ -1208,7 +1209,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
 
   /* draw the dimples */
-  for (i = 0; i < (count-1); i++)
+  for (i = 0; (i + 1) < count; i++)
     {
       v = [subs objectAtIndex: i];
       divRect = [v frame];
@@ -1286,8 +1287,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) resetCursorRects
 {
   NSArray *subs = [self subviews];
-  NSInteger i;
-  const NSInteger count = [subs count];
+  NSUInteger i;
+  const NSUInteger count = [subs count];
   const NSRect visibleRect = [self visibleRect];
   NSCursor *cursor;
 
@@ -1300,7 +1301,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       cursor = [NSCursor resizeUpDownCursor];
     }
 
-  for (i = 0; i < (count-1); i++)
+  for (i = 0; (i + 1) < count; i++)
     {
       NSView *v = [subs objectAtIndex: i];
       NSRect divRect = [v frame];
@@ -1353,6 +1354,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
   else
     {
+      // FIXME: No idea why this as encode as int
+      int draggedBarWidth = _draggedBarWidth;
+
       /*
        *        Encode objects we don't own.
        */
@@ -1368,7 +1372,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       /*
        *        Encode the rest of the ivar data.
        */
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
     }
 }
@@ -1411,6 +1415,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
   else
     {
+      // FIXME: No idea why this as encode as int
+      int draggedBarWidth;
+
       // Decode objects that we don't retain.
       [self setDelegate: [aDecoder decodeObject]];
 
@@ -1423,7 +1430,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
       // Decode non-object data.
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
+      _draggedBarWidth = draggedBarWidth;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       _dividerWidth = [self dividerThickness];
