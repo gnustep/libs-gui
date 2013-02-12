@@ -2,7 +2,7 @@
  * Date: September 2002
  * Translator: Maurizio Boriani <baux@gnu.org>
  * Date: April 2006
- * Trnalsator: Riccardo Mottola <rm@gnu.org>
+ * Translator: Riccardo Mottola <rm@gnu.org>
  */
 
 /***
@@ -38,11 +38,9 @@ add comments above this one
 
 /* File: ../Source/GSNibLoading.m:193 */
 /* Comment: Info */
-/* Flag: untranslated */
 /* File: ../Source/NSApplication.m:2878 */
 /* Comment: Title of the Info Panel */
 /* File: ../Source/NSMenu.m:258 */
-/* Flag: untranslated */
 "Info" = "Info";
 
 /* File: ../Source/GSNibLoading.m:176 */
@@ -62,15 +60,10 @@ add comments above this one
 "Preview" = "Anteprima";
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
-/* Flag: untranslated */
 /* File: ../Source/NSAlert.m:1830 */
-/* Flag: untranslated */
 /* File: ../Source/NSPrintOperation.m:678 */
-/* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:408 */
-/* Flag: untranslated */
 /* File: ../Source/NSSavePanel.m:333 */
-/* Flag: untranslated */
 "OK" = "OK";
 
 /* File: ../Source/NSAlert.m:389 */
@@ -88,11 +81,9 @@ add comments above this one
 
 /* File: ../Source/NSAttributedString.m:1060 */
 /* Comment: Error description */
-/* Flag: untranslated */
 /* File: ../Source/NSAttributedString.m:1083 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"Could not create data for type." = "Could not create data for type.";
+"Could not create data for type." = "Impossibile generare i dati per il tipo dati.";
 
 /* File: ../Source/NSColorPanel.m:244 */
 /* File: ../Source/NSToolbarItem.m:1076 */
@@ -119,28 +110,20 @@ add comments above this one
 "Use .%@" = "Use .%@";
 
 /* File: ../Source/NSDocument.m:1109 */
-/* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:350 */
-/* Flag: untranslated */
-"File Type" = "File Type";
+"File Type" = "Tipo Archivio";
 
 /* File: ../Source/GSCharacterPanel.m:173 */
-/* Flag: untranslated */
 /* File: ../Source/NSPageLayout.m:971 */
-/* Flag: untranslated */
-"Name" = "Name";
+"Name" = "Nome";
 
 /* File: ../Source/GSCharacterPanel.m:154 */
-/* Flag: untranslated */
 /* File: ../Source/NSFontPanel.m:738 */
-/* Flag: untranslated */
-"Character Panel" = "Character Panel";
+"Character Panel" = "Pannello Caratteri";
 
 /* File: ../Source/GSTextFinder.m:332 */
-/* Flag: untranslated */
 /* File: ../Source/GSTextFinder.m:381 */
-/* Flag: untranslated */
-"Not found" = "Not found";
+"Not found" = "Non trovato";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -158,33 +141,26 @@ add comments above this one
 "Release: " = "Release: ";
 
 /* File: ../Source/GSInfoPanel.m:396 */
-/* Flag: untranslated */
 "Copyright Information Not Available"
-= "Copyright Information Not Available";
+= "Informazioni di Copyright non disponibili";
 
 /* File: ../Source/GSTextFinder.m:408 */
-/* Flag: untranslated */
-"%d replaced" = "%d replaced";
+"%d replaced" = "%d rimpiazzati";
 
 /* File: ../Source/GSThemeDrawing.m:185 */
-/* Flag: untranslated */
 "?" = "?";
 
 /* File: ../Source/GSToolbarView.m:894 */
-/* Flag: untranslated */
-"Customize Toolbar" = "Customize Toolbar";
+"Customize Toolbar" = "Personalizza barra strumenti";
 
 /* File: ../Source/NSAlert.m:2001 */
-/* Flag: untranslated */
-"No information" = "No information";
+"No information" = "Nessuna informazione";
 
 /* File: ../Source/NSApplication.m:4197 */
-/* Flag: untranslated */
-"Show" = "Show";
+"Show" = "Mostra";
 
 /* File: ../Source/NSApplication.m:4203 */
-/* Flag: untranslated */
-"Hide" = "Hide";
+"Hide" = "Nascondi";
 
 /* File: ../Source/NSAttributedString.m:762 */
 /* Comment: Error description */
@@ -208,12 +184,10 @@ add comments above this one
 
 /* File: ../Source/NSColorSpace.m:137 */
 /* Comment: color space */
-/* Flag: untranslated */
-"unknown" = "unknown";
+"unknown" = "sconosciuto";
 
 /* File: ../Source/NSColorSpace.m:145 */
 /* Comment: color space */
-/* Flag: untranslated */
 "LAB" = "LAB";
 
 /* File: ../Source/NSColorSpace.m:147 */
@@ -238,8 +212,7 @@ add comments above this one
 "Font preview" = "Font preview";
 
 /* File: ../Source/NSFontPanel.m:639 */
-/* Flag: untranslated */
-"Size" = "Size";
+"Size" = "Dimensione";
 
 /* File: ../Source/NSFontPanel.m:719 */
 /* Flag: untranslated */
@@ -254,8 +227,7 @@ add comments above this one
 "NoFace" = "NoFace";
 
 /* File: ../Source/NSFontPanel.m:1138 */
-/* Flag: untranslated */
-"Family" = "Family";
+"Family" = "Famiglia";
 
 /* File: ../Source/NSFontPanel.m:1142 */
 /* Flag: untranslated */
@@ -266,8 +238,7 @@ add comments above this one
 "Open" = "Apri";
 
 /* File: ../Source/NSPageLayout.m:972 */
-/* Flag: untranslated */
-"Dimensions" = "Dimensions";
+"Dimensions" = "Dimensioni";
 
 /* File: ../Source/NSPageLayout.m:973 */
 /* Flag: untranslated */
@@ -278,8 +249,7 @@ add comments above this one
 "Scale" = "Scale";
 
 /* File: ../Source/NSPrintPanel.m:145 */
-/* Flag: untranslated */
-"Print Panel" = "Print Panel";
+"Print Panel" = "Pannello Stampa";
 
 /* File: ../Source/NSPrintPanel.m:179 */
 /* Flag: untranslated */
@@ -306,9 +276,8 @@ add comments above this one
 "Sorry" = "Sorry";
 
 /* File: ../Source/NSPrintPanel.m:407 */
-/* Flag: untranslated */
 "Faxing of print file not implemented"
-= "Faxing of print file not implemented";
+= "Invio fax stampa non implementato";
 
 /* File: ../Source/NSSavePanel.m:241 */
 /* Flag: untranslated */
@@ -319,12 +288,10 @@ add comments above this one
 "Home" = "Home";
 
 /* File: ../Source/NSSavePanel.m:292 */
-/* Flag: untranslated */
-"Mount" = "Mount";
+"Mount" = "Monta";
 
 /* File: ../Source/NSSavePanel.m:308 */
-/* Flag: untranslated */
-"Unmount" = "Unmount";
+"Unmount" = "Smonta";
 
 /* File: ../Source/NSSavePanel.m:1290 */
 /* Flag: untranslated */
