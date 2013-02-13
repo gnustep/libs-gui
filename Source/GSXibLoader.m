@@ -452,7 +452,7 @@
     {
       if ([coder containsValueForKey: @"name"])
         {
-          name = [coder decodeObjectForKey: @"name"];
+          ASSIGN(name, [coder decodeObjectForKey: @"name"]);
         }
       if ([coder containsValueForKey: @"object"])
         {
@@ -490,7 +490,7 @@
     {
       if ([coder containsValueForKey: @"name"])
         {
-          name = [coder decodeObjectForKey: @"name"];
+          ASSIGN(name, [coder decodeObjectForKey: @"name"]);
         }
       if ([coder containsValueForKey: @"object"])
         {
@@ -1095,7 +1095,7 @@
               if ([xmlKeys count] != [xmlObjs count])
                 {
                   NSLog(@"%s:keys to objs count mismatch - keys: %d objs: %d\n", __PRETTY_FUNCTION__,
-                        [xmlKeys count], [xmlObjs count]);
+                        (int)[xmlKeys count], (int)[xmlObjs count]);
                 }
               else
                 {
@@ -1253,7 +1253,10 @@ didStartElement: (NSString*)elementName
                                            andAttributes: attributeDict];
   NSString *key = [attributeDict objectForKey: @"key"];
   NSString *ref = [attributeDict objectForKey: @"id"];
-  
+
+  // FIXME: We should use proper memory management here
+  AUTORELEASE(element);
+
   if (key != nil)
     {
       [currentElement setElement: element forKey: key];
