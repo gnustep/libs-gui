@@ -811,7 +811,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   float interval;
   id target = [self target];
   SEL action = [self action];
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
                            | NSLeftMouseDraggedMask | NSMouseMovedMask;
   NSEventType eventType = [theEvent type];
   BOOL isContinuous = [self isContinuous];

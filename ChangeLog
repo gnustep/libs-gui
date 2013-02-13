@@ -1,3 +1,21 @@
+2013-02-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSEvent.h
+	* Source/NSEvent.m
+	* Source/GSDragView.m
+	* Source/GSTitleView.m
+	* Source/NSComboBoxCell.m
+	* Source/NSInputManager.m
+	* Source/NSMatrix.m
+	* Source/NSMenuView.m
+	* Source/NSRulerMarker.m
+	* Source/NSScroller.m
+	* Source/NSSlider.m
+	* Source/NSSliderCell.m
+	* Source/NSTableHeaderView.m
+	* Source/NSTableView.m:
+	Change NSEvent to CGFloat, NSUInteger and NSInteger.
+
 2013-02-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSplitView.h

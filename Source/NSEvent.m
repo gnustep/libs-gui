@@ -85,12 +85,12 @@ static Class eventClass;
  */
 + (NSEvent*) enterExitEventWithType: (NSEventType)type
                            location: (NSPoint)location
-                      modifierFlags: (unsigned int)flags
+                      modifierFlags: (NSUInteger)flags
                           timestamp: (NSTimeInterval)time
-                       windowNumber: (int)windowNum
+                       windowNumber: (NSInteger)windowNum
                             context: (NSGraphicsContext*)context
-                        eventNumber: (int)eventNum
-                     trackingNumber: (int)trackingNum
+                        eventNumber: (NSInteger)eventNum
+                     trackingNumber: (NSInteger)trackingNum
                            userData: (void *)userData
 {
   NSEvent *e;
@@ -121,9 +121,9 @@ static Class eventClass;
 
 + (NSEvent*) keyEventWithType: (NSEventType)type
                      location: (NSPoint)location
-                modifierFlags: (unsigned int)flags
+                modifierFlags: (NSUInteger)flags
                     timestamp: (NSTimeInterval)time
-                 windowNumber: (int)windowNum
+                 windowNumber: (NSInteger)windowNum
                       context: (NSGraphicsContext *)context
                    characters: (NSString *)keys
   charactersIgnoringModifiers: (NSString *)ukeys
@@ -159,12 +159,12 @@ static Class eventClass;
 
 + (NSEvent*) mouseEventWithType: (NSEventType)type
                        location: (NSPoint)location
-                  modifierFlags: (unsigned int)flags
+                  modifierFlags: (NSUInteger)flags
                       timestamp: (NSTimeInterval)time
-                   windowNumber: (int)windowNum
+                   windowNumber: (NSInteger)windowNum
                         context: (NSGraphicsContext*)context
-                    eventNumber: (int)eventNum
-                     clickCount: (int)clickNum
+                    eventNumber: (NSInteger)eventNum
+                     clickCount: (NSInteger)clickNum
                        pressure: (float)pressureValue
 {
   NSEvent *e;
@@ -193,17 +193,17 @@ static Class eventClass;
 
 + (NSEvent*) mouseEventWithType: (NSEventType)type        
                        location: (NSPoint)location
-                  modifierFlags: (unsigned int)flags
+                  modifierFlags: (NSUInteger)flags
                       timestamp: (NSTimeInterval)time
-                   windowNumber: (int)windowNum
+                   windowNumber: (NSInteger)windowNum
                         context: (NSGraphicsContext*)context        
-                    eventNumber: (int)eventNum
-                     clickCount: (int)clickNum
+                    eventNumber: (NSInteger)eventNum
+                     clickCount: (NSInteger)clickNum
                        pressure: (float)pressureValue
-                   buttonNumber: (int)buttonNum
-                         deltaX: (float)deltaX
-                         deltaY: (float)deltaY
-                         deltaZ: (float)deltaZ
+                   buttonNumber: (NSInteger)buttonNum
+                         deltaX: (CGFloat)deltaX
+                         deltaY: (CGFloat)deltaY
+                         deltaZ: (CGFloat)deltaZ
 {
   NSEvent *e;
 
@@ -243,13 +243,13 @@ static Class eventClass;
 
 + (NSEvent*) otherEventWithType: (NSEventType)type
                        location: (NSPoint)location
-                  modifierFlags: (unsigned int)flags
+                  modifierFlags: (NSUInteger)flags
                       timestamp: (NSTimeInterval)time
-                   windowNumber: (int)windowNum
+                   windowNumber: (NSInteger)windowNum
                         context: (NSGraphicsContext*)context
                         subtype: (short)subType
-                          data1: (int)data1
-                          data2: (int)data2
+                          data1: (NSInteger)data1
+                          data2: (NSInteger)data2
 {
   NSEvent *e;
 
@@ -381,7 +381,7 @@ static Class eventClass;
  * more buttons, and you want to know which button an 'other' mouse
  * event refers to.
  */
-- (int) buttonNumber
+- (NSInteger) buttonNumber
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
@@ -430,7 +430,7 @@ static Class eventClass;
  * <br />Raises an NSInternalInconsistencyException if applied to any
  * other type of event.
  */
-- (int) clickCount
+- (NSInteger) clickCount
 {
   /* Make sure it is one of the right event types */
   if (!(NSEventMaskFromType(event_type) & GSMouseEventMask))
@@ -473,7 +473,7 @@ static Class eventClass;
  * of type NSAppKitDefined, NSSystemDefined, NSApplicationDefined,
  * or NSPeriodic
  */
-- (int) data1
+- (NSInteger) data1
 {
   if (event_type < NSAppKitDefined || event_type > NSPeriodic)
     {
@@ -489,7 +489,7 @@ static Class eventClass;
  * of type NSAppKitDefined, NSSystemDefined, NSApplicationDefined,
  * or NSPeriodic
  */
-- (int) data2
+- (NSInteger) data2
 {
   if (event_type < NSAppKitDefined || event_type > NSPeriodic)
     {
@@ -522,7 +522,7 @@ static Class eventClass;
    NSScrollWheel events, otherwise it will return 0.
    </p>
  */
-- (float) deltaX
+- (CGFloat) deltaX
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
@@ -540,7 +540,7 @@ static Class eventClass;
    NSScrollWheel events, otherwise it will return 0.
    </p>
  */
-- (float) deltaY
+- (CGFloat) deltaY
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
@@ -561,7 +561,7 @@ static Class eventClass;
    The value returned is 0.0 in most cases.
    </p>
  */
-- (float) deltaZ
+- (CGFloat) deltaZ
 {
   if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
@@ -763,7 +763,7 @@ static const char *eventTypes[] = {
  * <br />Raises an NSInternalInconsistencyException if applied to any
  * other type of event.
  */
-- (int) eventNumber
+- (NSInteger) eventNumber
 {
   /* Make sure it is one of the right event types */
   if (!(NSEventMaskFromType(event_type) & GSMouseEventMask) && 
@@ -922,7 +922,7 @@ static const char *eventTypes[] = {
 /**
  * Returns the modifier flag bits associated with the event.
  */
-- (unsigned int) modifierFlags
+- (NSUInteger) modifierFlags
 {
   return modifier_flags;
 }
@@ -987,7 +987,7 @@ static const char *eventTypes[] = {
  * <br />Raises an NSInternalInconsistencyException if applied to any
  * other type of event than a mouse entered or exited event.
  */
-- (int) trackingNumber
+- (NSInteger) trackingNumber
 {
   if (event_type != NSMouseEntered && event_type != NSMouseExited
     &&  event_type != NSCursorUpdate)
@@ -1038,7 +1038,7 @@ static const char *eventTypes[] = {
  * <br />Periodic events have no associated window, and you should not call
  * this method for those events.
  */
-- (int) windowNumber
+- (NSInteger) windowNumber
 {
   return window_num;
 }
@@ -1046,37 +1046,37 @@ static const char *eventTypes[] = {
 /*
  * Methods for tablet events
  */
-- (int) absoluteX
+- (NSInteger) absoluteX
 {
   // FIXME
   return 0;
 }
 
-- (int) absoluteY
+- (NSInteger) absoluteY
 {
   // FIXME
   return 0;
 }
 
-- (int) absoluteZ
+- (NSInteger) absoluteZ
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) buttonMask
+- (NSUInteger) buttonMask
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) capabilityMask
+- (NSUInteger) capabilityMask
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) deviceID
+- (NSUInteger) deviceID
 {
   // FIXME
   return 0;
@@ -1088,13 +1088,13 @@ static const char *eventTypes[] = {
   return NO;
 }
 
-- (unsigned int) pointingDeviceID
+- (NSUInteger) pointingDeviceID
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) pointingDeviceSerialNumber
+- (NSUInteger) pointingDeviceSerialNumber
 {
   // FIXME
   return 0;
@@ -1112,13 +1112,13 @@ static const char *eventTypes[] = {
   return 0.0;
 }
 
-- (unsigned int) systemTabletID
+- (NSUInteger) systemTabletID
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) tabletID
+- (NSUInteger) tabletID
 {
   // FIXME
   return 0;
@@ -1148,13 +1148,13 @@ static const char *eventTypes[] = {
   return nil;
 }
 
-- (unsigned int) vendorID
+- (NSUInteger) vendorID
 {
   // FIXME
   return 0;
 }
 
-- (unsigned int) vendorPointingDeviceType
+- (NSUInteger) vendorPointingDeviceType
 {
   // FIXME
   return 0;

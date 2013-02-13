@@ -284,7 +284,7 @@
 {
   NSPoint  lastLocation;
   NSPoint  location;
-  unsigned eventMask = NSLeftMouseUpMask | NSPeriodicMask;
+  NSUInteger eventMask = NSLeftMouseUpMask | NSPeriodicMask;
   BOOL     done = NO;
   BOOL	   moved = NO;
   NSDate   *theDistantFuture = [NSDate distantFuture];

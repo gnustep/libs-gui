@@ -3616,8 +3616,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 } while (0);
 
       // Selection
-      unsigned int modifiers = [theEvent modifierFlags];
-      unsigned int eventMask = (NSLeftMouseUpMask 
+      NSUInteger modifiers = [theEvent modifierFlags];
+      NSUInteger eventMask = (NSLeftMouseUpMask 
 				| NSLeftMouseDownMask
 				| NSLeftMouseDraggedMask 
 				| NSPeriodicMask);
@@ -3635,8 +3635,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
       BOOL dragOperationPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
-      float minYVisible = NSMinY (visibleRect);
-      float maxYVisible = NSMaxY (visibleRect);
+      CGFloat minYVisible = NSMinY (visibleRect);
+      CGFloat maxYVisible = NSMaxY (visibleRect);
       float oldPeriod = 0;
       int originalRow = _clickedRow;
       int oldRow = -1;

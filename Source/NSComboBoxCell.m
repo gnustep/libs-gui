@@ -1471,7 +1471,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       NSEvent *e = theEvent;
       BOOL isMouseUp = NO;  
-      unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
        | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
        | NSRightMouseDraggedMask;
       NSPoint location;

@@ -198,7 +198,7 @@ enum {
 
 /* Class variables */
 static Class defaultCellClass = nil;
-static int mouseDownFlags = 0;
+static NSUInteger mouseDownFlags = 0;
 static SEL copySel;
 static SEL initSel;
 static SEL allocSel;
@@ -2248,7 +2248,7 @@ static SEL getSel;
   NSPoint mouseLocation;
   NSRect mouseCellFrame;
   NSCell *originallySelectedCell = _selectedCell;
-  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
+  NSUInteger eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
 
   while (!mouseUp)
@@ -2368,7 +2368,7 @@ static SEL getSel;
   id mouseCell, previousCell = nil;
   BOOL onCell;
   BOOL isSelecting = YES;
-  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
+  NSUInteger eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask | NSLeftMouseDraggedMask
                      | NSPeriodicMask;
 
@@ -2592,10 +2592,10 @@ static SEL getSel;
  */
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
-  unsigned int modifiers = [theEvent modifierFlags];
-  int		i;
-  unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+  NSString *keyEquivalent = [theEvent charactersIgnoringModifiers];
+  NSUInteger modifiers = [theEvent modifierFlags];
+  int i;
+  NSUInteger relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
 
   /* Take shift key into account only for control keys and arrow and function keys */
   if ((modifiers & NSFunctionKeyMask)
@@ -2607,19 +2607,19 @@ static SEL getSel;
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      int j;
 
       for (j = 0; j < _numCols; j++)
 	{
-	  NSCell	*aCell = _cells[i][j];
-    unsigned int mask = 0;
+	  NSCell *aCell = _cells[i][j];
+          NSUInteger mask = 0;
 
-    if ([aCell respondsToSelector:@selector(keyEquivalentModifierMask)])
-      mask = [(NSButtonCell *)aCell keyEquivalentModifierMask];
+          if ([aCell respondsToSelector:@selector(keyEquivalentModifierMask)])
+            mask = [(NSButtonCell *)aCell keyEquivalentModifierMask];
 
 	  if ([aCell isEnabled]
 	    && [[aCell keyEquivalent] isEqualToString: keyEquivalent]
-      && (mask & relevantModifiersMask) == (modifiers & relevantModifiersMask))
+              && (mask & relevantModifiersMask) == (modifiers & relevantModifiersMask))
 	    {
 	      NSCell *oldSelectedCell = _selectedCell;
 	      int     oldSelectedRow = _selectedRow; 
@@ -3685,7 +3685,7 @@ static SEL getSel;
 - (void) keyDown: (NSEvent *)theEvent
 {
   NSString *characters = [theEvent characters];
-  unsigned modifiers = [theEvent modifierFlags];
+  NSUInteger modifiers = [theEvent modifierFlags];
   unichar  character = 0;
 
   if ([characters length] > 0)

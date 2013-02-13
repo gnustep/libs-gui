@@ -849,7 +849,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (void) trackKnob: (NSEvent*)theEvent
 {
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 			  | NSLeftMouseDraggedMask | NSFlagsChangedMask;
   NSPoint	point;
   float		lastPosition;
@@ -860,7 +860,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   NSEvent	*presentEvent = theEvent;
   NSEventType	eventType = [theEvent type];
   NSRect	knobRect;
-  unsigned	flags = [theEvent modifierFlags];
+  NSUInteger	flags = [theEvent modifierFlags];
 
   knobRect = [self rectForPart: NSScrollerKnob];
 

@@ -496,7 +496,7 @@ static NSInputManager *currentInputManager = nil;
       NSString *characters = [theEvent characters];
       NSString *unmodifiedCharacters = [theEvent charactersIgnoringModifiers];
       unichar character = 0;
-      unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
+      NSUInteger flags = [theEvent modifierFlags] & (NSShiftKeyMask 
                                                    | NSAlternateKeyMask 
                                                    | NSControlKeyMask
                                                    | NSNumericPadKeyMask);

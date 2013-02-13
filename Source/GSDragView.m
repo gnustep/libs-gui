@@ -359,7 +359,7 @@ static	GSDragView *sharedDragView = nil;
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
                             windowRef: (int*)mouseWindowRef
 {
-  int win;
+  NSInteger win;
 
   *mouseWindowRef = 0;
   win = [GSServerForWindow(_window) findWindowAt: mouseLocation
@@ -389,7 +389,7 @@ static	GSDragView *sharedDragView = nil;
            mousePosition: (NSPoint)mPoint
            imagePosition: (NSPoint)iPoint
 {
-  NSSize	imageSize;
+  NSSize imageSize;
 
   if (anImage == nil)
     {
@@ -433,7 +433,7 @@ static	GSDragView *sharedDragView = nil;
 */
 - (BOOL) _updateOperationMask: (NSEvent*) theEvent
 {
-  unsigned int mod = [theEvent modifierFlags];
+  NSUInteger mod = [theEvent modifierFlags];
   NSDragOperation oldOperationMask = operationMask;
 
   if (operationMask == NSDragOperationIgnoresModifiers)
@@ -580,7 +580,7 @@ static	GSDragView *sharedDragView = nil;
   NSEvent *e;
   NSGraphicsContext *context = GSCurrentContext();
   // FIXME: Should store this once
-  int dragWindowRef = (int)(intptr_t)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
+  NSInteger dragWindowRef = (NSInteger)(intptr_t)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
 
   eventLocation = [dWindow convertScreenToBase: eventLocation];
   e = [NSEvent otherEventWithType: NSAppKitDefined
@@ -623,7 +623,7 @@ static	GSDragView *sharedDragView = nil;
   // Use eWindow for coordination transformation
   NSWindow	*eWindow = [theEvent window];
   NSDate	*theDistantFuture = [NSDate distantFuture];
-  unsigned int	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSUInteger	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSLeftMouseDraggedMask | NSMouseMovedMask
     | NSPeriodicMask | NSAppKitDefinedMask | NSFlagsChangedMask;
   NSPoint       startPoint;

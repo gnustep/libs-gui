@@ -274,14 +274,14 @@
           float p;
           NSEvent *e;
           BOOL lit;
-          unsigned int eventMask;
+          NSUInteger eventMask;
           BOOL liveResize;
 
           /* Width of the highlighted area. */
           const float divWidth = 4;
           /* Coordinates of visible part of table */
-          float minVisCoord = NSMinX([self visibleRect]);
-          float maxVisCoord = NSMaxX([self visibleRect]);
+          CGFloat minVisCoord = NSMinX([self visibleRect]);
+          CGFloat maxVisCoord = NSMaxX([self visibleRect]);
           
           NSPoint unconverted = [event locationInWindow];
           NSArray *columns = [_tableView tableColumns];
@@ -463,10 +463,10 @@
           float *_cO;
           float *_cO_minus1;
           int numberOfColumns = [_tableView numberOfColumns];
-          unsigned int eventMask = (NSLeftMouseUpMask 
+          NSUInteger eventMask = (NSLeftMouseUpMask 
                                     | NSLeftMouseDraggedMask 
                                     | NSPeriodicMask);
-          unsigned int modifiers = [event modifierFlags];
+          NSUInteger modifiers = [event modifierFlags];
           NSEvent *e;
           NSDate *distantFuture = [NSDate distantFuture];
           NSRect visibleRect = [self visibleRect];
@@ -719,7 +719,7 @@
         {
           NSRect cellFrame = [self headerRectOfColumn: columnIndex];
           NSApplication *theApp = [NSApplication sharedApplication];
-          unsigned int modifiers = [event modifierFlags];
+          NSUInteger modifiers = [event modifierFlags];
           NSPoint location = [event locationInWindow];
           NSPoint point = [self convertPoint: location fromView: nil];
 

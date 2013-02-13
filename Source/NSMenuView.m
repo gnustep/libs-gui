@@ -1445,7 +1445,7 @@ static NSMapTable *viewInfo = 0;
 - (BOOL) _trackWithEvent: (NSEvent*)event
         startingMenuView: (NSMenuView*)mainWindowMenuView
 {
-  unsigned eventMask = NSPeriodicMask;
+  NSUInteger eventMask = NSPeriodicMask;
   NSDate *theDistantFuture = [NSDate distantFuture];
   NSPoint lastLocation = {0,0};
   BOOL justAttachedNewSubmenu = NO;

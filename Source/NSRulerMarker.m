@@ -224,7 +224,7 @@
 {
   NSView *client = [_rulerView clientView];
   NSEvent *newEvent = nil;
-  int eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  NSUInteger eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   BOOL isFar = NO;
   BOOL askedCanRemove = NO;
   BOOL canRemove = NO;

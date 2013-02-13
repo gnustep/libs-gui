@@ -271,7 +271,7 @@ static Class cellClass;
   double min = [_cell minValue];
   double max = [_cell maxValue];
   double altValue = [_cell altIncrementValue];
-  int alt_down = ([ev modifierFlags] & NSAlternateKeyMask);
+  NSUInteger alt_down = ([ev modifierFlags] & NSAlternateKeyMask);
   BOOL only_ticks = [_cell allowsTickMarkValuesOnly];
   BOOL valueChanged = NO;
   double diff;
