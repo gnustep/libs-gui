@@ -872,13 +872,17 @@
 
       if (obj != nil)
         {
-          [topLevelObjects addObject: obj];
-          // All top level objects must be released by the caller to avoid
-          // leaking, unless they are going to be released by other nib
-          // objects on behalf of the owner.
           // IGNORE file's owner, first responder and NSApplication instances...
-          if ((obj != owner) && (obj != first) && (obj != app))
+		  // Those are NOT top level objects, and in particular putting the owner in the topLevelObjects list creates a retain cycle
+		  // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html
+          // also consistent with GSNibLoading.m: nibInstantiateWithOwner: (id)owner topLevelObjects:
+          if ((obj != owner) && (obj != first) && (obj != app)) {
+            [topLevelObjects addObject: obj];
+            // All top level objects must be released by the caller to avoid
+            // leaking, unless they are going to be released by other nib
+            // objects on behalf of the owner.
             RETAIN(obj);
+		  }
         }
 
       if (([obj isKindOfClass: [NSMenu class]]) &&

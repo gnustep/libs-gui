@@ -27,6 +27,7 @@
 */
 
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -129,6 +130,10 @@
 
 - (void) dealloc
 {
+  // View Controllers are expect to release their own top-level objects
+  // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html 
+  [_top_level_objects makeObjectsPerformSelector:@selector(release)];
+
   [self setWindow: nil];
   RELEASE(_window_nib_name);
   RELEASE(_window_nib_path);

@@ -27,6 +27,7 @@
 
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSViewController.h"
@@ -49,6 +50,10 @@
 
 - (void) dealloc
 {
+  // View Controllers are expect to release their own top-level objects
+  // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html 
+  [_topLevelObjects makeObjectsPerformSelector:@selector(release)];
+
   DESTROY(_nibName);
   DESTROY(_nibBundle);
   DESTROY(_representedObject);

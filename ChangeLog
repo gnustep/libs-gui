@@ -1,3 +1,15 @@
+2013-02-13  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Source\GSXibLoader.m: Fix a problem where owner, firstResponder and application 
+	were put in the list of top-level objects, creating a retain-cycle.
+	* Source\NSViewController.m: Fix a problem where view controllers did not release
+	their top-level objects as expected.
+	* Source\NSWindowController.m: Fix a problem where WindowControllers did not release
+	their top-level objects as expected.
+
+	Changes made in occordance with 
+	https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html
+
 2013-01-31  Doug Simons <doug.simons@testplant.com>
 
     * Source/NSTableView.m: Allow a non-selected row to be dragged.
