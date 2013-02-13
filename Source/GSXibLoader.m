@@ -1187,6 +1187,7 @@
             }
         }
       result = [document XMLData];
+	  RELEASE(document);
     }
 
   return result;
