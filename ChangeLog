@@ -1,3 +1,11 @@
+2013-02-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDragView.m
+	* Source/GSSlideView.m
+	* Source/NSApplication.m
+	Resolve clang warnings about wrong format specifiers for NSLog.
+	Patch by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
 2013-02-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Resolve memory leak for GSXibElement.

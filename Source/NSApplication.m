@@ -2091,16 +2091,16 @@ See -runModalForWindow:
 
       default:	/* pass all other events to the event's window	*/
 	{
-	  NSWindow	*window = [theEvent window];
+	  NSWindow *window = [theEvent window];
 
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
 	  if (type == NSMouseMoved)
 	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to %@", 
-			type, window);
+			(int)type, window);
 	  else
 	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to %@", 
-			type, window);
+			(int)type, window);
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)

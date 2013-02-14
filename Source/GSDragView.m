@@ -878,7 +878,7 @@ static	GSDragView *sharedDragView = nil;
         }
       break;
     default:
-      NSLog(@"Internal: dropped event (%d) during dragging", [theEvent type]);
+      NSLog(@"Internal: dropped event (%d) during dragging", (int)[theEvent type]);
     }
 }
   
@@ -1074,7 +1074,7 @@ static	GSDragView *sharedDragView = nil;
             {
               NSDebugLLog (@"NSDragging", 
 			   @"Unexpected event type: %d during slide",
-                           [theEvent type]);
+                           (int)[theEvent type]);
             }
           newPosition.x = (screenPoint.x + ((float) steps - 1.0) 
 			   * dragPosition.x) / ((float) steps);

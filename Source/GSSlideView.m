@@ -105,7 +105,7 @@
             {
               NSDebugLLog (@"NSDragging", 
 			   @"Unexpected event type: %d during slide",
-                           [theEvent type]);
+                           (int)[theEvent type]);
             }
 	}
       [NSEvent stopPeriodicEvents];
