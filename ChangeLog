@@ -1,3 +1,12 @@
+2013-02-14  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Headers/AppKit/NSTableView.h
+	* Source/NSTableView.m 
+	* Source/NSOutline.m
+	(-_dataCellForTableColumn:row:, -preparedCellAtColumn:row:): 
+	Replaced _dataCellForTableColumn:row: by -preparedCellAtColumn:row: 
+	new public method from Mac OS X 10.5.
+
 2013-02-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m (GSXibKeyedUnarchiver -_preProcessXib:):

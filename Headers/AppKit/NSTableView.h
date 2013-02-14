@@ -229,6 +229,12 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 - (NSTableViewGridLineStyle) gridStyleMask;
 #endif
 
+/* Proving Cells */
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex;
+#endif
+
 /* Editing Cells */
 /* ALL TODOS */
 - (void) editColumn: (NSInteger)columnIndex 

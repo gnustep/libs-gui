@@ -1982,8 +1982,6 @@ static void computeNewSelection
 - (void) _editNextCellAfterRow:(int)row inColumn:(int)column;
 - (void) _autosaveTableColumns;
 - (void) _autoloadTableColumns;
-- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex;
 @end
 
 
@@ -3177,6 +3175,28 @@ byExtendingSelection: (BOOL)flag
   return 0;
 }
 
+/*
+ * Providing Cells
+ */
+
+- (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
+{
+  NSCell *cell = nil;
+  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+
+  if ([_delegate respondsToSelector: 
+        @selector(tableView:dataCellForTableColumn:row:)])
+    {
+      cell = [_delegate tableView: self dataCellForTableColumn: tb
+                                                           row: rowIndex];
+    }
+  if (cell == nil)
+    {
+      cell = [tb dataCellForRow: rowIndex];
+    }
+  return cell;
+}
+
 /* 
  * Editing Cells 
  */
@@ -3337,11 +3357,11 @@ byExtendingSelection: (BOOL)flag
   _editedColumn = columnIndex;
 
   // Prepare the cell
-  tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
-  _editedCell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
+  _editedCell = [[self preparedCellAtColumn: columnIndex row: rowIndex] copy];
 
   [_editedCell setEditable: _dataSource_editable];
+  tb = [_tableColumns objectAtIndex: columnIndex];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
 				     row: rowIndex]];
   
@@ -3433,26 +3453,21 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		row: (NSInteger) rowIndex
 		withEvent: (NSEvent *) theEvent
 {
-  NSTableColumn *tb;
-  NSCell *cell;
-  NSRect cellFrame;
-  id originalValue;
-
   if (rowIndex == -1 || columnIndex == -1)
     {
       return;
     }
   
-  tb = [_tableColumns objectAtIndex: columnIndex];
   /* we should copy the cell here, as we do on editing.
      otherwise validation on a cell being edited could
      cause the cell we are selecting to get it's objectValue */
-  cell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
-  originalValue = RETAIN([self _objectValueForTableColumn: tb
-		  			row: rowIndex]);
+  NSCell *cell = [[self preparedCellAtColumn: columnIndex row: rowIndex] copy];
+  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+  id originalValue = RETAIN([self _objectValueForTableColumn: tb
+                                                         row: rowIndex]);
   [cell setObjectValue: originalValue]; 
-  cellFrame = [self frameOfCellAtColumn: columnIndex
-			      row: rowIndex];
+  NSRect cellFrame = [self frameOfCellAtColumn: columnIndex
+                                           row: rowIndex];
   [cell setHighlighted: YES];
   [self setNeedsDisplayInRect: cellFrame];
   /* give delegate a chance to i.e set target */
@@ -3802,11 +3817,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		       * Can never get here from a dragging source
 		       * so they need to track in mouse up.
 		       */
-		      NSTableColumn *tb;
-		      NSCell *cell;
-		      
-		      tb = [_tableColumns objectAtIndex: _clickedColumn];
-		      cell = [self _dataCellForTableColumn: tb row: _clickedRow];
+		      NSCell *cell = [self preparedCellAtColumn: _clickedColumn 
+                                                            row: _clickedRow];
 		      
 		      [self _trackCellAtColumn: _clickedColumn
 				row: _clickedRow
@@ -4770,7 +4782,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       width = [[tb headerCell] cellSize].width;
       for (row = 0; row < _numberOfRows; row++)
 	{
-	  cell = [self _dataCellForTableColumn: tb row: row];
+	  cell = [self preparedCellAtColumn: [_tableColumns indexOfObject: tb] 
+                                        row: row];
 	  [cell setObjectValue: [_dataSource tableView: self
 					     objectValueForTableColumn: tb
 					     row: row]]; 
@@ -5706,14 +5719,15 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) updateCell: (NSCell*)aCell
 {
   int i, j;
-  NSTableColumn *tb;
+
   if (aCell == nil)
     return;
+
   return;
+
   for (i = 0; i < _numberOfColumns; i++)
     {
-      tb = [_tableColumns objectAtIndex: i];
-      if ([self _dataCellForTableColumn: tb row: -1] == aCell)
+      if ([self preparedCellAtColumn: i row: -1] == aCell)
 	{
 	  [self setNeedsDisplayInRect: [self rectOfColumn: i]];
 	}
@@ -5738,7 +5752,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 	  for (j = firstVisibleRow; j < lastVisibleRow; j++)
 	    {
-	      if ([self _dataCellForTableColumn: tb row: j] == aCell)
+	      if ([self preparedCellAtColumn: i row: j] == aCell)
 		{
 		  rowRect = [self rectOfRow: j];
 		  [self setNeedsDisplayInRect:
@@ -6033,24 +6047,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	    }
 	}
     }
-}
-
-- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex
-{
-  NSCell *cell = nil;
-  if ([_delegate respondsToSelector:
-		@selector(tableView:dataCellForTableColumn:row:)])
-    {
-      cell = [_delegate tableView: self
-			dataCellForTableColumn: tb
-			      row: rowIndex];
-    }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
-  return cell;
 }
 
 - (void) superviewFrameChanged: (NSNotification*)aNotification
@@ -6571,7 +6567,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 		     
 {
   NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
-  NSCell *cell = [self _dataCellForTableColumn: tableColumn row: rowIndex];
+  NSCell *cell = [self preparedCellAtColumn: columnIndex row: rowIndex];
   
   BOOL cellIsEditable = [cell isEditable];
   BOOL columnIsEditable = [tableColumn isEditable];

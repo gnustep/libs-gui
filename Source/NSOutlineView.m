@@ -126,8 +126,6 @@ static NSImage *unexpandable  = nil;
 - (void) _closeItem: (id)item;
 - (void) _removeChildren: (id)startitem;
 - (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)n;
-- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex;
 @end
 
 @interface	NSOutlineView (Private)
@@ -915,9 +913,7 @@ static NSImage *unexpandable  = nil;
 {
   int startingColumn;
   int endingColumn;
-  NSTableColumn *tb;
   NSRect drawingRect;
-  NSCell *cell;
   NSCell *imageCell = nil;
   NSRect imageRect;
   int i;
@@ -964,11 +960,13 @@ static NSImage *unexpandable  = nil;
   for (i = startingColumn; i <= endingColumn; i++)
     {
       id item = [self itemAtRow: rowIndex];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: i];
+      NSCell *cell = [self preparedCellAtColumn: i row: rowIndex];
 
-      tb = [_tableColumns objectAtIndex: i];
-      cell = [self _dataCellForTableColumn: tb row: rowIndex];
       if (i == _editedColumn && rowIndex == _editedRow)
-        [cell _setInEditing: YES];
+        {
+          [cell _setInEditing: YES];
+        }
       [self _willDisplayCell: cell
             forTableColumn: tb
             row: rowIndex];
@@ -1584,11 +1582,11 @@ Also returns the child index relative to this parent. */
   _editedColumn = columnIndex;
 
   // Prepare the cell
-  tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
-  _editedCell = [[self _dataCellForTableColumn: tb row: rowIndex] copy];
+  _editedCell = [[self preparedCellAtColumn: columnIndex row: rowIndex] copy];
 
   [_editedCell setEditable: _dataSource_editable];
+  tb = [_tableColumns objectAtIndex: columnIndex];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
                                      row: rowIndex]];
 
@@ -2246,17 +2244,17 @@ Also returns the child index relative to this parent. */
     }
 }
 
-- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex
+- (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
+  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+
   if ([_delegate respondsToSelector:
-		@selector(outlineView:dataCellForTableColumn:item:)])
+        @selector(outlineView:dataCellForTableColumn:item:)])
     {
       id item = [self itemAtRow: rowIndex];
-      cell = [_delegate outlineView: self
-			dataCellForTableColumn: tb
-			       item: item];
+      cell = [_delegate outlineView: self dataCellForTableColumn: tb
+                                                            item: item];
     }
   if (cell == nil)
     {
