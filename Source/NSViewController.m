@@ -50,6 +50,8 @@
 
 - (void) dealloc
 {
+  // View Controllers are expect to release their own top-level objects
+  [_topLevelObjects makeObjectsPerformSelector: @selector(release)];
   DESTROY(_nibName);
   DESTROY(_nibBundle);
   DESTROY(_representedObject);

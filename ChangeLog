@@ -1,5 +1,20 @@
 2013-02-14  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXibLoader.m (GSXibKeyedUnarchiver -_preProcessXib:):
+	Release the document.
+	Patch by Doug Simons <doug.simons@testplant.com>
+	* Source/GSXibLoader.m: Fix a problem where owner, firstResponder and application
+ 	were put in the list of top-level objects, creating a retain-cycle.
+	* Source/NSViewController.m: Fix a problem where view controllers
+	did not release their top-level objects as expected.
+	* Source/NSWindowController.m: Fix a problem where window
+	controllers did not release their top-level objects as expected.
+	Changes made in occordance with
+	https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html
+	Patch by Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+2013-02-14  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSDragView.m
 	* Source/GSSlideView.m
 	* Source/NSApplication.m

@@ -26,6 +26,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
@@ -129,6 +130,8 @@
 
 - (void) dealloc
 {
+  // Window Controllers are expect to release their own top-level objects
+  [_top_level_objects makeObjectsPerformSelector: @selector(release)];
   [self setWindow: nil];
   RELEASE(_window_nib_name);
   RELEASE(_window_nib_path);
