@@ -38,7 +38,7 @@
 @implementation NSRulerMarker
 
 - (id)initWithRulerView:(NSRulerView *)aRulerView
-         markerLocation:(float)location
+         markerLocation:(CGFloat)location
 		  image:(NSImage *)anImage
 	    imageOrigin:(NSPoint)imageOrigin
 {
@@ -134,7 +134,7 @@
   return NSZeroRect;
 }
 
-- (float)thicknessRequiredInRuler
+- (CGFloat)thicknessRequiredInRuler
 {
   NSSize size = [_image size];
 
@@ -170,12 +170,12 @@
   return _isRemovable;
 }
 
-- (void)setMarkerLocation:(float)location
+- (void)setMarkerLocation:(CGFloat)location
 {
   _location = location;
 }
  
-- (float)markerLocation
+- (CGFloat)markerLocation
 {
   return _location;
 }
@@ -234,7 +234,7 @@
   NSPoint mousePositionInWindow;
   NSPoint previousMousePositionInWindow;
   NSPoint mouseOffset;
-  float location;
+  CGFloat location;
   NSRect drawRect;
   NSRect bounds = [_rulerView bounds];
   NSPoint drawPoint;

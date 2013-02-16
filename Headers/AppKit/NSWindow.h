@@ -206,7 +206,7 @@ PACKAGE_SCOPE
   NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
   NSInteger     _counterpart;
-  float         _alphaValue;
+  CGFloat       _alphaValue;
   
   NSMutableArray *_children;
   NSWindow       *_parent;
@@ -292,8 +292,8 @@ PACKAGE_SCOPE
  * and style.  This is the on-screen width of the window including
  * decorations.
  */
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (NSUInteger)aStyle;
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                         styleMask: (NSUInteger)aStyle;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect;
@@ -506,7 +506,7 @@ PACKAGE_SCOPE
 - (void) setOneShot: (BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSGraphicsContext*) graphicsContext;
-- (float) userSpaceScaleFactor;
+- (CGFloat) userSpaceScaleFactor;
 #endif
 
 
@@ -677,8 +677,8 @@ PACKAGE_SCOPE
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setHasShadow: (BOOL)hasShadow;
 - (BOOL) hasShadow;
-- (void) setAlphaValue: (float)windowAlpha;
-- (float) alphaValue;
+- (void) setAlphaValue: (CGFloat)windowAlpha;
+- (CGFloat) alphaValue;
 - (void) setOpaque: (BOOL)isOpaque;
 - (BOOL) isOpaque;
 #endif

@@ -107,7 +107,7 @@
    Returns the indentation level, a number between 0 and 15.
    </p>
  */
-- (int)indentationLevel;
+- (NSInteger)indentationLevel;
 #endif
 
 /**
@@ -219,7 +219,7 @@
 - (void) setImage: (NSImage*)menuImage;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (void)setIndentationLevel: (int)level;
+- (void)setIndentationLevel: (NSInteger)level;
 #endif
 
 /**

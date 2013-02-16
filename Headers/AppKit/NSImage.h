@@ -240,19 +240,19 @@ typedef enum {
 		 fromRect: (NSRect)aRect
 		operation: (NSCompositingOperation)op;
 - (void) dissolveToPoint: (NSPoint)aPoint
-		fraction: (float)aFloat;
+		fraction: (CGFloat)aFloat;
 - (void) dissolveToPoint: (NSPoint)aPoint
 		fromRect: (NSRect)aRect
-		fraction: (float)aFloat;
+		fraction: (CGFloat)aFloat;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) compositeToPoint: (NSPoint)aPoint
 		 fromRect: (NSRect)srcRect
 		operation: (NSCompositingOperation)op
-		 fraction: (float)delta;
+		 fraction: (CGFloat)delta;
 - (void) compositeToPoint: (NSPoint)aPoint
 		operation: (NSCompositingOperation)op
-		 fraction: (float)delta;
+		 fraction: (CGFloat)delta;
 #endif 
 
 //
@@ -332,7 +332,7 @@ typedef enum {
 - (void) drawAtPoint: (NSPoint)point
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
-	    fraction: (float)delta;
+	    fraction: (CGFloat)delta;
 
 /** <p>Takes the part of the receiver given by <code>srcRect</code> and
  *  draws it in <code>dstRect</code> in the current coordinate system,
@@ -350,7 +350,7 @@ typedef enum {
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta;
+	   fraction: (CGFloat)delta;
 #endif 
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
@@ -358,7 +358,7 @@ typedef enum {
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (CGFloat)delta
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints;
 

@@ -125,17 +125,17 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 @interface NSBitmapImageRep : NSImageRep
 {
   // Attributes
-  unsigned int		_bytesPerRow;
-  unsigned int		_numColors;
-  unsigned int		_bitsPerPixel;   
-  unsigned short  _compression;
-  float			      _comp_factor;
-  NSMutableDictionary   *_properties;
-  BOOL			_isPlanar;
-  unsigned char		**_imagePlanes;
-  NSData		*_imageData;
+  NSInteger _bytesPerRow;
+  NSInteger _numColors;
+  NSInteger _bitsPerPixel;   
+  unsigned short _compression;
+  float	_comp_factor;
+  NSMutableDictionary *_properties;
+  BOOL _isPlanar;
+  unsigned char **_imagePlanes;
+  NSData *_imageData;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-  NSBitmapFormat  _format;
+  NSBitmapFormat _format;
 #else
   unsigned int    _format;
 #endif
@@ -149,18 +149,18 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 - (id) initWithData: (NSData*)imageData;
 - (id) initWithFocusedViewRect: (NSRect)rect;
 - (id) initWithBitmapDataPlanes: (unsigned char**)planes
-		     pixelsWide: (int)width
-		     pixelsHigh: (int)height
-		  bitsPerSample: (int)bitsPerSample
-		samplesPerPixel: (int)samplesPerPixel
+		     pixelsWide: (NSInteger)width
+		     pixelsHigh: (NSInteger)height
+		  bitsPerSample: (NSInteger)bitsPerSample
+		samplesPerPixel: (NSInteger)samplesPerPixel
 		       hasAlpha: (BOOL)alpha
 		       isPlanar: (BOOL)isPlanar
 		 colorSpaceName: (NSString*)colorSpaceName
-		    bytesPerRow: (int)rowBytes
-		   bitsPerPixel: (int)pixelBits;
+		    bytesPerRow: (NSInteger)rowBytes
+		   bitsPerPixel: (NSInteger)pixelBits;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)colorizeByMappingGray:(float)midPoint 
+- (void)colorizeByMappingGray:(CGFloat)midPoint 
 		      toColor:(NSColor *)midPointColor 
 		 blackMapping:(NSColor *)shadowColor
 		 whiteMapping:(NSColor *)lightColor;
@@ -169,32 +169,32 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-- (int) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete;
+- (NSInteger) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete;
 - (id) initForIncrementalLoad;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (id) initWithBitmapDataPlanes: (unsigned char**)planes
-                     pixelsWide: (int)width
-                     pixelsHigh: (int)height
-                  bitsPerSample: (int)bps
-                samplesPerPixel: (int)spp
+                     pixelsWide: (NSInteger)width
+                     pixelsHigh: (NSInteger)height
+                  bitsPerSample: (NSInteger)bps
+                samplesPerPixel: (NSInteger)spp
                        hasAlpha: (BOOL)alpha
                        isPlanar: (BOOL)isPlanar
                  colorSpaceName: (NSString*)colorSpaceName
                    bitmapFormat: (NSBitmapFormat)bitmapFormat 
-                    bytesPerRow: (int)rowBytes
-                   bitsPerPixel: (int)pixelBits;
+                    bytesPerRow: (NSInteger)rowBytes
+                   bitsPerPixel: (NSInteger)pixelBits;
 #endif
 
 //
 // Getting Information about the Image 
 //
-- (int) bitsPerPixel;
-- (int) samplesPerPixel;
+- (NSInteger) bitsPerPixel;
+- (NSInteger) samplesPerPixel;
 - (BOOL) isPlanar;
-- (int) numberOfPlanes;
-- (int) bytesPerPlane;
-- (int) bytesPerRow;
+- (NSInteger) numberOfPlanes;
+- (NSInteger) bytesPerPlane;
+- (NSInteger) bytesPerRow;
 
 //
 // Getting Image Data 
@@ -204,10 +204,10 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSBitmapFormat) bitmapFormat;
-- (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y;
-- (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y;
-- (NSColor*) colorAtX: (int)x y: (int)y;
-- (void) setColor: (NSColor*)color atX: (int)x y: (int)y;
+- (void) getPixel: (NSUInteger[])pixelData atX: (NSInteger)x y: (NSInteger)y;
+- (void) setPixel: (NSUInteger[])pixelData atX: (NSInteger)x y: (NSInteger)y;
+- (NSColor*) colorAtX: (NSInteger)x y: (NSInteger)y;
+- (void) setColor: (NSColor*)color atX: (NSInteger)x y: (NSInteger)y;
 #endif 
 
 //
@@ -233,7 +233,7 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 // Setting and Checking Compression Types 
 //
 + (void) getTIFFCompressionTypes: (const NSTIFFCompression**)list
-			   count: (int*)numTypes;
+			   count: (NSInteger*)numTypes;
 + (NSString*) localizedNameForTIFFCompressionType: (NSTIFFCompression)type;
 - (BOOL) canBeCompressedUsing: (NSTIFFCompression)compression;
 - (void) getCompression: (NSTIFFCompression*)compression

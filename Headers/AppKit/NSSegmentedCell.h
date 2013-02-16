@@ -46,7 +46,7 @@ typedef enum {
 @interface NSSegmentedCell : NSActionCell
 {
   @private
-  int _selected_segment;
+  NSInteger _selected_segment;
   int _key_selection;
   NSMutableArray *_items;
   struct {
@@ -62,14 +62,14 @@ typedef enum {
 }
 
 // Specifying number of segments...
-- (void) setSegmentCount: (int) count;
-- (int) segmentCount; 
+- (void) setSegmentCount: (NSInteger) count;
+- (NSInteger) segmentCount; 
 
 // Specifying selected segment...
-- (void) setSelectedSegment: (int) segment;
-- (void) setSelected: (BOOL)flag forSegment: (int)segment;
-- (int) selectedSegment;
-- (void) selectSegmentWithTag: (int) tag;
+- (void) setSelectedSegment: (NSInteger) segment;
+- (void) setSelected: (BOOL)flag forSegment: (NSInteger)segment;
+- (NSInteger) selectedSegment;
+- (void) selectSegmentWithTag: (NSInteger)tag;
 - (void) makeNextSegmentKey;
 - (void) makePreviousSegmentKey;
 
@@ -78,24 +78,24 @@ typedef enum {
 - (NSSegmentSwitchTracking) trackingMode;
 
 // Working with individual segments...
-- (void) setWidth: (float)width forSegment: (int)segment;
-- (float) widthForSegment: (int)segment;
-- (void) setImage: (NSImage *)image forSegment: (int)segment;
-- (NSImage *) imageForSegment: (int)segment;
-- (void) setLabel: (NSString *)label forSegment: (int)segment;
-- (NSString *) labelForSegment: (int)segment;
-- (BOOL) isSelectedForSegment: (int)segment;
-- (void) setEnabled: (BOOL)flag forSegment: (int)segment;
-- (BOOL) isEnabledForSegment: (int)segment;
-- (void) setMenu: (NSMenu *)menu forSegment: (int)segment;
-- (NSMenu *) menuForSegment: (int)segment;
-- (void) setToolTip: (NSString *) toolTip forSegment: (int)segment;
-- (NSString *) toolTipForSegment: (int)segment;
-- (void) setTag: (int)tag forSegment: (int)segment;
-- (int) tagForSegment: (int)segment;
+- (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment;
+- (CGFloat) widthForSegment: (NSInteger)segment;
+- (void) setImage: (NSImage *)image forSegment: (NSInteger)segment;
+- (NSImage *) imageForSegment: (NSInteger)segment;
+- (void) setLabel: (NSString *)label forSegment: (NSInteger)segment;
+- (NSString *) labelForSegment: (NSInteger)segment;
+- (BOOL) isSelectedForSegment: (NSInteger)segment;
+- (void) setEnabled: (BOOL)flag forSegment: (NSInteger)segment;
+- (BOOL) isEnabledForSegment: (NSInteger)segment;
+- (void) setMenu: (NSMenu *)menu forSegment: (NSInteger)segment;
+- (NSMenu *) menuForSegment: (NSInteger)segment;
+- (void) setToolTip: (NSString *) toolTip forSegment: (NSInteger)segment;
+- (NSString *) toolTipForSegment: (NSInteger)segment;
+- (void) setTag: (NSInteger)tag forSegment: (NSInteger)segment;
+- (NSInteger) tagForSegment: (NSInteger)segment;
 
 // Drawing custom content
-- (void) drawSegment: (int)segment 
+- (void) drawSegment: (NSInteger)segment 
              inFrame: (NSRect)frame 
             withView: (NSView *)view;
 

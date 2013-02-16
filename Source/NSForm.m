@@ -244,7 +244,7 @@ static Class defaultCellClass = nil;
     informations. The default text alignment is NSRightTextAlignment</p> 
     <p>See Also: -setTitleAlignment: [NSCell-setAlignment:]</p>
  */
-- (void) setTextAlignment: (int)aMode
+- (void) setTextAlignment: (NSTextAlignment)aMode
 {
   NSInteger i, count = [self numberOfRows];
 

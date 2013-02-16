@@ -68,8 +68,8 @@ BOOL NSImageForceCaching = NO; /* use on missmatch */
   if ((ext == nil) || [ext isEqualToString:@""])
     {
       NSArray *types = [NSImage imageUnfilteredFileTypes];
-      unsigned c = [types count];
-      unsigned i;
+      NSUInteger c = [types count];
+      NSUInteger i;
 
       for (i = 0; path == nil && i < c; i++)
         {
@@ -614,7 +614,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) isValid
 {
   BOOL valid = NO;
-  unsigned i, count;
+  NSUInteger i, count;
 
   if (_flags.syncLoad)
     {
@@ -645,7 +645,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) recache
 {
-  unsigned i;
+  NSUInteger i;
 
   i = [_reps count];
   while (i--) 
@@ -709,7 +709,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) compositeToPoint: (NSPoint)aPoint
                 operation: (NSCompositingOperation)op
-                 fraction: (float)delta
+                 fraction: (CGFloat)delta
 {
   [self compositeToPoint: aPoint 
 		fromRect: NSZeroRect
@@ -720,7 +720,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) compositeToPoint: (NSPoint)aPoint
                  fromRect: (NSRect)srcRect
                 operation: (NSCompositingOperation)op
-                 fraction: (float)delta
+                 fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -753,7 +753,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   }
 }
 
-- (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat
+- (void) dissolveToPoint: (NSPoint)aPoint fraction: (CGFloat)aFloat
 {
   [self dissolveToPoint: aPoint 
 	       fromRect: NSZeroRect
@@ -762,7 +762,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) dissolveToPoint: (NSPoint)aPoint
                 fromRect: (NSRect)aRect 
-                fraction: (float)aFloat
+                fraction: (CGFloat)aFloat
 {
   [self compositeToPoint: aPoint
 		fromRect: aRect
@@ -804,7 +804,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) drawAtPoint: (NSPoint)point
             fromRect: (NSRect)srcRect
            operation: (NSCompositingOperation)op
-            fraction: (float)delta
+            fraction: (CGFloat)delta
 {
   [self drawInRect: NSMakeRect(point.x, point.y, srcRect.size.width, srcRect.size.height)
 	  fromRect: srcRect
@@ -817,7 +817,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) drawInRect: (NSRect)dstRect
            fromRect: (NSRect)srcRect
           operation: (NSCompositingOperation)op
-           fraction: (float)delta
+           fraction: (CGFloat)delta
 {
   [self drawInRect: dstRect
 	  fromRect: srcRect
@@ -833,7 +833,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) drawInRect: (NSRect)dstRect // Negative width/height => Nothing draws.
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (CGFloat)delta
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints
 {
@@ -918,7 +918,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) addRepresentations: (NSArray *)imageRepArray
 {
-  unsigned i, count;
+  NSUInteger i, count;
   GSRepData *repd;
 
   count = [imageRepArray count];
@@ -933,7 +933,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) removeRepresentation: (NSImageRep *)imageRep
 {
-  unsigned i;
+  NSUInteger i;
   GSRepData *repd;
 
   i = [_reps count];
@@ -1319,7 +1319,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 
 - (NSMutableArray *) _representationsWithCachedImages: (BOOL)flag
 {
-  unsigned        count;
+  NSUInteger count;
 
   if (_flags.syncLoad)
     {
@@ -1337,7 +1337,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   else
     {
       id repList[count];
-      unsigned i, j;
+      NSUInteger i, j;
 
       [_reps getObjects: repList];
       j = 0;
@@ -2084,15 +2084,15 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
        * for this image rep. If none is found create a cache to be used to
        * render the image rep into, and switch to the cached rep.
        */
-      unsigned count = [_reps count];
+      NSUInteger count = [_reps count];
 
       if (count > 0)
         {
           GSRepData *invalidCache = nil;
           GSRepData *partialCache = nil;
           GSRepData *reps[count];
-          unsigned partialCount = 0;
-          unsigned i;
+          NSUInteger partialCount = 0;
+          NSUInteger i;
           BOOL opaque = [rep isOpaque];
           
           [_reps getObjects: reps];
@@ -2163,7 +2163,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
           GSRepData *repd;
 	  NSSize imageSize = [self size];
           NSSize repSize;
-	  int pixelsWide, pixelsHigh;
+	  NSInteger pixelsWide, pixelsHigh;
 
 	  if (rep != nil)
 	    {

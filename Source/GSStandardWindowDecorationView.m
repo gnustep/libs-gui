@@ -75,7 +75,7 @@
     }
 }
 
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (NSUInteger)aStyle
 {
   float l, r, t, b, width;
@@ -97,7 +97,7 @@
 
   if (hasTitleBar)
     {
-      float titleHeight = [theme titlebarHeight];
+      CGFloat titleHeight = [theme titlebarHeight];
 
       titleBarRect = NSMakeRect(0.0, [self bounds].size.height - titleHeight,
 	[self bounds].size.width, titleHeight);

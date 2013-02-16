@@ -1,10 +1,35 @@
+2013-02-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
+	* Headers/AppKit/NSBitmapImageRep.h
+	* Headers/AppKit/NSForm.h
+	* Headers/AppKit/NSImage.h
+	* Headers/AppKit/NSMenuItem.h
+	* Headers/AppKit/NSRulerMarker.h
+	* Headers/AppKit/NSRulerView.h
+	* Headers/AppKit/NSSegmentedCell.h
+	* Headers/AppKit/NSSegmentedControl.h
+	* Headers/AppKit/NSWindow.h
+	* Source/GSStandardWindowDecorationView.m
+	* Source/GSWindowDecorationView.m
+	* Source/NSBitmapImageRep.m
+	* Source/NSForm.m
+	* Source/NSImage.m
+	* Source/NSMenuItem.m
+	* Source/NSRulerMarker.m
+	* Source/NSRulerView.m
+	* Source/NSSegmentedCell.m
+	* Source/NSSegmentedControl.m
+	* Source/NSWindow.m
+	More CGFloat, NSUInteger and NSInteger changes.
+
 2013-02-14  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/AppKit/NSTableView.h
-	* Source/NSTableView.m 
+	* Source/NSTableView.m
 	* Source/NSOutline.m
-	(-_dataCellForTableColumn:row:, -preparedCellAtColumn:row:): 
-	Replaced _dataCellForTableColumn:row: by -preparedCellAtColumn:row: 
+	(-_dataCellForTableColumn:row:, -preparedCellAtColumn:row:):
+	Replaced _dataCellForTableColumn:row: by -preparedCellAtColumn:row:
 	new public method from Mac OS X 10.5.
 
 2013-02-14  Fred Kiefer <FredKiefer@gmx.de>

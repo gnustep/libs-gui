@@ -40,8 +40,8 @@
        styleMask: (NSUInteger)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (NSUInteger)aStyle;
-- (float) minFrameWidthWithTitle: (NSString *)aTitle
-       styleMask: (NSUInteger)aStyle;
+- (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                         styleMask: (NSUInteger)aStyle;
 @end
 
 
@@ -70,7 +70,7 @@ this, either directly, or indirectly (by using the backend).
 			 styleMask: (NSUInteger)aStyle;
 
 - (void) layout;
-- (void) changeWindowHeight: (float)difference;
+- (void) changeWindowHeight: (CGFloat)difference;
 
 - (void) setBackgroundColor: (NSColor *)color;
 - (void) setContentView: (NSView *)contentView;

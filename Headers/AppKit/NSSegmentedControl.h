@@ -43,27 +43,27 @@ typedef enum _NSSegmentStyle {
 @interface NSSegmentedControl : NSControl
 
 // Specifying number of segments...
-- (void) setSegmentCount: (int) count;
-- (int) segmentCount; 
+- (void) setSegmentCount: (NSInteger)count;
+- (NSInteger) segmentCount; 
 
 // Specifying selected segment...
-- (void) setSelectedSegment: (int) segment;
-- (int) selectedSegment;
-- (void) selectSegmentWithTag: (int) tag;
+- (void) setSelectedSegment: (NSInteger)segment;
+- (NSInteger) selectedSegment;
+- (void) selectSegmentWithTag: (NSInteger)tag;
 
 // Working with individual segments...
-- (void) setWidth: (float)width forSegment: (int)segment;
-- (float) widthForSegment: (int)segment;
-- (void) setImage: (NSImage *)image forSegment: (int)segment;
-- (NSImage *) imageForSegment: (int)segment;
-- (void) setLabel: (NSString *)label forSegment: (int)segment;
-- (NSString *) labelForSegment: (int)segment;
-- (void) setMenu: (NSMenu *)menu forSegment: (int)segment;
-- (NSMenu *) menuForSegment: (int)segment;
-- (void) setSelected: (BOOL)flag forSegment: (int)segment;
-- (BOOL) isSelectedForSegment: (int)segment;
-- (void) setEnabled: (BOOL)flag forSegment: (int)segment;
-- (BOOL) isEnabledForSegment: (int)segment;
+- (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment;
+- (CGFloat) widthForSegment: (NSInteger)segment;
+- (void) setImage: (NSImage *)image forSegment: (NSInteger)segment;
+- (NSImage *) imageForSegment: (NSInteger)segment;
+- (void) setLabel: (NSString *)label forSegment: (NSInteger)segment;
+- (NSString *) labelForSegment: (NSInteger)segment;
+- (void) setMenu: (NSMenu *)menu forSegment: (NSInteger)segment;
+- (NSMenu *) menuForSegment: (NSInteger)segment;
+- (void) setSelected: (BOOL)flag forSegment: (NSInteger)segment;
+- (BOOL) isSelectedForSegment: (NSInteger)segment;
+- (void) setEnabled: (BOOL)flag forSegment: (NSInteger)segment;
+- (BOOL) isEnabledForSegment: (NSInteger)segment;
 
 // Setting the style of the segments
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)

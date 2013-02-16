@@ -520,12 +520,12 @@ static Class imageClass;
   [self setTitle: [title string]];
 }
 
-- (int)indentationLevel
+- (NSInteger)indentationLevel
 {
   return _indentation;
 }
 
-- (void)setIndentationLevel: (int)level
+- (void)setIndentationLevel: (NSInteger)level
 {
   _indentation = level;
 }

@@ -47,99 +47,99 @@ static Class segmentedControlCellClass;
 }
 
 // Specifying number of segments...
-- (void) setSegmentCount: (int) count
+- (void) setSegmentCount: (NSInteger) count
 {
   [_cell setSegmentCount: count];
 }
 
-- (int) segmentCount
+- (NSInteger) segmentCount
 {
   return [_cell segmentCount];
 } 
 
 // Specifying selected segment...
-- (void) setSelectedSegment: (int) segment
+- (void) setSelectedSegment: (NSInteger) segment
 {
   [_cell setSelectedSegment: segment];
 }
 
-- (int) selectedSegment
+- (NSInteger) selectedSegment
 {
   return [_cell selectedSegment];
 }
 
-- (void) selectSegmentWithTag: (int) tag
+- (void) selectSegmentWithTag: (NSInteger) tag
 {
   [_cell selectSegmentWithTag: tag];
 }
 
 // Working with individual segments...
-- (void) setWidth: (float)width forSegment: (int)segment
+- (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment
 {
   [_cell setWidth: width forSegment: segment];
 }
 
-- (float) widthForSegment: (int)segment
+- (CGFloat) widthForSegment: (NSInteger)segment
 {
   return [_cell widthForSegment: segment];
 }
 
-- (void) setImage: (NSImage *)image forSegment: (int)segment
+- (void) setImage: (NSImage *)image forSegment: (NSInteger)segment
 {
   [_cell setImage: image forSegment: segment];
 }
 
-- (NSImage *) imageForSegment: (int)segment
+- (NSImage *) imageForSegment: (NSInteger)segment
 {
   return [_cell imageForSegment: segment];
 }
 
-- (void) setLabel: (NSString *)label forSegment: (int)segment
+- (void) setLabel: (NSString *)label forSegment: (NSInteger)segment
 {
   [_cell setLabel: label forSegment: segment];
 }
 
-- (NSString *) labelForSegment: (int)segment
+- (NSString *) labelForSegment: (NSInteger)segment
 {
   return [_cell labelForSegment: segment];
 }
 
-- (void) setMenu: (NSMenu *)menu forSegment: (int)segment
+- (void) setMenu: (NSMenu *)menu forSegment: (NSInteger)segment
 {
   [_cell setMenu: menu forSegment: segment];
 }
 
-- (NSMenu *) menuForSegment: (int)segment
+- (NSMenu *) menuForSegment: (NSInteger)segment
 {
   return [_cell menuForSegment: segment];
 }
 
-- (void) setSelected: (BOOL)flag forSegment: (int)segment
+- (void) setSelected: (BOOL)flag forSegment: (NSInteger)segment
 {
   [_cell setSelected: flag forSegment: segment];
 }
 
-- (BOOL) isSelectedForSegment: (int)segment
+- (BOOL) isSelectedForSegment: (NSInteger)segment
 {
   return [_cell isSelectedForSegment: segment];
 }
 
-- (void) setEnabled: (BOOL)flag forSegment: (int)segment
+- (void) setEnabled: (BOOL)flag forSegment: (NSInteger)segment
 {
   [_cell setEnabled: flag forSegment: segment];
 }
 
-- (BOOL) isEnabledForSegment: (int)segment
+- (BOOL) isEnabledForSegment: (NSInteger)segment
 {
   return [_cell isEnabledForSegment: segment];
 }
 
-- (void)setSegmentStyle:(NSSegmentStyle)style
+- (void) setSegmentStyle: (NSSegmentStyle)style
 {
   [_cell setSegmentStyle: style];
 }
 
-- (NSSegmentStyle)segmentStyle
+- (NSSegmentStyle) segmentStyle
 {
   return [_cell segmentStyle];
 }

@@ -45,14 +45,14 @@
   NSImage *_image;
   id <NSCopying> _representedObject;
   NSPoint _imageOrigin;
-  float _location;
+  CGFloat _location;
   BOOL _isMovable;
   BOOL _isRemovable;
   BOOL _isDragging;
 }
 
 - (id)initWithRulerView:(NSRulerView *)aRulerView
-         markerLocation:(float)location
+         markerLocation:(CGFloat)location
 		  image:(NSImage *)anImage
 	    imageOrigin:(NSPoint)imageOrigin; 
 
@@ -64,15 +64,15 @@
 - (void)setImageOrigin:(NSPoint)aPoint; 
 - (NSPoint)imageOrigin; 
 - (NSRect)imageRectInRuler; 
-- (float)thicknessRequiredInRuler; 
+- (CGFloat)thicknessRequiredInRuler; 
 
 - (void)setMovable:(BOOL)flag;
 - (BOOL)isMovable; 
 - (void)setRemovable:(BOOL)flag; 
 - (BOOL)isRemovable; 
 
-- (void)setMarkerLocation:(float)location; 
-- (float)markerLocation; 
+- (void)setMarkerLocation:(CGFloat)location; 
+- (CGFloat)markerLocation; 
 
 - (void)setRepresentedObject:(id <NSCopying>)anObject; 
 - (id <NSCopying>)representedObject;

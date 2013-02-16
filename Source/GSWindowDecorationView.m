@@ -130,8 +130,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   return aRect;
 }
 
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (NSUInteger)aStyle
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                         styleMask: (NSUInteger)aStyle
 {
   [self subclassResponsibility: _cmd];
   return 0.0;
@@ -192,9 +192,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
   if ([_window menu] != nil)
     {
-      float	menubarHeight = [[GSTheme theme] 
-					 menuHeightForWindow: 
-				    _window];
+      CGFloat menubarHeight = 
+        [[GSTheme theme] menuHeightForWindow: _window];
   
       content.size.height -= menubarHeight;
     }
@@ -216,9 +215,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
   if ([_window menu] != nil)
     {
-      float	menubarHeight = [[GSTheme theme] 
-				  menuHeightForWindow: 
-				    _window];
+      CGFloat menubarHeight =
+        [[GSTheme theme] menuHeightForWindow: _window];
 
       aRect.size.height += menubarHeight;
     }
@@ -296,7 +294,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
     {
       NSMenuView *menuView = nil;
       GSTheme *theme = [GSTheme theme];
-      float menuBarHeight = [theme menuHeightForWindow: _window];
+      CGFloat menuBarHeight = [theme menuHeightForWindow: _window];
       NSRect menuRect = 
 	NSMakeRect(contentViewFrame.origin.x,
 		   (NSMaxY(contentRect) + 1) - menuBarHeight,  
@@ -320,7 +318,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   if (hasToolbar)
     {
       GSToolbarView *tv = [tb _toolbarView];
-      float newToolbarViewHeight;
+      CGFloat newToolbarViewHeight;
       NSRect toolbarRect;
       // If the width changed we may need to recalculate the height
       if (contentViewFrame.size.width != [tv frame].size.width)
@@ -351,7 +349,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
     }
 }
 
-- (void) changeWindowHeight: (float)difference
+- (void) changeWindowHeight: (CGFloat)difference
 {
   NSRect orgWindowFrame;
   NSRect windowFrame;
@@ -459,8 +457,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 - (void) addToolbarView: (GSToolbarView*)toolbarView
 {
-  float newToolbarViewHeight;
-  float contentYOrigin;
+  CGFloat newToolbarViewHeight;
+  CGFloat contentYOrigin;
 
   hasToolbar = YES;
   [toolbarView setFrameSize: NSMakeSize(contentRect.size.width, 100)];
@@ -472,7 +470,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   contentYOrigin = NSMaxY(contentRect);
   if (hasMenu)
     {
-      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: _window];
+      CGFloat menuBarHeight = [[GSTheme theme] menuHeightForWindow: _window];
       contentYOrigin -= menuBarHeight;
     }
 
@@ -489,7 +487,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 - (void) removeToolbarView: (GSToolbarView *)toolbarView
 {
-  float toolbarViewHeight = [toolbarView frame].size.height;
+  CGFloat toolbarViewHeight = [toolbarView frame].size.height;
 
   // Unplug the toolbar view
   hasToolbar = NO;
@@ -502,8 +500,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 {
   // Frame and height
   NSRect toolbarViewFrame = [toolbarView frame];
-  float toolbarViewHeight = toolbarViewFrame.size.height;
-  float newToolbarViewHeight = [toolbarView _heightFromLayout];
+  CGFloat toolbarViewHeight = toolbarViewFrame.size.height;
+  CGFloat newToolbarViewHeight = [toolbarView _heightFromLayout];
   
   if (toolbarViewHeight != newToolbarViewHeight)
     {
@@ -523,7 +521,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 - (void) addMenuView: (NSMenuView*)menuView
 {
-  float	menubarHeight = [[GSTheme theme] 
+  CGFloat menubarHeight = [[GSTheme theme] 
 			  menuHeightForWindow: 
 			    _window];
   NSRect menuRect = NSMakeRect(contentRect.origin.x,
@@ -540,9 +538,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 - (NSMenuView*) removeMenuView
 {
-  NSEnumerator	*e = [[self subviews] objectEnumerator];
-  NSView	*v;
-  float	menubarHeight = [[GSTheme theme] 
+  NSEnumerator *e = [[self subviews] objectEnumerator];
+  NSView *v;
+  CGFloat menubarHeight = [[GSTheme theme] 
 			  menuHeightForWindow: 
 			    _window];
   
@@ -576,8 +574,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   [GSCurrentServer() styleoffsets: l : r : t : b : style];
 }
 
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (NSUInteger)aStyle
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                         styleMask: (NSUInteger)aStyle
 {
   /* TODO: we could at least guess... */
   return 0.0;
