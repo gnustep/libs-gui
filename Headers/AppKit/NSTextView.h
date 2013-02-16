@@ -46,22 +46,23 @@
 @class NSRulerView,NSRulerMarker;
 
 
-typedef enum _NSSelectionGranularity {
+enum _NSSelectionGranularity {
   NSSelectByCharacter	= 0,
   NSSelectByWord	= 1,
   NSSelectByParagraph	= 2,
-} NSSelectionGranularity;
-
+};
+typedef NSUInteger NSSelectionGranularity;
 
 /* TODO: this looks like a mosx extension, not a GNUstep extension. should
 double-check */
-typedef enum _NSSelectionAffinity {
+enum _NSSelectionAffinity {
   NSSelectionAffinityUpstream	= 0,
   NSSelectionAffinityDownstream	= 1,
-} NSSelectionAffinity;
+};
+typedef NSUInteger NSSelectionAffinity;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-typedef enum _NSFindPanelAction
+enum _NSFindPanelAction
 {
   NSFindPanelActionShowFindPanel = 1,
   NSFindPanelActionNext,
@@ -76,7 +77,8 @@ typedef enum _NSFindPanelAction
   NSFindPanelActionSelectAll,
   NSFindPanelActionSelectAllInSelection
 #endif
-} NSFindPanelAction;
+};
+typedef NSUInteger NSFindPanelAction;
 #endif
 
 /*
@@ -162,21 +164,18 @@ therefore be stored in the NSLayoutManager to avoid problems.
 
 
   /* shared by all text views attached to one NSTextStorage */
-  int _spellCheckerDocumentTag;
-
+  NSInteger _spellCheckerDocumentTag;
 
   NSColor *_backgroundColor;
 
   NSSize _minSize;
   NSSize _maxSize;
-
   
   /* The following is the object used when posting notifications.  
      It is usually `self' - but in the case of multiple textviews 
      it is the firstTextView returned by the layout manager - which 
      might or might not be `self'.  This must *not* be retained. */
   NSTextView *_notifObject;
-
 
   /* other members of the text network */
   NSTextContainer *_textContainer;
@@ -204,7 +203,6 @@ therefore be stored in the NSLayoutManager to avoid problems.
   BOOL _drawInsertionPointNow;
 //#endif
 
-
   /* Stores the insertion point rect - updated by
      updateInsertionPointStateAndRestartTimer: - we must make sure we
      call the method every time that the insertion point rect might
@@ -218,12 +216,13 @@ therefore be stored in the NSLayoutManager to avoid problems.
   NSLayoutManager tries to maintain the original horizontal position when
   moving up/down.)
   */
-  unsigned int _originalInsertionPointCharacterIndex;
+  NSUInteger _originalInsertionPointCharacterIndex;
 
   /*
-  0=no information (_originalInsertionPointCharacterIndex undefined)
-  1=horizontal
-  2=vertical
+   * GSInsertionPointMovementDirection
+   * 0=no information (_originalInsertionPointCharacterIndex undefined)
+   * 1=horizontal
+   * 2=vertical
   */
   int _currentInsertionPointMovementDirection;
 
@@ -485,26 +484,6 @@ user/programmatic changes of the text.
 
 @interface NSTextView (leftovers)
 
-
-
-/*** Ruler support ***/
-
--(void) rulerView: (NSRulerView *)ruler didMoveMarker: (NSRulerMarker *)marker;
--(void) rulerView: (NSRulerView *)ruler didRemoveMarker: (NSRulerMarker *)marker;
--(void) rulerView: (NSRulerView *)ruler didAddMarker: (NSRulerMarker *)marker;
--(BOOL) rulerView: (NSRulerView *)ruler shouldMoveMarker: (NSRulerMarker *)marker;
--(BOOL) rulerView: (NSRulerView *)ruler shouldRemoveMarker: (NSRulerMarker *)marker;
--(BOOL) rulerView: (NSRulerView *)ruler shouldAddMarker: (NSRulerMarker *)marker;
--(float) rulerView: (NSRulerView *)ruler
-    willMoveMarker: (NSRulerMarker *)marker
-	toLocation: (float)location;
--(float) rulerView: (NSRulerView *)ruler
-     willAddMarker: (NSRulerMarker *)marker
-	atLocation: (float)location;
--(void) rulerView: (NSRulerView *)ruler
-  handleMouseDown: (NSEvent *)event;
-
-
 /*** Fine display control ***/
 
 /* Like -setNeedsDisplayInRect: (NSView), bit if flag is YES, won't do any
@@ -542,8 +521,8 @@ already been laid out. */
 
 -(NSImage *) dragImageForSelectionWithEvent: (NSEvent *)event
 				     origin: (NSPoint *)origin; /* mosx */
--(unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo
-					type: (NSString *)type; /* mosx */
+-(NSDragOperation) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo
+                                           type: (NSString *)type; /* mosx */
 -(BOOL) dragSelectionWithEvent: (NSEvent *)event
 			offset: (NSSize)mouseOffset
 		     slideBack: (BOOL)slideBack; /* mosx */
@@ -580,7 +559,7 @@ already been laid out. */
 
 /*** Spell checking ***/
 
--(int) spellCheckerDocumentTag;
+-(NSInteger) spellCheckerDocumentTag;
 
 
 /*** Smart copy/paste/delete support ***/
@@ -606,7 +585,7 @@ already been laid out. */
 -(void) setTypingAttributes: (NSDictionary *)attrs;
 
 - (void) clickedOnLink: (id)link
-               atIndex: (unsigned int)charIndex;
+               atIndex: (NSUInteger)charIndex;
 
 -(void) updateRuler;
 -(void) updateFontPanel;
@@ -632,10 +611,10 @@ already been laid out. */
 
 - (void) complete: (id)sender;
 - (NSArray *) completionsForPartialWordRange: (NSRange)range
-                         indexOfSelectedItem: (int *)index;
+                         indexOfSelectedItem: (NSInteger *)index;
 - (void) insertCompletion: (NSString *)word
       forPartialWordRange: (NSRange)range
-                 movement: (int)movement
+                 movement: (NSInteger)movement
                   isFinal: (BOOL)flag;
 
 - (void) performFindPanelAction: (id)sender;
@@ -683,12 +662,12 @@ layout manager. */
 -(void) textView: (NSTextView *)textView
    clickedOnCell: (id <NSTextAttachmentCell>)cell
 	  inRect: (NSRect)cellFrame
-	 atIndex: (unsigned)charIndex;
+	 atIndex: (NSUInteger)charIndex;
 
 -(BOOL) textView: (NSTextView *)textView  clickedOnLink: (id)link;
 -(BOOL) textView: (NSTextView *)textView
    clickedOnLink: (id)link
-	 atIndex: (unsigned)charIndex;
+	 atIndex: (NSUInteger)charIndex;
 
 -(void) textView: (NSTextView *)textView
 doubleClickedOnCell: (id <NSTextAttachmentCell>)cell 
@@ -696,16 +675,17 @@ doubleClickedOnCell: (id <NSTextAttachmentCell>)cell
 -(void) textView: (NSTextView *)textView
 doubleClickedOnCell: (id <NSTextAttachmentCell>)cell 
 	  inRect: (NSRect)cellFrame
-	 atIndex: (unsigned)charIndex;
+	 atIndex: (NSUInteger)charIndex;
 
 -(void) textView: (NSTextView *)view
      draggedCell: (id <NSTextAttachmentCell>)cell
-	  inRect: (NSRect)rect event:(NSEvent *)event;
+	  inRect: (NSRect)rect
+           event:(NSEvent *)event;
 -(void) textView: (NSTextView *)view
      draggedCell: (id <NSTextAttachmentCell>)cell
 	  inRect: (NSRect)rect
 	   event: (NSEvent *)event
-	 atIndex: (unsigned)charIndex;
+	 atIndex: (NSUInteger)charIndex;
 
 -(NSRange) textView: (NSTextView *)textView
 willChangeSelectionFromCharacterRange: (NSRange)oldSelectedCharRange 
@@ -729,10 +709,10 @@ replacementString will be nil. */
 - (NSArray *) textView: (NSTextView *)textView
            completions: (NSArray *)words
    forPartialWordRange: (NSRange)range
-   indexOfSelectedItem: (int *)index;
+   indexOfSelectedItem: (NSInteger *)index;
 - (NSString *) textView: (NSTextView *)textView
 	 willDisplayToolTip: (NSString *)tooltip
-	forCharacterAtIndex: (unsigned int)index;
+	forCharacterAtIndex: (NSUInteger)index;
 - (void) textViewDidChangeTypingAttributes: (NSNotification *)notification;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)

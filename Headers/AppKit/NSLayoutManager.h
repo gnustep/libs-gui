@@ -122,9 +122,9 @@ typedef enum {
 
 - (unsigned int) glyphIndexForPoint: (NSPoint)aPoint
 	inTextContainer: (NSTextContainer *)aTextContainer;
-- (unsigned int) glyphIndexForPoint: (NSPoint)point
+- (NSUInteger) glyphIndexForPoint: (NSPoint)point
 	inTextContainer: (NSTextContainer *)container
-	fractionOfDistanceThroughGlyph: (float *)partialFraction;
+	fractionOfDistanceThroughGlyph: (CGFloat *)partialFraction;
 
 
 /*

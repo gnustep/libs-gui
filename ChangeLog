@@ -1,5 +1,20 @@
 2013-02-16  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSDragging.h
+	* Headers/AppKit/NSInputManager.h
+	* Headers/AppKit/NSLayoutManager.h
+	* Headers/AppKit/NSRulerView.h
+	* Headers/AppKit/NSText.h
+	* Headers/AppKit/NSTextView.h
+	* Source/NSInputManager.m
+	* Source/NSLayoutManager.m
+	* Source/NSText.m
+	* Source/NSTextView.m
+	* Source/NSTextView_actions.m
+	More CGFloat, NSUInteger and NSInteger changes.
+
+2013-02-16  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h
 	* Headers/AppKit/NSBitmapImageRep.h
 	* Headers/AppKit/NSForm.h

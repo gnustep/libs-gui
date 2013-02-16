@@ -770,12 +770,12 @@ static NSInputManager *currentInputManager = nil;
   return nil;
 }
 
-- (unsigned int) characterIndexForPoint: (NSPoint)thePoint
+- (NSUInteger) characterIndexForPoint: (NSPoint)thePoint
 {
   return 0;
 }
 
-- (long) conversationIdentifier
+- (NSInteger) conversationIdentifier
 {
   return 0;
 }

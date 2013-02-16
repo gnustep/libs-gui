@@ -159,13 +159,13 @@ typedef enum {
 - (BOOL)rulerView: (NSRulerView *)aRulerView 
    shouldRemoveMarker: (NSRulerMarker *)aMarker;
 
-- (float)rulerView: (NSRulerView *)aRulerView
-     willAddMarker: (NSRulerMarker *)aMarker
-        atLocation: (float)location; 
+- (CGFloat)rulerView: (NSRulerView *)aRulerView
+       willAddMarker: (NSRulerMarker *)aMarker
+          atLocation: (CGFloat)location; 
 
-- (float)rulerView: (NSRulerView *)aRulerView
-    willMoveMarker: (NSRulerMarker *)aMarker
-        toLocation: (float)location; 
+- (CGFloat)rulerView: (NSRulerView *)aRulerView
+      willMoveMarker: (NSRulerMarker *)aMarker
+          toLocation: (CGFloat)location; 
 
 - (void)rulerView: (NSRulerView *)aRulerView
 willSetClientView: (NSView *)newClient; 

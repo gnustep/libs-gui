@@ -635,15 +635,15 @@ line frag rect. */
 TODO: decide on behavior wrt. invisible glyphs and pointer far away from
 anything visible
 */
--(unsigned int) glyphIndexForPoint: (NSPoint)point
-		   inTextContainer: (NSTextContainer *)container
-    fractionOfDistanceThroughGlyph: (float *)partialFraction
+-(NSUInteger) glyphIndexForPoint: (NSPoint)point
+                 inTextContainer: (NSTextContainer *)container
+  fractionOfDistanceThroughGlyph: (CGFloat *)partialFraction
 {
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
   linefrag_point_t *lp;
-  float dummy;
+  CGFloat dummy;
 
   if (!partialFraction)
     partialFraction = &dummy;
@@ -654,7 +654,7 @@ anything visible
   if (i == num_textcontainers)
     {
       NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
-      return -1;
+      return NSNotFound;
     }
 
   [self _doLayoutToContainer: i  point: point];
@@ -681,7 +681,14 @@ anything visible
           if (i > 0)
             {
               *partialFraction = 1.0;
-              return lf->pos - 1;
+              if (lf->pos == 0)
+                {
+                  return NSNotFound;
+                }
+              else
+                {
+                  return lf->pos - 1;
+                }
             }
           else
             {
@@ -713,7 +720,15 @@ anything visible
   if (i == tc->num_linefrags)
     {
       *partialFraction = 1.0;
-      return tc->pos + tc->length - 1; /* TODO: this should return the correct thing even if the container is empty */
+      /* TODO: this should return the correct thing even if the container is empty */
+      if (tc->pos + tc->length == 0)
+        {
+          return NSNotFound;
+        }
+      else
+        {
+          return tc->pos + tc->length - 1;
+        }
     }
 
   /* only interested in x from here on */

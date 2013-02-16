@@ -40,7 +40,7 @@
 @class NSImage;
 
 @protocol NSTextInput
-- (void) setMarkedText: (id)aString  selectedRange: (NSRange)selRange;
+- (void) setMarkedText: (id)aString selectedRange: (NSRange)selRange;
 - (BOOL) hasMarkedText;
 - (NSRange) markedRange;
 - (NSRange) selectedRange;
@@ -49,8 +49,8 @@
 
 
 - (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange;
-- (unsigned int) characterIndexForPoint: (NSPoint)thePoint;
-- (long) conversationIdentifier;
+- (NSUInteger) characterIndexForPoint: (NSPoint)thePoint;
+- (NSInteger) conversationIdentifier;
 - (void) doCommandBySelector: (SEL)aSelector;
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange;
 - (void) insertText: (id)aString;

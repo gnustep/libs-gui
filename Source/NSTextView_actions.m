@@ -175,11 +175,11 @@ static NSString *killBuffer = @"";
 		  inRange: (NSRange)r
 		    using: (NSNumber*(*)(NSNumber*))func
 {
-  unsigned int i;
+  NSUInteger i;
   NSRange e, r2;
   id current, new;
 
-  if (![self shouldChangeTextInRange: r  replacementString: nil])
+  if (![self shouldChangeTextInRange: r replacementString: nil])
     return;
 
   [_textStorage beginEditing];
@@ -830,7 +830,7 @@ added to the selection (1,3).
     return NSMaxRange(range);
 }
 
-- (unsigned int) _movementEnd
+- (NSUInteger) _movementEnd
 {
   NSRange range = [self selectedRange];
 
@@ -840,12 +840,12 @@ added to the selection (1,3).
     return NSMaxRange(range);
 }
 
-- (void) _moveTo: (unsigned int)cindex
+- (void) _moveTo: (NSUInteger)cindex
 	  select: (BOOL)select
 {
   if (select)
     {
-      unsigned int anchor = [self _movementEnd];
+      NSUInteger anchor = [self _movementEnd];
 
       if (anchor < cindex)
 	{
@@ -867,9 +867,9 @@ added to the selection (1,3).
   [self scrollRangeToVisible: NSMakeRange(cindex, 0)];
 }
 
-- (void) _moveFrom: (unsigned int)cindex
+- (void) _moveFrom: (NSUInteger)cindex
 	 direction: (GSInsertionPointMovementDirection)direction
-          distance: (float)distance
+          distance: (CGFloat)distance
 	    select: (BOOL)select
 {
   int new_direction;
@@ -907,7 +907,7 @@ added to the selection (1,3).
 }
 
 - (void) _move: (GSInsertionPointMovementDirection)direction
-      distance: (float)distance
+      distance: (CGFloat)distance
 	select: (BOOL)select
 {
   [self _moveFrom: [self _movementOrigin]
@@ -923,10 +923,10 @@ added to the selection (1,3).
  * it should only be used when moving a literal direction such as left right
  * up or down, not directions like forward, backward, beginning or end
  */
-- (unsigned int) _characterIndexForSelectedRange: (NSRange)range
-  			direction: (GSInsertionPointMovementDirection)direction
+- (NSUInteger) _characterIndexForSelectedRange: (NSRange)range
+       direction: (GSInsertionPointMovementDirection)direction
 {
-  unsigned int cIndex;
+  NSUInteger cIndex;
   NSParagraphStyle *parStyle;
   NSWritingDirection writingDirection;
   
@@ -975,7 +975,7 @@ check if there was a reason for that.
 - (void) moveUp: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int cIndex = [self _characterIndexForSelectedRange:range
+  NSUInteger cIndex = [self _characterIndexForSelectedRange:range
 	  			direction:GSInsertionPointMoveUp];
   
   [self _moveFrom: cIndex
@@ -994,7 +994,7 @@ check if there was a reason for that.
 - (void) moveDown: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int cIndex = [self _characterIndexForSelectedRange: range
+  NSUInteger cIndex = [self _characterIndexForSelectedRange: range
 	  			direction: GSInsertionPointMoveDown];
   [self _moveFrom: cIndex
 	direction: GSInsertionPointMoveDown
@@ -1015,7 +1015,7 @@ check if there was a reason for that.
 
   if (range.length)
     {
-      unsigned int cIndex;
+      NSUInteger cIndex;
       
       cIndex = [self _characterIndexForSelectedRange: range
 	      		direction:GSInsertionPointMoveLeft];
@@ -1023,7 +1023,6 @@ check if there was a reason for that.
     }
   else 
     {
-
       [self _move: GSInsertionPointMoveLeft
  	    distance: 0.0
 	    select: NO];
@@ -1055,7 +1054,7 @@ check if there was a reason for that.
   
   if (range.length)
     {
-      unsigned int cIndex;
+      NSUInteger cIndex;
       
       cIndex = [self _characterIndexForSelectedRange: range
 	       		direction: GSInsertionPointMoveRight];
@@ -1080,18 +1079,18 @@ check if there was a reason for that.
   
   if (writingDirection == NSWritingDirectionRightToLeft)
     {
-        [self moveBackwardAndModifySelection: sender];
+      [self moveBackwardAndModifySelection: sender];
     }
   else
     {
-        [self moveForwardAndModifySelection: sender];
+      [self moveForwardAndModifySelection: sender];
     }
 }
 
 - (void) moveBackward: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int to = range.location;
+  NSUInteger to = range.location;
 
   if (range.length == 0 && to)
     {
@@ -1104,7 +1103,7 @@ check if there was a reason for that.
 
 - (void) moveBackwardAndModifySelection: (id)sender
 {
-  unsigned int to = [self _movementOrigin];
+  NSUInteger to = [self _movementOrigin];
 
   if (to == 0)
     return;
@@ -1116,7 +1115,7 @@ check if there was a reason for that.
 - (void) moveForward: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int to = NSMaxRange(range);
+  NSUInteger to = NSMaxRange(range);
   
   if (range.length == 0 && to != [_textStorage length])
     {
@@ -1129,7 +1128,7 @@ check if there was a reason for that.
 
 - (void) moveForwardAndModifySelection: (id)sender
 {
-  unsigned int to = [self _movementOrigin];
+  NSUInteger to = [self _movementOrigin];
 
   if (to == [_textStorage length])
     return;
@@ -1141,8 +1140,8 @@ check if there was a reason for that.
 - (void) moveWordBackward: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int newLocation;
-  unsigned int cIndex = range.location;
+  NSUInteger newLocation;
+  NSUInteger cIndex = range.location;
   
   newLocation = [_textStorage nextWordFromIndex: cIndex
 			      forward: NO];
@@ -1152,7 +1151,7 @@ check if there was a reason for that.
 
 - (void) moveWordBackwardAndModifySelection: (id)sender
 {
-  unsigned int newLocation;
+  NSUInteger newLocation;
   
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: NO];
@@ -1162,8 +1161,8 @@ check if there was a reason for that.
 
 - (void) moveWordForward: (id)sender
 {
-  unsigned newLocation;
-  unsigned int cIndex = NSMaxRange([self selectedRange]);
+  NSUInteger newLocation;
+  NSUInteger cIndex = NSMaxRange([self selectedRange]);
 
   newLocation = [_textStorage nextWordFromIndex: cIndex
 			      forward: YES];
@@ -1173,7 +1172,7 @@ check if there was a reason for that.
 
 - (void) moveWordForwardAndModifySelection: (id)sender
 {
-  unsigned newLocation;
+  NSUInteger newLocation;
 
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: YES];
@@ -1230,11 +1229,11 @@ check if there was a reason for that.
   
   if (writingDirection == NSWritingDirectionRightToLeft)
     {
-        [self moveWordBackward: sender];
+      [self moveWordBackward: sender];
     }
   else
     {
-        [self moveWordForward: sender];
+      [self moveWordForward: sender];
     }
 }
 
@@ -1249,11 +1248,11 @@ check if there was a reason for that.
   
   if (writingDirection == NSWritingDirectionRightToLeft)
     {
-        [self moveWordBackwardAndModifySelection: sender];
+      [self moveWordBackwardAndModifySelection: sender];
     }
   else
     {
-        [self moveWordForwardAndModifySelection: sender];
+      [self moveWordForwardAndModifySelection: sender];
     }
 }
 
@@ -1285,7 +1284,6 @@ check if there was a reason for that.
 {
   NSRange aRange = [self selectedRange];
  
-  
   aRange = [[_textStorage string] lineRangeForRange: 
 				      NSMakeRange(aRange.location, 0)];
   [self _moveTo: aRange.location
@@ -1305,9 +1303,9 @@ check if there was a reason for that.
 - (void) _moveToEndOfParagraph: (id)sender modify:(BOOL)flag
 {
   NSRange aRange;
-  unsigned newLocation;
-  unsigned maxRange;
-  unsigned int cIndex;
+  NSUInteger newLocation;
+  NSUInteger maxRange;
+  NSUInteger cIndex;
 
   if (flag)
     {
@@ -1381,7 +1379,7 @@ and layout is left-to-right */
 - (void) moveToBeginningOfLine: (id)sender
 {
   NSRange range = [self selectedRange];
-  unsigned int cIndex = range.location;
+  NSUInteger cIndex = range.location;
 
   [self _moveFrom: cIndex
 	direction: GSInsertionPointMoveLeft
@@ -1398,7 +1396,7 @@ and layout is left-to-right */
 
 - (void) moveToEndOfLine: (id)sender
 {
-  unsigned int cIndex = NSMaxRange([self selectedRange]);
+  NSUInteger cIndex = NSMaxRange([self selectedRange]);
 
   [self _moveFrom: cIndex
 	direction: GSInsertionPointMoveRight
@@ -1421,10 +1419,10 @@ and layout is left-to-right */
  */
 - (void) _pageDown: (id)sender modify: (BOOL)flag
 {
-  float    scrollDelta;
-  float    oldOriginY;
-  float    newOriginY;
-  unsigned int cIndex;
+  CGFloat    scrollDelta;
+  CGFloat    oldOriginY;
+  CGFloat    newOriginY;
+  NSUInteger cIndex;
   
   if (flag)
     {
@@ -1474,10 +1472,10 @@ and layout is left-to-right */
  */
 - (void) _pageUp: (id)sender modify:(BOOL)flag
 {
-  float    scrollDelta;
-  float    oldOriginY;
-  float    newOriginY;
-  unsigned int cIndex;
+  CGFloat    scrollDelta;
+  CGFloat    oldOriginY;
+  CGFloat    newOriginY;
+  NSUInteger cIndex;
   
   if (flag)
     {
@@ -1592,7 +1590,7 @@ and layout is left-to-right */
 
 - (void) selectLine: (id)sender
 {
-  unsigned int start, end, cindex;
+  NSUInteger start, end, cindex;
 
   cindex = [self _movementOrigin];
   start = [_layoutManager characterIndexMoving: GSInsertionPointMoveLeft

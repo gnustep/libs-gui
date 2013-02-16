@@ -286,7 +286,7 @@ enum {
 
 @interface NSText (GNUstepExtensions)
 
-- (unsigned) textLength; /* PRIMITIVE */
+- (NSUInteger) textLength; /* PRIMITIVE */
 
 @end
 
