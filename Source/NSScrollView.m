@@ -114,7 +114,7 @@ typedef struct _scrollViewFlags
  * Class variables
  */
 static Class rulerViewClass = nil;
-static float scrollerWidth;
+static CGFloat scrollerWidth;
 
 /*
  * Class methods
@@ -146,7 +146,7 @@ static float scrollerWidth;
 {
   NSSize size = frameSize;
   NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
-  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+  CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
 			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   /*
@@ -176,7 +176,7 @@ static float scrollerWidth;
 {
   NSSize size = contentSize;
   NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
-  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+  CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
 			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   /*
@@ -401,9 +401,9 @@ static float scrollerWidth;
 - (void) scrollWheel: (NSEvent *)theEvent
 {
   NSRect clipViewBounds;
-  float deltaY = [theEvent deltaY];
-  float deltaX = [theEvent deltaX];
-  float amount;
+  CGFloat deltaY = [theEvent deltaY];
+  CGFloat deltaX = [theEvent deltaX];
+  CGFloat amount;
   NSPoint point;
 
   if (_contentView == nil)
@@ -500,7 +500,7 @@ static float scrollerWidth;
 {
   NSRect  clipViewBounds;
   NSPoint point;
-  float   amount;
+  CGFloat amount;
 
   if (_contentView == nil)
     {
@@ -528,7 +528,7 @@ static float scrollerWidth;
 {
   NSRect  clipViewBounds;
   NSPoint point;
-  float   amount;
+  CGFloat amount;
 
   if (_contentView == nil)
     {
@@ -563,7 +563,7 @@ static float scrollerWidth;
 {
   NSRect  clipViewBounds;
   NSPoint point;
-  float   amount;
+  CGFloat amount;
 
   if (_contentView == nil)
     {
@@ -607,7 +607,7 @@ static float scrollerWidth;
 {
   NSRect  clipViewBounds;
   NSPoint point;
-  float   amount;
+  CGFloat amount;
 
   if (_contentView == nil)
     {
@@ -641,7 +641,7 @@ static float scrollerWidth;
   NSScrollerPart hitPart = [scroller hitPart];
   NSRect clipViewBounds;
   NSRect documentRect;
-  float amount = 0;
+  CGFloat amount = 0;
   NSPoint point;
 
   if (_contentView == nil)
@@ -808,7 +808,7 @@ static float scrollerWidth;
   NSRect documentFrame = NSZeroRect;
   NSRect clipViewBounds = NSZeroRect;
   float floatValue;
-  float knobProportion;
+  CGFloat knobProportion;
   id documentView;
 
   if (aClipView != _contentView)
@@ -1069,10 +1069,10 @@ static float scrollerWidth;
   NSRect headerRect, contentRect;
   NSSize border = [[GSTheme theme] sizeForBorderType: _borderType];
   NSRectEdge bottomEdge, topEdge;
-  float headerViewHeight = 0;
+  CGFloat headerViewHeight = 0;
   NSRectEdge verticalScrollerEdge = NSMinXEdge;
   NSInterfaceStyle style;
-  float innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+  CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
 			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
@@ -1355,23 +1355,23 @@ static float scrollerWidth;
   return _rulersVisible;
 }
 
-- (void) setLineScroll: (float)aFloat
+- (void) setLineScroll: (CGFloat)aFloat
 {
   _hLineScroll = aFloat;
   _vLineScroll = aFloat;
 }
 
-- (void) setHorizontalLineScroll: (float)aFloat
+- (void) setHorizontalLineScroll: (CGFloat)aFloat
 {
   _hLineScroll = aFloat;
 }
 
-- (void) setVerticalLineScroll: (float)aFloat
+- (void) setVerticalLineScroll: (CGFloat)aFloat
 {
   _vLineScroll = aFloat;
 }
 
-- (float) lineScroll
+- (CGFloat) lineScroll
 {
   if (_hLineScroll != _vLineScroll)
     [NSException raise: NSInternalInconsistencyException
@@ -1379,33 +1379,33 @@ static float scrollerWidth;
   return _vLineScroll;
 }
 
-- (float) horizontalLineScroll
+- (CGFloat) horizontalLineScroll
 {
   return _hLineScroll;
 }
 
-- (float) verticalLineScroll
+- (CGFloat) verticalLineScroll
 {
   return _vLineScroll;
 }
 
-- (void) setPageScroll: (float)aFloat
+- (void) setPageScroll: (CGFloat)aFloat
 {
   _hPageScroll = aFloat;
   _vPageScroll = aFloat;
 }
 
-- (void) setHorizontalPageScroll: (float)aFloat
+- (void) setHorizontalPageScroll: (CGFloat)aFloat
 {
   _hPageScroll = aFloat;
 }
 
-- (void) setVerticalPageScroll: (float)aFloat
+- (void) setVerticalPageScroll: (CGFloat)aFloat
 {
   _vPageScroll = aFloat;
 }
 
-- (float) pageScroll
+- (CGFloat) pageScroll
 {
   if (_hPageScroll != _vPageScroll)
     [NSException raise: NSInternalInconsistencyException
@@ -1413,12 +1413,12 @@ static float scrollerWidth;
   return _vPageScroll;
 }
 
-- (float) horizontalPageScroll
+- (CGFloat) horizontalPageScroll
 {
   return _hPageScroll;
 }
 
-- (float) verticalPageScroll
+- (CGFloat) verticalPageScroll
 {
   return _vPageScroll;
 }
@@ -1478,7 +1478,8 @@ static float scrollerWidth;
   else
     {
       [aCoder encodeObject: _contentView];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_borderType];
+      // Was int, we need to stay compatible
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_borderType];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_hLineScroll];
@@ -1595,7 +1596,8 @@ static float scrollerWidth;
       int version = [aDecoder versionForClassName: @"NSScrollView"];
       NSDebugLLog(@"NSScrollView", @"NSScrollView: start decoding\n");
       _contentView = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_borderType];
+      // Was int, we need to stay compatible
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_borderType];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_hLineScroll];

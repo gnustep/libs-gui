@@ -1,5 +1,28 @@
 2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSScrollView.h
+	* Headers/AppKit/NSScroller.h
+	* Headers/AppKit/NSSlider.h
+	* Headers/AppKit/NSSliderCell.h
+	* Headers/AppKit/NSTableColumn.h
+	* Headers/AppKit/NSTableHeaderView.h
+	* Headers/AppKit/NSTableView.h
+	* Headers/AppKit/NSTextContainer.h
+	* Headers/AppKit/NSTextTable.h
+	* Source/NSScrollView.m
+	* Source/NSScroller.m
+	* Source/NSSlider.m
+	* Source/NSSliderCell.m
+	* Source/NSTableColumn.m
+	* Source/NSTableHeaderView.m
+	* Source/NSTableView.m
+	* Source/NSTextBlock.m
+	* Source/NSTextContainer.m
+	* Source/NSTextTable.m
+	More CGFloat, NSUInteger and NSInteger changes.
+
+2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSGraphicsContext.h
 	* Headers/AppKit/NSWindow.h
 	* Source/NSActionCell.m

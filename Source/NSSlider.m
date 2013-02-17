@@ -124,7 +124,7 @@ static Class cellClass;
   this cannot be determined, for such reasons as the slider is not yet
   displayed, this method returns -1.  Generally, a slider is
   considered vertical if its height is greater than its width.  */
-- (int) isVertical
+- (NSInteger) isVertical
 {
   return [_cell isVertical];
 }
@@ -132,7 +132,7 @@ static Class cellClass;
 /**
   Returns the thickness of the slider's knob.  This value is in
   pixels, and is the size of the knob along the slider's track.  */
-- (float) knobThickness
+- (CGFloat) knobThickness
 {
   return [_cell knobThickness];
 }
@@ -158,7 +158,7 @@ static Class cellClass;
   This value sets the amount of space which the knob takes up in the
   slider's track.</p><p>See Also: -knobThickness</p> 
  */
-- (void) setKnobThickness: (float)aFloat
+- (void) setKnobThickness: (CGFloat)aFloat
 {
   [_cell setKnobThickness: aFloat];
 }

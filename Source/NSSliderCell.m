@@ -57,7 +57,7 @@
 static inline
 float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 				NSRect slotRect, BOOL isVertical, 
-				float minValue, float maxValue, 
+				double minValue, double maxValue, 
 				NSSliderCell *theCell, BOOL flipped, 
 				BOOL isCircular)
 {
@@ -417,7 +417,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   pixels, and is the size of the knob along the slider's track.</p>
   <p>See Also: -setKnobThickness:</p>
 */
-- (float) knobThickness
+- (CGFloat) knobThickness
 {
   NSImage *image = [_knobCell image];
   NSSize size;
@@ -438,7 +438,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   This value sets the amount of space which the knob takes up in the
   slider's track.</p><p>See Also: -knobThickness</p> 
  */
-- (void) setKnobThickness: (float)thickness
+- (void) setKnobThickness: (CGFloat)thickness
 {
   NSImage *image = [_knobCell image];
   NSSize size;
@@ -609,7 +609,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   not yet displayed, this method returns -1.  Generally, a slider is
   considered vertical if its height is greater than its width. 
 */
-- (int) isVertical
+- (NSInteger) isVertical
 {
   return _isVertical;
 }
@@ -722,7 +722,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
 {
   NSRect rect = _trackRect;
-  float d;
+  CGFloat d;
 
   if ((index < 0) || (index >= _numberOfTickMarks))
     {
@@ -818,8 +818,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   float oldFloatValue = [self floatValue];
   NSRect slotRect = [self trackRect];
   BOOL isVertical = [self isVertical];
-  float minValue = [self minValue];
-  float maxValue = [self maxValue];
+  double minValue = [self minValue];
+  double maxValue = [self maxValue];
   BOOL isFlipped = [controlView isFlipped];
   NSPoint location = [theEvent locationInWindow];
   NSPoint point = [controlView convertPoint: location fromView: nil];
@@ -953,7 +953,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
 	{
 	  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-	  [decoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+	  [decoder decodeValueOfObjCType: @encode(NSInteger) at: &_numberOfTickMarks];
 	  [decoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
 	}
     }
@@ -982,7 +982,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
       // New for version 2
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-      [coder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &_numberOfTickMarks];
       [coder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
     }
 }

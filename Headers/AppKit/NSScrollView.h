@@ -119,21 +119,21 @@
 - (BOOL)rulersVisible;
 
 /* Setting scrolling behavior */
-- (void)setLineScroll:(float)aFloat;
-- (float)lineScroll;
-- (void)setPageScroll:(float)aFloat;
-- (float)pageScroll;
+- (void)setLineScroll:(CGFloat)aFloat;
+- (CGFloat)lineScroll;
+- (void)setPageScroll:(CGFloat)aFloat;
+- (CGFloat)pageScroll;
 - (void)setScrollsDynamically:(BOOL)flag;
 - (BOOL)scrollsDynamically;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (float) horizontalLineScroll;
-- (float) horizontalPageScroll;
-- (float) verticalLineScroll;
-- (float) verticalPageScroll;
-- (void) setHorizontalLineScroll: (float)aFloat;
-- (void) setHorizontalPageScroll: (float)aFloat;
-- (void) setVerticalLineScroll: (float)aFloat;
-- (void) setVerticalPageScroll: (float)aFloat;
+- (CGFloat) horizontalLineScroll;
+- (CGFloat) horizontalPageScroll;
+- (CGFloat) verticalLineScroll;
+- (CGFloat) verticalPageScroll;
+- (void) setHorizontalLineScroll: (CGFloat)aFloat;
+- (void) setHorizontalPageScroll: (CGFloat)aFloat;
+- (void) setVerticalLineScroll: (CGFloat)aFloat;
+- (void) setVerticalPageScroll: (CGFloat)aFloat;
 /* Setting the background drawing */
 - (void)setDrawsBackground:(BOOL)flag;
 - (BOOL)drawsBackground;

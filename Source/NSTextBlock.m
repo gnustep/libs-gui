@@ -84,7 +84,7 @@
   ASSIGN(_borderColorForEdge[NSMaxYEdge], color);
 }
 
-- (float) contentWidth
+- (CGFloat) contentWidth
 {
   return [self valueForDimension: NSTextBlockWidth];
 }
@@ -94,7 +94,7 @@
   return [self valueTypeForDimension: NSTextBlockWidth];
 }
 
-- (void) setContentWidth: (float)val type: (NSTextBlockValueType)type
+- (void) setContentWidth: (CGFloat)val type: (NSTextBlockValueType)type
 {
   [self setValue: val type: type forDimension: NSTextBlockWidth];
 }
@@ -109,7 +109,7 @@
  _verticalAlignment = alignment; 
 }
 
-- (float) valueForDimension: (NSTextBlockDimension)dimension
+- (CGFloat) valueForDimension: (NSTextBlockDimension)dimension
 {
   if (dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
     [NSException raise: NSInvalidArgumentException
@@ -125,7 +125,7 @@
   return _valueType[dimension];
 }
 
-- (float) _scaledValue: (NSTextBlockDimension)dimension : (NSSize)size
+- (CGFloat) _scaledValue: (NSTextBlockDimension)dimension : (NSSize)size
 {
   if (_valueType[dimension] == NSTextBlockAbsoluteValueType)
     {
@@ -149,7 +149,7 @@
   return 0.0;	
 }
 
-- (void) setValue: (float)val 
+- (void) setValue: (CGFloat)val 
              type: (NSTextBlockValueType)type
      forDimension: (NSTextBlockDimension)dimension
 {
@@ -160,7 +160,7 @@
   _valueType[dimension] = type;
 }
 
-- (float) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge
+- (CGFloat) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge
 {
   if (layer >= sizeof(_width) / sizeof(_width[0]))
     [NSException raise: NSInvalidArgumentException
@@ -183,7 +183,7 @@
   return _widthType[layer][edge];
 }
 
-- (void) setWidth: (float)val
+- (void) setWidth: (CGFloat)val
              type: (NSTextBlockValueType)type
          forLayer: (NSTextBlockLayer)layer
              edge: (NSRectEdge)edge
@@ -198,7 +198,7 @@
   _widthType[layer][edge] = type;
 }
 
-- (void) setWidth: (float)val
+- (void) setWidth: (CGFloat)val
              type: (NSTextBlockValueType)type 
          forLayer: (NSTextBlockLayer)layer
 {
@@ -215,7 +215,7 @@
   _widthType[layer][NSMaxYEdge] = type;
 }
 
-- (float) _scaledWidthValue: (NSTextBlockLayer) layer : (NSRectEdge) edge : (NSSize) size
+- (CGFloat) _scaledWidthValue: (NSTextBlockLayer) layer : (NSRectEdge) edge : (NSSize) size
 {
   if (_widthType[layer][edge] == NSTextBlockAbsoluteValueType)
     {
@@ -243,18 +243,18 @@
                       textContainer: (NSTextContainer *)container
                      characterRange: (NSRange)range
 {
-  float minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge: rect.size] 
+  CGFloat minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge: rect.size] 
     + [self _scaledWidthValue: NSTextBlockBorder : NSMinXEdge : rect.size]
     + [self _scaledWidthValue: NSTextBlockMargin : NSMinXEdge : rect.size];
 
-  float maxx = [self _scaledWidthValue: NSTextBlockPadding: NSMaxXEdge: rect.size]
+  CGFloat maxx = [self _scaledWidthValue: NSTextBlockPadding: NSMaxXEdge: rect.size]
     + [self _scaledWidthValue: NSTextBlockBorder : NSMaxXEdge : rect.size]
     + [self _scaledWidthValue: NSTextBlockMargin : NSMaxXEdge : rect.size];
-  float miny= [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge: rect.size] 
+  CGFloat miny= [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge: rect.size] 
     + [self _scaledWidthValue: NSTextBlockBorder : NSMinYEdge : rect.size]
     + [self _scaledWidthValue: NSTextBlockMargin : NSMinYEdge : rect.size];
 
-  float maxy = [self _scaledWidthValue: NSTextBlockPadding: NSMaxYEdge: rect.size]
+  CGFloat maxy = [self _scaledWidthValue: NSTextBlockPadding: NSMaxYEdge: rect.size]
     + [self _scaledWidthValue: NSTextBlockBorder : NSMaxYEdge : rect.size]
     + [self _scaledWidthValue: NSTextBlockMargin : NSMaxYEdge : rect.size];
 
@@ -304,10 +304,10 @@
                   characterRange: (NSRange)range
                    layoutManager: (NSLayoutManager *)lm
 {
-  float minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge : rect.size];
-  float maxx = [self _scaledWidthValue: NSTextBlockPadding : NSMaxXEdge : rect.size];
-  float miny = [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge : rect.size];
-  float maxy = [self _scaledWidthValue: NSTextBlockPadding : NSMaxYEdge : rect.size];
+  CGFloat minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge : rect.size];
+  CGFloat maxx = [self _scaledWidthValue: NSTextBlockPadding : NSMaxXEdge : rect.size];
+  CGFloat miny = [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge : rect.size];
+  CGFloat maxy = [self _scaledWidthValue: NSTextBlockPadding : NSMaxYEdge : rect.size];
 
   // FIXME - inset from frame by margin in the first step
   rect.origin.x -= minx;

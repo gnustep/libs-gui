@@ -202,9 +202,9 @@
   is redisplayed (by calling tile), and the
   NSTableViewColumnDidResizeNotification is posted on behalf of the
   table view.  */
-- (void) setWidth: (float)newWidth
+- (void) setWidth: (CGFloat)newWidth
 {
-  float oldWidth = _width;
+  CGFloat oldWidth = _width;
 
   if (newWidth > _max_width)
     newWidth = _max_width;
@@ -233,7 +233,7 @@
 
 /** Return the width of the table column. The 
     default width is 100. */
-- (float) width
+- (CGFloat) width
 {
   return _width;
 }
@@ -242,7 +242,7 @@
   Set the min width of the table column, eventually adjusting the
   width of the column if it is smaller than the new min width.  In no
   way a table column can be made smaller than its min width.  */
-- (void) setMinWidth: (float)minWidth
+- (void) setMinWidth: (CGFloat)minWidth
 {
   _min_width = minWidth;
   if (_width < _min_width)
@@ -253,7 +253,7 @@
   Return the column's min width.  The column can in no way be resized
   to a width smaller than this min width.  The default min width is
   10.  */
-- (float) minWidth
+- (CGFloat) minWidth
 {
   return _min_width;
 }
@@ -262,7 +262,7 @@
   Set the max width of the table column, eventually adjusting the
   width of the column if it is bigger than the new max width.  In no
   way a table column can be made bigger than its max width.  */
-- (void) setMaxWidth: (float)maxWidth
+- (void) setMaxWidth: (CGFloat)maxWidth
 {
   _max_width = maxWidth;
   if (_width > _max_width)
@@ -273,7 +273,7 @@
   Return the column's max width.  The column can in no way be resized
   to a width bigger than this max width.  The default max width is
   100000.  */
-- (float) maxWidth
+- (CGFloat) maxWidth
 {
   return _max_width;
 }
@@ -329,7 +329,7 @@ it resizes. */
   smaller than the column header width, it is increased to it).  */
 - (void) sizeToFit
 {
-  float new_width;
+  CGFloat new_width;
 
   new_width = [_headerCell cellSize].width;
 
@@ -443,7 +443,7 @@ Return the toop tip text displayed when the pointer is in the header area. */
   return _dataCell;
 }
 
-- (NSCell*) dataCellForRow: (int)row
+- (NSCell*) dataCellForRow: (NSInteger)row
 {
   return [self dataCell];
 }

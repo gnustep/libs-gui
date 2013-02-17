@@ -168,7 +168,7 @@ typedef struct _tableViewFlags
  *  This is used by the -sizeToFit method
  */
 typedef struct {
-  float width;
+  CGFloat width;
   BOOL isMax;
 } columnSorting;
 
@@ -180,7 +180,7 @@ void quick_sort_internal(columnSorting *data, int p, int r)
     {
       int q;
       {
-	float x = data[p].width;
+	CGFloat x = data[p].width;
 	BOOL y = data[p].isMax;
 	int i = p - 1;
 	int j = r + 1;
@@ -2532,13 +2532,13 @@ static void computeNewSelection
   return _intercellSpacing;
 }
 
-- (void) setRowHeight: (float)rowHeight
+- (void) setRowHeight: (CGFloat)rowHeight
 {
   _rowHeight = rowHeight;
   [self tile];
 }
 
-- (float) rowHeight
+- (CGFloat) rowHeight
 {
   return _rowHeight;
 }
@@ -5076,7 +5076,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       NSRect columnRect = [self rectOfColumn: columnIndex];
       NSRect visibleRect = [self visibleRect];
-      float diff;
+      CGFloat diff;
 
       // If the row is out on the left, or it is partially visible 
       // on the left

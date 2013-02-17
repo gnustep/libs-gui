@@ -49,13 +49,13 @@
 /*
  * Checking altered columns 
  */
-- (int) draggedColumn;
-- (float) draggedDistance; 
-- (int) resizedColumn;
+- (NSInteger) draggedColumn;
+- (CGFloat) draggedDistance; 
+- (NSInteger) resizedColumn;
 /*
  * Utility methods 
  */
-- (int) columnAtPoint: (NSPoint)aPoint; 
-- (NSRect) headerRectOfColumn: (int)columnIndex;  
+- (NSInteger) columnAtPoint: (NSPoint)aPoint; 
+- (NSRect) headerRectOfColumn: (NSInteger)columnIndex;  
 @end
 #endif

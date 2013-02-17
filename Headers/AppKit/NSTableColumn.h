@@ -89,12 +89,12 @@ enum {
 /*
  * Controlling size & visibility
  */
-- (void) setWidth: (float)newWidth;
-- (float) width; 
-- (void) setMinWidth: (float)minWidth;
-- (float) minWidth; 
-- (void) setMaxWidth: (float)maxWidth;
-- (float) maxWidth; 
+- (void) setWidth: (CGFloat)newWidth;
+- (CGFloat) width; 
+- (void) setMinWidth: (CGFloat)minWidth;
+- (CGFloat) minWidth; 
+- (void) setMaxWidth: (CGFloat)maxWidth;
+- (CGFloat) maxWidth; 
 - (void) setResizable: (BOOL)flag;
 - (BOOL) isResizable;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
@@ -122,7 +122,7 @@ enum {
 #endif
 - (void) setDataCell: (NSCell *)aCell; 
 - (NSCell *) dataCell;
-- (NSCell *) dataCellForRow: (int)row;
+- (NSCell *) dataCellForRow: (NSInteger)row;
 /*
  * Sorting
  */

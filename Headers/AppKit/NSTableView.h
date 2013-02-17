@@ -178,8 +178,8 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 /* Drawing Attributes */
 - (void) setIntercellSpacing: (NSSize)aSize;
 - (NSSize) intercellSpacing;
-- (void) setRowHeight: (float)rowHeight;
-- (float) rowHeight;
+- (void) setRowHeight: (CGFloat)rowHeight;
+- (CGFloat) rowHeight;
 - (void) setBackgroundColor: (NSColor *)aColor;
 - (NSColor *) backgroundColor;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
@@ -434,8 +434,8 @@ dataCellForTableColumn: (NSTableColumn *)aTableColumn
 - (void) tableViewSelectionDidChange: (NSNotification *)aNotification;
 - (void) tableViewSelectionIsChanging: (NSNotification *)aNotification;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (float) tableView: (NSTableView *)tableView
-        heightOfRow: (NSInteger)row;
+- (CGFloat) tableView: (NSTableView *)tableView
+          heightOfRow: (NSInteger)row;
 - (NSString *) tableView: (NSTableView *)tableView
           toolTipForCell: (NSCell *)cell
                     rect: (NSRect *)rect

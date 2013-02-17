@@ -224,7 +224,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
     {
       BOOL flag;
 
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_arrowsPosition];
       flag = _scFlags.isEnabled;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       [aCoder encodeConditionalObject: _target];
@@ -329,7 +329,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	  _doubleValue = 1.0;
 	}
       
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
 				   at: &_arrowsPosition];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _scFlags.isEnabled = flag;
@@ -473,8 +473,8 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 - (void) checkSpaceForParts
 {
   NSSize frameSize = _frame.size;
-  float size = (_scFlags.isHorizontal ? frameSize.width : frameSize.height);
-  int buttonsWidth = [[self class] scrollerWidth] - 2*buttonsOffset;
+  CGFloat size = (_scFlags.isHorizontal ? frameSize.width : frameSize.height);
+  CGFloat buttonsWidth = [[self class] scrollerWidth] - 2*buttonsOffset;
 
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
@@ -1145,10 +1145,10 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 - (NSRect) rectForPart: (NSScrollerPart)partCode
 {
   NSRect scrollerFrame = _frame;
-  float x, y;
-  float width, height;
-  float buttonsWidth;
-  float buttonsSize;  
+  CGFloat x, y;
+  CGFloat width, height;
+  CGFloat buttonsWidth;
+  CGFloat buttonsSize;  
   NSUsableScrollerParts usableParts;
   NSInterfaceStyle interfaceStyle;
   BOOL	arrowsSameEnd = NO;
@@ -1220,7 +1220,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
 	    ?  0 : buttonsSize);
 	  knobHeight = _knobProportion * slotHeight;
-	  knobHeight = (float)floor(knobHeight);
+	  knobHeight = floor(knobHeight);
 	  if (knobHeight < buttonsWidth)
 	    knobHeight = buttonsWidth;
 

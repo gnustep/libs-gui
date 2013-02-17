@@ -72,14 +72,14 @@ typedef enum _NSTextBlockVerticalAlignment
 
 @interface NSTextBlock : NSObject <NSCoding, NSCopying>
 {
-	NSColor *_backgroundColor;
-	NSColor *_borderColorForEdge[NSMaxYEdge + 1];
-	NSTextBlockVerticalAlignment _verticalAlignment;
+  NSColor *_backgroundColor;
+  NSColor *_borderColorForEdge[NSMaxYEdge + 1];
+  NSTextBlockVerticalAlignment _verticalAlignment;
   // The following ivars come in pairs
-	float _value[NSTextBlockMaximumHeight + 1];
-	NSTextBlockValueType _valueType[NSTextBlockMaximumHeight + 1];
-	float _width[NSTextBlockMargin + 1][NSMaxYEdge + 1];
-	NSTextBlockValueType _widthType[NSTextBlockMargin + 1][NSMaxYEdge + 1];
+  CGFloat _value[NSTextBlockMaximumHeight + 1];
+  NSTextBlockValueType _valueType[NSTextBlockMaximumHeight + 1];
+  CGFloat _width[NSTextBlockMargin + 1][NSMaxYEdge + 1];
+  NSTextBlockValueType _widthType[NSTextBlockMargin + 1][NSMaxYEdge + 1];
 }
 
 - (NSColor *) backgroundColor;
@@ -88,7 +88,7 @@ typedef enum _NSTextBlockVerticalAlignment
                              inRect: (NSRect)rect
                       textContainer: (NSTextContainer *)container
                      characterRange: (NSRange)range;
-- (float) contentWidth;
+- (CGFloat) contentWidth;
 - (NSTextBlockValueType) contentWidthValueType;
 - (void) drawBackgroundWithFrame: (NSRect)rect
                           inView: (NSView *)view 
@@ -102,22 +102,22 @@ typedef enum _NSTextBlockVerticalAlignment
 - (void) setBackgroundColor: (NSColor *)color;
 - (void) setBorderColor: (NSColor *)color;
 - (void) setBorderColor: (NSColor *)color forEdge: (NSRectEdge)edge;
-- (void) setContentWidth: (float)val type: (NSTextBlockValueType)type;
-- (void) setValue: (float)val 
+- (void) setContentWidth: (CGFloat)val type: (NSTextBlockValueType)type;
+- (void) setValue: (CGFloat)val 
              type: (NSTextBlockValueType)type
      forDimension: (NSTextBlockDimension)dimension;
 - (void) setVerticalAlignment: (NSTextBlockVerticalAlignment)alignment;
-- (void) setWidth: (float)val
+- (void) setWidth: (CGFloat)val
              type: (NSTextBlockValueType)type 
          forLayer: (NSTextBlockLayer)layer;
-- (void) setWidth: (float)val
+- (void) setWidth: (CGFloat)val
              type: (NSTextBlockValueType)type
          forLayer: (NSTextBlockLayer)layer
              edge: (NSRectEdge)edge;
-- (float) valueForDimension: (NSTextBlockDimension)dimension;
+- (CGFloat) valueForDimension: (NSTextBlockDimension)dimension;
 - (NSTextBlockValueType) valueTypeForDimension: (NSTextBlockDimension)dimension;
 - (NSTextBlockVerticalAlignment) verticalAlignment;
-- (float) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge;
+- (CGFloat) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge;
 - (NSTextBlockValueType) widthValueTypeForLayer: (NSTextBlockLayer)layer
                                            edge: (NSRectEdge)edge;
 @end
@@ -129,10 +129,10 @@ typedef enum _NSTextTableLayoutAlgorithm {
 
 @interface NSTextTable : NSTextBlock
 {
-	NSTextTableLayoutAlgorithm _layoutAlgorithm;
-	unsigned int _numberOfColumns;
-	BOOL _collapsesBorders;
-	BOOL _hidesEmptyCells;
+  NSTextTableLayoutAlgorithm _layoutAlgorithm;
+  NSUInteger _numberOfColumns;
+  BOOL _collapsesBorders;
+  BOOL _hidesEmptyCells;
 }
 
 - (NSRect) boundsRectForBlock: (NSTextTableBlock *)block
@@ -148,7 +148,7 @@ typedef enum _NSTextTableLayoutAlgorithm {
                   layoutManager: (NSLayoutManager *)manager;
 - (BOOL) hidesEmptyCells;
 - (NSTextTableLayoutAlgorithm) layoutAlgorithm;
-- (unsigned int) numberOfColumns;
+- (NSUInteger) numberOfColumns;
 - (NSRect) rectForBlock: (NSTextTableBlock *)block
           layoutAtPoint: (NSPoint)start
                  inRect: (NSRect)rect
@@ -157,17 +157,17 @@ typedef enum _NSTextTableLayoutAlgorithm {
 - (void) setCollapsesBorders: (BOOL)flag;
 - (void) setHidesEmptyCells: (BOOL)flag;
 - (void) setLayoutAlgorithm: (NSTextTableLayoutAlgorithm)algorithm;
-- (void) setNumberOfColumns: (unsigned int)numCols;
+- (void) setNumberOfColumns: (NSUInteger)numCols;
 
 @end
 
 @interface NSTextTableBlock : NSTextBlock
 {
-	NSTextTable *_table;
-	int _row;
-	int _rowSpan;
-	int _col;
-	int _colSpan;
+  NSTextTable *_table;
+  int _row;
+  int _rowSpan;
+  int _col;
+  int _colSpan;
 }
 
 - (id) initWithTable: (NSTextTable *)table

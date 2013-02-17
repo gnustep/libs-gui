@@ -63,12 +63,12 @@
   _layoutAlgorithm = algorithm;
 }
 
-- (unsigned int) numberOfColumns
+- (NSUInteger) numberOfColumns
 {
   return _numberOfColumns;
 }
 
-- (void) setNumberOfColumns: (unsigned int)numCols
+- (void) setNumberOfColumns: (NSUInteger)numCols
 {
   _numberOfColumns = numCols;
 }

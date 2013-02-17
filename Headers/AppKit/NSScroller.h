@@ -37,16 +37,17 @@
 
 @class NSEvent;
 
-typedef enum _NSScrollArrowPosition {
+enum _NSScrollArrowPosition {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
   NSScrollerArrowsDefaultSetting = 0,
 #endif
   NSScrollerArrowsMaxEnd = 0,
   NSScrollerArrowsMinEnd,
   NSScrollerArrowsNone 
-} NSScrollArrowPosition;
+};
+typedef NSUInteger NSScrollArrowPosition;
 
-typedef enum _NSScrollerPart {
+enum _NSScrollerPart {
   NSScrollerNoPart = 0,
   NSScrollerDecrementPage,
   NSScrollerKnob,
@@ -54,18 +55,21 @@ typedef enum _NSScrollerPart {
   NSScrollerDecrementLine,
   NSScrollerIncrementLine,
   NSScrollerKnobSlot
-} NSScrollerPart;
+};
+typedef NSUInteger NSScrollerPart;
 
-typedef enum _NSScrollerUsablePart {
+enum _NSScrollerUsablePart {
   NSNoScrollerParts = 0,
   NSOnlyScrollerArrows,
   NSAllScrollerParts  
-} NSUsableScrollerParts;
+};
+typedef NSUInteger NSUsableScrollerParts;
 
-typedef enum _NSScrollerArrow {
+enum _NSScrollerArrow {
   NSScrollerIncrementArrow = 0,
   NSScrollerDecrementArrow
-} NSScrollerArrow;
+};
+typedef NSUInteger NSScrollerArrow;
 
 @interface NSScroller : NSControl <NSCoding>
 {

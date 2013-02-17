@@ -163,7 +163,7 @@ framework intact.
     {
       NSTextStorage *textStorage = [_layoutManager textStorage];
       NSArray *textContainers = [_layoutManager textContainers];
-      unsigned int i, count = [textContainers count];
+      NSUInteger i, count = [textContainers count];
       GSLayoutManager *oldLayoutManager = _layoutManager;
 
       RETAIN(oldLayoutManager);
@@ -339,7 +339,7 @@ framework intact.
   return _heightTracksTextView;
 }
 
-- (void) setLineFragmentPadding: (float)aFloat
+- (void) setLineFragmentPadding: (CGFloat)aFloat
 {
   _lineFragmentPadding = aFloat;
 
@@ -347,7 +347,7 @@ framework intact.
     [_layoutManager textContainerChangedGeometry: self];
 }
 
-- (float) lineFragmentPadding
+- (CGFloat) lineFragmentPadding
 {
   return _lineFragmentPadding;
 }
@@ -357,8 +357,8 @@ framework intact.
                          movementDirection: (NSLineMovementDirection)moveDir
                              remainingRect: (NSRect *)remainingRect
 {
-  float minx, maxx, miny, maxy;
-  float cminx, cmaxx, cminy, cmaxy;
+  CGFloat minx, maxx, miny, maxy;
+  CGFloat cminx, cmaxx, cminy, cmaxy;
 
   minx = NSMinX(proposedRect);
   maxx = NSMaxX(proposedRect);
