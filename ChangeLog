@@ -1,5 +1,9 @@
 2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBezierPath.m: More keyed decoding.
+
+2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSBrowser.h
 	* Headers/AppKit/NSClipView.h
 	* Headers/AppKit/NSComboBox.h

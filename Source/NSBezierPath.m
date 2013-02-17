@@ -28,6 +28,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSFont.h"
@@ -1686,6 +1687,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeFloat: (float)_flatness forKey: @"NSFlatness"];
+      // FIXME
     }
   else
     {
@@ -1752,7 +1754,125 @@ static int winding_curve(double_point from, double_point to, double_point c1,
         }
       if ([aCoder containsValueForKey: @"NSSegments"])
         {
-          //NSData *d = [aCoder decodeObjectForKey: @"NSSegments"];
+	  NSUInteger length;
+	  const uint8_t *data;
+          NSData *d;
+          unsigned int cursor = 0;
+
+          data = [aCoder decodeBytesForKey: @"NSSegments"
+                              returnedLength: &length]; 
+          d = [NSData dataWithBytes: data length: length];
+          //NSLog(@"decoded segments %@", d);
+          while (cursor < length)
+            {
+              char c;
+              float f, g;
+              NSPoint p, cp1, cp2;
+
+              [d deserializeDataAt: &c
+                        ofObjCType: "c"
+                          atCursor: &cursor
+                           context: nil];
+              switch (c) 
+                {
+                case NSMoveToBezierPathElement:
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  p = NSMakePoint(f, g);
+                  [self moveToPoint: p];
+                  //NSLog(@"Decoded move %@", NSStringFromPoint(p));
+                  break;
+                case NSLineToBezierPathElement:
+
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  p = NSMakePoint(f, g);
+                  [self lineToPoint: p];
+                  //NSLog(@"Decoded line %@", NSStringFromPoint(p));
+                  break;
+                case NSCurveToBezierPathElement:
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  cp1 = NSMakePoint(f, g);
+                  [d deserializeDataAt: &c
+                            ofObjCType: "c"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  cp2 = NSMakePoint(f, g);
+                  [d deserializeDataAt: &c
+                            ofObjCType: "c"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  p = NSMakePoint(f, g);
+                  [self curveToPoint: p
+                       controlPoint1: cp1
+                       controlPoint2: cp2];
+                  //NSLog(@"Decoded curve %@ %@ %@", NSStringFromPoint(p), NSStringFromPoint(cp1), NSStringFromPoint(cp2));
+                  break;
+                case NSClosePathBezierPathElement:
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  p = NSMakePoint(f, g);
+                  [d deserializeDataAt: &c
+                            ofObjCType: "c"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &f
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  [d deserializeDataAt: &g
+                            ofObjCType: "f"
+                              atCursor: &cursor
+                               context: nil];
+                  cp1 = NSMakePoint(f, g);
+                  //NSLog(@"Decoded close %@ %@", NSStringFromPoint(p), NSStringFromPoint(cp1));
+                  [self closePath];
+                  break;
+                default:
+                  break;
+                }
+            }
         }
     }
   else
