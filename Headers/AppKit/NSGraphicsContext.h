@@ -53,13 +53,14 @@
 /*
  * Backing Store Types
  */
-typedef enum _NSBackingStoreType
+enum _NSBackingStoreType
 {
   NSBackingStoreRetained,
   NSBackingStoreNonretained,
   NSBackingStoreBuffered
 
-} NSBackingStoreType;
+};
+typedef NSUInteger NSBackingStoreType;
 
 /** NSCompositingOperation defines how an image is drawn or composited onto another.
  * <list>

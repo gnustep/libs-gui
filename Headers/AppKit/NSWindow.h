@@ -104,21 +104,23 @@ enum {
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
 
-typedef enum _NSSelectionDirection {
+enum _NSSelectionDirection {
   NSDirectSelection,
   NSSelectingNext,
   NSSelectingPrevious
-} NSSelectionDirection;
+};
+typedef NSUInteger NSSelectionDirection;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-typedef enum _NSWindowButton
+enum _NSWindowButton
 {
   NSWindowCloseButton = 0,
   NSWindowMiniaturizeButton,
   NSWindowZoomButton,
   NSWindowToolbarButton,
   NSWindowDocumentIconButton
-} NSWindowButton;
+};
+typedef NSUInteger NSWindowButton;
 #endif 
 
 APPKIT_EXPORT NSSize NSIconSize;

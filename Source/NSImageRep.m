@@ -871,24 +871,38 @@ Fallback for backends other than Cairo. */
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _colorSpace];
-  [aCoder encodeSize: _size];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsWide];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _colorSpace];
+      [aCoder encodeSize: _size];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_bitsPerSample];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_pixelsWide];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_pixelsHigh];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
-  _size = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsWide];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
+      _size = [aDecoder decodeSize];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_bitsPerSample];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_pixelsWide];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_pixelsHigh];
+    }
   return self;
 }
 

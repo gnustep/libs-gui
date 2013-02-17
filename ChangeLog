@@ -1,5 +1,24 @@
 2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSGraphicsContext.h
+	* Headers/AppKit/NSWindow.h
+	* Source/NSActionCell.m
+	* Source/NSBrowser.m
+	* Source/NSCell.m
+	* Source/NSEvent.m
+	* Source/NSImageRep.m
+	* Source/NSMatrix.m
+	* Source/NSMenuItem.m
+	* Source/NSParagraphStyle.m
+	* Source/NSRulerMarker.m
+	* Source/NSRulerView.m
+	* Source/NSSegmentedCell.m
+	* Source/NSView.m
+	* Source/NSWindow.m:
+	Correct coding/decoding after type changes.
+
+2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBezierPath.m: More keyed decoding.
 
 2013-02-17  Fred Kiefer <FredKiefer@gmx.de>

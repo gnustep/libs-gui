@@ -861,14 +861,19 @@ static NSMutableDictionary *units = nil;
 
 - (void) encodeWithCoder: (NSCoder *)encoder
 {
+  [super encodeWithCoder: encoder];
   /* FIXME/TODO: not implemented */
   return;
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
 {
+  self = [super initWithCoder: decoder];
+  if (self == nil)
+    return nil;
+
   /* FIXME/TODO: not implemented */
-  return nil;
+  return self;
 }
 
 - (void) dealloc

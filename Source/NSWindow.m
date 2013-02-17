@@ -5283,8 +5283,9 @@ current key view.<br />
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeRect: [[self contentView] frame]];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &_styleMask];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_backingType];
+  [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_styleMask];
+  // This used to be int, we need to stay compatible
+  [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_backingType];
 
   [aCoder encodePoint: NSMakePoint(NSMinX([self frame]), NSMaxY([self frame]))];
   [aCoder encodeObject: _contentView];
@@ -5296,7 +5297,7 @@ current key view.<br />
   [aCoder encodeSize: _minimumSize];
   [aCoder encodeSize: _maximumSize];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_windowLevel];
+  [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_windowLevel];
 
   flag = _f.menu_exclude;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -5345,13 +5346,14 @@ current key view.<br />
       NSPoint p;
       NSUInteger aStyle;
       NSBackingStoreType aBacking;
-      int anInt;
+      NSInteger level;
       id obj;
 
       aRect = [aDecoder decodeRect];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned)
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
                                    at: &aStyle];
-      [aDecoder decodeValueOfObjCType: @encode(int)
+      // This used to be int, we need to stay compatible
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger)
                                    at: &aBacking];
 
       // call the designated initializer....
@@ -5378,8 +5380,8 @@ current key view.<br />
       [self setMaxSize: aSize];
 
       [aDecoder decodeValueOfObjCType: @encode(int)
-                                   at: &anInt];
-      [self setLevel: anInt];
+                                   at: &level];
+      [self setLevel: level];
 
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setExcludedFromWindowsMenu: flag];

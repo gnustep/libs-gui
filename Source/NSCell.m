@@ -2481,8 +2481,8 @@ static NSColor *dtxtCol;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       tmp_int = _cell.mnemonic_location;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_mouse_down_flags];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
@@ -2647,9 +2647,9 @@ static NSColor *dtxtCol;
       _cell.state = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       _cell.mnemonic_location = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) 
                                    at: &_mouse_down_flags];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
       if (version < 3)
         {
           unsigned int mask = 0;

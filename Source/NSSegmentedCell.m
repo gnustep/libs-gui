@@ -210,8 +210,8 @@
       [aCoder encodeObject: _menu];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_selected];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_width];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
     }
 }
 
@@ -245,8 +245,8 @@
       ASSIGN(_menu, [aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_selected];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_width];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
     }
 
   return self;
@@ -626,7 +626,7 @@
     {
       int style;
       [aCoder encodeObject: _items];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_selected_segment];
       style = _segmentCellFlags._style;
       [aCoder encodeValueOfObjCType: @encode(int) at: &style];
     }
@@ -670,7 +670,7 @@
 
       _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
       ASSIGN(_items,[aDecoder decodeObject]);
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_selected_segment];
       if (_selected_segment != -1)
 	[self setSelectedSegment: _selected_segment];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &style];

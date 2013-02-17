@@ -4581,7 +4581,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	      at: &_is_rotated_or_scaled_from_base];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_autoresizingMask];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_autoresizingMask];
       [aCoder encodeConditionalObject: [self nextKeyView]];
       [aCoder encodeConditionalObject: [self previousKeyView]];
       [aCoder encodeObject: _sub_views];
@@ -4729,7 +4729,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
 				   at: &_autoresizes_subviews];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
 				   at: &_autoresizingMask];
       _coordinates_valid = NO;
       [self setNextKeyView: [aDecoder decodeObject]];

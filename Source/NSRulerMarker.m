@@ -544,7 +544,7 @@
   [aCoder encodeObject: _image];
   [aCoder encodeConditionalObject: _representedObject];
   [aCoder encodePoint: _imageOrigin];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_location];
+  [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_location];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
 }
@@ -555,7 +555,7 @@
   _image = [aDecoder decodeObject];
   _representedObject = [aDecoder decodeObject];
   _imageOrigin = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_location];
+  [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_location];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
 

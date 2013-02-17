@@ -698,61 +698,68 @@ static const char *eventTypes[] = {
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(int) at: &event_type];
-  [aCoder encodePoint: location_point];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &modifier_flags];
-  [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &window_num];
-
-  switch (event_type)
+  if ([aCoder allowsKeyedCoding])
     {
-      case NSLeftMouseDown:
-      case NSLeftMouseUp:
-      case NSOtherMouseDown:
-      case NSOtherMouseUp:
-      case NSRightMouseDown:
-      case NSRightMouseUp:
-      case NSScrollWheel:
-      case NSMouseMoved:
-      case NSLeftMouseDragged:
-      case NSOtherMouseDragged:
-      case NSRightMouseDragged:
-        [aCoder encodeValuesOfObjCTypes: "iififff", &event_data.mouse.event_num,
-          &event_data.mouse.click, &event_data.mouse.pressure,
-          &event_data.mouse.button, &event_data.mouse.deltaX,
-          &event_data.mouse.deltaY, &event_data.mouse.deltaZ];
-        break;
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(NSEventType) at: &event_type];
+      [aCoder encodePoint: location_point];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
+      [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &window_num];
+      
+      switch (event_type)
+        {
+        case NSLeftMouseDown:
+        case NSLeftMouseUp:
+        case NSOtherMouseDown:
+        case NSOtherMouseUp:
+        case NSRightMouseDown:
+        case NSRightMouseUp:
+        case NSScrollWheel:
+        case NSMouseMoved:
+        case NSLeftMouseDragged:
+        case NSOtherMouseDragged:
+        case NSRightMouseDragged:
+          [aCoder encodeValuesOfObjCTypes: "iififff", &event_data.mouse.event_num,
+                  &event_data.mouse.click, &event_data.mouse.pressure,
+                  &event_data.mouse.button, &event_data.mouse.deltaX,
+                  &event_data.mouse.deltaY, &event_data.mouse.deltaZ];
+          break;
 
-      case NSMouseEntered:
-      case NSMouseExited:
-      case NSCursorUpdate:
-        // Can't do anything with the user_data!?
-        [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
-          &event_data.tracking.tracking_num];
-        break;
-
-      case NSKeyDown:
-      case NSKeyUp:
-      case NSFlagsChanged:
-        [aCoder encodeValueOfObjCType: @encode(BOOL)
-                                   at: &event_data.key.repeat];
-        [aCoder encodeObject: event_data.key.char_keys];
-        [aCoder encodeObject: event_data.key.unmodified_keys];
-        [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
-        break;
-
-      case NSPeriodic:
-      case NSAppKitDefined:
-      case NSSystemDefined:
-      case NSApplicationDefined:
-        [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-          &event_data.misc.data1, &event_data.misc.data2];
-        break;
-
-      case NSTabletPoint:
-      case NSTabletProximity:
-        // FIXME: Tablet events
-        break;
+        case NSMouseEntered:
+        case NSMouseExited:
+        case NSCursorUpdate:
+          // Can't do anything with the user_data!?
+          [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+                  &event_data.tracking.tracking_num];
+          break;
+          
+        case NSKeyDown:
+        case NSKeyUp:
+        case NSFlagsChanged:
+          [aCoder encodeValueOfObjCType: @encode(BOOL)
+                                     at: &event_data.key.repeat];
+          [aCoder encodeObject: event_data.key.char_keys];
+          [aCoder encodeObject: event_data.key.unmodified_keys];
+          [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
+          break;
+          
+        case NSPeriodic:
+        case NSAppKitDefined:
+        case NSSystemDefined:
+        case NSApplicationDefined:
+          [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+                  &event_data.misc.data1, &event_data.misc.data2];
+          break;
+          
+        case NSTabletPoint:
+        case NSTabletProximity:
+          // FIXME: Tablet events
+          break;
+        }
     }
 }
 
@@ -779,103 +786,110 @@ static const char *eventTypes[] = {
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: @"NSEvent"];
-
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &event_type];
-  location_point = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &modifier_flags];
-  [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &window_num];
-
-  if (version == 1)
+  if ([aDecoder allowsKeyedCoding])
     {
-      // For the unlikely case that old events have been stored, convert them.
-      switch ((int)event_type)
+      // FIXME
+    }
+  else
+    {
+      int version = [aDecoder versionForClassName: @"NSEvent"];
+      
+      [aDecoder decodeValueOfObjCType: @encode(NSEventType) at: &event_type];
+      location_point = [aDecoder decodePoint];
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
+      [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &window_num];
+      
+      if (version == 1)
         {
-          case 0: event_type = NSLeftMouseDown; break;
-          case 1: event_type = NSLeftMouseUp; break;
-          case 2: event_type = NSOtherMouseDown; break;
-          case 3: event_type = NSOtherMouseUp; break;
-          case 4: event_type = NSRightMouseDown; break;
-          case 5: event_type = NSRightMouseUp; break;
-          case 6: event_type = NSMouseMoved; break;
-          case 7: event_type = NSLeftMouseDragged; break;
-          case 8: event_type = NSOtherMouseDragged; break;
-          case 9: event_type = NSRightMouseDragged; break;
-          case 10: event_type = NSMouseEntered; break;
-          case 11: event_type = NSMouseExited; break;
-          case 12: event_type = NSKeyDown; break;
-          case 13: event_type = NSKeyUp; break;
-          case 14: event_type = NSFlagsChanged; break;
-          case 15: event_type = NSAppKitDefined; break;
-          case 16: event_type = NSSystemDefined; break;
-          case 17: event_type = NSApplicationDefined; break;
-          case 18: event_type = NSPeriodic; break;
-          case 19: event_type = NSCursorUpdate; break;
-          case 20: event_type = NSScrollWheel; break;
-          default: break;
-        }  
+          // For the unlikely case that old events have been stored, convert them.
+          switch ((int)event_type)
+            {
+            case 0: event_type = NSLeftMouseDown; break;
+            case 1: event_type = NSLeftMouseUp; break;
+            case 2: event_type = NSOtherMouseDown; break;
+            case 3: event_type = NSOtherMouseUp; break;
+            case 4: event_type = NSRightMouseDown; break;
+            case 5: event_type = NSRightMouseUp; break;
+            case 6: event_type = NSMouseMoved; break;
+            case 7: event_type = NSLeftMouseDragged; break;
+            case 8: event_type = NSOtherMouseDragged; break;
+            case 9: event_type = NSRightMouseDragged; break;
+            case 10: event_type = NSMouseEntered; break;
+            case 11: event_type = NSMouseExited; break;
+            case 12: event_type = NSKeyDown; break;
+            case 13: event_type = NSKeyUp; break;
+            case 14: event_type = NSFlagsChanged; break;
+            case 15: event_type = NSAppKitDefined; break;
+            case 16: event_type = NSSystemDefined; break;
+            case 17: event_type = NSApplicationDefined; break;
+            case 18: event_type = NSPeriodic; break;
+            case 19: event_type = NSCursorUpdate; break;
+            case 20: event_type = NSScrollWheel; break;
+            default: break;
+            }  
     }
 
-  // Previously flag change events where encoded wrongly
-  if ((version == 2) && (event_type == NSFlagsChanged))
-    {
-        [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-          &event_data.misc.data1, &event_data.misc.data2];
-        return self;
-    }
+      // Previously flag change events where encoded wrongly
+      if ((version == 2) && (event_type == NSFlagsChanged))
+        {
+          [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+                    &event_data.misc.data1, &event_data.misc.data2];
+          return self;
+        }
+      
+      // Decode the event date based upon the event type
+      switch (event_type)
+        {
+        case NSLeftMouseDown:
+        case NSLeftMouseUp:
+        case NSOtherMouseDown:
+        case NSOtherMouseUp:
+        case NSRightMouseDown:
+        case NSRightMouseUp:
+        case NSScrollWheel:
+        case NSMouseMoved:
+        case NSLeftMouseDragged:
+        case NSOtherMouseDragged:
+        case NSRightMouseDragged:
+          [aDecoder decodeValuesOfObjCTypes: "iififff",
+                    &event_data.mouse.event_num, &event_data.mouse.click,
+                    &event_data.mouse.pressure, &event_data.mouse.button,
+                    &event_data.mouse.deltaX, &event_data.mouse.deltaY,
+                    &event_data.mouse.deltaZ];
+          break;
+          
+        case NSMouseEntered:
+        case NSMouseExited:
+        case NSCursorUpdate:
+          // Can't do anything with the user_data!?
+          [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+                    &event_data.tracking.tracking_num];
+          break;
+          
+        case NSKeyDown:
+        case NSKeyUp:
+        case NSFlagsChanged:
+          [aDecoder decodeValueOfObjCType: @encode(BOOL)
+                                       at: &event_data.key.repeat];
+          event_data.key.char_keys = [aDecoder decodeObject];
+          event_data.key.unmodified_keys = [aDecoder decodeObject];
+          [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
+          break;
+          
+        case NSPeriodic:
+        case NSAppKitDefined:
+        case NSSystemDefined:
+        case NSApplicationDefined:
+          [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+                    &event_data.misc.data1, &event_data.misc.data2];
+          break;
 
-  // Decode the event date based upon the event type
-  switch (event_type)
-    {
-      case NSLeftMouseDown:
-      case NSLeftMouseUp:
-      case NSOtherMouseDown:
-      case NSOtherMouseUp:
-      case NSRightMouseDown:
-      case NSRightMouseUp:
-      case NSScrollWheel:
-      case NSMouseMoved:
-      case NSLeftMouseDragged:
-      case NSOtherMouseDragged:
-      case NSRightMouseDragged:
-        [aDecoder decodeValuesOfObjCTypes: "iififff",
-          &event_data.mouse.event_num, &event_data.mouse.click,
-          &event_data.mouse.pressure, &event_data.mouse.button,
-          &event_data.mouse.deltaX, &event_data.mouse.deltaY,
-          &event_data.mouse.deltaZ];
-        break;
-
-      case NSMouseEntered:
-      case NSMouseExited:
-      case NSCursorUpdate:
-        // Can't do anything with the user_data!?
-        [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
-          &event_data.tracking.tracking_num];
-        break;
-
-      case NSKeyDown:
-      case NSKeyUp:
-      case NSFlagsChanged:
-        [aDecoder decodeValueOfObjCType: @encode(BOOL)
-                                     at: &event_data.key.repeat];
-        event_data.key.char_keys = [aDecoder decodeObject];
-        event_data.key.unmodified_keys = [aDecoder decodeObject];
-        [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
-        break;
-
-      case NSPeriodic:
-      case NSAppKitDefined:
-      case NSSystemDefined:
-      case NSApplicationDefined:
-        [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-          &event_data.misc.data1, &event_data.misc.data2];
-        break;
-
-      case NSTabletPoint:
-      case NSTabletProximity:
-        // FIXME: Tablet events
-        break;
+        case NSTabletPoint:
+        case NSTabletProximity:
+          // FIXME: Tablet events
+          break;
+        }
     }
 
   return self;
