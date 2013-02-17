@@ -45,8 +45,8 @@
 - (NSSize) intercellSpacing;
 - (void) setIntercellSpacing: (NSSize)aSize;
 
-- (float) itemHeight;
-- (void) setItemHeight: (float)itemHeight;
+- (CGFloat) itemHeight;
+- (void) setItemHeight: (CGFloat)itemHeight;
 
 - (NSInteger) numberOfVisibleItems;
 - (void) setNumberOfVisibleItems: (NSInteger)visibleItems;

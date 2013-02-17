@@ -42,12 +42,13 @@
 //@class NSBox;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-typedef enum _NSBrowserColumnResizingType
+enum _NSBrowserColumnResizingType
 {
   NSBrowserNoColumnResizing,
   NSBrowserAutoColumnResizing,
   NSBrowserUserColumnResizing
-} NSBrowserColumnResizingType;
+};
+typedef NSUInteger NSBrowserColumnResizingType;
 #endif
 
 @interface NSBrowser : NSControl <NSCoding>
@@ -88,12 +89,12 @@ typedef enum _NSBrowserColumnResizingType
   NSRect _scrollerRect;
   int _alphaNumericalLastColumn;
   int _maxVisibleColumns;
-  float _minColumnWidth;
+  CGFloat _minColumnWidth;
   int _lastColumnLoaded;
   int _firstVisibleColumn;
   int _lastVisibleColumn;
   NSString *_columnsAutosaveName;
-	NSBrowserColumnResizingType _columnResizing;
+  NSBrowserColumnResizingType _columnResizing;
 }
 
 //
@@ -155,14 +156,14 @@ typedef enum _NSBrowserColumnResizingType
 // Setting the NSBrowser's Appearance 
 //
 - (NSInteger) maxVisibleColumns;
-- (NSInteger) minColumnWidth;
+- (CGFloat) minColumnWidth;
 - (BOOL) separatesColumns;
 - (void) setMaxVisibleColumns: (NSInteger)columnCount;
-- (void) setMinColumnWidth: (NSInteger)columnWidth;
+- (void) setMinColumnWidth: (CGFloat)columnWidth;
 - (void) setSeparatesColumns: (BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (float) columnWidthForColumnContentWidth: (float)columnContentWidth;
-- (float) columnContentWidthForColumnWidth: (float)columnWidth;
+- (CGFloat) columnWidthForColumnContentWidth: (CGFloat)columnContentWidth;
+- (CGFloat) columnContentWidthForColumnWidth: (CGFloat)columnWidth;
 #endif
 
 //
@@ -260,8 +261,8 @@ typedef enum _NSBrowserColumnResizingType
 - (void) setColumnResizingType:(NSBrowserColumnResizingType) type;
 - (BOOL) prefersAllColumnUserResizing;
 - (void) setPrefersAllColumnUserResizing: (BOOL)flag;
-- (float) widthOfColumn: (NSInteger)column;
-- (void) setWidth: (float)columnWidth ofColumn: (NSInteger)columnIndex;
+- (CGFloat) widthOfColumn: (NSInteger)column;
+- (void) setWidth: (CGFloat)columnWidth ofColumn: (NSInteger)columnIndex;
 
 //
 // Autosave names
@@ -304,11 +305,11 @@ typedef enum _NSBrowserColumnResizingType
 - (void) browserWillScroll: (NSBrowser *)sender;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (float) browser: (NSBrowser *)browser
- shouldSizeColumn: (NSInteger)column
-    forUserResize: (BOOL)flag
-          toWidth: (float)width;
-- (float) browser: (NSBrowser *)browser
+- (CGFloat) browser: (NSBrowser *)browser
+   shouldSizeColumn: (NSInteger)column
+      forUserResize: (BOOL)flag
+            toWidth: (CGFloat)width;
+- (CGFloat) browser: (NSBrowser *)browser
 sizeToFitWidthOfColumn: (NSInteger)column;
 - (void) browserColumnConfigurationDidChange: (NSNotification *)notification;
 #endif

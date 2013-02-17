@@ -98,13 +98,13 @@ static NSNotificationCenter *nc;
 @end
 
 @interface NSComboBoxCell (GNUstepPrivate)
-- (NSString *) _stringValueAtIndex: (int)index;
+- (NSString *) _stringValueAtIndex: (NSInteger)index;
 - (void) _performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView;
 - (void) _didClickWithinButton: (id)sender;
 - (BOOL) _isWantedEvent: (NSEvent *)event;
 - (GSComboWindow *) _popUp;
 - (NSRect) _textCellFrame;
-- (void) _setSelectedItem: (int)index;
+- (void) _setSelectedItem: (NSInteger)index;
 - (void) _loadButtonCell;
 - (void) _selectCompleted;
 @end
@@ -207,12 +207,12 @@ static GSComboWindow *gsWindow = nil;
 {
   NSSize bsize = [[GSTheme theme] sizeForBorderType: NSLineBorder];
   NSSize size;
-  float itemHeight;
-  float textCellWidth;
-  float popUpWidth;
+  CGFloat itemHeight;
+  CGFloat textCellWidth;
+  CGFloat popUpWidth;
   NSSize intercellSpacing;
-  int num = [comboBoxCell numberOfItems];
-  int max = [comboBoxCell numberOfVisibleItems];
+  NSInteger num = [comboBoxCell numberOfItems];
+  NSInteger max = [comboBoxCell numberOfVisibleItems];
   
   // Manage table view or browser cells height
   
@@ -562,7 +562,7 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) moveDownSelection
 {
-  int index = [_tableView selectedRow] + 1;
+  NSInteger index = [_tableView selectedRow] + 1;
   
   if (index > -1 && index < [_tableView numberOfRows])
     {
@@ -577,7 +577,7 @@ static GSComboWindow *gsWindow = nil;
     {
       NSText	*textObject = nil;
       id	cv = [_cell controlView];
-      int 	index = [_cell indexOfSelectedItem];
+      NSInteger	index = [_cell indexOfSelectedItem];
       
       if ([cv isKindOfClass: [NSControl class]])
         {
@@ -731,7 +731,7 @@ static GSComboWindow *gsWindow = nil;
 /**
  * Returns the height of the items in the combo box cell list.
  */
-- (float) itemHeight 
+- (CGFloat) itemHeight 
 { 
   return _itemHeight; 
 }
@@ -740,9 +740,9 @@ static GSComboWindow *gsWindow = nil;
  * Sets the height of the items in the combo box cell list to
  * <var>itemHeight</var>.
  */
-- (void) setItemHeight: (float)itemHeight
+- (void) setItemHeight: (CGFloat)itemHeight
 {
-  if (itemHeight > 14)
+  if (itemHeight > 14.0)
     _itemHeight = itemHeight;
 }
 
@@ -1130,7 +1130,7 @@ static GSComboWindow *gsWindow = nil;
  */
 - (id) objectValue
 {
-  int index = [self indexOfSelectedItem];
+  NSInteger index = [self indexOfSelectedItem];
 
   if (index == -1)
     {
@@ -1182,7 +1182,7 @@ static GSComboWindow *gsWindow = nil;
     }
   else
     {
-      int index = [self indexOfSelectedItem];
+      NSInteger index = [self indexOfSelectedItem];
 
       if (index == -1)
         {
@@ -1268,7 +1268,7 @@ static GSComboWindow *gsWindow = nil;
 	}
       else
         {
-          unsigned int i;
+          NSInteger i;
 
           for (i = 0; i < [self numberOfItems]; i++)
             {
@@ -1281,7 +1281,7 @@ static GSComboWindow *gsWindow = nil;
     }
   else
     {
-      unsigned int i;
+      NSUInteger i;
 
       for (i = 0; i < [_popUpList count]; i++)
         {
@@ -1740,8 +1740,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       NSString *myString = [[textObject string] copy];
       NSString *more;
-      unsigned int myStringLength = [myString length];
-      unsigned int location, length;
+      NSUInteger myStringLength = [myString length];
+      NSUInteger location, length;
       NSRange selectedRange = [textObject selectedRange];
       
       if (myStringLength != 0
@@ -1766,7 +1766,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 @implementation NSComboBoxCell (GNUstepPrivate)
 
-- (NSString *) _stringValueAtIndex: (int)index
+- (NSString *) _stringValueAtIndex: (NSInteger)index
 {
   if (_usesDataSource == NO)
     {
@@ -1869,7 +1869,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   return textCellFrameFromRect(_lastValidFrame);
 }
 
-- (void) _setSelectedItem: (int)index
+- (void) _setSelectedItem: (NSInteger)index
 {
   _selectedItem = index;
 }

@@ -409,7 +409,7 @@ create_error(int code, NSString* desc)
 			withinRange: (NSRange)aRange
 {
   NSString *str = [self string];
-  unsigned length = [str length];
+  NSUInteger length = [str length];
   NSRange scanRange;
   NSRange startRange;
   
@@ -453,7 +453,7 @@ create_error(int code, NSString* desc)
 - (NSRange) doubleClickAtIndex: (NSUInteger)location
 {
   NSString *str = [self string];
-  unsigned length = [str length];
+  NSUInteger length = [str length];
   NSRange  scanRange;
   NSRange  startRange;
   NSRange  endRange;
@@ -557,10 +557,10 @@ create_error(int code, NSString* desc)
 }
 
 - (NSUInteger) nextWordFromIndex: (NSUInteger)location
-		       forward: (BOOL)isForward
+                         forward: (BOOL)isForward
 {
   NSString *str = [self string];
-  unsigned length = [str length];
+  NSUInteger length = [str length];
   NSRange range;
 
   if (location > length)
@@ -1118,7 +1118,7 @@ documentAttributes: (NSDictionary **)dict
       if ((textBlocks != nil) && [textBlocks containsObject: block])
         {
           NSRange newEffRange;
-          unsigned len = [self length];
+          NSUInteger len = [self length];
 
           while ((effRange.location > 0) && style && textBlocks)
             {
@@ -1174,7 +1174,7 @@ documentAttributes: (NSDictionary **)dict
       if ((textLists != nil) && [textLists containsObject: list])
         {
           NSRange newEffRange;
-          unsigned len = [self length];
+          NSUInteger len = [self length];
 
           while ((effRange.location > 0) && style && textLists)
             {
@@ -1246,7 +1246,7 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
       if ((textBlocks != nil) && containsTable(textBlocks, table))
         {
 	  NSRange newEffRange;
-	  unsigned len = [self length];
+	  NSUInteger len = [self length];
 	  
 	  while ((effRange.location > 0) && style && textBlocks)
 	    {
@@ -1370,7 +1370,7 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
 		   range: (NSRange)range
 {
   NSFont *font;
-  unsigned loc = range.location;
+  NSUInteger loc = range.location;
   NSRange effRange;
   NSFontManager *fm = [NSFontManager sharedFontManager];
 
@@ -1406,7 +1406,7 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
 		range: (NSRange)range
 {
   id		value;
-  unsigned	loc = range.location;
+  NSUInteger	loc = range.location;
   
   if (NSMaxRange(range) > [self length])
     {
@@ -1470,8 +1470,8 @@ static NSMutableDictionary *cachedCSets = nil;
                          font: (NSFont*)baseFont 
                      fromList: (NSArray *)fonts
 {
-  unsigned int count;
-  unsigned int i;
+  NSUInteger count;
+  NSUInteger i;
       
   if (cachedCSets == nil)
     {
@@ -1554,9 +1554,9 @@ static NSMutableDictionary *cachedCSets = nil;
   NSFont *font = nil;
   NSCharacterSet *charset = nil;
   NSRange fontRange = NSMakeRange(NSNotFound, 0);
-  unsigned int i;
-  unsigned int lastMax;
-  unsigned int start;
+  NSUInteger i;
+  NSUInteger lastMax;
+  NSUInteger start;
   unichar chars[64];
   CREATE_AUTORELEASE_POOL(pool);
   
@@ -1582,7 +1582,7 @@ static NSMutableDictionary *cachedCSets = nil;
   
       if (i >= lastMax)
         {
-          unsigned int dist;
+          NSUInteger dist;
           
           start = lastMax;
           dist = MIN(64, NSMaxRange(range) - start);
@@ -1622,7 +1622,7 @@ static NSMutableDictionary *cachedCSets = nil;
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
 {
   NSString *str = [self string];
-  unsigned loc = range.location;
+  NSUInteger loc = range.location;
   NSRange r;
 
   if (NSMaxRange (range) > [self length])
@@ -1635,7 +1635,7 @@ static NSMutableDictionary *cachedCSets = nil;
     {
       NSParagraphStyle	*style;
       NSRange		found;
-      unsigned		end;
+      NSUInteger	end;
 
       /* Extend loc to take in entire paragraph if necessary.  */
       r = [str lineRangeForRange: NSMakeRange (loc, 1)];
@@ -1697,8 +1697,8 @@ static NSMutableDictionary *cachedCSets = nil;
 - (void) fixAttachmentAttributeInRange: (NSRange)range
 {
   NSString *string = [self string];
-  unsigned location = range.location;
-  unsigned end = NSMaxRange (range);
+  NSUInteger location = range.location;
+  NSUInteger end = NSMaxRange (range);
 
   cache_init ();
 
@@ -1718,8 +1718,8 @@ static NSMutableDictionary *cachedCSets = nil;
       if ([attr objectForKey: NSAttachmentAttributeName] != nil)
 	{
 	  unichar	buf[eRange.length];
-	  unsigned	pos = 0;
-	  unsigned	start = eRange.location;
+	  NSUInteger	pos = 0;
+	  NSUInteger	start = eRange.location;
 
 	  // Leave only one character with the attachment
 	  [string getCharacters: buf  range: eRange];
@@ -1769,8 +1769,8 @@ static NSMutableDictionary *cachedCSets = nil;
 - (void) updateAttachmentsFromPath: (NSString *)path
 {
   NSString *string = [self string];
-  unsigned location = 0;
-  unsigned end = [string length];
+  NSUInteger location = 0;
+  NSUInteger end = [string length];
 
   cache_init ();
 
@@ -1865,7 +1865,7 @@ static NSMutableDictionary *cachedCSets = nil;
                            range: (NSRange)range
 {
   id value;
-  unsigned loc = range.location;
+  NSUInteger loc = range.location;
   
   if (NSMaxRange(range) > [self length])
     {

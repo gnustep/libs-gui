@@ -214,7 +214,7 @@ static Class defaultCellClass = nil;
 /** <p>Sets the spacing between all entries to spacing. By default
     the spacing is 4.</p><p>See Also: [NSMatrix-setIntercellSpacing:]</p>
  */
-- (void) setInterlineSpacing: (float)spacing
+- (void) setInterlineSpacing: (CGFloat)spacing
 {
   [self setIntercellSpacing: NSMakeSize(0, spacing)];
 }
@@ -356,8 +356,8 @@ static Class defaultCellClass = nil;
 - (void) calcSize
 {
   NSInteger i, count = [self numberOfRows];
-  float new_title_width = 0;
-  float candidate_title_width = 0;
+  CGFloat new_title_width = 0;
+  CGFloat candidate_title_width = 0;
   NSRect rect;
 
   // Compute max of title width in the cells

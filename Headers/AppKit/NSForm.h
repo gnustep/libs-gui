@@ -47,7 +47,7 @@
 - (NSFormCell*)insertEntry:(NSString*)title
 		    atIndex:(NSInteger)index;
 - (void)removeEntryAtIndex:(NSInteger)index;
-- (void)setInterlineSpacing:(float)spacing;
+- (void)setInterlineSpacing:(CGFloat)spacing;
 
 //
 // Finding Indices

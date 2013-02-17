@@ -141,7 +141,7 @@ static NSNotificationCenter *nc;
 /**
  * Returns the height of the items in the combo box cell list.
  */
-- (float)itemHeight
+- (CGFloat)itemHeight
 {
   return [_cell itemHeight];
 }
@@ -150,7 +150,7 @@ static NSNotificationCenter *nc;
  * Sets the height of the items in the combo box cell list to
  * <var>itemHeight</var>.
  */
-- (void)setItemHeight:(float)itemHeight
+- (void)setItemHeight:(CGFloat)itemHeight
 {
   [_cell setItemHeight:itemHeight];
 }

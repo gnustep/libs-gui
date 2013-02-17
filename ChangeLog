@@ -1,3 +1,22 @@
+2013-02-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSBrowser.h
+	* Headers/AppKit/NSClipView.h
+	* Headers/AppKit/NSComboBox.h
+	* Headers/AppKit/NSComboBoxCell.h
+	* Headers/AppKit/NSForm.h
+	* Headers/AppKit/NSFormCell.h
+	* Headers/AppKit/NSParagraphStyle.h
+	* Source/NSAttributedString.m
+	* Source/NSBrowser.m
+	* Source/NSClipView.m
+	* Source/NSComboBox.m
+	* Source/NSComboBoxCell.m
+	* Source/NSForm.m
+	* Source/NSFormCell.m
+	* Source/NSParagraphStyle.m
+	More CGFloat, NSUInteger and NSInteger changes.
+
 2013-02-16  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSDragging.h

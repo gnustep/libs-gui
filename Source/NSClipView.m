@@ -61,25 +61,25 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   output = [view convertRect: rect  toView: nil];
 
   rounded = (int)(output.origin.x);
-  if ((float)rounded != output.origin.x)
+  if ((CGFloat)rounded != output.origin.x)
     {
       output.origin.x = rounded + 1;
     }
 
   rounded = (int)(output.origin.y);
-  if ((float)rounded != output.origin.y)
+  if ((CGFloat)rounded != output.origin.y)
     {
       output.origin.y = rounded + 1;
     }
   
   rounded = (int)(NSMaxX (output));
-  if ((float)rounded != NSMaxX (output))
+  if ((CGFloat)rounded != NSMaxX (output))
     {
       output.size.width = rounded - output.origin.x;
     }
   
   rounded = (int)(NSMaxY (output));
-  if ((float)rounded != NSMaxY (output))
+  if ((CGFloat)rounded != NSMaxY (output))
     {
       output.size.height = rounded - output.origin.y;
     }
@@ -173,7 +173,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
   if (_documentView)
     {
-      NSRect	df;
+      NSRect df;
 
       [self addSubview: _documentView];
 
@@ -275,8 +275,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
          scrolling.  Then, document view needs to redraw the remaining
          areas. */
 
-	
-
       /* Common part - which is a first approx of what we could
          copy... */
       intersection = NSIntersectionRect (originalBounds, newBounds);
@@ -309,8 +307,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
              origins, both of which should be integers in device space
              because of the code at the end of
              constrainScrollPoint:. */
-          float dx = newBounds.origin.x - originalBounds.origin.x;
-          float dy = newBounds.origin.y - originalBounds.origin.y;
+          CGFloat dx = newBounds.origin.x - originalBounds.origin.x;
+          CGFloat dy = newBounds.origin.y - originalBounds.origin.y;
           NSRect redrawRect;
                     
           /* Copy the intersection to the new position */
@@ -660,7 +658,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	  _isOpaque = YES;
 	}
     }
-  
 }
 
 - (void) setDrawsBackground: (BOOL)flag
@@ -699,15 +696,15 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 }
 
 /* Disable rotation of clip view */
-- (void) rotateByAngle: (float)angle
+- (void) rotateByAngle: (CGFloat)angle
 {
 }
 
-- (void) setBoundsRotation: (float)angle
+- (void) setBoundsRotation: (CGFloat)angle
 {
 }
 
-- (void) setFrameRotation: (float)angle
+- (void) setFrameRotation: (CGFloat)angle
 {
 }
 

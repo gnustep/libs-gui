@@ -168,7 +168,7 @@
 /**<p>Sets the width of the NSFormCell's title to width. All NSFormCell
    of the NSForm are updated</p><p>See Also: -titleWidth</p>
 */
-- (void)setTitleWidth: (float)width
+- (void)setTitleWidth: (CGFloat)width
 {
   if (width >= 0)
     {
@@ -243,7 +243,7 @@
 // manually with setTitleWidth: disables any alignment with other
 // cells.
 //
-- (float)titleWidth
+- (CGFloat)titleWidth
 {
   if (_formcell_auto_title_width == NO)
     return _displayedTitleWidth;
@@ -254,7 +254,7 @@
     }
 }
 
-- (float)titleWidth: (NSSize)aSize
+- (CGFloat)titleWidth: (NSSize)aSize
 {
   if (_formcell_auto_title_width == NO)
     return _displayedTitleWidth;
