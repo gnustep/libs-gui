@@ -5780,7 +5780,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
 
 - (void) rightMouseDown: (NSEvent *)theEvent
 {
-  NSUInteger i;
+  NSInteger i;
   NSMenu *menu = [[self class] defaultMenu];
   NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   NSUInteger index = [self _characterIndexForPoint: point
@@ -5792,7 +5792,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
   if (!_layoutManager)
     return;
   
-  for (i=[[menu itemArray] count]-1; i>=0; --i)
+  for (i = [[menu itemArray] count] - 1; i >= 0; --i)
     {
       NSMenuItem *item = [menu itemAtIndex: i];
       if ([item tag] == GSSpellingSuggestionMenuItemTag)

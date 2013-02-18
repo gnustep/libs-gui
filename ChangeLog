@@ -1,3 +1,10 @@
+2013-02-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDragView.m
+	* Source/NSTextView.m
+	Fix compiler warnings reported by
+	Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
 2013-02-17  German A. Arias <german@xelalug.org>
 
 	* Resources/Spanish.lproj/Localizable.strings: Translations.

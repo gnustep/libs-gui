@@ -497,7 +497,7 @@ static	GSDragView *sharedDragView = nil;
 
   NSDebugLLog (@"NSDragging",
                @"drag, operation, target mask = (%x, %x, %x), dnd aware = %d\n",
-               dragMask, operationMask, targetMask,
+               (unsigned int)dragMask, (unsigned int)operationMask, (unsigned int)targetMask,
                (targetWindowRef != 0));
   
   if (cursors == nil)
