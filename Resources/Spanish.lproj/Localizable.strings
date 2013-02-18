@@ -100,51 +100,51 @@ add comments above this one
 
 /* File: ../Source/GSToolbarView.m:894 */
 /* Flag: untranslated */
-"Customize Toolbar" = "Customize Toolbar";
+"Customize Toolbar" = "Personalizar Barra de Herramientas";
 
 /* File: ../Source/NSAlert.m:2001 */
 /* Flag: untranslated */
-"No information" = "No information";
+"No information" = "No hay informaci\U00F3n";
 
 /* File: ../Source/NSApplication.m:4197 */
 /* Flag: untranslated */
-"Show" = "Show";
+"Show" = "Mostrar";
 
 /* File: ../Source/NSApplication.m:4203 */
 /* Flag: untranslated */
-"Hide" = "Hide";
+"Hide" = "Ocultar";
 
 /* File: ../Source/NSSavePanel.m:241 */
 /* Flag: untranslated */
-"Show Hidden Files" = "Show Hidden Files";
+"Show Hidden Files" = "Mostrar archivos ocultos";
 
 /* File: ../Source/NSSavePanel.m:276 */
 /* Flag: untranslated */
-"Home" = "Home";
+"Home" = "Carpeta Personal";
 
 /* File: ../Source/NSSavePanel.m:292 */
 /* Flag: untranslated */
-"Mount" = "Mount";
+"Mount" = "Montar";
 
 /* File: ../Source/NSSavePanel.m:308 */
 /* Flag: untranslated */
-"Unmount" = "Unmount";
+"Unmount" = "Desmontar";
 
 /* File: ../Source/NSTextView.m:650 */
 /* Flag: untranslated */
-"Cut" = "Cut";
+"Cut" = "Cortar";
 
 /* File: ../Source/NSTextView.m:651 */
 /* Flag: untranslated */
-"Copy" = "Copy";
+"Copy" = "Copiar";
 
 /* File: ../Source/NSTextView.m:652 */
 /* Flag: untranslated */
-"Paste" = "Paste";
+"Paste" = "Pegar";
 
 /* File: ../Source/NSTextView.m:5847 */
 /* Flag: untranslated */
-"No Suggestions" = "No Suggestions";
+"No Suggestions" = "No hay sugerencias";
 
 
 /*** Strings from ../Source/Functions.m ***/
