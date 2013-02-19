@@ -1,5 +1,11 @@
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
+	* Source/NSTableView.m (-_drawDropIndicator, 
+	-_setDropOperationAndRow:usingPositionInRow:atPoint:, -draggingUpdated:):
+	Cleaned code a bit more.
+
+2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
+
 	* Source/NSTableView.m (-draggingUpdated:): Don't update the drop row and 
 	operation if the drop target hasn't changed (this prevents to overwrite a 
 	custom drop row and operation set by the user in 

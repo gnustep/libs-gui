@@ -6204,7 +6204,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	   newRect = [self bounds];
 	   NSFrameRectWithWidth(newRect, 2.0);
 	   oldDraggingRect = newRect;
-	   currentDropRow = _numberOfRows;
 	}
   else if (currentDropOperation == NSTableViewDropAbove)
 	{
@@ -6241,10 +6240,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  newRect.origin.x -= _intercellSpacing.height / 2;
 	  newRect.size.height += _intercellSpacing.height;
 
-	  oldDraggingRect = newRect;
-	  oldDraggingRect.origin.y -= 1;
-	  oldDraggingRect.size.height += 2;
-
 	  newRect.size.height -= 1;
 	  newRect.origin.x += 3;
 	  newRect.size.width -= 3;
@@ -6256,14 +6251,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 			//newRect.size.width -= 2;
 			newRect.size.height += 1;
 		}
-	  else
-		{
+	  NSFrameRectWithWidth(newRect, 2.0);
 
-		}
-
-		NSFrameRectWithWidth(newRect, 2.0);
-		//	      NSRectFill(newRect);
-
+	  oldDraggingRect = newRect;
+	  oldDraggingRect.origin.y -= 1;
+	  oldDraggingRect.size.height += 2;
 	}
 
 	[_window flushWindow];
@@ -6292,24 +6284,22 @@ view to drag. */
     }
 }
 
+- (NSInteger) _computedRowAtPoint: (NSPoint)p
+{
+  return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+}
+
 - (void) _setDropOperationAndRow: (NSInteger)row
               usingPositionInRow: (NSInteger)positionInRow 
                          atPoint: (NSPoint)p
 {
-  // Are we in the two middle quarters of the row? Use TableViewDropOn
-  if ((positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4)
-   || row > _numberOfRows)
-    {
-      currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
-      currentDropOperation = NSTableViewDropOn;
-      if (currentDropRow >= _numberOfRows)
-        currentDropRow = -1;
-    }
-  else // drop above
-    {
-      currentDropRow = row;
-      currentDropOperation = NSTableViewDropAbove;
-    }
+  NSParameterAssert(row > -1);
+  BOOL isPositionInsideMiddleQuartersOfRow = 
+    (positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4);
+  BOOL isDropOn = (row > _numberOfRows || isPositionInsideMiddleQuartersOfRow); 
+
+  [self setDropRow: (isDropOn ? [self _computedRowAtPoint: p] : row)
+     dropOperation: (isDropOn ? NSTableViewDropOn : NSTableViewDropAbove)];
 }
 
 - (NSInteger) _dropRowFromQuarterPosition: (NSInteger)quarterPosition
@@ -6329,7 +6319,7 @@ view to drag. */
 {
   NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
   NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (int)_rowHeight;
-  NSInteger quarterPosition = (NSInteger)(p.y - _bounds.origin.y) / _rowHeight * 4.;
+  NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
   NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
   BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
@@ -6340,10 +6330,15 @@ view to drag. */
   if (isSameDropTargetThanBefore)
     return currentDragOperation;
 
+  /* Remember current drop target */
   currentDragOperation = dragOperation;
   lastQuarterPosition = quarterPosition;
-
-  [self _setDropOperationAndRow: row usingPositionInRow: positionInRow atPoint: p];
+ 
+  /* The user can retarget this default drog using -setDropRow:dropOperation: 
+     in -tableView:validateDrop:proposedRow:proposedDropOperation:. */
+  [self _setDropOperationAndRow: row 
+             usingPositionInRow: positionInRow 
+                        atPoint: p];
 
   if ([_dataSource respondsToSelector: 
       @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
@@ -6354,16 +6349,13 @@ view to drag. */
                               proposedDropOperation: currentDropOperation];
     }
   
-  /* The user might retarget the drop using -setDropRow:dropOperation: in
-     -tableView:validateDrop:proposedRow:proposedOperation:.
-
-     -setDropRow:dropOperation: can changes both currentDropRow and 
+  /* -setDropRow:dropOperation: can changes both currentDropRow and 
      currentDropOperation. Whether we have to redraw the drop indicator depends 
      on this change. */
   if (currentDropRow != oldDropRow || currentDropOperation != oldDropOperation)
     {
       [self _drawDropIndicator]; 
-      oldDropRow = currentDropRow;
+      oldDropRow = (currentDropRow > -1 ? currentDropRow : _numberOfRows);
       oldDropOperation = currentDropOperation;
     }
 
