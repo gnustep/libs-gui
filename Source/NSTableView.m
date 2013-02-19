@@ -6334,7 +6334,7 @@ view to drag. */
   currentDragOperation = dragOperation;
   lastQuarterPosition = quarterPosition;
  
-  /* The user can retarget this default drog using -setDropRow:dropOperation: 
+  /* The user can retarget this default drop using -setDropRow:dropOperation: 
      in -tableView:validateDrop:proposedRow:proposedDropOperation:. */
   [self _setDropOperationAndRow: row 
              usingPositionInRow: positionInRow 
@@ -6374,6 +6374,7 @@ view to drag. */
   else
     return NO;
 }
+
 - (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
 {
   [self setNeedsDisplayInRect: oldDraggingRect];
