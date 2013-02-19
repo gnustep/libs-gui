@@ -2,7 +2,7 @@
    NeXTstep/ OPENSTEP 'make_services' tool.  In addition it builds a list of
    applications and services-bundles found in the standard directories.
 
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998-2013 Free Software Foundation, Inc.
 
    Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Created: November 1998
@@ -197,6 +197,13 @@ main(int argc, char** argv, char **env_c)
    */
   usrRoot = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
     NSUserDomainMask, YES) lastObject];
+  if (CheckDirectory(usrRoot) == NO)
+    {
+      if (verbose > 0)
+	NSLog(@"couldn't create %@", usrRoot);
+      [pool drain];
+      exit(EXIT_FAILURE);
+    }
   usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
   if (CheckDirectory(usrRoot) == NO)
     {
