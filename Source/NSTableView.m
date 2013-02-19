@@ -6189,48 +6189,32 @@ This method is deprecated, use -columnIndexesInRect:. */
   [self displayIfNeeded];
 }
 
-- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
+/* This is a crude method of scrolling the view while dragging so the user can 
+drag to any cell even if it's not visible. Unfortunately we don't receive 
+events when the drag is outside the view, so the pointer must still be in the 
+view to drag. */
+- (void) _scrollRowAtPointToVisible: (NSPoint)p
 {
-  NSPoint p = [sender draggingLocation];
-  NSRect newRect;
-  int row;
-  int quarterPosition, positionInRow;
-  int currentRow;
-  NSDragOperation dragOperation;
+  NSInteger currentRow;
 
-  p = [self convertPoint: p fromView: nil];
-  /* This is a crude method of scrolling the view while dragging so
-     the user can drag to any cell even if it's not
-     visible. Unfortunately we don't receive events when the drag is
-     outside the view, so the pointer must still be in the view to
-     drag.
-  */
-  if (p.y < NSMinY([self visibleRect])+3)
+  if (p.y < NSMinY([self visibleRect]) + 3)
     {
       currentRow = [self rowAtPoint: p] - 1;
       if (currentRow > 0)
         [self scrollRowToVisible: currentRow];
     }
-  else if (p.y > NSMaxY([self visibleRect])-3)
+  else if (p.y > NSMaxY([self visibleRect]) - 3)
     {
       currentRow = [self rowAtPoint: p] + 1;
       if (currentRow < _numberOfRows)
         [self scrollRowToVisible: currentRow];
     }
+}
 
-  positionInRow = (int)(p.y - _bounds.origin.y) % (int)_rowHeight;
-  quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
-
-  if ((quarterPosition - oldDropRow * 4 <= 2) &&
-      (quarterPosition - oldDropRow * 4 >= -3))
-    {
-      row = oldDropRow;
-    }
-  else
-    {
-      row = (quarterPosition + 2) / 4;
-    }
-
+- (void) _setDropOperationAndRow: (NSInteger)row
+              usingPositionInRow: (NSInteger)positionInRow 
+                         atPoint: (NSPoint)p
+{
   // Are we in the two middle quarters of the row? Use TableViewDropOn
   if ((positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4)
    || row > _numberOfRows)
@@ -6245,8 +6229,33 @@ This method is deprecated, use -columnIndexesInRect:. */
       currentDropRow = row;
       currentDropOperation = NSTableViewDropAbove;
     }
+}
 
-  dragOperation = [sender draggingSourceOperationMask];
+- (NSInteger) _dropRowFromQuarterPosition: (NSInteger)quarterPosition
+{
+  if ((quarterPosition - oldDropRow * 4 <= 2) &&
+      (quarterPosition - oldDropRow * 4 >= -3))
+    {
+      return oldDropRow;
+    }
+  else
+    {
+      return (quarterPosition + 2) / 4;
+    }
+}
+
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
+{
+  NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
+  NSRect newRect;
+  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (int)_rowHeight;
+  NSInteger quarterPosition = (NSInteger)(p.y - _bounds.origin.y) / _rowHeight * 4.;
+  NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
+  NSDragOperation dragOperation = [sender draggingSourceOperationMask];
+
+  [self _scrollRowAtPointToVisible: p];
+  [self _setDropOperationAndRow: row usingPositionInRow: positionInRow atPoint: p];
+
   if ((lastQuarterPosition != quarterPosition)
       || (currentDragOperation != dragOperation))
     {

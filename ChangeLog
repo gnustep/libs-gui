@@ -1,3 +1,10 @@
+2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSTableView.m (-draggingUpdated:): Modularized the first part of 
+	the method into several smaller methods -_dropRowFromQuarterPosition:, 
+	-_setDropOperationAndRow:usingPositionInRow:atPoint: and 
+	_scrollRowAtPointToVisible:.
+
 2013-02-18 Riccardo Mottola <rm@gnu.org>
 
 	* Tools/make_services.m (main)
