@@ -1,7 +1,14 @@
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Extracted drop indicator drawing 
-	into a new method -_drawDropIndicator.
+	* Source/NSTableView.m (-draggingUpdated:): Don't update the drop row and 
+	operation if the drop target hasn't changed (this prevents to overwrite a 
+	custom drop row and operation set by the user in 
+	-tableView:handleValidateDrop:proposedRow:proposedOperation:).
+
+2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSTableView.m (-draggingUpdated:): Extracted drop indicator 
+	drawing into a new method -_drawDropIndicator.
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 

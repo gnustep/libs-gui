@@ -6336,13 +6336,14 @@ view to drag. */
     && currentDragOperation == dragOperation);
 
   [self _scrollRowAtPointToVisible: p];
-  [self _setDropOperationAndRow: row usingPositionInRow: positionInRow atPoint: p];
 
   if (isSameDropTargetThanBefore)
     return currentDragOperation;
 
   currentDragOperation = dragOperation;
   lastQuarterPosition = quarterPosition;
+
+  [self _setDropOperationAndRow: row usingPositionInRow: positionInRow atPoint: p];
 
   if ([_dataSource respondsToSelector: 
       @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
