@@ -1,26 +1,31 @@
+2013-02-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tools/make_services.m (main, CheckDirectory)
+	Improve the last fix by using newer method.
+
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-_drawDropIndicator, 
+	* Source/NSTableView.m (-_drawDropIndicator,
 	-_setDropOperationAndRow:usingPositionInRow:atPoint:, -draggingUpdated:):
 	Cleaned code a bit more.
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Don't update the drop row and 
-	operation if the drop target hasn't changed (this prevents to overwrite a 
-	custom drop row and operation set by the user in 
+	* Source/NSTableView.m (-draggingUpdated:): Don't update the drop row and
+	operation if the drop target hasn't changed (this prevents to overwrite a
+	custom drop row and operation set by the user in
 	-tableView:handleValidateDrop:proposedRow:proposedOperation:).
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Extracted drop indicator 
+	* Source/NSTableView.m (-draggingUpdated:): Extracted drop indicator
 	drawing into a new method -_drawDropIndicator.
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Modularized the first part of 
-	the method into several smaller methods -_dropRowFromQuarterPosition:, 
-	-_setDropOperationAndRow:usingPositionInRow:atPoint: and 
+	* Source/NSTableView.m (-draggingUpdated:): Modularized the first part of
+	the method into several smaller methods -_dropRowFromQuarterPosition:,
+	-_setDropOperationAndRow:usingPositionInRow:atPoint: and
 	_scrollRowAtPointToVisible:.
 
 2013-02-18 Riccardo Mottola <rm@gnu.org>
@@ -1761,16 +1766,16 @@
 	Improved the menu theming to support some common menu look variations.
 	Fixed bug #34792 too.
 	* Headers/Additions/GNUstepGUI/GSTheme.h
-	* Source/GSThemeDrawing.m 
+	* Source/GSThemeDrawing.m
 	(-menuBackgroundColor, -menuItemBackgroundColor, -menuBorderColor
-	-menuBorderColorForEdge:isHorizontal:, 
-	-drawsBorderForMenuItemCell:state:isHorizontal:, 
-	-drawTitleForMenuItemCell:withFrame:inView:state:isHorizontal:, 
+	-menuBorderColorForEdge:isHorizontal:,
+	-drawsBorderForMenuItemCell:state:isHorizontal:,
+	-drawTitleForMenuItemCell:withFrame:inView:state:isHorizontal:,
 	-menuSeparatorInset): Added.
 	(-menuBarBackgroundColor, -menuBarBorderColor): Added but not yet used.
 	(-menuSeparatorColor): Renamed -menuSeparatorItemColor.
-	* Source/NSMenuItemCell.m 
-	(-backgroundColor:): Changed to get the background color from 
+	* Source/NSMenuItemCell.m
+	(-backgroundColor:): Changed to get the background color from
 	-menuItemBackgroundColor.
 	(-themeControlState): Added.
 	(-drawTitleWithFrame:inView:): Moved drawing code to GSTheme.
@@ -1826,7 +1831,7 @@
 	cell classes that need it.
 	* Source/NSButtonCell.m:
 	* Headers/AppKit/NSButtonCell.h: Implement -imageScaling and
-	-setImageScaling methods. 
+	-setImageScaling methods.
 	* Source/GSThemeDrawing.m:
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Remove the
 	-drawImage:inButtonCell:withFrame:position: API intended
@@ -2622,7 +2627,7 @@
 	  ivars with the non-fragile ABI.
 
 2011-06-28  Eric Wasylishen  <ewasylishen@gmail.com>
-	
+
 	* Headers/Additions/GNUstepGUI/GSImageMagickImageRep.h:
 	* Source/GNUmakefile:
 	* Source/NSImageRep.m:
@@ -17673,4 +17678,3 @@
 	the correct background/highlight colors and NSCompositeSourceOver for
 	image cells.
 	(-setHighlighted): Use controlHighlightColor instead of controlColor.
-
