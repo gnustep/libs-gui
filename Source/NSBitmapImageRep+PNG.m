@@ -3,7 +3,7 @@
 
    Methods for loading .png images.
 
-   Copyright (C) 2003-2011 Free Software Foundation, Inc.
+   Copyright (C) 2003-2013 Free Software Foundation, Inc.
    
    Written by: Alexander Malmberg <alexander@malmberg.org>
    Date: 2003-12-07
@@ -47,6 +47,10 @@
 #endif
 
 #endif /* HAVE_LIBPNG */
+
+#if !defined png_sizeof
+#define png_sizeof(x) sizeof(x)
+#endif
 
 /* we import all the standard headers to allow compilation without PNG */
 #import <Foundation/NSData.h>

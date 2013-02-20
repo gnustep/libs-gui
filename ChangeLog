@@ -1,3 +1,8 @@
+2013-02-21 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+PNG.m
+	Define png_sizeof() to allow compilation on 1.6.
+
 2013-02-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tools/make_services.m (main, CheckDirectory)
