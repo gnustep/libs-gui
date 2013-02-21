@@ -1,3 +1,8 @@
+2013-02-21 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSParagraphStyle.m
+	Encode and decode lineBreakMode with NSInteger and not NSLineBreakMode
+
 2013-02-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+PNG.m
