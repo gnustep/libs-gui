@@ -1,3 +1,9 @@
+2013-02-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+PNG.m
+	(-_PNGRepresentationWithProperties:): Revert last change and don't
+	use png_info_init_3() on PNG >= 1.5.
+
 2013-02-21 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+PNG.m
