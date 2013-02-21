@@ -1,3 +1,14 @@
+2013-02-21  Frank Le Grand <frank.legrand@testplant.com>
+    Prelimirary/basic implementation of NSCollectionView and NSCollectionViewItem.
+	This is a work in progress.
+    * Source\NSCollectionView.m
+	* Source\NSCollectionViewItem.m
+	* Headers\NSCollectionView.h
+	* Headers\NSCollectionViewItem.h: Added files to project
+	* Source\NSViewController.m: Added a retain on view in SetView:
+	* Source\GNUmakefile: Added NSCollectionView and NSCollectionViewItem
+	to AppKit.
+
 2013-02-13  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source\GSXibLoader.m: Fix a problem where owner, firstResponder and application 

@@ -28,6 +28,7 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSKeyedArchiver.h>
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSViewController.h"
@@ -62,6 +63,7 @@
   DESTROY(_editors);
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
+  DESTROY(view);
   
   [super dealloc];
 }
@@ -97,7 +99,11 @@
 
 - (void)setView:(NSView *)aView
 {
-  view = aView;
+  if (aView != view)
+  {
+    [view release];
+    view = [aView retain];
+  }
 }
 
 - (void)loadView
@@ -186,6 +192,25 @@
 {
   // Loop over all elements of _editors
   [self notImplemented: _cmd];
+}
+
+- (id)initWithCoder:(NSCoder *)aCoder
+{
+    self = [super initWithCoder:aCoder];
+    
+    if (self)
+    {
+        NSView *aView = [aCoder decodeObjectForKey:@"NSView"];
+		[self setView:aView];
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:[self view] forKey:@"NSView"];
 }
 
 @end
