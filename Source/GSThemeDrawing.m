@@ -1693,7 +1693,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         aRect.size.height -= 16;
         aRect.origin.y += 16;
         [self drawButton: aRect withClip: rect];
-        aRect.origin.y -= 16;
         break;
 
       case NSLeftTabsBezelBorder: 

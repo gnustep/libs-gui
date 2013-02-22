@@ -386,21 +386,20 @@
 
 - (NSSize) minimumSize
 {
-  // FIXME: This should allow some space for the tabs
   switch (_type)
     {
       case NSTopTabsBezelBorder:
-        return NSMakeSize(2, 19.5);
+        return NSMakeSize(3, 19);
       case NSNoTabsBezelBorder:
-        return NSMakeSize(2, 3);
+        return NSMakeSize(3, 3);
       case NSNoTabsLineBorder:
-        return NSMakeSize(2, 3);
+        return NSMakeSize(2, 2);
       case NSBottomTabsBezelBorder:
-        return NSMakeSize(2, 16);
+        return NSMakeSize(3, 19);
       case NSLeftTabsBezelBorder:
-        return NSMakeSize(16, 3);
+        return NSMakeSize(21, 3);
       case NSRightTabsBezelBorder:
-        return NSMakeSize(16, 3);
+        return NSMakeSize(21, 3);
       case NSNoTabsNoBorder:
       default:
         return NSZeroSize;
@@ -411,42 +410,43 @@
 {
   NSRect cRect = _bounds;
 
-  /* 
-     FIXME: All these numbers seem wrong to me.
-     For a bezel border we loose 2 pixel on each side, 
-     for a line border 1 pixel. On top of that we will 
-     need the space for the tab.
-  */
   switch (_type)
     {
       case NSTopTabsBezelBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 18.5;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 3;
+        cRect.size.height -= 19;
         break;
       case NSNoTabsBezelBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 2;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 3;
+        cRect.size.height -= 3;
         break;
       case NSNoTabsLineBorder:
         cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
+        cRect.origin.x += 1; 
         cRect.size.width -= 2;
         cRect.size.height -= 2;
         break;
     case NSBottomTabsBezelBorder:
-        cRect.size.height -= 8;
-        cRect.origin.y = 8;
+        cRect.origin.x += 1;
+        cRect.origin.y += 19;
+        cRect.size.width -= 3;
+        cRect.size.height -= 19;
         break;
       case NSLeftTabsBezelBorder:
-        cRect.size.width -= 16;
-        cRect.origin.x += 16;
+        cRect.origin.x += 21;
+        cRect.origin.y += 1;
+        cRect.size.width -= 21;
+        cRect.size.height -= 3;
         break;
       case NSRightTabsBezelBorder:
-        cRect.size.width -= 16;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 21;
+        cRect.size.height -= 3;
         break;
       case NSNoTabsNoBorder:
       default:
