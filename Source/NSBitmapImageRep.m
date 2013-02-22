@@ -2258,7 +2258,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                   if (alpha)
                     {
                       // Scale from [0.0 ... 1.0]
-                      for (i = 0; i < _numColors; i++)
+                      for (i = 0; i < spp - 1; i++)
                         {
                           iv[i] = fv[i] * scale;
                         }

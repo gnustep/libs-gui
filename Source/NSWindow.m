@@ -5379,7 +5379,7 @@ current key view.<br />
       aSize = [aDecoder decodeSize];
       [self setMaxSize: aSize];
 
-      [aDecoder decodeValueOfObjCType: @encode(int)
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger)
                                    at: &level];
       [self setLevel: level];
 
