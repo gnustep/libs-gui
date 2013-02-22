@@ -1,3 +1,7 @@
+2013-01-31  Doug Simons <doug.simons@testplant.com>
+
+    * Source/NSindow.m: Don't unregister delegate notifications if same delegate is set twice.
+
 2013-02-21  Frank Le Grand <frank.legrand@testplant.com>
     Prelimirary/basic implementation of NSCollectionView and NSCollectionViewItem.
 	This is a work in progress.
