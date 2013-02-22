@@ -1,9 +1,16 @@
 2013-02-22  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSToolTips.m
+	* Source/NSProgressIndicator.m
+	* Source/NSTextView.m: Add the timers for NSModalPanelRunLoopMode
+	as well.
+
+2013-02-22  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTabView.m (-minimumSize, -contentRect): Make the values
 	here consistent with the code in GSThemeDrawing.
 	* Source/GSThemeDrawing.m (-drawTabViewRect:...): Remove useless
-	line of code. 
+	line of code.
 
 2013-02-21 Riccardo Mottola <rm@gnu.org>
 

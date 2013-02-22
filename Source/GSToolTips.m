@@ -26,11 +26,13 @@
 */
 
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSRunLoop.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSUserDefaults.h>
 
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSEvent.h"
@@ -363,6 +365,7 @@ static BOOL		restoreMouseMoved;
                                          selector: @selector(_timedOut:)
                                          userInfo: toolTipString
                                           repeats: YES];
+  [[NSRunLoop currentRunLoop] addTimer: timer forMode: NSModalPanelRunLoopMode];
   timedObject = self;
   if ([[view window] acceptsMouseMovedEvents] == YES)
     {

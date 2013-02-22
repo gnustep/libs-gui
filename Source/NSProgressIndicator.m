@@ -27,8 +27,10 @@
 */
 
 #import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSRunLoop.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSTimer.h>
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -132,6 +134,7 @@
                               selector: @selector(animate:)
                               userInfo: nil
                               repeats: YES]);
+      [[NSRunLoop currentRunLoop] addTimer: _timer forMode: NSModalPanelRunLoopMode];
     }
   else
     {

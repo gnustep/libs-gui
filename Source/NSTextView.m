@@ -4132,6 +4132,8 @@ Figure out how the additional layout stuff is supposed to work.
                                                         selector: @selector(_blink:)
                                                         userInfo: nil
                                                          repeats: YES];
+  [[NSRunLoop currentRunLoop] addTimer: _insertionPointTimer
+                               forMode: NSModalPanelRunLoopMode];
   RETAIN(_insertionPointTimer);
 }
 
