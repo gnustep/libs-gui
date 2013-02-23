@@ -5234,6 +5234,12 @@ current key view.<br />
 */
 - (void) setDelegate: (id)anObject
 {
+  if (anObject == _delegate)
+    {
+      // don't remove previously registered notifications if delegate is unchanged!
+      return;
+    }	  	 
+
   if (_delegate)
     {
       [nc removeObserver: _delegate name: nil object: self];
