@@ -579,7 +579,7 @@ this to return nil to indicate that we have no context menu.
       NSInteger  index = 0;
       [self removeAllItems];
       for (index = 0; index < [array count]; ++index)
-        [self insertItemWithTitle:[[array objectAtIndex: index] copy] atIndex:index];
+        [self insertItemWithTitle:AUTORELEASE([[array objectAtIndex: index] copy]) atIndex:index];
     }
   else
     {
