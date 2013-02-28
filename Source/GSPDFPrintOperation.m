@@ -38,6 +38,7 @@
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSTask.h>
 #import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSValue.h>
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSView.h"
 #import "GNUstepGUI/GSPDFPrintOperation.h"
@@ -101,7 +102,9 @@
     return _context;
 
   info = [[self printInfo] dictionary];
-  
+
+  // TODO: Instead we should support NSGraphicsContext writing to an 
+  // NSMutableData directly.
   [info setObject: _path 
            forKey: @"NSOutputFile"];
   
@@ -114,14 +117,31 @@
 
 - (void) _print
 {
+  // TODO: Copied-and-pasted from GSEPSPrintOperation. Factor out.
+
+  /* Save this for the view to look at. Seems like there should
+     be a better way to pass it to beginDocument */
+  [[[self printInfo] dictionary] setObject: [NSValue valueWithRect: _rect]
+                                 forKey: @"NSPrintSheetBounds"];
+
+  [_view beginDocument];
+  [_view beginPageInRect: _rect
+             atPlacement: NSMakePoint(0,0)];
+
   [_view displayRectIgnoringOpacity: _rect inContext: [self context]];
+
+  [_view endPage];
+  [_view endDocument];
+
+  // FIXME: Output comes out up-side-down
 }
 
 - (BOOL)deliverResult
 {
-  if (_data != nil && _path != nil && [_data length])
-    return [_data writeToFile: _path atomically: NO];
-  // FIXME Until we can create PDF we shoud convert the file with GhostScript
+  if (_data != nil && _path != nil)
+    {
+      [_data setData: [NSData dataWithContentsOfFile: _path]];
+    }
   
   return YES;
 }

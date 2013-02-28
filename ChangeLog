@@ -1,3 +1,9 @@
+2013-02-28  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSPDFPrintOperation.m: Update -_print and -deliverResult
+	to match GSEPSPrintOperation to get the class to at least partly
+	working. Output is appearing up-side-down for me though.
+
 2013-02-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSindow.m (-setDelegate:): Don't unregister delegate
