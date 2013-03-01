@@ -1,3 +1,8 @@
+2012-03-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Version 0.23.0
+	* Update release notes
+
 2013-02-28  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSPDFPrintOperation.m: Update -_print and -deliverResult
@@ -54,13 +59,15 @@
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSTableView.m (-_drawDropIndicator,
-	-_setDropOperationAndRow:usingPositionInRow:atPoint:, -draggingUpdated:):
+	-_setDropOperationAndRow:usingPositionInRow:atPoint:,
+        -draggingUpdated:):
 	Cleaned code a bit more.
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Don't update the drop row and
-	operation if the drop target hasn't changed (this prevents to overwrite a
+	* Source/NSTableView.m (-draggingUpdated:):
+        Don't update the drop row and operation if the drop target hasn't
+        changed (this prevents to overwrite a
 	custom drop row and operation set by the user in
 	-tableView:handleValidateDrop:proposedRow:proposedOperation:).
 
@@ -71,7 +78,8 @@
 
 2013-02-19  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Source/NSTableView.m (-draggingUpdated:): Modularized the first part of
+	* Source/NSTableView.m (-draggingUpdated:):
+        Modularized the first part of
 	the method into several smaller methods -_dropRowFromQuarterPosition:,
 	-_setDropOperationAndRow:usingPositionInRow:atPoint: and
 	_scrollRowAtPointToVisible:.
@@ -79,7 +87,8 @@
 2013-02-18 Riccardo Mottola <rm@gnu.org>
 
 	* Tools/make_services.m (main)
-	Check Library directory before checking and attempting to create Services subdir
+	Check Library directory before checking and attempting to create
+        Services subdir
 
 2013-02-18  Fred Kiefer <FredKiefer@gmx.de>
 
@@ -211,7 +220,8 @@
 	* Source/GSXibLoader.m (GSXibKeyedUnarchiver -_preProcessXib:):
 	Release the document.
 	Patch by Doug Simons <doug.simons@testplant.com>
-	* Source/GSXibLoader.m: Fix a problem where owner, firstResponder and application
+	* Source/GSXibLoader.m: Fix a problem where owner,
+        firstResponder and application
  	were put in the list of top-level objects, creating a retain-cycle.
 	* Source/NSViewController.m: Fix a problem where view controllers
 	did not release their top-level objects as expected.
@@ -288,7 +298,8 @@
 
 	* Source/NSView.m (-encodeWithCoder:): Fixed to encode the superview
 	conditionally as Cocoa does (Apple discusses superview encoding as a
-	use case for conditional encoding in the Archiving related documentation).
+	use case for conditional encoding in the Archiving related
+        documentation).
 	View can now be archived (or copied) without having to remove the view
 	from its hierarchy before archiving it.
 
@@ -380,7 +391,8 @@
 	* Source/NSTextView.m
 	* Source/NSWindow.m
 	* Source/NSWorkspace.m
-	* Tools/make_services.m: Fix all current compiler warnings on FreeBSD/x86-64.
+	* Tools/make_services.m:
+        Fix all current compiler warnings on FreeBSD/x86-64.
 
 2013-01-30  Fred Kiefer <FredKiefer@gmx.de>
 
@@ -492,9 +504,11 @@
 
 	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: Make
 	-_invalidateEverything visible.
-	* Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:...): Call
+	* Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:...):
+        Call
 	-_invalidateEverything when the whole character range is invalidated.
-	* Source/NSStringDrawing.m: Remove workarounds for full layout invalidation.
+	* Source/NSStringDrawing.m:
+        Remove workarounds for full layout invalidation.
 	Move initialisation check into cache_lock().
 	Extract size match code in function.
 	Put #ifdef around all statistics code.
@@ -511,7 +525,8 @@
 	initWithCoder so that it may marshall the pixel attributes prior to
 	initWithAttributes:. Change the getValues:... method to take an
 	int argument instead of long. GLint is mapped to int on most systems.
-	* Source/NSOpenGLContext.m: Use the format decoding to decode an OpenGL context.
+	* Source/NSOpenGLContext.m:
+        Use the format decoding to decode an OpenGL context.
 	Patch by Clint Smullen <daemonae>.
 
 	* Source/GSLayoutManager.m: Small cleanup in glyph code.
@@ -532,7 +547,8 @@
 	orderFrontCharacterPalette:] and do nothing instead of throwing a
 	run-time exception.
 	* Source/NSTextView.m (-_stopInsertionTimer, -_startInsertionTimer):
-	Extract this helper methods from -updateInsertionPointStateAndRestartTimer:.
+	Extract this helper methods from
+        -updateInsertionPointStateAndRestartTimer:.
 	* Source/NSTextView.m (-cleanUpAfterDragOperation): Add cleanup code to
 	cleanUpAfterDragOperation. Gets invoked from concludeDragOperation:.
 	Fix drag and drop of file objects.
@@ -562,7 +578,8 @@
 
 2012-10-31  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSTabView.m (-dealloc): Reset _selected to nil at top of dealloc.
+	* Source/NSTabView.m (-dealloc):
+        Reset _selected to nil at top of dealloc.
 	* Source/NSBox.m(-drawRect:, -initWithCoder:): Implement
 	transparent handling for custom boxes.
 	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
@@ -626,7 +643,8 @@
 	* Headers/AppKit/NSTextStorage.h,
 	* Source/NSTextStorage.m: Add font/setFont methods to NSTextStorage
 	Patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>
-        * NSWindow.m (-center): Center on the main screen if window is off screen.
+        * NSWindow.m (-center):
+        Center on the main screen if window is off screen.
 	Patch by Doug Simons <doug.simons@testplant.com>
 
 2012-10-12  Fred Kiefer <FredKiefer@gmx.de>
