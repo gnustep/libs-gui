@@ -6,7 +6,7 @@
 
 2013-02-23  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSindow.m (-setDelegate:): Don't unregister delegate
+	* Source/NSWindow.m (-setDelegate:): Don't unregister delegate
 	notifications if same delegate is set twice.
 	Patch by Doug Simons <doug.simons@testplant.com>
 
