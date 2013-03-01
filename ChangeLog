@@ -1,5 +1,10 @@
 2012-03-01  Richard Frith-Macdonald <rfm@gnu.org>
 
+        * Version ... bump subminor number in preparation for next release.
+
+2012-03-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+        Make release
 	* Version 0.23.0
 	* Update release notes
 
