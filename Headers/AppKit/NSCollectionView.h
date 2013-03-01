@@ -44,7 +44,6 @@
 
 @end
 
-
 @interface NSCollectionView : NSView
 {
   NSArray *_content;
@@ -63,9 +62,11 @@
   NSSize _minItemSize;
   float _tileWidth;
   float _verticalMargin;
+  float _horizontalMargin;
 
   NSUInteger _maxNumberOfColumns;
   NSUInteger _maxNumberOfRows;
+  long _numberOfColumns;
 }
 
 - (BOOL)allowsMultipleSelection;
@@ -115,7 +116,6 @@
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes
                                   withEvent:(NSEvent *)event
                                      offset:(NSPointPointer)dragImageOffset;
-
 
 @end
 

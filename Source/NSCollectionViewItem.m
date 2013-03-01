@@ -83,12 +83,22 @@
 
 - (void)dealloc
 {
+  DESTROY (textField);
+  DESTROY (imageView);
   [super dealloc];
 }
 
-- (void)setSelected:(BOOL)shouldBeSelected
+- (NSCollectionView *)collectionView
 {
-  _isSelected = shouldBeSelected;
+  return (NSCollectionView *)[[self view] superview];
+}
+
+- (void)setSelected:(BOOL)flag
+{
+  if (_isSelected != flag)
+    {
+      _isSelected = flag;
+	}
 }
 
 - (id)representedObject
@@ -100,6 +110,32 @@
 {
   [super setRepresentedObject:anObject];
   [textField setStringValue:[self representedObject]];
+}
+
+- (NSTextField *)textField
+{
+  return textField;
+}
+
+- (void)setTextField:(NSTextField *)aTextField
+{
+  if (textField != aTextField)
+    {
+	  textField = aTextField;
+	}
+}
+
+- (NSImageView *)imageView
+{
+  return imageView;
+}
+
+- (void)setImageView:(NSImageView *)anImageView
+{
+  if (imageView != anImageView)
+    {
+	  imageView = anImageView;
+	}
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder
@@ -120,6 +156,13 @@
   [super encodeWithCoder:aCoder];
   [aCoder encodeObject:textField forKey:@"textField"];
   [aCoder encodeObject:imageView forKey:@"imageView"];
+}
+
+- (id) copyWithZone:(NSZone *)zone 
+{
+  NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject:self];
+  NSCollectionViewItem *newItem = [NSKeyedUnarchiver unarchiveObjectWithData:itemAsData];
+  return newItem;
 }
 
 @end

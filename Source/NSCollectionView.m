@@ -44,8 +44,10 @@
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSTimer.h>
 
 #import "AppKit/NSView.h"
+#import "AppKit/NSAnimation.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSTableView.h"
 #import "AppKit/NSApplication.h"
@@ -78,20 +80,34 @@
 
 
 
-static NSString* NSCollectionViewMinItemSizeKey              = @"NSCollectionViewMinItemSizeKey";
-static NSString* NSCollectionViewMaxItemSizeKey              = @"NSCollectionViewMaxItemSizeKey";
-static NSString* NSCollectionViewVerticalMarginKey           = @"NSCollectionViewVerticalMarginKey";
-static NSString* NSCollectionViewMaxNumberOfRowsKey          = @"NSCollectionViewMaxNumberOfRowsKey";
-static NSString* NSCollectionViewMaxNumberOfColumnsKey       = @"NSCollectionViewMaxNumberOfColumnsKey";
-static NSString* NSCollectionViewSelectableKey               = @"NSCollectionViewSelectableKey";
-static NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSCollectionViewAllowsMultipleSelectionKey";
-static NSString* NSCollectionViewBackgroundColorsKey         = @"NSCollectionViewBackgroundColorsKey";
-
+static NSString* NSCollectionViewMinItemSizeKey              = @"NSMinGridSize";
+static NSString* NSCollectionViewMaxItemSizeKey              = @"NSMaxGridSize";
+//static NSString* NSCollectionViewVerticalMarginKey           = @"NSCollectionViewVerticalMarginKey";
+static NSString* NSCollectionViewMaxNumberOfRowsKey          = @"NSMaxNumberOfGridRows";
+static NSString* NSCollectionViewMaxNumberOfColumnsKey       = @"NSMaxNumberOfGridColumns";
+static NSString* NSCollectionViewSelectableKey               = @"NSSelectable";
+static NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSAllowsMultipleSelection";
+static NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundColors";
 
 /*
  * Class variables
  */
 static NSString *placeholderItem = nil;
+
+@interface NSCollectionView (CollectionViewInternalPrivate)
+- (void)_resetItemSize;
+- (void)_removeItemsViews;
+- (int)_indexAtPoint:(NSPoint)point;
+- (void)_modifySelectionWithNewIndex:(int)anIndex
+                           direction:(int)aDireection
+						      expand:(BOOL)shouldExpand;
+							  
+- (void)_moveDownAndExpandSelection:(BOOL)shouldExpand;
+- (void)_moveUpAndExpandSelection:(BOOL)shouldExpand;
+- (void)_moveLeftAndExpandSelection:(BOOL)shouldExpand;
+- (void)_moveRightAndExpandSelection:(BOOL)shouldExpand;
+@end
+
 
 @implementation NSCollectionView
 
@@ -105,11 +121,27 @@ static NSString *placeholderItem = nil;
 
 - (void)awakeFromNib
 {
-  // FIXME: This is just preliminary stuff
-  _minItemSize = NSMakeSize(120.0, 100.0);
-  _maxItemSize = NSMakeSize(120.0, 100.0);
+  [self _resetItemSize];
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
+  _selectionIndexes = [[NSIndexSet alloc] init];
+}
+
+- (void)_resetItemSize
+{
+  if (itemPrototype)
+    {
+      _itemSize = [[itemPrototype view] frame].size;
+      _minItemSize = NSMakeSize (_itemSize.width, _itemSize.height);
+      _maxItemSize = NSMakeSize (_itemSize.width, _itemSize.height);
+    }
+  else
+    {
+      // FIXME: This is just arbitrary.
+      _itemSize = NSMakeSize(120.0, 100.0);
+      _minItemSize = NSMakeSize(120.0, 100.0);
+      _maxItemSize = NSMakeSize(120.0, 100.0);
+	}
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -120,10 +152,13 @@ static NSString *placeholderItem = nil;
 
 - (void)dealloc
 {
-  [_content release];
-  [itemPrototype release];
-  [_backgroundColors release];
-  [_selectionIndexes release];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  DESTROY (_content);
+  //DESTROY (itemPrototype);
+  DESTROY (_backgroundColors);
+  DESTROY (_selectionIndexes);
+  DESTROY (_items);
   [super dealloc];
 }
 
@@ -159,10 +194,11 @@ static NSString *placeholderItem = nil;
 
 - (void)setContent:(NSArray *)content
 {
-  [_content release];
+  RELEASE (_content);
   _content = [content retain];
+  [self _removeItemsViews];
   
-  [_items release];
+  RELEASE (_items);
   _items = [[NSMutableArray alloc] initWithCapacity:[_content count]];
   
   int i;
@@ -190,22 +226,15 @@ static NSString *placeholderItem = nil;
 
 - (void)setItemPrototype:(NSCollectionViewItem *)prototype
 {
-  [itemPrototype release];
-  itemPrototype = [prototype retain];
-  
-  //TODO: Re-enabled this
-//  if (itemPrototype)
-//    _itemSize = [[itemPrototype view] frame].size;
-//  else
-//    {
-//      // TODO: Figure out what to do if prototype==nil
-//      _itemSize = NSMakeSize (1,1);
-//    }
+  RELEASE (itemPrototype);
+  itemPrototype = prototype;
+  RETAIN (itemPrototype);
+  [self _resetItemSize];
 }
 
 - (BOOL)isFirstResponder
 {
-  // FIXME
+  // FIXME: This will be required for keyboard events
   return NO;
 }
 
@@ -279,6 +308,14 @@ static NSString *placeholderItem = nil;
 - (void)setSelectable:(BOOL)flag
 {
   _isSelectable = flag;
+  if (!_isSelectable)
+    {
+      int index = -1;
+      while ((index = [_selectionIndexes indexGreaterThanIndex:index]) != NSNotFound)
+        {
+	      [[_items objectAtIndex:index] setSelected:NO];
+	    }
+	}
 }
 
 - (NSIndexSet *)selectionIndexes
@@ -288,8 +325,30 @@ static NSString *placeholderItem = nil;
 
 - (void)setSelectionIndexes:(NSIndexSet *)indexes
 {
-  [_selectionIndexes release];
-  _selectionIndexes = [indexes copy];
+  if (!_isSelectable || [_selectionIndexes isEqual:indexes])
+    {
+	  return;
+	}
+	
+  // FIXME: Reset selectionIndexes in SetContent:
+  
+  RELEASE(_selectionIndexes);
+  _selectionIndexes = indexes;
+  RETAIN(_selectionIndexes);
+  
+  
+  NSUInteger index = 0;
+  while (index < [_items count])
+    {
+	  [[_items objectAtIndex:index] setSelected:NO];
+	  index++;
+	}
+  
+  index = -1;
+  while ((index = [_selectionIndexes indexGreaterThanIndex:index]) != NSNotFound)
+    {
+	  [[_items objectAtIndex:index] setSelected:YES];
+	}
 }
 
 - (NSRect)frameForItemAtIndex:(NSUInteger)index
@@ -313,8 +372,7 @@ static NSString *placeholderItem = nil;
   NSCollectionViewItem *collectionItem = nil;
   if (itemPrototype)
     {
-      NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject:itemPrototype];
-      collectionItem = [NSKeyedUnarchiver unarchiveObjectWithData:itemAsData];
+	  ASSIGN(collectionItem, [itemPrototype copy]);
       [collectionItem setRepresentedObject:object];
     }
   return collectionItem;
@@ -332,26 +390,33 @@ static NSString *placeholderItem = nil;
   return nil;
 }
 
-- (void)reloadContent
+- (void)_removeItemsViews
 {
-  // First of all clean off the current item views:
+  if (!_items)
+	return;
+	
   long count = [_items count];
     
   while (count--)
     {
-       if (![[_items objectAtIndex:count] isKindOfClass:[NSString class]])
+       if ([[_items objectAtIndex:count] respondsToSelector:@selector(view)])
          {
            [[[_items objectAtIndex:count] view] removeFromSuperview];
            [[_items objectAtIndex:count] setSelected:NO];
          }
     }
+}
+
+- (void)reloadContent
+{
+  [self _removeItemsViews];
     
   if (!itemPrototype)
     return;
     
   long index = 0;
     
-  count = [_content count];
+  long count = [_content count];
     
   for (; index < count; ++index)
     {
@@ -368,6 +433,8 @@ static NSString *placeholderItem = nil;
 
 - (void)tile
 {
+  // TODO: - Animate items, Add Fade-in/Fade-out (as in Cocoa)
+  //       - Put the tiling on a delay
   if (!_items)
     return;
     
@@ -378,7 +445,7 @@ static NSString *placeholderItem = nil;
     
   NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
     
-  long _numberOfColumns = MAX(1.0, floor(width / itemSize.width));
+  _numberOfColumns = MAX(1.0, floor(width / itemSize.width));
     
   if (_maxNumberOfColumns > 0)
     _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
@@ -404,11 +471,11 @@ static NSString *placeholderItem = nil;
   if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
     count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
     
-  float _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / (_numberOfColumns + 1));
+  _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / (_numberOfColumns + 1));
     
   float x = _horizontalMargin;
   float y = -itemSize.height;
-    
+  
   for (; index < count; ++index)
     {
       if (index % _numberOfColumns == 0)
@@ -418,26 +485,27 @@ static NSString *placeholderItem = nil;
         }
         
       NSView *view = [[_items objectAtIndex:index] view];
-        
       [view setFrameOrigin:NSMakePoint(x, y)];
-        
+
       if (itemsNeedSizeUpdate)
           [view setFrameSize:_itemSize];
 
       x += itemSize.width + _horizontalMargin;
     }
     
-    float proposedHeight = y + itemSize.height + _verticalMargin;
+  float proposedHeight = y + itemSize.height + _verticalMargin;
 
-    _tileWidth = width;
-    [self setFrameSize:NSMakeSize(width, proposedHeight)];
-    _tileWidth = -1.0;
-
+  _tileWidth = width;
+  [self setFrameSize:NSMakeSize(width, proposedHeight)];
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)aSize
 {
-  [self tile];
+  NSSize currentSize = [self frame].size;
+  if (!NSEqualSizes(currentSize, aSize))
+    {
+      [self tile];
+    }
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder
@@ -457,7 +525,7 @@ static NSString *placeholderItem = nil;
       _maxNumberOfRows = [aCoder decodeInt64ForKey:NSCollectionViewMaxNumberOfRowsKey];
       _maxNumberOfColumns = [aCoder decodeInt64ForKey:NSCollectionViewMaxNumberOfColumnsKey];
         
-      _verticalMargin = [aCoder decodeFloatForKey:NSCollectionViewVerticalMarginKey];
+      //_verticalMargin = [aCoder decodeFloatForKey:NSCollectionViewVerticalMarginKey];
         
       _isSelectable = [aCoder decodeBoolForKey:NSCollectionViewSelectableKey];
       _allowsMultipleSelection = [aCoder decodeBoolForKey:NSCollectionViewAllowsMultipleSelectionKey];
@@ -467,9 +535,6 @@ static NSString *placeholderItem = nil;
       _tileWidth = -1.0;
         
       _selectionIndexes = [NSIndexSet indexSet];
-      
-	  // FIXME	  
-      //_allowsEmptySelection = YES;
     }
     
   return self;
@@ -491,9 +556,205 @@ static NSString *placeholderItem = nil;
   [aCoder encodeBool:_isSelectable forKey:NSCollectionViewSelectableKey];
   [aCoder encodeBool:_allowsMultipleSelection forKey:NSCollectionViewAllowsMultipleSelectionKey];
     
-  [aCoder encodeFloat:_verticalMargin forKey:NSCollectionViewVerticalMarginKey];
+  //[aCoder encodeFloat:_verticalMargin forKey:NSCollectionViewVerticalMarginKey];
     
   [aCoder encodeObject:_backgroundColors forKey:NSCollectionViewBackgroundColorsKey];
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+  // FIXME: This implements only a single mouse click.
+  // TODO: Handle double-click & mouse drag
+  NSPoint initialLocation = [theEvent locationInWindow];
+  NSPoint location = [self convertPoint: initialLocation fromView: nil];
+  int index = [self _indexAtPoint:location];
+  NSMutableIndexSet *currentIndexSet = [[NSMutableIndexSet alloc] initWithIndexSet:[self selectionIndexes]];
+
+  if (_isSelectable && (index >= 0 && index < [_items count]))
+    {
+      if (_allowsMultipleSelection
+          && (([theEvent modifierFlags] & NSControlKeyMask) || ([theEvent modifierFlags] & NSShiftKeyMask)))
+
+        {
+          if ([theEvent modifierFlags] & NSControlKeyMask)
+            {
+              if ([currentIndexSet containsIndex:index])
+                {
+                  [currentIndexSet removeIndex:index];
+                }
+              else
+                {
+                  [currentIndexSet addIndex:index];
+                }
+              [self setSelectionIndexes:currentIndexSet];
+            }
+          else if ([theEvent modifierFlags] & NSShiftKeyMask)
+            {
+              long firstSelectedIndex = [currentIndexSet firstIndex];
+              NSRange selectedRange;
+                
+              if (firstSelectedIndex == NSNotFound)
+                {
+                  selectedRange = NSMakeRange(index, index);
+                }
+              else if (index < firstSelectedIndex)
+                {
+                  selectedRange = NSMakeRange(index, (firstSelectedIndex - index + 1));
+                }
+              else
+                {
+                  selectedRange = NSMakeRange(firstSelectedIndex, (index - firstSelectedIndex + 1));
+                }
+              [currentIndexSet addIndexesInRange:selectedRange];
+              [self setSelectionIndexes:currentIndexSet];
+            }
+        }
+      else
+        {
+          [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:index]];
+        }
+      [[self window] makeFirstResponder:self];
+    }
+    else
+    {
+        [self setSelectionIndexes:[NSIndexSet indexSet]];
+    }
+    RELEASE (currentIndexSet);
+}
+
+- (int)_indexAtPoint:(NSPoint)point
+{
+  int row = floor(point.y / (_itemSize.height + _verticalMargin));
+  int column = floor(point.x / (_itemSize.width + _horizontalMargin));
+  return (column + (row * _numberOfColumns));
+}
+
+- (BOOL)acceptsFirstResponder
+{
+  return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+  [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+}
+ 
+-(IBAction)moveUp:(id)sender
+{
+  [self _moveUpAndExpandSelection:NO];
+}
+ 
+-(IBAction)moveUpAndModifySelection:(id)sender
+{
+  [self _moveUpAndExpandSelection:YES];
+}
+
+- (void)_moveUpAndExpandSelection:(BOOL)shouldExpand
+{
+  int index = [[self selectionIndexes] firstIndex];
+  if (index != NSNotFound && (index - _numberOfColumns) >= 0)
+    {
+      [self _modifySelectionWithNewIndex:index - _numberOfColumns
+                               direction:-1 
+		    				      expand:shouldExpand];
+	}
+}
+ 
+-(IBAction)moveDown:(id)sender
+{
+ [self _moveDownAndExpandSelection:NO];
+}
+
+-(IBAction)moveDownAndModifySelection:(id)sender
+{
+  [self _moveDownAndExpandSelection:YES];
+}
+ 
+-(void)_moveDownAndExpandSelection:(BOOL)shouldExpand
+{
+  int index = [[self selectionIndexes] lastIndex];
+  if (index != NSNotFound && (index + _numberOfColumns) < [_items count])
+    {
+      [self _modifySelectionWithNewIndex:index + _numberOfColumns
+                               direction:1 
+		    				      expand:shouldExpand];
+	}
+}
+ 
+-(IBAction)moveLeft:(id)sender
+{
+  [self _moveLeftAndExpandSelection:NO];
+}
+
+-(IBAction)moveLeftAndModifySelection:(id)sender
+{
+  [self _moveLeftAndExpandSelection:YES];
+}
+
+-(IBAction)moveBackwardAndModifySelection:(id)sender
+{
+  [self _moveLeftAndExpandSelection:YES];
+}
+
+-(void)_moveLeftAndExpandSelection:(BOOL)shouldExpand
+{
+  int index = [[self selectionIndexes] firstIndex];
+  if (index != NSNotFound && index != 0)
+    {
+      [self _modifySelectionWithNewIndex:index-1 direction:-1 expand:shouldExpand];
+	}
+}
+ 
+-(IBAction)moveRight:(id)sender
+{
+  [self _moveRightAndExpandSelection:NO];
+}
+
+-(IBAction)moveRightAndModifySelection:(id)sender
+{
+  [self _moveRightAndExpandSelection:YES];
+}
+
+-(IBAction)moveForwardAndModifySelection:(id)sender
+{
+  [self _moveRightAndExpandSelection:YES];
+}
+
+-(void)_moveRightAndExpandSelection:(BOOL)shouldExpand
+{
+  int index = [[self selectionIndexes] lastIndex];
+  if (index != NSNotFound && index != ([_items count] - 1))
+    {
+      [self _modifySelectionWithNewIndex:index+1 direction:1 expand:shouldExpand];
+	}
+}
+ 
+- (void)_modifySelectionWithNewIndex:(int)anIndex
+                           direction:(int)aDirection
+						      expand:(BOOL)shouldExpand
+{
+  anIndex = MIN (MAX (anIndex, 0), [_items count] - 1);
+  
+  if (_allowsMultipleSelection && shouldExpand)
+    {
+	  NSMutableIndexSet *newIndexSet = [[NSMutableIndexSet alloc] initWithIndexSet:_selectionIndexes];
+	  int firstIndex = [newIndexSet firstIndex];
+	  int lastIndex = [newIndexSet lastIndex];
+	  if (aDirection == -1)
+	    {
+		  [newIndexSet addIndexesInRange:NSMakeRange (anIndex, firstIndex - anIndex + 1)];
+		}
+      else
+	    {
+		  [newIndexSet addIndexesInRange:NSMakeRange (lastIndex, anIndex - lastIndex + 1)];
+		}
+	  [self setSelectionIndexes:newIndexSet];
+	  RELEASE (newIndexSet);
+	}
+  else
+    {
+	  [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:anIndex]];
+	}
 }
 
 @end

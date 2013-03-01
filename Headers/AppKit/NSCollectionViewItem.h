@@ -35,7 +35,9 @@
 #import <AppKit/NSImageView.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSViewController.h>
+#import <AppKit/NSCollectionView.h>
 #import <AppKit/NSDragging.h>
+
 
 @interface NSCollectionViewItem : NSViewController
 {
@@ -44,8 +46,15 @@
   BOOL _isSelected;
 }
 
+- (NSCollectionView *)collectionView;
+
 - (void)setSelected:(BOOL)shouldBeSelected;
 - (BOOL)isSelected;
+
+- (NSTextField *)textField;
+- (NSImageView *)imageView;
+- (void)setTextField:(NSTextField *)aTextField;
+- (void)setImageView:(NSImageView *)anImageView;
 
 @end
 
