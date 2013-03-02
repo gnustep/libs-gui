@@ -268,7 +268,7 @@ static NSString *commandKeyString = @"#";
 {
   NSSize   componentSize;
   NSImage *anImage = nil;
-  float    neededMenuItemHeight = 20;
+  CGFloat  neededMenuItemHeight = 20;
  
   // Check if _mcell_belongs_to_popupbutton = NO while cell owned by 
   // popup button. FIXME
@@ -385,7 +385,7 @@ static NSString *commandKeyString = @"#";
   return _needs_display;
 }
 
-- (float) imageWidth
+- (CGFloat) imageWidth
 {
   if (_needs_sizing)
     [self calcSize];
@@ -393,7 +393,7 @@ static NSString *commandKeyString = @"#";
   return _imageWidth;
 }
 
-- (float) titleWidth
+- (CGFloat) titleWidth
 {
   if (_needs_sizing)
     [self calcSize];
@@ -401,7 +401,7 @@ static NSString *commandKeyString = @"#";
   return _titleWidth;
 }
 
-- (float) keyEquivalentWidth
+- (CGFloat) keyEquivalentWidth
 {
   if (_needs_sizing)
     [self calcSize];
@@ -409,7 +409,7 @@ static NSString *commandKeyString = @"#";
   return _keyEquivalentWidth;
 }
 
-- (float) stateImageWidth
+- (CGFloat) stateImageWidth
 {
   if (_needs_sizing)
     [self calcSize];
@@ -625,7 +625,7 @@ static NSString *commandKeyString = @"#";
     {
       if (_cell.is_bordered)
         {
-          float yDelta = [_control_view isFlipped] ? 1. : 2.;
+          CGFloat yDelta = [_control_view isFlipped] ? 1. : 2.;
           unsigned mask;
           NSRect interiorFrame;
           

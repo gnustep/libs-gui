@@ -50,11 +50,11 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   BOOL _needs_display;
   char _pad[1];
 
-  float _imageWidth;
-  float _titleWidth;
-  float _keyEquivalentWidth;
-  float _stateImageWidth;
-  float _menuItemHeight;
+  CGFloat _imageWidth;
+  CGFloat _titleWidth;
+  CGFloat _keyEquivalentWidth;
+  CGFloat _stateImageWidth;
+  CGFloat _menuItemHeight;
 
   NSImage *_imageToDisplay;
   NSString *_titleToDisplay;
@@ -76,10 +76,10 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 - (void)setNeedsDisplay:(BOOL)flag;
 - (BOOL)needsDisplay;
 
-- (float)imageWidth;
-- (float)titleWidth;
-- (float)keyEquivalentWidth;
-- (float)stateImageWidth;
+- (CGFloat)imageWidth;
+- (CGFloat)titleWidth;
+- (CGFloat)keyEquivalentWidth;
+- (CGFloat)stateImageWidth;
 
 - (NSRect)imageRectForBounds:(NSRect)cellFrame;
 - (NSRect)keyEquivalentRectForBounds:(NSRect)cellFrame;
