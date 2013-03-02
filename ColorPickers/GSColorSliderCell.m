@@ -186,7 +186,7 @@
   [self drawKnob];
 }
 
-- (float) knobThickness
+- (CGFloat) knobThickness
 {
   return KNOB_WIDTH;
 }
