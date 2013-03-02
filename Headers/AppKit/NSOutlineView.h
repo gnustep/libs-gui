@@ -96,13 +96,13 @@
 - (BOOL) outlineView: (NSOutlineView *)outlineView 
           acceptDrop: (id <NSDraggingInfo>)info 
                 item: (id)item 
-          childIndex: (int)index;
+          childIndex: (NSInteger)index;
 /**
  * Implementation of this method is required.  Returns the child at 
  * the specified index for the given item.
  */
 - (id) outlineView: (NSOutlineView *)outlineView 
-             child: (int)index 
+             child: (NSInteger)index 
             ofItem: (id)item;
 /**
  * This is a required method.  Returns whether or not the outline view
@@ -121,7 +121,7 @@
  * This is a required method.  Returns the number of children of
  * the given item.
  */
-- (int) outlineView: (NSOutlineView *)outlineView
+- (NSInteger) outlineView: (NSOutlineView *)outlineView
   numberOfChildrenOfItem: (id)item;
 
 /**
@@ -154,7 +154,7 @@
 - (NSDragOperation) outlineView: (NSOutlineView*)outlineView 
                    validateDrop: (id <NSDraggingInfo>)info 
                    proposedItem: (id)item 
-             proposedChildIndex: (int)index;
+             proposedChildIndex: (NSInteger)index;
 
 /**
  * Causes the outline view to write the specified items to the pastboard.
