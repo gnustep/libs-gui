@@ -98,6 +98,10 @@ static CGFloat default_miter_limit = 10.0;
 
 + (void)initialize
 {
+  if (self == [NSBezierPath class])
+    {
+      [self setVersion: 2];
+    }
 }
 
 //
@@ -664,7 +668,7 @@ static CGFloat default_miter_limit = 10.0;
   NSBezierPathElement type, last_type;
   NSPoint pts[3];
   NSPoint p, cp1, cp2;
-  NSInteger i, j, count;
+  NSInteger i, count;
   BOOL closed = NO;
 
   /* Silence compiler warnings.  */
@@ -689,17 +693,7 @@ static CGFloat default_miter_limit = 10.0;
 	      p = pts[2];      
 	      break;
 	  case NSClosePathBezierPathElement:
-	      // find the first point of segment
-	      for (j = i - 1; j >= 0; j--) 
-	        {
-		  type = [self elementAtIndex: i associatedPoints: pts];
-		  if (type == NSMoveToBezierPathElement)
-		    {
-		      p = pts[0];
-		      break;
-		    }   
-		}
-	      // FIXME: What to do if we don't find a move element?
+	      p = pts[0];
 	      break;
 	  default:
 	      break;
@@ -793,7 +787,7 @@ static CGFloat default_miter_limit = 10.0;
 {
   NSBezierPathElement type;
   NSPoint points[3];
-  NSInteger i, count;
+  NSInteger count;
 
   count = [self elementCount];
   if (!count) 
@@ -811,13 +805,7 @@ static CGFloat default_miter_limit = 10.0;
 	  return points[2];
 	  break;
       case NSClosePathBezierPathElement:
-	  // We have to find the last move element and take its point
-	  for (i = count - 2; i >= 0; i--)
-	    {
-	      type = [self elementAtIndex: i associatedPoints: points];
-	      if (type == NSMoveToBezierPathElement)
-		return points[0];
-	    }
+	  return points[0];
 	  break;
       default:
 	  break;
@@ -853,19 +841,38 @@ static CGFloat default_miter_limit = 10.0;
 {
   PathElement elm = GSIArrayItemAtIndex(_pathElements, index).ext;
   NSBezierPathElement type = elm.type;
+  NSInteger i;
 	
   if (points != NULL) 
     {
-      if (type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) 
+      switch(type) 
         {
+        case NSMoveToBezierPathElement:
+        case NSLineToBezierPathElement:
 	  points[0] = elm.points[0];
-	} 
-      else if (type == NSCurveToBezierPathElement) 
-        {
+          break;
+        case NSCurveToBezierPathElement:
 	  points[0] = elm.points[0];
 	  points[1] = elm.points[1];
 	  points[2] = elm.points[2];
-	}
+          break;
+        case NSClosePathBezierPathElement:
+  	  // We have to find the last move element and take its point
+	  for (i = index - 1; i >= 0; i--)
+	    {
+	      elm = GSIArrayItemAtIndex(_pathElements, i).ext;
+              type = elm.type;
+	      if (type == NSMoveToBezierPathElement)
+                {
+                  points[0] = elm.points[0];
+                  break;
+                }
+	    }
+          // FIXME: What to do if we don't find a move element?
+          break;
+        default:
+	  break;
+        }
     }
   
   return type;
@@ -1686,8 +1693,102 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeFloat: (float)_flatness forKey: @"NSFlatness"];
-      // FIXME
+      NSUInteger count, i;
+      NSMutableData *d;
+      float x,y;
+      char ctype;
+
+      [aCoder encodeFloat: [self flatness] forKey: @"NSFlatness"];
+      [aCoder encodeFloat: [self lineWidth] forKey: @"NSLineWidth"];
+      [aCoder encodeInt: [self lineCapStyle] forKey: @"NSLineCapStyle"];
+      [aCoder encodeInt: [self lineJoinStyle] forKey: @"NSLineJoinStyle"];
+      [aCoder encodeInt: [self windingRule] forKey: @"NSWindingRule"];
+      [aCoder encodeFloat: [self miterLimit] forKey: @"NSMiterLimit"];
+
+      count = [self elementCount];
+      d = [[NSMutableData alloc] init];
+      for (i = 0; i < count; i++)
+        {
+          type = [self elementAtIndex: i associatedPoints: pts];
+          ctype = type; 
+          [d serializeDataAt: &ctype
+                  ofObjCType: "c"
+                     context: nil];
+
+          switch (type)
+            {
+            case NSMoveToBezierPathElement:
+            case NSLineToBezierPathElement:
+              x = pts[0].x;
+              y = pts[0].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              break;
+            case NSCurveToBezierPathElement:
+              x = pts[0].x;
+              y = pts[0].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &ctype
+                      ofObjCType: "c"
+                         context: nil];
+              x = pts[1].x;
+              y = pts[1].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &ctype
+                      ofObjCType: "c"
+                         context: nil];
+              x = pts[2].x;
+              y = pts[2].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              break;
+            case NSClosePathBezierPathElement:
+              x = pts[0].x;
+              y = pts[0].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &ctype
+                      ofObjCType: "c"
+                         context: nil];
+              x = pts[0].x;
+              y = pts[0].y;
+              [d serializeDataAt: &x
+                      ofObjCType: "f"
+                         context: nil];
+              [d serializeDataAt: &y
+                      ofObjCType: "f"
+                         context: nil];
+              break;
+           default:
+              break;
+           }
+        }
+      [aCoder encodeBytes: [d bytes]
+                   length: [d length]
+                   forKey: @"NSSegments"];
+      RELEASE(d);
     }
   else
     {
@@ -1703,6 +1804,12 @@ static int winding_curve(double_point from, double_point to, double_point c1,
       i = [self windingRule];
       [aCoder encodeValueOfObjCType: @encode(int) at: &i];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
+
+      // version 2
+      f = [self flatness];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &f];
+      f = [self miterLimit];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &f];
       
       count = [self elementCount];
       [aCoder encodeValueOfObjCType: @encode(int) at: &count];
@@ -1741,6 +1848,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
   if ([aCoder allowsKeyedCoding])
     {
       float f;
+      int i;
 
       if ([aCoder containsValueForKey: @"NSFlatness"])
         {
@@ -1752,6 +1860,27 @@ static int winding_curve(double_point from, double_point to, double_point c1,
           f = [aCoder decodeFloatForKey: @"NSLineWidth"];
           [self setLineWidth: f];
         }
+      if ([aCoder containsValueForKey: @"NSLineCapStyle"])
+        {
+          i = [aCoder decodeIntForKey: @"NSLineCapStyle"];
+          [self setLineCapStyle: i];
+        }
+      if ([aCoder containsValueForKey: @"NSLineJoinStyle"])
+        {
+          i = [aCoder decodeIntForKey: @"NSLineJoinStyle"];
+          [self setLineJoinStyle: i];
+        }
+      if ([aCoder containsValueForKey: @"NSWindingRule"])
+        {
+          i = [aCoder decodeIntForKey: @"NSWindingRule"];
+          [self setWindingRule: i];
+        }
+      if ([aCoder containsValueForKey: @"NSMiterLimit"])
+        {
+          f = [aCoder decodeFloatForKey: @"NSMiterLimit"];
+          [self setMiterLimit: f];
+        }
+
       if ([aCoder containsValueForKey: @"NSSegments"])
         {
 	  NSUInteger length;
@@ -1870,6 +1999,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
                   [self closePath];
                   break;
                 default:
+                  //NSLog(@"Unable to decode unknown bezier path element type %d", c);
                   break;
                 }
             }
@@ -1881,6 +2011,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
       NSPoint pts[3];
       int i, count;
       float f;
+      int version = [aCoder versionForClassName: @"NSBezierPath"];
       
       [aCoder decodeValueOfObjCType: @encode(float) at: &f];
       [self setLineWidth: f];
@@ -1891,6 +2022,14 @@ static int winding_curve(double_point from, double_point to, double_point c1,
       [aCoder decodeValueOfObjCType: @encode(int) at: &i];
       [self setWindingRule: i];
       [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_cachesBezierPath];
+
+      if (version >= 2)
+        {
+          [aCoder decodeValueOfObjCType: @encode(float) at: &f];
+          [self setFlatness: f];
+          [aCoder decodeValueOfObjCType: @encode(float) at: &f];
+          [self setMiterLimit: f];
+        }
 
       [aCoder decodeValueOfObjCType: @encode(int) at: &count];
       
@@ -1975,12 +2114,9 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 {
   NSBezierPathElement type;
   NSPoint p; /* Current point. */
-  NSPoint last_move;
   NSPoint pts[3];
-
   NSPoint min, max;   /* Path bounding box. */
   NSPoint cmin, cmax; /* Control-point bounding box. */
-
   int i, count, num_curves;
   
   count = [self elementCount];
@@ -1992,7 +2128,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
       return;
     }
 
-  last_move = p = min = max = cmin = cmax = NSMakePoint(0, 0);
+  p = min = max = cmin = cmax = NSMakePoint(0, 0);
 
 #define CHECK_MAX(max, p) \
   if (p.x > max.x) max.x = p.x; \
@@ -2006,20 +2142,18 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
     {
       type = [self elementAtIndex: i  associatedPoints: pts];
 
-      if (!i)
+      if (i == 0)
 	{
-	  cmin = cmax = min = max = p = last_move = pts[0];
+	  cmin = cmax = min = max = p = pts[0];
 	}
 
       switch (type)
 	{
           case NSClosePathBezierPathElement:
-	    p = last_move;
+	    p = pts[0];
 	    continue;
 
 	  case NSMoveToBezierPathElement:
-	    last_move = pts[0];
-	    /* Fall-through. */
 	  case NSLineToBezierPathElement:
 	    CHECK_MAX(max, pts[0])
 	    CHECK_MIN(min, pts[0])

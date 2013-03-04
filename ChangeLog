@@ -1,4 +1,16 @@
+2013-03-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m: Implement keyed coding and complete keyed
+	decoding.
+	Patch by Christopher Armstrong <carmstrong@fastmail.com.au>
+	* Source/NSBezierPath.m: Rewrote -elementAtIndex:associatedPoints:
+	to return a point for NSClosePathBezierPathElement. And adjust all
+	callers to make use of that point. Complete non-keyed coding and
+	decoding.
+	* Tests/gui/NSBezierPath/basic.m: Add basic tests for NSBezierPath.
+
 2013-03-02 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
 	* Source/NSMenuItemCell.m
 	* Headers/AppKit/NSMenuItemCell.h
 	  float -> CGFloat transitions
