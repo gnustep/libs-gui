@@ -1,5 +1,11 @@
 2013-03-04  Fred Kiefer <FredKiefer@gmx.de>
 
+	* configure.ac: Use CPPFLAGS instead of CFLAGS for libpng.
+	Patch by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+	* configure: Regenerated.
+
+2013-03-04  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBezierPath.m: Implement keyed coding and complete keyed
 	decoding.
 	Patch by Christopher Armstrong <carmstrong@fastmail.com.au>
