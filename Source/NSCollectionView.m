@@ -325,16 +325,17 @@ static NSString *placeholderItem = nil;
 
 - (void)setSelectionIndexes:(NSIndexSet *)indexes
 {
-  if (!_isSelectable || [_selectionIndexes isEqual:indexes])
+  if (!_isSelectable)
     {
 	  return;
 	}
 	
-  // FIXME: Reset selectionIndexes in SetContent:
-  
-  RELEASE(_selectionIndexes);
-  _selectionIndexes = indexes;
-  RETAIN(_selectionIndexes);
+  if (![_selectionIndexes isEqual:indexes])
+    {
+      RELEASE(_selectionIndexes);
+      _selectionIndexes = indexes;
+      RETAIN(_selectionIndexes);
+	}
   
   
   NSUInteger index = 0;
@@ -373,6 +374,11 @@ static NSString *placeholderItem = nil;
   if (itemPrototype)
     {
 	  ASSIGN(collectionItem, [itemPrototype copy]);
+//	  NSView *itemView = [collectionItem view];
+//	  NSRect itemViewFrame = [itemView frame];
+//	  NSRect frame = NSMakeRect (itemViewFrame.origin.x, itemViewFrame.origin.y, _itemSize.width, _itemSize.height);
+//	  [itemView setFrame:frame];
+//    _itemSize = _minItemSize;
       [collectionItem setRepresentedObject:object];
     }
   return collectionItem;
@@ -427,7 +433,11 @@ static NSString *placeholderItem = nil;
     }
 
   // TODO: Restore item's selected state    
-
+  //[self setSelectionIndexes:[_selectionIndexes copy]];
+  
+  // Force recalculation of the frames of each item's view
+  _itemSize = _minItemSize;
+  _tileWidth = -1;
   [self tile];
 }
 
