@@ -315,7 +315,7 @@ including gi will have been cached.
 struct GSHorizontalTypesetter_line_frag_s
 {
   NSRect rect;
-  float last_used;
+  CGFloat last_used;
   unsigned int last_glyph; /* last_glyph+1, actually */
 };
 typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
@@ -329,7 +329,7 @@ For bigger values the width gets ignored.
 -(void) fullJustifyLine: (line_frag_t *)lf : (int)num_line_frags
 {
   unsigned int i, start;
-  float extra_space, delta;
+  CGFloat extra_space, delta;
   unsigned int num_spaces;
   NSString *str = [curTextStorage string];
   glyph_cache_t *g;
@@ -375,7 +375,7 @@ For bigger values the width gets ignored.
 -(void) rightAlignLine: (line_frag_t *)lf : (int)num_line_frags
 {
   unsigned int i;
-  float delta;
+  CGFloat delta;
   glyph_cache_t *g;
 
   if (lf->rect.size.width >= LARGE_SIZE)
@@ -395,7 +395,7 @@ For bigger values the width gets ignored.
 -(void) centerAlignLine: (line_frag_t *)lf : (int)num_line_frags
 {
   unsigned int i;
-  float delta;
+  CGFloat delta;
   glyph_cache_t *g;
 
   if (lf->rect.size.width >= LARGE_SIZE)
@@ -422,7 +422,7 @@ For bigger values the width gets ignored.
   NSSize shift;
   int i;
   unsigned int g, g2, first;
-  float container_height;
+  CGFloat container_height;
   /*
   Ask the layout manager for soft-invalidated layout for the current
   glyph. If there is a set of line frags starting at the current glyph,
@@ -479,10 +479,10 @@ For bigger values the width gets ignored.
 
 
 - (NSRect)_getProposedRectFor: (BOOL)newParagraph
-               withLineHeight: (float) line_height 
+               withLineHeight: (CGFloat) line_height 
 {
-  float hindent;
-  float tindent = [curParagraphStyle tailIndent];
+  CGFloat hindent;
+  CGFloat tindent = [curParagraphStyle tailIndent];
 
   if (newParagraph)
     hindent = [curParagraphStyle firstLineHeadIndent];
@@ -522,11 +522,11 @@ Return values 0, 1, 2 are mostly the same as from
   NSRect rect, remain;
 
   /* Baseline and line height handling. */
-  float line_height;     /* Current line height. */
-  float max_line_height; /* Maximum line height (usually from the paragraph style). */
-  float baseline;        /* Baseline position (0 is top of line-height, positive is down). */
-  float ascender;        /* Amount of space we want above the baseline (always>=0). */
-  float descender;       /* Amount of space we want below the baseline (always>=0). */
+  CGFloat line_height;     /* Current line height. */
+  CGFloat max_line_height; /* Maximum line height (usually from the paragraph style). */
+  CGFloat baseline;        /* Baseline position (0 is top of line-height, positive is down). */
+  CGFloat ascender;        /* Amount of space we want above the baseline (always>=0). */
+  CGFloat descender;       /* Amount of space we want below the baseline (always>=0). */
   /*
   These are values for the line as a whole. We start out by initializing
   for the first glyph on the line and then update these as we add more
@@ -603,7 +603,7 @@ Return values 0, 1, 2 are mostly the same as from
 
   /* Set up our initial baseline info. */
   {
-    float min = [curParagraphStyle minimumLineHeight];
+    CGFloat min = [curParagraphStyle minimumLineHeight];
     max_line_height = [curParagraphStyle maximumLineHeight];
 
     /* sanity */
@@ -640,7 +640,7 @@ Return values 0, 1, 2 are mostly the same as from
 
 #define WANT_LINE_HEIGHT(h) \
   do { \
-    float __new_height = (h); \
+    CGFloat __new_height = (h); \
     if (max_line_height > 0 && __new_height > max_line_height) \
       __new_height = max_line_height; \
     if (__new_height > line_height) \
@@ -706,7 +706,7 @@ restart: ;
     
     NSFont *f = cache->font;
 
-    float f_ascender = [f ascender], f_descender = -[f descender];
+    CGFloat f_ascender = [f ascender], f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
@@ -781,7 +781,7 @@ restart: ;
 	(TODO?) */
 	if (g->font != f)
 	  {
-	    float new_height;
+	    CGFloat new_height;
 	    f = g->font;
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
@@ -887,7 +887,7 @@ restart: ;
 
 	/* Baseline adjustments. */
 	{
-	  float y = 0;
+	  CGFloat y = 0;
 
 	  /* Attributes are up-side-down in our coordinate system. */
 	  if (g->attributes.superscript)

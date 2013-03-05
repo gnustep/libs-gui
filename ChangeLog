@@ -1,3 +1,8 @@
+2013-03-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m: Change floats into CGFloats to
+	stop infinite loop.
+
 2013-03-04  Fred Kiefer <FredKiefer@gmx.de>
 
 	* configure.ac: Use CPPFLAGS instead of CFLAGS for libpng.
