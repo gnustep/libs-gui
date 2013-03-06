@@ -36,13 +36,26 @@
 #import <AppKit/NSDragging.h>
 
 @class NSCollectionViewItem;
+@class NSCollectionView;
 
+enum
+{  
+  NSCollectionViewDropOn = 0,
+  NSCollectionViewDropBefore = 1,
+};
+typedef NSInteger NSCollectionViewDropOperation;
 
 @protocol NSCollectionViewDelegate <NSObject>
 
-// TODO
+- (NSImage *)collectionView:(NSCollectionView *)collectionView draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset;
+- (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard;
+- (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event;
+- (NSDragOperation)collectionView:(NSCollectionView *)collectionView validateDrop:(id < NSDraggingInfo >)draggingInfo proposedIndex:(NSInteger *)proposedDropIndex dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation;
+- (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id < NSDraggingInfo >)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation;
+- (NSArray *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes;
 
 @end
+
 
 @interface NSCollectionView : NSView
 {
@@ -67,6 +80,10 @@
   NSUInteger _maxNumberOfColumns;
   NSUInteger _maxNumberOfRows;
   long _numberOfColumns;
+  
+  NSDragOperation _draggingSourceOperationMaskForLocal;
+  NSDragOperation _draggingSourceOperationMaskForRemote;
+  NSEvent *_mouseDownEvent;
 }
 
 - (BOOL)allowsMultipleSelection;
@@ -109,13 +126,13 @@
 
 - (NSCollectionViewItem *)newItemForRepresentedObject:(id)object;
 
-- (void)reloadContent;
 - (void)tile;
 
 - (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination;
 - (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes
                                   withEvent:(NSEvent *)event
                                      offset:(NSPointPointer)dragImageOffset;
+
 
 @end
 

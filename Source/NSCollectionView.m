@@ -95,6 +95,8 @@ static NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundCol
 static NSString *placeholderItem = nil;
 
 @interface NSCollectionView (CollectionViewInternalPrivate)
+
+- (void)_initDefaults;
 - (void)_resetItemSize;
 - (void)_removeItemsViews;
 - (int)_indexAtPoint:(NSPoint)point;
@@ -106,6 +108,10 @@ static NSString *placeholderItem = nil;
 - (void)_moveUpAndExpandSelection:(BOOL)shouldExpand;
 - (void)_moveLeftAndExpandSelection:(BOOL)shouldExpand;
 - (void)_moveRightAndExpandSelection:(BOOL)shouldExpand;
+
+- (BOOL)_writeItemsAtIndexes:(NSIndexSet *)indexes 
+                toPasteboard:(NSPasteboard *)pasteboard;
+
 @end
 
 
@@ -125,6 +131,7 @@ static NSString *placeholderItem = nil;
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
   _selectionIndexes = [[NSIndexSet alloc] init];
+  [self registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
 }
 
 - (void)_resetItemSize
@@ -146,8 +153,30 @@ static NSString *placeholderItem = nil;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-  [[NSColor whiteColor] set];
-  NSRectFill([self bounds]);
+  // TODO: Implement "use Alternating Colors"
+  if (_backgroundColors && [_backgroundColors count] > 0)
+    {
+	  NSColor *bgColor = [_backgroundColors objectAtIndex:0];
+	  [bgColor set];
+	  NSRectFill(dirtyRect);
+	}
+
+  NSPoint origin = dirtyRect.origin;
+  NSSize size = dirtyRect.size;
+  NSPoint oppositeOrigin = NSMakePoint (origin.x + size.width, origin.y + size.height);
+  
+  int firstIndexInRect = MAX(0, [self _indexAtPoint:origin]);
+  int lastIndexInRect = MIN([_items count] - 1, [self _indexAtPoint:oppositeOrigin]);
+  int index = firstIndexInRect;
+
+  for (; index <= lastIndexInRect; index++)
+    {
+	  // Calling itemAtIndex: will eventually instantiate the collection view item,
+	  // if it hasn't been done already.
+      NSCollectionViewItem *collectionItem = [self itemAtIndex:index];
+      NSView *view = [collectionItem view];
+	  [view setFrame:[self frameForItemAtIndex:index]];
+    }
 }
 
 - (void)dealloc
@@ -159,6 +188,7 @@ static NSString *placeholderItem = nil;
   DESTROY (_backgroundColors);
   DESTROY (_selectionIndexes);
   DESTROY (_items);
+  DESTROY (_mouseDownEvent);
   [super dealloc];
 }
 
@@ -185,6 +215,7 @@ static NSString *placeholderItem = nil;
 - (void)setBackgroundColors:(NSArray *)colors
 {
   _backgroundColors = [colors copy];
+  [self setNeedsDisplay:YES];
 }
 
 - (NSArray *)content
@@ -206,7 +237,18 @@ static NSString *placeholderItem = nil;
     {
       [_items addObject:placeholderItem];
     }
-  [self reloadContent];
+
+  if (!itemPrototype)
+    {
+      return;
+	}
+  else
+    {
+      // Force recalculation of each item's frame
+      _itemSize = _minItemSize;
+      _tileWidth = -1;
+      [self tile];
+	}
 }
 
 - (id < NSCollectionViewDelegate >)delegate
@@ -313,7 +355,11 @@ static NSString *placeholderItem = nil;
       int index = -1;
       while ((index = [_selectionIndexes indexGreaterThanIndex:index]) != NSNotFound)
         {
-	      [[_items objectAtIndex:index] setSelected:NO];
+	      id item = [_items objectAtIndex:index];
+	      if ([item respondsToSelector:@selector(setSelected:)])
+		    {
+			  [item setSelected:NO];
+			}
 	    }
 	}
 }
@@ -341,20 +387,55 @@ static NSString *placeholderItem = nil;
   NSUInteger index = 0;
   while (index < [_items count])
     {
-	  [[_items objectAtIndex:index] setSelected:NO];
-	  index++;
+	  id item = [_items objectAtIndex:index];
+	  if ([item respondsToSelector:@selector(setSelected:)])
+	    {
+		  [item setSelected:NO];
+	      //[[_items objectAtIndex:index] setSelected:NO];
+		}
+	    index++;
 	}
   
   index = -1;
   while ((index = [_selectionIndexes indexGreaterThanIndex:index]) != NSNotFound)
     {
-	  [[_items objectAtIndex:index] setSelected:YES];
+	  id item = [_items objectAtIndex:index];
+	  if ([item respondsToSelector:@selector(setSelected:)])
+	    {
+  	      [item setSelected:YES];
+		}
 	}
 }
 
-- (NSRect)frameForItemAtIndex:(NSUInteger)index
+- (NSRect)frameForItemAtIndex:(NSUInteger)theIndex
 {
-  return [[[self itemAtIndex:index] view] frame];
+  NSRect itemFrame = NSMakeRect (0,0,0,0);
+  int index = 0;
+  long count = (long)[_items count];
+    
+  if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
+    count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
+    
+  float x = _horizontalMargin;
+  float y = -_itemSize.height;
+  
+  for (; index < count; ++index)
+    {
+      if (index % _numberOfColumns == 0)
+        {
+          x = _horizontalMargin;
+          y += _verticalMargin + _itemSize.height;
+        }
+		
+	  if (index == theIndex)
+	    {
+		  itemFrame = NSMakeRect (x, y, _itemSize.width, _itemSize.height);
+		  break;
+		}
+
+      x += _itemSize.width + _horizontalMargin;
+    }
+  return itemFrame;
 }
 
 - (NSCollectionViewItem *)itemAtIndex:(NSUInteger)index
@@ -364,6 +445,11 @@ static NSString *placeholderItem = nil;
     {
       item = [self newItemForRepresentedObject:[_content objectAtIndex:index]];
       [_items replaceObjectAtIndex:index withObject:item];
+	  if ([[self selectionIndexes] containsIndex:index])
+	    {
+		  [item setSelected:YES];
+		}
+	  [self addSubview:[item view]];
     }
   return item;
 }
@@ -374,26 +460,9 @@ static NSString *placeholderItem = nil;
   if (itemPrototype)
     {
 	  ASSIGN(collectionItem, [itemPrototype copy]);
-//	  NSView *itemView = [collectionItem view];
-//	  NSRect itemViewFrame = [itemView frame];
-//	  NSRect frame = NSMakeRect (itemViewFrame.origin.x, itemViewFrame.origin.y, _itemSize.width, _itemSize.height);
-//	  [itemView setFrame:frame];
-//    _itemSize = _minItemSize;
       [collectionItem setRepresentedObject:object];
     }
   return collectionItem;
-}
-
-- (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination
-{
-  return;
-}
-
-- (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes
-                                  withEvent:(NSEvent *)event
-                                     offset:(NSPointPointer)dragImageOffset
-{
-  return nil;
 }
 
 - (void)_removeItemsViews
@@ -411,34 +480,6 @@ static NSString *placeholderItem = nil;
            [[_items objectAtIndex:count] setSelected:NO];
          }
     }
-}
-
-- (void)reloadContent
-{
-  [self _removeItemsViews];
-    
-  if (!itemPrototype)
-    return;
-    
-  long index = 0;
-    
-  long count = [_content count];
-    
-  for (; index < count; ++index)
-    {
-      [_items replaceObjectAtIndex:index
-                        withObject:[self newItemForRepresentedObject:[_content objectAtIndex:index]]];
-        
-      [self addSubview:[[_items objectAtIndex:index] view]];
-    }
-
-  // TODO: Restore item's selected state    
-  //[self setSelectionIndexes:[_selectionIndexes copy]];
-  
-  // Force recalculation of the frames of each item's view
-  _itemSize = _minItemSize;
-  _tileWidth = -1;
-  [self tile];
 }
 
 - (void)tile
@@ -482,31 +523,27 @@ static NSString *placeholderItem = nil;
     count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
     
   _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / (_numberOfColumns + 1));
-    
-  float x = _horizontalMargin;
   float y = -itemSize.height;
   
   for (; index < count; ++index)
     {
       if (index % _numberOfColumns == 0)
         {
-          x = _horizontalMargin;
           y += _verticalMargin + itemSize.height;
         }
-        
-      NSView *view = [[_items objectAtIndex:index] view];
-      [view setFrameOrigin:NSMakePoint(x, y)];
-
-      if (itemsNeedSizeUpdate)
-          [view setFrameSize:_itemSize];
-
-      x += itemSize.width + _horizontalMargin;
     }
-    
+  
+  id superview = [self superview];
   float proposedHeight = y + itemSize.height + _verticalMargin;
+  if ([superview isKindOfClass:[NSClipView class]])
+    {
+	  NSSize superviewSize = [superview bounds].size;
+	  proposedHeight = MAX(superviewSize.height, proposedHeight);
+	}
 
   _tileWidth = width;
   [self setFrameSize:NSMakeSize(width, proposedHeight)];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)aSize
@@ -546,6 +583,7 @@ static NSString *placeholderItem = nil;
         
       _selectionIndexes = [NSIndexSet indexSet];
     }
+  [self _initDefaults];
     
   return self;
 }
@@ -573,8 +611,10 @@ static NSString *placeholderItem = nil;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  // FIXME: This implements only a single mouse click.
-  // TODO: Handle double-click & mouse drag
+  RETAIN (theEvent);
+  RELEASE (_mouseDownEvent);
+  _mouseDownEvent = theEvent;
+  
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location = [self convertPoint: initialLocation fromView: nil];
   int index = [self _indexAtPoint:location];
@@ -765,6 +805,200 @@ static NSString *placeholderItem = nil;
     {
 	  [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:anIndex]];
 	}
+	
+  [self scrollRectToVisible:[self frameForItemAtIndex:anIndex]];
+}
+
+
+
+
+
+
+
+-(void) _initDefaults
+{
+  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+//  _draggingSourceOperationMaskForRemote = NSDragOperationNone;
+  _draggingSourceOperationMaskForRemote = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+}
+
+-(NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+  if (isLocal)
+    {
+	  return _draggingSourceOperationMaskForLocal;
+	}
+  else
+    {
+	  return _draggingSourceOperationMaskForRemote;
+	}
+}
+
+-(void)setDraggingSourceOperationMask:(NSDragOperation)mask
+                             forLocal:(BOOL)isLocal
+{
+  if (isLocal)
+    {
+	  _draggingSourceOperationMaskForLocal = mask;
+	}
+  else
+    {
+	  _draggingSourceOperationMaskForRemote = mask;
+	}
+}
+
+
+// TO BE REMOVED, FOR DEV/TEST ONLY:
+-(void)drawStringCenteredIn:(NSRect)aRect
+{
+   NSString *string = @"DRAG STRING-FIXME";
+   NSDictionary *attributes = [NSDictionary dictionary];
+   
+   NSSize strSize = [string sizeWithAttributes:attributes];
+   NSPoint strOrigin;
+   strOrigin.x = aRect.origin.x + (aRect.size.width - strSize.width) / 2;
+   strOrigin.y = aRect.origin.y + (aRect.size.height - strSize.height) / 2;
+   [string drawAtPoint:strOrigin withAttributes:attributes];
+}
+
+-(void)mouseDragged:(NSEvent*)event
+{
+  if (!_mouseDownEvent)
+    return;
+
+//  if (![_delegate respondsToSelector:@selector(collectionView:dragTypesForItemsAtIndexes:)])
+//    return;
+
+  if (![_selectionIndexes count])
+    return;
+
+//  if (![delegate respondsToSelector:@selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
+//    return;
+
+  if ([delegate respondsToSelector:@selector(collectionView:canDragItemsAtIndexes:withEvent:)])
+    {
+	  if (![delegate collectionView:self
+	          canDragItemsAtIndexes:_selectionIndexes
+			              withEvent:_mouseDownEvent])
+	    {
+		  return;
+		}
+	}
+
+  NSPoint downPoint = [_mouseDownEvent locationInWindow];
+  NSPoint convertedDownPoint = [self convertPoint:downPoint fromView:nil];
+	
+  NSPasteboard *pasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+  if ([self _writeItemsAtIndexes:_selectionIndexes toPasteboard:pasteboard])
+    {
+      NSImage *dragImage = [self draggingImageForItemsAtIndexes:_selectionIndexes
+                                                      withEvent:_mouseDownEvent
+			     									     offset:NULL];
+
+      [self dragImage:dragImage
+                   at:convertedDownPoint
+		       offset:NSMakeSize(0,0)
+		        event:_mouseDownEvent
+	       pasteboard:pasteboard
+	           source:self
+		    slideBack:YES];
+	}
+}
+
+- (NSImage *) draggingImageForItemsAtIndexes:(NSIndexSet *)indexes 
+                                   withEvent:(NSEvent *)event 
+				  				     offset:(NSPointPointer)dragImageOffset
+{
+  if ([delegate respondsToSelector:@selector(collectionView:draggingImageForItemsAtIndexes:withEvent:offset:)])
+    {
+	  return [delegate collectionView:self
+	   draggingImageForItemsAtIndexes:indexes
+		                    withEvent:event
+		   				       offset:dragImageOffset];
+	}
+  else
+    {
+	  return [[NSImage alloc] initWithData:[self dataWithPDFInsideRect:[self bounds]]];
+   // NSString *string = @"DRAG STRING-FIXME";
+   // NSDictionary *attributes = [NSDictionary dictionary];
+   // NSSize s = [string sizeWithAttributes:attributes];
+   // NSRect imageBounds;
+   // imageBounds.origin = NSZeroPoint;
+   // imageBounds.size = s;
+   // NSImage *textImage = [[NSImage alloc] initWithSize:s];
+   // [textImage lockFocus];
+   // [self drawStringCenteredIn:imageBounds];
+   // [textImage unlockFocus];
+   // return textImage;   
+	}
+}
+
+- (BOOL)_writeItemsAtIndexes:(NSIndexSet *)indexes 
+                toPasteboard:(NSPasteboard *)pasteboard
+{
+  if (![delegate respondsToSelector:@selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
+    {
+	  //return NO;
+	  // FIXME !!!! THIS IS JUST FOR ON-GOING DEVELOPMENT & TESTS!
+      [pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+      [pasteboard setString:@"FIX ME!!!!" forType:NSStringPboardType];
+	  return YES;
+	}
+  else
+    {
+      return [delegate collectionView:self
+	              writeItemsAtIndexes:indexes
+				         toPasteboard:pasteboard];
+	}
+}
+
+- (void)draggedImage:(NSImage *)image
+             endedAt:(NSPoint)point
+		   operation:operation
+{
+  NSLog(@"draggedImage:endedAt:operation:");
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+  NSLog(@"draggingEntered:");
+  if ([sender draggingSource] == self)
+    {
+	  return NSDragOperationNone;
+	}
+  else
+    {
+	  return NSDragOperationCopy;
+	}
+}
+
+- (void)draggingExited:(id<NSDraggingInfo>)sender
+{
+  NSLog(@"draggingExited:");
+}
+
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
+{
+  NSLog(@"draggingUpdated:");
+  if ([sender draggingSource] == self)
+    {
+	  return NSDragOperationNone;
+	}
+  else
+    {
+	  return NSDragOperationCopy;
+	}
+}
+
+- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
+{
+  return YES;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+  // FIXME
+  return YES;
 }
 
 @end
