@@ -83,55 +83,56 @@ typedef NSInteger NSCollectionViewDropOperation;
   
   NSDragOperation _draggingSourceOperationMaskForLocal;
   NSDragOperation _draggingSourceOperationMaskForRemote;
-  NSEvent *_mouseDownEvent;
+  
+  NSUInteger _draggingOnRow;
+  NSUInteger _draggingOnIndex;
 }
 
-- (BOOL)allowsMultipleSelection;
-- (void)setAllowsMultipleSelection:(BOOL)flag;
+- (BOOL) allowsMultipleSelection;
+- (void) setAllowsMultipleSelection: (BOOL)flag;
 
-- (NSArray *)backgroundColors;
-- (void)setBackgroundColors:(NSArray *)colors;
+- (NSArray *) backgroundColors;
+- (void) setBackgroundColors: (NSArray *)colors;
 
 - (NSArray *)content;
 - (void)setContent:(NSArray *)content;
 
-- (id < NSCollectionViewDelegate >)delegate;
-- (void)setDelegate:(id < NSCollectionViewDelegate >)aDelegate;
+- (id < NSCollectionViewDelegate >) delegate;
+- (void) setDelegate: (id < NSCollectionViewDelegate >)aDelegate;
 
-- (NSCollectionViewItem *)itemPrototype;
-- (void)setItemPrototype:(NSCollectionViewItem *)prototype;
+- (NSCollectionViewItem *) itemPrototype;
+- (void) setItemPrototype: (NSCollectionViewItem *)prototype;
 
-- (BOOL)isFirstResponder;
+- (NSSize) maxItemSize;
+- (void) setMaxItemSize: (NSSize)size;
 
-- (NSSize)maxItemSize;
-- (void)setMaxItemSize:(NSSize)size;
+- (NSUInteger) maxNumberOfColumns;
+- (void) setMaxNumberOfColumns: (NSUInteger)number;
 
-- (NSUInteger)maxNumberOfColumns;
-- (void)setMaxNumberOfColumns:(NSUInteger)number;
+- (NSUInteger) maxNumberOfRows;
+- (void) setMaxNumberOfRows: (NSUInteger)number;
 
-- (NSUInteger)maxNumberOfRows;
-- (void)setMaxNumberOfRows:(NSUInteger)number;
+- (NSSize) minItemSize;
+- (void) setMinItemSize: (NSSize)size;
 
-- (NSSize)minItemSize;
-- (void)setMinItemSize:(NSSize)size;
+- (BOOL) isSelectable;
+- (void) setSelectable: (BOOL)flag;
 
-- (BOOL)isSelectable;
-- (void)setSelectable:(BOOL)flag;
+- (NSIndexSet *) selectionIndexes;
+- (void) setSelectionIndexes: (NSIndexSet *)indexes;
 
-- (NSIndexSet *)selectionIndexes;
-- (void)setSelectionIndexes:(NSIndexSet *)indexes;
+- (NSRect) frameForItemAtIndex: (NSUInteger)index;
+- (NSCollectionViewItem *) itemAtIndex: (NSUInteger)index;
+- (NSCollectionViewItem *) newItemForRepresentedObject:(id)object;
 
-- (NSRect)frameForItemAtIndex:(NSUInteger)index;
-- (NSCollectionViewItem *)itemAtIndex:(NSUInteger)index;
+- (void) tile;
 
-- (NSCollectionViewItem *)newItemForRepresentedObject:(id)object;
-
-- (void)tile;
-
-- (void)setDraggingSourceOperationMask:(NSDragOperation)dragOperationMask forLocal:(BOOL)localDestination;
-- (NSImage *)draggingImageForItemsAtIndexes:(NSIndexSet *)indexes
-                                  withEvent:(NSEvent *)event
-                                     offset:(NSPointPointer)dragImageOffset;
+- (void) setDraggingSourceOperationMask: (NSDragOperation)dragOperationMask 
+                               forLocal: (BOOL)localDestination;
+							   
+- (NSImage *) draggingImageForItemsAtIndexes: (NSIndexSet *)indexes
+                                   withEvent: (NSEvent *)event
+                                      offset: (NSPointPointer)dragImageOffset;
 
 
 @end

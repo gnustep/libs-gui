@@ -96,21 +96,31 @@ static NSString *placeholderItem = nil;
 
 @interface NSCollectionView (CollectionViewInternalPrivate)
 
-- (void)_initDefaults;
-- (void)_resetItemSize;
-- (void)_removeItemsViews;
-- (int)_indexAtPoint:(NSPoint)point;
-- (void)_modifySelectionWithNewIndex:(int)anIndex
-                           direction:(int)aDireection
-						      expand:(BOOL)shouldExpand;
-							  
-- (void)_moveDownAndExpandSelection:(BOOL)shouldExpand;
-- (void)_moveUpAndExpandSelection:(BOOL)shouldExpand;
-- (void)_moveLeftAndExpandSelection:(BOOL)shouldExpand;
-- (void)_moveRightAndExpandSelection:(BOOL)shouldExpand;
+- (void) _initDefaults;
+- (void) _resetItemSize;
+- (void) _removeItemsViews;
+- (int) _indexAtPoint: (NSPoint)point;
 
-- (BOOL)_writeItemsAtIndexes:(NSIndexSet *)indexes 
-                toPasteboard:(NSPasteboard *)pasteboard;
+- (NSRect) _frameForRowOfItemAtIndex: (NSUInteger)theIndex;
+- (NSRect) _frameForRowsAroundItemAtIndex: (NSUInteger)theIndex;
+
+- (void) _modifySelectionWithNewIndex: (int)anIndex
+                            direction: (int)aDirection
+						       expand: (BOOL)shouldExpand;
+							  
+- (void) _moveDownAndExpandSelection: (BOOL)shouldExpand;
+- (void) _moveUpAndExpandSelection: (BOOL)shouldExpand;
+- (void) _moveLeftAndExpandSelection: (BOOL)shouldExpand;
+- (void) _moveRightAndExpandSelection: (BOOL)shouldExpand;
+
+- (BOOL) _writeItemsAtIndexes: (NSIndexSet *)indexes 
+                 toPasteboard: (NSPasteboard *)pasteboard;
+
+- (BOOL) _startDragOperationWithEvent: (NSEvent*)event 
+                         clickedIndex: (NSUInteger)index;
+
+- (void) _selectWithEvent: (NSEvent *)theEvent 
+                    index: (NSUInteger)index;
 
 @end
 
@@ -125,16 +135,18 @@ static NSString *placeholderItem = nil;
   placeholderItem = @"Placeholder";
 }
 
-- (void)awakeFromNib
+-(void) _initDefaults
 {
+  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+//  _draggingSourceOperationMaskForRemote = NSDragOperationNone;
+  _draggingSourceOperationMaskForRemote = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   [self _resetItemSize];
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
   _selectionIndexes = [[NSIndexSet alloc] init];
-  [self registerForDraggedTypes:[NSArray arrayWithObject:NSStringPboardType]];
 }
 
-- (void)_resetItemSize
+- (void) _resetItemSize
 {
   if (itemPrototype)
     {
@@ -145,13 +157,14 @@ static NSString *placeholderItem = nil;
   else
     {
       // FIXME: This is just arbitrary.
+	  // What are we suppose to do when we don't have a prototype?
       _itemSize = NSMakeSize(120.0, 100.0);
       _minItemSize = NSMakeSize(120.0, 100.0);
       _maxItemSize = NSMakeSize(120.0, 100.0);
 	}
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void) drawRect: (NSRect)dirtyRect
 {
   // TODO: Implement "use Alternating Colors"
   if (_backgroundColors && [_backgroundColors count] > 0)
@@ -179,51 +192,51 @@ static NSString *placeholderItem = nil;
     }
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  //[[NSNotificationCenter defaultCenter] removeObserver:self];
 
   DESTROY (_content);
   //DESTROY (itemPrototype);
   DESTROY (_backgroundColors);
   DESTROY (_selectionIndexes);
   DESTROY (_items);
-  DESTROY (_mouseDownEvent);
+  //DESTROY (_mouseDownEvent);
   [super dealloc];
 }
 
-- (BOOL)isFlipped
+- (BOOL) isFlipped
 {
   return YES;
 }
 
-- (BOOL)allowsMultipleSelection
+- (BOOL) allowsMultipleSelection
 {
   return _allowsMultipleSelection;
 }
 
-- (void)setAllowsMultipleSelection:(BOOL)flag
+- (void) setAllowsMultipleSelection:(BOOL)flag
 {
   _allowsMultipleSelection = flag;
 }
 
-- (NSArray *)backgroundColors
+- (NSArray *) backgroundColors
 {
   return _backgroundColors;
 }
 
-- (void)setBackgroundColors:(NSArray *)colors
+- (void) setBackgroundColors: (NSArray *)colors
 {
   _backgroundColors = [colors copy];
   [self setNeedsDisplay:YES];
 }
 
-- (NSArray *)content
+- (NSArray *) content
 {
   return _content;
 }
 
-- (void)setContent:(NSArray *)content
+- (void) setContent: (NSArray *)content
 {
   RELEASE (_content);
   _content = [content retain];
@@ -251,22 +264,22 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-- (id < NSCollectionViewDelegate >)delegate
+- (id < NSCollectionViewDelegate >) delegate
 {
   return delegate;
 }
 
-- (void)setDelegate:(id < NSCollectionViewDelegate >)aDelegate
+- (void) setDelegate: (id < NSCollectionViewDelegate >)aDelegate
 {
   delegate = aDelegate;
 }
 
-- (NSCollectionViewItem *)itemPrototype
+- (NSCollectionViewItem *) itemPrototype
 {
   return itemPrototype;
 }
 
-- (void)setItemPrototype:(NSCollectionViewItem *)prototype
+- (void) setItemPrototype: (NSCollectionViewItem *)prototype
 {
   RELEASE (itemPrototype);
   itemPrototype = prototype;
@@ -274,18 +287,12 @@ static NSString *placeholderItem = nil;
   [self _resetItemSize];
 }
 
-- (BOOL)isFirstResponder
-{
-  // FIXME: This will be required for keyboard events
-  return NO;
-}
-
-- (float)verticalMargin
+- (float) verticalMargin
 {
   return _verticalMargin;
 }
 
-- (void)setVerticalMargin:(float)margin
+- (void) setVerticalMargin: (float)margin
 {
   if (_verticalMargin == margin)
     return;
@@ -294,12 +301,12 @@ static NSString *placeholderItem = nil;
   [self tile];
 }
 
-- (NSSize)maxItemSize
+- (NSSize) maxItemSize
 {
   return _maxItemSize;
 }
 
-- (void)setMaxItemSize:(NSSize)size
+- (void) setMaxItemSize: (NSSize)size
 {
   if (NSEqualSizes(_maxItemSize, size))
     return;
@@ -308,32 +315,32 @@ static NSString *placeholderItem = nil;
   [self tile];
 }
 
-- (NSUInteger)maxNumberOfColumns
+- (NSUInteger) maxNumberOfColumns
 {
   return _maxNumberOfColumns;
 }
 
-- (void)setMaxNumberOfColumns:(NSUInteger)number
+- (void) setMaxNumberOfColumns: (NSUInteger)number
 {
   _maxNumberOfColumns = number;
 }
 
-- (NSUInteger)maxNumberOfRows
+- (NSUInteger) maxNumberOfRows
 {
   return _maxNumberOfRows;
 }
 
-- (void)setMaxNumberOfRows:(NSUInteger)number
+- (void) setMaxNumberOfRows: (NSUInteger)number
 {
   _maxNumberOfRows = number;
 }
 
-- (NSSize)minItemSize
+- (NSSize) minItemSize
 {
   return _minItemSize;
 }
 
-- (void)setMinItemSize:(NSSize)size
+- (void) setMinItemSize: (NSSize)size
 {
   if (NSEqualSizes(_minItemSize, size))
     return;
@@ -342,12 +349,12 @@ static NSString *placeholderItem = nil;
   [self tile];
 }
 
-- (BOOL)isSelectable
+- (BOOL) isSelectable
 {
   return _isSelectable;
 }
 
-- (void)setSelectable:(BOOL)flag
+- (void) setSelectable: (BOOL)flag
 {
   _isSelectable = flag;
   if (!_isSelectable)
@@ -364,12 +371,12 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-- (NSIndexSet *)selectionIndexes
+- (NSIndexSet *) selectionIndexes
 {
   return _selectionIndexes;
 }
 
-- (void)setSelectionIndexes:(NSIndexSet *)indexes
+- (void) setSelectionIndexes: (NSIndexSet *)indexes
 {
   if (!_isSelectable)
     {
@@ -391,7 +398,6 @@ static NSString *placeholderItem = nil;
 	  if ([item respondsToSelector:@selector(setSelected:)])
 	    {
 		  [item setSelected:NO];
-	      //[[_items objectAtIndex:index] setSelected:NO];
 		}
 	    index++;
 	}
@@ -407,7 +413,7 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-- (NSRect)frameForItemAtIndex:(NSUInteger)theIndex
+- (NSRect) frameForItemAtIndex: (NSUInteger)theIndex
 {
   NSRect itemFrame = NSMakeRect (0,0,0,0);
   int index = 0;
@@ -429,7 +435,24 @@ static NSString *placeholderItem = nil;
 		
 	  if (index == theIndex)
 	    {
-		  itemFrame = NSMakeRect (x, y, _itemSize.width, _itemSize.height);
+		  int draggingOffset = 0;
+		  if (_draggingOnIndex != NSNotFound)
+		    {
+			  int draggingOnRow = (_draggingOnIndex / _numberOfColumns);
+			  int currentIndexRow = (theIndex / _numberOfColumns);
+			  if (draggingOnRow == currentIndexRow)
+			    {
+				  if (index < _draggingOnIndex)
+				    {
+					  draggingOffset = -20;
+					}
+				  else
+				    {
+					  draggingOffset = 20;
+					}
+				}
+			}
+		  itemFrame = NSMakeRect ((x + draggingOffset), y, _itemSize.width, _itemSize.height);
 		  break;
 		}
 
@@ -438,7 +461,25 @@ static NSString *placeholderItem = nil;
   return itemFrame;
 }
 
-- (NSCollectionViewItem *)itemAtIndex:(NSUInteger)index
+- (NSRect) _frameForRowOfItemAtIndex: (NSUInteger)theIndex
+{
+  NSRect itemFrame = [self frameForItemAtIndex:theIndex];
+  NSPoint origin = NSMakePoint (0, itemFrame.origin.y);
+  NSSize size = NSMakeSize([self bounds].size.width, itemFrame.size.height);
+  return NSMakeRect (origin.x, origin.y, size.width, size.height);  
+}
+
+// Returns the frame of an item's row with the row above and the row below
+- (NSRect) _frameForRowsAroundItemAtIndex: (NSUInteger)theIndex
+{
+  NSRect itemRowFrame = [self _frameForRowOfItemAtIndex:theIndex];
+  float y = MAX (0, itemRowFrame.origin.y - itemRowFrame.size.height);
+  float height = MIN (itemRowFrame.size.height * 3, [self bounds].size.height);
+  NSRect rowsRect = NSMakeRect(0, y, itemRowFrame.size.width, height);
+  return rowsRect;
+}
+
+- (NSCollectionViewItem *) itemAtIndex: (NSUInteger)index
 {
   id item = [_items objectAtIndex:index];
   if (item == placeholderItem)
@@ -454,7 +495,7 @@ static NSString *placeholderItem = nil;
   return item;
 }
 
-- (NSCollectionViewItem *)newItemForRepresentedObject:(id)object
+- (NSCollectionViewItem *) newItemForRepresentedObject: (id)object
 {
   NSCollectionViewItem *collectionItem = nil;
   if (itemPrototype)
@@ -465,7 +506,7 @@ static NSString *placeholderItem = nil;
   return collectionItem;
 }
 
-- (void)_removeItemsViews
+- (void) _removeItemsViews
 {
   if (!_items)
 	return;
@@ -482,7 +523,7 @@ static NSString *placeholderItem = nil;
     }
 }
 
-- (void)tile
+- (void) tile
 {
   // TODO: - Animate items, Add Fade-in/Fade-out (as in Cocoa)
   //       - Put the tiling on a delay
@@ -546,7 +587,7 @@ static NSString *placeholderItem = nil;
   [self setNeedsDisplay:YES];
 }
 
-- (void)resizeSubviewsWithOldSize:(NSSize)aSize
+- (void) resizeSubviewsWithOldSize: (NSSize)aSize
 {
   NSSize currentSize = [self frame].size;
   if (!NSEqualSizes(currentSize, aSize))
@@ -555,7 +596,7 @@ static NSString *placeholderItem = nil;
     }
 }
 
-- (id)initWithCoder:(NSCoder *)aCoder
+- (id) initWithCoder: (NSCoder *)aCoder
 {
   self = [super initWithCoder:aCoder];
     
@@ -588,7 +629,7 @@ static NSString *placeholderItem = nil;
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder:aCoder];
     
@@ -609,15 +650,55 @@ static NSString *placeholderItem = nil;
   [aCoder encodeObject:_backgroundColors forKey:NSCollectionViewBackgroundColorsKey];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
-  RETAIN (theEvent);
-  RELEASE (_mouseDownEvent);
-  _mouseDownEvent = theEvent;
-  
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location = [self convertPoint: initialLocation fromView: nil];
   int index = [self _indexAtPoint:location];
+  NSEvent *lastEvent = theEvent;
+  BOOL done = NO;
+
+  unsigned int eventMask = (NSLeftMouseUpMask 
+			| NSLeftMouseDownMask
+			| NSLeftMouseDraggedMask 
+			| NSPeriodicMask);
+  NSDate *distantFuture = [NSDate distantFuture];
+
+  while (!done)
+    {
+	  lastEvent = [NSApp nextEventMatchingMask: eventMask 
+				                     untilDate: distantFuture
+				                        inMode: NSEventTrackingRunLoopMode 
+				                       dequeue: YES]; 
+	  NSEventType eventType = [lastEvent type];
+	  NSPoint mouseLocationWin = [lastEvent locationInWindow];
+	  switch (eventType)
+	    {
+		  case NSLeftMouseDown:
+		    break;
+		  case NSLeftMouseDragged:
+		    if (fabs(mouseLocationWin.x - initialLocation.x) >= 2
+			  || fabs(mouseLocationWin.y - initialLocation.y) >= 2)
+			  {
+                if ([self _startDragOperationWithEvent:theEvent clickedIndex:index])
+				  {
+				    done = YES;
+				  }
+			  }
+			break;
+		  case NSLeftMouseUp:
+		    [self _selectWithEvent:theEvent index:index];
+		    done = YES;
+			break;
+		  default:
+		    done = NO;
+		    break;
+        }
+	}
+}
+
+- (void) _selectWithEvent:(NSEvent *)theEvent index:(NSUInteger)index
+{
   NSMutableIndexSet *currentIndexSet = [[NSMutableIndexSet alloc] initWithIndexSet:[self selectionIndexes]];
 
   if (_isSelectable && (index >= 0 && index < [_items count]))
@@ -664,6 +745,8 @@ static NSString *placeholderItem = nil;
           [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:index]];
         }
       [[self window] makeFirstResponder:self];
+
+	  
     }
     else
     {
@@ -672,34 +755,36 @@ static NSString *placeholderItem = nil;
     RELEASE (currentIndexSet);
 }
 
-- (int)_indexAtPoint:(NSPoint)point
+- (int) _indexAtPoint: (NSPoint)point
 {
   int row = floor(point.y / (_itemSize.height + _verticalMargin));
   int column = floor(point.x / (_itemSize.width + _horizontalMargin));
   return (column + (row * _numberOfColumns));
 }
 
-- (BOOL)acceptsFirstResponder
+- (BOOL) acceptsFirstResponder
 {
   return YES;
 }
 
-- (void)keyDown:(NSEvent *)theEvent
+/* MARK: Keyboard Interaction */
+
+- (void) keyDown: (NSEvent *)theEvent
 {
   [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
 }
  
--(IBAction)moveUp:(id)sender
+-(IBAction) moveUp: (id)sender
 {
   [self _moveUpAndExpandSelection:NO];
 }
  
--(IBAction)moveUpAndModifySelection:(id)sender
+-(IBAction) moveUpAndModifySelection: (id)sender
 {
   [self _moveUpAndExpandSelection:YES];
 }
 
-- (void)_moveUpAndExpandSelection:(BOOL)shouldExpand
+- (void) _moveUpAndExpandSelection: (BOOL)shouldExpand
 {
   int index = [[self selectionIndexes] firstIndex];
   if (index != NSNotFound && (index - _numberOfColumns) >= 0)
@@ -710,17 +795,17 @@ static NSString *placeholderItem = nil;
 	}
 }
  
--(IBAction)moveDown:(id)sender
+-(IBAction) moveDown: (id)sender
 {
  [self _moveDownAndExpandSelection:NO];
 }
 
--(IBAction)moveDownAndModifySelection:(id)sender
+-(IBAction) moveDownAndModifySelection: (id)sender
 {
   [self _moveDownAndExpandSelection:YES];
 }
  
--(void)_moveDownAndExpandSelection:(BOOL)shouldExpand
+-(void) _moveDownAndExpandSelection: (BOOL)shouldExpand
 {
   int index = [[self selectionIndexes] lastIndex];
   if (index != NSNotFound && (index + _numberOfColumns) < [_items count])
@@ -731,22 +816,22 @@ static NSString *placeholderItem = nil;
 	}
 }
  
--(IBAction)moveLeft:(id)sender
+-(IBAction) moveLeft: (id)sender
 {
   [self _moveLeftAndExpandSelection:NO];
 }
 
--(IBAction)moveLeftAndModifySelection:(id)sender
+-(IBAction) moveLeftAndModifySelection: (id)sender
 {
   [self _moveLeftAndExpandSelection:YES];
 }
 
--(IBAction)moveBackwardAndModifySelection:(id)sender
+-(IBAction) moveBackwardAndModifySelection: (id)sender
 {
   [self _moveLeftAndExpandSelection:YES];
 }
 
--(void)_moveLeftAndExpandSelection:(BOOL)shouldExpand
+-(void) _moveLeftAndExpandSelection: (BOOL)shouldExpand
 {
   int index = [[self selectionIndexes] firstIndex];
   if (index != NSNotFound && index != 0)
@@ -755,22 +840,22 @@ static NSString *placeholderItem = nil;
 	}
 }
  
--(IBAction)moveRight:(id)sender
+-(IBAction) moveRight: (id)sender
 {
   [self _moveRightAndExpandSelection:NO];
 }
 
--(IBAction)moveRightAndModifySelection:(id)sender
+-(IBAction) moveRightAndModifySelection: (id)sender
 {
   [self _moveRightAndExpandSelection:YES];
 }
 
--(IBAction)moveForwardAndModifySelection:(id)sender
+-(IBAction) moveForwardAndModifySelection: (id)sender
 {
   [self _moveRightAndExpandSelection:YES];
 }
 
--(void)_moveRightAndExpandSelection:(BOOL)shouldExpand
+-(void) _moveRightAndExpandSelection: (BOOL)shouldExpand
 {
   int index = [[self selectionIndexes] lastIndex];
   if (index != NSNotFound && index != ([_items count] - 1))
@@ -779,9 +864,9 @@ static NSString *placeholderItem = nil;
 	}
 }
  
-- (void)_modifySelectionWithNewIndex:(int)anIndex
-                           direction:(int)aDirection
-						      expand:(BOOL)shouldExpand
+- (void) _modifySelectionWithNewIndex: (int)anIndex
+                            direction: (int)aDirection
+						       expand: (BOOL)shouldExpand
 {
   anIndex = MIN (MAX (anIndex, 0), [_items count] - 1);
   
@@ -810,17 +895,7 @@ static NSString *placeholderItem = nil;
 }
 
 
-
-
-
-
-
--(void) _initDefaults
-{
-  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
-//  _draggingSourceOperationMaskForRemote = NSDragOperationNone;
-  _draggingSourceOperationMaskForRemote = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
-}
+/* MARK: Drag & Drop */
 
 -(NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
@@ -847,67 +922,58 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-
-// TO BE REMOVED, FOR DEV/TEST ONLY:
--(void)drawStringCenteredIn:(NSRect)aRect
+- (BOOL) _startDragOperationWithEvent:(NSEvent*)event 
+                         clickedIndex:(NSUInteger)index
 {
-   NSString *string = @"DRAG STRING-FIXME";
-   NSDictionary *attributes = [NSDictionary dictionary];
-   
-   NSSize strSize = [string sizeWithAttributes:attributes];
-   NSPoint strOrigin;
-   strOrigin.x = aRect.origin.x + (aRect.size.width - strSize.width) / 2;
-   strOrigin.y = aRect.origin.y + (aRect.size.height - strSize.height) / 2;
-   [string drawAtPoint:strOrigin withAttributes:attributes];
-}
+  NSIndexSet *dragIndexes = _selectionIndexes;
+  if (![dragIndexes containsIndex:index]
+    && (index >= 0 && index < [_items count]))
+    {
+	  dragIndexes = [NSIndexSet indexSetWithIndex:index];
+	}
+	
+  if (![dragIndexes count])
+    return NO;
 
--(void)mouseDragged:(NSEvent*)event
-{
-  if (!_mouseDownEvent)
-    return;
-
-//  if (![_delegate respondsToSelector:@selector(collectionView:dragTypesForItemsAtIndexes:)])
-//    return;
-
-  if (![_selectionIndexes count])
-    return;
-
-//  if (![delegate respondsToSelector:@selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
-//    return;
+  if (![delegate respondsToSelector:@selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
+    return NO;
 
   if ([delegate respondsToSelector:@selector(collectionView:canDragItemsAtIndexes:withEvent:)])
     {
 	  if (![delegate collectionView:self
-	          canDragItemsAtIndexes:_selectionIndexes
-			              withEvent:_mouseDownEvent])
+	          canDragItemsAtIndexes:dragIndexes
+			              withEvent:event])
 	    {
-		  return;
+		  return NO;
 		}
 	}
 
-  NSPoint downPoint = [_mouseDownEvent locationInWindow];
+  NSPoint downPoint = [event locationInWindow];
   NSPoint convertedDownPoint = [self convertPoint:downPoint fromView:nil];
 	
   NSPasteboard *pasteboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-  if ([self _writeItemsAtIndexes:_selectionIndexes toPasteboard:pasteboard])
+  if ([self _writeItemsAtIndexes:dragIndexes toPasteboard:pasteboard])
     {
-      NSImage *dragImage = [self draggingImageForItemsAtIndexes:_selectionIndexes
-                                                      withEvent:_mouseDownEvent
+      NSImage *dragImage = [self draggingImageForItemsAtIndexes:dragIndexes
+                                                      withEvent:event
 			     									     offset:NULL];
 
       [self dragImage:dragImage
                    at:convertedDownPoint
 		       offset:NSMakeSize(0,0)
-		        event:_mouseDownEvent
+		        event:event
 	       pasteboard:pasteboard
 	           source:self
 		    slideBack:YES];
+
+      return YES;
 	}
+  return NO;
 }
 
-- (NSImage *) draggingImageForItemsAtIndexes:(NSIndexSet *)indexes 
-                                   withEvent:(NSEvent *)event 
-				  				     offset:(NSPointPointer)dragImageOffset
+- (NSImage *) draggingImageForItemsAtIndexes: (NSIndexSet *)indexes 
+                                   withEvent: (NSEvent *)event 
+				  				      offset: (NSPointPointer)dragImageOffset
 {
   if ([delegate respondsToSelector:@selector(collectionView:draggingImageForItemsAtIndexes:withEvent:offset:)])
     {
@@ -919,30 +985,15 @@ static NSString *placeholderItem = nil;
   else
     {
 	  return [[NSImage alloc] initWithData:[self dataWithPDFInsideRect:[self bounds]]];
-   // NSString *string = @"DRAG STRING-FIXME";
-   // NSDictionary *attributes = [NSDictionary dictionary];
-   // NSSize s = [string sizeWithAttributes:attributes];
-   // NSRect imageBounds;
-   // imageBounds.origin = NSZeroPoint;
-   // imageBounds.size = s;
-   // NSImage *textImage = [[NSImage alloc] initWithSize:s];
-   // [textImage lockFocus];
-   // [self drawStringCenteredIn:imageBounds];
-   // [textImage unlockFocus];
-   // return textImage;   
 	}
 }
 
-- (BOOL)_writeItemsAtIndexes:(NSIndexSet *)indexes 
-                toPasteboard:(NSPasteboard *)pasteboard
+- (BOOL) _writeItemsAtIndexes: (NSIndexSet *)indexes 
+                 toPasteboard: (NSPasteboard *)pasteboard
 {
   if (![delegate respondsToSelector:@selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
     {
-	  //return NO;
-	  // FIXME !!!! THIS IS JUST FOR ON-GOING DEVELOPMENT & TESTS!
-      [pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-      [pasteboard setString:@"FIX ME!!!!" forType:NSStringPboardType];
-	  return YES;
+	  return NO;
 	}
   else
     {
@@ -952,14 +1003,14 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-- (void)draggedImage:(NSImage *)image
-             endedAt:(NSPoint)point
-		   operation:operation
+- (void) draggedImage: (NSImage *)image
+              endedAt: (NSPoint)point
+		    operation: (NSDragOperation)operation
 {
   NSLog(@"draggedImage:endedAt:operation:");
 }
 
-- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
 {
   NSLog(@"draggingEntered:");
   if ([sender draggingSource] == self)
@@ -972,32 +1023,61 @@ static NSString *placeholderItem = nil;
 	}
 }
 
-- (void)draggingExited:(id<NSDraggingInfo>)sender
+- (void) draggingExited: (id<NSDraggingInfo>)sender
 {
-  NSLog(@"draggingExited:");
+  _draggingOnIndex = NSNotFound;
+  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
+  int index = [self _indexAtPoint:location];
+  [self setNeedsDisplayInRect:[self _frameForRowOfItemAtIndex:index]];
 }
 
-- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
+- (NSDragOperation) draggingUpdated: (id<NSDraggingInfo>)sender
 {
-  NSLog(@"draggingUpdated:");
-  if ([sender draggingSource] == self)
+  NSDragOperation result = NSDragOperationNone;
+  
+  if ([delegate respondsToSelector:@selector(collectionView:validateDrop:proposedIndex:dropOperation:)])
     {
-	  return NSDragOperationNone;
+	  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
+      int index = [self _indexAtPoint:location];
+	  _draggingOnIndex = index;
+      [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:index]];
+	  //NSLog (@">>> DRAGGING OVER INDEX %d", index);
+	  
+	  NSInteger *proposedIndex = (NSInteger *)index;
+
+	  result = [delegate collectionView:self
+	                       validateDrop:sender
+				          proposedIndex:proposedIndex
+			     	      dropOperation:NSCollectionViewDropOn];
 	}
-  else
-    {
-	  return NSDragOperationCopy;
-	}
+	
+  return result;
 }
 
-- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
 {
+  _draggingOnIndex = NSNotFound;
+  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
+  int index = [self _indexAtPoint:location];
+  [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:index]];
   return YES;
 }
 
-- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
-  // FIXME
+  BOOL result = NO;
+  if ([delegate respondsToSelector:@selector(collectionView:acceptDrop:index:dropOperation:)])
+    {
+	  result = [delegate collectionView:self
+	                         acceptDrop:sender
+							      index:0 //FIXME
+						  dropOperation:NSCollectionViewDropOn];
+	}
+  return result;
+}
+
+- (BOOL) wantsPeriodicDraggingUpdates
+{
   return YES;
 }
 
