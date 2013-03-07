@@ -3487,6 +3487,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent clickedRow:(NSUInteger)clickedRow
 {
+  if (clickedRow >= _numberOfRows)
+    return NO;
+	
   NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
   NSPoint startPoint = [self convertPoint: [theEvent locationInWindow] 
                                  fromView: nil];
