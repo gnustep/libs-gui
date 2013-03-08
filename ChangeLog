@@ -1,3 +1,9 @@
+2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m (-elementAtIndex:associatedPoints:): Fix
+	handling of close element.
+	Patch by Bluna Ratimonkey <object@gmail.com>.
+
 2013-03-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSHorizontalTypesetter.m: Change floats into CGFloats to

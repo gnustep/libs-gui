@@ -861,8 +861,7 @@ static CGFloat default_miter_limit = 10.0;
 	  for (i = index - 1; i >= 0; i--)
 	    {
 	      elm = GSIArrayItemAtIndex(_pathElements, i).ext;
-              type = elm.type;
-	      if (type == NSMoveToBezierPathElement)
+	      if (elm.type == NSMoveToBezierPathElement)
                 {
                   points[0] = elm.points[0];
                   break;
