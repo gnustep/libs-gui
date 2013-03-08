@@ -1,5 +1,11 @@
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tests/gui/NSSavePanel/setDelegate_reload.m: Rewrite to remove
+	use of @defs().
+	Base on idea by Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableColumn.m (-initWithCoder:): Make columns
 	non-editable by default.
 	* Source/NSTableView.m (-editColumn:...select:): Make editing here
