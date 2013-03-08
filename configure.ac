@@ -245,7 +245,7 @@ if test $enable_png = yes; then
   if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
     PNG_CFLAGS="`libpng-config --I_opts`"
     PNG_LDFLAGS="`libpng-config --ldflags`"
-    CPPFLAGS="$PNG_CFLAGS ${CFLAGS}"
+    CPPFLAGS="${CPPFLAGS} $PNG_CFLAGS"
     LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
     AC_CHECK_HEADERS(png.h)
     AC_CHECK_LIB(png, png_sig_cmp)

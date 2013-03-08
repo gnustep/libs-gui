@@ -1,5 +1,11 @@
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* configure.ac: Correct change for libpng.
+	Patch by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+	* configure: Regenerated.
+
+2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBezierPath.m (-elementAtIndex:associatedPoints:): Fix
 	handling of close element.
 	Patch by Bluna Ratimonkey <object@gmail.com>.

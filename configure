@@ -5008,7 +5008,7 @@ fi
   if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
     PNG_CFLAGS="`libpng-config --I_opts`"
     PNG_LDFLAGS="`libpng-config --ldflags`"
-    CPPFLAGS="$PNG_CFLAGS ${CFLAGS}"
+    CPPFLAGS="${CPPFLAGS} $PNG_CFLAGS"
     LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
     for ac_header in png.h
 do :
