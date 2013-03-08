@@ -141,8 +141,10 @@ typedef struct _tableViewFlags
 	 forTableColumn: (NSTableColumn *)tb
 		    row: (int)index;
 
-- (BOOL) _isCellEditableColumn: (int) columnIndex
-			   row: (int) rowIndex;
+- (BOOL) _isEditableColumn: (int)columnIndex
+                       row: (int)rowIndex;
+- (BOOL) _isCellEditableColumn: (int)columnIndex
+			   row: (int)rowIndex;
 - (int) _numRows;
 @end
 
@@ -3312,13 +3314,6 @@ byExtendingSelection: (BOOL)flag
   NSRect drawingRect;
   unsigned length = 0;
 
-  // We refuse to edit cells if the delegate can not accept results 
-  // of editing.
-  if (_dataSource_editable == NO)
-    {
-      flag = YES;
-    }
-  
   if (rowIndex != _selectedRow)
     {
       [NSException raise:NSInvalidArgumentException
@@ -3360,7 +3355,6 @@ byExtendingSelection: (BOOL)flag
   // NB: need to be released when no longer used
   _editedCell = [[self preparedCellAtColumn: columnIndex row: rowIndex] copy];
 
-  [_editedCell setEditable: _dataSource_editable];
   tb = [_tableColumns objectAtIndex: columnIndex];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
 				     row: rowIndex]];
@@ -3591,7 +3585,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  return;
 	}
 
-      if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
+      if (![self _isEditableColumn: _clickedColumn row: _clickedRow])
         {
 	  // Send double-action but don't edit
 	  [self _trackCellAtColumn: _clickedColumn
@@ -6576,19 +6570,28 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _isCellEditableColumn: (int) columnIndex
-			   row: (int) rowIndex
-		     
+- (BOOL) _isEditableColumn: (int) columnIndex
+                       row: (int) rowIndex
 {
   NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
-  NSCell *cell = [self preparedCellAtColumn: columnIndex row: rowIndex];
-  
-  BOOL cellIsEditable = [cell isEditable];
-  BOOL columnIsEditable = [tableColumn isEditable];
-  BOOL delegateAllowsEditing = [self _shouldEditTableColumn: tableColumn 
-							row: rowIndex];
 
-  return cellIsEditable && columnIsEditable && delegateAllowsEditing;
+  return [tableColumn isEditable] && [self _shouldEditTableColumn: tableColumn
+                                                              row: rowIndex];
+}
+
+- (BOOL) _isCellEditableColumn: (int) columnIndex
+			   row: (int) rowIndex
+{
+  if (![self _isEditableColumn: columnIndex row: rowIndex])
+    {
+      return NO;
+    }
+  else
+    {
+      NSCell *cell = [self preparedCellAtColumn: columnIndex row: rowIndex];
+
+      return [cell isEditable];
+    }
 }
 
 - (void) _willDisplayCell: (NSCell*)cell

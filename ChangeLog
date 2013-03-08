@@ -1,5 +1,14 @@
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTableColumn.m (-initWithCoder:): Make columns
+	non-editable by default.
+	* Source/NSTableView.m (-editColumn:...select:): Make editing here
+	independ of the datasource.
+	* Source/NSTableView.m: Split -_isCellEditableColumn:row: in two
+	methods and ignore the cell isEditable state in -mouseDown:.
+
+2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSTextView.h: Make NSTextViewDelegate a formal protocol.
 
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
