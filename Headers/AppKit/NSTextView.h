@@ -654,7 +654,13 @@ for that text view has been invalidated.
 layout manager. */
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+@protocol NSTextViewDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
 @interface NSObject (NSTextViewDelegate)
+#endif
 
 -(void) textView: (NSTextView *)textView
    clickedOnCell: (id <NSTextAttachmentCell>)cell

@@ -1,5 +1,9 @@
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSTextView.h: Make NSTextViewDelegate a formal protocol.
+
+2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* configure.ac: Correct change for libpng.
 	Patch by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
 	* configure: Regenerated.
