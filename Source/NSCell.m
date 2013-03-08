@@ -2238,7 +2238,6 @@ static NSColor *dtxtCol;
   // there's something wrong about telling the view to come
   // back here and draw.
   [controlView setKeyboardFocusRingNeedsDisplayInRect:NSMakeRect (aRect.origin.x - 2.0, aRect.origin.y - 2.0, aRect.size.width + 4.0, aRect.size.height + 4.0)];
-  NSLog(@"Edited Cell: %@", self);
 }
 
 /**<p>Ends any text editing. This method sets the text object's delegate 

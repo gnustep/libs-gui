@@ -135,15 +135,25 @@ static NSString *placeholderItem = nil;
   placeholderItem = @"Placeholder";
 }
 
+- (id) initWithFrame: (NSRect)frame
+{
+  if ((self = [super initWithFrame:frame]))
+    {
+	  [self _initDefaults];
+	}
+  return self;
+}
+
 -(void) _initDefaults
 {
-  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
-//  _draggingSourceOperationMaskForRemote = NSDragOperationNone;
-  _draggingSourceOperationMaskForRemote = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+//  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+  _draggingSourceOperationMaskForLocal = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
+  _draggingSourceOperationMaskForRemote = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
   [self _resetItemSize];
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
   _selectionIndexes = [[NSIndexSet alloc] init];
+  _draggingOnIndex = NSNotFound;
 }
 
 - (void) _resetItemSize
@@ -197,7 +207,10 @@ static NSString *placeholderItem = nil;
   //[[NSNotificationCenter defaultCenter] removeObserver:self];
 
   DESTROY (_content);
-  //DESTROY (itemPrototype);
+
+  // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
+  DESTROY (itemPrototype);
+  
   DESTROY (_backgroundColors);
   DESTROY (_selectionIndexes);
   DESTROY (_items);
@@ -503,7 +516,7 @@ static NSString *placeholderItem = nil;
 	  ASSIGN(collectionItem, [itemPrototype copy]);
       [collectionItem setRepresentedObject:object];
     }
-  return collectionItem;
+  return AUTORELEASE (collectionItem);
 }
 
 - (void) _removeItemsViews
@@ -1007,31 +1020,9 @@ static NSString *placeholderItem = nil;
               endedAt: (NSPoint)point
 		    operation: (NSDragOperation)operation
 {
-  NSLog(@"draggedImage:endedAt:operation:");
 }
 
-- (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
-{
-  NSLog(@"draggingEntered:");
-  if ([sender draggingSource] == self)
-    {
-	  return NSDragOperationNone;
-	}
-  else
-    {
-	  return NSDragOperationCopy;
-	}
-}
-
-- (void) draggingExited: (id<NSDraggingInfo>)sender
-{
-  _draggingOnIndex = NSNotFound;
-  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
-  int index = [self _indexAtPoint:location];
-  [self setNeedsDisplayInRect:[self _frameForRowOfItemAtIndex:index]];
-}
-
-- (NSDragOperation) draggingUpdated: (id<NSDraggingInfo>)sender
+- (NSDragOperation) _draggingEnteredOrUpdated: (id<NSDraggingInfo>)sender
 {
   NSDragOperation result = NSDragOperationNone;
   
@@ -1039,9 +1030,9 @@ static NSString *placeholderItem = nil;
     {
 	  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
       int index = [self _indexAtPoint:location];
+	  index = (index > [_items count] - 1) ? [_items count] - 1 : index;
 	  _draggingOnIndex = index;
       [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:index]];
-	  //NSLog (@">>> DRAGGING OVER INDEX %d", index);
 	  
 	  NSInteger *proposedIndex = (NSInteger *)index;
 
@@ -1052,6 +1043,22 @@ static NSString *placeholderItem = nil;
 	}
 	
   return result;
+}
+
+- (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
+{
+  return [self _draggingEnteredOrUpdated:sender];
+}
+
+- (void) draggingExited: (id<NSDraggingInfo>)sender
+{
+  [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:_draggingOnIndex]];
+  _draggingOnIndex = NSNotFound;
+}
+
+- (NSDragOperation) draggingUpdated: (id<NSDraggingInfo>)sender
+{
+  return [self _draggingEnteredOrUpdated:sender];
 }
 
 - (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender

@@ -89,6 +89,7 @@
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
   _selected = nil;
+  _original_nextKeyView = nil;
   RELEASE(_items);
   RELEASE(_font);
   [super dealloc];
@@ -273,24 +274,30 @@
 
       if (selectedView != nil)
         {
-	  NSView *firstResponder;
+	       NSView *firstResponder;
 
           [self addSubview: selectedView];
-          // FIXME: We should not change this mask
+          
+		  // FIXME: We should not change this mask
           [selectedView setAutoresizingMask:
-	    NSViewWidthSizable | NSViewHeightSizable];
+	      NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
-	  firstResponder = [_selected initialFirstResponder];
-	  if (firstResponder == nil)
-	    {
-	      firstResponder = [_selected view];
-	      [_selected setInitialFirstResponder: firstResponder];
-	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
-		_original_nextKeyView];
-	    }
-	  [self setNextKeyView: firstResponder];
+	      firstResponder = [_selected initialFirstResponder];
+		  
+	      if (firstResponder == nil)
+	        {
+	          firstResponder = [_selected view];
+	          [_selected setInitialFirstResponder: firstResponder];
+	          [firstResponder _setUpKeyViewLoopWithNextKeyView:_original_nextKeyView];
+	        }
+
+  		  [super setNextKeyView: firstResponder];
           [_window makeFirstResponder: firstResponder];
         }
+	  else
+	    {
+		  [super setNextKeyView:_original_nextKeyView];
+		}
       
       /* Will need to redraw tabs and content area. */
       [self setNeedsDisplay: YES];

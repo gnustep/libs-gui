@@ -109,7 +109,7 @@
 - (void)setRepresentedObject:(id)anObject
 {
   [super setRepresentedObject:anObject];
-  [textField setStringValue:[self representedObject]];
+  //[textField setStringValue:[self representedObject]];
 }
 
 - (NSTextField *)textField

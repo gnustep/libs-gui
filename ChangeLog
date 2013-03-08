@@ -1,3 +1,7 @@
+2013-03-08  Frank Le Grand <frank.legrand@testplant.com>
+	* Source\NSCollectionView.m: Implemented drag & drop.
+	* Source\NSTabView.m: Fixed a bug where the nextKeyView was being set a dealloc'd view in some cases.
+	
 2013-02-28  Frank Le Grand <frank.legrand@testplant.com>
     Continued work on Collection View: Applied more GNUstep coding standards (including
 	the use of macros), implemented selection.
