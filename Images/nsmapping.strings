@@ -32,3 +32,4 @@ NSComputer = common_Root_PC;
 NSStopProgressTemplate = GSStop;
 NSFontPanel = common_ToolbarShowFontsItem;
 NSFolder = common_Folder;
+NSInfo = common_Info;

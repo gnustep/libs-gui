@@ -1,3 +1,10 @@
+2013-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Images/GNUmakefile:
+	* Images/nsmapping.strings:
+	* Images/common_Info.svg:
+	* Images/common_Info.tiff: Add NSInfo image.
+
 2013-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSSavePanel/setDelegate_reload.m: Rewrite to remove

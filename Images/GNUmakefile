@@ -79,6 +79,7 @@ Images_RESOURCE_FILES = \
  common_Home.tiff \
  common_HomeDirectory.tiff \
  common_ImageFolder.tiff \
+ common_Info.tiff\
  common_LeftTabStop.tiff \
  common_LibraryFolder.tiff \
  common_MiniWindowTile.tiff \
