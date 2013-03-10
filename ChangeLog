@@ -1,3 +1,9 @@
+2013-03-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibLoading.m (NSCustomView -nibInstantiateWithCoder:):
+	Re-add call to -replaceObject:withObject: on decoder, but this
+	time in the right place.
+
 2013-03-09  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images/GNUmakefile:
