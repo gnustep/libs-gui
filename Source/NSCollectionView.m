@@ -1032,14 +1032,23 @@ static NSString *placeholderItem = nil;
       int index = [self _indexAtPoint:location];
 	  index = (index > [_items count] - 1) ? [_items count] - 1 : index;
 	  _draggingOnIndex = index;
-      [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:index]];
 	  
-	  NSInteger *proposedIndex = (NSInteger *)index;
+	  NSInteger *proposedIndex = &index;
+	  int dropOperationInt = NSCollectionViewDropOn;
+	  NSCollectionViewDropOperation *dropOperation = &dropOperationInt;
 
+	  // TODO: We currently don't do anything with the proposedIndex & dropOperation that
+	  // may get altered by the delegate.
 	  result = [delegate collectionView:self
 	                       validateDrop:sender
 				          proposedIndex:proposedIndex
-			     	      dropOperation:NSCollectionViewDropOn];
+			     	      dropOperation:dropOperation];
+	  
+	  if (result == NSDragOperationNone)
+	    {
+		  _draggingOnIndex = NSNotFound;
+		}
+      [self setNeedsDisplayInRect:[self _frameForRowsAroundItemAtIndex:index]];
 	}
 	
   return result;
@@ -1072,12 +1081,17 @@ static NSString *placeholderItem = nil;
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
+  NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
+  int index = [self _indexAtPoint:location];
+  index = (index > [_items count] - 1) ? [_items count] - 1 : index;
+
   BOOL result = NO;
   if ([delegate respondsToSelector:@selector(collectionView:acceptDrop:index:dropOperation:)])
     {
+	  // TODO: dropOperation should be retrieved from the validateDrop delegate method.
 	  result = [delegate collectionView:self
 	                         acceptDrop:sender
-							      index:0 //FIXME
+							      index:index
 						  dropOperation:NSCollectionViewDropOn];
 	}
   return result;
