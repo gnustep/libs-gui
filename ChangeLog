@@ -1,3 +1,8 @@
+2013-03-13  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
+
+	* Source\NSWorkspace.m: Log instead of raise fatal exceptions when unable to obtain a 
+	Distributed lock during application launch notification.	
+
 2013-03-08  Frank Le Grand <frank.legrand@testplant.com>
 	* Source\NSCollectionView.m: Implemented drag & drop.
 	* Source\NSTabView.m: Fixed a bug where the nextKeyView was being set a dealloc'd view in some cases.

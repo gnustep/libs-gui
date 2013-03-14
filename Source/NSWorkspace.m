@@ -148,6 +148,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 	  NS_HANDLER
 	    {
               NSLog(@"Unable to break lock %@ ... %@", lock, localException);
+			  return nil;
 	    }
 	  NS_ENDHANDLER
         }
@@ -246,8 +247,18 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     {
       [file writeToFile: path atomically: YES];
     }
-  [lock unlock];
 
+  NS_DURING
+    {
+	   [lock unlock];
+	}
+  NS_HANDLER
+    {
+      NSLog(@"Unable to un-lock %@ ... %@", lock, localException);
+      return nil;
+    }
+  NS_ENDHANDLER
+  
   if (active == YES)
     {
       NSString	*activeName = [file objectForKey: @"GSActive"];
@@ -777,7 +788,7 @@ static NSString			*_rootPath = @"/";
       unichar *buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
       [fullPath getCharacters: buffer range: NSMakeRange(0, [fullPath length])];
       buffer[[fullPath length]] = 0;
-      BOOL success = (ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
+      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
                                     NULL, SW_SHOWNORMAL) > 32);
       free(buffer);
       return success;
@@ -1868,7 +1879,7 @@ launchIdentifiers: (NSArray **)identifiers
 	  end++;
 	}
       len = (end - ptr);
-      path = [mgr stringWithFileSystemRepresentation: ptr length: len];
+      path = [mgr stringWithFileSystemRepresentation: (const char *)ptr length: len];
       [names addObject: path];
     }
   if (base != buf)
