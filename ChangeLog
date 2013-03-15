@@ -1,3 +1,8 @@
+2013-03-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m: Use new method -_isCellSelectableColumn:row:,
+	that checks the cells selectable state, in -mouseDown:.
+
 2013-03-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSNibLoading.m (NSCustomView -nibInstantiateWithCoder:):

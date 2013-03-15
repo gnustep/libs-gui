@@ -143,6 +143,8 @@ typedef struct _tableViewFlags
 
 - (BOOL) _isEditableColumn: (int)columnIndex
                        row: (int)rowIndex;
+- (BOOL) _isCellSelectableColumn: (int)columnIndex
+                             row: (int)rowIndex;
 - (BOOL) _isCellEditableColumn: (int)columnIndex
 			   row: (int)rowIndex;
 - (int) _numRows;
@@ -3585,12 +3587,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  return;
 	}
 
-      if (![self _isEditableColumn: _clickedColumn row: _clickedRow])
+      if (![self _isCellSelectableColumn: _clickedColumn row: _clickedRow])
         {
 	  // Send double-action but don't edit
 	  [self _trackCellAtColumn: _clickedColumn
-			    row: _clickedRow
-			    withEvent: theEvent];
+                               row: _clickedRow
+                         withEvent: theEvent];
 	  if (_clickedRow != -1)
 	    [self sendAction: _doubleAction to: _target];
 	}
@@ -6577,6 +6579,21 @@ For a more detailed explanation, -setSortDescriptors:. */
 
   return [tableColumn isEditable] && [self _shouldEditTableColumn: tableColumn
                                                               row: rowIndex];
+}
+
+- (BOOL) _isCellSelectableColumn: (int) columnIndex
+                             row: (int) rowIndex
+{
+  if (![self _isEditableColumn: columnIndex row: rowIndex])
+    {
+      return NO;
+    }
+  else
+    {
+      NSCell *cell = [self preparedCellAtColumn: columnIndex row: rowIndex];
+
+      return [cell isSelectable];
+    }
 }
 
 - (BOOL) _isCellEditableColumn: (int) columnIndex
