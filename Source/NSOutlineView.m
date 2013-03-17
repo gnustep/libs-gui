@@ -966,6 +966,7 @@ static NSImage *unexpandable  = nil;
       if (i == _editedColumn && rowIndex == _editedRow)
         {
           [cell _setInEditing: YES];
+          [cell setShowsFirstResponder: YES];
         }
       [self _willDisplayCell: cell
             forTableColumn: tb
@@ -1033,7 +1034,10 @@ static NSImage *unexpandable  = nil;
 
       [cell drawWithFrame: drawingRect inView: self];
       if (i == _editedColumn && rowIndex == _editedRow)
-        [cell _setInEditing: NO];
+        {
+          [cell _setInEditing: NO];
+          [cell setShowsFirstResponder: NO];
+        }
     }
 }
 

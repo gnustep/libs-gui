@@ -27,9 +27,11 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSString.h>
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSView.h"
 #import "AppKit/NSViewController.h"
 
 
@@ -60,7 +62,8 @@
   DESTROY(_editors);
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
-  
+  DESTROY(view);
+
   [super dealloc];
 }
 
@@ -95,7 +98,10 @@
 
 - (void)setView:(NSView *)aView
 {
-  view = aView;
+  if (view != aView)
+    {
+      ASSIGN(view, aView);
+    }
 }
 
 - (void)loadView
@@ -137,6 +143,42 @@
   return _nibBundle;
 }
 
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    {
+      return nil;
+    }
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSView *aView = [aDecoder decodeObjectForKey: @"NSView"];
+      [self setView: aView];
+    }
+  else
+    {
+      NSView *aView;
+
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &aView];
+      [self setView: aView];
+    }
+  return self;
+}
+  	 
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self view] forKey: @"NSView"];
+    }
+  else
+    {
+      [aCoder encodeObject: [self view]];
+    }
+}
 @end
 
 @implementation NSViewController (NSEditorRegistration)

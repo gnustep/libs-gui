@@ -1,5 +1,12 @@
 2013-03-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSViewController.m: Retain the view.
+	* Source/NSOutline.m(-drawRow:clipRect:): The selected cell shows
+	its first responder state.
+	Patch by Frank LeGrand <frank.legrand@testplant.com>
+
+2013-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSEvent.m,
 	* Source/NSParagraphStyle.m: Use NSInteger instead of enumerator
 	type name for decoding and encoding.
