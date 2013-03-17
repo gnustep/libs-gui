@@ -42,7 +42,7 @@
 - (void) orderFrontDataLinkPanel: (id)sender;
 @end
 
-@interface NSDataLinkPanel : NSPanel <NSCoding>
+@interface NSDataLinkPanel : NSPanel
 {
   // Outlets
   id _sourceField;

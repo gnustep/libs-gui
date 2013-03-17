@@ -1,3 +1,23 @@
+2013-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSEvent.m,
+	* Source/NSParagraphStyle.m: Use NSInteger instead of enumerator
+	type name for decoding and encoding.
+	* Header/AppKit/NSFontPanel.h,
+	* Header/AppKit/NSOpenPanel.h,
+	* Header/AppKit/NSDataLinkPanel.h,
+	* Source/NSDataLinkPanel.m,
+	* Header/AppKit/NSForm.h,
+	* Source/NSForm.m,
+	* Header/AppKit/NSHelpPanel.h,
+	* Source/NSHelpPanel.m,
+	* Source/NSColorPanel.m: Remove unused encoding/decoding methods.
+	* Source/NSCustomImageRep.m,
+	* Source/NSEPSImageRep.m,
+	* Source/NSMovie.m,
+	* Source/NSRulerMarker.m,
+	* Source/NSColorList.m: Flag missing keyed encoding/decoding.
+
 2013-03-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m: Use new method -_isCellSelectableColumn:row:,

@@ -704,7 +704,7 @@ static const char *eventTypes[] = {
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(NSEventType) at: &event_type];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &event_type];
       [aCoder encodePoint: location_point];
       [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
       [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
@@ -794,7 +794,7 @@ static const char *eventTypes[] = {
     {
       int version = [aDecoder versionForClassName: @"NSEvent"];
       
-      [aDecoder decodeValueOfObjCType: @encode(NSEventType) at: &event_type];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &event_type];
       location_point = [aDecoder decodePoint];
       [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
       [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];

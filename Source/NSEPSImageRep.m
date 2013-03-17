@@ -129,16 +129,29 @@
   NSData *data = [self EPSRepresentation];
 
   [super encodeWithCoder: aCoder];
-  [data encodeWithCoder: aCoder];
-
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [data encodeWithCoder: aCoder];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSData	*data;
+  NSData *data = nil;
 
   self = [super initWithCoder: aDecoder];
-  data = [aDecoder decodeObject];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      data = [aDecoder decodeObject];
+    }
   return [self initWithData: data];
 }
 

@@ -214,21 +214,4 @@ static NSHelpPanel	*_sharedPanel = nil;
 {
 }
 
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  self = [super initWithCoder: aDecoder];
-  if (nil == self)
-    return nil;
-
-  return self;
-}
-
 @end

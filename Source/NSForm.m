@@ -410,18 +410,4 @@ static Class defaultCellClass = nil;
   [self selectTextAtRow: index column: 0];
 }
 
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  self = [super initWithCoder: aDecoder];
-  if (nil == self)
-    return nil;
-
-  return self;
-}
-
 @end

@@ -36,7 +36,7 @@
 @class NSFormCell;
 @class NSFont;
 
-@interface NSForm : NSMatrix <NSCoding>
+@interface NSForm : NSMatrix
 {
   BOOL _title_width_needs_update;
 }

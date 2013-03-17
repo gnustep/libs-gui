@@ -42,7 +42,7 @@
 - (void) orderFrontHelpPanel: (id)sender;
 @end
 
-@interface NSHelpPanel : NSPanel <NSCoding>
+@interface NSHelpPanel : NSPanel
 {
   // Attributes
 }

@@ -181,10 +181,10 @@
   if ([aCoder allowsKeyedCoding])
     {
       _location = [aCoder decodeFloatForKey: @"NSLocation"];
-   }
+    }
   else
     {
-        // FIXME
+      // FIXME
     }
   return self;
 }
@@ -197,7 +197,7 @@
     }
   else
     {
-        // FIXME
+      // FIXME
     }
 }
 
@@ -468,9 +468,9 @@ static NSParagraphStyle	*defaultStyle = nil;
     }
   else
     {
-      unsigned	count;
+      NSUInteger count;
       
-      [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+      [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_alignment];
       [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_lineBreakMode];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_headIndent];
@@ -483,18 +483,18 @@ static NSParagraphStyle	*defaultStyle = nil;
       /*
        *	Tab stops don't conform to NSCoding - so we do it the long way.
        */
-      [aCoder decodeValueOfObjCType: @encode(unsigned) at: &count];
+      [aCoder decodeValueOfObjCType: @encode(NSUInteger) at: &count];
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
         {
-          float		locations[count];
-          NSTextTabType	types[count];
-          unsigned		i;
+          float locations[count];
+          NSTextTabType types[count];
+          NSUInteger i;
           
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+          [aCoder decodeArrayOfObjCType: @encode(NSInteger)
                   count: count
                   at: types];
           for (i = 0; i < count; i++)
@@ -510,7 +510,7 @@ static NSParagraphStyle	*defaultStyle = nil;
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
         {
-          [aCoder decodeValueOfObjCType: @encode(NSWritingDirection) at: &_baseDirection];
+          [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_baseDirection];
         }
     }
 
@@ -525,9 +525,9 @@ static NSParagraphStyle	*defaultStyle = nil;
     }
   else
     {
-      unsigned	count;
+      NSUInteger count;
       
-      [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_alignment];
       [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_lineBreakMode];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
       [aCoder encodeValueOfObjCType: @encode(float) at: &_headIndent];
@@ -541,12 +541,12 @@ static NSParagraphStyle	*defaultStyle = nil;
        *	Tab stops don't conform to NSCoding - so we do it the long way.
        */
       count = [_tabStops count];
-      [aCoder encodeValueOfObjCType: @encode(unsigned) at: &count];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &count];
       if (count > 0)
         {
-          float		locations[count];
-          NSTextTabType	types[count];
-          unsigned		i;
+          float locations[count];
+          NSTextTabType types[count];
+          NSUInteger i;
           
           for (i = 0; i < count; i++)
             {
@@ -558,12 +558,12 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder encodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
+          [aCoder encodeArrayOfObjCType: @encode(NSInteger)
                   count: count
                   at: types];
         }
       
-      [aCoder encodeValueOfObjCType: @encode(NSWritingDirection) at: &_baseDirection];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_baseDirection];
     }
 }
 

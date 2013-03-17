@@ -540,25 +540,38 @@
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _rulerView];
-  [aCoder encodeObject: _image];
-  [aCoder encodeConditionalObject: _representedObject];
-  [aCoder encodePoint: _imageOrigin];
-  [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_location];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _rulerView];
+      [aCoder encodeObject: _image];
+      [aCoder encodeConditionalObject: _representedObject];
+      [aCoder encodePoint: _imageOrigin];
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_location];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  _rulerView = [aDecoder decodeObject];
-  _image = [aDecoder decodeObject];
-  _representedObject = [aDecoder decodeObject];
-  _imageOrigin = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_location];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      _rulerView = [aDecoder decodeObject];
+      _image = [aDecoder decodeObject];
+      _representedObject = [aDecoder decodeObject];
+      _imageOrigin = [aDecoder decodePoint];
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_location];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+    }
   return self;
 }
 

@@ -154,17 +154,31 @@
 {
   [super encodeWithCoder: aCoder];
 
-  // FIXME: Should this be changed to encodeConditionalObject: ?
-  [aCoder encodeObject: _delegate];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_selector];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      // FIXME: Should this be changed to encodeConditionalObject: ?
+      [aCoder encodeObject: _delegate];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_selector];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_delegate];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_selector];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_delegate];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_selector];
+    }
   return self;
 }
 
