@@ -1,3 +1,10 @@
+2013-03-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tests/gui/NSImage/basic.m: Add basic tests for NSImage.
+	* Tests/gui/NSCell/basic.m: Extend basic tests for NSCell.
+	* Source/NSImage.m: Try to correct keyed encoding/decoding. Add
+	incomplete isEqual: method.
+
 2013-03-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSViewController.m: Retain the view.

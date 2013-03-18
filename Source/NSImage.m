@@ -446,6 +446,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return copy;
 }
 
+- (BOOL) isEqual: (id)anObject
+{
+  if (self == anObject)
+    return YES;
+  if (![anObject isKindOfClass: [NSImage class]])
+    return NO;
+
+  // FIXME
+  return NO;
+}
+
 /* This methd sets the name of an image, updating the global name dictionary
  * to point to the image (or removing an image from the dictionary if the
  * new name is nil).
@@ -1540,8 +1551,8 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 
   if ([coder allowsKeyedCoding])
     {
-      // FIXME: Not sure this is the way it goes...
-      /*
+      int flags = 0;
+
       if (_flags.archiveByName == NO)
         {
           NSMutableArray *container = [NSMutableArray array];
@@ -1549,24 +1560,41 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           NSEnumerator *en = [_reps objectEnumerator];
           GSRepData *rd = nil;
 
-          // add the reps to the container...
-          [container addObject: reps];
-          while ((rd = [en nextObject]) != nil)
+          if ([_reps count] > 0)
             {
-              [reps addObject: rd->rep];
+              [reps addObject: [NSNumber numberWithInt: 0]];
+              while ((rd = [en nextObject]) != nil)
+                {
+                  [reps addObject: rd->rep];
+                }
+
+              // add the reps to the container...
+              [container addObject: reps];
+              [coder encodeObject: container forKey: @"NSReps"];
             }
-          [coder encodeObject: container forKey: @"NSReps"];
         }
       else
         {
-          [coder encodeObject: _name forKey: @"NSImageName"];
+          [coder encodeObject: _name forKey: @"NSName"];
         }
-      */
 
       // encode the rest...
-      [coder encodeObject: _color forKey: @"NSColor"];
-      [coder encodeInt: 0 forKey: @"NSImageFlags"]; // zero...
-      [coder encodeSize: _size forKey: @"NSSize"];
+      if (_color != nil)
+        {
+          [coder encodeObject: _color forKey: @"NSColor"];
+        }
+      flags |= [self scalesWhenResized] ? 0x8000000 : 0;
+      flags |= _flags.sizeWasExplicitlySet ? 0x2000000 : 0;
+      flags |= [self usesEPSOnResolutionMismatch] ? 0x0200000 : 0;
+      flags |= [self prefersColorMatch] ? 0x0100000 : 0;
+      flags |= [self matchesOnMultipleResolution] ? 0x0080000 : 0;
+      flags |= [self isFlipped] ? 0x0008000 : 0;
+      flags |= [self cacheMode] << 11;
+      [coder encodeInt: flags forKey: @"NSImageFlags"];
+      if (_flags.sizeWasExplicitlySet)
+        {
+          [coder encodeSize: _size forKey: @"NSSize"];
+        }
     }
   else
     {
@@ -1635,51 +1663,68 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   if ([coder allowsKeyedCoding])
     {
+      if ([coder containsValueForKey: @"NSName"])
+        {
+          RELEASE(self);
+          return RETAIN([NSImage imageNamed: [coder decodeObjectForKey: @"NSName"]]);
+        }
       if ([coder containsValueForKey: @"NSColor"])
         {
           [self setBackgroundColor: [coder decodeObjectForKey: @"NSColor"]];
         }
       if ([coder containsValueForKey: @"NSImageFlags"])
         {
-          //FIXME
-          //int flags = [coder decodeIntForKey: @"NSImageFlags"];
+          int flags = [coder decodeIntForKey: @"NSImageFlags"];
+
+          [self setScalesWhenResized: ((flags & 0x8000000) != 0)];
+          // _flags.sizeWasExplicitlySet = ((flags & 0x2000000) != 0);
+          [self setUsesEPSOnResolutionMismatch: ((flags & 0x0200000) != 0)];
+          [self setPrefersColorMatch: ((flags & 0x0100000) != 0)];
+          [self setMatchesOnMultipleResolution: ((flags & 0x0080000) != 0)];
+          [self setFlipped: ((flags & 0x0008000) != 0)];
+          // ALIASED ((flags & 0x0004000) != 0)
+          [self setCacheMode: ((flags & 0x0001800) >> 11)];
         }
       if ([coder containsValueForKey: @"NSReps"])
         {
           NSArray *reps;
+          NSUInteger i;
 
           // FIXME: NSReps is in a strange format. It is a mutable array with one 
           // element which is an array with a first element 0 and than the image rep.  
           reps = [coder decodeObjectForKey: @"NSReps"];
           reps = [reps objectAtIndex: 0];
-	  id rep = [reps objectAtIndex: 1];
-	  if ([rep isKindOfClass: [NSImageRep class]])
-	    { 
-	      [self addRepresentation: rep];
-	    }
-	  else
-	    {
-	      if ([rep isKindOfClass: [NSURL class]])
-		{
-                  NSURL *tmp = (NSURL*)rep;
-		  rep = [NSImageRep imageRepWithContentsOfURL: rep];
-
-		  // If we are unable to resolved the URL, try to get it from the 
-		  // resources folder.
-		  if (rep == nil)
-		    {
-		      NSString *fileName = [[tmp absoluteString] lastPathComponent];
-		      NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
-		      rep = [NSImageRep imageRepWithContentsOfFile: path];
-		    }
-
-		  // If the representation was found, add it...
-		  if (rep != nil)
-		    {
-		      [self addRepresentation: rep];
-		    }
-		}
-	    }
+          for (i = 1; i < [reps count]; i++)
+            {
+              id rep = [reps objectAtIndex: i];
+              if ([rep isKindOfClass: [NSImageRep class]])
+                { 
+                  [self addRepresentation: rep];
+                }
+              else
+                {
+                  if ([rep isKindOfClass: [NSURL class]])
+                    {
+                      NSURL *tmp = (NSURL*)rep;
+                      rep = [NSImageRep imageRepWithContentsOfURL: rep];
+                      
+                      // If we are unable to resolved the URL, try to get it from the 
+                      // resources folder.
+                      if (rep == nil)
+                        {
+                          NSString *fileName = [[tmp absoluteString] lastPathComponent];
+                          NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
+                          rep = [NSImageRep imageRepWithContentsOfFile: path];
+                        }
+                      
+                      // If the representation was found, add it...
+                      if (rep != nil)
+                        {
+                          [self addRepresentation: rep];
+                        }
+                    }
+                }
+            }
         }
       if ([coder containsValueForKey: @"NSSize"])
         {
