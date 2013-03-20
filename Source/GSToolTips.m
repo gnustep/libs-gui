@@ -238,7 +238,8 @@ static BOOL		restoreMouseMoved;
     [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
   [window setReleasedWhenClosed: NO];
   [window setExcludedFromWindowsMenu: YES];
-  [window setLevel: NSStatusWindowLevel];
+  //  [window setLevel: NSStatusWindowLevel];
+  [window setLevel: NSPopUpMenuWindowLevel];
   [window setAutodisplay: NO];
 }
 

@@ -1,3 +1,9 @@
+2013-03-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSToolTips.m (+initialize): Set the level of the tool tip
+	window to NSPopUpMenuWindowLevel.
+	Change suggested by Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 2013-03-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSImage/basic.m: Add basic tests for NSImage.
