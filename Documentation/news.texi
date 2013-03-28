@@ -9,6 +9,12 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.23.1}
+
+This is a bugfix release, primarily to deal with coding/archiving issues.
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.22.0}
 
 New features include:
@@ -20,8 +26,6 @@ New features include:
 @end itemize
 
 Many NSImage improvements (Mac OS X 10.6 drawing methods, better selection of image reps, better support for icons). Many bugfixes, including in Xib loading, printing, and NSView geometry.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.20.0}
 

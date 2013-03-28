@@ -1,3 +1,9 @@
+2013-03-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+        Make release
+        * Version 0.23.1
+        * Update release notes
+
 2013-03-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSToolTips.m (+initialize): Set the level of the tool tip

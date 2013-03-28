@@ -21,6 +21,14 @@
       </p>
 
      <section>
+      	<heading>0.23.1</heading>
+	<p>This is a bugfix release containint many minor bugfixes, but
+        most importantly fixing some coding/archiving bugs introduced in
+        in the NSInteger,NSUInteger,CGFloat changes.
+        </p>
+     </section>
+
+     <section>
       	<heading>0.23.0</heading>
 	<p>
 	  This is a major new stable release of GUI.
