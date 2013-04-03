@@ -1,3 +1,8 @@
+2013-04-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+GIF.m (-_bitmapIsGIF:): Prepare for
+	additional argument to function DGifOpen in newer libgif versions.
+
 2013-03-28  Richard Frith-Macdonald <rfm@gnu.org>
 
         Make release

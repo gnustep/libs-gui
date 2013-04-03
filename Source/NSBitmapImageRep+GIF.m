@@ -142,7 +142,11 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
     }
 
   gs_gif_init_input_source(&src, imageData);
+#if GIFLIB_MAJOR >= 5
+  file = DGifOpen(&src, gs_gif_input, NULL);
+#else
   file = DGifOpen(&src, gs_gif_input);
+#endif
   if (file == NULL)
     {
       /* we do not use giferror here because it doesn't
