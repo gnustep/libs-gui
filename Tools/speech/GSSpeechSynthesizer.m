@@ -129,7 +129,7 @@ static int clients;
   if (clients == 0)
     {
       [NSTimer scheduledTimerWithTimeInterval: 600
-                                       target: object_getClass()
+                                       target: object_getClass(self)
                                      selector: @selector(exitIfUnneeded:)
                                      userInfo: nil
                                       repeats: NO];
