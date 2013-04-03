@@ -1,5 +1,10 @@
 2013-04-03  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tools/speech/GSSpeechSynthesizer.m: Use object_getClass()
+	instead of isa. Make exitIfUnneeded: a class method. Reformat code.
+
+2013-04-03  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBitmapImageRep+GIF.m (-_bitmapIsGIF:): Prepare for
 	additional argument to function DGifOpen in newer libgif versions.
 
