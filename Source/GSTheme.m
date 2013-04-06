@@ -208,6 +208,7 @@ GSStringFromBorderType(NSBorderType borderType)
 
 @interface	NSImage (Private)
 + (void) _setImagePath: (NSString*)path name: (NSString*)name;
++ (NSDictionary *) _nameToPathDictionaryWithMappings: (NSDictionary*)pathForName;
 @end
 
 @interface	GSTheme (Private)
@@ -452,7 +453,10 @@ typedef	struct {
   NSDictionary		*infoDict;
   NSWindow		*window;
   GSThemeControlState	state;
-  
+  NSMutableDictionary   *themeImagePathForName;
+  NSDictionary          *themeImagePathForNameWithMappings;
+  NSString              *imageName;
+
   NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
   /* Get rid of any cached colors list so that we regenerate it when needed
    */
@@ -473,6 +477,7 @@ typedef	struct {
   imagePaths = [_bundle pathsForResourcesOfType: nil
 				    inDirectory: @"ThemeImages"];
   enumerator = [imagePaths objectEnumerator];
+  themeImagePathForName = [[NSMutableDictionary alloc] init];
   while ((imagePath = [enumerator nextObject]) != nil)
     {
       NSString	*ext = [imagePath pathExtension];
@@ -483,10 +488,28 @@ typedef	struct {
 
 	  imageName = [imagePath lastPathComponent];
 	  imageName = [imageName stringByDeletingPathExtension];
-	  [_imageNames addObject: imageName];
-	  [NSImage _setImagePath: imagePath name: imageName];
+	  [themeImagePathForName setObject: imagePath forKey: imageName];
 	}
     }
+
+  /* 
+   * "Expand" the themeImagePathForName dictionary by applying the
+   * mappings in nsmappings.strings. 
+   * 
+   * e.g. if the theme defines 
+   * common_3DArrowRight but not NSMenuArrow, this will add an entry
+   * for NSMenuArrow pointing at the common_3DArrowRight path.
+   */
+  themeImagePathForNameWithMappings = [NSImage _nameToPathDictionaryWithMappings: themeImagePathForName];
+  DESTROY(themeImagePathForName);
+
+  enumerator = [themeImagePathForNameWithMappings keyEnumerator];
+  while ((imageName = [enumerator nextObject]) != nil)
+    {
+      imagePath = [themeImagePathForNameWithMappings objectForKey: imageName];
+      [NSImage _setImagePath: imagePath name: imageName];
+      [_imageNames addObject: imageName];
+    }  
 
   /*
    * Use the GSThemeDomain key in the info dictionary of the theme to

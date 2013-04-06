@@ -120,6 +120,7 @@ BOOL NSImageForceCaching = NO; /* use on missmatch */
 static NSRecursiveLock		*imageLock = nil;
 static NSMutableDictionary	*nameDict = nil;
 static NSDictionary		*nsmapping = nil;
+static NSMutableDictionary      *nsmapping_inverse = nil;
 static NSColor			*clearColor = nil;
 static Class cachedClass = 0;
 static Class bitmapClass = 0;
@@ -154,6 +155,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
++ (NSDictionary *) _nameToPathDictionaryWithMappings: (NSDictionary*)pathForName;
 + (void) _setImagePath: (NSString*)path name: (NSString*)name;
 + (NSString *) _pathForImageNamed: (NSString *)aName;
 - (BOOL) _useFromFile: (NSString *)fileName;
@@ -184,8 +186,31 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 				       ofType: @"strings"
 				  inDirectory: @"Images"];
       if (path)
-        nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
+	{
+	  NSEnumerator *e;
+	  NSString *nsName;
+
+	  // read NS image name to GS image name mapping
+	  nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
                                propertyListFromStringsFileFormat]);
+
+	  // create a GS image name to array of NS image names dict
+	  nsmapping_inverse = [[NSMutableDictionary alloc] init];
+
+	  e = [nsmapping keyEnumerator];	  
+	  while ((nsName = [e nextObject]) != nil)
+	    {
+	      NSString *gsName = [nsmapping objectForKey: nsName];
+	      
+	      NSMutableArray *nsNames = [nsmapping_inverse objectForKey: gsName];
+	      if (nsNames == nil)
+		{
+		  nsNames = [NSMutableArray array];
+		  [nsmapping_inverse setObject: nsNames forKey: gsName];
+		}
+	      [nsNames addObject: nsName];
+	    }
+	}
       clearColor = RETAIN([NSColor clearColor]);
       cachedClass = [NSCachedImageRep class];
       bitmapClass = [NSBitmapImageRep class];
@@ -1908,7 +1933,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	}
       [image setName: name];
     }
-  else
+  else if (image != nil)
     {
       if (nil == path)
 	{
@@ -1923,6 +1948,36 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	}
     }
   [imageLock unlock];
+}
+
+/**
+ * Expands a name->path dictionary by applying all of the nsmappings.strings
+ * mappings.
+ */
++ (NSDictionary *) _nameToPathDictionaryWithMappings: (NSDictionary*)pathForName
+{
+  NSMutableDictionary *finalDict = [NSMutableDictionary dictionaryWithDictionary: pathForName];
+  NSEnumerator *e;
+  NSString *name;
+
+  e = [pathForName keyEnumerator];
+  while ((name = [e nextObject]) != nil)
+    {
+      NSString *path = [pathForName objectForKey: name];
+      NSEnumerator *namesMappedToNameEnumerator;
+      NSString *mappedName;
+
+      namesMappedToNameEnumerator = [[nsmapping_inverse objectForKey: name] objectEnumerator];
+      while ((mappedName = [namesMappedToNameEnumerator nextObject]) != nil)
+	{
+	  if ([pathForName objectForKey: mappedName] == nil)
+	    {
+	      [finalDict setObject: path forKey: mappedName];
+	    }
+	}
+    }
+  
+  return finalDict;
 }
 
 + (NSString *) _pathForImageNamed: (NSString *)aName

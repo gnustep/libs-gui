@@ -1,3 +1,10 @@
+2013-04-06  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
+	* Source/NSImage.m: Allow themes to override only a "base" image like
+	common_3DArrowRight and have images that map to it (NSMenuArrow)
+	automatically update.
+
 2013-04-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tools/speech/GSSpeechSynthesizer.m: Use object_getClass()
