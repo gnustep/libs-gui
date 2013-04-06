@@ -154,8 +154,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
-+ (void) _setImagePath: (NSString*)path name: (NSString*)name;
 + (NSString *) _pathForImageNamed: (NSString *)aName;
++ (void) _reloadCachedImages;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
@@ -1887,40 +1887,29 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   DESTROY(imagePasteboardTypes);
 }
 
-+ (void) _setImagePath: (NSString*)path name: (NSString*)name
+/**
+ * For all NSImage instances cached in nameDict, recompute the
+ * path using +_pathForImageNamed: and if it has changed,
+ * reload the image contents using the new path.
+ */
++ (void) _reloadCachedImages
 {
-  NSImage	*image;
+  NSString *name;
+  NSEnumerator *e;
 
   [imageLock lock];
-  image = (NSImage*)[nameDict objectForKey: name];
-  if (nil == image && nil != path)
+  e = [nameDict keyEnumerator];
+  while ((name = [e nextObject]) != nil)
     {
-      /* There was no existing image with the given name ...
-       * create a new one.
-       */
-      image = [[[[GSTheme theme] imageClass] alloc]
-	initByReferencingFile: path];
-      if (image != nil)
-	{
-	  [image setName: name];
-	  image->_flags.archiveByName = YES;
-	  AUTORELEASE(image);
-	}
-      [image setName: name];
-    }
-  else
-    {
-      if (nil == path)
-	{
-	  path = [self _pathForImageNamed: name];
-	}
-      if (path != nil && ![path isEqual: image->_fileName])
+      NSImage *image = [nameDict objectForKey: name];
+      NSString *path = [self _pathForImageNamed: name];
+      if (![path isEqual: image->_fileName])
 	{
 	  /* Reset the existing image to use the contents of
 	   * the specified file.
 	   */
 	  [image _resetAndUseFromFile: path];
-	}
+	}      
     }
   [imageLock unlock];
 }
@@ -1977,6 +1966,32 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 				       ofType: o];
 	  if (path != nil && [path length] != 0)
 	    break;
+	}
+    }
+
+  /* If not found then search in the theme */
+  if (!path)
+    {
+      NSBundle *themeBundle = [[GSTheme theme] bundle];
+      if (ext)
+	{
+	  path = [themeBundle pathForResource: realName
+				       ofType: ext
+				  inDirectory: @"ThemeImages"];
+	}
+      else 
+	{
+	  id o, e;
+	  
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
+	    {
+	      path = [themeBundle pathForResource: realName
+					   ofType: o
+				      inDirectory: @"ThemeImages"];
+	      if (path != nil && [path length] != 0)
+		break;
+	    }
 	}
     }
   

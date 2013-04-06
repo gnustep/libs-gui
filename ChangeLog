@@ -1,6 +1,21 @@
 2013-04-06  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:
+	* Source/NSImage.m: Revert previous commit and write a much cleaner
+	implementation that fixes the same bug.
+
+	I removed the step in theme activation where we call
+	+[NSImage _setImagePath:name:] on each image in the theme, and instead
+	modified +[NSImage _pathForImageNamed:] to also search the theme images
+	directory.
+
+	When a GSTheme activates now, it only calls +[NSImage _reloadCachedImages]
+	which checks all NSImage cached by name and reloads any whose path has
+	changed.
+
+2013-04-06  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
 	* Source/NSImage.m: Allow themes to override only a "base" image like
 	common_3DArrowRight and have images that map to it (NSMenuArrow)
 	automatically update.
