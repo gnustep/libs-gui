@@ -682,6 +682,7 @@ NSString *NSAlignmentBinding = @"alignment";
 NSString *NSContentArrayBinding = @"contentArray";
 NSString *NSContentBinding = @"content";
 NSString *NSContentObjectBinding = @"contentObject";
+NSString *NSContentValuesBinding = @"contentValues";
 NSString *NSEditableBinding = @"editable";
 NSString *NSEnabledBinding = @"enabled";
 NSString *NSFontBinding = @"font";
