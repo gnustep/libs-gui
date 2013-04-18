@@ -67,6 +67,7 @@ NSButtonCell.m \
 NSCachedImageRep.m \
 NSCell.m \
 NSClipView.m \
+NSCollectionView.m \
 NSColor.m \
 NSColorList.m \
 NSColorPanel.m \
@@ -278,6 +279,7 @@ NSButtonCell.h \
 NSCachedImageRep.h \
 NSCell.h \
 NSClipView.h \
+NSCollectionView.h \
 NSColor.h \
 NSColorList.h \
 NSColorPanel.h \

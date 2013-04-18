@@ -1,3 +1,17 @@
+2013-04-17 23:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSCollectionView.h
+	* Headers/AppKit/NSCollectionViewItem.h
+	* Source/GNUmakefile
+	* Source/NSCollectionViewItem.m
+	* Source/NSCollectionView.m: Added NSCollectionView and
+	NSCollectionViewItem classes from testplant branch.  Made changes
+	to original patch to conform to coding standards, NSCoding for
+	non-keyed archiving and moved instances of float/integer to
+	CGFloat and NSInteger/NSUInteger as appropriate.
+	Patch by Doug Simons (dsimons@testplant.com) and
+	Frank LeGrand (flegrand@testplant.com).
+
 2013-04-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,
