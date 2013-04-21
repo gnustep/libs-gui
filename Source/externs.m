@@ -434,6 +434,17 @@ NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
 NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
 NSString *NSPopUpButtonCellWillPopUpNotification = @"PopUpButtonCellWillPopUp";
 
+// NSPopover notifications
+NSString *NSPopoverWillShowNotification = @"NSPopoverWillShowNotification";
+NSString *NSPopoverDidShowNotification = @"NSPopoverDidShowNotification";
+NSString *NSPopoverWillCloseNotification = @"NSPopoverWillCloseNotification";
+NSString *NSPopoverDidCloseNotification = @"NSPopoverDidCloseNotification";
+
+// NSPopover keys
+NSString *NSPopoverCloseReasonKey = @"NSPopoverCloseReasonKey";
+NSString *NSPopoverCloseReasonStandard = @"NSPopoverCloseReasonStandard";
+NSString *NSPopoverCloseReasonDetachToWindow = @"NSPopoverCloseReasonDetachToWindow";
+
 // NSTable notifications
 NSString *NSTableViewSelectionDidChangeNotification = @"TableViewSelectionDidChange";
 NSString *NSTableViewColumnDidMoveNotification = @"TableViewColumnDidMove";

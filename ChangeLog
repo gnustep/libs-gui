@@ -1,5 +1,11 @@
 2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSPopover.h,
+	* Source/NSPopover.m: Adjust to GNUstep coding standards.
+	* Source/externs.m: Move new strings to here.
+
+2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/AppKit.h: Add NSCollectionView.h and NSCollectionViewItem.h.
 
 2013-04-21  Fred Kiefer <FredKiefer@gmx.de>

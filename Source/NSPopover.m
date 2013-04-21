@@ -27,161 +27,152 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSNotification.h>
-#include <AppKit/NSPopover.h>
-#include <AppKit/NSViewController.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSNotification.h>
 
-/* Keys */
-NSString *NSPopoverCloseReasonKey = @"NSPopoverCloseReasonKey";
-NSString *NSPopoverCloseReasonStandard = @"NSPopoverCloseReasonStandard";
-NSString *NSPopoverCloseReasonDetachToWindow = @"NSPopoverCloseReasonDetachToWindow";
+#import "AppKit/NSPopover.h"
+#import "AppKit/NSViewController.h"
+#import "AppKit/NSView.h"
 
-/* Notifications */
-NSString *NSPopoverWillShowNotification = @"NSPopoverWillShowNotification";
-NSString *NSPopoverDidShowNotification = @"NSPopoverDidShowNotification";
-NSString *NSPopoverWillCloseNotification = @"NSPopoverWillCloseNotification";
-NSString *NSPopoverDidCloseNotification = @"NSPopoverDidCloseNotification";
 
 /* Class */
 @implementation NSPopover
 
 /* Properties */
-- (void)setAnimates:(BOOL)flag
+- (void) setAnimates: (BOOL)flag
 {
   _animates = flag;
 }
 
-- (BOOL)animates
+- (BOOL) animates
 {
   return _animates;
 }
 
-- (void)setAppearance: (NSPopoverAppearance)value
+- (void) setAppearance: (NSPopoverAppearance)value
 {
   _appearance = value;
 }
 
-- (NSPopoverAppearance)appearance
+- (NSPopoverAppearance) appearance
 {
   return _appearance;
 }
 
-- (void)setBehavior:(NSPopoverBehavior)value
+- (void) setBehavior: (NSPopoverBehavior)value
 {
   _behavior = value;
 }
 
-- (NSPopoverBehavior)behavior
+- (NSPopoverBehavior) behavior
 {
   return _behavior;
 }
 
-- (void)setContentSize:(NSSize)value
+- (void) setContentSize: (NSSize)value
 {
   _contentSize = value;
 }
 
-- (NSSize)contentSize
+- (NSSize) contentSize
 {
   return _contentSize;
 }
 
-- (void)setContentViewController:(NSViewController *)controller
+- (void) setContentViewController: (NSViewController *)controller
 {
-  ASSIGN(_contentViewController,controller);
+  ASSIGN(_contentViewController, controller);
 }
 
-- (NSViewController *)contentViewController
+- (NSViewController *) contentViewController
 {
   return _contentViewController;
 }
 
-- (void)setDelegate:(id<NSPopoverDelegate>)value
+- (void) setDelegate: (id<NSPopoverDelegate>)value
 {
   _delegate = value;
 }
 
-- (id<NSPopoverDelegate>)delegate
+- (id<NSPopoverDelegate>) delegate
 {
   return _delegate;
 }
 
-- (void)setPositioningRect:(NSRect)value
+- (void) setPositioningRect: (NSRect)value
 {
   _positioningRect = value;
 }
 
-- (NSRect)positioningRect
+- (NSRect) positioningRect
 {
   return _positioningRect;
 }
 
-- (BOOL)isShown
+- (BOOL) isShown
 {
   return _shown;
 }
 
 /* Methods */
-- (void)close
+- (void) close
 {
 }
 
-- (IBAction)performClose:(id)sender
+- (IBAction) performClose: (id)sender
 {
 }
 
-- (void)showRelativeToRect:(NSRect)positioningRect
-		    ofView:(NSView *)positioningView 
-	     preferredEdge:(NSRectEdge)preferredEdge
+- (void) showRelativeToRect: (NSRect)positioningRect
+                     ofView: (NSView *)positioningView 
+              preferredEdge: (NSRectEdge)preferredEdge
 {
   // NSLog(@"Test...");
 }
 
-- (id)initWithCoder:(NSCoder *)coder
+- (id) initWithCoder: (NSCoder *)coder
 {
-  if(nil != (self = [super initWithCoder:coder]))
+  if (nil != (self = [super initWithCoder:coder]))
     {
-      if(YES == [coder allowsKeyedCoding])
+      if (YES == [coder allowsKeyedCoding])
 	{
-	  _appearance = [coder decodeIntForKey:@"NSAppearance"];
-	  _behavior   = [coder decodeIntForKey:@"NSBehavior"];
-	  _animates   = [coder decodeBoolForKey:@"NSAnimates"];
-	  _contentSize.width = [coder decodeDoubleForKey:@"NSContentWidth"];
-	  _contentSize.height = [coder decodeDoubleForKey:@"NSContentHeight"];
+	  _appearance = [coder decodeIntForKey: @"NSAppearance"];
+	  _behavior   = [coder decodeIntForKey: @"NSBehavior"];
+	  _animates   = [coder decodeBoolForKey: @"NSAnimates"];
+	  _contentSize.width = [coder decodeDoubleForKey: @"NSContentWidth"];
+	  _contentSize.height = [coder decodeDoubleForKey: @"NSContentHeight"];
 	}
       else
 	{
-	  [coder decodeValueOfObjCType:@encode(NSInteger) at:&_appearance];
-	  [coder decodeValueOfObjCType:@encode(NSInteger) at:&_behavior];
-	  [coder decodeValueOfObjCType:@encode(BOOL) at:&_animates];
-	  [coder decodeValueOfObjCType:@encode(CGFloat) at:&_contentSize.width];
-	  [coder decodeValueOfObjCType:@encode(CGFloat) at:&_contentSize.height];
+	  [coder decodeValueOfObjCType: @encode(NSInteger) at: &_appearance];
+	  [coder decodeValueOfObjCType: @encode(NSInteger) at: &_behavior];
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_animates];
+	  [coder decodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.width];
+	  [coder decodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.height];
 	}
     }
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder:coder];
-  if(YES == [coder allowsKeyedCoding])
+  if (YES == [coder allowsKeyedCoding])
     {
-      [coder encodeInt:_appearance forKey:@"NSAppearance"];
-      [coder encodeInt:_behavior forKey:@"NSBehavior"];
-      [coder encodeBool:_animates forKey:@"NSAnimates"];
-      [coder encodeDouble:_contentSize.width forKey:@"NSContentWidth"];
-      [coder encodeDouble:_contentSize.height forKey:@"NSContentHeight"];
+      [coder encodeInt: _appearance forKey: @"NSAppearance"];
+      [coder encodeInt: _behavior forKey: @"NSBehavior"];
+      [coder encodeBool: _animates forKey: @"NSAnimates"];
+      [coder encodeDouble: _contentSize.width forKey: @"NSContentWidth"];
+      [coder encodeDouble: _contentSize.height forKey: @"NSContentHeight"];
     }
   else
     {
-      [coder encodeValueOfObjCType:@encode(NSInteger) at:&_appearance];
-      [coder encodeValueOfObjCType:@encode(NSInteger) at:&_behavior];
-      [coder encodeValueOfObjCType:@encode(BOOL) at:&_animates];
-      [coder encodeValueOfObjCType:@encode(CGFloat) at:&_contentSize.width];
-      [coder encodeValueOfObjCType:@encode(CGFloat) at:&_contentSize.height];
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &_appearance];
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &_behavior];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_animates];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.width];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.height];
     } 
 }
 @end

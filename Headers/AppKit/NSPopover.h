@@ -106,13 +106,16 @@ typedef NSInteger NSPopoverBehavior;
 @protocol NSPopoverDelegate
 #ifdef __OBJC2__
 @optional
+#else
+@end
+@interface NSObject (NSPopoverDelegate)
+#endif
 - (NSWindow *)detachableWindowForPopover:(NSPopover *)popover;
 - (void)popoverDidClose:(NSNotification *)notification;
 - (void)popoverDidShow:(NSNotification *)notification;
 - (void)popoverShouldClose:(NSNotification *)notification;
 - (void)popoverWillClose:(NSNotification *)notification;
 - (void)popoverWillShow:(NSNotification *)notification;
-#endif
 @end
 
 #endif
