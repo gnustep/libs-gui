@@ -651,6 +651,13 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 #endif
 
 /*
+ * NSApplicationDelegate inherits from GSAppDelegateProtocol to
+ * avoid compiler warnings. 
+ */
+@protocol NSApplicationDelegate <GSAppDelegateProtocol>
+@end
+
+/*
  * Notifications
  */
 APPKIT_EXPORT NSString	*NSApplicationDidBecomeActiveNotification;

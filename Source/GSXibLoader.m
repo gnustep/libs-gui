@@ -1492,6 +1492,10 @@ didStartElement: (NSString*)elementName
   if ([@"object" isEqualToString: elementName])
     {
       NSString *classname = [element attributeForKey: @"class"];
+      if([classname isEqualToString:@"NSCustomView"])
+	{
+	  classname = @"NSView"; // instantiate an NSView instead...
+	}
       return [self decodeObjectForXib: element
                          forClassName: classname
                                withID: objID];

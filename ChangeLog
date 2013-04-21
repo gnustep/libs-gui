@@ -1,3 +1,15 @@
+2013-04-21 09:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add NSPopover.h to set of files
+	included.
+	* Headers/AppKit/NSApplication.h: Add NSApplicationDelegate.
+	Inherit from GSAppDelegateProtocol.
+	* Headers/AppKit/NSPopover.h: NSPopover header.
+	* Source/GNUmakefile: Added NSPopover.[hm]
+	* Source/GSXibLoader.m: Translate NSCustomView to NSView when
+	unarchiving.
+	* Source/NSPopover.m: Skeletal implementation of NSPopover.m.
+
 2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-selectedColumnIndexes, -selectedRowIndexes): Return an

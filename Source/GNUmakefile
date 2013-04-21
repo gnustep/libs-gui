@@ -132,6 +132,7 @@ NSOutlineView.m \
 NSPageLayout.m \
 NSPanel.m \
 NSParagraphStyle.m \
+NSPopover.m \
 NSPopUpButton.m \
 NSPopUpButtonCell.m \
 NSPrinter.m \
@@ -341,6 +342,7 @@ NSPageLayout.h \
 NSPanel.h \
 NSParagraphStyle.h \
 NSPasteboard.h \
+NSPopover.h \
 NSPopUpButton.h \
 NSPopUpButtonCell.h \
 NSPrintInfo.h \
