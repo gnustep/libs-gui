@@ -29,8 +29,9 @@
 #ifndef _GNUstep_H_NSPopover
 #define _GNUstep_H_NSPopover
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSResponder.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSResponder.h>
 
 /* Keys */
 APPKIT_EXPORT NSString *NSPopoverCloseReasonKey;

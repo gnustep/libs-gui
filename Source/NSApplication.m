@@ -742,7 +742,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  *
  * <p>To avoid most common needs for subclassing, NSApplication allows you to
  * specify a <em>delegate</em> that is messaged in particular situations.
- * See -delegate , -setDelegate: , and [(GSAppDelegateProtocol)].</p>
+ * See -delegate , -setDelegate: , and [(NSApplicationDelegate)].</p>
  *
  * <p><strong>Subclassing</strong> should be a last resort, and delegate
  * methods should be used in most cases.  However, subclassing is most
@@ -3576,7 +3576,7 @@ struct _DelegateWrapper
  *   messages sent to the application from remote processes (see the
  *   section documenting distributed objects for [NSPasteboard]).
  * </p>
- * <p>See -setDelegate: and [(GSAppDelegateProtocol)] for more information.</p>
+ * <p>See -setDelegate: and [(NSApplicationDelegate)] for more information.</p>
  */
 - (id) delegate
 {
@@ -3590,7 +3590,7 @@ struct _DelegateWrapper
  * stop it being the application delagate by calling this
  * method again with another object (or nil) as the argument.
  * </p>
- * <p>See -delegate and [(GSAppDelegateProtocol)] for more information.</p>
+ * <p>See -delegate and [(NSApplicationDelegate)] for more information.</p>
  */
 - (void) setDelegate: (id)anObject
 {

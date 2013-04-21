@@ -1,3 +1,15 @@
+2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCollectionView.m (-_moveUpAndExpandSelection:): Correct
+	the comparision. Bug reported by Gregory John Casamento
+	<greg.casamento@gmail.com>
+	* Headers/AppKit/NSPopover.h: Add missing import.
+	* Source/GSXibLoader.m: Disable NSCustomView hack again.
+	* Headers/AppKit/NSApplication.h: Replace GSAppDelegateProtocol
+	with NSApplicationDelegate.
+	* Source/NSApplication.m: Adjust documentation to this replacement.
+
+
 2013-04-21 09:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add NSPopover.h to set of files

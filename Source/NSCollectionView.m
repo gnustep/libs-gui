@@ -782,7 +782,7 @@ static NSString *placeholderItem = nil;
 - (void) _moveUpAndExpandSelection: (BOOL)shouldExpand
 {
   NSInteger index = [[self selectionIndexes] firstIndex];
-  if (index != NSNotFound && (index - _numberOfColumns) >= 0)
+  if (index != NSNotFound && index >= _numberOfColumns)
     {
       [self _modifySelectionWithNewIndex: index - _numberOfColumns
                                direction: -1 

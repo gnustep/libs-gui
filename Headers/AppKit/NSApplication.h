@@ -440,13 +440,19 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 @end
 
 /**
- * This is a formal protocol that duplicates the informal protocol for
- * [NSApplication] delegates.  Your delegate does not need to implement the
- * formal protocol; it is declared only for documentation purposes.  Your
+ * This is now a formal optional protocol.
+ * Your delegate does not need to implement the full formal protocol.  Your
  * delegate should just implement the methods it needs to, which will allow
  * <code>NSApp</code> to use default implementations in other cases.
  */
-@protocol	GSAppDelegateProtocol
+@protocol NSApplicationDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
+@interface NSObject (NSApplicationDelegate)
+#endif
+
 /**
  * Sender app (not necessarily this application) requests application to open
  * file without bringing up its normal UI, for programmatic manipulation.
@@ -623,12 +629,14 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) application: (NSApplication*)sender 
   delegateHandlesKey: (NSString*)key;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
 /**
  * Method used on OS X to allow an application to override the standard menu
  * obtained by right-clicking on the application's dock icon.  <em>Called
  * when the application uses Macintosh or Windows95 style menus.</em>
  */
 - (NSMenu *) applicationDockMenu: (NSApplication*)sender;
+#endif
 
 /**
  * Method used on OS X to allow delegate to handle event when user clicks on
@@ -649,13 +657,6 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 #endif 
 @end
 #endif
-
-/*
- * NSApplicationDelegate inherits from GSAppDelegateProtocol to
- * avoid compiler warnings. 
- */
-@protocol NSApplicationDelegate <GSAppDelegateProtocol>
-@end
 
 /*
  * Notifications
