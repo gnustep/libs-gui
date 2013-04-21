@@ -29,11 +29,11 @@
 #ifndef _GNUstep_H_NSCollectionView
 #define _GNUstep_H_NSCollectionView
 
-#import <AppKit/NSNibDeclarations.h>
 #import <GNUstepBase/GSVersionMacros.h>
 
-#import <AppKit/NSView.h>
 #import <AppKit/NSDragging.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSView.h>
 
 @class NSCollectionViewItem;
 @class NSCollectionView;
@@ -47,17 +47,32 @@ typedef NSInteger NSCollectionViewDropOperation;
 
 @protocol NSCollectionViewDelegate <NSObject>
 
-- (NSImage *)collectionView:(NSCollectionView *)collectionView draggingImageForItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event offset:(NSPointPointer)dragImageOffset;
-- (BOOL)collectionView:(NSCollectionView *)collectionView writeItemsAtIndexes:(NSIndexSet *)indexes toPasteboard:(NSPasteboard *)pasteboard;
-- (BOOL)collectionView:(NSCollectionView *)collectionView canDragItemsAtIndexes:(NSIndexSet *)indexes withEvent:(NSEvent *)event;
-- (NSDragOperation)collectionView:(NSCollectionView *)collectionView validateDrop:(id < NSDraggingInfo >)draggingInfo proposedIndex:(NSInteger *)proposedDropIndex dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation;
-- (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id < NSDraggingInfo >)draggingInfo index:(NSInteger)index dropOperation:(NSCollectionViewDropOperation)dropOperation;
-- (NSArray *)collectionView:(NSCollectionView *)collectionView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL forDraggedItemsAtIndexes:(NSIndexSet *)indexes;
+- (NSImage *)collectionView:(NSCollectionView *)collectionView
+draggingImageForItemsAtIndexes:(NSIndexSet *)indexes
+                  withEvent:(NSEvent *)event
+                     offset:(NSPointPointer)dragImageOffset;
+- (BOOL)collectionView:(NSCollectionView *)collectionView
+   writeItemsAtIndexes:(NSIndexSet *)indexes
+          toPasteboard:(NSPasteboard *)pasteboard;
+- (BOOL)collectionView:(NSCollectionView *)collectionView
+ canDragItemsAtIndexes:(NSIndexSet *)indexes
+             withEvent:(NSEvent *)event;
+- (NSDragOperation)collectionView:(NSCollectionView *)collectionView
+                     validateDrop:(id < NSDraggingInfo >)draggingInfo
+                    proposedIndex:(NSInteger *)proposedDropIndex
+                    dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation;
+- (BOOL)collectionView:(NSCollectionView *)collectionView
+            acceptDrop:(id < NSDraggingInfo >)draggingInfo
+                 index:(NSInteger)index
+         dropOperation:(NSCollectionViewDropOperation)dropOperation;
+- (NSArray *)collectionView:(NSCollectionView *)collectionView
+namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL
+   forDraggedItemsAtIndexes:(NSIndexSet *)indexes;
 
 @end
 
 
-@interface NSCollectionView : NSView
+@interface NSCollectionView : NSView //<NSDraggingDestination, NSDraggingSource>
 {
   NSArray *_content;
   IBOutlet NSCollectionViewItem *itemPrototype;
@@ -73,13 +88,13 @@ typedef NSInteger NSCollectionViewDropOperation;
   NSSize _itemSize;
   NSSize _maxItemSize;
   NSSize _minItemSize;
-  float _tileWidth;
-  float _verticalMargin;
-  float _horizontalMargin;
+  CGFloat _tileWidth;
+  CGFloat _verticalMargin;
+  CGFloat _horizontalMargin;
 
   NSUInteger _maxNumberOfColumns;
   NSUInteger _maxNumberOfRows;
-  long _numberOfColumns;
+  NSUInteger _numberOfColumns;
   
   NSDragOperation _draggingSourceOperationMaskForLocal;
   NSDragOperation _draggingSourceOperationMaskForRemote;

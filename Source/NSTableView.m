@@ -2884,12 +2884,12 @@ byExtendingSelection: (BOOL)flag
 
 - (NSIndexSet *) selectedColumnIndexes
 {
-  return _selectedColumns;  
+  return [[_selectedColumns copy] autorelease];
 }
 
 - (NSIndexSet *) selectedRowIndexes
 {
-  return _selectedRows;  
+  return [[_selectedRows copy] autorelease];
 }
 
 - (void) deselectColumn: (NSInteger)columnIndex
