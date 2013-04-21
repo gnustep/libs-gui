@@ -1,5 +1,9 @@
 2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/AppKit.h: Add NSCollectionView.h and NSCollectionViewItem.h.
+
+2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCollectionView.m (-_moveUpAndExpandSelection:): Correct
 	the comparision. Bug reported by Gregory John Casamento
 	<greg.casamento@gmail.com>

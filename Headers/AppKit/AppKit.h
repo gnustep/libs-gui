@@ -56,6 +56,8 @@
 #import <AppKit/NSCachedImageRep.h>
 #import <AppKit/NSCell.h>
 #import <AppKit/NSClipView.h>
+#import <AppKit/NSCollectionView.h>
+#import <AppKit/NSCollectionViewItem.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSColorList.h>
 #import <AppKit/NSColorPanel.h>
