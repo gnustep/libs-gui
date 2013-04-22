@@ -1,3 +1,8 @@
+2013-04-22  Doug Simons <doug.simons@testplant.com>
+
+    * Source/NSTextFieldCell.m: Add support for NSLineBreakByTruncatingHead/Tail/Middle
+	line break modes.
+
 2013-03-13  Jonathan Gillaspie <jonathan.gillaspie@testplant.com>
 
 	* Source\NSWorkspace.m: Log instead of raise fatal exceptions when unable to obtain a 

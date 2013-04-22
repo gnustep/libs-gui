@@ -238,7 +238,29 @@
          well). */
       _cell.type = NSTextCellType;
       titleRect = [self titleRectForBounds: cellFrame];
-      [[self _drawAttributedString] drawInRect: titleRect];
+	  NSAttributedString *string = [self _drawAttributedString];
+	  NSSize size = [string size];
+	  if (size.width > titleRect.size.width && [string length] > 4)
+	    {
+		  NSLineBreakMode mode = [self lineBreakMode];
+		  if (mode == NSLineBreakByTruncatingHead || mode == NSLineBreakByTruncatingTail || mode == NSLineBreakByTruncatingMiddle)
+		    {
+			  string = [[string mutableCopy] autorelease];
+			  //unichar ell = 0x2026;
+			  NSString *ellipsis = @"..."; //[NSString stringWithCharacters:&ell length:1];
+		      do {
+			    NSRange replaceRange;
+			    if (mode == NSLineBreakByTruncatingHead)
+			      replaceRange = NSMakeRange(0,4);
+			    else if (mode == NSLineBreakByTruncatingTail)
+			      replaceRange = NSMakeRange([string length]-4,4);
+			    else
+			      replaceRange = NSMakeRange(([string length] / 2)-2, 4);
+			    [(NSMutableAttributedString *)string replaceCharactersInRange:replaceRange withString:ellipsis];
+			  } while ([string length] > 4 && [string size].width > titleRect.size.width);
+		    }
+		}
+      [string drawInRect: titleRect];
     }
 }
 
