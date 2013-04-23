@@ -1,3 +1,7 @@
+2013-04-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Add -replaceObject:withObject: method.
+
 2013-04-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPopover.h,

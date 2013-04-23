@@ -1333,6 +1333,30 @@ didStartElement: (NSString*)elementName
   return [c allocWithZone: [self zone]];
  }
 
+- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj
+{
+  NSEnumerator *keyEnumerator = [decoded keyEnumerator];
+  id key;
+  BOOL found = NO;
+
+  while ((key = [keyEnumerator nextObject]) != nil)
+    {
+      id obj = [decoded objectForKey: key];
+      if (obj == oldObj)
+        {
+          found = YES;
+          break;
+        }
+    }
+
+  if (found)
+    {
+      [decoded setObject: newObj forKey: key];
+    }
+
+  return found;
+}
+
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
@@ -1492,12 +1516,6 @@ didStartElement: (NSString*)elementName
   if ([@"object" isEqualToString: elementName])
     {
       NSString *classname = [element attributeForKey: @"class"];
-      /*
-      if ([classname isEqualToString:@"NSCustomView"])
-	{
-	  classname = @"NSView"; // instantiate an NSView instead...
-	}
-      */
       return [self decodeObjectForXib: element
                          forClassName: classname
                                withID: objID];
