@@ -188,8 +188,8 @@ static NSString *placeholderItem = nil;
   NSSize size = dirtyRect.size;
   NSPoint oppositeOrigin = NSMakePoint (origin.x + size.width, origin.y + size.height);
   
-  int firstIndexInRect = MAX(0, [self _indexAtPoint:origin]);
-  int lastIndexInRect = MIN([_items count] - 1, [self _indexAtPoint:oppositeOrigin]);
+  int firstIndexInRect = MAX(0, (int)[self _indexAtPoint:origin]);
+  int lastIndexInRect = MIN((int)([_items count] - 1), (int)[self _indexAtPoint:oppositeOrigin]);
   int index = firstIndexInRect;
 
   for (; index <= lastIndexInRect; index++)
@@ -433,7 +433,7 @@ static NSString *placeholderItem = nil;
   long count = (long)[_items count];
     
   if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
-    count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
+    count = MIN((int)count, (int)(_maxNumberOfColumns * _maxNumberOfRows));
     
   float x = _horizontalMargin;
   float y = -_itemSize.height;
@@ -486,8 +486,8 @@ static NSString *placeholderItem = nil;
 - (NSRect) _frameForRowsAroundItemAtIndex: (NSUInteger)theIndex
 {
   NSRect itemRowFrame = [self _frameForRowOfItemAtIndex:theIndex];
-  float y = MAX (0, itemRowFrame.origin.y - itemRowFrame.size.height);
-  float height = MIN (itemRowFrame.size.height * 3, [self bounds].size.height);
+  float y = MAX (0, (int)(itemRowFrame.origin.y - itemRowFrame.size.height));
+  float height = MIN ((int)(itemRowFrame.size.height * 3), (int)([self bounds].size.height));
   NSRect rowsRect = NSMakeRect(0, y, itemRowFrame.size.width, height);
   return rowsRect;
 }
@@ -881,7 +881,7 @@ static NSString *placeholderItem = nil;
                             direction: (int)aDirection
 						       expand: (BOOL)shouldExpand
 {
-  anIndex = MIN (MAX (anIndex, 0), [_items count] - 1);
+  anIndex = MIN ((int)(MAX (anIndex, 0)), (int)([_items count] - 1));
   
   if (_allowsMultipleSelection && shouldExpand)
     {
