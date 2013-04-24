@@ -334,6 +334,19 @@ PACKAGE_SCOPE
 - (NSPoint) convertScreenToBase: (NSPoint)aPoint;
 
 /**
+ * Converts aRect from the coordinate system of the screen
+ * to the coordinate system of the window.
+ */
+
+- (NSRect) convertRectFromScreen: (NSRect)aRect;
+
+/**
+ * Converts aRect from the window coordinate system to a rect in
+ * the screen coordinate system.
+ */
+- (NSRect) convertRectToScreen: (NSRect)aRect;
+
+/**
  * Returns the frame of the receiver ... the rectangular area that the window
  * (including any border, title, and other decorations) occupies on screen.
  */

@@ -1,3 +1,15 @@
+2013-04-24 05:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSPopover.h: correct delegate method
+	for popoverShouldClose:
+	* Headers/AppKit/NSWindow.h: add convertRectToScreen: and
+	convertRectFromScreen: methods.
+	* Source/NSPopover.m: Correct delegate method for popoverShouldClose:.
+	Changes to align popover window with rect it is being placed relative
+	to.
+	* Source/NSWindow.m: implementation of convertRectToScreen: and
+	convertRectFromScreen: methods.
+
 2013-04-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Add -replaceObject:withObject: method.

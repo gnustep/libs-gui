@@ -70,7 +70,7 @@ typedef NSInteger NSPopoverBehavior;
   NSPopoverBehavior _behavior;
   NSSize _contentSize;
   IBOutlet NSViewController *_contentViewController;
-  id<NSPopoverDelegate> _delegate;
+  id _delegate;
   NSRect _positioningRect;
   BOOL _shown;
 
@@ -88,8 +88,8 @@ typedef NSInteger NSPopoverBehavior;
 - (NSSize)contentSize;
 - (void)setContentViewController:(NSViewController *)controller;
 - (NSViewController *)contentViewController;
-- (void)setDelegate:(id<NSPopoverDelegate>)value;
-- (id<NSPopoverDelegate>)delegate;
+- (void)setDelegate:(id)value;
+- (id)delegate;
 - (void)setPositioningRect:(NSRect)value;
 - (NSRect)positioningRect;
 - (BOOL)isShown;
@@ -113,7 +113,7 @@ typedef NSInteger NSPopoverBehavior;
 - (NSWindow *)detachableWindowForPopover:(NSPopover *)popover;
 - (void)popoverDidClose:(NSNotification *)notification;
 - (void)popoverDidShow:(NSNotification *)notification;
-- (void)popoverShouldClose:(NSNotification *)notification;
+- (BOOL)popoverShouldClose:(NSPopover *)popover;
 - (void)popoverWillClose:(NSNotification *)notification;
 - (void)popoverWillShow:(NSNotification *)notification;
 @end

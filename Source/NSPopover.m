@@ -34,6 +34,7 @@
 #import "AppKit/NSPopover.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 
 
 /* Class */
@@ -90,12 +91,12 @@
   return _contentViewController;
 }
 
-- (void) setDelegate: (id<NSPopoverDelegate>)value
+- (void) setDelegate: (id)value
 {
   _delegate = value;
 }
 
-- (id<NSPopoverDelegate>) delegate
+- (id) delegate
 {
   return _delegate;
 }
@@ -118,17 +119,86 @@
 /* Methods */
 - (void) close
 {
+  [_realWindow close];
+  [_realWindow setDelegate:nil];
 }
 
 - (IBAction) performClose: (id)sender
 {
+  [_realWindow performClose:sender];
+  [_realWindow setDelegate:nil];
 }
 
 - (void) showRelativeToRect: (NSRect)positioningRect
                      ofView: (NSView *)positioningView 
               preferredEdge: (NSRectEdge)preferredEdge
 {
-  // NSLog(@"Test...");
+  NSView *view = nil;
+  NSRect screenRect;
+  NSRect windowFrame;
+  NSRect viewFrame;
+
+  [_contentViewController loadView];
+  view = [_contentViewController view];
+  viewFrame = [view frame];
+
+  _realWindow = [[NSWindow alloc] initWithContentRect: viewFrame
+					    styleMask: NSBorderlessWindowMask
+					      backing: NSBackingStoreRetained
+						defer: NO];
+
+  screenRect = [[positioningView window] convertRectToScreen:positioningRect];
+  windowFrame = [_realWindow frame];
+  windowFrame.origin = screenRect.origin;
+
+  if(NSMinXEdge == preferredEdge)
+    {
+      windowFrame.origin.y -= viewFrame.size.height;
+    }
+  else if(NSMaxXEdge == preferredEdge)
+    {
+      windowFrame.origin.y += viewFrame.size.height;
+    }
+  else if(NSMinYEdge == preferredEdge)
+    {
+      windowFrame.origin.x -= viewFrame.size.width;
+    }
+  else if(NSMaxYEdge == preferredEdge)
+    {
+      windowFrame.origin.x += viewFrame.size.width;
+    }
+
+  [_realWindow setFrame: windowFrame display: YES];
+
+  NSLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
+  NSLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
+  // [_realWindow setBackgroundColor:[NSColor clearColor]];
+  // [_realWindow setOpaque:NO];
+  // [_realWindow setLevel:NSFloatingWindowLevel];
+  // [_realWindow setAlphaValue:0.0];
+
+  [[_realWindow contentView] addSubview: view];
+  [_realWindow setDelegate: self];
+  [_realWindow makeKeyAndOrderFront:self];
+}
+
+- (BOOL) windowShouldClose: (id)sender
+{
+  return [_delegate popoverShouldClose:self];
+}
+
+- (void) windowDidClose: (NSNotification *)notification
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:NSPopoverDidCloseNotification
+						      object:self
+						    userInfo:nil];
+}
+
+- (void) windowWillClose: (NSNotification *)notification
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:NSPopoverWillCloseNotification
+						      object:self
+						    userInfo:nil];
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -142,6 +212,7 @@
 	  _animates   = [coder decodeBoolForKey: @"NSAnimates"];
 	  _contentSize.width = [coder decodeDoubleForKey: @"NSContentWidth"];
 	  _contentSize.height = [coder decodeDoubleForKey: @"NSContentHeight"];
+	  [self setContentViewController:[coder decodeObjectForKey:@"NSContentViewController"]];
 	}
       else
 	{
@@ -150,6 +221,7 @@
 	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_animates];
 	  [coder decodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.width];
 	  [coder decodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.height];
+	  [self setContentViewController:[coder decodeObject]];
 	}
     }
   return self;
@@ -165,6 +237,7 @@
       [coder encodeBool: _animates forKey: @"NSAnimates"];
       [coder encodeDouble: _contentSize.width forKey: @"NSContentWidth"];
       [coder encodeDouble: _contentSize.height forKey: @"NSContentHeight"];
+      [coder encodeObject:_contentViewController forKey:@"NSContentViewController"];
     }
   else
     {
@@ -173,6 +246,7 @@
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_animates];
       [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.width];
       [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.height];
+      [coder encodeObject:_contentViewController];
     } 
 }
 @end
