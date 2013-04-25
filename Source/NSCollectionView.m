@@ -198,8 +198,9 @@ static NSString *placeholderItem = nil;
 	  // if it hasn't been done already.
       NSCollectionViewItem *collectionItem = [self itemAtIndex:index];
       NSView *view = [collectionItem view];
-	  [view setFrame:[self frameForItemAtIndex:index]];
-    }
+	  NSRect itemFrame = [self frameForItemAtIndex:index];
+      [view setFrame:itemFrame];
+	}
 }
 
 - (void) dealloc
@@ -503,6 +504,14 @@ static NSString *placeholderItem = nil;
 	    {
 		  [item setSelected:YES];
 		}
+		
+	  // Frank LeGrand 4/25/13:
+	  // We set this initial rect as a workaround for a weird display
+	  // issue in our app where the item view would get drawn in front
+	  // of another view (a transparent NSBox) whereas it should stay
+	  // behind.
+	  NSRect initRect = NSMakeRect (-10000,-10000,100,100);
+	  [[item view] setFrame:initRect];
 	  [self addSubview:[item view]];
     }
   return item;
