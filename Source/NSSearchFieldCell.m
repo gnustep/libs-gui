@@ -59,6 +59,19 @@
 
 @implementation NSSearchFieldCell
 
+#define ICON_WIDTH	16
+
+// Inlined method
+ 
+static inline NSRect textCellFrameFromRect(NSRect cellRect) 
+// Not the drawed part, precises just the part which receives events
+{
+  return NSMakeRect(cellRect.origin.x + ICON_WIDTH,
+		    NSMinY(cellRect),
+		    NSWidth(cellRect) - 2*ICON_WIDTH,
+		    NSHeight(cellRect));
+}
+
 - (id) initTextCell:(NSString *)aString
 {
   self = [super initTextCell: aString];
@@ -306,8 +319,6 @@
   [c setKeyEquivalentModifierMask: 0];
 }
 
-#define ICON_WIDTH	16
-
 - (NSRect) cancelButtonRectForBounds: (NSRect)rect
 {
   NSRect part, clear;
@@ -440,6 +451,12 @@
 		inRect: [self searchTextRectForBounds: cellFrame]
 		ofView: controlView 
 		untilMouseUp: untilMouseUp];
+}
+
+- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  [super resetCursorRect: textCellFrameFromRect(cellFrame)
+		  inView: controlView];
 }
 
 - (void) textDidChange: (NSNotification *)notification

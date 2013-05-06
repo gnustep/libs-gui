@@ -1,3 +1,8 @@
+2013-05-06  German A. Arias <german@xelalug.org>
+
+	* Source/NSSearchFieldCell.m: Add method -resetCursorRect:inView: and an
+	inline method to handle correctly the mouse cursor.
+
 2013-04-24 05:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSPopover.h: correct delegate method
