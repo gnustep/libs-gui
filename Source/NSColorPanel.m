@@ -27,6 +27,7 @@
 */ 
 
 #import "config.h"
+#import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -389,7 +390,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       do {
 	NSPoint mouseLoc;
 	NSImage *img;
-	
+        CREATE_AUTORELEASE_POOL(pool);
+ 	
 	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
 					  untilDate: [NSDate distantFuture]
 					     inMode: NSEventTrackingRunLoopMode
@@ -406,7 +408,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 	    NSColor *color = [rep colorAtX: 0 y: 0];
 	    [self setColor: color];
 	  }
-      } while ([currentEvent type] != NSLeftMouseUp && 
+       [pool drain];
+     } while ([currentEvent type] != NSLeftMouseUp && 
 	       [currentEvent type] != NSLeftMouseDown);
     }
   NS_HANDLER

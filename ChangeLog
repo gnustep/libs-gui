@@ -1,3 +1,8 @@
+2013-05-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorPanel.m (-_magnify:): Use a local auto release
+	pool in loop.
+
 2013-05-06  German A. Arias <german@xelalug.org>
 
 	* Source/NSSearchFieldCell.m: Add method -resetCursorRect:inView: and an
