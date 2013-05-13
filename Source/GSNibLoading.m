@@ -49,15 +49,6 @@
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 
-// FIXME: Used for NSKeyedArchiver access. All this should be moved into base.
-/*
- *      Setup for inline operation of arrays.
- */
-#define GSI_ARRAY_RETAIN(A, X)	RETAIN((X).obj)
-#define GSI_ARRAY_RELEASE(A, X)	RELEASE((X).obj)
-#define GSI_ARRAY_TYPES GSUNION_OBJ
-#include <GNUstepBase/GSIArray.h>
-
 #import "GNUstepGUI/GSNibLoading.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSImage.h"
@@ -73,8 +64,6 @@
 static BOOL _isInInterfaceBuilder = NO;
 
 @interface NSKeyedUnarchiver (NSClassSwapperPrivate)
-- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
-- (NSDictionary *)keyMap;
 - (Class) replacementClassForClassName: (NSString *)className;
 @end
 
@@ -1291,38 +1280,6 @@ static BOOL _isInInterfaceBuilder = NO;
  */
 @implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
 /**
- * This method is used to replace oldObj with newObj
- * in the map that is maintained in NSKeyedUnarchiver.
- */
-- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj
-{
-  unsigned int i = 0;
-  unsigned int count = GSIArrayCount(_objMap);
-  for (i = 0; i < count; i++)
-    {
-      id obj = GSIArrayItemAtIndex(_objMap, i).obj;
-      if (obj == oldObj)
-        break;
-    }
-
-  if (i < count)
-    {
-      GSIArraySetItemAtIndex(_objMap, (GSIArrayItem)newObj, i);
-      return YES;
-    }
-
-  return NO;
-}
-
-/**
- * This method is private and is purely for debugging purposes.
- */
-- (NSDictionary *)keyMap
-{
-  return _keyMap;
-}
-
-/**
  * This method returns the class which replaces the class named
  * by className.   It uses the classes map to do this.
  */
@@ -2378,7 +2335,6 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  // NSLog(@"NSPSMatrix = %@",[(NSKeyedUnarchiver *)coder keyMap]);
   return self;
 }
 @end

@@ -1,3 +1,8 @@
+2013-05-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibLoading.m: Remove method [NSKeyedUnarchiver
+	-replaceObject:withObject:] which was moved to base.
+
 2013-05-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColorPanel.m (-_magnify:): Use a local auto release
