@@ -1,3 +1,7 @@
+2013-05-14  German A. Arias <german@xelalug.org>
+
+	* Source/NSFormCell.m: Add method -resetCursorRect:inView:.
+
 2013-05-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSNibLoading.m: Remove method [NSKeyedUnarchiver

@@ -355,6 +355,17 @@
   return [super drawingRectForBounds: theRect];
 }
 
+- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  NSRect rect = NSMakeRect(cellFrame.origin.x + 3 + [self titleWidth],
+			   NSMinY(cellFrame),
+			   NSWidth(cellFrame) - 3 - [self titleWidth],
+			   NSHeight(cellFrame));
+  
+  [super resetCursorRect: rect
+		  inView: controlView];
+}
+
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   NSRect borderedFrame = cellFrame;
