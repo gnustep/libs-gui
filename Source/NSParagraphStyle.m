@@ -236,7 +236,7 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       /* Set the class version to 2, as the writing direction is now 
 	 stored in the encoding */
-      [self setVersion: 2];
+      [self setVersion: 3];
     }
 }
 
@@ -494,9 +494,18 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder decodeArrayOfObjCType: @encode(NSInteger)
+          if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 3)
+            {
+              [aCoder decodeArrayOfObjCType: @encode(NSInteger)
                   count: count
                   at: types];
+	    }
+	  else
+            {
+              [aCoder decodeArrayOfObjCType: @encode(int)
+                  count: count
+                  at: types];
+	    }
           for (i = 0; i < count; i++)
             {
               NSTextTab	*tab;

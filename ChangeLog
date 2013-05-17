@@ -1,3 +1,7 @@
+2013-05-17  Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
+	* Source/NSParagraphStyle.m bump version, and fix decoder
+
 2013-05-14  German A. Arias <german@xelalug.org>
 
 	* Source/NSFormCell.m: Add method -resetCursorRect:inView:.
