@@ -1,3 +1,8 @@
+2013-06-02  German A. Arias <german@xelalug.org>
+
+	* Headers/AppKit/NSText.h: Add NSCancelTextMovement and
+	NSOtherTextMovement for compatibility with Cocoa.
+
 2013-05-27  German A. Arias <german@xelalug.org>
 
 	* Tools/say/GNUmakefile: Fix flag.

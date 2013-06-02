@@ -85,7 +85,9 @@ enum {
   NSLeftTextMovement	= 0x13,
   NSRightTextMovement	= 0x14,
   NSUpTextMovement	= 0x15,
-  NSDownTextMovement	= 0x16
+  NSDownTextMovement	= 0x16,
+  NSCancelTextMovement  = 0x17,
+  NSOtherTextMovement   = 0
 };
 
 enum {
