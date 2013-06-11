@@ -4833,8 +4833,8 @@ current key view.<br />
       // If the window doesn't show up on any screen then we need
       // to move it so it can be seen and assign it to the main
       // screen...
-      screen = [NSScreen mainScreen];
-      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
+      screen = [[NSScreen screens] objectAtIndex: 0];
+      NSDebugLLog(@"NSWindow", @"%s: re-assigning to primary screen\n", __PRETTY_FUNCTION__);
     }
   nRect = [screen visibleFrame];
 
