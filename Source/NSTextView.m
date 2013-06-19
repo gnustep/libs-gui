@@ -92,6 +92,7 @@
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
 #import "GSFastEnumeration.h"
+#import "GSAutocompleteWindow.h"
 
 
 /*
@@ -2857,8 +2858,49 @@ Returns the ranges to which various kinds of user changes should apply.
 
 - (NSRange) rangeForUserCompletion
 {
-  // FIXME
-  return NSMakeRange(NSNotFound, 0);
+  NSUInteger length, location;
+  NSRange range, space;
+
+  // Get the current location.
+  location = [self selectedRange].location;
+
+  // Find the first space starting from current location, backwards.
+  space = [[self string] rangeOfCharacterFromSet:
+			   [NSCharacterSet whitespaceAndNewlineCharacterSet]
+					 options: NSBackwardsSearch
+					   range: NSMakeRange(0, location)];
+
+  if (space.location == NSNotFound)
+    {
+      // No space was found.
+      if (location > 0)
+	{
+	  // Return the range of the whole substring.
+	  range = NSMakeRange(0, location);
+	}
+      else
+	{
+	  // There isn't word.
+	  range = NSMakeRange(NSNotFound, 0);
+	}
+    }
+  else
+    {
+      length = location - space.location - 1;
+
+      if (length > 0)
+	{
+	  // Return the range of the last word.
+	  range = NSMakeRange(space.location + 1, length);
+	}
+      else
+	{
+	  // There isn't word at the end.
+	  range = NSMakeRange(NSNotFound, 0);
+	}
+    }
+
+  return range;
 }
 
 - (NSArray *) rangesForUserCharacterAttributeChange
@@ -5965,13 +6007,28 @@ configuation! */
 
 - (void) complete: (id)sender
 {
-  // FIXME
+  NSRange range = [self rangeForUserCompletion];
+
+  if ([self isEditable] &&
+      range.location != NSNotFound && range.length != 0)
+    {
+      GSAutocompleteWindow *window = [GSAutocompleteWindow defaultWindow];
+      [window displayForTextView: self];
+    }
 }
 
 - (NSArray *) completionsForPartialWordRange: (NSRange)range
                          indexOfSelectedItem: (NSInteger *)index
 {
-  // FIXME
+  if ([_delegate respondsToSelector:
+      @selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)])
+    {
+      return [_delegate textView: self
+		     completions: [[GSAutocompleteWindow defaultWindow] words]
+     	     forPartialWordRange: range
+	     indexOfSelectedItem: index];
+    }
+
   return nil;
 }
 
@@ -5980,7 +6037,27 @@ configuation! */
                  movement: (NSInteger)movement
                   isFinal: (BOOL)flag
 {
-  // FIXME
+  NSString *complete;
+  NSString *partial = [word substringToIndex: range.length];
+
+  if (![self shouldChangeTextInRange: range replacementString: partial])
+    return;
+
+  complete = [word stringByDeletingPrefix: partial];
+
+  [_textStorage beginEditing];
+  [self replaceCharactersInRange: range withString: partial];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  [self insertText: complete];
+  [self didChangeText];
+
+  if (!flag && ([self selectedRange].length == 0) )
+    {
+      [self setSelectedRange:
+	      NSMakeRange(NSMaxRange(range), [complete length])];
+    }
 }
 
 - (void) orderFrontLinkPanel: (id)sender

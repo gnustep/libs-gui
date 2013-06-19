@@ -1,3 +1,13 @@
+2013-06-19  German A. Arias <german@xelalug.org>
+
+	* Source/GSAutocompleteWindow.h:
+	* Source/GSAutocompleteWindow.m: Add.
+	* Source/GNUmakefile: Add new files.
+	* Source/NSTextView.m (-rangeForUserCompletion, -complete:,
+	-completionsForPartialWordRange:indexOfSelectedItem:,
+	-insertCompletion:forPartialWordRange:movement:isFinal:):
+	Implement methods for autocomplete.
+
 2013-06-02  German A. Arias <german@xelalug.org>
 
 	* Headers/AppKit/NSText.h: Add NSCancelTextMovement and

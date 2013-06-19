@@ -194,6 +194,7 @@ NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
 GSAnimator.m \
+GSAutocompleteWindow.m \
 GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
@@ -419,6 +420,7 @@ GSVersion.h \
 GMAppKit.h \
 GMArchiver.h \
 GSAnimator.h \
+GSAutocompleteWindow.h \
 GSTheme.h \
 GSFontInfo.h \
 GSMemoryPanel.h \
