@@ -420,7 +420,6 @@ GSVersion.h \
 GMAppKit.h \
 GMArchiver.h \
 GSAnimator.h \
-GSAutocompleteWindow.h \
 GSTheme.h \
 GSFontInfo.h \
 GSMemoryPanel.h \

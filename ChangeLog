@@ -1,3 +1,9 @@
+2013-06-20  German A. Arias <german@xelalug.org>
+
+	* Source/GNUmakefile: Remove GSAutocompleteWindow.h, isn't
+	necessary add this here.
+	* Source/GSAutocompleteWindow.m: Add NSScreen header.
+
 2013-06-19  German A. Arias <german@xelalug.org>
 
 	* Source/GSAutocompleteWindow.h:

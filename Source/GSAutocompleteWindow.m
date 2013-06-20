@@ -29,6 +29,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableView.h"
 #import "AppKit/NSTableColumn.h"
