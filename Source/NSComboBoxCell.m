@@ -184,6 +184,7 @@ static GSComboWindow *gsWindow = nil;
                                                                borderRect.size.height)];
   [scrollView setHasVerticalScroller: YES];
   [scrollView setDocumentView: _tableView];
+  [_tableView release];
   [box setContentView: scrollView];
   RELEASE(scrollView);
   
