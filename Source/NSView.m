@@ -2572,6 +2572,7 @@ static void autoresize(CGFloat oldContainerSize,
       [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
       [self unlockFocusNeedsFlush: flush];
+      _rFlags.needs_display = NO;
     }
 
   /*
