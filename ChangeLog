@@ -1,3 +1,10 @@
+2013-07-02  German A. Arias <german@xelalug.org>
+
+	* Source/NSCursor.m (-push): If the cursor is the current cursor,
+	don't set it again.
+	* Source/NSWindow.m (-sendEvent:): Don't update the cursor if
+	the window isn't the key window.
+
 2013-06-22  German A. Arias <german@xelalug.org>
 
 	* Source/NSComboBoxCell.m (-initWithContentRect:...):

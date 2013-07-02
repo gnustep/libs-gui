@@ -3968,6 +3968,10 @@ resetCursorRectsForView(NSView *theView)
         {
           GSTrackingRect *r =(GSTrackingRect*)[theEvent userData];
           NSCursor *c = (NSCursor*)[r owner];
+
+	  // Don't update the cursor if the window isn't the key window.
+	  if (!_f.is_key)
+	    break;
           
           if ([theEvent trackingNumber]) // It's a mouse entered
             {
