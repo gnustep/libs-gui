@@ -490,13 +490,9 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) push
 {
-  // If this is the current cursor, don't set it again.
-  if (gnustep_gui_current_cursor != self)
-    {
-      [gnustep_gui_cursor_stack addObject: gnustep_gui_current_cursor];
-      [self set];
-      NSDebugLLog(@"NSCursor", @"Cursor push %p", _cid);
-    }
+  [gnustep_gui_cursor_stack addObject: gnustep_gui_current_cursor];
+  [self set];
+  NSDebugLLog(@"NSCursor", @"Cursor push %p", _cid);
 }
 
 /**<p>Sets the NSCursor as the current cursor.</p>
