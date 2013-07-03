@@ -185,6 +185,11 @@ APPKIT_EXPORT void NSDrawBitmap(NSRect rect,
                                 const unsigned char *const data[5]);
 
 APPKIT_EXPORT void
+NSDrawThreePartImage(NSRect aRect, NSImage *start, NSImage *middle,
+		     NSImage *end, BOOL isVertical, NSCompositingOperation op,
+		     CGFloat fraction, BOOL flipped);
+
+APPKIT_EXPORT void
 NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 		    NSImage *topRight, NSImage *centerLeft,
 		    NSImage *centerMiddle, NSImage *centerRight,

@@ -1,3 +1,8 @@
+2013-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/Functions.m:
+	* Headers/AppKit/NSGraphics.h: Add NSDrawThreePartImage
+
 2013-07-02  German A. Arias <german@xelalug.org>
 
 	* Source/NSCursor.m (-push): Revert last change.

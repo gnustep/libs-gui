@@ -393,6 +393,29 @@ static void GSDrawRepeatingImage(NSRect aRect, NSImage *image, NSCompositingOper
   [NSGraphicsContext restoreGraphicsState];
 }
 
+void NSDrawThreePartImage(NSRect aRect, NSImage *start, NSImage *middle,
+			  NSImage *end, BOOL isVertical, NSCompositingOperation op,
+			  CGFloat fraction, BOOL flipped)
+{
+  if (isVertical)
+    {
+      NSDrawNinePartImage(aRect,
+			  nil, start, nil, 
+			  nil, middle, nil,
+			  nil, end, nil,
+			  op, fraction, flipped);
+    }
+  else
+    {
+      NSDrawNinePartImage(aRect,
+                          nil, nil, nil,
+                          start, middle, end,
+                          nil, nil, nil,
+                          op, fraction, flipped);
+    }
+}
+
+
 void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 			 NSImage *topRight, NSImage *centerLeft,
 			 NSImage *centerMiddle, NSImage *centerRight,
