@@ -2451,8 +2451,9 @@ static void autoresize(CGFloat oldContainerSize,
 
       /*
        * If we still need display after displaying the invalid rectangle,
-       * this means that some subviews still need to display. For opaque subviews
-       * their invalid rectangle may even overlap the original aRect.
+       * this means that some subviews still need to display.
+       * For opaque subviews their invalid rectangle may even overlap the
+       * original aRect.
        * Display any subview that need display.
        */ 
       if (_rFlags.needs_display == YES)
@@ -2548,10 +2549,10 @@ static void autoresize(CGFloat oldContainerSize,
   
       /*
        * If the rect we are going to display contains the _invalidRect
-       * then we can empty _invalidRect. Do this before the drawing, as drawRect: 
-       * may change this value.
-       * FIXME: If the drawn rectangle cuts of a complete part of the _invalidRect,
-       * we should try to reduce this.
+       * then we can empty _invalidRect. Do this before the drawing,
+       * as drawRect: may change this value.
+       * FIXME: If the drawn rectangle cuts of a complete part of the
+       * _invalidRect, we should try to reduce this.
        */
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
         {
@@ -2599,12 +2600,13 @@ static void autoresize(CGFloat oldContainerSize,
               if (NSIsEmptyRect(isect) == NO)
                 {
                   isect = [subview convertRect: isect fromView: self];
-                  [subview displayRectIgnoringOpacity: isect inContext: context];
+                  [subview displayRectIgnoringOpacity: isect
+                                            inContext: context];
                 }
               /*
                * Is there still something to draw in the subview?
-               * This keeps the invariant that views further up are marked for redraw
-               * when ever a view further down needs to redraw.
+               * This keeps the invariant that views further up are marked
+               * for redraw when ever a view further down needs to redraw.
                */
               if (subview->_rFlags.needs_display == YES)
                 {

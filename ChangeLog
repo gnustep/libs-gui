@@ -1,3 +1,10 @@
+2013-07-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * config.make.in: Fix error in order of link/include directories
+        * configure.ac: Change variable names for match make system
+        * configure: regenerate
+        * Source/NSView.m: trivial comment format changes
+
 2013-07-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/Functions.m:
