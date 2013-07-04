@@ -244,6 +244,9 @@
 @class NSTabViewItem;
 @class GSDrawTiles;
 
+APPKIT_EXPORT	NSString	*GSSwitch;
+APPKIT_EXPORT   NSString        *GSRadio;
+
 /* First, declare names used for obtaining colors and/or tiles for specific
  * controls and parts of controls.
  */

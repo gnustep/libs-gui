@@ -201,17 +201,20 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 + (id) imageNamed: (NSString *)aName
 {
   NSImage   *image;
+  NSString  *realName;
 
-  /* 2009-09-10 changed operation of nsmapping so that the loaded
-   * image is stored under the key 'aName', not under the mapped
-   * name.  That way the image is created with the correct name and
-   * a later call to -setName: will work properly.
-   */
   [imageLock lock];
-  image = (NSImage*)[nameDict objectForKey: aName];
-  if (image == nil && aName != nil)
+
+  realName = [nsmapping objectForKey: aName];
+  if (realName == nil)
     {
-      NSString  *path = [self _pathForImageNamed: aName];
+      realName = aName;
+    }
+  image = (NSImage*)[nameDict objectForKey: realName];
+
+  if (image == nil && realName != nil)
+    {
+      NSString  *path = [self _pathForImageNamed: realName];
 
       if ([path length] != 0) 
         {
@@ -219,12 +222,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    initByReferencingFile: path];
           if (image != nil)
             {
-              [image setName: aName];
+              [image setName: realName];
               image->_flags.archiveByName = YES;
               AUTORELEASE(image);
             }
         }
     }
+
   IF_NO_GC([[image retain] autorelease]);
   [imageLock unlock];
   return image;
@@ -1895,28 +1899,106 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 + (void) _reloadCachedImages
 {
   NSString *name;
-  NSEnumerator *e;
+  NSEnumerator *e = [nameDict keyEnumerator];
 
   [imageLock lock];
-  e = [nameDict keyEnumerator];
   while ((name = [e nextObject]) != nil)
     {
       NSImage *image = [nameDict objectForKey: name];
       NSString *path = [self _pathForImageNamed: name];
-      if (![path isEqual: image->_fileName])
+
+      //NSLog(@"Loaded image %@ from %@", name, path);
+
+      if (path != nil && ![path isEqual: image->_fileName])
 	{
 	  /* Reset the existing image to use the contents of
 	   * the specified file.
 	   */
 	  [image _resetAndUseFromFile: path];
-	}      
+	}   
     }
   [imageLock unlock];
 }
 
++ (NSString *) _pathForLibraryImageNamed: (NSString *)aName 
+                                  ofType: (NSString *)ext 
+                             inDirectory: (NSString *)aDir
+{
+  if (ext != nil)
+    {
+      return [NSBundle pathForLibraryResource: aName
+                                       ofType: ext
+                                  inDirectory: aDir];
+    }
+
+  NSEnumerator *e = [[self imageFileTypes] objectEnumerator];
+  id o = nil;
+  NSString *path = nil;
+
+  while ((o = [e nextObject]) != nil)
+    {
+      path = [NSBundle pathForLibraryResource: aName
+                                       ofType: o
+                                  inDirectory: aDir];
+
+      if (path != nil && [path length] != 0)
+        break;
+    }
+
+  return path;
+}
+
++ (NSString *) _pathForImageNamed: (NSString *)aName 
+                           ofType: (NSString *)ext 
+                     subdirectory: (NSString *)aDir
+                         inBundle: (NSBundle *)aBundle
+{
+  if (ext != nil)
+    {
+      return [aBundle pathForResource: aName
+                               ofType: ext
+                          inDirectory: aDir];
+    }
+
+  NSEnumerator *e = [[self imageFileTypes] objectEnumerator];
+  id o = nil;
+  NSString *path = nil;
+
+  while ((o = [e nextObject]) != nil)
+    {
+      path = [aBundle pathForResource: aName
+                               ofType: o
+                          inDirectory: aDir];
+
+      if (path != nil && [path length] != 0)
+        break;
+    }
+
+  return path;
+}
+
+/*
+ * nsmapping.strings maps alternative image naming schemes to the GSTheme 
+ * standard image naming scheme. For example, NSSwitch (from OpenStep) and 
+ * common_SwitchOff (from GNUstep) are mapped to GSSwitch. In nameDict that 
+ * tracks image instances, the keys are image names from GSTheme such as 
+ * GSSwitch or additional icon names such NSApplicationIcon or 
+ * NSToolbarShowColors. In the long run, it would be cleaner to move built-in 
+ * theme images into a GNUstep.theme bundle.
+ *
+ * If you pass NSSwitch to +imageNamed:, nsmapping is used to get GSSwitch as 
+ * the real name, then _pathForImageNamed: will look up the image first in the 
+ * theme and fall back on the Library images. For the library images, we do a 
+ * reverse lookup in nsmapping (using allKeysForObject:) to get the image file 
+ * name (e.g. from GSSwitch to common_SwitchOff). This reverse lookup is 
+ * similar to the one supported for getting image file names from the 
+ * GSThemeImages section of a theme Info.plist. By creating a GNUstep.theme 
+ * bundle, this reverse lookup could be handled by GSTheme rather than being 
+ * treated as a special case in -_pathForImageNamed:.
+ */
 + (NSString *) _pathForImageNamed: (NSString *)aName
 {
-  NSString	*realName = [nsmapping objectForKey: aName];
+  NSString	*realName = aName;
   NSString	*ext;
   NSString	*path = nil;
   NSBundle	*main_bundle;
@@ -1970,54 +2052,46 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
     }
 
   /* If not found then search in the theme */
-  if (!path)
+  if (path == nil)
     {
-      NSBundle *themeBundle = [[GSTheme theme] bundle];
-      if (ext)
-	{
-	  path = [themeBundle pathForResource: realName
-				       ofType: ext
-				  inDirectory: @"ThemeImages"];
-	}
-      else 
-	{
-	  id o, e;
-	  
-	  e = [array objectEnumerator];
-	  while ((o = [e nextObject]))
-	    {
-	      path = [themeBundle pathForResource: realName
-					   ofType: o
-				      inDirectory: @"ThemeImages"];
-	      if (path != nil && [path length] != 0)
-		break;
-	    }
-	}
+      NSDictionary *themeMapping = 
+        [[[GSTheme theme] infoDictionary] objectForKey: @"GSThemeImages"];
+      NSString *mappedName = [themeMapping objectForKey: realName];
+
+      if (mappedName != nil)
+        {
+          // TODO: Could search the images if no file extension is provided
+          if ([[mappedName pathExtension] isEqual: @""])
+            {
+              NSLog(@"Theme image name %@ requires a file extension in the "
+                     "theme Info.plist to get loaded.", mappedName);
+            }
+
+          path = [[[GSTheme theme] bundle] pathForResource: mappedName 
+                                                    ofType: nil 
+                                               inDirectory: @"ThemeImages"];
+        }
     }
   
   /* If not found then search in system */
-  if (!path)
+  if (path == nil)
     {
-      if (ext)
-	{
-	  path = [NSBundle pathForLibraryResource: realName
-					   ofType: ext
-				      inDirectory: @"Images"];
-	}
-      else 
-	{
-	  id o, e;
-	  
-	  e = [array objectEnumerator];
-	  while ((o = [e nextObject]))
-	    {
-	      path = [NSBundle pathForLibraryResource: realName
-					       ofType: o
-					  inDirectory: @"Images"];
-	      if (path != nil && [path length] != 0)
-		break;
-	    }
-	}
+      path = [self _pathForLibraryImageNamed: realName ofType: ext inDirectory: @"Images"];  
+    }
+
+  /* If not found then search in system using reverse nsmapping */
+  if (path == nil)
+    {
+       NSEnumerator *e = [[nsmapping allKeysForObject: realName] objectEnumerator];
+       NSString *aliasName = nil;
+
+      while ((aliasName = [e nextObject]) != nil)
+        {
+          path = [self _pathForLibraryImageNamed: aliasName ofType: ext inDirectory: @"Images"];
+
+          if (path != nil)
+            break;
+        }
     }
   
   return path;

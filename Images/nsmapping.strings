@@ -2,34 +2,48 @@
    actual files where the GNUstep keeps them. The format is the "strings"
    format and content is trivial. */
 
-NSApplicationIcon = GNUstep;
-NSSwitch = common_SwitchOff;
-NSHighlightedSwitch = common_SwitchOn;
-NSRadioButton = common_RadioOff;
-NSHighlightedRadioButton = common_RadioOn;
-AppleMenuImage = GNUstepMenuImage;
-NSMenuCheckmark = common_2DCheckMark;
-NSMenuArrow = common_3DArrowRight;
-NSMenuMixedState = common_2DDash;
-NSComboArrow = common_ComboBoxEllipsis;
-GSClosedHandCursor =  common_ClosedHandCursor;
-GSOpenHandCursor = common_OpenHandCursor;
-GSDragCopyCursor = common_copyCursor;
-GSDragLinkCursor = common_linkCursor;
-GSOperationNotAllowedCursor = common_noCursor;
+GNUstep = NSApplicationIcon;
+
+common_SwitchOff = GSSwitch;
+NSSwitch = GSSwitch;
+common_SwitchOn = GSSwitchSelected;
+NSHighlightedSwitch = GSSwitchSelected;
+
+common_RadioOff = GSRadio;
+NSRadioButton = GSRadio;
+common_RadioOn = GSRadioSelected;
+NSHighlightedRadioButton = GSRadioSelected;
+
+GNUstepMenuImage = GSApplicationMenuIcon;
+AppleMenuImage = GSApplicationMenuIcon;
+common_3DArrowRight = GSMenuArrow;
+NSMenuArrow = GSMenuArrow;
+common_2DCheckMark = GSMenuSelected;
+NSMenuCheckmark = GSMenuSelected;
+common_2DDash = GSMenuMixed;
+NSMenuMixedState = GSMenuMixed;
+
+common_ComboBoxEllipsis = GSComboArrow;
+NSComboArrow = GSComboArrow;
+
+common_ClosedHandCursor = GSClosedHandCursor;
+common_OpenHandCursor = GSOpenHandCursor;
+common_copyCursor = GSDragCopyCursor;
+common_linkCursor = GSDragLinkCursor;
+common_noCursor = GSOperationNotAllowedCursor;
 
 /* Toolbar images */
 
-NSToolbarCustomizeToolbarItemImage = common_ToolbarCustomizeToolbarItem;
-NSToolbarPrint = common_Printer;
-NSToolbarShowColors = common_ToolbarShowColorsItem;
-NSToolbarShowFonts = common_ToolbarShowFontsItem;
+common_ToolbarCustomizeToolbarItem = NSToolbarCustomizeToolbarItemImage;
+common_Printer = NSToolbarPrint;
+common_ToolbarShowColorsItem = NSToolbarShowColors;
+common_ToolbarShowFontsItem = NSToolbarShowFonts;
 
 /* Misc. */
 
-NSColorPanel = common_ToolbarShowColorsItem;
-NSComputer = common_Root_PC;
-NSStopProgressTemplate = GSStop;
-NSFontPanel = common_ToolbarShowFontsItem;
-NSFolder = common_Folder;
-NSInfo = common_Info;
+common_ToolbarShowColorsItem = NSColorPanel;
+common_Root_PC = NSComputer;
+GSStop = NSStopProgressTemplate;
+common_ToolbarShowFontsItem = NSFontPanel;
+common_Folder = NSFolder;
+common_Info = NSInfo;

@@ -64,6 +64,9 @@
 #import "AppKit/PSOperators.h"
 #import "GSThemePrivate.h"
 
+NSString	*GSSwitch = @"GSSwitch";
+NSString        *GSRadio = @"GSRadio";
+
 // Scroller part names
 NSString	*GSScrollerDownArrow = @"GSScrollerDownArrow";
 NSString	*GSScrollerHorizontalKnob = @"GSScrollerHorizontalKnob";
