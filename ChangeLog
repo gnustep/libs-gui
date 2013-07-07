@@ -1,3 +1,11 @@
+2013-07-07  German A. Arias <german@xelalug.org>
+
+	* Headers/AppKit/NSCursor.h: Add _windowNum and _cursorRect.
+	* Source/NSCursor.m (-init, -push, -pop): Store at cursor object the
+	rect and the window where this is displayed. So the next time the app
+	request push this cursor, it can compare if currently is displayed for
+	that rect in that window. To prevent duplicate the cursor.
+
 2013-07-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageRep.m (-guiDrawInRect:...fraction:): Readd special
