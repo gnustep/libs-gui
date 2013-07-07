@@ -654,6 +654,30 @@ Fallback for backends other than Cairo. */
 
   repSize = [self size];
 
+  if (![ctxt isDrawingToScreen])
+    {
+      /* We can't composite or dissolve if we aren't drawing to a screen,
+         so we'll just draw the right part of the image in the right
+         place. This code will only get used by the GSStreamContext. */
+      NSPoint p;
+      double fx, fy;
+
+      fx = dstRect.size.width / srcRect.size.width;
+      fy = dstRect.size.height / srcRect.size.height;
+
+      p.x = dstRect.origin.x / fx - srcRect.origin.x;
+      p.y = dstRect.origin.y / fy - srcRect.origin.y;
+
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
+                  dstRect.size.width, dstRect.size.height);
+      DPSscale(ctxt, fx, fy);
+      [self drawInRect: NSMakeRect(p.x, p.y, repSize.width, repSize.height)];
+      DPSgrestore(ctxt);
+
+      return;
+    }
+
   /* Figure out what the effective transform from rep space to
      'window space' is.  */
   transform = [ctxt GSCurrentCTM];

@@ -1,14 +1,20 @@
+2013-07-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImageRep.m (-guiDrawInRect:...fraction:): Readd special
+	handling for printing as suggested by Eric Wasylishen
+	<ewasylishen@gmail.com>.
+
 2013-07-04  Quentin Mathe  <quentin.mathe@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
-	* Source/GSTheme.m: 
+	* Source/GSTheme.m:
 	Added new theme image constant image names.
-	* Source/NSImage.m (+imageNamed:, +_reloadCachedImages, 
-	+_pathForImageNamed:): Added support for providing custom theme control 
-	images in the same way that we support it for tiles. We now support a 
-	GSThemeImages section in the theme Info.plist for all the images stored 
+	* Source/NSImage.m (+imageNamed:, +_reloadCachedImages,
+	+_pathForImageNamed:): Added support for providing custom theme control
+	images in the same way that we support it for tiles. We now support a
+	GSThemeImages section in the theme Info.plist for all the images stored
 	inside a ThemeImages directory of the theme bundle.
-	 
+
 2013-07-04  Richard Frith-Macdonald <rfm@gnu.org>
 
         * config.make.in: Fix error in order of link/include directories
