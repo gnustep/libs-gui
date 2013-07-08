@@ -3234,6 +3234,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) setIgnoresMouseEvents: (BOOL)flag
 {
   _f.ignores_mouse_events = flag;
+  [GSServerForWindow(self) setIgnoreMouse: flag : _windowNum];
 }
 
 - (NSEvent*) currentEvent

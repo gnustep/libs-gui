@@ -175,6 +175,7 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (void) freecursor: (void*) cid;
 - (void) setParentWindow: (int)parentWin 
           forChildWindow: (int)childWin;
+- (void) setIgnoreMouse: (BOOL)ignoreMouse : (int)win;
 
 @end
 

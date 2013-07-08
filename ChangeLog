@@ -1,3 +1,10 @@
+2013-07-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Source/GSDisplayServer.m: Add new method -setIgnoreMouse:: with
+	empty implementation.
+	* Source/NSWindow.m (-setIgnoresMouseEvents:): Use this new method.
+
 2013-07-08  German A. Arias <german@xelalug.org>
 
 	* Source/NSMenuView.m (_trackWithEvent:startingMenuView:):

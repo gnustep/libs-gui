@@ -944,6 +944,11 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+- (void) setIgnoreMouse: (BOOL)ignoreMouse : (int)win
+{
+  // Do nothing if not overridden by subclass
+}
+
 @end
 
 /* ----------------------------------------------------------------------- */
