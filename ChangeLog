@@ -1,3 +1,9 @@
+2013-07-08  German A. Arias <german@xelalug.org>
+
+	* Source/NSMenuView.m (_trackWithEvent:startingMenuView:):
+	Ignore the first mouse up if is a transient menu and style
+	is NSWindows95InterfaceStyle.
+
 2013-07-07  German A. Arias <german@xelalug.org>
 
 	* Headers/AppKit/NSCursor.h:

@@ -1454,6 +1454,8 @@ static NSMapTable *viewInfo = 0;
   int delayCount = 0;
   int indexOfActionToExecute = -1;
   int firstIndex = -1;
+  NSInterfaceStyle style =
+    NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
   NSEvent *original;
   NSEventType type;
 
@@ -1496,21 +1498,22 @@ static NSMapTable *viewInfo = 0;
   
   /*We need know if the user press a modifier key to close the menu
     when the menu is in a window*/
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
-      NSWindows95InterfaceStyle)
+  if (style == NSWindows95InterfaceStyle)
     {
       eventMask |= NSFlagsChangedMask;
     }
   
-  /* We attempt to mimic Mac OS X behavior for pop up menus. If the user
-     presses the mouse button over a pop up button and then drags the mouse
-     over the menu, the menu is closed when the user releases the mouse. On the
-     other hand, when the user clicks on the button and then moves the mouse
-     the menu is closed upon the next mouse click. */
+  // Ignore the first mouse up if menu is horizontal.
   if ([self isHorizontal] == YES ||
-      ([[self menu] _ownedByPopUp] == YES &&
-       NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-       == NSMacintoshInterfaceStyle))
+      // Or if menu is transient and style is NSWindows95InterfaceStyle.
+      ([[self menu] isTransient] && style == NSWindows95InterfaceStyle) ||
+      /* Or to mimic Mac OS X behavior for pop up menus. If the user
+	 presses the mouse button over a pop up button and then drags the mouse
+	 over the menu, the menu is closed when the user releases the mouse. On
+	 the other hand, when the user clicks on the button and then moves the
+	 mouse the menu is closed upon the next mouse click. */
+      ([[self menu] _ownedByPopUp] &&
+       style == NSMacintoshInterfaceStyle))
     {
       /*
        * Ignore the first mouse up if nothing interesting has happened.
