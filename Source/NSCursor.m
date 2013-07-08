@@ -35,13 +35,11 @@
 
 #import "AppKit/NSColor.h"
 #import "AppKit/NSCursor.h"
-#import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSBitmapImageRep.h"
 
 #import "GNUstepGUI/GSDisplayServer.h"
-#import "GNUstepGUI/GSTrackingRect.h"
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;
@@ -317,8 +315,6 @@ NSCursor *getStandardCursor(NSString *name, int style)
  */
 - (id) init
 {
-  _windowNum = -1;
-  _cursorRect = NSZeroRect;
   return [self initWithImage: nil hotSpot: NSZeroPoint];
 }
 
@@ -444,26 +440,11 @@ backgroundColorHint:(NSColor *)bg
     }
   else if (_cursor_flags.is_set_on_mouse_exited == NO)
     {
-      NSInteger num = [theEvent windowNumber];
-      GSTrackingRect *r =(GSTrackingRect*)[theEvent userData];
       /*
        * Undocumented behavior - if a cursor is not set on exit or entry,
        * we assume a push-pop situation instead.
        */
-
-      /* First check if the cursor rect is currently updated. This prevent
-       * add the same cursor for the same cursor rect. This happen sometimes
-       * when the window become the main/key window, and the cursor is over
-       * a cursor rect.
-       */
-      if ( !(NSEqualRects(_cursorRect, r->rectangle) &&
-	     (_windowNum == num) &&
-	     [gnustep_gui_current_cursor isEqual: self]) )
-	{
-	  [self push];
-	  _windowNum = num;
-	  _cursorRect = r->rectangle;
-	}
+      [self push];
     }
 }
 
@@ -485,8 +466,6 @@ backgroundColorHint:(NSColor *)bg
        * we assume a push-pop situation instead.
        */
       [self pop];
-      _windowNum = -1;
-      _cursorRect = NSZeroRect;
     }
   else
     {

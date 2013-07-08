@@ -49,8 +49,6 @@
     unsigned int reserved: 25;
   } _cursor_flags;
   void		*_cid;
-  NSInteger     _windowNum;
-  NSRect        _cursorRect;
 }
 
 /*
