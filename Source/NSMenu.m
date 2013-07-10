@@ -1546,22 +1546,18 @@ static BOOL menuBarVisible = YES;
                 withEvent: (NSEvent*)event
                   forView: (NSView*)view
 {
-  [self popUpContextMenu:menu withEvent:event forView:view withFont:nil];
+  [self popUpContextMenu: menu
+               withEvent: event
+                 forView: view
+                withFont: nil];
 }
 
-+ (void) popUpContextMenu: (NSMenu *)menu 
-                withEvent: (NSEvent *)event 
-                  forView: (NSView *)view 
++ (void) popUpContextMenu: (NSMenu *)menu
+                withEvent: (NSEvent *)event
+                  forView: (NSView *)view
                  withFont: (NSFont *)font
 {
-  NSWindow   *window    = [event window];
-  NSPoint     point     = [window convertBaseToScreen: [event locationInWindow]];
-  NSRect      cellFrame = NSMakeRect(point.x, point.y, 0, 0);
-  [[GSTheme theme] displayPopUpMenu: [menu menuRepresentation]
-                      withCellFrame: cellFrame
-                  controlViewWindow: window
-                      preferredEdge: NSMinXEdge
-                       selectedItem: 0];
+  [menu _rightMouseDisplay: event];
 }
 
 /*
