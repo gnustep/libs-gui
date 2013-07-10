@@ -1546,10 +1546,7 @@ static BOOL menuBarVisible = YES;
                 withEvent: (NSEvent*)event
                   forView: (NSView*)view
 {
-  [self popUpContextMenu: menu
-               withEvent: event
-                 forView: view
-                withFont: nil];
+  [self popUpContextMenu:menu withEvent:event forView:view withFont:nil];
 }
 
 + (void) popUpContextMenu: (NSMenu *)menu 
@@ -1557,8 +1554,7 @@ static BOOL menuBarVisible = YES;
                   forView: (NSView *)view 
                  withFont: (NSFont *)font
 {
-  
-  NSWindow   *window    = [view window];
+  NSWindow   *window    = [event window];
   NSPoint     point     = [window convertBaseToScreen: [event locationInWindow]];
   NSRect      cellFrame = NSMakeRect(point.x, point.y, 0, 0);
   [[GSTheme theme] displayPopUpMenu: [menu menuRepresentation]
