@@ -49,6 +49,7 @@
 
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSCursor.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
@@ -1911,8 +1912,17 @@ static BOOL menuBarVisible = YES;
   [contentView addSubview: _view];
 
   [_view update];
-  
+
   [_bWindow orderFront: self];
+
+  /* Right mouse buttons which display transient menus don't update
+   * the cursor. So, the current cursor is displayed over the
+   * contextual menu (for example an I beam). However, when menu is
+   * closed the cursor pop, this can set a wrong cursor. We push here
+   * an arrow cursor, the cursor we want at menus. Being sure that
+   * this will pop when menu closes.
+   */
+  [[NSCursor arrowCursor] push];
 }
 
 - (void) close
