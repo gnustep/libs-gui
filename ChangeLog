@@ -1,5 +1,10 @@
 2013-07-15 Riccardo Mottola <rm@gnu.org>
 
+	* Images/nsmapping.strings
+	Do not remap GNUstep image itself.
+
+2013-07-15 Riccardo Mottola <rm@gnu.org>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h
 	* Source/GSTheme.m
 	Add license to the Theme properties.

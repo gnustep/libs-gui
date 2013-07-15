@@ -2,7 +2,8 @@
    actual files where the GNUstep keeps them. The format is the "strings"
    format and content is trivial. */
 
-GNUstep = NSApplicationIcon;
+/* We do not remap the application icon to GNUstep */
+/* GNUstep = NSApplicationIcon; */
 
 common_SwitchOff = GSSwitch;
 NSSwitch = GSSwitch;
