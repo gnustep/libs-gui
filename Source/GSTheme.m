@@ -1202,6 +1202,11 @@ typedef	struct {
   return [[self infoDictionary] objectForKey: @"GSThemeVersion"];
 }
 
+- (NSString *) license
+{
+  return [[self infoDictionary] objectForKey: @"GSThemeLicense"];
+}
+
 @end
 
 @implementation	GSTheme (Private)

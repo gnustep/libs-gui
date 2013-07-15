@@ -712,6 +712,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSString*) versionString;
 
+/**
+ * Return the theme's license.
+ */
+- (NSString*) license;
+
 @end
 
 /**

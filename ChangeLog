@@ -1,3 +1,9 @@
+2013-07-15 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Source/GSTheme.m
+	Add license to the Theme properties.
+
 2013-07-11  German A. Arias <german@xelalug.org>
 
 	* Source/NSMenu.m (-displayTransient): Push an arrow cursor when
