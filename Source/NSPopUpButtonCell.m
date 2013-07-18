@@ -36,7 +36,6 @@
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuView.h"
-#import "AppKit/NSPanel.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSWindow.h"
@@ -909,21 +908,6 @@ static NSImage *_pbc_image[5];
 
   [nc postNotificationName: NSPopUpButtonWillPopUpNotification
                     object: controlView];
-
-  /* Ensure the window responds when run in modal and should
-   * process events. Or revert this if theme has changed.
-   */
-  if ([[GSTheme theme] doesProcessEventsForPopUpMenu] &&
-      ![[_menu window] worksWhenModal])
-    {
-      [(NSPanel *)[_menu window] setWorksWhenModal: YES];
-    }
-
-  if (![[GSTheme theme] doesProcessEventsForPopUpMenu] &&
-      [[_menu window] worksWhenModal])
-    {
-      [(NSPanel *)[_menu window] setWorksWhenModal: NO];
-    }
 
   // Convert to Screen Coordinates
   cellFrame = [controlView convertRect: cellFrame toView: nil];

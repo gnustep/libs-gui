@@ -1,3 +1,10 @@
+2013-07-18  German A. Arias <german@xelalug.org>
+
+	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:): Revert
+	last change.
+	* Source/GSThemeMenu.m (-displayPopUpMenu:withCellFrame:...): Add here
+	the code. This place is more appropriate.
+
 2013-07-17  German A. Arias <german@xelalug.org>
 
 	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:): Ensure

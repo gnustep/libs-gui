@@ -29,6 +29,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSMenu.h"
+#import "AppKit/NSPanel.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSApplication.h"
@@ -104,6 +105,21 @@
 	    preferredEdge: (NSRectEdge)edge
 	     selectedItem: (int)selectedItem
 { 
+  /* Ensure the window responds when run in modal and should
+   * process events. Or revert this if theme has changed.
+   */
+  if ([[GSTheme theme] doesProcessEventsForPopUpMenu] &&
+      ![[mr window] worksWhenModal])
+    {
+      [(NSPanel *)[mr window] setWorksWhenModal: YES];
+    }
+
+  if (![[GSTheme theme] doesProcessEventsForPopUpMenu] &&
+      [[mr window] worksWhenModal])
+    {
+      [(NSPanel *)[mr window] setWorksWhenModal: NO];
+    }
+
   // Ask the MenuView to attach the menu to this rect
   [mr setWindowFrameForAttachingToRect: cellFrame
 			      onScreen: [cvWin screen]
