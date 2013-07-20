@@ -1867,21 +1867,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
       _f.visible = YES;
       [self displayIfNeeded];
     }
-#ifndef __MINGW32__
   else if ([self isOneShot])
     {
       [self _terminateBackendWindow];
     }
-#else
-  else // TEMPORARY PATCH UNTIL CAIRO BACKEND FIXED ON WINDOWS
-    {
-      id defaultsUseOneShot = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSUseOneShotWindows"];
-      if ((defaultsUseOneShot == nil) || ([defaultsUseOneShot boolValue] == NO) || [self isOneShot])
-      {
-        [self _terminateBackendWindow];
-      }
-    }
-#endif
 }
 
 - (void) resignKeyWindow
@@ -2416,7 +2405,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 {
   if (_gstate == 0 || _f.visible == NO)
     return;
-
+  
   [_wv display];
   [self discardCachedImage];
   _f.views_need_display = NO;

@@ -668,6 +668,7 @@ static BOOL		restoreMouseMoved;
   [(GSTTView*)([window contentView]) setText: toolTipText];
   [window setFrame: rect display: NO];
   [window orderFront: nil];
+  [window display];
   isOpening = NO;
 
   RELEASE(toolTipText);
