@@ -1933,19 +1933,73 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
   NSEnumerator *e = [[self imageFileTypes] objectEnumerator];
   id o = nil;
-  NSString *path = nil;
 
   while ((o = [e nextObject]) != nil)
     {
-      path = [NSBundle pathForLibraryResource: aName
-                                       ofType: o
-                                  inDirectory: aDir];
+      NSString *path = [NSBundle pathForLibraryResource: aName
+                                                 ofType: o
+                                            inDirectory: aDir];
 
       if (path != nil && [path length] != 0)
-        break;
+        return path;
+    }
+
+  return nil;
+}
+
++ (NSString *) _pathForSystemImageNamed: (NSString *)realName 
+                                 ofType: (NSString *)ext
+{
+  NSString *path = [self _pathForLibraryImageNamed: realName 
+                                            ofType: ext 
+                                       inDirectory: @"Images"];  
+
+  /* If not found then search in system using the reverse NSImage nsmapping */
+  if (path == nil)
+    {
+      NSEnumerator *e = 
+        [[nsmapping allKeysForObject: realName] objectEnumerator];
+      NSString *aliasName = nil;
+
+      while ((aliasName = [e nextObject]) != nil)
+        {
+          path = [self _pathForLibraryImageNamed: aliasName 
+                                          ofType: ext 
+                                     inDirectory: @"Images"];
+
+          if (path != nil)
+            break;
+        }
     }
 
   return path;
+}
+
++ (NSString *) _resourceNameForImageNamed: (NSString *)aName 
+                                     type: (NSString **)aType
+{
+  NSString *name = aName;
+  NSString *ext = [aName pathExtension];
+
+  if (ext != nil && [ext length] == 0)
+    {
+      ext = nil;
+    }
+
+  /* Check if extension is one of the image types */
+  if (ext != nil && [[self imageFileTypes] indexOfObject: ext] != NSNotFound)
+    {
+      /* Extension is one of the image types, so remove from the name */
+      name = [aName stringByDeletingPathExtension];
+    }
+  else
+    {
+      /* Otherwise extension is not an image type, so leave it alone */
+      ext = nil;
+    }
+
+	*aType = ext;
+	return name;
 }
 
 + (NSString *) _pathForImageNamed: (NSString *)aName 
@@ -1962,19 +2016,83 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
   NSEnumerator *e = [[self imageFileTypes] objectEnumerator];
   id o = nil;
-  NSString *path = nil;
 
   while ((o = [e nextObject]) != nil)
     {
-      path = [aBundle pathForResource: aName
-                               ofType: o
-                          inDirectory: aDir];
+       NSString * path = [aBundle pathForResource: aName
+                                           ofType: o
+                                      inDirectory: aDir];
 
       if (path != nil && [path length] != 0)
-        break;
+        return path;
     }
 
-  return path;
+  return nil;
+}
+
+/* 
+ * The type received in argument is meaningfull for searching image files 
+ * using the proposed image name, but useless otherwise. 
+ */
++ (NSString *) _pathForThemeImageNamed: (NSString *)aName 
+                                ofType: (NSString *)ext 
+{
+  NSDictionary *themeMapping = 
+    [[[GSTheme theme] infoDictionary] objectForKey: @"GSThemeImages"];
+  NSString *mappedName = [themeMapping objectForKey: aName];
+  NSString *path = nil;
+
+  /* First search among the theme images using the GSTheme mapping */
+  if (mappedName != nil)
+    {
+      NSString *extension = nil;
+      NSString *proposedName = [self _resourceNameForImageNamed: mappedName 
+                                                           type: &extension];
+
+      /* If the image file name from the theme mapping uses an extension, this 
+         extension is used to look up the path. If the image file cannot found, 
+         _pathForImageNamed:ofType:subdirectory:inBundle: searches an image 
+         file for the file extensions from -imageFileTypes. */
+      path = [self _pathForImageNamed: proposedName
+                               ofType: extension 
+                         subdirectory: @"ThemeImages"
+                             inBundle: [[GSTheme theme] bundle]];
+    }
+
+    /* If not found, search among the theme images using the reverse NSImage 
+       mapping (for GNUstep and OpenStep image names such as common_SwitchOff 
+       or NSSwitch) */
+  if (path == nil)
+    {
+      NSEnumerator *e = 
+        [[nsmapping allKeysForObject: aName] objectEnumerator];
+      NSString *aliasName = nil;
+
+      while ((aliasName = [e nextObject]) != nil)
+        {
+          NSAssert([[aliasName pathExtension] length] == 0, @"nsmapping.strings "
+            "must include no extensions in image file names");
+
+          path = [self _pathForImageNamed: aliasName 
+                                   ofType: nil
+                             subdirectory: @"ThemeImages"
+                                 inBundle: [[GSTheme theme] bundle]];
+
+          if (path != nil)
+            break;
+        }
+    }
+
+  /* If not found, search among the theme images using the image name directly */
+  if (path == nil)
+    {
+      path = [self _pathForImageNamed: aName 
+                               ofType: ext 
+                         subdirectory: @"ThemeImages" 
+                             inBundle: [[GSTheme theme] bundle]];
+    }
+
+  return path;   
 }
 
 /*
@@ -1998,100 +2116,29 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
  */
 + (NSString *) _pathForImageNamed: (NSString *)aName
 {
-  NSString	*realName = aName;
-  NSString	*ext;
+  NSString	*ext = nil;
+  NSString	*proposedName = [self _resourceNameForImageNamed: aName type: &ext];
   NSString	*path = nil;
-  NSBundle	*main_bundle;
-  NSArray	*array;
   
-  if (nil == realName)
-    {
-      realName = aName;
-    }
-  
-  // FIXME: This should use [NSBundle pathForImageResource], but this will 
-  // only allow imageUnfilteredFileTypes.
-  /* If there is no image with that name, search in the main bundle */
-  main_bundle = [NSBundle mainBundle];
-  ext = [realName pathExtension];
-  if (ext != nil && [ext length] == 0)
-    {
-      ext = nil;
-    }
-
-  /* Check if extension is one of the image types */
-  array = [self imageFileTypes];
-  if (ext != nil && [array indexOfObject: ext] != NSNotFound)
-    {
-      /* Extension is one of the image types
-	 So remove from the name */
-      realName = [realName stringByDeletingPathExtension];
-    }
-  else
-    {
-      /* Otherwise extension is not an image type
-	 So leave it alone */
-      ext = nil;
-    }
+  // FIXME: This should use [NSBundle pathForImageResource] if possible, but 
+  // this will only allow imageUnfilteredFileTypes.
   
   /* First search locally */
-  if (ext)
-    path = [main_bundle pathForResource: realName ofType: ext];
-  else 
-    {
-      id o, e;
-      
-      e = [array objectEnumerator];
-      while ((o = [e nextObject]))
-	{
-	  path = [main_bundle pathForResource: realName 
-				       ofType: o];
-	  if (path != nil && [path length] != 0)
-	    break;
-	}
-    }
+  path = [self _pathForImageNamed: proposedName 
+                           ofType: ext 
+                     subdirectory: nil 
+                         inBundle: [NSBundle mainBundle]];
 
-  /* If not found then search in the theme */
+  /* If not found then search in theme */
   if (path == nil)
     {
-      NSDictionary *themeMapping = 
-        [[[GSTheme theme] infoDictionary] objectForKey: @"GSThemeImages"];
-      NSString *mappedName = [themeMapping objectForKey: realName];
-
-      if (mappedName != nil)
-        {
-          // TODO: Could search the images if no file extension is provided
-          if ([[mappedName pathExtension] isEqual: @""])
-            {
-              NSLog(@"Theme image name %@ requires a file extension in the "
-                     "theme Info.plist to get loaded.", mappedName);
-            }
-
-          path = [[[GSTheme theme] bundle] pathForResource: mappedName 
-                                                    ofType: nil 
-                                               inDirectory: @"ThemeImages"];
-        }
+      path = [self _pathForThemeImageNamed: proposedName ofType: ext];
     }
   
   /* If not found then search in system */
   if (path == nil)
     {
-      path = [self _pathForLibraryImageNamed: realName ofType: ext inDirectory: @"Images"];  
-    }
-
-  /* If not found then search in system using reverse nsmapping */
-  if (path == nil)
-    {
-       NSEnumerator *e = [[nsmapping allKeysForObject: realName] objectEnumerator];
-       NSString *aliasName = nil;
-
-      while ((aliasName = [e nextObject]) != nil)
-        {
-          path = [self _pathForLibraryImageNamed: aliasName ofType: ext inDirectory: @"Images"];
-
-          if (path != nil)
-            break;
-        }
+      path = [self _pathForSystemImageNamed: proposedName ofType: ext];  
     }
   
   return path;

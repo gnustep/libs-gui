@@ -1,3 +1,14 @@
+2013-07-22  Quentin Mathe  <quentin.mathe@gmail.com>
+
+	* Source/NSImage.m (+_pathForImageNamed:, +_pathForSystemImageNamed:type:, 
+	+_pathForThemeImageNamed:type:, +_resourceNameForImageNamed:type:): 
+	Fixed missing theme images if not listed in the theme bundle Info.plist. 
+	Theme bundles that contain theme images named using either GNUstep or 
+	OPENSTEP names now work properly again (bug introduced in r36836).
+	Finished to clean and reduce duplication in the image searching code 
+	related to -_pathForImageNamed:.
+	* Images/nsmapping.strings: Updated documentation.
+
 2013-07-18  German A. Arias <german@xelalug.org>
 
 	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:): Revert

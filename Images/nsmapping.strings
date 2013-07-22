@@ -1,6 +1,15 @@
-/* This file contains the mapping of the OPENSTEP names of the images to the
-   actual files where the GNUstep keeps them. The format is the "strings"
-   format and content is trivial. */
+/* This file maps the old OPENSTEP and GNUstep names of the images to the 
+   standard theme image names (declared as constants in GSTheme.h) or icon 
+   names (declared as constants in their related header).
+
+   For now, the GNUstep names also represent the actual file names in the 
+   Images directory. As a result, this mapping is also used to access the 
+   image files at loading time. In the long run, the images could just be 
+   renamed to the standard theme image names (without breaking compatibility 
+   with existing applications and themes, since NSImage checks this mapping 
+   in +imageNamed:).
+   
+   The format is the "strings" format and content is trivial. */
 
 /* We do not remap the application icon to GNUstep */
 /* GNUstep = NSApplicationIcon; */
