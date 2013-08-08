@@ -1,3 +1,10 @@
+2013-08-08 16:27-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add new header for NSStatusItem.h
+	* Headers/AppKit/NSStatusItem.h: Placeholder header.
+	* Source/NSStatusItem.m: Add new class implementation.
+	* Source/GNUmakefile: Add new class.
+
 2013-07-22  Quentin Mathe  <quentin.mathe@gmail.com>
 
 	* Source/NSImage.m (+_pathForImageNamed:, +_pathForSystemImageNamed:type:, 
