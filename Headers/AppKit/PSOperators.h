@@ -39,43 +39,43 @@
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentalpha(float* a)
+PScurrentalpha(CGFloat* a)
 __attribute__((unused));
 
 static inline void
-PScurrentcmykcolor(float* c, float* m, float* y, float* k)
+PScurrentcmykcolor(CGFloat* c, CGFloat* m, CGFloat* y, CGFloat* k)
 __attribute__((unused));
 
 static inline void
-PScurrentgray(float* gray)
+PScurrentgray(CGFloat* gray)
 __attribute__((unused));
 
 static inline void
-PScurrenthsbcolor(float* h, float* s, float* b)
+PScurrenthsbcolor(CGFloat* h, CGFloat* s, CGFloat* b)
 __attribute__((unused));
 
 static inline void
-PScurrentrgbcolor(float* r, float* g, float* b)
+PScurrentrgbcolor(CGFloat* r, CGFloat* g, CGFloat* b)
 __attribute__((unused));
 
 static inline void
-PSsetalpha(float a)
+PSsetalpha(CGFloat a)
 __attribute__((unused));
 
 static inline void
-PSsetcmykcolor(float c, float m, float y, float k)
+PSsetcmykcolor(CGFloat c, CGFloat m, CGFloat y, CGFloat k)
 __attribute__((unused));
 
 static inline void
-PSsetgray(float gray)
+PSsetgray(CGFloat gray)
 __attribute__((unused));
 
 static inline void
-PSsethsbcolor(float h, float s, float b)
+PSsethsbcolor(CGFloat h, CGFloat s, CGFloat b)
 __attribute__((unused));
 
 static inline void
-PSsetrgbcolor(float r, float g, float b)
+PSsetrgbcolor(CGFloat r, CGFloat g, CGFloat b)
 __attribute__((unused));
 
 
@@ -84,11 +84,11 @@ __attribute__((unused));
 /* Text operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSashow(float x, float y, const char* s)
+PSashow(CGFloat x, CGFloat y, const char* s)
 __attribute__((unused));
 
 static inline void
-PSawidthshow(float cx, float cy, int c, float ax, float ay, const char* s)
+PSawidthshow(CGFloat cx, CGFloat cy, int c, CGFloat ax, CGFloat ay, const char* s)
 __attribute__((unused));
 
 static inline void
@@ -100,19 +100,19 @@ PSshow(const char* s)
 __attribute__((unused));
 
 static inline void
-PSwidthshow(float x, float y, int c, const char* s)
+PSwidthshow(CGFloat x, CGFloat y, int c, const char* s)
 __attribute__((unused));
 
 static inline void
-PSxshow(const char* s, const float* numarray, int size)
+PSxshow(const char* s, const CGFloat* numarray, int size)
 __attribute__((unused));
 
 static inline void
-PSxyshow(const char* s, const float* numarray, int size)
+PSxyshow(const char* s, const CGFloat* numarray, int size)
 __attribute__((unused));
 
 static inline void
-PSyshow(const char* s, const float* numarray, int size)
+PSyshow(const char* s, const CGFloat* numarray, int size)
 __attribute__((unused));
 
 
@@ -133,7 +133,7 @@ PSinitgraphics()
 __attribute__((unused));
 
 static inline void
-PSsetgstate(int gst)
+PSsetgstate(NSInteger gst)
 __attribute__((unused));
 
 
@@ -142,7 +142,7 @@ __attribute__((unused));
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentflat(float* flatness)
+PScurrentflat(CGFloat* flatness)
 __attribute__((unused));
 
 static inline void
@@ -154,15 +154,15 @@ PScurrentlinejoin(int* linejoin)
 __attribute__((unused));
 
 static inline void
-PScurrentlinewidth(float* width)
+PScurrentlinewidth(CGFloat* width)
 __attribute__((unused));
 
 static inline void
-PScurrentmiterlimit(float* limit)
+PScurrentmiterlimit(CGFloat* limit)
 __attribute__((unused));
 
 static inline void
-PScurrentpoint(float* x, float* y)
+PScurrentpoint(CGFloat* x, CGFloat* y)
 __attribute__((unused));
 
 static inline void
@@ -170,15 +170,15 @@ PScurrentstrokeadjust(int* b)
 __attribute__((unused));
 
 static inline void
-PSsetdash(const float* pat, int size, float offset)
+PSsetdash(const CGFloat* pat, NSInteger size, CGFloat offset)
 __attribute__((unused));
 
 static inline void
-PSsetflat(float flatness)
+PSsetflat(CGFloat flatness)
 __attribute__((unused));
 
 static inline void
-PSsethalftonephase(float x, float y)
+PSsethalftonephase(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
@@ -190,11 +190,11 @@ PSsetlinejoin(int linejoin)
 __attribute__((unused));
 
 static inline void
-PSsetlinewidth(float width)
+PSsetlinewidth(CGFloat width)
 __attribute__((unused));
 
 static inline void
-PSsetmiterlimit(float limit)
+PSsetmiterlimit(CGFloat limit)
 __attribute__((unused));
 
 static inline void
@@ -206,7 +206,7 @@ __attribute__((unused));
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSconcat(const float* m)
+PSconcat(const CGFloat* m)
 __attribute__((unused));
 
 static inline void
@@ -214,15 +214,15 @@ PSinitmatrix()
 __attribute__((unused));
 
 static inline void
-PSrotate(float angle)
+PSrotate(CGFloat angle)
 __attribute__((unused));
 
 static inline void
-PSscale(float x, float y)
+PSscale(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
-PStranslate(float x, float y)
+PStranslate(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 
@@ -231,15 +231,15 @@ __attribute__((unused));
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSarc(float x, float y, float r, float angle1, float angle2)
+PSarc(CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
 __attribute__((unused));
 
 static inline void
-PSarcn(float x, float y, float r, float angle1, float angle2)
+PSarcn(CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
 __attribute__((unused));
 
 static inline void
-PSarct(float x1, float y1, float x2, float y2, float r)
+PSarct(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat r)
 __attribute__((unused));
 
 static inline void
@@ -251,7 +251,7 @@ PSclosepath()
 __attribute__((unused));
 
 static inline void
-PScurveto(float x1, float y1, float x2, float y2, float x3, float y3)
+PScurveto(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
 __attribute__((unused));
 
 static inline void
@@ -275,11 +275,11 @@ PSinitclip()
 __attribute__((unused));
 
 static inline void
-PSlineto(float x, float y)
+PSlineto(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
-PSmoveto(float x, float y)
+PSmoveto(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
@@ -287,23 +287,23 @@ PSnewpath()
 __attribute__((unused));
 
 static inline void
-PSpathbbox(float* llx, float* lly, float* urx, float* ury)
+PSpathbbox(CGFloat* llx, CGFloat* lly, CGFloat* urx, CGFloat* ury)
 __attribute__((unused));
 
 static inline void
-PSrcurveto(float x1, float y1, float x2, float y2, float x3, float y3)
+PSrcurveto(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
 __attribute__((unused));
 
 static inline void
-PSrectclip(float x, float y, float w, float h)
+PSrectclip(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 __attribute__((unused));
 
 static inline void
-PSrectfill(float x, float y, float w, float h)
+PSrectfill(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 __attribute__((unused));
 
 static inline void
-PSrectstroke(float x, float y, float w, float h)
+PSrectstroke(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 __attribute__((unused));
 
 static inline void
@@ -311,11 +311,11 @@ PSreversepath()
 __attribute__((unused));
 
 static inline void
-PSrlineto(float x, float y)
+PSrlineto(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
-PSrmoveto(float x, float y)
+PSrmoveto(CGFloat x, CGFloat y)
 __attribute__((unused));
 
 static inline void
@@ -331,15 +331,15 @@ __attribute__((unused));
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
 static inline void
-PScomposite(float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+PScomposite(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSInteger gstateNum, CGFloat dx, CGFloat dy, NSCompositingOperation op)
 __attribute__((unused));
 
 static inline void
-PScompositerect(float x, float y, float w, float h, int op)
+PScompositerect(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSCompositingOperation op)
 __attribute__((unused));
 
 static inline void
-PSdissolve(float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+PSdissolve(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSInteger gstateNum, CGFloat dx, CGFloat dy, CGFloat delta)
 __attribute__((unused));
 
 
@@ -360,61 +360,61 @@ __attribute__((unused));
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentalpha(float* a)
+PScurrentalpha(CGFloat* a)
 {
   DPScurrentalpha(DEFCTXT, a);
 }
 
 static inline void
-PScurrentcmykcolor(float* c, float* m, float* y, float* k)
+PScurrentcmykcolor(CGFloat* c, CGFloat* m, CGFloat* y, CGFloat* k)
 {
   DPScurrentcmykcolor(DEFCTXT, c, m, y, k);
 }
 
 static inline void
-PScurrentgray(float* gray)
+PScurrentgray(CGFloat* gray)
 {
   DPScurrentgray(DEFCTXT, gray);
 }
 
 static inline void
-PScurrenthsbcolor(float* h, float* s, float* b)
+PScurrenthsbcolor(CGFloat* h, CGFloat* s, CGFloat* b)
 {
   DPScurrenthsbcolor(DEFCTXT, h, s, b);
 }
 
 static inline void
-PScurrentrgbcolor(float* r, float* g, float* b)
+PScurrentrgbcolor(CGFloat* r, CGFloat* g, CGFloat* b)
 {
   DPScurrentrgbcolor(DEFCTXT, r, g, b);
 }
 
 static inline void
-PSsetalpha(float a)
+PSsetalpha(CGFloat a)
 {
   DPSsetalpha(DEFCTXT, a);
 }
 
 static inline void
-PSsetcmykcolor(float c, float m, float y, float k)
+PSsetcmykcolor(CGFloat c, CGFloat m, CGFloat y, CGFloat k)
 {
   DPSsetcmykcolor(DEFCTXT, c, m, y, k);
 }
 
 static inline void
-PSsetgray(float gray)
+PSsetgray(CGFloat gray)
 {
   DPSsetgray(DEFCTXT, gray);
 }
 
 static inline void
-PSsethsbcolor(float h, float s, float b)
+PSsethsbcolor(CGFloat h, CGFloat s, CGFloat b)
 {
   DPSsethsbcolor(DEFCTXT, h, s, b);
 }
 
 static inline void
-PSsetrgbcolor(float r, float g, float b)
+PSsetrgbcolor(CGFloat r, CGFloat g, CGFloat b)
 {
   DPSsetrgbcolor(DEFCTXT, r, g, b);
 }
@@ -437,13 +437,13 @@ PSwindowlist(int __attribute__((unused)) d,
 /* Text operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSashow(float x, float y, const char* s)
+PSashow(CGFloat x, CGFloat y, const char* s)
 {
   DPSashow(DEFCTXT, x, y, s);
 }
 
 static inline void
-PSawidthshow(float cx, float cy, int c, float ax, float ay, const char* s)
+PSawidthshow(CGFloat cx, CGFloat cy, int c, CGFloat ax, CGFloat ay, const char* s)
 {
   DPSawidthshow(DEFCTXT, cx, cy, c, ax, ay, s);
 }
@@ -461,25 +461,25 @@ PSshow(const char* s)
 }
 
 static inline void
-PSwidthshow(float x, float y, int c, const char* s)
+PSwidthshow(CGFloat x, CGFloat y, int c, const char* s)
 {
   DPSwidthshow(DEFCTXT, x, y, c, s);
 }
 
 static inline void
-PSxshow(const char* s, const float* numarray, int size)
+PSxshow(const char* s, const CGFloat* numarray, int size)
 {
   DPSxshow(DEFCTXT, s, numarray, size);
 }
 
 static inline void
-PSxyshow(const char* s, const float* numarray, int size)
+PSxyshow(const char* s, const CGFloat* numarray, int size)
 {
   DPSxyshow(DEFCTXT, s, numarray, size);
 }
 
 static inline void
-PSyshow(const char* s, const float* numarray, int size)
+PSyshow(const char* s, const CGFloat* numarray, int size)
 {
   DPSyshow(DEFCTXT, s, numarray, size);
 }
@@ -508,7 +508,7 @@ PSinitgraphics()
 }
 
 static inline void
-PSsetgstate(int gst)
+PSsetgstate(NSInteger gst)
 {
   DPSsetgstate(DEFCTXT, gst);
 }
@@ -519,7 +519,7 @@ PSsetgstate(int gst)
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentflat(float* flatness)
+PScurrentflat(CGFloat* flatness)
 {
   DPScurrentflat(DEFCTXT, flatness);
 }
@@ -537,19 +537,19 @@ PScurrentlinejoin(int* linejoin)
 }
 
 static inline void
-PScurrentlinewidth(float* width)
+PScurrentlinewidth(CGFloat* width)
 {
   DPScurrentlinewidth(DEFCTXT, width);
 }
 
 static inline void
-PScurrentmiterlimit(float* limit)
+PScurrentmiterlimit(CGFloat* limit)
 {
   DPScurrentmiterlimit(DEFCTXT, limit);
 }
 
 static inline void
-PScurrentpoint(float* x, float* y)
+PScurrentpoint(CGFloat* x, CGFloat* y)
 {
   DPScurrentpoint(DEFCTXT, x, y);
 }
@@ -561,19 +561,19 @@ PScurrentstrokeadjust(int* b)
 }
 
 static inline void
-PSsetdash(const float* pat, int size, float offset)
+PSsetdash(const CGFloat* pat, NSInteger size, CGFloat offset)
 {
   DPSsetdash(DEFCTXT, pat, size, offset);
 }
 
 static inline void
-PSsetflat(float flatness)
+PSsetflat(CGFloat flatness)
 {
   DPSsetflat(DEFCTXT, flatness);
 }
 
 static inline void
-PSsethalftonephase(float x, float y)
+PSsethalftonephase(CGFloat x, CGFloat y)
 {
   DPSsethalftonephase(DEFCTXT, x, y);
 }
@@ -591,13 +591,13 @@ PSsetlinejoin(int linejoin)
 }
 
 static inline void
-PSsetlinewidth(float width)
+PSsetlinewidth(CGFloat width)
 {
   DPSsetlinewidth(DEFCTXT, width);
 }
 
 static inline void
-PSsetmiterlimit(float limit)
+PSsetmiterlimit(CGFloat limit)
 {
   DPSsetmiterlimit(DEFCTXT, limit);
 }
@@ -613,7 +613,7 @@ PSsetstrokeadjust(int b)
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSconcat(const float* m)
+PSconcat(const CGFloat* m)
 {
   DPSconcat(DEFCTXT, m);
 }
@@ -625,19 +625,19 @@ PSinitmatrix()
 }
 
 static inline void
-PSrotate(float angle)
+PSrotate(CGFloat angle)
 {
   DPSrotate(DEFCTXT, angle);
 }
 
 static inline void
-PSscale(float x, float y)
+PSscale(CGFloat x, CGFloat y)
 {
   DPSscale(DEFCTXT, x, y);
 }
 
 static inline void
-PStranslate(float x, float y)
+PStranslate(CGFloat x, CGFloat y)
 {
   DPStranslate(DEFCTXT, x, y);
 }
@@ -648,19 +648,19 @@ PStranslate(float x, float y)
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSarc(float x, float y, float r, float angle1, float angle2)
+PSarc(CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
 {
   DPSarc(DEFCTXT, x, y, r, angle1, angle2);
 }
 
 static inline void
-PSarcn(float x, float y, float r, float angle1, float angle2)
+PSarcn(CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
 {
   DPSarcn(DEFCTXT, x, y, r, angle1, angle2);
 }
 
 static inline void
-PSarct(float x1, float y1, float x2, float y2, float r)
+PSarct(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat r)
 {
   DPSarct(DEFCTXT, x1, y1, x2, y2, r);
 }
@@ -678,7 +678,7 @@ PSclosepath()
 }
 
 static inline void
-PScurveto(float x1, float y1, float x2, float y2, float x3, float y3)
+PScurveto(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
 {
   DPScurveto(DEFCTXT, x1, y1, x2, y2, x3, y3);
 }
@@ -714,13 +714,13 @@ PSinitclip()
 }
 
 static inline void
-PSlineto(float x, float y)
+PSlineto(CGFloat x, CGFloat y)
 {
   DPSlineto(DEFCTXT, x, y);
 }
 
 static inline void
-PSmoveto(float x, float y)
+PSmoveto(CGFloat x, CGFloat y)
 {
   DPSmoveto(DEFCTXT, x, y);
 }
@@ -732,31 +732,31 @@ PSnewpath()
 }
 
 static inline void
-PSpathbbox(float* llx, float* lly, float* urx, float* ury)
+PSpathbbox(CGFloat* llx, CGFloat* lly, CGFloat* urx, CGFloat* ury)
 {
   DPSpathbbox(DEFCTXT, llx, lly, urx, ury);
 }
 
 static inline void
-PSrcurveto(float x1, float y1, float x2, float y2, float x3, float y3)
+PSrcurveto(CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
 {
   DPSrcurveto(DEFCTXT, x1, y1, x2, y2, x3, y3);
 }
 
 static inline void
-PSrectclip(float x, float y, float w, float h)
+PSrectclip(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
   DPSrectclip(DEFCTXT, x, y, w, h);
 }
 
 static inline void
-PSrectfill(float x, float y, float w, float h)
+PSrectfill(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
   DPSrectfill(DEFCTXT, x, y, w, h);
 }
 
 static inline void
-PSrectstroke(float x, float y, float w, float h)
+PSrectstroke(CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 {
   DPSrectstroke(DEFCTXT, x, y, w, h);
 }
@@ -768,13 +768,13 @@ PSreversepath()
 }
 
 static inline void
-PSrlineto(float x, float y)
+PSrlineto(CGFloat x, CGFloat y)
 {
   DPSrlineto(DEFCTXT, x, y);
 }
 
 static inline void
-PSrmoveto(float x, float y)
+PSrmoveto(CGFloat x, CGFloat y)
 {
   DPSrmoveto(DEFCTXT, x, y);
 }
@@ -796,19 +796,20 @@ PSshfill(NSDictionary *shaderDictionary)
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
 static inline void
-PScomposite(float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+PScomposite(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSInteger gstateNum,
+            CGFloat dx, CGFloat dy, NSCompositingOperation op)
 {
   DPScomposite(DEFCTXT, x, y, w, h, gstateNum, dx, dy, op);
 }
 
 static inline void
-PScompositerect(float x, float y, float w, float h, int op)
+PScompositerect(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSCompositingOperation op)
 {
   DPScompositerect(DEFCTXT, x, y, w, h, op);
 }
 
 static inline void
-PSdissolve(float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+PSdissolve(CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSInteger gstateNum, CGFloat dx, CGFloat dy, CGFloat delta)
 {
   DPSdissolve(DEFCTXT, x, y, w, h, gstateNum, dx, dy, delta);
 }

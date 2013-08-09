@@ -77,12 +77,12 @@ typedef enum {
   NSWindingRule _windingRule;
   NSLineCapStyle _lineCapStyle;
   NSLineJoinStyle _lineJoinStyle;
-  float _lineWidth;
-  float _flatness;
-  float _miterLimit;
-  int _dash_count;
-  float _dash_phase;
-  float *_dash_pattern;
+  CGFloat _lineWidth;
+  CGFloat _flatness;
+  CGFloat _miterLimit;
+  NSInteger _dash_count;
+  CGFloat _dash_phase;
+  CGFloat *_dash_pattern;
   NSRect _bounds;
   NSRect _controlPointBounds;
   NSImage *_cacheImage;
@@ -128,18 +128,18 @@ typedef enum {
 //
 // Default path rendering parameters
 //
-+ (void)setDefaultMiterLimit:(float)limit;
-+ (float)defaultMiterLimit;
-+ (void)setDefaultFlatness:(float)flatness;
-+ (float)defaultFlatness;
++ (void)setDefaultMiterLimit:(CGFloat)limit;
++ (CGFloat)defaultMiterLimit;
++ (void)setDefaultFlatness:(CGFloat)flatness;
++ (CGFloat)defaultFlatness;
 + (void)setDefaultWindingRule:(NSWindingRule)windingRule;
 + (NSWindingRule)defaultWindingRule;
 + (void)setDefaultLineCapStyle:(NSLineCapStyle)lineCapStyle;
 + (NSLineCapStyle)defaultLineCapStyle;
 + (void)setDefaultLineJoinStyle:(NSLineJoinStyle)lineJoinStyle;
 + (NSLineJoinStyle)defaultLineJoinStyle;
-+ (void)setDefaultLineWidth:(float)lineWidth;
-+ (float)defaultLineWidth;
++ (void)setDefaultLineWidth:(CGFloat)lineWidth;
++ (CGFloat)defaultLineWidth;
 
 //
 // Path construction
@@ -164,20 +164,20 @@ typedef enum {
 //
 // Path rendering parameters
 //
-- (float)lineWidth;
-- (void)setLineWidth:(float)lineWidth;
+- (CGFloat)lineWidth;
+- (void)setLineWidth:(CGFloat)lineWidth;
 - (NSLineCapStyle)lineCapStyle;
 - (void)setLineCapStyle:(NSLineCapStyle)lineCapStyle;
 - (NSLineJoinStyle)lineJoinStyle;
 - (void)setLineJoinStyle:(NSLineJoinStyle)lineJoinStyle;
 - (NSWindingRule)windingRule;
 - (void)setWindingRule:(NSWindingRule)windingRule;
-- (void)setFlatness:(float)flatness;
-- (float)flatness;
-- (void)setMiterLimit:(float)limit;
-- (float)miterLimit;
-- (void)getLineDash:(float *)pattern count:(int *)count phase:(float *)phase;
-- (void)setLineDash:(const float *)pattern count:(int)count phase:(float)phase;
+- (void)setFlatness:(CGFloat)flatness;
+- (CGFloat)flatness;
+- (void)setMiterLimit:(CGFloat)limit;
+- (CGFloat)miterLimit;
+- (void)getLineDash:(CGFloat *)pattern count:(NSInteger *)count phase:(CGFloat *)phase;
+- (void)setLineDash:(const CGFloat *)pattern count:(NSInteger)count phase:(CGFloat)phase;
 
 //
 // Path operations
@@ -209,34 +209,34 @@ typedef enum {
 //
 // Elements
 //
-- (int)elementCount;
-- (NSBezierPathElement)elementAtIndex:(int)index
+- (NSInteger)elementCount;
+- (NSBezierPathElement)elementAtIndex:(NSInteger)index
 		     associatedPoints:(NSPoint *)points;
-- (NSBezierPathElement)elementAtIndex:(int)index;
-- (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index;
+- (NSBezierPathElement)elementAtIndex:(NSInteger)index;
+- (void)setAssociatedPoints:(NSPoint *)points atIndex:(NSInteger)index;
 
 //
 // Appending common paths
 //
 - (void)appendBezierPath:(NSBezierPath *)aPath;
 - (void)appendBezierPathWithRect:(NSRect)aRect;
-- (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count;
+- (void)appendBezierPathWithPoints:(NSPoint *)points count:(NSInteger)count;
 - (void)appendBezierPathWithOvalInRect:(NSRect)aRect;
 - (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
-				   radius:(float)radius
-			       startAngle:(float)startAngle
-				 endAngle:(float)endAngle
+				   radius:(CGFloat)radius
+			       startAngle:(CGFloat)startAngle
+				 endAngle:(CGFloat)endAngle
 				clockwise:(BOOL)clockwise;
 - (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
-				   radius:(float)radius
-			       startAngle:(float)startAngle
-				 endAngle:(float)endAngle;
+				   radius:(CGFloat)radius
+			       startAngle:(CGFloat)startAngle
+				 endAngle:(CGFloat)endAngle;
 - (void)appendBezierPathWithArcFromPoint:(NSPoint)point1
 				 toPoint:(NSPoint)point2
-				  radius:(float)radius;
+				  radius:(CGFloat)radius;
 - (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font;
 - (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
-			     count:(int)count
+			     count:(NSInteger)count
 			    inFont:(NSFont *)font;
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)

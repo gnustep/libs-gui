@@ -237,6 +237,7 @@ typedef struct GSLayoutManager_textcontainer_s
 @interface GSLayoutManager (LayoutHelpers)
 -(void) _freeLayout;
 -(void) _invalidateLayoutFromContainer: (int)idx;
+-(void) _invalidateEverything;
 
 -(void) _doLayout; /* TODO: this is just a hack until proper incremental layout is done */
 -(void) _doLayoutToGlyph: (unsigned int)glyphIndex;

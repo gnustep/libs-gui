@@ -258,8 +258,8 @@
 			      replaceRange = NSMakeRange(([string length] / 2)-2, 4);
 			    [(NSMutableAttributedString *)string replaceCharactersInRange:replaceRange withString:ellipsis];
 			  } while ([string length] > 4 && [string size].width > titleRect.size.width);
-		    }
-		}
+    }
+}
       [string drawInRect: titleRect];
     }
 }

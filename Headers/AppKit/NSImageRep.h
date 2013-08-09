@@ -53,9 +53,9 @@ enum {
   NSSize _size;
   BOOL   _hasAlpha;
   BOOL   _isOpaque;
-  int    _bitsPerSample;
-  int    _pixelsWide;
-  int    _pixelsHigh;
+  NSInteger _bitsPerSample;
+  NSInteger _pixelsWide;
+  NSInteger _pixelsHigh;
 }
 
 //
@@ -122,12 +122,12 @@ enum {
  *   <item>-setBitsPerSample:</item>
  *  </list>
  */
-- (int)bitsPerSample;
+- (NSInteger)bitsPerSample;
 - (NSString *)colorSpaceName;
 - (BOOL)hasAlpha;
 - (BOOL)isOpaque;
-- (int)pixelsHigh;
-- (int)pixelsWide;
+- (NSInteger)pixelsHigh;
+- (NSInteger)pixelsWide;
 - (void)setAlpha:(BOOL)flag;
 
 /** Sets the number of bits for each component of a pixel.
@@ -136,11 +136,11 @@ enum {
  *   <item>-bitsPerSample</item>
  *  </list>
  */
-- (void)setBitsPerSample:(int)anInt;
+- (void)setBitsPerSample:(NSInteger)anInt;
 - (void)setColorSpaceName:(NSString *)aString;
 - (void)setOpaque:(BOOL)flag;
-- (void)setPixelsHigh:(int)anInt;
-- (void)setPixelsWide:(int)anInt;
+- (void)setPixelsHigh:(NSInteger)anInt;
+- (void)setPixelsWide:(NSInteger)anInt;
 
 //
 // Drawing the Image 
@@ -160,7 +160,7 @@ enum {
 - (BOOL) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (CGFloat)delta
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints;
 #endif

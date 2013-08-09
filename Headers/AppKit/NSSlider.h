@@ -42,11 +42,11 @@
 // appearance 
 - (double) altIncrementValue;
 - (NSImage*) image;
-- (int) isVertical;
-- (float) knobThickness;
+- (NSInteger) isVertical;
+- (CGFloat) knobThickness;
 - (void) setAltIncrementValue: (double)increment;
 - (void) setImage: (NSImage*)backgroundImage;
-- (void) setKnobThickness: (float)aFloat;
+- (void) setKnobThickness: (CGFloat)aFloat;
 
 // title
 - (NSString*) title;

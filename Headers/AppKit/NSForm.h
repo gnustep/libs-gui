@@ -36,7 +36,7 @@
 @class NSFormCell;
 @class NSFont;
 
-@interface NSForm : NSMatrix <NSCoding>
+@interface NSForm : NSMatrix
 {
   BOOL _title_width_needs_update;
 }
@@ -45,22 +45,22 @@
 //
 - (NSFormCell*)addEntry:(NSString*)title;
 - (NSFormCell*)insertEntry:(NSString*)title
-		    atIndex:(int)index;
-- (void)removeEntryAtIndex:(int)index;
-- (void)setInterlineSpacing:(float)spacing;
+		    atIndex:(NSInteger)index;
+- (void)removeEntryAtIndex:(NSInteger)index;
+- (void)setInterlineSpacing:(CGFloat)spacing;
 
 //
 // Finding Indices
 //
-- (int)indexOfCellWithTag:(int)aTag;
-- (int)indexOfSelectedItem;
+- (NSInteger)indexOfCellWithTag:(NSInteger)aTag;
+- (NSInteger)indexOfSelectedItem;
 
 //
 // Modifying Graphic Attributes 
 //
 - (void)setBezeled:(BOOL)flag;
 - (void)setBordered:(BOOL)flag;
-- (void)setTextAlignment:(int)aMode;
+- (void)setTextAlignment:(NSTextAlignment)aMode;
 - (void)setTextFont:(NSFont*)fontObject;
 - (void)setTitleAlignment:(NSTextAlignment)aMode;
 - (void)setTitleFont:(NSFont*)fontObject;
@@ -72,17 +72,17 @@
 //
 // Getting a Cell 
 //
-- (id)cellAtIndex:(int)index;
+- (id)cellAtIndex:(NSInteger)index;
 
 //
 // Displaying a Cell
 //
-- (void)drawCellAtIndex:(int)index;
+- (void)drawCellAtIndex:(NSInteger)index;
 
 //
 // Editing Text 
 //
-- (void)selectTextAtIndex:(int)index;
+- (void)selectTextAtIndex:(NSInteger)index;
 
 //
 // Resizing the Form 

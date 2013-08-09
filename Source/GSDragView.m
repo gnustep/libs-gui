@@ -108,7 +108,7 @@
   [self setExcludedFromWindowsMenu: YES];
 }
 
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {
   [super orderWindow: place relativeTo: otherWin];
   [self setLevel: NSPopUpMenuWindowLevel];
@@ -359,12 +359,12 @@ static	GSDragView *sharedDragView = nil;
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
                             windowRef: (int*)mouseWindowRef
 {
-  int win;
-  
+  NSInteger win;
+
   *mouseWindowRef = 0;
   win = [GSServerForWindow(_window) findWindowAt: mouseLocation
-                                     windowRef: mouseWindowRef
-                                     excluding: [_window windowNumber]];
+				       windowRef: mouseWindowRef
+				       excluding: [_window windowNumber]];
 
   return GSWindowWithNumber(win);
 }
@@ -389,7 +389,7 @@ static	GSDragView *sharedDragView = nil;
            mousePosition: (NSPoint)mPoint
            imagePosition: (NSPoint)iPoint
 {
-  NSSize	imageSize;
+  NSSize imageSize;
 
   if (anImage == nil)
     {
@@ -433,7 +433,7 @@ static	GSDragView *sharedDragView = nil;
 */
 - (BOOL) _updateOperationMask: (NSEvent*) theEvent
 {
-  unsigned int mod = [theEvent modifierFlags];
+  NSUInteger mod = [theEvent modifierFlags];
   NSDragOperation oldOperationMask = operationMask;
 
   if (operationMask == NSDragOperationIgnoresModifiers)
@@ -497,7 +497,7 @@ static	GSDragView *sharedDragView = nil;
 
   NSDebugLLog (@"NSDragging",
                @"drag, operation, target mask = (%x, %x, %x), dnd aware = %d\n",
-               dragMask, operationMask, targetMask,
+               (unsigned int)dragMask, (unsigned int)operationMask, (unsigned int)targetMask,
                (targetWindowRef != 0));
   
   if (cursors == nil)
@@ -580,7 +580,7 @@ static	GSDragView *sharedDragView = nil;
   NSEvent *e;
   NSGraphicsContext *context = GSCurrentContext();
   // FIXME: Should store this once
-  int dragWindowRef = (int)(intptr_t)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
+  NSInteger dragWindowRef = (NSInteger)(intptr_t)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
 
   eventLocation = [dWindow convertScreenToBase: eventLocation];
   e = [NSEvent otherEventWithType: NSAppKitDefined
@@ -623,7 +623,7 @@ static	GSDragView *sharedDragView = nil;
   // Use eWindow for coordination transformation
   NSWindow	*eWindow = [theEvent window];
   NSDate	*theDistantFuture = [NSDate distantFuture];
-  unsigned int	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSUInteger	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSLeftMouseDraggedMask | NSMouseMovedMask
     | NSPeriodicMask | NSAppKitDefinedMask | NSFlagsChangedMask;
   NSPoint       startPoint;
@@ -878,7 +878,7 @@ static	GSDragView *sharedDragView = nil;
         }
       break;
     default:
-      NSLog(@"Internal: dropped event (%d) during dragging", [theEvent type]);
+      NSLog(@"Internal: dropped event (%d) during dragging", (int)[theEvent type]);
     }
 }
   
@@ -1074,7 +1074,7 @@ static	GSDragView *sharedDragView = nil;
             {
               NSDebugLLog (@"NSDragging", 
 			   @"Unexpected event type: %d during slide",
-                           [theEvent type]);
+                           (int)[theEvent type]);
             }
           newPosition.x = (screenPoint.x + ((float) steps - 1.0) 
 			   * dragPosition.x) / ((float) steps);

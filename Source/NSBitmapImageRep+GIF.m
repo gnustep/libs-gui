@@ -110,6 +110,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
+#if HAVE_QUANTIZEBUFFER
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
@@ -121,6 +122,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   [nsData appendBytes: buffer length: len];
   return len;
 }
+#endif
 
 /* -----------------------------------------------------------
    The gif loading part of NSBitmapImageRep
@@ -140,7 +142,11 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
     }
 
   gs_gif_init_input_source(&src, imageData);
+#if GIFLIB_MAJOR >= 5
+  file = DGifOpen(&src, gs_gif_input, NULL);
+#else
   file = DGifOpen(&src, gs_gif_input);
+#endif
   if (file == NULL)
     {
       /* we do not use giferror here because it doesn't
@@ -384,6 +390,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
+#if HAVE_QUANTIZEBUFFER
   NSMutableData         * GIFRep = nil;	// our return value
   GifFileType           * GIFFile = NULL;
   GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
@@ -534,6 +541,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   free(GIFImage);
 
   return GIFRep;
+#else
+  SET_ERROR_MSG(@"GIFRepresentation: not available on this system");
+  return nil;
+#endif
 }
 
 @end
@@ -548,6 +559,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (id) _initBitmapFromGIF: (NSData *)imageData
 	     errorMessage: (NSString **)errorMsg
 {
+  if (errorMsg != NULL)
+    {
+      *errorMsg = @"gif images not supported on this system";
+    }
   RELEASE(self);
   return nil;
 }
@@ -555,6 +570,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
+  if (errorMsg != NULL)
+    {
+      *errorMsg = @"GIFRepresentation: not supported on this system";
+    }
   return nil;
 }
 

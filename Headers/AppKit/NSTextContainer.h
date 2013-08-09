@@ -74,20 +74,22 @@ whenever this happens.
 @class GSLayoutManager;
 @class NSTextView;
 
-typedef enum {
+enum {
   NSLineSweepLeft,
   NSLineSweepRight,
   NSLineSweepDown,
   NSLineSweepUp
-} NSLineSweepDirection;
+};
+typedef NSUInteger NSLineSweepDirection;
 
-typedef enum {
-  NSLineMoveLeft,
-  NSLineMoveRight,
-  NSLineMoveDown,
-  NSLineMoveUp,
-  NSLineDoesntMove
-} NSLineMovementDirection;
+enum {
+  NSLineDoesntMove,
+  NSLineMovesLeft,
+  NSLineMovesRight,
+  NSLineMovesDown,
+  NSLineMovesUp
+};
+typedef NSUInteger NSLineMovementDirection;
 
 @interface NSTextContainer : NSObject
 {
@@ -95,7 +97,7 @@ typedef enum {
   id _textView;
 
   NSRect _containerRect;
-  float _lineFragmentPadding;
+  CGFloat _lineFragmentPadding;
 
   BOOL _observingFrameChanges;
   BOOL _widthTracksTextView;
@@ -258,8 +260,8 @@ Line fragment padding<br />
 The line fragment padding is an amount of space left empty at each end of
 a line fragment rectangle by the standard typesetter. The default is 0.0.
 */
-- (void) setLineFragmentPadding: (float)aFloat;
-- (float) lineFragmentPadding;
+- (void) setLineFragmentPadding: (CGFloat)aFloat;
+- (CGFloat) lineFragmentPadding;
 
 @end
 

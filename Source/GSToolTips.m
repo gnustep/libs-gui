@@ -26,11 +26,13 @@
 */
 
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSRunLoop.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSUserDefaults.h>
 
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSEvent.h"
@@ -143,7 +145,7 @@
     }
 }
  	  	 
-- (void) drawRect: (id)dirtyRect
+- (void) drawRect: (NSRect)dirtyRect
 {
   if (_text)
     {
@@ -170,7 +172,7 @@
 @implementation GSTTPanel
 
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag;
 {
@@ -236,7 +238,7 @@ static BOOL		restoreMouseMoved;
     [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
   [window setReleasedWhenClosed: NO];
   [window setExcludedFromWindowsMenu: YES];
-  [window setLevel: NSStatusWindowLevel];
+  [window setLevel: NSPopUpMenuWindowLevel];
   [window setAutodisplay: NO];
 }
 
@@ -363,6 +365,7 @@ static BOOL		restoreMouseMoved;
                                          selector: @selector(_timedOut:)
                                          userInfo: toolTipString
                                           repeats: YES];
+  [[NSRunLoop currentRunLoop] addTimer: timer forMode: NSModalPanelRunLoopMode];
   timedObject = self;
   if ([[view window] acceptsMouseMovedEvents] == YES)
     {

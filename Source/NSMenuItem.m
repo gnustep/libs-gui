@@ -520,12 +520,12 @@ static Class imageClass;
   [self setTitle: [title string]];
 }
 
-- (int)indentationLevel
+- (NSInteger)indentationLevel
 {
   return _indentation;
 }
 
-- (void)setIndentationLevel: (int)level
+- (void)setIndentationLevel: (NSInteger)level
 {
   _indentation = level;
 }
@@ -614,9 +614,9 @@ static Class imageClass;
     {
       [aCoder encodeObject: _title];
       [aCoder encodeObject: _keyEquivalent];
-      [aCoder encodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
-      [aCoder encodeValueOfObjCType: "I" at: &_mnemonicLocation];
-      [aCoder encodeValueOfObjCType: "i" at: &_state];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_keyEquivalentModifierMask];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_mnemonicLocation];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_state];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aCoder encodeObject: _image];
       [aCoder encodeObject: _onStateImage];
@@ -624,7 +624,7 @@ static Class imageClass;
       [aCoder encodeObject: _mixedStateImage];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_changesState];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-      [aCoder encodeValueOfObjCType: "i" at: &_tag];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
       [aCoder encodeConditionalObject: _representedObject];
       [aCoder encodeObject: _submenu];
       [aCoder encodeConditionalObject: _target];
@@ -729,13 +729,13 @@ static Class imageClass;
     
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
-      [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_keyEquivalentModifierMask];
       if (version <= 3)
         {
           _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
         }
-      [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
-      [aDecoder decodeValueOfObjCType: "i" at: &_state];
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_mnemonicLocation];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_state];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
@@ -747,7 +747,7 @@ static Class imageClass;
           _target = [aDecoder decodeObject];
         }
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-      [aDecoder decodeValueOfObjCType: "i" at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
       if (version >= 2)

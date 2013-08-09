@@ -49,11 +49,12 @@
 @class NSText;
 @class NSFormatter;
 
-typedef enum _NSCellType {
+enum _NSCellType {
   NSNullCellType,
   NSTextCellType,
   NSImageCellType
-} NSCellType;
+};
+typedef NSUInteger NSCellType;
 
 enum {
   NSAnyType,
@@ -66,7 +67,7 @@ enum {
   NSDateType
 };
 
-typedef enum {
+enum {
   NSNoImage = 0,
   NSImageOnly,
   NSImageLeft,
@@ -74,9 +75,10 @@ typedef enum {
   NSImageBelow,
   NSImageAbove,
   NSImageOverlaps
-} NSCellImagePosition;
+};
+typedef NSUInteger NSCellImagePosition;
 
-typedef enum _NSCellAttribute {
+enum _NSCellAttribute {
   NSCellDisabled,
   NSCellState,
   NSPushInCell,
@@ -94,7 +96,8 @@ typedef enum _NSCellAttribute {
   NSCellChangesContents,  
   NSCellIsInsetButton,
   NSCellAllowsMixedState
-} NSCellAttribute;
+};
+typedef NSUInteger NSCellAttribute;
 
 enum {
   NSNoCellMask			= 0,
@@ -113,10 +116,11 @@ enum {
  * We try to do as in macosx. 
  */
 enum { 
+  NSMixedState			= -1,
   NSOffState			= 0,
-  NSOnState			= 1,
-  NSMixedState			= -1
+  NSOnState			= 1
 };
+typedef NSUInteger NSCellStateValue;
 
 /**
  *  <p>Enumeration of the ways that you can display an image in an
@@ -131,7 +135,7 @@ enum {
  *  <p><code>NSScaleToFit</code>: The image is always resized (up
  *  or down) to fit exactly in the cell size.</p>
  */
-typedef enum {
+enum {
   NSScaleProportionally = 0,
   NSScaleToFit = 1,
   NSScaleNone = 2,
@@ -139,7 +143,8 @@ typedef enum {
   NSImageScaleAxesIndependently = 1,
   NSImageScaleNone = 2,
   NSImageScaleProportionallyUpOrDown = 3
-} NSImageScaling;
+};
+typedef NSUInteger NSImageScaling;
 
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
@@ -188,8 +193,8 @@ typedef enum {
     // Set while the cell is edited/selected
     unsigned in_editing: 1;
   } _cell;
-  unsigned int _mouse_down_flags;
-  unsigned int _action_mask;
+  NSUInteger _mouse_down_flags;
+  NSUInteger _action_mask;
   NSFormatter *_formatter;
   NSMenu *_menu;
   id _represented_object; 
@@ -235,9 +240,9 @@ typedef enum {
 //
 // Setting Parameters 
 //
-- (int)cellAttribute:(NSCellAttribute)aParameter;
+- (NSInteger)cellAttribute:(NSCellAttribute)aParameter;
 - (void)setCellAttribute:(NSCellAttribute)aParameter
-		      to:(int)value;
+		      to:(NSInteger)value;
 
 //
 // Setting the NSCell's Type 
@@ -312,7 +317,7 @@ typedef enum {
 //
 - (SEL)action;
 - (BOOL)isContinuous;
-- (int)sendActionOn:(int)mask;
+- (NSInteger)sendActionOn:(NSInteger)mask;
 - (void)setAction:(SEL)aSelector;
 - (void)setContinuous:(BOOL)flag;
 - (void)setTarget:(id)anObject;
@@ -337,12 +342,12 @@ typedef enum {
 - (void)setFormatter:(NSFormatter *)newFormatter;
 - (id)formatter;
 #endif
-- (int)entryType;
+- (NSInteger)entryType;
 - (BOOL)isEntryAcceptable:(NSString *)aString;
-- (void)setEntryType:(int)aType;
+- (void)setEntryType:(NSInteger)aType;
 - (void)setFloatingPointFormat:(BOOL)autoRange
-                          left:(unsigned int)leftDigits
-                         right:(unsigned int)rightDigits;
+                          left:(NSUInteger)leftDigits
+                         right:(NSUInteger)rightDigits;
 
 //
 // Menu
@@ -411,7 +416,7 @@ typedef enum {
 - (BOOL)continueTracking:(NSPoint)lastPoint
 		      at:(NSPoint)currentPoint
 		  inView:(NSView *)controlView;
-- (int)mouseDownFlags;
+- (NSInteger)mouseDownFlags;
 - (void)getPeriodicDelay:(float *)delay
 		interval:(float *)interval;
 - (BOOL)startTrackingAt:(NSPoint)startPoint
@@ -486,8 +491,8 @@ typedef enum {
 		 inView:(NSView *)controlView	 
 		 editor:(NSText *)textObject	 
 		 delegate:(id)anObject	 
-		  start:(int)selStart	 
-		 length:(int)selLength;
+		  start:(NSInteger)selStart	 
+		 length:(NSInteger)selLength;
 - (void)endEditing:(NSText *)textObject;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)sendsActionOnEndEditing;
@@ -511,7 +516,7 @@ typedef enum {
 - (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame;
 - (void) _drawAttributedText: (NSAttributedString*)aString  
 		     inFrame: (NSRect)aRect;
-- (BOOL) _sendsActionOn:(int)eventTypeMask;
+- (BOOL) _sendsActionOn:(NSUInteger)eventTypeMask;
 - (NSAttributedString*) _drawAttributedString;
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView;

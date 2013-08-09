@@ -911,7 +911,7 @@ static NSImage *unexpandable  = nil;
 /*
  * Drawing
  */
-- (void) drawRow: (int)rowIndex clipRect: (NSRect)aRect
+- (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
   int startingColumn;
   int endingColumn;
@@ -1039,11 +1039,11 @@ static NSImage *unexpandable  = nil;
 
       [cell drawWithFrame: drawingRect inView: self];
       if (i == _editedColumn && rowIndex == _editedRow)
-	    {
+        {
           [cell _setInEditing: NO];
 		  [cell setShowsFirstResponder:NO];
 		  [cell setFocusRingType:NSFocusRingTypeDefault];
-		}
+        }
     }
 }
 
@@ -1541,8 +1541,8 @@ Also returns the child index relative to this parent. */
   [self _autoloadExpandedItems];
 }
 
-- (void) editColumn: (int) columnIndex
-                row: (int) rowIndex
+- (void) editColumn: (NSInteger) columnIndex
+                row: (NSInteger) rowIndex
           withEvent: (NSEvent *) theEvent
              select: (BOOL) flag
 {
@@ -2258,12 +2258,12 @@ Also returns the child index relative to this parent. */
 {
   NSCell *cell = nil;
   if ([_delegate respondsToSelector:
-		@selector(outlineView:dataCellForTableColumn:item:)])
+        @selector(outlineView:dataCellForTableColumn:item:)])
     {
       id item = [self itemAtRow: rowIndex];
       cell = [_delegate outlineView: self
 			dataCellForTableColumn: tb
-			       item: item];
+                                                            item: item];
     }
   if (cell == nil)
     {

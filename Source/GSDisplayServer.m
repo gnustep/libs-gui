@@ -819,7 +819,7 @@ GSCurrentServer(void)
 }
 
 /** Sets the transparancy value for the whole window */
-- (void) setalpha: (float)alpha: (int) win
+- (void) setalpha: (float)alpha : (int) win
 {
   //[self subclassResponsibility: _cmd];
 }
@@ -942,6 +942,11 @@ GSCurrentServer(void)
           forChildWindow: (int)childWin
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (void) setIgnoreMouse: (BOOL)ignoreMouse : (int)win
+{
+  // Do nothing if not overridden by subclass
 }
 
 @end

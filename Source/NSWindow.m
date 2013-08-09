@@ -527,7 +527,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       NSPoint lastLocation;
       NSPoint location;
-      unsigned eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
         | NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
       NSDate *theDistantFuture = [NSDate distantFuture];
       BOOL done = NO;
@@ -554,7 +554,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
                 location = [_window mouseLocationOutsideOfEventStream];
                 if (NSEqualPoints(location, lastLocation) == NO)
                   {
-                    NSPoint        origin = [_window frame].origin;
+                    NSPoint origin = [_window frame].origin;
 
                     origin.x += (location.x - lastLocation.x);
                     origin.y += (location.y - lastLocation.y);
@@ -710,7 +710,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -720,7 +720,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+                         styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -729,8 +729,8 @@ static NSNotificationCenter *nc = nil;
                                         styleMask: aStyle];
 }
 
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
-                       styleMask: (unsigned int)aStyle
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                       styleMask: (NSUInteger)aStyle
 {
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
@@ -756,7 +756,7 @@ static NSNotificationCenter *nc = nil;
  */
 - (id) init
 {
-  int style;
+  NSUInteger style;
 
   style = NSTitledWindowMask | NSClosableWindowMask
           | NSMiniaturizableWindowMask | NSResizableWindowMask;
@@ -973,7 +973,7 @@ many times.
        */
       while ((type = [enumerator nextObject]) != nil)
         {
-          int i, count = [dragTypes countForObject: type];
+          NSUInteger i, count = [dragTypes countForObject: type];
           
           for (i = 0; i < count; i++)
             {
@@ -1023,7 +1023,7 @@ many times.
   </p> 
 */
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
 {
@@ -1040,7 +1040,7 @@ many times.
   // FIXME: This hack is here to work around a gorm decoding problem.
   if (_windowNum)
     {
-      NSLog(@"Window already initialized %d", _windowNum);
+      NSLog(@"Window already initialized %d", (int)_windowNum);
       return self;
     }
 
@@ -1136,7 +1136,7 @@ many times.
   </p> 
 */
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (unsigned int)aStyle
+                 styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
                     screen: (NSScreen*)aScreen
@@ -1160,7 +1160,7 @@ many times.
   NSBackingStoreType bufferingType;
   NSScreen* aScreen;
   int screen;
-  int winNum;
+  NSInteger winNum;
   GSDisplayServer *srv = GSCurrentServer();
 
   // Get the properties for the underlying window
@@ -1307,7 +1307,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (unsigned int) styleMask
+- (NSUInteger) styleMask
 {
   return _styleMask;
 }
@@ -1337,7 +1337,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 // FIXME
 }
 
-- (void) setAlphaValue: (float)windowAlpha
+- (void) setAlphaValue: (CGFloat)windowAlpha
 {
   _alphaValue = windowAlpha;
   if (_windowNum)
@@ -1346,7 +1346,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (float) alphaValue
+- (CGFloat) alphaValue
 {
   return _alphaValue;
 }
@@ -1380,7 +1380,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return _context;
 }
 
-- (float) userSpaceScaleFactor
+- (CGFloat) userSpaceScaleFactor
 {
   if (_styleMask & NSUnscaledWindowMask)
     {
@@ -1392,7 +1392,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (int) gState
+- (NSInteger) gState
 {
   if (_gstate <= 0)
     NSDebugLLog(@"NSWindow", @"gState called on deferred window");
@@ -1414,7 +1414,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   _f.is_one_shot = flag;
 }
 
-- (int) windowNumber
+- (NSInteger) windowNumber
 {
   if (_windowNum <= 0)
     NSDebugLLog(@"NSWindow", @"windowNumber called on deferred window");
@@ -1653,7 +1653,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return _f.visible;
 }
 
-- (int) level
+- (NSInteger) level
 {
   return _windowLevel;
 }
@@ -1765,7 +1765,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   is minus one, then the backend should not try to keep the window below the
   current key/main window
 */
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {
   GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
@@ -1944,7 +1944,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 }
 
-- (void) setLevel: (int)newLevel
+- (void) setLevel: (NSInteger)newLevel
 {
   if (_windowLevel != newLevel)
     {
@@ -2121,7 +2121,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: (NSScreen*)screen
 {
   NSRect screenRect = [screen visibleFrame];
-  float difference;
+  CGFloat difference;
 
   /* Move top edge of the window inside the screen */
   difference = NSMaxY (frameRect) - NSMaxY (screenRect);
@@ -2393,6 +2393,33 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return basePoint;
 }
 
+/**
+ * Converts aRect from the coordinate system of the screen
+ * to the coordinate system of the window.
+ */
+
+- (NSRect) convertRectFromScreen: (NSRect)aRect
+{
+  NSRect result = aRect;
+  NSPoint origin = result.origin;
+  NSPoint newOrigin = [self convertScreenToBase: origin];
+  result.origin = newOrigin;
+  return result;  
+}
+
+/**
+ * Converts aRect from the window coordinate system to a rect in
+ * the screen coordinate system.
+ */
+- (NSRect) convertRectToScreen: (NSRect)aRect
+{
+  NSRect result = aRect;
+  NSPoint origin = result.origin;
+  NSPoint newOrigin = [self convertBaseToScreen: origin];
+  result.origin = newOrigin;
+  return result;
+}
+
 /*
  * Managing the display
  */
@@ -2405,7 +2432,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 {
   if (_gstate == 0 || _f.visible == NO)
     return;
-  
+
   [_wv display];
   [self discardCachedImage];
   _f.views_need_display = NO;
@@ -2443,7 +2470,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
  */
 - (void) flushWindow
 {
-  int i;
+  NSUInteger i;
 
   /*
    * If flushWindow is called while flush is disabled
@@ -2673,12 +2700,12 @@ discardCursorRectsForView(NSView *theView)
       if (theView->_rFlags.has_subviews)
         {
           NSArray *s = theView->_sub_views;
-          unsigned count = [s count];
+          NSUInteger count = [s count];
 
           if (count)
             {
               NSView *subs[count];
-              unsigned i;
+              NSUInteger i;
 
               [s getObjects: subs];
               for (i = 0; i < count; i++)
@@ -2736,12 +2763,12 @@ resetCursorRectsForView(NSView *theView)
       if (theView->_rFlags.has_subviews)
         {
           NSArray *s = theView->_sub_views;
-          unsigned count = [s count];
+          NSUInteger count = [s count];
 
           if (count)
             {
               NSView *subs[count];
-              unsigned i;
+              NSUInteger i;
 
               [s getObjects: subs];
               for (i = 0; i < count; i++)
@@ -3064,7 +3091,7 @@ resetCursorRectsForView(NSView *theView)
 }
 
 + (NSButton *) standardWindowButton: (NSWindowButton)button 
-                       forStyleMask: (unsigned int) mask
+                       forStyleMask: (NSUInteger) mask
 {
   NSButton *newButton;
 
@@ -3125,7 +3152,7 @@ resetCursorRectsForView(NSView *theView)
   _f.shows_toolbar_button = flag;
 }
 
-- (int) resizeFlags
+- (NSInteger) resizeFlags
 {
   // FIXME: The implementation is missing
   return 0;
@@ -3226,6 +3253,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) setIgnoresMouseEvents: (BOOL)flag
 {
   _f.ignores_mouse_events = flag;
+  [GSServerForWindow(self) setIgnoreMouse: flag : _windowNum];
 }
 
 - (NSEvent*) currentEvent
@@ -3233,7 +3261,7 @@ resetCursorRectsForView(NSView *theView)
   return [NSApp currentEvent];
 }
 
-- (void) discardEventsMatchingMask: (unsigned int)mask
+- (void) discardEventsMatchingMask: (NSUInteger)mask
                        beforeEvent: (NSEvent*)lastEvent
 {
   [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
@@ -3441,7 +3469,7 @@ resetCursorRectsForView(NSView *theView)
   return p;
 }
 
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
 {
   return [NSApp nextEventMatchingMask: mask
                             untilDate: [NSDate distantFuture]
@@ -3449,7 +3477,7 @@ resetCursorRectsForView(NSView *theView)
                               dequeue: YES];
 }
 
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
                          untilDate: (NSDate*)expiration
                             inMode: (NSString*)mode
                            dequeue: (BOOL)deqFlag
@@ -3474,7 +3502,7 @@ resetCursorRectsForView(NSView *theView)
     {
       BOOL isFlipped = [theView isFlipped];
       NSArray *tr = theView->_tracking_rects;
-      unsigned count = [tr count];
+      NSUInteger count = [tr count];
 
       /*
        * Loop through the tracking rectangles
@@ -3484,7 +3512,7 @@ resetCursorRectsForView(NSView *theView)
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
 	  NSPoint lastPoint = _lastPoint;
-          unsigned i;
+          NSUInteger i;
 
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
 	  loc = [theView convertPoint: loc fromView: nil];
@@ -3570,12 +3598,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.has_subviews)
     {
       NSArray *sb = theView->_sub_views;
-      unsigned count = [sb count];
+      NSUInteger count = [sb count];
 
       if (count > 0)
         {
           NSView *subs[count];
-          unsigned i;
+          NSUInteger i;
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
@@ -3592,14 +3620,14 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.valid_rects)
     {
       NSArray *tr = theView->_cursor_rects;
-      unsigned count = [tr count];
+      NSUInteger count = [tr count];
 
       // Loop through cursor rectangles
       if (count > 0)
         {
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
-          unsigned i;
+          NSUInteger i;
 
           [tr getObjects: rects];
 
@@ -3660,12 +3688,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView->_rFlags.has_subviews)
     {
       NSArray *sb = theView->_sub_views;
-      unsigned count = [sb count];
+      NSUInteger count = [sb count];
 
       if (count > 0)
         {
           NSView *subs[count];
-          unsigned i;
+          NSUInteger i;
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
@@ -3960,6 +3988,10 @@ resetCursorRectsForView(NSView *theView)
         {
           GSTrackingRect *r =(GSTrackingRect*)[theEvent userData];
           NSCursor *c = (NSCursor*)[r owner];
+
+	  // Don't update the cursor if the window isn't the key window.
+	  if (!_f.is_key)
+	    break;
           
           if ([theEvent trackingNumber]) // It's a mouse entered
             {
@@ -3987,10 +4019,10 @@ resetCursorRectsForView(NSView *theView)
           switch (sub)
             {
             case GSAppKitWindowMoved:
-              _frame.origin.x = (float)[theEvent data1];
-              _frame.origin.y = (float)[theEvent data2];
+              _frame.origin.x = (CGFloat)[theEvent data1];
+              _frame.origin.y = (CGFloat)[theEvent data2];
               NSDebugLLog(@"Moving", @"Move event: %d %@",
-                          _windowNum, NSStringFromPoint(_frame.origin));
+                          (int)_windowNum, NSStringFromPoint(_frame.origin));
               if (_autosaveName != nil)
                 {
                   [self saveFrameUsingName: _autosaveName];
@@ -4102,7 +4134,7 @@ resetCursorRectsForView(NSView *theView)
 		}
               if ([self canBecomeKeyWindow] == YES)
 		{
-		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
+		  NSDebugLLog(@"Focus", @"Making %d key", (int)_windowNum);
 		  [self makeKeyWindow];
 		  [self makeMainWindow];
 		  [NSApp activateIgnoringOtherApps: YES];
@@ -4290,8 +4322,8 @@ resetCursorRectsForView(NSView *theView)
             case GSAppKitDraggingDrop:
               NSDebugLLog(@"NSDragging", @"GSAppKitDraggingDrop");
               dragInfo = [GSServerForWindow(self) dragInfo];
-              if (_lastDragView && _f.accepts_drag &&
-                  _lastDragOperationMask != NSDragOperationNone)
+              if (_lastDragView && _f.accepts_drag
+		  && _lastDragOperationMask != NSDragOperationNone)
                 {
                   action = YES;
                   GSPerformDragSelector(_lastDragView,
@@ -4732,14 +4764,14 @@ current key view.<br />
   // if toolbar is showing, adjust saved frame to add the toolbar back in
   if ([_toolbar isVisible])
     {
-      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      CGFloat toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
       fRect.size.height += toolbarHeight;
       fRect.origin.y -= toolbarHeight;
     }
   // if window has a menu, adjust saved frame to add the menu back in
   if ([_wv hasMenu])
     {
-      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+      CGFloat menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
       fRect.size.height += menuBarHeight;
       fRect.origin.y -= menuBarHeight;
     }
@@ -4822,8 +4854,8 @@ current key view.<br />
       // If the window doesn't show up on any screen then we need
       // to move it so it can be seen and assign it to the main
       // screen...
-      screen = [[NSScreen screens] objectAtIndex: 0];
-      NSDebugLLog(@"NSWindow", @"%s: re-assigning to primary screen\n", __PRETTY_FUNCTION__);
+      screen = [NSScreen mainScreen];
+      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
     }
   nRect = [screen visibleFrame];
 
@@ -4930,14 +4962,14 @@ current key view.<br />
   // if toolbar is showing, adjust saved frame to not include the toolbar
   if ([_toolbar isVisible])
     {
-      float toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      CGFloat toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
       fRect.size.height -= toolbarHeight;
       fRect.origin.y += toolbarHeight;
     }
   // if window has a menu, adjust saved frame to not include the menu
   if ([_wv hasMenu])
     {
-      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
+      CGFloat menuBarHeight = [[GSTheme theme] menuHeightForWindow: self];
       fRect.size.height -= menuBarHeight;
       fRect.origin.y += menuBarHeight;
     }
@@ -5310,8 +5342,11 @@ current key view.<br />
 - (void) setDelegate: (id)anObject
 {
   if (anObject == _delegate)
-    return; // don't remove previously registered notifications if delegate is unchanged!
-  
+    {
+      // don't remove previously registered notifications if delegate is unchanged!
+      return;
+    }	  	 
+
   if (_delegate)
     {
       [nc removeObserver: _delegate name: nil object: self];
@@ -5361,8 +5396,9 @@ current key view.<br />
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeRect: [[self contentView] frame]];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &_styleMask];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_backingType];
+  [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_styleMask];
+  // This used to be int, we need to stay compatible
+  [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_backingType];
 
   [aCoder encodePoint: NSMakePoint(NSMinX([self frame]), NSMaxY([self frame]))];
   [aCoder encodeObject: _contentView];
@@ -5374,7 +5410,7 @@ current key view.<br />
   [aCoder encodeSize: _minimumSize];
   [aCoder encodeSize: _maximumSize];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_windowLevel];
+  [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_windowLevel];
 
   flag = _f.menu_exclude;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -5421,15 +5457,16 @@ current key view.<br />
       NSSize aSize;
       NSRect aRect;
       NSPoint p;
-      unsigned aStyle;
+      NSUInteger aStyle;
       NSBackingStoreType aBacking;
-      int anInt;
+      NSInteger level;
       id obj;
 
       aRect = [aDecoder decodeRect];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned)
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
                                    at: &aStyle];
-      [aDecoder decodeValueOfObjCType: @encode(int)
+      // This used to be int, we need to stay compatible
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger)
                                    at: &aBacking];
 
       // call the designated initializer....
@@ -5455,9 +5492,9 @@ current key view.<br />
       aSize = [aDecoder decodeSize];
       [self setMaxSize: aSize];
 
-      [aDecoder decodeValueOfObjCType: @encode(int)
-                                   at: &anInt];
-      [self setLevel: anInt];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger)
+                                   at: &level];
+      [self setLevel: level];
 
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setExcludedFromWindowsMenu: flag];
@@ -5751,19 +5788,19 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
   return NO;
 }
 
-void NSCountWindows(int *count)
+void NSCountWindows(NSInteger *count)
 {
-  *count = (int)[[GSCurrentServer() windowlist] count];
+  *count = [[GSCurrentServer() windowlist] count];
 }
 
-void NSWindowList(int size, int list[])
+void NSWindowList(NSInteger size, NSInteger list[])
 {
   NSArray *windowList = [GSCurrentServer() windowlist];
-  unsigned i, c;
+  NSUInteger i, c;
 
   for (i = 0, c = [windowList count]; i < size && i < c; i++)
     {
-      list[i] = [[windowList objectAtIndex:i] intValue];
+      list[i] = [[windowList objectAtIndex: i] integerValue];
     }
 }
 
@@ -5771,14 +5808,14 @@ NSArray *GSOrderedWindows(void)
 {
   NSArray *window_list = [GSCurrentServer() windowlist];
   NSMutableArray *ret = [NSMutableArray array];
-  int i, c; 
+  NSUInteger i, c; 
   
   for (i = 0, c = [window_list count]; i < c; i++)
     {
-      int windowNumber = [[window_list objectAtIndex:i] intValue];
+      NSInteger windowNumber = [[window_list objectAtIndex: i] integerValue];
       NSWindow *win = GSWindowWithNumber(windowNumber);
       
-      [ret addObject:win];
+      [ret addObject: win];
     }
 
   return ret;
@@ -5792,7 +5829,7 @@ NSArray* GSAllWindows(void)
   return nil;
 }
 
-NSWindow* GSWindowWithNumber(int num)
+NSWindow* GSWindowWithNumber(NSInteger num)
 {
   if (windowmaps)
     return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);

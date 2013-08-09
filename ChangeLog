@@ -1,8 +1,13 @@
+2013-08-08  Frank Le Grand <frank.legrand@testplant.com>
+
+    Merged changes from Trunk (since rev 35219) to TestPlant branch.
+
 2013-04-24  Frank Le Grand <frank.legrand@testplant.com>
+
 	* Source\NSCollectionView.m: Fixed an NSRangeException that would get raised in drawRect:
 	when we have an empty content array by explicitly casting values to int in the MIN macro.
 
-	2013-04-22  Doug Simons <doug.simons@testplant.com>
+2013-04-22  Doug Simons <doug.simons@testplant.com>
 
     * Source/NSTextFieldCell.m: Add support for NSLineBreakByTruncatingHead/Tail/Middle
 	line break modes.
@@ -13,10 +18,12 @@
 	Distributed lock during application launch notification.	
 
 2013-03-08  Frank Le Grand <frank.legrand@testplant.com>
+
 	* Source\NSCollectionView.m: Implemented drag & drop.
 	* Source\NSTabView.m: Fixed a bug where the nextKeyView was being set a dealloc'd view in some cases.
 	
 2013-02-28  Frank Le Grand <frank.legrand@testplant.com>
+
     Continued work on Collection View: Applied more GNUstep coding standards (including
 	the use of macros), implemented selection.
 	This is a work in progress.

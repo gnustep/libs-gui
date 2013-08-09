@@ -87,10 +87,10 @@ static NSNotificationCenter *nc;
 - (void) clickItem: (id)sender;
 - (void) reloadData;
 - (void) noteNumberOfItemsChanged;
-- (void) scrollItemAtIndexToTop: (int)index;
-- (void) scrollItemAtIndexToVisible: (int)index;
-- (void) selectItemAtIndex: (int)index;
-- (void) deselectItemAtIndex: (int)index;
+- (void) scrollItemAtIndexToTop: (NSInteger)index;
+- (void) scrollItemAtIndexToVisible: (NSInteger)index;
+- (void) selectItemAtIndex: (NSInteger)index;
+- (void) deselectItemAtIndex: (NSInteger)index;
 - (void) moveUpSelection;
 - (void) moveDownSelection;
 - (void) validateSelection;
@@ -98,13 +98,13 @@ static NSNotificationCenter *nc;
 @end
 
 @interface NSComboBoxCell (GNUstepPrivate)
-- (NSString *) _stringValueAtIndex: (int)index;
+- (NSString *) _stringValueAtIndex: (NSInteger)index;
 - (void) _performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView;
 - (void) _didClickWithinButton: (id)sender;
 - (BOOL) _isWantedEvent: (NSEvent *)event;
 - (GSComboWindow *) _popUp;
 - (NSRect) _textCellFrame;
-- (void) _setSelectedItem: (int)index;
+- (void) _setSelectedItem: (NSInteger)index;
 - (void) _loadButtonCell;
 - (void) _selectCompleted;
 @end
@@ -126,7 +126,7 @@ static GSComboWindow *gsWindow = nil;
 }
 
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
+		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 {
@@ -184,6 +184,7 @@ static GSComboWindow *gsWindow = nil;
                                                                borderRect.size.height)];
   [scrollView setHasVerticalScroller: YES];
   [scrollView setDocumentView: _tableView];
+  [_tableView release];
   [box setContentView: scrollView];
   RELEASE(scrollView);
   
@@ -207,12 +208,12 @@ static GSComboWindow *gsWindow = nil;
 {
   NSSize bsize = [[GSTheme theme] sizeForBorderType: NSLineBorder];
   NSSize size;
-  float itemHeight;
-  float textCellWidth;
-  float popUpWidth;
+  CGFloat itemHeight;
+  CGFloat textCellWidth;
+  CGFloat popUpWidth;
   NSSize intercellSpacing;
-  int num = [comboBoxCell numberOfItems];
-  int max = [comboBoxCell numberOfVisibleItems];
+  NSInteger num = [comboBoxCell numberOfItems];
+  NSInteger max = [comboBoxCell numberOfVisibleItems];
   
   // Manage table view or browser cells height
   
@@ -463,7 +464,7 @@ static GSComboWindow *gsWindow = nil;
   [self reloadData];
 }
 
-- (void) scrollItemAtIndexToTop: (int)index
+- (void) scrollItemAtIndexToTop: (NSInteger)index
 {
   NSRect rect;
   
@@ -471,12 +472,12 @@ static GSComboWindow *gsWindow = nil;
   [_tableView scrollPoint: rect.origin]; 
 }
 
-- (void) scrollItemAtIndexToVisible: (int)index
+- (void) scrollItemAtIndexToVisible: (NSInteger)index
 {
   [_tableView scrollRowToVisible: index];
 }
 
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 { 
   if (index < 0)
     return;
@@ -487,7 +488,7 @@ static GSComboWindow *gsWindow = nil;
   [_tableView selectRow: index byExtendingSelection: NO];     
 }
 
-- (void) deselectItemAtIndex: (int)index
+- (void) deselectItemAtIndex: (NSInteger)index
 {
   [_tableView deselectAll: self];
 }
@@ -507,7 +508,7 @@ static GSComboWindow *gsWindow = nil;
 }
 
 // Browser delegate methods
-- (int) browser: (NSBrowser *)sender numberOfRowsInColumn: (int)column
+- (NSInteger) browser: (NSBrowser *)sender numberOfRowsInColumn: (NSInteger)column
 {
   if (_cell == nil)
     return 0;
@@ -517,8 +518,8 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)aCell
-	   atRow: (int)row 
-	  column: (int)column
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column
 {
   if (_cell == nil)
     return;
@@ -528,12 +529,12 @@ static GSComboWindow *gsWindow = nil;
 }
 
 // Table view data source methods
-- (int) numberOfRowsInTableView: (NSTableView *)tv
+- (NSInteger) numberOfRowsInTableView: (NSTableView *)tv
 {
   return [_cell numberOfItems];
 }
 
-- (id) tableView: (NSTableView *)tv objectValueForTableColumn: (NSTableColumn *)tc row: (int)row
+- (id) tableView: (NSTableView *)tv objectValueForTableColumn: (NSTableColumn *)tc row: (NSInteger)row
 {
   return [_cell _stringValueAtIndex: row];
 }
@@ -551,7 +552,7 @@ static GSComboWindow *gsWindow = nil;
 // Key actions methods
 - (void) moveUpSelection
 {
-  int index = [_tableView selectedRow] - 1;
+  NSInteger index = [_tableView selectedRow] - 1;
 
   if (index > -1 && index < [_tableView numberOfRows])
     {
@@ -562,7 +563,7 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) moveDownSelection
 {
-  int index = [_tableView selectedRow] + 1;
+  NSInteger index = [_tableView selectedRow] + 1;
   
   if (index > -1 && index < [_tableView numberOfRows])
     {
@@ -577,7 +578,7 @@ static GSComboWindow *gsWindow = nil;
     {
       NSText	*textObject = nil;
       id	cv = [_cell controlView];
-      int 	index = [_cell indexOfSelectedItem];
+      NSInteger	index = [_cell indexOfSelectedItem];
       
       if ([cv isKindOfClass: [NSControl class]])
         {
@@ -731,7 +732,7 @@ static GSComboWindow *gsWindow = nil;
 /**
  * Returns the height of the items in the combo box cell list.
  */
-- (float) itemHeight 
+- (CGFloat) itemHeight 
 { 
   return _itemHeight; 
 }
@@ -740,9 +741,9 @@ static GSComboWindow *gsWindow = nil;
  * Sets the height of the items in the combo box cell list to
  * <var>itemHeight</var>.
  */
-- (void) setItemHeight: (float)itemHeight
+- (void) setItemHeight: (CGFloat)itemHeight
 {
-  if (itemHeight > 14)
+  if (itemHeight > 14.0)
     _itemHeight = itemHeight;
 }
 
@@ -750,7 +751,7 @@ static GSComboWindow *gsWindow = nil;
  * Returns the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (int) numberOfVisibleItems 
+- (NSInteger) numberOfVisibleItems 
 { 
   return _visibleItems; 
 }
@@ -759,7 +760,7 @@ static GSComboWindow *gsWindow = nil;
  * Sets the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (void) setNumberOfVisibleItems: (int)visibleItems
+- (void) setNumberOfVisibleItems: (NSInteger)visibleItems
 {
   if (visibleItems > 10)
     _visibleItems = visibleItems;
@@ -814,7 +815,7 @@ static GSComboWindow *gsWindow = nil;
  * <var>index</var> in the closest position relative to the top. There is no
  * need to have the list displayed when this method is invoked.
  */
-- (void) scrollItemAtIndexToTop: (int)index
+- (void) scrollItemAtIndexToTop: (NSInteger)index
 {
   [_popup scrollItemAtIndexToTop: index];
 }
@@ -824,7 +825,7 @@ static GSComboWindow *gsWindow = nil;
  * <var>index</var> visible. There is no need to have the list displayed when
  * this method is invoked. 
  */
-- (void) scrollItemAtIndexToVisible: (int)index
+- (void) scrollItemAtIndexToVisible: (NSInteger)index
 {
   [_popup scrollItemAtIndexToVisible: index];
 }
@@ -836,7 +837,7 @@ static GSComboWindow *gsWindow = nil;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center when there is a new selection different from the previous one.
  */
-- (void) selectItemAtIndex: (int)index
+- (void) selectItemAtIndex: (NSInteger)index
 {
   // Method called by GSComboWindow when a selection is done in the table view or 
   // the browser
@@ -865,7 +866,7 @@ static GSComboWindow *gsWindow = nil;
  * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
  * center, when there is a new selection.
  */
-- (void) deselectItemAtIndex: (int)index
+- (void) deselectItemAtIndex: (NSInteger)index
 {
   if (_selectedItem == index)
     {
@@ -885,7 +886,7 @@ static GSComboWindow *gsWindow = nil;
  * object in the case <code>usesDataSource</code> returns YES else to the
  * default items list. 
  */
-- (int) indexOfSelectedItem
+- (NSInteger) indexOfSelectedItem
 {
   return _selectedItem;
 }
@@ -895,7 +896,7 @@ static GSComboWindow *gsWindow = nil;
  * items can be be related to the data source object in the case
  * <code>usesDataSource</code> returns YES else to the default items list.
  */
-- (int) numberOfItems
+- (NSInteger) numberOfItems
 {
   if (_usesDataSource)
     {
@@ -1002,7 +1003,7 @@ static GSComboWindow *gsWindow = nil;
  * is used when <code>usesDataSource</code> returns NO. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void) insertItemWithObjectValue: (id)object atIndex: (int)index
+- (void) insertItemWithObjectValue: (id)object atIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1042,7 +1043,7 @@ static GSComboWindow *gsWindow = nil;
  * default items list which is used when <code>usesDataSource</code> returns NO.
  * In the case <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (void) removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1110,7 +1111,7 @@ static GSComboWindow *gsWindow = nil;
  * raised. In the case <code>usesDataSource</code> returns YES, this method logs
  * a warning.
  */
-- (id) itemObjectValueAtIndex: (int)index
+- (id) itemObjectValueAtIndex: (NSInteger)index
 {
   if (_usesDataSource)
     {
@@ -1130,7 +1131,7 @@ static GSComboWindow *gsWindow = nil;
  */
 - (id) objectValue
 {
-  int index = [self indexOfSelectedItem];
+  NSInteger index = [self indexOfSelectedItem];
 
   if (index == -1)
     {
@@ -1182,7 +1183,7 @@ static GSComboWindow *gsWindow = nil;
     }
   else
     {
-      int index = [self indexOfSelectedItem];
+      NSInteger index = [self indexOfSelectedItem];
 
       if (index == -1)
         {
@@ -1201,7 +1202,7 @@ static GSComboWindow *gsWindow = nil;
  * NSNotFound when there is no such value. In the case
  * <code>usesDataSource</code> returns YES, this method logs a warning.
  */
-- (int) indexOfItemWithObjectValue: (id)object
+- (NSInteger) indexOfItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
     {
@@ -1268,7 +1269,7 @@ static GSComboWindow *gsWindow = nil;
 	}
       else
         {
-          unsigned int i;
+          NSInteger i;
 
           for (i = 0; i < [self numberOfItems]; i++)
             {
@@ -1281,7 +1282,7 @@ static GSComboWindow *gsWindow = nil;
     }
   else
     {
-      unsigned int i;
+      NSUInteger i;
 
       for (i = 0; i < [_popUpList count]; i++)
         {
@@ -1471,7 +1472,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       NSEvent *e = theEvent;
       BOOL isMouseUp = NO;  
-      unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+      NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
        | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
        | NSRightMouseDraggedMask;
       NSPoint location;
@@ -1666,8 +1667,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 		  inView: (NSView *)controlView
 		  editor: (NSText *)textObj 
 		delegate: (id)anObject
-		   start: (int)selStart 
-		  length: (int)selLength
+		   start: (NSInteger)selStart 
+		  length: (NSInteger)selLength
 {
   [super selectWithFrame: textCellFrameFromRect(aRect)
                   inView: controlView
@@ -1740,8 +1741,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       NSString *myString = [[textObject string] copy];
       NSString *more;
-      unsigned int myStringLength = [myString length];
-      unsigned int location, length;
+      NSUInteger myStringLength = [myString length];
+      NSUInteger location, length;
       NSRange selectedRange = [textObject selectedRange];
       
       if (myStringLength != 0
@@ -1766,7 +1767,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 @implementation NSComboBoxCell (GNUstepPrivate)
 
-- (NSString *) _stringValueAtIndex: (int)index
+- (NSString *) _stringValueAtIndex: (NSInteger)index
 {
   if (_usesDataSource == NO)
     {
@@ -1869,7 +1870,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   return textCellFrameFromRect(_lastValidFrame);
 }
 
-- (void) _setSelectedItem: (int)index
+- (void) _setSelectedItem: (NSInteger)index
 {
   _selectedItem = index;
 }

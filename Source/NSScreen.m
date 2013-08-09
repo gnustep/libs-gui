@@ -259,12 +259,11 @@ static NSMutableArray *screenArray = nil;
   return _frame;
 }
 
-- (NSString*)description
+- (NSString*) description
 {
-  NSMutableString *description = [NSMutableString stringWithString:[super description]];
-  [description appendFormat:@"number: %ld\n",(long)_screenNumber];
-  [description appendFormat:@"frame: %@\n",NSStringFromRect(_frame)];
-  return([[description copy] autorelease]);
+  return [NSString stringWithFormat: @"%@ number: %ld frame: %@", 
+                   [super description], (long)_screenNumber,
+                   NSStringFromRect(_frame)];
 }
 
 

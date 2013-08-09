@@ -2,7 +2,7 @@
    NeXTstep/ OPENSTEP 'make_services' tool.  In addition it builds a list of
    applications and services-bundles found in the standard directories.
 
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 1998-2013 Free Software Foundation, Inc.
 
    Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Created: November 1998
@@ -64,28 +64,23 @@ static Class aClass;
 static Class dClass;
 static Class sClass;
 
-static BOOL CheckDirectory(NSString *path)
+static BOOL CheckDirectory(NSString *path, NSError **error)
 {
   NSFileManager	*mgr;
   BOOL		isDir;
 
   mgr = [NSFileManager defaultManager];
-  if (([mgr fileExistsAtPath: path isDirectory: &isDir] && isDir) == 0)
+  if ([mgr fileExistsAtPath: path isDirectory: &isDir] && isDir)
     {
-      NSString	*parent;
-
-      parent = [path stringByDeletingLastPathComponent];
-      if ([parent length] < [path length]
-	&& CheckDirectory([parent stringByDeletingLastPathComponent]) == NO)
-	{
-	  return NO;
-	}
-      if ([mgr createDirectoryAtPath: path attributes: nil] == NO)
-	{
-	  return NO;
-	}
+      return YES;
     }
-  return YES;
+  else
+    {
+      return [mgr createDirectoryAtPath: path
+            withIntermediateDirectories: YES
+                             attributes: nil
+                                  error: error];
+    }
 }
 
 int
@@ -104,6 +99,7 @@ main(int argc, char** argv, char **env_c)
   NSDictionary		*oldMap;
   NSEnumerator		*enumerator;
   NSString		*path;
+  NSError *error;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
@@ -198,10 +194,10 @@ main(int argc, char** argv, char **env_c)
   usrRoot = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
     NSUserDomainMask, YES) lastObject];
   usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
-  if (CheckDirectory(usrRoot) == NO)
+  if (!CheckDirectory(usrRoot, &error))
     {
       if (verbose > 0)
-	NSLog(@"couldn't create %@", usrRoot);
+	NSLog(@"couldn't create %@ error: %@", usrRoot, error);
       [pool drain];
       exit(EXIT_FAILURE);
     }
@@ -1091,7 +1087,6 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
 	      while (i-- > 0)
 		{
-		  NSString	*type;
 
 		  str = [snd objectAtIndex: i];
 		  /* For UNIX I/O or file mapping, the send type must be a

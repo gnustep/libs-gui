@@ -50,7 +50,7 @@ enum _NSDragOperation {
   NSDragOperationEvery = UINT_MAX  
 };
 
-typedef unsigned int NSDragOperation;
+typedef NSUInteger NSDragOperation;
 
 @protocol NSDraggingInfo
 

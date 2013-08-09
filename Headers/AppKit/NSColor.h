@@ -41,18 +41,20 @@
 @class NSImage;
 @class NSColorSpace;
 
-typedef enum _NSControlTint {
+enum _NSControlTint {
     NSDefaultControlTint,
     NSBlueControlTint,
     NSGraphiteControlTint = 6,
     NSClearControlTint
-} NSControlTint;
+};
+typedef NSUInteger NSControlTint;
 
-typedef enum _NSControlSize {
+enum _NSControlSize {
     NSRegularControlSize,
     NSSmallControlSize,
     NSMiniControlSize
-} NSControlSize;
+};
+typedef NSUInteger NSControlSize;
 
 /*
  * NSColor is an abstract super class of the class cluster of the real colour classes.

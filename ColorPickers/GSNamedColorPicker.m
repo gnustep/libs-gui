@@ -175,13 +175,13 @@
 }
 
 -(NSString *) browser: (NSBrowser *)sender 
-	titleOfColumn: (int)column
+	titleOfColumn: (NSInteger)column
 {
   return nil;
 }
 
 -(void) browser: (NSBrowser *)sender 
-createRowsForColumn: (int)column
+createRowsForColumn: (NSInteger)column
        inMatrix: (NSMatrix *)matrix
 {
   int i;
@@ -215,31 +215,31 @@ createRowsForColumn: (int)column
 } 
 
 - (BOOL) browser: (NSBrowser*)sender 
-       selectRow: (int)row
-	inColumn: (int)column
+       selectRow: (NSInteger)row
+	inColumn: (NSInteger)column
 {
   return NO;
 }
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)cell
-	   atRow: (int)row 
-	  column: (int)column
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column
 {
 }
 
-- (int) numberOfItemsInComboBox: (NSComboBox *)aComboBox
+- (NSInteger) numberOfItemsInComboBox: (NSComboBox *)aComboBox
 {
    return [lists count];
 }
 
 - (id) comboBox: (NSComboBox *)aComboBox 
-objectValueForItemAtIndex: (int)index
+objectValueForItemAtIndex: (NSInteger)index
 {
    return [(NSColorList*)[lists objectAtIndex: index] name];
 }
 
-- (unsigned int) comboBox: (NSComboBox *)aComboBox
+- (NSUInteger) comboBox: (NSComboBox *)aComboBox
 indexOfItemWithStringValue: (NSString *)string
 {
    return [lists indexOfObject: [NSColorList colorListNamed: string]];

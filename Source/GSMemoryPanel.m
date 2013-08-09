@@ -310,14 +310,14 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   [super dealloc];
 }
 
-- (int) numberOfRowsInTableView: (NSTableView *)aTableView
+- (NSInteger) numberOfRowsInTableView: (NSTableView *)aTableView
 {
   return [array count];
 }
 
 - (id)           tableView: (NSTableView *)aTableView 
  objectValueForTableColumn: (NSTableColumn *)aTableColumn 
-		       row:(int)rowIndex
+		       row:(NSInteger)rowIndex
 {
   GSMemoryPanelEntry *entry = [array objectAtIndex: rowIndex];
   id identifier = [aTableColumn identifier];

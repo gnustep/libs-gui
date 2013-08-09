@@ -25,6 +25,7 @@
 #
 
 builtin(include, config/icu.m4)dnl
+builtin(include, config/pkg.m4)dnl
 
 AC_INIT
 AC_CONFIG_SRCDIR([Source/NSApplication.m])
@@ -53,8 +54,8 @@ AC_CANONICAL_TARGET([])
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
 #--------------------------------------------------------------------
-ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
-ADDITIONAL_LIB_DIRS="$LDFLAGS"
+CONFIG_SYSTEM_INCL="$CPPFLAGS"
+CONFIG_SYSTEM_LIB_DIR="$LDFLAGS"
 case "$target_os" in
   freebsd* | openbsd* )   
 	      CPPFLAGS="$CPPFLAGS -I/usr/local/include"
@@ -132,7 +133,7 @@ AC_ARG_WITH(include-flags,
     include_flags="$withval", include_flags="no")
 if test ${include_flags} != "no"; then
     CPPFLAGS="$CPPFLAGS ${include_flags}"
-    ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${include_flags}"
+    CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL ${include_flags}"
 fi
 
 AC_ARG_WITH(library-flags,
@@ -140,7 +141,7 @@ AC_ARG_WITH(library-flags,
     library_flags="$withval", library_flags="no")
 if test ${library_flags} != "no"; then
     LDFLAGS="$LDFLAGS ${library_flags}"
-    ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${library_flags}"
+    CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR ${library_flags}"
 fi
 
 #--------------------------------------------------------------------
@@ -244,7 +245,7 @@ if test $enable_png = yes; then
   if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
     PNG_CFLAGS="`libpng-config --I_opts`"
     PNG_LDFLAGS="`libpng-config --ldflags`"
-    CFLAGS="$PNG_CFLAGS ${CFLAGS}"
+    CPPFLAGS="${CPPFLAGS} $PNG_CFLAGS"
     LDFLAGS="$PNG_LDFLAGS ${LDFLAGS}"
     AC_CHECK_HEADERS(png.h)
     AC_CHECK_LIB(png, png_sig_cmp)
@@ -353,6 +354,11 @@ if test "$have_ungif" = no -o "${enable_libgif}" = yes; then
     fi
   fi
 fi
+
+# QuantizeBuffer was removed from giflib in version 4.2 but is supposed
+# to make its return in the next release. If this function is not present
+# we disable the support to create gif image representations.
+AC_CHECK_FUNCS(QuantizeBuffer)
 
 #--------------------------------------------------------------------
 # Find ImageMagick
@@ -534,11 +540,11 @@ AC_SUBST(GNUSTEP_GUI_MAJOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_MINOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 
-ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
-ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
+CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS"
+CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS"
 
-AC_SUBST(ADDITIONAL_LIB_DIRS)
-AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
+AC_SUBST(CONFIG_SYSTEM_LIB_DIR)
+AC_SUBST(CONFIG_SYSTEM_INCL)
 AC_SUBST(cross_compiling)
 
 #--------------------------------------------------------------------

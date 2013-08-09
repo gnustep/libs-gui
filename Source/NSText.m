@@ -78,7 +78,8 @@ static	Class	concrete;
 /*
  * Getting and Setting Contents
  */
-- (void) replaceCharactersInRange: (NSRange)aRange  withRTF: (NSData *)rtfData
+- (void) replaceCharactersInRange: (NSRange)aRange
+                          withRTF: (NSData *)rtfData
 {
   NSAttributedString *attr;
 
@@ -146,24 +147,24 @@ old text. */
 /*
  * old OpenStep methods doing the same
  */
-- (void) replaceRange: (NSRange)aRange  withRTFD: (NSData*)rtfdData
+- (void) replaceRange: (NSRange)aRange withRTFD: (NSData*)rtfdData
 {
-  [self replaceCharactersInRange: aRange  withRTFD: rtfdData];
+  [self replaceCharactersInRange: aRange withRTFD: rtfdData];
 }
 
-- (void) replaceRange: (NSRange)aRange  withRTF: (NSData*)rtfData
+- (void) replaceRange: (NSRange)aRange withRTF: (NSData*)rtfData
 {
-  [self replaceCharactersInRange: aRange  withRTF: rtfData];
+  [self replaceCharactersInRange: aRange withRTF: rtfData];
 }
 
-- (void) replaceRange: (NSRange)aRange  withString: (NSString*)aString
+- (void) replaceRange: (NSRange)aRange withString: (NSString*)aString
 {
-  [self replaceCharactersInRange: aRange  withString: aString];
+  [self replaceCharactersInRange: aRange withString: aString];
 }
 
-- (void) setText: (NSString*)aString  range: (NSRange)aRange
+- (void) setText: (NSString*)aString range: (NSRange)aRange
 {
-  [self replaceCharactersInRange: aRange  withString: aString];
+  [self replaceCharactersInRange: aRange withString: aString];
 }
 
 - (void) setText: (NSString*)aString
@@ -652,7 +653,7 @@ old text. */
 @implementation NSText (GNUstepExtensions)
 
 /* PRIMITIVE */
-- (unsigned) textLength
+- (NSUInteger) textLength
 {
   [self subclassResponsibility: _cmd];
   return 0;

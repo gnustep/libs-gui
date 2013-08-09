@@ -244,6 +244,9 @@
 @class NSTabViewItem;
 @class GSDrawTiles;
 
+APPKIT_EXPORT	NSString	*GSSwitch;
+APPKIT_EXPORT   NSString        *GSRadio;
+
 /* First, declare names used for obtaining colors and/or tiles for specific
  * controls and parts of controls.
  */
@@ -709,6 +712,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSString*) versionString;
 
+/**
+ * Return the theme's license.
+ */
+- (NSString*) license;
+
 @end
 
 /**
@@ -734,7 +742,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Allows the theme to set an image or set attributes for drawing the
  * button differently based on the key equivalent which is set.
  */
-- (void) setKeyEquivalent: (NSString *)key
+- (void) setKeyEquivalent: (NSString *)key 
             forButtonCell: (NSButtonCell *)cell;
 
 /**

@@ -635,15 +635,15 @@ line frag rect. */
 TODO: decide on behavior wrt. invisible glyphs and pointer far away from
 anything visible
 */
--(unsigned int) glyphIndexForPoint: (NSPoint)point
-		   inTextContainer: (NSTextContainer *)container
-    fractionOfDistanceThroughGlyph: (float *)partialFraction
+-(NSUInteger) glyphIndexForPoint: (NSPoint)point
+                 inTextContainer: (NSTextContainer *)container
+  fractionOfDistanceThroughGlyph: (CGFloat *)partialFraction
 {
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
   linefrag_point_t *lp;
-  float dummy;
+  CGFloat dummy;
 
   if (!partialFraction)
     partialFraction = &dummy;
@@ -654,7 +654,7 @@ anything visible
   if (i == num_textcontainers)
     {
       NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
-      return -1;
+      return NSNotFound;
     }
 
   [self _doLayoutToContainer: i  point: point];
@@ -681,7 +681,14 @@ anything visible
           if (i > 0)
             {
               *partialFraction = 1.0;
-              return lf->pos - 1;
+              if (lf->pos == 0)
+                {
+                  return NSNotFound;
+                }
+              else
+                {
+                  return lf->pos - 1;
+                }
             }
           else
             {
@@ -713,7 +720,15 @@ anything visible
   if (i == tc->num_linefrags)
     {
       *partialFraction = 1.0;
-      return tc->pos + tc->length - 1; /* TODO: this should return the correct thing even if the container is empty */
+      /* TODO: this should return the correct thing even if the container is empty */
+      if (tc->pos + tc->length == 0)
+        {
+          return NSNotFound;
+        }
+      else
+        {
+          return tc->pos + tc->length - 1;
+        }
     }
 
   /* only interested in x from here on */
@@ -1239,7 +1254,95 @@ has the same y origin and height as the line frag rect it is in.
   return from;
 }
 
+- (void) ensureGlyphsForGlyphRange: (NSRange)glyphRange
+{
+  [self _generateGlyphsUpToGlyph: NSMaxRange(glyphRange) - 1];
+}
 
+- (void) ensureGlyphsForCharacterRange: (NSRange)charRange
+{
+  [self _generateGlyphsUpToCharacter: NSMaxRange(charRange) - 1];
+}
+
+- (void) ensureLayoutForGlyphRange: (NSRange)glyphRange
+{
+  [self _doLayoutToGlyph: NSMaxRange(glyphRange) - 1];
+}
+
+- (void) ensureLayoutForCharacterRange: (NSRange)charRange
+{
+  NSRange glyphRange;
+
+  glyphRange = [self glyphRangeForCharacterRange: charRange 
+                            actualCharacterRange: NULL];
+  [self ensureLayoutForGlyphRange: glyphRange];
+}
+
+- (void) ensureLayoutForTextContainer: (NSTextContainer*)container
+{
+  int i;
+  textcontainer_t *tc;
+  NSSize size;
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == container)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  size = [container containerSize];
+  [self _doLayoutToContainer: i
+                       point: NSMakePoint(size.width, size.height)];
+}
+
+- (void) ensureLayoutForBoundingRect: (NSRect)bounds
+                     inTextContainer: (NSTextContainer*)container
+{
+  int i;
+  textcontainer_t *tc;
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == container)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  [self _doLayoutToContainer: i
+                       point: NSMakePoint(NSMaxX(bounds), NSMaxY(bounds))];
+}
+
+- (void) invalidateLayoutForCharacterRange: (NSRange)charRange
+                      actualCharacterRange: (NSRangePointer)actualCharRange
+{
+  [self invalidateLayoutForCharacterRange: charRange
+                                   isSoft: NO
+                     actualCharacterRange: actualCharRange];
+}
+
+- (void) invalidateGlyphsOnLayoutInvalidationForGlyphRange: (NSRange)glyphRange
+{
+  // FIXME
+}
+
+- (BOOL) allowsNonContiguousLayout
+{
+  return NO;
+}
+
+- (void) setAllowsNonContiguousLayout: (BOOL)flag;
+{
+}
+
+- (BOOL) hasNonContiguousLayout;
+{
+  return NO;
+}
 
 @end
 
@@ -1929,22 +2032,22 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
   // FIXME: setLineDash should take CGFloat
   if ((pattern & NSUnderlinePatternDot) == NSUnderlinePatternDot)
     {
-      const float dot[2] = {2.5 * thickness, 2.5 * thickness};
+      const CGFloat dot[2] = {2.5 * thickness, 2.5 * thickness};
       [path setLineDash: dot count: 2 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDash) == NSUnderlinePatternDash)
     {
-      const float dash[2] = {10 * thickness, 5 * thickness};   
+      const CGFloat dash[2] = {10 * thickness, 5 * thickness};   
       [path setLineDash: dash count: 2 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDashDot) == NSUnderlinePatternDashDot)
     {
-      const float dashdot[4] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      const CGFloat dashdot[4] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
       [path setLineDash: dashdot count: 4 phase: phase];
     }
   else if ((pattern & NSUnderlinePatternDashDotDot) == NSUnderlinePatternDashDotDot)
     {
-      const float dashdotdot[6] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
+      const CGFloat dashdotdot[6] = {10 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness, 3 * thickness};
       [path setLineDash: dashdotdot count: 6 phase: phase];
     }
 
@@ -2102,7 +2205,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 	   containerOrigin: (NSPoint)containerOrigin
 {
   NSBezierPath *path;
-  const float pattern[2] = {2.5, 1.0};
+  const CGFloat pattern[2] = {2.5, 1.0};
   NSFont *largestFont = [self effectiveFontForGlyphAtIndex: range.location // NOTE: GS private method
 						     range: NULL];
   NSPoint start = [self locationForGlyphAtIndex: range.location];

@@ -79,21 +79,6 @@
 - (BOOL)drawsBackground;
 #endif
 
-/* Overridden NSView methods */
-- (BOOL)acceptsFirstResponder;
-- (BOOL)isFlipped;
-- (void)rotateByAngle:(float)angle;
-- (void)scaleUnitSquareToSize:(NSSize)newUnitSize;
-- (void)setBoundsOrigin:(NSPoint)aPoint;
-- (void)setBoundsRotation:(float)angle;
-- (void)setBoundsSize:(NSSize)aSize;
-- (void)setFrameSize:(NSSize)aSize;
-- (void)setFrameOrigin:(NSPoint)aPoint;
-- (void)setFrameRotation:(float)angle;
-- (void)translateOriginToPoint:(NSPoint)aPoint;
-- (void)viewBoundsChanged:(NSNotification*)aNotification;
-- (void)viewFrameChanged:(NSNotification*)aNotification;
-
 @end
 
 #endif /* _GNUstep_H_NSClipView */

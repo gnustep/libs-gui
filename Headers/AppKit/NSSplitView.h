@@ -108,13 +108,13 @@ typedef NSInteger NSSplitViewDividerStyle;
 resizeSubviewsWithOldSize: (NSSize)oldSize;
 
 - (void) splitView: (NSSplitView *)sender 
-constrainMinCoordinate: (float *)min 
-     maxCoordinate: (float *)max 
-       ofSubviewAt: (int)offset;
+constrainMinCoordinate: (CGFloat *)min 
+     maxCoordinate: (CGFloat *)max 
+       ofSubviewAt: (NSInteger)offset;
 
-- (float) splitView: (NSSplitView *)sender
-constrainSplitPosition: (float)proposedPosition
-	ofSubviewAt: (int)offset;
+- (CGFloat) splitView: (NSSplitView *)sender
+constrainSplitPosition: (CGFloat)proposedPosition
+	ofSubviewAt: (NSInteger)offset;
 
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
@@ -123,13 +123,13 @@ constrainSplitPosition: (float)proposedPosition
 - (BOOL) splitView: (NSSplitView *)sender
 canCollapseSubview: (NSView *)subview;
 
-- (float) splitView: (NSSplitView *)sender
-constrainMaxCoordinate: (float)proposedMax
-	ofSubviewAt: (int)offset;
+- (CGFloat) splitView: (NSSplitView *)sender
+constrainMaxCoordinate: (CGFloat)proposedMax
+	ofSubviewAt: (NSInteger)offset;
 
-- (float) splitView: (NSSplitView *)sender
-constrainMinCoordinate: (float)proposedMin
-	ofSubviewAt: (int)offset;
+- (CGFloat) splitView: (NSSplitView *)sender
+constrainMinCoordinate: (CGFloat)proposedMin
+	ofSubviewAt: (NSInteger)offset;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)

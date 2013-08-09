@@ -149,15 +149,28 @@
 // NSCoding protocoll
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _movie];
-  [aCoder encodeObject: _url];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _movie];
+      [aCoder encodeObject: _url];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  ASSIGN (_movie, [aDecoder decodeObject]);
-  ASSIGN (_url, [aDecoder decodeObject]);
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      ASSIGN (_movie, [aDecoder decodeObject]);
+      ASSIGN (_url, [aDecoder decodeObject]);
+    }
   return self;
 }
 

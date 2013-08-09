@@ -56,6 +56,8 @@
 #import <AppKit/NSCachedImageRep.h>
 #import <AppKit/NSCell.h>
 #import <AppKit/NSClipView.h>
+#import <AppKit/NSCollectionView.h>
+#import <AppKit/NSCollectionViewItem.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSColorList.h>
 #import <AppKit/NSColorPanel.h>
@@ -91,6 +93,7 @@
 #import <AppKit/NSPageLayout.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSPasteboard.h>
+#import <AppKit/NSPopover.h>
 #import <AppKit/NSPopUpButton.h>
 #import <AppKit/NSPopUpButtonCell.h>
 #import <AppKit/NSPrinter.h>

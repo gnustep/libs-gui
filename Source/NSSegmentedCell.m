@@ -41,7 +41,7 @@
   BOOL _selected;
   BOOL _enabled;
   NSInteger _tag;
-  float _width;
+  CGFloat _width;
   NSMenu *_menu;
   NSString *_label;
   NSString *_tool_tip;
@@ -63,8 +63,8 @@
 - (void) setImage: (NSImage *)image;
 - (NSInteger) tag;
 - (void) setTag: (NSInteger)tag;
-- (float) width;
-- (void) setWidth: (float)width;
+- (CGFloat) width;
+- (void) setWidth: (CGFloat)width;
 - (NSRect) frame;
 - (void) setFrame: (NSRect)frame;
 @end
@@ -162,12 +162,12 @@
   _tag = tag;
 }
 
-- (float) width
+- (CGFloat) width
 {
   return _width;
 }
 
-- (void) setWidth: (float)width
+- (void) setWidth: (CGFloat)width
 {
   _width = width;
 }
@@ -210,8 +210,8 @@
       [aCoder encodeObject: _menu];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_selected];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_width];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
     }
 }
 
@@ -245,8 +245,8 @@
       ASSIGN(_menu, [aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_selected];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_width];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
     }
 
   return self;
@@ -318,9 +318,9 @@
 }
 
 // Specifying number of segments...
-- (void) setSegmentCount: (int)count
+- (void) setSegmentCount: (NSInteger)count
 {
-  int size;
+  NSInteger size;
 
   if ((count < 0) || (count > 2048))
     {
@@ -340,23 +340,23 @@
     }
 }
 
-- (int) segmentCount
+- (NSInteger) segmentCount
 {
   return [_items count];
 }
 
 // Specifying selected segment...
-- (void) setSelectedSegment: (int)segment
+- (void) setSelectedSegment: (NSInteger)segment
 {
   [self setSelected: YES forSegment: segment];
 }
 
-- (void) setSelected: (BOOL)flag forSegment: (int)seg
+- (void) setSelected: (BOOL)flag forSegment: (NSInteger)seg
 {
   NSSegmentItem *segment = [_items objectAtIndex: seg];
   NSSegmentItem *previous = nil;
 
-  if(_selected_segment != -1)
+  if (_selected_segment != -1)
     {
       previous = [_items objectAtIndex: _selected_segment];
       if(_segmentCellFlags._tracking_mode == NSSegmentSwitchTrackingSelectOne)
@@ -365,7 +365,7 @@
 	}
     }
 
-  if([segment isEnabled])
+  if ([segment isEnabled])
     {
       [segment setSelected: flag];
       if (flag)
@@ -379,16 +379,16 @@
     }
 }
 
-- (int) selectedSegment
+- (NSInteger) selectedSegment
 {
   return _selected_segment;
 }
 
-- (void) selectSegmentWithTag: (int)tag
+- (void) selectSegmentWithTag: (NSInteger)tag
 {
   NSEnumerator *en = [_items objectEnumerator];
   id o = nil;
-  int segment = 0;
+  NSInteger segment = 0;
 
   while ((o = [en nextObject]) != nil)
     {
@@ -404,7 +404,7 @@
 
 - (void) makeNextSegmentKey
 {
-  int next;
+  NSInteger next;
 
   if (_selected_segment < [_items count])
     {
@@ -420,7 +420,7 @@
 
 - (void) makePreviousSegmentKey
 {
-  int prev;
+  NSInteger prev;
 
   if (_selected_segment > 0)
     {
@@ -448,98 +448,98 @@
 
 
 // Working with individual segments...
-- (void) setWidth: (float)width forSegment: (int)seg
+- (void) setWidth: (CGFloat)width forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   [segment setWidth: width];
 }
 
-- (float) widthForSegment: (int)seg
+- (CGFloat) widthForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment width];
 }
 
-- (void) setImage: (NSImage *)image forSegment: (int)seg
+- (void) setImage: (NSImage *)image forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   [segment setImage: image];
 }
 
-- (NSImage *) imageForSegment: (int)seg
+- (NSImage *) imageForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment image];
 }
 
-- (void) setLabel: (NSString *)label forSegment: (int)seg
+- (void) setLabel: (NSString *)label forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   [segment setLabel: label];
 }
 
-- (NSString *) labelForSegment: (int)seg
+- (NSString *) labelForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment label];
 }
 
-- (BOOL) isSelectedForSegment: (int)seg
+- (BOOL) isSelectedForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment isSelected];
 }
 
-- (void) setEnabled: (BOOL)flag forSegment: (int)seg
+- (void) setEnabled: (BOOL)flag forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment setEnabled: flag];
 }
 
-- (BOOL) isEnabledForSegment: (int)seg
+- (BOOL) isEnabledForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment isEnabled];
 }
 
-- (void) setMenu: (NSMenu *)menu forSegment: (int)seg
+- (void) setMenu: (NSMenu *)menu forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment setMenu: menu];
 }
 
-- (NSMenu *) menuForSegment: (int)seg
+- (NSMenu *) menuForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment menu];
 }
 
-- (void) setToolTip: (NSString *) toolTip forSegment: (int)seg
+- (void) setToolTip: (NSString *) toolTip forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment setToolTip: toolTip];
 }
 
-- (NSString *) toolTipForSegment: (int)seg
+- (NSString *) toolTipForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment toolTip];
 }
 
-- (void) setTag: (int)tag forSegment: (int)seg
+- (void) setTag: (NSInteger)tag forSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment setTag: tag];
 }
 
-- (int) tagForSegment: (int)seg
+- (NSInteger) tagForSegment: (NSInteger)seg
 {
   id segment = [_items objectAtIndex: seg];
   return [segment tag];
 }
 
 // Drawing custom content
-- (void) drawSegment: (int)seg 
+- (void) drawSegment: (NSInteger)seg 
              inFrame: (NSRect)frame 
             withView: (NSView *)view
 {
@@ -547,7 +547,7 @@
   NSString *label = [segment label];
   NSSize textSize = [label sizeWithAttributes: [NSDictionary dictionary]];
   NSRect textFrame = frame;
-  float x_offset = (frame.size.width - textSize.width) / 2;
+  CGFloat x_offset = (frame.size.width - textSize.width) / 2;
   GSThemeControlState state = GSThemeNormalState;
   BOOL roundedLeft = NO;
   BOOL roundedRight = NO;
@@ -580,8 +580,8 @@
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
                         inView: (NSView*)controlView
 {
-  int i;
-  unsigned int count = [_items count];
+  NSInteger i;
+  NSUInteger count = [_items count];
   NSRect frame = cellFrame;
   NSRect controlFrame = [controlView frame];
 
@@ -601,12 +601,12 @@
 }
 
 // Setting the style of the segments
-- (void)setSegmentStyle:(NSSegmentStyle)style
+- (void) setSegmentStyle: (NSSegmentStyle)style
 {
   _segmentCellFlags._style = style;
 }
 
-- (NSSegmentStyle)segmentStyle
+- (NSSegmentStyle) segmentStyle
 {
   return _segmentCellFlags._style;
 }
@@ -626,7 +626,7 @@
     {
       int style;
       [aCoder encodeObject: _items];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_selected_segment];
       style = _segmentCellFlags._style;
       [aCoder encodeValueOfObjCType: @encode(int) at: &style];
     }
@@ -649,7 +649,7 @@
       else
 	_items = [[NSMutableArray alloc] initWithCapacity: 2];
 
-      for (i=0; i<[_items count]; i++)
+      for (i = 0; i < [_items count]; i++)
 	{
 	  if ([self isSelectedForSegment: i])
 	    _selected_segment = i;
@@ -670,7 +670,7 @@
 
       _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
       ASSIGN(_items,[aDecoder decodeObject]);
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_selected_segment];
       if (_selected_segment != -1)
 	[self setSelectedSegment: _selected_segment];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &style];
@@ -684,15 +684,15 @@
 	       inView: (NSView*)controlView
 	    mouseIsUp: (BOOL)flag
 {
-  int count = [self segmentCount];
-  int i = 0;
+  NSInteger count = [self segmentCount];
+  NSInteger i = 0;
 
   [super stopTracking: lastPoint
 	 at: stopPoint
 	 inView: controlView
 	 mouseIsUp: (BOOL)flag];
 
-  for(i = 0; i < count; i++)
+  for (i = 0; i < count; i++)
     {
       id segment = [_items objectAtIndex: i];
       NSRect frame = [segment frame];

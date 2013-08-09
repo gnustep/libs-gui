@@ -870,19 +870,14 @@
           obj = [obj nibInstantiate];
         }
 
-      if (obj != nil)
+      // IGNORE file's owner, first responder and NSApplication instances...
+      if ((obj != nil) && (obj != owner) && (obj != first) && (obj != app))
         {
-          // IGNORE file's owner, first responder and NSApplication instances...
-		  // Those are NOT top level objects, and in particular putting the owner in the topLevelObjects list creates a retain cycle
-		  // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html
-          // also consistent with GSNibLoading.m: nibInstantiateWithOwner: (id)owner topLevelObjects:
-          if ((obj != owner) && (obj != first) && (obj != app)) {
-            [topLevelObjects addObject: obj];
-            // All top level objects must be released by the caller to avoid
-            // leaking, unless they are going to be released by other nib
-            // objects on behalf of the owner.
-            RETAIN(obj);
-		  }
+          [topLevelObjects addObject: obj];
+          // All top level objects must be released by the caller to avoid
+          // leaking, unless they are going to be released by other nib
+          // objects on behalf of the owner.
+          RETAIN(obj);
         }
 
       if (([obj isKindOfClass: [NSMenu class]]) &&
@@ -1059,7 +1054,7 @@
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
 							options:0
 							  error:NULL];
-  if(document == nil)
+  if (document == nil)
     {
       NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
     }
@@ -1118,13 +1113,13 @@
         
       NSDebugLLog(@"PREXIB", @"%s:customClassDict: %@\n", __PRETTY_FUNCTION__, customClassDict);
       
-      if([customClassDict count] > 0)
+      if ([customClassDict count] > 0)
         {
           NSArray *objectRecords = nil;
           NSEnumerator *en = [[customClassDict allKeys] objectEnumerator];
           NSString *key = nil;
 
-          while((key = [en nextObject]) != nil)
+          while ((key = [en nextObject]) != nil)
             {
               NSString *keyValue = [key stringByReplacingOccurrencesOfString:@".CustomClassName" withString:@""];
               NSString *className = [customClassDict objectForKey:key];
@@ -1136,11 +1131,11 @@
 
               objectRecords = [document nodesForXPath:objectRecordXpath error:NULL];
               NSString *refId = nil;
-              if([objectRecords count] > 0)
+              if ([objectRecords count] > 0)
                 {
                   id record = nil;
                   NSEnumerator *oen = [objectRecords objectEnumerator];
-                  while((record = [oen nextObject]) != nil)
+                  while ((record = [oen nextObject]) != nil)
                     {
                       if ([record isMemberOfClass:[NSXMLElement class]])
                         {
@@ -1163,9 +1158,9 @@
 				  classAttr = [classNode attributeForName:@"class"];
 				  [classAttr setStringValue:className];
 				  
-				  if(cls != nil)
+				  if (cls != nil)
 				    {
-				      if([cls respondsToSelector:@selector(cellClass)])
+				      if ([cls respondsToSelector:@selector(cellClass)])
 					{
 					  NSArray *cellNodes = nil;
 					  id cellNode = nil;
@@ -1173,7 +1168,7 @@
 					  NSString *cellXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
 					  cellNodes = [document nodesForXPath:cellXpath
 									error:NULL];
-					  if([cellNodes count] > 0) 
+					  if ([cellNodes count] > 0) 
 					    {
 					      NSString *cellClassString = NSStringFromClass(cellClass);
 					      id cellAttr = nil;					      
@@ -1191,7 +1186,7 @@
             }
         }
       result = [document XMLData];
-	  RELEASE(document);
+      RELEASE(document);
     }
 
   return result;
@@ -1337,6 +1332,30 @@ didStartElement: (NSString*)elementName
   // Create instance.
   return [c allocWithZone: [self zone]];
  }
+
+- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj
+{
+  NSEnumerator *keyEnumerator = [decoded keyEnumerator];
+  id key;
+  BOOL found = NO;
+
+  while ((key = [keyEnumerator nextObject]) != nil)
+    {
+      id obj = [decoded objectForKey: key];
+      if (obj == oldObj)
+        {
+          found = YES;
+          break;
+        }
+    }
+
+  if (found)
+    {
+      [decoded setObject: newObj forKey: key];
+    }
+
+  return found;
+}
 
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname

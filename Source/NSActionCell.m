@@ -105,8 +105,8 @@ static Class controlClass;
 }
 
 - (void) setFloatingPointFormat: (BOOL)autoRange
-			   left: (unsigned int)leftDigits
-			  right: (unsigned int)rightDigits
+			   left: (NSUInteger)leftDigits
+			  right: (NSUInteger)rightDigits
 {
   [super setFloatingPointFormat: autoRange
 	 left: leftDigits
@@ -353,7 +353,7 @@ static Class controlClass;
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeInt: [self tag] forKey: @"NSTag"];
+      [aCoder encodeInteger: [self tag] forKey: @"NSTag"];
       if ([self target] != nil)
 	{
 	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
@@ -366,7 +366,7 @@ static Class controlClass;
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
       // This is only encoded for backward compatibility and won't be decoded.
@@ -384,7 +384,7 @@ static Class controlClass;
     {
       if ([aDecoder containsValueForKey: @"NSTag"])
         {
-	  [self setTag: [aDecoder decodeIntForKey: @"NSTag"]];
+	  [self setTag: [aDecoder decodeIntegerForKey: @"NSTag"]];
 	}
       if ([aDecoder containsValueForKey: @"NSTarget"])
 	{
@@ -400,7 +400,7 @@ static Class controlClass;
     {
       id dummy;
 
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
       _target = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       // Don't decode _control_view, as this may no longer be valid.

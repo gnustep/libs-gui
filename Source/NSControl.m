@@ -474,8 +474,8 @@ static NSNotificationCenter *nc;
 }
 
 - (void) setFloatingPointFormat: (BOOL)autoRange
-			   left: (unsigned)leftDigits
-			  right: (unsigned)rightDigits
+			   left: (NSUInteger)leftDigits
+			  right: (NSUInteger)rightDigits
 {
   [self abortEditing];
 
@@ -762,7 +762,7 @@ static NSNotificationCenter *nc;
     return NO;
 }
 
-- (int) sendActionOn: (int)mask
+- (NSInteger) sendActionOn: (NSInteger)mask
 {
   return [_cell sendActionOn: mask];
 }
@@ -971,7 +971,7 @@ static NSNotificationCenter *nc;
    the NSCell-trackMouse:inRect:ofView:untilMouseUp: method.</p>
    <p>This is a NeXTStep 3.3 method, no longer officially supported.</p>
  */
-- (int) mouseDownFlags
+- (NSInteger) mouseDownFlags
 { 
   return [[self selectedCell] mouseDownFlags];
 }

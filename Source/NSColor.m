@@ -1891,7 +1891,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
   else
     {
       [self release];
-      self = [c retain];
+      self = (GSNamedColor*)[c retain];
     }
   [namedColorLock unlock];
   return self;

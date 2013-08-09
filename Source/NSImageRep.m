@@ -433,7 +433,7 @@ implement, so we can't do that. */
 }
 
 // Specifying Information about the Representation
-- (int) bitsPerSample
+- (NSInteger) bitsPerSample
 {
   return _bitsPerSample;
 }
@@ -453,12 +453,12 @@ implement, so we can't do that. */
   return _isOpaque;
 }
 
-- (int) pixelsWide
+- (NSInteger) pixelsWide
 {
   return _pixelsWide;
 }
 
-- (int) pixelsHigh
+- (NSInteger) pixelsHigh
 {
   return _pixelsHigh;
 }
@@ -468,7 +468,7 @@ implement, so we can't do that. */
   _hasAlpha = flag;
 }
 
-- (void) setBitsPerSample: (int)anInt
+- (void) setBitsPerSample: (NSInteger)anInt
 {
   _bitsPerSample = anInt;
 }
@@ -483,12 +483,12 @@ implement, so we can't do that. */
   _isOpaque = flag;
 }
 
-- (void) setPixelsWide: (int)anInt
+- (void) setPixelsWide: (NSInteger)anInt
 {
   _pixelsWide = anInt;
 }
 
-- (void) setPixelsHigh: (int)anInt
+- (void) setPixelsHigh: (NSInteger)anInt
 {
   _pixelsHigh = anInt;
 }
@@ -552,7 +552,7 @@ behavior precisely matches Cocoa. */
 - (void) nativeDrawInRect: (NSRect)dstRect
                  fromRect: (NSRect)srcRect
                 operation: (NSCompositingOperation)op
-                 fraction: (float)delta
+                 fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   /* An intermediate image used to scale the image to be drawn as needed */
@@ -646,13 +646,37 @@ Fallback for backends other than Cairo. */
 - (void) guiDrawInRect: (NSRect)dstRect
               fromRect: (NSRect)srcRect
              operation: (NSCompositingOperation)op
-              fraction: (float)delta
+              fraction: (CGFloat)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
   NSSize repSize;
 
   repSize = [self size];
+
+  if (![ctxt isDrawingToScreen])
+    {
+      /* We can't composite or dissolve if we aren't drawing to a screen,
+         so we'll just draw the right part of the image in the right
+         place. This code will only get used by the GSStreamContext. */
+      NSPoint p;
+      double fx, fy;
+
+      fx = dstRect.size.width / srcRect.size.width;
+      fy = dstRect.size.height / srcRect.size.height;
+
+      p.x = dstRect.origin.x / fx - srcRect.origin.x;
+      p.y = dstRect.origin.y / fy - srcRect.origin.y;
+
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
+                  dstRect.size.width, dstRect.size.height);
+      DPSscale(ctxt, fx, fy);
+      [self drawInRect: NSMakeRect(p.x, p.y, repSize.width, repSize.height)];
+      DPSgrestore(ctxt);
+
+      return;
+    }
 
   /* Figure out what the effective transform from rep space to
      'window space' is.  */
@@ -684,8 +708,8 @@ Fallback for backends other than Cairo. */
     NSCachedImageRep *cache;
     NSAffineTransformStruct ts;
     NSPoint p;
-    double x0, y0, x1, y1, w, h;
-    int gState;
+    CGFloat x0, y0, x1, y1, w, h;
+    NSInteger gState;
     NSGraphicsContext *ctxt1;
 
     /* Figure out how big we need to make the window that'll hold the
@@ -782,7 +806,7 @@ Fallback for backends other than Cairo. */
 - (BOOL) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (CGFloat)delta
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints
 {
@@ -871,24 +895,38 @@ Fallback for backends other than Cairo. */
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _colorSpace];
-  [aCoder encodeSize: _size];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsWide];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _colorSpace];
+      [aCoder encodeSize: _size];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_bitsPerSample];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_pixelsWide];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_pixelsHigh];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
-  _size = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsWide];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
+      _size = [aDecoder decodeSize];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_bitsPerSample];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_pixelsWide];
+      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_pixelsHigh];
+    }
   return self;
 }
 

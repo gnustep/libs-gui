@@ -42,11 +42,12 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
-typedef enum _NSAlertStyle { 
+enum _NSAlertStyle { 
   NSWarningAlertStyle = 0, 
   NSInformationalAlertStyle = 1, 
   NSCriticalAlertStyle = 2 
-} NSAlertStyle;
+};
+typedef NSUInteger NSAlertStyle;
 
 enum { 
   NSAlertFirstButtonReturn = 1000,
@@ -68,7 +69,7 @@ enum {
   BOOL _shows_help;
   id _modalDelegate;
   SEL _didEndSelector;
-  int	_result;
+  NSInteger _result;
 }
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
@@ -93,7 +94,7 @@ enum {
 - (NSImage *) icon;
 - (NSString *) informativeText;
 - (NSString *) messageText;
-- (int) runModal;
+- (NSInteger) runModal;
 - (void) setAlertStyle: (NSAlertStyle)style;
 - (void) setDelegate: (id)delegate;
 - (void) setHelpAnchor: (NSString *)anchor;

@@ -71,24 +71,24 @@
 {
   NSString *_unitName;
   NSString *_abbreviation;
-  float    _conversionFactor;
+  CGFloat   _conversionFactor;
   NSArray  *_stepUpCycle;
   NSArray  *_stepDownCycle;
 }
 
 + (GSRulerUnit *) unitWithName: (NSString *)uName 
                   abbreviation: (NSString *)abbrev 
-  unitToPointsConversionFactor: (float)factor 
+  unitToPointsConversionFactor: (CGFloat)factor 
                    stepUpCycle: (NSArray *)upCycle 
                  stepDownCycle: (NSArray *)downCycle;
 - (id) initWithUnitName: (NSString *)uName 
                 abbreviation: (NSString *)abbrev
-unitToPointsConversionFactor: (float)factor 
+unitToPointsConversionFactor: (CGFloat)factor 
                  stepUpCycle: (NSArray *)upCycle 
                stepDownCycle: (NSArray *)downCycle;
 - (NSString *) unitName;
 - (NSString *) abbreviation;
-- (float) conversionFactor;
+- (CGFloat) conversionFactor;
 - (NSArray *) stepUpCycle;
 - (NSArray *) stepDownCycle;
 
@@ -98,7 +98,7 @@ unitToPointsConversionFactor: (float)factor
 
 + (GSRulerUnit *) unitWithName: (NSString *)uName 
                   abbreviation: (NSString *)abbrev 
-  unitToPointsConversionFactor: (float)factor 
+  unitToPointsConversionFactor: (CGFloat)factor 
                    stepUpCycle: (NSArray *)upCycle 
                  stepDownCycle: (NSArray *)downCycle
 {
@@ -111,7 +111,7 @@ unitToPointsConversionFactor: (float)factor
 
 - (id) initWithUnitName: (NSString *)uName 
 	   abbreviation: (NSString *)abbrev 
-unitToPointsConversionFactor: (float)factor 
+unitToPointsConversionFactor: (CGFloat)factor 
 	    stepUpCycle: (NSArray *)upCycle 
 	  stepDownCycle: (NSArray *)downCycle
 {
@@ -138,7 +138,7 @@ unitToPointsConversionFactor: (float)factor
   return _abbreviation;
 }
 
-- (float) conversionFactor
+- (CGFloat) conversionFactor
 {
   return _conversionFactor;
 }
@@ -242,7 +242,7 @@ static NSMutableDictionary *units = nil;
   
 + (void) registerUnitWithName: (NSString *)uName
                  abbreviation: (NSString *)abbreviation
- unitToPointsConversionFactor: (float)conversionFactor 
+ unitToPointsConversionFactor: (CGFloat)conversionFactor 
                   stepUpCycle: (NSArray *)stepUpCycle
                 stepDownCycle: (NSArray *)stepDownCycle
 {
@@ -312,13 +312,13 @@ static NSMutableDictionary *units = nil;
   return _accessoryView;
 }
 
-- (void) setOriginOffset: (float)offset
+- (void) setOriginOffset: (CGFloat)offset
 {
   _originOffset = offset;
   [self invalidateHashMarks];
 }
 
-- (float) originOffset
+- (CGFloat) originOffset
 {
   return _originOffset;
 }
@@ -327,7 +327,7 @@ static NSMutableDictionary *units = nil;
 {
   NSEnumerator *en;
   NSRulerMarker *marker;
-  float maxThickness = _reservedThicknessForMarkers;
+  CGFloat maxThickness = _reservedThicknessForMarkers;
   
   if (_markers == nil)
     {
@@ -336,7 +336,7 @@ static NSMutableDictionary *units = nil;
   en = [_markers objectEnumerator];
   while ((marker = [en nextObject]) != nil)
     {
-      float markerThickness;
+      CGFloat markerThickness;
       markerThickness = [marker thicknessRequiredInRuler];
       if (markerThickness > maxThickness)
         {
@@ -375,7 +375,7 @@ static NSMutableDictionary *units = nil;
 
 - (void) addMarker: (NSRulerMarker *)aMarker
 {
-  float markerThickness = [aMarker thicknessRequiredInRuler];
+  CGFloat markerThickness = [aMarker thicknessRequiredInRuler];
 
   if (_clientView == nil)
     {
@@ -506,8 +506,8 @@ static NSMutableDictionary *units = nil;
     }
 }
 
-- (void) moveRulerlineFromLocation: (float)oldLoc 
-                        toLocation: (float)newLoc
+- (void) moveRulerlineFromLocation: (CGFloat)oldLoc 
+                        toLocation: (CGFloat)newLoc
 {
   /* FIXME/TODO: not implemented */
 }
@@ -544,8 +544,8 @@ static NSMutableDictionary *units = nil;
   if (! _cacheIsValid)
     {
       NSSize unitSize;
-      float  cf; 
-      int    convIndex;
+      CGFloat cf; 
+      int convIndex;
 
       /* calculate the size one unit in document view has in the ruler */
       cf = [_unit conversionFactor];
@@ -619,18 +619,18 @@ static NSMutableDictionary *units = nil;
   NSRect docBounds;
   NSRect baselineRect;
   NSRect visibleBaselineRect;
-  float firstBaselineLocation;
-  float firstVisibleLocation;
-  float lastVisibleLocation;
+  CGFloat firstBaselineLocation;
+  CGFloat firstVisibleLocation;
+  CGFloat lastVisibleLocation;
   int firstVisibleMark;
   int lastVisibleMark;
   int mark;
   int firstVisibleLabel;
   int lastVisibleLabel;
   int label;
-  float baselineLocation = [self baselineLocation];
+  CGFloat baselineLocation = [self baselineLocation];
   NSPoint zeroPoint;
-  float zeroLocation;
+  CGFloat zeroLocation;
   NSBezierPath *path;
   NSFont *font = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
   NSDictionary *attr = [[NSDictionary alloc] 
@@ -692,7 +692,7 @@ static NSMutableDictionary *units = nil;
   
   for (mark = firstVisibleMark; mark <= lastVisibleMark; mark++)
     {
-      float markLocation;
+      CGFloat markLocation;
 
       markLocation = zeroLocation + mark * _markDistance;
       if (_orientation == NSHorizontalRuler)
@@ -742,7 +742,8 @@ static NSMutableDictionary *units = nil;
   
   for (label = firstVisibleLabel; label <= lastVisibleLabel; label++)
     {
-      float labelLocation = zeroLocation + label * _marksToLabel * _markDistance;
+      CGFloat labelLocation = zeroLocation + label * _marksToLabel * _markDistance;
+      // This has to be a float or we need to change the label format
       float labelValue = (labelLocation - zeroLocation) / _unitToRuler;
       NSString *labelString = [NSString stringWithFormat: _labelFormat, labelValue];
       NSSize size = [labelString sizeWithAttributes: attr];
@@ -803,53 +804,52 @@ static NSMutableDictionary *units = nil;
   return _orientation;
 }
 
-- (void) setReservedThicknessForAccessoryView: (float)thickness
+- (void) setReservedThicknessForAccessoryView: (CGFloat)thickness
 {
   _reservedThicknessForAccessoryView = thickness;
   [_scrollView tile];
 }
 
-- (float) reservedThicknessForAccessoryView
+- (CGFloat) reservedThicknessForAccessoryView
 {
   return _reservedThicknessForAccessoryView;
 }
 
-- (void) setReservedThicknessForMarkers: (float)thickness
+- (void) setReservedThicknessForMarkers: (CGFloat)thickness
 {
   _reservedThicknessForMarkers = thickness;
   [_scrollView tile];
 }
 
-- (float) reservedThicknessForMarkers
+- (CGFloat) reservedThicknessForMarkers
 {
   return _reservedThicknessForMarkers;
 }
 
-- (void) setRuleThickness: (float)thickness
+- (void) setRuleThickness: (CGFloat)thickness
 {
   _ruleThickness = thickness;
   [_scrollView tile];
 }
 
-- (float) ruleThickness
+- (CGFloat) ruleThickness
 {
   return _ruleThickness;
 }
 
-- (float) requiredThickness
+- (CGFloat) requiredThickness
 {
   return [self ruleThickness]
     + [self reservedThicknessForAccessoryView]
     + [self reservedThicknessForMarkers];
 }
 
-- (float) baselineLocation
+- (CGFloat) baselineLocation
 {
   return [self reservedThicknessForAccessoryView]
     + [self reservedThicknessForMarkers];
 }
 
-/* FIXME ... we cache isFlipped in NSView.  */
 - (BOOL) isFlipped
 {
   if (_orientation == NSVerticalRuler)
@@ -859,16 +859,21 @@ static NSMutableDictionary *units = nil;
   return YES;
 }
 
-- (void)encodeWithCoder:(NSCoder *)encoder
+- (void) encodeWithCoder: (NSCoder *)encoder
 {
+  [super encodeWithCoder: encoder];
   /* FIXME/TODO: not implemented */
   return;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (id) initWithCoder: (NSCoder *)decoder
 {
+  self = [super initWithCoder: decoder];
+  if (self == nil)
+    return nil;
+
   /* FIXME/TODO: not implemented */
-  return nil;
+  return self;
 }
 
 - (void) dealloc

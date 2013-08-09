@@ -455,19 +455,21 @@
   NSColor *color;
 
   rect = NSIntersectionRect(_bounds, rect);
-  if (_transparent)
+  if (_box_type == NSBoxCustom)
     {
-      color = [NSColor clearColor];
-    }
-  else if (_box_type == NSBoxCustom)
-    {
-      color = _fill_color;
+      if (_transparent)
+        {
+          color = [NSColor clearColor];
+        }
+      else
+        {
+          color = _fill_color;
+        }
     }
   else
     {
       color = [_window backgroundColor];
     }
-  
   // Fill inside
   [color set];
   NSRectFill(rect);
@@ -476,9 +478,8 @@
   switch (_border_type)
     {
       case NSNoBorder: 
-        break;
-        
-      case NSLineBorder:
+	break;
+      case NSLineBorder: 
         if (_box_type == NSBoxCustom)
           {
             [_border_color set];
@@ -489,15 +490,13 @@
             [[NSColor controlDarkShadowColor] set];
             NSFrameRect(_border_rect);
           }
-        break;
-
+	break;
       case NSBezelBorder:
-        [[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
-        break;
-
-      case NSGrooveBorder:
-        [[GSTheme theme] drawGroove: _border_rect withClip: rect];
-        break;
+	[[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
+	break;
+      case NSGrooveBorder: 
+	[[GSTheme theme] drawGroove: _border_rect withClip: rect];
+	break;
     }
 
   // Draw title
@@ -590,7 +589,7 @@
       [aCoder encodeInt: [self borderType] forKey: @"NSBorderType"];
       [aCoder encodeInt: [self boxType] forKey: @"NSBoxType"];
       [aCoder encodeInt: [self titlePosition] forKey: @"NSTitlePosition"];
-      [aCoder encodeBool: _transparent forKey: @"NSTransparent"];
+      [aCoder encodeBool: _transparent forKey: @"NSFullyTransparent"];
       [aCoder encodeSize: [self contentViewMargins] forKey: @"NSOffsets"];
     }
   else
@@ -630,14 +629,15 @@
           [self setTitlePosition: titlePosition];
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
-      {
-        _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
-      }
+        {
+          // On Apple this is always NO, we keep it for old GNUstep archives
+          _transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
+        }
       if ([aDecoder containsValueForKey: @"NSFullyTransparent"])
-      {
-        _transparent = [aDecoder decodeBoolForKey: @"NSFullyTransparent"];
-      }
-      if ([aDecoder containsValueForKey: @"NSOffsets"])
+        {
+          _transparent = [aDecoder decodeBoolForKey: @"NSFullyTransparent"];
+        }
+     if ([aDecoder containsValueForKey: @"NSOffsets"])
         {
           [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
         }

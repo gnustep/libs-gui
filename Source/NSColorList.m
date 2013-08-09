@@ -86,7 +86,7 @@ static NSColorList *themeColorList = nil;
   if (self == [NSColorList class])
     {
       [self setVersion: 2];
-      _colorListLock = [NSRecursiveLock new];
+      _colorListLock = (NSLock *)[NSRecursiveLock new];
     }
 }
 
@@ -533,17 +533,30 @@ static NSColorList *themeColorList = nil;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _name];
-  [aCoder encodeObject: _colorDictionary];
-  [aCoder encodeObject: _orderedColorKeys];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _name];
+      [aCoder encodeObject: _colorDictionary];
+      [aCoder encodeObject: _orderedColorKeys];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_name];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorDictionary];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_orderedColorKeys];
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_name];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorDictionary];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_orderedColorKeys];
+    }
   return self;
 }
 

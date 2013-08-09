@@ -21,6 +21,37 @@
       </p>
 
      <section>
+      	<heading>0.23.1</heading>
+	<p>This is a bugfix release containint many minor bugfixes, but
+        most importantly fixing some coding/archiving bugs introduced in
+        in the NSInteger,NSUInteger,CGFloat changes.
+        </p>
+     </section>
+
+     <section>
+      	<heading>0.23.0</heading>
+	<p>
+	  This is a major new stable release of GUI.
+          Note that this version is binary incompatible with previous
+          versions on 64-bit systems due to changes in some variables
+          based on changes in GNUstep base to the type of NSNotFound.<br />
+	  New features include:
+        </p>
+	<deflist>
+          <term>NSInteger,NSUInteger,CGFloat</term>
+          <desc>API and internals updated to use new types</desc>
+          <term>NSBezierPath</term>
+          <desc>Keyed encoding/decoding added</desc>
+          <term>Many bugfixes and tweaks to improve look and feel</term>
+          <desc>Most of the changes in this release are individually
+            small changes fixing UI layout issues, responsiveness etc.
+            The accumulated result should be a significantly smoother
+            look and feel.
+          </desc>
+	</deflist>
+     </section>
+
+     <section>
       	<heading>0.22.0</heading>
 	<p>
 	  This is a major new stable release of GUI. Note that to improve stability, some features that were in previous releases have been removed. Newer and better implementation of these features will be added back soon. These include use of ghostscript and ImageMagic to automatically translate image formats, and an implementation of copy-on-scroll in NSClipView. Also note that this version is binary incompatible with previous versions on 64-bit systems due to changes in some variables based on changes in GNUstep base to the type of NSNotFound.

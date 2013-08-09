@@ -38,7 +38,7 @@
 @implementation NSRulerMarker
 
 - (id)initWithRulerView:(NSRulerView *)aRulerView
-         markerLocation:(float)location
+         markerLocation:(CGFloat)location
 		  image:(NSImage *)anImage
 	    imageOrigin:(NSPoint)imageOrigin
 {
@@ -134,7 +134,7 @@
   return NSZeroRect;
 }
 
-- (float)thicknessRequiredInRuler
+- (CGFloat)thicknessRequiredInRuler
 {
   NSSize size = [_image size];
 
@@ -170,12 +170,12 @@
   return _isRemovable;
 }
 
-- (void)setMarkerLocation:(float)location
+- (void)setMarkerLocation:(CGFloat)location
 {
   _location = location;
 }
  
-- (float)markerLocation
+- (CGFloat)markerLocation
 {
   return _location;
 }
@@ -224,7 +224,7 @@
 {
   NSView *client = [_rulerView clientView];
   NSEvent *newEvent = nil;
-  int eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  NSUInteger eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   BOOL isFar = NO;
   BOOL askedCanRemove = NO;
   BOOL canRemove = NO;
@@ -234,7 +234,7 @@
   NSPoint mousePositionInWindow;
   NSPoint previousMousePositionInWindow;
   NSPoint mouseOffset;
-  float location;
+  CGFloat location;
   NSRect drawRect;
   NSRect bounds = [_rulerView bounds];
   NSPoint drawPoint;
@@ -540,25 +540,38 @@
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _rulerView];
-  [aCoder encodeObject: _image];
-  [aCoder encodeConditionalObject: _representedObject];
-  [aCoder encodePoint: _imageOrigin];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_location];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      [aCoder encodeObject: _rulerView];
+      [aCoder encodeObject: _image];
+      [aCoder encodeConditionalObject: _representedObject];
+      [aCoder encodePoint: _imageOrigin];
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_location];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  _rulerView = [aDecoder decodeObject];
-  _image = [aDecoder decodeObject];
-  _representedObject = [aDecoder decodeObject];
-  _imageOrigin = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_location];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else
+    {
+      _rulerView = [aDecoder decodeObject];
+      _image = [aDecoder decodeObject];
+      _representedObject = [aDecoder decodeObject];
+      _imageOrigin = [aDecoder decodePoint];
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_location];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isMovable];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRemovable];
+    }
   return self;
 }
 

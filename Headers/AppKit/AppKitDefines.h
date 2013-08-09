@@ -27,6 +27,12 @@
 #define __AppKitDefines_INCLUDE
 #import <GNUstepBase/GSVersionMacros.h>
 
+#ifdef __cplusplus
+#define APPKIT_EXTERN extern "C"
+#else
+#define APPKIT_EXTERN extern
+#endif
+
 #ifdef GNUSTEP_WITH_DLL 
 
 #if BUILD_libgnustep_gui_DLL
@@ -35,20 +41,20 @@
   /* On Mingw, the compiler will export all symbols automatically, so
    * __declspec(dllexport) is not needed.
    */
-#  define APPKIT_EXPORT  extern
+#  define APPKIT_EXPORT  APPKIT_EXTERN
 #  define APPKIT_DECLARE 
 # else
-#  define APPKIT_EXPORT  __declspec(dllexport)
+#  define APPKIT_EXPORT  __declspec(dllexport) APPKIT_EXTERN
 #  define APPKIT_DECLARE __declspec(dllexport)
 # endif
 #else
-#  define APPKIT_EXPORT  extern __declspec(dllimport)
+#  define APPKIT_EXPORT  APPKIT_EXTERN __declspec(dllimport)
 #  define APPKIT_DECLARE __declspec(dllimport)
 #endif
 
 #else /* GNUSTEP_WITH[OUT]_DLL */
 
-#  define APPKIT_EXPORT extern
+#  define APPKIT_EXPORT APPKIT_EXTERN 
 #  define APPKIT_DECLARE
 
 #endif

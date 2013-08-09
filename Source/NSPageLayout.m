@@ -170,11 +170,11 @@ enum {
 -(void) controlTextDidChange:(NSNotification*) notification;
 
 //NSTableView datasource handlers
--(int) numberOfRowsInTableView:(NSTableView*) tableView;
+-(NSInteger) numberOfRowsInTableView:(NSTableView*) tableView;
 
 -(id)                 tableView: (NSTableView*) tableView
       objectValueForTableColumn: (NSTableColumn*) tableColumn
-                            row: (int) index;
+                            row: (NSInteger) index;
 
 //NSTabView delegate handler we care about
 -(void)          tabView: (NSTabView*) tabView
@@ -267,7 +267,7 @@ enum {
    if the user clicks the Cancel button or NSOKButton otherwise.</p>
    <p>See Also: -runModalWithPrintInfo:</p>
 */
-- (int)runModal
+- (NSInteger)runModal
 {
   return [self runModalWithPrintInfo: [NSPrintInfo sharedPrintInfo]];
 }
@@ -277,9 +277,9 @@ enum {
    if the user clicks the Cancel button or NSOKButton otherwise.</p>
    <p>See Also: -runModal</p>
 */
-- (int)runModalWithPrintInfo:(NSPrintInfo *)printInfo
+- (NSInteger)runModalWithPrintInfo:(NSPrintInfo *)printInfo
 {
-  int result;
+  NSInteger result;
   
   [_controller setPrintInfo: printInfo];
   [_controller readPrintInfo];
@@ -540,12 +540,10 @@ enum {
   [NSApp stopModalWithCode: NSOKButton];
 }
 
-
 - (void) cancelButtonClicked: (id)sender
 {
   [NSApp stopModalWithCode: NSCancelButton];
 }
-
 
 -(void) printerPopUpClicked: (id)sender
 {
@@ -569,8 +567,6 @@ enum {
 
   [self processAttributes];
 }
-
-
 
 -(void) paperRadioMatrixClicked: (id) sender
 {
@@ -601,8 +597,6 @@ enum {
 -(void) customPaperButtonsClicked: (id) sender
 {
 }
-
-
 
 //determine the measurement string and factor value to use
 -(void) determineMeasurements
@@ -648,8 +642,6 @@ enum {
         }
    }
 }
-
-
 
 
 //
@@ -776,8 +768,6 @@ enum {
     }
 }
 
-
-
 - (void)readPrintInfo
 {
   NSString *paperName;
@@ -817,7 +807,6 @@ enum {
       [paperOrientationMatrix selectCellAtRow: 0 
                                        column: 1];
     }
- 
 
   //set the scaling
   scaleNumber = [[_printInfo dictionary] objectForKey: NSPrintScalingFactor];
@@ -940,7 +929,7 @@ enum {
 
 
 //NSTableView datasource handlers
--(int) numberOfRowsInTableView:(NSTableView*) tableView
+-(NSInteger) numberOfRowsInTableView:(NSTableView*) tableView
 {
   if (tableView == customPaperTableView)
     {
@@ -955,11 +944,10 @@ enum {
 
 -(id)                 tableView: (NSTableView*) tableView
       objectValueForTableColumn: (NSTableColumn*) tableColumn
-                            row: (int) index
+                            row: (NSInteger) index
 {
   if (tableView == customPaperTableView)
     {
-      
       return [[customPapers allKeys] objectAtIndex: index];
     }
   else  //summaryTableView

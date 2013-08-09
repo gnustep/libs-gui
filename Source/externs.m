@@ -29,11 +29,14 @@
 
 #import "config.h"
 #import <Foundation/NSString.h>
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
 NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
+
+const double NSAppKitVersionNumber = NSAppKitVersionNumber10_4;
 
 //
 // Global Exception Strings
@@ -138,11 +141,11 @@ NSString *NSPatternColorSpace = @"NSPatternColorSpace";
 NSString *NSCustomColorSpace = @"NSCustomColorSpace";
 
 // NSColor Global gray values
-const float NSBlack = 0;
-const float NSDarkGray = .333;
-const float NSGray = 0.5;
-const float NSLightGray = .667;
-const float NSWhite = 1;
+const CGFloat NSBlack = 0;
+const CGFloat NSDarkGray = .333;
+const CGFloat NSGray = 0.5;
+const CGFloat NSLightGray = .667;
+const CGFloat NSWhite = 1;
 
 // NSColor notification
 NSString *NSSystemColorsDidChangeNotification =
@@ -430,6 +433,17 @@ NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
 // NSPopUpButton notification
 NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
 NSString *NSPopUpButtonCellWillPopUpNotification = @"PopUpButtonCellWillPopUp";
+
+// NSPopover notifications
+NSString *NSPopoverWillShowNotification = @"NSPopoverWillShowNotification";
+NSString *NSPopoverDidShowNotification = @"NSPopoverDidShowNotification";
+NSString *NSPopoverWillCloseNotification = @"NSPopoverWillCloseNotification";
+NSString *NSPopoverDidCloseNotification = @"NSPopoverDidCloseNotification";
+
+// NSPopover keys
+NSString *NSPopoverCloseReasonKey = @"NSPopoverCloseReasonKey";
+NSString *NSPopoverCloseReasonStandard = @"NSPopoverCloseReasonStandard";
+NSString *NSPopoverCloseReasonDetachToWindow = @"NSPopoverCloseReasonDetachToWindow";
 
 // NSTable notifications
 NSString *NSTableViewSelectionDidChangeNotification = @"TableViewSelectionDidChange";

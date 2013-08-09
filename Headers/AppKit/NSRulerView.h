@@ -58,12 +58,12 @@ typedef enum {
   NSScrollView *_scrollView;
   NSView *_clientView;		// Not retained
   NSView *_accessoryView;
-  float _originOffset;
+  CGFloat _originOffset;
   NSMutableArray *_markers;
   NSRulerOrientation _orientation;
-  float _ruleThickness;
-  float _reservedThicknessForAccessoryView;
-  float _reservedThicknessForMarkers;
+  CGFloat _ruleThickness;
+  CGFloat _reservedThicknessForAccessoryView;
+  CGFloat _reservedThicknessForMarkers;
 
   /* Cached values. It's a little expensive to calculate them and they
    * change only when the unit or the originOffset is changed or when
@@ -80,12 +80,12 @@ typedef enum {
   NSString *_labelFormat;
 }
 
-- (id) initWithScrollView: (NSScrollView *)aScrollView
-	     orientation: (NSRulerOrientation)o; 
+- (id) initWithScrollView:(NSScrollView *)aScrollView
+	     orientation:(NSRulerOrientation)o; 
 
-+ (void) registerUnitWithName: (NSString *)uName
++ (void) registerUnitWithName:(NSString *)uName
 		 abbreviation:(NSString *)abbreviation
- unitToPointsConversionFactor:(float)conversionFactor
+ unitToPointsConversionFactor:(CGFloat)conversionFactor
 		  stepUpCycle:(NSArray *)stepUpCycle
 		stepDownCycle:(NSArray *)stepDownCycle;
 
@@ -98,8 +98,8 @@ typedef enum {
 - (void) setAccessoryView: (NSView *)aView; 
 - (NSView *) accessoryView; 
 
-- (void) setOriginOffset: (float)offset; 
-- (float) originOffset; 
+- (void) setOriginOffset: (CGFloat)offset; 
+- (CGFloat) originOffset; 
 
 - (void) setMarkers: (NSArray *)newMarkers; 
 - (NSArray *) markers;
@@ -108,7 +108,7 @@ typedef enum {
 - (BOOL) trackMarker: (NSRulerMarker *)aMarker 
       withMouseEvent: (NSEvent *)theEvent; 
 
-- (void) moveRulerlineFromLocation: (float)oldLoc toLocation: (float)newLoc; 
+- (void) moveRulerlineFromLocation: (CGFloat)oldLoc toLocation: (CGFloat)newLoc; 
 
 - (void) drawHashMarksAndLabelsInRect: (NSRect)aRect; 
 - (void) drawMarkersInRect: (NSRect)aRect; 
@@ -119,14 +119,14 @@ typedef enum {
 
 - (void) setOrientation: (NSRulerOrientation)o; 
 - (NSRulerOrientation) orientation; 
-- (void) setReservedThicknessForAccessoryView: (float)thickness; 
-- (float) reservedThicknessForAccessoryView; 
-- (void) setReservedThicknessForMarkers: (float)thickness; 
-- (float) reservedThicknessForMarkers; 
-- (void) setRuleThickness: (float)thickness; 
-- (float) ruleThickness; 
-- (float) requiredThickness;
-- (float) baselineLocation; 
+- (void) setReservedThicknessForAccessoryView: (CGFloat)thickness; 
+- (CGFloat) reservedThicknessForAccessoryView; 
+- (void) setReservedThicknessForMarkers: (CGFloat)thickness; 
+- (CGFloat) reservedThicknessForMarkers; 
+- (void) setRuleThickness: (CGFloat)thickness; 
+- (CGFloat) ruleThickness; 
+- (CGFloat) requiredThickness;
+- (CGFloat) baselineLocation; 
 - (BOOL) isFlipped; 
 
 @end
@@ -159,13 +159,13 @@ typedef enum {
 - (BOOL)rulerView: (NSRulerView *)aRulerView 
    shouldRemoveMarker: (NSRulerMarker *)aMarker;
 
-- (float)rulerView: (NSRulerView *)aRulerView
-     willAddMarker: (NSRulerMarker *)aMarker
-        atLocation: (float)location; 
+- (CGFloat)rulerView: (NSRulerView *)aRulerView
+       willAddMarker: (NSRulerMarker *)aMarker
+          atLocation: (CGFloat)location; 
 
-- (float)rulerView: (NSRulerView *)aRulerView
-    willMoveMarker: (NSRulerMarker *)aMarker
-        toLocation: (float)location; 
+- (CGFloat)rulerView: (NSRulerView *)aRulerView
+      willMoveMarker: (NSRulerMarker *)aMarker
+          toLocation: (CGFloat)location; 
 
 - (void)rulerView: (NSRulerView *)aRulerView
 willSetClientView: (NSView *)newClient; 

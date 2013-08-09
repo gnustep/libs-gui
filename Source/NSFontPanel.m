@@ -186,13 +186,12 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
   NSArray *fontFamilies = [fm availableFontFamilies];
   unsigned int i,j;
-
-  DESTROY(_familyList);
+  NSMutableArray *familyList;
 
   /*
   Build an array of all families that have a font that will be included.
   */
-  _familyList = [[NSMutableArray alloc]
+  familyList = [[NSMutableArray alloc]
 		  initWithCapacity: [fontFamilies count]];
 
   for (i = 0; i < [fontFamilies count]; i++)
@@ -206,12 +205,14 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	  if ([self _includeFont: [[familyMembers objectAtIndex: j] objectAtIndex: 0]
 			delegate: fmDelegate])
 	    {
-	      [_familyList addObject: [fontFamilies objectAtIndex: i]];
+	      [familyList addObject: [fontFamilies objectAtIndex: i]];
 	      break;
 	    }
 	}
     }
 
+  DESTROY(_familyList);
+  _familyList = familyList;
   // Reload the display. 
   [familyBrowser loadColumnZero];
   // Reselect the current font. (Hopefully still there)
@@ -544,6 +545,11 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 			    backing: NSBackingStoreRetained
 			      defer: YES
 			     screen: nil];
+  if (!self)
+    {
+      return nil;
+    }
+
   [self setTitle: _(@"Font Panel")];
   [self setBecomesKeyOnlyIfNeeded: YES];
 
@@ -623,7 +629,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // label for selection of size
   label = [[NSTextField alloc] initWithFrame: sizeTitleRect];
-  [label setCell: [GSBrowserTitleCell new]];
+  [label setCell: AUTORELEASE([GSBrowserTitleCell new])];
   [label setFont: [NSFont boldSystemFontOfSize: 0]];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground: YES];
@@ -642,6 +648,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [sizeField setEditable: YES];
   [sizeField setAllowsEditingTextAttributes: NO];
   [sizeField setAlignment: NSCenterTextAlignment];
+  [sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
   [sizeField setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
   [sizeField setDelegate: self];
   [sizeField setTag: NSFPSizeField];
@@ -999,23 +1006,24 @@ static int score_difference(int weight1, int traits1,
 
   unsigned int i;
   NSArray *entireFaceList;
-
+  NSMutableArray *faceList;
 
   entireFaceList = [fm availableMembersOfFontFamily:
-  			[_familyList objectAtIndex:row]];
+  			[_familyList objectAtIndex: row]];
 
-  DESTROY(_faceList);
-  _faceList = [[NSMutableArray alloc] initWithCapacity: [entireFaceList count]];
+  faceList = [[NSMutableArray alloc] initWithCapacity: [entireFaceList count]];
 
   for (i = 0; i < [entireFaceList count]; i++)
     {
       id aFace = [entireFaceList objectAtIndex:i];
       if ([self _includeFont: [aFace objectAtIndex:0]  delegate: fmDelegate])
 	{
-	  [_faceList addObject: aFace];
+	  [faceList addObject: aFace];
 	}
     }
 
+  DESTROY(_faceList);
+  _faceList = faceList;
   _family = row;
 
   // Select a face with the same properties
@@ -1143,8 +1151,8 @@ static int score_difference(int weight1, int traits1,
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)cell 
-	   atRow: (int)row 
-	  column: (int)column
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column
 {
   NSString *value = nil;
 
@@ -1155,7 +1163,7 @@ static int score_difference(int weight1, int traits1,
     {
     case NSFPFamilyBrowser:
       {
-	if ([_familyList count] > (unsigned)row)
+	if ([_familyList count] > (NSUInteger)row)
 	  {
 	    value = [_familyList objectAtIndex: row];
 	  }
@@ -1163,7 +1171,7 @@ static int score_difference(int weight1, int traits1,
       }
     case NSFPFaceBrowser:
       {
-	if ([_faceList count] > (unsigned)row)
+	if ([_faceList count] > (NSUInteger)row)
 	  {
 	    value = [[_faceList objectAtIndex: row] objectAtIndex: 1];
 	  } 

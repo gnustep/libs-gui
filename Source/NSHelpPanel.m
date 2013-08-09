@@ -130,7 +130,7 @@ static NSHelpPanel	*_sharedPanel = nil;
 }
 
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
+		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 {
@@ -212,23 +212,6 @@ static NSHelpPanel	*_sharedPanel = nil;
 //
 - (void) print: (id)sender
 {
-}
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  self = [super initWithCoder: aDecoder];
-  if (nil == self)
-    return nil;
-
-  return self;
 }
 
 @end

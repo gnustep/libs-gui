@@ -43,20 +43,22 @@ typedef enum _NSTextTabType {
   NSDecimalTabStopType
 } NSTextTabType;
 
-typedef enum _NSLineBreakMode {		/* What to do with long lines */
+enum _NSLineBreakMode {		/* What to do with long lines */
   NSLineBreakByWordWrapping = 0,     	/* Wrap at word boundaries, default */
   NSLineBreakByCharWrapping,		/* Wrap at character boundaries */
   NSLineBreakByClipping,		/* Simply clip */
   NSLineBreakByTruncatingHead,	/* Truncate at head of line: "...wxyz" */
   NSLineBreakByTruncatingTail,	/* Truncate at tail of line: "abcd..." */
   NSLineBreakByTruncatingMiddle	/* Truncate middle of line:  "ab...yz" */
-} NSLineBreakMode;
+};
+typedef NSUInteger NSLineBreakMode;
 
-typedef enum _NSWritingDirection {
+enum _NSWritingDirection {
     NSWritingDirectionNaturalDirection,
     NSWritingDirectionLeftToRight,
     NSWritingDirectionRightToLeft
-} NSWritingDirection;
+};
+typedef NSInteger NSWritingDirection;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName; 
@@ -70,13 +72,13 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
   float	_location;
 }
 
-- (id) initWithType: (NSTextTabType)type  location: (float)loc;
-- (float) location;
+- (id) initWithType: (NSTextTabType)type  location: (CGFloat)loc;
+- (CGFloat) location;
 - (NSTextTabType) tabStopType;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (id) initWithTextAlignment: (NSTextAlignment)align 
-                    location: (float)loc 
+                    location: (CGFloat)loc 
                      options: (NSDictionary *)options;
 - (NSTextAlignment) alignment;
 - (NSDictionary *) options;
@@ -115,12 +117,12 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
  *	Can't be negative. This value is included in the line fragment
  *	heights in layout manager.
  */
-- (float) lineSpacing;
+- (CGFloat) lineSpacing;
 
 /*
  *	Distance between the bottom of this paragraph and top of next.
  */
-- (float) paragraphSpacing;
+- (CGFloat) paragraphSpacing;
 
 - (NSTextAlignment) alignment;
 
@@ -132,18 +134,18 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 /*
  *	Distance from margin to front edge of paragraph
  */
-- (float) headIndent;
+- (CGFloat) headIndent;
 
 /*
  *	Distance from margin to back edge of paragraph; if negative or 0,
  *	from other margin
  */
-- (float) tailIndent;
+- (CGFloat) tailIndent;
 
 /*
  *	Distance from margin to edge appropriate for text direction
  */
-- (float) firstLineHeadIndent;
+- (CGFloat) firstLineHeadIndent;
 
 /*
  *	Distance from margin to tab stops
@@ -155,12 +157,12 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
  *	of ascenders; basically the line fragment height. Does not include
  *	lineSpacing (which is added after this computation).
  */
-- (float) minimumLineHeight;
+- (CGFloat) minimumLineHeight;
 
 /*
  *	0 implies no maximum.
  */ 
-- (float) maximumLineHeight;
+- (CGFloat) maximumLineHeight;
 - (NSLineBreakMode) lineBreakMode;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
@@ -173,12 +175,12 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 - (NSWritingDirection) baseWritingDirection;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (float) defaultTabInterval;
-- (float) lineHeightMultiple;
-- (float) paragraphSpacingBefore;
+- (CGFloat) defaultTabInterval;
+- (CGFloat) lineHeightMultiple;
+- (CGFloat) paragraphSpacingBefore;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (int) headerLevel;
+- (NSInteger) headerLevel;
 - (float) hyphenationFactor;
 - (NSArray *) textBlocks;
 - (NSArray *) textLists;
@@ -191,15 +193,15 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 {
 }
 
-- (void) setLineSpacing: (float)aFloat;
-- (void) setParagraphSpacing: (float)aFloat;
+- (void) setLineSpacing: (CGFloat)aFloat;
+- (void) setParagraphSpacing: (CGFloat)aFloat;
 - (void) setAlignment: (NSTextAlignment)newAlignment;
-- (void) setFirstLineHeadIndent: (float)aFloat;
-- (void) setHeadIndent: (float)aFloat;
-- (void) setTailIndent: (float)aFloat;
+- (void) setFirstLineHeadIndent: (CGFloat)aFloat;
+- (void) setHeadIndent: (CGFloat)aFloat;
+- (void) setTailIndent: (CGFloat)aFloat;
 - (void) setLineBreakMode: (NSLineBreakMode)mode;
-- (void) setMinimumLineHeight: (float)aFloat;
-- (void) setMaximumLineHeight: (float)aFloat;
+- (void) setMinimumLineHeight: (CGFloat)aFloat;
+- (void) setMaximumLineHeight: (CGFloat)aFloat;
 - (void) addTabStop: (NSTextTab*)anObject;
 - (void) removeTabStop: (NSTextTab*)anObject;
 - (void) setTabStops: (NSArray*)array;
@@ -209,12 +211,12 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 - (void) setBaseWritingDirection: (NSWritingDirection)direction;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-- (void) setDefaultTabInterval: (float)interval;
-- (void) setLineHeightMultiple: (float)factor;
-- (void) setParagraphSpacingBefore: (float)spacing;
+- (void) setDefaultTabInterval: (CGFloat)interval;
+- (void) setLineHeightMultiple: (CGFloat)factor;
+- (void) setParagraphSpacingBefore: (CGFloat)spacing;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (void) setHeaderLevel: (int)level;
+- (void) setHeaderLevel: (NSInteger)level;
 - (void) setHyphenationFactor: (float)factor;
 - (void) setTextBlocks: (NSArray *)blocks;
 - (void) setTextLists: (NSArray *)lists;

@@ -1146,7 +1146,6 @@ originalContentsURL: (NSURL *)orig
 
 - (NSSavePanel *)_runSavePanelForSaveOperation: (NSSaveOperationType)saveOperation
 {
-  NSView *accessory = nil;
   NSString *title;
   NSString *directory;
   NSArray *types;
@@ -1164,7 +1163,7 @@ originalContentsURL: (NSURL *)orig
       
       [self _addItemsToSpaButtonFromArray: types];
       
-      accessory = _save_panel_accessory;
+      [savePanel setAccessoryView: _save_panel_accessory];
     }
 
   if ([types count] > 0)
@@ -1192,13 +1191,16 @@ originalContentsURL: (NSURL *)orig
   else
     directory = [controller currentDirectory];
   [savePanel setDirectory: directory];
-        
-  if (![self prepareSavePanel: savePanel])
-    {
-      return nil;
-    }
 
-  if ([self runModalSavePanel: savePanel withAccessoryView: accessory])
+  if (!OVERRIDDEN(runModalSavePanel:withAccessoryView:))
+    {
+      if (![self prepareSavePanel: savePanel])
+	{
+	  return nil;
+	}
+    }
+  if ([self runModalSavePanel: savePanel
+	    withAccessoryView: [savePanel accessoryView]])
     {
       return savePanel;
     }

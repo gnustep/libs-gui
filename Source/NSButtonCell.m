@@ -238,9 +238,9 @@ typedef struct _GSButtonCellFlags
     }
 }
 
-- (int) cellAttribute: (NSCellAttribute)aParameter
+- (NSInteger) cellAttribute: (NSCellAttribute)aParameter
 {
-  int value = 0;
+  NSInteger value = 0;
 
   switch (aParameter)
     {
@@ -280,7 +280,7 @@ typedef struct _GSButtonCellFlags
   return value;
 }
 
-- (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
+- (void) setCellAttribute: (NSCellAttribute)aParameter to: (NSInteger)value
 {
   switch (aParameter)
     {

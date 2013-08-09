@@ -118,24 +118,24 @@
 /*
  * Checking altered columns 
  */
-- (int) draggedColumn
+- (NSInteger) draggedColumn
 {
   // TODO
   return -1;
 }
-- (float) draggedDistance
+- (CGFloat) draggedDistance
 {
   // TODO
   return -1;
 }
-- (int) resizedColumn
+- (NSInteger) resizedColumn
 {
   return _resizedColumn;
 }
 /*
  * Utility methods 
  */
-- (int) columnAtPoint: (NSPoint)aPoint
+- (NSInteger) columnAtPoint: (NSPoint)aPoint
 {
   if (_tableView == nil)
     return -1;
@@ -146,7 +146,7 @@
   return [_tableView columnAtPoint: aPoint];
 }
 
-- (NSRect)headerRectOfColumn: (int)columnIndex
+- (NSRect)headerRectOfColumn: (NSInteger)columnIndex
 {
   NSRect rect;
 
@@ -204,8 +204,8 @@
 - (void) mouseDown: (NSEvent*)event
 {
   NSPoint location = [event locationInWindow];
-  int clickCount;
-  int columnIndex;
+  NSInteger clickCount;
+  NSInteger columnIndex;
   NSTableColumn *currentColumn;
 
   clickCount = [event clickCount];
@@ -271,27 +271,27 @@
       /* Resizing */
       if (_resizedColumn != -1)
         {
-          float p;
+          CGFloat p;
           NSEvent *e;
           BOOL lit;
-          unsigned int eventMask;
+          NSUInteger eventMask;
           BOOL liveResize;
 
           /* Width of the highlighted area. */
           const float divWidth = 4;
           /* Coordinates of visible part of table */
-          float minVisCoord = NSMinX([self visibleRect]);
-          float maxVisCoord = NSMaxX([self visibleRect]);
+          CGFloat minVisCoord = NSMinX([self visibleRect]);
+          CGFloat maxVisCoord = NSMaxX([self visibleRect]);
           
           NSPoint unconverted = [event locationInWindow];
           NSArray *columns = [_tableView tableColumns];
           /* Column on the left of resizing bound */
           NSTableColumn *column = [columns objectAtIndex: _resizedColumn];
-          const float columnMinX = NSMinX([self headerRectOfColumn: _resizedColumn]);
-          const float columnMinWidth = [column minWidth];
-          const float columnMaxWidth = [column maxWidth];
-          float newColumnWidth = [column width];
-          float newColumnMaxX;
+          const CGFloat columnMinX = NSMinX([self headerRectOfColumn: _resizedColumn]);
+          const CGFloat columnMinWidth = [column minWidth];
+          const CGFloat columnMaxWidth = [column maxWidth];
+          CGFloat newColumnWidth = [column width];
+          CGFloat newColumnMaxX;
           NSRect oldHighlightRect;
           NSRect highlightRect = [self visibleRect];
           highlightRect.size.width = divWidth;
@@ -454,19 +454,19 @@
          If mouse is not dragged but released, select/deselect the column. */
       if ([_tableView allowsColumnReordering])
         {
-          int i = columnIndex;
-          int j = columnIndex;
-          float minCoord; 
-          float maxCoord; 
-          float minVisCoord;
-          float maxVisCoord;
-          float *_cO;
-          float *_cO_minus1;
-          int numberOfColumns = [_tableView numberOfColumns];
-          unsigned int eventMask = (NSLeftMouseUpMask 
+          NSInteger i = columnIndex;
+          NSInteger j = columnIndex;
+          CGFloat minCoord; 
+          CGFloat maxCoord; 
+          CGFloat minVisCoord;
+          CGFloat maxVisCoord;
+          CGFloat *_cO;
+          CGFloat *_cO_minus1;
+          NSInteger numberOfColumns = [_tableView numberOfColumns];
+          NSUInteger eventMask = (NSLeftMouseUpMask 
                                     | NSLeftMouseDraggedMask 
                                     | NSPeriodicMask);
-          unsigned int modifiers = [event modifierFlags];
+          NSUInteger modifiers = [event modifierFlags];
           NSEvent *e;
           NSDate *distantFuture = [NSDate distantFuture];
           NSRect visibleRect = [self visibleRect];
@@ -477,7 +477,7 @@
           BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
           
           BOOL mouseDragged = NO;
-          float p;
+          CGFloat p;
           NSPoint unconverted;
           minVisCoord = NSMinX (visibleRect);
           maxVisCoord = NSMaxX (visibleRect);
@@ -488,9 +488,9 @@
           }
           {
             float *_c = [_tableView _columnOrigins];
-            _cO_minus1 = malloc((numberOfColumns + 3) * sizeof(float));
+            _cO_minus1 = malloc((numberOfColumns + 3) * sizeof(CGFloat));
             _cO = _cO_minus1 + 1;
-            memcpy(_cO, _c, numberOfColumns * sizeof(float));
+            memcpy(_cO, _c, numberOfColumns * sizeof(CGFloat));
             _cO[numberOfColumns] = maxCoord;
             _cO[numberOfColumns + 1] = maxCoord;
             _cO[-1] = minCoord;
@@ -719,7 +719,7 @@
         {
           NSRect cellFrame = [self headerRectOfColumn: columnIndex];
           NSApplication *theApp = [NSApplication sharedApplication];
-          unsigned int modifiers = [event modifierFlags];
+          NSUInteger modifiers = [event modifierFlags];
           NSPoint location = [event locationInWindow];
           NSPoint point = [self convertPoint: location fromView: nil];
 

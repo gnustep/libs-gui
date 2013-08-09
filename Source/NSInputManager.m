@@ -496,7 +496,7 @@ static NSInputManager *currentInputManager = nil;
       NSString *characters = [theEvent characters];
       NSString *unmodifiedCharacters = [theEvent charactersIgnoringModifiers];
       unichar character = 0;
-      unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
+      NSUInteger flags = [theEvent modifierFlags] & (NSShiftKeyMask 
                                                    | NSAlternateKeyMask 
                                                    | NSControlKeyMask
                                                    | NSNumericPadKeyMask);
@@ -770,12 +770,12 @@ static NSInputManager *currentInputManager = nil;
   return nil;
 }
 
-- (unsigned int) characterIndexForPoint: (NSPoint)thePoint
+- (NSUInteger) characterIndexForPoint: (NSPoint)thePoint
 {
   return 0;
 }
 
-- (long) conversationIdentifier
+- (NSInteger) conversationIdentifier
 {
   return 0;
 }

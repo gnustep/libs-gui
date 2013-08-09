@@ -69,6 +69,9 @@
 /* Define to 1 if you have the <png.h> header file. */
 #undef HAVE_PNG_H
 
+/* Define to 1 if you have the `QuantizeBuffer' function. */
+#undef HAVE_QUANTIZEBUFFER
+
 /* Define to 1 if you have the `rint' function. */
 #undef HAVE_RINT
 

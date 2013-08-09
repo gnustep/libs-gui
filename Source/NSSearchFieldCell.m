@@ -59,6 +59,19 @@
 
 @implementation NSSearchFieldCell
 
+#define ICON_WIDTH	16
+
+// Inlined method
+ 
+static inline NSRect textCellFrameFromRect(NSRect cellRect) 
+// Not the drawed part, precises just the part which receives events
+{
+  return NSMakeRect(cellRect.origin.x + ICON_WIDTH,
+		    NSMinY(cellRect),
+		    NSWidth(cellRect) - 2*ICON_WIDTH,
+		    NSHeight(cellRect));
+}
+
 - (id) initTextCell:(NSString *)aString
 {
   self = [super initTextCell: aString];
@@ -192,6 +205,7 @@
 - (void) setRecentSearches: (NSArray *)searches
 {
   int max;
+  NSMutableArray *mutableSearches;
 
   max = [self maximumRecents];
   if ([searches count] > max)
@@ -199,13 +213,14 @@
       id buffer[max];
 
       [searches getObjects: buffer range: NSMakeRange(0, max)];
-      searches = [NSMutableArray arrayWithObjects: buffer count: max];
+      mutableSearches = [[NSMutableArray alloc] initWithObjects: buffer count: max];
     }
   else
     {
-      searches = [NSMutableArray arrayWithArray: searches];
+      mutableSearches = [[NSMutableArray alloc] initWithArray: searches];
     }
-  ASSIGN(_recent_searches, searches);
+  [_recent_searches release];
+  _recent_searches = mutableSearches;
   [self _saveSearches];
 }
  
@@ -304,8 +319,6 @@
   [c setKeyEquivalentModifierMask: 0];
 }
 
-#define ICON_WIDTH	16
-
 - (NSRect) cancelButtonRectForBounds: (NSRect)rect
 {
   NSRect part, clear;
@@ -377,8 +390,8 @@
 		  inView: (NSView*)controlView
 		  editor: (NSText*)textObject
 		delegate: (id)anObject
-		   start: (int)selStart	 
-		  length: (int)selLength
+		   start: (NSInteger)selStart
+		  length: (NSInteger)selLength
 { 
   // constrain to visible text area
   [super selectWithFrame: [self searchTextRectForBounds: aRect]
@@ -438,6 +451,12 @@
 		inRect: [self searchTextRectForBounds: cellFrame]
 		ofView: controlView 
 		untilMouseUp: untilMouseUp];
+}
+
+- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  [super resetCursorRect: textCellFrameFromRect(cellFrame)
+		  inView: controlView];
 }
 
 - (void) textDidChange: (NSNotification *)notification

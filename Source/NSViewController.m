@@ -25,12 +25,13 @@
  Boston, MA 02110-1301, USA.
  */ 
 
-#import <Foundation/NSBundle.h>
-#import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSString.h>
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSView.h"
 #import "AppKit/NSViewController.h"
 
 
@@ -52,9 +53,7 @@
 - (void) dealloc
 {
   // View Controllers are expect to release their own top-level objects
-  // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/LoadingResources/CocoaNibs/CocoaNibs.html 
-  [_topLevelObjects makeObjectsPerformSelector:@selector(release)];
-
+  [_topLevelObjects makeObjectsPerformSelector: @selector(release)];
   DESTROY(_nibName);
   DESTROY(_nibBundle);
   DESTROY(_representedObject);
@@ -64,7 +63,7 @@
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
   DESTROY(view);
-  
+
   [super dealloc];
 }
 
@@ -99,11 +98,10 @@
 
 - (void)setView:(NSView *)aView
 {
-  if (aView != view)
-  {
-    [view release];
-    view = [aView retain];
-  }
+  if (view != aView)
+    {
+      ASSIGN(view, aView);
+    }
 }
 
 - (void)loadView
@@ -145,6 +143,42 @@
   return _nibBundle;
 }
 
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    {
+      return nil;
+    }
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSView *aView = [aDecoder decodeObjectForKey: @"NSView"];
+      [self setView: aView];
+    }
+  else
+    {
+      NSView *aView;
+
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &aView];
+      [self setView: aView];
+    }
+  return self;
+}
+  	 
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self view] forKey: @"NSView"];
+    }
+  else
+    {
+      [aCoder encodeObject: [self view]];
+    }
+}
 @end
 
 @implementation NSViewController (NSEditorRegistration)
@@ -192,25 +226,6 @@
 {
   // Loop over all elements of _editors
   [self notImplemented: _cmd];
-}
-
-- (id)initWithCoder:(NSCoder *)aCoder
-{
-    self = [super initWithCoder:aCoder];
-    
-    if (self)
-    {
-        NSView *aView = [aCoder decodeObjectForKey:@"NSView"];
-		[self setView:aView];
-    }
-    
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [super encodeWithCoder:aCoder];
-    [aCoder encodeObject:[self view] forKey:@"NSView"];
 }
 
 @end

@@ -3,7 +3,7 @@
 
    Methods for loading .png images.
 
-   Copyright (C) 2003-2011 Free Software Foundation, Inc.
+   Copyright (C) 2003-2013 Free Software Foundation, Inc.
    
    Written by: Alexander Malmberg <alexander@malmberg.org>
    Date: 2003-12-07
@@ -359,7 +359,11 @@ static void writer_func(png_structp png_struct, png_bytep data,
 
   // init structures
   PNGRep = [NSMutableData dataWithLength: 0];
+#if PNG_LIBPNG_VER < 10500
+  // I don't think this was ever needed as png_create_info_struct()
+  // sets up the structure correctly and we rely on that in all other places.
   png_info_init_3(&png_info, png_sizeof(png_info));
+#endif
   png_set_write_fn(png_struct, PNGRep, writer_func, NULL);
   png_set_IHDR(png_struct, png_info, width, height, depth,
    type, interlace, PNG_COMPRESSION_TYPE_BASE,

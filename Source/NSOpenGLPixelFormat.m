@@ -27,29 +27,14 @@
 */
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import "AppKit/NSOpenGL.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 
-
-// @interface GSGLPixelFormat : NSOpenGLPixelFormat
-// {}
-// + _classContext;
-// @end
-
-// @implementation GSGLPixelFormat
-// - (id)initWithAttributes:(NSOpenGLPixelFormatAttribute *)attribs
-// {
-//   self = [[GSGLPixelFormat _classContext] alloc];
-
-//   return [self initWithAttributes: attribs];
-// }
-// @end
-
-//static GSGLPixelFormat *temp;
-
 @implementation NSOpenGLPixelFormat
-+ _classPixelFormat
+
++ (Class) _classPixelFormat
 {
   Class glPixelFormatClass = [GSCurrentServer() glPixelFormatClass];
 
@@ -65,16 +50,7 @@
     }
 }
 
-// + (void) initialize
-// {
-//   if (self == [NSOpenGLPixelFormat class])
-//     {
-//       temp = (GSGLPixelFormat *) NSAllocateObject([GSGLPixelFormat class], 0, 
-// 						  NSDefaultMallocZone());
-//     }
-// }
-
-+ allocWithZone: (NSZone *) z
++ (id) allocWithZone: (NSZone*) z
 {
   Class c = [self _classPixelFormat];
   if (c)
@@ -83,23 +59,54 @@
     return nil;
 }
 
-- (void)getValues:(long *)vals 
-     forAttribute:(NSOpenGLPixelFormatAttribute)attrib 
- forVirtualScreen:(int)screen
+- (void) getValues: (int*)vals 
+      forAttribute: (NSOpenGLPixelFormatAttribute)attrib 
+  forVirtualScreen: (int)screen
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (id)initWithAttributes:(NSOpenGLPixelFormatAttribute *)attribs
+- (id) initWithAttributes: (NSOpenGLPixelFormatAttribute*)attribs
 {
   [self subclassResponsibility: _cmd];
   return nil;
 }
 
-- (int)numberOfVirtualScreens
+- (int) numberOfVirtualScreens
 {
   [self subclassResponsibility: _cmd];
   return 0;
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSMutableData *attrs = [aDecoder decodeObjectForKey: @"NSPixelAttributes"];
+
+      if (attrs != nil)
+        {
+          NSOpenGLPixelFormatAttribute *glattrs;
+          unsigned char tmp = 0;
+
+          // Ensure that it is zero-terminated
+          [attrs appendBytes: &tmp length: sizeof(tmp)];
+          // FIXME: Deserialize an integer array
+          glattrs = (NSOpenGLPixelFormatAttribute *)[attrs mutableBytes];
+
+          return [self initWithAttributes: glattrs];
+        }
+    }
+  else
+    {
+    }
+
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [self subclassResponsibility: _cmd];
 }
 
 @end

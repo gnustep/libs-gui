@@ -89,7 +89,6 @@
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
   _selected = nil;
-  _original_nextKeyView = nil;
   RELEASE(_items);
   RELEASE(_font);
   [super dealloc];
@@ -140,8 +139,9 @@
   if (i == NSNotFound)
     return;
 
+  RETAIN(tabViewItem);
   // Do this BEFORE removing from array...in case it gets released...
-  [tabViewItem _setTabView:nil];
+  [tabViewItem _setTabView: nil];
   [_items removeObjectAtIndex: i];
 
   if (tabViewItem == _selected)
@@ -157,6 +157,7 @@
           [self selectTabViewItem: [_items objectAtIndex: newIndex]];
         }
     }
+  RELEASE(tabViewItem);
   
   if ([_delegate respondsToSelector: @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
@@ -238,14 +239,14 @@
   BOOL canSelect = YES;
   NSView *selectedView = nil;
 
-  if ([_delegate respondsToSelector: @selector(tabView: shouldSelectTabViewItem:)])
+  if ([_delegate respondsToSelector: @selector(tabView:shouldSelectTabViewItem:)])
     {
       canSelect = [_delegate tabView: self shouldSelectTabViewItem: tabViewItem];
     }
   
   if (canSelect)
     {
-      if ([_delegate respondsToSelector: @selector(tabView: willSelectTabViewItem:)])
+      if ([_delegate respondsToSelector: @selector(tabView:willSelectTabViewItem:)])
         {
           [_delegate tabView: self willSelectTabViewItem: tabViewItem];
         }
@@ -257,53 +258,37 @@
           /* NB: If [_selected view] is nil this does nothing, which
              is fine.  */
           [[_selected view] removeFromSuperview];
-	  _selected = nil;
-        }
-
-      if ([_delegate respondsToSelector: 
-        @selector(tabView: willSelectTabViewItem:)])
-        {
-          [_delegate tabView: self willSelectTabViewItem: tabViewItem];
         }
 
       _selected = tabViewItem;
-      _selected_item = [_items indexOfObject: _selected];
       [_selected _setTabState: NSSelectedTab];
-
       selectedView = [_selected view];
-
       if (selectedView != nil)
         {
-	       NSView *firstResponder;
+	  NSView *firstResponder;
 
           [self addSubview: selectedView];
-          
-		  // FIXME: We should not change this mask
+          // FIXME: We should not change this mask
           [selectedView setAutoresizingMask:
-	      NSViewWidthSizable | NSViewHeightSizable];
+	    NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
-	      firstResponder = [_selected initialFirstResponder];
-		  
-	      if (firstResponder == nil)
-	        {
-	          firstResponder = [_selected view];
-	          [_selected setInitialFirstResponder: firstResponder];
-	          [firstResponder _setUpKeyViewLoopWithNextKeyView:_original_nextKeyView];
-	        }
-
-  		  [super setNextKeyView: firstResponder];
+	  firstResponder = [_selected initialFirstResponder];
+	  if (firstResponder == nil)
+	    {
+	      firstResponder = [_selected view];
+	      [_selected setInitialFirstResponder: firstResponder];
+	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
+		_original_nextKeyView];
+	    }
+	  [self setNextKeyView: firstResponder];
           [_window makeFirstResponder: firstResponder];
         }
-	  else
-	    {
-		  [super setNextKeyView:_original_nextKeyView];
-		}
       
       /* Will need to redraw tabs and content area. */
       [self setNeedsDisplay: YES];
       
       if ([_delegate respondsToSelector: 
-        @selector(tabView: didSelectTabViewItem:)])
+        @selector(tabView:didSelectTabViewItem:)])
         {
           [_delegate tabView: self didSelectTabViewItem: _selected];
         }
@@ -426,42 +411,43 @@
 {
   NSRect cRect = _bounds;
 
-  /* 
-     FIXME: All these numbers seem wrong to me.
-     For a bezel border we loose 2 pixel on each side, 
-     for a line border 1 pixel. On top of that we will 
-     need the space for the tab.
-  */
   switch (_type)
     {
       case NSTopTabsBezelBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 18.5;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 3;
+        cRect.size.height -= 19;
         break;
       case NSNoTabsBezelBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 2;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 3;
+        cRect.size.height -= 3;
         break;
       case NSNoTabsLineBorder:
         cRect.origin.y += 1; 
-        cRect.origin.x += 0.5; 
+        cRect.origin.x += 1; 
         cRect.size.width -= 2;
         cRect.size.height -= 2;
         break;
     case NSBottomTabsBezelBorder:
-        cRect.size.height -= 8;
-        cRect.origin.y = 8;
+        cRect.origin.x += 1;
+        cRect.origin.y += 19;
+        cRect.size.width -= 3;
+        cRect.size.height -= 19;
         break;
       case NSLeftTabsBezelBorder:
-        cRect.size.width -= 16;
-        cRect.origin.x += 16;
+        cRect.origin.x += 21;
+        cRect.origin.y += 1;
+        cRect.size.width -= 21;
+        cRect.size.height -= 3;
         break;
       case NSRightTabsBezelBorder:
-        cRect.size.width -= 16;
+        cRect.origin.x += 1;
+        cRect.origin.y += 1;
+        cRect.size.width -= 21;
+        cRect.size.height -= 3;
         break;
       case NSNoTabsNoBorder:
       default:

@@ -68,14 +68,14 @@
 + (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
 - (void) _premultiply;
 - (void) _unpremultiply;
-- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (int)bps
-                                     samplesPerPixel: (int)spp
+- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (NSInteger)bps
+                                     samplesPerPixel: (NSInteger)spp
                                             hasAlpha: (BOOL)alpha
                                             isPlanar: (BOOL)isPlanar
                                       colorSpaceName: (NSString*)colorSpaceName
                                         bitmapFormat: (NSBitmapFormat)bitmapFormat 
-                                         bytesPerRow: (int)rowBytes
-                                        bitsPerPixel: (int)pixelBits;
+                                         bytesPerRow: (NSInteger)rowBytes
+                                        bitsPerPixel: (NSInteger)pixelBits;
 @end
 
 /**
@@ -331,7 +331,7 @@
 /** Initialize with bitmap data from a rect within the focused view */
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
-    int bps, spp, alpha, format;
+  NSInteger bps, spp, alpha, format;
   NSSize size;
   NSString *space;
   unsigned char *planes[4];
@@ -449,15 +449,15 @@
       </deflist>
 */
 - (id) initWithBitmapDataPlanes: (unsigned char **)planes
-                     pixelsWide: (int)width
-                     pixelsHigh: (int)height
-                  bitsPerSample: (int)bitsPerSample
-                samplesPerPixel: (int)samplesPerPixel
+                     pixelsWide: (NSInteger)width
+                     pixelsHigh: (NSInteger)height
+                  bitsPerSample: (NSInteger)bitsPerSample
+                samplesPerPixel: (NSInteger)samplesPerPixel
                        hasAlpha: (BOOL)alpha
                        isPlanar: (BOOL)isPlanar
                  colorSpaceName: (NSString *)colorSpaceName
-                    bytesPerRow: (int)rowBytes
-                   bitsPerPixel: (int)pixelBits
+                    bytesPerRow: (NSInteger)rowBytes
+                   bitsPerPixel: (NSInteger)pixelBits
 {
   return [self initWithBitmapDataPlanes: planes
                pixelsWide: width
@@ -473,19 +473,19 @@
 }
 
 - (id) initWithBitmapDataPlanes: (unsigned char**)planes
-                     pixelsWide: (int)width
-                     pixelsHigh: (int)height
-                  bitsPerSample: (int)bps
-                samplesPerPixel: (int)spp
+                     pixelsWide: (NSInteger)width
+                     pixelsHigh: (NSInteger)height
+                  bitsPerSample: (NSInteger)bps
+                samplesPerPixel: (NSInteger)spp
                        hasAlpha: (BOOL)alpha
                        isPlanar: (BOOL)isPlanar
                  colorSpaceName: (NSString*)colorSpaceName
                    bitmapFormat: (NSBitmapFormat)bitmapFormat 
-                    bytesPerRow: (int)rowBytes
-                   bitsPerPixel: (int)pixelBits
+                    bytesPerRow: (NSInteger)rowBytes
+                   bitsPerPixel: (NSInteger)pixelBits
 {
   NSDebugLLog(@"NSImage", @"Creating bitmap image with pw %d ph %d bps %d spp %d alpha %d, planar %d cs %@",
-              width, height, bps, spp, alpha, isPlanar, colorSpaceName);
+              (int)width,(int) height, (int)bps, (int)spp, alpha, isPlanar, colorSpaceName);
   if (!bps || !spp || !width || !height) 
     {
       [NSException raise: NSInvalidArgumentException
@@ -577,7 +577,7 @@
   return self;
 }
 
-- (void)colorizeByMappingGray:(float)midPoint 
+- (void)colorizeByMappingGray:(CGFloat)midPoint 
 		      toColor:(NSColor *)midPointColor 
 		 blackMapping:(NSColor *)shadowColor
 		 whiteMapping:(NSColor *)lightColor
@@ -605,14 +605,14 @@
   return self;
 }
 
-- (int) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete
+- (NSInteger) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete
 {
   if (!complete)
     {
       // we don't implement it really
       return NSImageRepLoadStatusWillNeedAllData;
     }
-  return [self initWithData:data] ? NSImageRepLoadStatusCompleted : NSImageRepLoadStatusUnexpectedEOF;
+  return [self initWithData: data] ? NSImageRepLoadStatusCompleted : NSImageRepLoadStatusUnexpectedEOF;
 }
 
 - (void) dealloc
@@ -629,14 +629,14 @@
 /** Returns the number of bits need to contain one pixels worth of data.
     This is normally the number of samples per pixel times the number of
     bits in one sample. */
-- (int) bitsPerPixel
+- (NSInteger) bitsPerPixel
 {
   return _bitsPerPixel;
 }
 
 /** Returns the number of samples in a pixel. For instance, a normal RGB
     image with transparency would have a samplesPerPixel of 4.  */
-- (int) samplesPerPixel
+- (NSInteger) samplesPerPixel
 {
   return _numColors;
 }
@@ -652,14 +652,14 @@
 /** Returns the number of planes in an image.  Typically this is
     equal to the number of samples in a planar image or 1 for a non-planar
     image.  */
-- (int) numberOfPlanes
+- (NSInteger) numberOfPlanes
 {
   return (_isPlanar) ? _numColors : 1;
 }
 
 /** Returns the number of bytes in a plane. This is the number of bytes
     in a row times tne height of the image.  */
-- (int) bytesPerPlane
+- (NSInteger) bytesPerPlane
 {
   return _bytesPerRow*_pixelsHigh;
 }
@@ -669,7 +669,7 @@
     in medhed configuration). However it may differ from this if set
     explicitly in -initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:.
 */
-- (int) bytesPerRow
+- (NSInteger) bytesPerRow
 {
   return _bytesPerRow;
 }
@@ -749,11 +749,11 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
  * Returns the values of the components of pixel (x,y), where (0,0) is the 
  * top-left pixel in the image, by storing them in the array pixelData.
  */
-- (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
+- (void) getPixel: (NSUInteger[])pixelData atX: (NSInteger)x y: (NSInteger)y
 {
-  int i;
-  long int offset;
-  long int line_offset;
+  NSInteger i;
+  NSInteger offset;
+  NSInteger line_offset;
 
   if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
@@ -842,13 +842,13 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
  * Sets the components of pixel (x,y), where (0,0) is the top-left pixel in
  * the image, to the given array of pixel components. 
  */
-- (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
+- (void) setPixel: (NSUInteger[])pixelData atX: (NSInteger)x y: (NSInteger)y
 {
-  int i;
-  long int offset;
-  long int line_offset;
+  NSInteger i;
+  NSInteger offset;
+  NSInteger line_offset;
 
-	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+  if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
       // outside
       return;
@@ -880,7 +880,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                              offset, _bitsPerSample, pixelData[i]);
             }
         }
-		}
+    }
   else
     {
       if (_bitsPerSample == 8)
@@ -908,21 +908,21 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
  * Returns an NSColor object representing the color of the pixel (x,y), where
  * (0,0) is the top-left pixel in the image.
  */
-- (NSColor*) colorAtX: (int)x y: (int)y
+- (NSColor*) colorAtX: (NSInteger)x y: (NSInteger)y
 {
-	unsigned int pixelData[5];
+  NSUInteger pixelData[5];
 
-	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+  if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
       // outside
       return nil;
     }
 
-	[self getPixel: pixelData atX: x y: y];
-	if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace]
+  [self getPixel: pixelData atX: x y: y];
+  if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace]
       || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
-		{
-      unsigned int ir, ig, ib, ia;
+    {
+      NSUInteger ir, ig, ib, ia;
       CGFloat fr, fg, fb, fa;
       CGFloat scale;
 
@@ -985,11 +985,11 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                           blue: fb
                           alpha: fa];
         }
-		}
-	else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+    }
+  else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
            || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
-		{
-      unsigned int iw, ia;
+    {
+      NSUInteger iw, ia;
       CGFloat fw, fa;
       CGFloat scale;
 
@@ -1041,7 +1041,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
            || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
     {
-      unsigned int ib, ia;
+      NSUInteger ib, ia;
       CGFloat fw, fa;
       CGFloat scale;
 
@@ -1090,7 +1090,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 		}
   else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
     {
-      unsigned int ic, im, iy, ib, ia;
+      NSUInteger ic, im, iy, ib, ia;
       CGFloat fc, fm, fy, fb, fa;
       CGFloat scale;
 
@@ -1153,19 +1153,19 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                       alpha: fa];
     }
 
-	return nil;
+  return nil;
 }
 
 /**
  * Sets the color of pixel (x,y), where (0,0) is the top-left pixel in the
  * image.
  */
-- (void) setColor: (NSColor*)color atX: (int)x y: (int)y
+- (void) setColor: (NSColor*)color atX: (NSInteger)x y: (NSInteger)y
 {
-	unsigned int pixelData[5];
+  NSUInteger pixelData[5];
   NSColor *conv;
 
-	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+  if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
       // outside
       return;
@@ -1180,7 +1180,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace]
       || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
     {
-      unsigned int ir, ig, ib, ia;
+      NSUInteger ir, ig, ib, ia;
       CGFloat fr, fg, fb, fa;
       CGFloat scale;
 
@@ -1231,10 +1231,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           pixelData[2] = ib;
         }
     }
-	else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+  else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
            || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
-		{
-      unsigned int iw, ia;
+    {
+      NSUInteger iw, ia;
       CGFloat fw, fa;
       CGFloat scale;
 
@@ -1273,7 +1273,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
            || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
     {
-      unsigned int iw, ia;
+      NSUInteger iw, ia;
       CGFloat fw, fa;
       CGFloat scale;
 
@@ -1311,7 +1311,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
   else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
     {
-      unsigned int ic, im, iy, ib, ia;
+      NSUInteger ic, im, iy, ib, ia;
       CGFloat fc, fm, fy, fb, fa;
       CGFloat scale;
 
@@ -1372,7 +1372,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       return;
     }
 
-	[self setPixel: pixelData atX: x y: y];
+  [self setPixel: pixelData atX: x y: y];
 }
 
 /** Draws the image in the current window according the information
@@ -1605,7 +1605,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 /** Returns a C-array of available TIFF compression types.
  */
 + (void) getTIFFCompressionTypes: (const NSTIFFCompression **)list
-			   count: (int *)numTypes
+			   count: (NSInteger *)numTypes
 {
   // the GNUstep supported types
   static NSTIFFCompression	types[] = {
@@ -1620,7 +1620,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   };
   
   // check with libtiff to see what is really available
-  int i, j;
+  NSInteger i, j;
   static NSTIFFCompression checkedTypes[8];
   for (i = 0, j = 0; i < 8; i++)
   {
@@ -1941,9 +1941,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
 - (void) _premultiply
 {
-  int x, y;
-	unsigned int pixelData[5];
-  int start, end, i, ai;
+  NSInteger x, y;
+  NSUInteger pixelData[5];
+  NSInteger start, end, i, ai;
   SEL getPSel = @selector(getPixel:atX:y:);
   SEL setPSel = @selector(setPixel:atX:y:);
   IMP getP = [self methodForSelector: getPSel];
@@ -1967,7 +1967,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   if (_bitsPerSample == 8)
     {
-      unsigned int a;
+      NSUInteger a;
 
       for (y = 0; y < _pixelsHigh; y++)
         {
@@ -1980,7 +1980,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                 {
                   for (i = start; i < end; i++)
                     {
-                      unsigned int t = a * pixelData[i] + 0x80;
+                      NSUInteger t = a * pixelData[i] + 0x80;
 
                       pixelData[i] = ((t >> 8) + t) >> 8;
                     }
@@ -2018,9 +2018,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
 - (void) _unpremultiply
 {
-  int x, y;
-	unsigned int pixelData[5];
-  int start, end, i, ai;
+  NSInteger x, y;
+  NSUInteger pixelData[5];
+  NSInteger start, end, i, ai;
   SEL getPSel = @selector(getPixel:atX:y:);
   SEL setPSel = @selector(setPixel:atX:y:);
   IMP getP = [self methodForSelector: getPSel];
@@ -2044,7 +2044,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   if (_bitsPerSample == 8)
     {
-      unsigned int a;
+      NSUInteger a;
 
       for (y = 0; y < _pixelsHigh; y++)
         {
@@ -2057,7 +2057,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                 {
                   for (i = start; i < end; i++)
                     {
-                      unsigned int c;
+                      NSUInteger c;
                       
                       c = (pixelData[i] * 255) / a;
                       if (c >= 255)
@@ -2083,7 +2083,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       scale = (CGFloat)((1 << _bitsPerSample) - 1);
       for (y = 0; y < _pixelsHigh; y++)
         {
-          unsigned int a;
+          NSUInteger a;
 
           for (x = 0; x < _pixelsWide; x++)
             {
@@ -2116,14 +2116,14 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   _format |= NSAlphaNonpremultipliedBitmapFormat;
 }
 
-- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (int)bps
-                                     samplesPerPixel: (int)spp
+- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (NSInteger)bps
+                                     samplesPerPixel: (NSInteger)spp
                                             hasAlpha: (BOOL)alpha
                                             isPlanar: (BOOL)isPlanar
                                       colorSpaceName: (NSString*)colorSpaceName
                                         bitmapFormat: (NSBitmapFormat)bitmapFormat 
-                                         bytesPerRow: (int)rowBytes
-                                        bitsPerPixel: (int)pixelBits
+                                         bytesPerRow: (NSInteger)rowBytes
+                                        bitsPerPixel: (NSInteger)pixelBits
 {
   if (!pixelBits)
     pixelBits = bps * ((isPlanar) ? 1 : spp);
@@ -2166,8 +2166,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           SEL setPSel = @selector(setPixel:atX:y:);
           IMP getP = [self methodForSelector: getPSel];
           IMP setP = [new methodForSelector: setPSel];
-          unsigned int pixelData[5];
-          int x, y;
+          NSUInteger pixelData[5];
+          NSInteger x, y;
           CGFloat _scale;
           CGFloat scale;
 
@@ -2188,9 +2188,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
             {
               for (x = 0; x < _pixelsWide; x++)
                 {
-                  unsigned int iv[4], ia;
+                  NSUInteger iv[4], ia;
                   CGFloat fv[4], fa;
-                  int i;
+                  NSInteger i;
 
                  //[self getPixel: pixelData atX: x y: y];
                   getP(self, getPSel, pixelData, x, y);
@@ -2258,7 +2258,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                   if (alpha)
                     {
                       // Scale from [0.0 ... 1.0]
-                      for (i = 0; i < _numColors; i++)
+                      for (i = 0; i < spp - 1; i++)
                         {
                           iv[i] = fv[i] * scale;
                         }
@@ -2306,11 +2306,11 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           SEL setPSel = @selector(setPixel:atX:y:);
           IMP getP = [self methodForSelector: getPSel];
           IMP setP = [new methodForSelector: setPSel];
-          unsigned int pixelData[4];
-          int x, y;
+          NSUInteger pixelData[4];
+          NSInteger x, y;
           CGFloat _scale;
           CGFloat scale;
-          int max = (1 << _bitsPerSample) - 1;
+          NSInteger max = (1 << _bitsPerSample) - 1;
           BOOL isWhite = [_colorSpace isEqualToString: NSCalibratedWhiteColorSpace] 
               || [_colorSpace isEqualToString: NSDeviceWhiteColorSpace];
 
@@ -2331,7 +2331,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
             {
               for (x = 0; x < _pixelsWide; x++)
                 {
-                  unsigned int iv, ia;
+                  NSUInteger iv, ia;
                   CGFloat fv, fa;
 
                  //[self getPixel: pixelData atX: x y: y];
@@ -2426,7 +2426,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           SEL setCSel = @selector(setColor:atX:y:);
           IMP getC = [self methodForSelector: getCSel];
           IMP setC = [new methodForSelector: setCSel];
-          int i, j;
+          NSInteger i, j;
 
           NSDebugLLog(@"NSImage", @"Slow converting %@ bitmap data to %@", 
                       _colorSpace, colorSpaceName);

@@ -54,12 +54,12 @@
 - (void)setTitle:(NSString*)aString;
 - (void)setTitleAlignment:(NSTextAlignment)mode;
 - (void)setTitleFont:(NSFont*)fontObject;
-- (void)setTitleWidth:(float)width;
+- (void)setTitleWidth:(CGFloat)width;
 - (NSString*)title;
 - (NSTextAlignment)titleAlignment;
 - (NSFont*)titleFont;
-- (float)titleWidth;
-- (float)titleWidth:(NSSize)aSize;
+- (CGFloat)titleWidth;
+- (CGFloat)titleWidth:(NSSize)aSize;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 //

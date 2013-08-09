@@ -104,21 +104,23 @@ enum {
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
 
-typedef enum _NSSelectionDirection {
+enum _NSSelectionDirection {
   NSDirectSelection,
   NSSelectingNext,
   NSSelectingPrevious
-} NSSelectionDirection;
+};
+typedef NSUInteger NSSelectionDirection;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-typedef enum _NSWindowButton
+enum _NSWindowButton
 {
   NSWindowCloseButton = 0,
   NSWindowMiniaturizeButton,
   NSWindowZoomButton,
   NSWindowToolbarButton,
   NSWindowDocumentIconButton
-} NSWindowButton;
+};
+typedef NSUInteger NSWindowButton;
 #endif 
 
 APPKIT_EXPORT NSSize NSIconSize;
@@ -179,9 +181,9 @@ PACKAGE_SCOPE
   id            _lastRightMouseDownView;
   id            _lastOtherMouseDownView;
   id            _lastDragView;
-  int           _lastDragOperationMask;
-  int           _windowNum;
-  int           _gstate;
+  NSInteger     _lastDragOperationMask;
+  NSInteger     _windowNum;
+  NSInteger     _gstate;
   id            _defaultButtonCell;
   NSGraphicsContext *_context;
 
@@ -195,8 +197,8 @@ PACKAGE_SCOPE
   NSPoint       _lastPoint;
 @protected
   NSBackingStoreType _backingType;
-  unsigned      _styleMask;
-  int           _windowLevel;
+  NSUInteger    _styleMask;
+  NSInteger     _windowLevel;
 PACKAGE_SCOPE
   NSRect        _rectNeedingFlush;
   NSMutableArray *_rectsBeingDrawn;
@@ -205,8 +207,8 @@ PACKAGE_SCOPE
   
   NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
-  int	        _counterpart;
-  float         _alphaValue;
+  NSInteger     _counterpart;
+  CGFloat       _alphaValue;
   
   NSMutableArray *_children;
   NSWindow       *_parent;
@@ -276,7 +278,7 @@ PACKAGE_SCOPE
  * Both rectangles are expressed in screen coordinates.
  */
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+			 styleMask: (NSUInteger)aStyle;
 
 /**
  * Returns the rectangle which would be used for the on-screen frame of
@@ -285,15 +287,15 @@ PACKAGE_SCOPE
  * Both rectangles are expressed in screen coordinates.
  */
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+			 styleMask: (NSUInteger)aStyle;
 
 /**
  * Returns the smallest frame width that will fit the given title
  * and style.  This is the on-screen width of the window including
  * decorations.
  */
-+ (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (unsigned int)aStyle;
++ (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
+                         styleMask: (NSUInteger)aStyle;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect;
@@ -303,7 +305,7 @@ PACKAGE_SCOPE
  * Initializing and getting a new NSWindow object
  */
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
+		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag;
 
@@ -314,7 +316,7 @@ PACKAGE_SCOPE
  * the window style mask.
  */
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
+		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen;
@@ -330,6 +332,19 @@ PACKAGE_SCOPE
  * the base coordinate system of the receiver.
  */
 - (NSPoint) convertScreenToBase: (NSPoint)aPoint;
+
+/**
+ * Converts aRect from the coordinate system of the screen
+ * to the coordinate system of the window.
+ */
+
+- (NSRect) convertRectFromScreen: (NSRect)aRect;
+
+/**
+ * Converts aRect from the window coordinate system to a rect in
+ * the screen coordinate system.
+ */
+- (NSRect) convertRectToScreen: (NSRect)aRect;
 
 /**
  * Returns the frame of the receiver ... the rectangular area that the window
@@ -380,7 +395,7 @@ PACKAGE_SCOPE
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint;
 
 - (void) center;
-- (int) resizeFlags;
+- (NSInteger) resizeFlags;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setFrame: (NSRect)frameRect
 	  display: (BOOL)displayFlag
@@ -446,10 +461,10 @@ PACKAGE_SCOPE
 - (void) orderFrontRegardless;
 - (void) orderOut: (id)sender;
 - (void) orderWindow: (NSWindowOrderingMode)place
-	  relativeTo: (int)otherWin;
+	  relativeTo: (NSInteger)otherWin;
 - (BOOL) isVisible;
-- (int) level;
-- (void) setLevel: (int)newLevel;
+- (NSInteger) level;
+- (void) setLevel: (NSInteger)newLevel;
 
 - (void) becomeKeyWindow;
 - (void) becomeMainWindow;
@@ -497,8 +512,8 @@ PACKAGE_SCOPE
 /*
  * Window device attributes
  */
-- (int) windowNumber;
-- (int) gState;
+- (NSInteger) windowNumber;
+- (NSInteger) gState;
 - (NSDictionary*) deviceDescription;
 - (NSBackingStoreType) backingType;
 - (void) setBackingType: (NSBackingStoreType)type;
@@ -506,7 +521,7 @@ PACKAGE_SCOPE
 - (void) setOneShot: (BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSGraphicsContext*) graphicsContext;
-- (float) userSpaceScaleFactor;
+- (CGFloat) userSpaceScaleFactor;
 #endif
 
 
@@ -547,12 +562,12 @@ PACKAGE_SCOPE
  * Aiding event handling
  */
 - (NSEvent*) currentEvent;
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask;
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask;
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
 			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
 			   dequeue: (BOOL)deqFlag;
-- (void) discardEventsMatchingMask: (unsigned int)mask
+- (void) discardEventsMatchingMask: (NSUInteger)mask
 		       beforeEvent: (NSEvent*)lastEvent;
 - (void) postEvent: (NSEvent*)event
 	   atStart: (BOOL)flag;
@@ -673,12 +688,12 @@ PACKAGE_SCOPE
 - (void) setContentView: (NSView*)aView;
 - (void) setBackgroundColor: (NSColor*)color;
 - (NSColor*) backgroundColor;
-- (unsigned int) styleMask;
+- (NSUInteger) styleMask;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setHasShadow: (BOOL)hasShadow;
 - (BOOL) hasShadow;
-- (void) setAlphaValue: (float)windowAlpha;
-- (float) alphaValue;
+- (void) setAlphaValue: (CGFloat)windowAlpha;
+- (CGFloat) alphaValue;
 - (void) setOpaque: (BOOL)isOpaque;
 - (BOOL) isOpaque;
 #endif
@@ -726,7 +741,7 @@ PACKAGE_SCOPE
  */
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 + (NSButton *) standardWindowButton: (NSWindowButton)button 
-                       forStyleMask: (unsigned int) mask;
+                       forStyleMask: (NSUInteger) mask;
 - (NSButton *) standardWindowButton: (NSWindowButton)button;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)

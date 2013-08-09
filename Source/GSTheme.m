@@ -64,6 +64,9 @@
 #import "AppKit/PSOperators.h"
 #import "GSThemePrivate.h"
 
+NSString	*GSSwitch = @"GSSwitch";
+NSString        *GSRadio = @"GSRadio";
+
 // Scroller part names
 NSString	*GSScrollerDownArrow = @"GSScrollerDownArrow";
 NSString	*GSScrollerHorizontalKnob = @"GSScrollerHorizontalKnob";
@@ -208,6 +211,7 @@ GSStringFromBorderType(NSBorderType borderType)
 
 @interface	NSImage (Private)
 + (void) _setImagePath: (NSString*)path name: (NSString*)name;
++ (void) _reloadCachedImages;
 @end
 
 @interface	GSTheme (Private)
@@ -446,9 +450,6 @@ typedef	struct {
   NSUserDefaults	*defs;
   NSMutableArray	*searchList;
   NSEnumerator		*enumerator;
-  NSArray		*imagePaths;
-  NSString		*imagePath;
-  NSArray		*imageTypes;
   NSDictionary		*infoDict;
   NSWindow		*window;
   GSThemeControlState	state;
@@ -465,28 +466,9 @@ typedef	struct {
     }
 
   /*
-   * We step through all the bundle image resources and load them in
-   * to memory, setting their names so that they are visible to
-   * [NSImage+imageNamed:] and storing them in our local array.
+   * Reload NSImage's cache of image by name
    */
-  imageTypes = [_imageClass imageFileTypes];
-  imagePaths = [_bundle pathsForResourcesOfType: nil
-				    inDirectory: @"ThemeImages"];
-  enumerator = [imagePaths objectEnumerator];
-  while ((imagePath = [enumerator nextObject]) != nil)
-    {
-      NSString	*ext = [imagePath pathExtension];
-
-      if (ext != nil && [imageTypes containsObject: ext] == YES)
-        {
-	  NSString	*imageName;
-
-	  imageName = [imagePath lastPathComponent];
-	  imageName = [imageName stringByDeletingPathExtension];
-	  [_imageNames addObject: imageName];
-	  [NSImage _setImagePath: imagePath name: imageName];
-	}
-    }
+  [NSImage _reloadCachedImages];
 
   /*
    * Use the GSThemeDomain key in the info dictionary of the theme to
@@ -690,7 +672,7 @@ typedef	struct {
       colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
       if (colorsPath == nil)
 	{
-	  _colors = [null retain];
+	  _colors = (id)[null retain];
 	}
       else
 	{
@@ -707,9 +689,6 @@ typedef	struct {
 
 - (void) deactivate
 {
-  NSEnumerator	*enumerator;
-  NSString	*imageName;
-
   NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
 
   /* Tell everything that we will become inactive.
@@ -731,15 +710,6 @@ typedef	struct {
 	  method_setImplementation(m->mth, m->old);
 	}
     }
-
-  /* Unload all images created by this theme.
-   */
-  enumerator = [_imageNames objectEnumerator];
-  while ((imageName = [enumerator nextObject]) != nil)
-    {
-      [NSImage _setImagePath: nil name: imageName];
-    }
-  [_imageNames removeAllObjects];
 
   [self _revokeOwnerships];
 
@@ -1230,6 +1200,11 @@ typedef	struct {
 - (NSString*) versionString
 {
   return [[self infoDictionary] objectForKey: @"GSThemeVersion"];
+}
+
+- (NSString *) license
+{
+  return [[self infoDictionary] objectForKey: @"GSThemeLicense"];
 }
 
 @end

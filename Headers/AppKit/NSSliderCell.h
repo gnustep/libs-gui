@@ -79,8 +79,8 @@ typedef enum _NSSliderType
 - (void) drawKnob: (NSRect)knobRect;
 
 /* Asking about the cell's appearance */
-- (float) knobThickness;
-- (int) isVertical;
+- (CGFloat) knobThickness;
+- (NSInteger) isVertical;
 - (NSString*) title;
 - (id) titleCell;
 - (NSColor*) titleColor;
@@ -88,7 +88,7 @@ typedef enum _NSSliderType
 - (NSSliderType) sliderType;
 
 /* Changing the cell's appearance */
-- (void) setKnobThickness: (float)thickness;
+- (void) setKnobThickness: (CGFloat)thickness;
 - (void) setTitle: (NSString*)title;
 - (void) setTitleCell: (NSCell*)aCell;
 - (void) setTitleColor: (NSColor*)color;

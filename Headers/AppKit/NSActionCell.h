@@ -36,7 +36,7 @@
 @interface NSActionCell : NSCell
 {
   // Attributes
-  int _tag;
+  NSInteger _tag;
   id _target;
   SEL _action;
   NSView *_control_view; 

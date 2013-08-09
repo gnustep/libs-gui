@@ -92,6 +92,7 @@
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
 #import "GSFastEnumeration.h"
+#import "GSAutocompleteWindow.h"
 
 
 /*
@@ -133,8 +134,8 @@ a new internal method called from NSLayoutManager when text has changed.
 Interface for a bunch of internal methods that need to be cleaned up.
 */
 @interface NSTextView (GNUstepPrivate)
-- (unsigned int) _characterIndexForPoint: (NSPoint)point
-                         respectFraction: (BOOL)respectFraction;
+- (NSUInteger) _characterIndexForPoint: (NSPoint)point
+                       respectFraction: (BOOL)respectFraction;
 
 /*
  * Used to implement the blinking insertion point
@@ -175,18 +176,18 @@ Interface for a bunch of internal methods that need to be cleaned up.
   NSParagraphStyle *paragraphStyle;
   unsigned int flags;
   NSColor *insertionColor;
-  NSArray *linkAttr;
-  NSArray *markAttr;
-  NSArray *selectedAttr;
+  NSDictionary *linkAttr;
+  NSDictionary *markAttr;
+  NSDictionary *selectedAttr;
   NSTextView *textView;
 }
 - (NSColor *) backgroundColor;
 - (NSParagraphStyle *) paragraphStyle;
 - (unsigned int) flags;
 - (NSColor *) insertionColor;
-- (NSArray *) linkAttributes;
-- (NSArray *) markAttributes;
-- (NSArray *) selectedAttributes;
+- (NSDictionary *) linkAttributes;
+- (NSDictionary *) markAttributes;
+- (NSDictionary *) selectedAttributes;
 - (NSTextView *) textView;
 @end
 
@@ -289,17 +290,17 @@ Interface for a bunch of internal methods that need to be cleaned up.
   return insertionColor;
 }
 
-- (NSArray *) linkAttributes
+- (NSDictionary *) linkAttributes
 {
   return linkAttr;
 }
 
-- (NSArray *) markAttributes
+- (NSDictionary *) markAttributes
 {
   return markAttr;
 }
 
-- (NSArray *) selectedAttributes
+- (NSDictionary *) selectedAttributes
 {
   return selectedAttr;
 }
@@ -438,7 +439,7 @@ editing is turned on or off.
 		       withFlag: (BOOL)flag
 {
   NSArray *array;
-  int i, count;
+  NSUInteger i, count;
 
   if (IS_SYNCHRONIZING_FLAGS == YES)
     {
@@ -1155,7 +1156,7 @@ to this method from the text container or layout manager.
 */
 - (void) setTextContainer: (NSTextContainer *)container
 {
-  unsigned int i, c;
+  NSUInteger i, c;
   NSArray *tcs;
   NSTextView *other;
 
@@ -1223,7 +1224,7 @@ to this method from the text container or layout manager.
 - (void) replaceTextContainer: (NSTextContainer *)newContainer
 {
   NSLayoutManager *lm = _layoutManager;
-  unsigned int index = [[lm textContainers] indexOfObject: _textContainer];
+  NSUInteger index = [[lm textContainers] indexOfObject: _textContainer];
   NSTextStorage *ts = _textStorage;
 
   RETAIN(self);
@@ -1300,7 +1301,7 @@ to make sure syncing is handled properly in all cases.
       /* Invoke setDelegate: on all the textviews which share this
          delegate. */
       NSArray *array;
-      int i, count;
+      NSUInteger i, count;
 
       IS_SYNCHRONIZING_DELEGATES = YES;
 
@@ -1644,7 +1645,7 @@ to make sure syncing is handled properly in all cases.
     {
       id futureFirstResponder;
       NSArray *textContainers;
-      int i, count;
+      NSUInteger i, count;
       
       futureFirstResponder = [_window _futureFirstResponder];
       textContainers = [_layoutManager textContainers];
@@ -2071,7 +2072,7 @@ here. */
 }
 
 // This method takes screen coordinates as input.
-- (unsigned int) characterIndexForPoint: (NSPoint)point
+- (NSUInteger) characterIndexForPoint: (NSPoint)point
 {
  point = [[self window] convertScreenToBase: point];
  point = [self convertPoint:point fromView: nil];
@@ -2118,9 +2119,9 @@ here. */
             NSForegroundColorAttributeName, NSFontAttributeName, nil];
 }
 
-- (long int) conversationIdentifier
+- (NSInteger) conversationIdentifier
 {
-  return (long int)_textStorage;
+  return (NSInteger)_textStorage;
 }
 
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange
@@ -2454,7 +2455,7 @@ the attributes for the range, and do not update the typing attributes.
   return [_textStorage string];
 }
 
-- (unsigned) textLength
+- (NSUInteger) textLength
 {
   return [_textStorage length];
 }
@@ -2856,8 +2857,49 @@ Returns the ranges to which various kinds of user changes should apply.
 
 - (NSRange) rangeForUserCompletion
 {
-  // FIXME
-  return NSMakeRange(NSNotFound, 0);
+  NSUInteger length, location;
+  NSRange range, space;
+
+  // Get the current location.
+  location = [self selectedRange].location;
+
+  // Find the first space starting from current location, backwards.
+  space = [[self string] rangeOfCharacterFromSet:
+			   [NSCharacterSet whitespaceAndNewlineCharacterSet]
+					 options: NSBackwardsSearch
+					   range: NSMakeRange(0, location)];
+
+  if (space.location == NSNotFound)
+    {
+      // No space was found.
+      if (location > 0)
+	{
+	  // Return the range of the whole substring.
+	  range = NSMakeRange(0, location);
+	}
+      else
+	{
+	  // There isn't word.
+	  range = NSMakeRange(NSNotFound, 0);
+	}
+    }
+  else
+    {
+      length = location - space.location - 1;
+
+      if (length > 0)
+	{
+	  // Return the range of the last word.
+	  range = NSMakeRange(space.location + 1, length);
+	}
+      else
+	{
+	  // There isn't word at the end.
+	  range = NSMakeRange(NSNotFound, 0);
+	}
+    }
+
+  return range;
 }
 
 - (NSArray *) rangesForUserCharacterAttributeChange
@@ -2905,7 +2947,7 @@ Scroll so that the beginning of the range is visible.
 {
   NSRect rect, r;
   NSView *cv;
-  float width;
+  CGFloat width;
   NSPoint p0, p1;
   NSRange ourCharRange;
 
@@ -3061,7 +3103,7 @@ Scroll so that the beginning of the range is visible.
 	  {
 	    /* Otherwise, fill the clip view with text; no blank space on
 	    either side. */
-	    float x;
+	    CGFloat x;
 
 	    x = p1.x - width;
 	    if (x < rect.origin.x)
@@ -3227,7 +3269,7 @@ This method is for user changes; see NSTextView_actions.m.
 - (void) changeFont: (id)sender
 {
   NSRange foundRange;
-  unsigned int maxSelRange;
+  NSUInteger maxSelRange;
   NSRange aRange= [self rangeForUserCharacterAttributeChange];
   NSRange searchRange = aRange;
   NSFont *font;
@@ -3400,7 +3442,7 @@ This method is for user changes; see NSTextView_actions.m.
 }
 
 - (void) clickedOnLink: (id)link
-	       atIndex: (unsigned int)charIndex
+	       atIndex: (NSUInteger)charIndex
 {
   if (_delegate != nil)
     {
@@ -3408,7 +3450,7 @@ This method is for user changes; see NSTextView_actions.m.
 
       if ([_delegate respondsToSelector: selector])
         {
-          [_delegate textView: self  clickedOnLink: link  atIndex: charIndex];
+          [_delegate textView: self clickedOnLink: link atIndex: charIndex];
         }
     }
 }
@@ -3566,11 +3608,11 @@ afterString in order over charRange.
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
 			       granularity: (NSSelectionGranularity)gr
 {
-  unsigned index;
+  NSUInteger index;
   NSRange aRange;
   NSRange newRange;
   NSString *string = [self string];
-  unsigned length = [string length];
+  NSUInteger length = [string length];
 
   if (NSMaxRange (proposedCharRange) > length)
     {
@@ -3646,7 +3688,7 @@ afterString in order over charRange.
      displayed selection could have been a temporary selection,
      different from the last official one: */
   NSRange oldDisplayedRange;
-  unsigned int length = [_textStorage length];
+  NSUInteger length = [_textStorage length];
 
   oldDisplayedRange = _layoutManager->_selected_range;
 
@@ -4092,7 +4134,7 @@ Figure out how the additional layout stuff is supposed to work.
                           fromView: nil];
         // Find out what the corresponding text is.
         startIndex = [self _characterIndexForPoint: point
-                                              respectFraction: NO];
+                                   respectFraction: NO];
         // Look up what the tooltip text should be.
         value = [_textStorage attribute: NSToolTipAttributeName
 				atIndex: startIndex
@@ -4112,16 +4154,16 @@ Figure out how the additional layout stuff is supposed to work.
 
 - (void) _stopInsertionTimer
 {
-  if (_insertionPointTimer)
+  if (_insertionPointTimer != nil)
     {
       [_insertionPointTimer invalidate];
       DESTROY(_insertionPointTimer);
     }
 }
-
+ 	  	 
 - (void) _startInsertionTimer
 {
-  if (_insertionPointTimer)
+  if (_insertionPointTimer != nil)
     {
       NSWarnMLog(@"Starting insertion timer with existing one running");
       [self _stopInsertionTimer];
@@ -4131,6 +4173,8 @@ Figure out how the additional layout stuff is supposed to work.
                                                         selector: @selector(_blink:)
                                                         userInfo: nil
                                                          repeats: YES];
+  [[NSRunLoop currentRunLoop] addTimer: _insertionPointTimer
+                               forMode: NSModalPanelRunLoopMode];
   RETAIN(_insertionPointTimer);
 }
 
@@ -4148,48 +4192,48 @@ Figure out how the additional layout stuff is supposed to work.
   if (_dragTargetLocation != NSNotFound)
     {
       _tf.drag_target_hijacks_insertion_point = YES;
-      
+
       new = [_layoutManager
-             insertionPointRectForCharacterIndex: _dragTargetLocation
-             inTextContainer: _textContainer];
-      
+	      insertionPointRectForCharacterIndex: _dragTargetLocation
+	      inTextContainer: _textContainer];
+
       new.origin.x += _textContainerOrigin.x;
       new.origin.y += _textContainerOrigin.y;
-      
+
       /* If the insertion would extend outside the view (e.g. because it's
-       just to the right of a character on the far right edge of the view,
-       a common case for right-aligned text), we force it back in. */
+      just to the right of a character on the far right edge of the view,
+      a common case for right-aligned text), we force it back in. */
       if (NSMaxX(new) > NSMaxX(_bounds))
-        {
-          new.origin.x = NSMaxX(_bounds) - new.size.width;
-        }
+	{
+	  new.origin.x = NSMaxX(_bounds) - new.size.width;
+	}
     }
   else if (_layoutManager->_selected_range.length > 0 ||
-           _layoutManager->_selected_range.location == NSNotFound ||
-           !restartFlag)
+      _layoutManager->_selected_range.location == NSNotFound ||
+      !restartFlag)
     {
       new = NSZeroRect;
     }
   else
     {
       new = [_layoutManager
-             insertionPointRectForCharacterIndex: _layoutManager->_selected_range.location
-             inTextContainer: _textContainer];
-      
+	      insertionPointRectForCharacterIndex: _layoutManager->_selected_range.location
+	      inTextContainer: _textContainer];
+
       new.origin.x += _textContainerOrigin.x;
       new.origin.y += _textContainerOrigin.y;
-      
+
       /* If the insertion would extend outside the view (e.g. because it's
-       just to the right of a character on the far right edge of the view,
-       a common case for right-aligned text), we force it back in. */
+      just to the right of a character on the far right edge of the view,
+      a common case for right-aligned text), we force it back in. */
       if (NSMaxX(new) > NSMaxX(_bounds))
-        {
-          new.origin.x = NSMaxX(_bounds) - new.size.width;
-        }
+	{
+	  new.origin.x = NSMaxX(_bounds) - new.size.width;
+	}
     }
-  
+
   /* Handle hijacked insertion point (either set above when entering this
-   method or during the previous call to this method) */
+     method or during the previous call to this method) */
   if (_tf.drag_target_hijacks_insertion_point)
     {
       // Erase previous insertion point line...
@@ -4198,7 +4242,7 @@ Figure out how the additional layout stuff is supposed to work.
       
       // Save new insertion point rectangle...
       _insertionPointRect = new;
-      
+
       if (_dragTargetLocation != NSNotFound)
         {
           // Draw insertion point line in new location...
@@ -4211,7 +4255,7 @@ Figure out how the additional layout stuff is supposed to work.
           _tf.drag_target_hijacks_insertion_point = NO;
         }
     }
-  
+
   /* Otherwise, draw insertion point only if there is a need to do so */
   else if ([self shouldDrawInsertionPoint] || _drawInsertionPointNow)
     {
@@ -4336,7 +4380,7 @@ Figure out how the additional layout stuff is supposed to work.
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
 					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
-  unsigned	loc = range.location;
+  NSUInteger loc = range.location;
   NSParagraphStyle *style;
   NSMutableParagraphStyle *mstyle;
 
@@ -4397,7 +4441,7 @@ Figure out how the additional layout stuff is supposed to work.
 {
   NSTextTab *tab = (NSTextTab *)[marker representedObject];
   NSRange range = [self rangeForUserParagraphAttributeChange];
-  unsigned	loc = range.location;
+  NSUInteger loc = range.location;
   NSParagraphStyle *style;
   NSMutableParagraphStyle *mstyle;
 
@@ -4452,7 +4496,7 @@ Figure out how the additional layout stuff is supposed to work.
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
 					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
-  unsigned	loc = range.location;
+  NSUInteger loc = range.location;
   NSParagraphStyle *style;
   NSMutableParagraphStyle *mstyle;
 
@@ -4511,7 +4555,7 @@ Figure out how the additional layout stuff is supposed to work.
 {
   NSPoint point = [ruler convertPoint: [event locationInWindow] 
 			     fromView: nil];
-  float location = point.x;
+  CGFloat location = point.x;
   NSRulerMarker *marker = [[NSRulerMarker alloc] 
 			      initWithRulerView: ruler
 			      markerLocation: location
@@ -4559,9 +4603,9 @@ shouldRemoveMarker: (NSRulerMarker *)marker
 /**
  * Return a position for adding by constraining the specified location.
  */
-- (float) rulerView: (NSRulerView *)ruler
-      willAddMarker: (NSRulerMarker *)marker
-	 atLocation: (float)location
+- (CGFloat) rulerView: (NSRulerView *)ruler
+        willAddMarker: (NSRulerMarker *)marker
+           atLocation: (CGFloat)location
 {
   NSSize size = [_textContainer containerSize];
 
@@ -4577,9 +4621,9 @@ shouldRemoveMarker: (NSRulerMarker *)marker
 /**
  * Return a new position by constraining the specified location.
  */
-- (float) rulerView: (NSRulerView *)ruler
-     willMoveMarker: (NSRulerMarker *)marker
-	 toLocation: (float)location
+- (CGFloat) rulerView: (NSRulerView *)ruler
+       willMoveMarker: (NSRulerMarker *)marker
+           toLocation: (CGFloat)location
 {
   NSSize size = [_textContainer containerSize];
 
@@ -4674,7 +4718,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker
 }
 
 
-- (int) spellCheckerDocumentTag
+- (NSInteger) spellCheckerDocumentTag
 {
   if (!_spellCheckerDocumentTag)
     _spellCheckerDocumentTag = [NSSpellChecker uniqueSpellDocumentTag];
@@ -5205,13 +5249,13 @@ other than copy/paste or dragging. */
 }
 
 - (void) _updateDragTargetLocation: (id <NSDraggingInfo>)sender
-			 operation: (unsigned int *)flags
+			 operation: (NSDragOperation *)flags
 {
   if (*flags != NSDragOperationNone)
     {
-      NSPoint	dragPoint;
-      unsigned	dragIndex;
-      
+      NSPoint dragPoint;
+      NSUInteger dragIndex;
+
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
       dragIndex = [self _characterIndexForPoint: dragPoint
@@ -5243,7 +5287,7 @@ other than copy/paste or dragging. */
   NSArray	*types = [self readablePasteboardTypes];
   NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
 				    restrictedToTypesFromArray: types];
-  unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
+  NSDragOperation flags = [self dragOperationForDraggingInfo: sender type: type];
 
   if (![type isEqual: NSColorPboardType])
     {
@@ -5258,7 +5302,7 @@ other than copy/paste or dragging. */
   NSArray	*types = [self readablePasteboardTypes];
   NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
 				    restrictedToTypesFromArray: types];
-  unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
+  NSDragOperation flags = [self dragOperationForDraggingInfo: sender type: type];
 
   NSPoint	dragPoint;
   NSRect	vRect;
@@ -5311,7 +5355,7 @@ other than copy/paste or dragging. */
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  unsigned int flags = NSDragOperationNone;
+  NSDragOperation flags = NSDragOperationNone;
   [self _updateDragTargetLocation: sender operation: &flags];
 }
 
@@ -5370,6 +5414,7 @@ other than copy/paste or dragging. */
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
+  [self cleanUpAfterDragOperation];
 }
 
 - (void) cleanUpAfterDragOperation
@@ -5380,8 +5425,8 @@ other than copy/paste or dragging. */
   [self displayIfNeeded];
 }
 
-- (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
-					 type: (NSString *)type
+- (NSDragOperation) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
+                                            type: (NSString *)type
 {
   //TODO
   return NSDragOperationCopy | NSDragOperationGeneric;
@@ -5452,7 +5497,7 @@ other than copy/paste or dragging. */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self _characterIndexForPoint: startPoint
-                     respectFraction: [theEvent clickCount] == 1];
+                             respectFraction: [theEvent clickCount] == 1];
 
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
@@ -5590,8 +5635,9 @@ other than copy/paste or dragging. */
 		       YES if it handles the click, NO if it doesn't
 		       -- and if it doesn't, we need to pass the click
 		       to the next responder.  */
-		    if ([_delegate textView: self  clickedOnLink: link  
-				   atIndex: startIndex])
+		    if ([_delegate textView: self
+                              clickedOnLink: link  
+                                    atIndex: startIndex])
 		      {
 			return;
 		      }
@@ -5607,10 +5653,10 @@ other than copy/paste or dragging. */
     }
 
   chosenRange = [self selectionRangeForProposedRange: proposedRange
-		      granularity: granularity];
+                                         granularity: granularity];
   if (canDrag)
   {
-    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+    NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
     NSEvent *currentEvent;
 
     currentEvent = [_window nextEventMatchingMask: mask
@@ -5631,8 +5677,8 @@ other than copy/paste or dragging. */
   
   /* Enter modal loop tracking the mouse */
   {
-    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
-			| NSPeriodicMask;
+    NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
+      | NSPeriodicMask;
     NSEvent *currentEvent;
     NSEvent *lastEvent = nil; /* Last non-periodic event. */
     NSDate *distantPast = [NSDate distantPast];
@@ -5784,7 +5830,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
 
 - (void) rightMouseDown: (NSEvent *)theEvent
 {
-  int i;
+  NSInteger i;
   NSMenu *menu = [[self class] defaultMenu];
   NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   NSUInteger index = [self _characterIndexForPoint: point
@@ -5796,7 +5842,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
   if (!_layoutManager)
     return;
   
-  for (i=[[menu itemArray] count]-1; i>=0; --i)
+  for (i = [[menu itemArray] count] - 1; i >= 0; --i)
     {
       NSMenuItem *item = [menu itemAtIndex: i];
       if ([item tag] == GSSpellingSuggestionMenuItemTag)
@@ -5930,8 +5976,8 @@ configuation! */
   NSDictionary *attributes;
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
   NSRange foundRange;
-  unsigned int location;
-  unsigned int maxSelRange = NSMaxRange(aRange);
+  NSUInteger location;
+  NSUInteger maxSelRange = NSMaxRange(aRange);
 
   if (aRange.location == NSNotFound)
     return;
@@ -5967,22 +6013,57 @@ configuation! */
 
 - (void) complete: (id)sender
 {
-  // FIXME
+  NSRange range = [self rangeForUserCompletion];
+
+  if ([self isEditable] &&
+      range.location != NSNotFound && range.length != 0)
+    {
+      GSAutocompleteWindow *window = [GSAutocompleteWindow defaultWindow];
+      [window displayForTextView: self];
+    }
 }
 
 - (NSArray *) completionsForPartialWordRange: (NSRange)range
-                         indexOfSelectedItem: (int *)index
+                         indexOfSelectedItem: (NSInteger *)index
 {
-  // FIXME
+  if ([_delegate respondsToSelector:
+      @selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)])
+    {
+      return [_delegate textView: self
+		     completions: [[GSAutocompleteWindow defaultWindow] words]
+     	     forPartialWordRange: range
+	     indexOfSelectedItem: index];
+    }
+
   return nil;
 }
 
 - (void) insertCompletion: (NSString *)word
       forPartialWordRange: (NSRange)range
-                 movement: (int)movement
+                 movement: (NSInteger)movement
                   isFinal: (BOOL)flag
 {
-  // FIXME
+  NSString *complete;
+  NSString *partial = [word substringToIndex: range.length];
+
+  if (![self shouldChangeTextInRange: range replacementString: partial])
+    return;
+
+  complete = [word stringByDeletingPrefix: partial];
+
+  [_textStorage beginEditing];
+  [self replaceCharactersInRange: range withString: partial];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  [self insertText: complete];
+  [self didChangeText];
+
+  if (!flag && ([self selectedRange].length == 0) )
+    {
+      [self setSelectedRange:
+	      NSMakeRange(NSMaxRange(range), [complete length])];
+    }
 }
 
 - (void) orderFrontLinkPanel: (id)sender
@@ -6016,11 +6097,11 @@ configuation! */
 TODO: make sure this is only called when _layoutManager is known non-nil,
 or add guards
 */
-- (unsigned int) _characterIndexForPoint: (NSPoint)point
-                         respectFraction: (BOOL)respectFraction
+- (NSUInteger) _characterIndexForPoint: (NSPoint)point
+                       respectFraction: (BOOL)respectFraction
 {
-  unsigned	index;
-  float		fraction;
+  NSUInteger index;
+  CGFloat fraction;
 
   point.x -= _textContainerOrigin.x;
   point.y -= _textContainerOrigin.y;
@@ -6037,7 +6118,7 @@ or add guards
 	      fractionOfDistanceThroughGlyph: &fraction];
   // FIXME The layoutManager should never return -1.
   // Assume that the text is empty if this happens.
-  if (index == (unsigned int)-1)
+  if (index == NSNotFound)
     return 0;
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
@@ -6060,7 +6141,8 @@ or add guards
       _drawInsertionPointNow = YES;
     }
   
-  [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
+  [self setNeedsDisplayInRect: _insertionPointRect
+	avoidAdditionalLayout: YES];
   /* Because we are called by a timer which is independent of any
      event processing in the gui runloop, we need to manually update
      the window.  */
@@ -6433,7 +6515,7 @@ or add guards
 
 - (NSTextView *) bestTextViewForTextStorage: (NSTextStorage *)aTextStorage
 {
-  int i, j;
+  NSUInteger i, j;
   NSArray *layoutManagers, *textContainers;
   NSTextView *tv, *first = nil, *best = nil;
   NSWindow *win;

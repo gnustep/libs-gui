@@ -287,32 +287,32 @@
   _acflags.preserves_selection = flag;
 }
 
-- (BOOL) alwaysUsesMultipleValuesMarker;
+- (BOOL) alwaysUsesMultipleValuesMarker
 {
   return _acflags.always_uses_multiple_values_marker;
 }
 
-- (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag;
+- (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag
 {
   _acflags.always_uses_multiple_values_marker = flag;
 }
 
-- (BOOL) clearsFilterPredicateOnInsertion;
+- (BOOL) clearsFilterPredicateOnInsertion
 {
   return _acflags.clears_filter_predicate_on_insertion;
 }
 
-- (void) setClearsFilterPredicateOnInsertion: (BOOL)flag;
+- (void) setClearsFilterPredicateOnInsertion: (BOOL)flag
 {
   _acflags.clears_filter_predicate_on_insertion = flag;
 }
 
-- (BOOL) automaticallyRearrangesObjects;
+- (BOOL) automaticallyRearrangesObjects
 {
   return _acflags.automatically_rearranges_objects;
 }
 
-- (void) setAutomaticallyRearrangesObjects: (BOOL)flag;
+- (void) setAutomaticallyRearrangesObjects: (BOOL)flag
 {
   _acflags.automatically_rearranges_objects = flag;
 }
@@ -438,6 +438,8 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       [coder encodeBool: [self avoidsEmptySelection] forKey: @"NSAvoidsEmptySelection"];
       [coder encodeBool: [self preservesSelection] forKey: @"NSPreservesSelection"];
       [coder encodeBool: [self selectsInsertedObjects] forKey: @"NSSelectsInsertedObjects"];
+      [coder encodeBool: [self clearsFilterPredicateOnInsertion] forKey:
+               @"NSClearsFilterPredicateOnInsertion"];
     }
   else
     {
@@ -467,6 +469,11 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
         {
           [self setSelectsInsertedObjects: 
                 [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+        }
+      if ([coder containsValueForKey: @"NSClearsFilterPredicateOnInsertion"])
+        {
+          [self setClearsFilterPredicateOnInsertion: 
+                [coder decodeBoolForKey: @"NSClearsFilterPredicateOnInsertion"]];
         }
     }
   else

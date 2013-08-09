@@ -116,33 +116,33 @@ APPKIT_EXPORT id NSGetInformationalAlertPanel(NSString *title,
 //
 // Create and Run an Attention Panel
 //
-APPKIT_EXPORT int NSRunAlertPanel(NSString *title,
-				   NSString *msg,
-				   NSString *defaultButton,
-				   NSString *alternateButton,
-				   NSString *otherButton, ...);
+APPKIT_EXPORT NSInteger NSRunAlertPanel(NSString *title,
+                                        NSString *msg,
+                                        NSString *defaultButton,
+                                        NSString *alternateButton,
+                                        NSString *otherButton, ...);
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-APPKIT_EXPORT int NSRunCriticalAlertPanel(NSString *title,
-					   NSString *msg,
-					   NSString *defaultButton,
-					   NSString *alternateButton, 
-					   NSString *otherButton, ...);
+APPKIT_EXPORT NSInteger NSRunCriticalAlertPanel(NSString *title,
+                                                NSString *msg,
+                                                NSString *defaultButton,
+                                                NSString *alternateButton, 
+                                                NSString *otherButton, ...);
 
-APPKIT_EXPORT int NSRunInformationalAlertPanel(NSString *title,
-						NSString *msg,
-						NSString *defaultButton,
-						NSString *alternateButton, 
-						NSString *otherButton, ...);
+APPKIT_EXPORT NSInteger NSRunInformationalAlertPanel(NSString *title,
+                                                     NSString *msg,
+                                                     NSString *defaultButton,
+                                                     NSString *alternateButton, 
+                                                     NSString *otherButton, ...);
 #endif
 
 #if OS_API_VERSION(GS_API_ONE, GS_API_ONE)
-APPKIT_EXPORT int NSRunLocalizedAlertPanel(NSString *table,
-					    NSString *title,
-					    NSString *msg,
-					    NSString *defaultButton, 
-					    NSString *alternateButton, 
-					    NSString *otherButton, ...);
+APPKIT_EXPORT NSInteger NSRunLocalizedAlertPanel(NSString *table,
+                                                 NSString *title,
+                                                 NSString *msg,
+                                                 NSString *defaultButton, 
+                                                 NSString *alternateButton, 
+                                                 NSString *otherButton, ...);
 #endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
@@ -182,11 +182,11 @@ APPKIT_EXPORT void NSBeginInformationalAlertSheet(NSString *title,
 						   void *contextInfo, 
 						   NSString *msg, ...);
 
-APPKIT_EXPORT int GSRunExceptionPanel(NSString *title,
-                                      NSException *exception,
-                                      NSString *defaultButton,
-                                      NSString *alternateButton,
-                                      NSString *otherButton);
+APPKIT_EXPORT NSInteger GSRunExceptionPanel(NSString *title,
+                                            NSException *exception,
+                                            NSString *defaultButton,
+                                            NSString *alternateButton,
+                                            NSString *otherButton);
 
 #endif
 

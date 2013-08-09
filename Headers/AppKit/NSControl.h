@@ -115,8 +115,8 @@
 - (void)setAlignment:(NSTextAlignment)mode;
 - (void)setFont:(NSFont *)fontObject;
 - (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned)leftDigits
-			 right:(unsigned)rightDigits;
+			  left:(NSUInteger)leftDigits
+			 right:(NSUInteger)rightDigits;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setFormatter:(NSFormatter*)newFormatter;
 - (id)formatter;
@@ -155,7 +155,7 @@
 - (BOOL)isContinuous;
 - (BOOL)sendAction:(SEL)theAction
 		to:(id)theTarget;
-- (int)sendActionOn:(int)mask;
+- (NSInteger)sendActionOn:(NSInteger)mask;
 - (void)setAction:(SEL)aSelector;
 - (void)setContinuous:(BOOL)flag;
 - (void)setTarget:(id)anObject;

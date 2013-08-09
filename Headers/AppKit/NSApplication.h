@@ -40,6 +40,7 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -84,11 +85,12 @@ enum {
 * NSTerminateLater.
 * </example>
 */
-typedef enum {
+enum {
   NSTerminateCancel = NO,
   NSTerminateNow = YES, 
   NSTerminateLater
-} NSApplicationTerminateReply;
+};
+typedef NSUInteger NSApplicationTerminateReply;
 
 /** 
 * Type used by -requestUserAttention: when an applications opened.  Possible values are:
@@ -97,35 +99,60 @@ typedef enum {
 * NSInformationalRequest;
 * </example>
 */
-typedef enum {
-  NSCriticalRequest,
-  NSInformationalRequest
-} NSRequestUserAttentionType;
+enum {
+  NSCriticalRequest = 0,
+  NSInformationalRequest = 10
+};
+typedef NSUInteger NSRequestUserAttentionType;
 
-#define NSAppKitVersionNumber10_0 0
+#define NSAppKitVersionNumber10_0   577
+#define NSAppKitVersionNumber10_1   620
+#define NSAppKitVersionNumber10_2   663
+#define NSAppKitVersionNumber10_2_3 663.6
+#define NSAppKitVersionNumber10_3   743
+#define NSAppKitVersionNumber10_3_2 743.14
+#define NSAppKitVersionNumber10_3_3 743.2
+#define NSAppKitVersionNumber10_3_5 743.24
+#define NSAppKitVersionNumber10_3_7 743.33
+#define NSAppKitVersionNumber10_3_9 743.36
+#define NSAppKitVersionNumber10_4   824
+#define NSAppKitVersionNumber10_4_1 824.1
+#define NSAppKitVersionNumber10_4_3 824.23
+#define NSAppKitVersionNumber10_4_4 824.33
+#define NSAppKitVersionNumber10_4_7 824.41
+#define NSAppKitVersionNumber10_5   949
+#define NSAppKitVersionNumber10_5_2 949.27
+#define NSAppKitVersionNumber10_5_3 949.33
+#define NSAppKitVersionNumber10_6   1038
+#define NSAppKitVersionNumber10_7   1138
+#define NSAppKitVersionNumber10_7_2 1138.23
+
+APPKIT_EXPORT const double NSAppKitVersionNumber;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-typedef enum _NSApplicationDelegateReply
+enum _NSApplicationDelegateReply
 {
-  NSApplicationDelegateReplySuccess =0,
-  NSApplicationDelegateReplyCancel  =1,
-  NSApplicationDelegateReplyFailure =2
-} NSApplicationDelegateReply;
+  NSApplicationDelegateReplySuccess = 0,
+  NSApplicationDelegateReplyCancel  = 1,
+  NSApplicationDelegateReplyFailure = 2
+};
+typedef NSUInteger NSApplicationDelegateReply;
 
-typedef enum _NSApplicationPrintReply
+enum _NSApplicationPrintReply
 {
   NSPrintingCancelled = NO,
   NSPrintingSuccess = YES,
   NSPrintingFailure,
   NSPrintingReplyLater
-} NSApplicationPrintReply;
+};
+typedef NSUInteger NSApplicationPrintReply;
 #endif
 
 APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
 APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
-@interface NSApplication : NSResponder <NSCoding>
+@interface NSApplication : NSResponder <NSCoding,NSUserInterfaceValidations>
 {
   NSGraphicsContext	*_default_context;
   NSEvent		*_current_event;
@@ -201,17 +228,17 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) endModalSession: (NSModalSession)theSession;
 - (BOOL) isRunning;
 - (void) run;
-- (int) runModalForWindow: (NSWindow*)theWindow;
-- (int) runModalSession: (NSModalSession)theSession;
+- (NSInteger) runModalForWindow: (NSWindow*)theWindow;
+- (NSInteger) runModalSession: (NSModalSession)theSession;
 - (NSWindow *) modalWindow;
 - (void) sendEvent: (NSEvent*)theEvent;
 - (void) stop: (id)sender;
 - (void) stopModal;
-- (void) stopModalWithCode: (int)returnCode;
+- (void) stopModalWithCode: (NSInteger)returnCode;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (int) runModalForWindow: (NSWindow *)theWindow
-	relativeToWindow: (NSWindow *)docWindow;
+- (NSInteger) runModalForWindow: (NSWindow *)theWindow
+               relativeToWindow: (NSWindow *)docWindow;
 - (void) beginSheet: (NSWindow *)sheet
      modalForWindow: (NSWindow *)docWindow
       modalDelegate: (id)modalDelegate
@@ -219,16 +246,16 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 	contextInfo: (void *)contextInfo;
 - (void) endSheet: (NSWindow *)sheet;
 - (void) endSheet: (NSWindow *)sheet
-       returnCode: (int)returnCode;
+       returnCode: (NSInteger)returnCode;
 #endif
 
 /*
  * Getting, removing, and posting events
  */
 - (NSEvent*) currentEvent;
-- (void) discardEventsMatchingMask: (unsigned int)mask
+- (void) discardEventsMatchingMask: (NSUInteger)mask
 		       beforeEvent: (NSEvent*)lastEvent;
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (NSUInteger)mask
 			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
 			   dequeue: (BOOL)flag;
@@ -275,7 +302,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) setWindowsNeedUpdate: (BOOL)flag;
 - (void) updateWindows;
 - (NSArray*) windows;
-- (NSWindow*) windowWithWindowNumber: (int)windowNum;
+- (NSWindow*) windowWithWindowNumber: (NSInteger)windowNum;
 
 /*
  * Showing Standard Panels
@@ -367,8 +394,8 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 /*
  * Methods for user attention requests
  */
-- (void) cancelUserAttentionRequest: (int)request;
-- (int) requestUserAttention: (NSRequestUserAttentionType)requestType;
+- (void) cancelUserAttentionRequest: (NSInteger)request;
+- (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType;
 #endif
 
 @end
@@ -413,13 +440,19 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 @end
 
 /**
- * This is a formal protocol that duplicates the informal protocol for
- * [NSApplication] delegates.  Your delegate does not need to implement the
- * formal protocol; it is declared only for documentation purposes.  Your
+ * This is now a formal optional protocol.
+ * Your delegate does not need to implement the full formal protocol.  Your
  * delegate should just implement the methods it needs to, which will allow
  * <code>NSApp</code> to use default implementations in other cases.
  */
-@protocol	GSAppDelegateProtocol
+@protocol NSApplicationDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
+@interface NSObject (NSApplicationDelegate)
+#endif
+
 /**
  * Sender app (not necessarily this application) requests application to open
  * file without bringing up its normal UI, for programmatic manipulation.
@@ -596,12 +629,14 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) application: (NSApplication*)sender 
   delegateHandlesKey: (NSString*)key;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
 /**
  * Method used on OS X to allow an application to override the standard menu
  * obtained by right-clicking on the application's dock icon.  <em>Called
  * when the application uses Macintosh or Windows95 style menus.</em>
  */
 - (NSMenu *) applicationDockMenu: (NSApplication*)sender;
+#endif
 
 /**
  * Method used on OS X to allow delegate to handle event when user clicks on

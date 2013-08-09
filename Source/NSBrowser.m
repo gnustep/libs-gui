@@ -59,7 +59,7 @@
 #import "GSGuiPrivate.h"
 
 /* Cache */
-static float scrollerWidth; // == [NSScroller scrollerWidth]
+static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
 static NSTextFieldCell *titleCell;
 
 #define NSBR_COLUMN_SEP 4
@@ -78,7 +78,7 @@ static NSTextFieldCell *titleCell;
   NSScrollView *_columnScrollView;
   NSMatrix *_columnMatrix;
   NSString *_columnTitle;
-  float _width;
+  CGFloat _width;
 }
 
 - (void) setIsLoaded: (BOOL)flag;
@@ -230,8 +230,8 @@ static NSTextFieldCell *titleCell;
 // Private NSBrowser methods
 //
 @interface NSBrowser (Private)
-- (NSString *) _getTitleOfColumn: (int)column;
-- (void) _performLoadOfColumn: (int)column;
+- (NSString *) _getTitleOfColumn: (NSInteger)column;
+- (void) _performLoadOfColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 @end
@@ -305,7 +305,7 @@ static NSTextFieldCell *titleCell;
 */
 - (id) selectedCell
 {
-  int i;
+  NSInteger i;
   NSMatrix *matrix;
 
   // Nothing selected
@@ -326,7 +326,7 @@ static NSTextFieldCell *titleCell;
     Returns nil if no cell is selected</p>
     <p>See Also: -selectedCell -selectedCells</p> 
 */
-- (id) selectedCellInColumn: (int)column
+- (id) selectedCellInColumn: (NSInteger)column
 {
   NSMatrix *matrix;
 
@@ -344,7 +344,7 @@ static NSTextFieldCell *titleCell;
 */
 - (NSArray *) selectedCells
 {
-  int i;
+  NSInteger i;
   NSMatrix *matrix;
 
   // Nothing selected
@@ -380,7 +380,7 @@ static NSTextFieldCell *titleCell;
     index <var>column</var>. Returns -1 if no cell is selected</p>
    <p>See Also: -selectedCellInColumn: [NSMatrix-selectedRow]</p>
 */
-- (int) selectedRowInColumn: (int)column
+- (NSInteger) selectedRowInColumn: (NSInteger)column
 {
   NSMatrix *matrix;
 
@@ -400,7 +400,7 @@ static NSTextFieldCell *titleCell;
    selection.</p><p>See Also: -loadedCellAtRow:column: 
    -browser:selectRow:inColumn: [NSMatrix-selectCellAtRow:column:]</p>
  */
-- (void) selectRow: (int)row inColumn: (int)column 
+- (void) selectRow: (NSInteger)row inColumn: (NSInteger)column 
 {
   NSMatrix *matrix;
   id cell;
@@ -447,8 +447,8 @@ static NSTextFieldCell *titleCell;
     if you change this code, you may want to look at the __performLoadOfColumn:
     method in which the following code is integrated (for speed) 
 */
-- (id) loadedCellAtRow: (int)row
-               column: (int)column
+- (id) loadedCellAtRow: (NSInteger)row
+                column: (NSInteger)column
 {
   NSMatrix *matrix;
   NSCell *cell;
@@ -487,7 +487,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Returns the matrix located in the column identified by index 
     <var>column</var>. Returns nil if the matrix does not exists</p> 
 */
-- (NSMatrix *) matrixInColumn: (int)column
+- (NSMatrix *) matrixInColumn: (NSInteger)column
 {
   NSBrowserColumn *browserColumn;
 
@@ -553,10 +553,10 @@ static NSTextFieldCell *titleCell;
 - (BOOL) setPath: (NSString *)path
 {
   NSMutableArray *subStrings;
-  unsigned          numberOfSubStrings;
-  unsigned          indexOfSubStrings;
-  int             column;
-  BOOL                  useDelegate = NO;
+  NSUInteger numberOfSubStrings;
+  NSUInteger indexOfSubStrings;
+  NSInteger column;
+  BOOL useDelegate = NO;
 
   if ([_browserDelegate respondsToSelector:
     @selector(browser:selectCellWithString:inColumn:)])
@@ -581,7 +581,7 @@ static NSTextFieldCell *titleCell;
   
   if ([path hasPrefix: _pathSeparator])
     {
-      int i;
+      NSUInteger i;
       /*
        * If the path begins with a separator, start at column 0.
        * Otherwise start at the currently selected column.
@@ -593,9 +593,9 @@ static NSTextFieldCell *titleCell;
        * specified path is already partially selected.  If this is the
        * case, we can avoid redrawing those columns.
        */
-      for (i = 0; i <= _lastColumnLoaded && (unsigned)i < numberOfSubStrings; i++)
+      for (i = 0; i <= _lastColumnLoaded && i < numberOfSubStrings; i++)
         {
-          NSString  *c = [[self selectedCellInColumn: i] stringValue];
+          NSString *c = [[self selectedCellInColumn: i] stringValue];
 
           if ([c isEqualToString: [subStrings objectAtIndex: i]])
             {
@@ -639,8 +639,8 @@ static NSTextFieldCell *titleCell;
         }
       else
         {
-          int numOfRows = [matrix numberOfRows];
-          int row;
+          NSInteger numOfRows = [matrix numberOfRows];
+          NSInteger row;
 
           // find the cell in the browser matrix which is equal to aStr
           for (row = 0; row < numOfRows; row++)
@@ -665,7 +665,7 @@ static NSTextFieldCell *titleCell;
           // if unable to find a cell whose title matches aStr return NO
           NSDebugLLog (@"NSBrowser", 
                        @"unable to find cell '%@' in column %d\n", 
-                      aStr, column);
+                      aStr, (int)column);
           break;
         }
 
@@ -696,11 +696,11 @@ static NSTextFieldCell *titleCell;
 /** <p>Returns a string representing the path from the first column up to,
     but not including, the column at index column.</p>
     <p>See Also: -path</p>*/
-- (NSString *) pathToColumn: (int)column
+- (NSString *) pathToColumn: (NSInteger)column
 {
   NSMutableString        *separator = [_pathSeparator mutableCopy];
   NSString *string;
-  int i;
+  NSInteger i;
   
   /*
    * Cannot go past the number of loaded columns
@@ -798,9 +798,9 @@ static NSTextFieldCell *titleCell;
 */
 - (void) addColumn
 {
-  int i;
+  NSInteger i;
 
-  if ((unsigned)(_lastColumnLoaded + 1) >= [_browserColumns count])
+  if ((NSUInteger)(_lastColumnLoaded + 1) >= [_browserColumns count])
     {
       i = [_browserColumns indexOfObject: [self _createColumn]];
     }
@@ -835,7 +835,7 @@ static NSTextFieldCell *titleCell;
 - (BOOL) becomeFirstResponder
 {
   NSMatrix *matrix;
-  int selectedColumn;
+  NSInteger selectedColumn;
 
   selectedColumn = [self selectedColumn];
   if (selectedColumn == -1)
@@ -860,7 +860,7 @@ static NSTextFieldCell *titleCell;
 
 /** <p>Updates the NSBrowser to display the column with the given index.</p>
  */
-- (void) displayColumn: (int)column
+- (void) displayColumn: (NSInteger)column
 {
   NSBrowserColumn *bc;
   NSScrollView *sc;
@@ -894,9 +894,9 @@ static NSTextFieldCell *titleCell;
 /** <p>Returns the column number in which <var>matrix</var> is located. 
     Returns -1 if <var>matrix</var> is not found.</p>
  */
-- (int) columnOfMatrix: (NSMatrix *)matrix
+- (NSInteger) columnOfMatrix: (NSMatrix *)matrix
 {
-  int i, count;
+  NSInteger i, count;
 
   // Loop through columns and compare matrixes
   count = [_browserColumns count];
@@ -911,9 +911,9 @@ static NSTextFieldCell *titleCell;
 }
 
 /** Returns the index of the last column with a selected item. */
-- (int) selectedColumn
+- (NSInteger) selectedColumn
 {
-  int i;
+  NSInteger i;
   NSMatrix *matrix;
 
   for (i = _lastColumnLoaded; i >= 0; i--)
@@ -921,7 +921,7 @@ static NSTextFieldCell *titleCell;
       if (!(matrix = [self matrixInColumn: i]))
         continue;
       if ([matrix selectedCell])
-              return i;
+        return i;
     }
   
   return -1;
@@ -930,7 +930,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Returns the index of the last column loaded.</p>
     <p>See Also: -setLastColumn:</p>
 */
-- (int) lastColumn
+- (NSInteger) lastColumn
 {
   return _lastColumnLoaded;
 }
@@ -938,9 +938,9 @@ static NSTextFieldCell *titleCell;
 /** <p>Sets the last column to <var>column</var>.</p>
     <p>See Also: -lastColumn </p>
 */
-- (void) setLastColumn: (int)column
+- (void) setLastColumn: (NSInteger)column
 {
-  int i, count;
+  NSInteger i, count;
   NSBrowserColumn *bc;
   NSScrollView *sc;
 
@@ -989,16 +989,16 @@ static NSTextFieldCell *titleCell;
 }
 
 /** Returns the index of the first visible column. */
-- (int) firstVisibleColumn
+- (NSInteger) firstVisibleColumn
 {
   return _firstVisibleColumn;
 }
 
 /** <p>Returns the number of columns visible.</p>
     <p>See Also: -firstVisibleColumn -lastVisibleColumn</p>*/
-- (int) numberOfVisibleColumns
+- (NSInteger) numberOfVisibleColumns
 {
-  int num;
+  NSInteger num;
 
   num = _lastVisibleColumn - _firstVisibleColumn + 1;
 
@@ -1006,7 +1006,7 @@ static NSTextFieldCell *titleCell;
 }
 
 /** Returns the index of the last visible column. */
-- (int) lastVisibleColumn
+- (NSInteger) lastVisibleColumn
 {
   return _lastVisibleColumn;
 }
@@ -1015,7 +1015,7 @@ static NSTextFieldCell *titleCell;
 */
 - (void) validateVisibleColumns
 {
-  int i;
+  NSInteger i;
 
   // If delegate doesn't care, just return
   if (![_browserDelegate respondsToSelector: 
@@ -1062,7 +1062,7 @@ static NSTextFieldCell *titleCell;
 
 /** Reloads column if it is loaded; sets it as the last column.
     Reselects previously selected cells, if they remain. */
-- (void) reloadColumn: (int)column
+- (void) reloadColumn: (NSInteger)column
 {
   NSArray *selectedCells;
   NSEnumerator *selectedCellsEnumerator;
@@ -1088,7 +1088,7 @@ static NSTextFieldCell *titleCell;
   selectedCellsEnumerator = [selectedCells objectEnumerator];
   while ((cell = [selectedCellsEnumerator nextObject]) != nil)
     {
-      int sRow, sColumn;
+      NSInteger sRow, sColumn;
 
       if ([matrix getRow: &sRow  column: &sColumn  ofCell: cell])
         {
@@ -1135,7 +1135,7 @@ static NSTextFieldCell *titleCell;
 {
   if (_allowsEmptySelection != flag)
     {
-      int i;
+      NSInteger i;
 
       _allowsEmptySelection = flag;
       for (i = 0; i <= _lastColumnLoaded; i++)
@@ -1160,7 +1160,7 @@ static NSTextFieldCell *titleCell;
 {
   if (_allowsMultipleSelection != flag)
     {
-      int i;
+      NSInteger i;
       NSMatrixMode mode;
 
       _allowsMultipleSelection = flag;
@@ -1206,7 +1206,7 @@ static NSTextFieldCell *titleCell;
 /**<p>Returns the maximum number of visible columns. By default a NSBrowser
    has 3 visible columns.</p><p>See Also: -setMaxVisibleColumns:</p> 
 */
-- (int) maxVisibleColumns
+- (NSInteger) maxVisibleColumns
 {
   return _maxVisibleColumns;
 }
@@ -1215,7 +1215,7 @@ static NSTextFieldCell *titleCell;
     subviews. By default a NSBrowser has 3 visible columns.</p>
     <p>See Also: -maxVisibleColumns</p> 
 */
-- (void) setMaxVisibleColumns: (int)columnCount
+- (void) setMaxVisibleColumns: (NSInteger)columnCount
 {
   if ((columnCount < 1) || (_maxVisibleColumns == columnCount))
     return;
@@ -1229,7 +1229,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Returns the minimum column width in pixels.</p> 
     <p>See Also: -setMinColumnWidth:</p>
 */
-- (int) minColumnWidth
+- (CGFloat) minColumnWidth
 {
   return _minColumnWidth;
 }
@@ -1237,9 +1237,9 @@ static NSTextFieldCell *titleCell;
 /** <p>Sets the minimum column width in pixels and adjusts subviews.</p>
     <p>See Also: -minColumnWidth</p>
 */
-- (void) setMinColumnWidth: (int)columnWidth
+- (void) setMinColumnWidth: (CGFloat)columnWidth
 {
-  float sw;
+  CGFloat sw;
 
   sw = scrollerWidth;
   // Take the border into account
@@ -1272,7 +1272,7 @@ static NSTextFieldCell *titleCell;
   NSBrowserColumn *bc;
   NSScrollView    *sc;
   NSBorderType    bt;
-  int             i, columnCount;
+  NSInteger       i, columnCount;
 
   // if this flag already set or browser is titled -- do nothing
   if (_separatesColumns == flag || _isTitled)
@@ -1292,9 +1292,9 @@ static NSTextFieldCell *titleCell;
   [self setNeedsDisplay:YES];
 }
 
-- (float) columnWidthForColumnContentWidth: (float)columnContentWidth
+- (CGFloat) columnWidthForColumnContentWidth: (CGFloat)columnContentWidth
 {
-  float cw;
+  CGFloat cw;
 
   cw = columnContentWidth;
   if (scrollerWidth > cw)
@@ -1309,9 +1309,9 @@ static NSTextFieldCell *titleCell;
   return cw;
 }
 
-- (float) columnContentWidthForColumnWidth: (float)columnWidth
+- (CGFloat) columnContentWidthForColumnWidth: (CGFloat)columnWidth
 {
-  float cw;
+  CGFloat cw;
 
   cw = columnWidth;
   // Take the border into account
@@ -1341,7 +1341,7 @@ static NSTextFieldCell *titleCell;
   _prefersAllColumnUserResizing = flag;
 }
 
-- (float) widthOfColumn: (int)column
+- (CGFloat) widthOfColumn: (NSInteger)column
 {
   NSBrowserColumn *browserColumn;
 
@@ -1350,7 +1350,7 @@ static NSTextFieldCell *titleCell;
   return browserColumn->_width;
 }
 
-- (void) setWidth: (float)columnWidth ofColumn: (int)columnIndex
+- (void) setWidth: (CGFloat)columnWidth ofColumn: (NSInteger)columnIndex
 {
   NSBrowserColumn *browserColumn;
 
@@ -1391,7 +1391,7 @@ static NSTextFieldCell *titleCell;
 
 /** Returns the title displayed for the column at index column.
  */
-- (NSString *) titleOfColumn: (int)column
+- (NSString *) titleOfColumn: (NSInteger)column
 {
   NSBrowserColumn *browserColumn;
 
@@ -1406,7 +1406,7 @@ static NSTextFieldCell *titleCell;
     <p>See Also: -isTitled -titleFrameOfColumn: -titleHeight</p>
 */
 - (void) setTitle: (NSString *)aString
-         ofColumn: (int)column
+         ofColumn: (NSInteger)column
 {
   NSBrowserColumn *bc;
 
@@ -1446,7 +1446,7 @@ static NSTextFieldCell *titleCell;
 
 /**
  */
-- (void) drawTitleOfColumn: (int)column 
+- (void) drawTitleOfColumn: (NSInteger)column 
                     inRect: (NSRect)aRect
 {
   [self drawTitle: [self titleOfColumn: column] 
@@ -1458,7 +1458,7 @@ static NSTextFieldCell *titleCell;
     defined by aRect. */
 - (void) drawTitle: (NSString *)title
             inRect: (NSRect)aRect
-          ofColumn: (int)column
+          ofColumn: (NSInteger)column
 {
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
@@ -1471,17 +1471,17 @@ static NSTextFieldCell *titleCell;
 
 /** <p>Returns the height of column titles. The Nextish look returns 21.</p>
  */
-- (float) titleHeight
+- (CGFloat) titleHeight
 {
   // Nextish look requires 21 here
-  return 21;
+  return 21.0;
 }
 
 /** <p>Returns the bounds of the title frame for the column at index column.
     Returns NSZeroRect if the NSBrowser does not display its titles</p>
     <p>See Also: -isTitled</p>
 */
-- (NSRect) titleFrameOfColumn: (int)column
+- (NSRect) titleFrameOfColumn: (NSInteger)column
 {
   // Not titled then no frame
   if (!_isTitled)
@@ -1491,8 +1491,8 @@ static NSTextFieldCell *titleCell;
   else
     {
       // Number of columns over from the first
-      int nbColumn = column - _firstVisibleColumn;
-      int titleHeight = [self titleHeight];
+      NSInteger nbColumn = column - _firstVisibleColumn;
+      CGFloat titleHeight = [self titleHeight];
       NSRect rect;
 
       // Calculate origin
@@ -1531,7 +1531,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Scrolls to make the column at index <var>column</var> visible.</p>
     <p>See Also: -scrollColumnsRightBy: -scrollColumnsLeftBy:</p>
  */
-- (void) scrollColumnToVisible: (int)column
+- (void) scrollColumnToVisible: (NSInteger)column
 {
   // If its the last visible column then we are there already
   if (_lastVisibleColumn < column)
@@ -1547,7 +1547,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Scrolls columns left by <var>shiftAmount</var> columns.</p> 
     <p>See Also: -scrollColumnsRightBy: -scrollColumnToVisible:</p>
  */
-- (void) scrollColumnsLeftBy: (int)shiftAmount
+- (void) scrollColumnsLeftBy: (NSInteger)shiftAmount
 {
   // Cannot shift past the zero column
   if ((_firstVisibleColumn - shiftAmount) < 0)
@@ -1581,7 +1581,7 @@ static NSTextFieldCell *titleCell;
 /** <p>Scrolls columns right by <var>shiftAmount</var> columns.</p>
     <p>See Also: -scrollColumnsLeftBy: -scrollColumnToVisible:</p>
 */
-- (void) scrollColumnsRightBy: (int)shiftAmount
+- (void) scrollColumnsRightBy: (NSInteger)shiftAmount
 {
   // Cannot shift past the last loaded column
   if ((shiftAmount + _lastVisibleColumn) > _lastColumnLoaded)
@@ -1616,9 +1616,9 @@ static NSTextFieldCell *titleCell;
  */
 - (void) updateScroller
 {
-  int   num = [self numberOfVisibleColumns];
+  NSInteger   num = [self numberOfVisibleColumns];
   float prop = (float)num / (float)(_lastColumnLoaded + 1);
-  int   uc = ((_lastColumnLoaded + 1) - num); // Unvisible columns
+  NSInteger   uc = ((_lastColumnLoaded + 1) - num); // Unvisible columns
   float f_step = 1.0;                         // Knob moving step
   float fv = 0.0;
 
@@ -1765,11 +1765,11 @@ static NSTextFieldCell *titleCell;
  */
 
 /** <p>Returns the rectangle containing the column at index column.</p> */
-- (NSRect) frameOfColumn: (int)column
+- (NSRect) frameOfColumn: (NSInteger)column
 {
   NSRect rect = NSZeroRect;
   NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
-  int n;
+  NSInteger n;
 
   // Number of columns over from the first
   n = column - _firstVisibleColumn;
@@ -1828,7 +1828,7 @@ static NSTextFieldCell *titleCell;
 
 /** Returns the rectangle containing the column at index column, */
 // not including borders.
-- (NSRect) frameOfInsideOfColumn: (int)column
+- (NSRect) frameOfInsideOfColumn: (NSInteger)column
 {
   // xxx what does this one do?
   return [self frameOfColumn: column];
@@ -1862,8 +1862,8 @@ static NSTextFieldCell *titleCell;
 - (void) tile
 {
   NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
-  int i, num, columnCount, delta;
-  float  frameWidth;
+  NSInteger i, num, columnCount, delta;
+  CGFloat frameWidth;
 
   _columnSize.height = _frame.size.height;
   
@@ -1903,7 +1903,7 @@ static NSTextFieldCell *titleCell;
 
   if (_minColumnWidth > 0)
     {
-      float colWidth = _minColumnWidth + scrollerWidth;
+      CGFloat colWidth = _minColumnWidth + scrollerWidth;
 
       if (_separatesColumns)
         colWidth += NSBR_COLUMN_SEP;
@@ -1947,7 +1947,7 @@ static NSTextFieldCell *titleCell;
     frameWidth = _frame.size.width - ((columnCount - 1) + 
                                       (2 * bezelBorderSize.width));
 
-  _columnSize.width = (int)(frameWidth / (float)columnCount);
+  _columnSize.width = (int)(frameWidth / (CGFloat)columnCount);
 
   if (_columnSize.height < 0)
     _columnSize.height = 0;
@@ -2114,7 +2114,7 @@ static NSTextFieldCell *titleCell;
   NSMutableArray *selectedCells;
   NSEnumerator   *enumerator;
   NSBrowserCell  *cell;
-  int             column, aCount, selectedCellsCount;
+  NSInteger       column, aCount, selectedCellsCount;
 
   if ([sender class] != _browserMatrixClass)
     return;
@@ -2355,7 +2355,7 @@ static NSTextFieldCell *titleCell;
   if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
-      int       selectedColumn;
+      NSInteger selectedColumn;
 
       matrix = (NSMatrix *)[_window firstResponder];
       selectedColumn = [self columnOfMatrix:matrix];
@@ -2388,7 +2388,7 @@ static NSTextFieldCell *titleCell;
   if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
-      int       selectedColumn;
+      NSInteger selectedColumn;
 
       matrix = (NSMatrix *)[_window firstResponder];
       selectedColumn = [self columnOfMatrix:matrix];
@@ -2483,9 +2483,9 @@ static NSTextFieldCell *titleCell;
     {
       NSMatrix *matrix;
       NSString *sv;
-      int i, n, s;
-      int match;
-      int selectedColumn;
+      NSInteger i, n, s;
+      NSInteger match;
+      NSInteger selectedColumn;
       SEL lcarcSel = @selector(loadedCellAtRow:column:);
       IMP lcarc = [self methodForSelector: lcarcSel];
 
@@ -2630,7 +2630,7 @@ static NSTextFieldCell *titleCell;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
       [aCoder encodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_minColumnWidth];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
@@ -2784,7 +2784,7 @@ static NSTextFieldCell *titleCell;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_minColumnWidth];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
@@ -2901,7 +2901,7 @@ static NSTextFieldCell *titleCell;
 {
   NSBrowserColumn *bc;
   NSScrollView *sc;
-  int i, count;
+  NSUInteger i, count;
   id firstResponder = nil;
   BOOL setFirstResponder = NO;
 
@@ -2975,12 +2975,12 @@ static NSTextFieldCell *titleCell;
 }
 
 /* Loads column 'column' (asking the delegate). */
-- (void) _performLoadOfColumn: (int)column
+- (void) _performLoadOfColumn: (NSInteger)column
 {
   NSBrowserColumn *bc;
   NSScrollView *sc;
   NSMatrix *matrix;
-  int i, rows, cols;
+  NSInteger i, rows, cols;
 
   if (_passiveDelegate)
     {
@@ -3107,7 +3107,7 @@ static NSTextFieldCell *titleCell;
 }
 
 /* Get the title of a column. */
-- (NSString *) _getTitleOfColumn: (int)column
+- (NSString *) _getTitleOfColumn: (NSInteger)column
 {
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector: 
@@ -3190,7 +3190,7 @@ static NSTextFieldCell *titleCell;
 
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
-    [super setNeedsDisplayInRect: invalidRect];
+  [super setNeedsDisplayInRect: invalidRect];
 }
 
 @end

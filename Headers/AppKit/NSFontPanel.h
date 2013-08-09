@@ -64,8 +64,8 @@ enum {
   BOOL _preview;
 
   // store currently selected information
-  NSMutableArray *_familyList;
-  NSMutableArray *_faceList;
+  NSArray *_familyList;
+  NSArray *_faceList;
   int _family;
   int _face;
   NSFontTraitMask _traits;

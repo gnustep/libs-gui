@@ -178,6 +178,15 @@
           is meant to make things friendlier for slow computers.
           </p>
 	  </desc>
+	  <term>GSUnknownFileTool</term>
+	  <desc>
+          <p>
+          A string value that defines a program that should be launched
+          when no GNUstep application has been defined for a specific
+          file extension or if an URL could not be opened by a service.
+          This program gets the file name or URL as parameter.
+          </p>
+	  </desc>
 	  <term>GSUseFreedesktopThumbnails</term>
 	  <desc>
           <p>

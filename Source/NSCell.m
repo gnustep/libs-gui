@@ -216,6 +216,7 @@ static NSColor *dtxtCol;
   _action_mask = NSLeftMouseUpMask;
   _menu = [object_getClass(self) defaultMenu];
   [self setFocusRingType: [object_getClass(self) defaultFocusRingType]];
+
   return self;
 }
 
@@ -502,7 +503,7 @@ static NSColor *dtxtCol;
    id="NSCellAttribute">NSCellAttribute</ref></p>
    <p>See Also: -setCellAttribute:to:</p>
  */
-- (int) cellAttribute: (NSCellAttribute)aParameter
+- (NSInteger) cellAttribute: (NSCellAttribute)aParameter
 {
   switch (aParameter)
     {
@@ -539,7 +540,7 @@ static NSColor *dtxtCol;
       }
     default:
       {
-        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        NSWarnLog (@"cell attribute %d not supported", (int)aParameter);
         break;
       }
     }
@@ -551,7 +552,7 @@ static NSColor *dtxtCol;
 /**<p>TODO</p>
  *<p>See Also: -cellAttribute:</p>
  */
-- (void) setCellAttribute: (NSCellAttribute)aParameter  to: (int)value
+- (void) setCellAttribute: (NSCellAttribute)aParameter to: (NSInteger)value
 {
   switch (aParameter)
     {
@@ -659,7 +660,7 @@ static NSColor *dtxtCol;
       }
     default:
       {
-        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        NSWarnLog (@"cell attribute %d not supported", (int)aParameter);
         break;
       }
     }
@@ -1172,9 +1173,9 @@ static NSColor *dtxtCol;
 
 /**<p>TODO Explain</p>
  */
-- (int) sendActionOn: (int)mask
+- (NSInteger) sendActionOn: (NSInteger)mask
 {
-  unsigned int previousMask = _action_mask;
+  NSUInteger previousMask = _action_mask;
 
   _action_mask = mask;
 
@@ -1239,15 +1240,15 @@ static NSColor *dtxtCol;
  * Formatting Data
  */
 - (void) setFloatingPointFormat: (BOOL)autoRange
-                           left: (unsigned int)leftDigits
-                          right: (unsigned int)rightDigits
+                           left: (NSUInteger)leftDigits
+                          right: (NSUInteger)rightDigits
 {
   NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
   NSMutableString *format = [[NSMutableString alloc] init];
 
   if (autoRange)
     {
-      unsigned fieldWidth = leftDigits + rightDigits + 1;
+      NSUInteger fieldWidth = leftDigits + rightDigits + 1;
 
       // FIXME: this does not fully match the documentation.
       while (fieldWidth--)
@@ -1286,14 +1287,14 @@ static NSColor *dtxtCol;
 
 /**<p> TODO</p>
  */
-- (int) entryType
+- (NSInteger) entryType
 {
   return _cell.entry_type;
 }
 
 /** <p>TODO</p>
  */
-- (void) setEntryType: (int)aType
+- (void) setEntryType: (NSInteger)aType
 {
   [self setType: NSTextCellType];
   // TODO: This should select a suitable formatter
@@ -1384,7 +1385,7 @@ static NSColor *dtxtCol;
 
   if (r.length > 0)
     {
-      unsigned int location = r.location;
+      NSUInteger location = r.location;
       
       
       [self setTitle: [[aString substringToIndex: location] 
@@ -1579,7 +1580,7 @@ static NSColor *dtxtCol;
 /**<p>Returns the mouse flags. This flags are usally sets in 
    the -trackMouse:inRect:ofView:untilMouseUp: method</p>
  */
-- (int) mouseDownFlags
+- (NSInteger) mouseDownFlags
 { 
   return _mouse_down_flags;
 }
@@ -1627,7 +1628,7 @@ static NSColor *dtxtCol;
        untilMouseUp: (BOOL)flag
 {
   NSApplication *theApp = [NSApplication sharedApplication];
-  unsigned event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSUInteger event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
   NSPoint location = [theEvent locationInWindow];
@@ -2302,8 +2303,8 @@ static NSColor *dtxtCol;
                   inView: (NSView*)controlView
                   editor: (NSText*)textObject
                 delegate: (id)anObject
-                   start: (int)selStart
-                  length: (int)selLength
+                   start: (NSInteger)selStart
+                  length: (NSInteger)selLength
 {
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
@@ -2491,8 +2492,8 @@ static NSColor *dtxtCol;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       tmp_int = _cell.mnemonic_location;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_mouse_down_flags];
+      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
@@ -2536,7 +2537,7 @@ static NSColor *dtxtCol;
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
           unsigned long cFlags;
-          unsigned long mask = 0;
+          NSUInteger mask = 0;
           cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
           
           [self setFocusRingType: (cFlags & 0x3)];
@@ -2570,7 +2571,7 @@ static NSColor *dtxtCol;
       
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
-          [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
+	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
           [self setSendsActionOnEndEditing: ((cFlags2 & 0x400000) == 0x400000)];
           [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
@@ -2660,9 +2661,9 @@ static NSColor *dtxtCol;
       _cell.state = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       _cell.mnemonic_location = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) 
                                    at: &_mouse_down_flags];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
       if (version < 3)
         {
           unsigned int mask = 0;
@@ -3002,7 +3003,7 @@ static NSColor *dtxtCol;
     }
 }
 
-- (BOOL) _sendsActionOn:(int)eventTypeMask
+- (BOOL) _sendsActionOn:(NSUInteger)eventTypeMask
 {
   return (_action_mask & eventTypeMask);
 }

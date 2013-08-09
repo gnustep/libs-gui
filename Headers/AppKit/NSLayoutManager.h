@@ -122,9 +122,9 @@ typedef enum {
 
 - (unsigned int) glyphIndexForPoint: (NSPoint)aPoint
 	inTextContainer: (NSTextContainer *)aTextContainer;
-- (unsigned int) glyphIndexForPoint: (NSPoint)point
+- (NSUInteger) glyphIndexForPoint: (NSPoint)point
 	inTextContainer: (NSTextContainer *)container
-	fractionOfDistanceThroughGlyph: (float *)partialFraction;
+	fractionOfDistanceThroughGlyph: (CGFloat *)partialFraction;
 
 
 /*
@@ -171,6 +171,24 @@ GNUstep extension.
 	      originalCharacterIndex: (unsigned int)original
 			    distance: (float)distance;
 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) ensureGlyphsForGlyphRange: (NSRange)glyphRange;
+- (void) ensureGlyphsForCharacterRange: (NSRange)charRange;
+- (void) ensureLayoutForGlyphRange: (NSRange)glyphRange;
+- (void) ensureLayoutForCharacterRange: (NSRange)charRange;
+- (void) ensureLayoutForTextContainer: (NSTextContainer*)container;
+- (void) ensureLayoutForBoundingRect: (NSRect)bounds
+                     inTextContainer: (NSTextContainer*)container;
+
+- (void) invalidateLayoutForCharacterRange: (NSRange)charRange
+                      actualCharacterRange: (NSRangePointer)actualCharRange;
+- (void) invalidateGlyphsOnLayoutInvalidationForGlyphRange: (NSRange)glyphRange;
+
+- (BOOL) allowsNonContiguousLayout;
+- (void) setAllowsNonContiguousLayout: (BOOL)flag;
+- (BOOL) hasNonContiguousLayout;
+#endif
 @end
 
 

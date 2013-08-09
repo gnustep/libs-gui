@@ -273,6 +273,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_setHomeDirectory)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelHomeButton];
+  [button setToolTip:_(@"Home")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -288,6 +289,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_mountMedia)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskButton];
+  [button setToolTip:_(@"Mount")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -303,6 +305,7 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(_unmountMedia)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskEjectButton];
+  [button setToolTip:_(@"Unmount")];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -552,7 +555,7 @@ setPath(NSBrowser *browser, NSString *path)
 
 - (BOOL) _browser: (NSBrowser*)sender
 selectCellWithString: (NSString*)title
-	inColumn: (int)column
+	inColumn: (NSInteger)column
 {
   NSMatrix *m;
   BOOL isLeaf;
@@ -1605,16 +1608,16 @@ selectCellWithString: (NSString*)title
 @interface NSSavePanel (GSBrowserDelegate)
 - (void) browserDidScroll: (NSBrowser *)sender;
 - (void) browser: (NSBrowser*)sender
-createRowsForColumn: (int)column
+createRowsForColumn: (NSInteger)column
         inMatrix: (NSMatrix*)matrix;
 
 - (BOOL) browser: (NSBrowser*)sender
-   isColumnValid: (int)column;
+   isColumnValid: (NSInteger)column;
 
 - (void) browser: (NSBrowser*)sender
  willDisplayCell: (id)cell
-           atRow: (int)row
-          column: (int)column;
+           atRow: (NSInteger)row
+          column: (NSInteger)column;
 @end 
 
 static int compareFilenames (id elem1, id elem2, void *context)
@@ -1637,7 +1640,7 @@ static int compareFilenames (id elem1, id elem2, void *context)
 }
 
 - (void) browser: (NSBrowser*)sender
-createRowsForColumn: (int)column
+createRowsForColumn: (NSInteger)column
 	inMatrix: (NSMatrix*)matrix
 {
   NSString              *path, *file, *pathAndFile, *extension; 
@@ -1862,7 +1865,7 @@ createRowsForColumn: (int)column
 }
 
 - (BOOL) browser: (NSBrowser*)sender
-   isColumnValid: (int)column
+   isColumnValid: (NSInteger)column
 {
   /*
    * FIXME This code doesn't handle the case where the delegate now wants
@@ -1889,8 +1892,8 @@ createRowsForColumn: (int)column
 
 - (void) browser: (NSBrowser*)sender
  willDisplayCell: (id)cell
-	   atRow: (int)row
-	  column: (int)column
+	   atRow: (NSInteger)row
+	  column: (NSInteger)column
 {
 }
 @end
