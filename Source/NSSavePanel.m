@@ -55,6 +55,7 @@
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSSavePanel.h"
 #import "AppKit/NSTextField.h"
+#import "AppKit/NSWindowController.h"
 #import "AppKit/NSWorkspace.h"
 
 #import "GSGuiPrivate.h"
@@ -1110,6 +1111,20 @@ selectCellWithString: (NSString*)title
   return [self runModalForDirectory: [self directory] file: [self filename]];
 }
 
+- (void) beginSheetModalForWindow:(NSWindow *)window
+                completionHandler:(GSSavePanelCompletionHandler)handler
+{
+  NSInteger result = [NSApp runModalForWindow: self
+                             relativeToWindow: window];
+  CALL_BLOCK(handler, result);
+}
+
+- (void) beginWithCompletionHandler:(GSSavePanelCompletionHandler)handler
+{
+  self->_completionHandler = Block_copy(handler);
+  [self makeKeyAndOrderFront: self];
+}
+
 /**<p> Initializes the panel to the directory specified by path and,
   optionally, the file specified by filename, then displays it and
   begins its modal event loop; path and filename can be empty
@@ -1218,7 +1233,16 @@ selectCellWithString: (NSString*)title
 {
   ASSIGN(_directory, pathToColumn(_browser, [_browser lastColumn]));
   [self _updateDefaultDirectory];
-  [NSApp stopModalWithCode: NSCancelButton];
+
+  if (self->_completionHandler == NULL)
+    [NSApp stopModalWithCode: NSCancelButton];
+  else
+    {
+      CALL_BLOCK(self->_completionHandler, NSCancelButton);
+      Block_release(self->_completionHandler);
+      self->_completionHandler = NULL;
+    }
+
   [_okButton setEnabled: NO];
   [self close];
 }
@@ -1389,7 +1413,16 @@ selectCellWithString: (NSString*)title
       return;
 
   [self _updateDefaultDirectory];
-  [NSApp stopModalWithCode: NSOKButton];
+
+  if (self->_completionHandler == NULL)
+    [NSApp stopModalWithCode: NSOKButton];
+  else
+    {
+      CALL_BLOCK(self->_completionHandler, NSOKButton);
+      Block_release(self->_completionHandler);
+      self->_completionHandler = NULL;
+    }
+
   [_okButton setEnabled: NO];
   [self close];
 }

@@ -1,3 +1,9 @@
+2013-08-12  Lubos Dolezel <lubos@dolezel.info>
+
+	* Headers/AppKit/NSSavePanel.h,
+	* Source/NSSavePanel.m: beginSheetModalForWindow: and
+	beginWithCompletionHander: implementations
+
 2013-08-08 16:27-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add new header for NSStatusItem.h
