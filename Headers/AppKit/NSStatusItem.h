@@ -33,9 +33,62 @@
 
 #ifndef _GNUstep_H_NSStatusItem
 #define _GNUstep_H_NSStatusItem
+#import <GNUstepBase/GSVersionMacros.h>
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+
+@class NSAttributedString;
+@class NSString;
+@class NSStatusBar;
+@class NSView;
+@class NSImage;
+@class NSMenu;
+@class NSMenuItem;
 
 @interface NSStatusItem : NSObject
+{
+  @private
+  NSMenuItem *_menuItem;
+  NSStatusBar *_statusBar;
+  NSView *_view;
+  CGFloat _length;
+  BOOL _highlightMode;
+}
+
+- (SEL) action;
+- (NSAttributedString*) attributedTitle;
+- (SEL) doubleAction;
+- (void) drawStatusBarBackgroundInRect: (NSRect)rect withHighlight: (BOOL)flag; 
+- (BOOL) highlightMode;
+- (NSImage*) image;
+- (BOOL) isEnabled;
+- (CGFloat) length;
+- (NSMenu*) menu;
+- (void) popUpStatusItemMenu: (NSMenu*)menu;
+- (void) sendActionOn: (NSInteger)mask;
+- (void) setAction: (SEL)action;
+- (void) setAttributedTitle: (NSAttributedString*)title;
+- (void) setDoubleAction: (SEL)sel;
+- (void) setEnabled: (BOOL)flag;
+- (void) setHighlightMode: (BOOL)highlightMode;
+- (void) setImage: (NSImage*)image;
+- (void) setLength: (CGFloat)length;
+- (void) setMenu: (NSMenu*)menu;
+- (void) setTarget: (id)target;
+- (void) setTitle: (NSString*)title;
+- (void) setToolTip: (NSString*)toolTip;
+- (void) setView: (NSView*)view;
+- (NSStatusBar*) statusBar;
+- (id) target;
+- (NSString*) title;
+- (NSString*) toolTip;
+- (NSView*) view;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST) 
+- (NSImage*) alternateImage;
+- (void) setAlternateImage: (NSImage*)img;
+#endif
+
 @end
 
 #endif // _GNUstep_H_NSStatusItem

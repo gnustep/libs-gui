@@ -163,6 +163,7 @@ NSSplitView.m \
 NSStepper.m \
 NSStepperCell.m \
 NSStringDrawing.m \
+NSStatusBar.m \
 NSStatusItem.m \
 NSTabView.m \
 NSTabViewItem.m \
@@ -376,6 +377,7 @@ NSSplitView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStringDrawing.h \
+NSStatusBar.h \
 NSStatusItem.h \
 NSTabView.h \
 NSTabViewItem.h \

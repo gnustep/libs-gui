@@ -1,3 +1,13 @@
+2013-08-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSStatusBar.h,
+	* Source/NSStatusBar.m: Add new class implementation.
+	* Headers/AppKit/AppKit.h: Add new header for NSStatusBar.h
+	* Source/GNUmakefile: Add new class.
+	* Headers/AppKit/NSStatusItem.h,
+	* Source/NSStatusItem.m:
+	Add fill in code by Nikolaus Schaller <hns@computer.org>.
+
 2013-08-12  Lubos Dolezel <lubos@dolezel.info>
 
 	* Headers/AppKit/NSSavePanel.h,
@@ -13,12 +23,12 @@
 
 2013-07-22  Quentin Mathe  <quentin.mathe@gmail.com>
 
-	* Source/NSImage.m (+_pathForImageNamed:, +_pathForSystemImageNamed:type:, 
-	+_pathForThemeImageNamed:type:, +_resourceNameForImageNamed:type:): 
-	Fixed missing theme images if not listed in the theme bundle Info.plist. 
-	Theme bundles that contain theme images named using either GNUstep or 
+	* Source/NSImage.m (+_pathForImageNamed:, +_pathForSystemImageNamed:type:,
+	+_pathForThemeImageNamed:type:, +_resourceNameForImageNamed:type:):
+	Fixed missing theme images if not listed in the theme bundle Info.plist.
+	Theme bundles that contain theme images named using either GNUstep or
 	OPENSTEP names now work properly again (bug introduced in r36836).
-	Finished to clean and reduce duplication in the image searching code 
+	Finished to clean and reduce duplication in the image searching code
 	related to -_pathForImageNamed:.
 	* Images/nsmapping.strings: Updated documentation.
 

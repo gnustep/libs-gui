@@ -111,6 +111,7 @@
 #import <AppKit/NSSpellChecker.h>
 #import <AppKit/NSSpellProtocol.h>
 #import <AppKit/NSSplitView.h>
+#import <AppKit/NSStatusBar.h>
 #import <AppKit/NSStatusItem.h>
 #import <AppKit/NSStringDrawing.h>
 #import <AppKit/NSText.h>
