@@ -182,6 +182,8 @@
 #import <AppKit/NSTextView.h>
 #import <AppKit/NSToolbar.h>
 #import <AppKit/NSToolbarItem.h>
+#import <AppKit/NSTreeController.h>
+#import <AppKit/NSTreeNode.h>
 #import <AppKit/NSUserDefaultsController.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>

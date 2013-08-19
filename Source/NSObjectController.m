@@ -50,9 +50,9 @@
 @implementation _NSManagedProxy
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
 	  ASSIGN(_entity_name_key,[coder decodeObjectForKey: @"NSEntityName"]);
 	}
@@ -66,7 +66,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _entity_name_key forKey: @"NSEntityName"];
     }
@@ -104,8 +104,10 @@
             triggerChangeNotificationsForDependentKey: @"canAdd"];
       [self setKeys: [NSArray arrayWithObject: @"editable"] 
             triggerChangeNotificationsForDependentKey: @"canRemove"];
-      [self setKeys: [NSArray arrayWithObject: @"content"] 
+      [self setKeys: [NSArray arrayWithObjects: @"content", NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"selectedObjects"];
+      [self setKeys: [NSArray arrayWithObjects: @"content", NSContentObjectBinding, nil] 
+            triggerChangeNotificationsForDependentKey: @"selection"];
     }
 }
 
@@ -140,7 +142,7 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 { 
   [super encodeWithCoder: coder];
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeBool: _is_editable forKey: @"NSEditable"];
       [coder encodeBool: _automatically_prepares_content forKey: @"NSAutomaticallyPreparesContent"];
@@ -158,7 +160,7 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 { 
-  if((self = [super initWithCoder: coder]) != nil)
+  if ((self = [super initWithCoder: coder]) != nil)
     {
       if ([self automaticallyPreparesContent])
 	{
@@ -172,7 +174,7 @@
 	    }
 	}
       
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
 	  _is_editable = [coder decodeBoolForKey: @"NSEditable"];
 	  _automatically_prepares_content = [coder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
@@ -353,13 +355,13 @@
 - (id) selection
 {
   // TODO
-  return nil;
+  return _content;
 }
 
 
 - (BOOL) validateMenuItem: (id <NSMenuItem>)item
 {
-  SEL  action = [item action];
+  SEL action = [item action];
 
   if (sel_isEqual(action, @selector(add:)))
     {

@@ -1,3 +1,14 @@
+2013-08-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTreeController.h,
+	* Headers/AppKit/NSTreeNode.h: Add method declarations to these files.
+	* Headers/AppKit/AppKit.h,
+	* Source/GNUmakefile: Include new files.
+	* Source/NSObjectController.m (+initialize, -selection): Get basic
+	binding example working.
+	* Source/NSTreeController.m: Minimal implementation.
+	* Source/NSTreeNode.m: Full implementation of this class.
+
 2013-08-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSStatusBar.h,
@@ -6,7 +17,7 @@
 	* Source/GNUmakefile: Add new class.
 	* Headers/AppKit/NSStatusItem.h,
 	* Source/NSStatusItem.m:
-	Add fill in code by Nikolaus Schaller <hns@computer.org>.
+	Add code by Nikolaus Schaller <hns@computer.org>, reformatted and simplified.
 
 2013-08-12  Lubos Dolezel <lubos@dolezel.info>
 
