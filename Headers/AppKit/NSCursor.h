@@ -120,7 +120,7 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) resizeUpCursor;
 + (NSCursor*) resizeUpDownCursor;
 + (NSCursor*) resizeNWSECursor;
-+ (NSCursor*) resizeSESWCursor;
++ (NSCursor*) resizeNESWCursor;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)

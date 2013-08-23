@@ -282,7 +282,7 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return getStandardCursor(@"GSResizeNWSECursor", GSResizeNWSECursor);
 }
 
-+ (NSCursor*) resizeSESWCursor
++ (NSCursor*) resizeNESWCursor
 {
   return getStandardCursor(@"GSResizeNESWCursor", GSResizeNESWCursor);
 }
