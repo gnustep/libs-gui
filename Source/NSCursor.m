@@ -277,6 +277,16 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
 }
 
++ (NSCursor*) resizeNWSECursor
+{
+  return getStandardCursor(@"GSResizeNWSECursor", GSResizeNWSECursor);
+}
+
++ (NSCursor*) resizeSESWCursor
+{
+  return getStandardCursor(@"GSResizeNESWCursor", GSResizeNESWCursor);
+}
+
 /**<p>Returns the current cursor.</p>
  */
 + (NSCursor*) currentCursor
