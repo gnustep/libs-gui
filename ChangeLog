@@ -1,3 +1,10 @@
+2013-08-26  Doug Simons <doug.simons@testplant.com>
+
+       * GSLayoutManager.m: Changed _didInvalidateLayout to call [self
+	   _invalidateLayoutFromContainer:0] to properly reset things. Otherwise
+	   things were left in an inconsistent state internally (including layout_glyph
+	   being beyond the new text length, which caused nasty exceptions).
+	   
 2013-08-08  Frank Le Grand <frank.legrand@testplant.com>
 
     Merged changes from Trunk (since rev 35219) to TestPlant branch.

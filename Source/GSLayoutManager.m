@@ -1854,6 +1854,7 @@ places where we switch.
       tc->num_linefrags = tc->num_soft = 0;
       tc->size_linefrags = 0;
       tc->pos = tc->length = 0;
+      // FIXME: This value never gets used:
       tc->was_invalidated = YES;
     }
   for (i = idx - 1, tc = textcontainers + idx - 1; i >= 0; i--, tc--)
@@ -2056,14 +2057,7 @@ places where we switch.
 
 -(void) _didInvalidateLayout
 {
-  int i;
-  textcontainer_t *tc;
-
-  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
-    {
-      // FIXME: This value never gets used
-      tc->was_invalidated = YES;
-    }
+  [self _invalidateLayoutFromContainer: 0];
 }
 
 @end
