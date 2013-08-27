@@ -3598,6 +3598,13 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _checkCursorRectangles: (NSView*)theView forEvent: (NSEvent*)theEvent
 {
+  // FIXME: What this method should do is to send exit events before enter events
+  // And all enter events should be sorted from outer to inner. With the current
+  // hack to post the enter events at the end of the queue this is about correct,
+  // as long as nothing else is in the event queue :-(
+  // Most likely similar reasoning should be applied to _checkTrackingRectangles:forEvent:
+  // the best way to achive this seems to be having to separate loops over the hierarchy.
+
   if (theView->_rFlags.valid_rects)
     {
       NSArray *tr = theView->_cursor_rects;
@@ -3641,7 +3648,7 @@ resetCursorRectsForView(NSView *theView)
                     eventNumber: 0
                     trackingNumber: (int)YES
                     userData: (void*)r];
-                  [self postEvent: e atStart: YES];
+                  [self postEvent: e atStart: NO];
                 }
               // Mouse exited
               if ((last) && (!now))

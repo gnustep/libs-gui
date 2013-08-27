@@ -434,6 +434,8 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) mouseEntered: (NSEvent*)theEvent
 {
+  NSDebugLLog(@"NSCursor", @"Cursor mouseEntered:enter %d exit %d",
+              _cursor_flags.is_set_on_mouse_entered, _cursor_flags.is_set_on_mouse_exited);
   if (_cursor_flags.is_set_on_mouse_entered == YES)
     {
       [self set];
@@ -454,7 +456,8 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) mouseExited: (NSEvent*)theEvent
 {
-  NSDebugLLog(@"NSCursor", @"Cursor mouseExited:");
+  NSDebugLLog(@"NSCursor", @"Cursor mouseExited: enter %d exit %d",
+              _cursor_flags.is_set_on_mouse_entered, _cursor_flags.is_set_on_mouse_exited);
   if (_cursor_flags.is_set_on_mouse_exited == YES)
     {
       [self set];
