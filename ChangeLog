@@ -1,3 +1,9 @@
+2013-08-27  Frank Le Grand <frank.legrand@testplant.com>
+
+    * Source\NSAttributedString.m: In the absence of a NSFontAttributeName attribute,
+	use a default font to prevent the substitution from stopping. This fixes a bug where
+	unicode characters would not get the proper font substitution.
+
 2013-08-26  Doug Simons <doug.simons@testplant.com>
 
        * GSLayoutManager.m: Changed _didInvalidateLayout to call [self
