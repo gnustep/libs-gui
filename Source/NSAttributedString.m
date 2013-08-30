@@ -1596,6 +1596,16 @@ static NSMutableDictionary *cachedCSets = nil;
           font = [self attribute: NSFontAttributeName
                        atIndex: i
                        effectiveRange: &fontRange];
+
+          /* If we don't have an attribute for NSFontAttributeName,
+          ** we take a default font so we can carry on with the
+          ** substitution.
+          */
+          if (nil == font)
+            {
+              font = [NSFont userFontOfSize:0.0];
+            }
+
           charset = [font coveredCharacterSet];
         }
       

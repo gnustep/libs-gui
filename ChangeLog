@@ -1,5 +1,13 @@
 2013-08-30  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source\NSAttributedString.m (-fixFontAttributeInRange:): In the
+	absence of a NSFontAttributeName attribute, use a default font to
+	prevent the substitution from stopping. This fixes a bug where
+ 	unicode characters would not get the proper font substitution.
+	Patch by: Frank Le Grand <frank.legrand@testplant.com>
+
+2013-08-30  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	* Source/GSDisplayServer.m: Add new method -_printEventQueue.
 	* Source/NSWindow.m (-_checkCursorRectangles:forEvent:): Replace
