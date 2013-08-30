@@ -190,6 +190,7 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (void) discardEventsMatchingMask: (unsigned)mask
 		       beforeEvent: (NSEvent*)limit;
 - (void) postEvent: (NSEvent*)anEvent atStart: (BOOL)flag;
+- (void) _printEventQueue;
 @end
 
 

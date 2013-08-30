@@ -1,3 +1,10 @@
+2013-08-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Source/GSDisplayServer.m: Add new method -_printEventQueue.
+	* Source/NSWindow.m (-_checkCursorRectangles:forEvent:): Replace
+	hack with proper functions that handle cursor rectangles.
+
 2013-08-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCursor.m (-mouseEntered:, -mouseExited:):

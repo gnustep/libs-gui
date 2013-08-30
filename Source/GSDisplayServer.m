@@ -331,7 +331,7 @@ GSCurrentServer(void)
   NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)win);
   NSEnumerator *drag_enum = [types objectEnumerator];
   id            type;
-  unsigned	originalCount;
+  NSUInteger	originalCount;
 
   /*
    * Make sure the set exists.
@@ -970,14 +970,14 @@ GSCurrentServer(void)
 			   inMode: (NSString*)mode
 			  dequeue: (BOOL)flag
 {
-  unsigned	pos = 0;	/* Position in queue scanned so far	*/
-  NSRunLoop	*loop = nil;
+  NSUInteger pos = 0;	/* Position in queue scanned so far	*/
+  NSRunLoop *loop = nil;
 
   do
     {
-      unsigned	count = [event_queue count];
-      NSEvent	*event;
-      unsigned	i = 0;
+      NSUInteger count = [event_queue count];
+      NSEvent *event;
+      NSUInteger i = 0;
 
       if (count == 0)
 	{
@@ -999,7 +999,7 @@ GSCurrentServer(void)
 	   */
 	  if (count > pos)
 	    {
-	      unsigned	end = count - pos;
+	      NSUInteger end = count - pos;
 	      NSRange	r = NSMakeRange(pos, end);
 	      NSEvent	*events[end];
 
@@ -1055,7 +1055,7 @@ GSCurrentServer(void)
 - (void) discardEventsMatchingMask: (unsigned)mask
 		       beforeEvent: (NSEvent*)limit
 {
-  unsigned		index = [event_queue count];
+  NSUInteger index = [event_queue count];
 
   /*
    *	If there is a range to use - remove all the matching events in it
@@ -1063,14 +1063,14 @@ GSCurrentServer(void)
    */
   if (index > 0)
     {
-      NSTimeInterval	when = [limit timestamp];
-      NSEvent		*events[index];
+      NSTimeInterval when = [limit timestamp];
+      NSEvent *events[index];
 
       [event_queue getObjects: events];
 
       while (index-- > 0)
 	{
-	  NSEvent	*event = events[index];
+	  NSEvent *event = events[index];
 
 	  if ([event timestamp] < when)
 	    {	
@@ -1094,6 +1094,31 @@ GSCurrentServer(void)
     [event_queue insertObject: anEvent atIndex: 0];
   else
     [event_queue addObject: anEvent];
+}
+
+- (void) _printEventQueue
+{
+  NSUInteger index = [event_queue count];
+
+  if (index > 0)
+    {
+      NSEvent *events[index];
+      NSUInteger i;
+
+      NSLog(@"Dumping events from queue");
+      [event_queue getObjects: events];
+
+      for (i = 0; i < index; i++)
+	{
+	  NSEvent *event = events[i];
+
+          NSLog(@"index %d %@", i, event);
+        }
+    }
+  else
+    {
+      NSLog(@"Event queue is empty");
+    }
 }
 
 @end

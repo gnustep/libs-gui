@@ -2761,6 +2761,164 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+static void
+checkCursorRectanglesEntered(NSView *theView,  NSEvent *theEvent, NSPoint lastPoint)
+{
+
+  /*
+   * Check cursor rectangles for the subviews
+   */
+  if (theView->_rFlags.has_subviews)
+    {
+      NSArray *sb = theView->_sub_views;
+      NSUInteger count = [sb count];
+
+      if (count > 0)
+        {
+          NSView *subs[count];
+          NSUInteger i;
+
+          [sb getObjects: subs];
+          for (i = 0; i < count; ++i)
+            {
+              if (![subs[i] isHidden])
+                {
+                  checkCursorRectanglesEntered(subs[i], theEvent, lastPoint);
+                }
+            }
+        }
+    }
+
+  if (theView->_rFlags.valid_rects)
+    {
+      NSArray *tr = theView->_cursor_rects;
+      NSUInteger count = [tr count];
+
+      // Loop through cursor rectangles
+      if (count > 0)
+        {
+          GSTrackingRect *rects[count];
+          NSPoint loc = [theEvent locationInWindow];
+          NSUInteger i;
+
+          [tr getObjects: rects];
+
+          for (i = 0; i < count; ++i)
+            {
+              GSTrackingRect *r = rects[i];
+              BOOL last;
+              BOOL now;
+
+              if ([r isValid] == NO)
+                continue;
+
+              /*
+               * Check for presence of point in rectangle.
+               */
+              last = NSMouseInRect(lastPoint, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, NO);
+
+              // Mouse entered
+              if ((!last) && (now))
+                {
+                  NSEvent *e;
+
+                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+                    location: loc
+                    modifierFlags: [theEvent modifierFlags]
+                    timestamp: 0
+                    windowNumber: [theEvent windowNumber]
+                    context: [theEvent context]
+                    eventNumber: 0
+                    trackingNumber: (int)YES
+                    userData: (void*)r];
+                  [NSApp postEvent: e atStart: YES];
+                  //NSLog(@"Add enter event %@ for view %@ rect %@", e, theView, NSStringFromRect(r->rectangle));
+                }
+            }
+        }
+    }
+}
+
+static void
+checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoint)
+{
+  if (theView->_rFlags.valid_rects)
+    {
+      NSArray *tr = theView->_cursor_rects;
+      NSUInteger count = [tr count];
+
+      // Loop through cursor rectangles
+      if (count > 0)
+        {
+          GSTrackingRect *rects[count];
+          NSPoint loc = [theEvent locationInWindow];
+          NSUInteger i;
+
+          [tr getObjects: rects];
+
+          for (i = 0; i < count; ++i)
+            {
+              GSTrackingRect *r = rects[i];
+              BOOL last;
+              BOOL now;
+
+              if ([r isValid] == NO)
+                continue;
+
+              /*
+               * Check for presence of point in rectangle.
+               */
+              last = NSMouseInRect(lastPoint, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, NO);
+
+              // Mouse exited
+              if ((last) && (!now))
+                {
+                  NSEvent *e;
+
+                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+                    location: loc
+                    modifierFlags: [theEvent modifierFlags]
+                    timestamp: 0
+                    windowNumber: [theEvent windowNumber]
+                    context: [theEvent context]
+                    eventNumber: 0
+                    trackingNumber: (int)NO
+                    userData: (void*)r];
+                  [NSApp postEvent: e atStart: YES];
+                  //[NSApp postEvent: e atStart: NO];
+                  //NSLog(@"Add exit event %@ for view %@ rect %@", e, theView, NSStringFromRect(r->rectangle));
+                }
+            }
+        }
+    }
+
+  /*
+   * Check cursor rectangles for the subviews
+   */
+  if (theView->_rFlags.has_subviews)
+    {
+      NSArray *sb = theView->_sub_views;
+      NSUInteger count = [sb count];
+
+      if (count > 0)
+        {
+          NSView *subs[count];
+          NSUInteger i;
+
+          [sb getObjects: subs];
+          for (i = 0; i < count; ++i)
+            {
+              if (![subs[i] isHidden])
+                {
+                  checkCursorRectanglesExited(subs[i], theEvent, lastPoint);
+                }
+            }
+        }
+    }
+}
+
 - (void) resetCursorRects
 {
   [self discardCursorRects];
@@ -2782,7 +2940,7 @@ resetCursorRectsForView(NSView *theView)
                                         clickCount: 0
                                           pressure: 0];
           _lastPoint = NSMakePoint(-1,-1);
-          (*ccImp)(self, ccSel, _wv, e);
+          checkCursorRectanglesEntered(_wv, e, _lastPoint);
           _lastPoint = loc;
         }
     }
@@ -3598,99 +3756,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _checkCursorRectangles: (NSView*)theView forEvent: (NSEvent*)theEvent
 {
-  // FIXME: What this method should do is to send exit events before enter events
-  // And all enter events should be sorted from outer to inner. With the current
-  // hack to post the enter events at the end of the queue this is about correct,
-  // as long as nothing else is in the event queue :-(
-  // Most likely similar reasoning should be applied to _checkTrackingRectangles:forEvent:
-  // the best way to achive this seems to be having to separate loops over the hierarchy.
-
-  if (theView->_rFlags.valid_rects)
-    {
-      NSArray *tr = theView->_cursor_rects;
-      NSUInteger count = [tr count];
-
-      // Loop through cursor rectangles
-      if (count > 0)
-        {
-          GSTrackingRect *rects[count];
-          NSPoint loc = [theEvent locationInWindow];
-          NSUInteger i;
-
-          [tr getObjects: rects];
-
-          for (i = 0; i < count; ++i)
-            {
-              GSTrackingRect *r = rects[i];
-              BOOL last;
-              BOOL now;
-
-              if ([r isValid] == NO)
-                continue;
-
-              /*
-               * Check for presence of point in rectangle.
-               */
-              last = NSMouseInRect(_lastPoint, r->rectangle, NO);
-              now = NSMouseInRect(loc, r->rectangle, NO);
-
-              // Mouse entered
-              if ((!last) && (now))
-                {
-                  NSEvent *e;
-
-                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-                    location: loc
-                    modifierFlags: [theEvent modifierFlags]
-                    timestamp: 0
-                    windowNumber: [theEvent windowNumber]
-                    context: [theEvent context]
-                    eventNumber: 0
-                    trackingNumber: (int)YES
-                    userData: (void*)r];
-                  [self postEvent: e atStart: NO];
-                }
-              // Mouse exited
-              if ((last) && (!now))
-                {
-                  NSEvent *e;
-
-                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-                    location: loc
-                    modifierFlags: [theEvent modifierFlags]
-                    timestamp: 0
-                    windowNumber: [theEvent windowNumber]
-                    context: [theEvent context]
-                    eventNumber: 0
-                    trackingNumber: (int)NO
-                    userData: (void*)r];
-                  [self postEvent: e atStart: YES];
-                }
-            }
-        }
-    }
-
-  /*
-   * Check cursor rectangles for the subviews
-   */
-  if (theView->_rFlags.has_subviews)
-    {
-      NSArray *sb = theView->_sub_views;
-      NSUInteger count = [sb count];
-
-      if (count > 0)
-        {
-          NSView *subs[count];
-          NSUInteger i;
-
-          [sb getObjects: subs];
-          for (i = 0; i < count; ++i)
-            {
-              if (![subs[i] isHidden])
-                (*ccImp)(self, ccSel, subs[i], theEvent);
-            }
-        }
-    }
+  // As we add the events to the front of the queue, we need to add the last
+  // events first. That is, first the enter evnts from inner to outer and 
+  // then the exit events
+  checkCursorRectanglesEntered(theView, theEvent, _lastPoint);
+  checkCursorRectanglesExited(theView, theEvent, _lastPoint);
+  //[GSServerForWindow(self) _printEventQueue];
 }
 
 - (void) _processResizeEvent
@@ -3934,7 +4005,9 @@ resetCursorRectsForView(NSView *theView)
              * cursor update event.
              */
             if (_f.cursor_rects_enabled)
+              {
                 (*ccImp)(self, ccSel, _wv, theEvent);
+              }
           }
         
         _lastPoint = [theEvent locationInWindow];
@@ -3979,7 +4052,9 @@ resetCursorRectsForView(NSView *theView)
 
 	  // Don't update the cursor if the window isn't the key window.
 	  if (!_f.is_key)
-	    break;
+            {
+              break;
+            }
           
           if ([theEvent trackingNumber]) // It's a mouse entered
             {
@@ -4158,7 +4233,9 @@ resetCursorRectsForView(NSView *theView)
                    * to determine if we should send a cursor update
                    * event.  */
                   if (_f.cursor_rects_enabled)
-                    (*ccImp)(self, ccSel, _wv, theEvent);
+                    {
+                      checkCursorRectanglesExited(_wv, theEvent, _lastPoint);
+                    }
                 }
               
               _lastPoint = NSMakePoint(-1, -1);
