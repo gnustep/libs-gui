@@ -311,9 +311,9 @@ Interface for a bunch of internal methods that need to be cleaned up.
 }
 @end
 
-
 @interface NSTextStorage(NSTextViewUndoSupport)
 - (void) _undoTextChange: (NSTextViewUndoObject *)anObject;
+- (BOOL) _isEditing;
 @end
 
 /**** Misc. helpers and stuff ****/
@@ -2785,6 +2785,9 @@ After each user-induced change, this method should be called.
 */
 - (void) didChangeText
 {
+  if ([_textStorage _isEditing])
+    return;
+  
   [self scrollRangeToVisible: [self selectedRange]];
   [notificationCenter postNotificationName: NSTextDidChangeNotification
     object: _notifObject];
@@ -5917,9 +5920,20 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
       [super keyDown: theEvent];
     }
   else
+  {
+    NSString *string = [theEvent characters];
+    
+    // TEMPORARY...
+    // Invoke autocompletion on ESCAPE...
+    if (([string length] == 1) && ([string characterAtIndex: 0] == 0x1B))
+    {
+      [self complete: self];
+    }
+    else
     {
       [self interpretKeyEvents: [NSArray arrayWithObject: theEvent]];
     }
+  }
 }
 
 /* Bind other mouse up to pasteSelection. This should be done via
@@ -6569,6 +6583,11 @@ or add guards
 - (void) _undoTextChange: (NSTextViewUndoObject *)anObject
 {
   [anObject performUndo: self];
+}
+
+- (BOOL) _isEditing
+{
+  return (_editCount != 0);
 }
 
 @end

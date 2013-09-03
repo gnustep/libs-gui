@@ -29,6 +29,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSLayoutManager.h"
 #import "AppKit/NSScreen.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableView.h"
@@ -211,7 +212,7 @@ static GSAutocompleteWindow *gsWindow = nil;
 	   [_textView convertRect: stringRect toView: nil].origin];
 
   // Calculate the origin point to the window.
-  rect.origin.x = point.x - [NSScroller scrollerWidth] - 4;
+  rect.origin.x = point.x; // - [NSScroller scrollerWidth] - 4;
   rect.origin.y = point.y - rect.size.height;
 
   // If part of the window is off screen, change the origin point.
