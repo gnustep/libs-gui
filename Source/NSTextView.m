@@ -5920,20 +5920,9 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
       [super keyDown: theEvent];
     }
   else
-  {
-    NSString *string = [theEvent characters];
-    
-    // TEMPORARY...
-    // Invoke autocompletion on ESCAPE...
-    if (([string length] == 1) && ([string characterAtIndex: 0] == 0x1B))
-    {
-      [self complete: self];
-    }
-    else
     {
       [self interpretKeyEvents: [NSArray arrayWithObject: theEvent]];
     }
-  }
 }
 
 /* Bind other mouse up to pasteSelection. This should be done via
