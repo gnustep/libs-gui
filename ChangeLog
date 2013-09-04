@@ -1,3 +1,8 @@
+2013-09-04  Frank Le Grand <frank.legrand@testplant.com>
+
+    * Source\NSBrowser.m: Fixed a bug where setting the path to "/" would
+	not deselect the cells.
+
 2013-08-27  Frank Le Grand <frank.legrand@testplant.com>
 
     * Source\NSAttributedString.m: In the absence of a NSFontAttributeName attribute,

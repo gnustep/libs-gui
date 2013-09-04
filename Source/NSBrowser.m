@@ -552,6 +552,7 @@ static NSTextFieldCell *titleCell;
  */
 - (BOOL) setPath: (NSString *)path
 {
+NSLog(@"NSBrowser.setPath: %@", path);
   NSMutableArray *subStrings;
   NSUInteger numberOfSubStrings;
   NSUInteger indexOfSubStrings;
@@ -603,11 +604,20 @@ static NSTextFieldCell *titleCell;
             }
           else
             {
+			  // Frank LeGrand 2013-09-04: Don't understand comment below,
+			  // we're never get here at column 0 when path is "/", so we
+			  // will do it after the loop too.
+			  
               // Actually it's always called at 0 column
               [[self matrixInColumn: i] deselectAllCells];
               break;
             }
         }
+	  
+	  if (i == 0)
+	    {
+          [[self matrixInColumn: i] deselectAllCells];
+		}
 
       [self setLastColumn: column];
       indexOfSubStrings = column;
