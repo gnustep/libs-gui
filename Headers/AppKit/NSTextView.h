@@ -153,6 +153,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
     unsigned uses_find_panel:1;
     unsigned accepts_glyph_info:1;
     unsigned allows_document_background_color_change:1;
+    unsigned isAutoCompleting:2;
   } _tf;
 
 

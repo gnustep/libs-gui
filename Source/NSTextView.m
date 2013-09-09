@@ -2653,34 +2653,34 @@ TextDidEndEditing notification _without_ asking the delegate
 	      replacementString: (NSString *)replacementString
 {
   BOOL result = YES;
-
+  
   if (_tf.is_editable == NO)
     return NO;
-
+  
   /*
-  We need to send the textShouldBeginEditing: /
-  textDidBeginEditingNotification only once.
-  */
-
+   We need to send the textShouldBeginEditing: /
+   textDidBeginEditingNotification only once.
+   */
+  
   if (BEGAN_EDITING == NO)
     {
       if (([_delegate respondsToSelector: @selector(textShouldBeginEditing:)])
-	  && ([_delegate textShouldBeginEditing: _notifObject] == NO))
-	return NO;
+          && ([_delegate textShouldBeginEditing: _notifObject] == NO))
+        return NO;
       
       SET_BEGAN_EDITING(YES);
       
       [notificationCenter postNotificationName: NSTextDidBeginEditingNotification
-	object: _notifObject];
+                                        object: _notifObject];
     }
-
+  
   if (_tf.delegate_responds_to_should_change)
     {
       result = [_delegate textView: self
-	   shouldChangeTextInRange: affectedCharRange
-	         replacementString: replacementString];
+           shouldChangeTextInRange: affectedCharRange
+                 replacementString: replacementString];
     }
-
+  
   if (result && [self allowsUndo])
     {
       NSUndoManager *undo;
@@ -2690,62 +2690,69 @@ TextDidEndEditing notification _without_ asking the delegate
       BOOL isTyping;
       NSEvent *event;
       static BOOL undoManagerCanCoalesce = NO;
-
+      
       {
-	// FIXME This code (together with undoManagerCanCoalesce) is a
-	// temporary workaround to allow using an out of date version of
-	// base. Removed this upon the next release of base.
-	static BOOL didCheck = NO;
-	if (!didCheck)
-	  {
-	    undoManagerCanCoalesce =
-	      [NSUndoManager instancesRespondToSelector:
-		 @selector(_canCoalesceUndoWithTarget:selector:object:)];
-	    if (!undoManagerCanCoalesce)
-	      {
-		NSLog(@"This version of NSUndoManager does not\n"
-		      @"support coalescing undo operations. "
-		      @"Upgrade gnustep-base to r29163 or newer to\n"
-		      @"get rid of this one-time warning.");
-	      }
-	    didCheck = YES; 
-	  }
+        // FIXME This code (together with undoManagerCanCoalesce) is a
+        // temporary workaround to allow using an out of date version of
+        // base. Removed this upon the next release of base.
+        static BOOL didCheck = NO;
+        if (!didCheck)
+          {
+            undoManagerCanCoalesce =
+            [NSUndoManager instancesRespondToSelector:
+             @selector(_canCoalesceUndoWithTarget:selector:object:)];
+            if (!undoManagerCanCoalesce)
+              {
+                NSLog(@"This version of NSUndoManager does not\n"
+                      @"support coalescing undo operations. "
+                      @"Upgrade gnustep-base to r29163 or newer to\n"
+                      @"get rid of this one-time warning.");
+              }
+            didCheck = YES;
+          }
       }
-
+      
       undo = [self undoManager];
-
+      
       /* Coalesce consecutive typing events into a single undo action using
-	 currently private undo manager functionality. An event is considered
-	 a typing event if it is a keyboard event and the event's characters
-	 match our replacement string.
-	 Note: Typing events are coalesced only when the previous action was
-	 a typing event too and the current character follows the previous one
-	 immediately. We never coalesce actions when the current selection is
-	 not empty. */
-      event = [NSApp currentEvent];
-      isTyping = [event type] == NSKeyDown
-	      && [[event characters] isEqualToString: replacementString];
+       currently private undo manager functionality. An event is considered
+       a typing event if it is a keyboard event and the event's characters
+       match our replacement string.
+       Note: Typing events are coalesced only when the previous action was
+       a typing event too and the current character follows the previous one
+       immediately. We never coalesce actions when the current selection is
+       not empty. */
+      event    = [NSApp currentEvent];
+      isTyping = (([event type] == NSKeyDown) &&
+                  ([[event characters] isEqualToString: replacementString]));
       if (undoManagerCanCoalesce && _undoObject)
-	{
-	  undoRange = [_undoObject range];
-	  if (isTyping &&
-	      NSMaxRange(undoRange) == affectedCharRange.location &&
-	      affectedCharRange.length == 0 &&	      
-	      [undo _canCoalesceUndoWithTarget: _textStorage
-				      selector: @selector(_undoTextChange:)
-					object: _undoObject])
-	    {
-	      undoRange.length += [replacementString length];
-	      [_undoObject setRange: undoRange];
-	      return result;
-	    }
-	  DESTROY(_undoObject);
+        {
+          if ([undo _canCoalesceUndoWithTarget: _textStorage
+                                      selector: @selector(_undoTextChange:)
+                                        object: _undoObject])
+            {
+              undoRange = [_undoObject range];
+              if (isTyping &&
+                  NSMaxRange(undoRange) == affectedCharRange.location &&
+                  affectedCharRange.length == 0)
+                {
+                  undoRange.length += [replacementString length];
+                  [_undoObject setRange: undoRange];
+                  return result;
+                }
+              else if (_tf.isAutoCompleting == 2)
+                {
+                  [_undoObject setRange: affectedCharRange];
+                  return result;
+                }
+              DESTROY(_undoObject);
+            }
         }
-
+      
       // The length of the undoRange is the length of the replacement, if any.
       if (replacementString != nil)
         {
-          undoRange = NSMakeRange(affectedCharRange.location, 
+          undoRange = NSMakeRange(affectedCharRange.location,
                                   [replacementString length]);
         }
       else
@@ -2753,19 +2760,21 @@ TextDidEndEditing notification _without_ asking the delegate
           undoRange = affectedCharRange;
         }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
-
+      
       undoObject =
-	[[NSTextViewUndoObject alloc] initWithRange: undoRange
-				   attributedString: undoString];
+      [[NSTextViewUndoObject alloc] initWithRange: undoRange
+                                 attributedString: undoString];
       [undo registerUndoWithTarget: _textStorage
-			  selector: @selector(_undoTextChange:)
-			    object: undoObject];
-      if (isTyping)
-	_undoObject = undoObject;
+                          selector: @selector(_undoTextChange:)
+                            object: undoObject];
+      if (isTyping || _tf.isAutoCompleting)
+        _undoObject = undoObject;
       else
-	RELEASE(undoObject);
+        RELEASE(undoObject);
+      if (_tf.isAutoCompleting == 1)
+        _tf.isAutoCompleting = 2;
     }
-
+  
   return result;
 }
 
@@ -6022,7 +6031,9 @@ configuation! */
       range.location != NSNotFound && range.length != 0)
     {
       GSAutocompleteWindow *window = [GSAutocompleteWindow defaultWindow];
+      _tf.isAutoCompleting = 1;
       [window displayForTextView: self];
+      _tf.isAutoCompleting = 0;
     }
 }
 
