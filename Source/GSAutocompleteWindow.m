@@ -26,7 +26,6 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSNotification.h>
-#import "Foundation/NSUndoManager.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSEvent.h"
@@ -317,7 +316,7 @@ static GSAutocompleteWindow *gsWindow = nil;
           if ([event window] != self)
 	    {
 	      [self updateTextViewWithMovement: NSCancelTextMovement
-				       isFinal: YES];
+				       isFinal: NO];
               break;
 	    }
 	  else
@@ -353,7 +352,7 @@ static GSAutocompleteWindow *gsWindow = nil;
 		   key == NSLeftArrowFunctionKey)
 	    {
 	      [self updateTextViewWithMovement: NSCancelTextMovement
-				       isFinal: YES];
+				       isFinal: NO];
 	      break;
 	    }
           else
@@ -383,7 +382,7 @@ static GSAutocompleteWindow *gsWindow = nil;
 {
   _stopped = YES;
   [self updateTextViewWithMovement: NSCancelTextMovement
-			   isFinal: YES];
+			   isFinal: NO];
 }
 
 - (void) reloadData
@@ -432,28 +431,25 @@ static GSAutocompleteWindow *gsWindow = nil;
 {
   NSString *word;
 
-  // If this is a cancelling request...
-  if (movement == NSCancelTextMovement)
-    {
-      // Invocation with flag==YES indicates we've inserted at least once
-      // causing text view to push an undo sequence that we need to undo
-      // here...
-      if (flag)
-        [[_textView undoManager] undo];
-    }
-  else
+  if (movement != NSCancelTextMovement)
     {
       NSInteger rowIndex = [_tableView selectedRow];
       word = [[_words objectAtIndex: rowIndex] description];
-      [_textView insertCompletion: word
-              forPartialWordRange: _range
-                         movement: movement
-                          isFinal: flag];
     }
+  else
+    {
+      word = _originalWord;
+    }
+
+  [_textView insertCompletion: word
+	  forPartialWordRange: _range
+		     movement: movement
+		      isFinal: flag];
 
   // Release _words and _originalWords if
   // autocomplete is final or canceled.
-  if ((flag) || (movement == NSCancelTextMovement) )
+  if ( (flag) ||
+       (movement == NSCancelTextMovement) )
     {
       ASSIGN(_originalWord, nil);
       ASSIGN(_words, nil);

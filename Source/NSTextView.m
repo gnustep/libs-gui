@@ -2767,7 +2767,7 @@ TextDidEndEditing notification _without_ asking the delegate
       [undo registerUndoWithTarget: _textStorage
                           selector: @selector(_undoTextChange:)
                             object: undoObject];
-      if (isTyping || _tf.isAutoCompleting)
+      if (isTyping) // || _tf.isAutoCompleting)
         _undoObject = undoObject;
       else
         RELEASE(undoObject);
