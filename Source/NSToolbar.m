@@ -1556,6 +1556,15 @@ static GSValidationCenter *vc = nil;
   [self validateVisibleItems];
 }
 
+- (void) _resetToolbarUpdates: (NSWindow *)window
+{
+  GSValidationCenter *validationCenter = [GSValidationCenter sharedValidationCenter];
+  [validationCenter removeObserver: self window: nil];
+  if (window != nil)
+    {
+      [validationCenter addObserver: self window: window];
+	}
+}
 
 
 @end

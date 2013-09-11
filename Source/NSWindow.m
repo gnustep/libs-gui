@@ -1571,6 +1571,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
       [_wv setInputState: GSTitleBarKey];
       [GSServerForWindow(self) setinputfocus: _windowNum];
+	  [self _resetToolbarUpdates];
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
       NSDebugLLog(@"NSWindow", @"%@ is now key window", [self title]);
@@ -5778,6 +5779,28 @@ current key view.<br />
       [_inactive removeObject: window];
     }
 }
+@end
+
+@implementation NSWindow (ToolbarPrivate)
+
+- (void) _resetToolbarUpdates
+{
+  /* 2013-09-11 Frank LeGrand: The toolbar validation process is
+   * architectured around the GSValidationCenter and its validation
+   * objects, which remove notification observers when the window
+   * closes (see NSToolbar.m). This architecture seems to assume
+   * that when a window closes it will be dealloc'd soon after, this
+   * is incorrect as someone else maybe retaining the window and later
+   * show it again. The purpose of this patch is to "turn on" again
+   * the validation process of the toolbar.
+   */
+  if ([self toolbar])
+    {
+	  [[self toolbar] _resetToolbarUpdates:self];
+      [nc postNotificationName: NSWindowDidUpdateNotification object: self];
+    }	
+}
+
 @end
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)

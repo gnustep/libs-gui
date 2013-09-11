@@ -35,6 +35,7 @@
 #import "AppKit/NSToolbarItem.h"
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSWindowDecorationView.h"
+#import "AppKit/NSWindow.h"
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;
@@ -114,6 +115,9 @@
 - (NSArray *) _selectableItemIdentifiers;
 - (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar: (BOOL)insert;
 
+// Validation management
+- (void) _resetToolbarUpdates: (NSWindow *)window;
+
 @end
 
 @interface GSWindowDecorationView (ToolbarPrivate)
@@ -124,6 +128,10 @@
 @interface GSWindowDecorationView (Menu)
 - (void) addMenuView: (NSMenuView*)menuView;
 - (NSMenuView*) removeMenuView;
+@end
+
+@interface NSWindow (ToolbarPrivate)
+- (void) _resetToolbarUpdates;
 @end
 
 #endif // _NSToolbarFrameworkPrivate_h_INCLUDE

@@ -1,3 +1,14 @@
+2013-09-11  Frank Le Grand <frank.legrand@testplant.com>
+
+    * Source\NSToolbar.m,
+	* Source\NSToolbarFrameworkPrivate.h,
+	* Source\NSWindow.h: Applied a fix/workaround to an issue where
+	a toolbar would cease from validating itself after its window
+	was closed and re-opened. The culprit is the logic in 
+	GSValidationCenter which seems to assume that when a window has
+	closed it will be dealloc'd soon after, and does not consider
+	the possibility of the window getting brought back up.
+
 2013-09-04  Frank Le Grand <frank.legrand@testplant.com>
 
     * Source\NSBrowser.m: Fixed a bug where setting the path to "/" would
