@@ -552,7 +552,6 @@ static NSTextFieldCell *titleCell;
  */
 - (BOOL) setPath: (NSString *)path
 {
-NSLog(@"NSBrowser.setPath: %@", path);
   NSMutableArray *subStrings;
   NSUInteger numberOfSubStrings;
   NSUInteger indexOfSubStrings;
