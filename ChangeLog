@@ -1,3 +1,8 @@
+2013-09-13 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+GIF.m (-_initBitmapFromGIF:): Prepare for
+	additional argument to function DGifOpen in newer libgif versions.
+
 2013-08-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source\NSAttributedString.m (-fixFontAttributeInRange:): In the
