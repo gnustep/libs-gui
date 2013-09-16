@@ -593,17 +593,17 @@ static NSTextFieldCell *titleCell;
        * specified path is already partially selected.  If this is the
        * case, we can avoid redrawing those columns.
        */
-      for (i = 0; i <= _lastColumnLoaded && i < numberOfSubStrings; i++)
+      for (i = 0; i <= _lastColumnLoaded; i++)
         {
-          NSString *c = [[self selectedCellInColumn: i] stringValue];
-
-          if ([c isEqualToString: [subStrings objectAtIndex: i]])
+          if ((i < numberOfSubStrings) &&
+              [[[self selectedCellInColumn: i] stringValue]
+                isEqualToString: [subStrings objectAtIndex: i]])
             {
               column = i;
             }
           else
             {
-              // Actually it's always called at 0 column
+              // Actually it's always called at 0 column, when string is "/"
               [[self matrixInColumn: i] deselectAllCells];
               break;
             }
