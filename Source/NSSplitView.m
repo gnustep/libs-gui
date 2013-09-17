@@ -432,6 +432,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   /* Silence compiler warnings.  */
+  r = NSZeroRect;
   r1 = NSZeroRect;
   bigRect = NSZeroRect;
 
