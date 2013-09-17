@@ -45,6 +45,7 @@
 @class NSView;
 @class NSWindow;
 @class NSMutableArray;
+@class NSScreen;
 
 /* ******************* */
 /* NSMenuView Protocol */
@@ -191,6 +192,63 @@
  *  </list>
  */
 - (BOOL) trackWithEvent: (NSEvent *)event;
+
+@end
+
+/**
+ * The NSMenuDelegate protocol defines optional methods implemented
+ * by delegates of NSMenu objects.
+ */
+@protocol NSMenuDelegate <NSObject>
+
+/**
+ * Allows the delegate to return the target and action for a key-down event.
+ */
+- (BOOL) menuHasKeyEquivalent: (NSMenu *)menu
+                     forEvent: (NSEvent *)event
+                       target: (id *)target
+                       action: (SEL *)action;
+
+/**
+ * Invoked on the delegate to allow changes before the menu opens.
+ */
+- (void) menuWillOpen: (NSMenu *)menu;
+
+/**
+ * Invoked when the menu is about to be displayed.
+ */
+- (NSInteger) numberOfItemsInMenu: (NSMenu *)menu;
+
+/**
+ * Invoked to indicate that the menu is about to be updated.
+ */
+- (void) menuNeedsUpdate: (NSMenu *)menu;
+
+/**
+ * Invoked to inform the delegate that the menu did close.
+ */
+- (void) menuDidClose: (NSMenu *)menu;
+
+/**
+ * Invoked too notify the delegate that the item will be highlighted.
+ */
+- (void) menu: (NSMenu *)menu
+         willHighlightItem: (NSMenuItem *)item;
+
+/**
+ * Invoked to allow the delegate to update an item before
+ * it is displayed.
+ */ 
+- (BOOL) menu: (NSMenu *)menu
+   updateItem: (NSMenuItem *)item
+      atIndex: (NSInteger)index
+ shouldCancel: (BOOL)shouldCancel;
+
+/**
+ * Specify a display location for the menu
+ */
+- (NSRect)confinementRectForMenu: (NSMenu *)menu
+                        onScreen: (NSScreen *)screen;
 
 @end
 

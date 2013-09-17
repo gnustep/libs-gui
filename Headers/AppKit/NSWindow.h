@@ -825,7 +825,15 @@ PACKAGE_SCOPE
  */
 
 #ifdef GNUSTEP
+
+@protocol NSWindowDelegate <NSObject>
+#ifdef __OBJC2__ 
+@optional
+#else
+@end
 @interface NSObject (NSWindowDelegate)
+#endif
+
 - (BOOL) windowShouldClose: (id)sender;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) windowWillBeginSheet: (NSNotification*)aNotification;
