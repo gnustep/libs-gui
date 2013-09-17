@@ -1,3 +1,9 @@
+2013-09-17 16:36-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSWindow.h: Add declaration to remove "attachedSheet"
+	from protocol.  Add declaration to add delegate methods to NSObject.
+	Some methods in NSWindow call these on self.
+
 2013-09-17 Ivan Vucica <ivan@vucica.net>
 
 	* Source/NSLayoutManager.m: 
