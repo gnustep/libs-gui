@@ -1,3 +1,10 @@
+2013-09-17 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSLayoutManager.m: 
+	advancementbuf[0] was not being filled. Most backends, including cairo, 
+	ignore advancements, so the bug was not immediately apparent until
+	opal backend started using the advancements.
+
 2013-09-17 16:36-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSMenu.h: Add NSMenuDelegate

@@ -1851,6 +1851,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	      if (!gbuf_len)
 		{
 		  gbuf[0] = glyph->g;
+		  advancementbuf[0] = [f advancementForGlyph: glyph->g];
 		  gbuf_point = p;
 		  gbuf_len = 1;
 		}
