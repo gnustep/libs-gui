@@ -534,7 +534,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
 - (void) removeProgressMark: (NSAnimationProgress)progress
 {
-  unsigned index;
+  NSUInteger index;
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
@@ -547,8 +547,8 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
       GSIArrayRemoveItemAtIndex(_progressMarks,index);
       _isCachedProgressMarkNumbersValid = NO;
       if (_nextMark > index) _nextMark--;
-      NSDebugMLLog(@"NSAnimationMark",@"Remove mark #%d for (next:#%d)",
-                   index, progress, _nextMark);
+      NSDebugMLLog(@"NSAnimationMark",@"Remove mark #%lu (%f) for (next:#%d)",
+                   (unsigned long)index, progress, _nextMark);
     }
   else
     NSWarnMLog(@"Unexistent progress mark");
