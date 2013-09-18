@@ -188,6 +188,7 @@ NSToolbarItem.m \
 NSToolbarItemGroup.m \
 NSTokenField.m \
 NSTokenFieldCell.m \
+NSTrackingArea.m \
 NSTreeController.m \
 NSTreeNode.m \
 NSUserDefaultsController.m \
@@ -400,6 +401,7 @@ NSToolbarItem.h \
 NSToolbarItemGroup.h \
 NSTokenField.h \
 NSTokenFieldCell.h \
+NSTrackingArea.h \
 NSTreeController.h \
 NSTreeNode.h \
 NSUserDefaultsController.h \
