@@ -263,7 +263,13 @@ APPKIT_EXPORT NSString *NSAnimationTriggerOrderOut;
 
 @end
 
+@protocol NSAnimationDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
 @interface NSObject (NSAnimation)
+#endif
 
 /** NSAnimation delegate method.
  * Sent to the delegate when an animation reaches a specific progress mark. */
