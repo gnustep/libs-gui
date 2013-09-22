@@ -351,7 +351,13 @@ typedef enum _NSTableViewColumnAutoresizingStyle
  * Informal protocol NSTableDataSource 
  */
 
+@protocol NSTableViewDataSource
+#ifdef __OBJC2__
+@optional
+#else
+@end
 @interface NSObject (NSTableDataSource)
+#endif
 
 /**
  * Returns the number of records that the data source manages for <em>aTableView</em>.
@@ -402,8 +408,13 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
  * Methods Implemented by the Delegate
  */
 
+@protocol NSTableViewDelegate <NSObject>
+#ifdef __OBJC2__
+@optional
+#else
+@end
 @interface NSObject (NSTableViewDelegate)
-
+#endif
 - (BOOL) selectionShouldChangeInTableView: (NSTableView *)aTableView;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) tableView: (NSTableView*)tableView

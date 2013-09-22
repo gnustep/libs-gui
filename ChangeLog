@@ -1,3 +1,8 @@
+2013-09-22 16:52-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTableView.h: Add formal protocols for
+	NSTableViewDelegate and NSTableViewDataSource.
+
 2013-09-22 15:59-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSAnimation.h: Add NSAnimationDelegate.
