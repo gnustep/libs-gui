@@ -849,7 +849,7 @@ Fallback for backends other than Cairo. */
     {
       NSAffineTransform *newXform;
 
-      backup = [ctx GSCurrentCTM];
+      backup = [[ctx GSCurrentCTM] retain];
 
       newXform = [backup copy];
       [newXform translateXBy: dstRect.origin.x yBy: dstRect.origin.y + dstRect.size.height];
@@ -876,6 +876,7 @@ Fallback for backends other than Cairo. */
   if (compensateForFlip)
     {
       [ctx GSSetCTM: backup];
+      [backup release];
     }
 
   return YES;
