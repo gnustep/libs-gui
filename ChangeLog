@@ -1,3 +1,9 @@
+2013-09-23 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSImage.m: Missing -retain inside the method
+	-compositeToPoint:fromRect:operation:fraction caused a crash
+	inside Opal backend.
+
 2013-09-22 16:52-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTableView.h: Add formal protocols for

@@ -750,7 +750,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   // Set the CTM to the identity matrix with the current translation
   // and the user space scale factor
   {
-    NSAffineTransform *backup = [ctxt GSCurrentCTM];
+    NSAffineTransform *backup = [[ctxt GSCurrentCTM] retain];
     NSAffineTransform *newTransform = [NSAffineTransform transform];
     NSPoint translation = [backup transformPoint: aPoint];
     [newTransform translateXBy: translation.x
@@ -765,6 +765,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	     fraction: delta];
     
     [ctxt GSSetCTM: backup];
+
+    [backup release];
   }
 }
 
