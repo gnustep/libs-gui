@@ -1451,6 +1451,7 @@ static NSMapTable *viewInfo = 0;
   BOOL justAttachedNewSubmenu = NO;
   BOOL subMenusNeedRemoving = YES;
   BOOL shouldFinish = YES;
+  BOOL popUpProcessEvents = [[GSTheme theme] doesProcessEventsForPopUpMenu];
   int delayCount = 0;
   int indexOfActionToExecute = -1;
   int firstIndex = -1;
@@ -1496,9 +1497,10 @@ static NSMapTable *viewInfo = 0;
   eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   eventMask |= NSLeftMouseDownMask;
   
-  /*We need know if the user press a modifier key to close the menu
-    when the menu is in a window*/
-  if (style == NSWindows95InterfaceStyle)
+  /* We need know if the user press a modifier key to close the menu
+     when the menu is in a window or when is owned by a popup and theme
+     process events. */
+  if (style == NSWindows95InterfaceStyle || popUpProcessEvents)
     {
       eventMask |= NSFlagsChangedMask;
     }
@@ -1513,7 +1515,7 @@ static NSMapTable *viewInfo = 0;
 	 the other hand, when the user clicks on the button and then moves the
 	 mouse the menu is closed upon the next mouse click. */
       ([[self menu] _ownedByPopUp] && (style == NSMacintoshInterfaceStyle ||
-	       [[GSTheme theme] doesProcessEventsForPopUpMenu])))
+				       popUpProcessEvents)))
     {
       /*
        * Ignore the first mouse up if nothing interesting has happened.
@@ -1522,13 +1524,23 @@ static NSMapTable *viewInfo = 0;
     }
   do
     {
-      /* Close the menu if the user press a modifier key and menu
-         is in a window */
-      if (mainWindowMenuView != nil && type == NSFlagsChanged)
+      if (type == NSFlagsChanged)
 	{
-	  [self setHighlightedItemIndex: -1];
-	  [[[mainWindowMenuView menu] attachedMenu] close];
-	  return NO;
+	  /* Close the menu if the user press a modifier key and menu
+	     is in a window */
+	  if (mainWindowMenuView != nil)
+	    {
+	      [self setHighlightedItemIndex: -1];
+	      [[[mainWindowMenuView menu] attachedMenu] close];
+	      return NO;
+	    }
+
+	  /* Close the menu if is owned by a popup and theme process events */
+	  if ([[self menu] _ownedByPopUp] && popUpProcessEvents)
+	    {
+	      [[[self menu] _owningPopUp] dismissPopUp];
+	      return NO;
+	    }
 	}
 
       if (type == NSLeftMouseUp ||
