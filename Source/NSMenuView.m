@@ -1088,9 +1088,19 @@ static NSMapTable *viewInfo = 0;
 	[_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
       NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
-      /*We add +1 for don't lose the track when the user move the
-	mouse from the horizontal menu to a submenu.*/
-      return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame) + 1);
+      /* If menu is in window, we add +1 for don't lose the track when
+	 the user move the mouse from the horizontal menu to a submenu.*/
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) ==
+	  NSWindows95InterfaceStyle)
+	{
+	  return NSMakePoint(subOrigin.x,
+			     subOrigin.y - NSHeight(submenuFrame) + 1);
+	}
+      else
+	{
+	  return NSMakePoint(subOrigin.x,
+			     subOrigin.y - NSHeight(submenuFrame));
+	}
     }
 }
 

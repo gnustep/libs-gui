@@ -1,3 +1,8 @@
+2013-09-27 German Arias <germanandre@gmx.es>
+
+	* Source/NSMenuView.m (-locationForSubmenu:): Don't change the location
+	of submenu if menu is horizontal and style is NSMacintoshInterfaceStyle.
+
 2013-09-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): Don't
