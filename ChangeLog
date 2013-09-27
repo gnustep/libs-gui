@@ -1,3 +1,10 @@
+2013-09-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): Don't
+	draw string when editing.
+	* Source/NSBrowserCell.m (-titleRectForBounds:): Implement to
+	exactly match calculation in -drawInteriorWithFrame:inView:.
+
 2013-09-27 German Arias <germanandre@gmx.es>
 
 	* Source/NSMenuView.m (- _trackWithEvent:startingMenuView:): If menu
@@ -26,7 +33,7 @@
 	* Source/NSImage.m: Missing -retain inside the method
 	-compositeToPoint:fromRect:operation:fraction: caused a crash
 	inside Opal backend.
-	
+
 	* Source/NSImage.m: Missing -retain inside the method
 	-drawInRect:fromRect:... caused a crash inside Opal backend.
 
@@ -59,8 +66,8 @@
 
 2013-09-17 Ivan Vucica <ivan@vucica.net>
 
-	* Source/NSLayoutManager.m: 
-	advancementbuf[0] was not being filled. Most backends, including cairo, 
+	* Source/NSLayoutManager.m:
+	advancementbuf[0] was not being filled. Most backends, including cairo,
 	ignore advancements, so the bug was not immediately apparent until
 	opal backend started using the advancements.
 

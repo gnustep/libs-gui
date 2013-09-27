@@ -276,6 +276,55 @@ static NSFont *_leafFont;
    */
 }
 
+- (NSRect) titleRectForBounds: (NSRect)theRect
+{
+  NSRect titleRect = [super titleRectForBounds: theRect];
+  NSImage *branch_image = nil;
+  NSImage *cell_image = [self image];
+
+   if (_cell.is_highlighted || _cell.state)
+    {
+      if (!_browsercell_is_leaf)
+        {
+          branch_image = [object_getClass(self) highlightedBranchImage];
+        }
+      if (nil != [self alternateImage])
+        {
+	  cell_image = [self alternateImage];
+        }
+    }
+  else
+    {
+      if (!_browsercell_is_leaf)
+        {
+          branch_image = [object_getClass(self) branchImage];
+        }
+    }
+ 
+   if (branch_image) 
+    {
+      NSRect imgRect;
+
+      imgRect.size = [branch_image size];
+      titleRect.size.width -= imgRect.size.width + 8;
+    }
+
+  if (cell_image) 
+    {
+      NSRect imgRect;
+      
+      imgRect.size = [cell_image size];
+      titleRect.origin.x += imgRect.size.width + 4;
+      titleRect.size.width -= imgRect.size.width + 4;
+    }
+
+  // Skip 2 points from the left border
+  titleRect.origin.x += 2;
+  titleRect.size.width -= 2;
+ 
+  return titleRect;
+}
+ 
 /*
  * Displaying
  */
@@ -358,8 +407,15 @@ static NSFont *_leafFont;
    }
 
   // Draw the body of the cell
-  [self _drawAttributedText: [self attributedStringValue]
-	inFrame: title_rect];
+  if (_cell.in_editing)
+    {
+      [self _drawEditorWithFrame: cellFrame inView: controlView];
+    }
+  else
+    {
+      [self _drawAttributedText: [self attributedStringValue]
+                        inFrame: title_rect];
+    }
 }
 
 /*
