@@ -1,3 +1,14 @@
+2013-09-26 German Arias <germanandre@gmx.es>
+
+	* Source/GSThemeMenu.m (-displayPopUpMenu:withCellFrame:...): Revert
+	last change, this don't prevent users open two or more popups at
+	same time.
+	* Source/NSPopUpButtonCell.m (-trackMouse:inRect:ofView:untilMouseUp:):
+	Don't check here if theme process events, this avoid NSMenuView
+	process correctly the events.
+	* Source/NSMenuView.m (- _trackWithEvent:startingMenuView:): Ignore
+	the first mouse up if is a popup and theme process events.
+
 2013-09-24 German Arias <germanandre@gmx.es>
 
 	* Source/GSThemeMenu.m (-displayPopUpMenu:withCellFrame:...): If the

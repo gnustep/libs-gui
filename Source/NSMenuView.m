@@ -1512,8 +1512,8 @@ static NSMapTable *viewInfo = 0;
 	 over the menu, the menu is closed when the user releases the mouse. On
 	 the other hand, when the user clicks on the button and then moves the
 	 mouse the menu is closed upon the next mouse click. */
-      ([[self menu] _ownedByPopUp] &&
-       style == NSMacintoshInterfaceStyle))
+      ([[self menu] _ownedByPopUp] && (style == NSMacintoshInterfaceStyle ||
+	       [[GSTheme theme] doesProcessEventsForPopUpMenu])))
     {
       /*
        * Ignore the first mouse up if nothing interesting has happened.

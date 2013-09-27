@@ -30,7 +30,6 @@
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSPanel.h"
-#import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSApplication.h"
@@ -41,20 +40,10 @@
 #import "NSToolbarFrameworkPrivate.h"
 #import "GSGuiPrivate.h"
 
-@interface NSMenu (PopUp)
-- (NSPopUpButtonCell *)owningPopUp;
-@end
 
 @interface NSWindow (Private)
 - (GSWindowDecorationView *) windowView;
 - (void) _setMenu: (NSMenu *)menu;
-@end
-
-@implementation NSMenu (PopUp)
-- (NSPopUpButtonCell *)owningPopUp
-{
-  return _popUpButtonCell;
-}
 @end
 
 @implementation NSWindow (Private)
@@ -130,17 +119,6 @@
   if (!pe && [[mr window] worksWhenModal])
     {
       [(NSPanel *)[mr window] setWorksWhenModal: NO];
-    }
-
-  /* This is for pulldown PopUp when the theme process events.
-   * If the popup is currently displayed, close it. If not, the
-   * user only can close it choosing one option at menu.
-   */
-  if (pe && [[mr window] isVisible] &&
-      [[mr menu] owningPopUp] != nil)
-    {
-      [[[mr menu] owningPopUp] dismissPopUp];
-      return;
     }
 
   // Ask the MenuView to attach the menu to this rect
