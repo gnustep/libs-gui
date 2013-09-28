@@ -1,5 +1,10 @@
 2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m: Add GSScrollerDefaultWidth user default
+	so non-code themes can change -[GSTheme defaultScrollerWidth]
+
+2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSScroller.m: Add GSScrollerKnobOvershoot default which
 	allows themes to make the scroller knob overlap the scroller buttons
 	by a specified amount.

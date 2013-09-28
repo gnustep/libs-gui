@@ -531,7 +531,18 @@
 
 - (float) defaultScrollerWidth
 {
-  return 18.0;
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  float defaultScrollerWidth;
+
+  if ([defs objectForKey: @"GSScrollerDefaultWidth"] != nil)
+    {
+      defaultScrollerWidth = [defs floatForKey: @"GSScrollerDefaultWidth"];
+    }
+  else
+    {
+      defaultScrollerWidth = 18.0;
+    }
+  return defaultScrollerWidth;
 }
 
 - (NSColor *) toolbarBackgroundColor
