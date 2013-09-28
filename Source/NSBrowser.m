@@ -2850,7 +2850,9 @@ static NSTextFieldCell *titleCell;
 
 - (BOOL) isOpaque
 {
-  return YES; // See drawRect.
+  // NSBrowser used to be opaque but may not be due to themes;
+  // e.g. if the header tile images are not opaque.
+  return NO;
 }
 
 @end

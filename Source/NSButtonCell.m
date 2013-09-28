@@ -679,14 +679,15 @@ typedef struct _GSButtonCellFlags
   _buttoncell_is_transparent = flag;
 }
 
-/**<p>Returns whether the NSButtonCell is opaque. Returns YES if the button 
-   cell is not transparent and if the cell is bordered and if there is no
-   bezel style, NO otherwise</p>
- */
+/**<p>Returns whether the NSButtonCell is opaque. Currently always
+   returns NO</p>*/
 - (BOOL) isOpaque
 {
-  return !_buttoncell_is_transparent && _cell.is_bordered &&
-    _bezel_style == 0;
+  // May not be opaque, due to themes
+  return NO;
+
+  //  return !_buttoncell_is_transparent && _cell.is_bordered &&
+  //    _bezel_style == 0;
 }
 
 - (NSBezelStyle) bezelStyle

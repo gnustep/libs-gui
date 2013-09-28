@@ -305,7 +305,8 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
 - (BOOL) isOpaque
 {
-  return _is_bordered;
+  // May not be opaque, due to themes
+  return NO;
 }
 
 - (void) mouseDown: (NSEvent *)theEvent

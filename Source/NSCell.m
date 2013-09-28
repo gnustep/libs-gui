@@ -2096,6 +2096,11 @@ static NSColor *dtxtCol;
   if (_cell.is_highlighted != lit)
     {
       _cell.is_highlighted = lit;
+
+      // Disabling this because when combined with making
+      // -[NSButtonCell isOpaque] return NO, it was causing scroller buttons
+      // to stay stuck down. --Eric (2013-09-28)
+#if 0
       /*
        * NB: This has a visible effect only if subclasses override
        * drawWithFrame:inView: to draw something special when the
@@ -2116,6 +2121,7 @@ static NSColor *dtxtCol;
            */
           [controlView displayRect: cellFrame];
         }
+#endif
       [self drawWithFrame: cellFrame inView: controlView];
     }
 }

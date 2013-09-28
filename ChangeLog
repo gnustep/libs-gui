@@ -1,5 +1,20 @@
 2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSCell.m (-highlight:withFrame:inView:):
+	Remove call to [controlView displayRect: cellFrame];
+	There was a comment saying it should be removed, and when
+	combined with the -[NSButtonCell isOpaque] change, it
+	was casuing scroller buttons to stay "stuck" down.
+	* Source/NSBrowser.m (-isOpaque):
+	* Source/NSButtonCell.m (-isOpaque):
+	* Source/NSColorWell.m (-isOpaque):
+	Force -isOpaque to return NO, because it's
+	possible to make all of these controls semitransparent with
+	theme tiles. This was visible with the Narcissus theme
+	(svn://svn.gna.org/svn/etoile/trunk/Etoile/Themes/Narcissus.theme)
+
+2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Add GSScrollerDefaultWidth user default
 	so non-code themes can change -[GSTheme defaultScrollerWidth]
 
