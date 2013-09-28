@@ -1,3 +1,9 @@
+2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSScroller.m: Add GSScrollerKnobOvershoot default which
+	allows themes to make the scroller knob overlap the scroller buttons
+	by a specified amount.
+
 2013-09-27 German Arias <germanandre@gmx.es>
 
 	* Source/NSMenuView.m (-locationForSubmenu:): Don't change the location

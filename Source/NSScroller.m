@@ -67,6 +67,14 @@ static NSCell	*verticalKnobCell = nil;
 static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
 static CGFloat	scrollerWidth = 0.0;
+/**
+ * This is the amount (in userspace points) by which the knob slides beyond
+ * either end of the track. Typical use would be to set it to 1 when both
+ * the knob and the buttons have a 1-point border, so that when the knob is
+ * at its maximum, it overlaps the button by 1 point giving a resulting
+ * 1-point wide border.
+ */
+static CGFloat  scrollerKnobOvershoot = 0.0;
 
 /* This is the distance by which buttons are offset inside the scroller slot.
  */
@@ -417,6 +425,14 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   else
     {
       buttonsOffset = 1.0;
+    }
+  if ([defs objectForKey: @"GSScrollerKnobOvershoot"] != nil)
+    {
+      scrollerKnobOvershoot = [defs floatForKey: @"GSScrollerKnobOvershoot"];
+    }
+  else
+    {
+      scrollerKnobOvershoot = 0.0;
     }
 
   upCell
@@ -1225,7 +1241,8 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	    knobHeight = buttonsWidth;
 
 	  /* calc knob's position */
-	  knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight));
+	  knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight + (2 * scrollerKnobOvershoot)))
+	    - scrollerKnobOvershoot;
 
 	  if (arrowsSameEnd)
 	    {
