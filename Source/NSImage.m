@@ -927,10 +927,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   GSRepData *repd;
 
-  repd = [GSRepData new];
-  repd->rep = RETAIN(imageRep);
-  [_reps addObject: repd]; 
-  RELEASE(repd);
+  if (imageRep != nil)
+    {
+      repd = [GSRepData new];
+      repd->rep = RETAIN(imageRep);
+      [_reps addObject: repd]; 
+      RELEASE(repd);
+    }
 }
 
 - (void) addRepresentations: (NSArray *)imageRepArray
@@ -2388,6 +2391,11 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 				depth: [[NSScreen mainScreen] depth]
 			     separate: _flags.cacheSeparately
 				alpha: [rep hasAlpha]];
+          if (cacheRep == nil)
+            {
+              return nil;
+            }
+
           repd = [GSRepData new];
           repd->rep = cacheRep;
           repd->original = rep; // may be nil!
