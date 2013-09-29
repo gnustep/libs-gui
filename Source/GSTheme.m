@@ -87,6 +87,7 @@ NSString        *GSBrowserHeader = @"GSBrowserHeader";
 // Menu part names
 NSString        *GSMenuHorizontalBackground = @"GSMenuHorizontalBackground";
 NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";
+NSString        *GSMenuTitleBackground = @"GSMenuTitleBackground";
 NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
 NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 NSString        *GSMenuSeparatorItem = @"GSMenuSeparatorItem";

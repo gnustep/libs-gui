@@ -1057,6 +1057,58 @@
   return [GSTitleView class];
 }
 
+- (NSRect) drawMenuTitleBackground: (GSTitleView *)aTitleView
+			withBounds: (NSRect)bounds
+			  withClip: (NSRect)clipRect
+{
+  GSDrawTiles *tiles = [self tilesNamed: GSMenuTitleBackground state: GSThemeNormalState];
+ 
+  if (tiles == nil)
+    {
+      NSRect     workRect = bounds;
+      NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};
+      CGFloat      darkGrays[] = {NSDarkGray, NSDarkGray};
+      NSColor *titleColor;
+
+      titleColor = [self colorNamed: @"GSMenuBar" state: GSThemeNormalState];
+      if (titleColor == nil)
+	{
+	  titleColor = [NSColor blackColor];
+	}
+ 
+      // Draw the dark gray upper left lines for menu and black for others.
+      // Rectangle 1
+      workRect = NSDrawTiledRects(workRect, workRect, top_left, darkGrays, 2);
+      
+      // Rectangle 2
+      // Draw the title box's button.
+      [self drawButton: workRect withClip: workRect];
+      
+      // Overdraw white top and left lines with light gray lines for window title
+      workRect.origin.y += 1;
+      workRect.size.height -= 1;
+      workRect.size.width -= 1;
+      
+      // Rectangle 3
+      // Paint background
+      workRect.origin.x += 1;
+      workRect.origin.y += 1;
+      workRect.size.height -= 2;
+      workRect.size.width -= 2;
+      
+      [titleColor set];
+      NSRectFill(workRect);
+
+      return workRect;
+    }
+  else
+    {
+      return [self fillRect: bounds
+		  withTiles: tiles
+		 background: [NSColor clearColor]];
+    }
+}
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds

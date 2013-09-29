@@ -206,66 +206,13 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  GSTheme    *theme = [GSTheme theme];
-  NSRect     workRect = [self bounds];
-  NSSize     titleSize;
-  NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};
-  NSRectEdge bottom_right[] = {NSMaxXEdge, NSMinYEdge};
-  CGFloat      blacks[] = {NSBlack, NSBlack};
-  CGFloat      grays[] = {NSLightGray, NSLightGray};
-  CGFloat      darkGrays[] = {NSDarkGray, NSDarkGray};
-
-  // Draw the dark gray upper left lines for menu and black for others.
-  // Rectangle 1
-  if (_ownedByMenu)
-    workRect = NSDrawTiledRects(workRect, workRect, top_left, darkGrays, 2);
-  else
-    workRect = NSDrawTiledRects(workRect, workRect, top_left, blacks, 2);
-
-
-  // Rectangle 2
-  // Draw the title box's button.
-  [theme drawButton: workRect withClip: workRect];
-
-  // Overdraw white top and left lines with light gray lines for window title
-  workRect.origin.y += 1;
-  workRect.size.height -= 1;
-  workRect.size.width -= 1;
-  if (!_ownedByMenu && (_isKeyWindow || _isMainWindow))
-    {
-      NSDrawTiledRects(workRect, workRect, top_left, grays, 2);
-    }
- 
-  // Rectangle 3
-  // Paint background
-  workRect.origin.x += 1;
-  workRect.origin.y += 1;
-  workRect.size.height -= 2;
-  workRect.size.width -= 2;
-
-  [titleColor set];
-  NSRectFill(workRect);
-
-  if (!_ownedByMenu && _isMainWindow && !_isKeyWindow)
-    {
-      NSRect blRect = workRect;
-
-      blRect.origin.y -= 1;
-      blRect.size.width += 1;
-      blRect.size.height += 1;
-      NSDrawTiledRects(blRect, blRect, bottom_right, blacks, 2);
-    }
-  
+  NSRect workRect = [[GSTheme theme] drawMenuTitleBackground: self
+						  withBounds: [self bounds]
+						    withClip: rect];
   // Draw the title
-  titleSize = [self titleSize];
-  if (_ownedByMenu)
-    {
-      workRect.origin.x += 4;
-    }
-  else
-    {
-      workRect.origin.x += NSMidX (workRect) - titleSize.width / 2;
-    }
+  NSSize titleSize = [self titleSize];
+  workRect.origin.x += 4;
+
   workRect.origin.y = NSMidY (workRect) - titleSize.height / 2;
   workRect.size.height = titleSize.height;
   [[_owner title] drawInRect: workRect  withAttributes: textAttributes];

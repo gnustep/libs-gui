@@ -1,5 +1,20 @@
 2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSTheme.m:
+	* Source/GSTitleView.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add GSMenuTitleBackground
+	theme tile for themeing the background of GSTitleView.
+
+	NOTE: I removed some code that was in -[GSTitleView drawRect:] for
+	drawing with a different style when the GSTitleView is NOT owned
+	by an NSMenu, but by an NSWindow/NSPanel (_ownedByMenu == NO).
+	If needed, this can be added back, but it doesn't appear to ever
+	be used in gnustep-gui - GSTitleView is only created in one place,
+	with NSMenu as the owner.
+
+2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSCell.m (-highlight:withFrame:inView:):
 	Remove call to [controlView displayRect: cellFrame];
 	There was a comment saying it should be removed, and when

@@ -243,6 +243,7 @@
 @class NSTableHeaderCell;
 @class NSTabViewItem;
 @class GSDrawTiles;
+@class GSTitleView;
 
 APPKIT_EXPORT	NSString	*GSSwitch;
 APPKIT_EXPORT   NSString        *GSRadio;
@@ -277,6 +278,7 @@ APPKIT_EXPORT  NSString        *GSBrowserHeader;
  */
 APPKIT_EXPORT  NSString        *GSMenuHorizontalBackground;
 APPKIT_EXPORT  NSString        *GSMenuVerticalBackground;
+APPKIT_EXPORT  NSString        *GSMenuTitleBackground;
 APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
 APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
 APPKIT_EXPORT  NSString        *GSMenuSeparatorItem;
@@ -1036,6 +1038,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * A subclass can be returned to customize the title view look and behavior.
  */
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView;
+
+- (NSRect) drawMenuTitleBackground: (GSTitleView *)aTitleView
+			withBounds: (NSRect)bounds
+			  withClip: (NSRect)clipRect;
 
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
