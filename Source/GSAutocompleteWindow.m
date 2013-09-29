@@ -199,6 +199,9 @@ static GSAutocompleteWindow *gsWindow = nil;
   NSRect  rect;
   NSRect  stringRect;
   NSPoint point;
+  NSInterfaceStyle style;
+
+  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 
   rect = [self frame];
   screenFrame = [[[_textView window] screen] frame];
@@ -211,7 +214,15 @@ static GSAutocompleteWindow *gsWindow = nil;
 	   [_textView convertRect: stringRect toView: nil].origin];
 
   // Calculate the origin point to the window.
-  rect.origin.x = point.x - [NSScroller scrollerWidth] - 4;
+  if (style == NSMacintoshInterfaceStyle
+      || style == NSWindows95InterfaceStyle)
+    {
+      rect.origin.x = point.x - 4;
+    }
+  else
+    {
+      rect.origin.x = point.x - [NSScroller scrollerWidth] - 4;
+    }
   rect.origin.y = point.y - rect.size.height;
 
   // If part of the window is off screen, change the origin point.

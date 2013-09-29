@@ -1,3 +1,8 @@
+2013-09-29 German Arias <germanandre@gmx.es>
+
+	* Source/GSAutocompleteWindow.m (-computePosition): Check the scrollview
+	style to display the autocomplete window.
+
 2013-09-28  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:
