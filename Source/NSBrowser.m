@@ -39,6 +39,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -61,9 +62,9 @@
 /* Cache */
 static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
 static NSTextFieldCell *titleCell;
+static CGFloat browserColumnSeparation;
+static CGFloat browserVerticalPadding;
 
-#define NSBR_COLUMN_SEP 4
-#define NSBR_VOFFSET 2
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
@@ -1498,7 +1499,7 @@ static NSTextFieldCell *titleCell;
       // Calculate origin
       if (_separatesColumns)
         {
-          rect.origin.x = nbColumn * (_columnSize.width + NSBR_COLUMN_SEP);
+          rect.origin.x = nbColumn * (_columnSize.width + browserColumnSeparation);
         }
       else
         {
@@ -1780,7 +1781,7 @@ static NSTextFieldCell *titleCell;
 
   if (_separatesColumns)
     {
-      rect.origin.x += n * NSBR_COLUMN_SEP;
+      rect.origin.x += n * browserColumnSeparation;
     }
   else
     {
@@ -1795,7 +1796,7 @@ static NSTextFieldCell *titleCell;
     {
       if (_separatesColumns)
         rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
-          NSBR_VOFFSET;
+          browserVerticalPadding;
       else
         rect.origin.y = scrollerWidth + bezelBorderSize.width;
     }
@@ -1870,7 +1871,7 @@ static NSTextFieldCell *titleCell;
   // Titles (there is no real frames to resize)
   if (_isTitled)
     {
-      _columnSize.height -= [self titleHeight] + NSBR_VOFFSET;
+      _columnSize.height -= [self titleHeight] + browserVerticalPadding;
     }
 
   // Horizontal scroller
@@ -1884,7 +1885,7 @@ static NSTextFieldCell *titleCell;
       
       if (_separatesColumns)
         _columnSize.height -= (scrollerWidth - 1) + 
-          (2 * bezelBorderSize.height) + NSBR_VOFFSET;
+          (2 * bezelBorderSize.height) + browserVerticalPadding;
       else
         _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
       
@@ -1906,7 +1907,7 @@ static NSTextFieldCell *titleCell;
       CGFloat colWidth = _minColumnWidth + scrollerWidth;
 
       if (_separatesColumns)
-        colWidth += NSBR_COLUMN_SEP;
+        colWidth += browserColumnSeparation;
 
       if (_frame.size.width > colWidth)
         {
@@ -1942,7 +1943,7 @@ static NSTextFieldCell *titleCell;
 
   // Columns
   if (_separatesColumns)
-    frameWidth = _frame.size.width - ((columnCount - 1) * NSBR_COLUMN_SEP);
+    frameWidth = _frame.size.width - ((columnCount - 1) * browserColumnSeparation);
   else
     frameWidth = _frame.size.width - ((columnCount - 1) + 
                                       (2 * bezelBorderSize.width));
@@ -2195,18 +2196,33 @@ static NSTextFieldCell *titleCell;
   [self sendAction: _doubleAction to: [self target]];
 }
 
++ (void) _themeDidActivate: (NSNotification*)n
+{
+  GSTheme *theme = [GSTheme theme];
+  scrollerWidth = [NSScroller scrollerWidth];
+  browserColumnSeparation = [theme browserColumnSeparation];
+  browserVerticalPadding = [theme browserVerticalPadding];
+}
+
 + (void) initialize
 {
   if (self == [NSBrowser class])
     {
+      [[NSNotificationCenter defaultCenter] addObserver: self
+	selector: @selector(_themeDidActivate:)
+	name: GSThemeDidActivateNotification
+	object: nil];
+
       // Initial version
       [self setVersion: 1];
-      scrollerWidth = [NSScroller scrollerWidth];
+      
       /* Create the shared titleCell if it hasn't been created already. */
       if (!titleCell)
         {
           titleCell = [GSBrowserTitleCell new];
         }
+      
+      [self _themeDidActivate: nil];
     }
 }
 

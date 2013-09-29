@@ -2144,6 +2144,34 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (CGFloat) browserColumnSeparation
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserColumnSeparation"] != nil)
+    {
+      return [defs floatForKey: @"GSBrowserColumnSeparation"];
+    }
+  else
+    {
+      return 4;
+    }
+}
+
+- (CGFloat) browserVerticalPadding
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserVerticalPadding"] != nil)
+    {
+      return [defs floatForKey: @"GSBrowserVerticalPadding"];
+    }
+  else
+    {
+      return 2;
+    }
+}
+
 - (void) drawMenuRect: (NSRect)rect
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal

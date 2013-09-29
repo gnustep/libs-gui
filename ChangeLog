@@ -1,3 +1,17 @@
+2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSBrowser.m: Change NSBR_COLUMN_SEP and NSBR_VOFFSET
+	macros to static floats. Cache the values in +initialize and
+	when GSThemeDidActivateNotification is sent, by calling the
+	new GSTheme methods.
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add
+	-browserColumnSeparation and -browserVerticalPadding methods
+	which access user defaults GSBrowserColumnSeparation and
+	GSBrowserVerticalPadding. These determine the padding between
+	browser columns, and the vertical padding between the bottom
+	scroller, contents, and headers.
+
 2013-09-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m: Better protection against representation being nil.

@@ -1098,6 +1098,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	withScrollerRect: (NSRect)scrollerRect
 	      columnSize: (NSSize)columnSize;
 
+- (CGFloat) browserColumnSeparation;
+
+- (CGFloat) browserVerticalPadding;
+
 - (void) drawMenuRect: (NSRect)rect
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal
