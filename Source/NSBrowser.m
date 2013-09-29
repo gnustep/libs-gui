@@ -1270,23 +1270,8 @@ static CGFloat browserVerticalPadding;
 */
 - (void) setSeparatesColumns: (BOOL)flag
 {
-  NSBrowserColumn *bc;
-  NSScrollView    *sc;
-  NSBorderType    bt;
-  NSInteger       i, columnCount;
-
-  // if this flag already set or browser is titled -- do nothing
-  if (_separatesColumns == flag || _isTitled)
+  if (_isTitled)
     return;
-
-  columnCount = [_browserColumns count];
-  bt = flag ? NSBezelBorder : NSNoBorder;
-  for (i = 0; i < columnCount; i++)
-    {
-      bc = [_browserColumns objectAtIndex: i];
-      sc = [bc columnScrollView];
-      [sc setBorderType:bt];
-    }
 
   _separatesColumns = flag;
   [self tile];
@@ -1786,9 +1771,9 @@ static CGFloat browserVerticalPadding;
   else
     {
       if (column == _firstVisibleColumn)
-        rect.origin.x = (n * _columnSize.width) + 2;
+        rect.origin.x += 2;
       else
-        rect.origin.x = (n * _columnSize.width) + (n + 2);
+        rect.origin.x += (n + 2);
     }
 
   // Adjust for horizontal scroller
@@ -1969,6 +1954,11 @@ static CGFloat browserVerticalPadding;
           NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
           return;
         }
+
+      {
+	NSBorderType bt = _separatesColumns ? NSBezelBorder : NSNoBorder;
+	[sc setBorderType: bt];
+      }
 
       [sc setFrame: [self frameOfColumn: i]];
       matrix = [bc columnMatrix];

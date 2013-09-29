@@ -1,5 +1,11 @@
 2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSBrowser.m: Small refactoring to simplify code.
+	Remove update logic from -setSeparatesColumns: and just use
+	-tile. Tested by toggling "separates columns" flag in Gorm.
+
+2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSBrowser.m: Change NSBR_COLUMN_SEP and NSBR_VOFFSET
 	macros to static floats. Cache the values in +initialize and
 	when GSThemeDidActivateNotification is sent, by calling the
