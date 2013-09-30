@@ -264,6 +264,9 @@ APPKIT_EXPORT	NSString	*GSScrollerUpArrow;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalKnob;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
 
+/* Scroll view parts */
+APPKIT_EXPORT   NSString        *GSScrollViewBottomCorner;
+
 /* Names for table view parts */
 APPKIT_EXPORT	NSString	*GSTableHeader;
 APPKIT_EXPORT	NSString	*GSTableCorner;
@@ -837,6 +840,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * remain constant until the theme is deactivated.
  */
 - (float) defaultScrollerWidth;
+
+- (BOOL) scrolViewUseBottomCorner;
 
 /** 
  * Method for toolbar theming.

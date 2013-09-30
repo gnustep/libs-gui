@@ -1075,6 +1075,8 @@ static CGFloat scrollerWidth;
   CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
 			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
+  BOOL useBottomCorner = [[GSTheme theme] scrolViewUseBottomCorner];
+ 
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 
   if (style == NSMacintoshInterfaceStyle
@@ -1139,6 +1141,15 @@ static CGFloat scrollerWidth;
 
       NSDivideRect (contentRect, &vertScrollerRect, &contentRect, 
         scrollerWidth, verticalScrollerEdge);
+
+      /* If the theme requests it, leave a square gap in the bottom-
+       * left (or bottom-right) corner where the horizontal and vertical
+       * scrollers meet. */
+      if (_hasHorizScroller && !useBottomCorner)
+	{
+	  NSDivideRect (vertScrollerRect, NULL, &vertScrollerRect,
+			scrollerWidth, bottomEdge);
+	}
 
       [_vertScroller setFrame: vertScrollerRect];
 
@@ -1288,7 +1299,12 @@ static CGFloat scrollerWidth;
 
 - (BOOL) isOpaque
 {
-  return [_contentView isOpaque];
+  // FIXME: Only needs to be NO in a corner case,
+  // when [[GSTheme theme] scrolViewUseBottomCorner] is NO
+  // and the theme tile for the bottom corner is transparent.
+  // So maybe cache the value of 
+  // [[GSTheme theme] scrolViewUseBottomCorner] and check it here.
+  return NO;
 }
 
 - (NSBorderType) borderType

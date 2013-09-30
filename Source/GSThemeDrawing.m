@@ -545,6 +545,16 @@
   return defaultScrollerWidth;
 }
 
+- (BOOL) scrolViewUseBottomCorner
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  if ([defs objectForKey: @"GSScrollViewUseBottomCorner"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollViewUseBottomCorner"];
+    }
+  return YES;
+}
+
 - (NSColor *) toolbarBackgroundColor
 {
   NSColor *color;
@@ -2310,6 +2320,26 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  DPSrlineto(ctxt, [horizScroller frame].size.width + 1, 0);
 	  DPSstroke(ctxt);
 	}
+    }
+
+  if (![self scrolViewUseBottomCorner]
+      && [scrollView hasHorizontalScroller]
+      && [scrollView hasVerticalScroller])
+    {
+      NSScroller *vertScroller = [scrollView verticalScroller];
+      NSScroller *horizScroller = [scrollView horizontalScroller];
+
+      NSRect bottomCornerRect = NSMakeRect([vertScroller frame].origin.x,
+					   [horizScroller frame].origin.y,
+					   NSWidth([vertScroller frame]),
+					   NSHeight([horizScroller frame]));
+
+      GSDrawTiles *tiles = [self tilesNamed: GSScrollViewBottomCorner 
+				      state: GSThemeNormalState];
+
+      [self fillRect: bottomCornerRect
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 

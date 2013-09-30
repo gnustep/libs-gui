@@ -77,6 +77,9 @@ NSString	*GSScrollerUpArrow = @"GSScrollerUpArrow";
 NSString	*GSScrollerVerticalKnob = @"GSScrollerVerticalKnob";
 NSString	*GSScrollerVerticalSlot = @"GSScrollerVerticalSlot";
 
+// Scroll view parts
+NSString        *GSScrollViewBottomCorner = @"GSScrollViewBottomCorner";
+
 // Table view part names
 NSString	*GSTableHeader = @"GSTableHeader";
 NSString	*GSTableCorner = @"GSTableCorner";

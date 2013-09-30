@@ -1,5 +1,15 @@
 2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/NSScrollView.m:
+	* Source/GSThemeDrawing.m:
+	* Source/GSTheme.m: Add GSScrollViewUseBottomCorner default,
+	which themes can set to NO to leave a square gap in the bottom-
+	left (or bottom-right) corner where the horizontal and vertical
+	scrollers meet.
+
+2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSBrowser.m: Fix some position calculations from the last
 	commit
 
