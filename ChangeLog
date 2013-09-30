@@ -1,5 +1,18 @@
 2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSBrowser.m: Fix some position calculations from the last
+	commit
+
+2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSBrowser.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add GSBrowserUseBezels
+	user default. Themes can set it to NO to prevent NSBrowser from
+	drawing any bezels, even if separatesColumns is set to YES.
+
+2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSBrowser.m: Small refactoring to simplify code.
 	Remove update logic from -setSeparatesColumns: and just use
 	-tile. Tested by toggling "separates columns" flag in Gorm.

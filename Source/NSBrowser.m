@@ -1789,7 +1789,7 @@ static BOOL browserUseBezels;
   else
     {
       if (_hasHorizontalScroller)
-	rect.origin.y = (scrollerWidth - 1);
+	rect.origin.y = scrollerWidth;
     }
 
   // Padding : _columnSize.width is rounded in "tile" method
@@ -1867,14 +1867,16 @@ static BOOL browserUseBezels;
   // Horizontal scroller
   if (_hasHorizontalScroller)
     {
+      const CGFloat scrollerHightReduction = browserUseBezels ? 1 : 0;
+
       _scrollerRect.origin.x = bezelBorderSize.width;
-      _scrollerRect.origin.y = bezelBorderSize.height - 1;
+      _scrollerRect.origin.y = bezelBorderSize.height - scrollerHightReduction;
       _scrollerRect.size.width = (_frame.size.width - 
                                   (2 * bezelBorderSize.width));
       _scrollerRect.size.height = scrollerWidth;
       
       if (_separatesColumns)
-        _columnSize.height -= (scrollerWidth - 1) + 
+        _columnSize.height -= (scrollerWidth - scrollerHightReduction) + 
           (2 * bezelBorderSize.height) + browserVerticalPadding;
       else
         _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
