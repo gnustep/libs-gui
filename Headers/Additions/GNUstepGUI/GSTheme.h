@@ -1102,6 +1102,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (CGFloat) browserVerticalPadding;
 
+- (BOOL) browserUseBezels;
+
 - (void) drawMenuRect: (NSRect)rect
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal

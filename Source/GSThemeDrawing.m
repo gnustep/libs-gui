@@ -2096,51 +2096,55 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 
   // Draws scroller border
-  if ([browser hasHorizontalScroller] && 
-      [browser separatesColumns])
+
+  if ([self browserUseBezels])
     {
-      NSRect scrollerBorderRect = scrollerRect;
-      NSSize bs = [self sizeForBorderType: NSBezelBorder];
-
-      scrollerBorderRect.origin.x = 0;
-      scrollerBorderRect.origin.y = 0;
-      scrollerBorderRect.size.width += 2 * bs.width;
-      scrollerBorderRect.size.height += (2 * bs.height) - 1;
-
-      if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && [view window])
-        {
-          [self drawGrayBezel: scrollerBorderRect withClip: rect];
-        }
-    }
-
-  if (![browser separatesColumns])
-    {
-      NSPoint p1,p2;
-      int     i, visibleColumns;
-      float   hScrollerWidth = [browser hasHorizontalScroller] ? 
-	[NSScroller scrollerWidth] : 0;
+      if ([browser hasHorizontalScroller] && 
+	  [browser separatesColumns])
+	{
+	  NSRect scrollerBorderRect = scrollerRect;
+	  NSSize bs = [self sizeForBorderType: NSBezelBorder];
+	  
+	  scrollerBorderRect.origin.x = 0;
+	  scrollerBorderRect.origin.y = 0;
+	  scrollerBorderRect.size.width += 2 * bs.width;
+	  scrollerBorderRect.size.height += (2 * bs.height) - 1;
+	  
+	  if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && [view window])
+	    {
+	      [self drawGrayBezel: scrollerBorderRect withClip: rect];
+	    }
+	}
       
-      // Columns borders
-      [self drawGrayBezel: bounds withClip: rect];
-      
-      [[NSColor blackColor] set];
-      visibleColumns = [browser numberOfVisibleColumns]; 
-      for (i = 1; i < visibleColumns; i++)
-        {
-          p1 = NSMakePoint((columnSize.width * i) + 2 + (i-1), 
+      if (![browser separatesColumns])
+	{
+	  NSPoint p1,p2;
+	  int     i, visibleColumns;
+	  float   hScrollerWidth = [browser hasHorizontalScroller] ? 
+	    [NSScroller scrollerWidth] : 0;
+	  
+	  // Columns borders
+	  [self drawGrayBezel: bounds withClip: rect];
+	  
+	  [[NSColor blackColor] set];
+	  visibleColumns = [browser numberOfVisibleColumns]; 
+	  for (i = 1; i < visibleColumns; i++)
+	    {
+	      p1 = NSMakePoint((columnSize.width * i) + 2 + (i-1), 
                            columnSize.height + hScrollerWidth + 2);
-          p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
-                           hScrollerWidth + 2);
-          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-        }
-
-      // Horizontal scroller border
-      if ([browser hasHorizontalScroller])
-        {
-          p1 = NSMakePoint(2, hScrollerWidth + 2);
-          p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
-          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-        }
+	      p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
+			       hScrollerWidth + 2);
+	      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+	    }
+	  
+	  // Horizontal scroller border
+	  if ([browser hasHorizontalScroller])
+	    {
+	      p1 = NSMakePoint(2, hScrollerWidth + 2);
+	      p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
+	      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+	    }
+	}
     }
 }
 
@@ -2169,6 +2173,20 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   else
     {
       return 2;
+    }
+}
+
+- (BOOL) browserUseBezels
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserUseBezels"] != nil)
+    {
+      return [defs boolForKey: @"GSBrowserUseBezels"];
+    }
+  else
+    {
+      return YES;
     }
 }
 

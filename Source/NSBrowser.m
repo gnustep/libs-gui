@@ -64,7 +64,7 @@ static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
 static NSTextFieldCell *titleCell;
 static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
-
+static BOOL browserUseBezels;
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
@@ -235,6 +235,8 @@ static CGFloat browserVerticalPadding;
 - (void) _performLoadOfColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
+- (NSBorderType) _resolvedBorderType;
+- (void) _themeDidActivate: (NSNotification*)notification;
 @end
 
 //
@@ -774,15 +776,7 @@ static CGFloat browserVerticalPadding;
   sc = [[NSScrollView alloc] initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
-  
-  if (_separatesColumns)
-    {
-      [sc setBorderType: NSBezelBorder];
-    }
-  else
-    {
-      [sc setBorderType: NSNoBorder];
-    }
+  [sc setBorderType: [self _resolvedBorderType]];
   
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
@@ -1244,8 +1238,7 @@ static CGFloat browserVerticalPadding;
 
   sw = scrollerWidth;
   // Take the border into account
-  if (_separatesColumns)
-    sw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  sw += 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   // Column width cannot be less than scroller and border
   if (columnWidth < sw)
@@ -1270,7 +1263,7 @@ static CGFloat browserVerticalPadding;
 */
 - (void) setSeparatesColumns: (BOOL)flag
 {
-  if (_isTitled)
+  if (_separatesColumns == flag || _isTitled)
     return;
 
   _separatesColumns = flag;
@@ -1289,8 +1282,7 @@ static CGFloat browserVerticalPadding;
     }
 
   // Take the border into account
-  if (_separatesColumns)
-    cw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  cw += 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   return cw;
 }
@@ -1301,8 +1293,7 @@ static CGFloat browserVerticalPadding;
 
   cw = columnWidth;
   // Take the border into account
-  if (_separatesColumns)
-    cw -= 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  cw -= 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   return cw;
 }
@@ -1754,8 +1745,11 @@ static CGFloat browserVerticalPadding;
 - (NSRect) frameOfColumn: (NSInteger)column
 {
   NSRect rect = NSZeroRect;
-  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+  NSSize bezelBorderSize = NSZeroSize;
   NSInteger n;
+
+  if (browserUseBezels)
+    bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
   // Number of columns over from the first
   n = column - _firstVisibleColumn;
@@ -1768,7 +1762,7 @@ static CGFloat browserVerticalPadding;
     {
       rect.origin.x += n * browserColumnSeparation;
     }
-  else
+  else if (!_separatesColumns && browserUseBezels)
     {
       if (column == _firstVisibleColumn)
         rect.origin.x += 2;
@@ -1777,17 +1771,25 @@ static CGFloat browserVerticalPadding;
     }
 
   // Adjust for horizontal scroller
-  if (_hasHorizontalScroller)
+  if (browserUseBezels)
     {
-      if (_separatesColumns)
-        rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
-          browserVerticalPadding;
+      if (_hasHorizontalScroller)
+	{
+	  if (_separatesColumns)
+	    rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
+	      browserVerticalPadding;
+	  else
+	    rect.origin.y = scrollerWidth + bezelBorderSize.width;
+	}
       else
-        rect.origin.y = scrollerWidth + bezelBorderSize.width;
+	{
+	  rect.origin.y += bezelBorderSize.width;
+	}
     }
   else
     {
-      rect.origin.y += bezelBorderSize.width;
+      if (_hasHorizontalScroller)
+	rect.origin.y = (scrollerWidth - 1);
     }
 
   // Padding : _columnSize.width is rounded in "tile" method
@@ -1795,7 +1797,7 @@ static CGFloat browserVerticalPadding;
     {
       if (_separatesColumns)
         rect.size.width = _frame.size.width - rect.origin.x;
-      else
+      else 
         rect.size.width = _frame.size.width -
           (rect.origin.x + bezelBorderSize.width);
     }
@@ -1847,9 +1849,12 @@ static CGFloat browserVerticalPadding;
  */
 - (void) tile
 {
-  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+  NSSize bezelBorderSize = NSZeroSize;
   NSInteger i, num, columnCount, delta;
   CGFloat frameWidth;
+
+  if (browserUseBezels)
+    bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
   _columnSize.height = _frame.size.height;
   
@@ -1960,6 +1965,7 @@ static CGFloat browserVerticalPadding;
 	[sc setBorderType: bt];
       }
 
+      [sc setBorderType: [self _resolvedBorderType]];
       [sc setFrame: [self frameOfColumn: i]];
       matrix = [bc columnMatrix];
       
@@ -2192,6 +2198,7 @@ static CGFloat browserVerticalPadding;
   scrollerWidth = [NSScroller scrollerWidth];
   browserColumnSeparation = [theme browserColumnSeparation];
   browserVerticalPadding = [theme browserVerticalPadding];
+  browserUseBezels = [theme browserUseBezels];
 }
 
 + (void) initialize
@@ -2254,7 +2261,10 @@ static CGFloat browserVerticalPadding;
   _browserDelegate = nil;
   _passiveDelegate = YES;
   _doubleAction = NULL;  
-  bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+  // FIXME: Seems a bit wrong to look at the current theme here
+  bs = NSZeroSize;
+  if (browserUseBezels)
+    bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
   _minColumnWidth = scrollerWidth + (2 * bs.width);
   if (_minColumnWidth < 100.0)
     _minColumnWidth = 100.0;
@@ -2280,11 +2290,19 @@ static CGFloat browserVerticalPadding;
   _maxVisibleColumns = 3;
   [self _createColumn];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+
   return self;
 }
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   if ([titleCell controlView] == self)
     {
       [titleCell setControlView: nil];
@@ -2706,7 +2724,10 @@ static CGFloat browserVerticalPadding;
       _browserDelegate = nil;
       _passiveDelegate = YES;
       _doubleAction = NULL;  
-      bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+      // FIXME: Seems a bit wrong to look at the current theme here
+      bs = NSZeroSize;
+      if (browserUseBezels)
+	bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
         _minColumnWidth = 100.0;
@@ -2844,6 +2865,12 @@ static CGFloat browserVerticalPadding;
   // Display even if there isn't any column
   _isLoaded = NO;
   [self tile];
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
 
   return self;
 }
@@ -3199,6 +3226,20 @@ static CGFloat browserVerticalPadding;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
   [super setNeedsDisplayInRect: invalidRect];
+}
+
+- (NSBorderType) _resolvedBorderType
+{
+  if (browserUseBezels && _separatesColumns)
+    {
+      return NSBezelBorder;
+    }
+  return NSNoBorder;
+}
+
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  [self tile];
 }
 
 @end
