@@ -2879,60 +2879,66 @@ Returns the ranges to which various kinds of user changes should apply.
     TheOtherSet = RETAIN([tempSet invertedSet]);
     TheAplhaSet = [tempSet copy];
   }
-  
-  NSRange   theRange  = NSMakeRange(NSNotFound, 0);
-  NSString *theString = [_textStorage string];
-  
-  // If we have a string typed in...
-  if (theString && [theString length])
-  {
-    NSRange selRange = _layoutManager->_selected_range;
-    if (selRange.length != 0)
-    {
-      theRange = selRange;
-    }
-    else
-    {
-      NSInteger length  = [theString length];
-      NSInteger index   = MAX(0, NSMaxRange(selRange)-1);
-      unichar   theChar = [theString characterAtIndex: index];
-      
-      // Last character is aplha...check and set the length...
-      if ([TheAplhaSet characterIsMember: theChar])
-      {
-        NSRange searchRange = NSMakeRange(0, index+1);
-        
-        // Locate the first non-alpha character from the end...
-        theRange = [theString rangeOfCharacterFromSet: TheOtherSet options: NSBackwardsSearch range: searchRange];
-        if (theRange.location != NSNotFound)
-        {
-          theRange.location += 1;
-          theRange.length    = length - theRange.location;
-        }
-        else // Check whether we're just starting to type...
-        {
-          // Check whether there are any non-alpha characters from the beginning...
-          theRange = [theString rangeOfCharacterFromSet: TheAplhaSet options: 0 range: searchRange];
-          
-          // This case should ONLY occur during the initial typing sequences...
-          if (theRange.location != 0)
-          {
-            // We SHOULD have been at location zero in the string so this
-            // is a problem...
-            NSWarnMLog(@"Unexpected completion string range processing error");
-          }
-          else
-          {
-            // There are no OTHER characters other than alpha...set the length...
-            theRange = NSMakeRange(0, length);
-          }
-        }
-      }
-    }
-//    NSLog(@"%s:theString: %@ theRange: %@", __PRETTY_FUNCTION__, theString, NSStringFromRange(theRange));
-  }
 
-  return theRange;
+  
+  NSUInteger length, location;
+  NSRange space; // The range of the first space or non-alpha character.
+  NSRange range = NSMakeRange(NSNotFound, 0);
+  NSRange selRange = [self selectedRange];
+  NSString *theString = [_textStorage string];
+
+  if (selRange.length != 0)
+    {
+      range = selRange;
+    }
+  else
+	{
+  
+	  // Get the current location.
+	  location = selRange.location;
+
+	  if (location != NSNotFound && location > 0 
+		&& [TheAplhaSet characterIsMember: [theString characterAtIndex: location - 1]])
+		{
+
+		  // Find the first non-alpha starting from current location, backwards.
+		  space = [[self string] rangeOfCharacterFromSet:TheOtherSet
+							 options: NSBackwardsSearch
+							   range: NSMakeRange(0, location)];
+
+		  if (space.location == NSNotFound)
+			{
+			  // No non-alpha was found.
+			  if (location > 0)
+				{
+				  // Return the range of the whole substring.
+				  range = NSMakeRange(0, location);
+				}
+			  else
+				{
+				  // There isn't word.
+				  range = NSMakeRange(NSNotFound, 0);
+				}
+			}
+		  else
+			{
+			  length = location - space.location - 1;
+
+			  if (length > 0)
+			   {
+				  // Return the range of the last word.
+				  range = NSMakeRange(space.location + 1, length);
+			   }
+			  else
+			   {
+				  // There isn't word at the end.
+				  range = NSMakeRange(NSNotFound, 0);
+			   }
+			}
+		}
+	}
+	
+  return range;
 }
 
 - (NSArray *) rangesForUserCharacterAttributeChange
