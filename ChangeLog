@@ -1,3 +1,12 @@
+2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSMenuView.m: Read the menu item/menu bar/separator
+	height from GSTheme.
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m: Add -menuBarHeight, -menuItemHeight,
+	-menuSeparatorHeight. Corresponding defaults are GSMenuBarHeight,
+	GSMenuItemHeight, GSMenuSeparatorHeight
+
 2013-09-29  Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:

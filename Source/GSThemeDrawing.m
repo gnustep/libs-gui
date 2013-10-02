@@ -1119,6 +1119,39 @@
     }
 }
 
+- (CGFloat) menuBarHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuBarHeight"];
+  if (height <= 0)
+    {
+      return 22;
+    }
+  return height;
+}
+
+- (CGFloat) menuItemHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuItemHeight"];
+  if (height <= 0)
+    {
+      return 20;
+    }
+  return height;
+}
+
+- (CGFloat) menuSeparatorHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuSeparatorHeight"];
+  if (height <= 0)
+    {
+      return 20;
+    }
+  return height;
+}
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds

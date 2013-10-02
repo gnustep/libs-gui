@@ -132,29 +132,44 @@ static NSMapTable *viewInfo = 0;
  * Class methods.
  */
 
+static float menuBarHeight = 0.0;
+
++ (void) _themeWillDeactivate: (NSNotification*)n
+{
+  /* Clear cached information from the old theme ... will get info from
+   * the new theme as required.
+   */
+  menuBarHeight = 0;
+}
+
 + (void) initialize
 {
   if (viewInfo == 0)
     {
       viewInfo = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                   NSNonOwnedPointerMapValueCallBacks, 20);
+
+      [[NSNotificationCenter defaultCenter] addObserver: self
+	selector: @selector(_themeWillDeactivate:)
+	name: GSThemeWillDeactivateNotification
+	object: nil];
     }
 }
 
 + (float) menuBarHeight
 {
-  static float height = 0.0;
-
-  if (height == 0.0)
+  if (menuBarHeight == 0.0)
     {
+      const CGFloat themeHeight = [[GSTheme theme] menuBarHeight];
+
       NSFont *font = [NSFont menuBarFontOfSize: 0.0];
 
-      height = [font boundingRectForFont].size.height;
-      if (height < 22)
-        height = 22;
+      menuBarHeight = [font boundingRectForFont].size.height;
+      if (menuBarHeight < themeHeight)
+        menuBarHeight = themeHeight;
     }
 
-  return height;
+  return menuBarHeight;
 }
 
 /*
@@ -194,6 +209,13 @@ static NSMapTable *viewInfo = 0;
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
 
+  // FIXME: Should this go in NSMenu instead of here?
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+
   return self;
 }
 
@@ -211,6 +233,8 @@ static NSMapTable *viewInfo = 0;
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   // We must remove the menu view from the menu list of observers.
   if (_attachedMenu != nil)
     {
@@ -345,14 +369,16 @@ static NSMapTable *viewInfo = 0;
   ASSIGN(_font, font);
   if (_font != nil)
     {
+      const CGFloat themeHeight = [[GSTheme theme] menuItemHeight];
+
       NSRect r;
   
       r = [_font boundingRectForFont];
       /* Should make up 110, 20 for default font */
       _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 3.);
 
-      if (_cellSize.height < 20)
-        _cellSize.height = 20;
+      if (_cellSize.height < themeHeight)
+        _cellSize.height = themeHeight;
 
       [self setNeedsSizing: YES];
     }
@@ -675,6 +701,41 @@ static NSMapTable *viewInfo = 0;
   return _needsSizing;
 }
 
+- (CGFloat) heightForItem: (NSUInteger)idx
+{
+  NSMenuItemCell *cell = [_itemCells objectAtIndex: idx];
+  NSMenuItem *item = [cell menuItem];
+
+  if ([item isSeparatorItem])
+    {
+      return [[GSTheme theme] menuSeparatorHeight];
+    }
+  return _cellSize.height;
+}
+
+- (CGFloat) yOriginForItem: (NSUInteger)item
+{
+  const NSInteger count = [_itemCells count];
+  CGFloat total = 0;
+  NSUInteger i = 0;
+  for (i = (count - 1); i > item ; i--)
+    {
+      total += [self heightForItem: i];
+    }
+  return total;
+}
+
+- (CGFloat) totalHeight
+{
+  CGFloat total = 0;
+  NSUInteger i = 0;
+  for (i = 0; i<[_itemCells count]; i++)
+    {
+      total += [self heightForItem: i];
+    }
+  return total;
+}
+
 - (void) sizeToFit
 {
   BOOL isPullDown =
@@ -702,7 +763,7 @@ static NSMapTable *viewInfo = 0;
           elem.rect = NSMakeRect (currentX,
                                   0,
                                   (2 * _horizontalEdgePad),
-                                  _cellSize.height);
+                                  [self heightForItem: 0]);
           GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
           currentX += 2 * _horizontalEdgePad;
         }
@@ -720,7 +781,7 @@ static NSMapTable *viewInfo = 0;
           elem.rect = NSMakeRect (currentX,
                                   0,
                                   (titleWidth + (2 * _horizontalEdgePad)),
-                                  _cellSize.height);
+                                  [self heightForItem: i]);
           GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
 
           currentX += titleWidth + (2 * _horizontalEdgePad);
@@ -888,9 +949,9 @@ static NSMapTable *viewInfo = 0;
         }
 
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-                                     (howMany * _cellSize.height) 
+                                     [self totalHeight] 
                                      + menuBarHeight)];
-      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+      [_titleView setFrame: NSMakeRect (0, [self totalHeight],
                                         NSWidth (_bounds), menuBarHeight)];
     }
   _needsSizing = NO;
@@ -988,10 +1049,10 @@ static NSMapTable *viewInfo = 0;
     {
       NSRect theRect;
 
-      theRect.origin.y
-          = _cellSize.height * ([_itemCells count] - index - 1);
+      theRect.origin.y	= [self yOriginForItem: index];
       theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
+      theRect.size.height = [self heightForItem: index];
 
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
        * else (unless we are a popup). This rect will have to be modified for 
@@ -1948,6 +2009,12 @@ static NSMapTable *viewInfo = 0;
   return [_attachedMenu performKeyEquivalent: theEvent];
 }
 
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  // The new theme may have different menu item sizes, 
+  // so the window size for the menu needs to be recalculated.
+  [[self menu] sizeToFit];
+}
 
 /*
  * NSCoding Protocol

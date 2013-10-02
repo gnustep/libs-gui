@@ -1048,6 +1048,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 			withBounds: (NSRect)bounds
 			  withClip: (NSRect)clipRect;
 
+- (CGFloat) menuBarHeight;
+- (CGFloat) menuItemHeight;
+- (CGFloat) menuSeparatorHeight;
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
