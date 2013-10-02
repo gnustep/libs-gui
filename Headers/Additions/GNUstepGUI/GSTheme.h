@@ -238,6 +238,7 @@
 @class NSColorWell;
 @class NSImage;
 @class NSMenuItemCell;
+@class NSPopUpButtonCell;
 @class NSMenuView;
 @class NSProgressIndicator;
 @class NSTableHeaderCell;
@@ -285,6 +286,10 @@ APPKIT_EXPORT  NSString        *GSMenuTitleBackground;
 APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
 APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
 APPKIT_EXPORT  NSString        *GSMenuSeparatorItem;
+
+/* NSPopUpButton parts */
+
+APPKIT_EXPORT  NSString        *GSPopUpButton;
 
 /*
  * Progress Indicator part names.
@@ -979,6 +984,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
+
+- (void) drawBorderAndBackgroundForPopUpButtonCell: (NSPopUpButtonCell *)cell
+					 withFrame: (NSRect)cellFrame
+					    inView: (NSView *)controlView
+					     state: (GSThemeControlState)state;
+
 /**
  * <p>Draws the menu item title.</p>
  *

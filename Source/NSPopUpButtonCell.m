@@ -48,6 +48,10 @@
  * and so on.  */
 static NSImage *_pbc_image[5];
 
+@interface NSMenuItemCell (Private)
+- (GSThemeControlState) themeControlState;
+@end
+
 @interface NSPopUpButtonCell (CocoaExtensions)
 - (void) _popUpItemAction: (id)sender;
 @end
@@ -1051,6 +1055,21 @@ static NSImage *_pbc_image[5];
   
   [self attachPopUpWithFrame: frame inView: controlView];
 }
+
+/*
+ * Override the implementation in NSMenuItemCell to call a different
+ * GSTheme method, since typically menu items and buttons will be
+ * drawn differently (though not in the GNUstep default theme).
+ */
+- (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+                                   inView: (NSView *)controlView
+{
+  [[GSTheme theme] drawBorderAndBackgroundForPopUpButtonCell: self
+                   withFrame: cellFrame
+                   inView: controlView
+		   state: [self themeControlState]];
+}
+
 
 /*
  * This drawing uses the same code that is used to draw cells in the menu.

@@ -95,6 +95,9 @@ NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
 NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 NSString        *GSMenuSeparatorItem = @"GSMenuSeparatorItem";
 
+// NSPopUpButton part names
+NSString        *GSPopUpButton = @"GSPopUpButton";
+
 // Progress indicator part names
 NSString        *GSProgressIndicatorBarDeterminate 
   = @"GSProgressIndicatorBarDeterminate";

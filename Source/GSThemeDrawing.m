@@ -44,6 +44,7 @@
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
@@ -991,6 +992,28 @@
         {
           [self drawButton: cellFrame withClip: NSZeroRect];
         }
+    }
+  else
+    {
+      [self fillRect: cellFrame
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
+}
+
+- (void) drawBorderAndBackgroundForPopUpButtonCell: (NSPopUpButtonCell *)cell
+					 withFrame: (NSRect)cellFrame
+					    inView: (NSView *)controlView
+					     state: (GSThemeControlState)state
+{
+  GSDrawTiles *tiles = [self tilesNamed: GSPopUpButton state: state];
+  if (tiles == nil)
+    {
+      [self drawBorderAndBackgroundForMenuItemCell: cell
+					 withFrame: cellFrame
+					    inView: controlView
+					     state: state
+				      isHorizontal: NO];
     }
   else
     {
