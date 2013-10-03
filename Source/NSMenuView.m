@@ -701,26 +701,33 @@ static float menuBarHeight = 0.0;
   return _needsSizing;
 }
 
-- (CGFloat) heightForItem: (NSUInteger)idx
+- (CGFloat) heightForItem: (NSInteger)idx
 {
-  NSMenuItemCell *cell = [_itemCells objectAtIndex: idx];
-  NSMenuItem *item = [cell menuItem];
-
-  if ([item isSeparatorItem])
+  if (idx >= 0)
     {
-      return [[GSTheme theme] menuSeparatorHeight];
+      NSMenuItemCell *cell = [_itemCells objectAtIndex: idx];
+      NSMenuItem *item = [cell menuItem];
+      
+      if ([item isSeparatorItem])
+	{
+	  return [[GSTheme theme] menuSeparatorHeight];
+	}
     }
   return _cellSize.height;
 }
 
-- (CGFloat) yOriginForItem: (NSUInteger)item
-{
+- (CGFloat) yOriginForItem: (NSInteger)item
+{  
   const NSInteger count = [_itemCells count];
   CGFloat total = 0;
-  NSUInteger i = 0;
-  for (i = (count - 1); i > item ; i--)
+
+  if (item >= 0)
     {
-      total += [self heightForItem: i];
+      NSInteger i = 0;
+      for (i = (count - 1); i > item ; i--)
+	{
+	  total += [self heightForItem: i];
+	}
     }
   return total;
 }

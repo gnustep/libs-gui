@@ -1,5 +1,12 @@
 2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSMenuView.m (heightForItem:, yOriginForItem:):
+	Accept negative item indicies, which are passed in when
+	opening the preferences window in TextEdit. Need to investigate
+	further why that is happening.
+
+2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m:
 	* Source/GSThemeDrawing.m:
