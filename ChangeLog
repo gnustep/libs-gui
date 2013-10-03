@@ -1,3 +1,9 @@
+2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSSliderCell.m: Support themeing the circular slider
+	with the image @"common_CircularSlider". Draw the dimple
+	with @"common_Dimple" instead of an NSBezierPath.
+
 2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:

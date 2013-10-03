@@ -356,6 +356,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       NSPoint point;
       NSRect knobRect;
       float fraction, angle, radius;
+      NSImage *image;
 
       if (cellFrame.size.width > cellFrame.size.height)
 	{
@@ -373,25 +374,57 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 				cellFrame.size.width,
 				cellFrame.size.width);
 	}
-      knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
 
-      circle = [NSBezierPath bezierPathWithOvalInRect: knobRect];
-      [[NSColor controlBackgroundColor] set];    
-      [circle fill];
-      [[NSColor blackColor] set];
-      [circle stroke];
+      if ([self controlView])
+	knobRect = [[self controlView] centerScanRect: knobRect];
+
+      image = [NSImage imageNamed: @"common_CircularSlider"];
+      if (image != nil)
+	{
+	  [image drawInRect: knobRect
+		   fromRect: NSZeroRect
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0
+	     respectFlipped: YES
+		      hints: nil];
+	}
+      else
+	{
+	  knobRect = NSInsetRect(knobRect, 1, 1);
+	  circle = [NSBezierPath bezierPathWithOvalInRect: knobRect];
+	  [[NSColor controlBackgroundColor] set];    
+	  [circle fill];
+	  [[NSColor blackColor] set];
+	  [circle stroke];
+	}
+
+      knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
 
       fraction = ([self floatValue] - [self minValue]) /
 	([self maxValue] - [self minValue]);
       angle = (fraction * (2.0 * M_PI)) - (M_PI / 2.0);
-      radius = (knobRect.size.height / 2) - 4;
+      radius = (knobRect.size.height / 2) - 6;
       point = NSMakePoint((radius * cos(angle)) + knobCenter.x,
 			  (radius * sin(angle)) + knobCenter.y);
           
-      [[NSBezierPath bezierPathWithOvalInRect: NSMakeRect(point.x - 2,
-							  point.y - 2,
-							  4,
-							  4)] stroke];
+      image = [NSImage imageNamed: @"common_Dimple"];
+	{
+	  NSSize size = [image size];
+	  NSRect dimpleRect = NSMakeRect(point.x - (size.width / 2.0),
+					 point.y - (size.height / 2.0),
+					 size.width,
+					 size.height);
+
+	  if ([self controlView])
+	    dimpleRect = [[self controlView] centerScanRect: dimpleRect];
+
+	  [image drawInRect: dimpleRect
+		   fromRect: NSZeroRect
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0
+	     respectFlipped: YES
+		      hints: nil];
+	}
     }
   else if (_type == NSLinearSlider)
     {
