@@ -288,12 +288,7 @@
     }
   else
     {
-      // FIXME: Move this code to a method in GSDrawTiles?
-      // FIXME: Not correct, need to get the content area of the draw tiles
-      margins.left = tiles->rects[TileCL].size.width;
-      margins.top = tiles->rects[TileTM].size.height;
-      margins.right = tiles->rects[TileCR].size.width;
-      margins.bottom = tiles->rects[TileBM].size.height;
+      margins = [tiles themeMargins];
       return margins;
     }
 }
@@ -370,8 +365,9 @@
     {
       // FIXME: We assume the button's top and right padding are the same as
       // its bottom and left.
-      return NSMakeSize(tiles->contentRect.origin.x,
-                        tiles->contentRect.origin.y);
+
+      GSThemeMargins margins = [tiles themeMargins];
+      return NSMakeSize(margins.left, margins.bottom);
     }
 }
 

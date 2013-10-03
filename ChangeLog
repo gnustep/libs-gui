@@ -1,5 +1,13 @@
 2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m: Use new -[GSDrawTiles themeMargins]
+	to get the margins for draw tiles.
+	* Source/GSThemePrivate.h:
+	* Source/GSThemeTools.m: Get the 9-patch content rect support
+	working from end-to-end.
+
+2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m:
 	* Source/GSThemeDrawing.m:

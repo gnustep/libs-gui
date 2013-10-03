@@ -897,7 +897,7 @@ withRepeatedImage: (NSImage*)image
     }
   else
     {
-      contentRect.origin.y = s.height - y2 - 1;
+      contentRect.origin.y = y1;
       contentRect.size.height = 1 + y2 - y1;
     }
 
@@ -923,6 +923,8 @@ withRepeatedImage: (NSImage*)image
 {
   int i;
 
+  originalRectCM = rects[TileCM];
+
   for (i = 0; i < 9; i++)
     {
       if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
@@ -935,6 +937,8 @@ withRepeatedImage: (NSImage*)image
         {
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
+	  // FIXME: This makes no sense to me, why not leave the
+	  // rect origins at their original values?
           rects[i].origin.x = 0;
           rects[i].origin.y = 0;
         }
@@ -1078,15 +1082,43 @@ withRepeatedImage: (NSImage*)image
   return tsz;
 }
 
+- (GSThemeMargins) themeMargins
+{
+  NSRect cm = originalRectCM;
+  GSThemeMargins margins;
+  
+  margins.left = rects[TileCL].size.width;
+  margins.right = rects[TileCR].size.width;
+  margins.top = rects[TileTM].size.height;
+  margins.bottom = rects[TileBM].size.height;
+
+  // Adjust for contentRect != cm
+
+  margins.left += (contentRect.origin.x - cm.origin.x);
+  margins.bottom += (contentRect.origin.y - cm.origin.y);
+
+  margins.right += (NSMaxX(cm) - NSMaxX(contentRect));
+  margins.top += (NSMaxY(cm) - NSMaxY(contentRect));
+  
+  return margins;
+}
+
 - (NSRect) contentRectForRect: (NSRect)rect
 {
-  NSSize total = [self computeTotalTilesSize];
-  NSRect inFill = NSMakeRect(
-    rect.origin.x + contentRect.origin.x,
-    rect.origin.y + contentRect.origin.y,
-    rect.size.width - (total.width - contentRect.size.width),
-    rect.size.height - (total.height - contentRect.size.height));
-  return inFill;
+  NSRect cm = originalRectCM;
+  NSRect result = NSMakeRect(rect.origin.x + rects[TileCL].size.width,
+			     rect.origin.y + rects[TileBM].size.height,
+			     rect.size.width - (rects[TileCL].size.width + rects[TileCR].size.width),
+			     rect.size.height - (rects[TileTM].size.height + rects[TileBM].size.height));
+  
+ 
+  result.origin.x += (contentRect.origin.x - cm.origin.x);
+  result.size.width += (contentRect.size.width - cm.size.width);
+  
+  result.origin.y += (contentRect.origin.y - cm.origin.y);
+  result.size.height += (contentRect.size.height - cm.size.height);
+
+  return result;
 }
 
 - (NSRect) noneStyleFillRect: (NSRect)rect

@@ -64,6 +64,9 @@ typedef enum {
   NSRect	contentRect;    /** Rectangle in which content should be
         	                 *  drawn, normally rects[TileCM], but can
         	                 *  be customized in the nine-patch format */
+  NSRect        originalRectCM; /** Caches rects[TileCM] as it was before
+				 *  -validateTilesSizeWithImage clears the
+				 *  origin. Used by -themeMargins */
   float		scaleFactor;
   GSThemeFillStyle	style;	/** The default style for filling a rect */
 }
@@ -138,6 +141,8 @@ typedef enum {
  * filled in one direction.
  */
 - (NSSize) size;
+
+- (GSThemeMargins) themeMargins;
 
 @end
 
