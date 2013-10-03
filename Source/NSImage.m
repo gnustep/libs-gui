@@ -1719,6 +1719,24 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
                           NSString *fileName = [[tmp absoluteString] lastPathComponent];
                           NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
                           rep = [NSImageRep imageRepWithContentsOfFile: path];
+
+						  // This hack is a workaround on the issue where Xcode is including its cursor image
+						  // on NSTextView's scroll view: We set the name of the image so we can catch it
+						  // in the NSCursor's initWithCoder:
+						  if ([[tmp absoluteString] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
+						    {
+							  [nameDict removeObjectForKey:[tmp absoluteString]];
+							  [self setName:[tmp absoluteString]];
+							}
+						  else if ([[tmp absoluteString] rangeOfString:@"/Xcode.app/"].length > 0
+						    || [[tmp absoluteString] rangeOfString:@"/DVTKit.framework/"].length > 0)
+							{
+							  NSLog (@"WARNING: Decoding image with absolute path %@."
+								@" Xcode may have inserted this in your XIB and the"
+								@" image may not be available in the app's resources"
+								, [tmp absoluteString]);
+							}
+							
                         }
                       
                       // If the representation was found, add it...

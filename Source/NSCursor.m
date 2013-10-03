@@ -70,6 +70,11 @@ static NSMutableDictionary *cursorDict = nil;
     }
 }
 
++ (NSMutableArray *) stack
+{
+	return gnustep_gui_cursor_stack;
+}
+
 - (void *) _cid
 {
   return _cid;
@@ -658,8 +663,20 @@ backgroundColorHint:(NSColor *)bg
               image = [aDecoder decodeObjectForKey: @"NSImage"];
             }
           
-          self = [[NSCursor alloc] initWithImage: image
-                                         hotSpot: hotSpot];
+		  
+		  if ([[image name] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
+		    {
+			  NSLog(@"An NSCursor object was encoded with the image "
+				@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff. "
+				@"This cursor was automatically substituted with [NSCursor IBeamCursor].");
+				
+			  self = [NSCursor IBeamCursor];
+			}
+		  else
+		    {
+			  self = [[NSCursor alloc] initWithImage: image
+											 hotSpot: hotSpot];
+			}
         }
     }
   else

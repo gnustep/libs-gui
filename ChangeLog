@@ -1,3 +1,13 @@
+2013-04-03  Frank Le Grand <frank.legrand@testplant.com>
+
+    * Source\NSImage.m: Added a small hack to work around and Ibeam 
+	cursor image inserted in XIB files by Xcode, which would not be
+	found in the project and therefore was substituted with the
+	default arrow cursor.
+	* Source\NSCursor.m: Added class method "stack" that is used
+	by the backend to determine whether or not the cursor is in
+	at least one cursor rectangle.
+
 2013-09-11  Frank Le Grand <frank.legrand@testplant.com>
 
     * Source\NSToolbar.m,
