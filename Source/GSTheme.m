@@ -105,6 +105,10 @@ NSString        *GSProgressIndicatorBarDeterminate
 // Color well part names
 NSString	*GSColorWell = @"GSColorWell";
 
+// Slider part names
+NSString        *GSSliderHorizontalTrack = @"GSSliderHorizontalTrack";
+NSString        *GSSliderVerticalTrack = @"GSSliderVerticalTrack";
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification

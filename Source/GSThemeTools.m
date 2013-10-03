@@ -1609,5 +1609,18 @@ withRepeatedImage: (NSImage*)image
   style = aStyle;
 }
 
+- (NSSize) size
+{
+  const CGFloat width = rects[TileCL].size.width
+    + rects[TileCM].size.width
+    + rects[TileCR].size.width;
+
+  const CGFloat height = rects[TileTM].size.height
+    + rects[TileCM].size.height
+    + rects[TileBM].size.height;
+
+  return NSMakeSize(width, height);
+}
+
 @end
 

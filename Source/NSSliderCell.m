@@ -224,6 +224,25 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
 }
 
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
+{
+  NSBorderType aType;
+  
+  if (_cell.is_bordered)
+    aType = NSLineBorder;
+  else if (_cell.is_bezeled)
+    aType = NSBezelBorder;
+  else
+    aType = NSNoBorder;
+
+  [[GSTheme theme] drawSliderBorderAndBackground: aType 
+					   frame: cellFrame
+					  inCell: self
+				    isHorizontal: ![self isVertical]];
+}
+
+
 /** <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
   <var>flipped</var> indicates whether the control view has a flipped 
    coordinate system.</p>
@@ -274,15 +293,26 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   if (_isVertical == YES)
     {
       origin = _trackRect.origin;
+      origin.x += (_trackRect.size.width - size.width) / 2.0; // center horizontally
       origin.y += (_trackRect.size.height - size.height) * floatValue;
     }
   else
     {
       origin = _trackRect.origin;
       origin.x += (_trackRect.size.width - size.width) * floatValue;
+      origin.y += (_trackRect.size.height - size.height) / 2.0; // center vertically
     }
 
-  return NSMakeRect (origin.x, origin.y, size.width, size.height); 
+  {
+    NSRect result = NSMakeRect (origin.x, origin.y, size.width, size.height);
+
+    if ([self controlView])
+      {
+	result = [[self controlView] centerScanRect: result];
+      }
+
+    return result;
+  } 
 }
 
 /** <p>Calculates the rect in which to draw the knob, then calls
@@ -366,30 +396,17 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   else if (_type == NSLinearSlider)
     {
       BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
-      NSImage *image;
-      NSSize size;
 
       if (vertical != _isVertical)
 	{
+	  NSImage *image;
 	  if (vertical == YES)
 	    {
 	      image = [NSImage imageNamed: @"common_SliderVert"];
-	      if (image != nil)
-		{
-		  size = [image size];
-		  [image setScalesWhenResized: YES];
-		  [image setSize: NSMakeSize(cellFrame.size.width, size.height)];
-		}
 	    }
 	  else
 	    {
 	      image = [NSImage imageNamed: @"common_SliderHoriz"];
-	      if (image != nil)
-		{
-		  size = [image size];
-		  [image setScalesWhenResized: YES];
-		  [image setSize: NSMakeSize(size.width, cellFrame.size.height)];
-		}
 	    }
 	  [_knobCell setImage: image];
 	}

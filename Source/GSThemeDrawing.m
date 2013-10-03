@@ -2399,6 +2399,54 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (void) drawSliderBorderAndBackground: (NSBorderType)aType
+				 frame: (NSRect)cellFrame
+				inCell: (NSCell *)cell
+			  isHorizontal: (BOOL)horizontal
+{
+  NSSliderType type = [(NSSliderCell *)cell sliderType];
+  if (type == NSLinearSlider)
+    {
+      NSString *partName = (horizontal ? GSSliderHorizontalTrack : GSSliderVerticalTrack); 
+      GSDrawTiles *tiles = [self tilesNamed: partName
+				      state: GSThemeNormalState];
+
+      if (tiles == nil)
+	{
+	  [[GSTheme theme] drawBorderType: aType 
+				    frame: cellFrame 
+				     view: [cell controlView]];
+	}
+      else
+	{
+	  // FIXME: This code could be factored out
+	  NSSize tilesNaturalSize = [tiles size];
+	  NSRect tilesRect;
+
+	  // Only stretch the tiles in one direction
+	  if (horizontal)
+	    {
+	      tilesRect.size = NSMakeSize(cellFrame.size.width, tilesNaturalSize.height);
+	    }
+	  else
+	    {
+	      tilesRect.size = NSMakeSize(tilesNaturalSize.width, cellFrame.size.height);
+	    }
+	  tilesRect.origin = NSMakePoint((cellFrame.size.width - tilesRect.size.width) / 2.0,
+					 (cellFrame.size.height - tilesRect.size.height) / 2.0);
+	  
+	  if ([cell controlView] != nil)
+	    {
+	      tilesRect = [[cell controlView] centerScanRect: tilesRect];
+	    }
+
+	  [self fillRect: tilesRect
+	       withTiles: tiles
+	      background: [NSColor clearColor]];
+	}
+    }
+}
+
 - (void) drawBarInside: (NSRect)rect
 		inCell: (NSCell *)cell
 	       flipped: (BOOL)flipped
@@ -2406,8 +2454,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSSliderType type = [(NSSliderCell *)cell sliderType];
   if (type == NSLinearSlider)
     {
-      [[NSColor scrollBarColor] set];
-      NSRectFill(rect);
+      BOOL horizontal = (rect.size.width > rect.size.height);
+      NSString *partName = (horizontal ? GSSliderHorizontalTrack : GSSliderVerticalTrack); 
+      GSDrawTiles *tiles = [self tilesNamed: partName
+				      state: GSThemeNormalState];
+
+      if (tiles == nil)
+	{
+	  [[NSColor scrollBarColor] set];
+	  NSRectFill(rect);
+	}
+      // Don't draw anything if we have tiles, they are drawn
+      // in -drawSliderBorderAndBackground:...
     }
 }
 

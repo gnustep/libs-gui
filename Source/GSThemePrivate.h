@@ -130,6 +130,15 @@ typedef enum {
 - (GSThemeFillStyle) fillStyle;
 - (void) setFillStyle: (GSThemeFillStyle)aStyle;
 
+/**
+ * Returns the sum of the widths of the left, middle, and right tiles,
+ * and the sum of the heights of the top, center, and bottom tiles, before scaling.
+ * 
+ * Can be used to calculate a rect to draw the tiles in such that they are only
+ * filled in one direction.
+ */
+- (NSSize) size;
+
 @end
 
 /** This is the panel used to select and inspect themes.

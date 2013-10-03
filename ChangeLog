@@ -1,5 +1,25 @@
 2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Declare GSSliderHorizontalTrack and GSSliderVerticalTrack
+	part names for themeing the background of NSSlider
+	* Source/GSThemeDrawing.m:
+	Add new drawSliderBorderAndBackground:frame:inCell:isHorizontal:
+	method to draw the slider border and background.
+	* Source/GSThemePrivate.h:
+	* Source/GSThemeTools.m:
+	Add a -size method on GSDrawTiles which returns the total
+	original size of the tiles, so we can easily compute a rect
+	that scales the tiles in only one dimension.
+	* Source/NSSliderCell.m:
+	Override _drawBorderAndBackgroundWithFrame: to call new
+	GSTheme method. Also, tweak the knob drawing code; the knob
+	is now centered and drawn at its native size. This still looks
+	correct with the default slider sizes create by Gorm.
+
+2013-10-02  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSMenuView.m (heightForItem:, yOriginForItem:):
 	Accept negative item indicies, which are passed in when
 	opening the preferences window in TextEdit. Need to investigate

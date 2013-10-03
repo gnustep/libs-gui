@@ -301,6 +301,10 @@ APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
  */
 APPKIT_EXPORT  NSString        *GSColorWell;
 
+/* NSSliderCell parts */
+APPKIT_EXPORT  NSString        *GSSliderHorizontalTrack;
+APPKIT_EXPORT  NSString        *GSSliderVerticalTrack;
+
 /**
  * Structure to describe the size of top/bottom/left/right margins inside
  * a button
@@ -1131,6 +1135,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (void) drawScrollViewRect: (NSRect)rect
 	             inView: (NSView *)view;
+
+- (void) drawSliderBorderAndBackground: (NSBorderType)aType
+				 frame: (NSRect)cellFrame
+				inCell: (NSCell *)cell
+			  isHorizontal: (BOOL)horizontal;
 
 - (void) drawBarInside: (NSRect)rect
 		inCell: (NSCell *)cell
