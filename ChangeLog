@@ -1,5 +1,14 @@
 2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Source/NSBox.m: Factor out -[NSBox drawRect:] to GSTheme
+	method -drawBoxInClipRect:boxType:borderType:inView:.
+	Add a tiles name GSBoxBorder for themeing the box border.
+
+2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSSliderCell.m: Support themeing the circular slider
 	with the image @"common_CircularSlider". Draw the dimple
 	with @"common_Dimple" instead of an NSBezierPath.

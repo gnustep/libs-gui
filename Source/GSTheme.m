@@ -109,6 +109,9 @@ NSString	*GSColorWell = @"GSColorWell";
 NSString        *GSSliderHorizontalTrack = @"GSSliderHorizontalTrack";
 NSString        *GSSliderVerticalTrack = @"GSSliderVerticalTrack";
 
+// NSBox parts 
+NSString        *GSBoxBorder = @"GSBoxBorder";
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification

@@ -452,65 +452,12 @@
 //
 - (void) drawRect: (NSRect)rect
 {
-  NSColor *color;
-
   rect = NSIntersectionRect(_bounds, rect);
-  if (_box_type == NSBoxCustom)
-    {
-      if (_transparent)
-        {
-          color = [NSColor clearColor];
-        }
-      else
-        {
-          color = _fill_color;
-        }
-    }
-  else
-    {
-      color = [_window backgroundColor];
-    }
-  // Fill inside
-  [color set];
-  NSRectFill(rect);
 
-  // Draw border
-  switch (_border_type)
-    {
-      case NSNoBorder: 
-	break;
-      case NSLineBorder: 
-        if (_box_type == NSBoxCustom)
-          {
-            [_border_color set];
-            NSFrameRectWithWidth(_border_rect, _border_width);
-          }
-        else
-          {
-            [[NSColor controlDarkShadowColor] set];
-            NSFrameRect(_border_rect);
-          }
-	break;
-      case NSBezelBorder:
-	[[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
-	break;
-      case NSGrooveBorder: 
-	[[GSTheme theme] drawGroove: _border_rect withClip: rect];
-	break;
-    }
-
-  // Draw title
-  if (_title_position != NSNoTitle)
-    {
-      // If the title is on the border, clip a hole in the later 
-      if ((_border_type != NSNoBorder)
-	&& ((_title_position == NSAtTop) || (_title_position == NSAtBottom)))
-        {
-          [color set];
-          NSRectFill(_title_rect);
-        }
-      [_cell drawWithFrame: _title_rect inView: self];
-    }
+  [[GSTheme theme] drawBoxInClipRect: rect
+			     boxType: _box_type
+			  borderType: _border_type
+			      inView: self];
 }
 
 - (BOOL) isOpaque

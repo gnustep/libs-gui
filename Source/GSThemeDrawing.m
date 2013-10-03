@@ -2913,4 +2913,85 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	[cell _setInEditing: NO];
     }
 }
+
+- (void) drawBoxInClipRect: (NSRect)clipRect
+		   boxType: (NSBoxType)boxType
+		borderType: (NSBorderType)borderType
+		    inView: (NSBox *)box
+{
+  NSColor *color;
+
+  if (boxType == NSBoxCustom)
+    {
+      if (![box isOpaque])
+        {
+          color = [NSColor clearColor];
+        }
+      else
+        {
+          color = [box fillColor];
+        }
+    }
+  else
+    {
+      color = [[box window] backgroundColor];
+    }
+  // Fill inside
+  [color set];
+  NSRectFill(clipRect);
+
+  // Draw border
+
+  GSDrawTiles *tiles = [[GSTheme theme] tilesNamed: GSBoxBorder state: GSThemeNormalState];
+  if (tiles == nil 
+      || borderType == NSNoBorder
+      || boxType == NSBoxSeparator
+      || boxType == NSBoxOldStyle
+      || boxType == NSBoxCustom)
+    {
+      switch (borderType)
+	{
+	case NSNoBorder: 
+	  break;
+	case NSLineBorder: 
+	  if (boxType == NSBoxCustom)
+	    {
+	      [[box borderColor] set];
+	      NSFrameRectWithWidth([box borderRect], [box borderWidth]);
+	    }
+	  else
+	    {
+	      [[NSColor controlDarkShadowColor] set];
+	      NSFrameRect([box borderRect]);
+	    }
+	  break;
+	case NSBezelBorder:
+	  [[GSTheme theme] drawDarkBezel: [box borderRect] withClip: clipRect];
+	  break;
+	case NSGrooveBorder: 
+	  [[GSTheme theme] drawGroove: [box borderRect] withClip: clipRect];
+	  break;
+	}
+    }
+  else
+    {
+      [[GSTheme theme] fillRect: [box borderRect]
+		      withTiles: tiles
+		     background: [NSColor clearColor]];
+    }
+
+  // Draw title
+  if ([box titlePosition] != NSNoTitle)
+    {
+      // If the title is on the border, clip a hole in the later 
+      if ((borderType != NSNoBorder)
+	&& (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
+        {
+          [color set];
+          NSRectFill([box titleRect]);
+        }
+      [[box titleCell] drawWithFrame: [box titleRect] inView: box];
+    }
+}
+
 @end

@@ -217,6 +217,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
+#import <AppKit/NSBox.h>
 #import <AppKit/NSCell.h>
 // For gradient types
 #import <AppKit/NSButtonCell.h>
@@ -304,6 +305,9 @@ APPKIT_EXPORT  NSString        *GSColorWell;
 /* NSSliderCell parts */
 APPKIT_EXPORT  NSString        *GSSliderHorizontalTrack;
 APPKIT_EXPORT  NSString        *GSSliderVerticalTrack;
+
+/* NSBox parts */
+APPKIT_EXPORT  NSString        *GSBoxBorder;
 
 /**
  * Structure to describe the size of top/bottom/left/right margins inside
@@ -1173,6 +1177,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawTableViewRow: (int)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
+
+- (void) drawBoxInClipRect: (NSRect)clipRect
+		   boxType: (NSBoxType)boxType
+		borderType: (NSBorderType)borderType
+		    inView: (NSBox *)box;
 @end
 
 /**
