@@ -726,7 +726,17 @@ static NSString *commandKeyString = @"#";
 - (void) drawKeyEquivalentWithFrame: (NSRect)cellFrame
 			     inView: (NSView *)controlView
 {
-  NSImage	*arrow = [NSImage imageNamed: @"NSMenuArrow"];
+  NSImage	*arrow = nil;
+  if (_cell.is_highlighted)
+    {
+      arrow = [NSImage imageNamed: @"NSHighlightedMenuArrow"];
+    }
+
+  if (arrow == nil)
+    {
+      arrow = [NSImage imageNamed: @"NSMenuArrow"];
+    }
+
 
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 

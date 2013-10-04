@@ -1,5 +1,10 @@
 2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSMenuItemCell.m: If the cell is highlighted, draw
+	the arrow using NSHighlightedMenuArrow (if available).
+
+2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Use new -[GSDrawTiles themeMargins]
 	to get the margins for draw tiles.
 	* Source/GSThemePrivate.h:
