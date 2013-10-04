@@ -197,22 +197,6 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     {
       return;
     }
-  if ([_the_color alphaComponent] < 1.0)
-    {
-      NSBezierPath *triangle = [NSBezierPath bezierPath];
-
-      [[NSColor whiteColor] set];
-      NSRectFill(insideRect);
-
-      [triangle moveToPoint: NSMakePoint(insideRect.origin.x,
-		insideRect.origin.y + insideRect.size.height)];
-      [triangle lineToPoint: NSMakePoint(insideRect.origin.x + insideRect.size.width, 
-		insideRect.origin.y + insideRect.size.height)];
-      [triangle lineToPoint: insideRect.origin];
-      [triangle closePath];
-      [[NSColor blackColor] set];
-      [triangle fill];
-    }
   [_the_color drawSwatchInRect: insideRect];
 }
 

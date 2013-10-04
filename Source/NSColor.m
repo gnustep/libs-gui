@@ -40,6 +40,7 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSScanner.h>
 
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSColorSpace.h"
@@ -1364,6 +1365,23 @@ systemColorWithName(NSString *name)
 //
 - (void) drawSwatchInRect: (NSRect)rect
 {
+  if ([self alphaComponent] < 1.0)
+    {
+      NSBezierPath *triangle = [NSBezierPath bezierPath];
+
+      [[NSColor whiteColor] set];
+      NSRectFill(rect);
+
+      [triangle moveToPoint: NSMakePoint(rect.origin.x,
+		rect.origin.y + rect.size.height)];
+      [triangle lineToPoint: NSMakePoint(rect.origin.x + rect.size.width, 
+		rect.origin.y + rect.size.height)];
+      [triangle lineToPoint: rect.origin];
+      [triangle closePath];
+      [[NSColor blackColor] set];
+      [triangle fill];
+    }
+
   [self set];
   NSRectFill(rect);
 }

@@ -1,3 +1,10 @@
+2013-10-04  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSColor.m:
+	* Source/NSColorWell.m: Move code to draw the black and white
+	triangles background for transparent colors to
+	-[NSColor drawSwatchInRect:].
+
 2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
