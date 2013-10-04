@@ -205,6 +205,17 @@ static BOOL browserUseBezels;
 
 @implementation GSBrowserTitleCell
 
+// Default appearance of GSBrowserTitleCell
+- (id) initTextCell: (NSString *)aString
+{
+  self = [super initTextCell: aString];
+  if (!self)
+    return nil;
+
+  [self setTextColor: [[GSTheme theme] browserHeaderTextColor]];
+  return self;
+}
+
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   // This adjustment must match the drawn border

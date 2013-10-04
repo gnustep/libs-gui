@@ -1388,6 +1388,23 @@ static NSImage *spinningImages[MaxCount];
 }
 
 // Table drawing methods
+
+- (NSColor *) tableHeaderTextColorForState: (GSThemeControlState)state
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"tableHeaderTextColor"
+		     state: state];
+  if (color == nil)
+    {
+      if (state == GSThemeHighlightedState)
+	color = [NSColor controlTextColor];
+      else
+	color = [NSColor windowFrameTextColor];
+    }
+  return color;
+}
+
 - (void) drawTableCornerView: (NSView*)cornerView
                    withClip: (NSRect)aRect
 {
@@ -1749,6 +1766,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (NSColor *) browserHeaderTextColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"browserHeaderTextColor"
+		     state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor windowFrameTextColor];
+    }
+  return color;
+}
 
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 	 	     withFrame: (NSRect)rect

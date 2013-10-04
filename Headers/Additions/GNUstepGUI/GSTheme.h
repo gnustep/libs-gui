@@ -1087,6 +1087,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds;
 
 // Table drawing methods
+- (NSColor *) tableHeaderTextColorForState: (GSThemeControlState)state;
+
 - (void) drawTableCornerView: (NSView*)cornerView
                     withClip: (NSRect)aRect;
 - (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
@@ -1103,6 +1105,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
              forStyleMask: (unsigned int)styleMask
                     state: (int)inputState
                  andTitle: (NSString*)title;
+
+- (NSColor *) browserHeaderTextColor;
 
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 		     withFrame: (NSRect)rect

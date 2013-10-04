@@ -1,5 +1,14 @@
 2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m:
+	* Source/NSBrowser.m:
+	* Source/NSTableHeaderCell.m: Add custom color names
+	tableHeaderTextColor and browserHeaderTextColor for
+	table and browser headers.
+
+2013-10-03  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSMenuItemCell.m: If the cell is highlighted, draw
 	the arrow using NSHighlightedMenuArrow (if available).
 
