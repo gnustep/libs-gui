@@ -240,6 +240,28 @@
           Default "+".
 	  </p>
 	  </desc>
+	  <term>GSScrollerArrowsSameEnd</term>
+	  <desc>
+          <p>
+	  YES if the scroller arrows are at the same end.
+	  NO to get one scroller arrow at each end of the scroller.
+	  
+	  If not set, the behaviour is delegated to NSScrollerInterfaceStyle.
+
+          Default YES.
+	  </p>
+	  </desc>
+	  <term>GSScrollerScrollsByPage</term>
+	  <desc>
+          <p>
+	  YES if clicking in the scroller slot should scroll by one page,
+	  NO if the scroller should jump to the location clicked.
+
+	  If not set, the behaviour is delegated to NSScrollerInterfaceStyle.
+
+          Default NO.
+	  </p>
+	  </desc>
 	  <term>GSShiftKeyString</term>
 	  <desc>
           <p>

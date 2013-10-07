@@ -809,14 +809,10 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 					   fromView: nil]];
 	  if (doubleValue != _doubleValue)
 	    {
-	      NSInterfaceStyle interfaceStyle;
+	      const BOOL scrollsToPoint =
+		![[GSTheme theme] scrollerScrollsByPageForScroller: self];
 
-	      interfaceStyle
-		= NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
-
-              if (interfaceStyle == NSNextStepInterfaceStyle 
-                  || interfaceStyle == NSMacintoshInterfaceStyle
-                  || interfaceStyle == GSWindowMakerInterfaceStyle)
+	      if (scrollsToPoint)
 		{
 		  /* NeXTstep style is to scroll to point.
 		   */
@@ -1166,15 +1162,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   CGFloat buttonsWidth;
   CGFloat buttonsSize;  
   NSUsableScrollerParts usableParts;
-  NSInterfaceStyle interfaceStyle;
-  BOOL	arrowsSameEnd = NO;
-
-  interfaceStyle = NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
-
-  if ((interfaceStyle == NSNextStepInterfaceStyle 
-    || interfaceStyle == NSMacintoshInterfaceStyle
-    || interfaceStyle == GSWindowMakerInterfaceStyle))
-    arrowsSameEnd = YES;
+  BOOL	arrowsSameEnd = [[GSTheme theme] scrollerArrowsSameEndForScroller: self];
 
   if (upCell == nil)
     {

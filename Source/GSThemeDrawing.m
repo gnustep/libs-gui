@@ -416,6 +416,62 @@
 
 /* NSScroller themeing.
  */
+- (BOOL) scrollerArrowsSameEndForScroller: (NSScroller *)aScroller
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+
+  if ([defs objectForKey: @"GSScrollerArrowsSameEnd"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollerArrowsSameEnd"];
+    }
+  else
+    {
+      NSInterfaceStyle interfaceStyle = 
+	NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
+      
+      if ((interfaceStyle == NSNextStepInterfaceStyle 
+	   || interfaceStyle == NSMacintoshInterfaceStyle
+	   || interfaceStyle == GSWindowMakerInterfaceStyle))
+	{
+	  return YES;
+	}
+      else
+	{
+	  return NO;
+	}
+    }
+}
+
+- (BOOL) scrollerScrollsByPageForScroller: (NSScroller *)aScroller
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+
+  if ([defs objectForKey: @"GSScrollerScrollsByPage"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollerScrollsByPage"];
+    }
+  else
+    {
+      NSInterfaceStyle interfaceStyle = 
+	NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
+      
+      if (interfaceStyle == NSNextStepInterfaceStyle 
+	  || interfaceStyle == NSMacintoshInterfaceStyle
+	  || interfaceStyle == GSWindowMakerInterfaceStyle)
+	{
+	  /* NeXTstep style is to scroll to point.
+	   */
+	  return NO;
+	}
+      else
+	{
+	  /* Windows style is to scroll by a page.
+	   */
+	  return YES;
+	}
+    }
+}
+
 - (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)arrow
 			    horizontal: (BOOL)horizontal
 {

@@ -816,6 +816,23 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle;
 
+/**
+ * Return YES if the scroller arrows are at the same end.
+ * Return NO to get one scroller arrow at each end of the scroller.
+ *
+ * The default implementation first checks the default GSScrollerArrowsSameEnd
+ * and if that is not set, delegates to the NSInterfaceStyle.
+ */
+- (BOOL) scrollerArrowsSameEndForScroller: (NSScroller *)aScroller;
+
+/**
+ * Returns YES if clicking in the scroller slot should scroll by one page,
+ * NO if the scroller should jump to the location clicked.
+ *
+ * The default implementation first checks the default GSScrollerScrollsByPage
+ * and if that is not set, delegates to the NSInterfaceStyle.
+ */
+- (BOOL) scrollerScrollsByPageForScroller: (NSScroller *)aScroller;
 
 /** 
  * Creates and returns the cell to be used to draw a scroller arrow of the

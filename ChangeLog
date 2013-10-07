@@ -1,3 +1,12 @@
+2013-10-06  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Documentation/GuiUser/DefaultsSummary.gsdoc:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m:
+	* Source/NSScroller.m: Add defaults GSScrollerScrollsByPage
+	and GSScrollerArrowsSameEnd to allow customizing scroller
+	behaviour beyond the combinations provided by NSInterfaceStyle.
+
 2013-10-04  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSColor.m:
