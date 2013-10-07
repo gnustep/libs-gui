@@ -189,6 +189,7 @@
 
   RELEASE(textAttributes);
   RELEASE(titleColor);
+  [[GSTheme theme] setName: nil forElement: [closeButton cell] temporary: NO];
   TEST_RELEASE(closeButton);
   TEST_RELEASE(miniaturizeButton);
 
@@ -390,12 +391,14 @@
       NSSize viewSize;
       NSSize buttonSize;
       
+      [[GSTheme theme] setName: nil forElement: [closeButton cell] temporary: NO];
       ASSIGN(closeButton, 
              [NSWindow standardWindowButton: 
                            NSWindowCloseButton 
                        forStyleMask: 
                            NSTitledWindowMask | NSClosableWindowMask 
                        | NSMiniaturizableWindowMask]);
+      [[GSTheme theme] setName: @"GSMenuCloseButton" forElement: [closeButton cell] temporary: NO];
 
       [closeButton setTarget: _owner];
       [closeButton setAction: closeAction];
