@@ -1,5 +1,16 @@
 2013-10-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m:
+	* Source/NSPopUpButtonCell.m:
+	Remove -[GSTheme drawBorderAndBackgroundForPopUpButtonCell:
+	withFrame:inView:state:] which I added recently, and just use
+	-[GSTheme drawButton:in:view:style:state]. This way,
+	NSPopUpButtonCell automatically supports all of the different
+	NSBezelStyles.
+
+2013-10-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSTitleView.m: Use the GSTheme
 	-setName:forElement:temporary: mechanism to bind the menu close
 	button's cell to the name GSMenuCloseButton, so themes can provide

@@ -1057,17 +1057,18 @@ static NSImage *_pbc_image[5];
 }
 
 /*
- * Override the implementation in NSMenuItemCell to call a different
- * GSTheme method, since typically menu items and buttons will be
- * drawn differently (though not in the GNUstep default theme).
+ * Override the implementation in NSMenuItemCell to behave the same
+ * as superclass NSButtonCell's implementation, since our direct
+ * superclass NSMenuItemCell has special menu-specific drawing.
  */
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
                                    inView: (NSView *)controlView
 {
-  [[GSTheme theme] drawBorderAndBackgroundForPopUpButtonCell: self
-                   withFrame: cellFrame
-                   inView: controlView
-		   state: [self themeControlState]];
+  [[GSTheme theme] drawButton: cellFrame
+			   in: self
+			 view: controlView
+			style: _bezel_style
+			state: [self themeControlState]];
 }
 
 

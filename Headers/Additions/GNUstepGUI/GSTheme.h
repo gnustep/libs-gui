@@ -1010,11 +1010,6 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
 
-- (void) drawBorderAndBackgroundForPopUpButtonCell: (NSPopUpButtonCell *)cell
-					 withFrame: (NSRect)cellFrame
-					    inView: (NSView *)controlView
-					     state: (GSThemeControlState)state;
-
 /**
  * <p>Draws the menu item title.</p>
  *

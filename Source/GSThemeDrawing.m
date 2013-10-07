@@ -1053,28 +1053,6 @@
     }
 }
 
-- (void) drawBorderAndBackgroundForPopUpButtonCell: (NSPopUpButtonCell *)cell
-					 withFrame: (NSRect)cellFrame
-					    inView: (NSView *)controlView
-					     state: (GSThemeControlState)state
-{
-  GSDrawTiles *tiles = [self tilesNamed: GSPopUpButton state: state];
-  if (tiles == nil)
-    {
-      [self drawBorderAndBackgroundForMenuItemCell: cell
-					 withFrame: cellFrame
-					    inView: controlView
-					     state: state
-				      isHorizontal: NO];
-    }
-  else
-    {
-      [self fillRect: cellFrame
-           withTiles: tiles
-          background: [NSColor clearColor]];
-    }
-}
-
 - (NSColor *) menuSeparatorColor
 {
   NSColor *color = [self colorNamed: @"menuSeparatorColor"
