@@ -2660,101 +2660,62 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 			      inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
-  NSRect bounds = [view bounds];
-  float minX = NSMinX (aRect);
-  float maxX = NSMaxX (aRect);
-  float minY = NSMinY (aRect);
-  float maxY = NSMaxY (aRect);
-  int i;
-  float x_pos;
-  int startingColumn; 
-  int endingColumn;
-  int numberOfColumns = [tableView numberOfColumns];
-  NSArray *tableColumns = [tableView tableColumns];
-  NSGraphicsContext *ctxt = GSCurrentContext ();
-  float position = 0.0;
-  float *columnOrigins = [tableView _columnOrigins];
-  int startingRow    = [tableView rowAtPoint: 
-			       NSMakePoint (bounds.origin.x, minY)];
-  int endingRow      = [tableView rowAtPoint: 
-			       NSMakePoint (bounds.origin.x, maxY)];
+
+  // Cache some constants
+  const CGFloat minX = NSMinX(aRect);
+  const CGFloat maxX = NSMaxX(aRect);
+  const CGFloat minY = NSMinY(aRect);
+  const CGFloat maxY = NSMaxY(aRect);
+  const NSInteger numberOfColumns = [tableView numberOfColumns];
+  const NSInteger numberOfRows = [tableView numberOfRows];
+
+  NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(minX, minY)];
+  NSInteger endingRow = [tableView rowAtPoint: NSMakePoint(minX, maxY)];
+  NSInteger startingColumn = [tableView columnAtPoint: NSMakePoint(minX, minY)];
+  NSInteger endingColumn = [tableView columnAtPoint: NSMakePoint(maxX, minY)];
+
+  NSGraphicsContext *ctxt = GSCurrentContext();
   NSColor *gridColor = [tableView gridColor];
-  int rowHeight = [tableView rowHeight];
-  int numberOfRows = [tableView numberOfRows];
 
-  /* Using columnAtPoint:, rowAtPoint: here calls them only twice 
-     per drawn rect */
-  x_pos = minX;
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
 
-  x_pos = maxX;
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
+  if (startingRow == -1)
+    startingRow = 0;
+  if (endingRow == -1)
+    endingRow = numberOfRows - 1;
+  
+  if (startingColumn == -1)
+    startingColumn = 0;
   if (endingColumn == -1)
     endingColumn = numberOfColumns - 1;
-  /*
-  int startingColumn = [tableView columnAtPoint: 
-			       NSMakePoint (minX, bounds.origin.y)];
-  int endingColumn   = [tableView columnAtPoint: 
-			       NSMakePoint (maxX, bounds.origin.y)];
-  */
 
-  DPSgsave (ctxt);
-  DPSsetlinewidth (ctxt, 1);
+
+  DPSgsave(ctxt);
   [gridColor set];
 
+  // Draw horizontal lines
   if (numberOfRows > 0)
     {
-      /* Draw horizontal lines */
-      if (startingRow == -1)
-	startingRow = 0;
-      if (endingRow == -1)
-	endingRow = numberOfRows - 1;
-      
-      position = bounds.origin.y;
-      position += startingRow * rowHeight;
-      for (i = startingRow; i <= endingRow + 1; i++)
+      NSInteger i;
+      for (i = startingRow; i <= endingRow; i++)
 	{
-	  DPSmoveto (ctxt, minX, position);
-	  DPSlineto (ctxt, maxX, position);
-	  DPSstroke (ctxt);
-	  position += rowHeight;
+	  NSRect rowRect = [tableView rectOfRow: i];
+	  rowRect.origin.y += rowRect.size.height - 1;
+	  rowRect.size.height = 1;
+	  NSRectFill(rowRect);
 	}
     }
   
+  // Draw vertical lines
   if (numberOfColumns > 0)
     {
-      int lastRowPosition = position - rowHeight;
-      /* Draw vertical lines */
-      if (startingColumn == -1)
-	startingColumn = 0;
-      if (endingColumn == -1)
-	endingColumn = numberOfColumns - 1;
-
+     NSInteger i;
       for (i = startingColumn; i <= endingColumn; i++)
 	{
-	  DPSmoveto (ctxt, columnOrigins[i], minY);
-	  DPSlineto (ctxt, columnOrigins[i], lastRowPosition);
-	  DPSstroke (ctxt);
+	  NSRect colRect = [tableView rectOfColumn: i];
+	  colRect.origin.x += colRect.size.width - 1;
+	  colRect.size.width = 1;
+	  NSRectFill(colRect);
 	}
-      position =  columnOrigins[endingColumn];
-      position += [[tableColumns objectAtIndex: endingColumn] width];  
-      /* Last vertical line must moved a pixel to the left */
-      if (endingColumn == (numberOfColumns - 1))
-	position -= 1;
-      DPSmoveto (ctxt, position, minY);
-      DPSlineto (ctxt, position, lastRowPosition);
-      DPSstroke (ctxt);
     }
 
   DPSgrestore (ctxt);

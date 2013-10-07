@@ -1,5 +1,10 @@
 2013-10-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-drawTableViewGridInClipRect:inView:):
+	Clean up grid drawing code; use rect fills to avoid blurriness.
+
+2013-10-07  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSThemeDrawing.m:
 	* Source/NSPopUpButtonCell.m:
