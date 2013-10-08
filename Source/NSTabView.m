@@ -409,7 +409,7 @@
 
   switch (_type)
     {
-      case NSTopTabsBezelBorder:
+      case NSBottomTabsBezelBorder:
         cRect.origin.x += 1;
         cRect.origin.y += 1;
         cRect.size.width -= 3;
@@ -427,9 +427,9 @@
         cRect.size.width -= 2;
         cRect.size.height -= 2;
         break;
-    case NSBottomTabsBezelBorder:
+      case NSTopTabsBezelBorder:
         cRect.origin.x += 1;
-        cRect.origin.y += 19;
+        cRect.origin.y += 18;
         cRect.size.width -= 3;
         cRect.size.height -= 19;
         break;
