@@ -1,3 +1,21 @@
+2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m: Rewrite tab drawing code to be more
+	organized, lay out the images in a straightforward way, and
+	allow themeing the fill part of the tab between the end images.
+	The output is almost pixel-identical to
+	the old code (only some unnoticable 1-pixel differences
+	in where shadows end). It's also organized so that adding support
+	for left and right tabs should be easy.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add some part names
+	* Images/common_Tab*.tiff: Tweak to work with the new layout code.
+	All top images are now the same size, as are all bottom images.
+	* Images/GNUmakefile:
+	* Images/common_TabUnSelectToSelectedJunction.tiff: Renamed to
+	Images/common_TabUnSelectedToSelectedJunction.tiff
+	* Source/GSThemePrivate.h:
+	* Source/GSTheme.m: Add GSStringFromTabViewType utility function
+
 2013-10-07  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m (-drawTableViewGridInClipRect:inView:):

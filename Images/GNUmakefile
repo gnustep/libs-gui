@@ -114,7 +114,7 @@ Images_RESOURCE_FILES = \
  common_TabSelectedLeft.tiff \
  common_TabSelectedRight.tiff \
  common_TabSelectedToUnSelectedJunction.tiff \
- common_TabUnSelectToSelectedJunction.tiff \
+ common_TabUnSelectedToSelectedJunction.tiff \
  common_TabUnSelectedJunction.tiff \
  common_TabUnSelectedLeft.tiff \
  common_TabUnSelectedRight.tiff \

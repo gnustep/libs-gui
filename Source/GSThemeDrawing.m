@@ -1851,300 +1851,403 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+typedef enum {
+  GSTabSelectedLeft,
+  GSTabSelectedRight,
+  GSTabSelectedToUnSelectedJunction,
+  GSTabSelectedFill,
+  GSTabUnSelectedLeft,
+  GSTabUnSelectedRight,
+  GSTabUnSelectedToSelectedJunction,
+  GSTabUnSelectedJunction,
+  GSTabUnSelectedFill,
+  GSTabBackgroundFill
+} GSTabPart;
+
+- (NSImage *)imageForTabPart: (GSTabPart)part type: (NSTabViewType)type
+{
+  NSMutableString *imageName = [NSMutableString stringWithCapacity: 32];
+  NSString *typeString = nil;
+  NSString *partString = nil;
+
+  switch (type)
+    {
+    case NSTopTabsBezelBorder:
+      typeString = @"";
+      break;
+    case NSBottomTabsBezelBorder:
+      typeString = @"Down";
+      break;
+    case NSLeftTabsBezelBorder:
+      typeString = @"Left";
+      break;
+    case NSRightTabsBezelBorder:
+      typeString =  @"Right";
+      break;
+    default:
+      return nil;
+    }
+
+  switch (part)
+    {
+    case GSTabSelectedLeft: 
+      partString = @"SelectedLeft";
+      break;
+    case GSTabSelectedRight:
+      partString = @"SelectedRight";
+      break;
+    case GSTabSelectedToUnSelectedJunction:
+      partString = @"SelectedToUnSelectedJunction";
+      break;
+    case GSTabSelectedFill:
+      return nil;
+    case GSTabUnSelectedLeft:
+      partString = @"UnSelectedLeft";
+      break;
+    case GSTabUnSelectedRight:
+      partString = @"UnSelectedRight";
+      break;
+    case GSTabUnSelectedToSelectedJunction:
+      partString = @"UnSelectedToSelectedJunction";
+      break;
+    case GSTabUnSelectedJunction:
+      partString = @"UnSelectedJunction";
+      break;
+    case GSTabUnSelectedFill:
+    case GSTabBackgroundFill:
+      return nil;
+    }
+
+  [imageName appendString: @"common_Tab"];
+  [imageName appendString: typeString];
+  [imageName appendString: partString];
+
+  return [NSImage imageNamed: imageName];
+}
+
+- (void) frameTabRectTopAndBottom: (NSRect)aRect 
+			 topColor: (NSColor *)topColor
+		      bottomColor: (NSColor *)bottomColor
+{
+  NSRect bottom = aRect;
+  NSRect top = aRect;
+
+  bottom.size.height = 1;
+  top.origin.y = NSMaxY(aRect) - 1;
+  top.size.height = 1;
+
+  [topColor set];
+  NSRectFill(top);
+
+  [bottomColor set];
+  NSRectFill(bottom);
+}
+
+- (void) drawTabFillInRect: (NSRect)aRect forPart: (GSTabPart)part type: (NSTabViewType)type
+{
+  NSString *name = nil;
+  GSDrawTiles *tiles = nil;
+
+  switch (part)
+    {
+    case GSTabSelectedFill:
+      name = GSTabViewSelectedTabFill;
+      break;
+    case GSTabUnSelectedFill:
+      name = GSTabViewUnSelectedTabFill;
+      break;
+    case GSTabBackgroundFill:
+      name = GSTabViewBackgroundTabFill;
+      break;
+    default:
+      break;
+    }
+
+  tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      if (type == NSBottomTabsBezelBorder)
+	{
+	  switch (part)
+	    {
+	    case GSTabSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor clearColor]
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabUnSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect 
+				    topColor: [NSColor darkGrayColor] 
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabBackgroundFill:
+	      {
+		NSRect clip = aRect;
+		aRect.origin.x -= 2;
+		aRect.origin.y = NSMaxY(aRect) - 2;
+		aRect.size.width += 2;
+		aRect.size.height = 4;
+		[self drawButton: aRect withClip: clip];
+		break;
+	      }
+	    default:
+	      break;
+	    }
+	}
+      else if (type == NSTopTabsBezelBorder)
+	{
+	  switch (part)
+	    {
+	    case GSTabSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor whiteColor]
+				 bottomColor: [NSColor clearColor]];
+	      break;
+	    case GSTabUnSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor whiteColor]
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabBackgroundFill:
+	      {
+		NSRect clip = aRect;
+		aRect.origin.x -= 2;
+		aRect.origin.y -= 3;
+		aRect.size.width += 2;
+		aRect.size.height = 4;
+		[self drawButton: aRect withClip: clip];
+		break;
+	      }
+	    default:
+	      break;
+	    }
+	}
+    }
+  else
+    {
+      [self fillRect: aRect
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
+}
+
+- (CGFloat) tabHeightForType: (NSTabViewType)type
+{
+  NSImage *img = [self imageForTabPart: GSTabUnSelectedLeft type: type];
+  return [img size].height;
+}
+
+- (void) drawTabViewBezelRect: (NSRect)aRect
+                  tabViewType: (NSTabViewType)type
+                       inView: (NSView *)view
+{
+  NSString *name = GSStringFromTabViewType(type);
+  GSDrawTiles *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      switch (type)
+	{
+	default:
+	case NSTopTabsBezelBorder:
+	  {
+	    NSRect clip = aRect;
+	    aRect.size.height += 1;
+	    [self drawButton: aRect withClip: clip];
+	    break;
+	  }
+	case NSBottomTabsBezelBorder:
+	  {
+	    NSRect clip = aRect;
+	    aRect.size.height += 2;
+	    aRect.origin.y -= 2;
+	    [self drawButton: aRect withClip: clip];
+	    break;
+	  }
+	case NSLeftTabsBezelBorder:
+	case NSRightTabsBezelBorder:
+	  [self drawButton: aRect withClip: NSZeroRect];
+	  break;
+	case NSNoTabsBezelBorder:
+       	  break;	
+	case NSNoTabsLineBorder:
+	  [[NSColor controlDarkShadowColor] set];
+	  NSFrameRect(aRect);
+	  break;	  
+	case NSNoTabsNoBorder:
+	  break;
+	}
+    }
+  else
+    {
+      [self fillRect: aRect
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
+}
+
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
 	       withItems: (NSArray *)items
 	    selectedItem: (NSTabViewItem *)selected
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  int howMany = [items count];
+  const NSUInteger howMany = [items count];
   int i;
   int previousState = 0;
-  NSRect bounds = [view bounds];
+  const NSRect bounds = [view bounds];
   NSRect aRect = bounds;
-  NSColor *lineColour = [NSColor highlightColor];
-  NSColor *backgroundColour = [[view window] backgroundColor];
-  BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
-  NSTabViewType type = [(NSTabView *)view tabViewType];
 
+  const BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
+  const NSTabViewType type = [(NSTabView *)view tabViewType];
+  const CGFloat tabHeight = [self tabHeightForType: type];
+  
   DPSgsave(ctxt);
 
+  // Calculate the background rect
   switch (type)
     {
       default:
       case NSTopTabsBezelBorder: 
-        aRect.size.height -= 16;
-        [self drawButton: aRect withClip: rect];
+        aRect.size.height -= tabHeight;
         break;
 
       case NSBottomTabsBezelBorder: 
-        aRect.size.height -= 16;
-        aRect.origin.y += 16;
-        [self drawButton: aRect withClip: rect];
+        aRect.size.height -= tabHeight;
+        aRect.origin.y += tabHeight;
         break;
 
       case NSLeftTabsBezelBorder: 
-        aRect.size.width -= 18;
-        aRect.origin.x += 18;
-        [self drawButton: aRect withClip: rect];
+        aRect.size.width -= tabHeight;
+        aRect.origin.x += tabHeight;
         break;
 
       case NSRightTabsBezelBorder: 
-        aRect.size.width -= 18;
-        [self drawButton: aRect withClip: rect];
+        aRect.size.width -= tabHeight;
         break;
 
       case NSNoTabsBezelBorder: 
-        [self drawButton: aRect withClip: rect];
-        break;
-
       case NSNoTabsLineBorder: 
-        [[NSColor controlDarkShadowColor] set];
-        NSFrameRect(aRect);
-        break;
-
       case NSNoTabsNoBorder: 
         break;
     }
-
-  if (type == NSBottomTabsBezelBorder)
+  
+  [self drawTabViewBezelRect: aRect
+ 		 tabViewType: type
+ 		      inView: view];
+ 
+  if (type == NSBottomTabsBezelBorder
+      || type == NSTopTabsBezelBorder)
     {
       NSPoint iP;
+      if (type == NSBottomTabsBezelBorder)
+	iP = bounds.origin;
+      else
+	iP = NSMakePoint(aRect.origin.x, NSMaxY(aRect));
 
-      iP.x = bounds.origin.x;
-      iP.y = bounds.origin.y;
-              
       for (i = 0; i < howMany; i++) 
         {
           NSRect r;
-          NSRect fRect;
           NSTabViewItem *anItem = [items objectAtIndex: i];
-          NSTabState itemState = [anItem tabState];
-          NSSize s = [anItem sizeOfLabel: truncate];
-          
-          [backgroundColour set];
+          const NSTabState itemState = [anItem tabState];
+          const NSSize s = [anItem sizeOfLabel: truncate];
+
+	  // Draw the left image
 
           if (i == 0)
-            {
-              if (itemState == NSSelectedTab)
+            {	    
+	      NSImage *part = nil;
+	      if (itemState == NSSelectedTab)
                 {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
+		  part = [self imageForTabPart: GSTabSelectedLeft type: type];
                 }
               else if (itemState == NSBackgroundTab)
                 {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownUnSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
+		  part = [self imageForTabPart: GSTabUnSelectedLeft type: type];
                 }
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
+
+	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      iP.x += [part size].width;
             }
           else
             {
-              if (itemState == NSSelectedTab) 
+	      NSImage *part = nil;
+              if (itemState == NSSelectedTab)
                 {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed:
-                    @"common_TabDownUnSelectedToSelectedJunction"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
+		  part = [self imageForTabPart: GSTabUnSelectedToSelectedJunction type: type];
                 }
               else if (itemState == NSBackgroundTab)
                 {
                   if (previousState == NSSelectedTab)
                     {
-                      iP.y += 1;
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabDownSelectedToUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                      iP.y -= 1;
+		      part = [self imageForTabPart: GSTabSelectedToUnSelectedJunction type: type];
                     }
                   else
                     {
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabDownUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
+		      part = [self imageForTabPart: GSTabUnSelectedJunction type: type];
                     }
-                } 
+                }
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
-            }  
 
-          r.origin.x = iP.x + 13;
-          r.origin.y = iP.y + 2;
-          r.size.width = s.width;
-          r.size.height = 15;
-
-          fRect = r;
-          if (itemState == NSSelectedTab)
-            {
-              // Undraw the line that separates the tab from its view.
-              fRect.origin.y += 1;
-              fRect.size.height += 1;
+	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      iP.x += [part size].width;
             }
-          NSRectFill(fRect);
 
-          // Draw the line at the bottom of the item
-          [lineColour set];
-          DPSsetlinewidth(ctxt, 1);
-          DPSmoveto(ctxt, r.origin.x, r.origin.y - 1);
-          DPSrlineto(ctxt, r.size.width, 0);
-          DPSstroke(ctxt);
-          
+	  // Draw the middle fill part of the tab
+
+          r.origin = iP;
+          r.size.width = s.width;
+          r.size.height = tabHeight;
+
+	  if (itemState == NSSelectedTab)
+	    {
+	      [self drawTabFillInRect: r forPart: GSTabSelectedFill type: type];
+	    }
+	  else if (itemState == NSBackgroundTab)
+	    {
+	      [self drawTabFillInRect: r forPart: GSTabUnSelectedFill type: type];
+	    }
+	  else
+	    NSLog(@"Not finished yet. Luff ya.\n");
+
           // Label
           [anItem drawLabel: truncate inRect: r];
           
-          iP.x += s.width + 13;
+          iP.x += s.width;
           previousState = itemState;
+
+	  // For the rightmost tab, draw the right side
 
           if (i == howMany - 1)
             {
-              [backgroundColour set];
-
-              if ([anItem tabState] == NSSelectedTab)
-                {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
-                }
-              else if ([anItem tabState] == NSBackgroundTab)
-                {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownUnSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                }
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }
-        }
-    }
-  else if (type == NSTopTabsBezelBorder)
-    {
-      NSPoint iP;
-
-      iP.x = bounds.origin.x;
-      // FIXME: Why not NSMaxY(bounds)?
-      iP.y = bounds.size.height - 16;
-
-      for (i = 0; i < howMany; i++) 
-        {
-          NSRect r;
-          NSRect fRect;
-          NSTabViewItem *anItem = [items objectAtIndex: i];
-          NSTabState itemState = [anItem tabState];
-          NSSize s = [anItem sizeOfLabel: truncate];
-
-          [backgroundColour set];
-          
-          if (i == 0)
-            {
-              if (itemState == NSSelectedTab)
-                {
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
-                }
-              else if (itemState == NSBackgroundTab)
-                {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabUnSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                }
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }
-          else
-            {
-              if (itemState == NSSelectedTab)
-                {
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed:
-                    @"common_TabUnSelectToSelectedJunction"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
-                }
-              else if (itemState == NSBackgroundTab)
-                {
-                  if (previousState == NSSelectedTab)
-                    {
-                      iP.y -= 1;
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabSelectedToUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                      iP.y += 1;
-                    }
-                  else
-                    {
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                    }
-                } 
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }  
-
-          r.origin.x = iP.x + 13;
-          r.origin.y = iP.y;
-          r.size.width = s.width;
-          r.size.height = 15;
-          
-          fRect = r;
-          if (itemState == NSSelectedTab)
-            {
-              // Undraw the line that separates the tab from its view.
-              fRect.origin.y -= 1;
-              fRect.size.height += 1;
-            }
-          NSRectFill(fRect);
-
-          // Draw the line at the top of the item
-          [lineColour set];
-          DPSsetlinewidth(ctxt, 1);
-          DPSmoveto(ctxt, r.origin.x, r.origin.y + 16);
-          DPSrlineto(ctxt, r.size.width, 0);
-          DPSstroke(ctxt);
-          
-          // Label
-          [anItem drawLabel: truncate inRect: r];
-          
-          iP.x += s.width + 13;
-          previousState = itemState;
-
-          if (i == howMany - 1)
-            {
-              [backgroundColour set];
-            
+	      NSImage *part = nil;
               if ([anItem tabState] == NSSelectedTab)
                 {              
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
+		  part = [self imageForTabPart: GSTabSelectedRight type: type];
                 }  
               else if ([anItem tabState] == NSBackgroundTab)
                 {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabUnSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
+		  part = [self imageForTabPart: GSTabUnSelectedRight type: type];
                 }
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
+
+	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      iP.x += [part size].width;
+
+	      // Draw the background fill
+	      if (iP.x < NSMaxX(bounds))
+		{
+		  r.origin = iP;
+		  r.size.width = NSMaxX(bounds) - iP.x;
+		  r.size.height = tabHeight;
+
+		  [self drawTabFillInRect: r forPart: GSTabBackgroundFill type: type];
+		}
             }
         }
     }

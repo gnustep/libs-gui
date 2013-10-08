@@ -112,6 +112,11 @@ NSString        *GSSliderVerticalTrack = @"GSSliderVerticalTrack";
 // NSBox parts 
 NSString        *GSBoxBorder = @"GSBoxBorder";
 
+/* NSTabView parts */
+NSString        *GSTabViewSelectedTabFill = @"GSTabViewSelectedTabFill";
+NSString        *GSTabViewUnSelectedTabFill = @"GSTabViewUnSelectedTabFill";
+NSString        *GSTabViewBackgroundTabFill = @"GSTabViewBackgroundTabFill";
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification
@@ -220,6 +225,22 @@ GSStringFromBorderType(NSBorderType borderType)
       case NSBezelBorder:                 return @"NSBezelBorder";
       case NSGrooveBorder:                return @"NSGrooveBorder";
       default:                            return nil;
+    }
+}
+
+NSString *
+GSStringFromTabViewType(NSTabViewType type)
+{
+  switch (type)
+    {
+    case NSTopTabsBezelBorder: return @"NSTopTabsBezelBorder";
+    case NSBottomTabsBezelBorder: return @"NSBottomTabsBezelBorder";
+    case NSLeftTabsBezelBorder: return @"NSLeftTabsBezelBorder";
+    case NSRightTabsBezelBorder: return @"NSRightTabsBezelBorder";
+    case NSNoTabsBezelBorder: return @"NSNoTabsBezelBorder";
+    case NSNoTabsLineBorder: return @"NSNoTabsLineBorder";
+    case NSNoTabsNoBorder: return @"NSNoTabsNoBorder";
+    default: return nil;
     }
 }
 

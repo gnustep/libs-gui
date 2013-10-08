@@ -227,6 +227,8 @@
 #import <AppKit/NSScroller.h>
 // For segmented control style constants
 #import <AppKit/NSSegmentedControl.h>
+// For tab view type 
+#import <AppKit/NSTabView.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -308,6 +310,11 @@ APPKIT_EXPORT  NSString        *GSSliderVerticalTrack;
 
 /* NSBox parts */
 APPKIT_EXPORT  NSString        *GSBoxBorder;
+
+/* NSTabView parts */
+APPKIT_EXPORT  NSString        *GSTabViewSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBackgroundTabFill;
 
 /**
  * Structure to describe the size of top/bottom/left/right margins inside
