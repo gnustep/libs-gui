@@ -1932,9 +1932,9 @@ typedef enum {
   NSRect bottom = aRect;
   NSRect top = aRect;
 
-  bottom.size.height = 1;
-  top.origin.y = NSMaxY(aRect) - 1;
   top.size.height = 1;
+  bottom.origin.y = NSMaxY(aRect) - 1;
+  bottom.size.height = 1;
 
   [topColor set];
   NSRectFill(top);
@@ -1983,9 +1983,9 @@ typedef enum {
 	      break;
 	    case GSTabBackgroundFill:
 	      {
-		NSRect clip = aRect;
+		const NSRect clip = aRect;
 		aRect.origin.x -= 2;
-		aRect.origin.y = NSMaxY(aRect) - 2;
+		aRect.origin.y = NSMinY(aRect) - 2;
 		aRect.size.width += 2;
 		aRect.size.height = 4;
 		[self drawButton: aRect withClip: clip];
@@ -2011,9 +2011,9 @@ typedef enum {
 	      break;
 	    case GSTabBackgroundFill:
 	      {
-		NSRect clip = aRect;
+		const NSRect clip = aRect;
 		aRect.origin.x -= 2;
-		aRect.origin.y -= 3;
+		aRect.origin.y = NSMaxY(aRect) - 1;
 		aRect.size.width += 2;
 		aRect.size.height = 4;
 		[self drawButton: aRect withClip: clip];
@@ -2052,16 +2052,16 @@ typedef enum {
 	default:
 	case NSTopTabsBezelBorder:
 	  {
-	    NSRect clip = aRect;
+	    const NSRect clip = aRect;
 	    aRect.size.height += 1;
+	    aRect.origin.y -= 1;
 	    [self drawButton: aRect withClip: clip];
 	    break;
 	  }
 	case NSBottomTabsBezelBorder:
 	  {
-	    NSRect clip = aRect;
+	    const NSRect clip = aRect;
 	    aRect.size.height += 2;
-	    aRect.origin.y -= 2;
 	    [self drawButton: aRect withClip: clip];
 	    break;
 	  }
@@ -2111,11 +2111,11 @@ typedef enum {
       default:
       case NSTopTabsBezelBorder: 
         aRect.size.height -= tabHeight;
+        aRect.origin.y += tabHeight;
         break;
 
       case NSBottomTabsBezelBorder: 
         aRect.size.height -= tabHeight;
-        aRect.origin.y += tabHeight;
         break;
 
       case NSLeftTabsBezelBorder: 
@@ -2141,7 +2141,7 @@ typedef enum {
       || type == NSTopTabsBezelBorder)
     {
       NSPoint iP;
-      if (type == NSBottomTabsBezelBorder)
+      if (type == NSTopTabsBezelBorder)
 	iP = bounds.origin;
       else
 	iP = NSMakePoint(aRect.origin.x, NSMaxY(aRect));
@@ -2169,7 +2169,13 @@ typedef enum {
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
 
-	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
 	      iP.x += [part size].width;
             }
           else
@@ -2193,7 +2199,13 @@ typedef enum {
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
 
-	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
 	      iP.x += [part size].width;
             }
 
@@ -2236,7 +2248,13 @@ typedef enum {
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
 
-	      [part compositeToPoint: iP operation: NSCompositeSourceOver];
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
 	      iP.x += [part size].width;
 
 	      // Draw the background fill

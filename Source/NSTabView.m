@@ -94,13 +94,10 @@
   [super dealloc];
 }
 
-/*
-// FIXME: This should be defined
 - (BOOL) isFlipped
 {
   return YES;
 }
-*/
 
 // tab management.
 

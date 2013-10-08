@@ -1,5 +1,11 @@
 2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTabView.m: Uncomment - (BOOL) isFlipped { return YES; }
+	* Source/GSThemeDrawing.m: Change tab drawing to assume flipped
+	coordinates
+
+2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Rewrite tab drawing code to be more
 	organized, lay out the images in a straightforward way, and
 	allow themeing the fill part of the tab between the end images.
