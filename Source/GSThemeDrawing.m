@@ -3061,6 +3061,7 @@ typedef enum {
 		    inView: (NSBox *)box
 {
   NSColor *color;
+  BOOL drawTitleBackground = YES;
 
   if (boxType == NSBoxCustom)
     {
@@ -3077,9 +3078,7 @@ typedef enum {
     {
       color = [[box window] backgroundColor];
     }
-  // Fill inside
-  [color set];
-  NSRectFill(clipRect);
+
 
   // Draw border
 
@@ -3090,6 +3089,10 @@ typedef enum {
       || boxType == NSBoxOldStyle
       || boxType == NSBoxCustom)
     {
+      // Fill inside
+      [color set];
+      NSRectFill(clipRect);
+
       switch (borderType)
 	{
 	case NSNoBorder: 
@@ -3116,21 +3119,81 @@ typedef enum {
     }
   else
     {
+      drawTitleBackground = NO;
+      
+      // If the title is on the border, clip a hole in the later 
+
+      [NSGraphicsContext saveGraphicsState];
+      
+      if ((borderType != NSNoBorder)
+	  && (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
+	{
+	  const NSRect borderRect = [box borderRect];
+	  const NSRect titleRect = [box titleRect];
+	  NSBezierPath *path = [NSBezierPath bezierPath];
+	  
+	  // Left
+	  if (NSMinX(titleRect) > NSMinX(borderRect))
+	    {
+	      NSRect left = borderRect;
+	      left.size.width = NSMinX(titleRect) - NSMinX(borderRect);
+	      [path appendBezierPathWithRect: left];
+	    }
+	  
+	  // Right
+	  if (NSMaxX(borderRect) > NSMaxX(titleRect))
+	    {
+	      NSRect right = borderRect;
+	      right.size.width = NSMaxX(borderRect) - NSMaxX(titleRect);
+	      right.origin.x = NSMaxX(titleRect);
+	      [path appendBezierPathWithRect: right];
+	    }      
+	  
+	  // MinY
+	  if (NSMinY(titleRect) > NSMinY(borderRect))
+	    {
+	      NSRect minY = borderRect;
+	      minY.size.height = NSMinY(titleRect) - NSMinY(borderRect);
+	      [path appendBezierPathWithRect: minY];
+	    }
+	  
+	  // MaxY
+	  if (NSMaxY(borderRect) > NSMaxY(titleRect))
+	    {
+	      NSRect maxY = borderRect;
+	      maxY.size.height = NSMaxY(borderRect) - NSMaxY(titleRect);
+	      maxY.origin.y = NSMaxY(titleRect);
+	      [path appendBezierPathWithRect: maxY];
+	    }      
+	  
+	  if (![path isEmpty])
+	    {
+	      [path addClip];
+	    }
+	}
+
+      
       [[GSTheme theme] fillRect: [box borderRect]
 		      withTiles: tiles
 		     background: [NSColor clearColor]];
+      
+      // Restore clipping path
+      [NSGraphicsContext restoreGraphicsState];
     }
+
 
   // Draw title
   if ([box titlePosition] != NSNoTitle)
     {
       // If the title is on the border, clip a hole in the later 
-      if ((borderType != NSNoBorder)
-	&& (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
-        {
-          [color set];
-          NSRectFill([box titleRect]);
-        }
+      if (drawTitleBackground
+	  && (borderType != NSNoBorder)
+	  && (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
+	{	  
+	  [color set];
+	  NSRectFill([box titleRect]);
+	}
+
       [[box titleCell] drawWithFrame: [box titleRect] inView: box];
     }
 }

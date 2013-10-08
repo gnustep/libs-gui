@@ -462,14 +462,18 @@
 
 - (BOOL) isOpaque
 {
-  if (_box_type == NSBoxCustom)
-    {
-      return !_transparent;
-    }
-  else
-    {
-      return YES;
-    }
+  // FIXME: Depends on theme; if always returning NO is a performance hit
+  // we can check if GSTheme is going to draw an old-style opaque box
+  // or not.
+  return NO;
+  // if (_box_type == NSBoxCustom)
+  //   {
+  //     return !_transparent;
+  //   }
+  // else
+  //   {
+  //     return YES;
+  //   }
 }
 
 - (NSColor*) fillColor
