@@ -1170,7 +1170,8 @@ typedef	struct {
 	      image = [[_imageClass alloc] initWithContentsOfFile: path];
 	      if (image != nil)
 		{
-                  if ([[info objectForKey: @"NinePatch"] boolValue])
+                  if ([[info objectForKey: @"NinePatch"] boolValue]
+		      || [file hasSuffix: @".9"])
                     {
                       tiles = [[GSDrawTiles alloc]
 			initWithNinePatchImage: image];
@@ -1187,7 +1188,30 @@ typedef	struct {
 		}
 	    }
 	}
-      else
+      
+      if (tiles == nil)
+        {
+	  NSString	*imagePath;
+
+	  // Try 9-patch first
+	  imagePath = [_bundle pathForResource: fullName
+					ofType: @"9.png"
+				   inDirectory: @"ThemeTiles"];
+	  if (imagePath != nil)
+	    {
+	      image
+		= [[_imageClass alloc] initWithContentsOfFile: imagePath];
+	      if (image != nil)
+		{
+		  tiles = [[GSDrawTiles alloc]
+			    initWithNinePatchImage: image];
+		  [tiles setFillStyle: GSThemeFillStyleScaleAll];
+		  RELEASE(image);
+		}
+	    }
+	}
+	        
+      if (tiles == nil)
         {
 	  NSArray	*imageTypes;
 	  NSString	*imagePath;

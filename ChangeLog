@@ -1,5 +1,12 @@
 2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSTheme.m (-tilesNamed:state:): Interpret .9.png files
+	as NinePatch=YES. If a tile isn't listed in GSThemeTiles in the
+	plist, try to find it in the ThemeTiles directory anyway. This
+	lets you avoid declaring tiles in the info plist.
+
+2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (NSBox): If drawing with theme tiles,
 	use actual clipping to clip a hole in the border, so we can avoid
 	filling anything with the background color.
