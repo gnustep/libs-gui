@@ -3079,13 +3079,20 @@ typedef enum {
       color = [[box window] backgroundColor];
     }
 
+  // Draw separator boxes
+
+  if (boxType == NSBoxSeparator)
+    {
+      [[box borderColor] set];
+      NSRectFill([box borderRect]);
+      return;
+    }
 
   // Draw border
 
   GSDrawTiles *tiles = [[GSTheme theme] tilesNamed: GSBoxBorder state: GSThemeNormalState];
   if (tiles == nil 
       || borderType == NSNoBorder
-      || boxType == NSBoxSeparator
       || boxType == NSBoxOldStyle
       || boxType == NSBoxCustom)
     {

@@ -1,5 +1,11 @@
 2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-drawBoxInClipRect:...):
+	* Source/NSBox.m (-calcSizesAllowingNegative):
+	Special case for box type NSBoxSeparator to draw a centered line
+
+2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTabView.m: Fix incorrect content rect now that view
 	is flipped.
 

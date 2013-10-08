@@ -645,6 +645,23 @@
   GSTheme	*theme = [GSTheme theme];
   NSRect r = NSZeroRect;
 
+  if (_box_type == NSBoxSeparator)
+    {
+      _title_rect = NSZeroRect;
+      _border_rect = _bounds;
+      if (_bounds.size.width > _bounds.size.height)
+	{
+	  _border_rect.origin.y = (int)(_border_rect.size.height / 2);
+	  _border_rect.size.height = 1;
+	}
+      else
+	{
+	  _border_rect.origin.x = (int)(_border_rect.size.width / 2);
+	  _border_rect.size.width = 1;
+	}
+      return r;
+    }				
+
   switch (_title_position)
     {
       case NSNoTitle: 
