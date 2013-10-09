@@ -4056,7 +4056,9 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               break;
             }
           
-          if ([theEvent trackingNumber]) // It's a mouse entered
+	  /* Only send the event mouse entered if the
+	   * cursor rectangle is valid. */
+          if ([theEvent trackingNumber] && [r isValid]) // It's a mouse entered
             {
               [c mouseEntered: theEvent];
             }
