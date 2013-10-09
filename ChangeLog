@@ -1,5 +1,9 @@
 2013-10-09 German Arias <germanandre@gmx.es>
 
+	* NSWindow.m (-sendEvent:): Fix last commit.
+
+2013-10-09 German Arias <germanandre@gmx.es>
+
 	* NSWindow.m (-sendEvent:): Only send events mouse entered if the
 	cursor rectangles are valid.
 
