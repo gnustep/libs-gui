@@ -1925,6 +1925,50 @@ typedef enum {
   return [NSImage imageNamed: imageName];
 }
 
+- (GSDrawTiles *)tilesForTabPart: (GSTabPart)part type: (NSTabViewType)type
+{
+  NSString *name = nil;
+
+  if (type == NSTopTabsBezelBorder)
+    {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewBackgroundTabFill;
+    }
+  else if (type == NSBottomTabsBezelBorder)
+    {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewBottomSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewBottomUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewBottomBackgroundTabFill;
+    }
+  else if (type == NSLeftTabsBezelBorder)
+    {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewLeftSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewLeftUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewLeftBackgroundTabFill;
+    }
+  else if (type == NSRightTabsBezelBorder)
+    {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewRightSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewRightUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewRightBackgroundTabFill;
+    }
+  
+  return [self tilesNamed: name state: GSThemeNormalState];
+}
+
 - (void) frameTabRectTopAndBottom: (NSRect)aRect 
 			 topColor: (NSColor *)topColor
 		      bottomColor: (NSColor *)bottomColor
@@ -1945,25 +1989,7 @@ typedef enum {
 
 - (void) drawTabFillInRect: (NSRect)aRect forPart: (GSTabPart)part type: (NSTabViewType)type
 {
-  NSString *name = nil;
-  GSDrawTiles *tiles = nil;
-
-  switch (part)
-    {
-    case GSTabSelectedFill:
-      name = GSTabViewSelectedTabFill;
-      break;
-    case GSTabUnSelectedFill:
-      name = GSTabViewUnSelectedTabFill;
-      break;
-    case GSTabBackgroundFill:
-      name = GSTabViewBackgroundTabFill;
-      break;
-    default:
-      break;
-    }
-
-  tiles = [self tilesNamed: name state: GSThemeNormalState];
+  GSDrawTiles *tiles = [self tilesForTabPart: part type: type];
 
   if (tiles == nil)
     {

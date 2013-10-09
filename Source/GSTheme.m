@@ -116,6 +116,16 @@ NSString        *GSBoxBorder = @"GSBoxBorder";
 NSString        *GSTabViewSelectedTabFill = @"GSTabViewSelectedTabFill";
 NSString        *GSTabViewUnSelectedTabFill = @"GSTabViewUnSelectedTabFill";
 NSString        *GSTabViewBackgroundTabFill = @"GSTabViewBackgroundTabFill";
+NSString        *GSTabViewBottomSelectedTabFill = @"GSTabViewBottomSelectedTabFill";
+NSString        *GSTabViewBottomUnSelectedTabFill = @"GSTabViewBottomUnSelectedTabFill";
+NSString        *GSTabViewBottomBackgroundTabFill = @"GSTabViewBottomBackgroundTabFill";
+NSString        *GSTabViewLeftSelectedTabFill = @"GSTabViewLeftSelectedTabFill";
+NSString        *GSTabViewLeftUnSelectedTabFill = @"GSTabViewLeftUnSelectedTabFill";
+NSString        *GSTabViewLeftBackgroundTabFill = @"GSTabViewLeftBackgroundTabFill";
+NSString        *GSTabViewRightSelectedTabFill = @"GSTabViewRightSelectedTabFill";
+NSString        *GSTabViewRightUnSelectedTabFill = @"GSTabViewRightUnSelectedTabFill";
+NSString        *GSTabViewRightBackgroundTabFill = @"GSTabViewRightBackgroundTabFill";
+
 
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";

@@ -1,5 +1,12 @@
 2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m:
+	* Source/GSTheme.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add part names for
+	themeing bottom tabs.
+
+2013-10-08  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (-drawBoxInClipRect:...):
 	* Source/NSBox.m (-calcSizesAllowingNegative):
 	Special case for box type NSBoxSeparator to draw a centered line

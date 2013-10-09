@@ -315,6 +315,15 @@ APPKIT_EXPORT  NSString        *GSBoxBorder;
 APPKIT_EXPORT  NSString        *GSTabViewSelectedTabFill;
 APPKIT_EXPORT  NSString        *GSTabViewUnSelectedTabFill;
 APPKIT_EXPORT  NSString        *GSTabViewBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightBackgroundTabFill;
 
 /**
  * Structure to describe the size of top/bottom/left/right margins inside
