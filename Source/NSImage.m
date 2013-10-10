@@ -1725,7 +1725,6 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 						  // in the NSCursor's initWithCoder:
 						  if ([[tmp absoluteString] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
 						    {
-							  [nameDict removeObjectForKey:[tmp absoluteString]];
 							  [self setName:[tmp absoluteString]];
 							}
 						  else if ([[tmp absoluteString] rangeOfString:@"/Xcode.app/"].length > 0

@@ -669,8 +669,9 @@ backgroundColorHint:(NSColor *)bg
 			  NSLog(@"An NSCursor object was encoded with the image "
 				@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff. "
 				@"This cursor was automatically substituted with [NSCursor IBeamCursor].");
-				
-			  self = [NSCursor IBeamCursor];
+			
+			  [image setName:nil];
+			  self = RETAIN([NSCursor IBeamCursor]);
 			}
 		  else
 		    {
