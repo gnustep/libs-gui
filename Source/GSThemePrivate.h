@@ -65,6 +65,7 @@ typedef enum {
   NSRect	contentRect;    /** Rectangle in which content should be
         	                 *  drawn, normally rects[TileCM], but can
         	                 *  be customized in the nine-patch format */
+  NSRect        layoutRect;
   NSRect        originalRectCM; /** Caches rects[TileCM] as it was before
 				 *  -validateTilesSizeWithImage clears the
 				 *  origin. Used by -themeMargins */

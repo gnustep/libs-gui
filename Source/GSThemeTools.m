@@ -849,11 +849,11 @@ withRepeatedImage: (NSImage*)image
       NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
 
       [pixelColor getRed: &r green: &g blue: &b alpha: &a];
-      if (a > 0 && x1 == -1)
+      if ((a == 1 && r == 0 && g == 0 && b == 0) && x1 == -1)
         {
           x1 = i;
         }
-      else if (a == 0 && x1 != -1)
+      else if (!(a == 1 && r == 0 && g == 0 && b == 0) && x1 != -1)
         {
           x2 = i - 1;
           break;
@@ -865,11 +865,11 @@ withRepeatedImage: (NSImage*)image
       NSColor	*pixelColor = [rep colorAtX: s.width - 1 y: i];
 
       [pixelColor getRed: &r green: &g blue: &b alpha: &a];
-      if (a > 0 && y1 == -1)
+      if ((a == 1 && r == 0 && g == 0 && b == 0) && y1 == -1)
         {
           y1 = i;
         }
-      else if (a == 0 && y1 != -1)
+      else if (!(a == 1 && r == 0 && g == 0 && b == 0) && y1 != -1)
         {
           y2 = i - 1;
           break;
@@ -903,6 +903,59 @@ withRepeatedImage: (NSImage*)image
       contentRect.origin.y = s.height - y2 - 1; 
       contentRect.size.height = 1 + y2 - y1;
     }
+
+  // Measure the layout rect (the right and bottom edges of the nine-patch
+  // data which  _isn't_ red pixels)
+
+  x1 = -1;
+  x2 = -1;
+  y1 = -1;
+  y2 = -1;
+
+  for (i = 1; i < (s.width - 1); i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (!(a == 1 && r == 1 && g == 0 && b == 0) && x1 == -1)
+        {
+          x1 = i;
+        }
+      else if ((a == 1 && r == 1 && g == 0 && b == 0) && x1 != -1)
+        {
+          x2 = i - 1;
+          break;
+        }
+    }
+
+  for (i = 1; i < (s.height - 1); i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: s.width - 1 y: i];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (!(a == 1 && r == 1 && g == 0 && b == 0) && y1 == -1)
+        {
+          y1 = i;
+        }
+      else if ((a == 1 && r == 1 && g == 0 && b == 0) && y1 != -1)
+        {
+          y2 = i - 1;
+          break;
+        }
+    }
+
+
+  if (x2 == -1)
+    {
+      x2 = s.width - 2;
+    }
+
+  if (y2 == -1)
+    {
+      y2 = s.height - 2;
+    }
+
+  layoutRect = NSMakeRect(x1, s.height - y2 - 1, 1 + x2 - x1, 1 + y2 - y1);
 
   [self validateTilesSizeWithImage: image];
   return self;

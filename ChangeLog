@@ -1,3 +1,13 @@
+2013-10-12  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeTools.m (-initWithNinePatchImage:): Parse the
+	"optiacal bounds" metadata in 9-patch images. It's stored
+	in the layoutRect ivar but not used otherwise.
+
+	See "Optical bounds layout" section of:
+	http://developer.android.com/about/versions/android-4.3.html
+	* Source/GSThemePrivate.h (GSDrawTiles): Add layoutRect ivar
+
 2013-10-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSColorWell.m (-drawRect:): Remove incorrect intersection
