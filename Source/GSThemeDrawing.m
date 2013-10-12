@@ -1843,11 +1843,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
   else
     {
-      // FIXME: We assume the button's top and right padding are the same as
-      // its bottom and left.
-      return NSInsetRect(rect,
-			 tiles->contentRect.origin.x,
-			 tiles->contentRect.origin.y);
+      NSRect result = [tiles contentRectForRect: rect];
+      return result;
     }
 }
 

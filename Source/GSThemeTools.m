@@ -783,8 +783,8 @@ withRepeatedImage: (NSImage*)image
 {
   int i;
   CGFloat r,g,b,a;
-  int x1 = -1;
-  int x2 = -1;
+  int x1 = -1; // x1, x2, y1, y2, are in flipped coordinates
+  int x2 = -1; // 0,0 is the top-left pixel
   int y1 = -1;
   int y2 = -1;
   NSSize s = [image size];
@@ -825,6 +825,7 @@ withRepeatedImage: (NSImage*)image
   scaleFactor  = 1.0f;
   style = GSThemeFillStyleScaleAll;
 
+  // These are all in _unflipped_ coordinates
   rects[TileTL] = NSMakeRect(1, s.height - y1, x1 - 1, y1 - 1);
   rects[TileTM] = NSMakeRect(x1, s.height - y1, 1 + x2 - x1, y1 - 1);
   rects[TileTR] = NSMakeRect(x2 + 1, s.height - y1, s.width - x2 - 2, y1 - 1);
@@ -879,6 +880,8 @@ withRepeatedImage: (NSImage*)image
   // ; if either the horizontal or vertical information is missing, use the
   // geometry from rects[TileCM]
 
+  // contentRect is in unflipped coordinates, like rects[]
+
   if (x1 == -1)
     {
       contentRect.origin.x = rects[TileCM].origin.x;
@@ -897,7 +900,7 @@ withRepeatedImage: (NSImage*)image
     }
   else
     {
-      contentRect.origin.y = y1;
+      contentRect.origin.y = s.height - y2 - 1; 
       contentRect.size.height = 1 + y2 - y1;
     }
 
@@ -1105,20 +1108,17 @@ withRepeatedImage: (NSImage*)image
 
 - (NSRect) contentRectForRect: (NSRect)rect
 {
-  NSRect cm = originalRectCM;
-  NSRect result = NSMakeRect(rect.origin.x + rects[TileCL].size.width,
-			     rect.origin.y + rects[TileBM].size.height,
-			     rect.size.width - (rects[TileCL].size.width + rects[TileCR].size.width),
-			     rect.size.height - (rects[TileTM].size.height + rects[TileBM].size.height));
+  GSThemeMargins margins = [self themeMargins];
   
- 
-  result.origin.x += (contentRect.origin.x - cm.origin.x);
-  result.size.width += (contentRect.size.width - cm.size.width);
+  // N.B. Assumes the caller is using unflipped coords.
   
-  result.origin.y += (contentRect.origin.y - cm.origin.y);
-  result.size.height += (contentRect.size.height - cm.size.height);
-
-  return result;
+  rect.origin.x += margins.left;
+  rect.origin.y += margins.bottom;
+  
+  rect.size.width -= (margins.left + margins.right);
+  rect.size.height -= (margins.top + margins.bottom);
+  
+  return rect;
 }
 
 - (NSRect) noneStyleFillRect: (NSRect)rect

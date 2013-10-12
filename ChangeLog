@@ -1,3 +1,13 @@
+2013-10-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeTools.m: Fix unflipped/flipped coordinates bug
+	in the 9-patch content rect parsing code. Add some comments.
+	Simplify contentRectForRect: implementation.
+	* Source/GSThemeDrawing.m (-browserHeaderDrawingRectForCell:...):
+	Use -contentRectForRect: to get the content rect instead of
+	incorrectly reading from ivar. Fixes broken text positioning
+	in browser header with Nesedah theme.
+
 2013-10-09 German Arias <germanandre@gmx.es>
 
 	* NSWindow.m (-sendEvent:): Fix last commit.
