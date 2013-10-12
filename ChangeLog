@@ -1,5 +1,11 @@
 2013-10-11  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSColorWell.m (-drawRect:): Remove incorrect intersection
+	with clipping rect that was causing artifacts when scrolling a list
+	of color wells in Thematic.
+
+2013-10-11  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeTools.m: Fix unflipped/flipped coordinates bug
 	in the 9-patch content rect parsing code. Add some comments.
 	Simplify contentRectForRect: implementation.

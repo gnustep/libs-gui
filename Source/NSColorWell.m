@@ -185,7 +185,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   _wellRect = [[GSTheme theme] drawColorWellBorder: self
                                withBounds: _bounds
                                withClip: clipRect];
-  [self drawWellInside: NSIntersectionRect(_wellRect, clipRect)];
+  [self drawWellInside: _wellRect];
 }
 
 /**<p>Draws the NSColorWell inside the rectangle <var>insideRect</var>.</p>
