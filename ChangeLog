@@ -1,5 +1,13 @@
 2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Panels/English.lproj/GSPageLayout.gorm:
+	* Panels/Spanish.lproj/GSPageLayout.gorm: Minor visual tweaks:
+	Turn off "draws background" on the portrait/landscape matrix
+	so it looks better with themes. Remove 0.5 point offsets on
+	some views on the second and third tabs to eliminate blurring.
+
+2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m: Add GSProgressIndicatorBezel part name
 	* Source/GSThemeDrawing.m (-drawProgressIndicatorBezel:withClip:):
