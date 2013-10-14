@@ -1,3 +1,12 @@
+2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m (-drawTableViewBackgroundInClipRect:...):
+	Add support for drawing striped table backgrounds, using the colors
+	returned by [NSColor controlAlternatingRowBackgroundColors].
+	Currently not used because
+	-[NSTableView usesAlternatingRowBackgroundColors] is hardcoded to
+	return NO.
+
 2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/NSSliderCell.m (-drawKnob:): Don't fill the knob
