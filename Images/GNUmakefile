@@ -102,6 +102,10 @@ Images_RESOURCE_FILES = \
  common_Root_Sparc2.tiff \
  common_SliderHoriz.tiff \
  common_SliderVert.tiff \
+ common_StepperDown.tiff \
+ common_StepperDownHighlighted.tiff \
+ common_StepperUp.tiff \
+ common_StepperUpHighlighted.tiff \
  common_SwitchOff.tiff \
  common_SwitchOn.tiff \
  common_TabDownSelectedLeft.tiff \
