@@ -337,10 +337,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 */
 - (void) drawKnob: (NSRect)knobRect
 {
-  NSColor* knobBackgroundColor = [NSColor controlBackgroundColor];
-  [knobBackgroundColor set];
-  NSRectFill (knobRect);
-  
   [_knobCell drawInteriorWithFrame: knobRect inView: _control_view];
 }
 

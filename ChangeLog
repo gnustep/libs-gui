@@ -1,5 +1,12 @@
 2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSSliderCell.m (-drawKnob:): Don't fill the knob
+	with a background color before drawing the cell. Seems pointless
+	- GNUstep's default knob image is opaque, but filling with a solid
+	color prevents transparent knob images from looking good.
+
+2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Panels/English.lproj/GSPageLayout.gorm:
 	* Panels/Spanish.lproj/GSPageLayout.gorm: Minor visual tweaks:
 	Turn off "draws background" on the portrait/landscape matrix
