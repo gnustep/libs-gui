@@ -377,8 +377,11 @@ GSThemeFillStyleFromString(NSString *s);
  */
 typedef enum {
   GSThemeNormalState = 0,	/** A control in its normal state */
+  GSThemeFirstResponderState,
   GSThemeDisabledState,		/** A control which is disabled */
+  GSThemeHighlightedFirstResponderState,
   GSThemeHighlightedState,	/** A control which is highlighted */
+  GSThemeSelectedFirstResponderState,
   GSThemeSelectedState		/** A control which is selected */
 } GSThemeControlState;
 

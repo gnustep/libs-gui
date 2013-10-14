@@ -122,11 +122,13 @@
 	{
           color = [NSColor controlBackgroundColor];
 	}
-      else if (state == GSThemeHighlightedState)
+      else if (state == GSThemeHighlightedState
+	       || state == GSThemeHighlightedFirstResponderState)
 	{
           color = [NSColor selectedControlColor];
 	}
-      else if (state == GSThemeSelectedState)
+      else if (state == GSThemeSelectedState
+	       || state == GSThemeSelectedFirstResponderState)
 	{
           color = [NSColor selectedControlColor];
 	}
@@ -207,7 +209,7 @@
 	      {
 		[self drawButton: frame withClip: NSZeroRect];
 	      }
-	    else if (state == GSThemeSelectedState)
+	    else if (state == GSThemeSelectedState || state == GSThemeSelectedFirstResponderState)
 	      {
 		[self drawGrayBezel: frame withClip: NSZeroRect];
 	      }
@@ -295,7 +297,18 @@
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
-  NSDottedFrameRect(frame);
+  GSDrawTiles *tiles = [self tilesNamed: @"NSFocusRing" state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {    
+      NSDottedFrameRect(frame);
+    }
+  else
+    {
+      [self fillRect: frame
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
 }
 
 - (void) drawWindowBackground: (NSRect) frame view: (NSView*) view

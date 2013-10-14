@@ -1,5 +1,20 @@
 2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add three new theme
+	control state: GSThemeFirstResponderState,
+	GSThemeHighlightedFirstResponderState,
+	and GSThemeSelectedFirstResponderState. This lets themes draw
+	custom first responder tiles, if the desired effect can't be
+	accomplished by drawing on top of an existing button.
+	* Source/GSThemeDrawing.m (-drawFocusFrame:inRect:):
+	Use tiles named "NSFocusRing" if available, else draw dotted
+	rect.
+	* Source/GSTheme.m:
+	* Source/NSButtonCell.m: Use new GSTheme*FirstResponderState
+	states
+
+2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (-drawTableViewBackgroundInClipRect:...):
 	Add support for drawing striped table backgrounds, using the colors
 	returned by [NSColor controlAlternatingRowBackgroundColors].

@@ -1131,11 +1131,20 @@ typedef	struct {
 	  case GSThemeNormalState:
 	    fullName = aName;
 	    break;
+	  case GSThemeFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"FirstResponder"];
+	    break;
 	  case GSThemeDisabledState:
 	    fullName = [aName stringByAppendingString: @"Disabled"];
 	    break;
+	  case GSThemeHighlightedFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"HighlightedFirstResponder"];
+	    break;
 	  case GSThemeHighlightedState:
 	    fullName = [aName stringByAppendingString: @"Highlighted"];
+	    break;
+	  case GSThemeSelectedFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"SelectedFirstResponder"];
 	    break;
 	  case GSThemeSelectedState:
 	    fullName = [aName stringByAppendingString: @"Selected"];

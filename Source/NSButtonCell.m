@@ -972,6 +972,20 @@ typedef struct _GSButtonCellFlags
       buttonState = GSThemeDisabledState;
     }
 
+  /* If we are first responder, change to the corresponding
+     first responder state. Note that GSThemeDisabledState
+     doesn't have a first responder variant, currently. */
+  if (_cell.shows_first_responder
+    && [[controlView window] firstResponder] == controlView)
+    {
+      if (buttonState == GSThemeSelectedState)
+	buttonState = GSThemeSelectedFirstResponderState;
+      else if (buttonState == GSThemeHighlightedState)
+	buttonState = GSThemeHighlightedFirstResponderState;
+      else if (buttonState == GSThemeNormalState)
+	buttonState = GSThemeFirstResponderState;
+    }
+
   [[GSTheme theme] drawButton: cellFrame 
                    in: self 
                    view: controlView
