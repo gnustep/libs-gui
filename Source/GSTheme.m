@@ -99,6 +99,7 @@ NSString        *GSMenuSeparatorItem = @"GSMenuSeparatorItem";
 NSString        *GSPopUpButton = @"GSPopUpButton";
 
 // Progress indicator part names
+NSString        *GSProgressIndicatorBezel = @"GSProgressIndicatorBezel";
 NSString        *GSProgressIndicatorBarDeterminate 
   = @"GSProgressIndicatorBarDeterminate";
 

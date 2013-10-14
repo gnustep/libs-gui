@@ -1,3 +1,10 @@
+2013-10-13  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m: Add GSProgressIndicatorBezel part name
+	* Source/GSThemeDrawing.m (-drawProgressIndicatorBezel:withClip:):
+	Use GSProgressIndicatorBezel to draw bezel if available.
+
 2013-10-12  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeTools.m (-initWithNinePatchImage:): Parse the

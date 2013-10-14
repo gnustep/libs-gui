@@ -1400,7 +1400,21 @@ static NSImage *spinningImages[MaxCount];
 
 - (NSRect) drawProgressIndicatorBezel: (NSRect)bounds withClip: (NSRect) rect
 {
-  return [self drawGrayBezel: bounds withClip: rect];
+  GSDrawTiles *tiles = [self tilesNamed: GSProgressIndicatorBezel
+                                  state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      return [self drawGrayBezel: bounds withClip: rect];
+    }
+  else
+    {
+      [self fillRect: bounds
+           withTiles: tiles
+          background: [NSColor clearColor]];
+
+      return [tiles contentRectForRect: bounds];
+    }  
 }
 
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds

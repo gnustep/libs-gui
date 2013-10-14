@@ -297,6 +297,7 @@ APPKIT_EXPORT  NSString        *GSPopUpButton;
 /*
  * Progress Indicator part names.
  */
+APPKIT_EXPORT  NSString        *GSProgressIndicatorBezel;
 APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
 
 /*
