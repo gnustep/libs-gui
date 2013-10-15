@@ -933,7 +933,7 @@ typedef struct _GSButtonCellFlags
   ASSIGN(_backgroundColor, color);
 }
 
-- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+- (GSThemeControlState) themeControlState
 {
   unsigned mask;
   GSThemeControlState buttonState = GSThemeNormalState;
@@ -976,7 +976,8 @@ typedef struct _GSButtonCellFlags
      first responder state. Note that GSThemeDisabledState
      doesn't have a first responder variant, currently. */
   if (_cell.shows_first_responder
-    && [[controlView window] firstResponder] == controlView)
+      && [[[self controlView] window] firstResponder] == [self controlView]
+      && [self controlView] != nil)
     {
       if (buttonState == GSThemeSelectedState)
 	buttonState = GSThemeSelectedFirstResponderState;
@@ -985,6 +986,13 @@ typedef struct _GSButtonCellFlags
       else if (buttonState == GSThemeNormalState)
 	buttonState = GSThemeFirstResponderState;
     }
+
+  return buttonState;
+}
+
+- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  GSThemeControlState buttonState = [self themeControlState];
 
   [[GSTheme theme] drawButton: cellFrame 
                    in: self 

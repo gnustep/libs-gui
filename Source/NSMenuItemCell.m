@@ -54,6 +54,10 @@ static NSString *alternateKeyString = @"+";
 static NSString *shiftKeyString = @"/";
 static NSString *commandKeyString = @"#";
 
+@interface NSMenuItemCell (Private)
+- (GSThemeControlState) themeControlState;
+@end
+
 @implementation NSMenuItemCell
 
 + (void) initialize
@@ -664,43 +668,6 @@ static NSString *commandKeyString = @"#";
           return theRect;
         }
     }
-}
-
-- (GSThemeControlState) themeControlState
-{
-  unsigned mask;
-  GSThemeControlState state = GSThemeNormalState;
-
-  // set the mask
-  if (_cell.is_highlighted)
-    {
-      mask = _highlightsByMask;
-      if (_cell.state)
-        {
-          mask &= ~_showAltStateMask;
-        }
-    }
-  else if (_cell.state)
-    mask = _showAltStateMask;
-  else
-    mask = NSNoCellMask;
-
-  /* Determine the background color. 
-     We draw when there is a border or when highlightsByMask
-     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-     as required by our nextstep-like look and feel.  */
-  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-    {
-      state = GSThemeHighlightedState;
-    }
-
-  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (mask & NSPushInCellMask)
-    {
-      state = GSThemeSelectedState;
-    }
-
-  return state;
 }
 
 //

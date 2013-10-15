@@ -1,5 +1,13 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSButtonCell.m:
+	* Source/NSMenuItemCell.m: Make a shared -themeControlState in
+	NSButtonCell and eliminate duplicated code.
+	* Source/NSPopUpButtonCell.m: Add private declaration for
+	-[NSButtonCell themeControlState]
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* ColorPickers/GSColorSliderCell.m (-drawBarInside:flipped:):
 	Set alpha to 1 before drawing because the current value could be
 	not 1, and PSsetrgbcolor doesn't set it.

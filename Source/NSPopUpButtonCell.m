@@ -48,7 +48,7 @@
  * and so on.  */
 static NSImage *_pbc_image[5];
 
-@interface NSMenuItemCell (Private)
+@interface NSButtonCell (Private)
 - (GSThemeControlState) themeControlState;
 @end
 
