@@ -605,6 +605,15 @@
         }
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
+	  // N.B.: As a side effect, this discards the subview frame
+	  // and sets it to [self contentRect]. 
+	  //
+	  // This is desirable because the subview frame will be different
+	  // depending on whether the arcive is from Cocoa or GNUstep,
+	  // and which GNUstep theme was active at save time.
+	  //
+	  // However, it does mean that the tab view contents should be 
+	  // prepared to resize slightly.
           [self selectTabViewItem: [aDecoder decodeObjectForKey: 
                                                  @"NSSelectedTabViewItem"]];
         }
@@ -660,9 +669,9 @@
       {
         [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &selected_item];
       }
-      
-      if (selected_item != NSNotFound)
-        _selected = [_items objectAtIndex: selected_item];
+
+      // N.B. Recalculates subview frame; see comment above.
+      [self selectTabViewItemAtIndex: selected_item];      
     }
   return self;
 }

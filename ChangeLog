@@ -1,3 +1,26 @@
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/NSTabView.m (-initWithCoder:): Make non-keyed archives
+	call -selectTabViewItem: to select the current tab at unarchiving
+	time (keyed archives were already doing this.)
+
+	Comment: "N.B.: As a side effect, this discards the subview frame
+	and sets it to [self contentRect].
+
+	This is desirable because the subview frame will be different
+	depending on whether the arcive is from Cocoa or GNUstep,
+	and which GNUstep theme was active at save time.
+
+	However, it does mean that the tab view contents should be
+	prepared to resize slightly."
+
+	The immediate need for this is tab views were changed to use
+	flipped coordinates, so the subview frames stored in existing
+	archives are now in the wrong coordinate system.
+
+	This is essentially the same idea as NSScrollView calling -tile at the
+	end of -initWithCoder: so I hope it makes sense for tab views too.
+
 2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m (-tabHeightForType:): Check for nil
