@@ -4967,11 +4967,14 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if (_headerView != nil)
     {
+      CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+				   boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
+
       [_headerView setFrameSize: 
 		     NSMakeSize (_frame.size.width,
 				 [_headerView frame].size.height)];
       [_cornerView setFrameSize: 
-		     NSMakeSize ([NSScroller scrollerWidth] + 1,
+		     NSMakeSize ([NSScroller scrollerWidth] + innerBorderWidth,
 				 [_headerView frame].size.height)];
       [_headerView setNeedsDisplay: YES];
       [_cornerView setNeedsDisplay: YES];

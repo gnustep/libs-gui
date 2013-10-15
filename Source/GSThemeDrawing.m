@@ -2745,7 +2745,7 @@ typedef enum {
   columns = [tableView tableColumns];
   highlightedTableColumn = [tableView highlightedTableColumn];
   
-  for (i = firstColumnToDraw; i < lastColumnToDraw; i++)
+  for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
     {
       column = [columns objectAtIndex: i];
       width = [column width];
@@ -2753,44 +2753,6 @@ typedef enum {
       cell = [column headerCell];
       if ((column == highlightedTableColumn)
           || [tableView isColumnSelected: i])
-        {
-          [cell setHighlighted: YES];
-        }
-      else
-        {
-          [cell setHighlighted: NO];
-        }
-      [cell drawWithFrame: drawingRect
-                           inView: tableHeaderView];
-      drawingRect.origin.x += width;
-    }
-  if (lastColumnToDraw == [tableView numberOfColumns] - 1)
-    {
-      column = [columns objectAtIndex: lastColumnToDraw];
-      width = [column width] - 1;
-      drawingRect.size.width = width;
-      cell = [column headerCell];
-      if ((column == highlightedTableColumn)
-          || [tableView isColumnSelected: lastColumnToDraw])
-        {
-          [cell setHighlighted: YES];
-        }
-      else
-        {
-          [cell setHighlighted: NO];
-        }
-      [cell drawWithFrame: drawingRect
-                           inView: tableHeaderView];
-      drawingRect.origin.x += width;
-    }
-  else
-    {
-      column = [columns objectAtIndex: lastColumnToDraw];
-      width = [column width];
-      drawingRect.size.width = width;
-      cell = [column headerCell];
-      if ((column == highlightedTableColumn)
-          || [tableView isColumnSelected: lastColumnToDraw])
         {
           [cell setHighlighted: YES];
         }

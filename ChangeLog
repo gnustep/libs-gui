@@ -1,5 +1,15 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTableView.m (-tile): Check the GSScrollViewNoInnerBorder
+	user default to see whether to expand the corner view by 1pt or not.
+	* Source/GSThemeDrawing.m (-drawTableHeaderRect:inView:): Remove
+	special case which reduced the width of the last column header by 1pt.
+
+	I don't see any reason for doing that and it looks better to me without
+	the gap, and more uniform for themeing.
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSButtonCell.m:
 	* Source/NSMenuItemCell.m: Make a shared -themeControlState in
 	NSButtonCell and eliminate duplicated code.
