@@ -268,9 +268,6 @@ APPKIT_EXPORT	NSString	*GSScrollerUpArrow;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalKnob;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
 
-/* Scroll view parts */
-APPKIT_EXPORT   NSString        *GSScrollViewBottomCorner;
-
 /* Names for table view parts */
 APPKIT_EXPORT	NSString	*GSTableHeader;
 APPKIT_EXPORT	NSString	*GSTableCorner;
@@ -891,7 +888,22 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (float) defaultScrollerWidth;
 
-- (BOOL) scrolViewUseBottomCorner;
+/**
+ * If YES, instructs NSScrollView to leave an empty square space where
+ * the horizontal and vertical scrollers meet.
+ * 
+ * Controlled by user default GSScrollViewUseBottomCorner; default YES.
+ */
+- (BOOL) scrollViewUseBottomCorner;
+
+/**
+ * If YES, instructs NSScrollView to make the scrollers overlap the border.
+ * The scroll view border is drawn using the NSScrollView part, which
+ * must be provided by the theme if this method returns YES.
+ * 
+ * Controlled by user default GSScrollViewScrollersOverlapBorders; default NO;
+ */
+- (BOOL) scrollViewScrollersOverlapBorders;
 
 /** 
  * Method for toolbar theming.

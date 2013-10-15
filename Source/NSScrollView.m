@@ -1064,6 +1064,12 @@ static CGFloat scrollerWidth;
   [self tile];
 }
 
+static NSRectEdge
+GSOppositeEdge(NSRectEdge edge)
+{
+  return (edge == NSMinXEdge) ? NSMaxXEdge : NSMinXEdge;
+}
+
 - (void) tile
 {
   NSRect headerRect, contentRect;
@@ -1075,8 +1081,9 @@ static CGFloat scrollerWidth;
   CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
 			      boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
 
-  BOOL useBottomCorner = [[GSTheme theme] scrolViewUseBottomCorner];
- 
+  const BOOL useBottomCorner = [[GSTheme theme] scrollViewUseBottomCorner];
+  const BOOL overlapBorders = [[GSTheme theme] scrollViewScrollersOverlapBorders];
+
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 
   if (style == NSMacintoshInterfaceStyle
@@ -1098,7 +1105,11 @@ static CGFloat scrollerWidth;
     }
 
   /* Prepare the contentRect by insetting the borders.  */
-  contentRect = NSInsetRect(_bounds, border.width, border.height);
+  contentRect = _bounds;
+
+  if (!overlapBorders)
+    contentRect = NSInsetRect(contentRect, border.width, border.height);
+
   if (contentRect.size.width < 0 || contentRect.size.height < 0)
     {
       /* FIXME ... should we do something else when given
@@ -1108,6 +1119,32 @@ static CGFloat scrollerWidth;
   
   [self _synchronizeHeaderAndCornerView];
   
+  if (overlapBorders)
+    {
+      if (_borderType != NSNoBorder)
+	{
+	  if (!(_hasHeaderView || _hasCornerView))
+	    {
+	      // Inset 1px on the top
+	      NSDivideRect(contentRect, NULL, &contentRect, 1, topEdge);
+	    }
+	  if (!_hasVertScroller)
+	    {
+	      // Inset 1px on the edge where the vertical scroller would be
+	      NSDivideRect(contentRect, NULL, &contentRect, 1, verticalScrollerEdge);
+	    }
+	  if (!_hasHorizScroller)
+	    {
+	      NSDivideRect(contentRect, NULL, &contentRect, 1, bottomEdge);
+	    }
+	  // The vertical edge without a scroller
+	  {
+	    NSDivideRect(contentRect, NULL, &contentRect, 1, 
+			 GSOppositeEdge(verticalScrollerEdge));
+	  }
+	}
+    } 
+
   /* First, allocate vertical space for the headerView / cornerView
      (but - NB - the headerView needs to be placed above the clipview
      later on, we can't place it now).  */
@@ -1151,6 +1188,13 @@ static CGFloat scrollerWidth;
 			scrollerWidth, bottomEdge);
 	}
 
+      /** Vertically expand the scroller by 1pt on each end */
+      if (overlapBorders)
+	{
+	  vertScrollerRect.origin.y -= 1;
+	  vertScrollerRect.size.height += 2;
+	}
+
       [_vertScroller setFrame: vertScrollerRect];
 
       /* Substract 1 for the line that separates the vertical scroller
@@ -1166,6 +1210,13 @@ static CGFloat scrollerWidth;
       
       NSDivideRect (contentRect, &horizScrollerRect, &contentRect, 
         scrollerWidth, bottomEdge);
+
+      /** Horizontall expand the scroller by 1pt on each end */
+      if (overlapBorders)
+	{
+	  horizScrollerRect.origin.x -= 1;
+	  horizScrollerRect.size.width += 2;
+	}
 
       [_horizScroller setFrame: horizScrollerRect];
 
@@ -1300,10 +1351,10 @@ static CGFloat scrollerWidth;
 - (BOOL) isOpaque
 {
   // FIXME: Only needs to be NO in a corner case,
-  // when [[GSTheme theme] scrolViewUseBottomCorner] is NO
+  // when [[GSTheme theme] scrollViewUseBottomCorner] is NO
   // and the theme tile for the bottom corner is transparent.
   // So maybe cache the value of 
-  // [[GSTheme theme] scrolViewUseBottomCorner] and check it here.
+  // [[GSTheme theme] scrollViewUseBottomCorner] and check it here.
   return NO;
 }
 
@@ -1739,6 +1790,13 @@ static CGFloat scrollerWidth;
 
 - (void) _themeDidActivate: (NSNotification*)notification
 {
+  // N.B. Reload cached [NSScroller scrollerWidth] since the
+  // new theme may have a different scroller width.
+  //
+  // Since scrollerWidth is a static, it will get overwritten
+  // several times; doesn't matter though.
+  scrollerWidth = [NSScroller scrollerWidth];
+
   [self tile];
 }
 

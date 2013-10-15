@@ -1,5 +1,33 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Remove GSScrollViewBottomCorner
+	part name, instead themes should just provide a part called NSScrollView.
+
+	Add -scrollViewScrollersOverlapBorders method.
+
+	* Source/GSTheme.m: Remove GSScrollViewBottomCorner part name.
+	* Source/GSThemeDrawing.m: Add -scrollViewScrollersOverlapBorders.
+	* Source/GSThemeDrawing.m (-drawBrowserRect:...): If
+	-scrollViewScrollersOverlapBorders is enabled, fill the browser background
+	with the NSScrollView tile.
+	* Source/GSThemeDrawing.m (-drawScrollViewRect:...): If
+	-scrollViewScrollersOverlapBorders is enabled, fill the scroll view background
+	with the NSScrollView tile.
+	* Source/NSScroller.m (-rectForPart:): Change the meaning of the
+	GSScrollerKnobOvershoot default so the knob only overlaps the buttons
+	by this much (rather than both ends of the track). Turns out this is more
+	useful for themes.
+	* Source/NSScrollView.m (-tile): Add support for
+	-[GSTheme scrollViewScrollersOverlapBorders]
+	* Source/NSBrowser.m (-tile): Add support for
+	-[GSTheme scrollViewScrollersOverlapBorders] and
+	-[GSTheme scrollViewUseBottomCorner]
+
+	The overall point of these additions is to support NSScrollView and
+	NSBrowser looking like: http://jesseross.com/clients/gnustep/ui/concepts/
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTableView.m (-tile): Check the GSScrollViewNoInnerBorder
 	user default to see whether to expand the corner view by 1pt or not.
 	* Source/GSThemeDrawing.m (-drawTableHeaderRect:inView:): Remove

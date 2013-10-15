@@ -1811,6 +1811,12 @@ static BOOL browserUseBezels;
       else 
         rect.size.width = _frame.size.width -
           (rect.origin.x + bezelBorderSize.width);
+
+      // FIXME: Assumes left-side scrollers
+      if ([[GSTheme theme] scrollViewScrollersOverlapBorders])
+	{
+	  rect.size.width -= 1;
+	}
     }
 
   if (rect.size.width < 0)
@@ -1863,6 +1869,8 @@ static BOOL browserUseBezels;
   NSSize bezelBorderSize = NSZeroSize;
   NSInteger i, num, columnCount, delta;
   CGFloat frameWidth;
+  const BOOL overlapBorders = [[GSTheme theme] scrollViewScrollersOverlapBorders];
+  const BOOL useBottomCorner = [[GSTheme theme] scrollViewUseBottomCorner];
 
   if (browserUseBezels)
     bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
@@ -1892,6 +1900,21 @@ static BOOL browserUseBezels;
       else
         _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
       
+      // "Bottom corner" box
+      if (!browserUseBezels && !useBottomCorner)
+	{
+	  _scrollerRect.origin.x += scrollerWidth;
+	  _scrollerRect.size.width -= scrollerWidth;
+	}
+
+      /** Horizontall expand the scroller by GSScrollerKnobOvershoot on the left */
+      if (overlapBorders)
+	{
+	  // FIXME: Assumes left scroller
+	  _scrollerRect.origin.x -= 1;
+	  _scrollerRect.size.width += 1;
+	}
+
       if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
         {
           [_horizontalScroller setFrame: _scrollerRect];

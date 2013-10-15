@@ -68,8 +68,8 @@ static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
 static CGFloat	scrollerWidth = 0.0;
 /**
- * This is the amount (in userspace points) by which the knob slides beyond
- * either end of the track. Typical use would be to set it to 1 when both
+ * This is the amount (in userspace points) by which the knob slides over the
+ * button ends of the track. Typical use would be to set it to 1 when both
  * the knob and the buttons have a 1-point border, so that when the knob is
  * at its maximum, it overlaps the button by 1 point giving a resulting
  * 1-point wide border.
@@ -1229,8 +1229,29 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	    knobHeight = buttonsWidth;
 
 	  /* calc knob's position */
-	  knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight + (2 * scrollerKnobOvershoot)))
-	    - scrollerKnobOvershoot;
+
+	  {
+	    CGFloat knobOvershootAbove = scrollerKnobOvershoot;
+	    CGFloat knobOvershootBelow = scrollerKnobOvershoot;
+	    if (arrowsSameEnd
+		&& _arrowsPosition == NSScrollerArrowsMinEnd)
+	      {
+		knobOvershootBelow = 0;
+	      }
+	    else if (arrowsSameEnd
+		     && _arrowsPosition == NSScrollerArrowsMaxEnd)
+	      {
+		knobOvershootAbove = 0;
+	      }
+	    else if (_arrowsPosition == NSScrollerArrowsNone)
+	      {
+		knobOvershootAbove = 0;
+		knobOvershootBelow = 0;
+	      }
+
+	    knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight + knobOvershootAbove + knobOvershootBelow))
+	      - knobOvershootAbove;
+	  }
 
 	  if (arrowsSameEnd)
 	    {

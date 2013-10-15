@@ -611,7 +611,7 @@
   return defaultScrollerWidth;
 }
 
-- (BOOL) scrolViewUseBottomCorner
+- (BOOL) scrollViewUseBottomCorner
 {
   NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
   if ([defs objectForKey: @"GSScrollViewUseBottomCorner"] != nil)
@@ -619,6 +619,16 @@
       return [defs boolForKey: @"GSScrollViewUseBottomCorner"];
     }
   return YES;
+}
+
+- (BOOL) scrollViewScrollersOverlapBorders
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  if ([defs objectForKey: @"GSScrollViewScrollersOverlapBorders"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollViewScrollersOverlapBorders"];
+    }
+  return NO;
 }
 
 - (NSColor *) toolbarBackgroundColor
@@ -2435,6 +2445,21 @@ typedef enum {
 	    }
 	}
     }
+
+   if (![self browserUseBezels]
+       && [self scrollViewScrollersOverlapBorders])
+    {
+      NSRect baseRect = NSMakeRect(0, 0, bounds.size.width, 1); 
+      NSRect colFrame = [browser frameOfColumn: [browser firstVisibleColumn]];
+      NSRect scrollViewRect = NSUnionRect(baseRect, colFrame);
+
+      GSDrawTiles *tiles = [self tilesNamed: @"NSScrollView"
+				      state: GSThemeNormalState];
+
+      [self fillRect: scrollViewRect
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
 }
 
 - (CGFloat) browserColumnSeparation
@@ -2521,6 +2546,7 @@ typedef enum {
   NSRect         bounds = [view bounds];
   BOOL hasInnerBorder = ![[NSUserDefaults standardUserDefaults]
 			   boolForKey: @"GSScrollViewNoInnerBorder"];
+  GSDrawTiles *tiles = nil;
 
   name = [theme nameForElement: self];
   if (name == nil)
@@ -2528,28 +2554,38 @@ typedef enum {
       name = @"NSScrollView";
     }
   color = [theme colorNamed: name state: GSThemeNormalState];
+  tiles = [theme tilesNamed: name state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor controlDarkShadowColor];
     }
-  
-  switch (borderType)
+
+  if (tiles == nil)
     {
-      case NSNoBorder:
-        break;
-
-      case NSLineBorder:
-        [color set];
-        NSFrameRect(bounds);
-        break;
-
-      case NSBezelBorder:
-        [theme drawGrayBezel: bounds withClip: rect];
-        break;
-
-      case NSGrooveBorder:
-        [theme drawGroove: bounds withClip: rect];
-        break;
+      switch (borderType)
+	{
+	case NSNoBorder:
+	  break;
+	  
+	case NSLineBorder:
+	  [color set];
+	  NSFrameRect(bounds);
+	  break;
+	  
+	case NSBezelBorder:
+	  [theme drawGrayBezel: bounds withClip: rect];
+	  break;
+	  
+	case NSGrooveBorder:
+	  [theme drawGroove: bounds withClip: rect];
+	  break;
+	}
+    }
+  else
+    {
+      [self fillRect: bounds
+	   withTiles: tiles
+	  background: [NSColor clearColor]];
     }
 
   if (hasInnerBorder)
@@ -2599,26 +2635,6 @@ typedef enum {
 	  DPSrlineto(ctxt, [horizScroller frame].size.width + 1, 0);
 	  DPSstroke(ctxt);
 	}
-    }
-
-  if (![self scrolViewUseBottomCorner]
-      && [scrollView hasHorizontalScroller]
-      && [scrollView hasVerticalScroller])
-    {
-      NSScroller *vertScroller = [scrollView verticalScroller];
-      NSScroller *horizScroller = [scrollView horizontalScroller];
-
-      NSRect bottomCornerRect = NSMakeRect([vertScroller frame].origin.x,
-					   [horizScroller frame].origin.y,
-					   NSWidth([vertScroller frame]),
-					   NSHeight([horizScroller frame]));
-
-      GSDrawTiles *tiles = [self tilesNamed: GSScrollViewBottomCorner 
-				      state: GSThemeNormalState];
-
-      [self fillRect: bottomCornerRect
-           withTiles: tiles
-          background: [NSColor clearColor]];
     }
 }
 
