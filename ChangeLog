@@ -1,5 +1,10 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/NSTabViewItem.m (-drawLabel:inRect:): Center label vertically
+	inside the tab.
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTabView.m (-initWithCoder:): Make non-keyed archives
 	call -selectTabViewItem: to select the current tab at unarchiving
 	time (keyed archives were already doing this.)
