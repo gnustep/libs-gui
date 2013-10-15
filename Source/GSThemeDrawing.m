@@ -2011,6 +2011,104 @@ typedef enum {
   return [img size].height;
 }
 
+- (NSRect) tabViewBackgroundRectForBounds: (NSRect)aRect
+			      tabViewType: (NSTabViewType)type
+{
+  const CGFloat tabHeight = [self tabHeightForType: type];
+
+  switch (type)
+    {
+      default:
+      case NSTopTabsBezelBorder: 
+        aRect.size.height -= tabHeight;
+        aRect.origin.y += tabHeight;
+        break;
+
+      case NSBottomTabsBezelBorder: 
+        aRect.size.height -= tabHeight;
+        break;
+
+      case NSLeftTabsBezelBorder: 
+        aRect.size.width -= tabHeight;
+        aRect.origin.x += tabHeight;
+        break;
+
+      case NSRightTabsBezelBorder: 
+        aRect.size.width -= tabHeight;
+        break;
+
+      case NSNoTabsBezelBorder: 
+      case NSNoTabsLineBorder: 
+      case NSNoTabsNoBorder: 
+        break;
+    }
+
+  return aRect;
+}
+
+
+- (NSRect) tabViewContentRectForBounds: (NSRect)aRect
+			   tabViewType: (NSTabViewType)type
+			       tabView: (NSTabView *)view
+{
+  NSRect cRect = [self tabViewBackgroundRectForBounds: aRect
+						   tabViewType: type];
+  NSString *name = GSStringFromTabViewType(type);
+  GSDrawTiles *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      switch (type)
+	{
+	case NSBottomTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsLineBorder:
+	  cRect.origin.y += 1; 
+	  cRect.origin.x += 1; 
+	  cRect.size.width -= 2;
+	  cRect.size.height -= 2;
+	  break;
+	case NSTopTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSLeftTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSRightTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsNoBorder:
+	default:
+	  break;
+	}     
+    }
+  else
+    {
+      cRect = [tiles contentRectForRect: cRect];
+    }
+  return cRect;
+}
+
+
 - (void) drawTabViewBezelRect: (NSRect)aRect
                   tabViewType: (NSTabViewType)type
                        inView: (NSView *)view
@@ -2069,42 +2167,14 @@ typedef enum {
   const NSUInteger howMany = [items count];
   int i;
   int previousState = 0;
+  const NSTabViewType type = [(NSTabView *)view tabViewType];
   const NSRect bounds = [view bounds];
-  NSRect aRect = bounds;
+  NSRect aRect = [self tabViewBackgroundRectForBounds: bounds tabViewType: type];
 
   const BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
-  const NSTabViewType type = [(NSTabView *)view tabViewType];
   const CGFloat tabHeight = [self tabHeightForType: type];
   
   DPSgsave(ctxt);
-
-  // Calculate the background rect
-  switch (type)
-    {
-      default:
-      case NSTopTabsBezelBorder: 
-        aRect.size.height -= tabHeight;
-        aRect.origin.y += tabHeight;
-        break;
-
-      case NSBottomTabsBezelBorder: 
-        aRect.size.height -= tabHeight;
-        break;
-
-      case NSLeftTabsBezelBorder: 
-        aRect.size.width -= tabHeight;
-        aRect.origin.x += tabHeight;
-        break;
-
-      case NSRightTabsBezelBorder: 
-        aRect.size.width -= tabHeight;
-        break;
-
-      case NSNoTabsBezelBorder: 
-      case NSNoTabsLineBorder: 
-      case NSNoTabsNoBorder: 
-        break;
-    }
   
   [self drawTabViewBezelRect: aRect
  		 tabViewType: type

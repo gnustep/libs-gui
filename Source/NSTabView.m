@@ -405,52 +405,10 @@
 
 - (NSRect) contentRect
 {
-  NSRect cRect = _bounds;
-
-  switch (_type)
-    {
-      case NSBottomTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 3;
-        cRect.size.height -= 19;
-        break;
-      case NSNoTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 3;
-        cRect.size.height -= 3;
-        break;
-      case NSNoTabsLineBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 1; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 2;
-        break;
-      case NSTopTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 18;
-        cRect.size.width -= 3;
-        cRect.size.height -= 19;
-        break;
-      case NSLeftTabsBezelBorder:
-        cRect.origin.x += 21;
-        cRect.origin.y += 1;
-        cRect.size.width -= 21;
-        cRect.size.height -= 3;
-        break;
-      case NSRightTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 21;
-        cRect.size.height -= 3;
-        break;
-      case NSNoTabsNoBorder:
-      default:
-        break;
-    }
-
-  return cRect;
+  NSRect result = [[GSTheme theme] tabViewContentRectForBounds: _bounds
+						   tabViewType: [self tabViewType]
+						       tabView: self];
+  return result;
 }
 
 // Drawing.

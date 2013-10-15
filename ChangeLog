@@ -1,5 +1,13 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add -tabViewContentRectForBounds:
+	method.
+	* Source/GSThemeDrawing.m:
+	* Source/NSTabView.m: Move the -contentRect implementation to GSTheme
+	so we can delegate to GSDrawTiles, if used.
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/NSTabViewItem.m (-drawLabel:inRect:): Center label vertically
 	inside the tab.
 

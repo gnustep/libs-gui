@@ -1147,6 +1147,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
+- (NSRect) tabViewContentRectForBounds: (NSRect)aRect
+			   tabViewType: (NSTabViewType)type
+			       tabView: (NSTabView *)view;
+
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
 	       withItems: (NSArray *)items
