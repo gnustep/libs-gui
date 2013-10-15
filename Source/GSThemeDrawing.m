@@ -2004,6 +2004,10 @@ typedef enum {
 - (CGFloat) tabHeightForType: (NSTabViewType)type
 {
   NSImage *img = [self imageForTabPart: GSTabUnSelectedLeft type: type];
+  if (img == nil)
+    {
+      return 0;
+    }
   return [img size].height;
 }
 

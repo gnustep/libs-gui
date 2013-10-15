@@ -1,5 +1,11 @@
 2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-tabHeightForType:): Check for nil
+	before calling -size on an NSImage, for systems where this
+	corrupts the stack.
+
+2013-10-14  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Change stepper drawing methods to use
 	images. The stepper is too small to make decomposing it in to
 	border + bezel + arrow worthwhile; it's simpler to just use images.
