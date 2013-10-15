@@ -105,6 +105,8 @@
 {
   float i, f;
 
+  PSsetalpha(1);
+
   if (_isVertical)
     {
       for (i = 0; i < r.size.height; i += 1)

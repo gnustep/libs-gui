@@ -1,5 +1,11 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* ColorPickers/GSColorSliderCell.m (-drawBarInside:flipped:):
+	Set alpha to 1 before drawing because the current value could be
+	not 1, and PSsetrgbcolor doesn't set it.
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add -tabViewContentRectForBounds:
 	method.
 	* Source/GSThemeDrawing.m:
