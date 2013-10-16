@@ -1111,6 +1111,8 @@ static float menuBarHeight = 0.0;
 {
   NSRect frame = [_window frame];
   NSRect submenuFrame;
+  const CGFloat submenuHorizOverlap = [[GSTheme theme] menuSubmenuHorizontalOverlap];
+  const CGFloat submenuVertOverlap = [[GSTheme theme] menuSubmenuVerticalOverlap];
 
   if (_needsSizing)
     [self sizeToFit];
@@ -1130,7 +1132,7 @@ static float menuBarHeight = 0.0;
             [_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
           NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
-          return NSMakePoint (NSMaxX(frame),
+          return NSMakePoint (NSMaxX(frame) - submenuHorizOverlap,
             subOrigin.y - NSHeight(submenuFrame) - 2 +
             2*[NSMenuView menuBarHeight]);
         }
@@ -1141,12 +1143,12 @@ static float menuBarHeight = 0.0;
           NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
           // FIXME ... why is the offset +1 needed below? 
-          return NSMakePoint (NSMaxX(frame),
+          return NSMakePoint (NSMaxX(frame) - submenuHorizOverlap,
             subOrigin.y - NSHeight(submenuFrame) + aRect.size.height + 1);
         }
       else
         {
-          return NSMakePoint(NSMaxX(frame),
+          return NSMakePoint(NSMaxX(frame) - submenuHorizOverlap,
             NSMaxY(frame) - NSHeight(submenuFrame));
         }
     }
@@ -1162,12 +1164,12 @@ static float menuBarHeight = 0.0;
 	  NSWindows95InterfaceStyle)
 	{
 	  return NSMakePoint(subOrigin.x,
-			     subOrigin.y - NSHeight(submenuFrame) + 1);
+			     subOrigin.y - NSHeight(submenuFrame) + 1 + submenuVertOverlap);
 	}
       else
 	{
 	  return NSMakePoint(subOrigin.x,
-			     subOrigin.y - NSHeight(submenuFrame));
+			     subOrigin.y - NSHeight(submenuFrame) + submenuVertOverlap);
 	}
     }
 }

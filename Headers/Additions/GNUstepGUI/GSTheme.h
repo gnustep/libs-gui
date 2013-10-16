@@ -1084,6 +1084,22 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>Can be overridden in subclasses to return a custom value.</p>
  */
 - (CGFloat) menuSeparatorInset;
+
+/**
+ * Amount that submenus overlap their parent menu by, horizontally.
+ * (i.e. applies to vertical menus)
+ *
+ * Controlled by GSMenuSubmenuHorizontalOverlap default
+ */
+- (CGFloat) menuSubmenuHorizontalOverlap;
+
+/**
+ * Amount that submenus overlap the horizontal menu bar by, vertically.
+ *
+ * Controlled by GSMenuSubmenuVerticalOverlap default
+ */
+- (CGFloat) menuSubmenuVerticalOverlap;
+
 /**
  * <p>Draws a separator between normal menu items in a menu.</p>
  *

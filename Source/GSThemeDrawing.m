@@ -1027,6 +1027,18 @@
   return 3.0;
 }
 
+- (CGFloat) menuSubmenuHorizontalOverlap
+{
+  return [[NSUserDefaults standardUserDefaults]
+				   floatForKey: @"GSMenuSubmenuHorizontalOverlap"];
+}
+
+- (CGFloat) menuSubmenuVerticalOverlap
+{
+  return [[NSUserDefaults standardUserDefaults]
+				   floatForKey: @"GSMenuSubmenuVerticalOverlap"];
+}
+
 - (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
                                 withFrame: (NSRect)cellFrame
                                    inView: (NSView *)controlView

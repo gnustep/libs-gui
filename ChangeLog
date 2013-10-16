@@ -1,5 +1,16 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add methods
+	-menuSubmenuHorizontalOverlap and -menuSubmenuVerticalOverlap
+	wrapping user defaults GSMenuSubmenuHorizontalOverlap and
+	GSMenuSubmenuVerticalOverlap
+	* Source/NSMenuView.m (-locationForSubmenu:): Offset calculations
+	by -[GSTheme menuSubmenuHorizontalOverlap] and
+	-[GSTheme menuSubmenuVerticalOverlap]
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemePrivate.h:
 	* Source/GSTheme.m: Add GSStringFromImageFrameStyle
 	* Source/GSThemeDrawing.m (-drawBorderForImageFrameStyle:...):
