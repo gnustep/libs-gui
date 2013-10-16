@@ -1,5 +1,13 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-drawColorWellBorder:...): Draw inner
+	border using part GSColorWellInnerBorder
+	* Source/GSTheme.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add GSColorWellInnerBorder
+	part name
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemePrivate.h:
 	* Source/GSThemeTools.m:
 	* Source/GSThemeDrawing.m: Add explicit isFlipped: param to

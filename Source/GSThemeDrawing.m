@@ -1209,11 +1209,23 @@
    */
   if ([well isEnabled])
     {
-      /*
-       * Draw inner frame.
-       */
-      [self drawGrayBezel: aRect withClip: clipRect];
-      aRect = NSInsetRect(aRect, 2.0, 2.0);
+      GSDrawTiles *tiles = [self tilesNamed: GSColorWellInnerBorder state: GSThemeNormalState];
+      if (tiles == nil)
+        {
+	  /*
+	   * Draw inner frame.
+	   */
+	  [self drawGrayBezel: aRect withClip: clipRect];
+	  aRect = NSInsetRect(aRect, 2.0, 2.0);
+	}
+      else
+	{
+	  [self fillRect: aRect
+	       withTiles: tiles
+	      background: [NSColor clearColor]];
+
+	  aRect = [tiles contentRectForRect: aRect isFlipped: [well isFlipped]];
+	}
     }
 
   return aRect;

@@ -102,6 +102,7 @@ NSString        *GSProgressIndicatorBarDeterminate
 
 // Color well part names
 NSString	*GSColorWell = @"GSColorWell";
+NSString        *GSColorWellInnerBorder = @"GSColorWellInnerBorder";
 
 // Slider part names
 NSString        *GSSliderHorizontalTrack = @"GSSliderHorizontalTrack";

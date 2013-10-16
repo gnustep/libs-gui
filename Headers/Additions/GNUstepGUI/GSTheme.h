@@ -301,6 +301,7 @@ APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
  * Color well part names.
  */
 APPKIT_EXPORT  NSString        *GSColorWell;
+APPKIT_EXPORT  NSString        *GSColorWellInnerBorder;
 
 /* NSSliderCell parts */
 APPKIT_EXPORT  NSString        *GSSliderHorizontalTrack;
