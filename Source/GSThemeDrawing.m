@@ -1355,7 +1355,8 @@ static NSImage *spinningImages[MaxCount];
            withTiles: tiles
           background: [NSColor clearColor]];
 
-      return [tiles contentRectForRect: bounds];
+      return [tiles contentRectForRect: bounds
+			     isFlipped: [[NSView focusView] isFlipped]];
     }  
 }
 
@@ -1799,7 +1800,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
   else
     {
-      NSRect result = [tiles contentRectForRect: rect];
+      const BOOL flipped = [[cell controlView] isFlipped];
+      NSRect result = [tiles contentRectForRect: rect
+				      isFlipped: flipped];
       return result;
     }
 }
@@ -2113,7 +2116,8 @@ typedef enum {
     }
   else
     {
-      cRect = [tiles contentRectForRect: cRect];
+      cRect = [tiles contentRectForRect: cRect
+			      isFlipped: [view isFlipped]];
     }
   return cRect;
 }

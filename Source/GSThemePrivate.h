@@ -113,8 +113,8 @@ typedef enum {
  * drawn in the given rect, or NSZeroRect if the given rect is too small
  * to draw the tiles in.
  */
-- (NSRect) contentRectForRect: (NSRect)rect;
-
+- (NSRect) contentRectForRect: (NSRect)rect
+		    isFlipped: (BOOL)flipped;
 /* Style drawing methods
  */
 - (NSRect) noneStyleFillRect: (NSRect)rect;

@@ -1,5 +1,12 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemePrivate.h:
+	* Source/GSThemeTools.m:
+	* Source/GSThemeDrawing.m: Add explicit isFlipped: param to
+	-[GSDrawTiles contentRectForRect:]
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Remove GSScrollViewBottomCorner
 	part name, instead themes should just provide a part called NSScrollView.
 

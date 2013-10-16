@@ -1160,14 +1160,13 @@ withRepeatedImage: (NSImage*)image
 }
 
 - (NSRect) contentRectForRect: (NSRect)rect
+		    isFlipped: (BOOL)flipped
 {
   GSThemeMargins margins = [self themeMargins];
   
-  // N.B. Assumes the caller is using unflipped coords.
-  
   rect.origin.x += margins.left;
-  rect.origin.y += margins.bottom;
-  
+  rect.origin.y += flipped ? margins.top : margins.bottom;
+    
   rect.size.width -= (margins.left + margins.right);
   rect.size.height -= (margins.top + margins.bottom);
   
@@ -1176,7 +1175,7 @@ withRepeatedImage: (NSImage*)image
 
 - (NSRect) noneStyleFillRect: (NSRect)rect
 {
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: NO];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
   return inFill;
@@ -1187,7 +1186,7 @@ withRepeatedImage: (NSImage*)image
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
   NSRect r = rects[TileCM];
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1211,7 +1210,7 @@ withRepeatedImage: (NSImage*)image
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
   NSSize tsz = [self computeTotalTilesSize];
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1230,7 +1229,7 @@ withRepeatedImage: (NSImage*)image
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
 
   NSImage *im = [images[TileCM] copy];
   NSRect r =  rects[TileCM];
@@ -1274,7 +1273,7 @@ withRepeatedImage: (NSImage*)image
   NSImage *img;
   NSRect imgRect;
 
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self scaleFillRect: rect];
   [self drawCornersRect: rect];
 
