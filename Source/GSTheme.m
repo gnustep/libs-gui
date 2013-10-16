@@ -253,6 +253,20 @@ GSStringFromTabViewType(NSTabViewType type)
     }
 }
 
+NSString *
+GSStringFromImageFrameStyle(NSImageFrameStyle type)
+{
+  switch (type)
+    {
+    case NSImageFrameNone: return @"NSImageFrameNone";
+    case NSImageFramePhoto: return @"NSImageFramePhoto";
+    case NSImageFrameGrayBezel: return @"NSImageFrameGrayBezel";
+    case NSImageFrameGroove: return @"NSImageFrameGroove";
+    case NSImageFrameButton: return @"NSImageFrameButton";
+    default: return nil;
+    }
+}
+
 @interface	NSImage (Private)
 + (void) _setImagePath: (NSString*)path name: (NSString*)name;
 + (void) _reloadCachedImages;

@@ -388,23 +388,35 @@
                                 frame: (NSRect)frame 
                                  view: (NSView*)view
 {
-  switch (frameStyle)
+  NSString      *name = GSStringFromImageFrameStyle(frameStyle);
+  GSDrawTiles   *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
     {
-      case NSImageFrameNone:
-        // do nothing
-        break;
-      case NSImageFramePhoto:
-        [self drawFramePhoto: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameGrayBezel:
-        [self drawGrayBezel: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameGroove:
-        [self drawGroove: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameButton:
-        [self drawButton: frame withClip: NSZeroRect];
-        break;
+      switch (frameStyle)
+	{
+	case NSImageFrameNone:
+	  // do nothing
+	  break;
+	case NSImageFramePhoto:
+	  [self drawFramePhoto: frame withClip: NSZeroRect];
+	  break;
+	case NSImageFrameGrayBezel:
+	  [self drawGrayBezel: frame withClip: NSZeroRect];
+	  break;
+	case NSImageFrameGroove:
+	  [self drawGroove: frame withClip: NSZeroRect];
+	  break;
+	case NSImageFrameButton:
+	  [self drawButton: frame withClip: NSZeroRect];
+	  break;
+	}
+    }
+  else
+    {
+      [self fillRect: frame
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 

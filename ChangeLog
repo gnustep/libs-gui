@@ -1,5 +1,12 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
+	* Source/GSThemePrivate.h:
+	* Source/GSTheme.m: Add GSStringFromImageFrameStyle
+	* Source/GSThemeDrawing.m (-drawBorderForImageFrameStyle:...):
+	Use GSStringFromImageFrameStyle to get tiles, if present
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (-drawColorWellBorder:...): Draw inner
 	border using part GSColorWellInnerBorder
 	* Source/GSTheme.m:
