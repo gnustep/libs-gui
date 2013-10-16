@@ -1350,6 +1350,9 @@ withRepeatedImage: (NSImage*)image
 	  withTiles: (GSDrawTiles*)tiles
 	 background: (NSColor*)color;
 
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles;
+
 /**
  * Method to tile the supplied image to fill the vertical rectangle.<br />
  * The rect argument is the rectangle to be filled.<br />

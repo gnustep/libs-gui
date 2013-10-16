@@ -620,6 +620,15 @@ withRepeatedImage: (NSImage*)image
 
 - (NSRect) fillRect: (NSRect)rect
 	  withTiles: (GSDrawTiles*)tiles
+{
+  return [self fillRect: rect
+	      withTiles: tiles
+	     background: [NSColor clearColor]
+	      fillStyle: [tiles fillStyle]];
+}
+
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
 	 background: (NSColor*)color
 	  fillStyle: (GSThemeFillStyle)style
 {

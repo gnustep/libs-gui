@@ -306,8 +306,7 @@
   else
     {
       [self fillRect: frame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -349,8 +348,7 @@
   else
     {
       [self fillRect: frame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -415,8 +413,7 @@
   else
     {
       [self fillRect: frame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -847,8 +844,7 @@
   else
     {
       [self fillRect: cellFrame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -945,8 +941,7 @@
   else
     {
       [self fillRect: bounds
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -1002,8 +997,7 @@
   else
     {
       [self fillRect: cellFrame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -1066,8 +1060,7 @@
   else
     {
       [self fillRect: cellFrame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -1133,8 +1126,7 @@
   else
     {
       return [self fillRect: bounds
-		  withTiles: tiles
-		 background: [NSColor clearColor]];
+		  withTiles: tiles];
     }
 }
 
@@ -1217,8 +1209,7 @@
       else
         {
           aRect = [self fillRect: aRect
-                       withTiles: tiles
-                      background: [NSColor clearColor]];
+                       withTiles: tiles];
         }
 
       /*
@@ -1245,8 +1236,7 @@
       else
 	{
 	  [self fillRect: aRect
-	       withTiles: tiles
-	      background: [NSColor clearColor]];
+	       withTiles: tiles];
 
 	  aRect = [tiles contentRectForRect: aRect isFlipped: [well isFlipped]];
 	}
@@ -1388,8 +1378,7 @@ static NSImage *spinningImages[MaxCount];
   else
     {
       [self fillRect: bounds
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
 
       return [tiles contentRectForRect: bounds
 			     isFlipped: [[NSView focusView] isFlipped]];
@@ -1459,8 +1448,7 @@ static NSImage *spinningImages[MaxCount];
   else
     {
        [self fillRect: aRect
-            withTiles: tiles
-           background: [NSColor clearColor]];
+            withTiles: tiles];
     }
 }
 
@@ -1498,8 +1486,7 @@ static NSImage *spinningImages[MaxCount];
   else
     {
       [self fillRect: cellFrame
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -1721,8 +1708,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   else
     {
       [self fillRect: resizeBarRect
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -1820,8 +1806,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   else
     {
       [self fillRect: rect
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -2045,8 +2030,7 @@ typedef enum {
   else
     {
       [self fillRect: aRect
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -2203,8 +2187,7 @@ typedef enum {
   else
     {
       [self fillRect: aRect
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -2497,8 +2480,7 @@ typedef enum {
 				      state: GSThemeNormalState];
 
       [self fillRect: scrollViewRect
-           withTiles: tiles
-          background: [NSColor clearColor]];
+           withTiles: tiles];
     }
 }
 
@@ -2624,8 +2606,7 @@ typedef enum {
   else
     {
       [self fillRect: bounds
-	   withTiles: tiles
-	  background: [NSColor clearColor]];
+	   withTiles: tiles];
     }
 
   if (hasInnerBorder)
@@ -2720,8 +2701,7 @@ typedef enum {
 	    }
 
 	  [self fillRect: tilesRect
-	       withTiles: tiles
-	      background: [NSColor clearColor]];
+	       withTiles: tiles];
 	}
     }
 }
@@ -3280,8 +3260,7 @@ typedef enum {
 
       
       [[GSTheme theme] fillRect: [box borderRect]
-		      withTiles: tiles
-		     background: [NSColor clearColor]];
+		      withTiles: tiles];
       
       // Restore clipping path
       [NSGraphicsContext restoreGraphicsState];

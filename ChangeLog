@@ -1,6 +1,15 @@
 2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m:
+	* Source/GSThemeTools.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Small refactor:
+	most uses of -[GSTheme fillRect:withTiles:background:] use
+	[NSColor clearColor], so add a version without the background:
+	param.
+
+2013-10-15  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m:
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add methods
 	-menuSubmenuHorizontalOverlap and -menuSubmenuVerticalOverlap
 	wrapping user defaults GSMenuSubmenuHorizontalOverlap and
