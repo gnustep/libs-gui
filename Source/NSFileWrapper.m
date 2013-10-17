@@ -37,9 +37,11 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
+#import <Foundation/NSURL.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSFileWrapper.h"
 #import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
 #import "AppKit/NSWorkspace.h"
 
 @implementation NSFileWrapper
@@ -101,6 +103,12 @@
   return self;
 }
 
+- (id) initSymbolicLinkWithDestinationURL: (NSURL*)url
+{
+  // FIXME
+  return [self initSymbolicLinkWithDestination: [url path]];
+}
+
 /**
  * Init an instance from the file, directory, or symbolic link at path.<br /> 
  * This can create a tree of instances with a directory instance at the top
@@ -109,17 +117,14 @@
 {
   CREATE_AUTORELEASE_POOL(arp);
   NSFileManager	*fm = [NSFileManager defaultManager];
-  NSString	*fileType;
+  NSDictionary *fileAttributes;
+  NSString *fileType;
 
   NSDebugLLog(@"NSFileWrapper", @"initWithPath: %@", path);
 
-  // Store the full path in filename, the specification is unclear in this point
-  [self setFilename: path];
-  [self setPreferredFilename: [path lastPathComponent]];
-  [self setFileAttributes: [fm fileAttributesAtPath: path traverseLink: NO]];
-
-  fileType = [[self fileAttributes] fileType];
-  if ([fileType isEqualToString: @"NSFileTypeDirectory"])
+  fileAttributes = [fm fileAttributesAtPath: path traverseLink: NO];
+  fileType = [fileAttributes fileType];
+  if ([fileType isEqualToString: NSFileTypeDirectory])
     {
       NSString		*filename;
       NSMutableArray	*fileWrappers = [NSMutableArray array];
@@ -138,18 +143,42 @@
       self = [self initDirectoryWithFileWrappers: 
         [NSDictionary dictionaryWithObjects: fileWrappers forKeys: filenames]];
     }
-  else if ([fileType isEqualToString: @"NSFileTypeRegular"])
+  else if ([fileType isEqualToString: NSFileTypeRegular])
     {
       self = [self initRegularFileWithContents: 
 		AUTORELEASE([[NSData alloc] initWithContentsOfFile: path])];
     }
-  else if ([fileType isEqualToString: @"NSFileTypeSymbolicLink"])
+  else if ([fileType isEqualToString: NSFileTypeSymbolicLink])
     {
       self = [self initSymbolicLinkWithDestination: 
                  [fm pathContentOfSymbolicLinkAtPath: path]];
     }
+
+  // Store the full path in filename, the specification is unclear in this point
+  [self setFilename: path];
+  [self setPreferredFilename: [path lastPathComponent]];
+  [self setFileAttributes: fileAttributes];
+
   [arp drain];
   return self;
+}
+
+- (id) initWithURL: (NSURL*)url 
+           options: (NSFileWrapperReadingOptions)options
+             error: (NSError**)outError
+{
+  // FIXME
+  if ([self readFromURL: url
+                options: options
+                  error: outError])
+    {
+      return self;
+    }
+  else
+    {
+      DESTROY(self);
+      return nil;
+    }
 }
 
 // Init an instance from data in std serial format.  Serial format is the
@@ -435,10 +464,10 @@
 //
 
 #define GSFileWrapperDirectoryTypeCheck() \
-  if (_wrapperType != GSFileWrapperDirectoryType) \
+  if (![self isDirectory]) \
 	[NSException raise: NSInternalInconsistencyException \
 	            format: @"Can't invoke %@ on a file wrapper that" \
-                            @" does not wrap a directory!", _cmd];
+                     @" does not wrap a directory!", NSStringFromSelector(_cmd)];
 
 - (NSString*) addFileWrapper: (NSFileWrapper*)doc			
 {
@@ -544,7 +573,7 @@
 
 - (NSData*) regularFileContents
 {
-  if (_wrapperType == GSFileWrapperRegularFileType)
+  if ([self isRegularFile])
     {
       return _wrapperData;
     }
@@ -563,7 +592,7 @@
 
 - (NSString*) symbolicLinkDestination
 {
-  if (_wrapperType == GSFileWrapperSymbolicLinkType)
+  if ([self isSymbolicLink])
     {
       return _wrapperData;
     }
@@ -575,6 +604,99 @@
   
   return nil;
 }
+
+- (NSURL *)symbolicLinkDestinationURL
+{
+  // FIXME
+  return [NSURL fileURLWithPath: [self symbolicLinkDestination]];
+}
+
+- (BOOL) matchesContentsOfURL: (NSURL*)url
+{
+  // FIXME
+  // For 
+  return NO;
+}
+
+- (BOOL) readFromURL: (NSURL*)url
+             options: (NSFileWrapperReadingOptions)options
+               error: (NSError**)outError
+{
+  // FIXME
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *path = [url path];
+  NSDictionary *fileAttributes;
+  NSString *fileType;
+
+  NSDebugLLog(@"NSFileWrapper", @"readFromURL: %@", path);
+
+  fileAttributes = [fm fileAttributesAtPath: path traverseLink: NO];
+  fileType = [fileAttributes fileType];
+  if ([fileType isEqualToString: NSFileTypeDirectory])
+    {
+      if (options & NSFileWrapperReadingImmediate)
+        {
+          NSString *filename;
+          NSMutableArray *fileWrappers = [NSMutableArray array];
+          NSArray *filenames = [fm directoryContentsAtPath: path];
+          NSEnumerator *enumerator = [filenames objectEnumerator];
+
+          while ((filename = [enumerator nextObject]) != nil)
+            {
+              NSFileWrapper *w;
+
+              w = [[NSFileWrapper alloc] initWithPath: 
+                                           [path stringByAppendingPathComponent: filename]];
+              [fileWrappers addObject: w];
+              RELEASE(w);
+            }
+          self = [self initDirectoryWithFileWrappers: 
+                         [NSDictionary dictionaryWithObjects: fileWrappers
+                                                     forKeys: filenames]];
+        }
+      else
+        {
+          self = [self initDirectoryWithFileWrappers: nil];
+        }
+    }
+  else if ([fileType isEqualToString: NSFileTypeRegular])
+    {
+      if (options & NSFileWrapperReadingWithoutMapping)
+        {
+          self = [self initRegularFileWithContents: 
+                         AUTORELEASE([[NSData alloc] initWithContentsOfFile: path])];
+        }
+      else
+        {
+          self = [self initRegularFileWithContents: 
+                         AUTORELEASE([[NSData alloc] initWithContentsOfMappedFile: path])];
+        }
+    }
+  else if ([fileType isEqualToString: NSFileTypeSymbolicLink])
+    {
+      self = [self initSymbolicLinkWithDestination: 
+                 [fm pathContentOfSymbolicLinkAtPath: path]];
+    }
+
+  // Store the full path in filename, the specification is unclear in this point
+  [self setFilename: path];
+  [self setPreferredFilename: [path lastPathComponent]];
+  [self setFileAttributes: [fm fileAttributesAtPath: path traverseLink: NO]];
+
+  return NO;
+}
+
+- (BOOL) writeToURL: (NSURL*)url
+            options: (NSFileWrapperWritingOptions)options
+originalContentsURL: (NSURL*)originalContentsURL
+              error: (NSError**)outError
+{
+  // FIXME
+  return [self writeToFile: [url path]
+                atomically: options & NSFileWrapperWritingAtomic
+           updateFilenames: options & NSFileWrapperWritingWithNameUpdating];
+}
+
 
 //								
 // Archiving 				  

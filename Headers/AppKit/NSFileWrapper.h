@@ -32,12 +32,13 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #import <Foundation/NSObject.h>
-#import <AppKit/NSImage.h>
 
 @class NSData;
 @class NSDictionary;
+@class NSError;
 @class NSMutableDictionary;
 @class NSString;
+@class NSURL;
 @class NSImage;
 
 typedef enum
@@ -46,7 +47,21 @@ typedef enum
   GSFileWrapperRegularFileType,
   GSFileWrapperSymbolicLinkType
 } GSFileWrapperType;
-  
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+enum {
+   NSFileWrapperReadingImmediate = 1,
+   NSFileWrapperReadingWithoutMapping = 2,
+};
+typedef NSUInteger NSFileWrapperReadingOptions; 
+
+enum {
+   NSFileWrapperWritingAtomic = 1,
+   NSFileWrapperWritingWithNameUpdating = 2,
+};
+typedef NSUInteger NSFileWrapperWritingOptions;
+#endif
+
 @interface NSFileWrapper : NSObject 
 {
   NSString		*_filename;
@@ -137,6 +152,22 @@ typedef enum
 //
 
 - (NSString *)symbolicLinkDestination;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (id)initSymbolicLinkWithDestinationURL:(NSURL *)url;
+- (id)initWithURL:(NSURL *)url 
+          options:(NSFileWrapperReadingOptions)options
+            error:(NSError **)outError;
+- (BOOL)matchesContentsOfURL:(NSURL *)url;
+- (BOOL)readFromURL:(NSURL *)url
+            options:(NSFileWrapperReadingOptions)options
+              error:(NSError **)outError;
+- (NSURL *)symbolicLinkDestinationURL;
+- (BOOL)writeToURL:(NSURL *)url
+           options:(NSFileWrapperWritingOptions)options
+originalContentsURL:(NSURL *)originalContentsURL
+             error:(NSError **)outError;
+#endif
 
 @end
 
