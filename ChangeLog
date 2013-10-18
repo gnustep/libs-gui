@@ -1,3 +1,10 @@
+2013-10-17  Eric Wasylishen  <ewasylishen@gmail.com>
+
+	* Images/common_SliderHoriz.tiff:
+	* Images/common_SliderVert.tiff: Bake in the control background
+	color because the NSSliderCell now draws these without filling
+	with [NSColor controlBackgroundColor] first.
+
 2013-10-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSFileWrapper.h,
