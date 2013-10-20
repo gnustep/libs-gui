@@ -834,8 +834,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   all = ((1<<bit_width)-1) << shift;
 
   if (byte1 != byte2)
-    base[byte1] = (value >> 8) | (base[byte1] ^ (all >> 8));
-  base[byte2] = (value & 255) | (base[byte2] ^ (all & 255));
+    base[byte1] = (value >> 8) | (base[byte1] & ~(all >> 8));
+  base[byte2] = (value & 255) | (base[byte2] & ~(all & 255));
 }
 
 /**

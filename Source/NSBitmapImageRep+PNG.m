@@ -98,7 +98,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
   png_infop png_info, png_end_info;
 
   int width,height;
-  unsigned char *buf;
+  unsigned char *buf = NULL;
   int bytes_per_row;
   int type,channels,depth;
 
@@ -107,7 +107,6 @@ static void reader_func(png_structp png_struct, png_bytep data,
   NSString *colorspace;
 
   reader_struct_t reader;
-
 
   if (!(self = [super init]))
     return nil;
@@ -137,7 +136,12 @@ static void reader_func(png_structp png_struct, png_bytep data,
 
   if (setjmp(png_jmpbuf(png_struct)))
     {
+      // We get here when an error happens during image loading
       png_destroy_read_struct(&png_struct, &png_info, &png_end_info);
+      if (buf != NULL)
+        {
+          NSZoneFree([self zone], buf);
+        }
       RELEASE(self);
       return nil;
     }
@@ -212,25 +216,29 @@ static void reader_func(png_structp png_struct, png_bytep data,
   buf = NSZoneMalloc([self zone], bytes_per_row * height);
 
   {
-    unsigned char *row_pointers[height];
+    png_bytep row_pointers[height];
     int i;
-    for (i=0;i<height;i++)
-      row_pointers[i]=buf+i*bytes_per_row;
+
+    for (i = 0; i < height; i++)
+      {
+        row_pointers[i] = buf + i * bytes_per_row;
+      }
+
     png_read_image(png_struct, row_pointers);
   }
 
-  [self initWithBitmapDataPlanes: &buf
-        pixelsWide: width
-        pixelsHigh: height
-        bitsPerSample: depth
-        samplesPerPixel: channels
-        hasAlpha: alpha
-        isPlanar: NO
-        colorSpaceName: colorspace
-        bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
-        bytesPerRow: bytes_per_row
-		    bitsPerPixel: bpp];
-
+  self = [self initWithBitmapDataPlanes: &buf
+                             pixelsWide: width
+                             pixelsHigh: height
+                          bitsPerSample: depth
+                        samplesPerPixel: channels
+                               hasAlpha: alpha
+                               isPlanar: NO
+                         colorSpaceName: colorspace
+                           bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
+                            bytesPerRow: bytes_per_row
+                           bitsPerPixel: bpp];
+  
   _imageData = [[NSData alloc]
     initWithBytesNoCopy: buf
 		 length: bytes_per_row * height];

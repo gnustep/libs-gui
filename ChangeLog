@@ -1,3 +1,9 @@
+2013-10-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+PNG.m: Better cleanup on error.
+	* Source/NSBitmapImageRep.m (_set_bit_value): Correct error in bit
+	operation. This should allow the code to work with 16 bit images.
+
 2013-10-17  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Images/common_SliderHoriz.tiff:
