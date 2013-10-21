@@ -72,7 +72,12 @@ static NSMutableDictionary *cursorDict = nil;
 
 + (NSMutableArray *) stack
 {
-	return gnustep_gui_cursor_stack;
+  return gnustep_gui_cursor_stack;
+}
+
++ (void) resetStack
+{
+  [gnustep_gui_cursor_stack removeAllObjects];
 }
 
 - (void *) _cid

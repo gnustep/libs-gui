@@ -1,3 +1,9 @@
+2013-10-21  Frank Le Grand <frank.legrand@testplant.com>
+
+	* Source\NSCursor.m: Added class method "resetStack" 
+	that is used by the backend to determine when we hit a 
+	non-client area of the window.
+
 2013-04-03  Frank Le Grand <frank.legrand@testplant.com>
 
     * Source\NSImage.m: Added a small hack to work around and Ibeam 
