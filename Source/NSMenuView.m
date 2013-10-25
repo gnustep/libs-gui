@@ -444,7 +444,7 @@ static float menuBarHeight = 0.0;
 
 - (NSMenuItemCell*) menuItemCellForItemAtIndex: (NSInteger)index
 {
-  if (index < [_itemCells count])
+  if ((index >= 0) && (index < [_itemCells count]))
     return [_itemCells objectAtIndex: index];
   else
     return nil;
@@ -703,9 +703,10 @@ static float menuBarHeight = 0.0;
 
 - (CGFloat) heightForItem: (NSInteger)idx
 {
-  if (idx >= 0)
+  NSMenuItemCell *cell = [self menuItemCellForItemAtIndex: idx];
+
+  if (cell != nil)
     {
-      NSMenuItemCell *cell = [_itemCells objectAtIndex: idx];
       NSMenuItem *item = [cell menuItem];
       
       if ([item isSeparatorItem])
@@ -724,7 +725,7 @@ static float menuBarHeight = 0.0;
   if (item >= 0)
     {
       NSInteger i = 0;
-      for (i = (count - 1); i > item ; i--)
+      for (i = (count - 1); i > item; i--)
 	{
 	  total += [self heightForItem: i];
 	}
@@ -736,7 +737,8 @@ static float menuBarHeight = 0.0;
 {
   CGFloat total = 0;
   NSUInteger i = 0;
-  for (i = 0; i<[_itemCells count]; i++)
+
+  for (i = 0; i < [_itemCells count]; i++)
     {
       total += [self heightForItem: i];
     }

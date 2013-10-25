@@ -1,3 +1,12 @@
+2013-10-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-heightForItem:): Use
+	-menuItemCellForItemAtIndex: to protect against an index being to
+	big. This happens when the menu does not send notifications and a
+	non-existing item gets highlighted.
+	* Source/NSMenuView.m (-menuItemCellForItemAtIndex:): Protect
+	against negative index values.
+
 2013-10-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+PNG.m: Better cleanup on error.
