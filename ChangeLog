@@ -1,5 +1,10 @@
 2013-10-26  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m (-mouseDown:): Use container origin for
+	attachment cells.
+
+2013-10-26  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenuView.m (-heightForItem:): Use
 	-menuItemCellForItemAtIndex: to protect against an index being to
 	big. This happens when the menu does not send notifications and a

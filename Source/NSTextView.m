@@ -5573,12 +5573,14 @@ other than copy/paste or dragging. */
 		  cellFrame.origin =
 		    [_layoutManager
 		      locationForGlyphAtIndex: glyphIndex];
+		  cellFrame.origin.x += lfRect.origin.x;
+		  cellFrame.origin.y += lfRect.origin.y;
+                  cellFrame.origin.x += _textContainerOrigin.x;
+                  cellFrame.origin.y += _textContainerOrigin.y;
 		  cellFrame.size =
 		    [_layoutManager 
 		      attachmentSizeForGlyphAtIndex: glyphIndex];
 		  cellFrame.origin.y -= cellFrame.size.height;
-		  cellFrame.origin.x += lfRect.origin.x;
-		  cellFrame.origin.y += lfRect.origin.y;
 
 		  /* TODO: What about the insertion point ? */
 		  if ([cell wantsToTrackMouseForEvent: theEvent
