@@ -607,7 +607,7 @@ Return values 0, 1, 2 are mostly the same as from
     max_line_height = [curParagraphStyle maximumLineHeight];
 
     /* sanity */
-    if (max_line_height < min)
+    if (max_line_height > 0 && max_line_height < min)
       max_line_height = min;
 
     line_height = [cache->font defaultLineHeightForFont];

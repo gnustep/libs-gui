@@ -1,3 +1,8 @@
+2013-10-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Only
+	adjust max_line_height to minimumLineHeight if it isn't zero.
+
 2013-10-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-mouseDown:): Use container origin for
