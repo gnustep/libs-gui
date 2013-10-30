@@ -146,6 +146,13 @@ enum {
 };
 typedef NSUInteger NSImageScaling;
 
+enum {
+  NSCellHitNone = 0,
+  NSCellHitContentArea = 1 << 0,
+  NSCellHitEditableTextArea = 1 << 1,
+  NSCellHitTrackableArea = 1 << 2,
+};
+
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
@@ -501,6 +508,10 @@ typedef NSUInteger NSImageScaling;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL)allowsUndo;
 - (void)setAllowsUndo:(BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView;
 #endif
 
 @end

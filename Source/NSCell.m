@@ -1597,6 +1597,43 @@ static NSColor *dtxtCol;
   *interval = 0.1;
 }
 
+- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
+{
+  NSUInteger hitResult  = NSCellHitNone;
+	NSPoint    point      = [controlView convertPoint:[event locationInWindow] fromView:nil];
+
+  switch (_cell.type)
+    {
+      case NSImageCellType:
+        {
+          NSRect checkFrame = [self imageRectForBounds:cellFrame];
+          if (NSPointInRect(point, checkFrame))
+            hitResult |= NSCellHitContentArea;
+          break;
+        }
+        
+      case NSTextCellType:
+        {
+          NSString *stringValue = [self stringValue];
+          if (stringValue && [stringValue length])
+            {
+              NSRect checkFrame = [self titleRectForBounds:cellFrame];
+              if (NSPointInRect(point, checkFrame))
+                hitResult |= NSCellHitContentArea;
+            }
+          break;
+        }
+        
+      case NSNullCellType:
+      default:
+        hitResult = NSCellHitContentArea;
+        // FIXME: If the cell not disabled, and it would track, OR in NSCellHitTrackableArea...
+        break;
+    }
+  
+  return(hitResult);
+}
+
 /**<p>Returns whether tracking starts. The NSCell implementation
    returns YES when the <var>startPoint</var> is into the control view
    retangle, NO otherwise. This method is call at the early stage of
@@ -2353,7 +2390,7 @@ static NSColor *dtxtCol;
   _menu = TEST_RETAIN (_menu);
   _cell_image = TEST_RETAIN (_cell_image);
   _formatter = TEST_RETAIN (_formatter);
-  _formatter = TEST_RETAIN (_represented_object);
+  _represented_object = TEST_RETAIN (_represented_object);
 
   return c;
 }
