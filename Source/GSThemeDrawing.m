@@ -2662,14 +2662,16 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
           
           // Need to draw in the background gradient - this seems to be done outside the cell drawing
           // on Cocoa...
-          CGFloat     startNum    = 212.0 / 255.0;
-          CGFloat     endNum      = 217.0 / 255.0;
-          NSColor    *startColor  = [NSColor colorWithCalibratedRed:startNum green:startNum blue:startNum alpha:1.0];
-          NSColor    *endColor    = [NSColor colorWithCalibratedRed:endNum green:endNum blue:endNum alpha:1.0];
-          NSGradient *gradient    = AUTORELEASE([[NSGradient alloc] initWithStartingColor:startColor endingColor:endColor]);
+          static NSGradient *GroupCellGradient = nil;
+          if (GroupCellGradient == nil)
+            {
+              NSColor *startColor = [NSColor colorWithCalibratedWhite:212.0 / 255.0 alpha:1.0f];
+              NSColor *endColor   = [NSColor colorWithCalibratedWhite:217.0 / 255.0 alpha:1.0f];
+              GroupCellGradient   = [[NSGradient alloc] initWithStartingColor:startColor endingColor:endColor];
+            }
           
           // Draw the group row...
-          [gradient drawInRect:drawingRect angle:90.0f];
+          [GroupCellGradient drawInRect:drawingRect angle:90.0f];
           [cell drawWithFrame: drawingRect inView: tableView];
         }
       return;
