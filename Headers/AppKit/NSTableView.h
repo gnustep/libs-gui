@@ -391,12 +391,6 @@ writeRowsWithIndexes: (NSIndexSet*)rows
 namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 forDraggedRowsWithIndexes: (NSIndexSet *)indexSet;
 #endif
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (BOOL)tableView:(NSTableView*)tableView isGroupRow:(NSInteger)row;
-- (NSCell *)tableView:(NSTableView*)tableView dataCellForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row;
-- (NSIndexSet *)tableView:(NSTableView*)tableView selectionIndexesForProposedSelection:(NSIndexSet*)proposedSelectionIndexes;
-#endif
 @end
 
 APPKIT_EXPORT NSString *NSTableViewColumnDidMoveNotification;
@@ -448,6 +442,12 @@ dataCellForTableColumn: (NSTableColumn *)aTableColumn
              tableColumn: (NSTableColumn *)col
                      row: (NSInteger)row
            mouseLocation: (NSPoint)mouse;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL)tableView:(NSTableView*)tableView isGroupRow:(NSInteger)row;
+- (NSCell *)tableView:(NSTableView*)tableView dataCellForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row;
+- (NSIndexSet *)tableView:(NSTableView*)tableView selectionIndexesForProposedSelection:(NSIndexSet*)proposedSelectionIndexes;
 #endif
 @end
 
