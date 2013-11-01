@@ -3190,19 +3190,34 @@ byExtendingSelection: (BOOL)flag
 
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
-  NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+  NSCell        *cell = nil;
+  NSTableColumn *tb   = nil;
+  
+  // -1 on Cocoa means nil table column for group row cell...
+  if (columnIndex >= 0)
+    tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector: 
-        @selector(tableView:dataCellForTableColumn:row:)])
+  if ([_delegate respondsToSelector: @selector(tableView:dataCellForTableColumn:row:)])
     {
-      cell = [_delegate tableView: self dataCellForTableColumn: tb
-                                                           row: rowIndex];
+      cell = [_delegate tableView: self dataCellForTableColumn: tb row: rowIndex];
     }
-  if (cell == nil)
+  
+  // If no cell and we're requesting a non-group cell...
+  if ((cell == nil) && tb)
     {
       cell = [tb dataCellForRow: rowIndex];
     }
+  
+  // If we got a cell get the object value...this is done here in Cocoa...
+  if (cell)
+    {
+      // Get the object value from the delegate or nil...
+      [cell setObjectValue:[self _objectValueForTableColumn:tb row:rowIndex]];
+      
+      // Inform delegate we are getting ready to display
+      [self _willDisplayCell: cell forTableColumn: tb row: rowIndex];
+    }
+  
   return cell;
 }
 
@@ -3574,13 +3589,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (NSUInteger)_hitTestForEvent:(NSEvent*)event atColumn:(NSInteger)column row:(NSInteger)row
 {
-  NSTableColumn *tableColumn  = ((column == -1) ? nil : [[self tableColumns] objectAtIndex:column]);
-  NSCell        *cell         = [self _dataCellForTableColumn:tableColumn row:row];
-  NSRect         cellFrame    = [self frameOfCellAtColumn:(column == -1) ? 0 : column row:row];
-  id             objectValue  = [self _objectValueForTableColumn:tableColumn row:row];
-  
-  // Initialize object value for data cell...
-  [cell setObjectValue:objectValue];
+  NSCell  *cell       = [self preparedCellAtColumn: column row: row];
+  NSRect   cellFrame  = [self frameOfCellAtColumn:(column == -1) ? 0 : column row:row];
   
   // Return the hit result...
   return([cell hitTestForEvent:event inRect:cellFrame ofView:self]);
@@ -3619,13 +3629,17 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if ([theEvent type] == NSLeftMouseDown)
     {
       // If the cell processed the mouse hit...
-      BOOL       isGrouped  = [[self delegate] tableView:self isGroupRow:_clickedRow];
-      NSInteger  theColumn  = (isGrouped ? -1 : _clickedColumn);
-      NSUInteger hitResult  = [self _hitTestForEvent:theEvent atColumn:theColumn row:_clickedRow];
+      NSInteger  theColumn  = _clickedColumn;
+      BOOL       responds   = [[self delegate] respondsToSelector: @selector(tableView:isGroupRow:)];
+      
+      // Check for grouped row...
+      if (responds && [[self delegate] tableView:self isGroupRow:_clickedRow])
+        theColumn = -1;
 
       // Application specific hit test processing is handled within the delegate's should select callbacks
       // if they're implemented...however - I'm not sure when this SHOULD be invoked...
-      [self _shouldSelectRow:_clickedRow];
+      if ([self _hitTestForEvent:theEvent atColumn:theColumn row:_clickedRow] != NSCellHitNone)
+        [self _shouldSelectRow:_clickedRow];
     }
   
   if ([theEvent type] == NSLeftMouseDown

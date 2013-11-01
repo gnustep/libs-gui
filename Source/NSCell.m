@@ -1597,6 +1597,16 @@ static NSColor *dtxtCol;
   *interval = 0.1;
 }
 
+- (NSBackgroundStyle)backgroundStyle
+{
+  return(_cell.background_style);
+}
+
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
+{
+  _cell.background_style = backgroundStyle;
+}
+
 - (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
 {
   NSUInteger hitResult  = NSCellHitNone;
@@ -1617,6 +1627,7 @@ static NSColor *dtxtCol;
           NSString *stringValue = [self stringValue];
           if (stringValue && [stringValue length])
             {
+              // TODO: Needs to be the string rect NOT the title rect area...
               NSRect checkFrame = [self titleRectForBounds:cellFrame];
               if (NSPointInRect(point, checkFrame))
                 hitResult |= NSCellHitContentArea;
@@ -2855,24 +2866,55 @@ static NSColor *dtxtCol;
    are deallocated at the end of the run loop. */
 - (NSDictionary*) _nonAutoreleasedTypingAttributes
 {
-  NSDictionary *attr;
-  NSColor *color;
-  NSMutableParagraphStyle *paragraphStyle;
+  NSDictionary *attr = nil;
 
-  color = [self textColor];
-  /* Note: There are only a few possible paragraph styles for cells.  
-     TODO: Cache them and reuse them for the whole app lifetime. */
-  paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  [paragraphStyle setLineBreakMode: [self lineBreakMode]];
-  [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
-  [paragraphStyle setAlignment: [self alignment]];
+  switch (_cell.background_style)
+  {
+    case NSBackgroundStyleDark:
+      {
+        NSFont  *font  = [NSFont fontWithName:@"LucidaGrande-Bold" size:12.0];
+        NSColor *color = [NSColor colorWithCalibratedWhite:0.458824 alpha:1.0];
+        
+        /* Note: There are only a few possible paragraph styles for cells.
+         TODO: Cache them and reuse them for the whole app lifetime. */
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        [paragraphStyle setLineBreakMode: [self lineBreakMode]];
+        [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
+        [paragraphStyle setAlignment: [self alignment]];
+        
+        attr = [[NSDictionary alloc] initWithObjectsAndKeys:
+                font,           NSFontAttributeName,
+                color,          NSForegroundColorAttributeName,
+                paragraphStyle, NSParagraphStyleAttributeName,
+                nil];
+        RELEASE (paragraphStyle);
+        break;
+      }
+      
+    // TODO: Add raised style settings...
+    case NSBackgroundStyleRaised:
+    // TODO: Add lowered style settings...
+    case NSBackgroundStyleLowered:
+    case NSBackgroundStyleLight:
+    default:
+      {
+        NSColor *color = [self textColor];
+        /* Note: There are only a few possible paragraph styles for cells.  
+           TODO: Cache them and reuse them for the whole app lifetime. */
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        [paragraphStyle setLineBreakMode: [self lineBreakMode]];
+        [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
+        [paragraphStyle setAlignment: [self alignment]];
 
-  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-                               _font, NSFontAttributeName,
-                               color, NSForegroundColorAttributeName,
-                               paragraphStyle, NSParagraphStyleAttributeName,
-                               nil];
-  RELEASE (paragraphStyle);
+        attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+                                     _font, NSFontAttributeName,
+                                     color, NSForegroundColorAttributeName,
+                                     paragraphStyle, NSParagraphStyleAttributeName,
+                                     nil];
+        RELEASE (paragraphStyle);
+        break;
+      }
+  }
   return attr;
 }
 

@@ -2599,10 +2599,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   float *columnOrigins = [tableView _columnOrigins];
   int editedRow = [tableView editedRow];
   int editedColumn = [tableView editedColumn];
-  NSArray *tableColumns = [tableView tableColumns];
-  int startingColumn; 
+  int startingColumn;
   int endingColumn;
-  NSTableColumn *tb;
   NSRect drawingRect;
   NSCell *cell;
   int i;
@@ -2613,96 +2611,88 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       return;
     }
 
-  /* Using columnAtPoint: here would make it called twice per row per drawn 
-     rect - so we avoid it and do it natively */
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
-
   BOOL respondsToIsGroupRow = [[tableView delegate] respondsToSelector:@selector(tableView:isGroupRow:)];
 
   // First, determine whether the table view delegate wants this row
   // to be a grouped cell row...
   if (respondsToIsGroupRow && [[tableView delegate] tableView:tableView isGroupRow:rowIndex])
     {
-      cell = [tableView _dataCellForTableColumn:nil row:rowIndex];
+      cell = [tableView preparedCellAtColumn: -1 row:rowIndex];
       if (cell)
         {
-          id objectValue = [dataSource tableView: tableView objectValueForTableColumn: nil row: rowIndex];
+          static NSGradient *GroupCellGradient = nil;
+          if (GroupCellGradient == nil)
+          {
+            NSColor *startColor = [NSColor colorWithCalibratedWhite:212.0 / 255.0 alpha:1.0f];
+            NSColor *endColor   = [NSColor colorWithCalibratedWhite:217.0 / 255.0 alpha:1.0f];
+            GroupCellGradient   = [[NSGradient alloc] initWithStartingColor:startColor endingColor:endColor];
+          }
+          
           [cell _setInEditing: NO];
           [cell setShowsFirstResponder:NO];
           [cell setFocusRingType:NSFocusRingTypeNone];
-          
-          [tableView _willDisplayCell: cell forTableColumn: nil row: rowIndex];
-          [cell setObjectValue: objectValue];
+          [cell setBackgroundStyle:NSBackgroundStyleDark];
           
           // Get the drawing rectangle...
           drawingRect = [tableView frameOfCellAtColumn: 0 row: rowIndex];
           
           // Need to draw in the background gradient - this seems to be done outside the cell drawing
           // on Cocoa...
-          static NSGradient *GroupCellGradient = nil;
-          if (GroupCellGradient == nil)
-            {
-              NSColor *startColor = [NSColor colorWithCalibratedWhite:212.0 / 255.0 alpha:1.0f];
-              NSColor *endColor   = [NSColor colorWithCalibratedWhite:217.0 / 255.0 alpha:1.0f];
-              GroupCellGradient   = [[NSGradient alloc] initWithStartingColor:startColor endingColor:endColor];
-            }
-          
-          // Draw the group row...
           [GroupCellGradient drawInRect:drawingRect angle:90.0f];
+
+          // Draw the group row...
           [cell drawWithFrame: drawingRect inView: tableView];
         }
-      return;
     }
-    
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
+  else
     {
-      tb   = [tableColumns objectAtIndex: i];
-      cell = [tableView _dataCellForTableColumn:tb row:rowIndex];
-      if (i == editedColumn && rowIndex == editedRow)
-        {
-          [cell _setInEditing: YES];
-          [cell setShowsFirstResponder:YES];
-          [cell setFocusRingType:NSFocusRingTypeDefault];
-        }
+      /* Using columnAtPoint: here would make it called twice per row per drawn
+       rect - so we avoid it and do it natively */
       
-      [tableView _willDisplayCell: cell
-                   forTableColumn: tb
-                              row: rowIndex];
-      [cell setObjectValue: [dataSource tableView: tableView
-                        objectValueForTableColumn: tb
-                                              row: rowIndex]];
-      drawingRect = [tableView frameOfCellAtColumn: i
-                                               row: rowIndex];
-      [cell drawWithFrame: drawingRect inView: tableView];
-      if (i == editedColumn && rowIndex == editedRow)
+      /* Determine starting column as fast as possible */
+      x_pos = NSMinX (clipRect);
+      i = 0;
+      while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+      {
+        i++;
+      }
+      startingColumn = (i - 1);
+      
+      if (startingColumn == -1)
+        startingColumn = 0;
+      
+      /* Determine ending column as fast as possible */
+      x_pos = NSMaxX (clipRect);
+      // Nota Bene: we do *not* reset i
+      while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+      {
+        i++;
+      }
+      endingColumn = (i - 1);
+      
+      if (endingColumn == -1)
+        endingColumn = numberOfColumns - 1;
+
+      /* Draw the row between startingColumn and endingColumn */
+      for (i = startingColumn; i <= endingColumn; i++)
         {
-          [cell _setInEditing: NO];
-          [cell setShowsFirstResponder:NO];
-          [cell setFocusRingType:NSFocusRingTypeNone];
+          cell = [tableView preparedCellAtColumn: i row:rowIndex];
+          if (i == editedColumn && rowIndex == editedRow)
+            {
+              [cell _setInEditing: YES];
+              [cell setShowsFirstResponder:YES];
+              [cell setFocusRingType:NSFocusRingTypeDefault];
+            }
+          
+          drawingRect = [tableView frameOfCellAtColumn: i row: rowIndex];
+          [cell drawWithFrame: drawingRect inView: tableView];
+          
+          if (i == editedColumn && rowIndex == editedRow)
+            {
+              [cell _setInEditing: NO];
+              [cell setShowsFirstResponder:NO];
+              [cell setFocusRingType:NSFocusRingTypeNone];
+            }
         }
     }
 }

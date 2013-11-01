@@ -153,6 +153,14 @@ enum {
   NSCellHitTrackableArea = 1 << 2,
 };
 
+enum {
+  NSBackgroundStyleLight = 0,
+  NSBackgroundStyleDark = 1,
+  NSBackgroundStyleRaised = 2,
+  NSBackgroundStyleLowered = 3
+};
+typedef NSInteger NSBackgroundStyle;
+
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
@@ -199,6 +207,7 @@ enum {
     unsigned subclass_bool_four: 1;
     // Set while the cell is edited/selected
     unsigned in_editing: 1;
+    unsigned background_style: 2;
   } _cell;
   NSUInteger _mouse_down_flags;
   NSUInteger _action_mask;
@@ -511,6 +520,8 @@ enum {
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSBackgroundStyle)backgroundStyle;
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle;
 - (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView;
 #endif
 
