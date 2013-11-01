@@ -57,11 +57,31 @@
 
 #define		SANITY_CHECKS	0
 
+static BOOL     adding;
+
+/* When caching attributes we make a shallow copy of the dictionary cached,
+ * so that it is immutable and safe to cache.
+ * However, we have a potential problem if the objects within the attributes
+ * dictionary are themselves mutable, and something mutates them while they
+ * are in the cache.  In this case we could items added while different and
+ * then mutated to have the same contents, so we would not know which of
+ * the equal dictionaries to remove.
+ * The solution is to require dictionaries to be identical for removal.
+ */
+static inline BOOL
+cacheEqual(id A, id B)
+{
+  if (YES == adding)
+    return [A isEqualToDictionary: B];
+  else
+    return A == B;
+}
+
 #define	GSI_MAP_RETAIN_KEY(M, X)	
 #define	GSI_MAP_RELEASE_KEY(M, X)	
 #define	GSI_MAP_RETAIN_VAL(M, X)	
 #define	GSI_MAP_RELEASE_VAL(M, X)	
-#define	GSI_MAP_EQUAL(M, X,Y)	[(X).obj isEqualToDictionary: (Y).obj]
+#define	GSI_MAP_EQUAL(M, X,Y)	cacheEqual((X).obj, (Y).obj)
 #define GSI_MAP_KTYPES	GSUNION_OBJ
 #define GSI_MAP_VTYPES	GSUNION_NSINT
 #define	GSI_MAP_NOCLEAN	1
@@ -186,6 +206,7 @@ cacheAttributes(NSDictionary *attrs)
   GSIMapNode	node;
 
   ALOCK();
+  adding = YES;
   node = GSIMapNodeForKey(&attrMap, (GSIMapKey)((id)attrs));
   if (node == 0)
     {
@@ -194,7 +215,8 @@ cacheAttributes(NSDictionary *attrs)
        * in an immutable dictionary that can safely be cached.
        */
       attrs = [[NSDictionary alloc] initWithDictionary: attrs copyItems: NO];
-      GSIMapAddPair(&attrMap, (GSIMapKey)((id)attrs), (GSIMapVal)(NSUInteger)1);
+      GSIMapAddPair(&attrMap,
+        (GSIMapKey)((id)attrs), (GSIMapVal)(NSUInteger)1);
     }
   else
     {
@@ -211,12 +233,14 @@ unCacheAttributes(NSDictionary *attrs)
   GSIMapBucket       bucket;
 
   ALOCK();
+  adding = NO;
   bucket = GSIMapBucketForKey(&attrMap, (GSIMapKey)((id)attrs));
   if (bucket != 0)
     {
       GSIMapNode     node;
 
-      node = GSIMapNodeForKeyInBucket(&attrMap, bucket, (GSIMapKey)((id)attrs));
+      node = GSIMapNodeForKeyInBucket(&attrMap,
+        bucket, (GSIMapKey)((id)attrs));
       if (node != 0)
 	{
 	  if (--node->value.nsu == 0)
