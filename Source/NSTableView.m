@@ -1991,6 +1991,7 @@ static void computeNewSelection
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
                                  row: (int) rowIndex;
 - (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(int)row;
+- (BOOL)_isGroupRow: (NSInteger)rowIndex;
 @end
 
 
@@ -3197,10 +3198,7 @@ byExtendingSelection: (BOOL)flag
   if (columnIndex >= 0)
     tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector: @selector(tableView:dataCellForTableColumn:row:)])
-    {
-      cell = [_delegate tableView: self dataCellForTableColumn: tb row: rowIndex];
-    }
+  cell = [self _dataCellForTableColumn: tb row:rowIndex];
   
   // If no cell and we're requesting a non-group cell...
   if ((cell == nil) && tb)
@@ -3629,11 +3627,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if ([theEvent type] == NSLeftMouseDown)
     {
       // If the cell processed the mouse hit...
-      NSInteger  theColumn  = _clickedColumn;
-      BOOL       responds   = [[self delegate] respondsToSelector: @selector(tableView:isGroupRow:)];
+      NSInteger theColumn = _clickedColumn;
       
       // Check for grouped row...
-      if (responds && [[self delegate] tableView:self isGroupRow:_clickedRow])
+      if ([self _isGroupRow: _clickedRow])
         theColumn = -1;
 
       // Application specific hit test processing is handled within the delegate's should select callbacks
@@ -4492,7 +4489,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex 
+- (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex
 			   row: (NSInteger)rowIndex
 {
   NSRect frameRect;
@@ -4511,7 +4508,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   frameRect.origin.x    += _intercellSpacing.width / 2;
 
   // Group rows take up the entire row...
-  if ([[self delegate] tableView:self isGroupRow:rowIndex] == YES)
+  if ([self _isGroupRow: rowIndex])
   {
     frameRect.size.width   = [self frame].size.width;
   }
@@ -6185,18 +6182,22 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
+- (BOOL)_isGroupRow: (NSInteger)rowIndex
+{
+  if ([[self delegate] respondsToSelector: @selector(tableView:isGroupRow:)])
+    return [[self delegate] tableView:self isGroupRow:rowIndex];
+  return NO;
+}
+
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
                                  row: (int) rowIndex
 {
   NSCell *cell = nil;
-  if ([_delegate respondsToSelector:
-		@selector(tableView:dataCellForTableColumn:row:)])
+  if ([_delegate respondsToSelector: @selector(tableView:dataCellForTableColumn:row:)])
     {
-      cell = [_delegate tableView: self
-			dataCellForTableColumn: tb
-			      row: rowIndex];
+      cell = [_delegate tableView: self dataCellForTableColumn: tb row: rowIndex];
     }
-  if (cell == nil)
+  if ((cell == nil) && tb)
     {
       cell = [tb dataCellForRow: rowIndex];
     }
