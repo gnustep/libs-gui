@@ -1,3 +1,16 @@
+2013-11-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSServicesManager.m: Call the more modern
+	NSDocumentController methods to open documents.
+	* Resources/English.lproj/Localizable.strings
+	* Resources/Esperanto.lproj/Localizable.strings
+	* Resources/French.lproj/Localizable.strings
+	* Resources/German.lproj/Localizable.strings
+	* Resources/Italian.lproj/Localizable.strings
+	* Resources/Lojban.lproj/Localizable.strings
+	* Resources/Spanish.lproj/Localizable.strings
+	Regenerate string files.
+
 2013-10-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Only

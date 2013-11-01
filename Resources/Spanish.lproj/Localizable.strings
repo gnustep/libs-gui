@@ -1,20 +1,20 @@
 /***
 Spanish.lproj/Localizable.strings
-updated by make_strings 2013-02-08 11:56:02 +0100
+updated by make_strings 2013-10-28 21:50:46 +0100
 add comments above this one
 ***/
 
 
 /*** Keys found in multiple places ***/
 
-/* File: ../Source/GSNibLoading.m:193 */
+/* File: ../Source/GSNibLoading.m:182 */
 /* Comment: Info */
 /* File: ../Source/NSApplication.m:2878 */
 /* Comment: Title of the Info Panel */
-/* File: ../Source/NSMenu.m:258 */
+/* File: ../Source/NSMenu.m:259 */
 "Info" = "Informaci\U00F3n";
 
-/* File: ../Source/GSNibLoading.m:176 */
+/* File: ../Source/GSNibLoading.m:165 */
 /* Comment: Quit */
 /* File: ../Source/NSApplication.m:3442 */
 /* File: ../Source/NSApplication.m:4207 */
@@ -22,7 +22,7 @@ add comments above this one
 "Quit" = "Salir";
 
 /* File: ../Source/GSCharacterPanel.m:173 */
-/* File: ../Source/NSPageLayout.m:971 */
+/* File: ../Source/NSPageLayout.m:959 */
 "Name" = "Nombre";
 
 /* File: ../Source/NSAlert.m:384 */
@@ -31,9 +31,9 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1660 */
 /* File: ../Source/NSDocumentController.m:955 */
 /* File: ../Source/NSDocumentController.m:987 */
-/* File: ../Source/NSSavePanel.m:317 */
-/* File: ../Source/NSSavePanel.m:1306 */
-/* File: ../Source/NSSavePanel.m:1379 */
+/* File: ../Source/NSSavePanel.m:318 */
+/* File: ../Source/NSSavePanel.m:1330 */
+/* File: ../Source/NSSavePanel.m:1403 */
 "Cancel" = "Cancelar";
 
 /* File: ../Source/NSAlert.m:389 */
@@ -43,12 +43,12 @@ add comments above this one
 /* File: ../Source/NSDocument.m:474 */
 /* File: ../Source/NSDocument.m:815 */
 /* File: ../Source/NSDocument.m:1183 */
-/* File: ../Source/NSSavePanel.m:434 */
-/* File: ../Source/NSSavePanel.m:1303 */
-/* File: ../Source/NSSavePanel.m:1342 */
-/* File: ../Source/NSSavePanel.m:1355 */
+/* File: ../Source/NSSavePanel.m:435 */
+/* File: ../Source/NSSavePanel.m:1327 */
 /* File: ../Source/NSSavePanel.m:1366 */
-/* File: ../Source/NSSavePanel.m:1377 */
+/* File: ../Source/NSSavePanel.m:1379 */
+/* File: ../Source/NSSavePanel.m:1390 */
+/* File: ../Source/NSSavePanel.m:1401 */
 /* Flag: untranslated */
 "Save" = "Guardar";
 
@@ -56,15 +56,15 @@ add comments above this one
 /* File: ../Source/NSAlert.m:1830 */
 /* File: ../Source/NSPrintOperation.m:678 */
 /* File: ../Source/NSPrintPanel.m:408 */
-/* File: ../Source/NSSavePanel.m:333 */
+/* File: ../Source/NSSavePanel.m:334 */
 "OK" = "Bien";
 
 /* File: ../Source/GSPrintOperation.m:157 */
-/* File: ../Source/NSSavePanel.m:1357 */
-/* File: ../Source/NSSavePanel.m:1368 */
+/* File: ../Source/NSSavePanel.m:1381 */
+/* File: ../Source/NSSavePanel.m:1392 */
 "Dismiss" = "Despedir";
 
-/* File: ../Source/NSColorPanel.m:244 */
+/* File: ../Source/NSColorPanel.m:245 */
 /* File: ../Source/NSToolbarItem.m:1076 */
 "Colors" = "Colores";
 
@@ -73,8 +73,8 @@ add comments above this one
 /* File: ../Source/NSFontPanel.m:696 */
 "Revert" = "Revertir";
 
-/* File: ../Source/NSPageLayout.m:979 */
-/* File: ../Source/NSPageLayout.m:1050 */
+/* File: ../Source/NSPageLayout.m:967 */
+/* File: ../Source/NSPageLayout.m:1038 */
 /* File: ../Source/NSPrintPanel.m:630 */
 /* File: ../Source/NSPrintPanel.m:676 */
 "Unknown" = "Desconocido";
@@ -114,35 +114,35 @@ add comments above this one
 /* Flag: untranslated */
 "Hide" = "Ocultar";
 
-/* File: ../Source/NSSavePanel.m:241 */
+/* File: ../Source/NSSavePanel.m:242 */
 /* Flag: untranslated */
 "Show Hidden Files" = "Mostrar archivos ocultos";
 
-/* File: ../Source/NSSavePanel.m:276 */
+/* File: ../Source/NSSavePanel.m:277 */
 /* Flag: untranslated */
 "Home" = "Carpeta Personal";
 
-/* File: ../Source/NSSavePanel.m:292 */
+/* File: ../Source/NSSavePanel.m:293 */
 /* Flag: untranslated */
 "Mount" = "Montar";
 
-/* File: ../Source/NSSavePanel.m:308 */
+/* File: ../Source/NSSavePanel.m:309 */
 /* Flag: untranslated */
 "Unmount" = "Desmontar";
 
-/* File: ../Source/NSTextView.m:650 */
+/* File: ../Source/NSTextView.m:651 */
 /* Flag: untranslated */
 "Cut" = "Cortar";
 
-/* File: ../Source/NSTextView.m:651 */
+/* File: ../Source/NSTextView.m:652 */
 /* Flag: untranslated */
 "Copy" = "Copiar";
 
-/* File: ../Source/NSTextView.m:652 */
+/* File: ../Source/NSTextView.m:653 */
 /* Flag: untranslated */
 "Paste" = "Pegar";
 
-/* File: ../Source/NSTextView.m:5847 */
+/* File: ../Source/NSTextView.m:5894 */
 /* Flag: untranslated */
 "No Suggestions" = "No hay sugerencias";
 
@@ -150,7 +150,7 @@ add comments above this one
 /*** Strings from ../Source/Functions.m ***/
 /* File: ../Source/Functions.m:85 */
 "Cannot load the main model file '%@'"
-= "No se puede leer el archivo del m\U00F3delo principal '%@'";
+  = "No se puede leer el archivo del m\U00F3delo principal '%@'";
 
 
 /*** Strings from ../Source/GSCharacterPanel.m ***/
@@ -167,8 +167,8 @@ add comments above this one
 "Authors: " = "Autores: ";
 /* File: ../Source/GSInfoPanel.m:396 */
 "Copyright Information Not Available" = "Informaci\U00F3n no disponible";
-/* File: ../Source/GSInfoPanel.m:187 */
 /* File: ../Source/GSInfoPanel.m:482 */
+/* File: ../Source/GSInfoPanel.m:187 */
 "Current theme" = "Tema Actual";
 /* File: ../Source/GSInfoPanel.m:339 */
 "Release: " = "Versi\U00F3n: ";
@@ -177,7 +177,7 @@ add comments above this one
 /*** Strings from ../Source/GSPrintOperation.m ***/
 /* File: ../Source/GSPrintOperation.m:156 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
-= "Problema con la aplicaci\U00F3n de vista previa '%@' talvez usted necesite establecer NSPreviewApp para su usuario";
+  = "Problema con la aplicaci\U00F3n de vista previa '%@' talvez usted necesite establecer NSPreviewApp para su usuario";
 
 
 /*** Strings from ../Source/GSTextFinder.m ***/
@@ -189,7 +189,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/GSThemeDrawing.m ***/
-/* File: ../Source/GSThemeDrawing.m:185 */
+/* File: ../Source/GSThemeDrawing.m:188 */
 "?" = "?";
 
 
@@ -219,25 +219,25 @@ add comments above this one
 "Abort" = "Abortar";
 /* File: ../Source/NSApplication.m:323 */
 "Backend at path %@ doesn't contain the GSBackend class"
-= "El backend en la ruta %@ no contiene la clase GSBackend";
+  = "El backend en la ruta %@ no contiene la clase GSBackend";
 /* File: ../Source/NSApplication.m:311 */
 "Can't create NSBundle object for backend at path %@"
-= "No se puede crear el objeto NSBundle para el backend en la ruta %@";
+  = "No se puede crear el objeto NSBundle para el backend en la ruta %@";
 /* File: ../Source/NSApplication.m:316 */
 "Can't load object file from backend at path %@"
-= "No se puede leer el archivo desde el backend en la ruta %@";
+  = "No se puede leer el archivo desde el backend en la ruta %@";
 /* File: ../Source/NSApplication.m:135 */
 "Critical Error in %@" = "Error Cr\U00EDtico en %@";
 /* File: ../Source/NSApplication.m:141 */
 "Debug" = "Depurar";
 /* File: ../Source/NSApplication.m:1198 */
 "Problem during launch app notification: %@"
-= "Problema durante la notificaci\U00F3n de aplicaci\U00F3n iniciada: %@";
+  = "Problema durante la notificaci\U00F3n de aplicaci\U00F3n iniciada: %@";
 /* File: ../Source/NSApplication.m:304 */
 "Unable to find backend %@" = "Incapaz de encontrar el backend %@";
 /* File: ../Source/NSApplication.m:972 */
 "[NSApplication -init] called more than once"
-= "[NSApplication -init] llamada m\U00E1s de una vez";
+  = "[NSApplication -init] llamada m\U00E1s de una vez";
 /* File: ../Source/NSApplication.m:3315 */
 "reported exception - %@" = "excepci\U00F3n reportada - %@";
 
@@ -248,18 +248,18 @@ add comments above this one
 /* File: ../Source/NSAttributedString.m:1083 */
 /* Comment: Error description */
 "Could not create data for type."
-= "No se puede crear el dato para el tipo.";
+  = "No se puede crear el dato para el tipo.";
 /* File: ../Source/NSAttributedString.m:927 */
 /* Comment: Error description */
 "Could not load data from URL."
-= "No se pueden leer los datos desde la URL.";
+  = "No se pueden leer los datos desde la URL.";
 /* File: ../Source/NSAttributedString.m:863 */
 /* Comment: Error description */
 "Could not load data." = "No se pueden leer los datos.";
 /* File: ../Source/NSAttributedString.m:762 */
 /* Comment: Error description */
 "No data specified for data loading."
-= "No hay datos especificados en la informaci\U00F3n le\U00EDda.";
+  = "No hay datos especificados en la informaci\U00F3n le\U00EDda.";
 /* File: ../Source/NSAttributedString.m:1033 */
 /* Comment: Error description */
 "No type specified for data." = "No hay un tipo especificado para el dato.";
@@ -285,7 +285,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSColorPanel.m ***/
-/* File: ../Source/NSColorPanel.m:308 */
+/* File: ../Source/NSColorPanel.m:309 */
 "Opacity" = "Opacidad";
 
 
@@ -313,12 +313,12 @@ add comments above this one
 /*** Strings from ../Source/NSDocument.m ***/
 /* File: ../Source/NSDocument.m:1659 */
 "%@ has been edited.  Are you sure you want to undo changes?"
-= "%@ ha sido editado.  \U00BFEsta seguro de querer revertir los cambios?";
+  = "%@ ha sido editado.  \U00BFEsta seguro de querer revertir los cambios?";
 /* File: ../Source/NSDocument.m:473 */
 "%@ has changed.  Save?" = "%@ ha cambiado.  \U00BFGuardar?";
 /* File: ../Source/NSDocument.m:814 */
 "Can't create backup file.  Save anyways?"
-= "No se puede crear el archivo de respaldo.  \U00BFGuardar de cualquier forma?";
+  = "No se puede crear el archivo de respaldo.  \U00BFGuardar de cualquier forma?";
 /* File: ../Source/NSDocument.m:472 */
 "Close" = "Cerrar";
 /* File: ../Source/NSDocument.m:142 */
@@ -343,14 +343,14 @@ add comments above this one
 "Clear List" = "Limpiar Lista";
 /* File: ../Source/NSDocumentController.m:1056 */
 "Power Off" = "Desconectar";
-/* File: ../Source/NSDocumentController.m:966 */
 /* File: ../Source/NSDocumentController.m:1008 */
+/* File: ../Source/NSDocumentController.m:966 */
 "Quit Anyway" = "Salir de Cualquier Forma";
 /* File: ../Source/NSDocumentController.m:1006 */
 /* File: ../Source/NSDocumentController.m:964 */
 "Review Unsaved" = "Revisi\U00F3n sin Guardar";
-/* File: ../Source/NSDocumentController.m:963 */
 /* File: ../Source/NSDocumentController.m:1013 */
+/* File: ../Source/NSDocumentController.m:963 */
 "You have unsaved documents" = "Usted tiene documentos sin guardar";
 
 
@@ -376,7 +376,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSMenu.m ***/
-/* File: ../Source/NSMenu.m:259 */
+/* File: ../Source/NSMenu.m:260 */
 "Services" = "Servicios";
 
 
@@ -386,26 +386,26 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSPageLayout.m ***/
-/* File: ../Source/NSPageLayout.m:749 */
-/* File: ../Source/NSPageLayout.m:747 */
+/* File: ../Source/NSPageLayout.m:741 */
+/* File: ../Source/NSPageLayout.m:739 */
 "(none)" = "(ninguno)";
-/* File: ../Source/NSPageLayout.m:976 */
+/* File: ../Source/NSPageLayout.m:964 */
 "Bottom Margin" = "Margen Inferior";
-/* File: ../Source/NSPageLayout.m:972 */
+/* File: ../Source/NSPageLayout.m:960 */
 "Dimensions" = "Dimensiones";
-/* File: ../Source/NSPageLayout.m:1032 */
+/* File: ../Source/NSPageLayout.m:1020 */
 "Landscape" = "Horizontal";
-/* File: ../Source/NSPageLayout.m:977 */
+/* File: ../Source/NSPageLayout.m:965 */
 "Left Margin" = "Margen Izquierdo";
-/* File: ../Source/NSPageLayout.m:973 */
+/* File: ../Source/NSPageLayout.m:961 */
 "Orientation" = "Orientaci\U00F3n";
-/* File: ../Source/NSPageLayout.m:1028 */
+/* File: ../Source/NSPageLayout.m:1016 */
 "Portrait" = "Vertical";
-/* File: ../Source/NSPageLayout.m:978 */
+/* File: ../Source/NSPageLayout.m:966 */
 "Right Margin" = "Margen Derecho";
-/* File: ../Source/NSPageLayout.m:974 */
+/* File: ../Source/NSPageLayout.m:962 */
 "Scale" = "Escala";
-/* File: ../Source/NSPageLayout.m:975 */
+/* File: ../Source/NSPageLayout.m:963 */
 "Top Margin" = "Margen Superior";
 
 
@@ -429,10 +429,10 @@ add comments above this one
 "8 up" = "8 p\U00E1ginas";
 /* File: ../Source/NSPrintPanel.m:407 */
 "Faxing of print file not implemented"
-= "El faxeo de archivos no esta implementado";
+  = "El faxeo de archivos no esta implementado";
+/* File: ../Source/NSPrintPanel.m:781 */
 /* File: ../Source/NSPrintPanel.m:774 */
 /* File: ../Source/NSPrintPanel.m:643 */
-/* File: ../Source/NSPrintPanel.m:781 */
 "Manual" = "Manual";
 /* File: ../Source/NSPrintPanel.m:145 */
 "Print Panel" = "Panel de Impresi\U00F3n";
@@ -441,37 +441,37 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSSavePanel.m ***/
-/* File: ../Source/NSSavePanel.m:433 */
-/* File: ../Source/NSSavePanel.m:250 */
+/* File: ../Source/NSSavePanel.m:434 */
+/* File: ../Source/NSSavePanel.m:251 */
 "Name:" = "Nombre:";
-/* File: ../Source/NSSavePanel.m:1344 */
+/* File: ../Source/NSSavePanel.m:1368 */
 "No" = "No";
-/* File: ../Source/NSSavePanel.m:1761 */
+/* File: ../Source/NSSavePanel.m:1794 */
 "Reading Directory " = "Leyendo Directorio ";
-/* File: ../Source/NSSavePanel.m:1379 */
+/* File: ../Source/NSSavePanel.m:1403 */
 "Replace" = "Remplazar";
-/* File: ../Source/NSSavePanel.m:1356 */
+/* File: ../Source/NSSavePanel.m:1380 */
 "The directory '%@' could not be created."
-= "El directorio '%@' no se pudo crear.";
-/* File: ../Source/NSSavePanel.m:1343 */
-"The directory '%@' does not exist, do you want to create it?"
-= "El directorio '%@' no existe, \U00BFquiere crearlo?";
-/* File: ../Source/NSSavePanel.m:1378 */
-"The file '%@' in '%@' exists. Replace it?"
-= "El archivo '%@' en '%@' existe. \U00BFRemplazarlo?";
+  = "El directorio '%@' no se pudo crear.";
 /* File: ../Source/NSSavePanel.m:1367 */
+"The directory '%@' does not exist, do you want to create it?"
+  = "El directorio '%@' no existe, \U00BFquiere crearlo?";
+/* File: ../Source/NSSavePanel.m:1402 */
+"The file '%@' in '%@' exists. Replace it?"
+  = "El archivo '%@' en '%@' existe. \U00BFRemplazarlo?";
+/* File: ../Source/NSSavePanel.m:1391 */
 "The path '%@' is not a directory." = "La ruta '%@' no es un directorio.";
-/* File: ../Source/NSSavePanel.m:1299 */
-/* File: ../Source/NSSavePanel.m:1291 */
+/* File: ../Source/NSSavePanel.m:1323 */
+/* File: ../Source/NSSavePanel.m:1315 */
 "Use .%@" = "Usar .%@";
-/* File: ../Source/NSSavePanel.m:1344 */
+/* File: ../Source/NSSavePanel.m:1368 */
 "Yes" = "Si";
-/* File: ../Source/NSSavePanel.m:1298 */
+/* File: ../Source/NSSavePanel.m:1322 */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
-= "Usted no puede guardar este documento con la extensi\U00F3n '.%@'.\nLa extensi\U00F3n requerida es '.%@'.";
-/* File: ../Source/NSSavePanel.m:1290 */
+  = "Usted no puede guardar este documento con la extensi\U00F3n '.%@'.\nLa extensi\U00F3n requerida es '.%@'.";
+/* File: ../Source/NSSavePanel.m:1314 */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
-= "Usted ha puesto la extensi\U00F3n '.%@'.\nLa extensi\U00F3n esperada es '.%@'.'";
+  = "Usted ha puesto la extensi\U00F3n '.%@'.\nLa extensi\U00F3n esperada es '.%@'.'";
 
 
 /*** Strings from ../Source/NSSpellChecker.m ***/
@@ -495,7 +495,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSWindow.m ***/
-/* File: ../Source/NSWindow.m:5192 */
+/* File: ../Source/NSWindow.m:5317 */
 "Hide Toolbar" = "Ocultar Barra";
-/* File: ../Source/NSWindow.m:5194 */
+/* File: ../Source/NSWindow.m:5319 */
 "Show Toolbar" = "Mostrar Barra";
