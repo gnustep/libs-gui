@@ -70,6 +70,7 @@
 - (float *)_columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell forTableColumn: (NSTableColumn *)tb row: (int)index;
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb row: (int) rowIndex;
+- (BOOL)_isGroupRow: (NSInteger)rowIndex;
 @end
 
 @interface NSCell (Private)
@@ -2611,11 +2612,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       return;
     }
 
-  BOOL respondsToIsGroupRow = [[tableView delegate] respondsToSelector:@selector(tableView:isGroupRow:)];
-
   // First, determine whether the table view delegate wants this row
   // to be a grouped cell row...
-  if (respondsToIsGroupRow && [[tableView delegate] tableView:tableView isGroupRow:rowIndex])
+  if ([tableView _isGroupRow:rowIndex])
     {
       cell = [tableView preparedCellAtColumn: -1 row:rowIndex];
       if (cell)
@@ -2631,7 +2630,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
           [cell _setInEditing: NO];
           [cell setShowsFirstResponder:NO];
           [cell setFocusRingType:NSFocusRingTypeNone];
-          [cell setBackgroundStyle:NSBackgroundStyleDark];
           
           // Get the drawing rectangle...
           drawingRect = [tableView frameOfCellAtColumn: 0 row: rowIndex];

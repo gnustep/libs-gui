@@ -2870,10 +2870,10 @@ static NSColor *dtxtCol;
 
   switch (_cell.background_style)
   {
+#if 0
     case NSBackgroundStyleDark:
       {
-        NSFont  *font  = [NSFont fontWithName:@"LucidaGrande-Bold" size:12.0];
-        NSColor *color = [NSColor colorWithCalibratedWhite:0.458824 alpha:1.0];
+        NSColor *color = [NSColor alternateSelectedControlTextColor];
         
         /* Note: There are only a few possible paragraph styles for cells.
          TODO: Cache them and reuse them for the whole app lifetime. */
@@ -2883,7 +2883,7 @@ static NSColor *dtxtCol;
         [paragraphStyle setAlignment: [self alignment]];
         
         attr = [[NSDictionary alloc] initWithObjectsAndKeys:
-                font,           NSFontAttributeName,
+                _font,          NSFontAttributeName,
                 color,          NSForegroundColorAttributeName,
                 paragraphStyle, NSParagraphStyleAttributeName,
                 nil];
@@ -2891,11 +2891,49 @@ static NSColor *dtxtCol;
         break;
       }
       
-    // TODO: Add raised style settings...
     case NSBackgroundStyleRaised:
+      {
+        NSColor *color = [NSColor colorWithCalibratedWhite: 0.0 alpha: 1.0];
+        
+        /* Note: There are only a few possible paragraph styles for cells.
+         TODO: Cache them and reuse them for the whole app lifetime. */
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        [paragraphStyle setLineBreakMode: [self lineBreakMode]];
+        [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
+        [paragraphStyle setAlignment: [self alignment]];
+        
+        attr = [[NSDictionary alloc] initWithObjectsAndKeys:
+                _font,          NSFontAttributeName,
+                color,          NSForegroundColorAttributeName,
+                paragraphStyle, NSParagraphStyleAttributeName,
+                nil];
+        RELEASE (paragraphStyle);
+        break;
+      }
+    
     // TODO: Add lowered style settings...
     case NSBackgroundStyleLowered:
+      {
+        NSColor *color = [NSColor colorWithCalibratedWhite: 1.0 alpha: 1.0];
+        
+        /* Note: There are only a few possible paragraph styles for cells.
+         TODO: Cache them and reuse them for the whole app lifetime. */
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        [paragraphStyle setLineBreakMode: [self lineBreakMode]];
+        [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
+        [paragraphStyle setAlignment: [self alignment]];
+        
+        attr = [[NSDictionary alloc] initWithObjectsAndKeys:
+                _font,          NSFontAttributeName,
+                color,          NSForegroundColorAttributeName,
+                paragraphStyle, NSParagraphStyleAttributeName,
+                nil];
+        RELEASE (paragraphStyle);
+        break;
+      }
+    
     case NSBackgroundStyleLight:
+#endif
     default:
       {
         NSColor *color = [self textColor];

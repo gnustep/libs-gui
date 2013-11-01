@@ -3189,6 +3189,35 @@ byExtendingSelection: (BOOL)flag
  * Providing Cells
  */
 
+- (void)_addGroupRowAttributesToCell:(NSCell*)cell withData:(id)objectValue highlighted:(BOOL)highlighted
+{
+  if ([objectValue isKindOfClass:[NSString class]])
+    {
+      NSString *fontname = [NSString stringWithFormat:@"%@-Bold",[[cell font] fontName]];
+      CGFloat   fontsize = [[cell font] pointSize];
+      NSFont   *font     = [NSFont fontWithName:fontname size:fontsize];
+      NSColor  *color    = [NSColor colorWithCalibratedWhite:0.458824 alpha:1.0];
+      
+      /* Note: There are only a few possible paragraph styles for cells.
+       TODO: Cache them and reuse them for the whole app lifetime. */
+      NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+      [paragraphStyle setLineBreakMode: [cell lineBreakMode]];
+      [paragraphStyle setBaseWritingDirection: [cell baseWritingDirection]];
+      [paragraphStyle setAlignment: [cell alignment]];
+      
+      NSDictionary *attributes = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                  font,           NSFontAttributeName,
+                                  color,          NSForegroundColorAttributeName,
+                                  paragraphStyle, NSParagraphStyleAttributeName,
+                                  nil];
+      objectValue = [[NSAttributedString alloc] initWithString:objectValue attributes:attributes];
+      RELEASE(paragraphStyle);
+      
+      // Replace the cell's object value...
+      [cell setObjectValue:objectValue];
+    }
+}
+
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell        *cell = nil;
@@ -3210,7 +3239,24 @@ byExtendingSelection: (BOOL)flag
   if (cell)
     {
       // Get the object value from the delegate or nil...
-      [cell setObjectValue:[self _objectValueForTableColumn:tb row:rowIndex]];
+      id objectValue = [self _objectValueForTableColumn:tb row:rowIndex];
+      
+      // Set the cell's object value...
+      [cell setObjectValue:objectValue];
+      
+      // If grouped row the add the necessary group row attributes...
+      if ([self _isGroupRow:rowIndex])
+        {
+          // Force reset from other attributes then set dark...
+          [cell setBackgroundStyle:NSBackgroundStyleLight];
+          [cell setBackgroundStyle:NSBackgroundStyleDark];
+          
+          // If the object value is a NSString type...
+          // Cocoa uses the object value as is if it is a NSAttributedString already...
+          if ([cell isKindOfClass:[NSTextFieldCell class]] &&
+              [objectValue isKindOfClass:[NSString class]])
+            [self _addGroupRowAttributesToCell:cell withData:objectValue highlighted:YES];
+        }
       
       // Inform delegate we are getting ready to display
       [self _willDisplayCell: cell forTableColumn: tb row: rowIndex];
