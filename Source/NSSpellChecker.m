@@ -686,35 +686,35 @@ inSpellDocumentWithTag:(int)tag
 @end
 
 @interface NSSpellChecker(SpellBrowserDelegate)
-- (BOOL) browser: (NSBrowser*)sender selectRow: (int)row inColumn: (int)column;
+- (BOOL) browser: (NSBrowser*)sender selectRow: (NSInteger)row inColumn: (NSInteger)column;
 
-- (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
+- (void) browser: (NSBrowser *)sender createRowsForColumn: (NSInteger)column
 	inMatrix: (NSMatrix *)matrix;
 
-- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column;
+- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (NSInteger)column;
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)cell 
-	   atRow: (int)row 
-	  column: (int)column;
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column;
 
-- (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column;
+- (BOOL) browser: (NSBrowser *)sender isColumnValid: (NSInteger)column;
 @end
 
 @implementation NSSpellChecker(SpellBrowserDelegate)
-- (BOOL) browser: (NSBrowser*)sender selectRow: (int)row inColumn: (int)column
+- (BOOL) browser: (NSBrowser*)sender selectRow: (NSInteger)row inColumn: (NSInteger)column
 {
   return YES;
 }
 
-- (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
+- (void) browser: (NSBrowser *)sender createRowsForColumn: (NSInteger)column
 	inMatrix: (NSMatrix *)matrix
 {
   NSArray   *guesses = [self guessesForWord: [_wordField stringValue]];
   NSEnumerator    *e = [guesses objectEnumerator];
   NSString     *word = nil;
   NSBrowserCell *cell= nil;
-  int i = 0;
+  NSInteger i = 0;
 
   while ((word = [e nextObject]) != nil)
     {
@@ -726,19 +726,19 @@ inSpellDocumentWithTag:(int)tag
     }
 }
 
-- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column
+- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (NSInteger)column
 {
   return _(@"Guess");
 }
 
 - (void) browser: (NSBrowser *)sender 
  willDisplayCell: (id)cell 
-	   atRow: (int)row 
-	  column: (int)column
+	   atRow: (NSInteger)row 
+	  column: (NSInteger)column
 {
 }
 
-- (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column
+- (BOOL) browser: (NSBrowser *)sender isColumnValid: (NSInteger)column
 {
   return NO;
 }
