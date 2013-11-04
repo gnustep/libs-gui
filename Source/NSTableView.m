@@ -3633,11 +3633,15 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (NSUInteger)_hitTestForEvent:(NSEvent*)event atColumn:(NSInteger)column row:(NSInteger)row
 {
-  NSCell  *cell       = [self preparedCellAtColumn: column row: row];
-  NSRect   cellFrame  = [self frameOfCellAtColumn:(column == -1) ? 0 : column row:row];
-  
-  // Return the hit result...
-  return([cell hitTestForEvent:event inRect:cellFrame ofView:self]);
+  if (row >= 0)
+    {
+      NSCell  *cell       = [self preparedCellAtColumn: column row: row];
+      NSRect   cellFrame  = [self frameOfCellAtColumn:(column == -1) ? 0 : column row:row];
+      
+      // Return the hit result...
+      return([cell hitTestForEvent:event inRect:cellFrame ofView:self]);
+    }
+  return(NSCellHitNone);
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
@@ -3670,7 +3674,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   _clickedRow  = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
   
-  if ([theEvent type] == NSLeftMouseDown)
+  if ((_clickedRow != -1) && ([theEvent type] == NSLeftMouseDown))
     {
       // If the cell processed the mouse hit...
       NSInteger theColumn = _clickedColumn;
