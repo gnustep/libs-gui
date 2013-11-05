@@ -2985,6 +2985,31 @@ typedef enum {
   NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
   NSColor *backgroundColor = [tableView backgroundColor];
 
+  // Set the fill color
+  {
+    NSColor *selectionColor;
+    
+    selectionColor = [self colorNamed: @"highlightedTableRowBackgroundColor"
+				state: GSThemeNormalState];
+
+    if (selectionColor == nil)
+      {
+	// Switch to the alternate color of the backgroundColor is white.
+	if([backgroundColor isEqual: [NSColor whiteColor]])
+	  {
+	    selectionColor = [NSColor colorWithCalibratedRed: 0.86
+						       green: 0.92
+							blue: 0.99
+						       alpha: 1.0];
+	  }
+	else
+	  {
+	    selectionColor = [NSColor whiteColor];
+	  }
+      }
+    [selectionColor set];
+  }
+
   if (selectingColumns == NO)
     {
       NSInteger selectedRowsCount;
@@ -3007,24 +3032,6 @@ typedef enum {
       row = [selectedRows indexGreaterThanOrEqualToIndex: startingRow];
       while ((row != NSNotFound) && (row <= endingRow))
 	{
-	  NSColor *selectionColor = nil;
-	  
-	  // Switch to the alternate color of the backgroundColor is white.
-	  if([backgroundColor isEqual: [NSColor whiteColor]])
-	    {
-	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
-					green: 0.92
-					blue: 0.99
-					alpha: 1.0];
-	    }
-	  else
-	    {
-	      selectionColor = [NSColor whiteColor];
-	    }
-
-	  //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
-	  //						 clipRect));
-	  [selectionColor set];
 	  NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
 	  row = [selectedRows indexGreaterThanIndex: row];
 	}	  
@@ -3052,8 +3059,8 @@ typedef enum {
       column = [selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
       while ((column != NSNotFound) && (column <= endingColumn))
 	{
-	  NSHighlightRect(NSIntersectionRect([tableView rectOfColumn: column],
-					     clipRect));
+	  NSRectFill(NSIntersectionRect([tableView rectOfColumn: column],
+					clipRect));
 	  column = [selectedColumns indexGreaterThanIndex: column];
 	}	  
     }
@@ -3080,6 +3087,10 @@ typedef enum {
   NSCell *cell;
   int i;
   float x_pos;
+  const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
+  NSColor *tempColor = nil;
+  NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
+					  state: GSThemeNormalState];
 
   if (dataSource == nil)
     {
@@ -3116,6 +3127,8 @@ typedef enum {
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
+      const BOOL columnSelected = [tableView isColumnSelected: i];
+      const BOOL cellSelected = (rowSelected || columnSelected);
       tb = [tableColumns objectAtIndex: i];
       cell = [tb dataCellForRow: rowIndex];
       if (i == editedColumn && rowIndex == editedRow)
@@ -3128,7 +3141,29 @@ typedef enum {
 					row: rowIndex]]; 
       drawingRect = [tableView frameOfCellAtColumn: i
 			       row: rowIndex];
+
+      // Set the cell text color if the theme provides a custom highlighted
+      // row color.
+      //
+      // FIXME: This could probably be done in a cleaner way. We should
+      // probably do -setHighlighted: YES, and the implementation of
+      // -textColor in NSCell could use that to return a highlighted text color.
+      if (cellSelected && (selectedTextColor != nil)
+	  && [cell isKindOfClass: [NSTextFieldCell class]])
+	{
+	  tempColor = [cell textColor];
+	  [(NSTextFieldCell *)cell setTextColor: selectedTextColor];
+	}
+
       [cell drawWithFrame: drawingRect inView: tableView];
+
+      if (cellSelected && (selectedTextColor != nil)
+	  && [cell isKindOfClass: [NSTextFieldCell class]])
+	{
+	  // Restore the cell's text color if we changed it
+	  [(NSTextFieldCell *)cell setTextColor: tempColor];
+	}
+
       if (i == editedColumn && rowIndex == editedRow)
 	[cell _setInEditing: NO];
     }
