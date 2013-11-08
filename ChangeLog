@@ -1,3 +1,8 @@
+2013-11-08 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+GIF.m:
+	Adapt for newer libgif versions of EGifOpen and renamed GifMakeMapObject.
+
 2013-11-05  Eric Wasylishen  <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m (-highlightTableViewSelectionInClipRect:...):

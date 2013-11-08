@@ -41,6 +41,7 @@
 
 #if HAVE_LIBUNGIF || HAVE_LIBGIF
 
+
 /*
 gif_lib.h (4.1.0b1, possibly other versions) uses Object as the name of an
 argument to a function. This causes a conflict with Object declared by the
@@ -468,7 +469,11 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   // If you have a color table, you must be certain that it is GIF format
   colorTable = [self valueForProperty: NSImageRGBColorTable];	// nil is OK
   colorMapSize = (colorTable)? [colorTable length]/sizeof(GifColorType) : 256;
+#if GIFLIB_MAJOR >= 5
+  GIFColorMap = GifMakeMapObject(colorMapSize, [colorTable bytes]);
+#else
   GIFColorMap = MakeMapObject(colorMapSize, [colorTable bytes]);
+#endif
   if (!GIFColorMap)
     {
       SET_ERROR_MSG(@"GIFRepresentation (giflib): MakeMapObject() failed.");
@@ -510,7 +515,11 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       free(GIFImage);
       return nil;
     }
+#if GIFLIB_MAJOR >= 5
+  GIFFile = EGifOpen(GIFRep, gs_gif_output, NULL);
+#else
   GIFFile = EGifOpen(GIFRep, gs_gif_output);
+#endif
   status = EGifPutScreenDesc(GIFFile, width, height, 8, 0, NULL);
   if (status == GIF_ERROR)
     {
