@@ -1,3 +1,12 @@
+2013-11-22  Fred Kiefer <FredKiefer@gmx.de>
+
+        * configure.ac: Try to improve the ICU detection.
+        * configure: regenerate
+	* Headers/AppKit/NSTrackingArea.h
+	* Source/NSTrackingArea.m: Remove compiler warnings.
+	* Headers/AppKit/NSBrowser.h,
+	* Source/NSBrowser.m: Add a few new Cocoa methods.
+
 2013-11-22  German Arias <germanandre@gmx.es>
 
 	* NSWindow.m (-sendEvent:): Set _lastPoint only for mouse entered

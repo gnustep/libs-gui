@@ -39,6 +39,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSIndexPath.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSBrowser.h"
@@ -454,6 +455,136 @@ static BOOL browserUseBezels;
                     || ([(NSBrowserCell*)cell isLeaf] == NO)))
     {
       [self addColumn];
+    }
+}
+
+/** <p>Returns the index path of the selected item, or nil if there is
+    no selection.
+*/
+- (NSIndexPath *) selectionIndexPath
+{
+  NSInteger columnNumber = 0;
+  NSInteger selectedColumn = [self selectedColumn];
+
+  if (selectedColumn > -1)
+    {
+      NSUInteger rowIndexes[selectedColumn + 1];
+      
+      for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
+        {
+          rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+        }
+
+      return [[NSIndexPath alloc] initWithIndexes: rowIndexes 
+                                           length: selectedColumn + 1];
+    }
+
+  return nil;
+}
+
+- (NSArray *) selectionIndexPaths
+{
+  NSInteger selectedColumn = [self selectedColumn];
+
+  if (selectedColumn == -1)
+    {
+      return nil;
+    }
+  else
+    {
+      NSMutableArray *paths = AUTORELEASE([[NSMutableArray alloc] init]);
+      NSMatrix *matrix;
+      NSArray *selectedCells;
+      NSUInteger count;
+
+      // FIXME: There should be a more efficent way to the the selected row numbers
+      if (!(matrix = [self matrixInColumn: selectedColumn]))
+        {
+          return nil;
+        }
+
+      selectedCells = [matrix selectedCells];
+      if (selectedCells == nil)
+        {
+          return nil;
+        }
+
+      count = [selectedCells count];
+      NSInteger seletedRows[count];
+      NSEnumerator *enumerator = [selectedCells objectEnumerator];
+      NSCell *cell;
+      int i = 0;
+
+      while ((cell = [enumerator nextObject]) != nil)
+        {
+          NSInteger row;
+          NSInteger column;
+
+          [matrix getRow: &row
+                  column: &column
+                  ofCell: cell];
+          seletedRows[i++] = row;
+        }
+
+      if (selectedColumn > 0)
+        {
+          NSIndexPath *indexPath;
+          NSUInteger rowIndexes[selectedColumn + 1];
+          NSInteger columnNumber = 0;
+          
+          for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
+            {
+              rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+            }
+          
+          indexPath = [[NSIndexPath alloc] initWithIndexes: rowIndexes 
+                                                    length: selectedColumn + 1];
+          
+          for (i = 0; i < count; i++)
+            {
+              [paths addObject: [indexPath indexPathByAddingIndex: seletedRows[i]]];
+            }
+        }
+      if (selectedColumn == 0)
+        {
+          NSIndexPath *indexPath;
+
+          for (i = 0; i < count; i++)
+            {
+              indexPath = [[NSIndexPath alloc] initWithIndex: seletedRows[i]];
+              [paths addObject: indexPath];
+              RELEASE(indexPath);
+            }
+        }
+      return paths;
+    }
+
+  return nil;
+}
+
+- (void) setSelectionIndexPath: (NSIndexPath *)path
+{
+  NSInteger column;
+  NSUInteger length;
+
+  length = [path length];
+  for (column = 0; column < length; column++)
+    {
+      NSInteger row = [path indexAtPosition: column];
+
+      [self selectRow: row inColumn: column];
+    }
+}
+
+- (void) setSelectionIndexPaths: (NSArray *)paths
+{
+  NSEnumerator *enumerator = [paths objectEnumerator];
+  NSIndexPath *path;
+
+  while ((path = [enumerator nextObject]) != nil)
+    {
+      // FIXME
+      [self setSelectionIndexPath: path];
     }
 }
 
@@ -1372,6 +1503,46 @@ static BOOL browserUseBezels;
     }
 }
 
+- (BOOL) autohidesScroller
+{
+  // FIXME
+  return NO;
+}
+
+- (void) setAutohidesScroller: (BOOL)flag
+{
+  // FIXME
+}
+
+- (NSColor *) backgroundColor
+{
+  // FIXME
+  return [NSColor controlColor];
+}
+
+- (void) setBackgroundColor: (NSColor *)backgroundColor
+{
+  // FIXME
+}
+
+- (BOOL) canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
+                       inColumn: (NSInteger)columnIndex
+                      withEvent: (NSEvent *)dragEvent
+{
+  if ([_browserDelegate respondsToSelector: 
+                         @selector(browser:canDragRowsWithIndexes:inColumn:withEvent:)])
+    {
+      return [_browserDelegate browser: self
+                canDragRowsWithIndexes: rowIndexes
+                              inColumn: columnIndex
+                             withEvent: dragEvent];
+    }
+  else
+    {
+      // FIXME
+      return NO;
+    }
+}
 
 /*
  * Manipulating column titles
@@ -1747,6 +1918,17 @@ static BOOL browserUseBezels;
   _sendsActionOnArrowKeys = flag;
 }
 
+- (BOOL) allowsTypeSelect
+{
+  // FIXME
+  return [self acceptsArrowKeys];
+}
+
+- (void) setAllowsTypeSelect: (BOOL)allowsTypeSelection
+{
+  // FIXME
+  [self setAcceptsArrowKeys: allowsTypeSelection];
+}
 
 /*
  * Getting column frames
@@ -2226,6 +2408,18 @@ static BOOL browserUseBezels;
   // so send the double action
 
   [self sendAction: _doubleAction to: [self target]];
+}
+
+- (NSInteger) clickedColumn
+{
+  // FIXME: Return column number from doClick:
+  return -1;
+}
+
+- (NSInteger) clickedRow
+{
+  // FIXME: Return row number from doClick:
+  return -1;
 }
 
 + (void) _themeDidActivate: (NSNotification*)n
@@ -3099,7 +3293,7 @@ static BOOL browserUseBezels;
       [matrix setAutoscroll: YES];
 
       // Set up background colors.
-      [matrix setBackgroundColor: [NSColor controlColor]];
+      [matrix setBackgroundColor: [self backgroundColor]];
       [matrix setDrawsBackground: YES];
 
       if (!_allowsMultipleSelection)

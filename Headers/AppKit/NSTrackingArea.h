@@ -32,7 +32,6 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSCoder.h>
-#import "GNUstepGUI/GSTrackingRect.h"
 
 /*
  * Options pulled from Cocoa documentation.
@@ -52,8 +51,9 @@ enum {
 typedef NSUInteger NSTrackingAreaOptions;
 
 @class NSDictionary;
+@class GSTrackingRect;
 
-@interface NSTrackingArea : NSObject <NSCoding, NSCopying, NSObject>
+@interface NSTrackingArea : NSObject <NSCoding, NSCopying>
 {
     NSDictionary *_userInfo;
     GSTrackingRect *_trackingRect;

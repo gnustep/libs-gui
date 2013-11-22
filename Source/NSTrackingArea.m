@@ -27,7 +27,9 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <AppKit/NSTrackingArea.h>
+#import <Foundation/NSDictionary.h>
+#import "AppKit/NSTrackingArea.h"
+#import "GNUstepGUI/GSTrackingRect.h"
 
 @implementation NSTrackingArea 
 
@@ -36,7 +38,7 @@
              owner: (id)owner
           userInfo: (NSDictionary *)userInfo
 {
-    if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
 	BOOL flag = (BOOL)(options & NSTrackingAssumeInside);
 
@@ -48,61 +50,60 @@
 						    userData:(void *)userInfo
 						      inside:flag];
     }
-    return self;
+  return self;
 }
 
 - (void) dealloc
 {
-    [_userInfo release];
-    [_trackingRect release];
-    [super dealloc];
+  [_userInfo release];
+  [_trackingRect release];
+  [super dealloc];
 }
 
 - (NSTrackingAreaOptions) options
 {
-    return _options;
+  return _options;
 }
 
 - (id) owner
 {
-    return [_trackingRect owner];
+  return [_trackingRect owner];
 }
 
 - (NSRect) rect
 {
-    return [_trackingRect rectangle];
+  return [_trackingRect rectangle];
 }
 
 - (NSDictionary *) userInfo
 {
-    return _userInfo;
+  return _userInfo;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-    // [super encodeWithCoder:coder];
+  // [super encodeWithCoder:coder];
 }
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-    //[super initWithCoder:coder];
-    return self;
+  //[super initWithCoder:coder];
+  return self;
 }
 
 - (id) copyWithZone: (NSZone *)zone
 {
-    NSRect rect = [self rect];
-    NSTrackingAreaOptions options = [self options];
-    id owner = [self owner];
-    id info = [self userInfo];
-    NSTrackingArea *newArea = [[NSTrackingArea allocWithZone:zone]
+  NSRect rect = [self rect];
+  NSTrackingAreaOptions options = [self options];
+  id owner = [self owner];
+  id info = [self userInfo];
+  NSTrackingArea *newArea = [[NSTrackingArea allocWithZone:zone]
 				  initWithRect: rect
 				       options: options
 					 owner: owner
 				      userInfo: info];
 
-    return newArea;
+  return newArea;
 }
 
 @end
-

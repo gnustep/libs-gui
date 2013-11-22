@@ -385,8 +385,32 @@ AC_ARG_ENABLE(icu,
   [  --disable-icu		Disable International Components for Unicode],,
   enable_icu=yes)
 
+AC_ARG_ENABLE(icu-config,
+  [  --disable-icu-config		Do not use the icu-config script to check
+				for ICU.],,
+  enable_icu_config=yes)
+
+AC_ARG_WITH(icu-library,
+  [  --with-icu-library=PATH  	library path for ICU libraries (only checked
+				if not using icu-config)],
+  icu_libdir="$withval", icu_libdir="no")
+
 if test $enable_icu = yes; then
-  AC_CHECK_ICU(4.0, have_icu=yes, have_icu=no)
+  if test "$enable_icu_config" = "yes"; then
+    AC_CHECK_ICU(4.0, have_icu=yes, have_icu=no)
+  else
+    have_icu=no;
+    AC_CHECKING([for libicu (icu-config disabled)])
+    if test "$icu_libdir" != "no"; then
+      ICU_LDFLAGS="-L$icu_libdir";
+    fi
+    saved_LDFLAGS="$LDFLAGS";
+    LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
+    AC_TRY_LINK([],[], have_icu="yes", have_icu="no");
+    LDFLAGS="$saved_LDFLAGS";
+    ICU_LIBS="-licui18n -licuuc -licudata -lm" 
+  fi
+    
   if test "$have_icu" = "yes"; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
