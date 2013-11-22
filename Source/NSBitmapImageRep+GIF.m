@@ -111,7 +111,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
-#if HAVE_QUANTIZEBUFFER
+#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
@@ -395,7 +395,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
-#if HAVE_QUANTIZEBUFFER
+#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
   NSMutableData         * GIFRep = nil;	// our return value
   GifFileType           * GIFFile = NULL;
   GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
@@ -487,9 +487,15 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
       free(rgbPlanes);
     }
+#if GIFLIB_MAJOR >= 5
+  status = GifQuantizeBuffer(width, height, &colorMapSize,
+                             redPlane, greenPlane, bluePlane,
+                             GIFImage, GIFColorMap->Colors);
+#else
   status = QuantizeBuffer(width, height, &colorMapSize,
 		       redPlane, greenPlane, bluePlane,
 		       GIFImage, GIFColorMap->Colors);
+#endif
   if (status == GIF_ERROR)
     {
       free(GIFImage);

@@ -5424,8 +5424,8 @@ $as_echo "$as_me: -gui will be linked against -lX11 to support libgif images" >&
   fi
 fi
 
-# QuantizeBuffer was removed from giflib in version 4.2 but is supposed
-# to make its return in the next release. If this function is not present
+# QuantizeBuffer was removed from giflib in version 4.2 but was reintroduced
+# in the 5.0 release with a new name. If this function is not present
 # we disable the support to create gif image representations.
 for ac_func in QuantizeBuffer
 do :
@@ -5433,6 +5433,17 @@ do :
 if test "x$ac_cv_func_QuantizeBuffer" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_QUANTIZEBUFFER 1
+_ACEOF
+
+fi
+done
+
+for ac_func in GifQuantizeBuffer
+do :
+  ac_fn_c_check_func "$LINENO" "GifQuantizeBuffer" "ac_cv_func_GifQuantizeBuffer"
+if test "x$ac_cv_func_GifQuantizeBuffer" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GIFQUANTIZEBUFFER 1
 _ACEOF
 
 fi

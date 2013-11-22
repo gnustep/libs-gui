@@ -1,3 +1,10 @@
+2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
+
+        * configure.ac: Detect new GifQuantizeBuffer function.
+        * configure: regenerate
+	* Source/NSBitmapImageRep+GIF.m: Try to handle quantize again for
+	libgif 5.0.
+
 2013-11-22  Fred Kiefer <FredKiefer@gmx.de>
 
         * configure.ac: Try to improve the ICU detection.
