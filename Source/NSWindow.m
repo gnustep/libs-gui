@@ -4063,16 +4063,17 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 	      if ([r isValid])
 		{
 		  [c mouseEntered: theEvent];
+
+		  /* This could seems redundant, but ensure the correct
+		   * value to use in events mouse moved. And avoids strange
+		   * issues with cursor. */
+		  _lastPoint = [theEvent locationInWindow];
 		}
             }
           else                           // it is a mouse exited
             {
               [c mouseExited: theEvent];
             }
-
-	  /* This could seems redundant, but ensure the correct value to use
-	   * in events mouse moved. And avoids strange issues with cursor. */
-	  _lastPoint = [theEvent locationInWindow];
         }
         break;
 

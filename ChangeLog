@@ -1,3 +1,9 @@
+2013-11-22  German Arias <germanandre@gmx.es>
+
+	* NSWindow.m (-sendEvent:): Set _lastPoint only for mouse entered
+	events. If not, in some cases (i.e. display contextual menus), this
+	sets the wrong point for the event.
+
 2013-11-08 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+GIF.m:
