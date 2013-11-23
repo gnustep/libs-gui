@@ -532,7 +532,7 @@ static BOOL browserUseBezels;
           NSUInteger rowIndexes[selectedColumn + 1];
           NSInteger columnNumber = 0;
           
-          for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
+          for (columnNumber = 0; columnNumber < selectedColumn; columnNumber++)
             {
               rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
             }

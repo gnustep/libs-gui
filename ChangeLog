@@ -1,5 +1,11 @@
 2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBrowser.m (-selectionIndexPaths): Correct off by one
+	error in last change.
+	Detected by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>.
+
+2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
+
         * configure.ac: Detect new GifQuantizeBuffer function.
         * configure: regenerate
 	* Source/NSBitmapImageRep+GIF.m: Try to handle quantize again for
@@ -36,6 +42,7 @@
 	cell (only if the theme defines that color).
 
 2013-11-03 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
 	* Source/NSSpellChecker.m
 	  int -> NSInteger transition
 
