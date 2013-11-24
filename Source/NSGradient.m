@@ -42,6 +42,12 @@
 #define PI 3.1415926535897932384626434
 #endif
 
+@interface NSGradient (Private)
+- (void) _drawInRect: (NSRect)rect angle: (CGFloat)angle;
+- (void) _drawInRect: (NSRect)rect 
+relativeCenterPosition: (NSPoint)relativeCenterPoint;
+@end
+
 @implementation NSGradient
 
 - (NSColorSpace *) colorSpace; 
@@ -79,7 +85,7 @@
 
   [currentContext saveGraphicsState];
   [path addClip];
-  [self drawInRect: [path bounds] angle: angle];
+  [self _drawInRect: [path bounds] angle: angle];
   [currentContext restoreGraphicsState];
 }
 
@@ -90,102 +96,28 @@
 
   [currentContext saveGraphicsState];
   [path addClip];
-  [self drawInRect: [path bounds] relativeCenterPosition: relativeCenterPoint];
+  [self _drawInRect: [path bounds] relativeCenterPosition: relativeCenterPoint];
   [currentContext restoreGraphicsState];
 }
 
 - (void) drawInRect: (NSRect)rect angle: (CGFloat)angle
 {
   NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
-  NSPoint startPoint;
-  NSPoint endPoint;
-  float rad;
-  float length;
-
-  // Normalize to 0.0 <= angle <= 360.0
-  while (angle < 0.0)
-    {
-      angle += 360.0;
-    }
-  while (angle > 360.0)
-    {
-      angle -= 360.0;
-    }
-
-  if (angle < 90.0)
-    {
-      startPoint = NSMakePoint(NSMinX(rect), NSMinY(rect));
-    }
-  else if (angle < 180.0)
-    {
-      startPoint = NSMakePoint(NSMaxX(rect), NSMinY(rect));
-    }
-  else if (angle < 270.0)
-    {
-      startPoint = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
-    }
-  else
-    {
-      startPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
-    }
-  rad = PI * angle / 180;
-  length = abs(NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad));
-  endPoint = NSMakePoint(startPoint.x + length * cos(rad), 
-                         startPoint.y + length * sin(rad));
 
   [currentContext saveGraphicsState];
   [NSBezierPath clipRect: rect];
-  [self  drawFromPoint: startPoint
-         toPoint: endPoint
-         options: 0];
+  [self _drawInRect: rect angle: angle];
   [currentContext restoreGraphicsState];
-}
-
-static inline float sqr(float a)
-{
-  return a * a;
-}
-
-static inline float euclidian_distance(NSPoint start, NSPoint end)
-{
-  return sqrt(sqr(end.x - start.x) + sqr(end.y - start.y));
 }
 
 - (void) drawInRect: (NSRect)rect 
 relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
   NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
-  NSPoint startCenter;
-  NSPoint endCenter;
-  CGFloat endRadius;
-  CGFloat distance;
-
-  NSAssert(relativeCenterPoint.x >= 0.0 && relativeCenterPoint.x <= 1.0, @"NSGradient invalid relative center point");
-  NSAssert(relativeCenterPoint.y >= 0.0 && relativeCenterPoint.y <= 1.0, @"NSGradient invalid relative center point");
-  startCenter = NSMakePoint(NSMidX(rect), NSMidY(rect));
-  endCenter = NSMakePoint(startCenter.x + rect.size.width * relativeCenterPoint.x, 
-                          startCenter.y + rect.size.height * relativeCenterPoint.y);
-  endRadius = 0.0;
-  distance = euclidian_distance(endCenter, NSMakePoint(NSMinX(rect), NSMinY(rect)));
-  if (endRadius < distance)
-    endRadius = distance;
-  distance = euclidian_distance(endCenter, NSMakePoint(NSMaxX(rect), NSMinY(rect)));
-  if (endRadius < distance)
-    endRadius = distance;
-  distance = euclidian_distance(endCenter, NSMakePoint(NSMinX(rect), NSMaxY(rect)));
-  if (endRadius < distance)
-    endRadius = distance;
-  distance = euclidian_distance(endCenter, NSMakePoint(NSMaxX(rect), NSMaxY(rect)));
-  if (endRadius < distance)
-    endRadius = distance;
 
   [currentContext saveGraphicsState];
   [NSBezierPath clipRect: rect];
-  [self drawFromCenter: startCenter
-        radius: 0.0
-        toCenter: endCenter 
-        radius: endRadius
-        options: 0];
+  [self _drawInRect: rect relativeCenterPosition: relativeCenterPoint];
   [currentContext restoreGraphicsState];
 }
 
@@ -364,4 +296,94 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   return self;
 }
 
+@end
+
+@implementation NSGradient (Private)
+
+- (void) _drawInRect: (NSRect)rect angle: (CGFloat)angle
+{
+  NSPoint startPoint;
+  NSPoint endPoint;
+  float rad;
+  float length;
+
+  // Normalize to 0.0 <= angle <= 360.0
+  while (angle < 0.0)
+    {
+      angle += 360.0;
+    }
+  while (angle > 360.0)
+    {
+      angle -= 360.0;
+    }
+
+  if (angle < 90.0)
+    {
+      startPoint = NSMakePoint(NSMinX(rect), NSMinY(rect));
+    }
+  else if (angle < 180.0)
+    {
+      startPoint = NSMakePoint(NSMaxX(rect), NSMinY(rect));
+    }
+  else if (angle < 270.0)
+    {
+      startPoint = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
+    }
+  else
+    {
+      startPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
+    }
+  rad = PI * angle / 180;
+  length = abs(NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad));
+  endPoint = NSMakePoint(startPoint.x + length * cos(rad), 
+                         startPoint.y + length * sin(rad));
+
+  [self  drawFromPoint: startPoint
+         toPoint: endPoint
+         options: 0];
+}
+
+static inline float sqr(float a)
+{
+  return a * a;
+}
+
+static inline float euclidian_distance(NSPoint start, NSPoint end)
+{
+  return sqrt(sqr(end.x - start.x) + sqr(end.y - start.y));
+}
+
+- (void) _drawInRect: (NSRect)rect 
+relativeCenterPosition: (NSPoint)relativeCenterPoint
+{
+  NSPoint startCenter;
+  NSPoint endCenter;
+  CGFloat endRadius;
+  CGFloat distance;
+
+  NSAssert(relativeCenterPoint.x >= 0.0 && relativeCenterPoint.x <= 1.0, @"NSGradient invalid relative center point");
+  NSAssert(relativeCenterPoint.y >= 0.0 && relativeCenterPoint.y <= 1.0, @"NSGradient invalid relative center point");
+  startCenter = NSMakePoint(NSMidX(rect), NSMidY(rect));
+  endCenter = NSMakePoint(startCenter.x + rect.size.width * relativeCenterPoint.x, 
+                          startCenter.y + rect.size.height * relativeCenterPoint.y);
+  endRadius = 0.0;
+  distance = euclidian_distance(endCenter, NSMakePoint(NSMinX(rect), NSMinY(rect)));
+  if (endRadius < distance)
+    endRadius = distance;
+  distance = euclidian_distance(endCenter, NSMakePoint(NSMaxX(rect), NSMinY(rect)));
+  if (endRadius < distance)
+    endRadius = distance;
+  distance = euclidian_distance(endCenter, NSMakePoint(NSMinX(rect), NSMaxY(rect)));
+  if (endRadius < distance)
+    endRadius = distance;
+  distance = euclidian_distance(endCenter, NSMakePoint(NSMaxX(rect), NSMaxY(rect)));
+  if (endRadius < distance)
+    endRadius = distance;
+
+  [self drawFromCenter: startCenter
+        radius: 0.0
+        toCenter: endCenter 
+        radius: endRadius
+        options: 0];
+}
 @end

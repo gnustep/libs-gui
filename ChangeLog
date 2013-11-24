@@ -1,5 +1,10 @@
 2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSGradient.m: Rearrange code to avoid duplicate
+	saveGraphicsState calls.
+
+2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBitmapImageRep+GIF.m: Add define missing in libgif 5.0.
 
 2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
