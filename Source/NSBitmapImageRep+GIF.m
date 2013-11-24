@@ -51,6 +51,11 @@ objective-c headers.
 #include <gif_lib.h>
 #undef Object
 
+// GIF 5.0 no longer has this define
+#ifndef FALSE
+#define FALSE       0
+#endif /* FALSE */
+
 /* -----------------------------------------------------------
    The following types and functions are for interacting with
    the gif library.

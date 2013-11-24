@@ -1,4 +1,8 @@
-2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
+2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+GIF.m: Add define missing in libgif 5.0.
+
+2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (-selectionIndexPaths): Actually do the correction.
 
