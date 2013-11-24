@@ -529,7 +529,7 @@ static BOOL browserUseBezels;
       if (selectedColumn > 0)
         {
           NSIndexPath *indexPath;
-          NSUInteger rowIndexes[selectedColumn + 1];
+          NSUInteger rowIndexes[selectedColumn];
           NSInteger columnNumber = 0;
           
           for (columnNumber = 0; columnNumber < selectedColumn; columnNumber++)
@@ -538,7 +538,7 @@ static BOOL browserUseBezels;
             }
           
           indexPath = [[NSIndexPath alloc] initWithIndexes: rowIndexes 
-                                                    length: selectedColumn + 1];
+                                                    length: selectedColumn];
           
           for (i = 0; i < count; i++)
             {

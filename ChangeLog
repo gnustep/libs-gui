@@ -1,5 +1,9 @@
 2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBrowser.m (-selectionIndexPaths): Actually do the correction.
+
+2013-11-23  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBrowser.m (-selectionIndexPaths): Correct off by one
 	error in last change.
 	Detected by Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>.
