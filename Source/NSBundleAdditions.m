@@ -34,6 +34,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -281,53 +282,42 @@
 
 - (NSString *) pathForNibResource: (NSString *)fileName
 {
-  NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
-  NSArray		*languages;
-  NSString		*rootPath = [self bundlePath];
-  NSString		*primary;
-  NSString		*language;
-  NSEnumerator		*enumerator;
+  NSEnumerator *enumerator;
+  NSArray *types = [GSModelLoaderFactory supportedTypes];
+  NSString *ext = [fileName pathExtension];
 
-  languages = [[NSUserDefaults standardUserDefaults]
-    stringArrayForKey: @"NSLanguages"];
-
-  /*
-   * Build an array of resource paths that differs from the normal order -
-   * we want a localized file in preference to a generic one.
-   */
-  primary = [rootPath stringByAppendingPathComponent: @"Resources"];
-  enumerator = [languages objectEnumerator];
-  while ((language = [enumerator nextObject]))
+  NSDebugLLog(@"NIB", @"Path for NIB file %@", fileName);
+  if ((ext == nil) || [ext isEqualToString:@""])
     {
-      NSString	*langDir;
+      NSString *type;
 
-      langDir = [NSString stringWithFormat: @"%@.lproj", language];
-      [array addObject: [primary stringByAppendingPathComponent: langDir]];
+      enumerator = [types objectEnumerator];
+      while ((type = [enumerator nextObject]))
+        {
+          NSDebugLLog(@"NIB", @"Checking type %@", fileName);
+          NSString *path = [self pathForResource: fileName
+                                          ofType: type];
+          if (path != nil)
+            {
+              return path;
+            }
+        }  
     }
-  [array addObject: primary];
-  primary = rootPath;
-  enumerator = [languages objectEnumerator];
-  while ((language = [enumerator nextObject]))
+  else
     {
-      NSString	*langDir;
-
-      langDir = [NSString stringWithFormat: @"%@.lproj", language];
-      [array addObject: [primary stringByAppendingPathComponent: langDir]];
-    }
-  [array addObject: primary];
-
-  enumerator = [array objectEnumerator];
-  while ((rootPath = [enumerator nextObject]) != nil)
-    {
-      NSString *modelPath = [rootPath stringByAppendingPathComponent: fileName];
-      NSString *path = [GSModelLoaderFactory supportedModelFileAtPath: modelPath];
-      
-      if (path != nil)
-	{
-	  return path;
-	}
+      if ([types containsObject: ext])
+        {
+          NSString *path = [self pathForResource: 
+                                   [fileName stringByDeletingPathExtension]
+                                          ofType: ext];
+          if (path != nil)
+            {
+              return path;
+            }
+        }
     }
 
+  NSDebugLLog(@"NIB", @"Did not find NIB resource %@", fileName);
   return nil;
 }
 

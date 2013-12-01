@@ -1,3 +1,10 @@
+2013-12-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h,
+	* Source/GSModelLoaderFactory.m: Add new method +supportedTypes.
+	* Source/NSBundleAdditions.m: Use this new method to implement NIB
+	resource detection on top of the base methods instead of doing it here.
+
 2013-11-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGradient.m: Rearrange code to avoid duplicate
