@@ -777,6 +777,14 @@ void NSFrameRectWithWidth(const NSRect aRect, CGFloat frameWidth)
   NSRect rects[4];
   int i;
 
+  if (frameWidth == 0.0)
+    {
+      NSView *view = [GSCurrentContext() focusView];
+      NSSize aSize = [view convertSize: NSMakeSize(1.0, 1.0) fromView: nil];
+
+      frameWidth = (aSize.width + aSize.height) / 2.0;
+    }
+
   for (i = 0; i < 4; i++) 
     {
       NSDivideRect(remainder, &rects[i], &remainder, frameWidth, sides[i]);
@@ -792,6 +800,14 @@ NSFrameRectWithWidthUsingOperation(NSRect aRect, CGFloat frameWidth,
   NSRect remainder = aRect;
   NSRect rects[4];
   int i;
+
+  if (frameWidth == 0.0)
+    {
+      NSView *view = [GSCurrentContext() focusView];
+      NSSize aSize = [view convertSize: NSMakeSize(1.0, 1.0) fromView: nil];
+
+      frameWidth = (aSize.width + aSize.height) / 2.0;
+    }
 
   for (i = 0; i < 4; i++) 
     {

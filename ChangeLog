@@ -1,5 +1,12 @@
 2013-12-01  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/Functions.m (NSFrameRectWithWidth): Use one pixel width
+	if a value of 0 is given. Fixes bug #40760
+	* Source/NSScroller.m: Move disable check out of -rectForPart:.
+	Fixes bug #40761.
+
+2013-12-01  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h,
 	* Source/GSModelLoaderFactory.m: Add new method +supportedTypes.
 	* Source/NSBundleAdditions.m: Use this new method to implement NIB
