@@ -1115,11 +1115,8 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (void) drawKnobSlot
 {
-  if (_scFlags.isEnabled)
-    {
-      [self drawKnobSlotInRect: [self rectForPart: NSScrollerKnobSlot] 
-                     highlight: NO];
-    }
+  [self drawKnobSlotInRect: [self rectForPart: NSScrollerKnobSlot] 
+                 highlight: NO];
 }
 
 - (void) drawKnobSlotInRect: (NSRect)slotRect highlight: (BOOL)flag

@@ -1,3 +1,8 @@
+2013-12-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScroller.m (-drawKnobSlot): Draw the slot even when the
+	scroller is disabled.
+
 2013-12-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/Functions.m (NSFrameRectWithWidth): Use one pixel width
