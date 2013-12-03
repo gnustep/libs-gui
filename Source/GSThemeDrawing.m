@@ -2364,8 +2364,10 @@ typedef enum {
   rectForPartDecrementLine = [scroller rectForPart: NSScrollerDecrementLine];
   rectForPartKnobSlot = [scroller rectForPart: NSScrollerKnobSlot];
 
+  /*
   [[[view window] backgroundColor] set];
   NSRectFill (rect);
+  */
 
   if (NSIntersectsRect (rect, rectForPartKnobSlot) == YES)
     {
@@ -2560,7 +2562,6 @@ typedef enum {
 		     inView: (NSView *)view 
 {
   NSScrollView  *scrollView = (NSScrollView *)view;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   GSTheme	*theme = [GSTheme theme];
   NSColor	*color;
   NSString	*name;
@@ -2616,45 +2617,41 @@ typedef enum {
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
 
       [color set];
-      DPSsetlinewidth(ctxt, 1);
 
       if ([scrollView hasVerticalScroller])
 	{
 	  NSInterfaceStyle style;
+	  CGFloat xpos;
 
 	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 	  if (style == NSMacintoshInterfaceStyle
 	      || style == NSWindows95InterfaceStyle)
 	    {
-	      DPSmoveto(ctxt, [vertScroller frame].origin.x - 1, 
-			[vertScroller frame].origin.y - 1);
+              xpos = [vertScroller frame].origin.x - 1.0;
 	    }
 	  else
 	    {
-	      DPSmoveto(ctxt, [vertScroller frame].origin.x + scrollerWidth, 
-			[vertScroller frame].origin.y - 1);
+              xpos = [vertScroller frame].origin.x + scrollerWidth;
 	    }
-	  DPSrlineto(ctxt, 0, [vertScroller frame].size.height + 1);
-	  DPSstroke(ctxt);
+          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
+                                1.0, [vertScroller frame].size.height + 1.0));
 	}
 
       if ([scrollView hasHorizontalScroller])
 	{
-	  float ypos;
-	  float scrollerY = [horizScroller frame].origin.y;
+	  CGFloat ypos;
+	  CGFloat scrollerY = [horizScroller frame].origin.y;
 
 	  if ([scrollView isFlipped])
 	    {
-	      ypos = scrollerY - 1;
+	      ypos = scrollerY - 1.0;
 	    }
 	  else
 	    {
-	      ypos = scrollerY + scrollerWidth + 1;
+	      ypos = scrollerY + scrollerWidth + 1.0;
 	    }
-
-	  DPSmoveto(ctxt, [horizScroller frame].origin.x - 1, ypos);
-	  DPSrlineto(ctxt, [horizScroller frame].size.width + 1, 0);
-	  DPSstroke(ctxt);
+          NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
+                                [horizScroller frame].size.width + 1.0, 1.0));
 	}
     }
 }

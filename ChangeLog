@@ -1,3 +1,15 @@
+2013-12-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSThemeDrawing.m (-drawScrollViewRect:inView:): Use
+	NSRectFill() instead of line drawing to get sharper separator
+	lines.
+	* Source/GSThemeDrawing.m (-drawScrollerRect:...): Don't fill with
+	window background colour.
+	* Source/NSScroller.m (-drawRect:): Draw only the knob slot when
+	disabled.
+	* Source/NSScroller.m (-mouseDown:): Don't handle mouse down event
+	when disabled.
+
 2013-12-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScroller.m (-drawKnobSlot): Draw the slot even when the

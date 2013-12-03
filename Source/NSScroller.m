@@ -785,6 +785,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
+  if (!_scFlags.isEnabled)
+    {
+      [super mouseDown: theEvent];
+      return;
+    }
+
   NSPoint location = [theEvent locationInWindow];
   _hitPart = [self testPart: location];
   [self _setTargetAndActionToCells];
@@ -1045,10 +1051,20 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
  */
 - (void) drawRect: (NSRect)rect
 {
-  [[GSTheme theme] drawScrollerRect: rect
-		   inView: self
-		   hitPart: _hitPart
-		   isHorizontal: _scFlags.isHorizontal];
+  if (!_scFlags.isEnabled)
+    {
+      NSRect rect1 = NSIntersectionRect(rect, NSInsetRect(_bounds,
+                                                  buttonsOffset, buttonsOffset));
+      [self drawKnobSlotInRect: rect1
+                     highlight: NO];
+    }
+  else
+    {
+      [[GSTheme theme] drawScrollerRect: rect
+                                 inView: self
+                                hitPart: _hitPart
+                           isHorizontal: _scFlags.isHorizontal];
+    }
 }
 
 /**<p>(Un)Highlight the button specified by <var>whichButton</var>.
@@ -1059,11 +1075,6 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
  */
 - (void) drawArrow: (NSScrollerArrow)whichButton highlight: (BOOL)flag
 {
-  if (!_scFlags.isEnabled)
-    {
-      return;
-    }
-
   NSRect rect = [self rectForPart: (whichButton == NSScrollerIncrementArrow
 		? NSScrollerIncrementLine : NSScrollerDecrementLine)];
   id theCell = nil;
