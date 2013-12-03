@@ -239,15 +239,15 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (void) setBounds: (NSRect)b
 {
-  // FIXME: Shouldn't the document view be marked as needing a redraw?
   [super setBounds: b];
+  [_documentView setNeedsDisplayInRect: [self documentVisibleRect]];
   [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setBoundsSize: (NSSize)aSize
 {
-  // FIXME: Shouldn't the document view be marked as needing a redraw?
   [super setBoundsSize: aSize];
+  [_documentView setNeedsDisplayInRect: [self documentVisibleRect]];
   [_super_view reflectScrolledClipView: self];
 }
 

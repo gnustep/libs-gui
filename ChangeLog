@@ -1,5 +1,11 @@
 2013-12-03  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSClipView.m (-setBounds:, -setBoundsSize:): Mark the
+	documentView as needing redisplay. Fixes #40776.
+	Based on patch by Jeff Teunissen <deek@d2dc.net>.
+
+2013-12-03  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSThemeDrawing.m (-drawScrollViewRect:inView:): Use
 	NSRectFill() instead of line drawing to get sharper separator
 	lines.
