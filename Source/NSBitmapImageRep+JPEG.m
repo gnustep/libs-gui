@@ -54,11 +54,6 @@ typedef int jpeg_boolean;
 #endif
 #endif // __MINGW32__
 #include <jpeglib.h>
-#if defined(__CYGWIN__)
-/* Cygwin uses a patched jpeg */
-#define GSTEP_PROGRESSIVE_CODEC
-#endif
-
 #include <setjmp.h>
 
 
