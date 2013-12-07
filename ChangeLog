@@ -1,5 +1,11 @@
 2013-12-07  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSClipView.m (-setDocumentView:): Don't take the
+	background colour from the document view.
+	Patch by Jeff Teunissen <deek@d2dc.net>.
+
+2013-12-07  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSThemeDrawing.m (-drawScrollViewRect:inView:): Use the
 	scrollview bounds instead of the scroller frame for drawing the border.
 	Patch by Jeff Teunissen <deek@d2dc.net>.

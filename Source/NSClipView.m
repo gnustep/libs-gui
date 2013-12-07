@@ -180,16 +180,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       df = [_documentView frame];
       [self setBoundsOrigin: df.origin];
 
-      if ([aView respondsToSelector: @selector(backgroundColor)])
-	{
-	  [self setBackgroundColor: [(id)aView backgroundColor]];
-	}
-      
-      if ([aView respondsToSelector: @selector(drawsBackground)])
-	{
-	  [self setDrawsBackground: [(id)aView drawsBackground]];
-	}
-
       /* Register for notifications sent by the document view */
       [_documentView setPostsFrameChangedNotifications: YES];
       [_documentView setPostsBoundsChangedNotifications: YES];
