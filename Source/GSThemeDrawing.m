@@ -2622,6 +2622,7 @@ typedef enum {
 	{
 	  NSInterfaceStyle style;
 	  CGFloat xpos;
+	  CGFloat scrollerHeight = bounds.size.height;
 
 	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 	  if (style == NSMacintoshInterfaceStyle
@@ -2634,14 +2635,20 @@ typedef enum {
               xpos = [vertScroller frame].origin.x + scrollerWidth;
 	    }
           NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
-                                1.0, [vertScroller frame].size.height + 1.0));
+                                1.0, scrollerHeight + 1.0));
 	}
 
       if ([scrollView hasHorizontalScroller])
 	{
 	  CGFloat ypos;
 	  CGFloat scrollerY = [horizScroller frame].origin.y;
+	  CGFloat scrollerLength = bounds.size.width;
 
+	  if ([scrollView hasVerticalScroller])
+	    {
+	      scrollerLength -= [NSScroller scrollerWidth];
+	    }
+ 
 	  if ([scrollView isFlipped])
 	    {
 	      ypos = scrollerY - 1.0;
@@ -2651,7 +2658,7 @@ typedef enum {
 	      ypos = scrollerY + scrollerWidth + 1.0;
 	    }
           NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
-                                [horizScroller frame].size.width + 1.0, 1.0));
+                                scrollerLength + 1.0, 1.0));
 	}
     }
 }
