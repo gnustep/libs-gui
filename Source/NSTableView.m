@@ -149,7 +149,8 @@ typedef struct _tableViewFlags
                              row: (int)rowIndex;
 - (BOOL) _isCellEditableColumn: (int)columnIndex
 			   row: (int)rowIndex;
-- (int) _numRows;
+- (int) _numRowsFromBindingOrDatasource;
+- (int) _numberOfRows;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -2036,6 +2037,7 @@ static void computeNewSelection
   _selectedColumn = -1;
   _selectedRow = -1;
   _highlightedTableColumn = nil;
+  _reloadNumberOfRows = YES;
   _draggingSourceOperationMaskForLocal = NSDragOperationCopy 
       | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
@@ -2106,9 +2108,23 @@ static void computeNewSelection
   return _numberOfColumns;
 }
 
+- (int)_numberOfRows
+{
+  // numberOfRows can be overridden and we NEED to cache the overridden value...
+  // Invoke numberOfRows from here and store the result...
+  if (_reloadNumberOfRows)
+    _numberOfRows = [self numberOfRows];
+  _reloadNumberOfRows = NO;
+  return _numberOfRows;
+}
+
 - (NSInteger) numberOfRows
 {
-  return _numberOfRows;
+  // Cocoa does delegate/datasource reloading embedded within this method...
+  // This allows subclasses to modify the returned result as needed...
+  // Since we NEED the result from the overridden numberOfRows method this is
+  // invoked from our private _numberOfRows method...
+  return [self _numRowsFromBindingOrDatasource];
 }
 
 /* 
@@ -2652,7 +2668,7 @@ static void computeNewSelection
 - (void) selectRow: (NSInteger)rowIndex
 byExtendingSelection: (BOOL)flag
 {
-  if (rowIndex < 0 || rowIndex >= _numberOfRows)
+  if (rowIndex < 0 || rowIndex >= [self numberOfRows])
     {
       NSDebugLLog(@"NSTableView", @"Row index %d out of table in selectRow", (int)rowIndex);
       return;
@@ -2690,7 +2706,7 @@ byExtendingSelection: (BOOL)flag
 
       /* If _numberOfRows == 1, we can skip trying to deselect the
 	 only row - because we have been called to select it. */
-      if (_numberOfRows > 1)
+      if ([self _numberOfRows] > 1)
 	{
 	  [self _unselectAllRows];
 	}
@@ -2820,11 +2836,11 @@ byExtendingSelection: (BOOL)flag
     {
       _selectingColumns = NO;
       if (_headerView)
-	{
-	  [_headerView setNeedsDisplay: YES];
-	}
+        {
+          [_headerView setNeedsDisplay: YES];
+        }
     }
-
+  
   /* Stop editing if any */
   if (_textObject != nil)
     {
@@ -2839,49 +2855,51 @@ byExtendingSelection: (BOOL)flag
        * a NSTableViewSelectionDidChangeNotification.
        * This behaviour is required by the specifications */
       if ([_selectedRows isEqual: indexes])
+      {
+        if (!empty)
         {
-	  if (!empty)
-	    {
-	      _selectedRow = [indexes lastIndex];
-	    }
-	  return;
-	}
-
+          _selectedRow = [indexes lastIndex];
+        }
+        return;
+      }
+      
       [self _unselectAllRows];
       changed = YES;
     }
-
+  
   if (!empty)
     {
-      if ([indexes lastIndex] >= _numberOfRows)
+      // FIXME: Caching problem between Cocoa and GNUstep implementation differences...
+      // Cocoa does not seem to use the cached value...
+      if ([indexes lastIndex] >= [self numberOfRows])
         {
-	  [NSException raise: NSInvalidArgumentException
-		       format: @"Row index out of table in selectRow"];
-	}
-
-      /* This check is not fully correct, as both sets may contain just 
-	 the same entry, but works according to the old specification. */
-      if (_allowsMultipleSelection == NO && 
-	  [_selectedRows count] + [indexes count] > 1)
-        {
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Can not set multiple selection in table view when multiple selection is disabled"];  
-	}
-
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Row index out of table in selectRow"];
+        }
+      
+      /* This check is not fully correct, as both sets may contain just
+       the same entry, but works according to the old specification. */
+      if (_allowsMultipleSelection == NO &&
+          [_selectedRows count] + [indexes count] > 1)
+      {
+        [NSException raise: NSInternalInconsistencyException
+                    format: @"Can not set multiple selection in table view when multiple selection is disabled"];
+      }
+      
       row = [indexes firstIndex];
       while (row != NSNotFound)
         {
-	  if (![_selectedRows containsIndex: row])
-	    {
-	      [self setNeedsDisplayInRect: [self rectOfRow: row]];
-	    }
-	  row = [indexes indexGreaterThanIndex: row];
-	}
+          if (![_selectedRows containsIndex: row])
+            {
+              [self setNeedsDisplayInRect: [self rectOfRow: row]];
+            }
+          row = [indexes indexGreaterThanIndex: row];
+        }
       [_selectedRows addIndexes: indexes];
       _selectedRow = [indexes lastIndex];
       changed = YES;
     }
-
+  
   if (changed)
     {
       [self _postSelectionDidChangeNotification];
@@ -3076,7 +3094,7 @@ byExtendingSelection: (BOOL)flag
     }
   else // selecting rows
     {
-      if ([_selectedRows count] == (unsigned)_numberOfRows)
+      if ([_selectedRows count] == (unsigned)[self _numberOfRows])
 	{
 	  // Nothing to do !
 	  return;
@@ -3085,7 +3103,7 @@ byExtendingSelection: (BOOL)flag
       {
 	int row; 
 	
-	for (row = 0; row < _numberOfRows; row++)
+	for (row = 0; row < [self _numberOfRows]; row++)
 	  {
 	    if ([self _shouldSelectRow: row] == NO)
 	      return;
@@ -3109,7 +3127,7 @@ byExtendingSelection: (BOOL)flag
   else // selecting rows
     {
       [_selectedRows removeAllIndexes];
-      [_selectedRows addIndexesInRange: NSMakeRange(0, _numberOfRows)];
+      [_selectedRows addIndexesInRange: NSMakeRange(0, [self _numberOfRows])];
     }
   
   [self setNeedsDisplay: YES];
@@ -3393,7 +3411,7 @@ byExtendingSelection: (BOOL)flag
 	      format:@"Attempted to edit unselected row"];
     }
 
-  if (rowIndex < 0 || rowIndex >= _numberOfRows 
+  if (rowIndex < 0 || rowIndex >= [self _numberOfRows] 
       || columnIndex < 0 || columnIndex >= _numberOfColumns)
     {
       [NSException raise: NSInvalidArgumentException
@@ -3572,7 +3590,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent clickedRow:(NSUInteger)clickedRow
 {
-  if (clickedRow >= _numberOfRows)
+  if (clickedRow >= [self _numberOfRows])
     return NO;
 	
   NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
@@ -3635,8 +3653,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   if (row >= 0)
     {
-      NSCell  *cell       = [self preparedCellAtColumn: column row: row];
-      NSRect   cellFrame  = [self frameOfCellAtColumn:(column == -1) ? 0 : column row:row];
+      NSCell  *cell       = [self preparedCellAtColumn:column row:row];
+      NSRect   cellFrame  = [self frameOfCellAtColumn:column row:row];
       
       // Return the hit result...
       return([cell hitTestForEvent:event inRect:cellFrame ofView:self]);
@@ -3651,7 +3669,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   int clickCount = [theEvent clickCount];
   
   // Pathological case -- ignore mouse down
-  if ((_numberOfRows == 0) || (_numberOfColumns == 0))
+  if (([self _numberOfRows] == 0) || (_numberOfColumns == 0))
     {
       return;
     }
@@ -3674,23 +3692,31 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   _clickedRow  = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
   
-  if ((_clickedRow != -1) && ([theEvent type] == NSLeftMouseDown))
+  if ([theEvent type] == NSLeftMouseDown)
     {
-      // If the cell processed the mouse hit...
-      NSInteger theColumn = _clickedColumn;
-      
-      // Check for grouped row...
-      if ([self _isGroupRow: _clickedRow])
-        theColumn = -1;
+      // If clicked outside of row(s)...
+      if (_clickedRow == -1)
+        {
+          [self deselectAll:self];
+          [self displayIfNeeded];
+        }
+      else
+        {
+          // If the cell processed the mouse hit...
+          NSInteger theColumn = _clickedColumn;
+          
+          // Check for grouped row...
+          if ([self _isGroupRow: _clickedRow])
+            theColumn = -1;
 
-      // Application specific hit test processing is handled within the delegate's should select callbacks
-      // if they're implemented...however - I'm not sure when this SHOULD be invoked...
-      if ([self _hitTestForEvent:theEvent atColumn:theColumn row:_clickedRow] != NSCellHitNone)
-        [self _shouldSelectRow:_clickedRow];
+          // Application specific hit test processing is handled within the delegate's should select callbacks
+          // if they're implemented...however - I'm not sure when this SHOULD be invoked...
+          if ([self _hitTestForEvent:theEvent atColumn:theColumn row:_clickedRow] != NSCellHitNone)
+            [self _shouldSelectRow:_clickedRow];
+        }
     }
   
-  if ([theEvent type] == NSLeftMouseDown
-      && clickCount > 1)
+  if ([theEvent type] == NSLeftMouseDown && clickCount > 1)
     {
       // Double-click event
       
@@ -3719,24 +3745,25 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
   else
     {
-#define COMPUTE_NEW_SELECTION do { \
-if (originalRow == -1) \
-{ \
-originalRow = currentRow; \
-} \
-if (currentRow >= 0 && currentRow < _numberOfRows) \
-{ \
-computeNewSelection(self, \
-oldSelectedRows, \
-_selectedRows, \
-originalRow, \
-oldRow, \
-currentRow, \
-&_selectedRow, \
-selectionMode); \
-[self displayIfNeeded]; \
-} \
-} while (0);
+#define COMPUTE_NEW_SELECTION do \
+      { \
+        if (originalRow == -1) \
+        { \
+          originalRow = currentRow; \
+        } \
+        if (currentRow >= 0 && currentRow < [self _numberOfRows]) \
+        { \
+          computeNewSelection(self, \
+                              oldSelectedRows, \
+                              _selectedRows, \
+                              originalRow, \
+                              oldRow, \
+                              currentRow, \
+                              &_selectedRow, \
+                              selectionMode); \
+          [self displayIfNeeded]; \
+        } \
+      } while (0);
       
       // Selection
       NSUInteger modifiers = [theEvent modifierFlags];
@@ -3984,7 +4011,7 @@ selectionMode); \
                 if (currentRow == -1 && oldRow != -1)
                   currentRow = oldRow + 1;
                 
-                if (currentRow != -1 && currentRow < _numberOfRows - 1)
+                if (currentRow != -1 && currentRow < [self _numberOfRows] - 1)
                 {
                   oldRow = currentRow;
                   currentRow++;
@@ -4266,7 +4293,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	       }
 	     else
 	       {
-		 currentRow = _numberOfRows - 1;
+		 currentRow = [self _numberOfRows] - 1;
 	       }
 	     break;
 	   default:
@@ -4288,12 +4315,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       currentRow = 0;
     }
-  else if (currentRow >= _numberOfRows)
+  else if (currentRow >= [self _numberOfRows])
     {
-      currentRow = _numberOfRows - 1;
+      currentRow = [self _numberOfRows] - 1;
     }
   
-  if (_numberOfRows)
+  if ([self _numberOfRows])
     {
       if (modifySelection)
         {
@@ -4417,7 +4444,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   rect.origin.x = _columnOrigins[columnIndex];
   rect.origin.y = _bounds.origin.y;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
-  rect.size.height = _numberOfRows * _rowHeight;
+  rect.size.height = [self _numberOfRows] * _rowHeight;
   return rect;
 }
 
@@ -4425,7 +4452,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 {
   NSRect rect;
 
-  if (rowIndex < 0 || rowIndex >= _numberOfRows)
+  if (rowIndex < 0 || rowIndex >= [self _numberOfRows])
     {
       NSDebugLLog(@"NSTableView", @"Row index %d out of table in rectOfRow", (int)rowIndex);
       return NSZeroRect;
@@ -4490,7 +4517,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   
   if (lastRowInRect == -1)
     {
-      lastRowInRect = _numberOfRows - 1;
+      lastRowInRect = [self _numberOfRows] - 1;
     }
   
   range.length = lastRowInRect;
@@ -4531,7 +4558,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       aPoint.y -= _bounds.origin.y;
       return_value = (int) (aPoint.y / _rowHeight);
       /* This could happen if point lies on the grid line or below the last row */
-      if (return_value >= _numberOfRows)
+      if (return_value >= [self _numberOfRows])
 	{
 	  return_value = -1;
 	}
@@ -4540,21 +4567,23 @@ This method is deprecated, use -columnIndexesInRect:. */
 }
 
 - (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex
-			   row: (NSInteger)rowIndex
+                           row: (NSInteger)rowIndex
 {
   NSRect frameRect;
 
-  if ((columnIndex < 0) 
-      || (rowIndex < 0)
-      || (columnIndex > (_numberOfColumns - 1))
-      || (rowIndex > (_numberOfRows - 1)))
+  [self numberOfRows];
+  
+  if ((rowIndex < 0) ||
+      (rowIndex > ([self _numberOfRows] - 1)) ||
+      (columnIndex < -1) || // Cocoa processes -1 as group row request...
+      (columnIndex > (_numberOfColumns - 1)))
     return NSZeroRect;
 
   // Setup the common frame values...
   frameRect.origin.y     = _bounds.origin.y + (rowIndex * _rowHeight);
   frameRect.origin.y    += _intercellSpacing.height / 2;
   frameRect.size.height  = _rowHeight - _intercellSpacing.height;
-  frameRect.origin.x     = _columnOrigins[columnIndex];
+  frameRect.origin.x     = ((columnIndex == -1) ? _columnOrigins[0] : _columnOrigins[columnIndex]);
   frameRect.origin.x    += _intercellSpacing.width / 2;
 
   // Group rows take up the entire row...
@@ -4628,7 +4657,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      float rowsHeight = (([self _numberOfRows] * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
       
       if (rowsHeight < docRect.size.height)
@@ -4650,7 +4679,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      float rowsHeight = (([self _numberOfRows] * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
       
       if (rowsHeight < docRect.size.height)
@@ -4900,7 +4929,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       // Compute min width of column 
       width = [[tb headerCell] cellSize].width;
-      for (row = 0; row < _numberOfRows; row++)
+      for (row = 0; row < [self _numberOfRows]; row++)
 	{
 	  cell = [self _dataCellForTableColumn: tb row: row];
 	  [cell setObjectValue: [_dataSource tableView: self
@@ -4964,7 +4993,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   NSRect newFrame;
 
-  _numberOfRows = [self _numRows];
+  // Cocoa does caching, delegate and datasource reloading embedded within numberOfRows method...
+  // This allows subclasses to modify the returned result as needed...
+  // So force this sequence to happen...
+  _reloadNumberOfRows = YES;
+  [self _numberOfRows];
  
   /* If we are selecting rows, we have to check that we have no
      selected rows below the new end of the table */
@@ -4978,7 +5011,7 @@ This method is deprecated, use -columnIndexesInRect:. */
             {
               /* We shouldn't allow empty selection - try
                  selecting the last row */
-              NSInteger lastRow = _numberOfRows - 1;
+              NSInteger lastRow = [self _numberOfRows] - 1;
 		      
               if (lastRow > -1)
                 {
@@ -4995,11 +5028,11 @@ This method is deprecated, use -columnIndexesInRect:. */
             }
         }
       /* Check that all selected rows are in the new range of rows */
-      else if (row >= _numberOfRows)
+      else if (row >= [self _numberOfRows])
         {
           [_selectedRows removeIndexesInRange: 
-             NSMakeRange(_numberOfRows,  row + 1 - _numberOfRows)];
-          if (_selectedRow >= _numberOfRows)
+             NSMakeRange([self _numberOfRows],  row + 1 - [self _numberOfRows])];
+          if (_selectedRow >= [self _numberOfRows])
             {
               row = [_selectedRows lastIndex];
               [self _postSelectionIsChangingNotification];
@@ -5019,7 +5052,7 @@ This method is deprecated, use -columnIndexesInRect:. */
                     {
                       /* We shouldn't allow empty selection - try
                          selecting the last row */
-                      int lastRow = _numberOfRows - 1;
+                      int lastRow = [self _numberOfRows] - 1;
                       
                       if (lastRow > -1)
                         {
@@ -5039,7 +5072,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   
   newFrame = _frame;
-  newFrame.size.height = (_numberOfRows * _rowHeight) + 1;
+  newFrame.size.height = ([self _numberOfRows] * _rowHeight) + 1;
   if (NO == NSEqualRects(newFrame, NSUnionRect(newFrame, _frame)))
     {
       [_super_view setNeedsDisplayInRect: _frame];
@@ -5084,7 +5117,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	}
     }
   /* + 1 for the last grid line */
-  table_height = (_numberOfRows * _rowHeight) + 1;
+  table_height = ([self _numberOfRows] * _rowHeight) + 1;
   [self setFrameSize: NSMakeSize (table_width, table_height)];
   [self setNeedsDisplay: YES];
 
@@ -5544,8 +5577,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) setDropRow: (int)row
       dropOperation: (NSTableViewDropOperation)operation
 {
-  if (row < -1 || row > _numberOfRows 
-    || (operation == NSTableViewDropOn && row == _numberOfRows))    
+  if (row < -1 || row > [self _numberOfRows] 
+    || (operation == NSTableViewDropOn && row == [self _numberOfRows]))    
     {
       currentDropRow = -1;
       currentDropOperation = NSTableViewDropOn;
@@ -6008,7 +6041,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) _editNextCellAfterRow: (int) row
 		inColumn: (int) column
 {
-  if (++row >= _numberOfRows)
+  if (++row >= [self _numberOfRows])
     row = 0;
 
   if ([self _shouldSelectRow: row])
@@ -6045,7 +6078,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 
   // Otherwise, make the big cycle.
-  for (i = row + 1; i < _numberOfRows; i++)
+  for (i = row + 1; i < [self _numberOfRows]; i++)
     {
       for (j = 0; j < _numberOfColumns; j++)
         {
@@ -6130,7 +6163,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 // Should we loop around or not?
 #if 0
   // Nothing found? Search in the rows after the current
-  for (i = _numberOfRows - 1; i > row; i--)
+  for (i = [self _numberOfRows] - 1; i > row; i--)
     {
       for (j = _numberOfColumns - 1; j > -1; j--)
         {
@@ -6437,7 +6470,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   else if (p.y > NSMaxY([self visibleRect])-3)
     {
       currentRow = [self rowAtPoint: p] + 1;
-      if (currentRow < _numberOfRows)
+      if (currentRow < [self _numberOfRows])
         [self scrollRowToVisible: currentRow];
     }
 
@@ -6456,11 +6489,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   // Are we in the two middle quarters of the row? Use TableViewDropOn
   if ((positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4)
-   || row > _numberOfRows)
+   || row > [self _numberOfRows])
     {
       currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
       currentDropOperation = NSTableViewDropOn;
-      if (currentDropRow >= _numberOfRows)
+      if (currentDropRow >= [self _numberOfRows])
         currentDropRow = -1;
     }
   else // drop above
@@ -6499,7 +6532,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	   newRect = [self bounds];
 	   NSFrameRectWithWidth(newRect, 2.0);
 	   oldDraggingRect = newRect;
-	      currentDropRow = _numberOfRows;
+	      currentDropRow = [self _numberOfRows];
 	}
   else if (currentDropOperation == NSTableViewDropAbove)
 	{
@@ -6510,7 +6543,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 					[self visibleRect].size.width,
 					3);
 		}
-	  else if (currentDropRow == _numberOfRows)
+	  else if (currentDropRow == [self _numberOfRows])
 		{
 		  newRect = NSMakeRect([self visibleRect].origin.x,
 					currentDropRow * _rowHeight - 2,
@@ -6869,7 +6902,7 @@ For a more detailed explanation, -setSortDescriptors:. */
  * implemented in NSTableView and subclasses 
  * by default returns the DataSource's -numberOfRowsInTableView:
  */
-- (int) _numRows
+- (int) _numRowsFromBindingOrDatasource
 {
   GSKeyValueBinding *theBinding;
 

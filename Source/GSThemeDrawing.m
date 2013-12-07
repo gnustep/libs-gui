@@ -73,6 +73,23 @@
 - (BOOL)_isGroupRow: (NSInteger)rowIndex;
 @end
 
+@interface NSTableView (PrivateAccess)
+- (NSIndexSet*)_selectedRowIndexes;
+- (NSIndexSet*)_selectedColumnIndexes;
+@end
+
+@implementation NSTableView (PrivateAccess)
+- (NSIndexSet *)_selectedRowIndexes
+{
+  return _selectedRows;
+}
+
+- (NSIndexSet *)_selectedColumnIndexes
+{
+  return _selectedColumns;
+}
+@end
+
 @interface NSCell (Private)
 - (void) _setInEditing: (BOOL)flag;
 @end
@@ -2509,9 +2526,12 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSTableView *tableView = (NSTableView *)view;
   int numberOfRows = [tableView numberOfRows];
   int numberOfColumns = [tableView numberOfColumns];
-  NSIndexSet *selectedRows = [tableView selectedRowIndexes];
-  NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
   NSColor *backgroundColor = [tableView backgroundColor];
+
+  // selectedRowIndexes/selectedColumnIndexes can be overridden and change values...
+  // Cocoa does NOT invoke these during drawing processing...
+  NSIndexSet *selectedRows = [tableView _selectedRowIndexes];
+  NSIndexSet *selectedColumns = [tableView _selectedColumnIndexes];
 
   if (selectingColumns == NO)
     {
@@ -2594,7 +2614,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSTableView *tableView = (NSTableView *)view;
   // int numberOfRows = [tableView numberOfRows];
   int numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
+  // NSIndexSet *selectedRows = [tableView _selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];
   id dataSource = [tableView dataSource];
   float *columnOrigins = [tableView _columnOrigins];

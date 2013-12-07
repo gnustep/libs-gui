@@ -118,6 +118,7 @@ typedef enum _NSTableViewColumnAutoresizingStyle
   /*
    * Ivars Acting as Cache 
    */
+  BOOL   _reloadNumberOfRows;
   int    _numberOfRows;
   int    _numberOfColumns;
   /* YES if _delegate responds to
