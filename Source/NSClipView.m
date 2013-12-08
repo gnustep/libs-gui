@@ -230,14 +230,14 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) setBounds: (NSRect)b
 {
   [super setBounds: b];
-  [_documentView setNeedsDisplayInRect: [self documentVisibleRect]];
+  [self setNeedsDisplay: YES];
   [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setBoundsSize: (NSSize)aSize
 {
   [super setBoundsSize: aSize];
-  [_documentView setNeedsDisplayInRect: [self documentVisibleRect]];
+  [self setNeedsDisplay: YES];
   [_super_view reflectScrolledClipView: self];
 }
 

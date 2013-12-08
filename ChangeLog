@@ -1,3 +1,9 @@
+2013-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSClipView.m (-setBounds:, -setBoundsSize:): Use
+	-setNeedsDisplay: to redraw areas no longer covered by the
+	document view.
+
 2013-12-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSClipView.m (-setDocumentView:): Don't take the
