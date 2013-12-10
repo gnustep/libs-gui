@@ -110,7 +110,6 @@ static NSImage *unexpandable  = nil;
 - (void) _setObjectValue: (id)value
           forTableColumn: (NSTableColumn *)tb
                      row: (int) index;
-- (int) _numRows;
 @end
 
 // These methods are private...
@@ -1710,6 +1709,11 @@ Also returns the child index relative to this parent. */
   return;
 }
 
+- (NSInteger) numberOfRows
+{
+  return [_items count];
+}
+
 @end /* implementation of NSOutlineView */
 
 @implementation NSOutlineView (NotificationRequestMethods)
@@ -1912,11 +1916,6 @@ Also returns the child index relative to this parent. */
                    forTableColumn: tb
                    byItem: item];
     }
-}
-
-- (int) _numRows
-{
-  return [_items count];
 }
 
 @end
