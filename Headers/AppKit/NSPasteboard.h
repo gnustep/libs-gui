@@ -175,7 +175,12 @@ APPKIT_EXPORT NSString *NSRulerPboard;
  */
 APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 
-
+@class NSPasteboard;
+  
+// Protocol definitions...
+@protocol NSPasteboardWriting
+@end
+  
 @interface NSPasteboard : NSObject
 {
   NSString	*name;		// The name of this pasteboard.
