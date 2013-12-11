@@ -1079,6 +1079,7 @@ static NSImage *unexpandable  = nil;
        * item presumably), or perhaps we should treat this as
        * cancelling the drop?
        */
+	NSLog(@"Alert: Invalid drop item %@", item);
       return;
     }
   currentDropItem = item;
