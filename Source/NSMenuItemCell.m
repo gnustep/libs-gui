@@ -587,11 +587,15 @@ static NSString *commandKeyString = @"#";
 
           case NSImageLeft:
             cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
-            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
+            // the below line doesn't always clip correctly (eg drop down indicator images)
+            //cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
+                cellFrame.size.width = _titleWidth;
             break;
 
           case NSImageRight:
-            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
+            // the below line doesn't always clip correctly (eg drop down indicator images)
+            //cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
+                cellFrame.size.width = _titleWidth;
             break;
 
           case NSImageBelow:
