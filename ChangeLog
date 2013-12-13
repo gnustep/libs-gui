@@ -1,5 +1,11 @@
 2013-12-13  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXibLoader.m: Handle changed keys for XIB 4.6 format.
+	Based on patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>.
+	* Source/GSXibLoader.m (-parser:...): Warn about unsupported XIB 5 format.
+
+2013-12-13  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m (-numberOfRows): Return the current number
 	of rows not the internal cached value.
 	Replace some occurences of int with NSInteger

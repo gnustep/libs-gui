@@ -405,6 +405,13 @@
         {
           connectionID = [coder decodeIntForKey: @"connectionID"];
         }
+      else if ([coder containsValueForKey: @"id"])
+        {
+          // 4.6+ XIBs....
+          NSString *string = [coder decodeObjectForKey: @"id"];
+
+          connectionID = [string intValue];
+        }
     }
   else
     {
@@ -529,6 +536,13 @@
       if ([coder containsValueForKey: @"objectID"])
         {
           objectID = [coder decodeIntForKey: @"objectID"];
+        }
+      else if ([coder containsValueForKey: @"id"])
+        {
+          // 4.6+ XIBs....
+          NSString *string = [coder decodeObjectForKey: @"id"];
+
+          objectID = [string intValue];
         }
       if ([coder containsValueForKey: @"object"])
         {
@@ -1122,14 +1136,24 @@
           while ((key = [en nextObject]) != nil)
             {
               NSString *keyValue = [key stringByReplacingOccurrencesOfString:@".CustomClassName" withString:@""];
-              NSString *className = [customClassDict objectForKey:key];
+              NSString *className = [customClassDict objectForKey: key];
               NSString *objectRecordXpath = nil;
 
-              objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
+              objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
                     @"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
                     keyValue];
 
-              objectRecords = [document nodesForXPath:objectRecordXpath error:NULL];
+              objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
+
+              if (objectRecords == nil)
+                {
+                  // If that didn't work then it could be a 4.6+ XIB...
+                  objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
+                                                @"string[@key=\"id\"][text()=\"%@\"]/../reference",
+                                                keyValue];
+                  objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
+                }
+
               NSString *refId = nil;
               if ([objectRecords count] > 0)
                 {
@@ -1256,6 +1280,12 @@ didStartElement: (NSString*)elementName
 
   // FIXME: We should use proper memory management here
   AUTORELEASE(element);
+
+  if ([@"document" isEqualToString: elementName])
+    {
+      [NSException raise: NSInvalidArgumentException 
+                  format: @"Cannot decode XIB 5 format."];
+    }
 
   if (key != nil)
     {
