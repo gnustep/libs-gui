@@ -401,9 +401,44 @@
         {
           ASSIGN(connection, [coder decodeObjectForKey: @"connection"]);
         }
+      else
+        {
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without a connection ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
+        }
+      
+      // Load the connection ID....
       if ([coder containsValueForKey: @"connectionID"])
         {
+          // PRE-4.6 XIBs....
           connectionID = [coder decodeIntForKey: @"connectionID"];
+        }
+      else if ([coder containsValueForKey: @"id"])
+        {
+          // 4.6+ XIBs....
+          NSString *string = [coder decodeObjectForKey: @"id"];
+          if (string && [string isKindOfClass:[NSString class]] && [string length])
+            {
+              connectionID = [string intValue];
+            }
+          else
+            {
+              NSString *format = [NSString stringWithFormat:@"%s:class: %@ - connection ID is missing or zero!",
+                                  __PRETTY_FUNCTION__, NSStringFromClass([self class])];
+              [NSException raise: NSInvalidArgumentException
+                          format: format];
+            }
+        }
+      else
+        {
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without a connection ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
         }
     }
   else
@@ -528,8 +563,35 @@
     {
       if ([coder containsValueForKey: @"objectID"])
         {
+          // PRE-4.6 XIBs....
           objectID = [coder decodeIntForKey: @"objectID"];
         }
+      else if ([coder containsValueForKey: @"id"])
+        {
+          // 4.6+ XIBs....
+          NSString *string = [coder decodeObjectForKey: @"id"];
+          if (string && [string isKindOfClass:[NSString class]] && [string length])
+            {
+              objectID = [string intValue];
+            }
+          else
+            {
+              NSString *format = [NSString stringWithFormat:@"%s:class: %@ - object ID is missing or zero!",
+                                  __PRETTY_FUNCTION__, NSStringFromClass([self class])];
+              [NSException raise: NSInvalidArgumentException
+                          format: format];
+            }
+        }
+      else
+        {
+          // Cannot process without object ID...
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without an object ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
+        }
+      
       if ([coder containsValueForKey: @"object"])
         {
           ASSIGN(object, [coder decodeObjectForKey: @"object"]);
@@ -1125,11 +1187,21 @@
               NSString *className = [customClassDict objectForKey:key];
               NSString *objectRecordXpath = nil;
 
+              //PRE-4.6 XIBs...
               objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
                     @"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
                     keyValue];
+              objectRecords     = [document nodesForXPath:objectRecordXpath error:NULL];
 
-              objectRecords = [document nodesForXPath:objectRecordXpath error:NULL];
+              // If that didn't work then it could be a 4.6+ XIB...
+              if (objectRecords == nil)
+              {
+                objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
+                                     @"string[@key=\"id\"][text()=\"%@\"]/../reference",
+                                     keyValue];
+                objectRecords     = [document nodesForXPath:objectRecordXpath error:NULL];
+              }
+              
               NSString *refId = nil;
               if ([objectRecords count] > 0)
                 {
@@ -1147,37 +1219,36 @@
 
                               refId = [[record attributeForName:@"ref"] stringValue];
                               refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
-                              classNodes = [document nodesForXPath:refXpath
-							     error:NULL];
+                              classNodes = [document nodesForXPath:refXpath error:NULL];
                               if([classNodes count] > 0)
                                 {
-				  id classAttr = nil;
-				  Class cls = NSClassFromString(className);
-
-				  classNode = [classNodes objectAtIndex:0];
-				  classAttr = [classNode attributeForName:@"class"];
-				  [classAttr setStringValue:className];
-				  
-				  if (cls != nil)
-				    {
-				      if ([cls respondsToSelector:@selector(cellClass)])
-					{
-					  NSArray *cellNodes = nil;
-					  id cellNode = nil;
-					  id cellClass = [cls cellClass];
-					  NSString *cellXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
-					  cellNodes = [document nodesForXPath:cellXpath
-									error:NULL];
-					  if ([cellNodes count] > 0) 
-					    {
-					      NSString *cellClassString = NSStringFromClass(cellClass);
-					      id cellAttr = nil;					      
-					      cellNode = [cellNodes objectAtIndex:0];
-					      cellAttr = [cellNode attributeForName:@"class"];
-					      [cellAttr setStringValue:cellClassString];
-					    }
-					}
-				    }
+                                  id classAttr = nil;
+                                  Class cls = NSClassFromString(className);
+                                  
+                                  classNode = [classNodes objectAtIndex:0];
+                                  classAttr = [classNode attributeForName:@"class"];
+                                  [classAttr setStringValue:className];
+                                  
+                                  if (cls != nil)
+                                    {
+                                      if ([cls respondsToSelector:@selector(cellClass)])
+                                        {
+                                          NSArray *cellNodes = nil;
+                                          id cellNode = nil;
+                                          id cellClass = [cls cellClass];
+                                          NSString *cellXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
+                                          cellNodes = [document nodesForXPath:cellXpath
+                                                                        error:NULL];
+                                          if ([cellNodes count] > 0) 
+                                          {
+                                            NSString *cellClassString = NSStringFromClass(cellClass);
+                                            id cellAttr = nil;					      
+                                            cellNode = [cellNodes objectAtIndex:0];
+                                            cellAttr = [cellNode attributeForName:@"class"];
+                                            [cellAttr setStringValue:cellClassString];
+                                          }
+                                        }
+                                    }
                                 }
                             }
                         }
