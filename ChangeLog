@@ -1,3 +1,10 @@
+2013-12-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-numberOfRows): Return the current number
+	of rows not the internal cached value.
+	Replace some occurences of int with NSInteger
+	and unsigned with NSUInteger.
+
 2013-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSClipView.m (-setBounds:, -setBoundsSize:): Use

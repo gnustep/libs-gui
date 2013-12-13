@@ -2102,7 +2102,7 @@ static void computeNewSelection
 
 - (NSInteger) numberOfRows
 {
-  return _numberOfRows;
+  return [self _numRows];
 }
 
 /* 
@@ -3050,7 +3050,7 @@ byExtendingSelection: (BOOL)flag
   /* Ask the delegate if we can select all columns or rows */
   if (_selectingColumns == YES)
     {
-      if ([_selectedColumns count] == (unsigned)_numberOfColumns)
+      if ([_selectedColumns count] == (NSUInteger)_numberOfColumns)
 	{
 	  // Nothing to do !
 	  return;
@@ -3070,14 +3070,14 @@ byExtendingSelection: (BOOL)flag
     }
   else // selecting rows
     {
-      if ([_selectedRows count] == (unsigned)_numberOfRows)
+      if ([_selectedRows count] == (NSUInteger)_numberOfRows)
 	{
 	  // Nothing to do !
 	  return;
 	}
 
       {
-	int row; 
+	NSInteger row; 
 	
 	for (row = 0; row < _numberOfRows; row++)
 	  {
@@ -3314,7 +3314,7 @@ byExtendingSelection: (BOOL)flag
   NSText *t;
   NSTableColumn *tb;
   NSRect drawingRect;
-  unsigned length = 0;
+  NSUInteger length = 0;
 
   if (rowIndex != _selectedRow)
     {
@@ -4036,20 +4036,20 @@ static BOOL selectContiguousRegion(NSTableView *self,
   return notified;
 }         
 
-- (void) keyDown:(NSEvent *)theEvent
+- (void) keyDown: (NSEvent *)theEvent
 {
-   int oldRow = -1;
-   int currentRow = _selectedRow;
-   int originalRow = -1;
+   NSInteger oldRow = -1;
+   NSInteger currentRow = _selectedRow;
+   NSInteger originalRow = -1;
    NSString *characters = [theEvent characters];
-   unsigned int len = [characters length];
-   unsigned int modifiers = [theEvent modifierFlags];
-   int rowHeight = [self rowHeight];
+   NSUInteger len = [characters length];
+   NSUInteger modifiers = [theEvent modifierFlags];
+   CGFloat rowHeight = [self rowHeight];
    NSRect visRect = [self visibleRect];
    BOOL modifySelection = YES;
    NSPoint noModPoint = NSZeroPoint;
-   int visRows;
-   unsigned int i;
+   NSInteger visRows;
+   NSUInteger i;
    BOOL gotMovementKey = NO;
    
    // will not contain partial rows.
