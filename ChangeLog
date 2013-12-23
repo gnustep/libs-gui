@@ -1,3 +1,7 @@
+2013-12-23  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Update release notes to prepare for upcoming release.
+
 2013-12-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Handle changed keys for XIB 4.6 format.

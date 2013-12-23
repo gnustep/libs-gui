@@ -9,11 +9,25 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.24.0}
+
+New features include:
+@itemize @bullet
+@item Require newer base release as we moved the
+-replaceObject:withObject: of NSKeyedUnarchiver there.
+@item Support for newer releases of the gif library.
+@item NSTabView is now flipped.
+@item Theme improvements and changes to image mapping.
+@end itemize
+
+Many bugfixes.
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.23.1}
 
 This is a bugfix release, primarily to deal with coding/archiving issues.
 
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.22.0}
 

@@ -21,6 +21,34 @@
       </p>
 
      <section>
+      	<heading>0.24.0</heading>
+	<p>
+	  This is a major new stable release of GUI.
+          Require newer base release as we moved the
+          -replaceObject:withObject: of NSKeyedUnarchiver there.<br />
+	  New features include:
+        </p>
+	<deflist>
+          <term>GIF library update</term>
+          <desc>Newer versions of the GIF library (5.0) have an incompatible
+          interface change. We now support the new interface as well as the
+          old one and detect at configure time which one to use.</desc>
+          <term>NSTabView flipped</term>
+          <desc>NSTabView was the last view class that still had its flipped
+          state defined incorrectly. This finally got corrected.</desc>
+          <term>Theme improvements</term>
+          <desc>A lot more of the gui appearance is now changable by a
+          theme. The way image names get mapped to real file names when
+          loading has been clearified.Better support for 9-patch images.</desc>
+          <term>Additional Cocoa classes</term>
+          <desc>NSTreeController, NSTreeNode, NSStatusBar, NSStatusItem,
+          NSTrackingArea</desc>
+          <term>Many bugfixes and tweaks to improve look and feel</term>
+          <desc>Cursor display is a lot more consistent.</desc>
+	</deflist>
+     </section>
+
+     <section>
       	<heading>0.23.1</heading>
 	<p>This is a bugfix release containint many minor bugfixes, but
         most importantly fixing some coding/archiving bugs introduced in
