@@ -461,6 +461,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return NO;
 }
 
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"<%@ %p Name=%@ Size=%@ Reps=%@>",
+                   [self class],
+                   self,
+                   [self name],
+                   NSStringFromSize([self size]),
+                   [self representations]];
+}
+
 /* This methd sets the name of an image, updating the global name dictionary
  * to point to the image (or removing an image from the dictionary if the
  * new name is nil).

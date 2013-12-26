@@ -1,3 +1,8 @@
+2013-12-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m: Add description method.
+	Patch by Johannes Lundberg <johannes@brilliantservice.co.jp>.
+
 2013-12-24  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Version: bump to 0.24.0
