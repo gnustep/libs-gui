@@ -352,7 +352,7 @@ typedef enum _NSTableViewColumnAutoresizingStyle
  */
 
 @protocol NSTableViewDataSource
-#ifdef __OBJC2__
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #else
 @end
@@ -409,7 +409,7 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
  */
 
 @protocol NSTableViewDelegate <NSObject>
-#ifdef __OBJC2__
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #else
 @end

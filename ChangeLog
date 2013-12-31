@@ -1,3 +1,16 @@
+2013-12-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSAnimation.h
+	* Headers/AppKit/NSApplication.h
+	* Headers/AppKit/NSControl.h
+	* Headers/AppKit/NSPopover.h
+	* Headers/AppKit/NSSavePanel.h
+	* Headers/AppKit/NSTableView.h
+	* Headers/AppKit/NSTextView.h
+	* Headers/AppKit/NSWindow.h: Use GS_PROTOCOLS_HAVE_OPTIONAL to
+	protect the @optional keyword in protocol definitions.
+	Based on base patch by Marcus Mueller <znek@mulle-kybernetik.com>.
+
 2013-12-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m: Add description method.

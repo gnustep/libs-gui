@@ -33,6 +33,7 @@
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSResponder.h>
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 /* Keys */
 APPKIT_EXPORT NSString *NSPopoverCloseReasonKey;
 APPKIT_EXPORT NSString *NSPopoverCloseReasonStandard;
@@ -104,7 +105,7 @@ typedef NSInteger NSPopoverBehavior;
 
 /* Delegate */
 @protocol NSPopoverDelegate
-#ifdef __OBJC2__
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #else
 @end
@@ -118,4 +119,5 @@ typedef NSInteger NSPopoverBehavior;
 - (void)popoverWillShow:(NSNotification *)notification;
 @end
 
+#endif
 #endif

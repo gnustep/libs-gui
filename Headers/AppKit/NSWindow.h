@@ -827,7 +827,7 @@ PACKAGE_SCOPE
 #ifdef GNUSTEP
 
 @protocol NSWindowDelegate <NSObject>
-#ifdef __OBJC2__ 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #else
 @end
