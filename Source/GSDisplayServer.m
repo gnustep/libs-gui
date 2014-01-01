@@ -570,6 +570,11 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+- (void*)backendIdentifierForWindow: (int)win
+{
+  return win;
+}
+
 /** Create all the backend structures for a reference to a native window and 
     return the extend, backing type, style and screen for that window. */ 
 - (int) nativeWindow: (void *)winref

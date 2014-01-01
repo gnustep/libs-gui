@@ -1,3 +1,9 @@
+2014-01-01 Niels Grewe <niels.grewe@halbordnung.de>
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Source/GSDisplayServer.m:
+	Add a method to get the window identifier used by the
+	backend (instead of just the window number).
+
 2013-12-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSAnimation.h
