@@ -1,3 +1,8 @@
+2014-01-05 Niels Grewe <niels.grewe@halbordnung.de>
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	* Source/GSDisplayServer.m:
+	Remove redundant method again.
+
 2014-01-01 Niels Grewe <niels.grewe@halbordnung.de>
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	* Source/GSDisplayServer.m:
