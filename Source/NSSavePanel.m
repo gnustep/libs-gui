@@ -1108,7 +1108,8 @@ selectCellWithString: (NSString*)title
  */
 - (NSInteger) runModal
 {
-  return [self runModalForDirectory: [self directory] file: [self filename]];
+  return [self runModalForDirectory: [self directory]
+                               file: [[self filename] lastPathComponent]];
 }
 
 - (void) beginSheetModalForWindow:(NSWindow *)window
@@ -1201,7 +1202,7 @@ selectCellWithString: (NSString*)title
 
   if (_allowedFileTypes == nil ||
       [_allowedFileTypes indexOfObject: @""] != NSNotFound)
-    return _fullFileName;
+    return AUTORELEASE([_fullFileName copy]);
 
   /* add file type extension if the file name does not have an extension or
      the file name's extension is not one of the allowed extensions and the
@@ -1216,7 +1217,7 @@ selectCellWithString: (NSString*)title
     }
   else
     {
-      return _fullFileName;
+      return AUTORELEASE([_fullFileName copy]);
     }
 }
 

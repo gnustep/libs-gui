@@ -1,9 +1,17 @@
+2014-01-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-runModal): Use only last component from filename.
+	* Source/NSSavePanel.m (-filename): Return autoreleased copy of
+	instance variable.
+
 2014-01-05 Niels Grewe <niels.grewe@halbordnung.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	* Source/GSDisplayServer.m:
 	Remove redundant method again.
 
 2014-01-01 Niels Grewe <niels.grewe@halbordnung.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	* Source/GSDisplayServer.m:
 	Add a method to get the window identifier used by the
