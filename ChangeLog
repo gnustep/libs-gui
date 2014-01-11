@@ -1,5 +1,10 @@
 2014-01-10  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSAttributedString.m (-fixFontAttributeInRange:): Don't
+	look for substitutions for control or attachment characters.
+
+2014-01-10  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSavePanel.m (-runModal): Use only last component from filename.
 	* Source/NSSavePanel.m (-filename): Return autoreleased copy of
 	instance variable.

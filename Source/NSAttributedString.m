@@ -1559,6 +1559,7 @@ static NSMutableDictionary *cachedCSets = nil;
   NSUInteger start;
   unichar chars[64];
   CREATE_AUTORELEASE_POOL(pool);
+  NSCharacterSet *controlset = [NSCharacterSet controlCharacterSet];
   
   if (NSMaxRange (range) > [self length])
     {
@@ -1603,14 +1604,15 @@ static NSMutableDictionary *cachedCSets = nil;
           */
           if (nil == font)
             {
-              font = [NSFont userFontOfSize:0.0];
+              font = [NSFont userFontOfSize: 0.0];
             }
 
           charset = [font coveredCharacterSet];
         }
       
       if (charset != nil && ![charset characterIsMember: uchar]
-          && (uchar > 31))
+          && (uchar != NSAttachmentCharacter)
+          && ![controlset characterIsMember: uchar])
         {
           // Find a replacement font
           NSFont *subFont;
