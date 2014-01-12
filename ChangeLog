@@ -1,4 +1,8 @@
-2014-01-10  Fred Kiefer <FredKiefer@gmx.de>
+2014-01-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextAttachment.m: Add keyed coding.
+
+2014-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-fixFontAttributeInRange:): Don't
 	look for substitutions for control or attachment characters.

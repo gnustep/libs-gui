@@ -350,7 +350,11 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // TODO_NIB: Determine keys for NSTextAttachment.
+      [aCoder encodeObject: [self fileWrapper] forKey: @"NSFileWrapper"];
+      if (_cell != nil)
+        {
+          [aCoder encodeObject: _cell forKey: @"NSCell"];
+        }
     }
   else
     {
@@ -363,7 +367,8 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      // TODO_NIB: Determine keys for NSTextAttachment.
+      [self setFileWrapper: [aDecoder decodeObjectForKey: @"NSFileWrapper"]];
+      [self setAttachmentCell: [aDecoder decodeObjectForKey: @"NSCell"]];
     }
   else
     {
