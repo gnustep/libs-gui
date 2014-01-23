@@ -92,9 +92,6 @@
   _selected = nil;
   RELEASE(_items);
   RELEASE(_font);
-  // Reset the _selected attribute to prevent crash when -dealloc calls
-  // -setNextKeyView:
-  _selected = nil;
   [super dealloc];
 }
 
