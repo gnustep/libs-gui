@@ -671,7 +671,7 @@ backgroundColorHint:(NSColor *)bg
 		  
 		  if ([[image name] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
 		    {
-			  NSLog(@"An NSCursor object was encoded with the image "
+			  NSDebugLog(@"An NSCursor object was encoded with the image "
 				@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff. "
 				@"This cursor was automatically substituted with [NSCursor IBeamCursor].");
 			

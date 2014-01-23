@@ -1730,7 +1730,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 						  else if ([[tmp absoluteString] rangeOfString:@"/Xcode.app/"].length > 0
 						    || [[tmp absoluteString] rangeOfString:@"/DVTKit.framework/"].length > 0)
 							{
-							  NSLog (@"WARNING: Decoding image with absolute path %@."
+							  NSDebugLog (@"WARNING: Decoding image with absolute path %@."
 								@" Xcode may have inserted this in your XIB and the"
 								@" image may not be available in the app's resources"
 								, [tmp absoluteString]);

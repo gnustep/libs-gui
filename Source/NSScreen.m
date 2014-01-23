@@ -119,7 +119,6 @@ static NSMutableArray *screenArray = nil;
       [screenArray addObject: screen];
       RELEASE(screen);
     }
-  NSLog(@"NSScreen:screens: %@", screenArray);
 
   return [NSArray arrayWithArray: screenArray];
 }
