@@ -2164,7 +2164,7 @@ chain if we can't handle it. */
     }
   if ([self respondsToSelector: aSelector])
     {
-      [self performSelector: aSelector];
+      [self performSelector: aSelector withObject: nil];
     }
   else
     {
