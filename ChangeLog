@@ -1,5 +1,10 @@
 2014-01-26  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSCell.h
+	* Source/NSCell.m: Add hitTestForEvent:inRect:ofView:.
+
+2014-01-26  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSThemeDrawing.m (-drawTableViewRow:clipRect:inView:):
 	Don't change the value of an edited cell.
 

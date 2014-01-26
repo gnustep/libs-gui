@@ -1780,6 +1780,53 @@ static NSColor *dtxtCol;
   return NO; // Otherwise return NO
 }
 
+- (NSUInteger) hitTestForEvent: (NSEvent*)event
+                       inRect: (NSRect)cellFrame
+                       ofView: (NSView*)controlView
+{
+  if (_cell.type == NSImageCellType)
+    {
+      if ((_cell_image != nil) && 
+          NSMouseInRect([controlView convertPoint: [event locationInWindow]
+                                         fromView: nil],
+                        [self imageRectForBounds: [controlView bounds]],
+                        [controlView isFlipped]))
+        {
+          return NSCellHitContentArea;
+        }
+      else
+        {
+          return NSCellHitNone;
+        }
+    }
+  else if (_cell.type == NSTextCellType)
+    {
+      if (_contents == nil)
+        {
+          return NSCellHitNone;
+        }
+      else if (_cell.is_disabled == NO)
+        {
+          return NSCellHitContentArea | NSCellHitEditableTextArea;
+        }
+      else
+        {
+          return NSCellHitContentArea;
+        }
+    }
+  else
+    {
+      if (_cell.is_disabled == NO)
+        {
+          return NSCellHitContentArea | NSCellHitTrackableArea;
+        }
+      else
+        {
+          return NSCellHitContentArea;
+        }
+    }
+}
+
 /** <p>TODO</p>
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView*)controlView
