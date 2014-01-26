@@ -3135,14 +3135,19 @@ typedef enum {
       const BOOL cellSelected = (rowSelected || columnSelected);
       tb = [tableColumns objectAtIndex: i];
       cell = [tb dataCellForRow: rowIndex];
-      if (i == editedColumn && rowIndex == editedRow)
-	[cell _setInEditing: YES];
       [tableView _willDisplayCell: cell
 		 forTableColumn: tb
 		 row: rowIndex];
-      [cell setObjectValue: [dataSource tableView: tableView
-					objectValueForTableColumn: tb
-					row: rowIndex]]; 
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: YES];
+        }
+      else
+        {
+          [cell setObjectValue: [dataSource tableView: tableView
+                                            objectValueForTableColumn: tb
+                                                  row: rowIndex]];
+        }
       drawingRect = [tableView frameOfCellAtColumn: i
 			       row: rowIndex];
 

@@ -1,7 +1,12 @@
+2014-01-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSThemeDrawing.m (-drawTableViewRow:clipRect:inView:):
+	Don't change the value of an edited cell.
+
 2014-01-26  Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
 
 	* Source/NSFontPanel.m
-	* Some int -> NSInteger and float -> CGFloat transitions
+	Some int -> NSInteger and float -> CGFloat transitions
 
 2014-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
