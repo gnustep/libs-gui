@@ -1,3 +1,8 @@
+2014-01-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSAlert.h,
+	* Headers/AppKit/NSWindow.h: Remove usage of GNUSTEP define.
+
 2014-01-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSCell.h
