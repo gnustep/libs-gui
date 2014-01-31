@@ -136,6 +136,7 @@
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapper.h>
 #import <AppKit/NSFontDescriptor.h>
+#import <AppKit/NSGlyphGenerator.h>
 #import <AppKit/NSGradient.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSHelpManager.h>
@@ -180,8 +181,11 @@
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextTable.h>
 #import <AppKit/NSTextView.h>
+#import <AppKit/NSTokenField.h>
+#import <AppKit/NSTokenFieldCell.h>
 #import <AppKit/NSToolbar.h>
 #import <AppKit/NSToolbarItem.h>
+#import <AppKit/NSToolbarItemGroup.h>
 #import <AppKit/NSTrackingArea.h>
 #import <AppKit/NSTreeController.h>
 #import <AppKit/NSTreeNode.h>
