@@ -1,3 +1,7 @@
+2014-02-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-insertText:): Ignore nil argument.
+
 2014-02-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindowController.m (-setWindow:): Clear the window

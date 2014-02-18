@@ -2190,6 +2190,11 @@ This method is for user changes; see NSTextView_actions.m.
       return;
     }
 
+  if (insertString == nil)
+    {
+      return;
+    }
+
   isAttributed = [insertString isKindOfClass: [NSAttributedString class]];
 
   if (isAttributed)
