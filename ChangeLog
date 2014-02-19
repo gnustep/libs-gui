@@ -1,3 +1,8 @@
+2013-02-18  Frank Le Grand <frank.legrand@testplant.com>
+
+	* Source\NSCollectionView.m: Fixed a potential "index out
+	of bounds" exception.
+
 2013-10-21  Frank Le Grand <frank.legrand@testplant.com>
 
 	* Source\NSCursor.m: Added class method "resetStack" 

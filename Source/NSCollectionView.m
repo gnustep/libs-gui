@@ -158,9 +158,12 @@ static NSString *placeholderItem = nil;
     {
       // Calling itemAtIndex: will eventually instantiate the collection view item,
       // if it hasn't been done already.
-      NSCollectionViewItem *collectionItem = [self itemAtIndex: index];
-      NSView *view = [collectionItem view];
-      [view setFrame: [self frameForItemAtIndex: index]];
+	  if (index < [_items count])
+	    {
+          NSCollectionViewItem *collectionItem = [self itemAtIndex: index];
+          NSView *view = [collectionItem view];
+          [view setFrame: [self frameForItemAtIndex: index]];
+	    }
     }
 }
 
