@@ -2174,7 +2174,18 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
   if (_maximumSize.height > 0 && frameRect.size.height > _maximumSize.height)
     {
-      frameRect.size.height = _maximumSize.height;
+      NSInterfaceStyle style = 
+	NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+
+      if (style != NSWindows95InterfaceStyle)
+	{
+	  frameRect.size.height = _maximumSize.height;
+	}
+      else
+	{
+	  float menuHeight = [[GSTheme theme] menuHeightForWindow:self];
+	  frameRect.size.height = _maximumSize.height + menuHeight;
+	}
     }
   if (frameRect.size.width < _minimumSize.width)
     {

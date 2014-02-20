@@ -1,3 +1,9 @@
+2014-02-20 18:48-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWindow.m: (-setFrame:): Correct window resize when
+	in window menus are used and size constraints on the window don't
+	allow it to accommodate the menu.
+
 2014-02-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-insertText:): Ignore nil argument.
