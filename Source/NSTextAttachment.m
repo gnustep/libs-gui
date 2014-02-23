@@ -49,15 +49,16 @@
 
 - (void)drawWithFrame: (NSRect)cellFrame 
 	       inView: (NSView *)controlView 
-       characterIndex: (unsigned)charIndex
+       characterIndex: (NSUInteger)charIndex
 {
+  //  cellFrame.origin.y -= cellFrame.size.height;
   [self drawWithFrame: cellFrame 
 	inView: controlView];
 }
 
 - (void)drawWithFrame: (NSRect)cellFrame 
 	       inView: (NSView *)controlView 
-       characterIndex: (unsigned)charIndex
+       characterIndex: (NSUInteger)charIndex
 	layoutManager: (NSLayoutManager *)layoutManager
 {
   [self drawWithFrame: cellFrame 
@@ -73,7 +74,7 @@
 - (NSRect)cellFrameForTextContainer: (NSTextContainer *)textContainer 
 	       proposedLineFragment: (NSRect)lineFrag
 		      glyphPosition: (NSPoint)position 
-		     characterIndex: (unsigned)charIndex
+		     characterIndex: (NSUInteger)charIndex
 {
   NSRect aRect;
   
@@ -90,7 +91,7 @@
 - (BOOL)wantsToTrackMouseForEvent: (NSEvent *)theEvent 
 			   inRect: (NSRect)cellFrame 
 			   ofView: (NSView *)controlView
-		 atCharacterIndex: (unsigned)charIndex
+		 atCharacterIndex: (NSUInteger)charIndex
 {
   return [self wantsToTrackMouse];
 }
@@ -154,7 +155,7 @@
 - (BOOL)trackMouse: (NSEvent *)theEvent 
 	    inRect: (NSRect)cellFrame 
 	    ofView: (NSView *)controlView
-  atCharacterIndex: (unsigned)charIndex 
+  atCharacterIndex: (NSUInteger)charIndex 
       untilMouseUp: (BOOL)flag
 {
   if ([controlView respondsToSelector: @selector(delegate)])
@@ -235,27 +236,8 @@
 
 - (void)setAttachment: (NSTextAttachment *)anObject
 {
-  NSFileWrapper *fileWrap = [anObject fileWrapper];
-
   // Do not retain the attachment
   _attachment = anObject;
-
-  if (fileWrap != nil)
-    {
-      NSImage *icon = nil;
-      NSString *fileName = [fileWrap filename];
-
-      if (fileName != nil)
-        {
-	  // Try to set the image to the file wrapper content
-	  icon = [[NSImage alloc] initByReferencingFile: fileName];
-        }
-      if (icon == nil)
-	icon = RETAIN([fileWrap icon]);
-
-      [self setImage: icon];
-      RELEASE(icon);
-    }
 }
 
 - (NSTextAttachment *)attachment
@@ -307,9 +289,8 @@
   self = [super init];
   if (self != nil)
     {
-      ASSIGN(_fileWrapper, fileWrapper);
       _cell = [[NSTextAttachmentCell alloc ] init];
-      [_cell setAttachment: self];
+      [self setFileWrapper: fileWrapper];
     }
   return self;
 }
@@ -321,6 +302,25 @@
   if ([_cell respondsToSelector: @selector(setAttachment:)] == YES)
     {
       [_cell setAttachment: self];
+    }
+  if (_taflags.cell_explicitly_set == 0)
+    {
+      if (fileWrapper != nil)
+        {
+          NSImage *icon = nil;
+          NSString *fileName = [fileWrapper filename];
+          
+          if (fileName != nil)
+            {
+              // Try to set the image to the file wrapper content
+              icon = [[NSImage alloc] initByReferencingFile: fileName];
+            }
+          if (icon == nil)
+            icon = RETAIN([fileWrapper icon]);
+          
+          [(NSTextAttachmentCell*)_cell setImage: icon];
+          RELEASE(icon);
+        }
     }
 }
 
@@ -337,6 +337,7 @@
 - (void)setAttachmentCell: (id <NSTextAttachmentCell>)cell
 {
   ASSIGN(_cell, cell);
+  _taflags.cell_explicitly_set = 1;
   if ([_cell respondsToSelector: @selector(setAttachment:)] == YES)
     {
       [_cell setAttachment: self];

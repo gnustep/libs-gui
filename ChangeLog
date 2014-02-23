@@ -1,3 +1,11 @@
+2014-02-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextAttachment.h
+	* Source/NSTextAttachment.m: Use NSUInteger and bring closer to
+	the Apple implementation.
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): For
+	attachments use the cell origin y flipped.
+
 2014-02-20 18:48-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: (-setFrame:): Correct window resize when

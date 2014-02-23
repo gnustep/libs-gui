@@ -968,7 +968,7 @@ restart: ;
 
 	    g->size = r.size;
 	    g->pos.x = p.x + r.origin.x;
-	    g->pos.y = p.y + r.origin.y;
+	    g->pos.y = p.y - r.origin.y;
 
 	    p.x = g->pos.x + g->size.width;
 
