@@ -6070,10 +6070,13 @@ configuation! */
   if ([_delegate respondsToSelector:
       @selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)])
     {
+      // Passing in last used word(s) list array causes various problems - use nil for now...
+      // FIXME: The completions array should be some default dictionary words based on the
+      //        partial word range...
       return [_delegate textView: self
-		     completions: [[GSAutocompleteWindow defaultWindow] words]
-     	     forPartialWordRange: range
-	     indexOfSelectedItem: index];
+                     completions: nil
+             forPartialWordRange: range
+             indexOfSelectedItem: index];
     }
 
   return nil;
