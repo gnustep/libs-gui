@@ -176,16 +176,19 @@ static GSAutocompleteWindow *gsWindow = nil;
   while ((word = [enumerator nextObject]))
     {
       if ([word length] > widest)
-	{
-	  widest = [word length];
-	  widestWord = word;
-	}
+        {
+          widest = [word length];
+          widestWord = word;
+        }
     }
-
+  
+  // String size caching could cache one of our strings with the wrong sizing
+  widestWord = [NSString stringWithFormat:@"%@#",widestWord];
+  
   // Width
   cell = [[_tableView tableColumnWithIdentifier: @"content"] dataCell];
-  windowWidth = 1.1*[cell _sizeText: widestWord].width
-    + [NSScroller scrollerWidth] + 2*bsize.width;
+  windowWidth  = ([cell _sizeText: widestWord].width + [NSScroller scrollerWidth] + 2*bsize.width);
+  //  windowWidth *= 1.1;
 
   //Height
   windowHeight = 2*bsize.height + [_tableView rowHeight]*num
