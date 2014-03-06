@@ -109,7 +109,8 @@ typedef enum _NSTableViewColumnAutoresizingStyle
   NSString          *_autosaveName;
   BOOL              _verticalMotionDrag;
   NSArray           *_sortDescriptors;
-
+  NSTableViewColumnAutoresizingStyle _columnAutoresizingStyle;
+  
   /*
    * Ivars Acting as Control... 
    */

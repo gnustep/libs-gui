@@ -2286,8 +2286,15 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   
   columns = [tableView tableColumns];
   highlightedTableColumn = [tableView highlightedTableColumn];
+#if 0
+  NSLog(@"%s:rect: %@ super: %@ visible: %@ first: %d last: %d", __PRETTY_FUNCTION__,
+        NSStringFromRect(aRect),
+        NSStringFromRect([[tableView superview] frame]),
+        NSStringFromRect([(NSClipView*)[tableView superview] documentVisibleRect]),
+        firstColumnToDraw, lastColumnToDraw);
+#endif
   
-  for (i = firstColumnToDraw; i < lastColumnToDraw; i++)
+  for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
     {
       column = [columns objectAtIndex: i];
       width = [column width];
@@ -2302,48 +2309,36 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         {
           [cell setHighlighted: NO];
         }
+#if 0
+      NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, i, NSStringFromRect(drawingRect));
+#endif
       [cell drawWithFrame: drawingRect
-                           inView: tableHeaderView];
+                   inView: tableHeaderView];
       drawingRect.origin.x += width;
     }
+  
+  // Fill out table header to end if needed...
   if (lastColumnToDraw == [tableView numberOfColumns] - 1)
+  {
+    // This is really here to handle extending the table headers using the
+    // WinUXTheme (or one equivalent to) that writes directly to the MS windows
+    // device contexts...
+    NSRect clipFrame = [(NSClipView*)[tableView superview] documentVisibleRect];
+    CGFloat maxWidth = NSMaxX(clipFrame);
+    if (drawingRect.origin.x < maxWidth)
     {
+      drawingRect.size.width = maxWidth - drawingRect.origin.x;
       column = [columns objectAtIndex: lastColumnToDraw];
-      width = [column width] - 1;
-      drawingRect.size.width = width;
-      cell = [column headerCell];
-      if ((column == highlightedTableColumn)
-          || [tableView isColumnSelected: lastColumnToDraw])
-        {
-          [cell setHighlighted: YES];
-        }
-      else
-        {
-          [cell setHighlighted: NO];
-        }
+      cell = [column headerCell]; //AUTORELEASE([[column headerCell] copy]);
+      //[cell setTitle:@""];
+      [cell setHighlighted: NO];
+#if 0
+      NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, -2, NSStringFromRect(drawingRect));
+#endif
       [cell drawWithFrame: drawingRect
-                           inView: tableHeaderView];
-      drawingRect.origin.x += width;
+                   inView: tableHeaderView];
     }
-  else
-    {
-      column = [columns objectAtIndex: lastColumnToDraw];
-      width = [column width];
-      drawingRect.size.width = width;
-      cell = [column headerCell];
-      if ((column == highlightedTableColumn)
-          || [tableView isColumnSelected: lastColumnToDraw])
-        {
-          [cell setHighlighted: YES];
-        }
-      else
-        {
-          [cell setHighlighted: NO];
-        }
-      [cell drawWithFrame: drawingRect
-                           inView: tableHeaderView];
-      drawingRect.origin.x += width;
-    }
+  }
 }
 
 - (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame

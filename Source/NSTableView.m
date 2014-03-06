@@ -98,9 +98,13 @@ typedef struct _tableViewFlags
   unsigned int emptySelection:1;
   unsigned int multipleSelection:1;
   unsigned int columnSelection:1;
-  unsigned int _unused:26;
+  unsigned int unknown1:1;
+  unsigned int columnAutosave:1;
+  unsigned int _unused:24;
 #else
-  unsigned int _unused:26;
+  unsigned int _unused:24;
+  unsigned int columnAutosave:1;
+  unsigned int unknown1:1;
   unsigned int columnSelection:1;
   unsigned int multipleSelection:1;
   unsigned int emptySelection:1;
@@ -5854,6 +5858,7 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setDrawsGrid: tableViewFlags.drawsGrid];
           [self setAllowsColumnResizing: tableViewFlags.columnResizing];
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
+          [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
         }
  
       // get the table columns...
@@ -5864,6 +5869,29 @@ This method is deprecated, use -columnIndexesInRect:. */
           /* Will initialize -[NSTableColumn tableView], _numberOfColumns and 
              allocate _columnsOrigins */
           [self addTableColumn: col];
+        }
+      
+      if ([aDecoder containsValueForKey: @"NSAutosaveName"])
+      {
+        [self setAutosaveName:[aDecoder decodeObjectForKey: @"NSAutosaveName"]];
+      }
+      
+      if ([aDecoder containsValueForKey: @"NSColumnAutoresizingStyle"])
+        {
+          _columnAutoresizingStyle = [aDecoder decodeIntForKey: @"NSColumnAutoresizingStyle"];
+          if (_columnAutoresizingStyle == NSTableViewUniformColumnAutoresizingStyle)
+            {
+              [self setAutoresizesAllColumnsToFit:YES];
+              [self sizeToFit];
+            }
+          else if (_columnAutoresizingStyle == NSTableViewLastColumnOnlyAutoresizingStyle)
+            {
+              [self sizeLastColumnToFit];
+            }
+          else if (_columnAutoresizingStyle != NSTableViewNoColumnAutoresizing)
+            {
+              NSLog(@"%s:unsupported column autoresizing style: %d", __PRETTY_FUNCTION__, _columnAutoresizingStyle);
+            }
         }
 
       [self tile]; /* Initialize _columnOrigins */
@@ -6241,25 +6269,33 @@ This method is deprecated, use -columnIndexesInRect:. */
 			   _autosaveName];
       config = [defaults objectForKey: tableKey];
       if (config != nil) 
-	{
-	  NSEnumerator *en = [[config allKeys] objectEnumerator];
-	  NSString *colKey;
-	  NSArray *colDesc; 
-	  NSTableColumn *col;
-	  
-	  while ((colKey = [en nextObject]) != nil) 
-	    {
-	      col = [self tableColumnWithIdentifier: colKey];
-	      
-	      if (col != nil)
-		{
-		  colDesc = [config objectForKey: colKey];
-		  [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
-		  [self moveColumn: [self columnWithIdentifier: colKey]
-			toColumn: [[colDesc objectAtIndex: 1] intValue]];
-		}
-	    }
-	}
+        {
+          NSEnumerator *en = [[config allKeys] objectEnumerator];
+          NSString *colKey;
+          NSArray *colDesc; 
+          NSTableColumn *col;
+          
+          while ((colKey = [en nextObject]) != nil) 
+            {
+              col = [self tableColumnWithIdentifier: colKey];
+              
+              if (col != nil)
+          {
+            colDesc = [config objectForKey: colKey];
+            [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
+            [self moveColumn: [self columnWithIdentifier: colKey]
+            toColumn: [[colDesc objectAtIndex: 1] intValue]];
+          }
+            }
+        }
+      if (_columnAutoresizingStyle == NSTableViewUniformColumnAutoresizingStyle)
+        {
+          [self sizeToFit];
+        }
+      else if (_columnAutoresizingStyle == NSTableViewLastColumnOnlyAutoresizingStyle)
+        {
+          [self sizeLastColumnToFit];
+        }
     }
 }
 
@@ -6351,7 +6387,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	}
       _superview_width = visible_width;
     }
-  else
+  else if (_columnAutoresizingStyle == NSTableViewLastColumnOnlyAutoresizingStyle)
     {
       float visible_width = [self convertRect: [_super_view bounds] 
 				  fromView: _super_view].size.width;
