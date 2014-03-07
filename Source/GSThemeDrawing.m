@@ -2329,8 +2329,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       drawingRect.size.width = maxWidth - drawingRect.origin.x;
       column = [columns objectAtIndex: lastColumnToDraw];
-      cell = [column headerCell]; //AUTORELEASE([[column headerCell] copy]);
-      //[cell setTitle:@""];
+      cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell:@""]);
       [cell setHighlighted: NO];
 #if 0
       NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, -2, NSStringFromRect(drawingRect));
