@@ -921,6 +921,7 @@ static CGFloat scrollerWidth;
         {
           headerClipViewOrigin.x = clipViewBounds.origin.x;
           [_headerClipView scrollToPoint: headerClipViewOrigin];
+          [[_headerClipView documentView] setNeedsDisplayInRect:clipViewBounds];
         }
     }
 

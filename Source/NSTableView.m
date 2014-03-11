@@ -4625,13 +4625,12 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSTableViewColumnAutoresizingStyle) columnAutoresizingStyle
 {
-  // FIXME
-  return NSTableViewNoColumnAutoresizing;
+  return _columnAutoresizingStyle;
 }
 
 - (void) setColumnAutoresizingStyle: (NSTableViewColumnAutoresizingStyle)style
 {
-  // FIXME
+  _columnAutoresizingStyle = style;
 }
 
 - (void) sizeLastColumnToFit
