@@ -3899,7 +3899,10 @@ resetCursorRectsForView(NSView *theView)
         switch (type)
           {
             case NSLeftMouseDragged:
-              [_lastLeftMouseDownView mouseDragged: theEvent];
+              if (_lastLeftMouseDownView)
+                [_lastLeftMouseDownView mouseDragged: theEvent];
+              else
+                [self mouseDragged: theEvent];
               break;
             case NSOtherMouseDragged:
               [_lastOtherMouseDownView otherMouseDragged: theEvent];
