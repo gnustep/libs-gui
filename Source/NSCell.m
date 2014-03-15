@@ -2269,7 +2269,7 @@ static NSColor *dtxtCol;
   if (wraps)
     maxSize = NSMakeSize(NSWidth(titleRect), 1e6);
   else
-    maxSize = NSMakeSize(1e6, 1e6);
+    maxSize = titleRect.size;
   [ct setContainerSize: maxSize];
   [ct setWidthTracksTextView: wraps];
   [ct setHeightTracksTextView: NO];
