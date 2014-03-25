@@ -1,3 +1,17 @@
+2014-03-25 03:56-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibElement.h
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h
+	* Headers/Additions/GNUstepGUI/GSXibObjectContainer.h
+	* Headers/Additions/GNUstepGUI/GSXibParser.h
+	* Source/GNUmakefile: Add new files to makefile.
+	* Source/GSXibElement.m: Refactored out of GSXibLoader.m
+	* Source/GSXibLoader.m: Remove some code and move into
+	separate files.
+	* Source/GSXibParser.m: Version 5 XIB support. Initial code.  This
+	currently doesn't work, but it illustrates the direction I am
+	taking with solving this.
+
 2014-02-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextAttachment.h
