@@ -250,6 +250,7 @@ GSNibLoader.m \
 GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
+GSXibObjectContainer.m \
 GSXibParser.m \
 GSHelpAttachment.m 
 
@@ -468,6 +469,7 @@ GSSoundSource.h \
 GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
+GSXibObjectContainer.h \
 GSXibParser.h \
 GSHelpAttachment.h
 

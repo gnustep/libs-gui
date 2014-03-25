@@ -1,3 +1,10 @@
+2014-03-25 04:07-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibObjectContainer.h
+	* Source/GNUmakefile
+	* Source/GSXibLoading.m
+	* Source/GSXibObjectContainer.m: Add object container.
+
 2014-03-25 03:56-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibElement.h

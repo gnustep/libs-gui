@@ -24,12 +24,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#ifndef _GNUstep_H_GSXibObjectContainer
-#define _GNUstep_H_GSXibObjectContainer
+#import "GNUstepGUI/GSXibObjectContainer.h"
 
-#import <Foundation/NSObject.h>
-
-@interface GSXibObjectContainer : NSObject
+@implementation GSXibObjectContainer
 @end
 
-#endif

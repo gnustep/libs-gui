@@ -1,5 +1,6 @@
 #import <Foundation/NSObject.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import "GNUstepGUI/GSXibElement.h"
 
 @interface IBUserDefinedRuntimeAttributesPlaceholder : NSObject <NSCoding>
 {
