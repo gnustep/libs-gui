@@ -1,5 +1,11 @@
 2013-02-18  Frank Le Grand <frank.legrand@testplant.com>
 
+	* Source\NSToolbarItem.m: Fixed a bug where calling setImage:
+	  on a toolbar item would draw the image even if the toolbar
+	  display mode would be set to NSToolbarDisplayModeLabelOnly
+
+2013-02-18  Frank Le Grand <frank.legrand@testplant.com>
+
 	* Source\NSCollectionView.m: Fixed a potential "index out
 	of bounds" exception.
 
