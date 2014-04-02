@@ -1331,7 +1331,13 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   [_image setScalesWhenResized: YES];
   //[_image setSize: NSMakeSize(32, 32)];
 
-  [(GSToolbarButton*)_backView setImage: image];
+  // Do not set the image on the button if we are in "LabelOnly"
+  // mode. If the toolbar's displayMode changes later, we'll
+  // put the image on the button in the layout method.
+  if ([[self toolbar] displayMode] != NSToolbarDisplayModeLabelOnly)
+    {
+      [(GSToolbarButton*)_backView setImage: image];
+    }
 }
 
 - (void) setLabel: (NSString *)label
@@ -1497,6 +1503,15 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) _layout
 {
+  // Reset to image on the backview: We may have toggled
+  // from one NSToolbarDisplayMode to another, and it is
+  // possible setImage: would have been called on the
+  // NSToolbarItem while we were in NSToolbarDisplayModeLabelOnly
+  if ([[self toolbar] displayMode] != NSToolbarDisplayModeLabelOnly)
+    {
+      [(GSToolbarButton*)_backView setImage: _image];
+    }
+
   [(id)_backView layout];
 }
 

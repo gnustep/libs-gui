@@ -1,3 +1,10 @@
+2013-04-02  Frank Le Grand <frank.legrand@testplant.com>
+
+	* Source/NSToolbarItem.m: Fixed a bug where calling setImage:
+	  on a toolbar item would draw the image even if the toolbar
+	  display mode would be set to NSToolbarDisplayModeLabelOnly
+	* Source/GSToolbarCustomizationPalette.m: Turn NSLog into NSDebugLLog.
+
 2014-03-25 04:07-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibObjectContainer.h
