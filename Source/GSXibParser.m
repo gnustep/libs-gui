@@ -84,20 +84,25 @@ didStartElement: (NSString*)elementName
 
   // FIXME: We should use proper memory management here
   AUTORELEASE(element);
-
-  if (key != nil)
+  if ([@"document" isEqualToString: elementName])
     {
-      [currentElement setElement: element forKey: key];
+      currentElement = element;
     }
   else
     {
-      // For Arrays
-      [currentElement addElement: element];
+      if (key != nil)
+	{
+	  [currentElement setElement: element forKey: key];
+	}
+      else
+	{
+	  // For Arrays
+	  [currentElement addElement: element];
+	}
+      currentElement = element;
     }
-  
-  // Maintain the stack...
-  [stack addObject: currentElement];  
-  currentElement = element;
+
+  [stack addObject: currentElement];
 }
 
 - (void) parser: (NSXMLParser*)parser
@@ -105,7 +110,10 @@ didStartElement: (NSString*)elementName
    namespaceURI: (NSString*)namespaceURI
   qualifiedName: (NSString*)qName
 {
-  currentElement = [stack lastObject];
-  [stack removeLastObject];
+  if (![@"document" isEqualToString: elementName])
+    {
+      currentElement = [stack lastObject];
+      [stack removeLastObject];
+    }
 }
 @end

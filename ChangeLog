@@ -1,3 +1,8 @@
+2014-04-03 00:55-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXibParser.m: Add code to parse XML into a tree
+	so that it can be processed into instances.
+
 2013-04-02  Frank Le Grand <frank.legrand@testplant.com>
 
 	* Source/NSToolbarItem.m: Fixed a bug where calling setImage:
