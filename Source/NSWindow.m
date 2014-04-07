@@ -389,7 +389,7 @@ has blocked and waited for events.
 */
 - (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  NSInteger  largest   = -1;
+  NSInteger  largest   = 0;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;
@@ -4856,8 +4856,8 @@ current key view.<br />
   if (screen == nil)
     {
       // If the window doesn't show up on any screen then we need
-      // to move it so it can be seen and assign it to the main
-      // screen...
+      // to move it so it can be seen and assign it to the screen
+      // at {0, 0}...
       screen = [NSScreen mainScreen];
       NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
     }
@@ -4905,6 +4905,14 @@ current key view.<br />
       }
     }
 
+  // Another sanity check...
+  // Check again whether new window frame shows up on ANY screen...
+  if ([self _screenForFrame: fRect] == nil)
+    {
+      // Just center in first screen...
+      fRect = [self _centerFrame: fRect onScreen: [[NSScreen screens] objectAtIndex:0]];
+    }
+  
   // FIXME: Is this check needed?
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure
      we don't change the size. */
