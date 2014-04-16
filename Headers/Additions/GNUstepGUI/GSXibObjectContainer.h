@@ -29,7 +29,13 @@
 
 #import <Foundation/NSObject.h>
 
+@class NSMutableArray;
+
 @interface GSXibObjectContainer : NSObject
+{
+  NSMutableArray *objects;
+  NSMutableArray *connections;
+}
 @end
 
 #endif

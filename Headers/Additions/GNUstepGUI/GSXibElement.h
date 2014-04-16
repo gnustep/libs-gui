@@ -53,6 +53,7 @@
 - (void) setValue: (NSString*)text;
 - (NSString*) attributeForKey: (NSString*)key;
 - (GSXibElement*) elementForKey: (NSString*)key;
+- (NSDictionary *) attributes;
 @end
 
 #endif

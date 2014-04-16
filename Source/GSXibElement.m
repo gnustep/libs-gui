@@ -100,6 +100,11 @@
   return [elements objectForKey: key];
 }
 
+- (NSDictionary *)attributes
+{
+  return attributes;
+}
+
 - (NSString*) description
 {
   return [NSString stringWithFormat: 

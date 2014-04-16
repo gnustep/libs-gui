@@ -34,6 +34,65 @@
 #import "GNUstepGUI/GSXibParser.h"
 #import "GNUstepGUI/GSXibElement.h"
 
+// XIB Object...
+@interface XIBObject : NSObject
+{
+  NSMutableArray *connections;
+}
+- (id) initWithXibElement: (GSXibElement *)element;
+- (id) instantiateObject;
+@end
+
+@implementation XIBObject
+- (id) initWithXibElement: (GSXibElement *)element
+{
+  if ((self = [super init]) != nil)
+    {
+      connections = [[NSMutableArray alloc] initWithCapacity: 10];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  [connections release];
+  [super dealloc];
+}
+
+- (id) instantiateObject
+{
+  return nil;
+}
+
+- (NSArray *) connections
+{
+  return connections;
+}
+@end
+
+@interface XIBAction : XIBObject
+- (void) setSelector: (NSString *)selectorName;
+- (NSString *) selector;
+- (void) setTarget: (NSString *)targetId;
+- (NSString *) target;
+@end
+
+@interface XIBOutlet : XIBObject
+- (void) setProperty: (NSString *)propertyName;
+- (NSString *) property;
+- (void) setDestination: (NSString *)destinationId;
+- (NSString *) destination;
+@end
+
+@interface XIBCustomObject
+- (void) setUserLabel: (NSString *)label;
+- (NSString *) userLabel;
+- (void) setCustomClass: (NSString *)className;
+- (NSString *) customClass;
+@end
+
+
+
 @implementation GSXibParser 
 
 - (id) initWithData: (NSData *)data
@@ -66,6 +125,34 @@
   return objects;
 }
 
+- (NSMutableDictionary *) instantiateObjects
+{
+  return nil;
+}
+
+- (NSString *)classNameFromType: (NSString *)typeName
+{
+  NSString *className = [@"XIB" stringByAppendingString: [typeName capitalizedString]];
+  return className;
+}
+
+- (id) instantiateObjectForElement: (GSXibElement *)element
+{
+  NSString *className = [self classNameFromType: [element type]];
+  id obj = nil;
+
+  if (className != nil)
+    {
+      Class cls = NSClassFromString(className);
+      if (cls != nil)
+	{
+	  obj = [[cls alloc] initWithXibElement:element];
+	}
+    }
+
+  return obj;
+}
+
 - (void) parser: (NSXMLParser*)parser
 foundCharacters: (NSString*)string
 {
@@ -92,6 +179,7 @@ didStartElement: (NSString*)elementName
     {
       if (key != nil)
 	{
+	  // id obj = [self instantiateObjectForElement: element];
 	  [currentElement setElement: element forKey: key];
 	}
       else
@@ -114,6 +202,10 @@ didStartElement: (NSString*)elementName
     {
       currentElement = [stack lastObject];
       [stack removeLastObject];
+    }
+  else
+    {
+      objects = [self instantiateObjects];
     }
 }
 @end
