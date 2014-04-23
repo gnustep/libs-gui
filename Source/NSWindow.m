@@ -389,7 +389,7 @@ has blocked and waited for events.
 */
 - (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  NSInteger  largest   = -1;
+  NSInteger  largest   = 0;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;
@@ -1969,7 +1969,8 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       NSScreen *screen = [NSScreen mainScreen];
       NSRect    sFrame = [screen visibleFrame];
-      topLeftPoint     = sFrame.origin;
+      topLeftPoint.x = NSMinX(sFrame);
+      topLeftPoint.y = NSMaxY(sFrame);
     }
   else if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
