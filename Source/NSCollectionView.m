@@ -518,7 +518,7 @@ static NSString *placeholderItem = nil;
   
   CGFloat width = [self bounds].size.width;
   
-  if (width == _tileWidth)
+  if (ABS(width - _tileWidth) <= 1)
     return;
   
   NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
