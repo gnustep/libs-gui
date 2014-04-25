@@ -517,8 +517,8 @@ static NSString *placeholderItem = nil;
     return;
   
   CGFloat width = [self bounds].size.width;
-  NSLog(@"tile: width = %g, previous width = %g", width, _tileWidth);
-  if (ABS(width - _tileWidth) <= 2)
+  //NSLog(@"tile: width = %g, previous width = %g", width, _tileWidth);
+  if (isnan(width) || ABS(width - _tileWidth) <= 1)
     return;
   
   NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
@@ -587,7 +587,7 @@ static NSString *placeholderItem = nil;
   NSSize currentSize = [self frame].size;
   if (!NSEqualSizes(currentSize, aSize))
     {
-		NSLog(@"resizeSubviews: new size = %g x %g, currentSize = %g x %g", aSize.width, aSize.height, currentSize.width, currentSize.height);
+	  //NSLog(@"resizeSubviews: new size = %g x %g, currentSize = %g x %g", aSize.width, aSize.height, currentSize.width, currentSize.height);
       [self tile];
     }
 }
