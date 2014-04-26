@@ -1386,10 +1386,11 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       return 1.0;
     }
-  else
+  else if (_screen != nil)
     {
       return [_screen userSpaceScaleFactor];
     }
+  return 1.0;
 }
 
 - (NSInteger) gState
