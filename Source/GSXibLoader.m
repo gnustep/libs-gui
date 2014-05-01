@@ -917,7 +917,11 @@
   else
     NSLog(@"%s:first responder missing\n", __PRETTY_FUNCTION__);
 
-  if ([[(NSCustomObject*)[rootObjects objectAtIndex: 2] className] isEqualToString: @"NSApplication"])
+  id        object     = [rootObjects objectAtIndex: 2];
+  NSString *className  = [(NSCustomObject*)object className];
+  Class     theClass   = NSClassFromString(className);
+  BOOL      isAppClass = [theClass isSubclassOfClass:[NSApplication class]];
+  if (isAppClass)
     app = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
   else
     NSLog(@"%s:NSApplication missing\n", __PRETTY_FUNCTION__);
