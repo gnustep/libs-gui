@@ -311,8 +311,10 @@ static BOOL _isInInterfaceBuilder = NO;
           // style & size
           _windowStyle = [window styleMask];
           _backingStoreType = [window backingType];
-          _maxSize = [window maxSize];
-          _minSize = [window minSize];
+          //_maxSize = [window maxSize];
+          //_minSize = [window minSize];
+          _maxSize = [window contentMaxSize];
+          _minSize = [window contentMinSize];
           _windowRect = [window frame];
           _screenRect = [[NSScreen mainScreen] frame];
           
@@ -360,18 +362,37 @@ static BOOL _isInInterfaceBuilder = NO;
           unsigned long flags = [coder decodeIntForKey: @"NSWTFlags"];
           memcpy((void *)&_flags,(void *)&flags,sizeof(struct _GSWindowTemplateFlags));
         }
-      if ([coder containsValueForKey: @"NSMinSize"])
+
+      if ([coder containsValueForKey: @"NSWindowContentMinSize"])
         {
-          _minSize = [coder decodeSizeForKey: @"NSMinSize"];
+          _minSize = [coder decodeSizeForKey: @"NSWindowContentMinSize"];
         }
-      if ([coder containsValueForKey: @"NSMaxSize"])
+      else if ([coder containsValueForKey: @"NSMinSize"])
         {
-          _maxSize = [coder decodeSizeForKey: @"NSMaxSize"];
+          NSRect rect = NSZeroRect;
+          rect.size = [coder decodeSizeForKey: @"NSMinSize"];
+          rect = [NSWindow contentRectForFrameRect: rect
+                                         styleMask: _windowStyle];
+          _minSize = rect.size;
+        }
+
+      if ([coder containsValueForKey: @"NSWindowContentMaxSize"])
+        {
+          _maxSize = [coder decodeSizeForKey: @"NSWindowContentMaxSize"];
+        }
+      else if ([coder containsValueForKey: @"NSMaxSize"])
+        {
+          NSRect rect = NSZeroRect;
+          rect.size = [coder decodeSizeForKey: @"NSMaxSize"];
+          rect = [NSWindow contentRectForFrameRect: rect
+                                         styleMask: _windowStyle];
+          _maxSize = rect.size;
         }
       else
         {
           _maxSize = NSMakeSize (10e4, 10e4);
         }
+
       if ([coder containsValueForKey: @"NSWindowRect"])
         {
           _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
@@ -412,8 +433,8 @@ static BOOL _isInInterfaceBuilder = NO;
       [aCoder encodeInt: _backingStoreType forKey: @"NSWindowBacking"];
       [aCoder encodeObject: _view forKey: @"NSWindowView"];
       [aCoder encodeInt: flags forKey: @"NSWTFlags"];
-      [aCoder encodeSize: _minSize forKey: @"NSMinSize"];
-      [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
+      [aCoder encodeSize: _minSize forKey: @"NSWindowContentMinSize"];
+      [aCoder encodeSize: _maxSize forKey: @"NSWindowContentMaxSize"];
       [aCoder encodeRect: rect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
@@ -465,8 +486,8 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // reset attributes...
       [_realObject setContentView: _view];
-      [_realObject setMinSize: _minSize];
-      [_realObject setMaxSize: _maxSize];
+      //[_realObject setMinSize: _minSize];
+      //[_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
 
       if ([_viewClass isKindOfClass: [NSToolbar class]])
@@ -474,6 +495,9 @@ static BOOL _isInInterfaceBuilder = NO;
           // FIXME: No idea what is going on here
 	  [_realObject setToolbar: (NSToolbar*)_viewClass];
 	}
+
+      [_realObject setContentMinSize: _minSize];
+      [_realObject setContentMaxSize: _maxSize];
 	  
       [_view _fixSubviews];
 

@@ -682,7 +682,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (self == [NSWindow class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       ccSel = @selector(_checkCursorRectangles:forEvent:);
       ctSel = @selector(_checkTrackingRectangles:forEvent:);
       ccImp = [self instanceMethodForSelector: ccSel];
@@ -2174,18 +2174,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
   if (_maximumSize.height > 0 && frameRect.size.height > _maximumSize.height)
     {
-      NSInterfaceStyle style = 
-	NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-
-      if (style != NSWindows95InterfaceStyle)
-	{
-	  frameRect.size.height = _maximumSize.height;
-	}
-      else
-	{
-	  float menuHeight = [[GSTheme theme] menuHeightForWindow:self];
-	  frameRect.size.height = _maximumSize.height + menuHeight;
-	}
+      frameRect.size.height = _maximumSize.height;
     }
   if (frameRect.size.width < _minimumSize.width)
     {
@@ -5437,8 +5426,10 @@ current key view.<br />
   [aCoder encodeObject: _miniaturizedTitle];
   [aCoder encodeObject: _windowTitle];
 
-  [aCoder encodeSize: _minimumSize];
-  [aCoder encodeSize: _maximumSize];
+  //  [aCoder encodeSize: _minimumSize];
+  //  [aCoder encodeSize: _maximumSize];
+  [aCoder encodeSize: [self contentMinSize]];
+  [aCoder encodeSize: [self contentMaxSize]];
 
   [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_windowLevel];
 
@@ -5491,6 +5482,7 @@ current key view.<br />
       NSBackingStoreType aBacking;
       NSInteger level;
       id obj;
+      int version = [aDecoder versionForClassName: @"NSWindow"];
 
       aRect = [aDecoder decodeRect];
       [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
@@ -5517,10 +5509,20 @@ current key view.<br />
       obj = [aDecoder decodeObject];
       [self setTitle: obj];
 
-      aSize = [aDecoder decodeSize];
-      [self setMinSize: aSize];
-      aSize = [aDecoder decodeSize];
-      [self setMaxSize: aSize];
+      if (version < 3)
+        {
+          aSize = [aDecoder decodeSize];
+          [self setMinSize: aSize];
+          aSize = [aDecoder decodeSize];
+          [self setMaxSize: aSize];
+        }
+      else
+        {
+          aSize = [aDecoder decodeSize];
+          [self setContentMinSize: aSize];
+          aSize = [aDecoder decodeSize];
+          [self setContentMaxSize: aSize];
+        }
 
       [aDecoder decodeValueOfObjCType: @encode(NSInteger)
                                    at: &level];
