@@ -573,9 +573,8 @@ static Class textFieldCellClass;
 
       if (newString != nil)
         {
-          NSLog (@"Unimplemented: should set string to %@", newString);
-          // FIXME ! This would reset editing !
-          //[_text_object setString: newString];
+          // This resets editing with insertion point after the string, which is what Cocoa does
+          [_text_object setString: newString];
         }
       else
         {

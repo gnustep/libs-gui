@@ -1,9 +1,23 @@
 2014-05-03  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSWindow.m: (-setFrame:): Revert last change.
-	* Source/NSWindow.m: (-encodeWithCoder:, -initWithCoder:): Use
+	* Source/GSXibLoader.m (-awake:inContainer:withContext:): Allow
+	for subclasses of NSApplication as rootObjects.
+	Based on patch by Marcian Lytwyn <gna@advcsi.com>.
+	* Source/NSWindow.m (-userSpaceScaleFactor): Handle case where
+	_screen is nil.
+	Patch by Doug Simons (dsimons@testplant.com).
+	* Source/NSWindow.m (-_screenForFrame:): Require real overlapp.
+	Patch by Doug Simons (dsimons@testplant.com).
+	* Source/NSTextField.m (-textDidChange:): Improve editing behavior
+	when formatter returns a new string.
+	Patch by Doug Simons (dsimons@testplant.com).
+
+2014-05-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-setFrame:): Revert last change.
+	* Source/NSWindow.m (-encodeWithCoder:, -initWithCoder:): Use
 	content min/max size instead of min/max size.
-	* Source/NSWindow.m: (+initialize): Increase version number to 3.
+	* Source/NSWindow.m (+initialize): Increase version number to 3.
 	* Source/GSNibLoading.m (NSWindowTemplate -encodeWithCoder:,
 	-initWithCoder:): Use NSWindowContentMinSize/NSWindowContentMaxSize
 	instead of NSMinSize/NSMaxSize.

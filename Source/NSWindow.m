@@ -389,7 +389,7 @@ has blocked and waited for events.
 */
 - (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  NSInteger  largest   = -1;
+  CGFloat    largest   = 0.0;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;
@@ -399,7 +399,8 @@ has blocked and waited for events.
       NSScreen  *screen = [screens objectAtIndex: index];
       NSRect     sframe = [screen frame];
       NSRect     iframe = NSIntersectionRect(frame, sframe);
-      NSInteger  isize  = NSWidth(iframe) * NSHeight(iframe);
+      CGFloat    isize  = NSWidth(iframe) * NSHeight(iframe);
+
       if (isize > largest)
         {
           largest   = isize;
@@ -1386,9 +1387,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       return 1.0;
     }
+  else if (_screen != nil)
+     {
+       return [_screen userSpaceScaleFactor];
+     }
   else
     {
-      return [_screen userSpaceScaleFactor];
+      return 1.0;
     }
 }
 
@@ -2117,7 +2122,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   difference = NSMaxY (screenRect) - NSMaxY (frameRect);
   if (_styleMask & NSResizableWindowMask)
     {
-      float difference2;
+      CGFloat difference2;
       
       difference2 = screenRect.origin.y - frameRect.origin.y;
       difference2 -= difference; 

@@ -865,20 +865,35 @@
   id owner = [context objectForKey: NSNibOwner];
   id first = nil;
   id app   = nil;
-  
-  // Get the file's owner and NSApplication object references...
-  if ([[(NSCustomObject*)[rootObjects objectAtIndex: 1] className] isEqualToString: @"FirstResponder"])
-    first = [(NSCustomObject*)[rootObjects objectAtIndex: 1] realObject];
-  else
-    NSLog(@"%s:first responder missing\n", __PRETTY_FUNCTION__);
+  NSCustomObject *object;
+  NSString *className;
 
-  if ([[(NSCustomObject*)[rootObjects objectAtIndex: 2] className] isEqualToString: @"NSApplication"])
-    app = [(NSCustomObject*)[rootObjects objectAtIndex: 2] realObject];
+  // Get the file's owner and NSApplication object references...
+  object = (NSCustomObject*)[rootObjects objectAtIndex: 1];
+  if ([[object className] isEqualToString: @"FirstResponder"])
+    {
+      first = [object realObject];
+    }
   else
-    NSLog(@"%s:NSApplication missing\n", __PRETTY_FUNCTION__);
+    {
+      NSLog(@"%s:first responder missing\n", __PRETTY_FUNCTION__);
+    }
+
+  object = (NSCustomObject*)[rootObjects objectAtIndex: 2];
+  className = [object className];
+  if ([className isEqualToString: @"NSApplication"] ||
+      [NSClassFromString(className) isSubclassOfClass:[NSApplication class]])
+    {
+      app = [object realObject];
+    }
+  else
+    {
+      NSLog(@"%s:NSApplication missing\n", __PRETTY_FUNCTION__);
+    }
 
   // Use the owner as first root object
   [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
+
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
