@@ -1,3 +1,7 @@
+2014-05-04  Ivan Vucica <ivan@vucica.net>
+
+	* Tests/GNUmakefile: Don't fail if 'gnustep-tests --clean' fails.
+
 2014-05-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m (-awake:inContainer:withContext:): Allow

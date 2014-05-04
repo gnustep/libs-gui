@@ -49,6 +49,6 @@ check::
 	gnustep-tests gui
 
 clean::
-	gnustep-tests --clean
+	-gnustep-tests --clean
 
 include $(GNUSTEP_MAKEFILES)/rules.make
