@@ -1,6 +1,10 @@
 2014-05-04  Ivan Vucica <ivan@vucica.net>
 
 	* Tests/GNUmakefile: Don't fail if 'gnustep-tests --clean' fails.
+	* gnustep-gui-spec.in: Added fields Packager, Vendor and URL into
+	the specfile.
+	* GNUmakefile: Included Master/deb.make to be able to build deb
+	packages for gnustep-gui.
 
 2014-05-03  Fred Kiefer <FredKiefer@gmx.de>
 
