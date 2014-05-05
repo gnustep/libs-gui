@@ -166,6 +166,7 @@ static GSWindowAnimationDelegate *animationDelegate;
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
 - (NSScreen *) _screenForFrame: (NSRect)frame;
+- (NSScreen*) _screen;
 @end
 
 @implementation NSWindow (GNUstepPrivate)
@@ -410,6 +411,16 @@ has blocked and waited for events.
               NSStringFromRect(frame), theScreen, (long)largest);
 
   return theScreen;
+}
+
+- (NSScreen*) _screen
+{
+  // Internal support method to allow 'screen' method to adhere to Cocoa behavior
+  // i.e. screen CAN return nil if no part of window shows up on screen
+  NSScreen *screen = [self screen];
+  if (screen == nil)
+    screen = [NSScreen mainScreen];
+  return screen;
 }
 
 @end
@@ -1372,7 +1383,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSDictionary*) deviceDescription
 {
-  return [[self screen] deviceDescription];
+  return [[self _screen] deviceDescription];
 }
 
 - (NSGraphicsContext*) graphicsContext
@@ -1382,15 +1393,14 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (CGFloat) userSpaceScaleFactor
 {
-  if (_styleMask & NSUnscaledWindowMask)
+  if ((_styleMask & NSUnscaledWindowMask) || (_screen == nil))
     {
       return 1.0;
     }
-  else if (_screen != nil)
+  else
     {
       return [_screen userSpaceScaleFactor];
     }
-  return 1.0;
 }
 
 - (NSInteger) gState
@@ -1802,7 +1812,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
           && _f.visible == NO)
         {
           NSRect nframe = [self constrainFrameRect: _frame
-                                toScreen: [self screen]];
+                                          toScreen: [self _screen]];
           [self setFrame: nframe display: NO];
         }
       // create deferred window
@@ -2211,7 +2221,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
      titled windows are constrained */
   if (_styleMask & NSTitledWindowMask)
     {
-      frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
+      frameRect = [self constrainFrameRect: frameRect toScreen: [self _screen]];
     }
         
   // If nothing changes, don't send it to the backend and don't redisplay 
@@ -4989,10 +4999,7 @@ current key view.<br />
     }
   
   // If window doesn't show up on any screen then just include main screen frame...
-  NSScreen *myScreen = [self screen];
-  if (myScreen == nil)
-    myScreen = [NSScreen mainScreen];
-
+  NSScreen *myScreen = [self _screen];
   /*
    * The screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
@@ -5053,7 +5060,7 @@ current key view.<br />
  */
 - (BOOL) isZoomed
 {
-  NSRect maxRect = [[self screen] visibleFrame];
+  NSRect maxRect = [[self _screen] visibleFrame];
 
   if ([_delegate respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
     {
@@ -5092,7 +5099,7 @@ current key view.<br />
 */
 - (void) zoom: (id)sender
 {
-  NSRect maxRect = [[self screen] visibleFrame];
+  NSRect maxRect = [[self _screen] visibleFrame];
 
   if ([_delegate respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
     {
@@ -5103,7 +5110,7 @@ current key view.<br />
       maxRect = [self windowWillUseStandardFrame: self defaultFrame: maxRect];
     }
 
-  maxRect = [self constrainFrameRect: maxRect toScreen: [self screen]];
+  maxRect = [self constrainFrameRect: maxRect toScreen: [self _screen]];
 
   // Compare the new frame with the current one
   if ((abs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST)

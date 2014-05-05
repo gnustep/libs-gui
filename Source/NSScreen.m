@@ -132,7 +132,7 @@ static NSMutableArray *screenArray = nil;
   NSWindow *keyWindow;
 
   keyWindow = [NSApp keyWindow];
-  if (keyWindow != nil)
+  if ((keyWindow != nil) && ([keyWindow screen] != nil))
     {
       return [keyWindow screen];
     }
