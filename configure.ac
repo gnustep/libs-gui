@@ -418,7 +418,16 @@ fi
 #--------------------------------------------------------------------
 # Check for ICNS library.
 #--------------------------------------------------------------------
-AC_CHECK_LIB(icns, icns_read_family_from_file)
+HAVE_LIBICNS=0
+AC_ARG_ENABLE(icns,
+  [  --disable-icns             Disable ICNS library],,
+  enable_icns=yes)
+if test x$enable_icns = x"yes"; then
+  AC_CHECK_LIB(icns, icns_read_family_from_file)
+else
+  AC_MSG_CHECKING(icns)
+  AC_MSG_RESULT(disabled)
+fi
 
 #--------------------------------------------------------------------
 # NSSound
