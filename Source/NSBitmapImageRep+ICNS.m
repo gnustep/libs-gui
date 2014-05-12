@@ -41,7 +41,7 @@
 
 #define ICNS_HEADER "icns"
 
-#if 0 //HAVE_LIBICNS
+#if HAVE_LIBICNS
 
 #include <icns.h>
 
