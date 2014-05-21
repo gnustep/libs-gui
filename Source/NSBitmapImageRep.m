@@ -2,7 +2,7 @@
 
    <abstract>Bitmap image representation.</abstract>
 
-   Copyright (C) 1996, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1996-2014 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
@@ -1498,9 +1498,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info.compression = [NSBitmapImageRep _localFromCompressionType: type];
   if (factor < 0)
     factor = 0;
-  if (factor > 255)
-    factor = 255;
-  info.quality = (1 - ((float)factor)/255.0) * 100;
+  if (factor > 1)
+    factor = 1;
+  info.quality = factor * 100;
   info.numImages = 1;
   info.error = 0;
 
@@ -1685,8 +1685,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 /** Returns the receivers compression and compression factor, which is
     set either when the image is read in or by -setCompression:factor:.
     Factor is ignored in many compression schemes. For JPEG compression,
-    factor can be any value from 0 to 255, with 255 being the maximum
-    compression.  */
+    factor can be any value from 0 to 1, with 1 being the maximum
+    quality.  */
 - (void) getCompression: (NSTIFFCompression*)compression
 		 factor: (float*)factor
 {
@@ -1712,7 +1712,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     <term> NSImageCompressionMethod </term>
     <desc> NSNumber; automatically set when reading TIFF data; writing TIFF data </desc>
     <term> NSImageCompressionFactor </term>
-    <desc> NSNumber 0.0 to 255.0; writing JPEG data 
+    <desc> NSNumber 0.0 to 1.0; writing JPEG data 
     (GNUstep extension: JPEG-compressed TIFFs too) </desc>
     <term> NSImageProgressive </term>
     <desc> NSNumber boolean; automatically set when reading JPEG data; writing JPEG data.
@@ -1911,7 +1911,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
         bytesPerRow: 0
         bitsPerPixel: 0];
   _compression = [NSBitmapImageRep _compressionTypeFromLocal: info->compression];
-  _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
+  _comp_factor = (((float)info->quality)/100.0);
 
   // Note that Cocoa does not do this, even though the docs say it should
   [_properties setObject: [NSNumber numberWithUnsignedShort: _compression]

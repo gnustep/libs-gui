@@ -1,3 +1,9 @@
+2014-05-21 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m
+	* Source/NSBitmapImageRep.m
+	Transform 0..255 compression factor to 0..1 quality to match Cocoa specs.
+
 2014-05-04  Ivan Vucica <ivan@vucica.net>
 
 	* Tests/GNUmakefile: Don't fail if 'gnustep-tests --clean' fails.
