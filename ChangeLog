@@ -1,3 +1,8 @@
+2014-05-30 Sebastian Reitenbach <sebastia@l00-bugdedad-prods.de>
+	* Headers/AppKit/NSStatusItem.h
+	* Source/NSStatusItem.m
+	make return value of -sendActionOn: match apple documentation
+
 2014-05-21 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m

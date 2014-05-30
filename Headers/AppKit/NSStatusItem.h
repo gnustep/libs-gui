@@ -65,7 +65,7 @@
 - (CGFloat) length;
 - (NSMenu*) menu;
 - (void) popUpStatusItemMenu: (NSMenu*)menu;
-- (void) sendActionOn: (NSInteger)mask;
+- (NSInteger) sendActionOn: (NSInteger)mask;
 - (void) setAction: (SEL)action;
 - (void) setAttributedTitle: (NSAttributedString*)title;
 - (void) setDoubleAction: (SEL)sel;

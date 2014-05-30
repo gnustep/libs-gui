@@ -114,9 +114,10 @@
   // NIMP
 }
 
-- (void) sendActionOn: (NSInteger)mask
+- (NSInteger) sendActionOn: (NSInteger)mask
 {
   //NIMP
+  return 0;
 }
 
 - (void) setAction: (SEL)action
