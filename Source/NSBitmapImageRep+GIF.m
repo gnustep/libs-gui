@@ -56,7 +56,12 @@ objective-c headers.
 #define FALSE       0
 #endif /* FALSE */
 
-// GIF 5.1
+// GIF > 5.0
+#if GIFLIB_MAJOR >= 5
+  #define DGifOpen(s, i) DGifOpen(s, i, NULL)
+#endif
+
+// GIF> 5.1
 #if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
   #define DGifCloseFile(f) DGifCloseFile(f, NULL)
 #endif
@@ -153,11 +158,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
     }
 
   gs_gif_init_input_source(&src, imageData);
-#if GIFLIB_MAJOR >= 5
-  file = DGifOpen(&src, gs_gif_input, NULL);
-#else
   file = DGifOpen(&src, gs_gif_input);
-#endif
   if (file == NULL)
     {
       /* we do not use giferror here because it doesn't
@@ -231,11 +232,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 
   /* open the image */
   gs_gif_init_input_source(&src, imageData);
-#if GIFLIB_MAJOR >= 5
-  file = DGifOpen(&src, gs_gif_input, NULL);
-#else
   file = DGifOpen(&src, gs_gif_input);
-#endif
   if (file == NULL)
     {
       /* we do not use giferror here because it doesn't
