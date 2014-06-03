@@ -1,3 +1,8 @@
+2014-06-03 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+GIF.m
+	Add giflib 5.1 compatibility through macro.
+
 2014-05-30 Sebastian Reitenbach <sebastia@l00-bugdedad-prods.de>
 	* Headers/AppKit/NSStatusItem.h
 	* Source/NSStatusItem.m

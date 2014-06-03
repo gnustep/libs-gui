@@ -2,7 +2,7 @@
 
    Methods for reading GIF images
 
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003-2014 Free Software Foundation, Inc.
    
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
@@ -55,6 +55,11 @@ objective-c headers.
 #ifndef FALSE
 #define FALSE       0
 #endif /* FALSE */
+
+// GIF 5.1
+#if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
+  #define DGifCloseFile(f) DGifCloseFile(f, NULL)
+#endif
 
 /* -----------------------------------------------------------
    The following types and functions are for interacting with
