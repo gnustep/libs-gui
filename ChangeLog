@@ -1,7 +1,12 @@
+2014-06-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/externs.m: Correct many string values that where
+	different to Cocoa.
+
 2014-06-03 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+GIF.m
-	Rewrite Open compatibility with a more readable macro. 
+	Rewrite Open compatibility with a more readable macro.
 
 2014-06-03 Riccardo Mottola <rm@gnu.org>
 

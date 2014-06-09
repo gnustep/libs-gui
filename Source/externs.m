@@ -33,49 +33,49 @@
 #import "AppKit/NSEvent.h"
 
 // Global strings
-NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
-NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
+NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
+NSString *NSEventTrackingRunLoopMode = @"NSEventTrackingRunLoopMode";
 
 const double NSAppKitVersionNumber = NSAppKitVersionNumber10_4;
 
 //
 // Global Exception Strings
 //
-NSString *NSAbortModalException = @"AbortModal";
-NSString *NSAbortPrintingException = @"AbortPrinting";
-NSString *NSAppKitIgnoredException = @"AppKitIgnored";
-NSString *NSAppKitVirtualMemoryException = @"AppKitVirtualMemory";
-NSString *NSBadBitmapParametersException = @"BadBitmapParameters";
-NSString *NSBadComparisonException = @"BadComparison";
-NSString *NSBadRTFColorTableException = @"BadRTFColorTable";
-NSString *NSBadRTFDirectiveException = @"BadRTFDirective";
-NSString *NSBadRTFFontTableException = @"BadRTFFontTable";
-NSString *NSBadRTFStyleSheetException = @"BadRTFStyleSheet";
-NSString *NSBrowserIllegalDelegateException = @"BrowserIllegalDelegate";
-NSString *NSColorListIOException = @"ColorListIO";
-NSString *NSColorListNotEditableException = @"ColorListNotEditable";
-NSString *NSDraggingException = @"Draggin";
-NSString *NSFontUnavailableException = @"FontUnavailable";
-NSString *NSIllegalSelectorException = @"IllegalSelector";
-NSString *NSImageCacheException = @"ImageCache";
-NSString *NSNibLoadingException = @"NibLoading";
-NSString *NSPPDIncludeNotFoundException = @"PPDIncludeNotFound";
-NSString *NSPPDIncludeStackOverflowException = @"PPDIncludeStackOverflow";
-NSString *NSPPDIncludeStackUnderflowException = @"PPDIncludeStackUnderflow";
-NSString *NSPPDParseException = @"PPDParse";
-NSString *NSPrintOperationExistsException = @"PrintOperationExists";
-NSString *NSPrintPackageException = @"PrintPackage";
-NSString *NSPrintingCommunicationException = @"PrintingCommunication";
-NSString *NSRTFPropertyStackOverflowException = @"RTFPropertyStackOverflow";
-NSString *NSTIFFException = @"TIFF";
-NSString *NSTextLineTooLongException = @"TextLineTooLong";
-NSString *NSTextNoSelectionException = @"TextNoSelection";
-NSString *NSTextReadException = @"TextRead";
-NSString *NSTextWriteException = @"TextWrite";
-NSString *NSTypedStreamVersionException = @"TypedStreamVersion";
-NSString *NSWindowServerCommunicationException = @"WindowServerCommunication";
-NSString *NSWordTablesReadException = @"WordTablesRead";
-NSString *NSWordTablesWriteException = @"WordTablesWrite";
+NSString *NSAbortModalException = @"NSAbortModalException";
+NSString *NSAbortPrintingException = @"NSAbortPrintingException";
+NSString *NSAppKitIgnoredException = @"NSAppKitIgnoredException";
+NSString *NSAppKitVirtualMemoryException = @"NSAppKitVirtualMemoryException";
+NSString *NSBadBitmapParametersException = @"NSBadBitmapParametersException";
+NSString *NSBadComparisonException = @"NSBadComparisonException";
+NSString *NSBadRTFColorTableException = @"NSBadRTFColorTableException";
+NSString *NSBadRTFDirectiveException = @"NSBadRTFDirectiveException";
+NSString *NSBadRTFFontTableException = @"NSBadRTFFontTableException";
+NSString *NSBadRTFStyleSheetException = @"NSBadRTFStyleSheetException";
+NSString *NSBrowserIllegalDelegateException = @"NSBrowserIllegalDelegateException";
+NSString *NSColorListIOException = @"NSColorListIOException";
+NSString *NSColorListNotEditableException = @"NSColorListNotEditableException";
+NSString *NSDraggingException = @"NSDraggingException";
+NSString *NSFontUnavailableException = @"NSFontUnavailableException";
+NSString *NSIllegalSelectorException = @"NSIllegalSelectorException";
+NSString *NSImageCacheException = @"NSImageCacheException";
+NSString *NSNibLoadingException = @"NSNibLoadingException";
+NSString *NSPPDIncludeNotFoundException = @"NSPPDIncludeNotFoundException";
+NSString *NSPPDIncludeStackOverflowException = @"NSPPDIncludeStackOverflowException";
+NSString *NSPPDIncludeStackUnderflowException = @"NSPPDIncludeStackUnderflowException";
+NSString *NSPPDParseException = @"NSPPDParseException";
+NSString *NSPrintOperationExistsException = @"NSPrintOperationExistsException";
+NSString *NSPrintPackageException = @"NSPrintPackageException";
+NSString *NSPrintingCommunicationException = @"NSPrintingCommunicationException";
+NSString *NSRTFPropertyStackOverflowException = @"NSRTFPropertyStackOverflowException";
+NSString *NSTIFFException = @"NSTIFFException";
+NSString *NSTextLineTooLongException = @"NSTextLineTooLongException";
+NSString *NSTextNoSelectionException = @"NSTextNoSelectionException";
+NSString *NSTextReadException = @"NSTextReadException";
+NSString *NSTextWriteException = @"NSTextWriteException";
+NSString *NSTypedStreamVersionException = @"NSTypedStreamVersionException";
+NSString *NSWindowServerCommunicationException = @"NSWindowServerCommunicationException";
+NSString *NSWordTablesReadException = @"NSWordTablesReadException";
+NSString *NSWordTablesWriteException = @"NSWordTablesWriteException";
 
 NSString *GSWindowServerInternalException = @"WindowServerInternal";
 
@@ -88,26 +88,26 @@ NSString *NSAnimationTriggerOrderOut = @"NSAnimationTriggerOrderOut";
 
 // Application notifications
 NSString *NSApplicationDidBecomeActiveNotification
-              = @"ApplicationDidBecomeActive";
+              = @"NSApplicationDidBecomeActiveNotification";
 NSString *NSApplicationDidChangeScreenParametersNotification 
-              = @"NSApplicationDidChangeScreenParameters";
+              = @"NSApplicationDidChangeScreenParametersNotification";
 NSString *NSApplicationDidFinishLaunchingNotification
-              = @"ApplicationDidFinishLaunching";
-NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
+              = @"NSApplicationDidFinishLaunchingNotification";
+NSString *NSApplicationDidHideNotification = @"NSApplicationDidHideNotification";
 NSString *NSApplicationDidResignActiveNotification
-              = @"ApplicationDidResignActive";
-NSString *NSApplicationDidUnhideNotification = @"ApplicationDidUnhide";
-NSString *NSApplicationDidUpdateNotification = @"ApplicationDidUpdate";
+              = @"NSApplicationDidResignActiveNotification";
+NSString *NSApplicationDidUnhideNotification = @"NSApplicationDidUnhideNotification";
+NSString *NSApplicationDidUpdateNotification = @"NSApplicationDidUpdateNotification";
 NSString *NSApplicationWillBecomeActiveNotification
-              = @"ApplicationWillBecomeActive";
+              = @"NSApplicationWillBecomeActiveNotification";
 NSString *NSApplicationWillFinishLaunchingNotification
-              = @"ApplicationWillFinishLaunching";
-NSString *NSApplicationWillTerminateNotification = @"ApplicationWillTerminate";
-NSString *NSApplicationWillHideNotification = @"ApplicationWillHide";
+              = @"NSApplicationWillFinishLaunchingNotification";
+NSString *NSApplicationWillTerminateNotification = @"NSApplicationWillTerminateNotification";
+NSString *NSApplicationWillHideNotification = @"NSApplicationWillHideNotification";
 NSString *NSApplicationWillResignActiveNotification
-              = @"ApplicationWillResignActive";
-NSString *NSApplicationWillUnhideNotification = @"ApplicationWillUnhide";
-NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
+              = @"NSApplicationWillResignActiveNotification";
+NSString *NSApplicationWillUnhideNotification = @"NSApplicationWillUnhideNotification";
+NSString *NSApplicationWillUpdateNotification = @"NSApplicationWillUpdateNotification";
 
 // NSBitmapImageRep Global strings
 NSString *NSImageCompressionMethod = @"NSImageCompressionMethod";
@@ -152,18 +152,11 @@ NSString *NSSystemColorsDidChangeNotification =
             @"NSSystemColorsDidChangeNotification";
 
 // NSColorList notifications
-NSString *NSColorListDidChangeNotification = @"NSColorListDidChange";
+NSString *NSColorListDidChangeNotification = @"NSColorListDidChangeNotification";
 
 // NSColorPanel notifications
 NSString *NSColorPanelColorDidChangeNotification =
-  @"NSColorPanelColorDidChange";
-
-#if GNUSTEP_GUI_MAJOR_VERSION == 0 && GNUSTEP_GUI_MINOR_VERSION < 20
-/* The above notifications had been misspelled in GNUstep. We keep them around
-   here to preserve binary compatibility until the next release. */
-NSString *NSColorListChangedNotification = @"NSColorListDidChange";
-NSString *NSColorPanelColorChangedNotification = @"NSColorPanelColorDidChange";
-#endif
+  @"NSColorPanelColorDidChangeNotification";
 
 // NSComboBox notifications
 NSString *NSComboBoxWillPopUpNotification = 
@@ -210,11 +203,6 @@ NSString *NSGraphicsContextPSFormat =
 NSString *NSGraphicsContextRepresentationFormatAttributeName = 
 @"NSGraphicsContextRepresentationFormatAttributeName";
 
-NSString *NSImageInterpolationDefault = @"NSImageInterpolationDefault";
-NSString *NSImageInterpolationNone = @"NSImageInterpolationNone";
-NSString *NSImageInterpolationLow = @"NSImageInterpolationLow";
-NSString *NSImageInterpolationHigh = @"NSImageInterpolationHigh";
-
 // NSHelpManager notifications;
 NSString *NSContextHelpModeDidActivateNotification =
 @"NSContextHelpModeDidActivateNotification";
@@ -241,29 +229,29 @@ NSString *NSAFMWeight = @"Weight";
 NSString *NSAFMXHeight = @"XHeight";
 
 // NSFontDescriptor global strings
-NSString *NSFontFamilyAttribute = @"Family";
-NSString *NSFontNameAttribute = @"Name";
-NSString *NSFontFaceAttribute = @"Face";
-NSString *NSFontSizeAttribute = @"Size"; 
-NSString *NSFontVisibleNameAttribute = @"VisibleName"; 
-NSString *NSFontColorAttribute = @"Color";
-NSString *NSFontMatrixAttribute = @"Matrix";
-NSString *NSFontVariationAttribute = @"Variation";
-NSString *NSFontCharacterSetAttribute = @"CharacterSet";
-NSString *NSFontCascadeListAttribute = @"CascadeList";
-NSString *NSFontTraitsAttribute = @"Traits";
-NSString *NSFontFixedAdvanceAttribute = @"FixedAdvance";
+NSString *NSFontFamilyAttribute = @"NSFontFamilyAttribute";
+NSString *NSFontNameAttribute = @"NSFontNameAttribute";
+NSString *NSFontFaceAttribute = @"NSFontFaceAttribute";
+NSString *NSFontSizeAttribute = @"NSFontSizeAttribute"; 
+NSString *NSFontVisibleNameAttribute = @"NSFontVisibleNameAttribute"; 
+NSString *NSFontColorAttribute = @"NSFontColorAttribute";
+NSString *NSFontMatrixAttribute = @"NSFontMatrixAttribute";
+NSString *NSFontVariationAttribute = @"NSCTFontVariationAttribute";
+NSString *NSFontCharacterSetAttribute = @"NSCTFontCharacterSetAttribute";
+NSString *NSFontCascadeListAttribute = @"NSCTFontCascadeListAttribute";
+NSString *NSFontTraitsAttribute = @"NSCTFontTraitsAttribute";
+NSString *NSFontFixedAdvanceAttribute = @"NSCTFontFixedAdvanceAttribute";
 
-NSString *NSFontSymbolicTrait = @"SymbolicTrait";
-NSString *NSFontWeightTrait = @"WeightTrait";
-NSString *NSFontWidthTrait = @"WidthTrait";
-NSString *NSFontSlantTrait = @"SlantTrait";
+NSString *NSFontSymbolicTrait = @"NSCTFontSymbolicTrait";
+NSString *NSFontWeightTrait = @"NSCTFontWeightTrait";
+NSString *NSFontWidthTrait = @"NSCTFontProportionTrait";
+NSString *NSFontSlantTrait = @"NSCTFontSlantTrait";
 
-NSString *NSFontVariationAxisIdentifierKey = @"VariationAxisIdentifier";
-NSString *NSFontVariationAxisMinimumValueKey = @"VariationAxisMinimumValue";
-NSString *NSFontVariationAxisMaximumValueKey = @"VariationAxisMaximumValue";
-NSString *NSFontVariationAxisDefaultValueKey = @"VariationAxisDefaultValue";
-NSString *NSFontVariationAxisNameKey = @"VariationAxisName";
+NSString *NSFontVariationAxisIdentifierKey = @"NSCTFontVariationAxisIdentifier";
+NSString *NSFontVariationAxisMinimumValueKey = @"NSCTFontVariationAxisMinimumValue";
+NSString *NSFontVariationAxisMaximumValueKey = @"NSCTFontVariationAxisMaximumValue";
+NSString *NSFontVariationAxisDefaultValueKey = @"NSCTFontVariationAxisDefaultValue";
+NSString *NSFontVariationAxisNameKey = @"NSCTFontVariationAxisName";
 
 // NSScreen Global device dictionary key strings
 NSString *NSDeviceResolution = @"NSDeviceResolution";
@@ -312,57 +300,56 @@ NSString *NSPasteboardCommunicationException
 = @"NSPasteboardCommunicationException";
 
 // Printing Information Dictionary Keys
-NSString *NSPrintAllPages = @"PrintAllPages";
-NSString *NSPrintBottomMargin = @"PrintBottomMargin";
-NSString *NSPrintCopies = @"PrintCopies";
-NSString *NSPrintFaxCoverSheetName = @"PrintFaxCoverSheetName";
-NSString *NSPrintFaxHighResolution = @"PrintFaxHighResolution";
-NSString *NSPrintFaxModem = @"PrintFaxModem";
-NSString *NSPrintFaxReceiverNames = @"PrintFaxReceiverNames";
-NSString *NSPrintFaxReceiverNumbers = @"PrintFaxReceiverNumbers";
-NSString *NSPrintFaxReturnReceipt = @"PrintFaxReturnReceipt";
-NSString *NSPrintFaxSendTime = @"PrintFaxSendTime";
-NSString *NSPrintFaxTrimPageEnds = @"PrintFaxTrimPageEnds";
-NSString *NSPrintFaxUseCoverSheet = @"PrintFaxUseCoverSheet";
-NSString *NSPrintFirstPage = @"PrintFirstPage";
-NSString *NSPrintHorizonalPagination = @"PrintHorizonalPagination";
-NSString *NSPrintHorizontallyCentered = @"PrintHorizontallyCentered";
-NSString *NSPrintJobDisposition = @"PrintJobDisposition";
-NSString *NSPrintJobFeatures = @"PrintJobFeatures";
-NSString *NSPrintLastPage = @"PrintLastPage";
-NSString *NSPrintLeftMargin = @"PrintLeftMargin";
-NSString *NSPrintManualFeed = @"PrintManualFeed";
-NSString *NSPrintMustCollate = @"PrintMustCollate";
-NSString *NSPrintOrientation = @"PrintOrientation";
-NSString *NSPrintPagesPerSheet = @"PrintPagesPerSheet";
-NSString *NSPrintPaperFeed = @"PrintPaperFeed";
-NSString *NSPrintPaperName = @"PrintPaperName";
-NSString *NSPrintPaperSize = @"PrintPaperSize";
-NSString *NSPrintPrinter = @"PrintPrinter";
-NSString *NSPrintReversePageOrder = @"PrintReversePageOrder";
-NSString *NSPrintRightMargin = @"PrintRightMargin";
-NSString *NSPrintSavePath = @"PrintSavePath";
-NSString *NSPrintScalingFactor = @"PrintScalingFactor";
-NSString *NSPrintTopMargin = @"PrintTopMargin";
-NSString *NSPrintHorizontalPagination = @"PrintHorizontalPagination";
-NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
-NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
-NSString *NSPrintPagesAcross = @"PrintPagesAcross";
-NSString *NSPrintPagesDown = @"PrintPagesDown";
-NSString *NSPrintTime = @"PrintTime";
-NSString *NSPrintDetailedErrorReporting = @"PrintDetailedErrorReporting";
-NSString *NSPrintFaxNumber = @"PrintFaxNumber";
-NSString *NSPrintPrinterName = @"PrintPrinterName";
-NSString *NSPrintHeaderAndFooter = @"PrintHeaderAndFooter";
+NSString *NSPrintAllPages = @"NSPrintAllPages";
+NSString *NSPrintBottomMargin = @"NSBottomMargin";
+NSString *NSPrintCopies = @"NSCopies";
+NSString *NSPrintFaxCoverSheetName = @"NSPrintFaxCoverSheetName";
+NSString *NSPrintFaxHighResolution = @"NSPrintFaxHighResolution";
+NSString *NSPrintFaxModem = @"NSPrintFaxModem";
+NSString *NSPrintFaxReceiverNames = @"NSPrintFaxReceiverNames";
+NSString *NSPrintFaxReceiverNumbers = @"NSPrintFaxReceiverNumbers";
+NSString *NSPrintFaxReturnReceipt = @"NSPrintFaxReturnReceipt";
+NSString *NSPrintFaxSendTime = @"NSPrintFaxSendTime";
+NSString *NSPrintFaxTrimPageEnds = @"NSPrintFaxTrimPageEnds";
+NSString *NSPrintFaxUseCoverSheet = @"NSPrintFaxUseCoverSheet";
+NSString *NSPrintFirstPage = @"NSFirstPage";
+NSString *NSPrintHorizonalPagination = @"NSHorizonalPagination";
+NSString *NSPrintHorizontallyCentered = @"NSHorizontallyCentered";
+NSString *NSPrintJobDisposition = @"NSJobDisposition";
+NSString *NSPrintJobFeatures = @"NSJobFeatures";
+NSString *NSPrintLastPage = @"NSLastPage";
+NSString *NSPrintLeftMargin = @"NSLeftMargin";
+NSString *NSPrintManualFeed = @"NSPrintManualFeed";
+NSString *NSPrintMustCollate = @"NSMustCollate";
+NSString *NSPrintOrientation = @"NSOrientation";
+NSString *NSPrintPagesPerSheet = @"NSPagesPerSheet";
+NSString *NSPrintPaperFeed = @"NSPaperFeed";
+NSString *NSPrintPaperName = @"NSPaperName";
+NSString *NSPrintPaperSize = @"NSPaperSize";
+NSString *NSPrintPrinter = @"NSPrinter";
+NSString *NSPrintReversePageOrder = @"NSReversePageOrder";
+NSString *NSPrintRightMargin = @"NSRightMargin";
+NSString *NSPrintSavePath = @"NSSavePath";
+NSString *NSPrintScalingFactor = @"NSScalingFactor";
+NSString *NSPrintTopMargin = @"NSTopMargin";
+NSString *NSPrintVerticalPagination = @"NSVerticalPagination";
+NSString *NSPrintVerticallyCentered = @"NSVerticallyCentered";
+NSString *NSPrintPagesAcross = @"NSPagesAcross";
+NSString *NSPrintPagesDown = @"NSPagesDown";
+NSString *NSPrintTime = @"NSPrintTime";
+NSString *NSPrintDetailedErrorReporting = @"NSDetailedErrorReporting";
+NSString *NSPrintFaxNumber = @"NSFaxNumber";
+NSString *NSPrintPrinterName = @"NSPrinterName";
+NSString *NSPrintHeaderAndFooter = @"NSPrintHeaderAndFooter";
 
 NSString *NSPrintPageDirection = @"NSPrintPageDirection";
 
 // Print Job Disposition Values
-NSString  *NSPrintCancelJob = @"PrintCancelJob";
-NSString  *NSPrintFaxJob = @"PrintFaxJob";
-NSString  *NSPrintPreviewJob = @"PrintPreviewJob";
-NSString  *NSPrintSaveJob = @"PrintSaveJob";
-NSString  *NSPrintSpoolJob = @"PrintSpoolJob";
+NSString  *NSPrintCancelJob = @"NSPrintCancelJob";
+NSString  *NSPrintFaxJob = @"NSPrintFaxJob";
+NSString  *NSPrintPreviewJob = @"NSPrintPreviewJob";
+NSString  *NSPrintSaveJob = @"NSPrintSaveJob";
+NSString  *NSPrintSpoolJob = @"NSPrintSpoolJob";
 
 // Print Panel
 NSString *NSPrintPanelAccessorySummaryItemNameKey = @"name";
@@ -424,15 +411,15 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
 
 // NSMenu notifications
-NSString* const NSMenuDidSendActionNotification = @"MenuDidSendAction";
-NSString* const NSMenuWillSendActionNotification = @"MenuWillSendAction";
-NSString* const NSMenuDidAddItemNotification = @"MenuDidAddItem";
-NSString* const NSMenuDidRemoveItemNotification = @"MenuDidRemoveItem";
-NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
+NSString* const NSMenuDidSendActionNotification = @"NSMenuDidSendActionNotification";
+NSString* const NSMenuWillSendActionNotification = @"NSMenuWillSendActionNotification";
+NSString* const NSMenuDidAddItemNotification = @"NSMenuDidAddItemNotification";
+NSString* const NSMenuDidRemoveItemNotification = @"NSMenuDidRemoveItemNotification";
+NSString* const NSMenuDidChangeItemNotification = @"NSMenuDidChangeItemNotification";
 
 // NSPopUpButton notification
-NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
-NSString *NSPopUpButtonCellWillPopUpNotification = @"PopUpButtonCellWillPopUp";
+NSString *NSPopUpButtonWillPopUpNotification = @"NSPopUpButtonWillPopUpNotification";
+NSString *NSPopUpButtonCellWillPopUpNotification = @"NSPopUpButtonCellWillPopUpNotification";
 
 // NSPopover notifications
 NSString *NSPopoverWillShowNotification = @"NSPopoverWillShowNotification";
@@ -446,39 +433,39 @@ NSString *NSPopoverCloseReasonStandard = @"NSPopoverCloseReasonStandard";
 NSString *NSPopoverCloseReasonDetachToWindow = @"NSPopoverCloseReasonDetachToWindow";
 
 // NSTable notifications
-NSString *NSTableViewSelectionDidChangeNotification = @"TableViewSelectionDidChange";
-NSString *NSTableViewColumnDidMoveNotification = @"TableViewColumnDidMove";
-NSString *NSTableViewColumnDidResizeNotification = @"TableViewColumnDidResize";
-NSString *NSTableViewSelectionIsChangingNotification = @"TableViewSelectionIsChanging";
+NSString *NSTableViewSelectionDidChangeNotification = @"NSTableViewSelectionDidChangeNotification";
+NSString *NSTableViewColumnDidMoveNotification = @"NSTableViewColumnDidMoveNotification";
+NSString *NSTableViewColumnDidResizeNotification = @"NSTableViewColumnDidResizeNotification";
+NSString *NSTableViewSelectionIsChangingNotification = @"NSTableViewSelectionIsChangingNotification";
 
 // NSOutlineView notifications
-NSString *NSOutlineViewSelectionDidChangeNotification = @"OutlineViewSelectionDidChange";
-NSString *NSOutlineViewColumnDidMoveNotification = @"OutlineViewColumnDidMove";
-NSString *NSOutlineViewColumnDidResizeNotification = @"OutlineViewColumnDidResize";
-NSString *NSOutlineViewSelectionIsChangingNotification = @"OutlineViewSelectionIsChanging";
-NSString *NSOutlineViewItemDidExpandNotification = @"OutlineViewItemDidExpand";
-NSString *NSOutlineViewItemDidCollapseNotification = @"OutlineViewItemDidCollapse";
-NSString *NSOutlineViewItemWillExpandNotification = @"OutlineViewItemWillExpand";
-NSString *NSOutlineViewItemWillCollapseNotification = @"OutlineViewItemWillCollapse";
+NSString *NSOutlineViewSelectionDidChangeNotification = @"NSOutlineViewSelectionDidChangeNotification";
+NSString *NSOutlineViewColumnDidMoveNotification = @"NSOutlineViewColumnDidMoveNotification";
+NSString *NSOutlineViewColumnDidResizeNotification = @"NSOutlineViewColumnDidResizeNotification";
+NSString *NSOutlineViewSelectionIsChangingNotification = @"NSOutlineViewSelectionIsChangingNotification";
+NSString *NSOutlineViewItemDidExpandNotification = @"NSOutlineViewItemDidExpandNotification";
+NSString *NSOutlineViewItemDidCollapseNotification = @"NSOutlineViewItemDidCollapseNotification";
+NSString *NSOutlineViewItemWillExpandNotification = @"NSOutlineViewItemWillExpandNotification";
+NSString *NSOutlineViewItemWillCollapseNotification = @"NSOutlineViewItemWillCollapseNotification";
 
 // NSWindow notifications
-NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
-NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
-NSString *NSWindowDidChangeScreenNotification = @"WindowDidChangeScreen";
-NSString *NSWindowDidChangeScreenProfileNotification = @"NSWindowDidChangeScreenProfile";
-NSString *NSWindowDidDeminiaturizeNotification = @"WindowDidDeminiaturize";
-NSString *NSWindowDidEndSheetNotification = @"NSWindowDidEndSheet";
-NSString *NSWindowDidExposeNotification = @"WindowDidExpose";
-NSString *NSWindowDidMiniaturizeNotification = @"WindowDidMiniaturize";
-NSString *NSWindowDidMoveNotification = @"WindowDidMove";
-NSString *NSWindowDidResignKeyNotification = @"WindowDidResignKey";
-NSString *NSWindowDidResignMainNotification = @"WindowDidResignMain";
-NSString *NSWindowDidResizeNotification = @"WindowDidResize";
-NSString *NSWindowDidUpdateNotification = @"WindowDidUpdate";
-NSString *NSWindowWillBeginSheetNotification = @"NSWindowWillBeginSheet";
-NSString *NSWindowWillCloseNotification = @"WindowWillClose";
-NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
-NSString *NSWindowWillMoveNotification = @"WindowWillMove";
+NSString *NSWindowDidBecomeKeyNotification = @"NSWindowDidBecomeKeyNotification";
+NSString *NSWindowDidBecomeMainNotification = @"NSWindowDidBecomeMainNotification";
+NSString *NSWindowDidChangeScreenNotification = @"NSWindowDidChangeScreenNotification";
+NSString *NSWindowDidChangeScreenProfileNotification = @"NSWindowDidChangeScreenProfileNotification";
+NSString *NSWindowDidDeminiaturizeNotification = @"NSWindowDidDeminiaturizeNotification";
+NSString *NSWindowDidEndSheetNotification = @"NSWindowDidEndSheetNotification";
+NSString *NSWindowDidExposeNotification = @"NSWindowDidExposeNotification";
+NSString *NSWindowDidMiniaturizeNotification = @"NSWindowDidMiniaturizeNotification";
+NSString *NSWindowDidMoveNotification = @"NSWindowDidMoveNotification";
+NSString *NSWindowDidResignKeyNotification = @"NSWindowDidResignKeyNotification";
+NSString *NSWindowDidResignMainNotification = @"NSWindowDidResignMainNotification";
+NSString *NSWindowDidResizeNotification = @"NSWindowDidResizeNotification";
+NSString *NSWindowDidUpdateNotification = @"NSWindowDidUpdateNotification";
+NSString *NSWindowWillBeginSheetNotification = @"NSWindowWillBeginSheetNotification";
+NSString *NSWindowWillCloseNotification = @"NSWindowWillCloseNotification";
+NSString *NSWindowWillMiniaturizeNotification = @"NSWindowWillMiniaturizeNotification";
+NSString *NSWindowWillMoveNotification = @"NSWindowWillMoveNotification";
 
 // Workspace File Type Globals
 NSString *NSPlainFileType = @"NSPlainFileType";
@@ -488,16 +475,16 @@ NSString *NSFilesystemFileType = @"NSFilesystemFileType";
 NSString *NSShellCommandFileType = @"NSShellCommandFileType";
 
 // Workspace File Operation Globals
-NSString *NSWorkspaceCompressOperation = @"NSWorkspaceCompressOperation";
-NSString *NSWorkspaceCopyOperation = @"NSWorkspaceCopyOperation";
-NSString *NSWorkspaceDecompressOperation = @"NSWorkspaceDecompressOperation";
-NSString *NSWorkspaceDecryptOperation = @"NSWorkspaceDecryptOperation";
-NSString *NSWorkspaceDestroyOperation = @"NSWorkspaceDestroyOperation";
-NSString *NSWorkspaceDuplicateOperation = @"NSWorkspaceDuplicateOperation";
-NSString *NSWorkspaceEncryptOperation = @"NSWorkspaceEncryptOperation";
-NSString *NSWorkspaceLinkOperation = @"NSWorkspaceLinkOperation";
-NSString *NSWorkspaceMoveOperation = @"NSWorkspaceMoveOperation";
-NSString *NSWorkspaceRecycleOperation = @"NSWorkspaceRecycleOperation";
+NSString *NSWorkspaceCompressOperation = @"compress";
+NSString *NSWorkspaceCopyOperation = @"copy";
+NSString *NSWorkspaceDecompressOperation = @"decompress";
+NSString *NSWorkspaceDecryptOperation = @"decrypt";
+NSString *NSWorkspaceDestroyOperation = @"destroy";
+NSString *NSWorkspaceDuplicateOperation = @"duplicate";
+NSString *NSWorkspaceEncryptOperation = @"encrypt";
+NSString *NSWorkspaceLinkOperation = @"link";
+NSString *NSWorkspaceMoveOperation = @"move";
+NSString *NSWorkspaceRecycleOperation = @"recycle";
 
 // NSWorkspace notifications
 NSString *NSWorkspaceDidLaunchApplicationNotification =
@@ -527,31 +514,31 @@ NSString *NSWorkspaceWillSleepNotification =
 /*
  *	NSStringDrawing NSAttributedString additions
  */
-NSString *NSAttachmentAttributeName = @"NSAttachmentAttributeName";
-NSString *NSBackgroundColorAttributeName = @"NSBackgroundColorAttributeName";
-NSString *NSBaselineOffsetAttributeName = @"NSBaselineOffsetAttributeName";
-NSString *NSCursorAttributeName = @"NSCursorAttributeName";
-NSString *NSExpansionAttributeName = @"NSExpansionAttributeName";
-NSString *NSFontAttributeName = @"NSFontAttributeName";
-NSString *NSForegroundColorAttributeName = @"NSForegroundColorAttributeName";
-NSString *NSKernAttributeName = @"NSKernAttributeName";
-NSString *NSLigatureAttributeName = @"NSLigatureAttributeName";
-NSString *NSLinkAttributeName = @"NSLinkAttributeName";
-NSString *NSObliquenessAttributeName = @"NSObliquenessAttributeName";
-NSString *NSParagraphStyleAttributeName = @"NSParagraphStyleAttributeName";
-NSString *NSShadowAttributeName = @"NSShadowAttributeName";
+NSString *NSAttachmentAttributeName = @"NSAttachment";
+NSString *NSBackgroundColorAttributeName = @"NSBackgroundColor";
+NSString *NSBaselineOffsetAttributeName = @"NSBaselineOffset";
+NSString *NSCursorAttributeName = @"NSCursor";
+NSString *NSExpansionAttributeName = @"NSExpansion";
+NSString *NSFontAttributeName = @"NSFont";
+NSString *NSForegroundColorAttributeName = @"NSColor";
+NSString *NSKernAttributeName = @"NSKern";
+NSString *NSLigatureAttributeName = @"NSLigature";
+NSString *NSLinkAttributeName = @"NSLink";
+NSString *NSObliquenessAttributeName = @"NSObliqueness";
+NSString *NSParagraphStyleAttributeName = @"NSParagraphStyle";
+NSString *NSShadowAttributeName = @"NSShadow";
 NSString *NSStrikethroughColorAttributeName
-  = @"NSStrikethroughColorAttributeName";
-NSString *NSStrikethroughStyleAttributeName = @"NSStrikethroughStyleAttributeName";
-NSString *NSStrokeColorAttributeName = @"NSStrokeColorAttributeName";
-NSString *NSStrokeWidthAttributeName = @"NSStrokeWidthAttributeName";
-NSString *NSSuperscriptAttributeName = @"NSSuperscriptAttributeName";
-NSString *NSToolTipAttributeName = @"NSToolTipAttributeName";
-NSString *NSUnderlineColorAttributeName = @"NSUnderlineColorAttributeName";
-NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
+  = @"NSStrikethroughColor";
+NSString *NSStrikethroughStyleAttributeName = @"NSStrikethrough";
+NSString *NSStrokeColorAttributeName = @"NSStrokeColor";
+NSString *NSStrokeWidthAttributeName = @"NSStrokeWidth";
+NSString *NSSuperscriptAttributeName = @"NSSuperScript";
+NSString *NSToolTipAttributeName = @"NSToolTip";
+NSString *NSUnderlineColorAttributeName = @"NSUnderlineColor";
+NSString *NSUnderlineStyleAttributeName = @"NSUnderline";
 
-NSString *NSCharacterShapeAttributeName = @"CharacterShape";
-NSString *NSGlyphInfoAttributeName = @"GlyphInfo";
+NSString *NSCharacterShapeAttributeName = @"NSCharacterShape";
+NSString *NSGlyphInfoAttributeName = @"NSGlyphInfo";
 
 NSString *NSPaperSizeDocumentAttribute = @"PaperSize";
 NSString *NSLeftMarginDocumentAttribute = @"LeftMargin";
@@ -587,43 +574,43 @@ const unsigned NSSpellingStateSpellingFlag = 1;
 const unsigned NSSpellingStateGrammarFlag = 2;
 
 
-NSString *NSPlainTextDocumentType = @"PlainText";
-NSString *NSRTFTextDocumentType = @"RTF";
-NSString *NSRTFDTextDocumentType = @"RTFD";
-NSString *NSMacSimpleTextDocumentType = @"SimpleText";
-NSString *NSHTMLTextDocumentType = @"HTML";
-NSString *NSDocFormatTextDocumentType = @"Doc";
-NSString *NSWordMLTextDocumentType = @"WordML";
+NSString *NSPlainTextDocumentType = @"NSPlainText";
+NSString *NSRTFTextDocumentType = @"NSRTF";
+NSString *NSRTFDTextDocumentType = @"NSRTFD";
+NSString *NSMacSimpleTextDocumentType = @"NSMacSimpleText";
+NSString *NSHTMLTextDocumentType = @"NSHTML";
+NSString *NSDocFormatTextDocumentType = @"NSDocFormat";
+NSString *NSWordMLTextDocumentType = @"NSWordML";
 
 NSString *NSExcludedElementsDocumentAttribute = @"ExcludedElements";
-NSString *NSTextEncodingNameDocumentAttribute = @"TextEncoding";
+NSString *NSTextEncodingNameDocumentAttribute = @"TextEncodingName";
 NSString *NSPrefixSpacesDocumentAttribute = @"PrefixSpaces";
 
 NSString *NSBaseURLDocumentOption = @"BaseURL";
 NSString *NSCharacterEncodingDocumentOption = @"CharacterEncoding";
 NSString *NSDefaultAttributesDocumentOption = @"DefaultAttributes";
 NSString *NSDocumentTypeDocumentOption = @"DocumentType";
-NSString *NSTextEncodingNameDocumentOption = @"TextEncoding";
+NSString *NSTextEncodingNameDocumentOption = @"TextEncodingName";
 NSString *NSTextSizeMultiplierDocumentOption = @"TextSizeMultiplier";
 NSString *NSTimeoutDocumentOption = @"Timeout";
 NSString *NSWebPreferencesDocumentOption = @"WebPreferences";
 NSString *NSWebResourceLoadDelegateDocumentOption = @"WebResourceLoadDelegate";
 
 // NSTextTab
-NSString *NSTabColumnTerminatorsAttributeName = @"TabColumnTerminatorsAttributeName"; 
+NSString *NSTabColumnTerminatorsAttributeName = @"NSTabColumnTerminatorsAttributeName"; 
 
 // NSToolbar notifications
 NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";
 NSString *NSToolbarWillAddItemNotification = @"NSToolbarWillAddItemNotification";
 
 // NSToolbarItem constants
-NSString *NSToolbarSeparatorItemIdentifier = @"NSToolbarSeparatorItemIdentifier";
-NSString *NSToolbarSpaceItemIdentifier = @"NSToolbarSpaceItemIdentifier";
-NSString *NSToolbarFlexibleSpaceItemIdentifier = @"NSToolbarFlexibleSpaceItemIdentifier";
-NSString *NSToolbarShowColorsItemIdentifier = @"NSToolbarShowColorsItemIdentifier";
-NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItemIdentifier";
-NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItemIdentifier";
-NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItemIdentifier";
+NSString *NSToolbarSeparatorItemIdentifier = @"NSToolbarSeparatorItem";
+NSString *NSToolbarSpaceItemIdentifier = @"NSToolbarSpaceItem";
+NSString *NSToolbarFlexibleSpaceItemIdentifier = @"NSToolbarFlexibleSpaceItem";
+NSString *NSToolbarShowColorsItemIdentifier = @"NSToolbarShowColorsItem";
+NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItem";
+NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItem";
+NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItem";
 
 /*
  * NSTextView userInfo for notifications 
@@ -709,10 +696,10 @@ NSString *NSTitleBinding = @"title";
 NSString *NSToolTipBinding = @"toolTip";
 NSString *NSValueBinding = @"value";
 
-// FIXME: Need to defined!
-id NSMultipleValuesMarker = @"NSMultipleValuesMarker";
-id NSNoSelectionMarker = @"NSNoSelectionMarker";
-id NSNotApplicableMarker = @"NSNotApplicableMarker";
+// FIXME: Need to define class _NSStateMarker!
+id NSMultipleValuesMarker = @"<MULTIPLE VALUES MARKER>";
+id NSNoSelectionMarker = @"<NO SELECTION MARKER>";
+id NSNotApplicableMarker = @"<NOT APPLICABLE MARKER>";
 
 
 // NSNib
