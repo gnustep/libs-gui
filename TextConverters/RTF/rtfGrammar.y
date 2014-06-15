@@ -68,7 +68,7 @@ typedef void	*GSRTFctxt;
 #define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
-#define YYDEBUG 0
+#define YYDEBUG 1
 
 #include "RTFConsumerFunctions.h"
 /*int GSRTFlex (YYSTYPE *lvalp, RTFscannerCtxt *lctxt); */
@@ -110,6 +110,15 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token RTFemspace
 %token RTFenspace
 %token RTFbullet
+%token RTFfield
+%token RTFfldinst
+%token RTFfldalt
+%token RTFfldrslt
+%token RTFflddirty
+%token RTFfldedit
+%token RTFfldlock
+%token RTFfldpriv
+%token RTFfttruetype
 %token RTFlquote
 %token RTFrquote
 %token RTFldblquote
@@ -187,6 +196,7 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token	RTFfamilyTech
 
 %type	<number> rtfFontFamily rtfCharset rtfFontStatement
+%type	<text> rtfFieldinst rtfFieldrslt
 
 /*	let's go	*/
 
@@ -220,9 +230,44 @@ rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients rtfNeXTstuff '}' { GS
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, NO); } RTFfield rtfField '}' { GSRTFcloseBlock(CTXT, NO); }
 		|	'{' error '}'
 		;
 
+
+rtfField: rtfFieldMod rtfFieldinst rtfFieldrslt { GSRTFaddField(CTXT, $2, $3); free((void *)$2); free((void *)$3); }
+		|	error
+		;
+
+rtfFieldMod:	/*	empty	*/
+		|	rtfFieldMod RTFflddirty
+		|	rtfFieldMod RTFfldedit
+		|	rtfFieldMod RTFfldlock
+		|	rtfFieldMod RTFfldpriv
+		;
+
+rtfIgnore:  	/*	empty	*/
+		| RTFignore
+		;
+
+rtfFieldinst: '{' rtfIgnore RTFfldinst RTFtext rtfFieldalt '}' { $$ = $4;}
+		| '{' rtfIgnore RTFfldinst '{' { GSRTFopenBlock(CTXT, YES); } rtfStatementList RTFtext rtfFieldalt '}' { GSRTFcloseBlock(CTXT, YES); } '}' { $$ = $7;}
+		| '{' error '}' { $$ = NULL;}
+		;
+
+rtfFieldalt:  	/*	empty	*/
+		| RTFfldalt
+		;
+
+rtfFieldrslt: '{' rtfIgnore RTFfldrslt RTFtext '}' { $$ = $4;}
+		| '{' rtfIgnore RTFfldrslt '{' rtfStatementList RTFtext '}' '}' { $$ = $6;}
+		| '{' error '}' { $$ = NULL;}
+		;
+
+rtfStatementList: 	/*	empty	*/
+		| rtfStatementList rtfStatement
+		| rtfStatementList rtfBlock
+		;
 
 /*
 	RTF statements start with a '\', have a alpha name and a number argument
@@ -548,6 +593,7 @@ rtfFontAttrs: /* empty */
                 | rtfFontAttrs RTFfcharset 
                 | rtfFontAttrs RTFfprq
                 | rtfFontAttrs RTFcpg
+                | rtfFontAttrs RTFfttruetype
                 | rtfFontAttrs rtfBlock
                 ;
 

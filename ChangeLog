@@ -1,3 +1,12 @@
+2014-06-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfScanner.m,
+	* TextConverters/RTF/rtfGrammar.y,
+	* TextConverters/RTF/RTFConsumerFunctions.h,
+	* TextConverters/RTF/RTFConsumer.m: Add support for parsing link fields.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+
 2014-06-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/externs.m: Correct many string values that where

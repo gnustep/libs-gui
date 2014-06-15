@@ -147,5 +147,7 @@ void GSRTFNeXTHelpLink(void *ctxt, int num, const char *markername,
 /* NeXTHelpMarker */
 void GSRTFNeXTHelpMarker(void *ctxt, int num, const char *markername);
 
+void GSRTFaddField (void *ctxt, const char *inst,  const char *result);
+
 #endif
 

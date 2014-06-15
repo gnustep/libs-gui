@@ -284,6 +284,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) appendString: (NSString*)string;
 - (void) appendHelpLink: (NSString*)fileName marker: (NSString *)markerName;
 - (void) appendHelpMarker: (NSString*)markerName;
+- (void) appendField: (NSString*)instruction
+              result: (NSString*)result;
 - (void) reset;
 @end
 
@@ -775,6 +777,40 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
       attr->changed = YES;
       RELEASE(attributes);
       RELEASE(attachment);
+    }
+}
+
+- (void) appendField: (NSString*)instruction
+              result: (NSString*)fieldResult
+{
+  if (!ignore)
+    {
+      int  oldPosition = [result length];
+      int  textlen = [fieldResult length]; 
+      NSRange insertionRange = NSMakeRange(oldPosition, textlen);
+
+      [self appendString: fieldResult];
+
+      if ([instruction hasPrefix: @"HYPERLINK "])
+        {
+          NSDictionary *attributes;
+          NSString *link = [instruction substringFromIndex: 10];
+
+          if ([link characterAtIndex: 0] == (unichar)'\"') 
+            {
+              link = [link substringWithRange: NSMakeRange(1, [link length] - 2)];
+            }
+
+          attributes = [[NSDictionary alloc] 
+                                       initWithObjectsAndKeys:
+                           link, NSLinkAttributeName, 
+                                     [NSNumber numberWithInt : 1], NSUnderlineStyleAttributeName,
+                         [NSColor blueColor], NSForegroundColorAttributeName, 
+                         nil];
+          [result addAttributes: attributes
+                         range: insertionRange];
+          DESTROY(attributes);
+        }
     }
 }
 
@@ -1349,3 +1385,21 @@ void GSRTFNeXTHelpMarker (void *ctxt, int num, const char *markername)
   [(RTFDConsumer *)ctxt appendHelpMarker: markerName];
 }
 
+void GSRTFaddField (void *ctxt, const char *inst,  const char *result)
+{
+  NSString *fieldResult = [[NSString alloc] initWithCString: result
+                                                        encoding: ENCODING];
+  NSString *fieldInstruction;
+
+  // Ignore leading blanks
+  while (inst[0] == ' ')
+    {
+      inst++;
+    }
+  fieldInstruction = [[NSString alloc] initWithCString: inst
+                                              encoding: ENCODING];
+      
+  [(RTFDConsumer *)ctxt appendField: fieldInstruction result: fieldResult];
+  DESTROY(fieldInstruction);
+  DESTROY(fieldResult);
+}

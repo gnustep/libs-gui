@@ -1,10 +1,8 @@
+/* A Bison parser, made by GNU Bison 2.7.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
-
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +30,15 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+#ifndef YY_GSRTF_RTFGRAMMAR_TAB_H_INCLUDED
+# define YY_GSRTF_RTFGRAMMAR_TAB_H_INCLUDED
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int GSRTFdebug;
+#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -63,87 +70,94 @@
      RTFemspace = 279,
      RTFenspace = 280,
      RTFbullet = 281,
-     RTFlquote = 282,
-     RTFrquote = 283,
-     RTFldblquote = 284,
-     RTFrdblquote = 285,
-     RTFred = 286,
-     RTFgreen = 287,
-     RTFblue = 288,
-     RTFcolorbg = 289,
-     RTFcolorfg = 290,
-     RTFunderlinecolor = 291,
-     RTFcolortable = 292,
-     RTFfont = 293,
-     RTFfontSize = 294,
-     RTFNeXTGraphic = 295,
-     RTFNeXTGraphicWidth = 296,
-     RTFNeXTGraphicHeight = 297,
-     RTFNeXTHelpLink = 298,
-     RTFNeXTHelpMarker = 299,
-     RTFNeXTfilename = 300,
-     RTFNeXTmarkername = 301,
-     RTFNeXTlinkFilename = 302,
-     RTFNeXTlinkMarkername = 303,
-     RTFpaperWidth = 304,
-     RTFpaperHeight = 305,
-     RTFmarginLeft = 306,
-     RTFmarginRight = 307,
-     RTFmarginTop = 308,
-     RTFmarginButtom = 309,
-     RTFfirstLineIndent = 310,
-     RTFleftIndent = 311,
-     RTFrightIndent = 312,
-     RTFalignCenter = 313,
-     RTFalignJustified = 314,
-     RTFalignLeft = 315,
-     RTFalignRight = 316,
-     RTFlineSpace = 317,
-     RTFspaceAbove = 318,
-     RTFstyle = 319,
-     RTFbold = 320,
-     RTFitalic = 321,
-     RTFunderline = 322,
-     RTFunderlineDot = 323,
-     RTFunderlineDash = 324,
-     RTFunderlineDashDot = 325,
-     RTFunderlineDashDotDot = 326,
-     RTFunderlineDouble = 327,
-     RTFunderlineStop = 328,
-     RTFunderlineThick = 329,
-     RTFunderlineThickDot = 330,
-     RTFunderlineThickDash = 331,
-     RTFunderlineThickDashDot = 332,
-     RTFunderlineThickDashDotDot = 333,
-     RTFunderlineWord = 334,
-     RTFstrikethrough = 335,
-     RTFstrikethroughDouble = 336,
-     RTFunichar = 337,
-     RTFsubscript = 338,
-     RTFsuperscript = 339,
-     RTFtabstop = 340,
-     RTFfcharset = 341,
-     RTFfprq = 342,
-     RTFcpg = 343,
-     RTFOtherStatement = 344,
-     RTFfontListStart = 345,
-     RTFfamilyNil = 346,
-     RTFfamilyRoman = 347,
-     RTFfamilySwiss = 348,
-     RTFfamilyModern = 349,
-     RTFfamilyScript = 350,
-     RTFfamilyDecor = 351,
-     RTFfamilyTech = 352
+     RTFfield = 282,
+     RTFfldinst = 283,
+     RTFfldalt = 284,
+     RTFfldrslt = 285,
+     RTFflddirty = 286,
+     RTFfldedit = 287,
+     RTFfldlock = 288,
+     RTFfldpriv = 289,
+     RTFfttruetype = 290,
+     RTFlquote = 291,
+     RTFrquote = 292,
+     RTFldblquote = 293,
+     RTFrdblquote = 294,
+     RTFred = 295,
+     RTFgreen = 296,
+     RTFblue = 297,
+     RTFcolorbg = 298,
+     RTFcolorfg = 299,
+     RTFunderlinecolor = 300,
+     RTFcolortable = 301,
+     RTFfont = 302,
+     RTFfontSize = 303,
+     RTFNeXTGraphic = 304,
+     RTFNeXTGraphicWidth = 305,
+     RTFNeXTGraphicHeight = 306,
+     RTFNeXTHelpLink = 307,
+     RTFNeXTHelpMarker = 308,
+     RTFNeXTfilename = 309,
+     RTFNeXTmarkername = 310,
+     RTFNeXTlinkFilename = 311,
+     RTFNeXTlinkMarkername = 312,
+     RTFpaperWidth = 313,
+     RTFpaperHeight = 314,
+     RTFmarginLeft = 315,
+     RTFmarginRight = 316,
+     RTFmarginTop = 317,
+     RTFmarginButtom = 318,
+     RTFfirstLineIndent = 319,
+     RTFleftIndent = 320,
+     RTFrightIndent = 321,
+     RTFalignCenter = 322,
+     RTFalignJustified = 323,
+     RTFalignLeft = 324,
+     RTFalignRight = 325,
+     RTFlineSpace = 326,
+     RTFspaceAbove = 327,
+     RTFstyle = 328,
+     RTFbold = 329,
+     RTFitalic = 330,
+     RTFunderline = 331,
+     RTFunderlineDot = 332,
+     RTFunderlineDash = 333,
+     RTFunderlineDashDot = 334,
+     RTFunderlineDashDotDot = 335,
+     RTFunderlineDouble = 336,
+     RTFunderlineStop = 337,
+     RTFunderlineThick = 338,
+     RTFunderlineThickDot = 339,
+     RTFunderlineThickDash = 340,
+     RTFunderlineThickDashDot = 341,
+     RTFunderlineThickDashDotDot = 342,
+     RTFunderlineWord = 343,
+     RTFstrikethrough = 344,
+     RTFstrikethroughDouble = 345,
+     RTFunichar = 346,
+     RTFsubscript = 347,
+     RTFsuperscript = 348,
+     RTFtabstop = 349,
+     RTFfcharset = 350,
+     RTFfprq = 351,
+     RTFcpg = 352,
+     RTFOtherStatement = 353,
+     RTFfontListStart = 354,
+     RTFfamilyNil = 355,
+     RTFfamilyRoman = 356,
+     RTFfamilySwiss = 357,
+     RTFfamilyModern = 358,
+     RTFfamilyScript = 359,
+     RTFfamilyDecor = 360,
+     RTFfamilyTech = 361
    };
 #endif
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-
-/* Line 1676 of yacc.c  */
+/* Line 2058 of yacc.c  */
 #line 82 "rtfGrammar.y"
 
 	int		number;
@@ -151,9 +165,8 @@ typedef union YYSTYPE
 	RTFcmd		cmd;
 
 
-
-/* Line 1676 of yacc.c  */
-#line 157 "rtfGrammar.tab.h"
+/* Line 2058 of yacc.c  */
+#line 170 "rtfGrammar.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -161,5 +174,18 @@ typedef union YYSTYPE
 #endif
 
 
+#ifdef YYPARSE_PARAM
+#if defined __STDC__ || defined __cplusplus
+int GSRTFparse (void *YYPARSE_PARAM);
+#else
+int GSRTFparse ();
+#endif
+#else /* ! YYPARSE_PARAM */
+#if defined __STDC__ || defined __cplusplus
+int GSRTFparse (void *ctxt, void *lctxt);
+#else
+int GSRTFparse ();
+#endif
+#endif /* ! YYPARSE_PARAM */
 
-
+#endif /* !YY_GSRTF_RTFGRAMMAR_TAB_H_INCLUDED  */
