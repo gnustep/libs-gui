@@ -74,6 +74,9 @@ typedef void	*GSRTFctxt;
 /*int GSRTFlex (YYSTYPE *lvalp, RTFscannerCtxt *lctxt); */
 int GSRTFlex(void *lvalp, void *lctxt);
 
+/* */
+int fieldStart = 0;
+
 %}
 
 %parse-param {void *ctxt}
@@ -196,7 +199,7 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token	RTFfamilyTech
 
 %type	<number> rtfFontFamily rtfCharset rtfFontStatement
-%type	<text> rtfFieldinst rtfFieldrslt
+%type	<text> rtfFieldinst
 
 /*	let's go	*/
 
@@ -235,7 +238,7 @@ rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients rtfNeXTstuff '}' { GS
 		;
 
 
-rtfField: rtfFieldMod rtfFieldinst rtfFieldrslt { GSRTFaddField(CTXT, $2, $3); free((void *)$2); free((void *)$3); }
+rtfField: { fieldStart = GSRTFgetPosition(CTXT);} rtfFieldMod rtfFieldinst rtfFieldrslt { GSRTFaddField(CTXT, fieldStart, $3); free((void *)$3); }
 		|	error
 		;
 
@@ -259,9 +262,8 @@ rtfFieldalt:  	/*	empty	*/
 		| RTFfldalt
 		;
 
-rtfFieldrslt: '{' rtfIgnore RTFfldrslt RTFtext '}' { $$ = $4;}
-		| '{' rtfIgnore RTFfldrslt '{' rtfStatementList RTFtext '}' '}' { $$ = $6;}
-		| '{' error '}' { $$ = NULL;}
+rtfFieldrslt: '{' rtfIgnore RTFfldrslt rtfIngredients '}' 
+		| '{' error '}'
 		;
 
 rtfStatementList: 	/*	empty	*/

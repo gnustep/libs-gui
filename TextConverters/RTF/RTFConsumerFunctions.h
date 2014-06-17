@@ -46,6 +46,9 @@ void GSRTFstart(void *ctxt);
 /* seal the parsing process, the context or whatever you want */
 void GSRTFstop(void *ctxt);
 
+/* */
+int GSRTFgetPosition(void *ctxt);
+
 /*
  * those pairing functions enclose RTFBlocks. Use it to capture the
  * hierarchical attribute changes of blocks.  i.e. attributes of a
@@ -147,7 +150,7 @@ void GSRTFNeXTHelpLink(void *ctxt, int num, const char *markername,
 /* NeXTHelpMarker */
 void GSRTFNeXTHelpMarker(void *ctxt, int num, const char *markername);
 
-void GSRTFaddField (void *ctxt, const char *inst,  const char *result);
+void GSRTFaddField (void *ctxt, int start, const char *inst);
 
 #endif
 

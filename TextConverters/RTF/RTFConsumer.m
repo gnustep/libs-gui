@@ -284,8 +284,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) appendString: (NSString*)string;
 - (void) appendHelpLink: (NSString*)fileName marker: (NSString *)markerName;
 - (void) appendHelpMarker: (NSString*)markerName;
-- (void) appendField: (NSString*)instruction
-              result: (NSString*)result;
+- (void) appendField: (int)start
+         instruction: (NSString*)instruction;
 - (void) reset;
 @end
 
@@ -780,16 +780,14 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
     }
 }
 
-- (void) appendField: (NSString*)instruction
-              result: (NSString*)fieldResult
+- (void) appendField: (int)start
+         instruction: (NSString*)instruction
 {
   if (!ignore)
     {
-      int  oldPosition = [result length];
-      int  textlen = [fieldResult length]; 
+      int  oldPosition = start;
+      int  textlen = [result length] - start;
       NSRange insertionRange = NSMakeRange(oldPosition, textlen);
-
-      [self appendString: fieldResult];
 
       if ([instruction hasPrefix: @"HYPERLINK "])
         {
@@ -877,6 +875,11 @@ void GSRTFstop (void *ctxt)
 {
   //<!> close all open bolds et al.
   NSDebugLLog(@"RTFParser", @"End RTF parsing");
+}
+
+int GSRTFgetPosition(void *ctxt)
+{
+  return [((RTFConsumer *)ctxt)->result length];
 }
 
 void GSRTFopenBlock (void *ctxt, BOOL ignore)
@@ -1385,10 +1388,8 @@ void GSRTFNeXTHelpMarker (void *ctxt, int num, const char *markername)
   [(RTFDConsumer *)ctxt appendHelpMarker: markerName];
 }
 
-void GSRTFaddField (void *ctxt, const char *inst,  const char *result)
+void GSRTFaddField (void *ctxt, int start, const char *inst)
 {
-  NSString *fieldResult = [[NSString alloc] initWithCString: result
-                                                        encoding: ENCODING];
   NSString *fieldInstruction;
 
   // Ignore leading blanks
@@ -1399,7 +1400,6 @@ void GSRTFaddField (void *ctxt, const char *inst,  const char *result)
   fieldInstruction = [[NSString alloc] initWithCString: inst
                                               encoding: ENCODING];
       
-  [(RTFDConsumer *)ctxt appendField: fieldInstruction result: fieldResult];
+  [(RTFDConsumer *)ctxt appendField: start instruction: fieldInstruction];
   DESTROY(fieldInstruction);
-  DESTROY(fieldResult);
 }

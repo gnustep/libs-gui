@@ -158,7 +158,7 @@ extern int GSRTFdebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 82 "rtfGrammar.y"
+#line 85 "rtfGrammar.y"
 
 	int		number;
 	const char	*text;
