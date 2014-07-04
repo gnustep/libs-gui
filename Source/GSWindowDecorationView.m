@@ -355,6 +355,20 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   NSRect windowFrame;
   NSRect windowContentFrame;
 
+  // FIXME: This is needed as long as NSWindow uses fraem limits not content frame limits
+  NSSize aSize = [window minSize];
+  if (!NSEqualSizes(aSize, NSZeroSize))
+    {
+      aSize.height += difference;
+      [window setMinSize: aSize];
+    }
+  aSize = [window maxSize];
+  if (!NSEqualSizes(aSize, NSZeroSize))
+    {
+      aSize.height += difference;
+      [window setMaxSize: aSize];
+    }
+ 
   contentRect.size.height += difference;
   windowFrame = [object_getClass(self)
                     frameRectForContentRect: contentRect

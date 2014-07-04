@@ -1,3 +1,8 @@
+2014-07-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Add
+	workaround to adjust window min and max size when the height changes.
+
 2014-06-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/rtfGrammar.y,
