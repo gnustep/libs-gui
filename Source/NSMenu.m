@@ -829,6 +829,15 @@ static BOOL menuBarVisible = YES;
   [self menuChanged];
 }
 
+- (void) removeAllItems
+{
+  [_items makeObjectsPerformSelector:@selector(setMenu:) withObject:nil];
+  [_items removeAllObjects];
+  _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
+  [self menuChanged];
+}
+
 - (void) itemChanged: (id <NSMenuItem>)anObject
 {
   NSNotification *changed;
@@ -1563,6 +1572,10 @@ static BOOL menuBarVisible = YES;
                   forView: (NSView *)view
                  withFont: (NSFont *)font
 {
+  NSPoint point = [view frame].origin;
+  point = [[view superview] convertPoint:point toView:nil];
+      point = [[view window] convertBaseToScreen: point];
+//  [[menu window] setFrameOrigin:point];
   [menu _rightMouseDisplay: event];
 }
 

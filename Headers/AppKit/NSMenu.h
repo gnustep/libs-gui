@@ -568,6 +568,10 @@
  */
 - (void) removeItemAtIndex: (NSInteger)index;
 
+/** Removes all menu items.
+ */
+- (void) removeAllItems;
+
 /** Sets if a menu does autoenable.
  */
 - (void) setAutoenablesItems: (BOOL)flag;
