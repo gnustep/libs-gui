@@ -625,6 +625,12 @@ APPKIT_EXPORT_CLASS
  */
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
 
+/** Removes all menu items.
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) removeAllItems;
+#endif
+
 /** Calls -removeItemAtIndex: for anItem.
  */
 - (void) removeItem: (id <NSMenuItem>)anItem;

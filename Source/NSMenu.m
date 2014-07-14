@@ -811,6 +811,15 @@ static BOOL menuBarVisible = YES;
 			   atIndex: [_items count]];
 }
 
+- (void) removeAllItems
+{
+  [_items makeObjectsPerformSelector: @selector(setMenu:) withObject: nil];
+  [_items removeAllObjects];
+  _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
+  [self menuChanged];
+}
+
 - (void) removeItem: (id <NSMenuItem>)anItem
 {
   NSInteger index = [self indexOfItem: anItem];
