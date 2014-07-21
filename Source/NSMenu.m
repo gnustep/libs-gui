@@ -501,11 +501,14 @@ static BOOL menuBarVisible = YES;
 	    }
 	}
       
-      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
-	  - [_aWindow frame].size.height);
+      if ((_aWindow != nil) && ([_aWindow screen] != nil))
+        {
+          origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+                               - [_aWindow frame].size.height);
 	  
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
+          [_aWindow setFrameOrigin: origin];
+          [_bWindow setFrameOrigin: origin];
+        }
     }
 }
 

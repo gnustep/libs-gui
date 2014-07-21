@@ -1,5 +1,12 @@
 2014-07-04  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBox.m (-calcSizesAllowingNegative): Protect against
+	_cell being nil.
+	* Source/NSBox.m (-initWithCoder:): Add a few default values.
+	* Source/NSMenu.m (-_setGeometry): Protect against _aWindow being nil.
+
+2014-07-04  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSWindowDecorationView.m (-changeWindowHeight:): Add
 	workaround to adjust window min and max size when the height changes.
 

@@ -572,12 +572,20 @@
 
           [self setBorderType: borderType];
         }
+      else
+        {
+          _border_type = NSGrooveBorder;
+        }
       if ([aDecoder containsValueForKey: @"NSTitlePosition"])
         {
           NSTitlePosition titlePosition = [aDecoder decodeIntForKey: 
                                                         @"NSTitlePosition"];
           
           [self setTitlePosition: titlePosition];
+        }
+      else
+        {
+          _title_position = NSAtTop;
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
         {
@@ -598,11 +606,26 @@
           
           ASSIGN(_cell, titleCell);
         }
+      else
+        {
+          _cell = [[NSCell alloc] initTextCell: @"Title"];
+          [_cell setAlignment: NSCenterTextAlignment];
+          [_cell setBordered: NO];
+          [_cell setEditable: NO];
+          [self setTitleFont: [NSFont systemFontOfSize:
+                                        [NSFont smallSystemFontSize]]];
+        }
       if ([aDecoder containsValueForKey: @"NSContentView"])
         {
           NSView *contentView = [aDecoder decodeObjectForKey: @"NSContentView"];
 
           [self setContentView: contentView];
+        }
+      else
+        {
+          NSView *cv = [NSView new];
+          [self setContentView: cv];
+          RELEASE(cv);
         }
     }
   else
@@ -661,6 +684,12 @@
 	}
       return r;
     }				
+
+  // Don't try to compute anything while the title cell hasn't been set.
+  if (_cell == nil)
+    {
+      return r;
+    }
 
   switch (_title_position)
     {
