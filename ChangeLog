@@ -1,4 +1,9 @@
-2014-07-04  Fred Kiefer <FredKiefer@gmx.de>
+2014-07-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSGormLoading.m (GSWindowTemplate initWithCoder:): Remove
+	replace to none assigned variable.
+
+2014-07-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBox.m (-calcSizesAllowingNegative): Protect against
 	_cell being nil.
