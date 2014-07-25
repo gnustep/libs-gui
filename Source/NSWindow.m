@@ -1029,8 +1029,6 @@ many times.
                      defer: (BOOL)flag
 {
   NSRect  cframe;
-  NSInterfaceStyle style = 
-    NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
 
   NSAssert(NSApp,
     @"The shared NSApplication instance must be created before windows "
@@ -1101,14 +1099,6 @@ many times.
          selector: @selector(colorListChanged:)
              name: NSColorListDidChangeNotification
            object: nil];
-
-  if (style == NSWindows95InterfaceStyle)
-    {
-      if([self canBecomeMainWindow])
-        {
-          [self setMenu: [NSApp mainMenu]];
-        }
-    }
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
   return self;
