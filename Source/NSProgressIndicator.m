@@ -250,7 +250,6 @@
 
 - (void) setBezeled: (BOOL)flag
 {
-  NSLog(@"%s:flag: %ld", __PRETTY_FUNCTION__, (long)flag);
   if (_isBezeled != flag)
     {
       _isBezeled = flag;
@@ -497,7 +496,6 @@
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
           int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
-          NSLog(@"%s:flags: %p", __PRETTY_FUNCTION__, flags);
           
           _isIndeterminate = ((flags & 2) == 2);
           _controlTint = NSDefaultControlTint;
