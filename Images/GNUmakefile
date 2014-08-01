@@ -152,6 +152,18 @@ Images_RESOURCE_FILES = \
  common_ProgressSpinning_6.tiff \
  common_ProgressSpinning_7.tiff \
  common_ProgressSpinning_8.tiff \
+ common_ProgressSpinning2_1.png \
+ common_ProgressSpinning2_2.png \
+ common_ProgressSpinning2_3.png \
+ common_ProgressSpinning2_4.png \
+ common_ProgressSpinning2_5.png \
+ common_ProgressSpinning2_6.png \
+ common_ProgressSpinning2_7.png \
+ common_ProgressSpinning2_8.png \
+ common_ProgressSpinning2_9.png \
+ common_ProgressSpinning2_10.png \
+ common_ProgressSpinning2_11.png \
+ common_ProgressSpinning2_12.png \
  nsmapping.strings \
  page_landscape.tiff \
  page_portrait.tiff

@@ -62,6 +62,10 @@
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
+
+#define USE_SPINNING_DOTS
+
+
 /* a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good */
 /* 7.0 gives us the NeXT Look (which is 8 pix wide including the shadow) */
 #define COLOR_WELL_BORDER_WIDTH 7.0
@@ -1136,11 +1140,17 @@
   return aRect;
 }
 
+// TODO: Add linux type spinning image(s)???
 // progress indicator drawing methods
 static NSColor *fillColour = nil;
-#define MaxCount 10
-static int indeterminateMaxCount = MaxCount;
-static int spinningMaxCount = MaxCount;
+#define MaxCount 12
+#if defined(USE_SPINNING_DOTS)
+static int indeterminateMaxCount = 10;
+static int spinningMaxCount = 12;
+#else
+static int indeterminateMaxCount = 10;
+static int spinningMaxCount = 10;
+#endif
 static NSColor *indeterminateColors[MaxCount];
 static NSImage *spinningImages[MaxCount];
 
@@ -1153,7 +1163,7 @@ static NSImage *spinningImages[MaxCount];
   fillColour = RETAIN([NSColor controlShadowColor]);
 
   // Load images for indeterminate style
-  for (i = 0; i < MaxCount; i++)
+  for (i = 0; i < indeterminateMaxCount; i++)
     {
       NSString *imgName = [NSString stringWithFormat: @"common_ProgressIndeterminate_%d", i + 1];
       NSImage *image = [NSImage imageNamed: imgName];
@@ -1167,10 +1177,15 @@ static NSImage *spinningImages[MaxCount];
     }
   
   // Load images for spinning style
-  for (i = 0; i < MaxCount; i++)
+#if defined(USE_SPINNING_DOTS)
+  NSString *baseName = @"common_ProgressSpinning2_";
+#else
+  NSString *baseName = @"common_ProgressSpinning_";
+#endif
+  for (i = 0; i < spinningMaxCount; i++)
     {
-      NSString *imgName = [NSString stringWithFormat: @"common_ProgressSpinning_%d", i + 1];
-      NSImage *image = [NSImage imageNamed: imgName];
+      NSString *imgName = [NSString stringWithFormat: @"%@%d", baseName, i + 1];
+      NSImage  *image   = [NSImage imageNamed: imgName];
       
       if (image == nil)
         {
@@ -1210,14 +1225,16 @@ static NSImage *spinningImages[MaxCount];
        NSRect imgBox = {{0,0}, {0,0}};
 
        if (spinningMaxCount != 0)
-	 {
-	   count = count % spinningMaxCount;
-	   imgBox.size = [spinningImages[count] size];
-	   [spinningImages[count] drawInRect: r 
-				    fromRect: imgBox 
-				   operation: NSCompositeSourceOver
-				    fraction: 1.0];
-	 }
+         {
+           count = count % spinningMaxCount;
+           imgBox.size = [spinningImages[count] size];
+           [spinningImages[count] drawInRect: r
+                                    fromRect: imgBox
+                                   operation: NSCompositeSourceOver
+                                    fraction: 1.0
+                              respectFlipped: YES
+                                       hints: nil];
+         }
      }
    else
      {

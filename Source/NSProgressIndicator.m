@@ -126,6 +126,7 @@
                      && (_style == NSProgressIndicatorBarStyle)))
     return;
 
+  [self setHidden:NO];
   _isRunning = YES;
   if (!_usesThreadedAnimation)
     {
@@ -160,6 +161,8 @@
       // Done automatically
     }
 
+  if (_isDisplayedWhenStopped == NO)
+    [self setHidden:YES];
   _isRunning = NO;
 }
 
@@ -247,6 +250,7 @@
 
 - (void) setBezeled: (BOOL)flag
 {
+  NSLog(@"%s:flag: %ld", __PRETTY_FUNCTION__, (long)flag);
   if (_isBezeled != flag)
     {
       _isBezeled = flag;
@@ -295,7 +299,8 @@
 {
   _style = style;
   _count = 0;
-  [self setDisplayedWhenStopped: (style == NSProgressIndicatorBarStyle)];
+  [self setDisplayedWhenStopped:(style == NSProgressIndicatorBarStyle)];
+  [self setBezeled:(style == NSProgressIndicatorBarStyle)];
   [self sizeToFit];
   [self setNeedsDisplay: YES];
 }
@@ -334,7 +339,7 @@
 
    if (!_isRunning && !_isDisplayedWhenStopped)
      return;
-
+  
    if (_doubleValue < _minValue)
      val = 0.0;
    else if (_doubleValue > _maxValue)
@@ -419,6 +424,54 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
+      // things which Gorm encodes, but IB doesn't care about.
+      // process Gorm encodings that IB doesn't care about first
+      // otherwise we overwrite settings read in from XIB...
+      if ([aDecoder containsValueForKey: @"GSDoubleValue"])
+      {
+        _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
+      }
+      else
+      {
+        _doubleValue = _minValue;
+      }
+      
+      if ([aDecoder containsValueForKey: @"GSIsBezeled"])
+      {
+        _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
+      }
+      else
+      {
+        _isBezeled = YES;
+      }
+      
+      if ([aDecoder containsValueForKey: @"GSIsVertical"])
+      {
+        _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
+      }
+      else
+      {
+        _isVertical = NO;
+      }
+      
+      if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
+      {
+        _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
+      }
+      else
+      {
+        _usesThreadedAnimation = NO;
+      }
+      
+      if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
+      {
+        _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
+      }
+      else
+      {
+        _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
+      }
+
       // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
@@ -444,6 +497,7 @@
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
           int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+          NSLog(@"%s:flags: %p", __PRETTY_FUNCTION__, flags);
           
           _isIndeterminate = ((flags & 2) == 2);
           _controlTint = NSDefaultControlTint;
@@ -460,52 +514,6 @@
           _controlTint = NSDefaultControlTint;
           _controlSize = NSRegularControlSize;
           [self setStyle: NSProgressIndicatorBarStyle];
-        }
-
-      // things which Gorm encodes, but IB doesn't care about.
-      if ([aDecoder containsValueForKey: @"GSDoubleValue"])
-        {
-          _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
-        }
-      else
-        {
-          _doubleValue = _minValue;
-        }
-
-      if ([aDecoder containsValueForKey: @"GSIsBezeled"])
-        {
-          _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
-        }
-      else
-        {
-          _isBezeled = YES;
-        }
-
-      if ([aDecoder containsValueForKey: @"GSIsVertical"])
-        {
-          _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
-        }
-      else
-        {
-          _isVertical = NO;
-        }
-
-      if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
-        {
-          _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
-        }
-      else
-        {
-          _usesThreadedAnimation = NO;
-        } 
-     
-      if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
-        {
-          _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
-        }
-      else
-        {
-          _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
         }
     }
   else
