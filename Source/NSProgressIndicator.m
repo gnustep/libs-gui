@@ -85,7 +85,9 @@
 {
   if (!_isIndeterminate && (_style == NSProgressIndicatorBarStyle))
     return;
-
+  if ([self isHidden] == YES)
+    return; // Don't update if hidden...
+  
   // Let this value overflow when it reachs the limit
   _count++;
 
@@ -125,8 +127,7 @@
   if (_isRunning || (!_isIndeterminate 
                      && (_style == NSProgressIndicatorBarStyle)))
     return;
-
-  [self setHidden:NO];
+  
   _isRunning = YES;
   if (!_usesThreadedAnimation)
     {
