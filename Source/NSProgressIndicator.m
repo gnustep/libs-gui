@@ -128,6 +128,9 @@
                      && (_style == NSProgressIndicatorBarStyle)))
     return;
   
+  if ([self isHidden] && (_isDisplayedWhenStopped == YES))
+    return;
+  
   _isRunning = YES;
   if (!_usesThreadedAnimation)
     {
@@ -162,9 +165,12 @@
       // Done automatically
     }
 
+#if 0
   if (_isDisplayedWhenStopped == NO)
     [self setHidden:YES];
+#endif
   _isRunning = NO;
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) usesThreadedAnimation
@@ -337,8 +343,15 @@
 {
    double val;
 
-   if (!_isRunning && !_isDisplayedWhenStopped)
+   if (!_isRunning)
+   {
+     if (_isDisplayedWhenStopped == NO)
+     {
+       [[NSColor clearColor] setFill];
+       NSRectFill(_bounds);
+     }
      return;
+   }
   
    if (_doubleValue < _minValue)
      val = 0.0;
