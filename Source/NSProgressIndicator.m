@@ -85,8 +85,6 @@
 {
   if (!_isIndeterminate && (_style == NSProgressIndicatorBarStyle))
     return;
-  if ([self isHidden] == YES)
-    return; // Don't update if hidden...
   
   // Let this value overflow when it reachs the limit
   _count++;
@@ -127,10 +125,7 @@
   if (_isRunning || (!_isIndeterminate 
                      && (_style == NSProgressIndicatorBarStyle)))
     return;
-  
-  if ([self isHidden] && (_isDisplayedWhenStopped == YES))
-    return;
-  
+
   _isRunning = YES;
   if (!_usesThreadedAnimation)
     {
@@ -151,9 +146,9 @@
 
 - (void) stopAnimation: (id)sender
 {
-  if (!_isRunning || (!_isIndeterminate 
+  if (!_isRunning || (!_isIndeterminate
                       && (_style == NSProgressIndicatorBarStyle)))
-    return;
+      return;
 
   if (!_usesThreadedAnimation)
     {
@@ -165,17 +160,21 @@
       // Done automatically
     }
 
-#if 0
-  if (_isDisplayedWhenStopped == NO)
-    [self setHidden:YES];
-#endif
   _isRunning = NO;
+  _count     = 0;
   [self setNeedsDisplay: YES];
 }
 
 - (BOOL) usesThreadedAnimation
 {
   return _usesThreadedAnimation;
+}
+
+- (BOOL)isHidden
+{
+  if ((_isRunning == NO) && (_isDisplayedWhenStopped == NO))
+    return(YES);
+  return([super isHidden]);
 }
 
 - (void) setUsesThreadedAnimation: (BOOL)flag
@@ -342,28 +341,17 @@
 - (void) drawRect: (NSRect)rect
 {
    double val;
-
-   if (!_isRunning)
-   {
-     if (_isDisplayedWhenStopped == NO)
-     {
-       [[NSColor clearColor] setFill];
-       NSRectFill(_bounds);
-     }
-     return;
-   }
-  
    if (_doubleValue < _minValue)
      val = 0.0;
    else if (_doubleValue > _maxValue)
      val = 1.0;
    else 
      val = (_doubleValue - _minValue) / (_maxValue - _minValue);
-   [[GSTheme theme] drawProgressIndicator: self
-                    withBounds: _bounds
-                    withClip: rect
-                    atCount: _count
-                    forValue: val];
+  [[GSTheme theme] drawProgressIndicator: self
+                              withBounds: _bounds
+                                withClip: rect
+                                 atCount: _count
+                                forValue: val];
 }
 
 // It does not seem that Gnustep has a copyWithZone: on NSView, it is private
