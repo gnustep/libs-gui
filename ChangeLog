@@ -1,3 +1,13 @@
+2014-08-18 12:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWindow.m: Change code in
+	-[NSWindow constrainFrameRect:toScreen:] to contstrain
+	the X origin coordinate as well so that the window will appear
+	inside the screen if the saved coordinates are outside of the current
+	screen's range.  This can occur of the .gorm file was made on a machine
+	with a larger screen geometry than the machine it is currently running
+	on.
+
 2014-07-25  Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: Remove code in (initWithContentRect:..) which

@@ -2105,6 +2105,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       frameRect.origin.y -= difference;
     }
+
+  /* Adjust X origin, if needed */
+  difference = NSMaxX (frameRect) - NSMaxX (screenRect);
+  if (difference > 0)
+    {
+      frameRect.origin.x -= difference;
+    }
   
   /* If the window is resizable, resize it (if needed) so that the
      bottom edge is on the screen or can be on the screen when the user moves 
