@@ -1068,12 +1068,16 @@ typedef struct _GSButtonCellFlags
     }
 }
 
-- (void) drawTitle: (NSAttributedString*)titleToDisplay 
-         withFrame: (NSRect)cellFrame 
-            inView: (NSView*)controlView
+- (NSRect) drawTitle: (NSAttributedString*)titleToDisplay 
+	   withFrame: (NSRect)cellFrame 
+	      inView: (NSView*)controlView
 {
   [self _drawAttributedText: titleToDisplay
 		    inFrame: cellFrame];
+
+  return [titleToDisplay
+	   boundingRectWithSize: cellFrame.size
+			options: NSStringDrawingUsesLineFragmentOrigin];   
 }
 
 // Private helper method overridden in subclasses

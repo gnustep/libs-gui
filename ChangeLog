@@ -1,3 +1,10 @@
+2014-08-20 22:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSButtonCell.h
+	* Source/NSButtonCell.m: Change return type of -drawTitle:withFrame:
+	inView: to NSRect instead of void per Cocoa documentation.
+
+
 2014-08-18 12:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: Change code in
