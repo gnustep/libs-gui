@@ -2410,21 +2410,9 @@ static NSColor *dtxtCol;
     {
       unsigned long cFlags = 0;
       unsigned int cFlags2 = 0;
-      id contents;
+      id contents = _contents;
 
       // encode contents
-      if (_cell.type == NSTextCellType)
-        {
-          contents = _contents;
-        }
-      else if (_cell.type == NSImageCellType)
-        {
-          contents = _cell_image;
-        }
-      else
-        {
-          contents = [self objectValue];
-        }
       [aCoder encodeObject: contents forKey: @"NSContents"];
 
       // flags
