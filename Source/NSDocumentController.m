@@ -1648,6 +1648,8 @@ static NSString *processName = nil;
 - (void) _updateRecentDocumentsMenu
 {
   NSMenu *recentMenu;
+  BOOL listUpdated;
+  NSMutableArray *a;
   int i;
 
   recentMenu = [self _recentDocumentsMenu];
@@ -1660,6 +1662,35 @@ static NSString *processName = nil;
   [recentMenu setAutoenablesItems: NO];
   [recentMenu setMenuChangedMessagesEnabled: NO];
 
+  // remove from list all deleted or otherwise inaccessable files
+  listUpdated = NO;
+  for (i = [_recent_documents count] - 1; i >= 0; i--)
+    {
+      NSURL *u = [_recent_documents objectAtIndex: i];
+      NSError *error;
+      //  if resource has been deleted
+      if (![u checkResourceIsReachableAndReturnError:&error])
+        {
+          [_recent_documents removeObjectAtIndex:i];
+          listUpdated = YES;
+          continue;
+        }
+    }
+  if ( listUpdated ) 
+    {
+      // Save the changed list
+      a = [_recent_documents mutableCopy];
+      i = [a count];
+      while (i-- > 0)
+        {
+          [a replaceObjectAtIndex: i withObject:
+           [[a objectAtIndex: i] absoluteString]];
+        }
+      [[NSUserDefaults standardUserDefaults]
+        setObject: a forKey: NSRecentDocuments];
+      RELEASE(a);
+    }
+    
   while ([recentMenu numberOfItems] > 0)
     {
       [recentMenu removeItemAtIndex: 0];	// remove them all
@@ -1738,7 +1769,10 @@ static NSString *processName = nil;
 
   [self openDocumentWithContentsOfURL: url display: YES error: &err];
   if (err)
+  {
     [self presentError: err];
+    [self _updateRecentDocumentsMenu];
+  }
 }
 
 @end
