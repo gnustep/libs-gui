@@ -1,3 +1,28 @@
+2014-09-16 12:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSPrinting.m: Reorder printing backend load order.
+	Move WIN32 before GSLPR so it will be considered first on
+	Windows systems.
+	* Printing/GSWIN32: Add windows printing backend implementation.
+	* Printing/GSWIN32/GNUmakefile
+	* Printing/GSWIN32/GNUmakefile.postamble
+	* Printing/GSWIN32/GNUmakefile.preamble
+	* Printing/GSWIN32/GSWIN32PageLayout.h
+	* Printing/GSWIN32/GSWIN32PageLayout.m
+	* Printing/GSWIN32/GSWIN32PrincipalClass.h
+	* Printing/GSWIN32/GSWIN32PrincipalClass.m
+	* Printing/GSWIN32/GSWIN32PrintInfo.h
+	* Printing/GSWIN32/GSWIN32PrintInfo.m
+	* Printing/GSWIN32/GSWIN32PrintOperation.h
+	* Printing/GSWIN32/GSWIN32PrintOperation.m
+	* Printing/GSWIN32/GSWIN32PrintPanel.h
+	* Printing/GSWIN32/GSWIN32PrintPanel.m
+	* Printing/GSWIN32/GSWIN32Printer.h
+	* Printing/GSWIN32/GSWIN32Printer.m: Add new files to support windows
+	printing backend.
+	NOTE: This is currently a work in progress.  I am currently working
+	on integration with the Windows GDI Printing backend.
+
 2014-09-01 01:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSCell.m: Fix issue with saving text contents of the cell.

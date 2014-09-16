@@ -111,11 +111,11 @@ static NSBundle *printingBundle = nil;
     
   if ((bundle = [GSPrinting loadPrintingBundle: @"GSCUPS"]))
     return bundle;
-	
-  if ((bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]))
+
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSWIN32"]))
     return bundle;
-	
-  if ((bundle = [GSPrinting loadPrintingBundle: @"GSWin32"]))
+		
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]))
     return bundle;
 	
   return nil;
