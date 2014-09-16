@@ -42,5 +42,9 @@ ifeq ($(BUILD_GSCUPS), YES)
 SUBPROJECTS += GSCUPS
 endif
 
+ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+SUBPROJECTS += GSWIN32
+endif
+
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 
