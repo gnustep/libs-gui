@@ -18,7 +18,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../../Headers/Additions -I../../Headers \
 	-I../../Source/$(GNUSTEP_TARGET_DIR)
 
 # Additional LDFLAGS to pass to the linker
-ADDITIONAL_LDFLAGS += -lwinspool
+ADDITIONAL_LDFLAGS += 
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR)
@@ -32,7 +32,7 @@ ADDITIONAL_GUI_LIBS +=
 # Libraries
 ADDITIONAL_LIBRARY_LIBS +=
 # ObjC stuff
-ADDITIONAL_OBJC_LIBS += 
+ADDITIONAL_OBJC_LIBS += -lwinspool 
 #-lgnustep-gui $(SYSTEM_LIBS)
 # Tools
 ADDITIONAL_TOOL_LIBS +=

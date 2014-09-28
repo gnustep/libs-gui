@@ -1,3 +1,11 @@
+2014-09-27 12:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Printing/GSWIN32/GSWIN32PrinterOperation.m: Addition of function
+	to output to printer directly.
+	* Printing/GSWIN32/GNUmakefile: Change to correct linker issue
+	winspool was not being linked in the proper place so it was
+	causing unresolved references.
+	
 2014-09-16 12:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSPrinting.m: Reorder printing backend load order.
