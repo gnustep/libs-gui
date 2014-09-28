@@ -45,9 +45,81 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
+
 #import "GSWIN32Printer.h"
 #import "GNUstepGUI/GSPrinting.h"
 
+NSMutableDictionary *EnumeratePrinters(DWORD flags)
+{
+    PRINTER_INFO_2* prninfo=NULL;
+    DWORD needed, returned;
+    NSMutableDictionary *printers = nil;
+
+    //find required size for the buffer
+    EnumPrinters(flags, NULL, 2, NULL, 0, &needed, &returned);
+ 
+    //allocate array of PRINTER_INFO structures
+    prninfo = (PRINTER_INFO_2*) GlobalAlloc(GPTR,needed);
+ 
+    //call again
+    if (!EnumPrinters(flags, NULL, 
+        2, (LPBYTE) prninfo, needed, &needed, &returned))
+      {
+	NSLog(@"Error: %s\n", GetLastError());
+      }
+    else
+      {
+	int i = 0;
+	
+	printers = [NSMutableDictionary dictionary];
+	NSLog(@"Printers found: %d\n\n",returned);
+	for (i = 0; i < returned; i++)
+	  {
+	    NSMutableDictionary *entry = [NSMutableDictionary dictionary];
+	    NSString *printerName = 
+	      [NSString stringWithCString:prninfo[i].pPrinterName 
+				 encoding:NSASCIIStringEncoding];
+	    
+	    if (printerName != nil)
+	      {
+		NSString *portName = 
+		  [NSString stringWithCString:prninfo[i].pPortName
+				     encoding:NSASCIIStringEncoding];
+		if (portName != nil)
+		  {
+		    [entry setObject:portName
+			      forKey:@"Host"];
+		    [entry setObject:[NSString stringWithFormat:@"Current Status: %d",prninfo[i].Status]
+			      forKey:@"Note"];
+		    [entry setObject:@"Generic Postscript Printer"
+			      forKey:@"Type"];
+		    
+		    [printers setObject:entry
+				 forKey:printerName];
+		    /*
+		    NSLog(@"%s on %s, Status = %d, jobs=%d\n",
+			  prninfo[i].pPrinterName,
+			  prninfo[i].pPortName,
+			  prninfo[i].Status, 
+			  prninfo[i].cJobs);
+		    */
+		  }
+		else
+		  {
+		    NSLog(@"Port name is nil for %@",printerName);
+		  }
+	      }
+	    else
+	      {
+		NSLog(@"Printer name is nil");
+	      }
+	  }
+      }
+    
+    GlobalFree(prninfo);
+
+    return printers;
+}
 
 @implementation GSWIN32Printer
 
@@ -97,7 +169,7 @@
                         withHost: [printerEntry objectForKey: @"Host"]
                         withNote: [printerEntry objectForKey: @"Note"]];
 
-  [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
+  // [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
                          
   return AUTORELEASE(printer);
 }
@@ -109,58 +181,52 @@
 }
 
 //
-// Load the printer setup from NSUserDefaults
+// Load the printer setup
 //
 + (NSDictionary*) printersDictionary
 {
   static BOOL didWarn;
-  NSUserDefaults* defaults;
   NSDictionary *printers;
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  printers = [defaults dictionaryForKey: @"GSWIN32Printers"];
-
+  printers = EnumeratePrinters(PRINTER_ENUM_LOCAL);
   if (!printers) //Not set, make a default printer because we are nice.
     {
       NSString *ppdPath;
       NSMutableDictionary *printerEntry;
-
+      
       printers = [NSMutableDictionary dictionary];
       printerEntry = [NSMutableDictionary dictionary];
-
+      
       ppdPath = [NSBundle
-	pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
-			ofType: @"ppd"
-		   inDirectory: @"PostScript/PPD"];
+		      pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
+				      ofType: @"ppd"
+				 inDirectory: @"PostScript/PPD"];
       NSAssert(ppdPath,
 	       @"Couldn't find the PPD file for the fallback printer.");
-
+      
       [printerEntry setObject: ppdPath
 		       forKey: @"PPDPath"];
-
+      
       [printerEntry setObject: @"localhost"
-                       forKey: @"Host"];
-
+		       forKey: @"Host"];
+      
       [printerEntry setObject: @"Automatically Generated"
-                       forKey: @"Note"];
-
+		       forKey: @"Note"];
+      
       [printerEntry setObject: @"Unknown"
-                       forKey: @"Type"];
-
+		       forKey: @"Type"];
+      
       [(NSMutableDictionary*)printers setObject: printerEntry
-                                         forKey: @"Unnamed"];
-
-      [defaults setObject: printers forKey: @"GSWIN32Printers"];
-      [defaults synchronize];
-
+					 forKey: @"Unnamed"];
+      
       if (!didWarn)
 	{
 	  NSLog(@"Creating a default printer since no printer has been set "
- 		@"in the user defaults (under the GSWIN32Printers key).");
+		@"in the user defaults (under the GSWIN32Printers key).");
 	  didWarn = YES;
 	}
     }
-
+  
   return printers;
 }
 

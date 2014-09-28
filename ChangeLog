@@ -1,11 +1,24 @@
-2014-09-27 12:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
+2014-09-28 04:00-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Printing/GNUmakefile: On windows only compile the GSWIN32
+	Printing backend
+	* Printing/GSWIN32/GSWIN32PrintPanel.m: Extract printer name
+	from results.
+	* Printing/GSWIN32/GSWIN32PrintOperation.m: Add code to
+	send raw data to the printer.  Implement code to send
+	file to printer.
+	* Printing/GSWIN32/GSWIN32Printer.m: Add code to enumerate list of
+	available printers on Windows.  Build dictionary for GSWIN32Printer
+	class.
+
+2014-09-27 21:30-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Printing/GSWIN32/GSWIN32PrinterOperation.m: Addition of function
 	to output to printer directly.
 	* Printing/GSWIN32/GNUmakefile: Change to correct linker issue
 	winspool was not being linked in the proper place so it was
 	causing unresolved references.
-	
+
 2014-09-16 12:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSPrinting.m: Reorder printing backend load order.

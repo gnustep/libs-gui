@@ -1,20 +1,12 @@
 /* 
-   GWIN32SPrintOperation.m
+   GWIN32PrintOperation.m
 
-   Controls operations generating EPS, PDF or PS print jobs.
+   Controls operations generating windows print
 
    Copyright (C) 2014 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg.casamento@gmail.com>
    Date 2014
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
-   Author: Fred Kiefer <FredKiefer@gmx.de>
-   Date: November 2000
-   Started implementation.
-   Modified for Printing Backend Support
-   Author: Chad Hardin
-   Date: June 2004
 
    This file is part of the GNUstep GUI Library.
 
@@ -42,6 +34,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSTask.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSData.h>
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSPrinter.h"
@@ -154,35 +147,36 @@ BOOL RawDataToPrinter(LPSTR szPrinterName, LPBYTE lpData, DWORD dwCount)
 
 - (BOOL) _deliverSpooledResult
 {
-  int copies;
-  NSDictionary *dict;
-  NSTask *task;
-  NSString *name, *status;
-  NSMutableArray *args;
+  NSString *name = nil;
+  NSData *fileData = nil;
+  LPSTR szPrinterName = NULL; 
+  DWORD dwCount = 0;
+  LPBYTE lpData = NULL;
+  BOOL result = FALSE;
   
   name = [[[self printInfo] printer] name];
-  status = [NSString stringWithFormat: _(@"Spooling to printer %@."), name];
-  [[self printPanel] _setStatusStringValue: status];
-
-  dict = [[self printInfo] dictionary];
-  args = [NSMutableArray array];
-  copies = [[dict objectForKey: NSPrintCopies] intValue];
-  if (copies > 1)
-    [args addObject: [NSString stringWithFormat: @"-#%0d", copies]];
-  if ([name isEqual: @"Unknown"] == NO)
+  
+  if(name != nil)
     {
-      [args addObject: @"-P"];
-      [args addObject: name];
+      szPrinterName = (LPSTR)[name cString];
+      fileData = [NSData dataWithContentsOfFile:_path];
+      if(fileData != nil)
+	{
+	  dwCount = (DWORD)[fileData length];
+	  lpData = (LPBYTE)[fileData bytes];
+	  result = RawDataToPrinter(szPrinterName, lpData, dwCount);
+	}
+      else
+	{
+	  NSLog(@"File is blank");
+	}
     }
-  [args addObject: _path];
+  else
+    {
+      NSLog(@"No printer name supplied");
+    }
 
-  task = [NSTask new];
-  [task setLaunchPath: @"lpr"];
-  [task setArguments: args];
-  [task launch];
-  [task waitUntilExit];
-  AUTORELEASE(task);
-  return YES;
+  return (result ? YES : NO); // Paranoid conversion to ObjC type...
 }
 
 - (NSGraphicsContext*)createContext

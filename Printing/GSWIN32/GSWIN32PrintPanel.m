@@ -50,26 +50,14 @@
 - (NSInteger) runModalWithPrintInfo: (NSPrintInfo *)printInfo
 {
    int                   retVal;
-   // NSMutableDictionary  *info = [printInfo dictionary];
    PRINTDLG              printDlg;
-   // GSWIN32Printer       *printer = [info objectForKey:@"NSPrinter"];
    int                   windowNumber = [[[NSApplication sharedApplication] mainWindow] windowNumber];
    
-   /*
-   NSLog(@"==== Printer info ");
-   NSLog(@"Names: %@",[GSWIN32Printer printerNames]);
-   NSLog(@"Info: %@",info);
-   NSLog(@"Host: %@",[printer host]);
-   NSLog(@"Name: %@",[printer name]);
-   NSLog(@"Note: %@",[printer note]);
-   NSLog(@"Type: %@",[printer type]);
-   NSLog(@"==== End Printer info ");
-   */
-
    printDlg.lStructSize = sizeof(PRINTDLG);
    printDlg.hwndOwner = (HWND)windowNumber;
    printDlg.hDevMode = NULL;
    printDlg.hDevNames = NULL;
+   printDlg.Flags = PD_RETURNDC | PD_USEDEVMODECOPIESANDCOLLATE;
    printDlg.hDC = NULL;
    printDlg.lCustData = 0; 
    printDlg.lpfnPrintHook = NULL; 
@@ -78,12 +66,11 @@
    printDlg.lpSetupTemplateName = NULL; 
    printDlg.hPrintTemplate = NULL; 
    printDlg.hSetupTemplate = NULL; 
-   printDlg.Flags = PD_RETURNDC | PD_COLLATE; //  | PD_ENABLEPRINTHOOK;
 
-   printDlg.nFromPage = 1;
-   printDlg.nToPage = 1;
+   printDlg.nFromPage = 0; //0xFFFF;
+   printDlg.nToPage = 0; //0xFFFF;
    printDlg.nMinPage = 1;
-   printDlg.nMaxPage = 1;
+   printDlg.nMaxPage = 0xFFFF;
    printDlg.nCopies = 1; 
    printDlg.hInstance = NULL; 
    
@@ -94,10 +81,20 @@
      }
    else 
      {
-       // Get specifics from the data returned
-       DEVMODE *devMode = printDlg.hDevMode;
-       NSString *printerName = [NSString stringWithCString:(const char *)(devMode->dmDeviceName)];
+       DEVNAMES   *pDevNames = (DEVNAMES *)GlobalLock(printDlg.hDevNames);
+       LPCTSTR     szDevice = NULL;
+       NSString   *printerName = nil;
+       NSPrinter  *printer = nil;
+
+       szDevice = (LPCTSTR)pDevNames + pDevNames->wDeviceOffset;
+       printerName = [NSString stringWithCString:(const char *)szDevice];
        NSLog(@"Printer Name = %@",printerName);
+
+       printer = [NSPrinter printerWithName:printerName];
+       if(printer != nil)
+	 {
+	   [printInfo setPrinter:printer];
+	 }
      }
    
    return NSOKButton;
