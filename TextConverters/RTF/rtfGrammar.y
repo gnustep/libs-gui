@@ -197,6 +197,7 @@ int fieldStart = 0;
 %token	RTFfamilyScript
 %token	RTFfamilyDecor
 %token	RTFfamilyTech
+%token	RTFfamilyBiDi
 
 %type	<number> rtfFontFamily rtfCharset rtfFontStatement
 %type	<text> rtfFieldinst
@@ -205,18 +206,18 @@ int fieldStart = 0;
 
 %%
 
-rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfCharset rtfIngredients { GSRTFstop(CTXT); } '}'
+rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfIngredients { GSRTFstop(CTXT); } '}'
 		;
 
+/* FIXME: This should change the used encoding */
 rtfCharset: RTFansi { $$ = 1; }
 		|	RTFmac { $$ = 2; }
 		|	RTFpc  { $$ = 3; }
 		|	RTFpca { $$ = 4; }
-			/* If it's an unknown character set, assume ansi. */
-		|	RTFOtherStatement { $$ = 1; free((void*)$1.name); }
 		;
 
 rtfIngredients:	/*	empty	*/
+		|	rtfIngredients rtfCharset
 		|	rtfIngredients rtfFontList
 		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
@@ -589,6 +590,12 @@ rtfFonts:
 /* RTFtext introduces the fontName */
 rtfFontStatement:	RTFfont rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $4, $2, $1.parameter);
                                                           free((void *)$4); }
+/* fbidi should be a font family, but it seems to be used differently */
+		|	RTFfont RTFfamilyBiDi rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $5, $3, $1.parameter);
+                                                          free((void *)$5); }
+/* Theme fonts */
+		|	RTFOtherStatement RTFfont RTFfamilyBiDi rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $6, $4, $2.parameter);
+                                                          free((void *)$6); }
 		;
 
 rtfFontAttrs: /* empty */

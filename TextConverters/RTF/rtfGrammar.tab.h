@@ -149,7 +149,8 @@ extern int GSRTFdebug;
      RTFfamilyModern = 358,
      RTFfamilyScript = 359,
      RTFfamilyDecor = 360,
-     RTFfamilyTech = 361
+     RTFfamilyTech = 361,
+     RTFfamilyBiDi = 362
    };
 #endif
 
@@ -166,7 +167,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 170 "rtfGrammar.tab.h"
+#line 171 "rtfGrammar.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

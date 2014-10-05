@@ -177,6 +177,7 @@ LexKeyword RTFcommands[] =
     {"endash",    token(RTFendash)},
     {"enspace",   token(RTFenspace)},
     {"f",         token(RTFfont)},
+    {"fbidi",     token(RTFfamilyBiDi)},
     {"fcharset",  token(RTFfcharset)},
     {"fdecor",    token(RTFfamilyDecor)},
     {"fi",        token(RTFfirstLineIndent)},

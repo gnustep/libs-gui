@@ -1,4 +1,11 @@
-2014-10-04  Fred Kiefer <FredKiefer@gmx.de>
+2014-10-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfScanner.m: Add RTFfamilyBiDi.
+	* TextConverters/RTF/rtfGrammar.y: Handle more complex font tables.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+
+2014-10-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (-lockFocusOnRepresentation:): Allow image
 	caching during printing.
