@@ -58,6 +58,10 @@
 
 BOOL NSImageForceCaching = NO; /* use on missmatch */
 
+@interface NSView (Private)
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
+@end
+
 @implementation NSBundle (NSImageAdditions)
 
 - (NSString*) pathForImageResource: (NSString*)name
@@ -1012,9 +1016,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
       if (_lockedView == nil)
-        [NSException raise: NSImageCacheException
-                     format: @"Cannot lock focus on nil rep"];
-      [_lockedView lockFocus];
+        {
+          [NSException raise: NSImageCacheException
+                      format: @"Cannot lock focus on nil rep"];
+        }
+
+      // FIXME: This is needed to get image caching working while printing. A better solution
+      // needs to remove the viewIsPrinting variable from NSView.
+      [_lockedView _lockFocusInContext: [window graphicsContext] inRect: [_lockedView bounds]];
       if (repd->bg == nil) 
         {
           NSRect fillrect = NSMakeRect(0, 0, _size.width, _size.height);
