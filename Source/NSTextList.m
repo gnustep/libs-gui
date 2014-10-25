@@ -47,7 +47,7 @@
 - (void) dealloc;
 {
   RELEASE(_markerFormat);
-	[super dealloc];
+  [super dealloc];
 }
 
 - (BOOL) isEqual: (id)anObject
@@ -77,7 +77,7 @@
 
 - (NSString *) markerForItemNumber: (int)item
 {
-	NSMutableString *s = [_markerFormat mutableCopy];
+  NSMutableString *s = [_markerFormat mutableCopy];
   unichar box = 0x25A1;
   unichar check = 0x2713;
   unichar circle = 0x25E6;
@@ -87,67 +87,67 @@
   unichar square = 0x25A0;
 
   // FIXME: Needs optimisation and roman numbers
-	[s replaceOccurrencesOfString: @"{box}" 
+  [s replaceOccurrencesOfString: @"{box}" 
      withString: [NSString stringWithCharacters: &box length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{check}" 
+  [s replaceOccurrencesOfString: @"{check}" 
      withString: [NSString stringWithCharacters: &check length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{circle}" 
+  [s replaceOccurrencesOfString: @"{circle}" 
      withString: [NSString stringWithCharacters: &circle length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{diamond}" 
+  [s replaceOccurrencesOfString: @"{diamond}" 
      withString: [NSString stringWithCharacters: &diamond length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{disc}" 
+  [s replaceOccurrencesOfString: @"{disc}" 
      withString: [NSString stringWithCharacters: &disc length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{hyphen}" 
+  [s replaceOccurrencesOfString: @"{hyphen}" 
      withString: [NSString stringWithCharacters: &hyphen length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{square}" 
+  [s replaceOccurrencesOfString: @"{square}" 
      withString: [NSString stringWithCharacters: &square length: 1] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{decimal}" 
+  [s replaceOccurrencesOfString: @"{decimal}" 
      withString: [NSString stringWithFormat: @"%d", item] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{octal}" 
+  [s replaceOccurrencesOfString: @"{octal}" 
      withString: [NSString stringWithFormat: @"%o", item] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{lower-hexadecimal}" 
+  [s replaceOccurrencesOfString: @"{lower-hexadecimal}" 
      withString: [NSString stringWithFormat: @"%x", item] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{upper-hexadecimal}" 
+  [s replaceOccurrencesOfString: @"{upper-hexadecimal}" 
      withString: [NSString stringWithFormat: @"%X", item] 
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{lower-alpha}" 
+  [s replaceOccurrencesOfString: @"{lower-alpha}" 
      withString: [NSString stringWithFormat: @"%c", item + 'a']
      options: 0 
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{lower-latin}" 
+  [s replaceOccurrencesOfString: @"{lower-latin}" 
      withString: [NSString stringWithFormat: @"%c", item + 'a']
      options: 0
      range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{upper-alpha}"
+  [s replaceOccurrencesOfString: @"{upper-alpha}"
      withString: [NSString stringWithFormat: @"%c", item + 'A']
      options: 0 range: NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString: @"{upper-latin}"
+  [s replaceOccurrencesOfString: @"{upper-latin}"
      withString: [NSString stringWithFormat: @"%c", item + 'A']
      options: 0
      range: NSMakeRange(0, [s length])];
 
-	return AUTORELEASE(s);
+  return AUTORELEASE(s);
 }
 
 - (id) copyWithZone: (NSZone*)zone
@@ -161,9 +161,12 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // FIXME
   if ([aCoder allowsKeyedCoding])
     {
+      [aCoder encodeObject: _markerFormat
+                    forKey: @"NSMarkerFormat"];
+      [aCoder encodeInt: _listOptions
+                 forKey: @"NSOptions"];
     }
   else
     {
@@ -172,9 +175,10 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // FIXME
   if ([aDecoder allowsKeyedCoding])
     {
+      ASSIGN(_markerFormat, [aDecoder decodeObjectForKey: @"NSMarkerFormat"]);
+      _listOptions = [aDecoder decodeIntForKey: @"NSOptions"];
     }
   else
     {

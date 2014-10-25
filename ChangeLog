@@ -1,3 +1,8 @@
+2014-10-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSParagraphStyle.m,
+	* Source/NSTextList.m: Add keyed en-/decoding.
+
 2014-10-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/rtfScanner.m: Add RTFfamilyBiDi.
