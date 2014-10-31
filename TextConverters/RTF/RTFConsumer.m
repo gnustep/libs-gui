@@ -286,6 +286,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) appendHelpMarker: (NSString*)markerName;
 - (void) appendField: (int)start
          instruction: (NSString*)instruction;
+- (void) appendImage: (NSString*) string;
 - (void) reset;
 @end
 
@@ -408,12 +409,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
 @end
 
-
-@interface RTFDConsumer (Private)
-
-- (void) appendImage: (NSString*) string;
-
-@end
 
 @implementation RTFDConsumer
 
@@ -810,6 +805,11 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
           DESTROY(attributes);
         }
     }
+}
+
+- (void) appendImage: (NSString*)string
+{
+  // Do nothing for RTF
 }
 
 @end
