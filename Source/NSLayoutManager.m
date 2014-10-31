@@ -1408,12 +1408,14 @@ container
   i = range.location - glyph_pos;
   last_color = nil;
   first_char_pos = char_pos;
-  while (1)
+  while ((glyph_run != nil) && (i + glyph_pos < range.location + range.length))
     {
       NSRange r = NSMakeRange(glyph_pos + i, glyph_run->head.glyph_length - i);
 
       if (NSMaxRange(r) > NSMaxRange(range))
-	r.length = NSMaxRange(range) - r.location;
+        {
+          r.length = NSMaxRange(range) - r.location;
+        }
 
       color = [_textStorage attribute: NSBackgroundColorAttributeName
 			      atIndex: char_pos
@@ -1446,8 +1448,6 @@ container
       char_pos += glyph_run->head.char_length;
       i = 0;
       glyph_run = (glyph_run_t *)glyph_run->head.next;
-      if (i + glyph_pos >= range.location + range.length)
-	break;
     }
 
   if (!_selected_range.length || _selected_range.location == NSNotFound)

@@ -1,3 +1,9 @@
+2014-10-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSLayoutManager.m
+	(-drawBackgroundForGlyphRange:atPoint:): Make save against
+	glyph_run being null. Should fix part of #43454.
+
 2014-10-25  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSParagraphStyle.m,
