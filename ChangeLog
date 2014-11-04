@@ -1,3 +1,11 @@
+2014-11-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSParagraphStyle.m (+defaultParagraphStyle): Comment out
+	tabs in default paragraph style as Apple doesn't seem to have them.
+	* Source/GSNibLoading.m: Set the main menu already when
+	instantiating the top level objects. Thi is needed for newer
+	versions of NIB files.
+
 2014-10-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumer.m: Add empty appendImage: method

@@ -95,6 +95,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 @interface NSMenu (GNUstepPrivate)
 - (void) _setGeometry;
+- (BOOL) _isMainMenu;
 @end
 
 @implementation NSMenu (NibCompatibility)
@@ -1753,7 +1754,7 @@ static BOOL _isInInterfaceBuilder = NO;
 				  NSObjectMapValueCallBacks, 2);
       _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
 			       NSObjectMapValueCallBacks, 2);
-      
+
       // 
       // Get the maps.  There is no need to retain these, 
       // since they are going to be placed into the NSMapTable
@@ -1937,6 +1938,11 @@ static BOOL _isInInterfaceBuilder = NO;
 	      // objects on behalf of the owner.
 	      RETAIN(obj);
 	    }
+          if ([obj isKindOfClass: [NSMenu class]] &&
+              [obj _isMainMenu])
+            {
+              [NSApp _setMainMenu: obj];
+            }
         }
     }
 
