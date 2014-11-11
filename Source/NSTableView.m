@@ -4573,7 +4573,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   NSRect frameRect;
 
-  [self numberOfRows];
+  _reloadNumberOfRows = YES;
+  [self _numberOfRows];
   
   if ((rowIndex < 0) ||
       (rowIndex > (_numberOfRows - 1)) ||
