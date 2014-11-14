@@ -283,6 +283,10 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag;
 @end
 
+
+// Declare the protocol (with no mandatory methods) to support cross compiling
+@protocol NSBrowserDelegate;
+
 //
 // Methods Implemented by the Delegate 
 //

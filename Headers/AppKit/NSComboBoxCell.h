@@ -117,6 +117,9 @@
 #endif
 @end
 
+// Declare the protocol (with no mandatory methods) to support cross compiling
+@protocol NSComboBoxCellDataSource;
+
 @interface NSObject (NSComboBoxCellDataSource)
 - (NSInteger)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (id)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
