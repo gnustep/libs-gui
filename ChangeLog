@@ -1,3 +1,8 @@
+2014-11-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSBrowser.h,
+	* Headers/AppKit/NSComboBoxCell.h: Add missing protocol declarations.
+
 2014-11-04  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSParagraphStyle.m (+defaultParagraphStyle): Comment out

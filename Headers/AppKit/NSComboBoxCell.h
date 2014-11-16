@@ -117,7 +117,13 @@
 #endif
 @end
 
+@protocol NSComboBoxCellDataSource <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSComboBoxCellDataSource)
+#endif
 - (NSInteger)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (id)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
   objectValueForItemAtIndex:(NSInteger)index;

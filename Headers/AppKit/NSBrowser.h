@@ -315,7 +315,13 @@ typedef NSUInteger NSBrowserColumnResizingType;
 //
 // Methods Implemented by the Delegate 
 //
+@protocol NSBrowserDelegate <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSBrowserDelegate)
+#endif
 
 - (void) browser: (NSBrowser *)sender createRowsForColumn: (NSInteger)column
   inMatrix: (NSMatrix *)matrix;
