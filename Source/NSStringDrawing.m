@@ -181,94 +181,102 @@ static inline BOOL is_size_match(cache_t *c, int hasSize, NSSize size)
 
 static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
 {
+  static int LastReplaced = 0;
+  
   int i, j;
   cache_t *c;
   int least_used;
   int replace;
   int orig_used;
   unsigned int string_hash = [[scratchTextStorage string] hash];
-
+  
 #ifdef STATS
   total++;
 #endif
-
+  
   *matched = 1;
   replace = least_used = -1;
-
+  
   /*
-  A deterministic pattern for replacing cache entries can hit ugly worst
-  cases on certain matching use patterns (where the cache is full of old
-  unused entries, but the new entries keep replacing each other).
-
-  By starting at a random index, we avoid this kind of problem.
-  */
+   A deterministic pattern for replacing cache entries can hit ugly worst
+   cases on certain matching use patterns (where the cache is full of old
+   unused entries, but the new entries keep replacing each other).
+   
+   By starting at a random index, we avoid this kind of problem.
+   */
   j = rand() % NUM_CACHE_ENTRIES;
   for (i = 0; i < NUM_CACHE_ENTRIES; i++, j++)
     {
       if (j == NUM_CACHE_ENTRIES)
-	j = 0;
+        j = 0;
       c = cache + j;
       if (least_used == -1 || c->used < least_used)
-	{
-	  least_used = c->used;
-	  replace = j;
-	}
-
+        {
+          // Avoid replacing the very last one in case of recursion...
+          if (j != LastReplaced)
+            {
+              least_used = c->used;
+              replace = j;
+            }
+        }
+      
       if (!c->used)
-	continue;
-
+        continue;
+      
       orig_used = c->used;
       if (c->used > MISS_COST)
-	c->used -= MISS_COST;
+        c->used -= MISS_COST;
       else
-	c->used = 1;
-
+        c->used = 1;
+      
       if (c->string_hash != string_hash
-	  || c->useScreenFonts != useScreenFonts)
-	continue;
-
-#ifdef STATS
+          || c->useScreenFonts != useScreenFonts)
+        continue;
+      
+  #ifdef STATS
       hash_hits++;
-#endif
-
+  #endif
+      
       if (![scratchTextStorage isEqualToAttributedString: c->textStorage])
-	continue;
-
+        continue;
+      
       /* String and attributes match, check size. */
       if (is_size_match(c, hasSize, size))
-	{
-	  c->used = orig_used + HIT_BOOST;
+        {
+          c->used = orig_used + HIT_BOOST;
 #ifdef STATS
-	  hits++;
+          hits++;
 #endif
-	  return j;
-	}
+          return j;
+        }
     }
-
+  
   NSCAssert(replace != -1, @"Couldn't find a cache entry to replace.");
-
+  
 #ifdef STATS
   misses++;
 #endif
-  *matched = 0;
-
+  *matched     = 0;
+  LastReplaced = replace;
+  
   c = cache + replace;
   c->used = 1;
   c->string_hash = string_hash;
   c->hasSize = hasSize;
   c->useScreenFonts = useScreenFonts;
   c->givenSize = size;
-
+  c->usedRect = NSZeroRect;
+  
   {
     id temp;
-
+    
 #define SWAP(a, b) temp = a; a = b; b = temp;
     SWAP(scratchTextStorage, c->textStorage)
     SWAP(scratchLayoutManager, c->layoutManager)
     SWAP(scratchTextContainer, c->textContainer)
 #undef SWAP
   }
-
+  
   return replace;
 }
 
