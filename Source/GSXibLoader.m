@@ -564,23 +564,12 @@
       if ([coder containsValueForKey: @"objectID"])
         {
           // PRE-4.6 XIBs....
-          objectID = [coder decodeIntForKey: @"objectID"];
+          objectID = [coder decodeObjectForKey: @"objectID"];
         }
       else if ([coder containsValueForKey: @"id"])
         {
           // 4.6+ XIBs....
-          NSString *string = [coder decodeObjectForKey: @"id"];
-          if (string && [string isKindOfClass:[NSString class]] && [string length])
-            {
-              objectID = [string intValue];
-            }
-          else
-            {
-              NSString *format = [NSString stringWithFormat:@"%s:class: %@ - object ID is missing or zero!",
-                                  __PRETTY_FUNCTION__, NSStringFromClass([self class])];
-              [NSException raise: NSInvalidArgumentException
-                          format: format];
-            }
+          objectID = [coder decodeObjectForKey: @"id"];
         }
       else
         {
@@ -632,7 +621,7 @@
   return parent;
 }
 
-- (NSInteger) objectID
+- (id) objectID
 {
   return objectID;
 }
@@ -678,7 +667,7 @@
   return orderedObjects;
 }
 
-- (id) objectWithObjectID: (NSInteger)objID
+- (id) objectWithObjectID: (id)objID
 {
   NSEnumerator *en;
   IBObjectRecord *obj;
@@ -686,7 +675,7 @@
   en = [orderedObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      if ([obj objectID] == objID)
+      if ([[obj objectID] isEqual:objID])
         {
           return [obj object];
         }
@@ -760,7 +749,7 @@
   return [[objectRecords orderedObjects] objectEnumerator];
 }
 
-- (NSDictionary*) propertiesForObjectID: (int)objectID
+- (NSDictionary*) propertiesForObjectID: (id)objectID
 {
   NSEnumerator *en;
   NSString *idString;
@@ -768,7 +757,7 @@
   NSMutableDictionary *properties;
   int idLength;
 
-  idString = [NSString stringWithFormat: @"%d.", objectID];
+  idString = [NSString stringWithFormat: @"%@.", objectID];
   idLength = [idString length];
   properties = [[NSMutableDictionary alloc] init];
   en = [flattenedProperties keyEnumerator];
