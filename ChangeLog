@@ -1,3 +1,8 @@
+2014-12-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarItem.m: Fix tool bar item tool tips.
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+
 2014-11-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m (-copyWithZone:) Deep copy ivar _properties.
