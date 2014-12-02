@@ -1385,7 +1385,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 - (void) setToolTip: (NSString *)toolTip
 {
   ASSIGN(_toolTip, toolTip);
-  [_view setToolTip: _toolTip];
+  if (_view)
+    [_view setToolTip: _toolTip];
+  else if (_backView && [_backView isMemberOfClass:[GSToolbarButton class]])
+    [_backView setToolTip: _toolTip];
 }
 
 - (void) setView: (NSView *)view
@@ -1414,6 +1417,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     {
       RELEASE(_backView);
       _backView = [[GSToolbarButton alloc] initWithToolbarItem: self];
+      [_backView setToolTip: _toolTip];
     }
 }
 

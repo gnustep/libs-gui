@@ -72,7 +72,7 @@ static NSInteger draggedItemIndex = NSNotFound;
  * Toolbar related code
  */
 
-@interface GSToolbarButton
+@interface GSToolbarButton : NSButton
 - (NSToolbarItem *) toolbarItem;
 @end
 
