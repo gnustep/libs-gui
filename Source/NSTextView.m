@@ -5521,332 +5521,342 @@ other than copy/paste or dragging. */
   NSRange chosenRange, proposedRange;
   NSPoint point, startPoint;
   NSUInteger startIndex, endIndex;
-
+  
   /* If non selectable then ignore the mouse down. */
   if (_tf.is_selectable == NO)
     {
       return;
     }
-
+  
   if (!_layoutManager)
     return;
-
+  
   /* Otherwise, NSWindow has already made us first responder (if
-     possible) */
-
+   possible) */
+  
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self _characterIndexForPoint: startPoint
                              respectFraction: [theEvent clickCount] == 1];
-
+  
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
-      /* Shift-click is for extending or shrinking an existing selection using 
-	 the existing granularity */
+      /* Shift-click is for extending or shrinking an existing selection using
+       the existing granularity */
       proposedRange = _layoutManager->_selected_range;
       granularity = _layoutManager->_selectionGranularity;
-
+      
       /* If the clicked point is closer to the left end of the current selection
-	 adjust the left end of the selected range */
+       adjust the left end of the selected range */
       if (startIndex < proposedRange.location + proposedRange.length / 2)
-	{
-	  proposedRange = NSMakeRange(startIndex,
-				      NSMaxRange(proposedRange) - startIndex);
-	  proposedRange = [self selectionRangeForProposedRange: proposedRange
-						   granularity: granularity];
-	  /* Prepare for shift-dragging. Anchor is at the right end. */
-	  startIndex = NSMaxRange(proposedRange);
-	}
+        {
+          proposedRange = NSMakeRange(startIndex,
+                                      NSMaxRange(proposedRange) - startIndex);
+          proposedRange = [self selectionRangeForProposedRange: proposedRange
+                                                   granularity: granularity];
+          /* Prepare for shift-dragging. Anchor is at the right end. */
+          startIndex = NSMaxRange(proposedRange);
+        }
       /* otherwise, adjust the right end of the selected range */
       else
-	{
-	  proposedRange = NSMakeRange(proposedRange.location,
-				      startIndex - proposedRange.location);
-	  proposedRange = [self selectionRangeForProposedRange: proposedRange
-						   granularity: granularity];
-	  /* Prepare for shift-dragging. Anchor is at the left end. */
-	  startIndex = proposedRange.location;
-	}
+        {
+          proposedRange = NSMakeRange(proposedRange.location,
+                                      startIndex - proposedRange.location);
+          proposedRange = [self selectionRangeForProposedRange: proposedRange
+                                                   granularity: granularity];
+          /* Prepare for shift-dragging. Anchor is at the left end. */
+          startIndex = proposedRange.location;
+        }
     }
   else /* No shift */
-    {
-      switch ([theEvent clickCount])
-	{
-	case 1: granularity = NSSelectByCharacter;
-	  break;
-	case 2: granularity = NSSelectByWord;
-	  break;
-	case 3: granularity = NSSelectByParagraph;
-	  break;
-	}
+  {
+    switch ([theEvent clickCount])
+      {
+        case 1: granularity = NSSelectByCharacter;
+          break;
+        case 2: granularity = NSSelectByWord;
+          break;
+        case 3: granularity = NSSelectByParagraph;
+          break;
+      }
+    
+    /* A single click into the selected range can start a drag operation */
+    canDrag = granularity == NSSelectByCharacter && NSLocationInRange(startIndex, _layoutManager->_selected_range);
+    proposedRange = NSMakeRange (startIndex, 0);
+    
+    /* We manage clicks on attachments and links only on the first
+     click, so that if you double-click on them, only the first
+     click gets sent to them; the other clicks select by
+     word/paragraph as usual.  */
+    if (granularity == NSSelectByCharacter)
+      {
+        NSTextAttachment *attachment;
+        
+        /* Check if the click was on an attachment cell.  */
+        attachment = [_textStorage attribute: NSAttachmentAttributeName
+                                     atIndex: startIndex
+                              effectiveRange: NULL];
+        
+        if (attachment != nil)
+          {
+            id <NSTextAttachmentCell> cell = [attachment attachmentCell];
+            
+            if (cell != nil)
+              {
+                NSRect cellFrame = NSZeroRect;
 
-      /* A single click into the selected range can start a drag operation */
-      canDrag = granularity == NSSelectByCharacter
-	  && NSLocationInRange(startIndex, _layoutManager->_selected_range);
-      proposedRange = NSMakeRange (startIndex, 0);
-
-      /* We manage clicks on attachments and links only on the first
-	 click, so that if you double-click on them, only the first
-	 click gets sent to them; the other clicks select by
-	 word/paragraph as usual.  */
-      if (granularity == NSSelectByCharacter)
-	{
-	  NSTextAttachment *attachment;
-
-	  /* Check if the click was on an attachment cell.  */
-	  attachment = [_textStorage attribute: NSAttachmentAttributeName
-				       atIndex: startIndex
-				effectiveRange: NULL];
-	      
-	  if (attachment != nil)
-	    {
-	      id <NSTextAttachmentCell> cell = [attachment attachmentCell];
-
-	      if (cell != nil)
-		{
-		  NSRect cellFrame;
-		  NSRect lfRect;
-		  NSUInteger glyphIndex;
-
-		  glyphIndex =
-		    [_layoutManager
-		      glyphRangeForCharacterRange: NSMakeRange(startIndex, 1)
-		      actualCharacterRange: NULL].location;
-		  lfRect =
-		    [_layoutManager
-		      lineFragmentRectForGlyphAtIndex: glyphIndex
-		      effectiveRange: NULL];
-		  cellFrame.origin =
-		    [_layoutManager
-		      locationForGlyphAtIndex: glyphIndex];
-		  cellFrame.size =
-		    [_layoutManager 
-		      attachmentSizeForGlyphAtIndex: glyphIndex];
-		  cellFrame.origin.y -= cellFrame.size.height;
-		  cellFrame.origin.x += lfRect.origin.x;
-		  cellFrame.origin.y += lfRect.origin.y;
-
-		  /* TODO: What about the insertion point ? */
-		  if ([cell wantsToTrackMouseForEvent: theEvent
-			inRect: cellFrame
-			ofView: self
-			atCharacterIndex: startIndex]
-		      && [cell trackMouse: theEvent
-				   inRect: cellFrame 
-				   ofView: self
-			 atCharacterIndex: startIndex
-			     untilMouseUp: NO])
-		    {
-		      return;
-		    }
-		}
-	    }
-
-	  /* This is the code for handling click event on a link (a link
-	     is some chars with the NSLinkAttributeName set to something
-	     which is not-null, a NSURL object usually).  */
-	  {
-	    /* What exactly is this link object, it's up to the
-	       programmer who is using the NSTextView and who
-	       originally created the link object and saved it under
-	       the NSLinkAttributeName in the text.  Normally, a NSURL
-	       object is used. */
-	    /* TODO: should call -clickedOnLink:atIndex: instead */
-	    id link = [_textStorage attribute: NSLinkAttributeName
-				    atIndex: startIndex
-				    effectiveRange: NULL];
-	    if (link != nil  &&  _delegate != nil)
-	      {
-		SEL selector = @selector(textView:clickedOnLink:atIndex:);
-		
-		if ([_delegate respondsToSelector: selector])
-		  {
-		    /* Move the insertion point over the link.  */
-		    chosenRange = [self selectionRangeForProposedRange: 
-					  proposedRange
-					granularity: granularity];
-
-		    [self setSelectedRange: chosenRange  affinity: affinity  
-			  stillSelecting: NO];
-
-		    [self displayIfNeeded];
-
-		    /* Now 'activate' the link.  The _delegate returns
-		       YES if it handles the click, NO if it doesn't
-		       -- and if it doesn't, we need to pass the click
-		       to the next responder.  */
-		    if ([_delegate textView: self
-                              clickedOnLink: link  
-                                    atIndex: startIndex])
-		      {
-			return;
-		      }
-		    else
-		      {
-			[super mouseDown: theEvent];
-			return; 
-		      }
-		  }
-	      }
-	  }
-	}
-    }
-
+                if (startIndex >= [_textStorage length])
+                  {
+                    NSUInteger glyphIndex  = [_textStorage length]-1;
+                    NSRect     lfRect      = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex
+                                                                              effectiveRange: NULL];
+                    cellFrame.origin       = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+                    cellFrame.size         = [_layoutManager attachmentSizeForGlyphAtIndex: glyphIndex];
+                    cellFrame.origin.y    -= cellFrame.size.height;
+                    cellFrame.origin.x    += lfRect.origin.x;
+                    cellFrame.origin.y    += lfRect.origin.y;
+                  }
+                else
+                  {
+                    NSRect lfRect;
+                    NSUInteger glyphIndex;
+                    
+                    glyphIndex = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(startIndex, 1)
+                                                        actualCharacterRange: NULL].location;
+                    lfRect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex
+                                                              effectiveRange: NULL];
+                    cellFrame.origin     = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+                    cellFrame.size       = [_layoutManager attachmentSizeForGlyphAtIndex: glyphIndex];
+                    cellFrame.origin.y  -= cellFrame.size.height;
+                    cellFrame.origin.x  += lfRect.origin.x;
+                    cellFrame.origin.y  += lfRect.origin.y;
+                  }
+                
+                if (NSEqualRects(NSZeroRect, cellFrame) == NO)
+                  {
+                    /* TODO: What about the insertion point ? */
+                    if ([cell wantsToTrackMouseForEvent: theEvent
+                                                 inRect: cellFrame
+                                                 ofView: self
+                                       atCharacterIndex: startIndex]
+                        && [cell trackMouse: theEvent
+                                     inRect: cellFrame
+                                     ofView: self
+                           atCharacterIndex: startIndex
+                               untilMouseUp: NO])
+                      {
+                        return;
+                      }
+                  }
+              }
+          }
+        
+        /* This is the code for handling click event on a link (a link
+         is some chars with the NSLinkAttributeName set to something
+         which is not-null, a NSURL object usually).  */
+        {
+          /* What exactly is this link object, it's up to the
+           programmer who is using the NSTextView and who
+           originally created the link object and saved it under
+           the NSLinkAttributeName in the text.  Normally, a NSURL
+           object is used. */
+          /* TODO: should call -clickedOnLink:atIndex: instead */
+          id link = [_textStorage attribute: NSLinkAttributeName
+                                    atIndex: startIndex
+                             effectiveRange: NULL];
+          if (link != nil  &&  _delegate != nil)
+            {
+              SEL selector = @selector(textView:clickedOnLink:atIndex:);
+              
+              if ([_delegate respondsToSelector: selector])
+                {
+                  /* Move the insertion point over the link.  */
+                  chosenRange = [self selectionRangeForProposedRange: proposedRange
+                                                         granularity: granularity];
+                  
+                  [self setSelectedRange: chosenRange  affinity: affinity
+                          stillSelecting: NO];
+                  
+                  [self displayIfNeeded];
+                  
+                  /* Now 'activate' the link.  The _delegate returns
+                   YES if it handles the click, NO if it doesn't
+                   -- and if it doesn't, we need to pass the click
+                   to the next responder.  */
+                  if ([_delegate textView: self
+                            clickedOnLink: link
+                                  atIndex: startIndex])
+                    {
+                      return;
+                    }
+                  else
+                    {
+                      [super mouseDown: theEvent];
+                      return;
+                    }
+                }
+            }
+        }
+      }
+  }
+  
   chosenRange = [self selectionRangeForProposedRange: proposedRange
                                          granularity: granularity];
   if (canDrag)
   {
     NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
     NSEvent *currentEvent;
-
+    
     currentEvent = [_window nextEventMatchingMask: mask
-  			      untilDate: [NSDate distantFuture]
-  			      inMode: NSEventTrackingRunLoopMode
-  			      dequeue: NO];
+                                        untilDate: [NSDate distantFuture]
+                                           inMode: NSEventTrackingRunLoopMode
+                                          dequeue: NO];
     if ([currentEvent type] == NSLeftMouseDragged)
       {
-  	if (![self dragSelectionWithEvent: theEvent
-  				   offset: NSMakeSize(0, 0)
-  				slideBack: YES])
-  	  {
-  	    NSBeep();
-  	  }
-  	return;
+        if (![self dragSelectionWithEvent: theEvent
+                                   offset: NSMakeSize(0, 0)
+                                slideBack: YES])
+          {
+            NSBeep();
+          }
+        return;
       }
   }
   
   /* Enter modal loop tracking the mouse */
   {
     NSUInteger mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
-      | NSPeriodicMask;
+    | NSPeriodicMask;
     NSEvent *currentEvent;
     NSEvent *lastEvent = nil; /* Last non-periodic event. */
     NSDate *distantPast = [NSDate distantPast];
     BOOL gettingPeriodic, gotPeriodic;
-
-    [self setSelectedRange: chosenRange  affinity: affinity  
-	  stillSelecting: YES];
-
+    
+    [self setSelectedRange: chosenRange  affinity: affinity
+            stillSelecting: YES];
+    
     currentEvent = [_window nextEventMatchingMask: mask
-		     untilDate: [NSDate distantFuture]
-		     inMode: NSEventTrackingRunLoopMode
-		     dequeue: YES];
+                                        untilDate: [NSDate distantFuture]
+                                           inMode: NSEventTrackingRunLoopMode
+                                          dequeue: YES];
     gettingPeriodic = NO;
     do
       {
-	gotPeriodic = NO;
-	while (currentEvent && [currentEvent type] != NSLeftMouseUp)
-	  {
-	    if ([currentEvent type] == NSPeriodic)
-	      {
-		gotPeriodic = YES;
-	      }
-	    else
-	      lastEvent = currentEvent;
-	    currentEvent = [_window nextEventMatchingMask: mask
-			     untilDate: distantPast
-			     inMode: NSEventTrackingRunLoopMode
-			     dequeue: YES];
-	  }
-	if (currentEvent && [currentEvent type] == NSLeftMouseUp)
-	  break;
-
-	/*
-	Automatic scrolling.
-
-	If we aren't getting periodic events, we check all events. If any of
-	them causes us to scroll, we scroll and start up the periodic events.
-
-	If we are getting periodic events, we only scroll when we receive a
-	periodic event (and we use the last non-periodic event to determine
-	how far). If no scrolling occurred, we stop the periodic events.
-	*/
-	if (!gettingPeriodic)
-	  {
-	    if ([self autoscroll: lastEvent])
-	      {
-		gettingPeriodic = YES;
-		[NSEvent startPeriodicEventsAfterDelay: 0.1
-					    withPeriod: 0.1];
-		
-	      }
-	  }
-	else if (gotPeriodic)
-	  {
-	    if (![self autoscroll: lastEvent])
-	      {
-		gettingPeriodic = NO;
-		[NSEvent stopPeriodicEvents];
-	      }
-	  }
-
-
-	point = [self convertPoint: [lastEvent locationInWindow]
-		  fromView: nil];
-
-	endIndex = [self _characterIndexForPoint: point
-				 respectFraction: YES];
-	
-	/**
-	 * If the mouse is not inside the receiver, see if it is over another
-	 * text view with the same layout manager. If so, use that text view
-	 * to compute endIndex
-	 */
-	if (![self mouse: point inRect: [self bounds]])
-	  {
-	    BOOL found = NO;
-	    // FIXME: Is there an easier way to find the view under a point?
-	    NSView *winContentView = [[self window] contentView];
-	    NSView *view = [winContentView hitTest: 
-					     [[winContentView superview] convertPoint: [lastEvent locationInWindow]
-									     fromView: nil]];
-	    for (; view != nil; view = [view superview])
-	      {
-		if ([view isKindOfClass: [NSTextView class]] && 
-		    [(NSTextView*)view layoutManager] == [self layoutManager])
-		  {
-		    found = YES;
-		    break;
-		  }
-	      }
-
-	    if (found)
-	      {
-		NSTextView *textview = (NSTextView*)view;
-		NSPoint mouse = [textview convertPoint: [lastEvent locationInWindow]
-					      fromView: nil];
-
-		endIndex = [textview _characterIndexForPoint: mouse
-					     respectFraction: YES];
-	      }
-	  }
-
-	proposedRange = MakeRangeFromAbs(endIndex,
-					 startIndex);
-
-	chosenRange = [self selectionRangeForProposedRange: proposedRange
-			granularity: granularity];
-
-	[self setSelectedRange: chosenRange  affinity: affinity
-	  stillSelecting: YES];
-
-	currentEvent = [_window nextEventMatchingMask: mask
-			 untilDate: [NSDate distantFuture]
-			 inMode: NSEventTrackingRunLoopMode
-			 dequeue: YES];
+        gotPeriodic = NO;
+        while (currentEvent && [currentEvent type] != NSLeftMouseUp)
+          {
+            if ([currentEvent type] == NSPeriodic)
+              {
+                gotPeriodic = YES;
+              }
+            else
+              {
+                lastEvent = currentEvent;
+              }
+            currentEvent = [_window nextEventMatchingMask: mask
+                                                untilDate: distantPast
+                                                   inMode: NSEventTrackingRunLoopMode
+                                                  dequeue: YES];
+          }
+        if (currentEvent && [currentEvent type] == NSLeftMouseUp)
+          break;
+        
+        /*
+         Automatic scrolling.
+         
+         If we aren't getting periodic events, we check all events. If any of
+         them causes us to scroll, we scroll and start up the periodic events.
+         
+         If we are getting periodic events, we only scroll when we receive a
+         periodic event (and we use the last non-periodic event to determine
+         how far). If no scrolling occurred, we stop the periodic events.
+         */
+        if (!gettingPeriodic)
+          {
+            if ([self autoscroll: lastEvent])
+              {
+                gettingPeriodic = YES;
+                [NSEvent startPeriodicEventsAfterDelay: 0.1
+                                            withPeriod: 0.1];
+                
+              }
+          }
+        else if (gotPeriodic)
+          {
+            if (![self autoscroll: lastEvent])
+              {
+                gettingPeriodic = NO;
+                [NSEvent stopPeriodicEvents];
+              }
+          }
+        
+        
+        point = [self convertPoint: [lastEvent locationInWindow]
+                          fromView: nil];
+        
+        endIndex = [self _characterIndexForPoint: point
+                                 respectFraction: YES];
+        
+        /**
+         * If the mouse is not inside the receiver, see if it is over another
+         * text view with the same layout manager. If so, use that text view
+         * to compute endIndex
+         */
+        if (![self mouse: point inRect: [self bounds]])
+          {
+            BOOL found = NO;
+            // FIXME: Is there an easier way to find the view under a point?
+            NSView *winContentView = [[self window] contentView];
+            NSView *view = [winContentView hitTest:
+                            [[winContentView superview] convertPoint: [lastEvent locationInWindow]
+                                                            fromView: nil]];
+            for (; view != nil; view = [view superview])
+              {
+                if ([view isKindOfClass: [NSTextView class]] &&
+                    [(NSTextView*)view layoutManager] == [self layoutManager])
+                  {
+                    found = YES;
+                    break;
+                  }
+              }
+            
+            if (found)
+              {
+                NSTextView *textview = (NSTextView*)view;
+                NSPoint mouse = [textview convertPoint: [lastEvent locationInWindow]
+                                              fromView: nil];
+                
+                endIndex = [textview _characterIndexForPoint: mouse
+                                             respectFraction: YES];
+              }
+          }
+        
+        proposedRange = MakeRangeFromAbs(endIndex,
+                                         startIndex);
+        
+        chosenRange = [self selectionRangeForProposedRange: proposedRange
+                                               granularity: granularity];
+        
+        [self setSelectedRange: chosenRange  affinity: affinity
+                stillSelecting: YES];
+        
+        currentEvent = [_window nextEventMatchingMask: mask
+                                            untilDate: [NSDate distantFuture]
+                                               inMode: NSEventTrackingRunLoopMode
+                                              dequeue: YES];
       } while ([currentEvent type] != NSLeftMouseUp);
-
+    
     if (gettingPeriodic)
       {
-	[NSEvent stopPeriodicEvents];
+        [NSEvent stopPeriodicEvents];
       }
   }
-
+  
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
-	     (int)chosenRange.location, (int)chosenRange.length);
-
+             (int)chosenRange.location, (int)chosenRange.length);
+  
   [self setSelectedRange: chosenRange  affinity: affinity  
-	stillSelecting: NO];
-
+          stillSelecting: NO];
+  
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
 }
