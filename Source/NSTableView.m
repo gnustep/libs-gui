@@ -3375,13 +3375,11 @@ byExtendingSelection: (BOOL)flag
           
           if (_dataSource_editable)
             {
-              NSTableColumn *tb;
+              NSTableColumn *tb = [_tableColumns objectAtIndex: _editedColumn];
               
-              tb = [_tableColumns objectAtIndex: _editedColumn];
-              
-              [self _setObjectValue: string // newObjectValue
-                    forTableColumn: tb
-                    row: _editedRow];
+              [self _setObjectValue: [_textObject textStorage] // newObjectValue
+                     forTableColumn: tb
+                                row: _editedRow];
             }
         }
 
