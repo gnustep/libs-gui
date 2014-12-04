@@ -3371,13 +3371,22 @@ byExtendingSelection: (BOOL)flag
 
       if (validatedOK)
         {
-          [_editedCell setStringValue: string];
+          id object = string;
+          
+          if ([_editedCell allowsEditingTextAttributes])
+          {
+            NSTextView *textView = (NSTextView*)_textObject;
+            object = AUTORELEASE([[NSAttributedString alloc] initWithAttributedString:[textView textStorage]]);
+          }
+
+          [_editedCell setObjectValue: object];
           
           if (_dataSource_editable)
             {
-              NSTableColumn *tb = [_tableColumns objectAtIndex: _editedColumn];
+              // Need to pass string or attributedString based on cell settings...
+              NSTableColumn *tb     = [_tableColumns objectAtIndex: _editedColumn];
               
-              [self _setObjectValue: [_textObject textStorage] // newObjectValue
+              [self _setObjectValue: object // newObjectValue
                      forTableColumn: tb
                                 row: _editedRow];
             }
