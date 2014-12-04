@@ -306,6 +306,16 @@ static NSParagraphStyle	*defaultStyle = nil;
   return self;
 }
 
+- (NSString *)description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat:@" Alignment %ld",_alignment];
+  [description appendFormat:@" LineSpacing: %f",_lineSpacing];
+  [description appendFormat:@" ParagraphSpacing: %f",_paragraphSpacing];
+  [description appendFormat:@" LineBreakMode: %ld",_lineBreakMode];
+  return([description copy]);
+}
+
 /*
  *      "Leading": distance between the bottom of one line fragment and top
  *      of next (applied between lines in the same container).
