@@ -858,48 +858,61 @@ has the same y origin and height as the line frag rect it is in.
   linefrag_t *lf;
   float x0, x1;
   NSRect r;
-
+  
   unsigned int glyph_index;
   float fraction_through;
-
-
+  
+  
   glyph_index = [self _glyphIndexForCharacterIndex: cindex
-				   fractionThrough: &fraction_through];
+                                   fractionThrough: &fraction_through];
   if (glyph_index == (unsigned int)-1)
     {
       /* Need complete layout information. */
       [self _doLayout];
       if (extra_textcontainer)
-	{
-	  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
-	    if (tc->textContainer == extra_textcontainer)
-	      break;
-	  NSAssert(i < num_textcontainers, @"invalid extraTextContainer");
-	  *textContainer = i;
-	  r = extra_rect;
-	  r.size.width = 1;
-	  return r;
-	}
+        {
+          for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+            if (tc->textContainer == extra_textcontainer)
+              break;
+          NSAssert(i < num_textcontainers, @"invalid extraTextContainer");
+          *textContainer = i;
+          r = extra_rect;
+          r.size.width = 1;
+          return r;
+        }
       glyph_index = [self numberOfGlyphs] - 1;
       if (glyph_index == (unsigned int)-1)
-	{ /* No information is available. Get default font height. */
-	  NSFont *f = [_typingAttributes objectForKey:NSFontAttributeName];
-
-	  /* will be -1 if there are no text containers */
-	  *textContainer = num_textcontainers - 1;
-	  r = NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
-	  if (num_textcontainers > 0)
-	    {
-	      tc = textcontainers + num_textcontainers - 1;
-	      r.origin.x += [tc->textContainer lineFragmentPadding];
-	    }
-	  return r;
-	}
+        { /* No information is available. Get default font height. */
+          NSFont            *f         = [_typingAttributes objectForKey:NSFontAttributeName];
+          NSParagraphStyle  *paragraph = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+          NSTextAlignment    alignment = [paragraph alignment];
+          
+          /* will be -1 if there are no text containers */
+          *textContainer = num_textcontainers - 1;
+          r = NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
+          if (num_textcontainers > 0)
+          {
+            tc = textcontainers + num_textcontainers - 1;
+            r.origin.x += [tc->textContainer lineFragmentPadding];
+          }
+          
+          // Apply left/right/center justification...
+          if (alignment == NSRightTextAlignment)
+          {
+            r.origin.x += [[self firstTextView] frame].size.width;
+          }
+          else if (alignment == NSCenterTextAlignment)
+          {
+            r.origin.x += [[self firstTextView] frame].size.width / 2;
+          }
+          
+          return r;
+        }
       fraction_through = 1.0;
     }
   else
     [self _doLayoutToGlyph: glyph_index];
-
+  
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyph_index)
       break;
@@ -908,17 +921,17 @@ has the same y origin and height as the line frag rect it is in.
       *textContainer = -1;
       return NSZeroRect;
     }
-
+  
   *textContainer = i;
-
+  
   LINEFRAG_FOR_GLYPH(glyph_index);
-
+  
   /* Special case if we are asked for the insertion point rectangle at the
-     end of text, since the standard code yields an incorrect result if the
-     last line fragment ends with an invisible character (e.g., a tab).
-     Note that fraction_through is always less than 1 except when
-     -_glyphIndexForCharacterIndex:fractionThrough: is called for
-     cindex == [_textStorage length], in which case we set it to 1. */
+   end of text, since the standard code yields an incorrect result if the
+   last line fragment ends with an invisible character (e.g., a tab).
+   Note that fraction_through is always less than 1 except when
+   -_glyphIndexForCharacterIndex:fractionThrough: is called for
+   cindex == [_textStorage length], in which case we set it to 1. */
   if (fraction_through == 1.0)
     {
       r = (lf == 0) ? NSZeroRect : lf->used_rect;
@@ -926,43 +939,43 @@ has the same y origin and height as the line frag rect it is in.
       r.size.width = 1;
       return r;
     }
-
+  
   {
     unsigned int i;
     int j;
     linefrag_point_t *lp;
     glyph_run_t *r;
     unsigned int gpos, cpos;
-
+    
     for (j = 0, lp = lf->points; j < lf->num_points; j++, lp++)
       if (lp->pos + lp->length > glyph_index)
-	break;
-
+        break;
+    
     x0 = lp->p.x + lf->rect.origin.x;
     r = run_for_glyph_index(lp->pos, glyphs, &gpos, &cpos);
     i = lp->pos - gpos;
-
+    
     while (i + gpos < glyph_index)
       {
-	if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
-	    r->glyphs[i].g != NSControlGlyph)
-	  {
-	    x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
-	  }
-	GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+        if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
+            r->glyphs[i].g != NSControlGlyph)
+          {
+            x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+          }
+        GLYPH_STEP_FORWARD(r, i, gpos, cpos)
       }
     x1 = x0;
     if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
-	r->glyphs[i].g != NSControlGlyph)
+        r->glyphs[i].g != NSControlGlyph)
       {
-	x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+        x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
       }
   }
-
+  
   r = lf->rect;
   r.origin.x = x0 + (x1 - x0) * fraction_through;
   r.size.width = 1;
-
+  
   return r;
 }
 
