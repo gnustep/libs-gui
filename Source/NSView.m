@@ -2490,6 +2490,10 @@ static void autoresize(CGFloat oldContainerSize,
             {
               _rFlags.needs_display = subviewNeedsDisplay;
             }
+          else
+            {
+              _rFlags.needs_display = NO;
+            }
         }
     }
 }
