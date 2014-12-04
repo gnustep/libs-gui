@@ -68,6 +68,18 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 } NSTableViewColumnAutoresizingStyle;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+typedef enum _NSTableViewAnimationOptions
+{
+  NSTableViewAnimationEffectNone = 0x0,
+  NSTableViewAnimationEffectFade = 0x1,
+  NSTableViewAnimationEffectGap  = 0x2,
+  NSTableViewAnimationSlideUp    = 0x10,
+  NSTableViewAnimationSlideDown  = 0x20,
+  NSTableViewAnimationSlideLeft  = 0x30,
+  NSTableViewAnimationSlideRight = 0x40,
+} NSTableViewAnimationOptions;
+#endif
 
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
 {
@@ -114,7 +126,8 @@ typedef enum _NSTableViewColumnAutoresizingStyle
   /*
    * Ivars Acting as Control... 
    */
-  BOOL   _isValidating;
+  BOOL      _isValidating;
+  NSInteger _beginEndUpdates;
 
   /*
    * Ivars Acting as Cache 
@@ -341,6 +354,19 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 - (NSArray *) sortDescriptors;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet *)columnIndexes;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (void)beginUpdates;
+- (void)endUpdates;
+- (NSInteger)columnForView:(NSView *)view;
+- (void)insertRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions;
+- (void)removeRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions;
+- (NSInteger)rowForView:(NSView *)view;
+#endif
+
 @end /* interface of NSTableView */
 
 @interface NSTableView (GNUPrivate)
@@ -459,6 +485,7 @@ dataCellForTableColumn: (NSTableColumn *)aTableColumn
 - (NSCell *)tableView:(NSTableView*)tableView dataCellForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row;
 - (NSIndexSet *)tableView:(NSTableView*)tableView selectionIndexesForProposedSelection:(NSIndexSet*)proposedSelectionIndexes;
 #endif
+
 @end
 
 #endif /* _GNUstep_H_NSTableView */
