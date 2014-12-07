@@ -122,14 +122,14 @@
 
 @interface IBObjectRecord: NSObject
 {
-  int objectID;
+  id objectID;
   id object;
   id children;
   id parent;
 }
 - (id) object;
 - (id) parent;
-- (NSInteger) objectID;
+- (id) objectID;
 @end
 
 @interface IBMutableOrderedSet: NSObject
@@ -137,7 +137,7 @@
   NSArray *orderedObjects;
 }
 - (NSArray *)orderedObjects;
-- (id) objectWithObjectID: (NSInteger)objID;
+- (id) objectWithObjectID: (id)objID;
 @end
 
 @interface IBObjectContainer: NSObject <NSCoding>

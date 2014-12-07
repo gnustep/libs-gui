@@ -404,8 +404,19 @@
         {
           ASSIGN(connection, [coder decodeObjectForKey: @"connection"]);
         }
+      else
+        {
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without a connection ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
+        }
+      
+      // Load the connection ID....
       if ([coder containsValueForKey: @"connectionID"])
         {
+          // PRE-4.6 XIBs....
           connectionID = [coder decodeIntForKey: @"connectionID"];
         }
       else if ([coder containsValueForKey: @"id"])
@@ -413,7 +424,25 @@
           // 4.6+ XIBs....
           NSString *string = [coder decodeObjectForKey: @"id"];
 
-          connectionID = [string intValue];
+          if (string && [string isKindOfClass:[NSString class]] && [string length])
+            {
+              connectionID = [string intValue];
+            }
+          else
+            {
+              NSString *format = [NSString stringWithFormat:@"%s:class: %@ - connection ID is missing or zero!",
+                                  __PRETTY_FUNCTION__, NSStringFromClass([self class])];
+              [NSException raise: NSInvalidArgumentException
+                          format: format];
+            }
+        }
+      else
+        {
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without a connection ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
         }
     }
   else
@@ -538,15 +567,24 @@
     {
       if ([coder containsValueForKey: @"objectID"])
         {
-          objectID = [coder decodeIntForKey: @"objectID"];
+          // PRE-4.6 XIBs....
+          objectID = [coder decodeObjectForKey: @"objectID"];
         }
       else if ([coder containsValueForKey: @"id"])
         {
           // 4.6+ XIBs....
-          NSString *string = [coder decodeObjectForKey: @"id"];
-
-          objectID = [string intValue];
+          objectID = [coder decodeObjectForKey: @"id"];
         }
+      else
+        {
+          // Cannot process without object ID...
+          NSString *format = [NSString stringWithFormat:@"%s:Can't decode %@ without an object ID",
+                              __PRETTY_FUNCTION__,
+                              NSStringFromClass([self class])];
+          [NSException raise: NSInvalidArgumentException
+                      format: format];
+        }
+      
       if ([coder containsValueForKey: @"object"])
         {
           ASSIGN(object, [coder decodeObjectForKey: @"object"]);
@@ -587,7 +625,7 @@
   return parent;
 }
 
-- (NSInteger) objectID
+- (id) objectID
 {
   return objectID;
 }
@@ -633,7 +671,7 @@
   return orderedObjects;
 }
 
-- (id) objectWithObjectID: (NSInteger)objID
+- (id) objectWithObjectID: (id)objID
 {
   NSEnumerator *en;
   IBObjectRecord *obj;
@@ -641,7 +679,7 @@
   en = [orderedObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      if ([obj objectID] == objID)
+      if ([[obj objectID] isEqual:objID])
         {
           return [obj object];
         }
@@ -715,7 +753,7 @@
   return [[objectRecords orderedObjects] objectEnumerator];
 }
 
-- (NSDictionary*) propertiesForObjectID: (int)objectID
+- (NSDictionary*) propertiesForObjectID: (id)objectID
 {
   NSEnumerator *en;
   NSString *idString;
@@ -723,7 +761,7 @@
   NSMutableDictionary *properties;
   int idLength;
 
-  idString = [NSString stringWithFormat: @"%d.", objectID];
+  idString = [NSString stringWithFormat: @"%@.", objectID];
   idLength = [idString length];
   properties = [[NSMutableDictionary alloc] init];
   en = [flattenedProperties keyEnumerator];
