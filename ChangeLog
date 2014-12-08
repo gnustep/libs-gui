@@ -1,3 +1,13 @@
+2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSLayoutManager.m
+	(_insertionPointRectForCharacterIndex:textContainer:): Fix initial
+	cursor insertion location with paragraph alignment setting.
+	This patch has no visual effect as the alignment of the typing
+	attributes never gets set.
+	Based on patch by Marcian Lytwyn <gna@advcsi.com>.
+	* Source/NSLayoutManager.m: Fix some compiler warnings.
+
 2014-12-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
