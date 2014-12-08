@@ -202,6 +202,7 @@
 
 @interface	GSToolTips (Private)
 - (void) _endDisplay;
+- (void) _endDisplay: (NSTrackingRectTag)tag;
 - (void) _timedOut: (NSTimer *)timer;
 @end
 /*
@@ -217,6 +218,7 @@ typedef NSView* NSViewPtr;
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
+static NSTrackingRectTag timedTag = NSNotFound;
 // Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
 static GSTTPanel	*window = nil;
 // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
@@ -341,6 +343,7 @@ static BOOL		restoreMouseMoved;
       [timer invalidate];
       timer = nil;
       timedObject = nil;
+      timedTag = NSNotFound;
     }
 
   provider = (GSTTProvider*)[theEvent userData];
@@ -348,8 +351,10 @@ static BOOL		restoreMouseMoved;
     @selector(view:stringForToolTip:point:userData:)] == YES)
     {
       // From testing on OS X, point is in the view's coordinate system
-      NSPoint p = [view convertPoint: [theEvent locationInWindow]
-			    fromView: nil];
+      // The locationInWindow has been converted to this in
+      // [NSWindow _checkTrackingRectangles:forEvent:]
+      NSPoint p = [theEvent locationInWindow];
+
       toolTipString = [[provider object] view: view
 			     stringForToolTip: [theEvent trackingNumber]
 					point: p
@@ -367,6 +372,7 @@ static BOOL		restoreMouseMoved;
                                           repeats: YES];
   [[NSRunLoop currentRunLoop] addTimer: timer forMode: NSModalPanelRunLoopMode];
   timedObject = self;
+  timedTag = [theEvent trackingNumber];
   if ([[view window] acceptsMouseMovedEvents] == YES)
     {
       restoreMouseMoved = NO;
@@ -381,7 +387,7 @@ static BOOL		restoreMouseMoved;
 
 - (void) mouseExited: (NSEvent *)theEvent
 {
-  [self _endDisplay];
+  [self _endDisplay:[theEvent trackingNumber]];
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
@@ -534,16 +540,21 @@ static BOOL		restoreMouseMoved;
 
 - (void) _endDisplay
 {
+  [self _endDisplay:NSNotFound];
+}
+
+- (void) _endDisplay: (NSTrackingRectTag)tag
+{
   if (isOpening)
     return;
   if ([NSWindow _toolTipVisible] == self)
     {
       [NSWindow _setToolTipVisible: nil];
     }
-  /* If there is currently a timer running for this object,
-   * cancel it.
+  /* If there is currently a timer running for this object and it is the target tag,
+   * cancel it. Always remove if the target tag is NSNotFound
    */
-  if (timer != nil && timedObject == self)
+  if (timer != nil && timedObject == self && (timedTag == tag || tag == NSNotFound))
     {
       if ([timer isValid])
 	{
@@ -551,6 +562,7 @@ static BOOL		restoreMouseMoved;
 	}
       timer = nil;
       timedObject = nil;
+      timedTag = NSNotFound;
     }
   if (window != nil)
     {
@@ -595,6 +607,7 @@ static BOOL		restoreMouseMoved;
 	}
       timer = nil;
       timedObject = nil;
+      timedTag = NSNotFound;
     }
 
   if ([window isVisible])

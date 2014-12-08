@@ -1,5 +1,17 @@
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSToolTips.m: Fixed two issues with tooltips.
+	(a) locationInView was being converted twice, producing invalid
+	coordinates the second time, when using a provider to get the
+	tooltips.
+	(b) Tooltips were not working if you had two tracking rects next
+	to each other in the same view, when moving from one to the other,
+	depending on the order they were processed, one could get the
+	enter before the other's exit, thus canceling the timer.
+	Patch by Paul Landers <paul.landers@testplant.com>.
+
+2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSTableView.h,
 	* Source/NSTableView.m:
 	Create working stubs for table view batch insertions/removals of rows
