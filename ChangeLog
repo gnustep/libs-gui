@@ -1,5 +1,12 @@
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSTableView.h,
+	* Source/NSTableView.m:
+	Create working stubs for table view batch insertions/removals of rows
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+
+2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSParagraphStyle.m (-description): Add method.
 	Based on patch by Marcian Lytwyn <gna@advcsi.com>.
 

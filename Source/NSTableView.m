@@ -6724,6 +6724,50 @@ For a more detailed explanation, -setSortDescriptors:. */
   return NO;
 }
 
+- (void) reloadDataForRowIndexes: (NSIndexSet*)rowIndexes
+                   columnIndexes: (NSIndexSet*)columnIndexes
+{
+  [self reloadData];
+}
+
+- (void) beginUpdates
+{
+  _beginEndUpdates++;
+}
+
+- (void) endUpdates
+{
+  if (_beginEndUpdates > 0)
+    {
+      if (--_beginEndUpdates == 0)
+        {
+          // Process batched inserts/removes....
+          // Just reload table for now until we get inserts/removes working...
+          [self reloadData];
+        }
+    }
+}
+
+- (NSInteger) columnForView: (NSView*)view
+{
+  return NSNotFound;
+}
+
+- (void) insertRowsAtIndexes: (NSIndexSet*)indexes
+               withAnimation: (NSTableViewAnimationOptions)animationOptions
+{
+}
+
+- (void) removeRowsAtIndexes: (NSIndexSet*)indexes
+               withAnimation: (NSTableViewAnimationOptions)animationOptions
+{
+}
+
+- (NSInteger) rowForView: (NSView*)view
+{
+  return NSNotFound;
+}
+
 @end /* implementation of NSTableView */
 
 @implementation NSTableView (SelectionHelper)
