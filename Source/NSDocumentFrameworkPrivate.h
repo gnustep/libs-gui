@@ -50,6 +50,8 @@
 - (void) _setRecentDocumentsMenu: (NSMenu *)menu;
 - (void) _updateRecentDocumentsMenu;
 - (IBAction) _openRecentDocument: (id)sender;
+- (void) _saveRecentDocuments;
+- (void) _loadRecentDocuments;
 @end
 
 @interface NSDocument (Private)

@@ -1,5 +1,12 @@
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSDocumentFrameworkPrivate.h,
+        * Source/NSDocumentController.m:
+	Open recent menu to clear items that have been deleted whenever it reloads.
+	Based on patch by Paul Landers <paul.landers@testplant.com>.
+
+2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSToolTips.m: Fixed two issues with tooltips.
 	(a) locationInView was being converted twice, producing invalid
 	coordinates the second time, when using a provider to get the
