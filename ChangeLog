@@ -1,5 +1,10 @@
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSParagraphStyle.m (-description): Add method.
+	Based on patch by Marcian Lytwyn <gna@advcsi.com>.
+
+2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSLayoutManager.m
 	(_insertionPointRectForCharacterIndex:textContainer:): Fix initial
 	cursor insertion location with paragraph alignment setting.

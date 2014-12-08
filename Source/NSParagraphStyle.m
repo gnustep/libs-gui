@@ -308,6 +308,14 @@ static NSParagraphStyle	*defaultStyle = nil;
   return self;
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat: 
+                     @"%@ Alignment: %ld LineSpacing: %f ParagraphSpacing: %f LineBreakMode: %ld", 
+                   [super description], (long)_alignment, (float)_lineSpacing,
+                   (float)_paragraphSpacing, (long)_lineBreakMode];
+}
+
 /*
  *      "Leading": distance between the bottom of one line fragment and top
  *      of next (applied between lines in the same container).
