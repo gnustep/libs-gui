@@ -3653,6 +3653,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
 	  NSPoint lastPoint = _lastPoint;
+	  NSRect vr = [theView visibleRect];
           NSUInteger i;
 
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
@@ -3664,13 +3665,14 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               BOOL last;
               BOOL now;
               GSTrackingRect *r = rects[i];
+	      NSRect tr = NSIntersectionRect(vr, r->rectangle);
 
               if ([r isValid] == NO)
                 continue;
               /* Check mouse at last point */
-              last = NSMouseInRect(lastPoint, r->rectangle, isFlipped);
+              last = NSMouseInRect(lastPoint, tr, isFlipped);
               /* Check mouse at current point */
-              now = NSMouseInRect(loc, r->rectangle, isFlipped);
+              now = NSMouseInRect(loc, tr, isFlipped);
 
               if ((!last) && (now))                // Mouse entered event
                 {

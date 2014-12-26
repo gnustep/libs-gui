@@ -1,3 +1,10 @@
+2014-12-26  German Arias <germanandre@gmx.es>
+
+	* Source/NSWindow.m (_checkTrackingRectangles:forEvent:): Use the
+	intersection rectangle with visible rect as suggested by Fred. This
+	avoid send events mouse entered/exited to rectangles that aren't
+	visible.
+
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocumentFrameworkPrivate.h,
