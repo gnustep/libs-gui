@@ -3,7 +3,7 @@
 
    <abstract>The toolbar view class.</abstract>
    
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 2004-2015 Free Software Foundation, Inc.
 
    Author:  Quentin Mathe <qmathe@club-internet.fr>
    Date: January 2004
@@ -891,7 +891,7 @@ static NSInteger draggedItemIndex = NSNotFound;
 - (NSMenu *) menuForEvent: (NSEvent *)event 
 {
   NSMenu *menu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
-  NSMenuItem *customize = [menu insertItemWithTitle: _(@"Customize Toolbar") action:@selector(runCustomizationPalette:) keyEquivalent:@"" atIndex:0];
+  id <NSMenuItem> customize = [menu insertItemWithTitle: _(@"Customize Toolbar") action:@selector(runCustomizationPalette:) keyEquivalent:@"" atIndex:0];
   [customize setTarget: _toolbar];
   return menu;
 }
