@@ -3,6 +3,9 @@
 	* Source/GSToolbarView.m (menuForEvent)
 	Use protocol not class for NSMenuItem.
 
+	* Source/NSBox.m
+	floor() rects.
+
 2014-12-26  German Arias <germanandre@gmx.es>
 
 	* Source/NSWindow.m (_checkTrackingRectangles:forEvent:): Use the
