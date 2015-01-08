@@ -1198,6 +1198,10 @@ static BOOL menuBarVisible = YES;
 	        {
 	          shouldBeEnabled = [validator validateUserInterfaceItem: item];
 	        }
+          else if ([item hasSubmenu] && [[item submenu] numberOfItems] == 0)
+            {
+              shouldBeEnabled = NO;
+            }
 	      else
 	        {
 	          shouldBeEnabled = YES;
