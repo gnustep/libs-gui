@@ -1704,6 +1704,11 @@ to make sure syncing is handled properly in all cases.
   [notificationCenter postNotificationName: NSTextDidEndEditingNotification
       object: _notifObject];
 
+  if (_tf.is_field_editor)
+    {
+	  [[self undoManager] removeAllActions];
+	}
+
   return YES;
 }
 

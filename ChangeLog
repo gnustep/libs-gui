@@ -1,3 +1,9 @@
+2015-01-08  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSTextView.m: Fix bizarre behavior with undo/redo
+	actions carrying across between different fields with the
+	fieldEditor.
+
 2014-07-14  Doug Simons <doug.simons@testplant.com>
 
 	* Headers/NSMenu.h
