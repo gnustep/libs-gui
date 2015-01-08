@@ -5873,7 +5873,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
       
       NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
       NSString *word = [[self string] substringWithRange: [self selectedRange]];
-      if ([sp checkSpellingOfString: word startingAt: 0].location != NSNotFound)
+      if (sp != nil && [sp checkSpellingOfString: word startingAt: 0].location != NSNotFound)
 	{
 	  /*NSArray *guesses = [sp guessesForWordRange: wordRange
 	    inString: [self string]
@@ -6272,6 +6272,11 @@ or add guards
     // nearest word boundary
     NSString *substring = [[self string] substringWithRange: aRange];
     
+    if (sp == nil)
+      {
+        return;
+      }
+
     do {
       NSRange errorRange = [sp checkSpellingOfString: substring
 					  startingAt: start

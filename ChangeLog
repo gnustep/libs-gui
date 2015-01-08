@@ -1,3 +1,9 @@
+2015-01-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m: Protect usages of sharedSpellChecker with
+	nil tests.
+	Patch by Eric Wasylishen <ewasylishen@gmail.com>
+
 2015-01-05 Riccardo Mottola <rm@gnu.org>
 
 	* Source/GSToolbarView.m (menuForEvent)
