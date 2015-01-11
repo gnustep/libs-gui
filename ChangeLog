@@ -1,5 +1,12 @@
 2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m: Fix bizarre behavior with undo/redo
+	actions carrying across between different fields with the
+	fieldEditor.
+	Patch by Doug Simons <doug.simons@testplant.com>
+
+2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/tiff.m: Use type tmsize_t.
 	Base on patch by Marat Ibadinov <ibadinov@me.com>
 
