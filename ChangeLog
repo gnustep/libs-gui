@@ -1,3 +1,8 @@
+2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/tiff.m: Use type tmsize_t.
+	Base on patch by Marat Ibadinov <ibadinov@me.com>
+
 2015-01-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Protect usages of sharedSpellChecker with

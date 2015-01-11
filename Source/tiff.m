@@ -73,6 +73,11 @@
 #include <unistd.h>		/* for L_SET, etc definitions */
 #endif /* !__WIN32__ */
 
+#if !defined(tmsize_t)
+// This only got added in version 4 of libtiff, but TIFFLIB_VERSION is unusable to differentiate here
+typedef tsize_t tmsize_t;
+#endif
+
 typedef struct {
   char* data;
   long  size;
@@ -366,7 +371,7 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
   uint8* buf;
   uint8* raster;
   NSTiffColormap* map;
-  int scan_line_size;
+  tmsize_t scan_line_size;
 
   if (data == NULL)
     return -1;
@@ -471,7 +476,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   int		i;
   unsigned int 	row;
   int           error = 0;
-  int           scan_line_size;
+  tmsize_t      scan_line_size;
 
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
