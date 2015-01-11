@@ -1,5 +1,12 @@
 2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m (-update): Added case to menu autoenabler to
+	disable supermenus that have empty submenus, when there is no
+	validator.
+	Patch by Paul Landers <paul.landers@testplant.com>.
+
+2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m: Fix bizarre behavior with undo/redo
 	actions carrying across between different fields with the
 	fieldEditor.
