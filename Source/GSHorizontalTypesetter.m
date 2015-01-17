@@ -1214,6 +1214,12 @@ restart: ;
       /* Since we might be the shared system typesetter, we must be
       reentrant. Thus, if we are already in use and can't lock our lock,
       we create a new instance and let it handle the call. */
+      
+      static NSUInteger RecursionCount = 0;
+      RecursionCount++;
+      if (RecursionCount > 1)
+        NSLog(@"%s:entering %d level recursion", __PRETTY_FUNCTION__, RecursionCount);
+
       GSHorizontalTypesetter *temp;
 
       temp = [[object_getClass(self) alloc] init];
@@ -1224,6 +1230,9 @@ restart: ;
 			       nextGlyphIndex: nextGlyphIndex
 			numberOfLineFragments: howMany];
       DESTROY(temp);
+      
+      RecursionCount--;
+     
       return ret;
     }
 
