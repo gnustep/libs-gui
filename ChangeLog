@@ -1,5 +1,12 @@
 2015-01-23  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBitmapImageRep.m (-copyWithZone): Changed the call from
+	-copyWithZone: to -mutableCopyWithZone:. 
+	* Tests/gui/NSBitmapImageRep/testcopy.m: Test for this change
+	Patch by Josh Freeman <tedge>.
+
+2015-01-23  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/tiff.m: Correct check for old libtiff version based on
 	idea by Riccardo Mottola <rm@gnu.org>.
 	Remove all usages of deprecated types.
