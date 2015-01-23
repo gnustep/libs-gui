@@ -73,7 +73,7 @@
 #include <unistd.h>		/* for L_SET, etc definitions */
 #endif /* !__WIN32__ */
 
-#if !defined(tmsize_t)
+#if !defined(TIFF_VERSION_CLASSIC)
 // This only got added in version 4 of libtiff, but TIFFLIB_VERSION is unusable to differentiate here
 typedef tsize_t tmsize_t;
 #endif
@@ -109,8 +109,8 @@ NSTiffWarning(const char *func, const char *msg, va_list ap)
 }
 
 /* Client functions that provide reading/writing of data for libtiff */
-static tsize_t
-TiffHandleRead(thandle_t handle, tdata_t buf, tsize_t count)
+static tmsize_t
+TiffHandleRead(thandle_t handle, void* buf, tmsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
   if (chand->position >= chand->size)
@@ -121,8 +121,8 @@ TiffHandleRead(thandle_t handle, tdata_t buf, tsize_t count)
   return count;
 }
 
-static tsize_t
-TiffHandleWrite(thandle_t handle, tdata_t buf, tsize_t count)
+static tmsize_t
+TiffHandleWrite(thandle_t handle, void* buf, tmsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
   if (chand->mode == 'r')
@@ -178,7 +178,7 @@ TiffHandleSize(thandle_t handle)
 }
 
 static int
-TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
+TiffHandleMap(thandle_t handle, void** data, toff_t* size)
 {
   chandle_t* chand = (chandle_t *)handle;
   
@@ -189,7 +189,7 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 }
 
 static void
-TiffHandleUnmap(thandle_t handle, tdata_t data, toff_t size)
+TiffHandleUnmap(thandle_t handle, void* data, toff_t size)
 {
   /* Nothing to unmap. */
 }
@@ -471,7 +471,7 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 int  
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
-  tdata_t	buf = (tdata_t)data;
+  void*	buf = (void*)data;
   uint16        sample_info[2];
   int		i;
   unsigned int 	row;

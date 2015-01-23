@@ -1,3 +1,9 @@
+2015-01-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/tiff.m: Correct check for old libtiff version based on
+	idea by Riccardo Mottola <rm@gnu.org>.
+	Remove all usages of deprecated types.
+
 2015-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-update): Added case to menu autoenabler to
