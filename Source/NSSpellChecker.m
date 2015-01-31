@@ -62,7 +62,7 @@
 #import "GNUstepGUI/GSServicesManager.h"
 
 // prototype for function to create name for server
-NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
+extern NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 
 // These are methods which we only want the NSSpellChecker to call.
 // The protocol is defined here so that the outside world does not

@@ -2637,7 +2637,7 @@ this file describes this.
 
       if (!layout_char)
 	new_last_glyph = 0;
-      else if (layout_char == [_textStorage length])
+      else if (layout_char >= [_textStorage length])
 	new_last_glyph = [self numberOfGlyphs];
       else
 	new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
