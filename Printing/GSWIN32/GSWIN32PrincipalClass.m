@@ -55,18 +55,15 @@
   return [GSWIN32PrintOperation class];
 }
 
-
 +(Class) printPanelClass
 {
   return [GSWIN32PrintPanel class];
 }
 
-
 +(Class) printerClass
 {
   return [GSWIN32Printer class];
 }
-
 
 +(Class) gsPrintOperationClass
 {

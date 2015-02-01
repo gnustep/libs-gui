@@ -1434,5 +1434,19 @@ withRepeatedImage: (NSImage*)image
 - (Class) savePanelClass;
 @end
 
+@interface GSTheme (PrintPanels)
+/**
+ * This method returns the print panel class needed by the
+ * native environment.
+ */
+- (Class) printPanelClass;
+
+/**
+ * This method returns the page layout class needed by the 
+ * native environment.
+ */
+- (Class) pageLayoutClass;
+@end
+
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

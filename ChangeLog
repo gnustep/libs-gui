@@ -1,4 +1,15 @@
-2015-01-31  Fred Kiefer <FredKiefer@gmx.de>
+2015-02-01 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/GSPrinting.m: Add call to GSTheme code to get the
+	class for the layout and print panels. Printing bundle can
+	still overide if needed.
+	* Source/GSThemePrintPanels.m: Add implementation of category
+	for handling print / layout panels.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add category
+	for print/layout panels.
+	* Printing/GSWIN32/GSWIN32PrincipalClass.m: Minor cleanup.
+	
+2015-01-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextStorage.m
 	* Source/NSSpellChecker.m

@@ -232,6 +232,7 @@ GSThemeInspector.m \
 GSThemeMenu.m \
 GSThemeOpenSavePanels.m \
 GSThemePanel.m \
+GSThemePrintPanels.m \
 GSThemeTools.m \
 GSTitleView.m \
 GSToolTips.m \
