@@ -30,6 +30,31 @@
 #import "AppKit/NSPageLayout.h"
 #import "GNUstepGUI/GSTheme.h"
 
+@interface GSPrintPanel : NSPrintPanel
+@end
+
+@interface GSPageLayout : NSPageLayout
+@end
+
+@implementation GSPrintPanel
+
++ (id) allocWithZone: (NSZone*)zone
+{
+  return NSAllocateObject(self, 0, zone);
+}
+
+@end
+
+@implementation GSPageLayout
+
++ (id) allocWithZone: (NSZone*)zone
+{
+  return NSAllocateObject(self, 0, zone);
+}
+
+@end
+
+
 @implementation GSTheme (PrintPanels)
 /**
  * This method returns the print panel class needed by the
@@ -37,7 +62,7 @@
  */
 - (Class) printPanelClass
 {
-  return [NSPrintPanel class];
+  return [GSPrintPanel class];
 }
 
 /**
@@ -46,7 +71,7 @@
  */
 - (Class) pageLayoutClass
 {
-  return [NSPageLayout class];
+  return [GSPageLayout class];
 }
 
 @end

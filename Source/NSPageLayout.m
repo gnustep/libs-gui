@@ -59,6 +59,7 @@
 #import "AppKit/NSPrinter.h"
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSPrinting.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static NSPageLayout *shared_instance;
 
@@ -139,6 +140,7 @@ enum {
   NSPrintInfo *_printInfo;
   NSView *_accessoryView;
 }
+
 -(NSPageLayout*) panel;
 
 //IBActions
@@ -229,20 +231,13 @@ enum {
 // Class methods
 //
 /** Load the appropriate bundle for the PageLayout 
-    (eg: GSLPRPageLayout, GSCUPSPageLayout).
 */
+
 + (id) allocWithZone: (NSZone*) zone
 {
-  Class principalClass;
-
-  principalClass = [[GSPrinting printingBundle] principalClass];
-
-  if (principalClass == nil)
-    return nil;
-	
-  return [[principalClass pageLayoutClass] allocWithZone: zone];
+  Class cls = [[GSTheme theme] pageLayoutClass];
+  return [cls allocWithZone: zone];
 }
-
 
 /** Creates ( if needed )  and returns a shared instance of the
     NSPageLayout panel.

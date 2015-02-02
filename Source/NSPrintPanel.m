@@ -49,6 +49,7 @@
 #import "AppKit/NSView.h"
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSPrinting.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static NSPrintPanel *shared_instance = nil;
 
@@ -85,18 +86,12 @@ static NSPrintPanel *shared_instance = nil;
 //
 /** Load the appropriate bundle for the PrintPanel
     and alloc the class from that in our place
-    (eg: GSLPRPrintPanel, GSCUPSPrintPanel).
 */
+
 + (id) allocWithZone: (NSZone*) zone
 {
-  Class principalClass;
-
-  principalClass = [[GSPrinting printingBundle] principalClass];
-
-  if (principalClass == nil)
-    return nil;
-	
-  return [[principalClass printPanelClass] allocWithZone: zone];
+  Class cls = [[GSTheme theme] printPanelClass];
+  return [cls allocWithZone: zone];
 }
 
 /** Creates ( if needed) and returns a shared instance of the

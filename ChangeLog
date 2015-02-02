@@ -1,3 +1,12 @@
+2015-02-02 11:59-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemePrintPanels.m: Add default subclass implementation
+	so that the panels can be instantiated.
+	* Source/NSPageLayout.m: Change the allocWithZone: method to
+	return the class indicated by the theme.
+	* Source/NSPrintPanel.m: Change the allocWithZone: method to
+	return the class indicated by the theme.
+
 2015-02-01 Gregory Casamento <greg.casamento@gmail.com>
 
 	* Source/GSPrinting.m: Add call to GSTheme code to get the
