@@ -235,8 +235,13 @@ enum {
 
 + (id) allocWithZone: (NSZone*) zone
 {
-  Class cls = [[GSTheme theme] pageLayoutClass];
-  return [cls allocWithZone: zone];
+  Class principalClass;
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if (principalClass == nil)
+    return nil;
+
+  return [[principalClass pageLayoutClass] allocWithZone: zone];
 }
 
 /** Creates ( if needed )  and returns a shared instance of the

@@ -1,3 +1,10 @@
+2015-02-02 18:37-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPageLayout.m
+	* Source/NSPrintPanel.m: Restore allocWithZone: to previous
+	implementation to allow overriding of the panels from
+	either the print bundle or the theme.
+
 2015-02-02 11:59-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSThemePrintPanels.m: Add default subclass implementation

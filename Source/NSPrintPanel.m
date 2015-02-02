@@ -90,8 +90,13 @@ static NSPrintPanel *shared_instance = nil;
 
 + (id) allocWithZone: (NSZone*) zone
 {
-  Class cls = [[GSTheme theme] printPanelClass];
-  return [cls allocWithZone: zone];
+  Class principalClass;
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if (principalClass == nil)
+    return nil;
+
+  return [[principalClass printPanelClass] allocWithZone: zone];
 }
 
 /** Creates ( if needed) and returns a shared instance of the
