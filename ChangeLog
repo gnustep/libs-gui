@@ -1,3 +1,26 @@
+2015-02-03 15:23-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations here
+	for GSPageLayout and GSPrintPanel.
+	* Printing/GSCUPS/GNUmakefile: Remove uneeded classes
+	* Printing/GSCUPS/GSCUPSPageLayout.h
+	* Printing/GSCUPS/GSCUPSPageLayout.m: Remove since it is not
+	needed. It does nothing.
+	* Printing/GSCUPS/GSCUPSPrincipalClass.m: Remove uneeded classes
+	* Printing/GSCUPS/GSCUPSPrintPanel.h
+	* Printing/GSCUPS/GSCUPSPrintPanel.m: Remove since it is not
+	needed. It does nothing.
+	* Printing/GSLPR/GNUmakefile: Remove uneeded classes.
+	* Printing/GSLPR/GSLPRPageLayout.h
+	* Printing/GSLPR/GSLPRPageLayout.m: Remove since it is not
+	needed. It does nothing.
+	* Printing/GSLPR/GSLPRPrincipalClass.m: Remove uneeded classes
+	* Printing/GSLPR/GSLPRPrintPanel.h
+	* Printing/GSLPR/GSLPRPrintPanel.m: Remove since it is not
+	needed. It does nothing.
+	* Source/GSThemePrintPanels.m: Remove declaration from here
+	for GSPrintPanel and GSPageLayout and move it to GSTheme.h
+
 2015-02-02 18:37-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSPageLayout.m

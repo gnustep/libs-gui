@@ -69,12 +69,10 @@ GSCUPS_BUNDLE_LIBS += $(GSCUPS_LIBS)
 # Header files
 #
 GSCUPS_HEADERS= \
- GSCUPSPrincipalClass.m \
- GSCUPSPageLayout.m \
- GSCUPSPrintInfo.m \
- GSCUPSPrintOperation \
- GSCUPSPrintPanel.m \
- GSCUPSPrinter.m
+ GSCUPSPrincipalClass.h \
+ GSCUPSPrintInfo.h \
+ GSCUPSPrintOperation.h \
+ GSCUPSPrinter.h
 
 
 #
@@ -82,10 +80,8 @@ GSCUPS_HEADERS= \
 #
 GSCUPS_OBJC_FILES=	\
  GSCUPSPrincipalClass.m \
- GSCUPSPageLayout.m \
  GSCUPSPrintInfo.m \
  GSCUPSPrintOperation.m \
- GSCUPSPrintPanel.m \
  GSCUPSPrinter.m
 
 

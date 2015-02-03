@@ -229,6 +229,8 @@
 #import <AppKit/NSSegmentedControl.h>
 // For tab view type 
 #import <AppKit/NSTabView.h>
+#import <AppKit/NSPrintPanel.h>
+#import <AppKit/NSPageLayout.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -1432,6 +1434,13 @@ withRepeatedImage: (NSImage*)image
  * native environment.
  */ 
 - (Class) savePanelClass;
+@end
+
+// Panels which can be overridden by the theme...
+@interface GSPrintPanel : NSPrintPanel
+@end
+
+@interface GSPageLayout : NSPageLayout
 @end
 
 @interface GSTheme (PrintPanels)

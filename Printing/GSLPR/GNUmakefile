@@ -57,22 +57,18 @@ endif
 # Header files
 #
 GSLPR_HEADERS= \
- GSLPRPrincipalClass.m \
- GSLPRPageLayout.m \
- GSLPRPrintInfo.m \
- GSLPRPrintOperation \
- GSLPRPrintPanel.m \
- GSLPRPrinter.m
+ GSLPRPrincipalClass.h \
+ GSLPRPrintInfo.h \
+ GSLPRPrintOperation.h \
+ GSLPRPrinter.h
 
 #
 # Class files
 #
 GSLPR_OBJC_FILES=	\
  GSLPRPrincipalClass.m \
- GSLPRPageLayout.m \
  GSLPRPrintInfo.m \
  GSLPRPrintOperation.m \
- GSLPRPrintPanel.m \
  GSLPRPrinter.m
 
 #

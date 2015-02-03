@@ -30,12 +30,6 @@
 #import "AppKit/NSPageLayout.h"
 #import "GNUstepGUI/GSTheme.h"
 
-@interface GSPrintPanel : NSPrintPanel
-@end
-
-@interface GSPageLayout : NSPageLayout
-@end
-
 @implementation GSPrintPanel
 
 + (id) allocWithZone: (NSZone*)zone

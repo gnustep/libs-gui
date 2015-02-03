@@ -29,10 +29,8 @@
 
 #import <Foundation/NSDebug.h>
 #import "GSLPRPrincipalClass.h"
-#import "GSLPRPageLayout.h"
 #import "GSLPRPrintInfo.h"
 #import "GSLPRPrintOperation.h"
-#import "GSLPRPrintPanel.h"
 #import "GSLPRPrinter.h"
 
 
@@ -40,11 +38,6 @@
 //
 // Class methods
 //
-+(Class) pageLayoutClass
-{
-  return [GSLPRPageLayout class];
-}
-
 +(Class) printInfoClass
 {
   return [GSLPRPrintInfo class];
@@ -55,18 +48,10 @@
   return [GSLPRPrintOperation class];
 }
 
-
-+(Class) printPanelClass
-{
-  return [GSLPRPrintPanel class];
-}
-
-
 +(Class) printerClass
 {
   return [GSLPRPrinter class];
 }
-
 
 +(Class) gsPrintOperationClass
 {
