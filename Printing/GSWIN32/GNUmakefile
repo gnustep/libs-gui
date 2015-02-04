@@ -57,22 +57,18 @@ endif
 # Header files
 #
 GSWIN32_HEADERS= \
- GSWIN32PrincipalClass.m \
- GSWIN32PageLayout.m \
- GSWIN32PrintInfo.m \
- GSWIN32PrintOperation \
- GSWIN32PrintPanel.m \
- GSWIN32Printer.m
+ GSWIN32PrincipalClass.h \
+ GSWIN32PrintInfo.h \
+ GSWIN32PrintOperation.h \
+ GSWIN32Printer.h
 
 #
 # Class files
 #
 GSWIN32_OBJC_FILES=	\
  GSWIN32PrincipalClass.m \
- GSWIN32PageLayout.m \
  GSWIN32PrintInfo.m \
  GSWIN32PrintOperation.m \
- GSWIN32PrintPanel.m \
  GSWIN32Printer.m
 
 #

@@ -29,10 +29,8 @@
 
 #import <Foundation/NSDebug.h>
 #import "GSWIN32PrincipalClass.h"
-#import "GSWIN32PageLayout.h"
 #import "GSWIN32PrintInfo.h"
 #import "GSWIN32PrintOperation.h"
-#import "GSWIN32PrintPanel.h"
 #import "GSWIN32Printer.h"
 
 
@@ -40,11 +38,6 @@
 //
 // Class methods
 //
-+(Class) pageLayoutClass
-{
-  return [GSWIN32PageLayout class];
-}
-
 +(Class) printInfoClass
 {
   return [GSWIN32PrintInfo class];
@@ -53,11 +46,6 @@
 +(Class) printOperationClass
 {
   return [GSWIN32PrintOperation class];
-}
-
-+(Class) printPanelClass
-{
-  return [GSWIN32PrintPanel class];
 }
 
 +(Class) printerClass

@@ -1,3 +1,11 @@
+2015-02-03 20:20-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Printing/GSWIN32/GSWIN32PrincipalClass.m: Remove calls to
+	instantiate GSWIN32PageLayout and GSWIN32PrintPanel classes.
+	* Printing/GSWIN32/GSWIN32PrintPanel.[hm]: Removed.
+	* Printing/GSWIN32/GSWIN32PageLayout.[hm]: Removed.
+	* Printing/GSWIN32/GNUmakefile: Remove classes from compilation.
+
 2015-02-03 15:23-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations here
