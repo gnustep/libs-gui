@@ -2396,7 +2396,7 @@ static NSColor *dtxtCol;
   _menu = TEST_RETAIN (_menu);
   _cell_image = TEST_RETAIN (_cell_image);
   _formatter = TEST_RETAIN (_formatter);
-  _formatter = TEST_RETAIN (_represented_object);
+  _represented_object = TEST_RETAIN (_represented_object);
 
   return c;
 }

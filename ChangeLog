@@ -1,3 +1,7 @@
+2015-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-copyWithZone:): Fix copy and paste error.
+
 2015-02-03 20:20-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Printing/GSWIN32/GSWIN32PrincipalClass.m: Remove calls to
@@ -55,7 +59,7 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add category
 	for print/layout panels.
 	* Printing/GSWIN32/GSWIN32PrincipalClass.m: Minor cleanup.
-	
+
 2015-01-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextStorage.m
