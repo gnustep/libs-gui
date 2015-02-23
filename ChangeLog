@@ -1,5 +1,12 @@
 2015-02-23  Germán Arias <germanandre@gmx.es>
 
+	* Source/GSToolTips.m (+initialize): Use buffered window and
+	allow autodisplay. Set auto display to NO maybe was needed in the
+	past, but currently is not needed anymore and interferes with the
+	display of tooltips on Windows.
+
+2015-02-23  Germán Arias <germanandre@gmx.es>
+
 	* Source/GSAutocompleteWindow.m (+defaultWindow):
 	* Source/NSComboBoxCell.m (+defaultPopUp): Use buffered windows.
 
