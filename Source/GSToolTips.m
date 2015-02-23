@@ -233,7 +233,7 @@ static BOOL		restoreMouseMoved;
            
   window = [[GSTTPanel alloc] initWithContentRect: NSMakeRect(0,0,100,25)
 				       styleMask: NSBorderlessWindowMask
-					 backing: NSBackingStoreBuffered
+					 backing: NSBackingStoreRetained
 					   defer: YES];
     
   [window setBackgroundColor:
@@ -241,6 +241,7 @@ static BOOL		restoreMouseMoved;
   [window setReleasedWhenClosed: NO];
   [window setExcludedFromWindowsMenu: YES];
   [window setLevel: NSPopUpMenuWindowLevel];
+  [window setAutodisplay: NO];
 }
 
 + (void) removeTipsForView: (NSView*)aView

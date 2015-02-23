@@ -120,7 +120,7 @@ static GSComboWindow *gsWindow = nil;
   if (gsWindow == nil)
     gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,200,200)
 			               styleMask: NSBorderlessWindowMask
-			                 backing: NSBackingStoreBuffered
+			                 backing: backing: NSBackingStoreNonretained // NSBackingStoreBuffered
 			                   defer: YES];
   return gsWindow;
 }
