@@ -1,3 +1,8 @@
+2015-02-23  Germán Arias <germanandre@gmx.es>
+
+	* Source/GSAutocompleteWindow.m (+defaultWindow):
+	* Source/NSComboBoxCell.m (+defaultPopUp): Use buffered windows.
+
 2015-02-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-copyWithZone:): Fix copy and paste error.

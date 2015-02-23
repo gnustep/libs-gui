@@ -63,7 +63,7 @@ static GSAutocompleteWindow *gsWindow = nil;
   if (gsWindow == nil)
     gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,200,200)
 			               styleMask: NSBorderlessWindowMask
-			                 backing: NSBackingStoreNonretained
+			                 backing: NSBackingStoreBuffered
 			                   defer: YES];
 
   return gsWindow;
