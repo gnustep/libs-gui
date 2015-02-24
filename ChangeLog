@@ -1,3 +1,8 @@
+2015-02-24  Germán Arias <germanandre@gmx.es>
+
+	* Source/GSAutocompleteWindow.m (+defaultWindow):
+	* Source/NSComboBoxCell.m (+defaultPopUp): Fix last revert.
+
 2015-02-23  Germán Arias <germanandre@gmx.es>
 
 	* Source/GSToolTips.m (+initialize):
