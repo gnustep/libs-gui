@@ -81,6 +81,7 @@ static Class imageCellClass;
   [self setImageFrameStyle: NSImageFrameNone];
   [self setImageScaling: NSScaleProportionally];
   [self setEditable: NO];
+  [self setAllowsCutCopyPaste: YES];
 
   return self;
 }
