@@ -151,8 +151,11 @@ static NSString *placeholderItem = nil;
   NSPoint oppositeOrigin = NSMakePoint (origin.x + size.width, origin.y + size.height);
   
   NSInteger firstIndexInRect = MAX(0, [self _indexAtPoint: origin]);
-  NSInteger lastIndexInRect = MIN([_items count] - 1, [self _indexAtPoint: oppositeOrigin]);
-  NSInteger index;
+  // I had to extract these values from the macro to get it
+  // working correctly.
+  NSInteger index = [self _indexAtPoint: oppositeOrigin];
+  NSInteger last = [_items count] - 1;
+  NSInteger lastIndexInRect = MIN(last, index);
 
   for (index = firstIndexInRect; index <= lastIndexInRect; index++)
     {

@@ -1,5 +1,10 @@
 2015-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSCollectionView.m (-drawRect:): Work around strange
+	behaviour of compiler.
+
+2015-03-05 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSImageView.m (-initWithFrame:): Set default for AllowsCutCopyPaste.
 
 2015-02-24  Germán Arias <germanandre@gmx.es>
