@@ -37,6 +37,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
 
@@ -94,7 +95,11 @@ static NSString *placeholderItem = nil;
 //
 + (void) initialize
 {
-  placeholderItem = @"Placeholder";
+  if (self == [NSCollectionView class])
+    {
+      placeholderItem = @"Placeholder";
+      [self exposeBinding: NSContentBinding];
+    }
 }
 
 - (id) initWithFrame: (NSRect)frame

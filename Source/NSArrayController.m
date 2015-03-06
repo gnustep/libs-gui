@@ -55,6 +55,7 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
+      [self setAutomaticallyRearrangesObjects: YES];
       [self rearrangeObjects];
       [self setSelectsInsertedObjects: YES];
     }

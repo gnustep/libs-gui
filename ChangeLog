@@ -1,3 +1,11 @@
+2015-03-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCollectionView.m (+initialize): Add binding for content.
+	* Source/NSViewController.m (-loadView): Don't try to load the
+	view if there is no name for the NIB.
+	* Source/NSArrayController.m (-initWithContent:): Sets
+	automaticallyRearrangesObjects to true.
+
 2015-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCollectionView.m (-drawRect:): Work around strange
