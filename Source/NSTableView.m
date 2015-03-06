@@ -7039,6 +7039,31 @@ For a more detailed explanation, -setSortDescriptors:. */
   return(NSNotFound);
 }
 
+- (NSMenu *)menuForEvent:(NSEvent *)event
+{
+  NSPoint eventPoint = [event locationInWindow];
+  NSPoint viewPoint  = [self convertPoint:eventPoint fromView:nil];
+  NSUInteger row     = [self rowAtPoint:viewPoint];
+  NSUInteger col     = [self columnAtPoint:viewPoint];
+  
+  if ((row != -1) && (col != -1))
+  {
+    NSCell *cell = [self preparedCellAtColumn:col row:row];
+    
+    // If there is a defined cell at row,col...
+    if (cell)
+    {
+      NSMenu *menu = [cell menu];
+      // If we found a menu...
+      if (menu)
+        return(menu);
+    }
+  }
+  
+  // else pass it on...
+  return([super menuForEvent:event]);
+}
+
 @end /* implementation of NSTableView */
 
 @implementation NSTableView (SelectionHelper)
