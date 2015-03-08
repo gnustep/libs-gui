@@ -1,3 +1,10 @@
+2015-03-08  Germán Arias <germanandre@gmx.es>
+
+	* Source/NSPrinter.m (-loadPPDAtPath:symbolValues:inclusionSet:):
+	Skip any data that don't conform with the specification, to prevent
+	application get trapped in the loop while. Correction suggested
+	by Fred.
+
 2015-03-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCollectionView.m (+initialize): Add binding for content.
