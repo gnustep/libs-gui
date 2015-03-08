@@ -48,6 +48,8 @@
   if (self == [NSArrayController class])
     {
       [self exposeBinding: NSContentArrayBinding];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
+            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
 }
 
@@ -55,7 +57,6 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
-      [self setAutomaticallyRearrangesObjects: YES];
       [self rearrangeObjects];
       [self setSelectsInsertedObjects: YES];
     }
@@ -83,42 +84,76 @@
 
 - (void) addObject: (id)obj
 {
+  [self willChangeValueForKey: NSContentBinding];
   [_content addObject: obj];
   if ([self automaticallyRearrangesObjects])
     {
       [self rearrangeObjects];
     }
+  else 
+    {
+      // FIXME: Should check whether _arranged_objects is mutable
+      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObject: obj]);
+    }
+  if ([self selectsInsertedObjects])
+    {
+      [self addSelectedObjects: [NSArray arrayWithObject: obj]];
+    }
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (void) addObjects: (NSArray*)obj
 {
+  [self willChangeValueForKey: NSContentBinding];
   [_content addObjectsFromArray: obj];
   if ([self automaticallyRearrangesObjects])
     {
       [self rearrangeObjects];
     }
+  else 
+    {
+      // FIXME: Should check whether _arranged_objects is mutable
+      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObjectsFromArray: obj]);
+    }
   if ([self selectsInsertedObjects])
     {
       [self addSelectedObjects: obj];
     }
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (void) removeObject: (id)obj
 {
+  [self willChangeValueForKey: NSContentBinding];
   [_content removeObject: obj];
+  [self removeSelectedObjects: [NSArray arrayWithObject: obj]];
   if ([self automaticallyRearrangesObjects])
     {
       [self rearrangeObjects];
     }
+  else 
+    {
+      // FIXME
+      //[_arranged_objects removeObject: obj];
+    }
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (void) removeObjects: (NSArray*)obj
 {
+  [self willChangeValueForKey: NSContentBinding];
   [_content removeObjectsInArray: obj];
+  [self removeSelectedObjects: obj];
   if ([self automaticallyRearrangesObjects])
     {
       [self rearrangeObjects];
     }
+  else 
+    {
+      // FIXME
+      //[_arranged_objects removeObjectsInArray: obj];
+    }
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (BOOL) canInsert
@@ -136,7 +171,7 @@
 {
   id new = [self newObject];
 
-  [_content addObject: new];
+  [self addObject: new];
   RELEASE(new);
 }
 
@@ -391,10 +426,10 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   [self removeObjects: [_arranged_objects objectsAtIndexes: idx]];
 }
 
-- (void)bind: (NSString *)binding 
-    toObject: (id)anObject
- withKeyPath: (NSString *)keyPath
-     options: (NSDictionary *)options
+- (void) bind: (NSString *)binding 
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
 {
   if ([binding isEqual: NSContentArrayBinding])
     {
@@ -441,6 +476,7 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       [coder encodeBool: [self selectsInsertedObjects] forKey: @"NSSelectsInsertedObjects"];
       [coder encodeBool: [self clearsFilterPredicateOnInsertion] forKey:
                @"NSClearsFilterPredicateOnInsertion"];
+      [coder encodeBool: [self automaticallyRearrangesObjects] forKey: @"NSAutomaticallyRearrangesObjects"];
     }
   else
     {
@@ -475,6 +511,11 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
         {
           [self setClearsFilterPredicateOnInsertion: 
                 [coder decodeBoolForKey: @"NSClearsFilterPredicateOnInsertion"]];
+        }
+      if ([coder containsValueForKey: @"NSAutomaticallyRearrangesObjects"])
+        {
+          [self setAutomaticallyRearrangesObjects: 
+                [coder decodeBoolForKey: @"NSAutomaticallyRearrangesObjects"]];
         }
     }
   else

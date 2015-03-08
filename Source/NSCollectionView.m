@@ -522,10 +522,15 @@ static NSString *placeholderItem = nil;
   NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
   
   _numberOfColumns = MAX(1.0, floor(width / itemSize.width));
-  
+
   if (_maxNumberOfColumns > 0)
     {
       _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
+    }
+
+  if (_numberOfColumns == 0)
+    {
+      _numberOfColumns = 1;
     }
   
   CGFloat remaining = width - _numberOfColumns * itemSize.width;

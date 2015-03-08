@@ -88,10 +88,7 @@
 
 - (void) setTextField: (NSTextField *)aTextField
 {
-  if (textField != aTextField)
-    {
-      textField = aTextField;
-    }
+  ASSIGN(textField, aTextField);
 }
 
 - (NSImageView *) imageView
@@ -101,10 +98,14 @@
 
 - (void) setImageView: (NSImageView *)anImageView
 {
-  if (imageView != anImageView)
-    {
-      imageView = anImageView;
-    }
+  ASSIGN(imageView, anImageView);
+}
+
+- (NSView *) view
+{
+  // FIXME
+  [[self textField] setStringValue: [self representedObject]];
+  return [self textField];
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
@@ -114,13 +115,27 @@
     {
       if (YES == [aCoder allowsKeyedCoding])
 	{
-	  textField = [aCoder decodeObjectForKey: @"textField"];
-	  imageView = [aCoder decodeObjectForKey: @"imageView"];
+          if ([aCoder containsValueForKey: @"textField"])
+            {
+              [self setTextField: [aCoder decodeObjectForKey: @"textField"]];
+            }
+          else
+            {
+              textField = [[NSTextField alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 20.0)];
+            }
+          if ([aCoder containsValueForKey: @"imageView"])
+            {
+              [self setImageView: [aCoder decodeObjectForKey: @"imageView"]];
+            }
+          else
+            {
+              imageView = [[NSImageView alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 100.0)];
+            }
 	}
       else
 	{
-	  textField = [aCoder decodeObject];
-	  imageView = [aCoder decodeObject];
+	  [self setTextField: [aCoder decodeObject]];
+	  [self setImageView: [aCoder decodeObject]];
 	}
     }
   return self;
