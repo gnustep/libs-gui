@@ -79,14 +79,14 @@ after-distclean::
 
 gui.make: gui.make.in Version configure
 	if [ -x config.status ]; then \
-	  ./config.status --recheck; \
+	  ./config.status --recheck && ./config.status; \
 	else \
 	  ./configure; \
 	fi
 
 config.make: config.make.in configure
 	if [ -x config.status ]; then \
-	  ./config.status --recheck; \
+	  ./config.status --recheck && ./config.status; \
 	else \
 	  ./configure; \
 	fi
