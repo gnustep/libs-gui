@@ -1,3 +1,11 @@
+2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCollectionViewItem.m: Fix reference counting in
+	-copyWithZone:. Remove method -view again.
+	* Source/NSArrayController.m: Fix reference counting in
+	-newItemForRepresentedObject. Protect -_resetItemSize from missing
+	prototype view.
+
 2015-03-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCollectionView.m (-tile): Prevent _numberOfColumns from

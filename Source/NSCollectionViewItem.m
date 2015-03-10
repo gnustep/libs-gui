@@ -101,13 +101,6 @@
   ASSIGN(imageView, anImageView);
 }
 
-- (NSView *) view
-{
-  // FIXME
-  [[self textField] setStringValue: [self representedObject]];
-  return [self textField];
-}
-
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   self = [super initWithCoder: aCoder];
@@ -161,7 +154,7 @@
   NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject: self];
   NSCollectionViewItem *newItem = 
     [NSKeyedUnarchiver unarchiveObjectWithData: itemAsData];
-  return newItem;
+  return RETAIN(newItem);
 }
 
 @end

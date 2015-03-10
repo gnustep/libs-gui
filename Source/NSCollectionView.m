@@ -125,7 +125,7 @@ static NSString *placeholderItem = nil;
 
 - (void) _resetItemSize
 {
-  if (itemPrototype)
+  if (itemPrototype && ([itemPrototype view] != nil))
     {
       _itemSize = [[itemPrototype view] frame].size;
       _minItemSize = NSMakeSize (_itemSize.width, _itemSize.height);
@@ -240,6 +240,7 @@ static NSString *placeholderItem = nil;
     }
   else
     {
+      [self _resetItemSize];
       // Force recalculation of each item's frame
       _itemSize = _minItemSize;
       _tileWidth = -1.0;
@@ -482,7 +483,7 @@ static NSString *placeholderItem = nil;
   NSCollectionViewItem *collectionItem = nil;
   if (itemPrototype)
     {
-      ASSIGN(collectionItem, [itemPrototype copy]);
+      collectionItem = [itemPrototype copy];
       [collectionItem setRepresentedObject: object];
     }
   return AUTORELEASE (collectionItem);
