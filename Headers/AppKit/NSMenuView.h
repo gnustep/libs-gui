@@ -95,6 +95,7 @@
   BOOL           _needsSizing;
   char		 _pad2[3];
   NSSize         _cellSize;
+  BOOL           _finished;
 
 @private
   id             _items_link;

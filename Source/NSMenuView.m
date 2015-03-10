@@ -90,6 +90,10 @@ static NSMapTable *viewInfo = 0;
 - (void) _attachMenu: (NSMenu*)aMenu;
 @end
 
+@interface      NSMenu (GNUstepPrivate)
++ (void)_setCurrentMenu:(NSMenu*)menu;
+@end
+
 @implementation NSMenu (Private)
 - (void) _attachMenu: (NSMenu*)aMenu
 {
@@ -1459,6 +1463,8 @@ static NSMapTable *viewInfo = 0;
   NSEvent *original;
   NSEventType type;
 
+  _finished = NO;
+
   /*
    * The original event is unused except to determine whether the method
    * was invoked in response to a right or left mouse down.
@@ -1731,11 +1737,12 @@ static NSMapTable *viewInfo = 0;
 	      [[event window] sendEvent: event];
 	    }
 	}
-      while (type == NSAppKitDefined);
+      while (type == NSAppKitDefined && (_finished == NO));
     }
-  while ((type != NSLeftMouseUp &&
-	  type != NSRightMouseUp &&
-	  type != NSOtherMouseUp) || shouldFinish == NO);
+  while ((_finished == NO) &&
+         ((type != NSLeftMouseUp &&
+	   type != NSRightMouseUp &&
+	   type != NSOtherMouseUp) || shouldFinish == NO));
 
   /*
    * Ok, we released the mouse
@@ -1890,9 +1897,11 @@ static NSMapTable *viewInfo = 0;
       originalTopLeft.y += originalFrame.size.height;
     }
   
+  [NSMenu _setCurrentMenu:[self menu]];
   [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.01];
   [self trackWithEvent: theEvent];
   [NSEvent stopPeriodicEvents];
+  [NSMenu _setCurrentMenu:nil];
 
   if (restorePosition)
     {
@@ -1977,6 +1986,11 @@ static NSMapTable *viewInfo = 0;
 - (NSArray *)_itemCells
 {
   return _itemCells;
+}
+
+- (void)_finish
+{
+  _finished = YES;
 }
 
 @end
