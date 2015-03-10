@@ -398,6 +398,7 @@ static Class imageCellClass;
   if (!self)
     return self;
 
+  [self setAllowsCutCopyPaste: YES];
   if ([aDecoder allowsKeyedCoding])
     {
       //NSArray *dragType = [aDecoder decodeObjectForKey: @"NSDragTypes"];

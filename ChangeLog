@@ -1,5 +1,9 @@
 2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImageView.m (-initWithCoder:): Set default for AllowsCutCopyPaste.
+
+2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCollectionViewItem.m: Fix reference counting in
 	-copyWithZone:. Remove method -view again.
 	* Source/NSArrayController.m: Fix reference counting in
