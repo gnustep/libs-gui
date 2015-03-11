@@ -118,10 +118,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (void) postDragEvent: (NSEvent*)event;
 @end
 
-@interface NSMenu (GNUstepPrivate)
-+ (NSMenu*)_currentMenu;
-@end
-
 @interface NSView (MoveToWindow)
 // Normally this method is only used internally.
 - (void) _viewWillMoveToWindow: (NSWindow*)newWindow;
@@ -4047,10 +4043,6 @@ resetCursorRectsForView(NSView *theView)
                 {
                   [self saveFrameUsingName: _autosaveName];
                 }
-              if ([NSMenu _currentMenu])
-                {
-                  [[NSMenu _currentMenu] close];
-                }
               [nc postNotificationName: NSWindowDidMoveNotification
                   object: self];
               break;
@@ -4076,10 +4068,6 @@ resetCursorRectsForView(NSView *theView)
                 if (_autosaveName != nil)
                   {
                     [self saveFrameUsingName: _autosaveName];
-                  }
-                if ([NSMenu _currentMenu])
-                  {
-                    [[NSMenu _currentMenu] close];
                   }
 
                 [self _processResizeEvent];

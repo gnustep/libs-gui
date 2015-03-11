@@ -125,20 +125,17 @@
 
 @interface NSMenuView (GNUstepPrivate)
 - (NSArray *)_itemCells;
-- (void)_finish;
 @end
+
 
 static NSZone	*menuZone = NULL;
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSString *NSEnqueuedMenuMoveName = @"EnqueuedMoveNotificationName";
 static NSNotificationCenter *nc;
 static BOOL menuBarVisible = YES;
-static NSMenu   *_CurrentMenu = nil;
 
 @interface	NSMenu (GNUstepPrivate)
 
-+ (NSMenu*)_currentMenu;
-+ (void)_setCurrentMenu:(NSMenu*)menu;
 - (NSString *) _name;
 - (void) _setName: (NSString *)name;
 - (NSMenuPanel *) _createWindow;
@@ -147,7 +144,6 @@ static NSMenu   *_CurrentMenu = nil;
 - (void) _setGeometry;
 - (void) _updateUserDefaults: (id) notification;
 - (void) _organizeMenu;
-- (void) _finish;
 
 @end
 
@@ -179,38 +175,9 @@ static NSMenu   *_CurrentMenu = nil;
     }
   [super orderFrontRegardless];
 }
-
-- (void)orderOut:(id)sender
-{
-  [super orderOut:sender];
-  [_the_menu _finish];
-}
-
-- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(NSInteger)otherWin
-{
-  [super orderWindow:place relativeTo:otherWin];
-  [_the_menu _finish];
-}
-
 @end
 
 @implementation	NSMenu (GNUstepPrivate)
-
-+ (NSMenu*)_currentMenu
-{
-  return _CurrentMenu;
-}
-
-+ (void)_setCurrentMenu:(NSMenu*)menu
-{
-  @synchronized(self)
-  {
-    if (_CurrentMenu != menu)
-    {
-      _CurrentMenu = menu;
-    }
-  }
-}
 
 - (NSString *) _name;
 {
@@ -495,11 +462,6 @@ static NSMenu   *_CurrentMenu = nil;
 
   [[self menuRepresentation] update];
   [self sizeToFit];
-}
-
-- (void) _finish
-{
-  [(NSMenuView*)_view _finish];
 }
 
 - (void) _setGeometry
