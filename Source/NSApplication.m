@@ -1872,6 +1872,7 @@ See Also: -runModalForWindow:
 	  NSEventType	type = [_current_event type];
 
 	  [self sendEvent: _current_event];
+      [_session->window displayIfNeeded];
 
 	  // update (en/disable) the services menu's items
 	  if (type != NSPeriodic && type != NSMouseMoved)
