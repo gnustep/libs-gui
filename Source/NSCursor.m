@@ -70,6 +70,13 @@ static NSMutableDictionary *cursorDict = nil;
     }
 }
 
+#ifdef WIN32
++ (NSUInteger) count
+{
+  return [gnustep_gui_cursor_stack count];
+}
+#endif
+
 - (void *) _cid
 {
   return _cid;

@@ -1,3 +1,9 @@
+2015-03-11  Germán Arias <germanandre@gmx.es>
+
+	* Headers/AppKit/NSCursor.h:
+	* Source/NSCursor.m: Add class method +count, specifically to handle
+	cursors on MS Windows.
+
 2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageView.m (-initWithCoder:): Set default for AllowsCutCopyPaste.
