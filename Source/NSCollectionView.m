@@ -474,6 +474,7 @@ static NSString *placeholderItem = nil;
           [item setSelected: YES];
         }
       [self addSubview: [item view]];
+      RELEASE(item);
     }
   return item;
 }
@@ -486,7 +487,7 @@ static NSString *placeholderItem = nil;
       collectionItem = [itemPrototype copy];
       [collectionItem setRepresentedObject: object];
     }
-  return AUTORELEASE (collectionItem);
+  return collectionItem;
 }
 
 - (void) _removeItemsViews

@@ -1,3 +1,11 @@
+2015-03-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCollectionView.m (-newItemForRepresentedObject:): Don't
+	autorelease the returned object as this method starts with "new".
+	* Source/NSCollectionViewItem.m (-copyWithZone:): Add call to new
+	method to copy over the bindings from the old view hierarchy to
+	the new.
+
 2015-03-11  Germán Arias <germanandre@gmx.es>
 
 	* Headers/AppKit/NSCursor.h:

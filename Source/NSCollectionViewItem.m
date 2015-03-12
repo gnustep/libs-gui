@@ -26,11 +26,13 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyedArchiver.h>
 
 #import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewItem.h"
 #import "AppKit/NSImageView.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTextField.h"
 
 @implementation NSCollectionViewItem
@@ -149,11 +151,50 @@
     }
 }
 
+- (void) copyBindingsTo: (NSCollectionViewItem*)newItem
+                   from: (NSView*)view
+                   onto: (NSView*)newView
+{
+  NSArray *exposedBindings = [view exposedBindings];
+  NSEnumerator *e = [exposedBindings objectEnumerator];
+  NSString *binding = nil;
+  while ((binding = [e nextObject]) != nil)
+    {
+      NSDictionary *info = [view infoForBinding: binding];
+      if (info != nil)
+        {
+          NSObject *target = [info objectForKey: NSObservedObjectKey];
+          if (target == self)
+            {
+              [newView bind: binding
+                   toObject: newItem
+                withKeyPath: [info objectForKey: NSObservedKeyPathKey]
+                    options: [info objectForKey: NSOptionsKey]];
+            }
+        }
+    }
+
+  NSView *sub1 = nil;
+  NSEnumerator *e1 = [[view subviews] objectEnumerator];
+  NSView *sub2 = nil;
+  NSEnumerator *e2 = [[newView subviews] objectEnumerator];
+  while ((sub1 = [e1 nextObject]) != nil)
+    {
+      sub2 = [e2 nextObject];
+      [self copyBindingsTo: newItem from: sub1 onto: sub2];
+    }
+ }
+
 - (id) copyWithZone: (NSZone *)zone 
 {
+  // FIXME: Cache this data, as we need a lot of copies
   NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject: self];
   NSCollectionViewItem *newItem = 
     [NSKeyedUnarchiver unarchiveObjectWithData: itemAsData];
+
+  // Try to copy bindings too
+  [self copyBindingsTo: newItem from: [self view] onto: [newItem view]];
+ 
   return RETAIN(newItem);
 }
 
