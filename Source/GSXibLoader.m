@@ -926,7 +926,7 @@
     }
   else
     {
-      NSLog(@"%s:NSApplication missing\n", __PRETTY_FUNCTION__);
+      NSLog(@"%s:NSApplication missing '%@'\n", __PRETTY_FUNCTION__, className);
     }
 
   // Use the owner as first root object

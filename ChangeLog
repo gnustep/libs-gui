@@ -1,3 +1,12 @@
+2015-03-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Images/NSRemoveTemplate.tiff: Add file.
+	* Images/GNUmakefile: Handle new file.
+	* Source/GSXibLoader.m: Better error reporting for wrong
+	application class.
+	* Source/NSOutline.m (-drawRow:clipRect:): Don't set the value for
+	the edited cell.
+
 2015-03-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCollectionView.m (-newItemForRepresentedObject:): Don't

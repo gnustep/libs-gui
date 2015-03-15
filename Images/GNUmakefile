@@ -41,6 +41,7 @@ Images_RESOURCE_FILES = \
  NSAddTemplate.tiff\
  NSComboArrow.tiff \
  NSRatingLevelIndicator.tiff \
+ NSRemoveTemplate.tiff\
  common_2DCheckMark.tiff \
  common_2DDash.tiff \
  common_3DArrowDown.tiff \

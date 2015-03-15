@@ -963,17 +963,20 @@ static NSImage *unexpandable  = nil;
       NSTableColumn *tb = [_tableColumns objectAtIndex: i];
       NSCell *cell = [self preparedCellAtColumn: i row: rowIndex];
 
+      [self _willDisplayCell: cell
+            forTableColumn: tb
+            row: rowIndex];
       if (i == _editedColumn && rowIndex == _editedRow)
         {
           [cell _setInEditing: YES];
           [cell setShowsFirstResponder: YES];
         }
-      [self _willDisplayCell: cell
-            forTableColumn: tb
-            row: rowIndex];
-      [cell setObjectValue: [_dataSource outlineView: self
-                                         objectValueForTableColumn: tb
-                                         byItem: item]];
+      else
+        {
+          [cell setObjectValue: [_dataSource outlineView: self
+                                             objectValueForTableColumn: tb
+                                                  byItem: item]];
+        }
       drawingRect = [self frameOfCellAtColumn: i
                           row: rowIndex];
 
@@ -1544,8 +1547,6 @@ Also returns the child index relative to this parent. */
   NSTableColumn *tb;
   NSRect drawingRect;
   unsigned length = 0;
-  int level = 0;
-  float indentationFactor = 0.0;
 
   // We refuse to edit cells if the delegate can not accept results
   // of editing.
@@ -1554,15 +1555,21 @@ Also returns the child index relative to this parent. */
       flag = YES;
     }
 
-  [self scrollRowToVisible: rowIndex];
-  [self scrollColumnToVisible: columnIndex];
+   if (rowIndex != _selectedRow)
+    {
+      [NSException raise:NSInvalidArgumentException
+	      format:@"Attempted to edit unselected row"];
+    }
 
-  if (rowIndex < 0 || rowIndex >= _numberOfRows
+   if (rowIndex < 0 || rowIndex >= _numberOfRows
       || columnIndex < 0 || columnIndex >= _numberOfColumns)
     {
       [NSException raise: NSInvalidArgumentException
                    format: @"Row/column out of index in edit"];
     }
+
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
 
   if (_textObject != nil)
     {
@@ -1627,6 +1634,8 @@ Also returns the child index relative to this parent. */
       NSImage *image = nil;
       NSCell *imageCell = nil;
       NSRect imageRect;
+      int level = 0;
+      float indentationFactor = 0.0;
 
       item = [self itemAtRow: rowIndex];
       // determine which image to use...
