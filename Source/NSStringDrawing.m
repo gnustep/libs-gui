@@ -143,6 +143,40 @@ static void init_string_drawing(void)
     }
 }
 
+static int lockedCacheEntries[NUM_CACHE_ENTRIES];
+static unsigned int numLockedCacheEntries = 0;
+#define DEBUG_CACHE_RECURSION_COUNT 0
+
+static inline BOOL is_entry_locked(unsigned int entry)
+{
+  int i;
+  for (i=0; i<numLockedCacheEntries; i++)
+    {
+      if (lockedCacheEntries[i]==entry) return YES;
+    }
+  return NO;
+}
+
+static inline void lock_entry(unsigned int entry)
+{
+  lockedCacheEntries[numLockedCacheEntries++] = entry;
+
+#if DEBUG_CACHE_RECURSION_COUNT
+  static BOOL printing = YES;
+  if (printing || numLockedCacheEntries > 1)
+    {
+      printf("Locked Entries: %d\n", numLockedCacheEntries);
+ 	  printing = numLockedCacheEntries > 1;
+    }
+#endif
+}
+
+static inline void unlock_top_entry()
+{
+  if ( numLockedCacheEntries )
+      numLockedCacheEntries--;
+}
+
 static inline void cache_lock()
 {
   // FIXME: Put all the init code into an +initialize method
@@ -160,6 +194,7 @@ static inline void cache_lock()
 
 static inline void cache_unlock()
 {
+  unlock_top_entry();
   [cacheLock unlock];
 }
 
@@ -181,8 +216,6 @@ static inline BOOL is_size_match(cache_t *c, int hasSize, NSSize size)
 
 static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
 {
-  static int LastReplaced = 0;
-  
   int i, j;
   cache_t *c;
   int least_used;
@@ -213,7 +246,7 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
       if (least_used == -1 || c->used < least_used)
         {
           // Avoid replacing the very last one in case of recursion...
-          if (j != LastReplaced)
+          if (!is_entry_locked(j))
             {
               least_used = c->used;
               replace = j;
@@ -247,6 +280,7 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
 #ifdef STATS
           hits++;
 #endif
+
           return j;
         }
     }
@@ -257,7 +291,6 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
   misses++;
 #endif
   *matched     = 0;
-  LastReplaced = replace;
   
   c = cache + replace;
   c->used = 1;
@@ -307,6 +340,7 @@ static int cache_lookup(int hasSize, NSSize size, int useScreenFonts)
   NSTextContainer *textContainer;
 
   ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  lock_entry(ci);
   if (hit)
     {
       return ci;
