@@ -166,7 +166,7 @@ static inline void lock_entry(unsigned int entry)
   if (printing || numLockedCacheEntries > 1)
     {
       printf("Locked Entries: %d\n", numLockedCacheEntries);
- 	  printing = numLockedCacheEntries > 1;
+      printing = numLockedCacheEntries > 1;
     }
 #endif
 }
@@ -174,7 +174,7 @@ static inline void lock_entry(unsigned int entry)
 static inline void unlock_top_entry()
 {
   if ( numLockedCacheEntries )
-      numLockedCacheEntries--;
+    numLockedCacheEntries--;
 }
 
 static inline void cache_lock()
@@ -245,7 +245,7 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
       c = cache + j;
       if (least_used == -1 || c->used < least_used)
         {
-          // Avoid replacing the very last one in case of recursion...
+          // Avoid replacing items that are currently being modified by other stack frames...
           if (!is_entry_locked(j))
             {
               least_used = c->used;
