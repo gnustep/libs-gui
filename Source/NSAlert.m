@@ -2028,9 +2028,26 @@ void NSBeginInformationalAlertSheet(NSString *title,
 		   didEndSelector: (SEL)didEndSelector
 		      contextInfo: (void *)contextInfo
 {
+  NSRect  frame = [window frame];
+  NSPoint point = frame.origin;
+  NSSize  size;
+  CGFloat width;
+  
+  // Ssetup...
   [self _setupPanel];
+  
+  // Position window...
+  size  = [_window frame].size;
+  point = NSMakePoint(NSMinX(frame), NSMaxY(frame)-size.height);
+  width = frame.size.width - size.width;
+  point.x += width / 2;
+  point.y -= size.height;
+  [_window setFrameOrigin:point];
+
+  // Save parameters...
   _modalDelegate = delegate;
   _didEndSelector = didEndSelector;
+
   [NSApp beginSheet: _window
          modalForWindow: window
          modalDelegate: self
