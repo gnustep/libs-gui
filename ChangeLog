@@ -1,3 +1,9 @@
+2015-03-26  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSSavePanel.m: Fix problem with the title shown in
+	the save panel's title bar not matching the set title when
+	the panel is reused for a different purpose.
+
 2015-01-08  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSTextView.m: Fix bizarre behavior with undo/redo
