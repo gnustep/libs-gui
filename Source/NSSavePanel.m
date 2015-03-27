@@ -859,6 +859,8 @@ selectCellWithString: (NSString*)title
 */
 - (void) setTitle: (NSString*)title
 {
+  // keep the window title in sync with the title field
+  [super setTitle:title];
   [_titleField setStringValue: title];
 
   // TODO: Improve the following by managing 

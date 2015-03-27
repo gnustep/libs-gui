@@ -1,3 +1,13 @@
+2015-03-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m: Fix problem with the title shown in
+	the save panel's title bar not matching the set title when
+	the panel is reused for a different purpose.
+	Patch by Doug Simons <doug.simons@testplant.com>
+	* Source/NSApplication.m: Adjust modal window position to relative
+	window requested.
+	Patch by Marcian Lytwyn <gna@advcsi.com> with small change.
+
 2015-03-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Images/NSRemoveTemplate.tiff: Add file.
