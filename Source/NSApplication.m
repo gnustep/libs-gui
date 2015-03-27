@@ -1977,8 +1977,19 @@ See -runModalForWindow:
                relativeToWindow: (NSWindow *)docWindow
 {
   // FIXME
+  NSRect  frame = [docWindow frame];
+  NSPoint point = frame.origin;
+  NSSize  size  = [theWindow frame].size;
+  
+  // Calculate window position...
+  point.x += (frame.size.width - size.width) / 2;
+  point.y += (frame.size.height - size.height);
+
+  // Position window...
+  [theWindow setFrameOrigin:point];
   [theWindow orderWindow: NSWindowAbove
-	     relativeTo: [docWindow windowNumber]];
+              relativeTo: [docWindow windowNumber]];
+  
   return [self runModalForWindow: theWindow];
 }
 
