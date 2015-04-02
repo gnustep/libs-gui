@@ -256,6 +256,12 @@ typedef NSUInteger NSControlSize;
 + (NSColor*) windowBackgroundColor;
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
++ (NSColor*) labelColor;
++ (NSColor*) secondaryLabelColor;
++ (NSColor*) tertiaryLabelColor;
++ (NSColor*) quaternaryLabelColor;
+#endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 + (NSArray*) controlAlternatingRowBackgroundColors;

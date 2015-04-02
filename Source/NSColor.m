@@ -203,12 +203,14 @@ void initSystemColors(void)
   
   colorStrings = [[NSMutableDictionary alloc]
 		     initWithObjectsAndKeys:
+		     black, @"alternateSelectedControlColor",
+		     white, @"alternateSelectedControlTextColor",
 		     lightGray, @"controlBackgroundColor",
 		     lightGray, @"controlColor",
+		     black, @"controlDarkShadowColor",
 		     lightGray, @"controlHighlightColor",
 		     white, @"controlLightHighlightColor",
 		     darkGray, @"controlShadowColor",
-		     black, @"controlDarkShadowColor",
 		     black, @"controlTextColor",
 		     darkGray, @"disabledControlTextColor",
 		     gray, @"gridColor",
@@ -217,7 +219,11 @@ void initSystemColors(void)
 		     white, @"highlightColor",
 		     black, @"keyboardFocusIndicatorColor",
 		     lightGray, @"knobColor",
+		     black, @"labelColor",
+		     black, @"quaternaryLabelColor",
 		     gray, @"scrollBarColor",
+		     black, @"secondaryLabelColor",
+		     lightGray, @"secondarySelectedControlColor",
 		     white, @"selectedControlColor",
 		     black, @"selectedControlTextColor",
 		     lightGray, @"selectedKnobColor",
@@ -226,18 +232,15 @@ void initSystemColors(void)
 		     lightGray, @"selectedTextBackgroundColor",
 		     black, @"selectedTextColor",
 		     black, @"shadowColor",
+		     black, @"tertiaryLabelColor",
 		     white, @"textBackgroundColor",
 		     black, @"textColor",
 		     lightGray, @"windowBackgroundColor",
 		     black, @"windowFrameColor",
 		     white, @"windowFrameTextColor",
-		     black, @"alternateSelectedControlColor",
-		     white, @"alternateSelectedControlTextColor",
+
 		     white, @"rowBackgroundColor",
 		     lightGray, @"alternateRowBackgroundColor",
-		     lightGray, @"secondarySelectedControlColor",
-		     //gray, @"windowFrameColor",
-		     //black, @"windowFrameTextColor",
 		     nil];
   
   systemColors = RETAIN([NSColorList colorListNamed: @"System"]);
@@ -487,8 +490,8 @@ systemColorWithName(NSString *name)
 
 + (NSColor*) colorForControlTint: (NSControlTint)controlTint
 {
- 	switch (controlTint)
-		{
+  switch (controlTint)
+    {
       default:
       case NSDefaultControlTint: 
         return [self colorForControlTint: [self currentControlTint]];
@@ -498,13 +501,13 @@ systemColorWithName(NSString *name)
         // FIXME
       case NSBlueControlTint:
         return [NSColor blueColor];
-		}
+    }
 }
 
 + (NSControlTint) currentControlTint
 {
-	// FIXME: should be made a system setting
-	return NSBlueControlTint;
+  // FIXME: should be made a system setting
+  return NSBlueControlTint;
 }
 
 + (NSColor*) colorWithPatternImage: (NSImage*)image
@@ -740,6 +743,11 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"controlColor");
 }
 
++ (NSColor*) controlDarkShadowColor
+{
+  return systemColorWithName(@"controlDarkShadowColor");
+}
+
 + (NSColor*) controlHighlightColor
 {
   return systemColorWithName(@"controlHighlightColor");
@@ -753,11 +761,6 @@ systemColorWithName(NSString *name)
 + (NSColor*) controlShadowColor
 {
   return systemColorWithName(@"controlShadowColor");
-}
-
-+ (NSColor*) controlDarkShadowColor
-{
-  return systemColorWithName(@"controlDarkShadowColor");
 }
 
 + (NSColor*) controlTextColor
@@ -800,9 +803,24 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"knobColor");
 }
 
++ (NSColor*) labelColor
+{
+  return systemColorWithName(@"labelColor");
+}
+
++ (NSColor*) quaternaryLabelColor
+{
+  return systemColorWithName(@"quaternaryLabelColor");
+}
+
 + (NSColor*) scrollBarColor
 {
   return systemColorWithName(@"scrollBarColor");
+}
+
++ (NSColor*) secondaryLabelColor
+{
+  return systemColorWithName(@"secondaryLabelColor");
 }
 
 + (NSColor*) secondarySelectedControlColor
@@ -848,6 +866,11 @@ systemColorWithName(NSString *name)
 + (NSColor*) shadowColor
 {
   return systemColorWithName(@"shadowColor");
+}
+
++ (NSColor*) tertiaryLabelColor
+{
+  return systemColorWithName(@"tertiaryLabelColor");
 }
 
 + (NSColor*) textBackgroundColor

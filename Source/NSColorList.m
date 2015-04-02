@@ -535,8 +535,20 @@ static NSColorList *themeColorList = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // FIXME
-    }
+      NSMutableArray *colors = [[NSMutableArray alloc] init];
+      NSInteger i;
+
+      for (i = 0; i < [_orderedColorKeys count]; i++)
+        {
+          NSString *name = [_orderedColorKeys objectAtIndex: i];
+          [colors insertObject: [_colorDictionary objectForKey: name]
+                       atIndex: i];
+        }
+      [aCoder encodeObject: _name forKey: @"NSName"];
+      [aCoder encodeObject: _orderedColorKeys forKey: @"NSKeys"];
+      [aCoder encodeObject: colors forKey: @"NSColors"];
+      RELEASE(colors);
+     }
   else
     {
       [aCoder encodeObject: _name];
@@ -549,7 +561,14 @@ static NSColorList *themeColorList = nil;
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      // FIXME
+      NSArray *colors;
+
+      ASSIGN(_name, [aDecoder decodeObjectForKey: @"NSName"]);
+      ASSIGN(_orderedColorKeys, [aDecoder decodeObjectForKey: @"NSKeys"]);
+      colors = [aDecoder decodeObjectForKey: @"NSColors"];
+      _colorDictionary = [[NSMutableDictionary alloc]
+                           initWithObjects: colors
+                                   forKeys: _orderedColorKeys];
     }
   else
     {
