@@ -5094,7 +5094,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       NSRect superviewBounds; // Get this *after* [self setFrame:]
       superviewBounds = [_super_view bounds];
-      if ((superviewBounds.origin.x <= _frame.origin.x) 
+      if ((superviewBounds.origin.y <= _frame.origin.y) 
         && (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
         {
           [self setNeedsDisplay: YES];

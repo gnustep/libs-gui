@@ -2816,7 +2816,8 @@ in the main thread.
 	  const NSRect inBaseRounded = NSIntegralRect(inBase);
 	  _invalidRect = [self convertRectFromBase: inBaseRounded];
 
-          [_window setViewsNeedDisplay: YES];
+          invalidRect = [_super_view convertRect: _invalidRect fromView: self];
+          [_super_view setNeedsDisplayInRect: invalidRect];
         }
       else
         {

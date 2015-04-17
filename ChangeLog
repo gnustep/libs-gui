@@ -1,3 +1,12 @@
+2015-04-17  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSView.m: Fix broken invalidRect mechanism so, for
+	example, NSOutlineView will redraw correctly when expanding
+	an item.
+	* Source/NSTableView.m: Correct an apparently incorrect use of
+	origin.x rather than origin.y when comparing heights, although
+	I'm not sure if this code does anything useful anyway.
+
 2015-03-26  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSSavePanel.m: Fix problem with the title shown in
