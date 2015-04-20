@@ -667,7 +667,7 @@ static NSImage *_pbc_image[5];
 
   if (_selectedItem != nil)
     {
-      if (_pbcFlags.altersStateOfSelectedItem)
+      if (_pbcFlags.altersStateOfSelectedItem && !_pbcFlags.pullsDown)
         {
           [_selectedItem setState: NSOffState];
         }
@@ -684,7 +684,7 @@ static NSImage *_pbc_image[5];
 
   if (_selectedItem != nil)
     {
-      if (_pbcFlags.altersStateOfSelectedItem)
+      if (_pbcFlags.altersStateOfSelectedItem && !_pbcFlags.pullsDown)
         {
           [_selectedItem setState: NSOnState];
         }
