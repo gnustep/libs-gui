@@ -1402,132 +1402,127 @@ systemColorWithName(NSString *name)
   if ([aDecoder allowsKeyedCoding])
     {
       int colorSpace = [aDecoder decodeIntForKey: @"NSColorSpace"];
-
+      
       DESTROY(self);
-
+      
       if ((colorSpace == 1) || (colorSpace == 2))
         {
-	  NSUInteger length;
-	  const uint8_t *data;
-	  double red = 0.0;
-	  double green = 0.0;
-	  double blue = 0.0;
-	  double alpha = 1.0;
-	  NSString *str;
-	  NSScanner *scanner;
-	  
-	  if ([aDecoder containsValueForKey: @"NSRGB"])
-	    {
-	      data = [aDecoder decodeBytesForKey: @"NSRGB"
-			       returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: (const char*)data 
-				      length: length];
-	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanDouble: &red];
-	      [scanner scanDouble: &green];
-	      [scanner scanDouble: &blue];
-	      [scanner scanDouble: &alpha];
-	      RELEASE(scanner);
-	      RELEASE(str);
-	    }
-
-	  if (colorSpace == 1)
-	    {
-	      self = RETAIN([NSColor colorWithCalibratedRed: red
-				     green: green
-				     blue: blue
-				     alpha: alpha]);
-	    }
-	  else
-	    {
-	      self = RETAIN([NSColor colorWithDeviceRed: red
-				     green: green
-				     blue: blue
-				     alpha: alpha]);
-	    }
-	}
+          NSUInteger length;
+          const uint8_t *data;
+          double red = 0.0;
+          double green = 0.0;
+          double blue = 0.0;
+          double alpha = 1.0;
+          NSString *str;
+          NSScanner *scanner;
+          
+          if ([aDecoder containsValueForKey: @"NSRGB"])
+            {
+              data = [aDecoder decodeBytesForKey: @"NSRGB"
+                                  returnedLength: &length];
+              str = [[NSString alloc] initWithCString: (const char*)data
+                                               length: length];
+              scanner = [[NSScanner alloc] initWithString: str];
+              [scanner scanDouble: &red];
+              [scanner scanDouble: &green];
+              [scanner scanDouble: &blue];
+              [scanner scanDouble: &alpha];
+              RELEASE(scanner);
+              RELEASE(str);
+            }
+          
+          if (colorSpace == 1)
+            {
+              self = RETAIN([NSColor colorWithCalibratedRed: red
+                                                      green: green
+                                                       blue: blue
+                                                      alpha: alpha]);
+            }
+          else
+            {
+              self = RETAIN([NSColor colorWithDeviceRed: red
+                                                  green: green
+                                                   blue: blue
+                                                  alpha: alpha]);
+            }
+        }
       else if ((colorSpace == 3) || (colorSpace == 4))
         {
-	  NSUInteger length;
-	  const uint8_t *data;
-	  double white = 0.0;
-	  double alpha = 1.0;
-	  NSString *str;
-	  NSScanner *scanner;
-	  
-	  if ([aDecoder containsValueForKey: @"NSWhite"])
-	    {
-	      data = [aDecoder decodeBytesForKey: @"NSWhite"
-			       returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: (const char*)data 
-				      length: length];
-	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanDouble: &white];
-	      [scanner scanDouble: &alpha];
-	      RELEASE(scanner);
-	      RELEASE(str);
-	    }
-	  
-	  if (colorSpace == 3)
-	    {
-	      self = RETAIN([NSColor colorWithCalibratedWhite: white
-				     alpha: alpha]);
-	    }
-	  else
-	    {
-	      self = RETAIN([NSColor colorWithDeviceWhite: white
-				     alpha: alpha]);
-	    }
-	}
+          NSUInteger length;
+          const uint8_t *data;
+          double white = 0.0;
+          double alpha = 1.0;
+          NSString *str;
+          NSScanner *scanner;
+          
+          if ([aDecoder containsValueForKey: @"NSWhite"])
+            {
+              data = [aDecoder decodeBytesForKey: @"NSWhite"
+                                  returnedLength: &length];
+              str = [[NSString alloc] initWithCString: (const char*)data
+                                               length: length];
+              scanner = [[NSScanner alloc] initWithString: str];
+              [scanner scanDouble: &white];
+              [scanner scanDouble: &alpha];
+              RELEASE(scanner);
+              RELEASE(str);
+            }
+          
+          if (colorSpace == 3)
+            {
+              self = RETAIN([NSColor colorWithCalibratedWhite: white
+                                                        alpha: alpha]);
+            }
+          else
+            {
+              self = RETAIN([NSColor colorWithDeviceWhite: white
+                                                    alpha: alpha]);
+            }
+        }
       else if (colorSpace == 5)
         {
-	  NSUInteger length;
-	  const uint8_t *data;
-	  double cyan = 0.0;
-	  double yellow = 0.0;
-	  double magenta = 0.0;
-	  double black = 0.0;
-	  double alpha = 1.0;
-	  NSString *str;
-	  NSScanner *scanner;
-	  
-	  if ([aDecoder containsValueForKey: @"NSCYMK"])
-	    {
-	      data = [aDecoder decodeBytesForKey: @"NSCYMK"
-			       returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: (const char*)data 
-				      length: length];
-	      scanner = [[NSScanner alloc] initWithString: str];
-	      [scanner scanDouble: &cyan];
-	      [scanner scanDouble: &yellow];
-	      [scanner scanDouble: &magenta];
-	      [scanner scanDouble: &black];
-	      [scanner scanDouble: &alpha];
-	      RELEASE(scanner);
-	      RELEASE(str);
-	    }
-
-	  self = RETAIN([NSColor colorWithDeviceCyan: cyan
-				 magenta: magenta
-				 yellow: yellow
-				 black: black
-				 alpha: alpha]);
-	}
+          NSUInteger length;
+          const uint8_t *data;
+          double cyan = 0.0;
+          double yellow = 0.0;
+          double magenta = 0.0;
+          double black = 0.0;
+          double alpha = 1.0;
+          NSString *str;
+          NSScanner *scanner;
+          
+          if ([aDecoder containsValueForKey: @"NSCYMK"])
+            {
+              data = [aDecoder decodeBytesForKey: @"NSCYMK"
+                                  returnedLength: &length];
+              str = [[NSString alloc] initWithCString: (const char*)data
+                                               length: length];
+              scanner = [[NSScanner alloc] initWithString: str];
+              [scanner scanDouble: &cyan];
+              [scanner scanDouble: &yellow];
+              [scanner scanDouble: &magenta];
+              [scanner scanDouble: &black];
+              [scanner scanDouble: &alpha];
+              RELEASE(scanner);
+              RELEASE(str);
+            }
+          
+          self = RETAIN([NSColor colorWithDeviceCyan: cyan
+                                             magenta: magenta
+                                              yellow: yellow
+                                               black: black
+                                               alpha: alpha]);
+        }
       else if (colorSpace == 6)
         {
-	  NSString *catalog = [aDecoder decodeObjectForKey: @"NSCatalogName"];
-	  NSString *name = [aDecoder decodeObjectForKey: @"NSColorName"];
-	  //NSColor *color = [aDecoder decodeObjectForKey: @"NSColor"];
-	  
-	  self = RETAIN([NSColor colorWithCatalogName: catalog
-				 colorName: name]);
-	}
+          self = [[GSNamedColor alloc] initWithCoder:aDecoder];
+        }
       else if (colorSpace == 10)
         {
-	  NSImage *image = [aDecoder decodeObjectForKey: @"NSImage"];
-	  
-	  self = RETAIN([NSColor colorWithPatternImage: image]);
-	}
+          NSImage *image = [aDecoder decodeObjectForKey: @"NSImage"];
+          
+          self = RETAIN([NSColor colorWithPatternImage: image]);
+        }
       
       return self;
     }
@@ -1545,23 +1540,23 @@ systemColorWithName(NSString *name)
       float brightness;
       float alpha;
       float white;
-
+      
       int active_component;
       int valid_components;
       NSString *colorspace_name;
       NSString *catalog_name;
       NSString *color_name;
       BOOL is_clear;
-
+      
       DESTROY(self);
-
+      
       // Version 1
       [aDecoder decodeValueOfObjCType: @encode(float) at: &red];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &green];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &blue];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &alpha];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_clear];
-
+      
       // Version 2
       [aDecoder decodeValueOfObjCType: @encode(id) at: &colorspace_name];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &catalog_name];
@@ -1576,80 +1571,80 @@ systemColorWithName(NSString *name)
       [aDecoder decodeValueOfObjCType: @encode(float) at: &white];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &active_component];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &valid_components];
-
+      
       if ([colorspace_name isEqualToString: @"NSDeviceCMYKColorSpace"])
-	{
-	  self = [NSColorClass colorWithDeviceCyan: cyan
-					   magenta: magenta
-					    yellow: yellow
-					     black: black
-					     alpha: alpha];
-	}
+        {
+          self = [NSColorClass colorWithDeviceCyan: cyan
+                                           magenta: magenta
+                                            yellow: yellow
+                                             black: black
+                                             alpha: alpha];
+        }
       else if ([colorspace_name isEqualToString: @"NSDeviceWhiteColorSpace"])
-	{
-	  self = [NSColorClass colorWithDeviceWhite: white alpha: alpha];
-	}
+        {
+          self = [NSColorClass colorWithDeviceWhite: white alpha: alpha];
+        }
       else if ([colorspace_name isEqualToString:
-	@"NSCalibratedWhiteColorSpace"])
-	{
-	  self = [NSColorClass colorWithCalibratedWhite:white alpha: alpha];
-	}
+                @"NSCalibratedWhiteColorSpace"])
+        {
+          self = [NSColorClass colorWithCalibratedWhite:white alpha: alpha];
+        }
       else if ([colorspace_name isEqualToString: @"NSDeviceRGBColorSpace"])
-	{
-	  self = [NSColorClass colorWithDeviceRed: red
-					    green: green
-					     blue: blue
-					    alpha: alpha];
-	}
+        {
+          self = [NSColorClass colorWithDeviceRed: red
+                                            green: green
+                                             blue: blue
+                                            alpha: alpha];
+        }
       else if ([colorspace_name isEqualToString: @"NSCalibratedRGBColorSpace"])
-	{
-	  self = [NSColorClass colorWithCalibratedRed: red
-						green: green
-						 blue: blue
-						alpha: alpha];
-	}
+        {
+          self = [NSColorClass colorWithCalibratedRed: red
+                                                green: green
+                                                 blue: blue
+                                                alpha: alpha];
+        }
       else if ([colorspace_name isEqualToString: @"NSNamedColorSpace"])
-	{
-	  self = [NSColorClass colorWithCatalogName: catalog_name
-					  colorName: color_name];
-	}
-
+        {
+          self = [NSColorClass colorWithCatalogName: catalog_name
+                                          colorName: color_name];
+        }
+      
       return RETAIN(self);
     }
   else
     {
       NSString	*csName = [aDecoder decodeObject];
-
+      
       RELEASE(self);
       if ([csName isEqualToString: @"NSDeviceCMYKColorSpace"])
-	{
-	  self = [GSDeviceCMYKColor alloc];
-	}
+        {
+          self = [GSDeviceCMYKColor alloc];
+        }
       else if ([csName isEqualToString: @"NSDeviceRGBColorSpace"])
-	{
-	  self = [GSDeviceRGBColor alloc];
-	}
+        {
+          self = [GSDeviceRGBColor alloc];
+        }
       else if ([csName isEqualToString: @"NSDeviceWhiteColorSpace"])
-	{
-	  self = [GSDeviceWhiteColor alloc];
-	}
+        {
+          self = [GSDeviceWhiteColor alloc];
+        }
       else if ([csName isEqualToString: @"NSCalibratedWhiteColorSpace"])
-	{
-	  self = [GSCalibratedWhiteColor alloc];
-	}
+        {
+          self = [GSCalibratedWhiteColor alloc];
+        }
       else if ([csName isEqualToString: @"NSCalibratedRGBColorSpace"])
-	{
-	  self = [GSCalibratedRGBColor alloc];
-	}
+        {
+          self = [GSCalibratedRGBColor alloc];
+        }
       else if ([csName isEqualToString: @"NSNamedColorSpace"])
-	{
-	  self = [GSNamedColor alloc];
-	}
+        {
+          self = [GSNamedColor alloc];
+        }
       else
-	{
-	  NSLog(@"Unknown colorspace name in decoded color");
-	  return nil;
-	}
+        {
+          NSLog(@"Unknown colorspace name in decoded color");
+          return nil;
+        }
       return [self initWithCoder: aDecoder];
     }
 }
@@ -1859,12 +1854,15 @@ systemColorWithName(NSString *name)
 @implementation GSNamedColor
 
 static	NSMutableDictionary	*namedColors = nil;
-static	NSRecursiveLock		*namedColorLock = nil;
+static	NSRecursiveLock     *namedColorLock = nil;
 
 + (void) initialize
 {
-  namedColorLock = [NSRecursiveLock new];
-  namedColors = [NSMutableDictionary new];
+  if (self == [GSNamedColor class])
+  {
+    namedColorLock = [NSRecursiveLock new];
+    namedColors    = [NSMutableDictionary new];
+  }
 }
 
 - (NSColor*) initWithCatalogName: (NSString *)listName
@@ -1872,10 +1870,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   NSMutableDictionary	*d;
   NSColor		*c;
-
+  
   _catalog_name = [listName copy];
   _color_name = [colorName copy];
+  
   [namedColorLock lock];
+
   d = [namedColors objectForKey: _catalog_name];
   if (d == nil)
     {
@@ -1883,6 +1883,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
       [namedColors setObject: d forKey: _catalog_name];
       [d release];
     }
+
   c = [d objectForKey: _color_name];
   if (c == nil)
     {
@@ -1893,6 +1894,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
       [self release];
       self = (GSNamedColor*)[c retain];
     }
+
   [namedColorLock unlock];
   return self;
 }
@@ -1981,12 +1983,14 @@ static	NSRecursiveLock		*namedColorLock = nil;
   if (colorSpace == nil)
     {
       if (deviceDescription != nil)
-	colorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
+        colorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
+      
       // FIXME: If the deviceDescription is nil, we should get it from the
       // current view or printer
       if (colorSpace == nil)
         colorSpace = NSCalibratedRGBColorSpace;
     }
+  
   if ([colorSpace isEqualToString: [self colorSpaceName]])
     {
       return self;
@@ -2001,12 +2005,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
       list = [NSColorList colorListNamed: _catalog_name];
       real = [list colorWithKey: _color_name];
       ASSIGN(_cached_color, [real colorUsingColorSpaceName: colorSpace
-	device: deviceDescription]);
+                                                    device: deviceDescription]);
       ASSIGN(_cached_name_space, colorSpace);
     }
   real = [[_cached_color retain] autorelease];
   [namedColorLock unlock];
-
+  
   return real;
 }
 
@@ -2028,6 +2032,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
       [aCoder encodeInt: 6 forKey: @"NSColorSpace"];
       [aCoder encodeObject: _catalog_name forKey: @"NSCatalogName"];
       [aCoder encodeObject: _color_name forKey: @"NSColorName"];
+      [aCoder encodeObject: _cached_color forKey:@"NSColor"];
     }
   else 
     {
@@ -2039,13 +2044,30 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSString	*listName;
-  NSString	*colorName;
+  NSString	*listName   = nil;
+  NSString	*colorName  = nil;
   
-  listName = [aDecoder decodeObject];
-  colorName = [aDecoder decodeObject];
-  return [self initWithCatalogName: listName
-		         colorName: colorName];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      listName               = [aDecoder decodeObjectForKey: @"NSCatalogName"];
+      colorName              = [aDecoder decodeObjectForKey: @"NSColorName"];
+      NSColor     *color     = (NSColor*)[aDecoder decodeObjectForKey: @"NSColor"];
+      NSColorList *colorList = [NSColorList colorListNamed: listName];
+      
+      if ([colorList colorWithKey:colorName] == nil)
+        {
+          NSWarnMLog(@"adding to color list: %@ name: %@ color: %@", listName, colorName, color);
+          [[NSColorList colorListNamed:listName] setColor:color forKey:colorName];
+        }
+    }
+  else
+    {
+      listName  = [aDecoder decodeObject];
+      colorName = [aDecoder decodeObject];
+    }
+  
+  self = (id)[self initWithCatalogName: listName colorName: colorName];
+  return self;
 }
 
 @end
