@@ -348,7 +348,8 @@
     unsigned int transient: 1;
     unsigned int horizontal: 1;
     unsigned int mainMenuChanged: 1;
-		unsigned int unused: 25;
+    unsigned int isUpdating: 1;
+		unsigned int unused: 24;
   } _menu;
 
 @private

@@ -1091,150 +1091,157 @@ static BOOL menuBarVisible = YES;
 
 - (void) update
 {
-  if (_delegate)
+  if (_menu.isUpdating == NO)
     {
-      if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
-        {
-          [_delegate menuNeedsUpdate:self];
-        }
-      else if ([_delegate respondsToSelector:@selector(numberOfItemsInMenu:)])
-        {
-          NSInteger num;
-
-          num = [_delegate numberOfItemsInMenu: self];
-          if (num > 0)
-            {
-              BOOL cont = YES;
-              NSInteger i = 0;
-              NSInteger curr = [self numberOfItems];
-
-              while (num < curr)
-                {
-                  [self removeItemAtIndex: --curr];
-                }
-              while (num > curr)
-                {
-                  [self insertItemWithTitle: @"" 
-                        action: NULL
-                        keyEquivalent: @"" 
-                        atIndex: curr++];
-                }
-
-              // FIXME: Should only process the items we display
-              while (cont && i < num)
-                {
-                  cont = [_delegate menu: self
-                                    updateItem: (NSMenuItem*)[self itemAtIndex: i]
-                                    atIndex: i
-                                    shouldCancel: NO];
-                  i++;
-                }
-            }
-        }
-    }
-
-  // We use this as a recursion check.
-  if (!_menu.changedMessagesEnabled)
-    return;
-
-  if ([self autoenablesItems])
-    {
-      unsigned i, count;
-
-      count = [_items count];  
+      _menu.isUpdating = YES;
       
-      // Temporary disable automatic displaying of menu.
-      [self setMenuChangedMessagesEnabled: NO];
-
-      NS_DURING
-	{
-	  for (i = 0; i < count; i++)
-	    {
-	      NSMenuItem *item = [_items objectAtIndex: i];
-	      SEL	      action = [item action];
-	      id	      validator = nil;
-	      BOOL	      wasEnabled = [item isEnabled];
-	      BOOL	      shouldBeEnabled;
-
-	      // Update the submenu items if any.
-	      if ([item hasSubmenu])
-	        [[item submenu] update];
-
-	      // If there is no action - there can be no validator for the item.
-	      if (action)
-	        {
-	          validator = [NSApp targetForAction: action 
-				     to: [item target]
-				     from: item];
-	        }
-	      else if (_popUpButtonCell != nil)
-	        {
-	          if (NULL != (action = [_popUpButtonCell action]))
-	            {
-		      validator = [NSApp targetForAction: action
-				         to: [_popUpButtonCell target]
-				         from: [_popUpButtonCell controlView]];
-		    }
-	        }
-
-	      if (validator == nil)
-	        {
-	          if ((action == NULL) && (_popUpButtonCell != nil))
-		    {
-		      shouldBeEnabled = YES;
-		    }
-	          else 
-		    {
-		      shouldBeEnabled = NO;
-		    }
-	        }
-	      else if ([validator
-		         respondsToSelector: @selector(validateMenuItem:)])
-	        {
-	          shouldBeEnabled = [validator validateMenuItem: item];
-	        }
-	      else if ([validator
-		         respondsToSelector: @selector(validateUserInterfaceItem:)])
-	        {
-	          shouldBeEnabled = [validator validateUserInterfaceItem: item];
-	        }
-          else if ([item hasSubmenu] && [[item submenu] numberOfItems] == 0)
-            {
-              shouldBeEnabled = NO;
-            }
-	      else
-	        {
-	          shouldBeEnabled = YES;
-	        }
-
-	      if (shouldBeEnabled != wasEnabled)
-	        {
-	          [item setEnabled: shouldBeEnabled];
-	        }
-	    }
-          }
-	NS_HANDLER
-	  {
-	    NSLog(@"Error Occurred While Updating Menu %@: %@", [self title], localException);
-	  }
-	NS_ENDHANDLER
-      // Reenable displaying of menus
-      [self setMenuChangedMessagesEnabled: YES]; // this will send pending _notifications
-    }
-
-  if (_menu.mainMenuChanged)
-    {
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == NSWindows95InterfaceStyle)
+      if (_delegate)
         {
-          [[GSTheme theme] updateAllWindowsWithMenu: self];
+          if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
+            {
+              [_delegate menuNeedsUpdate:self];
+            }
+          else if ([_delegate respondsToSelector:@selector(numberOfItemsInMenu:)])
+            {
+              NSInteger num;
+              
+              num = [_delegate numberOfItemsInMenu: self];
+              if (num > 0)
+                {
+                  BOOL cont = YES;
+                  NSInteger i = 0;
+                  NSInteger curr = [self numberOfItems];
+                  
+                  while (num < curr)
+                    {
+                      [self removeItemAtIndex: --curr];
+                    }
+                  while (num > curr)
+                    {
+                      [self insertItemWithTitle: @""
+                                         action: NULL
+                                  keyEquivalent: @""
+                                        atIndex: curr++];
+                    }
+                  
+                  // FIXME: Should only process the items we display
+                  while (cont && i < num)
+                    {
+                      cont = [_delegate menu: self
+                                  updateItem: (NSMenuItem*)[self itemAtIndex: i]
+                                     atIndex: i
+                                shouldCancel: NO];
+                      i++;
+                    }
+                }
+            }
         }
-      _menu.mainMenuChanged = NO;
-    }
-
-  if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
-    {
-      NSDebugLLog (@"NSMenu", @" Calling Size To Fit (A)");
-      [self sizeToFit];
+      
+      // We use this as a recursion check.
+      if (_menu.changedMessagesEnabled)
+      {
+        if ([self autoenablesItems])
+          {
+            unsigned i, count;
+            
+            count = [_items count];
+            
+            // Temporary disable automatic displaying of menu.
+            [self setMenuChangedMessagesEnabled: NO];
+            
+            NS_DURING
+              {
+                for (i = 0; i < count; i++)
+                  {
+                    NSMenuItem *item = [_items objectAtIndex: i];
+                    SEL	      action = [item action];
+                    id	      validator = nil;
+                    BOOL	      wasEnabled = [item isEnabled];
+                    BOOL	      shouldBeEnabled;
+                    
+                    // Update the submenu items if any.
+                    if ([item hasSubmenu])
+                      [[item submenu] update];
+                    
+                    // If there is no action - there can be no validator for the item.
+                    if (action)
+                      {
+                        validator = [NSApp targetForAction: action
+                                                        to: [item target]
+                                                      from: item];
+                      }
+                    else if (_popUpButtonCell != nil)
+                      {
+                        if (NULL != (action = [_popUpButtonCell action]))
+                          {
+                            validator = [NSApp targetForAction: action
+                                                            to: [_popUpButtonCell target]
+                                                          from: [_popUpButtonCell controlView]];
+                          }
+                      }
+                    
+                    if (validator == nil)
+                      {
+                        if ((action == NULL) && (_popUpButtonCell != nil))
+                          {
+                            shouldBeEnabled = YES;
+                          }
+                        else
+                          {
+                            shouldBeEnabled = NO;
+                          }
+                      }
+                    else if ([validator
+                              respondsToSelector: @selector(validateMenuItem:)])
+                      {
+                        shouldBeEnabled = [validator validateMenuItem: item];
+                      }
+                    else if ([validator
+                              respondsToSelector: @selector(validateUserInterfaceItem:)])
+                      {
+                        shouldBeEnabled = [validator validateUserInterfaceItem: item];
+                      }
+                    else if ([item hasSubmenu] && [[item submenu] numberOfItems] == 0)
+                      {
+                        shouldBeEnabled = NO;
+                      }
+                    else
+                      {
+                        shouldBeEnabled = YES;
+                      }
+                    
+                    if (shouldBeEnabled != wasEnabled)
+                      {
+                        [item setEnabled: shouldBeEnabled];
+                      }
+                  }
+              }
+            NS_HANDLER
+            {
+              NSLog(@"Error Occurred While Updating Menu %@: %@", [self title], localException);
+            }
+            NS_ENDHANDLER
+            // Reenable displaying of menus
+            [self setMenuChangedMessagesEnabled: YES]; // this will send pending _notifications
+          }
+        
+        if (_menu.mainMenuChanged)
+        {
+          if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == NSWindows95InterfaceStyle)
+          {
+            [[GSTheme theme] updateAllWindowsWithMenu: self];
+          }
+          _menu.mainMenuChanged = NO;
+        }
+        
+        if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
+        {
+          NSDebugLLog (@"NSMenu", @" Calling Size To Fit (A)");
+          [self sizeToFit];
+        }
+      }
+      
+      _menu.isUpdating = NO;
     }
   
   return;
