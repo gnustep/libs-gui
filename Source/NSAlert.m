@@ -1789,10 +1789,17 @@ void NSBeginInformationalAlertSheet(NSString *title,
 {
   NSArray *options;
   NSUInteger count;
+  NSString *errorText;
+
+  errorText = [error localizedFailureReason];
+  if (errorText == nil)
+    {
+      errorText = [error localizedDescription];
+    }
 
   options = [error localizedRecoveryOptions];
   count = [options count];
-  return [self alertWithMessageText: [error localizedDescription]
+  return [self alertWithMessageText: errorText
                defaultButton: (count > 0) ? [options objectAtIndex: 0] : nil
                alternateButton: (count > 1) ? [options objectAtIndex: 1] : nil
                otherButton: (count > 2) ? [options objectAtIndex: 2] : nil

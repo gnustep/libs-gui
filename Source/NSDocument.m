@@ -641,8 +641,9 @@ withContentsOfURL: (NSURL *)url
   
   if (data == nil) 
     {
-      *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
-                                                 @"Error description"));
+      if (error && !(*error))
+          *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
+                                                     @"Error description"));
       return nil;
     }
   return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
@@ -1022,7 +1023,7 @@ withContentsOfURL: (NSURL *)url
                       error: error];
       if (wrapper == nil)
         {
-	  if (error)
+	  if (error && !(*error))
             {
               *error = create_error(0, NSLocalizedString(@"Could not write file wrapper.",
                                                          @"Error description"));

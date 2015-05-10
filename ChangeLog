@@ -1,3 +1,15 @@
+2015-05-10  Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSAlert.m (+alertWithError:): Support use of
+	NSLocalizedFailureReasonKey. Prefer it as the title of the error
+	alert's title in case it is present inside a NSError.
+	* Source/NSDocument.m (-fileWrapperOfType:error:): Prefer error
+	created by called -dataOfType:error: method; that is, do not overwrite
+	it.
+	* Source/NSDocument.m (-writeToURL:ofType:error:): Check that error is
+	non-nil, then apply the error message only if
+	-fileWrapperOfType:error: did not set its own error.
+
 2015-04-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSColor.h,
