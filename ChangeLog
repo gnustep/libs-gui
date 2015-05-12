@@ -1,3 +1,10 @@
+2015-05-12 Riccardo Mottola <rm@gnu.org>
+
+	* configure.ac
+	pick up gnustep make configured CC, CPP, CXX and check they are consistent with how make was configured
+	* configure
+	regenerated
+
 2015-05-10  Ivan Vucica <ivan@vucica.net>
 
 	* Source/NSAlert.m (+alertWithError:): Support use of

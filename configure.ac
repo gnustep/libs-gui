@@ -1,7 +1,7 @@
 # configure.in for GNUstep GUI library
 # Process this file with autoconf to produce a configure script.
 #
-# Copyright (C) 1996-2011 Free Software Foundation, Inc.
+# Copyright (C) 1996-2015 Free Software Foundation, Inc.
 #
 # Author:  Adam Fedor <fedor@gnu.org>
 #
@@ -50,6 +50,27 @@ AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
 # Determine the host, build, and target systems
 #--------------------------------------------------------------------
 AC_CANONICAL_TARGET([])
+
+#--------------------------------------------------------------------
+# Find the compiler
+#--------------------------------------------------------------------
+if test "$CC" = ""; then
+  CC=`gnustep-config --variable=CC`
+fi
+if test "$CPP" = ""; then
+  CPP=`gnustep-config --variable=CPP`
+fi
+if test "$CXX" = ""; then
+  CXX=`gnustep-config --variable=CXX`
+fi
+AC_PROG_CC
+AC_PROG_CPP
+
+MAKECC=`gnustep-config --variable=CC`
+if test "$CC" != "$MAKECC"; then
+  AC_MSG_ERROR([You are running configure with the compiler ($CC) set to a different value from that used by gnustep-make ($MAKECC).  Please run configure again with your environment set to match your gnustep-make])
+  exit 1
+fi
 
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
@@ -105,11 +126,6 @@ fi
 CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
-#--------------------------------------------------------------------
-# Find the compiler
-#--------------------------------------------------------------------
-AC_PROG_CC
-AC_PROG_CPP
 
 AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rint rintf atan2f)
