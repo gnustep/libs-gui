@@ -1,3 +1,10 @@
+2015-05-13 Riccardo Mottola <rm@gnu.org>
+
+	* configure.ac
+	Copied from base: only warn if compiler is different from the one configured in make
+	* configure
+	regenerated
+
 2015-05-12 Riccardo Mottola <rm@gnu.org>
 
 	* configure.ac

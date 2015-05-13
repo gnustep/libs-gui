@@ -54,23 +54,38 @@ AC_CANONICAL_TARGET([])
 #--------------------------------------------------------------------
 # Find the compiler
 #--------------------------------------------------------------------
+MAKECC=`gnustep-config --variable=CC`
+MAKECPP=`gnustep-config --variable=CPP`
+MAKECXX=`gnustep-config --variable=CXX`
 if test "$CC" = ""; then
-  CC=`gnustep-config --variable=CC`
+  CC=$MAKECC
+else
+  if test "$CC" != "$MAKECC"; then
+    AC_MSG_WARN([You are running configure with the compiler ($CC) set to a different value from that used by gnustep-make ($MAKECC).  To a
+void conflicts/problems, reconfigure/reinstall gnustep-make to use $CC or run the gnustep-base configure again with your CC environment var
+iable set to $MAKECC])
+  fi
 fi
 if test "$CPP" = ""; then
-  CPP=`gnustep-config --variable=CPP`
+  CPP=$MAKECPP
+else
+  if test "$CPP" != "$MAKECPP"; then
+    AC_MSG_WARN([You are running configure with the preprocessor ($CPP) set to a different value from that used by gnustep-make ($MAKECPP).
+  To avoid conflicts/problems, reconfigure/reinstall gnustep-make to use $CPP or run the gnustep-base configure again with your CPP environ
+ment variable set to $MAKECPP])
+  fi
 fi
 if test "$CXX" = ""; then
-  CXX=`gnustep-config --variable=CXX`
+  CXX=$MAKECXX
+else
+  if test "$CXX" != "$MAKECXX"; then
+    AC_MSG_WARN([You are running configure with the compiler ($CXX) set to a different value from that used by gnustep-make ($MAKECXX).  To
+ avoid conflicts/problems, reconfigure/reinstall gnustep-make to use $CXX or run the gnustep-base configure again with your CXX environment
+ variable set to $MAKECXX])
+  fi
 fi
 AC_PROG_CC
 AC_PROG_CPP
-
-MAKECC=`gnustep-config --variable=CC`
-if test "$CC" != "$MAKECC"; then
-  AC_MSG_ERROR([You are running configure with the compiler ($CC) set to a different value from that used by gnustep-make ($MAKECC).  Please run configure again with your environment set to match your gnustep-make])
-  exit 1
-fi
 
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
