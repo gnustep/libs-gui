@@ -675,7 +675,14 @@ static NSInputManager *currentInputManager = nil;
         case NSEnterCharacter:
         case NSFormFeedCharacter:
         case NSCarriageReturnCharacter:
-          [self doCommandBySelector: @selector (insertNewline:)];
+          if (flags & NSAlternateKeyMask)
+            {
+              [self doCommandBySelector: @selector (insertNewlineIgnoringFieldEditor:)];
+            }
+          else
+            {
+              [self doCommandBySelector: @selector (insertNewline:)];
+            }
           break;
           
         case NSHelpFunctionKey:

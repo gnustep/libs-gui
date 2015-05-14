@@ -18,8 +18,8 @@
   "Control-Shift-UpArrow" = "moveToBeginningOfDocumentAndModifySelection:";
   "Control-Shift-DownArrow" = "moveToEndOfDocumentAndModifySelection:";
 
-  "Alternate-UpArrow" = ("moveUp:", "moveWordBackward:"); 
-  "Alternate-DownArrow" = ("moveDown:", "moveWordForward:"); 
+  "Alternate-UpArrow" = ("moveBackward:", "moveToBeginningOfParagraph:");
+  "Alternate-DownArrow" = ("moveForward:", "moveToEndOfParagraph:");
   "Alternate-LeftArrow" = "moveWordBackward:";
   "Alternate-RightArrow" = "moveWordForward:";
 
