@@ -9,6 +9,14 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.24.1}
+
+From a look through ChangeLog, we can see a lot of bugfixes for this release,
+with the main focus on avoiding display glitches and improving OSX
+compatibility.
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.24.0}
 
 New features include:
@@ -21,8 +29,6 @@ New features include:
 @end itemize
 
 Many bugfixes.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.23.1}
 

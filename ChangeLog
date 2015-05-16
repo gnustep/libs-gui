@@ -1,14 +1,24 @@
+2015-05-16  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Documentation/news.texi:
+        * ANNOUNCE:
+        * NEWS:
+        * Version:
+	New  0.24.2 bugfix release
+
 2015-05-13 Riccardo Mottola <rm@gnu.org>
 
 	* configure.ac
-	Copied from base: only warn if compiler is different from the one configured in make
+	Copied from base: only warn if compiler is different from the one
+	configured in make
 	* configure
 	regenerated
 
 2015-05-12 Riccardo Mottola <rm@gnu.org>
 
 	* configure.ac
-	pick up gnustep make configured CC, CPP, CXX and check they are consistent with how make was configured
+	pick up gnustep make configured CC, CPP, CXX and check they are
+	consistent with how make was configured
 	* configure
 	regenerated
 
@@ -65,7 +75,8 @@
 
 2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSImageView.m (-initWithCoder:): Set default for AllowsCutCopyPaste.
+	* Source/NSImageView.m (-initWithCoder:): Set default for
+	AllowsCutCopyPaste.
 
 2015-03-10 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -106,7 +117,8 @@
 
 2015-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSImageView.m (-initWithFrame:): Set default for AllowsCutCopyPaste.
+	* Source/NSImageView.m (-initWithFrame:): Set default for
+	AllowsCutCopyPaste.
 
 2015-02-24  Germán Arias <germanandre@gmx.es>
 
@@ -261,7 +273,8 @@
 
 	* Source/NSDocumentFrameworkPrivate.h,
         * Source/NSDocumentController.m:
-	Open recent menu to clear items that have been deleted whenever it reloads.
+	Open recent menu to clear items that have been deleted whenever
+	it reloads.
 	Based on patch by Paul Landers <paul.landers@testplant.com>.
 
 2014-12-08  Fred Kiefer <FredKiefer@gmx.de>
@@ -677,7 +690,8 @@
 
 	* Source/GSXibLoader.m: Handle changed keys for XIB 4.6 format.
 	Based on patch by Marcian Lytwyn <marcian.lytwyn@advcsi.com>.
-	* Source/GSXibLoader.m (-parser:...): Warn about unsupported XIB 5 format.
+	* Source/GSXibLoader.m (-parser:...): Warn about unsupported XIB 5
+	format.
 
 2013-12-13  Fred Kiefer <FredKiefer@gmx.de>
 
