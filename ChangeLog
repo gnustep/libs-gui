@@ -1,10 +1,16 @@
+2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ChangeLog: Correct version number in last commit.
+	* Source/NSButtonCell.m (-encodeWithCoder:): Correct bug with
+	image position in NSButtonFlags.
+
 2015-05-16  Richard Frith-Macdonald <rfm@gnu.org>
 
         * Documentation/news.texi:
         * ANNOUNCE:
         * NEWS:
         * Version:
-	New  0.24.2 bugfix release
+	New  0.24.1 bugfix release
 
 2015-05-13 Riccardo Mottola <rm@gnu.org>
 

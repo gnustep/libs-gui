@@ -1671,7 +1671,7 @@ typedef struct _GSButtonCellFlags
           || (_cell.image_position == NSImageOnly);
       buttonCellFlags.isHorizontal = (_cell.image_position == NSImageLeft) 
           || (_cell.image_position == NSImageRight);
-      buttonCellFlags.isBottomOrLeft = (_cell.image_position == NSImageAbove) 
+      buttonCellFlags.isBottomOrLeft = (_cell.image_position == NSImageLeft) 
           || (_cell.image_position == NSImageBelow);
       buttonCellFlags.isImageAndText = (image != nil) 
           && (_cell.image_position != NSImageOnly);
