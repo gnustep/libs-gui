@@ -64,6 +64,7 @@ objective-c headers.
 // GIF> 5.1
 #if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
   #define DGifCloseFile(f) DGifCloseFile(f, NULL)
+  #define EGifCloseFile(f) EGifCloseFile(f, NULL)
 #endif
 
 /* -----------------------------------------------------------
