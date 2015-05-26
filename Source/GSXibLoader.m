@@ -410,7 +410,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
       
       // Load the connection ID....
@@ -433,7 +433,7 @@
               NSString *format = [NSString stringWithFormat:@"%s:class: %@ - connection ID is missing or zero!",
                                   __PRETTY_FUNCTION__, NSStringFromClass([self class])];
               [NSException raise: NSInvalidArgumentException
-                          format: format];
+                          format: @"%@", format];
             }
         }
       else
@@ -442,7 +442,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
     }
   else
@@ -582,7 +582,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
       
       if ([coder containsValueForKey: @"object"])
@@ -632,7 +632,7 @@
 
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"<%@, %@, %@, %d>",
+  return [NSString stringWithFormat: @"<%@, %@, %@, %p>",
 		   [self className],
 		   object,
 		   parent,

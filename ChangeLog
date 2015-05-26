@@ -8,6 +8,17 @@
 	  return value for NSMenu itemAtIndex change from
 	  id<NSMenuItem> to NSMenuitem* as it is done by Apple too
 	  fixes warnings in NSApplication.m and NSTextView.m
+	* Source/NSAnimation.m
+	* Source/NSCachedImageRep.m
+	* Source/NSEvent.m
+	* Source/NSPrintPanel.m
+	* Source/NSTextBlock.m
+	* Source/NSToolbarItem.m
+	* Source/GSDisplayServer.m
+	* Source/GSXibLoader.m
+	* Source/NSSplitView.m
+	* Model/GMArchiver.m
+	  Format string fixes and casts 
 
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
 

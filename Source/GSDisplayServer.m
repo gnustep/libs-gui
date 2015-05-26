@@ -1112,7 +1112,7 @@ GSCurrentServer(void)
 	{
 	  NSEvent *event = events[i];
 
-          NSLog(@"index %d %@", i, event);
+          NSLog(@"index %lu %@", (unsigned long) i, event);
         }
     }
   else

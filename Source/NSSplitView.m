@@ -150,7 +150,7 @@ static NSNotificationCenter *nc = nil;
                 {
                   proportion = (NSWidth(frames[i]))/oldTotal;              
                 }
-              key = [NSString stringWithFormat: @"%u", i];
+              key = [NSString stringWithFormat: @"%lu", (unsigned long) i];
               [config setObject: [NSNumber numberWithDouble: proportion]
                          forKey: key];
             }
@@ -829,7 +829,7 @@ static NSNotificationCenter *nc = nil;
               NSNumber	*proportion;
 	      NSString	*key;
 
-	      key = [NSString stringWithFormat: @"%u", i];
+	      key = [NSString stringWithFormat: @"%lu", (unsigned long) i];
               proportion = [config objectForKey: key];
               if (proportion == nil)
                 {

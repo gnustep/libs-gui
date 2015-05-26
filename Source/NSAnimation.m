@@ -797,7 +797,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
         [delegate methodForSelector: @selector (animationShouldStart:)]
         : NULL;
       NSDebugMLLog(@"NSAnimationDelegate",
-                   @"Delegation methods : %x %x %x %x %x",
+                   @"Delegation methods : %p %p %p %p %p",
                    _delegate_animationDidReachProgressMark,
                    _delegate_animationValueForProgress,
                    _delegate_animationDidEnd,

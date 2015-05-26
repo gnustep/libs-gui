@@ -287,7 +287,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           index = [toolbar _indexOfItem: _toolbarItem];
         }
 	  [GSToolbarView setDraggedItemIndex:index];
-      [pboard setString: [NSString stringWithFormat:@"%d", index] 
+      [pboard setString: [NSString stringWithFormat:@"%ld", (long) index] 
               forType: GSMovableToolbarItemPboardType];
           
       [self dragImage: image 
@@ -777,7 +777,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           index = [toolbar _indexOfItem: _toolbarItem];
         }
 	  [GSToolbarView setDraggedItemIndex:index];
-      [pboard setString: [NSString stringWithFormat:@"%d", index] 
+      [pboard setString: [NSString stringWithFormat:@"%ld", (long) index] 
               forType: GSMovableToolbarItemPboardType];
       
       [self dragImage: image 

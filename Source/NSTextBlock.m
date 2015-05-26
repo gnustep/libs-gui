@@ -72,7 +72,7 @@
 {
   if (edge >= sizeof(_borderColorForEdge) / sizeof(_borderColorForEdge[0]))
     [NSException raise: NSInvalidArgumentException
-                 format: @"invalid edge %d", edge];
+                 format: @"invalid edge %lu", (unsigned long) edge];
   ASSIGN(_borderColorForEdge[edge], color);
 }
 
@@ -167,7 +167,7 @@
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
-		 format: @"invalid edge %d", edge];
+		 format: @"invalid edge %lu", (unsigned long) edge];
   return _width[layer][edge];
 }
 
@@ -179,7 +179,7 @@
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
-		 format: @"invalid edge %d", edge];
+		 format: @"invalid edge %lu", (unsigned long) edge];
   return _widthType[layer][edge];
 }
 
@@ -193,7 +193,7 @@
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
-		 format: @"invalid edge %d", edge];
+		 format: @"invalid edge %lu", (unsigned long) edge];
   _width[layer][edge] = val;
   _widthType[layer][edge] = type;
 }

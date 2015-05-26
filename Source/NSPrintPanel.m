@@ -462,9 +462,9 @@ static NSPrintPanel *shared_instance = nil;
   else
     {
       NSString *str;
-      str = [NSString stringWithFormat: @"%d", _pages.location];
+      str = [NSString stringWithFormat: @"%lu", (unsigned long) _pages.location];
       [[fromRangeForm cellAtIndex: 0] setStringValue: str];
-      str = [NSString stringWithFormat: @"%d", NSMaxRange(_pages)-1];
+      str = [NSString stringWithFormat: @"%lu", (unsigned long) NSMaxRange(_pages)-1];
       [[toRangeForm cellAtIndex: 0] setStringValue: str];
     }
 }
