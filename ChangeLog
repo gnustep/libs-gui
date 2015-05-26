@@ -1,3 +1,9 @@
+2015-05-26: Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+
+	* Source/NSView.m
+	* Source/NSTextContainer.m
+	  remove unused parameters from debug outputs
+
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* ChangeLog: Correct version number in last commit.
