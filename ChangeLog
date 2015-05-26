@@ -18,6 +18,7 @@
 	* Source/GSXibLoader.m
 	* Source/NSSplitView.m
 	* Model/GMArchiver.m
+	* TextConverters/RTF/RTFConsumer.m
 	  Format string fixes and casts 
 
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>

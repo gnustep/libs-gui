@@ -941,8 +941,8 @@ void GSRTFregisterFont (void *ctxt, const char *fontName,
   if (!fontName || !*fontName)
     {	
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Error in RTF (font omitted?), position:%d",
-		   TEXTPOSITION];
+		   format: @"Error in RTF (font omitted?), position:%lu",
+		   (unsigned long) TEXTPOSITION];
     }
   // exclude trailing ';' from fontName
   if (';' == fontName[strlen(fontName)-1])
@@ -967,9 +967,9 @@ void GSRTFfontNumber (void *ctxt, int fontNumber)
     {
       /* we're about to set an unknown font */
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Error in RTF (referring to undefined font \\f%d), position:%d",
+		   format: @"Error in RTF (referring to undefined font \\f%d), position:%lu",
 		   fontNumber,
-		   TEXTPOSITION];
+		   (unsigned long) TEXTPOSITION];
     } 
   else 
     {
