@@ -558,7 +558,7 @@
 
 /** Returns an item located at index.
  */
-- (id <NSMenuItem>) itemAtIndex: (NSInteger)index;
+- (NSMenuItem *) itemAtIndex: (NSInteger)index;
 
 /** Informs the menu that the specified item has changed.
  */

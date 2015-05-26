@@ -3,6 +3,11 @@
 	* Source/NSView.m
 	* Source/NSTextContainer.m
 	  remove unused parameters from debug outputs
+	* Headers/AppKit/NSMenu.h
+	* Source/NSMenu.m
+	  return value for NSMenu itemAtIndex change from
+	  id<NSMenuItem> to NSMenuitem* as it is done by Apple too
+	  fixes warnings in NSApplication.m and NSTextView.m
 
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
 

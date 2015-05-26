@@ -894,7 +894,7 @@ static BOOL menuBarVisible = YES;
   return nil;
 }
 
-- (id <NSMenuItem>) itemAtIndex: (NSInteger)index
+- (NSMenuItem *) itemAtIndex: (NSInteger)index
 {
   if (index >= [_items count] || index < 0)
     [NSException  raise: NSRangeException
