@@ -334,7 +334,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
       startPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
     }
   rad = PI * angle / 180;
-  length = abs(NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad));
+  length = fabs(NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad));
   endPoint = NSMakePoint(startPoint.x + length * cos(rad), 
                          startPoint.y + length * sin(rad));
 

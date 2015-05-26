@@ -20,6 +20,9 @@
 	* Model/GMArchiver.m
 	* TextConverters/RTF/RTFConsumer.m
 	  Format string fixes and casts 
+	* Source/NSGradient.m
+	* Source/NSWindow.m
+	  abs() -> fabs()
 
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
 
