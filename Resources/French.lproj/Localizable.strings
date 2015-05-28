@@ -5,7 +5,7 @@
 
 /***
 French.lproj/Localizable.strings
-updated by make_strings 2013-10-28 21:50:06 +0100
+updated by make_strings 2015-05-28 23:51:14 +0200
 add comments above this one
 ***/
 
@@ -13,55 +13,55 @@ add comments above this one
 /*** Keys found in multiple places ***/
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
-/* File: ../Source/NSAlert.m:1830 */
+/* File: ../Source/NSAlert.m:1837 */
 /* File: ../Source/NSPrintOperation.m:678 */
 /* File: ../Source/NSPrintPanel.m:408 */
 /* File: ../Source/NSSavePanel.m:334 */
 "OK" = "OK";
 
-/* File: ../Source/GSNibLoading.m:182 */
+/* File: ../Source/GSNibLoading.m:183 */
 /* Comment: Info */
-/* File: ../Source/NSApplication.m:2878 */
+/* File: ../Source/NSApplication.m:2891 */
 /* Comment: Title of the Info Panel */
 /* File: ../Source/NSMenu.m:259 */
 "Info" = "Info";
 
-/* File: ../Source/GSNibLoading.m:165 */
+/* File: ../Source/GSNibLoading.m:166 */
 /* Comment: Quit */
-/* File: ../Source/NSApplication.m:3442 */
-/* File: ../Source/NSApplication.m:4207 */
-/* File: ../Source/NSDocumentController.m:1049 */
+/* File: ../Source/NSApplication.m:3455 */
+/* File: ../Source/NSApplication.m:4220 */
+/* File: ../Source/NSDocumentController.m:1015 */
 "Quit" = "Quitter";
 
 /* File: ../Source/GSPrintOperation.m:157 */
-/* File: ../Source/NSSavePanel.m:1381 */
-/* File: ../Source/NSSavePanel.m:1392 */
+/* File: ../Source/NSSavePanel.m:1384 */
+/* File: ../Source/NSSavePanel.m:1395 */
 "Dismiss" = "Abandonner";
 
 /* File: ../Source/NSAlert.m:384 */
-/* File: ../Source/NSDocument.m:474 */
-/* File: ../Source/NSDocument.m:815 */
-/* File: ../Source/NSDocument.m:1660 */
-/* File: ../Source/NSDocumentController.m:955 */
-/* File: ../Source/NSDocumentController.m:987 */
+/* File: ../Source/NSDocument.m:485 */
+/* File: ../Source/NSDocument.m:832 */
+/* File: ../Source/NSDocument.m:1688 */
+/* File: ../Source/NSDocumentController.m:921 */
+/* File: ../Source/NSDocumentController.m:953 */
 /* File: ../Source/NSSavePanel.m:318 */
-/* File: ../Source/NSSavePanel.m:1330 */
-/* File: ../Source/NSSavePanel.m:1403 */
+/* File: ../Source/NSSavePanel.m:1333 */
+/* File: ../Source/NSSavePanel.m:1406 */
 "Cancel" = "Annuler";
 
 /* File: ../Source/NSAlert.m:389 */
-/* File: ../Source/NSDocument.m:474 */
+/* File: ../Source/NSDocument.m:485 */
 "Don't Save" = "Fermer sans enregistrer";
 
-/* File: ../Source/NSDocument.m:474 */
-/* File: ../Source/NSDocument.m:815 */
-/* File: ../Source/NSDocument.m:1183 */
+/* File: ../Source/NSDocument.m:485 */
+/* File: ../Source/NSDocument.m:832 */
+/* File: ../Source/NSDocument.m:1211 */
 /* File: ../Source/NSSavePanel.m:435 */
-/* File: ../Source/NSSavePanel.m:1327 */
-/* File: ../Source/NSSavePanel.m:1366 */
-/* File: ../Source/NSSavePanel.m:1379 */
-/* File: ../Source/NSSavePanel.m:1390 */
-/* File: ../Source/NSSavePanel.m:1401 */
+/* File: ../Source/NSSavePanel.m:1330 */
+/* File: ../Source/NSSavePanel.m:1369 */
+/* File: ../Source/NSSavePanel.m:1382 */
+/* File: ../Source/NSSavePanel.m:1393 */
+/* File: ../Source/NSSavePanel.m:1404 */
 "Save" = "Enregistrer";
 
 /* File: ../Source/GSHelpManagerPanel.m:70 */
@@ -72,8 +72,8 @@ add comments above this one
 /* File: ../Source/NSFontPanel.m:706 */
 "Preview" = "Aper\U00E7u";
 
-/* File: ../Source/NSDocument.m:1658 */
-/* File: ../Source/NSDocument.m:1660 */
+/* File: ../Source/NSDocument.m:1686 */
+/* File: ../Source/NSDocument.m:1688 */
 /* File: ../Source/NSFontPanel.m:696 */
 "Revert" = "R\U00E9tablir";
 
@@ -87,7 +87,7 @@ add comments above this one
 /* File: ../Source/NSPrintPanel.m:676 */
 "Unknown" = "Inconnu";
 
-/* File: ../Source/NSDocument.m:1109 */
+/* File: ../Source/NSDocument.m:1137 */
 /* File: ../Source/NSPrintPanel.m:350 */
 "File Type" = "Type de fichier";
 
@@ -106,6 +106,23 @@ add comments above this one
 /* File: ../Source/GSTextFinder.m:381 */
 /* Flag: untranslated */
 "Not found" = "Not found";
+
+/* File: ../Source/NSAttributedString.m:1060 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:1083 */
+/* Comment: Error description */
+/* File: ../Source/NSDocument.m:646 */
+/* Comment: Error description */
+"Could not create data for type."
+  = "Impossible de cr\U00E9er des donn\U00E9es pour ce type.";
+
+/* File: ../Source/NSDocument.m:917 */
+/* Comment: Error description */
+/* Flag: untranslated */
+/* File: ../Source/NSDocument.m:957 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Could not write backup file." = "Could not write backup file.";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -130,17 +147,33 @@ add comments above this one
 /* Flag: untranslated */
 "Customize Toolbar" = "Customize Toolbar";
 
-/* File: ../Source/NSAlert.m:2001 */
+/* File: ../Source/NSAlert.m:2008 */
 /* Flag: untranslated */
 "No information" = "No information";
 
-/* File: ../Source/NSApplication.m:4197 */
+/* File: ../Source/NSApplication.m:4210 */
 /* Flag: untranslated */
 "Show" = "Show";
 
-/* File: ../Source/NSApplication.m:4203 */
+/* File: ../Source/NSApplication.m:4216 */
 /* Flag: untranslated */
 "Hide" = "Hide";
+
+/* File: ../Source/NSDocument.m:751 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"File wrapper is no file." = "File wrapper is no file.";
+
+/* File: ../Source/NSDocument.m:935 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Not a writable type or no URL given."
+  = "Not a writable type or no URL given.";
+
+/* File: ../Source/NSDocument.m:1029 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Could not write file wrapper." = "Could not write file wrapper.";
 
 /* File: ../Source/NSFontPanel.m:810 */
 /* Flag: untranslated */
@@ -195,12 +228,12 @@ add comments above this one
 /* Flag: untranslated */
 "Unmount" = "Unmount";
 
-/* File: ../Source/NSSavePanel.m:1314 */
+/* File: ../Source/NSSavePanel.m:1317 */
 /* Flag: untranslated */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
   = "You have used the extension '.%@'.\nThe standard extension is '.%@'.'";
 
-/* File: ../Source/NSSavePanel.m:1322 */
+/* File: ../Source/NSSavePanel.m:1325 */
 /* Flag: untranslated */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
   = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
@@ -221,7 +254,7 @@ add comments above this one
 /* Flag: untranslated */
 "Paste" = "Paste";
 
-/* File: ../Source/NSTextView.m:5894 */
+/* File: ../Source/NSTextView.m:5904 */
 /* Flag: untranslated */
 "No Suggestions" = "No Suggestions";
 
@@ -277,7 +310,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSAlert.m ***/
-/* File: ../Source/NSAlert.m:2000 */
+/* File: ../Source/NSAlert.m:2007 */
 "Alert" = "Attention";
 
 
@@ -305,17 +338,11 @@ add comments above this one
 /* File: ../Source/NSApplication.m:972 */
 "[NSApplication -init] called more than once"
   = "[NSApplication -init] appell\U00E9e plus d'une fois";
-/* File: ../Source/NSApplication.m:3315 */
+/* File: ../Source/NSApplication.m:3328 */
 "reported exception - %@" = "Exception signal\U00E9e - %@";
 
 
 /*** Strings from ../Source/NSAttributedString.m ***/
-/* File: ../Source/NSAttributedString.m:1060 */
-/* Comment: Error description */
-/* File: ../Source/NSAttributedString.m:1083 */
-/* Comment: Error description */
-"Could not create data for type."
-  = "Impossible de cr\U00E9er des donn\U00E9es pour ce type.";
 /* File: ../Source/NSAttributedString.m:927 */
 /* Comment: Error description */
 "Could not load data from URL."
@@ -379,46 +406,46 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSDocument.m ***/
-/* File: ../Source/NSDocument.m:1659 */
+/* File: ../Source/NSDocument.m:1687 */
 "%@ has been edited.  Are you sure you want to undo changes?"
   = "%@ a \U00E9t\U00E9 modifi\U00E9.  Etes-vous s\U00FBr de vouloir annuler les modifications ?";
-/* File: ../Source/NSDocument.m:473 */
+/* File: ../Source/NSDocument.m:484 */
 "%@ has changed.  Save?" = "%@ a \U00E9t\U00E9 modifi\U00E9.  Enregistrer ?";
-/* File: ../Source/NSDocument.m:814 */
+/* File: ../Source/NSDocument.m:831 */
 "Can't create backup file.  Save anyways?"
   = "Impossible de cr\U00E9er le fichier de sauvegarde.  Enregistrer quand m\U006Dme ?";
-/* File: ../Source/NSDocument.m:472 */
+/* File: ../Source/NSDocument.m:483 */
 "Close" = "Fermer";
-/* File: ../Source/NSDocument.m:142 */
+/* File: ../Source/NSDocument.m:153 */
 "Could not load URL %@." = "Impossible de charger l'URL %@.";
-/* File: ../Source/NSDocument.m:119 */
+/* File: ../Source/NSDocument.m:130 */
 "Could not load file %@." = "Impossible de charger le fichier %@.";
-/* File: ../Source/NSDocument.m:813 */
+/* File: ../Source/NSDocument.m:830 */
 "File Error" = "Erreur fichier";
-/* File: ../Source/NSDocument.m:141 */
-/* File: ../Source/NSDocument.m:118 */
+/* File: ../Source/NSDocument.m:152 */
+/* File: ../Source/NSDocument.m:129 */
 "Load failed" = "Erreur lors du chargement";
-/* File: ../Source/NSDocument.m:1179 */
+/* File: ../Source/NSDocument.m:1207 */
 "Save As" = "Enregistrer sous";
-/* File: ../Source/NSDocument.m:1180 */
+/* File: ../Source/NSDocument.m:1208 */
 "Save To" = "Enregistrer une copie sous";
-/* File: ../Source/NSDocument.m:569 */
+/* File: ../Source/NSDocument.m:580 */
 "Untitled-%d" = "SansTitre-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
-/* File: ../Source/NSDocumentController.m:1692 */
+/* File: ../Source/NSDocumentController.m:1671 */
 "Clear List" = "Vider la liste";
-/* File: ../Source/NSDocumentController.m:1056 */
+/* File: ../Source/NSDocumentController.m:1022 */
 "Power Off" = "Eteindre";
-/* File: ../Source/NSDocumentController.m:1008 */
-/* File: ../Source/NSDocumentController.m:966 */
+/* File: ../Source/NSDocumentController.m:974 */
+/* File: ../Source/NSDocumentController.m:932 */
 "Quit Anyway" = "Quitter sans enregistrer";
-/* File: ../Source/NSDocumentController.m:1006 */
-/* File: ../Source/NSDocumentController.m:964 */
+/* File: ../Source/NSDocumentController.m:972 */
+/* File: ../Source/NSDocumentController.m:930 */
 "Review Unsaved" = "Passer en revue";
-/* File: ../Source/NSDocumentController.m:1013 */
-/* File: ../Source/NSDocumentController.m:963 */
+/* File: ../Source/NSDocumentController.m:979 */
+/* File: ../Source/NSDocumentController.m:929 */
 "You have unsaved documents"
   = "Certains documents ne sont pas sauvegard\U00E9s";
 
@@ -494,28 +521,28 @@ add comments above this one
 /* File: ../Source/NSSavePanel.m:434 */
 /* File: ../Source/NSSavePanel.m:251 */
 "Name:" = "Nom:";
-/* File: ../Source/NSSavePanel.m:1368 */
+/* File: ../Source/NSSavePanel.m:1371 */
 "No" = "Non";
-/* File: ../Source/NSSavePanel.m:1794 */
+/* File: ../Source/NSSavePanel.m:1797 */
 "Reading Directory " = "Lecture du r\U00E9pertoire ";
-/* File: ../Source/NSSavePanel.m:1403 */
+/* File: ../Source/NSSavePanel.m:1406 */
 "Replace" = "Remplacer";
-/* File: ../Source/NSSavePanel.m:1380 */
+/* File: ../Source/NSSavePanel.m:1383 */
 "The directory '%@' could not be created."
   = "Impossible de cr\U00E9er le r\U00E9pertoire '%@'.";
-/* File: ../Source/NSSavePanel.m:1367 */
+/* File: ../Source/NSSavePanel.m:1370 */
 "The directory '%@' does not exist, do you want to create it?"
   = "Le r\U00E9pertoire '%@' n'existe pas, voulez-vous le cr\U00E9er ?";
-/* File: ../Source/NSSavePanel.m:1402 */
+/* File: ../Source/NSSavePanel.m:1405 */
 "The file '%@' in '%@' exists. Replace it?"
   = "Le fichier '%@' existe dans '%@'. Voulez-vous le remplacer ?";
-/* File: ../Source/NSSavePanel.m:1391 */
+/* File: ../Source/NSSavePanel.m:1394 */
 "The path '%@' is not a directory."
   = "Le chemin '%@' n'est pas un r\U00E9pertoire.";
-/* File: ../Source/NSSavePanel.m:1323 */
-/* File: ../Source/NSSavePanel.m:1315 */
+/* File: ../Source/NSSavePanel.m:1326 */
+/* File: ../Source/NSSavePanel.m:1318 */
 "Use .%@" = "Utiliser .%@";
-/* File: ../Source/NSSavePanel.m:1368 */
+/* File: ../Source/NSSavePanel.m:1371 */
 "Yes" = "Oui";
 
 
@@ -533,7 +560,7 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSWindow.m ***/
-/* File: ../Source/NSWindow.m:5317 */
+/* File: ../Source/NSWindow.m:5322 */
 "Hide Toolbar" = "Cacher la barre d'outils";
-/* File: ../Source/NSWindow.m:5319 */
+/* File: ../Source/NSWindow.m:5324 */
 "Show Toolbar" = "Afficher la barre d'outils";

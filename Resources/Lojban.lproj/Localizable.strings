@@ -1,6 +1,6 @@
 /***
 Lojban.lproj/Localizable.strings
-updated by make_strings 2013-10-28 21:50:17 +0100
+updated by make_strings 2015-05-29 00:13:11 +0200
 add comments above this one
 ***/
 
@@ -9,82 +9,82 @@ add comments above this one
 
 /* File: ../Source/GSPrintOperation.m:157 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1381 */
+/* File: ../Source/NSSavePanel.m:1384 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1392 */
+/* File: ../Source/NSSavePanel.m:1395 */
 /* Flag: untranslated */
 "Dismiss" = "e'i nai";
 
-/* File: ../Source/GSNibLoading.m:182 */
+/* File: ../Source/GSNibLoading.m:183 */
 /* Comment: Info */
 /* Flag: untranslated */
-/* File: ../Source/NSApplication.m:2878 */
+/* File: ../Source/NSApplication.m:2891 */
 /* Comment: Title of the Info Panel */
 /* Flag: untranslated */
 /* File: ../Source/NSMenu.m:259 */
 /* Flag: untranslated */
 "Info" = "Info";
 
-/* File: ../Source/GSNibLoading.m:165 */
+/* File: ../Source/GSNibLoading.m:166 */
 /* Comment: Quit */
 /* Flag: untranslated */
-/* File: ../Source/NSApplication.m:3442 */
+/* File: ../Source/NSApplication.m:3455 */
 /* Flag: untranslated */
-/* File: ../Source/NSApplication.m:4207 */
+/* File: ../Source/NSApplication.m:4220 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:1049 */
+/* File: ../Source/NSDocumentController.m:1015 */
 /* Flag: untranslated */
 "Quit" = "fanmo";
 
-/* File: ../Source/NSDocument.m:118 */
+/* File: ../Source/NSDocument.m:129 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:141 */
+/* File: ../Source/NSDocument.m:152 */
 /* Flag: untranslated */
 "Load failed" = "na'e tcidu";
 
-/* File: ../Source/NSDocument.m:474 */
+/* File: ../Source/NSDocument.m:485 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:815 */
+/* File: ../Source/NSDocument.m:832 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:1183 */
+/* File: ../Source/NSDocument.m:1211 */
 /* Flag: untranslated */
 /* File: ../Source/NSSavePanel.m:435 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1327 */
+/* File: ../Source/NSSavePanel.m:1330 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1366 */
+/* File: ../Source/NSSavePanel.m:1369 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1379 */
+/* File: ../Source/NSSavePanel.m:1382 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1390 */
+/* File: ../Source/NSSavePanel.m:1393 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1401 */
+/* File: ../Source/NSSavePanel.m:1404 */
 /* Flag: untranslated */
 "Save" = "Save";
 
 /* File: ../Source/NSAlert.m:384 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:474 */
+/* File: ../Source/NSDocument.m:485 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:815 */
+/* File: ../Source/NSDocument.m:832 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:1660 */
+/* File: ../Source/NSDocument.m:1688 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:955 */
+/* File: ../Source/NSDocumentController.m:921 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:987 */
+/* File: ../Source/NSDocumentController.m:953 */
 /* Flag: untranslated */
 /* File: ../Source/NSSavePanel.m:318 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1330 */
+/* File: ../Source/NSSavePanel.m:1333 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1403 */
+/* File: ../Source/NSSavePanel.m:1406 */
 /* Flag: untranslated */
 "Cancel" = "Cancel";
 
-/* File: ../Source/NSDocument.m:1658 */
+/* File: ../Source/NSDocument.m:1686 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:1660 */
+/* File: ../Source/NSDocument.m:1688 */
 /* Flag: untranslated */
 /* File: ../Source/NSFontPanel.m:696 */
 /* Flag: untranslated */
@@ -98,7 +98,7 @@ add comments above this one
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
 /* Flag: untranslated */
-/* File: ../Source/NSAlert.m:1830 */
+/* File: ../Source/NSAlert.m:1837 */
 /* Flag: untranslated */
 /* File: ../Source/NSPrintOperation.m:678 */
 /* Flag: untranslated */
@@ -110,25 +110,25 @@ add comments above this one
 
 /* File: ../Source/NSAlert.m:389 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:474 */
+/* File: ../Source/NSDocument.m:485 */
 /* Flag: untranslated */
 "Don't Save" = "na'e ciska";
 
-/* File: ../Source/NSDocumentController.m:963 */
+/* File: ../Source/NSDocumentController.m:929 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:1013 */
+/* File: ../Source/NSDocumentController.m:979 */
 /* Flag: untranslated */
 "You have unsaved documents" = "You have unsaved documents";
 
-/* File: ../Source/NSDocumentController.m:964 */
+/* File: ../Source/NSDocumentController.m:930 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:1006 */
+/* File: ../Source/NSDocumentController.m:972 */
 /* Flag: untranslated */
 "Review Unsaved" = "Review Unsaved";
 
-/* File: ../Source/NSDocumentController.m:966 */
+/* File: ../Source/NSDocumentController.m:932 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:1008 */
+/* File: ../Source/NSDocumentController.m:974 */
 /* Flag: untranslated */
 "Quit Anyway" = "Quit Anyway";
 
@@ -180,6 +180,9 @@ add comments above this one
 /* File: ../Source/NSAttributedString.m:1083 */
 /* Comment: Error description */
 /* Flag: untranslated */
+/* File: ../Source/NSDocument.m:646 */
+/* Comment: Error description */
+/* Flag: untranslated */
 "Could not create data for type." = "Could not create data for type.";
 
 /* File: ../Source/NSColorPanel.m:245 */
@@ -188,7 +191,7 @@ add comments above this one
 /* Flag: untranslated */
 "Colors" = "Colors";
 
-/* File: ../Source/NSDocument.m:1109 */
+/* File: ../Source/NSDocument.m:1137 */
 /* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:350 */
 /* Flag: untranslated */
@@ -224,11 +227,19 @@ add comments above this one
 /* Flag: untranslated */
 "Name:" = "Name:";
 
-/* File: ../Source/NSSavePanel.m:1315 */
+/* File: ../Source/NSSavePanel.m:1318 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1323 */
+/* File: ../Source/NSSavePanel.m:1326 */
 /* Flag: untranslated */
 "Use .%@" = "Use .%@";
+
+/* File: ../Source/NSDocument.m:917 */
+/* Comment: Error description */
+/* Flag: untranslated */
+/* File: ../Source/NSDocument.m:957 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Could not write backup file." = "Could not write backup file.";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -288,11 +299,11 @@ add comments above this one
 /* Flag: untranslated */
 "Customize Toolbar" = "Customize Toolbar";
 
-/* File: ../Source/NSAlert.m:2000 */
+/* File: ../Source/NSAlert.m:2007 */
 /* Flag: untranslated */
 "Alert" = "Alert";
 
-/* File: ../Source/NSAlert.m:2001 */
+/* File: ../Source/NSAlert.m:2008 */
 /* Flag: untranslated */
 "No information" = "No information";
 
@@ -337,15 +348,15 @@ add comments above this one
 "Problem during launch app notification: %@"
   = "zo'e nabmi le samru'e cu notci gy. %@ gy.";
 
-/* File: ../Source/NSApplication.m:3315 */
+/* File: ../Source/NSApplication.m:3328 */
 /* Flag: untranslated */
 "reported exception - %@" = "le nafmupli gy. %@ gy.";
 
-/* File: ../Source/NSApplication.m:4197 */
+/* File: ../Source/NSApplication.m:4210 */
 /* Flag: untranslated */
 "Show" = "Show";
 
-/* File: ../Source/NSApplication.m:4203 */
+/* File: ../Source/NSApplication.m:4216 */
 /* Flag: untranslated */
 "Hide" = "Hide";
 
@@ -436,53 +447,69 @@ add comments above this one
 /* Flag: untranslated */
 "DeviceN" = "DeviceN";
 
-/* File: ../Source/NSDocument.m:119 */
+/* File: ../Source/NSDocument.m:130 */
 /* Flag: untranslated */
 "Could not load file %@." = "na'e tcidu le datnyvei gy. %@. gy.";
 
-/* File: ../Source/NSDocument.m:142 */
+/* File: ../Source/NSDocument.m:153 */
 /* Flag: untranslated */
 "Could not load URL %@." = "na'e tcidu la gy. URL %@ gy.";
 
-/* File: ../Source/NSDocument.m:472 */
+/* File: ../Source/NSDocument.m:483 */
 /* Flag: untranslated */
 "Close" = "fanmo";
 
-/* File: ../Source/NSDocument.m:473 */
+/* File: ../Source/NSDocument.m:484 */
 /* Flag: untranslated */
 "%@ has changed.  Save?" = "la gy. %@ gy. cenba .i do ciska mo";
 
-/* File: ../Source/NSDocument.m:569 */
+/* File: ../Source/NSDocument.m:580 */
 /* Flag: untranslated */
 "Untitled-%d" = "nae-cmene-%d";
 
-/* File: ../Source/NSDocument.m:813 */
+/* File: ../Source/NSDocument.m:751 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"File wrapper is no file." = "File wrapper is no file.";
+
+/* File: ../Source/NSDocument.m:830 */
 /* Flag: untranslated */
 "File Error" = "le datnyvei srera";
 
-/* File: ../Source/NSDocument.m:814 */
+/* File: ../Source/NSDocument.m:831 */
 /* Flag: untranslated */
 "Can't create backup file.  Save anyways?"
   = "na'e finti fe fukdat'i .i do ciska mo";
 
-/* File: ../Source/NSDocument.m:1179 */
+/* File: ../Source/NSDocument.m:935 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Not a writable type or no URL given."
+  = "Not a writable type or no URL given.";
+
+/* File: ../Source/NSDocument.m:1029 */
+/* Comment: Error description */
+/* Flag: untranslated */
+"Could not write file wrapper." = "Could not write file wrapper.";
+
+/* File: ../Source/NSDocument.m:1207 */
 /* Flag: untranslated */
 "Save As" = "ciska fi ma";
 
-/* File: ../Source/NSDocument.m:1180 */
+/* File: ../Source/NSDocument.m:1208 */
 /* Flag: untranslated */
 "Save To" = "ciska fe mo";
 
-/* File: ../Source/NSDocument.m:1659 */
+/* File: ../Source/NSDocument.m:1687 */
 /* Flag: untranslated */
 "%@ has been edited.  Are you sure you want to undo changes?"
   = "la gy. %@ gy. cenba .i  do xruti le cenba mo?";
 
-/* File: ../Source/NSDocumentController.m:1056 */
+/* File: ../Source/NSDocumentController.m:1022 */
 /* Flag: untranslated */
 "Power Off" = "ganlo";
 
-/* File: ../Source/NSDocumentController.m:1692 */
+/* File: ../Source/NSDocumentController.m:1671 */
 /* Flag: untranslated */
 "Clear List" = "Clear List";
 
@@ -568,15 +595,19 @@ add comments above this one
 
 /* File: ../Source/NSPrintOperation.m:677 */
 /* Flag: untranslated */
-"Error" = "Error";
+"Printing error: %@" = "Printing error: %@";
 
 /* File: ../Source/NSPrintOperation.m:677 */
 /* Flag: untranslated */
-"Printing error: %@" = "Printing error: %@";
+"Error" = "Error";
 
 /* File: ../Source/NSPrintPanel.m:145 */
 /* Flag: untranslated */
 "Print Panel" = "Print Panel";
+
+/* File: ../Source/NSPrintPanel.m:179 */
+/* Flag: untranslated */
+"4 up" = "4 up";
 
 /* File: ../Source/NSPrintPanel.m:179 */
 /* Flag: untranslated */
@@ -589,10 +620,6 @@ add comments above this one
 /* File: ../Source/NSPrintPanel.m:179 */
 /* Flag: untranslated */
 "6 up" = "6 up";
-
-/* File: ../Source/NSPrintPanel.m:179 */
-/* Flag: untranslated */
-"4 up" = "4 up";
 
 /* File: ../Source/NSPrintPanel.m:180 */
 /* Flag: untranslated */
@@ -623,48 +650,48 @@ add comments above this one
 /* Flag: untranslated */
 "Unmount" = "Unmount";
 
-/* File: ../Source/NSSavePanel.m:1314 */
+/* File: ../Source/NSSavePanel.m:1317 */
 /* Flag: untranslated */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
   = "You have used the extension '.%@'.\nThe standard extension is '.%@'.'";
 
-/* File: ../Source/NSSavePanel.m:1322 */
+/* File: ../Source/NSSavePanel.m:1325 */
 /* Flag: untranslated */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
   = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
 
-/* File: ../Source/NSSavePanel.m:1367 */
+/* File: ../Source/NSSavePanel.m:1370 */
 /* Flag: untranslated */
 "The directory '%@' does not exist, do you want to create it?"
   = "na'e zasti le datnyvei gy. %@ gy. .i do finti mo";
 
-/* File: ../Source/NSSavePanel.m:1368 */
+/* File: ../Source/NSSavePanel.m:1371 */
 /* Flag: untranslated */
 "No" = "nago'i";
 
-/* File: ../Source/NSSavePanel.m:1368 */
+/* File: ../Source/NSSavePanel.m:1371 */
 /* Flag: untranslated */
 "Yes" = "go'i";
 
-/* File: ../Source/NSSavePanel.m:1380 */
+/* File: ../Source/NSSavePanel.m:1383 */
 /* Flag: untranslated */
 "The directory '%@' could not be created."
   = "na'e finti le datnyveiste gy. %@ gy.";
 
-/* File: ../Source/NSSavePanel.m:1391 */
+/* File: ../Source/NSSavePanel.m:1394 */
 /* Flag: untranslated */
 "The path '%@' is not a directory." = "ne'e datnyveiste la gy. %@ gy.";
 
-/* File: ../Source/NSSavePanel.m:1402 */
+/* File: ../Source/NSSavePanel.m:1405 */
 /* Flag: untranslated */
 "The file '%@' in '%@' exists. Replace it?"
   = "zasti le datnyvei gy. %@ gy. la gy. %@ gy. .i do basti mo";
 
-/* File: ../Source/NSSavePanel.m:1403 */
+/* File: ../Source/NSSavePanel.m:1406 */
 /* Flag: untranslated */
 "Replace" = "basti";
 
-/* File: ../Source/NSSavePanel.m:1794 */
+/* File: ../Source/NSSavePanel.m:1797 */
 /* Flag: untranslated */
 "Reading Directory " = "Reading Directory ";
 
@@ -684,7 +711,7 @@ add comments above this one
 /* Flag: untranslated */
 "Paste" = "Paste";
 
-/* File: ../Source/NSTextView.m:5894 */
+/* File: ../Source/NSTextView.m:5904 */
 /* Flag: untranslated */
 "No Suggestions" = "No Suggestions";
 
@@ -712,10 +739,10 @@ add comments above this one
 /* Flag: untranslated */
 "Print..." = "Print...";
 
-/* File: ../Source/NSWindow.m:5317 */
+/* File: ../Source/NSWindow.m:5322 */
 /* Flag: untranslated */
 "Hide Toolbar" = "Hide Toolbar";
 
-/* File: ../Source/NSWindow.m:5319 */
+/* File: ../Source/NSWindow.m:5324 */
 /* Flag: untranslated */
 "Show Toolbar" = "Show Toolbar";

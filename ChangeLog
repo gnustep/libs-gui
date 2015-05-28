@@ -1,3 +1,14 @@
+2015-05-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/English.lproj/Localizable.strings
+	* Resources/Esperanto.lproj/Localizable.strings
+	* Resources/French.lproj/Localizable.strings
+	* Resources/German.lproj/Localizable.strings
+	* Resources/Italian.lproj/Localizable.strings
+	* Resources/Lojban.lproj/Localizable.strings
+	* Resources/Spanish.lproj/Localizable.strings
+	Regenerate string files.
+
 2015-05-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+GIF.m: Handle EGifOpen similar to other
