@@ -59,6 +59,7 @@ objective-c headers.
 // GIF > 5.0
 #if GIFLIB_MAJOR >= 5
   #define DGifOpen(s, i) DGifOpen(s, i, NULL)
+  #define EGifOpen(s, i) EGifOpen(s, i, NULL)
 #endif
 
 // GIF> 5.1
@@ -529,11 +530,8 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       free(GIFImage);
       return nil;
     }
-#if GIFLIB_MAJOR >= 5
-  GIFFile = EGifOpen(GIFRep, gs_gif_output, NULL);
-#else
+
   GIFFile = EGifOpen(GIFRep, gs_gif_output);
-#endif
   status = EGifPutScreenDesc(GIFFile, width, height, 8, 0, NULL);
   if (status == GIF_ERROR)
     {

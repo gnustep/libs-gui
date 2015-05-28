@@ -1,4 +1,14 @@
-2015-05-26: Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+2015-05-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+GIF.m: Handle EGifOpen similar to other
+	version specific functions.
+	* Headers/Additions/GNUstepGUI/GSXibElement.h
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h
+	* Headers/Additions/GNUstepGUI/GSXibObjectContainer.h
+	* Headers/Additions/GNUstepGUI/GSXibParser.h
+	Correct FSF address.
+
+2015-05-26 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
 
 	* Source/NSView.m
 	* Source/NSTextContainer.m
@@ -19,10 +29,13 @@
 	* Source/NSSplitView.m
 	* Model/GMArchiver.m
 	* TextConverters/RTF/RTFConsumer.m
-	  Format string fixes and casts 
+	  Format string fixes and casts
 	* Source/NSGradient.m
 	* Source/NSWindow.m
 	  abs() -> fabs()
+	* Source/NSBitmapImageRep+GIF.m
+	  giflib 5.1.0 also has EGifCloseFile with 2 parameters,
+	  so add a define like others have to fix its usage.
 
 2015-05-22 Fred Kiefer <FredKiefer@gmx.de>
 
