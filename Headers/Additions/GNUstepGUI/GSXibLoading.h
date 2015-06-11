@@ -9,21 +9,23 @@
    Refactored slightly by: Gregory Casamento <greg.casamento@gmail.com>
    Created: May 2010
 
-   This file is part of the GNUstep Base Library.
+   This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_GSXibLoading
@@ -34,6 +36,7 @@
 
 @class NSString, NSDictionary, NSArray, NSMutableDictionary, NSMutableArray;
 @class NSNibBindingConnector;
+@class GSXibElement;
 
 // Hack: This allows the class name FirstResponder in NSCustomObject and
 // correctly returns nil as the corresponding object.
@@ -153,25 +156,6 @@
 - (id) nibInstantiate;
 - (NSEnumerator *) connectionRecordEnumerator;
 - (NSEnumerator *) objectRecordEnumerator;
-@end
-
-@interface GSXibElement: NSObject
-{
-  NSString *type;
-  NSDictionary *attributes;
-  NSString *value;
-  NSMutableDictionary *elements;
-  NSMutableArray *values;
-}
-- (NSString*) type;
-- (NSString*) value;
-- (NSDictionary*) elements;
-- (NSArray*) values;
-- (void) addElement: (GSXibElement*)element;
-- (void) setElement: (GSXibElement*)element forKey: (NSString*)key;
-- (void) setValue: (NSString*)text;
-- (NSString*) attributeForKey: (NSString*)key;
-- (GSXibElement*) elementForKey: (NSString*)key;
 @end
 
 @interface GSXibKeyedUnarchiver: NSKeyedUnarchiver

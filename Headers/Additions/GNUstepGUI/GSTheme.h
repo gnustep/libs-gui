@@ -217,6 +217,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
+#import <AppKit/NSBox.h>
 #import <AppKit/NSCell.h>
 // For gradient types
 #import <AppKit/NSButtonCell.h>
@@ -226,6 +227,10 @@
 #import <AppKit/NSScroller.h>
 // For segmented control style constants
 #import <AppKit/NSSegmentedControl.h>
+// For tab view type 
+#import <AppKit/NSTabView.h>
+#import <AppKit/NSPrintPanel.h>
+#import <AppKit/NSPageLayout.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -238,11 +243,13 @@
 @class NSColorWell;
 @class NSImage;
 @class NSMenuItemCell;
+@class NSPopUpButtonCell;
 @class NSMenuView;
 @class NSProgressIndicator;
 @class NSTableHeaderCell;
 @class NSTabViewItem;
 @class GSDrawTiles;
+@class GSTitleView;
 
 APPKIT_EXPORT	NSString	*GSSwitch;
 APPKIT_EXPORT   NSString        *GSRadio;
@@ -277,19 +284,47 @@ APPKIT_EXPORT  NSString        *GSBrowserHeader;
  */
 APPKIT_EXPORT  NSString        *GSMenuHorizontalBackground;
 APPKIT_EXPORT  NSString        *GSMenuVerticalBackground;
+APPKIT_EXPORT  NSString        *GSMenuTitleBackground;
 APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
 APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
 APPKIT_EXPORT  NSString        *GSMenuSeparatorItem;
 
+/* NSPopUpButton parts */
+
+APPKIT_EXPORT  NSString        *GSPopUpButton;
+
 /*
  * Progress Indicator part names.
  */
+APPKIT_EXPORT  NSString        *GSProgressIndicatorBezel;
 APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
 
 /*
  * Color well part names.
  */
 APPKIT_EXPORT  NSString        *GSColorWell;
+APPKIT_EXPORT  NSString        *GSColorWellInnerBorder;
+
+/* NSSliderCell parts */
+APPKIT_EXPORT  NSString        *GSSliderHorizontalTrack;
+APPKIT_EXPORT  NSString        *GSSliderVerticalTrack;
+
+/* NSBox parts */
+APPKIT_EXPORT  NSString        *GSBoxBorder;
+
+/* NSTabView parts */
+APPKIT_EXPORT  NSString        *GSTabViewSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewBottomBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewLeftBackgroundTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightUnSelectedTabFill;
+APPKIT_EXPORT  NSString        *GSTabViewRightBackgroundTabFill;
 
 /**
  * Structure to describe the size of top/bottom/left/right margins inside
@@ -342,8 +377,11 @@ GSThemeFillStyleFromString(NSString *s);
  */
 typedef enum {
   GSThemeNormalState = 0,	/** A control in its normal state */
+  GSThemeFirstResponderState,
   GSThemeDisabledState,		/** A control which is disabled */
+  GSThemeHighlightedFirstResponderState,
   GSThemeHighlightedState,	/** A control which is highlighted */
+  GSThemeSelectedFirstResponderState,
   GSThemeSelectedState		/** A control which is selected */
 } GSThemeControlState;
 
@@ -798,6 +836,23 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle;
 
+/**
+ * Return YES if the scroller arrows are at the same end.
+ * Return NO to get one scroller arrow at each end of the scroller.
+ *
+ * The default implementation first checks the default GSScrollerArrowsSameEnd
+ * and if that is not set, delegates to the NSInterfaceStyle.
+ */
+- (BOOL) scrollerArrowsSameEndForScroller: (NSScroller *)aScroller;
+
+/** 
+ * Returns YES if clicking in the scroller slot should scroll by one page,
+ * NO if the scroller should jump to the location clicked.
+ *
+ * The default implementation first checks the default GSScrollerScrollsByPage
+ * and if that is not set, delegates to the NSInterfaceStyle.
+ */
+- (BOOL) scrollerScrollsByPageForScroller: (NSScroller *)aScroller;
 
 /** 
  * Creates and returns the cell to be used to draw a scroller arrow of the
@@ -835,6 +890,23 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * remain constant until the theme is deactivated.
  */
 - (float) defaultScrollerWidth;
+
+/** 
+ * If YES, instructs NSScrollView to leave an empty square space where
+ * the horizontal and vertical scrollers meet.
+ * 
+ * Controlled by user default GSScrollViewUseBottomCorner; default YES.
+ */
+- (BOOL) scrollViewUseBottomCorner;
+
+/**
+ * If YES, instructs NSScrollView to make the scrollers overlap the border.
+ * The scroll view border is drawn using the NSScrollView part, which
+ * must be provided by the theme if this method returns YES.
+ * 
+ * Controlled by user default GSScrollViewScrollersOverlapBorders; default NO;
+ */
+- (BOOL) scrollViewScrollersOverlapBorders;
 
 /** 
  * Method for toolbar theming.
@@ -972,6 +1044,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
+
 /**
  * <p>Draws the menu item title.</p>
  *
@@ -1013,6 +1086,22 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>Can be overridden in subclasses to return a custom value.</p>
  */
 - (CGFloat) menuSeparatorInset;
+
+/**
+ * Amount that submenus overlap their parent menu by, horizontally.
+ * (i.e. applies to vertical menus)
+ *
+ * Controlled by GSMenuSubmenuHorizontalOverlap default
+ */
+- (CGFloat) menuSubmenuHorizontalOverlap;
+
+/**
+ * Amount that submenus overlap the horizontal menu bar by, vertically.
+ *
+ * Controlled by GSMenuSubmenuVerticalOverlap default
+ */
+- (CGFloat) menuSubmenuVerticalOverlap;
+
 /**
  * <p>Draws a separator between normal menu items in a menu.</p>
  *
@@ -1037,6 +1126,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView;
 
+- (NSRect) drawMenuTitleBackground: (GSTitleView *)aTitleView
+			withBounds: (NSRect)bounds
+			  withClip: (NSRect)clipRect;
+
+- (CGFloat) menuBarHeight;
+- (CGFloat) menuItemHeight;
+- (CGFloat) menuSeparatorHeight;
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
@@ -1053,6 +1150,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds;
 
 // Table drawing methods
+- (NSColor *) tableHeaderTextColorForState: (GSThemeControlState)state;
+
 - (void) drawTableCornerView: (NSView*)cornerView
                     withClip: (NSRect)aRect;
 - (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
@@ -1070,12 +1169,18 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                     state: (int)inputState
                  andTitle: (NSString*)title;
 
+- (NSColor *) browserHeaderTextColor;
+
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 		     withFrame: (NSRect)rect
 			inView: (NSView*)view;
 
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
+
+- (NSRect) tabViewContentRectForBounds: (NSRect)aRect
+			   tabViewType: (NSTabViewType)type
+			       tabView: (NSTabView *)view;
 
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
@@ -1092,6 +1197,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	withScrollerRect: (NSRect)scrollerRect
 	      columnSize: (NSSize)columnSize;
 
+- (CGFloat) browserColumnSeparation;
+
+- (CGFloat) browserVerticalPadding;
+
+- (BOOL) browserUseBezels;
+
 - (void) drawMenuRect: (NSRect)rect
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal
@@ -1099,6 +1210,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (void) drawScrollViewRect: (NSRect)rect
 	             inView: (NSView *)view;
+
+- (void) drawSliderBorderAndBackground: (NSBorderType)aType
+				 frame: (NSRect)cellFrame
+				inCell: (NSCell *)cell
+			  isHorizontal: (BOOL)horizontal;
 
 - (void) drawBarInside: (NSRect)rect
 		inCell: (NSCell *)cell
@@ -1132,6 +1248,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawTableViewRow: (int)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
+
+- (void) drawBoxInClipRect: (NSRect)clipRect
+		   boxType: (NSBoxType)boxType
+		borderType: (NSBorderType)borderType
+		    inView: (NSBox *)box;
 @end
 
 /**
@@ -1231,6 +1352,9 @@ withRepeatedImage: (NSImage*)image
 	  withTiles: (GSDrawTiles*)tiles
 	 background: (NSColor*)color;
 
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles;
+
 /**
  * Method to tile the supplied image to fill the vertical rectangle.<br />
  * The rect argument is the rectangle to be filled.<br />
@@ -1310,6 +1434,27 @@ withRepeatedImage: (NSImage*)image
  * native environment.
  */ 
 - (Class) savePanelClass;
+@end
+
+// Panels which can be overridden by the theme...
+@interface GSPrintPanel : NSPrintPanel
+@end
+
+@interface GSPageLayout : NSPageLayout
+@end
+
+@interface GSTheme (PrintPanels)
+/**
+ * This method returns the print panel class needed by the
+ * native environment.
+ */
+- (Class) printPanelClass;
+
+/**
+ * This method returns the page layout class needed by the 
+ * native environment.
+ */
+- (Class) pageLayoutClass;
 @end
 
 #endif /* OS_API_VERSION */

@@ -36,12 +36,12 @@
 # Things to do before compiling
 ifeq ($(doc),yes)
 before-all:: $(GNUSTEP_TARGET_DIR)/config.h
-	cp ../Documentation/Gui/Gui.gsdoc .
+	cp ../Documentation/Gui.gsdoc .
 
 # Things to do after compiling
 after-all::
 	$(RM) Gui.gsdoc
-	if test -d Gui; then rmdir Gui; fi;
+	if test -d Gui; then rm -rf Gui; fi;
 else
 before-all:: $(GNUSTEP_TARGET_DIR)/config.h
 endif

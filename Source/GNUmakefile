@@ -163,6 +163,8 @@ NSSplitView.m \
 NSStepper.m \
 NSStepperCell.m \
 NSStringDrawing.m \
+NSStatusBar.m \
+NSStatusItem.m \
 NSTabView.m \
 NSTabViewItem.m \
 NSTableColumn.m \
@@ -186,7 +188,9 @@ NSToolbarItem.m \
 NSToolbarItemGroup.m \
 NSTokenField.m \
 NSTokenFieldCell.m \
+NSTrackingArea.m \
 NSTreeController.m \
+NSTreeNode.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSViewController.m \
@@ -228,6 +232,7 @@ GSThemeInspector.m \
 GSThemeMenu.m \
 GSThemeOpenSavePanels.m \
 GSThemePanel.m \
+GSThemePrintPanels.m \
 GSThemeTools.m \
 GSTitleView.m \
 GSToolTips.m \
@@ -243,8 +248,11 @@ GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
+GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
+GSXibObjectContainer.m \
+GSXibParser.m \
 GSHelpAttachment.m 
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
@@ -375,6 +383,8 @@ NSSplitView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStringDrawing.h \
+NSStatusBar.h \
+NSStatusItem.h \
 NSTabView.h \
 NSTabViewItem.h \
 NSTableColumn.h \
@@ -395,7 +405,9 @@ NSToolbarItem.h \
 NSToolbarItemGroup.h \
 NSTokenField.h \
 NSTokenFieldCell.h \
+NSTrackingArea.h \
 NSTreeController.h \
+NSTreeNode.h \
 NSUserDefaultsController.h \
 NSView.h \
 NSViewController.h \
@@ -456,7 +468,10 @@ GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \
 GSWindowDecorationView.h \
+GSXibElement.h \
 GSXibLoading.h \
+GSXibObjectContainer.h \
+GSXibParser.h \
 GSHelpAttachment.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}

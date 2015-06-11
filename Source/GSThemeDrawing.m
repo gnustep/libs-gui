@@ -45,6 +45,7 @@
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
@@ -143,11 +144,13 @@
 	{
           color = [NSColor controlBackgroundColor];
 	}
-      else if (state == GSThemeHighlightedState)
+      else if (state == GSThemeHighlightedState
+	       || state == GSThemeHighlightedFirstResponderState)
 	{
           color = [NSColor selectedControlColor];
 	}
-      else if (state == GSThemeSelectedState)
+      else if (state == GSThemeSelectedState
+	       || state == GSThemeSelectedFirstResponderState)
 	{
           color = [NSColor selectedControlColor];
 	}
@@ -228,7 +231,7 @@
 	      {
 		[self drawButton: frame withClip: NSZeroRect];
 	      }
-	    else if (state == GSThemeSelectedState)
+	    else if (state == GSThemeSelectedState || state == GSThemeSelectedFirstResponderState)
 	      {
 		[self drawGrayBezel: frame withClip: NSZeroRect];
 	      }
@@ -309,19 +312,28 @@
     }
   else
     {
-      // FIXME: Move this code to a method in GSDrawTiles?
-      // FIXME: Not correct, need to get the content area of the draw tiles
-      margins.left = tiles->rects[TileCL].size.width;
-      margins.top = tiles->rects[TileTM].size.height;
-      margins.right = tiles->rects[TileCR].size.width;
-      margins.bottom = tiles->rects[TileBM].size.height;
+      margins = [tiles themeMargins];
       return margins;
     }
 }
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
+#if 0 //TESTPLANT-MAL
   NSFocusRingFrameRect(frame);
+#else
+  GSDrawTiles *tiles = [self tilesNamed: @"NSFocusRing" state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {    
+      NSDottedFrameRect(frame);
+    }
+  else
+    {
+      [self fillRect: frame
+           withTiles: tiles];
+    }
+#endif
 }
 
 - (void) drawWindowBackground: (NSRect) frame view: (NSView*) view
@@ -391,8 +403,9 @@
     {
       // FIXME: We assume the button's top and right padding are the same as
       // its bottom and left.
-      return NSMakeSize(tiles->contentRect.origin.x,
-                        tiles->contentRect.origin.y);
+
+      GSThemeMargins margins = [tiles themeMargins];
+      return NSMakeSize(margins.left, margins.bottom);
     }
 }
 
@@ -400,23 +413,34 @@
                                 frame: (NSRect)frame 
                                  view: (NSView*)view
 {
-  switch (frameStyle)
+  NSString      *name = GSStringFromImageFrameStyle(frameStyle);
+  GSDrawTiles   *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
     {
-      case NSImageFrameNone:
-        // do nothing
-        break;
-      case NSImageFramePhoto:
-        [self drawFramePhoto: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameGrayBezel:
-        [self drawGrayBezel: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameGroove:
-        [self drawGroove: frame withClip: NSZeroRect];
-        break;
-      case NSImageFrameButton:
-        [self drawButton: frame withClip: NSZeroRect];
-        break;
+      switch (frameStyle)
+        {
+          case NSImageFrameNone:
+            // do nothing
+            break;
+          case NSImageFramePhoto:
+            [self drawFramePhoto: frame withClip: NSZeroRect];
+            break;
+          case NSImageFrameGrayBezel:
+            [self drawGrayBezel: frame withClip: NSZeroRect];
+            break;
+          case NSImageFrameGroove:
+            [self drawGroove: frame withClip: NSZeroRect];
+            break;
+          case NSImageFrameButton:
+            [self drawButton: frame withClip: NSZeroRect];
+            break;
+        }
+    }
+  else
+    {
+      [self fillRect: frame
+           withTiles: tiles];
     }
 }
 
@@ -441,6 +465,61 @@
 
 /* NSScroller themeing.
  */
+- (BOOL) scrollerArrowsSameEndForScroller: (NSScroller *)aScroller
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+
+  if ([defs objectForKey: @"GSScrollerArrowsSameEnd"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollerArrowsSameEnd"];
+    }
+  else
+    {
+      NSInterfaceStyle interfaceStyle =  NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
+      
+      if ((interfaceStyle == NSNextStepInterfaceStyle 
+	   || interfaceStyle == NSMacintoshInterfaceStyle
+	   || interfaceStyle == GSWindowMakerInterfaceStyle))
+    	{
+    	  return YES;
+    	}
+      else
+    	{
+    	  return NO;
+    	}
+    }
+}
+
+- (BOOL) scrollerScrollsByPageForScroller: (NSScroller *)aScroller
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+
+  if ([defs objectForKey: @"GSScrollerScrollsByPage"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollerScrollsByPage"];
+    }
+  else
+    {
+      NSInterfaceStyle interfaceStyle = 
+	NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
+      
+      if (interfaceStyle == NSNextStepInterfaceStyle 
+	  || interfaceStyle == NSMacintoshInterfaceStyle
+	  || interfaceStyle == GSWindowMakerInterfaceStyle)
+	{
+	  /* NeXTstep style is to scroll to point.
+	   */
+	  return NO;
+	}
+      else
+	{
+	  /* Windows style is to scroll by a page.
+	   */
+	  return YES;
+	}
+    }
+}
+
 - (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)arrow
 			    horizontal: (BOOL)horizontal
 {
@@ -553,7 +632,38 @@
 
 - (float) defaultScrollerWidth
 {
-  return 18.0;
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  float defaultScrollerWidth;
+
+  if ([defs objectForKey: @"GSScrollerDefaultWidth"] != nil)
+    {
+      defaultScrollerWidth = [defs floatForKey: @"GSScrollerDefaultWidth"];
+    }
+  else
+    {
+      defaultScrollerWidth = 18.0;
+    }
+  return defaultScrollerWidth;
+}
+
+- (BOOL) scrollViewUseBottomCorner
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  if ([defs objectForKey: @"GSScrollViewUseBottomCorner"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollViewUseBottomCorner"];
+    }
+  return YES;
+}
+
+- (BOOL) scrollViewScrollersOverlapBorders
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  if ([defs objectForKey: @"GSScrollViewScrollersOverlapBorders"] != nil)
+    {
+      return [defs boolForKey: @"GSScrollViewScrollersOverlapBorders"];
+    }
+  return NO;
 }
 
 - (NSColor *) toolbarBackgroundColor
@@ -629,44 +739,40 @@
     }
 }
 
-// NSStepperCell drawing
-// Hard coded values for button sizes
-#define STEPPER_WIDTH 15
-#define STEPPER_HEIGHT 11
-
 - (NSRect) stepperUpButtonRectWithFrame: (NSRect)frame
 {
+  NSSize size = [[NSImage imageNamed: @"common_StepperUp"] size];
   NSRect upRect;
 
-  upRect.size.width = STEPPER_WIDTH;
-  upRect.size.height = STEPPER_HEIGHT;
-  upRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  upRect.size = size;
+  upRect.origin.x = NSMaxX(frame) - size.width;
   upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
   return upRect;
 }
 
 - (NSRect) stepperDownButtonRectWithFrame: (NSRect)frame
 {
+  NSSize size = [[NSImage imageNamed: @"common_StepperDown"] size];
   NSRect downRect;
 
-  downRect.size.width = STEPPER_WIDTH;
-  downRect.size.height = STEPPER_HEIGHT;
-  downRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
-  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT + 1;
+  downRect.size = size;
+  downRect.origin.x = NSMaxX(frame) - size.width;
+  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - size.height + 1;
   return downRect;
 }
 
 - (void) drawStepperBorder: (NSRect)frame
 {
+  NSSize size = [[NSImage imageNamed: @"common_StepperDown"] size];
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
   NSColor *black = [NSColor controlDarkShadowColor];
   NSColor *grays[] = {black, black}; 
   NSRect twoButtons;
   
-  twoButtons.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
-  twoButtons.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT;
-  twoButtons.size.width = STEPPER_WIDTH + 1;
-  twoButtons.size.height = 2 * STEPPER_HEIGHT + 1;
+  twoButtons.origin.x = NSMaxX(frame) - size.width - 1;
+  twoButtons.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - size.height;
+  twoButtons.size.width = size.width + 1;
+  twoButtons.size.height = 2 * size.height + 1;
   
   NSDrawColorTiledRects(twoButtons, NSZeroRect,
                         up_sides, grays, 2);
@@ -700,86 +806,46 @@
 
 - (void) drawStepperUpButton: (NSRect)aRect
 {
-  NSRect unHighlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
-  [[NSColor controlBackgroundColor] set];
-  NSRectFill(unHighlightRect);
-      
-  PSsetlinewidth(1.0);
-  [[NSColor controlShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
-  PSstroke();
-  [[NSColor controlLightHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSstroke();
+  NSImage *image = [NSImage imageNamed: @"common_StepperUp"];
+  [image drawInRect: aRect
+	   fromRect: NSZeroRect
+	  operation: NSCompositeSourceOver
+	   fraction: 1
+     respectFlipped: YES
+	      hints: nil];
 }
 
 - (void) drawStepperHighlightUpButton: (NSRect)aRect
 {
-  NSRect highlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
-  [[NSColor selectedControlColor] set];
-  NSRectFill(highlightRect);
-  
-  PSsetlinewidth(1.0);
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
-  PSstroke();
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSstroke();
+  NSImage *image = [NSImage imageNamed: @"common_StepperUpHighlighted"];
+  [image drawInRect: aRect
+	   fromRect: NSZeroRect
+	  operation: NSCompositeSourceOver
+	   fraction: 1
+     respectFlipped: YES
+	      hints: nil];
 }
 
 - (void) drawStepperDownButton: (NSRect)aRect
 {
-  NSRect unHighlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
-  [[NSColor controlBackgroundColor] set];
-  NSRectFill(unHighlightRect);
-
-  PSsetlinewidth(1.0);
-  [[NSColor controlShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
-  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSstroke();
-  [[NSColor controlLightHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
-  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
-  PSstroke();
+  NSImage *image = [NSImage imageNamed: @"common_StepperDown"];
+  [image drawInRect: aRect
+	   fromRect: NSZeroRect
+	  operation: NSCompositeSourceOver
+	   fraction: 1
+     respectFlipped: YES
+	      hints: nil];
 }
 
 - (void) drawStepperHighlightDownButton: (NSRect)aRect
 {
-  NSRect highlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
-  [[NSColor selectedControlColor] set];
-  NSRectFill(highlightRect);
-  
-  PSsetlinewidth(1.0);
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
-  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSstroke();
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
-  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
-  PSstroke();
+  NSImage *image = [NSImage imageNamed: @"common_StepperDownHighlighted"];
+  [image drawInRect: aRect
+	   fromRect: NSZeroRect
+	  operation: NSCompositeSourceOver
+	   fraction: 1
+     respectFlipped: YES
+	      hints: nil];
 }
 
 - (void) drawStepperCell: (NSCell*)cell
@@ -788,14 +854,11 @@
              highlightUp: (BOOL)highlightUp
            highlightDown: (BOOL)highlightDown
 {
-  NSRect upRect;
-  NSRect downRect;
+  const NSRect upRect = [self stepperUpButtonRectWithFrame: cellFrame];
+  const NSRect downRect = [self stepperDownButtonRectWithFrame: cellFrame];
 
   [self drawStepperBorder: cellFrame];
 
-  upRect = [self stepperUpButtonRectWithFrame: cellFrame];
-  downRect = [self stepperDownButtonRectWithFrame: cellFrame];
-  
   if (highlightUp)
     [self drawStepperHighlightUpButton: upRect];
   else
@@ -1021,6 +1084,18 @@
   return 3.0;
 }
 
+- (CGFloat) menuSubmenuHorizontalOverlap
+{
+  return [[NSUserDefaults standardUserDefaults]
+				   floatForKey: @"GSMenuSubmenuHorizontalOverlap"];
+}
+
+- (CGFloat) menuSubmenuVerticalOverlap
+{
+  return [[NSUserDefaults standardUserDefaults]
+				   floatForKey: @"GSMenuSubmenuVerticalOverlap"];
+}
+
 - (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
                                 withFrame: (NSRect)cellFrame
                                    inView: (NSView *)controlView
@@ -1066,6 +1141,90 @@
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView
 {
   return [GSTitleView class];
+}
+
+- (NSRect) drawMenuTitleBackground: (GSTitleView *)aTitleView
+			withBounds: (NSRect)bounds
+			  withClip: (NSRect)clipRect
+{
+  GSDrawTiles *tiles = [self tilesNamed: GSMenuTitleBackground state: GSThemeNormalState];
+ 
+  if (tiles == nil)
+    {
+      NSRect     workRect = bounds;
+      NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};
+      CGFloat      darkGrays[] = {NSDarkGray, NSDarkGray};
+      NSColor *titleColor;
+
+      titleColor = [self colorNamed: @"GSMenuBar" state: GSThemeNormalState];
+      if (titleColor == nil)
+	{
+	  titleColor = [NSColor blackColor];
+	}
+ 
+      // Draw the dark gray upper left lines for menu and black for others.
+      // Rectangle 1
+      workRect = NSDrawTiledRects(workRect, workRect, top_left, darkGrays, 2);
+      
+      // Rectangle 2
+      // Draw the title box's button.
+      [self drawButton: workRect withClip: workRect];
+      
+      // Overdraw white top and left lines with light gray lines for window title
+      workRect.origin.y += 1;
+      workRect.size.height -= 1;
+      workRect.size.width -= 1;
+      
+      // Rectangle 3
+      // Paint background
+      workRect.origin.x += 1;
+      workRect.origin.y += 1;
+      workRect.size.height -= 2;
+      workRect.size.width -= 2;
+      
+      [titleColor set];
+      NSRectFill(workRect);
+
+      return workRect;
+    }
+  else
+    {
+      return [self fillRect: bounds
+		  withTiles: tiles];
+    }
+}
+
+- (CGFloat) menuBarHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuBarHeight"];
+  if (height <= 0)
+    {
+      return 22;
+    }
+  return height;
+}
+
+- (CGFloat) menuItemHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuItemHeight"];
+  if (height <= 0)
+    {
+      return 20;
+    }
+  return height;
+}
+
+- (CGFloat) menuSeparatorHeight
+{
+  CGFloat height = [[NSUserDefaults standardUserDefaults]
+		     floatForKey: @"GSMenuSeparatorHeight"];
+  if (height <= 0)
+    {
+      return 20;
+    }
+  return height;
 }
 
 // NSColorWell drawing method
@@ -1130,11 +1289,21 @@
    */
   if ([well isEnabled])
     {
-      /*
-       * Draw inner frame.
-       */
-      [self drawGrayBezel: aRect withClip: clipRect];
-      aRect = NSInsetRect(aRect, 2.0, 2.0);
+      GSDrawTiles *tiles = [self tilesNamed: GSColorWellInnerBorder state: GSThemeNormalState];
+      if (tiles == nil)
+        {
+          /*
+           * Draw inner frame.
+           */
+          [self drawGrayBezel: aRect withClip: clipRect];
+          aRect = NSInsetRect(aRect, 2.0, 2.0);
+        }
+      else
+    	{
+    	  [self fillRect: aRect withTiles: tiles];
+
+    	  aRect = [tiles contentRectForRect: aRect isFlipped: [well isFlipped]];
+    	}
     }
 
   return aRect;
@@ -1276,7 +1445,20 @@ static NSImage *spinningImages[MaxCount];
 
 - (NSRect) drawProgressIndicatorBezel: (NSRect)bounds withClip: (NSRect) rect
 {
-  return [self drawGrayBezel: bounds withClip: rect];
+  GSDrawTiles *tiles = [self tilesNamed: GSProgressIndicatorBezel
+                                  state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      return [self drawGrayBezel: bounds withClip: rect];
+    }
+  else
+    {
+      [self fillRect: bounds withTiles: tiles];
+
+      return [tiles contentRectForRect: bounds
+                             isFlipped: [[NSView focusView] isFlipped]];
+    }  
 }
 
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds
@@ -1298,6 +1480,22 @@ static NSImage *spinningImages[MaxCount];
 }
 
 // Table drawing methods
+
+- (NSColor *) tableHeaderTextColorForState: (GSThemeControlState)state
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"tableHeaderTextColor" state: state];
+  if (color == nil)
+    {
+      if (state == GSThemeHighlightedState)
+    	color = [NSColor controlTextColor];
+      else
+    	color = [NSColor windowFrameTextColor];
+    }
+  return color;
+}
+
 - (void) drawTableCornerView: (NSView*)cornerView
                    withClip: (NSRect)aRect
 {
@@ -1659,6 +1857,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (NSColor *) browserHeaderTextColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"browserHeaderTextColor"
+	        	     state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor windowFrameTextColor];
+    }
+  return color;
+}
 
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 	 	     withFrame: (NSRect)rect
@@ -1690,310 +1900,529 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
   else
     {
-      // FIXME: We assume the button's top and right padding are the same as
-      // its bottom and left.
-      return NSInsetRect(rect,
-			 tiles->contentRect.origin.x,
-			 tiles->contentRect.origin.y);
+      const BOOL flipped = [[cell controlView] isFlipped];
+      NSRect result = [tiles contentRectForRect: rect
+				      isFlipped: flipped];
+      return result;
     }
 }
+
+typedef enum {
+  GSTabSelectedLeft,
+  GSTabSelectedRight,
+  GSTabSelectedToUnSelectedJunction,
+  GSTabSelectedFill,
+  GSTabUnSelectedLeft,
+  GSTabUnSelectedRight,
+  GSTabUnSelectedToSelectedJunction,
+  GSTabUnSelectedJunction,
+  GSTabUnSelectedFill,
+  GSTabBackgroundFill
+} GSTabPart;
+
+- (NSImage *)imageForTabPart: (GSTabPart)part type: (NSTabViewType)type
+{
+  NSMutableString *imageName = [NSMutableString stringWithCapacity: 32];
+  NSString *typeString = nil;
+  NSString *partString = nil;
+
+  switch (type)
+    {
+      case NSTopTabsBezelBorder: 
+      typeString = @"";
+        break;
+      case NSBottomTabsBezelBorder: 
+      typeString = @"Down";
+        break;
+      case NSLeftTabsBezelBorder: 
+      typeString = @"Left";
+        break;
+      case NSRightTabsBezelBorder: 
+      typeString =  @"Right";
+        break;
+    default:
+      return nil;
+    }
+
+  switch (part)
+    {
+    case GSTabSelectedLeft: 
+      partString = @"SelectedLeft";
+        break;
+    case GSTabSelectedRight:
+      partString = @"SelectedRight";
+        break;
+    case GSTabSelectedToUnSelectedJunction:
+      partString = @"SelectedToUnSelectedJunction";
+        break;
+    case GSTabSelectedFill:
+      return nil;
+    case GSTabUnSelectedLeft:
+      partString = @"UnSelectedLeft";
+      break;
+    case GSTabUnSelectedRight:
+      partString = @"UnSelectedRight";
+      break;
+    case GSTabUnSelectedToSelectedJunction:
+      partString = @"UnSelectedToSelectedJunction";
+      break;
+    case GSTabUnSelectedJunction:
+      partString = @"UnSelectedJunction";
+      break;
+    case GSTabUnSelectedFill:
+    case GSTabBackgroundFill:
+      return nil;
+    }
+
+  [imageName appendString: @"common_Tab"];
+  [imageName appendString: typeString];
+  [imageName appendString: partString];
+
+  return [NSImage imageNamed: imageName];
+}
+              
+- (GSDrawTiles *)tilesForTabPart: (GSTabPart)part type: (NSTabViewType)type
+        {
+  NSString *name = nil;
+          
+  if (type == NSTopTabsBezelBorder)
+            {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewBackgroundTabFill;
+    }
+  else if (type == NSBottomTabsBezelBorder)
+                {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewBottomSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewBottomUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewBottomBackgroundTabFill;
+                }
+  else if (type == NSLeftTabsBezelBorder)
+                {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewLeftSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewLeftUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewLeftBackgroundTabFill;
+                }
+  else if (type == NSRightTabsBezelBorder)
+    {
+      if (part == GSTabSelectedFill)
+	name = GSTabViewRightSelectedTabFill;
+      else if (part == GSTabUnSelectedFill)
+	name = GSTabViewRightUnSelectedTabFill;
+      else if (part == GSTabBackgroundFill)
+	name = GSTabViewRightBackgroundTabFill;
+            }
+  
+  return [self tilesNamed: name state: GSThemeNormalState];
+}
+
+- (void) frameTabRectTopAndBottom: (NSRect)aRect 
+			 topColor: (NSColor *)topColor
+		      bottomColor: (NSColor *)bottomColor
+            {
+  NSRect bottom = aRect;
+  NSRect top = aRect;
+
+  top.size.height = 1;
+  bottom.origin.y = NSMaxY(aRect) - 1;
+  bottom.size.height = 1;
+
+  [topColor set];
+  NSRectFill(top);
+
+  [bottomColor set];
+  NSRectFill(bottom);
+}
+
+- (void) drawTabFillInRect: (NSRect)aRect forPart: (GSTabPart)part type: (NSTabViewType)type
+                {
+  GSDrawTiles *tiles = [self tilesForTabPart: part type: type];
+
+  if (tiles == nil)
+    {
+      if (type == NSBottomTabsBezelBorder)
+	{
+	  switch (part)
+	    {
+	    case GSTabSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor clearColor]
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabUnSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect 
+				    topColor: [NSColor darkGrayColor] 
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabBackgroundFill:
+	      {
+		const NSRect clip = aRect;
+		aRect.origin.x -= 2;
+		aRect.origin.y = NSMinY(aRect) - 2;
+		aRect.size.width += 2;
+		aRect.size.height = 4;
+		[self drawButton: aRect withClip: clip];
+		break;
+                }
+	    default:
+	      break;
+	    }
+	}
+      else if (type == NSTopTabsBezelBorder)
+                {
+	  switch (part)
+                    {
+	    case GSTabSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor whiteColor]
+				 bottomColor: [NSColor clearColor]];
+	      break;
+	    case GSTabUnSelectedFill:
+	      [self frameTabRectTopAndBottom: aRect
+				    topColor: [NSColor whiteColor]
+				 bottomColor: [NSColor whiteColor]];
+	      break;
+	    case GSTabBackgroundFill:
+	      {
+		const NSRect clip = aRect;
+		aRect.origin.x -= 2;
+		aRect.origin.y = NSMaxY(aRect) - 1;
+		aRect.size.width += 2;
+		aRect.size.height = 4;
+		[self drawButton: aRect withClip: clip];
+		break;
+                    }
+	    default:
+	      break;
+	    }
+	}
+    }
+                  else
+                    {
+      [self fillRect: aRect
+           withTiles: tiles];
+                    }
+                } 
+
+- (CGFloat) tabHeightForType: (NSTabViewType)type
+{
+  NSImage *img = [self imageForTabPart: GSTabUnSelectedLeft type: type];
+  if (img == nil)
+    {
+      return 0;
+            }  
+  return [img size].height;
+}
+
+- (NSRect) tabViewBackgroundRectForBounds: (NSRect)aRect
+			      tabViewType: (NSTabViewType)type
+{
+  const CGFloat tabHeight = [self tabHeightForType: type];
+
+  switch (type)
+            {
+      default:
+      case NSTopTabsBezelBorder: 
+        aRect.size.height -= tabHeight;
+        aRect.origin.y += tabHeight;
+        break;
+
+      case NSBottomTabsBezelBorder: 
+        aRect.size.height -= tabHeight;
+        break;
+
+      case NSLeftTabsBezelBorder: 
+        aRect.size.width -= tabHeight;
+        aRect.origin.x += tabHeight;
+        break;
+
+      case NSRightTabsBezelBorder: 
+        aRect.size.width -= tabHeight;
+        break;
+
+      case NSNoTabsBezelBorder: 
+      case NSNoTabsLineBorder: 
+      case NSNoTabsNoBorder: 
+        break;
+            }
+
+  return aRect;
+}
+          
+          
+- (NSRect) tabViewContentRectForBounds: (NSRect)aRect
+			   tabViewType: (NSTabViewType)type
+			       tabView: (NSTabView *)view
+{
+  NSRect cRect = [self tabViewBackgroundRectForBounds: aRect
+						   tabViewType: type];
+  NSString *name = GSStringFromTabViewType(type);
+  GSDrawTiles *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
+            {
+      switch (type)
+	{
+	case NSBottomTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsLineBorder:
+	  cRect.origin.y += 1; 
+	  cRect.origin.x += 1; 
+	  cRect.size.width -= 2;
+	  cRect.size.height -= 2;
+	  break;
+	case NSTopTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSLeftTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSRightTabsBezelBorder:
+	  cRect.origin.x += 1;
+	  cRect.origin.y += 1;
+	  cRect.size.width -= 3;
+	  cRect.size.height -= 2;
+	  break;
+	case NSNoTabsNoBorder:
+	default:
+	  break;
+	}     
+    }
+  else
+    {
+      cRect = [tiles contentRectForRect: cRect
+			      isFlipped: [view isFlipped]];
+    }
+  return cRect;
+}
+
+
+- (void) drawTabViewBezelRect: (NSRect)aRect
+                  tabViewType: (NSTabViewType)type
+                       inView: (NSView *)view
+                {
+  NSString *name = GSStringFromTabViewType(type);
+  GSDrawTiles *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      switch (type)
+	{
+	default:
+	case NSTopTabsBezelBorder:
+	  {
+	    const NSRect clip = aRect;
+	    aRect.size.height += 1;
+	    aRect.origin.y -= 1;
+	    [self drawButton: aRect withClip: clip];
+	    break;
+                }
+	case NSBottomTabsBezelBorder:
+                {
+	    const NSRect clip = aRect;
+	    aRect.size.height += 2;
+	    [self drawButton: aRect withClip: clip];
+	    break;
+                }
+	case NSLeftTabsBezelBorder:
+	case NSRightTabsBezelBorder:
+	  [self drawButton: aRect withClip: NSZeroRect];
+	  break;
+	case NSNoTabsBezelBorder:
+       	  break;	
+	case NSNoTabsLineBorder:
+	  [[NSColor controlDarkShadowColor] set];
+	  NSFrameRect(aRect);
+	  break;	  
+	case NSNoTabsNoBorder:
+	  break;
+	}
+    }
+              else
+    {
+      [self fillRect: aRect
+           withTiles: tiles];
+            }
+        }
 
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
 	       withItems: (NSArray *)items
 	    selectedItem: (NSTabViewItem *)selected
-{
+    {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  int howMany = [items count];
+  const NSUInteger howMany = [items count];
   int i;
   int previousState = 0;
-  NSRect bounds = [view bounds];
-  NSRect aRect = bounds;
-  NSColor *lineColour = [NSColor highlightColor];
-  NSColor *backgroundColour = [[view window] backgroundColor];
-  BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
-  NSTabViewType type = [(NSTabView *)view tabViewType];
+  const NSTabViewType type = [(NSTabView *)view tabViewType];
+  const NSRect bounds = [view bounds];
+  NSRect aRect = [self tabViewBackgroundRectForBounds: bounds tabViewType: type];
 
+  const BOOL truncate = [(NSTabView *)view allowsTruncatedLabels];
+  const CGFloat tabHeight = [self tabHeightForType: type];
+  
   DPSgsave(ctxt);
-
-  switch (type)
-    {
-      default:
-      case NSTopTabsBezelBorder: 
-        aRect.size.height -= 16;
-        [self drawButton: aRect withClip: rect];
-        break;
-
-      case NSBottomTabsBezelBorder: 
-        aRect.size.height -= 16;
-        aRect.origin.y += 16;
-        [self drawButton: aRect withClip: rect];
-        break;
-
-      case NSLeftTabsBezelBorder: 
-        aRect.size.width -= 18;
-        aRect.origin.x += 18;
-        [self drawButton: aRect withClip: rect];
-        break;
-
-      case NSRightTabsBezelBorder: 
-        aRect.size.width -= 18;
-        [self drawButton: aRect withClip: rect];
-        break;
-
-      case NSNoTabsBezelBorder: 
-        [self drawButton: aRect withClip: rect];
-        break;
-
-      case NSNoTabsLineBorder: 
-        [[NSColor controlDarkShadowColor] set];
-        NSFrameRect(aRect);
-        break;
-
-      case NSNoTabsNoBorder: 
-        break;
-    }
-
-  if (type == NSBottomTabsBezelBorder)
+  
+  [self drawTabViewBezelRect: aRect
+ 		 tabViewType: type
+ 		      inView: view];
+ 
+  if (type == NSBottomTabsBezelBorder
+      || type == NSTopTabsBezelBorder)
     {
       NSPoint iP;
+      if (type == NSTopTabsBezelBorder)
+	iP = bounds.origin;
+      else
+	iP = NSMakePoint(aRect.origin.x, NSMaxY(aRect));
 
-      iP.x = bounds.origin.x;
-      iP.y = bounds.origin.y;
-              
       for (i = 0; i < howMany; i++) 
         {
           NSRect r;
-          NSRect fRect;
           NSTabViewItem *anItem = [items objectAtIndex: i];
-          NSTabState itemState = [anItem tabState];
-          NSSize s = [anItem sizeOfLabel: truncate];
-          
-          [backgroundColour set];
+          const NSTabState itemState = [anItem tabState];
+          const NSSize s = [anItem sizeOfLabel: truncate];
 
+	  // Draw the left image
+          
           if (i == 0)
             {
+	      NSImage *part = nil;
               if (itemState == NSSelectedTab)
                 {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
+		  part = [self imageForTabPart: GSTabSelectedLeft type: type];
                 }
               else if (itemState == NSBackgroundTab)
                 {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownUnSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
+		  part = [self imageForTabPart: GSTabUnSelectedLeft type: type];
                 }
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
+
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
+	      iP.x += [part size].width;
             }
           else
             {
-              if (itemState == NSSelectedTab) 
+	      NSImage *part = nil;
+              if (itemState == NSSelectedTab)
                 {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed:
-                    @"common_TabDownUnSelectedToSelectedJunction"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
+		  part = [self imageForTabPart: GSTabUnSelectedToSelectedJunction type: type];
                 }
               else if (itemState == NSBackgroundTab)
                 {
                   if (previousState == NSSelectedTab)
                     {
-                      iP.y += 1;
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabDownSelectedToUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                      iP.y -= 1;
+		      part = [self imageForTabPart: GSTabSelectedToUnSelectedJunction type: type];
                     }
                   else
                     {
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabDownUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
+		      part = [self imageForTabPart: GSTabUnSelectedJunction type: type];
                     }
                 } 
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
+
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
+	      iP.x += [part size].width;
             }  
 
-          r.origin.x = iP.x + 13;
-          r.origin.y = iP.y + 2;
-          r.size.width = s.width;
-          r.size.height = 15;
+	  // Draw the middle fill part of the tab
 
-          fRect = r;
+          r.origin = iP;
+          r.size.width = s.width;
+          r.size.height = tabHeight;
+          
           if (itemState == NSSelectedTab)
             {
-              // Undraw the line that separates the tab from its view.
-              fRect.origin.y += 1;
-              fRect.size.height += 1;
+	      [self drawTabFillInRect: r forPart: GSTabSelectedFill type: type];
             }
-          NSRectFill(fRect);
+	  else if (itemState == NSBackgroundTab)
+	    {
+	      [self drawTabFillInRect: r forPart: GSTabUnSelectedFill type: type];
+	    }
+	  else
+	    NSLog(@"Not finished yet. Luff ya.\n");
 
-          // Draw the line at the bottom of the item
-          [lineColour set];
-          DPSsetlinewidth(ctxt, 1);
-          DPSmoveto(ctxt, r.origin.x, r.origin.y - 1);
-          DPSrlineto(ctxt, r.size.width, 0);
-          DPSstroke(ctxt);
-          
           // Label
           [anItem drawLabel: truncate inRect: r];
           
-          iP.x += s.width + 13;
+          iP.x += s.width;
           previousState = itemState;
+
+	  // For the rightmost tab, draw the right side
 
           if (i == howMany - 1)
             {
-              [backgroundColour set];
-
-              if ([anItem tabState] == NSSelectedTab)
-                {
-                  iP.y += 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y -= 1;
-                }
-              else if ([anItem tabState] == NSBackgroundTab)
-                {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabDownUnSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                }
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }
-        }
-    }
-  else if (type == NSTopTabsBezelBorder)
-    {
-      NSPoint iP;
-
-      iP.x = bounds.origin.x;
-      // FIXME: Why not NSMaxY(bounds)?
-      iP.y = bounds.size.height - 16;
-
-      for (i = 0; i < howMany; i++) 
-        {
-          NSRect r;
-          NSRect fRect;
-          NSTabViewItem *anItem = [items objectAtIndex: i];
-          NSTabState itemState = [anItem tabState];
-          NSSize s = [anItem sizeOfLabel: truncate];
-
-          [backgroundColour set];
-          
-          if (i == 0)
-            {
-              if (itemState == NSSelectedTab)
-                {
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
-                }
-              else if (itemState == NSBackgroundTab)
-                {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabUnSelectedLeft"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                }
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }
-          else
-            {
-              if (itemState == NSSelectedTab)
-                {
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed:
-                    @"common_TabUnSelectToSelectedJunction"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
-                }
-              else if (itemState == NSBackgroundTab)
-                {
-                  if (previousState == NSSelectedTab)
-                    {
-                      iP.y -= 1;
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabSelectedToUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                      iP.y += 1;
-                    }
-                  else
-                    {
-                      NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                      [[NSImage imageNamed:
-                        @"common_TabUnSelectedJunction"]
-                        compositeToPoint: iP operation: NSCompositeSourceOver];
-                    }
-                } 
-              else
-                NSLog(@"Not finished yet. Luff ya.\n");
-            }  
-
-          r.origin.x = iP.x + 13;
-          r.origin.y = iP.y;
-          r.size.width = s.width;
-          r.size.height = 15;
-          
-          fRect = r;
-          if (itemState == NSSelectedTab)
-            {
-              // Undraw the line that separates the tab from its view.
-              fRect.origin.y -= 1;
-              fRect.size.height += 1;
-            }
-          NSRectFill(fRect);
-
-          // Draw the line at the top of the item
-          [lineColour set];
-          DPSsetlinewidth(ctxt, 1);
-          DPSmoveto(ctxt, r.origin.x, r.origin.y + 16);
-          DPSrlineto(ctxt, r.size.width, 0);
-          DPSstroke(ctxt);
-          
-          // Label
-          [anItem drawLabel: truncate inRect: r];
-          
-          iP.x += s.width + 13;
-          previousState = itemState;
-
-          if (i == howMany - 1)
-            {
-              [backgroundColour set];
-            
+	      NSImage *part = nil;
               if ([anItem tabState] == NSSelectedTab)
                 {              
-                  iP.y -= 1;
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
-                  iP.y += 1;
+		  part = [self imageForTabPart: GSTabSelectedRight type: type];
                 }  
               else if ([anItem tabState] == NSBackgroundTab)
                 {
-                  NSRectFill(NSMakeRect(iP.x, iP.y, 14, 17));
-                  [[NSImage imageNamed: @"common_TabUnSelectedRight"]
-                    compositeToPoint: iP operation: NSCompositeSourceOver];
+		  part = [self imageForTabPart: GSTabUnSelectedRight type: type];
                 }
               else
                 NSLog(@"Not finished yet. Luff ya.\n");
+
+	      [part drawInRect: NSMakeRect(iP.x, iP.y, [part size].width, [part size].height)
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
+	      iP.x += [part size].width;
+
+	      // Draw the background fill
+	      if (iP.x < NSMaxX(bounds))
+		{
+		  r.origin = iP;
+		  r.size.width = NSMaxX(bounds) - iP.x;
+		  r.size.height = tabHeight;
+
+		  [self drawTabFillInRect: r forPart: GSTabBackgroundFill type: type];
             }
         }
+    }
     }
   // FIXME: Missing drawing code for other cases
 
@@ -2014,8 +2443,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   rectForPartDecrementLine = [scroller rectForPart: NSScrollerDecrementLine];
   rectForPartKnobSlot = [scroller rectForPart: NSScrollerKnobSlot];
 
+  /*
   [[[view window] backgroundColor] set];
   NSRectFill (rect);
+  */
 
   if (NSIntersectsRect (rect, rectForPartKnobSlot) == YES)
     {
@@ -2068,51 +2499,109 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 
   // Draws scroller border
-  if ([browser hasHorizontalScroller] && 
-      [browser separatesColumns])
+
+  if ([self browserUseBezels])
     {
-      NSRect scrollerBorderRect = scrollerRect;
-      NSSize bs = [self sizeForBorderType: NSBezelBorder];
-
-      scrollerBorderRect.origin.x = 0;
-      scrollerBorderRect.origin.y = 0;
-      scrollerBorderRect.size.width += 2 * bs.width;
-      scrollerBorderRect.size.height += (2 * bs.height) - 1;
-
-      if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && [view window])
+      if ([browser hasHorizontalScroller] && 
+          [browser separatesColumns])
         {
-          [self drawGrayBezel: scrollerBorderRect withClip: rect];
+          NSRect scrollerBorderRect = scrollerRect;
+          NSSize bs = [self sizeForBorderType: NSBezelBorder];
+
+          scrollerBorderRect.origin.x = 0;
+          scrollerBorderRect.origin.y = 0;
+          scrollerBorderRect.size.width += 2 * bs.width;
+          scrollerBorderRect.size.height += (2 * bs.height) - 1;
+
+          if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && [view window])
+            {
+              [self drawGrayBezel: scrollerBorderRect withClip: rect];
+            }
+        }
+
+      if (![browser separatesColumns])
+        {
+          NSPoint p1,p2;
+          int     i, visibleColumns;
+          float   hScrollerWidth = [browser hasHorizontalScroller] ?  [NSScroller scrollerWidth] : 0;
+      
+          // Columns borders
+          [self drawGrayBezel: bounds withClip: rect];
+      
+          [[NSColor blackColor] set];
+          visibleColumns = [browser numberOfVisibleColumns]; 
+          for (i = 1; i < visibleColumns; i++)
+            {
+              p1 = NSMakePoint((columnSize.width * i) + 2 + (i-1), 
+                               columnSize.height + hScrollerWidth + 2);
+              p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
+                               hScrollerWidth + 2);
+              [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+            }
+
+          // Horizontal scroller border
+          if ([browser hasHorizontalScroller])
+            {
+              p1 = NSMakePoint(2, hScrollerWidth + 2);
+              p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
+              [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+            }
         }
     }
 
-  if (![browser separatesColumns])
+   if (![self browserUseBezels]
+       && [self scrollViewScrollersOverlapBorders])
     {
-      NSPoint p1,p2;
-      int     i, visibleColumns;
-      float   hScrollerWidth = [browser hasHorizontalScroller] ? 
-	[NSScroller scrollerWidth] : 0;
-      
-      // Columns borders
-      [self drawGrayBezel: bounds withClip: rect];
-      
-      [[NSColor blackColor] set];
-      visibleColumns = [browser numberOfVisibleColumns]; 
-      for (i = 1; i < visibleColumns; i++)
-        {
-          p1 = NSMakePoint((columnSize.width * i) + 2 + (i-1), 
-                           columnSize.height + hScrollerWidth + 2);
-          p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
-                           hScrollerWidth + 2);
-          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-        }
+      NSRect baseRect = NSMakeRect(0, 0, bounds.size.width, 1); 
+      NSRect colFrame = [browser frameOfColumn: [browser firstVisibleColumn]];
+      NSRect scrollViewRect = NSUnionRect(baseRect, colFrame);
 
-      // Horizontal scroller border
-      if ([browser hasHorizontalScroller])
-        {
-          p1 = NSMakePoint(2, hScrollerWidth + 2);
-          p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
-          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-        }
+      GSDrawTiles *tiles = [self tilesNamed: @"NSScrollView" state: GSThemeNormalState];
+
+      [self fillRect: scrollViewRect
+           withTiles: tiles];
+    }
+}
+
+- (CGFloat) browserColumnSeparation
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserColumnSeparation"] != nil)
+    {
+      return [defs floatForKey: @"GSBrowserColumnSeparation"];
+    }
+  else
+    {
+      return 4;
+    }
+}
+
+- (CGFloat) browserVerticalPadding
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserVerticalPadding"] != nil)
+    {
+      return [defs floatForKey: @"GSBrowserVerticalPadding"];
+    }
+  else
+    {
+      return 2;
+    }
+}
+
+- (BOOL) browserUseBezels
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  
+  if ([defs objectForKey: @"GSBrowserUseBezels"] != nil)
+    {
+      return [defs boolForKey: @"GSBrowserUseBezels"];
+    }
+  else
+    {
+      return YES;
     }
 }
 
@@ -2150,7 +2639,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		     inView: (NSView *)view 
 {
   NSScrollView  *scrollView = (NSScrollView *)view;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   GSTheme	*theme = [GSTheme theme];
   NSColor	*color;
   NSString	*name;
@@ -2158,6 +2646,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSRect         bounds = [view bounds];
   BOOL hasInnerBorder = ![[NSUserDefaults standardUserDefaults]
 			   boolForKey: @"GSScrollViewNoInnerBorder"];
+  GSDrawTiles *tiles = nil;
 
   name = [theme nameForElement: self];
   if (name == nil)
@@ -2165,28 +2654,37 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       name = @"NSScrollView";
     }
   color = [theme colorNamed: name state: GSThemeNormalState];
+  tiles = [theme tilesNamed: name state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor controlDarkShadowColor];
     }
   
-  switch (borderType)
+  if (tiles == nil)
     {
-      case NSNoBorder:
-        break;
+      switch (borderType)
+        {
+          case NSNoBorder:
+            break;
 
-      case NSLineBorder:
-        [color set];
-        NSFrameRect(bounds);
-        break;
+          case NSLineBorder:
+            [color set];
+            NSFrameRect(bounds);
+            break;
 
-      case NSBezelBorder:
-        [theme drawGrayBezel: bounds withClip: rect];
-        break;
+          case NSBezelBorder:
+            [theme drawGrayBezel: bounds withClip: rect];
+            break;
 
-      case NSGrooveBorder:
-        [theme drawGroove: bounds withClip: rect];
-        break;
+          case NSGrooveBorder:
+            [theme drawGroove: bounds withClip: rect];
+            break;
+        }
+    }
+  else
+    {
+      [self fillRect: bounds
+	   withTiles: tiles];
     }
 
   if (hasInnerBorder)
@@ -2196,58 +2694,118 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
 
       [color set];
-      DPSsetlinewidth(ctxt, 1);
 
       if ([scrollView hasVerticalScroller])
-	{
-	  NSInterfaceStyle style;
+    	{
+    	  NSInterfaceStyle style;
+    	  CGFloat xpos;
+    	  CGFloat scrollerHeight = bounds.size.height;
 
-	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
-	  if (style == NSMacintoshInterfaceStyle
-	      || style == NSWindows95InterfaceStyle)
-	    {
-	      DPSmoveto(ctxt, [vertScroller frame].origin.x - 1, 
-			[vertScroller frame].origin.y - 1);
-	    }
-	  else
-	    {
-	      DPSmoveto(ctxt, [vertScroller frame].origin.x + scrollerWidth, 
-			[vertScroller frame].origin.y - 1);
-	    }
-	  DPSrlineto(ctxt, 0, [vertScroller frame].size.height + 1);
-	  DPSstroke(ctxt);
-	}
+    	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+    	  if (style == NSMacintoshInterfaceStyle
+    	      || style == NSWindows95InterfaceStyle)
+    	    {
+              xpos = [vertScroller frame].origin.x - 1.0;
+    	    }
+    	  else
+    	    {
+                  xpos = [vertScroller frame].origin.x + scrollerWidth;
+    	    }
+              NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
+                                    1.0, scrollerHeight + 1.0));
+    	}
 
       if ([scrollView hasHorizontalScroller])
-	{
-	  float ypos;
-	  float scrollerY = [horizScroller frame].origin.y;
+    	{
+    	  CGFloat ypos;
+    	  CGFloat scrollerY = [horizScroller frame].origin.y;
+    	  CGFloat scrollerLength = bounds.size.width;
 
-	  if ([scrollView isFlipped])
-	    {
-	      ypos = scrollerY - 1;
-	    }
-	  else
-	    {
-	      ypos = scrollerY + scrollerWidth + 1;
-	    }
-
-	  DPSmoveto(ctxt, [horizScroller frame].origin.x - 1, ypos);
-	  DPSrlineto(ctxt, [horizScroller frame].size.width + 1, 0);
-	  DPSstroke(ctxt);
-	}
+    	  if ([scrollView hasVerticalScroller])
+    	    {
+    	      scrollerLength -= [NSScroller scrollerWidth];
+    	    }
+ 
+    	  if ([scrollView isFlipped])
+    	    {
+    	      ypos = scrollerY - 1.0;
+    	    }
+    	  else
+    	    {
+    	      ypos = scrollerY + scrollerWidth + 1.0;
+    	    }
+              NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
+                                    scrollerLength + 1.0, 1.0));
+    	}
     }
 }
 
-- (void) drawBarInside: (NSRect)rect
-		inCell: (NSCell *)cell
-	       flipped: (BOOL)flipped
+- (void) drawSliderBorderAndBackground: (NSBorderType)aType
+				 frame: (NSRect)cellFrame
+				inCell: (NSCell *)cell
+			  isHorizontal: (BOOL)horizontal
 {
   NSSliderType type = [(NSSliderCell *)cell sliderType];
   if (type == NSLinearSlider)
     {
-      [[NSColor scrollBarColor] set];
-      NSRectFill(rect);
+      NSString *partName = (horizontal ? GSSliderHorizontalTrack : GSSliderVerticalTrack); 
+      GSDrawTiles *tiles = [self tilesNamed: partName
+				      state: GSThemeNormalState];
+
+      if (tiles == nil)
+    	{
+    	  [[GSTheme theme] drawBorderType: aType 
+                				    frame: cellFrame 
+                				     view: [cell controlView]];
+    	}
+      else
+    	{
+    	  // FIXME: This code could be factored out
+    	  NSSize tilesNaturalSize = [tiles size];
+    	  NSRect tilesRect;
+
+    	  // Only stretch the tiles in one direction
+    	  if (horizontal)
+    	    {
+    	      tilesRect.size = NSMakeSize(cellFrame.size.width, tilesNaturalSize.height);
+            }
+    	  else
+    	    {
+    	      tilesRect.size = NSMakeSize(tilesNaturalSize.width, cellFrame.size.height);
+            }
+    	  tilesRect.origin = NSMakePoint((cellFrame.size.width - tilesRect.size.width) / 2.0,
+        					 (cellFrame.size.height - tilesRect.size.height) / 2.0);
+
+    	  if ([cell controlView] != nil)
+    	    {
+    	      tilesRect = [[cell controlView] centerScanRect: tilesRect];
+    	    }
+
+    	  [self fillRect: tilesRect
+    	       withTiles: tiles];
+    	}
+    }
+}
+
+- (void) drawBarInside: (NSRect)rect
+        		inCell: (NSCell *)cell
+	           flipped: (BOOL)flipped
+{
+  NSSliderType type = [(NSSliderCell *)cell sliderType];
+  if (type == NSLinearSlider)
+    {
+      BOOL horizontal = (rect.size.width > rect.size.height);
+      NSString *partName = (horizontal ? GSSliderHorizontalTrack : GSSliderVerticalTrack); 
+      GSDrawTiles *tiles = [self tilesNamed: partName
+				      state: GSThemeNormalState];
+
+      if (tiles == nil)
+    	{
+          [[NSColor scrollBarColor] set];
+          NSRectFill(rect);
+        }
+      // Don't draw anything if we have tiles, they are drawn
+      // in -drawSliderBorderAndBackground:...
     }
 }
 
@@ -2303,13 +2861,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   
   columns = [tableView tableColumns];
   highlightedTableColumn = [tableView highlightedTableColumn];
-#if 0
-  NSLog(@"%s:rect: %@ super: %@ visible: %@ first: %d last: %d", __PRETTY_FUNCTION__,
-        NSStringFromRect(aRect),
-        NSStringFromRect([[tableView superview] frame]),
-        NSStringFromRect([(NSClipView*)[tableView superview] documentVisibleRect]),
-        firstColumnToDraw, lastColumnToDraw);
-#endif
   
   for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
     {
@@ -2326,35 +2877,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         {
           [cell setHighlighted: NO];
         }
-#if 0
-      NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, i, NSStringFromRect(drawingRect));
-#endif
       [cell drawWithFrame: drawingRect
                    inView: tableHeaderView];
       drawingRect.origin.x += width;
     }
-  
-  // Fill out table header to end if needed...
-  if (lastColumnToDraw == [tableView numberOfColumns] - 1)
-  {
-    // This is really here to handle extending the table headers using the
-    // WinUXTheme (or one equivalent to) that writes directly to the MS windows
-    // device contexts...
-    NSRect clipFrame = [(NSClipView*)[tableView superview] documentVisibleRect];
-    CGFloat maxWidth = NSMaxX(clipFrame);
-    if (drawingRect.origin.x < maxWidth)
-    {
-      drawingRect.size.width = maxWidth - drawingRect.origin.x;
-      column = [columns objectAtIndex: lastColumnToDraw];
-      cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell:@""]);
-      [cell setHighlighted: NO];
-#if 0
-      NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, -2, NSStringFromRect(drawingRect));
-#endif
-      [cell drawWithFrame: drawingRect
-                   inView: tableHeaderView];
-    }
-  }
 }
 
 - (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame
@@ -2364,114 +2890,112 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   // Default implementation of this method does nothing.
 }
 
-- (void) drawTableViewBackgroundInClipRect: (NSRect)clipRect
+- (void) drawTableViewBackgroundInClipRect: (NSRect)aRect
 				    inView: (NSView *)view
 		       withBackgroundColor: (NSColor *)backgroundColor
 {
+  NSTableView *tableView = (NSTableView *)view;
 
   [backgroundColor set];
-  NSRectFill (clipRect);
+  NSRectFill (aRect);
+  
+  if ([tableView usesAlternatingRowBackgroundColors])
+    {
+      const CGFloat rowHeight = [tableView rowHeight];
+      NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
+      NSInteger endingRow;
+      NSInteger i;
+      
+      NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
+      const NSUInteger rowColorCount = [rowColors count];
+      
+      NSRect rowRect;
+      
+      if (rowHeight <= 0
+    	  || rowColorCount == 0
+    	  || aRect.size.height <= 0)
+    	return;
+
+      if (startingRow <= 0)
+    	startingRow = 0;
+      
+      rowRect = [tableView rectOfRow: startingRow];
+      rowRect.origin.x = aRect.origin.x;
+      rowRect.size.width = aRect.size.width;
+      
+      endingRow = startingRow + ceil(aRect.size.height / rowHeight);
+      
+      for (i = startingRow; i <= endingRow; i++)
+    	{
+    	  NSColor *color = [rowColors objectAtIndex: (i % rowColorCount)];
+	  
+    	  [color set];
+    	  NSRectFill(rowRect);
+	  
+    	  rowRect.origin.y += rowHeight;
+        }
+    }
 }
 
 - (void) drawTableViewGridInClipRect: (NSRect)aRect
 			      inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
-  NSRect bounds = [view bounds];
-  float minX = NSMinX (aRect);
-  float maxX = NSMaxX (aRect);
-  float minY = NSMinY (aRect);
-  float maxY = NSMaxY (aRect);
-  int i;
-  float x_pos;
-  int startingColumn; 
-  int endingColumn;
-  int numberOfColumns = [tableView numberOfColumns];
-  NSArray *tableColumns = [tableView tableColumns];
+
+  // Cache some constants
+  const CGFloat minX = NSMinX(aRect);
+  const CGFloat maxX = NSMaxX(aRect);
+  const CGFloat minY = NSMinY(aRect);
+  const CGFloat maxY = NSMaxY(aRect);
+  const NSInteger numberOfColumns = [tableView numberOfColumns];
+  const NSInteger numberOfRows = [tableView numberOfRows];
+
+  NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(minX, minY)];
+  NSInteger endingRow = [tableView rowAtPoint: NSMakePoint(minX, maxY)];
+  NSInteger startingColumn = [tableView columnAtPoint: NSMakePoint(minX, minY)];
+  NSInteger endingColumn = [tableView columnAtPoint: NSMakePoint(maxX, minY)];
+
   NSGraphicsContext *ctxt = GSCurrentContext ();
-  float position = 0.0;
-  float *columnOrigins = [tableView _columnOrigins];
-  int startingRow    = [tableView rowAtPoint: 
-			       NSMakePoint (bounds.origin.x, minY)];
-  int endingRow      = [tableView rowAtPoint: 
-			       NSMakePoint (bounds.origin.x, maxY)];
   NSColor *gridColor = [tableView gridColor];
-  int rowHeight = [tableView rowHeight];
-  int numberOfRows = [tableView numberOfRows];
 
-  /* Using columnAtPoint:, rowAtPoint: here calls them only twice 
-     per drawn rect */
-  x_pos = minX;
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
 
-  x_pos = maxX;
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
+  if (startingRow == -1)
+    startingRow = 0;
+  if (endingRow == -1)
+    endingRow = numberOfRows - 1;
 
+  if (startingColumn == -1)
+    startingColumn = 0;
   if (endingColumn == -1)
     endingColumn = numberOfColumns - 1;
-  /*
-  int startingColumn = [tableView columnAtPoint: 
-			       NSMakePoint (minX, bounds.origin.y)];
-  int endingColumn   = [tableView columnAtPoint: 
-			       NSMakePoint (maxX, bounds.origin.y)];
-  */
+
 
   DPSgsave (ctxt);
-  DPSsetlinewidth (ctxt, 1);
   [gridColor set];
 
+  // Draw horizontal lines
   if (numberOfRows > 0)
     {
-      /* Draw horizontal lines */
-      if (startingRow == -1)
-	startingRow = 0;
-      if (endingRow == -1)
-	endingRow = numberOfRows - 1;
-      
-      position = bounds.origin.y;
-      position += startingRow * rowHeight;
-      for (i = startingRow; i <= endingRow + 1; i++)
-	{
-	  DPSmoveto (ctxt, minX, position);
-	  DPSlineto (ctxt, maxX, position);
-	  DPSstroke (ctxt);
-	  position += rowHeight;
-	}
+      NSInteger i;
+      for (i = startingRow; i <= endingRow; i++)
+    	{
+    	  NSRect rowRect = [tableView rectOfRow: i];
+    	  rowRect.origin.y += rowRect.size.height - 1;
+    	  rowRect.size.height = 1;
+    	  NSRectFill(rowRect);
+    	}
     }
   
   if (numberOfColumns > 0)
     {
-      int lastRowPosition = position - rowHeight;
-      /* Draw vertical lines */
-      if (startingColumn == -1)
-	startingColumn = 0;
-      if (endingColumn == -1)
-	endingColumn = numberOfColumns - 1;
-
+      NSInteger i;
       for (i = startingColumn; i <= endingColumn; i++)
-	{
-	  DPSmoveto (ctxt, columnOrigins[i], minY);
-	  DPSlineto (ctxt, columnOrigins[i], lastRowPosition);
-	  DPSstroke (ctxt);
-	}
-      position =  columnOrigins[endingColumn];
-      position += [[tableColumns objectAtIndex: endingColumn] width];  
-      /* Last vertical line must moved a pixel to the left */
-      if (endingColumn == (numberOfColumns - 1))
-	position -= 1;
-      DPSmoveto (ctxt, position, minY);
-      DPSlineto (ctxt, position, lastRowPosition);
-      DPSstroke (ctxt);
+    	{
+    	  NSRect colRect = [tableView rectOfColumn: i];
+    	  colRect.origin.x += colRect.size.width - 1;
+    	  colRect.size.width = 1;
+    	  NSRectFill(colRect);
+    	}
     }
 
   DPSgrestore (ctxt);
@@ -2544,6 +3068,33 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSIndexSet *selectedRows = [tableView _selectedRowIndexes];
   NSIndexSet *selectedColumns = [tableView _selectedColumnIndexes];
 
+#if 0 //TESTPLANT-MAL - SHOULD WE USE THIS???
+  // Set the fill color
+  {
+    NSColor *selectionColor;
+
+    selectionColor = [self colorNamed: @"highlightedTableRowBackgroundColor"
+				state: GSThemeNormalState];
+
+    if (selectionColor == nil)
+      {
+	// Switch to the alternate color of the backgroundColor is white.
+	if([backgroundColor isEqual: [NSColor whiteColor]])
+	  {
+	    selectionColor = [NSColor colorWithCalibratedRed: 0.86
+						                           green: 0.92
+							                        blue: 0.99
+						                           alpha: 1.0];
+	  }
+	else
+	  {
+	    selectionColor = [NSColor whiteColor];
+	  }
+      }
+    [selectionColor set];
+  }
+#endif
+
   if (selectingColumns == NO)
     {
       NSInteger selectedRowsCount;
@@ -2552,41 +3103,41 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
       selectedRowsCount = [selectedRows count];      
       if (selectedRowsCount == 0)
-	return;
+    	return;
       
       /* highlight selected rows */
       startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(clipRect))];
       endingRow   = [tableView rowAtPoint: NSMakePoint(0, NSMaxY(clipRect))];
       
       if (startingRow == -1)
-	startingRow = 0;
+    	startingRow = 0;
       if (endingRow == -1)
-	endingRow = numberOfRows - 1;
+    	endingRow = numberOfRows - 1;
       
       row = [selectedRows indexGreaterThanOrEqualToIndex: startingRow];
       while ((row != NSNotFound) && (row <= endingRow))
-	{
-	  NSColor *selectionColor = nil;
+    	{
+    	  NSColor *selectionColor = nil;
 	  
-	  // Switch to the alternate color of the backgroundColor is white.
-	  if([backgroundColor isEqual: [NSColor whiteColor]])
-	    {
-	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
-					green: 0.92
-					blue: 0.99
-					alpha: 1.0];
-	    }
-	  else
-	    {
-	      selectionColor = [NSColor whiteColor];
-	    }
+    	  // Switch to the alternate color of the backgroundColor is white.
+    	  if([backgroundColor isEqual: [NSColor whiteColor]])
+    	    {
+    	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
+                                                         green: 0.92
+                                                          blue: 0.99
+                                                         alpha: 1.0];
+    	    }
+	      else
+    	    {
+	          selectionColor = [NSColor whiteColor];
+	        }
 
-	  //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
-	  //						 clipRect));
-	  [selectionColor set];
-	  NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
-	  row = [selectedRows indexGreaterThanIndex: row];
-	}	  
+    	  //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
+	      //						 clipRect));
+    	  [selectionColor set];
+	      NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
+    	  row = [selectedRows indexGreaterThanIndex: row];
+    	}	  
     }
   else // Selecting columns
     {
@@ -2597,24 +3148,23 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       selectedColumnsCount = [selectedColumns count];
       
       if (selectedColumnsCount == 0)
-	return;
+	    return;
       
       /* highlight selected columns */
       startingColumn = [tableView columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
       endingColumn = [tableView columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
 
       if (startingColumn == -1)
-	startingColumn = 0;
+	    startingColumn = 0;
       if (endingColumn == -1)
-	endingColumn = numberOfColumns - 1;
+	    endingColumn = numberOfColumns - 1;
 
       column = [selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
       while ((column != NSNotFound) && (column <= endingColumn))
-	{
-	  NSHighlightRect(NSIntersectionRect([tableView rectOfColumn: column],
-					     clipRect));
-	  column = [selectedColumns indexGreaterThanIndex: column];
-	}	  
+        {
+            NSHighlightRect(NSIntersectionRect([tableView rectOfColumn: column], clipRect));
+            column = [selectedColumns indexGreaterThanIndex: column];
+        }	  
     }
 }
 
@@ -2725,4 +3275,153 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         }
     }
 }
+
+- (void) drawBoxInClipRect: (NSRect)clipRect
+                   boxType: (NSBoxType)boxType
+                borderType: (NSBorderType)borderType
+                    inView: (NSBox *)box
+{
+  NSColor *color;
+  BOOL drawTitleBackground = YES;
+
+  if (boxType == NSBoxCustom)
+    {
+      if (![box isOpaque])
+        {
+          color = [NSColor clearColor];
+    }
+      else
+        {
+          color = [box fillColor];
+}
+    }
+  else
+    {
+      color = [[box window] backgroundColor];
+    }
+
+  // Draw separator boxes
+
+  if (boxType == NSBoxSeparator)
+    {
+      [[box borderColor] set];
+      NSRectFill([box borderRect]);
+      return;
+    }
+
+  // Draw border
+
+  GSDrawTiles *tiles = [[GSTheme theme] tilesNamed: GSBoxBorder state: GSThemeNormalState];
+  if (tiles == nil 
+      || borderType == NSNoBorder
+      || boxType == NSBoxOldStyle
+      || boxType == NSBoxCustom)
+    {
+      // Fill inside
+      [color set];
+      NSRectFill(clipRect);
+
+      switch (borderType)
+	{
+	case NSNoBorder: 
+	  break;
+	case NSLineBorder: 
+	  if (boxType == NSBoxCustom)
+	    {
+	      [[box borderColor] set];
+	      NSFrameRectWithWidth([box borderRect], [box borderWidth]);
+	    }
+	  else
+	    {
+	      [[NSColor controlDarkShadowColor] set];
+	      NSFrameRect([box borderRect]);
+	    }
+	  break;
+	case NSBezelBorder:
+	  [[GSTheme theme] drawDarkBezel: [box borderRect] withClip: clipRect];
+	  break;
+	case NSGrooveBorder: 
+	  [[GSTheme theme] drawGroove: [box borderRect] withClip: clipRect];
+	  break;
+	}
+    }
+  else
+    {
+      drawTitleBackground = NO;
+      
+      // If the title is on the border, clip a hole in the later 
+
+      [NSGraphicsContext saveGraphicsState];
+      
+      if ((borderType != NSNoBorder)
+            && (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
+        {
+          const NSRect borderRect = [box borderRect];
+          const NSRect titleRect = [box titleRect];
+          NSBezierPath *path = [NSBezierPath bezierPath];
+	  
+          // Left
+          if (NSMinX(titleRect) > NSMinX(borderRect))
+            {
+              NSRect left = borderRect;
+              left.size.width = NSMinX(titleRect) - NSMinX(borderRect);
+              [path appendBezierPathWithRect: left];
+            }
+	  
+          // Right
+          if (NSMaxX(borderRect) > NSMaxX(titleRect))
+            {
+              NSRect right = borderRect;
+              right.size.width = NSMaxX(borderRect) - NSMaxX(titleRect);
+              right.origin.x = NSMaxX(titleRect);
+              [path appendBezierPathWithRect: right];
+            }      
+	  
+          // MinY
+          if (NSMinY(titleRect) > NSMinY(borderRect))
+            {
+              NSRect minY = borderRect;
+              minY.size.height = NSMinY(titleRect) - NSMinY(borderRect);
+              [path appendBezierPathWithRect: minY];
+            }
+	  
+          // MaxY
+          if (NSMaxY(borderRect) > NSMaxY(titleRect))
+            {
+              NSRect maxY = borderRect;
+              maxY.size.height = NSMaxY(borderRect) - NSMaxY(titleRect);
+              maxY.origin.y = NSMaxY(titleRect);
+              [path appendBezierPathWithRect: maxY];
+            }      
+	  
+          if (![path isEmpty])
+            {
+              [path addClip];
+            }
+        }
+
+      
+      [[GSTheme theme] fillRect: [box borderRect] withTiles: tiles];
+      
+      // Restore clipping path
+      [NSGraphicsContext restoreGraphicsState];
+    }
+
+
+  // Draw title
+  if ([box titlePosition] != NSNoTitle)
+    {
+      // If the title is on the border, clip a hole in the later 
+      if (drawTitleBackground
+            && (borderType != NSNoBorder)
+            && (([box titlePosition] == NSAtTop) || ([box titlePosition] == NSAtBottom)))
+        {	  
+          [color set];
+          NSRectFill([box titleRect]);
+        }
+
+      [[box titleCell] drawWithFrame: [box titleRect] inView: box];
+    }
+}
+
 @end

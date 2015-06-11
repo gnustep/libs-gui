@@ -45,6 +45,9 @@
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
+#import "GNUstepGUI/GSXibParser.h"
+#import "GNUstepGUI/GSXibObjectContainer.h"
+#import "GNUstepGUI/GSXibElement.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
@@ -628,7 +631,7 @@
 
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"<%@, %@, %@, %d>",
+  return [NSString stringWithFormat: @"<%@, %@, %@, %p>",
 		   [self className],
 		   object,
 		   parent,
@@ -944,7 +947,10 @@
     }
 
   // Load connections and awaken objects
-  [objects nibInstantiate];
+  if ([objects respondsToSelector:@selector(nibInstantiate)])
+    {
+      [objects nibInstantiate];
+    }
 }
 
 - (BOOL) loadModelData: (NSData *)data
@@ -975,7 +981,20 @@
 	    }
 	  else
 	    {
-	      NSLog(@"Could not instantiate Xib unarchiver.");
+	      GSXibParser *parser = [[GSXibParser alloc] initWithData: data]; 
+	      NSDictionary *result = [parser parse];
+	      if (result != nil)
+		{
+		  NSArray *rootObjects = [result objectForKey: @"IBDocument.RootObjects"];
+		  GSXibObjectContainer *objects = [result objectForKey: @"IBDocument.Objects"];
+		  [self awake: rootObjects
+			inContainer: objects
+			withContext: context];
+	    }
+	      else
+		{
+		  NSLog(@"Could not instantiate Xib unarchiver/Unable to parse Xib.");
+        }
 	    }
 	}
       else
@@ -1024,83 +1043,6 @@
 
 @end
 
-@implementation GSXibElement
-
-- (GSXibElement*) initWithType: (NSString*)typeName 
-               andAttributes: (NSDictionary*)attribs
-{
-  ASSIGN(type, typeName);
-  ASSIGN(attributes, attribs);
-  elements = [[NSMutableDictionary alloc] init];
-  values = [[NSMutableArray alloc] init];
-
-  return self;
-}
-
-- (void) dealloc
-{
-  DESTROY(type);
-  DESTROY(attributes);
-  DESTROY(elements);
-  DESTROY(values);
-  DESTROY(value);
-  [super dealloc];
-}
-
-- (NSString*) type
-{
-  return type;
-}
-
-- (NSString*) value
-{
-  return value;
-}
-
-- (NSDictionary*) elements
-{
-  return elements;
-}
-
-- (NSArray*) values
-{
-  return values;
-}
-
-- (void) addElement: (GSXibElement*)element
-{
-  [values addObject: element];
-}
-
-- (void) setElement: (GSXibElement*)element forKey: (NSString*)key
-{
-  [elements setObject: element forKey: key];
-}
-
-- (void) setValue: (NSString*)text
-{
-  ASSIGN(value, text);
-}
-
-- (NSString*) attributeForKey: (NSString*)key
-{
-  return [attributes objectForKey: key];
-}
-
-- (GSXibElement*) elementForKey: (NSString*)key
-{
-  return [elements objectForKey: key];
-}
-
-- (NSString*) description
-{
-  return [NSString stringWithFormat: 
-                     @"GSXibElement <%@> attrs (%@) elements [%@] values [%@] %@", 
-                   type, attributes, elements, values, value, nil];
-}
-
-@end
-
 @implementation GSXibKeyedUnarchiver
 
 - (NSData *) _preProcessXib: (NSData *)data
@@ -1115,6 +1057,16 @@
     }
   else
     {
+      // Test to see if this is an Xcode 5 XIB...
+      NSArray *documentNodes = [document nodesForXPath:@"/document"
+						 error:NULL];
+      if ([documentNodes count] > 0)
+	{
+	  NSLog(@"Unsupported... This is an XCode 5 XIB file.");
+	  return nil;
+	}
+      else
+	{
       NSArray *customClassNodes = [document nodesForXPath:@"//dictionary[@key=\"flattenedProperties\"]/"
 					    @"string[contains(@key,\"CustomClassName\")]"
 						    error:NULL];
@@ -1252,6 +1204,7 @@
       result = [document XMLData];
       RELEASE(document);
     }
+    }
 
   return result;
 }
@@ -1266,6 +1219,11 @@
   if([NSClassSwapper isInInterfaceBuilder] == NO)
     {
       theData = [self _preProcessXib: data];
+    }
+
+  if (theData == nil)
+    {
+      return nil;
     }
 
   objects = [[NSMutableDictionary alloc] init];

@@ -127,7 +127,6 @@ typedef enum _NSTableViewAnimationOptions
    * Ivars Acting as Control... 
    */
   BOOL      _isValidating;
-  NSInteger _beginEndUpdates;
 
   /*
    * Ivars Acting as Cache 
@@ -163,6 +162,8 @@ typedef enum _NSTableViewAnimationOptions
 
   NSDragOperation _draggingSourceOperationMaskForLocal;
   NSDragOperation _draggingSourceOperationMaskForRemote;
+
+  NSInteger _beginEndUpdates;
 }
 
 /* Data Source */
@@ -379,9 +380,11 @@ typedef enum _NSTableViewAnimationOptions
  * Informal protocol NSTableDataSource 
  */
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
-@protocol NSTableViewDataSource <NSObject>
+@protocol NSTableViewDataSource
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
 #else
+@end
 @interface NSObject (NSTableDataSource)
 #endif
 
@@ -434,12 +437,13 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
  * Methods Implemented by the Delegate
  */
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 @protocol NSTableViewDelegate <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
 #else
+@end
 @interface NSObject (NSTableViewDelegate)
 #endif
-
 - (BOOL) selectionShouldChangeInTableView: (NSTableView *)aTableView;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) tableView: (NSTableView*)tableView

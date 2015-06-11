@@ -32,6 +32,7 @@
 #import <Foundation/NSObject.h>
 #import <Foundation/NSZone.h>
 
+@class NSArray;
 @class NSData;
 @class NSDictionary;
 @class NSString;
@@ -52,6 +53,7 @@
 @interface GSModelLoaderFactory : NSObject
 + (void) registerModelLoaderClass: (Class)aClass;
 + (Class)classForType: (NSString *)type;
++ (NSArray *) supportedTypes;
 + (NSString *) supportedModelFileAtPath: (NSString *)modelPath;
 + (GSModelLoader *)modelLoaderForFileType: (NSString *)type;
 + (GSModelLoader *)modelLoaderForFileName: (NSString *)modelPath;

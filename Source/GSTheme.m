@@ -87,16 +87,44 @@ NSString        *GSBrowserHeader = @"GSBrowserHeader";
 // Menu part names
 NSString        *GSMenuHorizontalBackground = @"GSMenuHorizontalBackground";
 NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";
+NSString        *GSMenuTitleBackground = @"GSMenuTitleBackground";
 NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
 NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 NSString        *GSMenuSeparatorItem = @"GSMenuSeparatorItem";
 
+// NSPopUpButton part names
+NSString        *GSPopUpButton = @"GSPopUpButton";
+
 // Progress indicator part names
+NSString        *GSProgressIndicatorBezel = @"GSProgressIndicatorBezel";
 NSString        *GSProgressIndicatorBarDeterminate 
   = @"GSProgressIndicatorBarDeterminate";
 
 // Color well part names
 NSString	*GSColorWell = @"GSColorWell";
+NSString        *GSColorWellInnerBorder = @"GSColorWellInnerBorder";
+
+// Slider part names
+NSString        *GSSliderHorizontalTrack = @"GSSliderHorizontalTrack";
+NSString        *GSSliderVerticalTrack = @"GSSliderVerticalTrack";
+
+// NSBox parts 
+NSString        *GSBoxBorder = @"GSBoxBorder";
+
+/* NSTabView parts */
+NSString        *GSTabViewSelectedTabFill = @"GSTabViewSelectedTabFill";
+NSString        *GSTabViewUnSelectedTabFill = @"GSTabViewUnSelectedTabFill";
+NSString        *GSTabViewBackgroundTabFill = @"GSTabViewBackgroundTabFill";
+NSString        *GSTabViewBottomSelectedTabFill = @"GSTabViewBottomSelectedTabFill";
+NSString        *GSTabViewBottomUnSelectedTabFill = @"GSTabViewBottomUnSelectedTabFill";
+NSString        *GSTabViewBottomBackgroundTabFill = @"GSTabViewBottomBackgroundTabFill";
+NSString        *GSTabViewLeftSelectedTabFill = @"GSTabViewLeftSelectedTabFill";
+NSString        *GSTabViewLeftUnSelectedTabFill = @"GSTabViewLeftUnSelectedTabFill";
+NSString        *GSTabViewLeftBackgroundTabFill = @"GSTabViewLeftBackgroundTabFill";
+NSString        *GSTabViewRightSelectedTabFill = @"GSTabViewRightSelectedTabFill";
+NSString        *GSTabViewRightUnSelectedTabFill = @"GSTabViewRightUnSelectedTabFill";
+NSString        *GSTabViewRightBackgroundTabFill = @"GSTabViewRightBackgroundTabFill";
+
 
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
@@ -206,6 +234,36 @@ GSStringFromBorderType(NSBorderType borderType)
       case NSBezelBorder:                 return @"NSBezelBorder";
       case NSGrooveBorder:                return @"NSGrooveBorder";
       default:                            return nil;
+    }
+}
+
+NSString *
+GSStringFromTabViewType(NSTabViewType type)
+{
+  switch (type)
+    {
+    case NSTopTabsBezelBorder: return @"NSTopTabsBezelBorder";
+    case NSBottomTabsBezelBorder: return @"NSBottomTabsBezelBorder";
+    case NSLeftTabsBezelBorder: return @"NSLeftTabsBezelBorder";
+    case NSRightTabsBezelBorder: return @"NSRightTabsBezelBorder";
+    case NSNoTabsBezelBorder: return @"NSNoTabsBezelBorder";
+    case NSNoTabsLineBorder: return @"NSNoTabsLineBorder";
+    case NSNoTabsNoBorder: return @"NSNoTabsNoBorder";
+    default: return nil;
+    }
+}
+
+NSString *
+GSStringFromImageFrameStyle(NSImageFrameStyle type)
+{
+  switch (type)
+    {
+    case NSImageFrameNone: return @"NSImageFrameNone";
+    case NSImageFramePhoto: return @"NSImageFramePhoto";
+    case NSImageFrameGrayBezel: return @"NSImageFrameGrayBezel";
+    case NSImageFrameGroove: return @"NSImageFrameGroove";
+    case NSImageFrameButton: return @"NSImageFrameButton";
+    default: return nil;
     }
 }
 
@@ -1085,11 +1143,20 @@ typedef	struct {
 	  case GSThemeNormalState:
 	    fullName = aName;
 	    break;
+	  case GSThemeFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"FirstResponder"];
+	    break;
 	  case GSThemeDisabledState:
 	    fullName = [aName stringByAppendingString: @"Disabled"];
 	    break;
+	  case GSThemeHighlightedFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"HighlightedFirstResponder"];
+	    break;
 	  case GSThemeHighlightedState:
 	    fullName = [aName stringByAppendingString: @"Highlighted"];
+	    break;
+	  case GSThemeSelectedFirstResponderState:
+	    fullName = [aName stringByAppendingString: @"SelectedFirstResponder"];
 	    break;
 	  case GSThemeSelectedState:
 	    fullName = [aName stringByAppendingString: @"Selected"];
@@ -1107,88 +1174,109 @@ typedef	struct {
       info = [[info objectForKey: @"GSThemeTiles"] objectForKey: fullName];
       if ([info isKindOfClass: [NSDictionary class]] == YES)
         {
-	  float			x;
-	  float			y;
-	  NSString		*name;
-	  NSString		*path;
-	  NSString		*file;
-	  NSString		*ext;
-	  GSThemeFillStyle	style;
+          float			x;
+          float			y;
+          NSString		*name;
+          NSString		*path;
+          NSString		*file;
+          NSString		*ext;
+          GSThemeFillStyle	style;
 
-	  name = [info objectForKey: @"FillStyle"];
-	  style = GSThemeFillStyleFromString(name);
-	  if (style < GSThemeFillStyleNone) style = GSThemeFillStyleNone;
-	  x = [[info objectForKey: @"HorizontalDivision"] floatValue];
-	  y = [[info objectForKey: @"VerticalDivision"] floatValue];
-	  file = [info objectForKey: @"FileName"];
-	  ext = [file pathExtension];
-	  file = [file stringByDeletingPathExtension];
-	  path = [_bundle pathForResource: file
-				   ofType: ext
-			      inDirectory: @"ThemeTiles"];
-	  if (path == nil)
-	    {
-	      NSLog(@"File %@.%@ not found in ThemeTiles", file, ext);
-	    }
-	  else
-	    {
-	      image = [[_imageClass alloc] initWithContentsOfFile: path];
-	      if (image != nil)
-		{
-                  if ([[info objectForKey: @"NinePatch"] boolValue])
+          name = [info objectForKey: @"FillStyle"];
+          style = GSThemeFillStyleFromString(name);
+          if (style < GSThemeFillStyleNone)
+            style = GSThemeFillStyleNone;
+          x = [[info objectForKey: @"HorizontalDivision"] floatValue];
+          y = [[info objectForKey: @"VerticalDivision"] floatValue];
+          file = [info objectForKey: @"FileName"];
+          ext = [file pathExtension];
+          file = [file stringByDeletingPathExtension];
+          path = [_bundle pathForResource: file
+                                   ofType: ext
+                              inDirectory: @"ThemeTiles"];
+          if (path == nil)
+            {
+              NSLog(@"File %@.%@ not found in ThemeTiles", file, ext);
+            }
+          else
+            {
+              image = [[_imageClass alloc] initWithContentsOfFile: path];
+              if (image != nil)
+                {
+                  if ([[info objectForKey: @"NinePatch"] boolValue]
+                            || [file hasSuffix: @".9"])
                     {
-                      tiles = [[GSDrawTiles alloc]
-			initWithNinePatchImage: image];
-		      [tiles setFillStyle: GSThemeFillStyleScaleAll];
+                      tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
+                      [tiles setFillStyle: GSThemeFillStyleScaleAll];
                     }
                   else
                     {
-		      tiles = [[GSDrawTiles alloc] initWithImage: image
+                      tiles = [[GSDrawTiles alloc] initWithImage: image
                                                       horizontal: x
                                                         vertical: y];
-		      [tiles setFillStyle: style];
+                      [tiles setFillStyle: style];
                     }
-		  RELEASE(image);
+                  RELEASE(image);
+                }
+            }
 		}
-	    }
-	}
-      else
+      
+      if (tiles == nil)
         {
-	  NSArray	*imageTypes;
-	  NSString	*imagePath;
-	  unsigned	count;
+          NSString	*imagePath;
 
-	  imageTypes = [_imageClass imageFileTypes];
-	  for (count = 0; count < [imageTypes count]; count++)
-	    {
-	      NSString	*ext = [imageTypes objectAtIndex: count];
-
-	      imagePath = [_bundle pathForResource: fullName
-					    ofType: ext
-				       inDirectory: @"ThemeTiles"];
-	      if (imagePath != nil)
-		{
-		  image
-		    = [[_imageClass alloc] initWithContentsOfFile: imagePath];
-		  if (image != nil)
-		    {
-		      tiles = [[GSDrawTiles alloc] initWithImage: image];
-		      RELEASE(image);
-		      break;
-		    }
-		}
+          // Try 9-patch first
+          imagePath = [_bundle pathForResource: fullName
+                                        ofType: @"9.png"
+                                   inDirectory: @"ThemeTiles"];
+          if (imagePath != nil)
+            {
+              image = [[_imageClass alloc] initWithContentsOfFile: imagePath];
+	          if (image != nil)
+                {
+                  tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
+                  [tiles setFillStyle: GSThemeFillStyleScaleAll];
+                  RELEASE(image);
+                }
+	        }
 	    }
-	}
+	        
+      if (tiles == nil)
+        {
+          NSArray	*imageTypes;
+          NSString	*imagePath;
+          unsigned	count;
+
+          imageTypes = [_imageClass imageFileTypes];
+          for (count = 0; count < [imageTypes count]; count++)
+            {
+              NSString	*ext = [imageTypes objectAtIndex: count];
+
+              imagePath = [_bundle pathForResource: fullName
+                                            ofType: ext
+                                       inDirectory: @"ThemeTiles"];
+              if (imagePath != nil)
+                {
+                  image = [[_imageClass alloc] initWithContentsOfFile: imagePath];
+                  if (image != nil)
+                    {
+                      tiles = [[GSDrawTiles alloc] initWithImage: image];
+                      RELEASE(image);
+                      break;
+                    }
+                }
+            }
+        }
 
       if (tiles == nil)
         {
-	  [cache setObject: null forKey: aName];
-	}
+          [cache setObject: null forKey: aName];
+        }
       else
         {
-	  [cache setObject: tiles forKey: aName];
-	  RELEASE(tiles);
-	}
+          [cache setObject: tiles forKey: aName];
+          RELEASE(tiles);
+        }
     }
   if (tiles == (id)null)
     {

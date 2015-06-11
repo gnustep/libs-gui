@@ -39,6 +39,8 @@
 NSString *GSStringFromSegmentStyle(NSSegmentStyle segmentStyle);
 NSString *GSStringFromBezelStyle(NSBezelStyle bezelStyle);
 NSString *GSStringFromBorderType(NSBorderType borderType);
+NSString *GSStringFromTabViewType(NSTabViewType type);
+NSString *GSStringFromImageFrameStyle(NSImageFrameStyle type);
 
 /** These are the nine types of tile used to draw a rectangular object.
  */
@@ -64,6 +66,10 @@ typedef enum {
   NSRect	contentRect;    /** Rectangle in which content should be
         	                 *  drawn, normally rects[TileCM], but can
         	                 *  be customized in the nine-patch format */
+  NSRect        layoutRect;
+  NSRect        originalRectCM; /** Caches rects[TileCM] as it was before
+				 *  -validateTilesSizeWithImage clears the
+				 *  origin. Used by -themeMargins */
   float		scaleFactor;
   GSThemeFillStyle	style;	/** The default style for filling a rect */
 }
@@ -108,8 +114,8 @@ typedef enum {
  * drawn in the given rect, or NSZeroRect if the given rect is too small
  * to draw the tiles in.
  */
-- (NSRect) contentRectForRect: (NSRect)rect;
-
+- (NSRect) contentRectForRect: (NSRect)rect
+		    isFlipped: (BOOL)flipped;
 /* Style drawing methods
  */
 - (NSRect) noneStyleFillRect: (NSRect)rect;
@@ -129,6 +135,17 @@ typedef enum {
 
 - (GSThemeFillStyle) fillStyle;
 - (void) setFillStyle: (GSThemeFillStyle)aStyle;
+
+/**
+ * Returns the sum of the widths of the left, middle, and right tiles,
+ * and the sum of the heights of the top, center, and bottom tiles, before scaling.
+ * 
+ * Can be used to calculate a rect to draw the tiles in such that they are only
+ * filled in one direction.
+ */
+- (NSSize) size;
+
+- (GSThemeMargins) themeMargins;
 
 @end
 
