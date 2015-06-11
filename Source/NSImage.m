@@ -92,11 +92,9 @@ NSString *const NSImageNameComputer                 = @"NSComputer";
 NSString *const NSImageNameFolderBurnable           = @"NSFolderBurnable";
 NSString *const NSImageNameFolderSmart              = @"NSFolderSmart";
 NSString *const NSImageNameNetwork                  = @"NSNetwork";
-#endif
 
 // OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 NSString *const NSImageNameFolder                   = @"NSFolder";
-#endif
 
 @implementation NSBundle (NSImageAdditions)
 
