@@ -58,7 +58,7 @@
 
 BOOL NSImageForceCaching = NO; /* use on missmatch */
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+// OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 NSString *const NSImageNameQuickLookTemplate        = @"NSQuickLookTemplate";
 NSString *const NSImageNameBluetooth                = @"NSBluetoothTemplate";
 NSString *const NSImageNameIChatTheater             = @"NSIChatTheaterTemplate";
@@ -94,7 +94,7 @@ NSString *const NSImageNameFolderSmart              = @"NSFolderSmart";
 NSString *const NSImageNameNetwork                  = @"NSNetwork";
 #endif
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+// OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 NSString *const NSImageNameFolder                   = @"NSFolder";
 #endif
 
