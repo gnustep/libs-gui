@@ -1,3 +1,9 @@
+2015-06-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSplitView.m: Be sure to adjust subviews before setting
+	divider position. Otherwise, adjustSubviews will wipe out the setting.
+	Patch by Doug Simons <doug.simons@testplant.com>
+
 2015-05-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/English.lproj/Localizable.strings

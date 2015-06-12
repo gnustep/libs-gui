@@ -1125,6 +1125,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       return;
     }
 
+  // be sure to adjust subviews before repositioning the divider
+  if (_never_displayed_before == YES)
+    {
+      _never_displayed_before = NO;
+      [self _adjustSubviews: _frame.size];
+    }
+
   if (_delegate && 
       [_delegate respondsToSelector: 
                      @selector(splitView:constrainSplitPosition:ofSubviewAt:)])
