@@ -48,6 +48,7 @@ NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
 NSAnimation.m \
+NSAnimationContext.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -278,6 +279,7 @@ NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
 NSAnimation.h \
+NSAnimationContext.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \
