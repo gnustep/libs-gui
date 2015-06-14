@@ -25,29 +25,37 @@
    Boston, MA 02110-1301, USA.
  */ 
 
+#import <AppKit/NSAnimationContext.h>
 
-#ifndef _GNUstep_H_NSAnimationContext_
-#define _GNUstep_H_NSAnimationContext_
+static NSAnimationContext *_currentContext = nil;
 
-#import <Foundation/NSObject.h>
-#import <Foundation/NSDate.h>
-
-@interface NSAnimationContext : NSObject
-{
-  NSTimeInterval _duration;
-}
+@implementation NSAnimationContext : NSObject
 
 // Begin and end grouping
-+ (void) beginGrouping;
-+ (void) endGrouping;
++ (void) beginGrouping
+{
+}
+
++ (void) endGrouping
+{
+}
 
 // Retrieve current context
-+ (NSAnimationContext *)currentContext;
++ (NSAnimationContext *)currentContext
+{
+  return _currentContext;
+}
 
 // Properties...
-- (void) setDuration: (NSTimeInterval)duration;
-- (NSTimeInterval) duration;
+- (void) setDuration: (NSTimeInterval)duration
+{
+  _duration = duration;
+}
+
+- (NSTimeInterval) duration
+{
+  return _duration;
+}
 
 @end
 
-#endif
