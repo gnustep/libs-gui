@@ -285,7 +285,8 @@ typedef NSUInteger NSBrowserColumnResizingType;
 
 
 // Declare the protocol (with no mandatory methods) to support cross compiling
-@protocol NSBrowserDelegate;
+@protocol NSBrowserDelegate
+@end
 
 //
 // Methods Implemented by the Delegate 
