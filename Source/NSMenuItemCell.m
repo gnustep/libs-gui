@@ -528,9 +528,13 @@ static NSString *commandKeyString = @"#";
 
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
-      // Special case: draw image on the extreme right 
-      cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-      cellFrame.size.width = _titleWidth;
+      // TODO: Need to find this out somehow...Testplant-MAL
+      static const NSUInteger ButtonMargin = 5;
+      // Special case: image is drawn on the extreme right
+      // First inset the title rect...Testplant-MAL
+      cellFrame = NSInsetRect(cellFrame, ButtonMargin, 0);
+      // Adjust for image on right side i.e. down arrow popup indicator...Testplant-MAL
+      cellFrame.size.width -= _imageWidth + ButtonMargin;
       return cellFrame;
     }
 

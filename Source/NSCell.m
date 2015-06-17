@@ -2999,6 +2999,57 @@ static NSColor *dtxtCol;
     }
 }
 
+- (NSAttributedString*)_resizeAttributedString: (NSAttributedString*)attrstring forRect:(NSRect)titleRect
+{
+  // Redo string based on selected truncation mask...
+  NSSize titleSize = [attrstring size];
+  if (titleSize.width > titleRect.size.width && [attrstring length] > 4)
+    {
+      NSLineBreakMode mode = [self lineBreakMode];
+      if (mode == NSLineBreakByTruncatingHead || mode == NSLineBreakByTruncatingTail || mode == NSLineBreakByTruncatingMiddle)
+        {
+          attrstring = [[attrstring mutableCopy] autorelease];
+          //unichar ell = 0x2026;
+          NSString *ellipsis = @"..."; //[NSString stringWithCharacters:&ell length:1];
+          do
+            {
+              NSRange replaceRange;
+              if (mode == NSLineBreakByTruncatingHead)
+                replaceRange = NSMakeRange(0,4);
+              else if (mode == NSLineBreakByTruncatingTail)
+                replaceRange = NSMakeRange([attrstring length]-4,4);
+              else
+                replaceRange = NSMakeRange(([attrstring length] / 2)-2, 4);
+              [(NSMutableAttributedString *)attrstring replaceCharactersInRange:replaceRange withString:ellipsis];
+            } while ([attrstring length] > 4 && [attrstring size].width > titleRect.size.width);
+
+          // Return the modified attributed string...
+          return(attrstring);
+        }
+    }
+  
+  // Otherwise just return the string...
+  return(attrstring);
+}
+
+- (NSString*)_resizeDrawString: (NSString*)string withAttrbutes:(NSDictionary*)attributes forRect:(NSRect)titleRect
+{
+  // Redo string based on selected truncation mask...
+  NSLineBreakMode mode      = [self lineBreakMode];
+  NSSize          titleSize = [string sizeWithAttributes: attributes];
+  if (titleSize.width > titleRect.size.width && [string length] > 4)
+    {
+      if (mode == NSLineBreakByTruncatingHead || mode == NSLineBreakByTruncatingTail || mode == NSLineBreakByTruncatingMiddle)
+        {
+          NSAttributedString *attrstring = [[[NSAttributedString alloc] initWithString:string attributes:attributes] autorelease];
+          return([[self _resizeAttributedString:attrstring forRect:titleRect] string]);
+        }
+    }
+  
+  // Otherwise just return the string...
+  return(string);
+}
+
 /**
  * Private internal method to display an attributed string.
  */
@@ -3019,7 +3070,8 @@ static NSColor *dtxtCol;
    */
   aRect.origin.y = NSMidY (aRect) - titleSize.height/2; 
   aRect.size.height = titleSize.height;
-
+  aString = [self _resizeAttributedString:aString forRect:aRect];
+  
   [aString drawInRect: aRect];
 }
 
@@ -3041,7 +3093,8 @@ static NSColor *dtxtCol;
    */
   cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
   cellFrame.size.height = titleSize.height;
-
+  aString = [self _resizeDrawString:aString withAttrbutes:attributes forRect:cellFrame];
+  
   [aString drawInRect: cellFrame  withAttributes: attributes];
   RELEASE (attributes);
 }
