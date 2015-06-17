@@ -1,3 +1,8 @@
+2015-06-17  Paul Landers <paul.landers@testplant.com>
+
+	* Source/NSView.m: Add checks to cut out parts of _invalidRect
+	a whole slice of it is being drawn, but the whole rect is not.
+ 
 2015-06-10  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSSplitView.m: Be sure to adjust subviews before setting

@@ -2490,10 +2490,6 @@ static void autoresize(CGFloat oldContainerSize,
             {
               _rFlags.needs_display = subviewNeedsDisplay;
             }
-          else
-            {
-              _rFlags.needs_display = NO;
-            }
         }
     }
 }
@@ -2555,14 +2551,48 @@ static void autoresize(CGFloat oldContainerSize,
        * If the rect we are going to display contains the _invalidRect
        * then we can empty _invalidRect. Do this before the drawing,
        * as drawRect: may change this value.
-       * FIXME: If the drawn rectangle cuts of a complete part of the
-       * _invalidRect, we should try to reduce this.
+       * If the drawn rectangle cuts off a complete part of the
+       * _invalidRect, we should remove that part.
        */
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
         }
+      else
+	  {
+		  NSRectEdge sliceEdge = NSNotFound;
+		  int distance = 0;
+
+		  // check that intersection of aRect and _invalidRect either has an equal height or width to _invalidRect
+		  // eg, if they are equal heights, we might be a slice on the left or right side
+		  NSRect invalidAndRedrawn = NSIntersectionRect(aRect, neededRect);
+		  if ( invalidAndRedrawn.size.height == neededRect.size.height ) {
+			  // then check that aRect contains one of the side (corner?) points of _invalidRect (inclusive)
+			  if ( NSPointInRect(NSMakePoint(NSMinX(neededRect), NSMidY(neededRect)), aRect) ) {
+				  sliceEdge = NSMinXEdge;
+				  distance = invalidAndRedrawn.size.width;
+			  } else if ( NSPointInRect(NSMakePoint(NSMaxX(neededRect), NSMidY(neededRect)), aRect) ) {
+				  sliceEdge = NSMaxXEdge;
+				  distance = invalidAndRedrawn.size.width;
+			  }
+		  } else if ( invalidAndRedrawn.size.width  == neededRect.size.width  ) {
+			  if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMinY(neededRect)), aRect) ) {
+				  sliceEdge = NSMinYEdge;
+				  distance = invalidAndRedrawn.size.height;
+			  } else if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMaxY(neededRect)), aRect) ) {
+				  sliceEdge = NSMaxYEdge;
+				  distance = invalidAndRedrawn.size.height;
+			  }
+		  }
+
+		  // remove the drawn area from _invalidRect
+		  if ( sliceEdge != NSNotFound ) {
+			  NSRect newInvalid;
+			  NSDivideRect(_invalidRect, 0, &newInvalid, distance, sliceEdge);
+			  _invalidRect = newInvalid;
+		  }
+	  }
     }
   
   if (NSIsEmptyRect(aRect) == NO)
@@ -2573,7 +2603,6 @@ static void autoresize(CGFloat oldContainerSize,
       [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
       [self unlockFocusNeedsFlush: flush];
-      _rFlags.needs_display = NO;
     }
 
   /*
@@ -2816,8 +2845,6 @@ in the main thread.
 	  const NSRect inBaseRounded = NSIntegralRect(inBase);
 	  _invalidRect = [self convertRectFromBase: inBaseRounded];
 
-          invalidRect = [_super_view convertRect: _invalidRect fromView: self];
-          [_super_view setNeedsDisplayInRect: invalidRect];
         }
       else
         {
