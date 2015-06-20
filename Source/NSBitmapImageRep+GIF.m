@@ -2,7 +2,7 @@
 
    Methods for reading GIF images
 
-   Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2003-2014 Free Software Foundation, Inc.
    
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
@@ -41,6 +41,7 @@
 
 #if HAVE_LIBUNGIF || HAVE_LIBGIF
 
+
 /*
 gif_lib.h (4.1.0b1, possibly other versions) uses Object as the name of an
 argument to a function. This causes a conflict with Object declared by the
@@ -49,6 +50,23 @@ objective-c headers.
 #define Object GS_GifLib_Object
 #include <gif_lib.h>
 #undef Object
+
+// GIF 5.0 no longer has this define
+#ifndef FALSE
+#define FALSE       0
+#endif /* FALSE */
+
+// GIF > 5.0
+#if GIFLIB_MAJOR >= 5
+  #define DGifOpen(s, i) DGifOpen(s, i, NULL)
+  #define EGifOpen(s, i) EGifOpen(s, i, NULL)
+#endif
+
+// GIF> 5.1
+#if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
+  #define DGifCloseFile(f) DGifCloseFile(f, NULL)
+  #define EGifCloseFile(f) EGifCloseFile(f, NULL)
+#endif
 
 /* -----------------------------------------------------------
    The following types and functions are for interacting with
@@ -110,7 +128,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
-#if HAVE_QUANTIZEBUFFER
+#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
@@ -142,11 +160,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
     }
 
   gs_gif_init_input_source(&src, imageData);
-#if GIFLIB_MAJOR >= 5
-  file = DGifOpen(&src, gs_gif_input, NULL);
-#else
   file = DGifOpen(&src, gs_gif_input);
-#endif
   if (file == NULL)
     {
       /* we do not use giferror here because it doesn't
@@ -390,7 +404,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
-#if HAVE_QUANTIZEBUFFER
+#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
   NSMutableData         * GIFRep = nil;	// our return value
   GifFileType           * GIFFile = NULL;
   GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
@@ -464,7 +478,11 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
   // If you have a color table, you must be certain that it is GIF format
   colorTable = [self valueForProperty: NSImageRGBColorTable];	// nil is OK
   colorMapSize = (colorTable)? [colorTable length]/sizeof(GifColorType) : 256;
+#if GIFLIB_MAJOR >= 5
+  GIFColorMap = GifMakeMapObject(colorMapSize, [colorTable bytes]);
+#else
   GIFColorMap = MakeMapObject(colorMapSize, [colorTable bytes]);
+#endif
   if (!GIFColorMap)
     {
       SET_ERROR_MSG(@"GIFRepresentation (giflib): MakeMapObject() failed.");
@@ -478,9 +496,15 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
       free(rgbPlanes);
     }
+#if GIFLIB_MAJOR >= 5
+  status = GifQuantizeBuffer(width, height, &colorMapSize,
+                             redPlane, greenPlane, bluePlane,
+                             GIFImage, GIFColorMap->Colors);
+#else
   status = QuantizeBuffer(width, height, &colorMapSize,
 		       redPlane, greenPlane, bluePlane,
 		       GIFImage, GIFColorMap->Colors);
+#endif
   if (status == GIF_ERROR)
     {
       free(GIFImage);
@@ -506,6 +530,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       free(GIFImage);
       return nil;
     }
+
   GIFFile = EGifOpen(GIFRep, gs_gif_output);
   status = EGifPutScreenDesc(GIFFile, width, height, 8, 0, NULL);
   if (status == GIF_ERROR)

@@ -2,7 +2,7 @@
 
    Methods for reading jpeg images
 
-   Copyright (C) 2003-2010 Free Software Foundation, Inc.
+   Copyright (C) 2003-2014 Free Software Foundation, Inc.
    
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
@@ -54,11 +54,6 @@ typedef int jpeg_boolean;
 #endif
 #endif // __MINGW32__
 #include <jpeglib.h>
-#if defined(__CYGWIN__)
-/* Cygwin uses a patched jpeg */
-#define GSTEP_PROGRESSIVE_CODEC
-#endif
-
 #include <setjmp.h>
 
 
@@ -605,11 +600,12 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   jpeg_set_defaults (&cinfo);
 
   // set quality
+  // we expect a value between 0..1, 0 being lowest, 1 highest quality
   
   qualityNumber = [properties objectForKey: NSImageCompressionFactor];
   if (qualityNumber != nil)
     {
-      quality = (int) ((1-[qualityNumber floatValue] / 255.0) * 100.0);
+      quality = (int) ([qualityNumber floatValue] * 100.0);
     }
 
   // set progressive mode
