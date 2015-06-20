@@ -39,6 +39,8 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSIndexPath.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -61,9 +63,9 @@
 /* Cache */
 static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
 static NSTextFieldCell *titleCell;
-
-#define NSBR_COLUMN_SEP 4
-#define NSBR_VOFFSET 2
+static CGFloat browserColumnSeparation;
+static CGFloat browserVerticalPadding;
+static BOOL browserUseBezels;
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
@@ -204,6 +206,17 @@ static NSTextFieldCell *titleCell;
 
 @implementation GSBrowserTitleCell
 
+// Default appearance of GSBrowserTitleCell
+- (id) initTextCell: (NSString *)aString
+{
+  self = [super initTextCell: aString];
+  if (!self)
+    return nil;
+
+  [self setTextColor: [[GSTheme theme] browserHeaderTextColor]];
+  return self;
+}
+
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   // This adjustment must match the drawn border
@@ -234,6 +247,8 @@ static NSTextFieldCell *titleCell;
 - (void) _performLoadOfColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
+- (NSBorderType) _resolvedBorderType;
+- (void) _themeDidActivate: (NSNotification*)notification;
 @end
 
 //
@@ -443,6 +458,136 @@ static NSTextFieldCell *titleCell;
     }
 }
 
+/** <p>Returns the index path of the selected item, or nil if there is
+    no selection.
+*/
+- (NSIndexPath *) selectionIndexPath
+{
+  NSInteger columnNumber = 0;
+  NSInteger selectedColumn = [self selectedColumn];
+
+  if (selectedColumn > -1)
+    {
+      NSUInteger rowIndexes[selectedColumn + 1];
+      
+      for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
+        {
+          rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+        }
+
+      return [[NSIndexPath alloc] initWithIndexes: rowIndexes 
+                                           length: selectedColumn + 1];
+    }
+
+  return nil;
+}
+
+- (NSArray *) selectionIndexPaths
+{
+  NSInteger selectedColumn = [self selectedColumn];
+
+  if (selectedColumn == -1)
+    {
+      return nil;
+    }
+  else
+    {
+      NSMutableArray *paths = AUTORELEASE([[NSMutableArray alloc] init]);
+      NSMatrix *matrix;
+      NSArray *selectedCells;
+      NSUInteger count;
+
+      // FIXME: There should be a more efficent way to the the selected row numbers
+      if (!(matrix = [self matrixInColumn: selectedColumn]))
+        {
+          return nil;
+        }
+
+      selectedCells = [matrix selectedCells];
+      if (selectedCells == nil)
+        {
+          return nil;
+        }
+
+      count = [selectedCells count];
+      NSInteger seletedRows[count];
+      NSEnumerator *enumerator = [selectedCells objectEnumerator];
+      NSCell *cell;
+      int i = 0;
+
+      while ((cell = [enumerator nextObject]) != nil)
+        {
+          NSInteger row;
+          NSInteger column;
+
+          [matrix getRow: &row
+                  column: &column
+                  ofCell: cell];
+          seletedRows[i++] = row;
+        }
+
+      if (selectedColumn > 0)
+        {
+          NSIndexPath *indexPath;
+          NSUInteger rowIndexes[selectedColumn];
+          NSInteger columnNumber = 0;
+          
+          for (columnNumber = 0; columnNumber < selectedColumn; columnNumber++)
+            {
+              rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+            }
+          
+          indexPath = [[NSIndexPath alloc] initWithIndexes: rowIndexes 
+                                                    length: selectedColumn];
+          
+          for (i = 0; i < count; i++)
+            {
+              [paths addObject: [indexPath indexPathByAddingIndex: seletedRows[i]]];
+            }
+        }
+      if (selectedColumn == 0)
+        {
+          NSIndexPath *indexPath;
+
+          for (i = 0; i < count; i++)
+            {
+              indexPath = [[NSIndexPath alloc] initWithIndex: seletedRows[i]];
+              [paths addObject: indexPath];
+              RELEASE(indexPath);
+            }
+        }
+      return paths;
+    }
+
+  return nil;
+}
+
+- (void) setSelectionIndexPath: (NSIndexPath *)path
+{
+  NSInteger column;
+  NSUInteger length;
+
+  length = [path length];
+  for (column = 0; column < length; column++)
+    {
+      NSInteger row = [path indexAtPosition: column];
+
+      [self selectRow: row inColumn: column];
+    }
+}
+
+- (void) setSelectionIndexPaths: (NSArray *)paths
+{
+  NSEnumerator *enumerator = [paths objectEnumerator];
+  NSIndexPath *path;
+
+  while ((path = [enumerator nextObject]) != nil)
+    {
+      // FIXME
+      [self setSelectionIndexPath: path];
+    }
+}
+
 /** Loads if necessary and returns the NSCell at row in column. 
     if you change this code, you may want to look at the __performLoadOfColumn:
     method in which the following code is integrated (for speed) 
@@ -593,31 +738,24 @@ static NSTextFieldCell *titleCell;
        * specified path is already partially selected.  If this is the
        * case, we can avoid redrawing those columns.
        */
-      for (i = 0; i <= _lastColumnLoaded && i < numberOfSubStrings; i++)
+      for (i = 0; i <= _lastColumnLoaded; i++)
         {
-          NSString *c = [[self selectedCellInColumn: i] stringValue];
-
-          if ([c isEqualToString: [subStrings objectAtIndex: i]])
+          // TESTPLANT-MAL-This merge takes into account Frank LeGrand's 2013-09-04
+          // change...
+          if ((i < numberOfSubStrings) &&
+              [[[self selectedCellInColumn: i] stringValue]
+                isEqualToString: [subStrings objectAtIndex: i]])
             {
               column = i;
             }
           else
             {
-			  // Frank LeGrand 2013-09-04: Don't understand comment below,
-			  // we're never get here at column 0 when path is "/", so we
-			  // will do it after the loop too.
-			  
-              // Actually it's always called at 0 column
+              // Actually it's always called at 0 column, when string is "/"
               [[self matrixInColumn: i] deselectAllCells];
               break;
             }
         }
 	  
-	  if (i == 0)
-	    {
-          [[self matrixInColumn: i] deselectAllCells];
-		}
-
       [self setLastColumn: column];
       indexOfSubStrings = column;
     }
@@ -782,15 +920,7 @@ static NSTextFieldCell *titleCell;
   sc = [[NSScrollView alloc] initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
-  
-  if (_separatesColumns)
-    {
-      [sc setBorderType: NSBezelBorder];
-    }
-  else
-    {
-      [sc setBorderType: NSNoBorder];
-    }
+  [sc setBorderType: [self _resolvedBorderType]];
   
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
@@ -1252,8 +1382,7 @@ static NSTextFieldCell *titleCell;
 
   sw = scrollerWidth;
   // Take the border into account
-  if (_separatesColumns)
-    sw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  sw += 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   // Column width cannot be less than scroller and border
   if (columnWidth < sw)
@@ -1278,15 +1407,18 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setSeparatesColumns: (BOOL)flag
 {
+#if 0 // Testplant-MAL-Merge-2015-06-20 - Should this be excluded from merge?
   NSBrowserColumn *bc;
   NSScrollView    *sc;
   NSBorderType    bt;
   NSInteger       i, columnCount;
+#endif
 
   // if this flag already set or browser is titled -- do nothing
   if (_separatesColumns == flag || _isTitled)
     return;
 
+#if 0 // Testplant-MAL-Merge-2015-06-20 - Should this be excluded from merge?
   columnCount = [_browserColumns count];
   bt = flag ? NSBezelBorder : NSNoBorder;
   for (i = 0; i < columnCount; i++)
@@ -1295,6 +1427,7 @@ static NSTextFieldCell *titleCell;
       sc = [bc columnScrollView];
       [sc setBorderType:bt];
     }
+#endif
 
   _separatesColumns = flag;
   [self tile];
@@ -1312,8 +1445,7 @@ static NSTextFieldCell *titleCell;
     }
 
   // Take the border into account
-  if (_separatesColumns)
-    cw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  cw += 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   return cw;
 }
@@ -1324,8 +1456,7 @@ static NSTextFieldCell *titleCell;
 
   cw = columnWidth;
   // Take the border into account
-  if (_separatesColumns)
-    cw -= 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
+  cw -= 2 * ([[GSTheme theme] sizeForBorderType: [self _resolvedBorderType]]).width;
 
   return cw;
 }
@@ -1393,6 +1524,46 @@ static NSTextFieldCell *titleCell;
     }
 }
 
+- (BOOL) autohidesScroller
+{
+  // FIXME
+  return NO;
+}
+
+- (void) setAutohidesScroller: (BOOL)flag
+{
+  // FIXME
+}
+
+- (NSColor *) backgroundColor
+{
+  // FIXME
+  return [NSColor controlColor];
+}
+
+- (void) setBackgroundColor: (NSColor *)backgroundColor
+{
+  // FIXME
+}
+
+- (BOOL) canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
+                       inColumn: (NSInteger)columnIndex
+                      withEvent: (NSEvent *)dragEvent
+{
+  if ([_browserDelegate respondsToSelector: 
+                         @selector(browser:canDragRowsWithIndexes:inColumn:withEvent:)])
+    {
+      return [_browserDelegate browser: self
+                canDragRowsWithIndexes: rowIndexes
+                              inColumn: columnIndex
+                             withEvent: dragEvent];
+    }
+  else
+    {
+      // FIXME
+      return NO;
+    }
+}
 
 /*
  * Manipulating column titles
@@ -1507,7 +1678,7 @@ static NSTextFieldCell *titleCell;
       // Calculate origin
       if (_separatesColumns)
         {
-          rect.origin.x = nbColumn * (_columnSize.width + NSBR_COLUMN_SEP);
+          rect.origin.x = nbColumn * (_columnSize.width + browserColumnSeparation);
         }
       else
         {
@@ -1768,6 +1939,17 @@ static NSTextFieldCell *titleCell;
   _sendsActionOnArrowKeys = flag;
 }
 
+- (BOOL) allowsTypeSelect
+{
+  // FIXME
+  return [self acceptsArrowKeys];
+}
+
+- (void) setAllowsTypeSelect: (BOOL)allowsTypeSelection
+{
+  // FIXME
+  [self setAcceptsArrowKeys: allowsTypeSelection];
+}
 
 /*
  * Getting column frames
@@ -1777,8 +1959,11 @@ static NSTextFieldCell *titleCell;
 - (NSRect) frameOfColumn: (NSInteger)column
 {
   NSRect rect = NSZeroRect;
-  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+  NSSize bezelBorderSize = NSZeroSize;
   NSInteger n;
+
+  if (browserUseBezels)
+    bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
   // Number of columns over from the first
   n = column - _firstVisibleColumn;
@@ -1789,28 +1974,36 @@ static NSTextFieldCell *titleCell;
 
   if (_separatesColumns)
     {
-      rect.origin.x += n * NSBR_COLUMN_SEP;
+      rect.origin.x += n * browserColumnSeparation;
     }
-  else
+  else if (!_separatesColumns && browserUseBezels)
     {
       if (column == _firstVisibleColumn)
-        rect.origin.x = (n * _columnSize.width) + 2;
+        rect.origin.x += 2;
       else
-        rect.origin.x = (n * _columnSize.width) + (n + 2);
+        rect.origin.x += (n + 2);
     }
 
   // Adjust for horizontal scroller
+  if (browserUseBezels)
+    {
   if (_hasHorizontalScroller)
     {
       if (_separatesColumns)
         rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
-          NSBR_VOFFSET;
+	      browserVerticalPadding;
       else
         rect.origin.y = scrollerWidth + bezelBorderSize.width;
     }
   else
     {
       rect.origin.y += bezelBorderSize.width;
+    }
+    }
+  else
+    {
+      if (_hasHorizontalScroller)
+	rect.origin.y = scrollerWidth;
     }
 
   // Padding : _columnSize.width is rounded in "tile" method
@@ -1821,6 +2014,12 @@ static NSTextFieldCell *titleCell;
       else
         rect.size.width = _frame.size.width -
           (rect.origin.x + bezelBorderSize.width);
+
+      // FIXME: Assumes left-side scrollers
+      if ([[GSTheme theme] scrollViewScrollersOverlapBorders])
+	{
+	  rect.size.width -= 1;
+    }
     }
 
   if (rect.size.width < 0)
@@ -1870,33 +2069,55 @@ static NSTextFieldCell *titleCell;
  */
 - (void) tile
 {
-  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
+  NSSize bezelBorderSize = NSZeroSize;
   NSInteger i, num, columnCount, delta;
   CGFloat frameWidth;
+  const BOOL overlapBorders = [[GSTheme theme] scrollViewScrollersOverlapBorders];
+  const BOOL useBottomCorner = [[GSTheme theme] scrollViewUseBottomCorner];
+
+  if (browserUseBezels)
+    bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
   _columnSize.height = _frame.size.height;
   
   // Titles (there is no real frames to resize)
   if (_isTitled)
     {
-      _columnSize.height -= [self titleHeight] + NSBR_VOFFSET;
+      _columnSize.height -= [self titleHeight] + browserVerticalPadding;
     }
 
   // Horizontal scroller
   if (_hasHorizontalScroller)
     {
+      const CGFloat scrollerHightReduction = browserUseBezels ? 1 : 0;
+
       _scrollerRect.origin.x = bezelBorderSize.width;
-      _scrollerRect.origin.y = bezelBorderSize.height - 1;
+      _scrollerRect.origin.y = bezelBorderSize.height - scrollerHightReduction;
       _scrollerRect.size.width = (_frame.size.width - 
                                   (2 * bezelBorderSize.width));
       _scrollerRect.size.height = scrollerWidth;
       
       if (_separatesColumns)
-        _columnSize.height -= (scrollerWidth - 1) + 
-          (2 * bezelBorderSize.height) + NSBR_VOFFSET;
+        _columnSize.height -= (scrollerWidth - scrollerHightReduction) + 
+          (2 * bezelBorderSize.height) + browserVerticalPadding;
       else
         _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
       
+      // "Bottom corner" box
+      if (!browserUseBezels && !useBottomCorner)
+	{
+	  _scrollerRect.origin.x += scrollerWidth;
+	  _scrollerRect.size.width -= scrollerWidth;
+	}
+
+      /** Horizontall expand the scroller by GSScrollerKnobOvershoot on the left */
+      if (overlapBorders)
+	{
+	  // FIXME: Assumes left scroller
+	  _scrollerRect.origin.x -= 1;
+	  _scrollerRect.size.width += 1;
+	}
+
       if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
         {
           [_horizontalScroller setFrame: _scrollerRect];
@@ -1915,7 +2136,7 @@ static NSTextFieldCell *titleCell;
       CGFloat colWidth = _minColumnWidth + scrollerWidth;
 
       if (_separatesColumns)
-        colWidth += NSBR_COLUMN_SEP;
+        colWidth += browserColumnSeparation;
 
       if (_frame.size.width > colWidth)
         {
@@ -1951,7 +2172,7 @@ static NSTextFieldCell *titleCell;
 
   // Columns
   if (_separatesColumns)
-    frameWidth = _frame.size.width - ((columnCount - 1) * NSBR_COLUMN_SEP);
+    frameWidth = _frame.size.width - ((columnCount - 1) * browserColumnSeparation);
   else
     frameWidth = _frame.size.width - ((columnCount - 1) + 
                                       (2 * bezelBorderSize.width));
@@ -1978,6 +2199,12 @@ static NSTextFieldCell *titleCell;
           return;
         }
 
+      {
+	NSBorderType bt = _separatesColumns ? NSBezelBorder : NSNoBorder;
+	[sc setBorderType: bt];
+      }
+
+      [sc setBorderType: [self _resolvedBorderType]];
       [sc setFrame: [self frameOfColumn: i]];
       matrix = [bc columnMatrix];
       
@@ -2204,18 +2431,46 @@ static NSTextFieldCell *titleCell;
   [self sendAction: _doubleAction to: [self target]];
 }
 
+- (NSInteger) clickedColumn
+{
+  // FIXME: Return column number from doClick:
+  return -1;
+}
+
+- (NSInteger) clickedRow
+{
+  // FIXME: Return row number from doClick:
+  return -1;
+}
+
++ (void) _themeDidActivate: (NSNotification*)n
+{
+  GSTheme *theme = [GSTheme theme];
+  scrollerWidth = [NSScroller scrollerWidth];
+  browserColumnSeparation = [theme browserColumnSeparation];
+  browserVerticalPadding = [theme browserVerticalPadding];
+  browserUseBezels = [theme browserUseBezels];
+}
+
 + (void) initialize
 {
   if (self == [NSBrowser class])
     {
+      [[NSNotificationCenter defaultCenter] addObserver: self
+	selector: @selector(_themeDidActivate:)
+	name: GSThemeDidActivateNotification
+	object: nil];
+
       // Initial version
       [self setVersion: 1];
-      scrollerWidth = [NSScroller scrollerWidth];
+      
       /* Create the shared titleCell if it hasn't been created already. */
       if (!titleCell)
         {
           titleCell = [GSBrowserTitleCell new];
         }
+      
+      [self _themeDidActivate: nil];
     }
 }
 
@@ -2257,6 +2512,9 @@ static NSTextFieldCell *titleCell;
   _browserDelegate = nil;
   _passiveDelegate = YES;
   _doubleAction = NULL;  
+  // FIXME: Seems a bit wrong to look at the current theme here
+  bs = NSZeroSize;
+  if (browserUseBezels)
   bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
   _minColumnWidth = scrollerWidth + (2 * bs.width);
   if (_minColumnWidth < 100.0)
@@ -2283,11 +2541,19 @@ static NSTextFieldCell *titleCell;
   _maxVisibleColumns = 3;
   [self _createColumn];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+
   return self;
 }
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   if ([titleCell controlView] == self)
     {
       [titleCell setControlView: nil];
@@ -2709,6 +2975,9 @@ static NSTextFieldCell *titleCell;
       _browserDelegate = nil;
       _passiveDelegate = YES;
       _doubleAction = NULL;  
+      // FIXME: Seems a bit wrong to look at the current theme here
+      bs = NSZeroSize;
+      if (browserUseBezels)
       bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
@@ -2848,6 +3117,12 @@ static NSTextFieldCell *titleCell;
   _isLoaded = NO;
   [self tile];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+
   return self;
 }
 
@@ -2859,7 +3134,9 @@ static NSTextFieldCell *titleCell;
 
 - (BOOL) isOpaque
 {
-  return YES; // See drawRect.
+  // NSBrowser used to be opaque but may not be due to themes;
+  // e.g. if the header tile images are not opaque.
+  return NO;
 }
 
 @end
@@ -3037,7 +3314,7 @@ static NSTextFieldCell *titleCell;
       [matrix setAutoscroll: YES];
 
       // Set up background colors.
-      [matrix setBackgroundColor: [NSColor controlColor]];
+      [matrix setBackgroundColor: [self backgroundColor]];
       [matrix setDrawsBackground: YES];
 
       if (!_allowsMultipleSelection)
@@ -3200,6 +3477,20 @@ static NSTextFieldCell *titleCell;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
   [super setNeedsDisplayInRect: invalidRect];
+}
+
+- (NSBorderType) _resolvedBorderType
+{
+  if (browserUseBezels && _separatesColumns)
+    {
+      return NSBezelBorder;
+    }
+  return NSNoBorder;
+}
+
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  [self tile];
 }
 
 @end

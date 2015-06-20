@@ -35,8 +35,11 @@
 
 @class NSString;
 @class NSArray;
+@class NSIndexPath;
+@class NSIndexSet;
 
 @class NSCell;
+@class NSEvent;
 @class NSMatrix;
 @class NSScroller;
 //@class NSBox;
@@ -127,6 +130,17 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (void) setReusesColumns: (BOOL)flag;
 - (void) setTakesTitleFromPreviousColumn: (BOOL)flag;
 - (BOOL) takesTitleFromPreviousColumn;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (BOOL) autohidesScroller;
+- (void) setAutohidesScroller: (BOOL)flag;
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)backgroundColor;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL) canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
+                       inColumn: (NSInteger)columnIndex
+                      withEvent: (NSEvent *)dragEvent;
+#endif
 
 //
 // Allowing Different Types of Selection 
@@ -145,6 +159,11 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (BOOL) sendsActionOnArrowKeys;
 - (void) setAcceptsArrowKeys: (BOOL)flag;
 - (void) setSendsActionOnArrowKeys: (BOOL)flag;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL) allowsTypeSelect;
+- (void) setAllowsTypeSelect: (BOOL)allowsTypeSelection;
+#endif
 
 //
 // Showing a Horizontal Scroller 
@@ -186,6 +205,12 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (NSInteger) selectedRowInColumn: (NSInteger)column;
 - (void) setLastColumn: (NSInteger)column;
 - (void) validateVisibleColumns;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSIndexPath *) selectionIndexPath;
+- (NSArray *) selectionIndexPaths;
+- (void) setSelectionIndexPath: (NSIndexPath *)path;
+- (void) setSelectionIndexPaths: (NSArray *)paths;
+#endif
 
 //
 // Manipulating Column Titles 
@@ -222,6 +247,10 @@ typedef NSUInteger NSBrowserColumnResizingType;
 //
 - (void) doClick: (id)sender;
 - (void) doDoubleClick: (id)sender;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSInteger) clickedColumn;
+- (NSInteger) clickedRow;
+#endif
 
 //
 // Getting Matrices and Cells 
@@ -283,15 +312,16 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag;
 @end
 
-
-// Declare the protocol (with no mandatory methods) to support cross compiling
-@protocol NSBrowserDelegate
-@end
-
 //
 // Methods Implemented by the Delegate 
 //
+@protocol NSBrowserDelegate <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSBrowserDelegate)
+#endif
 
 - (void) browser: (NSBrowser *)sender createRowsForColumn: (NSInteger)column
   inMatrix: (NSMatrix *)matrix;
@@ -317,6 +347,12 @@ typedef NSUInteger NSBrowserColumnResizingType;
 - (CGFloat) browser: (NSBrowser *)browser
 sizeToFitWidthOfColumn: (NSInteger)column;
 - (void) browserColumnConfigurationDidChange: (NSNotification *)notification;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (BOOL) browser: (NSBrowser *)browser
+canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
+        inColumn: (NSInteger)column
+       withEvent: (NSEvent *)event;
 #endif
 @end
 
