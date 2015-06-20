@@ -194,7 +194,15 @@
 			       [NSColor controlTextColor], NSForegroundColorAttributeName,
 			       nil];
 
-  [string drawInRect: tabRect withAttributes: attr];
+  {
+    NSSize size = [string sizeWithAttributes: attr];
+    NSRect labelRect = tabRect;
+
+    labelRect.origin.y = tabRect.origin.y + ((tabRect.size.height - size.height) / 2);
+    labelRect.size.height = size.height;
+
+    [string drawInRect: labelRect withAttributes: attr];
+  }
   RELEASE(attr);
 }
 

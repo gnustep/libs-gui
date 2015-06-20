@@ -88,20 +88,16 @@
 {
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
-  _original_nextKeyView = nil;
   _selected = nil;
   RELEASE(_items);
   RELEASE(_font);
   [super dealloc];
 }
 
-/*
-// FIXME: This should be defined
 - (BOOL) isFlipped
 {
   return YES;
 }
-*/
 
 // tab management.
 
@@ -267,8 +263,8 @@
       if (selectedView != nil)
         {
 	      NSView *firstResponder;
-          [self addSubview: selectedView];
 	  
+          [self addSubview: selectedView];
 	      // FIXME: We should not change this mask
           [selectedView setAutoresizingMask:
 	      NSViewWidthSizable | NSViewHeightSizable];
@@ -278,9 +274,10 @@
 	        {
 	          firstResponder = [_selected view];
 	          [_selected setInitialFirstResponder: firstResponder];
-	          [firstResponder _setUpKeyViewLoopWithNextKeyView: _original_nextKeyView];
+	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
+		_original_nextKeyView];
 	        }
-	      [super setNextKeyView: firstResponder];
+	  [self setNextKeyView: firstResponder];
           [_window makeFirstResponder: firstResponder];
         }
       
@@ -386,21 +383,20 @@
 
 - (NSSize) minimumSize
 {
-  // FIXME: This should allow some space for the tabs
   switch (_type)
     {
       case NSTopTabsBezelBorder:
-        return NSMakeSize(2, 19.5);
+        return NSMakeSize(3, 19);
       case NSNoTabsBezelBorder:
-        return NSMakeSize(2, 3);
+        return NSMakeSize(3, 3);
       case NSNoTabsLineBorder:
-        return NSMakeSize(2, 3);
+        return NSMakeSize(2, 2);
       case NSBottomTabsBezelBorder:
-        return NSMakeSize(2, 16);
+        return NSMakeSize(3, 19);
       case NSLeftTabsBezelBorder:
-        return NSMakeSize(16, 3);
+        return NSMakeSize(21, 3);
       case NSRightTabsBezelBorder:
-        return NSMakeSize(16, 3);
+        return NSMakeSize(21, 3);
       case NSNoTabsNoBorder:
       default:
         return NSZeroSize;
@@ -409,53 +405,11 @@
 
 - (NSRect) contentRect
 {
-  NSRect cRect = _bounds;
-
-  switch (_type)
-    {
-      case NSTopTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 3;
-        cRect.size.height -= 19;
-        break;
-      case NSNoTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 3;
-        cRect.size.height -= 3;
-        break;
-      case NSNoTabsLineBorder:
-        cRect.origin.y += 1; 
-        cRect.origin.x += 1; 
-        cRect.size.width -= 2;
-        cRect.size.height -= 2;
-        break;
-    case NSBottomTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 19;
-        cRect.size.width -= 3;
-        cRect.size.height -= 19;
-        break;
-      case NSLeftTabsBezelBorder:
-        cRect.origin.x += 21;
-        cRect.origin.y += 1;
-        cRect.size.width -= 21;
-        cRect.size.height -= 3;
-        break;
-      case NSRightTabsBezelBorder:
-        cRect.origin.x += 1;
-        cRect.origin.y += 1;
-        cRect.size.width -= 21;
-        cRect.size.height -= 3;
-        break;
-      case NSNoTabsNoBorder:
-      default:
-        break;
+  NSRect result = [[GSTheme theme] tabViewContentRectForBounds: _bounds
+						   tabViewType: [self tabViewType]
+						       tabView: self];
+  return result;
     }
-
-  return cRect;
-}
 
 // Drawing.
 
@@ -609,6 +563,15 @@
         }
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
+	  // N.B.: As a side effect, this discards the subview frame
+	  // and sets it to [self contentRect]. 
+	  //
+	  // This is desirable because the subview frame will be different
+	  // depending on whether the arcive is from Cocoa or GNUstep,
+	  // and which GNUstep theme was active at save time.
+	  //
+	  // However, it does mean that the tab view contents should be 
+	  // prepared to resize slightly.
           [self selectTabViewItem: [aDecoder decodeObjectForKey: 
                                                  @"NSSelectedTabViewItem"]];
         }
@@ -665,8 +628,8 @@
         [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &selected_item];
       }
       
-      if (selected_item != NSNotFound)
-        _selected = [_items objectAtIndex: selected_item];
+      // N.B. Recalculates subview frame; see comment above.
+      [self selectTabViewItemAtIndex: selected_item];      
     }
   return self;
 }

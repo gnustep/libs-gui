@@ -40,6 +40,7 @@
 #import "NSToolbarFrameworkPrivate.h"
 #import "GSGuiPrivate.h"
 
+
 @interface NSWindow (Private)
 - (GSWindowDecorationView *) windowView;
 - (void) _setMenu: (NSMenu *)menu;
@@ -105,17 +106,17 @@
 	    preferredEdge: (NSRectEdge)edge
 	     selectedItem: (int)selectedItem
 { 
+  BOOL pe = [[GSTheme theme] doesProcessEventsForPopUpMenu];
+
   /* Ensure the window responds when run in modal and should
    * process events. Or revert this if theme has changed.
    */
-  if ([[GSTheme theme] doesProcessEventsForPopUpMenu] &&
-      ![[mr window] worksWhenModal])
+  if (pe && ![[mr window] worksWhenModal])
     {
       [(NSPanel *)[mr window] setWorksWhenModal: YES];
     }
 
-  if (![[GSTheme theme] doesProcessEventsForPopUpMenu] &&
-      [[mr window] worksWhenModal])
+  if (!pe && [[mr window] worksWhenModal])
     {
       [(NSPanel *)[mr window] setWorksWhenModal: NO];
     }

@@ -620,6 +620,15 @@ withRepeatedImage: (NSImage*)image
 
 - (NSRect) fillRect: (NSRect)rect
 	  withTiles: (GSDrawTiles*)tiles
+{
+  return [self fillRect: rect
+	      withTiles: tiles
+	     background: [NSColor clearColor]
+	      fillStyle: [tiles fillStyle]];
+}
+
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
 	 background: (NSColor*)color
 	  fillStyle: (GSThemeFillStyle)style
 {
@@ -783,8 +792,8 @@ withRepeatedImage: (NSImage*)image
 {
   int i;
   CGFloat r,g,b,a;
-  int x1 = -1;
-  int x2 = -1;
+  int x1 = -1; // x1, x2, y1, y2, are in flipped coordinates
+  int x2 = -1; // 0,0 is the top-left pixel
   int y1 = -1;
   int y2 = -1;
   NSSize s = [image size];
@@ -825,6 +834,7 @@ withRepeatedImage: (NSImage*)image
   scaleFactor  = 1.0f;
   style = GSThemeFillStyleScaleAll;
 
+  // These are all in _unflipped_ coordinates
   rects[TileTL] = NSMakeRect(1, s.height - y1, x1 - 1, y1 - 1);
   rects[TileTM] = NSMakeRect(x1, s.height - y1, 1 + x2 - x1, y1 - 1);
   rects[TileTR] = NSMakeRect(x2 + 1, s.height - y1, s.width - x2 - 2, y1 - 1);
@@ -848,11 +858,11 @@ withRepeatedImage: (NSImage*)image
       NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
 
       [pixelColor getRed: &r green: &g blue: &b alpha: &a];
-      if (a > 0 && x1 == -1)
+      if ((a == 1 && r == 0 && g == 0 && b == 0) && x1 == -1)
         {
           x1 = i;
         }
-      else if (a == 0 && x1 != -1)
+      else if (!(a == 1 && r == 0 && g == 0 && b == 0) && x1 != -1)
         {
           x2 = i - 1;
           break;
@@ -864,11 +874,11 @@ withRepeatedImage: (NSImage*)image
       NSColor	*pixelColor = [rep colorAtX: s.width - 1 y: i];
 
       [pixelColor getRed: &r green: &g blue: &b alpha: &a];
-      if (a > 0 && y1 == -1)
+      if ((a == 1 && r == 0 && g == 0 && b == 0) && y1 == -1)
         {
           y1 = i;
         }
-      else if (a == 0 && y1 != -1)
+      else if (!(a == 1 && r == 0 && g == 0 && b == 0) && y1 != -1)
         {
           y2 = i - 1;
           break;
@@ -878,6 +888,8 @@ withRepeatedImage: (NSImage*)image
   // Specifying the content rect part of the nine-patch image is optional
   // ; if either the horizontal or vertical information is missing, use the
   // geometry from rects[TileCM]
+
+  // contentRect is in unflipped coordinates, like rects[]
 
   if (x1 == -1)
     {
@@ -901,6 +913,59 @@ withRepeatedImage: (NSImage*)image
       contentRect.size.height = 1 + y2 - y1;
     }
 
+  // Measure the layout rect (the right and bottom edges of the nine-patch
+  // data which  _isn't_ red pixels)
+
+  x1 = -1;
+  x2 = -1;
+  y1 = -1;
+  y2 = -1;
+
+  for (i = 1; i < (s.width - 1); i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (!(a == 1 && r == 1 && g == 0 && b == 0) && x1 == -1)
+        {
+          x1 = i;
+        }
+      else if ((a == 1 && r == 1 && g == 0 && b == 0) && x1 != -1)
+        {
+          x2 = i - 1;
+          break;
+        }
+    }
+
+  for (i = 1; i < (s.height - 1); i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: s.width - 1 y: i];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (!(a == 1 && r == 1 && g == 0 && b == 0) && y1 == -1)
+        {
+          y1 = i;
+        }
+      else if ((a == 1 && r == 1 && g == 0 && b == 0) && y1 != -1)
+        {
+          y2 = i - 1;
+          break;
+        }
+    }
+
+
+  if (x2 == -1)
+    {
+      x2 = s.width - 2;
+    }
+
+  if (y2 == -1)
+    {
+      y2 = s.height - 2;
+    }
+
+  layoutRect = NSMakeRect(x1, s.height - y2 - 1, 1 + x2 - x1, 1 + y2 - y1);
+
   [self validateTilesSizeWithImage: image];
   return self;
 }
@@ -923,6 +988,8 @@ withRepeatedImage: (NSImage*)image
 {
   int i;
 
+  originalRectCM = rects[TileCM];
+
   for (i = 0; i < 9; i++)
     {
       if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
@@ -935,6 +1002,8 @@ withRepeatedImage: (NSImage*)image
         {
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
+	  // FIXME: This makes no sense to me, why not leave the
+	  // rect origins at their original values?
           rects[i].origin.x = 0;
           rects[i].origin.y = 0;
         }
@@ -1078,20 +1147,44 @@ withRepeatedImage: (NSImage*)image
   return tsz;
 }
 
-- (NSRect) contentRectForRect: (NSRect)rect
+- (GSThemeMargins) themeMargins
 {
-  NSSize total = [self computeTotalTilesSize];
-  NSRect inFill = NSMakeRect(
-    rect.origin.x + contentRect.origin.x,
-    rect.origin.y + contentRect.origin.y,
-    rect.size.width - (total.width - contentRect.size.width),
-    rect.size.height - (total.height - contentRect.size.height));
-  return inFill;
+  NSRect cm = originalRectCM;
+  GSThemeMargins margins;
+  
+  margins.left = rects[TileCL].size.width;
+  margins.right = rects[TileCR].size.width;
+  margins.top = rects[TileTM].size.height;
+  margins.bottom = rects[TileBM].size.height;
+
+  // Adjust for contentRect != cm
+
+  margins.left += (contentRect.origin.x - cm.origin.x);
+  margins.bottom += (contentRect.origin.y - cm.origin.y);
+
+  margins.right += (NSMaxX(cm) - NSMaxX(contentRect));
+  margins.top += (NSMaxY(cm) - NSMaxY(contentRect));
+  
+  return margins;
+}
+
+- (NSRect) contentRectForRect: (NSRect)rect
+		    isFlipped: (BOOL)flipped
+{
+  GSThemeMargins margins = [self themeMargins];
+  
+  rect.origin.x += margins.left;
+  rect.origin.y += flipped ? margins.top : margins.bottom;
+    
+  rect.size.width -= (margins.left + margins.right);
+  rect.size.height -= (margins.top + margins.bottom);
+  
+  return rect;
 }
 
 - (NSRect) noneStyleFillRect: (NSRect)rect
 {
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: NO];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
   return inFill;
@@ -1102,7 +1195,7 @@ withRepeatedImage: (NSImage*)image
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
   NSRect r = rects[TileCM];
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1126,7 +1219,7 @@ withRepeatedImage: (NSImage*)image
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
   NSSize tsz = [self computeTotalTilesSize];
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1145,7 +1238,7 @@ withRepeatedImage: (NSImage*)image
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
 
   NSImage *im = [images[TileCM] copy];
   NSRect r =  rects[TileCM];
@@ -1189,7 +1282,7 @@ withRepeatedImage: (NSImage*)image
   NSImage *img;
   NSRect imgRect;
 
-  NSRect inFill = [self contentRectForRect: rect];
+  NSRect inFill = [self contentRectForRect: rect isFlipped: flipped];
   [self scaleFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1607,6 +1700,19 @@ withRepeatedImage: (NSImage*)image
 - (void) setFillStyle: (GSThemeFillStyle)aStyle
 {
   style = aStyle;
+}
+
+- (NSSize) size
+{
+  const CGFloat width = rects[TileCL].size.width
+    + rects[TileCM].size.width
+    + rects[TileCR].size.width;
+
+  const CGFloat height = rects[TileTM].size.height
+    + rects[TileCM].size.height
+    + rects[TileBM].size.height;
+
+  return NSMakeSize(width, height);
 }
 
 @end
