@@ -679,14 +679,15 @@ typedef struct _GSButtonCellFlags
   _buttoncell_is_transparent = flag;
 }
 
-/**<p>Returns whether the NSButtonCell is opaque. Returns YES if the button 
-   cell is not transparent and if the cell is bordered and if there is no
-   bezel style, NO otherwise</p>
- */
+/**<p>Returns whether the NSButtonCell is opaque. Currently always
+   returns NO</p>*/
 - (BOOL) isOpaque
 {
-  return !_buttoncell_is_transparent && _cell.is_bordered &&
-    _bezel_style == 0;
+  // May not be opaque, due to themes
+  return NO;
+
+  //  return !_buttoncell_is_transparent && _cell.is_bordered &&
+  //    _bezel_style == 0;
 }
 
 - (NSBezelStyle) bezelStyle
@@ -932,7 +933,7 @@ typedef struct _GSButtonCellFlags
   ASSIGN(_backgroundColor, color);
 }
 
-- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+- (GSThemeControlState) themeControlState
 {
   unsigned mask;
   GSThemeControlState buttonState = GSThemeNormalState;
@@ -970,6 +971,28 @@ typedef struct _GSButtonCellFlags
     {
       buttonState = GSThemeDisabledState;
     }
+
+  /* If we are first responder, change to the corresponding
+     first responder state. Note that GSThemeDisabledState
+     doesn't have a first responder variant, currently. */
+  if (_cell.shows_first_responder
+      && [[[self controlView] window] firstResponder] == [self controlView]
+      && [self controlView] != nil)
+    {
+      if (buttonState == GSThemeSelectedState)
+	buttonState = GSThemeSelectedFirstResponderState;
+      else if (buttonState == GSThemeHighlightedState)
+	buttonState = GSThemeHighlightedFirstResponderState;
+      else if (buttonState == GSThemeNormalState)
+	buttonState = GSThemeFirstResponderState;
+    }
+
+  return buttonState;
+}
+
+- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  GSThemeControlState buttonState = [self themeControlState];
 
   [[GSTheme theme] drawButton: cellFrame 
                    in: self 
@@ -1045,12 +1068,16 @@ typedef struct _GSButtonCellFlags
     }
 }
 
-- (void) drawTitle: (NSAttributedString*)titleToDisplay 
+- (NSRect) drawTitle: (NSAttributedString*)titleToDisplay 
          withFrame: (NSRect)cellFrame 
             inView: (NSView*)controlView
 {
   [self _drawAttributedText: titleToDisplay
 		    inFrame: cellFrame];
+
+  return [titleToDisplay
+	   boundingRectWithSize: cellFrame.size
+			options: NSStringDrawingUsesLineFragmentOrigin];   
 }
 
 // Private helper method overridden in subclasses
@@ -1644,7 +1671,7 @@ typedef struct _GSButtonCellFlags
           || (_cell.image_position == NSImageOnly);
       buttonCellFlags.isHorizontal = (_cell.image_position == NSImageLeft) 
           || (_cell.image_position == NSImageRight);
-      buttonCellFlags.isBottomOrLeft = (_cell.image_position == NSImageAbove) 
+      buttonCellFlags.isBottomOrLeft = (_cell.image_position == NSImageLeft) 
           || (_cell.image_position == NSImageBelow);
       buttonCellFlags.isImageAndText = (image != nil) 
           && (_cell.image_position != NSImageOnly);
