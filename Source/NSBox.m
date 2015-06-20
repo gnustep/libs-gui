@@ -3,7 +3,7 @@
    <abstract>Simple box view that can display a border and title
    </abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -452,69 +452,22 @@
 //
 - (void) drawRect: (NSRect)rect
 {
-  NSColor *color;
-
   rect = NSIntersectionRect(_bounds, rect);
-  if (_box_type == NSBoxCustom)
-    {
-      if (_transparent)
-        {
-          color = [NSColor clearColor];
-        }
-      else
-        {
-          color = _fill_color;
-        }
-    }
-  else
-    {
-      color = [_window backgroundColor];
-    }
-  // Fill inside
-  [color set];
-  NSRectFill(rect);
 
-  // Draw border
-  switch (_border_type)
-    {
-      case NSNoBorder: 
-	break;
-      case NSLineBorder: 
-        if (_box_type == NSBoxCustom)
-          {
-            [_border_color set];
-            NSFrameRectWithWidth(_border_rect, _border_width);
-          }
-        else
-          {
-            [[NSColor controlDarkShadowColor] set];
-            NSFrameRect(_border_rect);
-          }
-	break;
-      case NSBezelBorder:
-	[[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
-	break;
-      case NSGrooveBorder: 
-	[[GSTheme theme] drawGroove: _border_rect withClip: rect];
-	break;
-    }
-
-  // Draw title
-  if (_title_position != NSNoTitle)
-    {
-      // If the title is on the border, clip a hole in the later 
-      if ((_border_type != NSNoBorder)
-	&& ((_title_position == NSAtTop) || (_title_position == NSAtBottom)))
-        {
-          [color set];
-          NSRectFill(_title_rect);
-        }
-      [_cell drawWithFrame: _title_rect inView: self];
-    }
+  [[GSTheme theme] drawBoxInClipRect: rect
+                             boxType: _box_type
+                          borderType: _border_type
+                              inView: self];
 }
 
 - (BOOL) isOpaque
 {
+#if 1 //TESTPLANT-MAL-MERGE-06202015
+  // FIXME: Depends on theme; if always returning NO is a performance hit
+  // we can check if GSTheme is going to draw an old-style opaque box
+  // or not.
+  return NO;
+#else
   if (_box_type == NSBoxCustom)
     {
       return !_transparent;
@@ -523,6 +476,7 @@
     {
       return YES;
     }
+#endif
 }
 
 - (NSColor*) fillColor
@@ -621,12 +575,20 @@
 
           [self setBorderType: borderType];
         }
+      else
+        {
+          _border_type = NSGrooveBorder;
+        }
       if ([aDecoder containsValueForKey: @"NSTitlePosition"])
         {
           NSTitlePosition titlePosition = [aDecoder decodeIntForKey: 
                                                         @"NSTitlePosition"];
           
           [self setTitlePosition: titlePosition];
+        }
+      else
+        {
+          _title_position = NSAtTop;
         }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
         {
@@ -647,12 +609,27 @@
           
           ASSIGN(_cell, titleCell);
         }
+      else
+        {
+          _cell = [[NSCell alloc] initTextCell: @"Title"];
+          [_cell setAlignment: NSCenterTextAlignment];
+          [_cell setBordered: NO];
+          [_cell setEditable: NO];
+          [self setTitleFont: [NSFont systemFontOfSize:
+                                        [NSFont smallSystemFontSize]]];
+        }
       if ([aDecoder containsValueForKey: @"NSContentView"])
         {
           NSView *contentView = [aDecoder decodeObjectForKey: @"NSContentView"];
 
           [self setContentView: contentView];
         }
+      else
+        {
+          NSView *cv = [NSView new];
+          [self setContentView: cv];
+          RELEASE(cv);
+    }
     }
   else
     {
@@ -693,6 +670,29 @@
 {
   GSTheme	*theme = [GSTheme theme];
   NSRect r = NSZeroRect;
+
+  if (_box_type == NSBoxSeparator)
+    {
+      _title_rect = NSZeroRect;
+      _border_rect = _bounds;
+      if (_bounds.size.width > _bounds.size.height)
+	{
+	  _border_rect.origin.y = (int)(_border_rect.size.height / 2);
+	  _border_rect.size.height = 1;
+	}
+      else
+	{
+	  _border_rect.origin.x = (int)(_border_rect.size.width / 2);
+	  _border_rect.size.width = 1;
+	}
+      return r;
+    }				
+
+  // Don't try to compute anything while the title cell hasn't been set.
+  if (_cell == nil)
+    {
+      return r;
+    }
 
   switch (_title_position)
     {
@@ -737,7 +737,7 @@
 	    - (2 * borderSize.height);
 
 	  // center the title cell
-	  c = (_bounds.size.width - titleSize.width) / 2;
+	  c = floor((_bounds.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = _bounds.origin.x + c;
 	  _title_rect.origin.y = _bounds.origin.y + _border_rect.size.height
@@ -773,7 +773,7 @@
 	  r.size.height -= titleSize.height + borderSize.height;
 
 	  // center the title cell
-	  c = (_border_rect.size.width - titleSize.width) / 2;
+	  c = floor((_border_rect.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = _border_rect.origin.x + c;
 	  _title_rect.origin.y
@@ -828,7 +828,7 @@
 	  //	r.size.height -= titleSize.height + borderSize.height;
 
 	  // center the title cell
-	  c = (_border_rect.size.width - titleSize.width) / 2;
+	  c = floor((_border_rect.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = _border_rect.origin.x + c;
 	  _title_rect.origin.y
@@ -885,7 +885,7 @@
 	  r.size.height -= (titleSize.height / 2) + borderSize.height;
 	  */
 	  // center the title cell
-	  c = (_border_rect.size.width - titleSize.width) / 2;
+	  c = floor((_border_rect.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = c;
 	  _title_rect.origin.y = 0;
@@ -919,7 +919,7 @@
 	    - (2 * borderSize.height);
 
 	  // center the title cell
-	  c = (_border_rect.size.width - titleSize.width) / 2;
+	  c = floor((_border_rect.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = c;
 	  _title_rect.origin.y = 0;
@@ -954,7 +954,7 @@
 	  r.size.height -= titleSize.height + borderSize.height;
 
 	  // center the title cell
-	  c = (_border_rect.size.width - titleSize.width) / 2;
+	  c = floor((_border_rect.size.width - titleSize.width) / 2);
 	  if (c < 0) c = 0;
 	  _title_rect.origin.x = _border_rect.origin.x + c;
 	  _title_rect.origin.y = _border_rect.origin.y + borderSize.height;
