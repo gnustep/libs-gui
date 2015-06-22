@@ -35,6 +35,7 @@
 #import <Foundation/NSUserDefaults.h>
 #import "AppKit/NSPanel.h"
 #import "GNUstepGUI/GSPrinting.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static NSBundle *printingBundle = nil;
 
@@ -112,10 +113,10 @@ static NSBundle *printingBundle = nil;
   if ((bundle = [GSPrinting loadPrintingBundle: @"GSCUPS"]))
     return bundle;
 	
-  if ((bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]))
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSWIN32"]))
     return bundle;
 	
-  if ((bundle = [GSPrinting loadPrintingBundle: @"GSWin32"]))
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]))
     return bundle;
 	
   return nil;
@@ -227,14 +228,13 @@ static NSBundle *printingBundle = nil;
 
 +(Class) pageLayoutClass
 {
- return Nil;
+  return [[GSTheme theme] pageLayoutClass];
 }
 
 +(Class) printInfoClass
 {
  return Nil;
 }
-
 
 +(Class) printOperationClass
 {
@@ -243,9 +243,8 @@ static NSBundle *printingBundle = nil;
 
 +(Class) printPanelClass
 {
- return Nil;
+  return [[GSTheme theme] printPanelClass];
 }
-
 
 +(Class) printerClass
 {
