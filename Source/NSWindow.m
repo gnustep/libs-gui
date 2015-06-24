@@ -3831,7 +3831,7 @@ resetCursorRectsForView(NSView *theView)
                       return;
                     }
                 }
-              if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+              if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES || ![self canBecomeKeyWindow])
                 {
                   if ([NSHelpManager isContextHelpModeActive])
                     {
