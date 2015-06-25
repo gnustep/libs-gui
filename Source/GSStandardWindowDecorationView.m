@@ -108,15 +108,18 @@
     }
   if (hasCloseButton)
     {
-      closeButtonRect = NSMakeRect(
-	[self bounds].size.width - 15 - 4, [self bounds].size.height - 15 - 4, 15, 15);
+      closeButtonRect = NSMakeRect([self bounds].size.width - [theme titlebarButtonSize] - 
+				   [theme titlebarPaddingRight], [self bounds].size.height - 
+				   [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+				   [theme titlebarButtonSize], [theme titlebarButtonSize]);
       [closeButton setFrame: closeButtonRect];
     }
 
   if (hasMiniaturizeButton)
     {
-      miniaturizeButtonRect = NSMakeRect(
-	4, [self bounds].size.height - 15 - 4, 15, 15);
+      miniaturizeButtonRect = NSMakeRect([theme titlebarPaddingLeft], [self bounds].size.height - 
+					 [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+					 [theme titlebarButtonSize], [theme titlebarButtonSize]);
       [miniaturizeButton setFrame: miniaturizeButtonRect];
     }
 }

@@ -1163,6 +1163,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (float) resizebarHeight;
 
+- (float) titlebarButtonSize;
+
+- (float) titlebarPaddingRight;
+
+- (float) titlebarPaddingTop;
+
+- (float) titlebarPaddingLeft;
+
 - (void) drawWindowBorder: (NSRect)rect
                 withFrame: (NSRect)frame 
              forStyleMask: (unsigned int)styleMask

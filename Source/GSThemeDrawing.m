@@ -1495,6 +1495,10 @@ static NSImage *spinningImages[MaxCount];
 /* These include the black border. */
 #define TITLE_HEIGHT 23.0
 #define RESIZE_HEIGHT 9.0
+#define TITLEBAR_BUTTON_SIZE 15.0
+#define TITLEBAR_PADDING_TOP 4.0
+#define TITLEBAR_PADDING_RIGHT 4.0
+#define TITLEBAR_PADDING_LEFT 4.0
 
 - (float) titlebarHeight
 {
@@ -1504,6 +1508,26 @@ static NSImage *spinningImages[MaxCount];
 - (float) resizebarHeight
 {
   return RESIZE_HEIGHT;
+}
+
+- (float) titlebarButtonSize
+{
+  return TITLEBAR_BUTTON_SIZE;
+}
+
+- (float) titlebarPaddingRight
+{
+  return TITLEBAR_PADDING_RIGHT;
+}
+
+- (float) titlebarPaddingTop
+{
+  return TITLEBAR_PADDING_TOP;
+}
+
+- (float) titlebarPaddingLeft
+{
+  return TITLEBAR_PADDING_LEFT;
 }
 
 static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
