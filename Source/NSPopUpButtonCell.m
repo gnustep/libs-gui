@@ -48,6 +48,10 @@
  * and so on.  */
 static NSImage *_pbc_image[5];
 
+@interface NSButtonCell (Private)
+- (GSThemeControlState) themeControlState;
+@end
+
 @interface NSPopUpButtonCell (CocoaExtensions)
 - (void) _popUpItemAction: (id)sender;
 @end
@@ -326,6 +330,7 @@ static NSImage *_pbc_image[5];
 {
   id <NSMenuItem> selectedItem = [self selectedItem];
 
+#if 0
   if (flag)
     {
       [selectedItem setState: NSOnState];
@@ -334,7 +339,8 @@ static NSImage *_pbc_image[5];
     {
       [selectedItem setState: NSOffState];
     }
-
+#endif
+  
   _pbcFlags.altersStateOfSelectedItem = flag;
 }
 
@@ -667,7 +673,7 @@ static NSImage *_pbc_image[5];
 
   if (_selectedItem != nil)
     {
-      if (_pbcFlags.altersStateOfSelectedItem && !_pbcFlags.pullsDown)
+      if (_pbcFlags.altersStateOfSelectedItem)
         {
           [_selectedItem setState: NSOffState];
         }
@@ -684,7 +690,7 @@ static NSImage *_pbc_image[5];
 
   if (_selectedItem != nil)
     {
-      if (_pbcFlags.altersStateOfSelectedItem && !_pbcFlags.pullsDown)
+      if (_pbcFlags.altersStateOfSelectedItem)
         {
           [_selectedItem setState: NSOnState];
         }
@@ -891,6 +897,29 @@ static NSImage *_pbc_image[5];
     return @"";
 }
 
+- (NSInteger)state
+{
+  return NSOffState;
+}
+
+- (NSRect)titleRectForBounds:(NSRect)cellFrame
+{
+  // Testplant branch code - MAL-2015-06-20: ensure correct available width returned...
+  // Override base class for popup button rectangle...
+  // TODO: Need to find this out somehow...Testplant-MAL
+  static const NSUInteger ButtonMargin = 5;
+  
+  CGFloat inset = _imageWidth + ButtonMargin;
+  
+  // Special case: image is drawn on the extreme right
+  // First inset the title rect...Testplant-MAL
+  cellFrame = NSInsetRect(cellFrame, ButtonMargin, 0);
+  // Adjust for image on right side i.e. down arrow popup indicator...Testplant-MAL
+  cellFrame.size.width -= _imageWidth;
+
+  return cellFrame;
+}
+
 /**
  * Attach popup
  */
@@ -1053,6 +1082,22 @@ static NSImage *_pbc_image[5];
   
   [self attachPopUpWithFrame: frame inView: controlView];
 }
+
+/*
+ * Override the implementation in NSMenuItemCell to behave the same
+ * as superclass NSButtonCell's implementation, since our direct
+ * superclass NSMenuItemCell has special menu-specific drawing.
+ */
+- (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+                                   inView: (NSView *)controlView
+{
+  [[GSTheme theme] drawButton: cellFrame
+			   in: self
+			 view: controlView
+			style: _bezel_style
+			state: [self themeControlState]];
+}
+
 
 /*
  * This drawing uses the same code that is used to draw cells in the menu.

@@ -54,6 +54,10 @@ static NSString *alternateKeyString = @"+";
 static NSString *shiftKeyString = @"/";
 static NSString *commandKeyString = @"#";
 
+@interface NSMenuItemCell (Private)
+- (GSThemeControlState) themeControlState;
+@end
+
 @implementation NSMenuItemCell
 
 + (void) initialize
@@ -526,18 +530,33 @@ static NSString *commandKeyString = @"#";
   if (_needs_sizing)
     [self calcSize];
 
+#if 0
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
+#if 0 //Main branch code...
+      //Tesplant-MAL-2015-06-22 - should fix branch version below but need
+      //to fix check mark being displayed on main pop up button rather than
+      //just on the showing the check mark on the selected item in the
+      //drop down list...
+      // Special case: draw image on the extreme right 
+      cellFrame.origin.x   += [_menuView imageAndTitleOffset];
+      cellFrame.size.width -= [_menuView imageAndTitleOffset];
+#else //Testplant branch code - MAL-2015-06-20: ensure correct available width returned...
       // TODO: Need to find this out somehow...Testplant-MAL
       static const NSUInteger ButtonMargin = 5;
+      
+      CGFloat inset = _imageWidth + ButtonMargin;
+      
       // Special case: image is drawn on the extreme right
       // First inset the title rect...Testplant-MAL
       cellFrame = NSInsetRect(cellFrame, ButtonMargin, 0);
       // Adjust for image on right side i.e. down arrow popup indicator...Testplant-MAL
-      cellFrame.size.width -= _imageWidth + ButtonMargin;
+      cellFrame.size.width -= _imageWidth;
+#endif
       return cellFrame;
     }
-
+#endif
+  
   if ([_menuView isHorizontal] == YES)
     {
       /* This adjust will center us within the menubar. */
@@ -674,43 +693,6 @@ static NSString *commandKeyString = @"#";
     }
 }
 
-- (GSThemeControlState) themeControlState
-{
-  unsigned mask;
-  GSThemeControlState state = GSThemeNormalState;
-
-  // set the mask
-  if (_cell.is_highlighted)
-    {
-      mask = _highlightsByMask;
-      if (_cell.state)
-        {
-          mask &= ~_showAltStateMask;
-        }
-    }
-  else if (_cell.state)
-    mask = _showAltStateMask;
-  else
-    mask = NSNoCellMask;
-
-  /* Determine the background color. 
-     We draw when there is a border or when highlightsByMask
-     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-     as required by our nextstep-like look and feel.  */
-  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-    {
-      state = GSThemeHighlightedState;
-    }
-
-  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (mask & NSPushInCellMask)
-    {
-      state = GSThemeSelectedState;
-    }
-
-  return state;
-}
-
 //
 // Drawing.
 //
@@ -734,7 +716,17 @@ static NSString *commandKeyString = @"#";
 - (void) drawKeyEquivalentWithFrame: (NSRect)cellFrame
 			     inView: (NSView *)controlView
 {
-  NSImage	*arrow = [NSImage imageNamed: @"NSMenuArrow"];
+  NSImage	*arrow = nil;
+  if (_cell.is_highlighted)
+    {
+      arrow = [NSImage imageNamed: @"NSHighlightedMenuArrow"];
+    }
+
+  if (arrow == nil)
+    {
+      arrow = [NSImage imageNamed: @"NSMenuArrow"];
+    }
+
 
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
@@ -786,7 +778,9 @@ static NSString *commandKeyString = @"#";
 {
   NSImage *imageToDisplay;
 
-  switch ([_menuItem state])
+  // Testplant-MAL-2015-06-22: While merging found was [_menuItem state] but
+  // I think it should be using [self state] for popups to show properly...
+  switch ([self state])
     {
       case NSOnState:
         imageToDisplay = [_menuItem onStateImage];

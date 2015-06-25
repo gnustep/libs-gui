@@ -1607,44 +1607,6 @@ static NSColor *dtxtCol;
   _cell.background_style = backgroundStyle;
 }
 
-- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
-{
-  NSUInteger hitResult  = NSCellHitNone;
-	NSPoint    point      = [controlView convertPoint:[event locationInWindow] fromView:nil];
-
-  switch (_cell.type)
-    {
-      case NSImageCellType:
-        {
-          NSRect checkFrame = [self imageRectForBounds:cellFrame];
-          if (NSPointInRect(point, checkFrame))
-            hitResult |= NSCellHitContentArea;
-          break;
-        }
-        
-      case NSTextCellType:
-        {
-          NSString *stringValue = [self stringValue];
-          if (stringValue && [stringValue length])
-            {
-              // TODO: Needs to be the string rect NOT the title rect area...
-              NSRect checkFrame = [self titleRectForBounds:cellFrame];
-              if (NSPointInRect(point, checkFrame))
-                hitResult |= NSCellHitContentArea;
-            }
-          break;
-        }
-        
-      case NSNullCellType:
-      default:
-        hitResult = NSCellHitContentArea;
-        // FIXME: If the cell not disabled, and it would track, OR in NSCellHitTrackableArea...
-        break;
-    }
-  
-  return(hitResult);
-}
-
 /**<p>Returns whether tracking starts. The NSCell implementation
    returns YES when the <var>startPoint</var> is into the control view
    retangle, NO otherwise. This method is call at the early stage of
@@ -1829,6 +1791,44 @@ static NSColor *dtxtCol;
   return NO; // Otherwise return NO
 }
 
+- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
+{
+  NSUInteger hitResult  = NSCellHitNone;
+	NSPoint    point      = [controlView convertPoint:[event locationInWindow] fromView:nil];
+
+  switch (_cell.type)
+    {
+      case NSImageCellType:
+        {
+          NSRect checkFrame = [self imageRectForBounds:cellFrame];
+          if (NSPointInRect(point, checkFrame))
+            hitResult |= NSCellHitContentArea;
+          break;
+        }
+        
+      case NSTextCellType:
+        {
+          NSString *stringValue = [self stringValue];
+          if (stringValue && [stringValue length])
+            {
+              // TODO: Needs to be the string rect NOT the title rect area...
+              NSRect checkFrame = [self titleRectForBounds:cellFrame];
+              if (NSPointInRect(point, checkFrame))
+                hitResult |= NSCellHitContentArea;
+            }
+          break;
+        }
+        
+      case NSNullCellType:
+      default:
+        hitResult = NSCellHitContentArea;
+        // FIXME: If the cell not disabled, and it would track, OR in NSCellHitTrackableArea...
+        break;
+    }
+  
+  return(hitResult);
+}
+
 /** <p>TODO</p>
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView*)controlView
@@ -1976,8 +1976,29 @@ static NSColor *dtxtCol;
     aType = NSBezelBorder;
   else
     aType = NSNoBorder;
-    
+  
+#if 1
   borderSize = [[GSTheme theme] sizeForBorderType: aType];
+#else //Testplant-MAL-2015-06-20: Button size testing
+  borderSize = NSMakeSize(0, 0); // Regular...
+  switch ([self controlSize]) {
+    case NSRegularControlSize:
+      borderSize = NSMakeSize(12, 9);
+      break;
+      
+    case NSSmallControlSize:
+      borderSize = NSMakeSize(11, 8);
+      break;
+      
+    case NSMiniControlSize:
+      borderSize = NSMakeSize(10, 6);
+      break;
+      
+    default:
+      NSWarnMLog(@"invalid control size: %ld", [self controlSize]);
+      break;
+  }
+#endif
   return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
@@ -2145,6 +2166,11 @@ static NSColor *dtxtCol;
   if (_cell.is_highlighted != lit)
     {
       _cell.is_highlighted = lit;
+
+      // Disabling this because when combined with making
+      // -[NSButtonCell isOpaque] return NO, it was causing scroller buttons
+      // to stay stuck down. --Eric (2013-09-28)
+#if 0
       /*
        * NB: This has a visible effect only if subclasses override
        * drawWithFrame:inView: to draw something special when the
@@ -2165,6 +2191,7 @@ static NSColor *dtxtCol;
            */
           [controlView displayRect: cellFrame];
         }
+#endif
       [self drawWithFrame: cellFrame inView: controlView];
     }
 }
@@ -2267,9 +2294,15 @@ static NSColor *dtxtCol;
   /* See comments in NSStringDrawing.m about the choice of maximum size. */
   ct = [(NSTextView*)textObject textContainer];
   if (wraps)
-    maxSize = NSMakeSize(NSWidth(titleRect), 1e6);
+    {
+      maxSize = NSMakeSize(NSWidth(titleRect), 1e6);
+    }
   else
-    maxSize = titleRect.size;
+    {
+      // Testplant-MAL-2015-06-20: Korean/Chinese/etc characters not properly
+      // horizontally centered if you set to infinity - should be at text size...
+      maxSize = titleRect.size;
+    }
   [ct setContainerSize: maxSize];
   [ct setWidthTracksTextView: wraps];
   [ct setHeightTracksTextView: NO];
@@ -2283,10 +2316,14 @@ static NSColor *dtxtCol;
   [[controlView window] makeFirstResponder: textObject];
   _cell.shows_first_responder = YES;
   _cell.in_editing = YES;
+
+#if 1
+  // Testplant-MAL-2015-06-20: merging removal causes focus ring issues...
   // FIXME: we need to draw the focus ring, this works but
   // there's something wrong about telling the view to come
   // back here and draw.
   [controlView setKeyboardFocusRingNeedsDisplayInRect:NSMakeRect (aRect.origin.x - 2.0, aRect.origin.y - 2.0, aRect.size.width + 4.0, aRect.size.height + 4.0)];
+#endif
 }
 
 /**<p>Ends any text editing. This method sets the text object's delegate 
@@ -2298,7 +2335,6 @@ static NSColor *dtxtCol;
   NSClipView *clipView;
 
   _cell.in_editing = NO;
-  _cell.shows_first_responder = NO;
   [textObject setString: @""];
   [textObject setDelegate: nil];
   
@@ -2311,8 +2347,10 @@ static NSColor *dtxtCol;
   else
     [textObject removeFromSuperview];
 
+#if 1 //Testplant-MAL-2015-06-20: Removed due to merge???
   // FIXME: This is brutal but clears the focus ring clean.
   [[self controlView] setNeedsDisplay:YES];
+#endif
 }
 
 /*
@@ -2415,7 +2453,7 @@ static NSColor *dtxtCol;
     {
       unsigned long cFlags = 0;
       unsigned int cFlags2 = 0;
-      id contents;
+      id contents = _contents;
 
       // encode contents
       if (_cell.type == NSTextCellType)
@@ -2867,7 +2905,9 @@ static NSColor *dtxtCol;
 - (NSDictionary*) _nonAutoreleasedTypingAttributes
 {
   NSDictionary *attr = nil;
+  NSColor *color;
 
+  color = [self textColor];
   switch (_cell.background_style)
   {
 #if 0

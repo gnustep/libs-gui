@@ -319,21 +319,20 @@
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
-#if 0 //TESTPLANT-MAL
-  NSFocusRingFrameRect(frame);
-#else
   GSDrawTiles *tiles = [self tilesNamed: @"NSFocusRing" state: GSThemeNormalState];
 
   if (tiles == nil)
     {    
+#if 0 //TESTPLANT-MAL-2015-06-20: Merged but use the old drawing method...
+      NSFocusRingFrameRect(frame);
+#else
       NSDottedFrameRect(frame);
+#endif
     }
   else
     {
-      [self fillRect: frame
-           withTiles: tiles];
+      [self fillRect: frame withTiles: tiles];
     }
-#endif
 }
 
 - (void) drawWindowBackground: (NSRect) frame view: (NSView*) view

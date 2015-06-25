@@ -132,29 +132,44 @@ static NSMapTable *viewInfo = 0;
  * Class methods.
  */
 
+static float menuBarHeight = 0.0;
+
++ (void) _themeWillDeactivate: (NSNotification*)n
+{
+  /* Clear cached information from the old theme ... will get info from
+   * the new theme as required.
+   */
+  menuBarHeight = 0;
+}
+
 + (void) initialize
 {
   if (viewInfo == 0)
     {
       viewInfo = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                   NSNonOwnedPointerMapValueCallBacks, 20);
+
+      [[NSNotificationCenter defaultCenter] addObserver: self
+	selector: @selector(_themeWillDeactivate:)
+	name: GSThemeWillDeactivateNotification
+	object: nil];
     }
 }
 
 + (float) menuBarHeight
 {
-  static float height = 0.0;
-
-  if (height == 0.0)
+  if (menuBarHeight == 0.0)
     {
+      const CGFloat themeHeight = [[GSTheme theme] menuBarHeight];
+
       NSFont *font = [NSFont menuBarFontOfSize: 0.0];
 
-      height = [font boundingRectForFont].size.height;
-      if (height < 22)
-        height = 22;
+      menuBarHeight = [font boundingRectForFont].size.height;
+      if (menuBarHeight < themeHeight)
+        menuBarHeight = themeHeight;
     }
 
-  return height;
+  return menuBarHeight;
 }
 
 /*
