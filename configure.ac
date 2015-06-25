@@ -1,7 +1,7 @@
 # configure.in for GNUstep GUI library
 # Process this file with autoconf to produce a configure script.
 #
-# Copyright (C) 1996-2011 Free Software Foundation, Inc.
+# Copyright (C) 1996-2015 Free Software Foundation, Inc.
 #
 # Author:  Adam Fedor <fedor@gnu.org>
 #
@@ -50,6 +50,42 @@ AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
 # Determine the host, build, and target systems
 #--------------------------------------------------------------------
 AC_CANONICAL_TARGET([])
+
+#--------------------------------------------------------------------
+# Find the compiler
+#--------------------------------------------------------------------
+MAKECC=`gnustep-config --variable=CC`
+MAKECPP=`gnustep-config --variable=CPP`
+MAKECXX=`gnustep-config --variable=CXX`
+if test "$CC" = ""; then
+  CC=$MAKECC
+else
+  if test "$CC" != "$MAKECC"; then
+    AC_MSG_WARN([You are running configure with the compiler ($CC) set to a different value from that used by gnustep-make ($MAKECC).  To a
+void conflicts/problems, reconfigure/reinstall gnustep-make to use $CC or run the gnustep-base configure again with your CC environment var
+iable set to $MAKECC])
+  fi
+fi
+if test "$CPP" = ""; then
+  CPP=$MAKECPP
+else
+  if test "$CPP" != "$MAKECPP"; then
+    AC_MSG_WARN([You are running configure with the preprocessor ($CPP) set to a different value from that used by gnustep-make ($MAKECPP).
+  To avoid conflicts/problems, reconfigure/reinstall gnustep-make to use $CPP or run the gnustep-base configure again with your CPP environ
+ment variable set to $MAKECPP])
+  fi
+fi
+if test "$CXX" = ""; then
+  CXX=$MAKECXX
+else
+  if test "$CXX" != "$MAKECXX"; then
+    AC_MSG_WARN([You are running configure with the compiler ($CXX) set to a different value from that used by gnustep-make ($MAKECXX).  To
+ avoid conflicts/problems, reconfigure/reinstall gnustep-make to use $CXX or run the gnustep-base configure again with your CXX environment
+ variable set to $MAKECXX])
+  fi
+fi
+AC_PROG_CC
+AC_PROG_CPP
 
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
@@ -105,11 +141,6 @@ fi
 CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
-#--------------------------------------------------------------------
-# Find the compiler
-#--------------------------------------------------------------------
-AC_PROG_CC
-AC_PROG_CPP
 
 AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rint rintf atan2f)
@@ -355,10 +386,11 @@ if test "$have_ungif" = no -o "${enable_libgif}" = yes; then
   fi
 fi
 
-# QuantizeBuffer was removed from giflib in version 4.2 but is supposed
-# to make its return in the next release. If this function is not present
+# QuantizeBuffer was removed from giflib in version 4.2 but was reintroduced
+# in the 5.0 release with a new name. If this function is not present
 # we disable the support to create gif image representations.
 AC_CHECK_FUNCS(QuantizeBuffer)
+AC_CHECK_FUNCS(GifQuantizeBuffer)
 
 #--------------------------------------------------------------------
 # Find ImageMagick
@@ -385,8 +417,32 @@ AC_ARG_ENABLE(icu,
   [  --disable-icu		Disable International Components for Unicode],,
   enable_icu=yes)
 
+AC_ARG_ENABLE(icu-config,
+  [  --disable-icu-config		Do not use the icu-config script to check
+				for ICU.],,
+  enable_icu_config=yes)
+
+AC_ARG_WITH(icu-library,
+  [  --with-icu-library=PATH  	library path for ICU libraries (only checked
+				if not using icu-config)],
+  icu_libdir="$withval", icu_libdir="no")
+
 if test $enable_icu = yes; then
+  if test "$enable_icu_config" = "yes"; then
   AC_CHECK_ICU(4.0, have_icu=yes, have_icu=no)
+  else
+    have_icu=no;
+    AC_CHECKING([for libicu (icu-config disabled)])
+    if test "$icu_libdir" != "no"; then
+      ICU_LDFLAGS="-L$icu_libdir";
+    fi
+    saved_LDFLAGS="$LDFLAGS";
+    LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
+    AC_TRY_LINK([],[], have_icu="yes", have_icu="no");
+    LDFLAGS="$saved_LDFLAGS";
+    ICU_LIBS="-licui18n -licuuc -licudata -lm" 
+  fi
+    
   if test "$have_icu" = "yes"; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
