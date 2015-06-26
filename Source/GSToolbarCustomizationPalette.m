@@ -304,6 +304,7 @@
     {
       NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier
 				     willBeInsertedIntoToolbar: NO];
+      NSDebugLLog(DEBUG_LEVEL, @"item %@ for ident %@", item, identifier);
       [_allowedItems addObject: item]; 
     }
 
