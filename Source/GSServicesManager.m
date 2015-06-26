@@ -577,16 +577,23 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   id	del = [NSApp delegate];
   BOOL	result = NO;
+  NSError *err = nil;
 
   if ([del respondsToSelector: _cmd])
     {
       result = [del application: theApp openFile: file];
     }
   else if ([[NSDocumentController sharedDocumentController]
-    openDocumentWithContentsOfFile: file display: YES] != nil)
+             openDocumentWithContentsOfURL: [NSURL fileURLWithPath: file]
+                                   display: YES
+                                     error: &err] != nil)
     {
       [NSApp activateIgnoringOtherApps: YES];
       result = YES;
+    }
+  else
+    {
+      [NSApp presentError: err];
     }
   return result;
 }
@@ -618,13 +625,16 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   id	del = [NSApp delegate];
   BOOL	result = NO;
+  NSError *err = nil;
 
   if ([del respondsToSelector: _cmd])
     {
       result = [del application: theApp openFileWithoutUI: file];
     }
   else if ([[NSDocumentController sharedDocumentController]
-    openDocumentWithContentsOfFile: file display: NO] != nil)
+             openDocumentWithContentsOfURL: [NSURL fileURLWithPath: file]
+                                   display: NO
+                                     error: &err] != nil)
     {
       result = YES;
     }
@@ -646,13 +656,16 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   id	del = [NSApp delegate];
   BOOL	result = NO;
+  NSError *err = nil;
 
   if ([del respondsToSelector: _cmd])
     {
       result = [del application: theApp openURL: aURL];
     }
   else if ([[NSDocumentController sharedDocumentController]
-    openDocumentWithContentsOfURL: aURL display: YES] != nil)
+             openDocumentWithContentsOfURL: aURL
+                                   display: YES
+                                     error: &err] != nil)
     {
       [NSApp activateIgnoringOtherApps: YES];
       result = YES;

@@ -130,6 +130,23 @@ static NSMutableDictionary *_modelMap = nil;
   return [_modelMap objectForKey: type];
 }
 
++ (NSArray *) supportedTypes
+{
+  NSArray *objectArray = [_modelMap allValues];
+  NSArray *sortedArray = [objectArray sortedArrayUsingSelector: 
+					    @selector(_comparePriority:)];
+  NSEnumerator *oen = [sortedArray objectEnumerator];
+  Class cls = nil;
+  NSMutableArray *types = [[NSMutableArray alloc] init];
+
+  while ((cls = [oen nextObject]) != nil)
+    {
+      [types addObject: [cls type]];
+    }
+
+  return AUTORELEASE(types);
+}
+
 + (NSString *) supportedModelFileAtPath: (NSString *)modelPath
 {
   NSString *result = nil;
