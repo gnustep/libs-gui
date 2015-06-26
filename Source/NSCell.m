@@ -1791,6 +1791,7 @@ static NSColor *dtxtCol;
   return NO; // Otherwise return NO
 }
 
+// Testplant-MAL-2015-06-26: Keeping testplant fixes for this method...
 - (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
 {
   NSUInteger hitResult  = NSCellHitNone;
@@ -2317,7 +2318,7 @@ static NSColor *dtxtCol;
   _cell.shows_first_responder = YES;
   _cell.in_editing = YES;
 
-#if 1
+#if 0
   // Testplant-MAL-2015-06-20: merging removal causes focus ring issues...
   // FIXME: we need to draw the focus ring, this works but
   // there's something wrong about telling the view to come

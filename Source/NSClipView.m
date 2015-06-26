@@ -180,6 +180,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       df = [_documentView frame];
       [self setBoundsOrigin: df.origin];
 
+      // Testplant-MAL-2015-06-26: Keeping testplant fixes...
       if ([aView respondsToSelector: @selector(backgroundColor)])
 	{
 	  [self setBackgroundColor: [(id)aView backgroundColor]];
@@ -239,15 +240,15 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (void) setBounds: (NSRect)b
 {
-  // FIXME: Shouldn't the document view be marked as needing a redraw?
   [super setBounds: b];
+  [self setNeedsDisplay: YES];
   [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setBoundsSize: (NSSize)aSize
 {
-  // FIXME: Shouldn't the document view be marked as needing a redraw?
   [super setBoundsSize: aSize];
+  [self setNeedsDisplay: YES];
   [_super_view reflectScrolledClipView: self];
 }
 
@@ -274,8 +275,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       /* Copy the portion of the view that is common before and after
          scrolling.  Then, document view needs to redraw the remaining
          areas. */
-
-	
 
       /* Common part - which is a first approx of what we could
          copy... */

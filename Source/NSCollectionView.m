@@ -166,6 +166,7 @@ static NSString *placeholderItem = nil;
     {
       // Calling itemAtIndex: will eventually instantiate the collection view item,
       // if it hasn't been done already.
+      // Testplant-MAL-2015-06-26: Keeping testplant fixes...
 	  if (index < [_items count])
 	    {
           NSCollectionViewItem *collectionItem = [self itemAtIndex: index];
@@ -476,6 +477,7 @@ static NSString *placeholderItem = nil;
         {
           [item setSelected: YES];
         }
+      // Testplant-MAL-2015-06-26: Keeping testplant fixes...
 	  // Frank LeGrand 4/25/13:
 	  // We set this initial rect as a workaround for a weird display
 	  // issue in our app where the item view would get drawn in front
@@ -527,7 +529,7 @@ static NSString *placeholderItem = nil;
     return;
   
   CGFloat width = [self bounds].size.width;
-  //NSLog(@"tile: width = %g, previous width = %g", width, _tileWidth);
+  // Testplant-MAL-2015-06-26: Keeping testplant fixes...
   if (isnan(width) || ABS(width - _tileWidth) <= 1)
     return;
   
@@ -602,7 +604,6 @@ static NSString *placeholderItem = nil;
   NSSize currentSize = [self frame].size;
   if (!NSEqualSizes(currentSize, aSize))
     {
-	  //NSLog(@"resizeSubviews: new size = %g x %g, currentSize = %g x %g", aSize.width, aSize.height, currentSize.width, currentSize.height);
       [self tile];
     }
 }
