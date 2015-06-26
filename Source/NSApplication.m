@@ -1872,6 +1872,7 @@ See Also: -runModalForWindow:
 	  NSEventType	type = [_current_event type];
 
 	  [self sendEvent: _current_event];
+      // Testplant-MAL-2015-06-26: keeping testplant fix...
       [_session->window displayIfNeeded];
 
 	  // update (en/disable) the services menu's items
@@ -1970,26 +1971,31 @@ See -runModalForWindow:
  * Put up a modal window centered relative to docWindow.  On OS X this is
  * deprecated in favor of
  * -beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo: .
- * <em>Not implemented under GNUstep.  Currently just centers window on the
- * screen.</em>
  */
 - (NSInteger) runModalForWindow: (NSWindow *)theWindow
                relativeToWindow: (NSWindow *)docWindow
 {
-  // FIXME
-  NSRect  frame = [docWindow frame];
-  NSPoint point = frame.origin;
-  NSSize  size  = [theWindow frame].size;
+  if ((docWindow != nil) && (theWindow != nil))
+    {
+      NSRect  docFrame = [docWindow frame];
+      NSPoint point    = docFrame.origin;
+      NSRect  theFrame = [theWindow frame];
+      NSSize  size     = theFrame.size;
   
-  // Calculate window position...
-  point.x += (frame.size.width - size.width) / 2;
-  point.y += (frame.size.height - size.height);
+      // Calculate window position...
+      point.x += (docFrame.size.width - size.width) / 2;
+      // Testplant-MAL-2015-06-26: Keeping position at top...
+      point.y += (docFrame.size.height - size.height);
 
-  // Position window...
-  [theWindow setFrameOrigin:point];
+      NSDebugLLog(@"NSWindow", @"Positioning window %@ relative to %@ at %@", 
+            NSStringFromRect(theFrame), NSStringFromRect(docFrame), NSStringFromPoint(point));
+
+      // Position window...
+      [theWindow setFrameOrigin:point];
+    }
+
   [theWindow orderWindow: NSWindowAbove
               relativeTo: [docWindow windowNumber]];
-  
   return [self runModalForWindow: theWindow];
 }
 
