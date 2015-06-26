@@ -40,6 +40,7 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSScanner.h>
 
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSColorSpace.h"
@@ -202,12 +203,14 @@ void initSystemColors(void)
   
   colorStrings = [[NSMutableDictionary alloc]
 		     initWithObjectsAndKeys:
+		     black, @"alternateSelectedControlColor",
+		     white, @"alternateSelectedControlTextColor",
 		     lightGray, @"controlBackgroundColor",
 		     lightGray, @"controlColor",
+		     black, @"controlDarkShadowColor",
 		     lightGray, @"controlHighlightColor",
 		     white, @"controlLightHighlightColor",
 		     darkGray, @"controlShadowColor",
-		     black, @"controlDarkShadowColor",
 		     black, @"controlTextColor",
 		     darkGray, @"disabledControlTextColor",
 		     gray, @"gridColor",
@@ -216,7 +219,11 @@ void initSystemColors(void)
 		     white, @"highlightColor",
 		     black, @"keyboardFocusIndicatorColor",
 		     lightGray, @"knobColor",
+		     black, @"labelColor",
+		     black, @"quaternaryLabelColor",
 		     gray, @"scrollBarColor",
+		     black, @"secondaryLabelColor",
+		     lightGray, @"secondarySelectedControlColor",
 		     white, @"selectedControlColor",
 		     black, @"selectedControlTextColor",
 		     lightGray, @"selectedKnobColor",
@@ -225,18 +232,15 @@ void initSystemColors(void)
 		     lightGray, @"selectedTextBackgroundColor",
 		     black, @"selectedTextColor",
 		     black, @"shadowColor",
+		     black, @"tertiaryLabelColor",
 		     white, @"textBackgroundColor",
 		     black, @"textColor",
 		     lightGray, @"windowBackgroundColor",
 		     black, @"windowFrameColor",
 		     white, @"windowFrameTextColor",
-		     black, @"alternateSelectedControlColor",
-		     white, @"alternateSelectedControlTextColor",
+
 		     white, @"rowBackgroundColor",
 		     lightGray, @"alternateRowBackgroundColor",
-		     lightGray, @"secondarySelectedControlColor",
-		     //gray, @"windowFrameColor",
-		     //black, @"windowFrameTextColor",
 		     nil];
   
   systemColors = RETAIN([NSColorList colorListNamed: @"System"]);
@@ -739,6 +743,11 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"controlColor");
 }
 
++ (NSColor*) controlDarkShadowColor
+{
+  return systemColorWithName(@"controlDarkShadowColor");
+}
+
 + (NSColor*) controlHighlightColor
 {
   return systemColorWithName(@"controlHighlightColor");
@@ -752,11 +761,6 @@ systemColorWithName(NSString *name)
 + (NSColor*) controlShadowColor
 {
   return systemColorWithName(@"controlShadowColor");
-}
-
-+ (NSColor*) controlDarkShadowColor
-{
-  return systemColorWithName(@"controlDarkShadowColor");
 }
 
 + (NSColor*) controlTextColor
@@ -799,9 +803,24 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"knobColor");
 }
 
++ (NSColor*) labelColor
+{
+  return systemColorWithName(@"labelColor");
+}
+
++ (NSColor*) quaternaryLabelColor
+{
+  return systemColorWithName(@"quaternaryLabelColor");
+}
+
 + (NSColor*) scrollBarColor
 {
   return systemColorWithName(@"scrollBarColor");
+}
+
++ (NSColor*) secondaryLabelColor
+{
+  return systemColorWithName(@"secondaryLabelColor");
 }
 
 + (NSColor*) secondarySelectedControlColor
@@ -847,6 +866,11 @@ systemColorWithName(NSString *name)
 + (NSColor*) shadowColor
 {
   return systemColorWithName(@"shadowColor");
+}
+
++ (NSColor*) tertiaryLabelColor
+{
+  return systemColorWithName(@"tertiaryLabelColor");
 }
 
 + (NSColor*) textBackgroundColor
@@ -1364,6 +1388,24 @@ systemColorWithName(NSString *name)
 //
 - (void) drawSwatchInRect: (NSRect)rect
 {
+  // Testplant-MAL-2015-06-25 Merged with GUI trunk...
+  if ([self alphaComponent] < 1.0)
+    {
+      NSBezierPath *triangle = [NSBezierPath bezierPath];
+
+      [[NSColor whiteColor] set];
+      NSRectFill(rect);
+
+      [triangle moveToPoint: NSMakePoint(rect.origin.x,
+		rect.origin.y + rect.size.height)];
+      [triangle lineToPoint: NSMakePoint(rect.origin.x + rect.size.width, 
+		rect.origin.y + rect.size.height)];
+      [triangle lineToPoint: rect.origin];
+      [triangle closePath];
+      [[NSColor blackColor] set];
+      [triangle fill];
+    }
+
   [self set];
   NSRectFill(rect);
 }
@@ -1515,6 +1557,7 @@ systemColorWithName(NSString *name)
         }
       else if (colorSpace == 6)
         {
+          // Testplant-MAL-2015-06-25: This fixes the main branch code...
           self = [[GSNamedColor alloc] initWithCoder:aDecoder];
         }
       else if (colorSpace == 10)
@@ -1858,6 +1901,7 @@ static	NSRecursiveLock     *namedColorLock = nil;
 
 + (void) initialize
 {
+  // Testplant-MAL-2015-06-25: Fix for main branch code...
   if (self == [GSNamedColor class])
   {
     namedColorLock = [NSRecursiveLock new];
@@ -2032,6 +2076,7 @@ static	NSRecursiveLock     *namedColorLock = nil;
       [aCoder encodeInt: 6 forKey: @"NSColorSpace"];
       [aCoder encodeObject: _catalog_name forKey: @"NSCatalogName"];
       [aCoder encodeObject: _color_name forKey: @"NSColorName"];
+      // Testplant-MAL-2015-06-25: Fix for main branch code...
       [aCoder encodeObject: _cached_color forKey:@"NSColor"];
     }
   else 
@@ -2047,6 +2092,7 @@ static	NSRecursiveLock     *namedColorLock = nil;
   NSString	*listName   = nil;
   NSString	*colorName  = nil;
   
+  // Testplant-MAL-2015-06-25: Fix for main branch code...
   if ([aDecoder allowsKeyedCoding])
     {
       listName               = [aDecoder decodeObjectForKey: @"NSCatalogName"];

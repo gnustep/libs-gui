@@ -185,7 +185,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   _wellRect = [[GSTheme theme] drawColorWellBorder: self
                                withBounds: _bounds
                                withClip: clipRect];
-  [self drawWellInside: NSIntersectionRect(_wellRect, clipRect)];
+  [self drawWellInside: _wellRect];
 }
 
 /**<p>Draws the NSColorWell inside the rectangle <var>insideRect</var>.</p>
@@ -196,22 +196,6 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   if (NSIsEmptyRect(insideRect))
     {
       return;
-    }
-  if ([_the_color alphaComponent] < 1.0)
-    {
-      NSBezierPath *triangle = [NSBezierPath bezierPath];
-
-      [[NSColor whiteColor] set];
-      NSRectFill(insideRect);
-
-      [triangle moveToPoint: NSMakePoint(insideRect.origin.x,
-		insideRect.origin.y + insideRect.size.height)];
-      [triangle lineToPoint: NSMakePoint(insideRect.origin.x + insideRect.size.width, 
-		insideRect.origin.y + insideRect.size.height)];
-      [triangle lineToPoint: insideRect.origin];
-      [triangle closePath];
-      [[NSColor blackColor] set];
-      [triangle fill];
     }
   [_the_color drawSwatchInRect: insideRect];
 }
@@ -305,7 +289,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
 - (BOOL) isOpaque
 {
-  return _is_bordered;
+  // Testplant-MAL-2015-06-25: main branch code merge...
+  // May not be opaque, due to themes
+  return NO;
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
