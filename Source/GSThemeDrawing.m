@@ -35,6 +35,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
@@ -75,6 +76,11 @@
 
 @interface NSCell (Private)
 - (void) _setInEditing: (BOOL)flag;
+- (BOOL) _inEditing;
+- (void) _drawEditorWithFrame: (NSRect)cellFrame
+                       inView: (NSView *)controlView;
+- (void) _drawAttributedText: (NSAttributedString*)aString 
+                     inFrame: (NSRect)aRect;
 @end
 
 @implementation	GSTheme (Drawing)
@@ -3351,4 +3357,131 @@ typedef enum {
     }
 }
 
+- (void) drawEditorForCell: (NSCell *)cell
+		 withFrame: (NSRect)cellFrame
+		    inView: (NSView *)view
+{
+  [cell _drawEditorWithFrame: cellFrame 
+		      inView: view];
+}
+
+
+- (void) drawInCell: (NSCell *)cell
+     attributedText: (NSAttributedString *)stringValue
+	    inFrame: (NSRect)cellFrame
+{
+  [cell _drawAttributedText: stringValue 
+		    inFrame: cellFrame];
+}
+
+// NSBrowserCell
+- (void) drawBrowserInteriorWithFrame: (NSRect)cellFrame 
+			     withCell: (NSBrowserCell *)cell
+			       inView: (NSView *)controlView
+			    withImage: (NSImage *)theImage
+		       alternateImage: (NSImage *)alternateImage
+			isHighlighted: (BOOL)isHighlighted
+				state: (int)state
+			       isLeaf: (BOOL)isLeaf
+{
+  NSRect	title_rect = cellFrame;
+  NSImage	*branch_image = nil;
+  NSImage	*cell_image = theImage;
+
+  if (isHighlighted || state)
+    {
+      if (!isLeaf)
+	branch_image = [self highlightedBranchImage];
+      if (nil != alternateImage)
+	[cell setImage: alternateImage];
+
+      // If we are highlighted, fill the background
+      [[cell highlightColorInView: controlView] setFill];
+      NSRectFill(cellFrame);
+    }
+  else
+    {
+      if (!isLeaf)
+	branch_image = [self branchImage];
+
+      // (Don't fill the background)
+    }
+  
+  // Draw the branch image if there is one
+  if (branch_image) 
+    {
+      NSRect imgRect;
+
+      imgRect.size = [branch_image size];
+      imgRect.origin.x = MAX(NSMaxX(title_rect) - imgRect.size.width - 4.0, 0.);
+      imgRect.origin.y = MAX(NSMidY(title_rect) - (imgRect.size.height/2.), 0.);
+
+      if (controlView != nil)
+	{
+	  imgRect = [controlView centerScanRect: imgRect];
+	}
+
+      [branch_image drawInRect: imgRect
+		      fromRect: NSZeroRect
+		     operation: NSCompositeSourceOver
+		      fraction: 1.0
+		respectFlipped: YES
+			 hints: nil];
+
+      title_rect.size.width -= imgRect.size.width + 8;
+    }
+
+  // Skip 2 points from the left border
+  title_rect.origin.x += 2;
+  title_rect.size.width -= 2;
+  
+  // Draw the cell image if there is one
+  if (cell_image) 
+    {
+      NSRect imgRect;
+      
+      imgRect.size = [cell_image size];
+      imgRect.origin.x = NSMinX(title_rect);
+      imgRect.origin.y = MAX(NSMidY(title_rect) - (imgRect.size.height/2.),0.);
+
+      if (controlView != nil)
+	{
+	  imgRect = [controlView centerScanRect: imgRect];
+	}
+
+      [cell_image drawInRect: imgRect
+		    fromRect: NSZeroRect
+		   operation: NSCompositeSourceOver
+		    fraction: 1.0
+	      respectFlipped: YES
+		       hints: nil];
+
+      title_rect.origin.x += imgRect.size.width + 4;
+      title_rect.size.width -= imgRect.size.width + 4;
+   }
+
+  // Draw the body of the cell
+  if ([cell _inEditing])
+    {
+      [self drawEditorForCell: cell 
+		    withFrame: cellFrame 
+		       inView: controlView];
+    }
+  else
+    {
+      [self drawInCell: cell
+	attributedText: [cell attributedStringValue]
+	       inFrame: title_rect];
+    }
+}
+
+- (NSImage *) branchImage
+{
+  return [NSImage imageNamed: @"common_3DArrowRight"];
+}
+
+- (NSImage *) highlightedBranchImage
+{
+  return [NSImage imageNamed: @"common_3DArrowRightH"];
+}
 @end

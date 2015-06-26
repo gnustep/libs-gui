@@ -3030,6 +3030,11 @@ static NSColor *dtxtCol;
   _cell.in_editing = flag;
 }
 
+- (BOOL) _inEditing
+{
+  return _cell.in_editing;
+}
+
 - (void) _updateFieldEditor: (NSText*)textObject
 {
   if (_formatter != nil)

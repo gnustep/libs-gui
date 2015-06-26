@@ -1,3 +1,11 @@
+2015-06-26 01:22-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations for
+	drawing methods for theming.
+	* Source/GSThemeDrawing.m: Add drawing methods for theming
+	* Source/NSBrowserCell.m: Use drawing methods
+	* Source/NSCell.m: Add private method for _inEditing
+
 2015-06-25 20:11-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations for method

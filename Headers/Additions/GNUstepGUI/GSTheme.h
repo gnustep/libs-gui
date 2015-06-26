@@ -235,8 +235,8 @@
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
 @class NSBundle;
+@class NSBrowserCell;
 @class NSDictionary;
-
 @class NSButton;
 @class NSColor;
 @class NSColorList;
@@ -1479,6 +1479,46 @@ withRepeatedImage: (NSImage*)image
  */
 - (void) didSetDefaultButtonCell: (NSButtonCell *)aCell;
 @end
+					 
+@interface GSTheme (NSBrowserCell)
+/** 
+ * Draw editor in cell
+ */
+- (void) drawEditorForCell: (NSCell *)cell
+		 withFrame: (NSRect)cellFrame
+	       	    inView: (NSView *)view;
+
+/** 
+ * Draw attributed text in cell
+ */
+- (void) drawInCell: (NSCell *)cell
+     attributedText: (NSAttributedString *)stringValue
+	    inFrame: (NSRect)cellFrame;
+
+/** 
+ * Draw the interior of the browser cell
+ */
+- (void) drawBrowserInteriorWithFrame: (NSRect)cellFrame 
+			     withCell: (NSBrowserCell *)cell
+			       inView: (NSView *)controlView
+			    withImage: (NSImage *)theImage
+		       alternateImage: (NSImage *)alternateImage
+			isHighlighted: (BOOL)isHighlighted
+				state: (int)state
+			       isLeaf: (BOOL)isLeaf;
+
+/** 
+ * This method returns the branch image
+ */
+- (NSImage *) branchImage;
+
+/** 
+ * This method returns the highlighted version of 
+ * the branch image
+ */
+- (NSImage *) highlightedBranchImage;
+@end
+
 
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */
