@@ -29,14 +29,16 @@
 #ifndef _GNUstep_H_NSCollectionViewItem
 #define _GNUstep_H_NSCollectionViewItem
 
-#import <AppKit/NSNibDeclarations.h>
 #import <GNUstepBase/GSVersionMacros.h>
-#import <AppKit/NSTextField.h>
-#import <AppKit/NSImageView.h>
-#import <AppKit/NSView.h>
-#import <AppKit/NSViewController.h>
+#import <Foundation/NSArray.h>
+
 #import <AppKit/NSCollectionView.h>
 #import <AppKit/NSDragging.h>
+#import <AppKit/NSImageView.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSViewController.h>
 
 
 @interface NSCollectionViewItem : NSViewController
@@ -47,13 +49,15 @@
 }
 
 - (NSCollectionView *)collectionView;
+- (NSArray *)draggingImageComponents;
 
 - (void)setSelected:(BOOL)shouldBeSelected;
 - (BOOL)isSelected;
 
 - (NSTextField *)textField;
-- (NSImageView *)imageView;
 - (void)setTextField:(NSTextField *)aTextField;
+
+- (NSImageView *)imageView;
 - (void)setImageView:(NSImageView *)anImageView;
 
 @end

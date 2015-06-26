@@ -25,50 +25,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#import "AppKit/NSCollectionViewItem.h"
-
-#import <Foundation/NSAutoreleasePool.h>
-#import <Foundation/NSDebug.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
-#import <Foundation/NSEnumerator.h>
-#import <Foundation/NSException.h>
-#import <Foundation/NSFormatter.h>
-#import <Foundation/NSIndexSet.h>
-#import <Foundation/NSKeyValueCoding.h>
-#import <Foundation/NSNotification.h>
-#import <Foundation/NSSet.h>
-#import <Foundation/NSSortDescriptor.h>
-#import <Foundation/NSUserDefaults.h>
-#import <Foundation/NSValue.h>
 #import <Foundation/NSKeyedArchiver.h>
 
-#import "AppKit/NSTableView.h"
-#import "AppKit/NSApplication.h"
-#import "AppKit/NSCell.h"
-#import "AppKit/NSClipView.h"
-#import "AppKit/NSColor.h"
-#import "AppKit/NSEvent.h"
-#import "AppKit/NSImage.h"
-#import "AppKit/NSGraphics.h"
+#import "AppKit/NSCollectionView.h"
+#import "AppKit/NSCollectionViewItem.h"
+#import "AppKit/NSImageView.h"
 #import "AppKit/NSKeyValueBinding.h"
-#import "AppKit/NSScroller.h"
-#import "AppKit/NSScrollView.h"
-#import "AppKit/NSTableColumn.h"
-#import "AppKit/NSTableHeaderView.h"
-#import "AppKit/NSText.h"
-#import "AppKit/NSTextFieldCell.h"
-#import "AppKit/NSWindow.h"
-#import "AppKit/PSOperators.h"
-#import "AppKit/NSCachedImageRep.h"
-#import "AppKit/NSPasteboard.h"
-#import "AppKit/NSDragging.h"
-#import "AppKit/NSCustomImageRep.h"
-#import "AppKit/NSAttributedString.h"
-#import "AppKit/NSStringDrawing.h"
-#import "GNUstepGUI/GSTheme.h"
-#import "GSBindingHelpers.h"
-
-#include <math.h>
+#import "AppKit/NSTextField.h"
 
 @implementation NSCollectionViewItem
 
@@ -91,6 +56,12 @@
 - (NSCollectionView *)collectionView
 {
   return (NSCollectionView *)[[self view] superview];
+}
+
+- (NSArray *) draggingImageComponents
+{
+  // FIXME: We don't have NSDraggingImageComponent
+  return [NSArray array];
 }
 
 - (void)setSelected:(BOOL)flag
@@ -119,10 +90,7 @@
 
 - (void)setTextField:(NSTextField *)aTextField
 {
-  if (textField != aTextField)
-    {
-	  textField = aTextField;
-	}
+  ASSIGN(textField, aTextField);
 }
 
 - (NSImageView *)imageView
@@ -132,37 +100,102 @@
 
 - (void)setImageView:(NSImageView *)anImageView
 {
-  if (imageView != anImageView)
-    {
-	  imageView = anImageView;
-	}
+  ASSIGN(imageView, anImageView);
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder
 {
   self = [super initWithCoder:aCoder];
-    
-  if (self)
+  if (nil != self)
     {
-      textField = [aCoder decodeObjectForKey:@"textField"];
-      imageView = [aCoder decodeObjectForKey:@"imageView"];
+      if (YES == [aCoder allowsKeyedCoding])
+	{
+          if ([aCoder containsValueForKey: @"textField"])
+            {
+              [self setTextField: [aCoder decodeObjectForKey: @"textField"]];
     }
-    
+          else
+            {
+              textField = [[NSTextField alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 20.0)];
+            }
+          if ([aCoder containsValueForKey: @"imageView"])
+            {
+              [self setImageView: [aCoder decodeObjectForKey: @"imageView"]];
+            }
+          else
+            {
+              imageView = [[NSImageView alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 100.0)];
+            }
+	}
+      else
+	{
+	  [self setTextField: [aCoder decodeObject]];
+	  [self setImageView: [aCoder decodeObject]];
+	}
+    }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
   [super encodeWithCoder:aCoder];
-  [aCoder encodeObject:textField forKey:@"textField"];
-  [aCoder encodeObject:imageView forKey:@"imageView"];
+  if (YES == [aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject:textField forKey:@"textField"];
+      [aCoder encodeObject:imageView forKey:@"imageView"];
+    }
+  else
+    {
+      [aCoder encodeObject: textField];
+      [aCoder encodeObject: imageView];
+    }
 }
+
+- (void) copyBindingsTo: (NSCollectionViewItem*)newItem
+                   from: (NSView*)view
+                   onto: (NSView*)newView
+{
+  NSArray *exposedBindings = [view exposedBindings];
+  NSEnumerator *e = [exposedBindings objectEnumerator];
+  NSString *binding = nil;
+  while ((binding = [e nextObject]) != nil)
+    {
+      NSDictionary *info = [view infoForBinding: binding];
+      if (info != nil)
+        {
+          NSObject *target = [info objectForKey: NSObservedObjectKey];
+          if (target == self)
+            {
+              [newView bind: binding
+                   toObject: newItem
+                withKeyPath: [info objectForKey: NSObservedKeyPathKey]
+                    options: [info objectForKey: NSOptionsKey]];
+            }
+        }
+    }
+
+  NSView *sub1 = nil;
+  NSEnumerator *e1 = [[view subviews] objectEnumerator];
+  NSView *sub2 = nil;
+  NSEnumerator *e2 = [[newView subviews] objectEnumerator];
+  while ((sub1 = [e1 nextObject]) != nil)
+    {
+      sub2 = [e2 nextObject];
+      [self copyBindingsTo: newItem from: sub1 onto: sub2];
+    }
+ }
 
 - (id) copyWithZone:(NSZone *)zone 
 {
+  // FIXME: Cache this data, as we need a lot of copies
   NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject:self];
-  NSCollectionViewItem *newItem = [NSKeyedUnarchiver unarchiveObjectWithData:itemAsData];
-  return newItem;
+  NSCollectionViewItem *newItem = 
+    [NSKeyedUnarchiver unarchiveObjectWithData: itemAsData];
+
+  // Try to copy bindings too
+  [self copyBindingsTo: newItem from: [self view] onto: [newItem view]];
+ 
+  return RETAIN(newItem);
 }
 
 @end

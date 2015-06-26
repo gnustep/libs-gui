@@ -146,12 +146,14 @@ enum {
 };
 typedef NSUInteger NSImageScaling;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 enum {
   NSCellHitNone = 0,
-  NSCellHitContentArea = 1 << 0,
-  NSCellHitEditableTextArea = 1 << 1,
-  NSCellHitTrackableArea = 1 << 2,
+  NSCellHitContentArea = 1,
+  NSCellHitEditableTextArea = 2,
+  NSCellHitTrackableArea = 4
 };
+#endif
 
 enum {
   NSBackgroundStyleLight = 0,

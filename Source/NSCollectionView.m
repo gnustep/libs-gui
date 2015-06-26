@@ -37,6 +37,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
 
@@ -94,7 +95,11 @@ static NSString *placeholderItem = nil;
 //
 + (void) initialize
 {
+  if (self == [NSCollectionView class])
+    {
   placeholderItem = @"Placeholder";
+      [self exposeBinding: NSContentBinding];
+}
 }
 
 - (id) initWithFrame: (NSRect)frame
@@ -120,7 +125,7 @@ static NSString *placeholderItem = nil;
 
 - (void) _resetItemSize
 {
-  if (itemPrototype)
+  if (itemPrototype && ([itemPrototype view] != nil))
     {
       _itemSize = [[itemPrototype view] frame].size;
       _minItemSize = NSMakeSize (_itemSize.width, _itemSize.height);
@@ -151,8 +156,11 @@ static NSString *placeholderItem = nil;
   NSPoint oppositeOrigin = NSMakePoint (origin.x + size.width, origin.y + size.height);
   
   NSInteger firstIndexInRect = MAX(0, [self _indexAtPoint: origin]);
-  NSInteger lastIndexInRect = MIN([_items count] - 1, [self _indexAtPoint: oppositeOrigin]);
-  NSInteger index;
+  // I had to extract these values from the macro to get it
+  // working correctly.
+  NSInteger index = [self _indexAtPoint: oppositeOrigin];
+  NSInteger last = [_items count] - 1;
+  NSInteger lastIndexInRect = MIN(last, index);
 
   for (index = firstIndexInRect; index <= lastIndexInRect; index++)
     {
@@ -235,6 +243,7 @@ static NSString *placeholderItem = nil;
     }
   else
     {
+      [self _resetItemSize];
       // Force recalculation of each item's frame
       _itemSize = _minItemSize;
       _tileWidth = -1.0;
@@ -475,6 +484,7 @@ static NSString *placeholderItem = nil;
 	  NSRect initRect = NSMakeRect (-10000,-10000,100,100);
 	  [[item view] setFrame:initRect];
       [self addSubview: [item view]];
+      RELEASE(item);
     }
   return item;
 }
@@ -484,10 +494,10 @@ static NSString *placeholderItem = nil;
   NSCollectionViewItem *collectionItem = nil;
   if (itemPrototype)
     {
-      ASSIGN(collectionItem, [itemPrototype copy]);
+      collectionItem = [itemPrototype copy];
       [collectionItem setRepresentedObject: object];
     }
-  return AUTORELEASE (collectionItem);
+  return collectionItem;
 }
 
 - (void) _removeItemsViews
@@ -528,6 +538,11 @@ static NSString *placeholderItem = nil;
   if (_maxNumberOfColumns > 0)
     {
       _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
+    }
+  
+  if (_numberOfColumns == 0)
+    {
+      _numberOfColumns = 1;
     }
   
   CGFloat remaining = width - _numberOfColumns * itemSize.width;

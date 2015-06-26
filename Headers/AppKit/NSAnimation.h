@@ -263,7 +263,13 @@ APPKIT_EXPORT NSString *NSAnimationTriggerOrderOut;
 
 @end
 
+@protocol NSAnimationDelegate <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSAnimation)
+#endif
 
 /** NSAnimation delegate method.
  * Sent to the delegate when an animation reaches a specific progress mark. */
