@@ -607,8 +607,15 @@ Return values 0, 1, 2 are mostly the same as from
     max_line_height = [curParagraphStyle maximumLineHeight];
 
     /* sanity */
+#if 0
+    // Testplant-MAL-2015-06-26: Merge with main branch...
+    // This doesn't work in eggplant test...
+    if (max_line_height > 0 && max_line_height < min)
+#else
+    // Testplant-MAL-2015-06-26: Original testplant code...
     if (max_line_height < min)
       max_line_height = min;
+#endif
 
     line_height = [cache->font defaultLineHeightForFont];
     ascender = [cache->font ascender];
@@ -968,7 +975,15 @@ restart: ;
 
 	    g->size = r.size;
 	    g->pos.x = p.x + r.origin.x;
+#if 0
+        // Testplant-MAL-2015-06-26: Merge with main branch...
+	    g->pos.y = p.y - r.origin.y;
+#else
+        // Testplant-MAL-2015-06-26: Original testplant code...
+        // Using this over main branch...the above line with '-'
+        // doesn't seem to position text correctly in a text box...
 	    g->pos.y = p.y + r.origin.y;
+#endif
 
 	    p.x = g->pos.x + g->size.width;
 

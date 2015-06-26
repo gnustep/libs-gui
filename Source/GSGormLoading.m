@@ -892,7 +892,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  // decode the defer flag...
 	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
 	  _autoPositionMask = GSWindowAutoPositionNone;
-	  _screenRect = [[_object screen] frame];
+	  _screenRect = [[obj screen] frame];
 	}
 
       // FIXME: The designated initializer logic for NSWindow is in the initWithCoder: method of
