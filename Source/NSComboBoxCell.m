@@ -1767,6 +1767,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 @implementation NSComboBoxCell (GNUstepPrivate)
 
+// Testplant-MAL-2015-06-26: Keeping testplant fixes for this method...
 - (NSString *) _stringValueAtIndex: (NSInteger)index
 {
   if (_usesDataSource == NO)
