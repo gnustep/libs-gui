@@ -475,7 +475,7 @@
 - (void) encodeShort: (short)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat: @"%s", value];
+    id valueString = [NSString stringWithFormat: @"%hd", value];
 
     [lastObjectRepresentation setObject: valueString forKey: name];
   }
@@ -511,7 +511,7 @@
 - (void) encodeLong: (long)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat: @"%l", value];
+    id valueString = [NSString stringWithFormat: @"%ld", value];
 
     [lastObjectRepresentation setObject: valueString forKey: name];
   }

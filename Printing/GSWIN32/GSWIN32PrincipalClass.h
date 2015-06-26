@@ -1,12 +1,9 @@
-/** <title>GSLPRPageLayout</title>
+/** <title>GSWIN32PrincipalClass</title>
 
-   <abstract>Standard panel for querying user about page layout.</abstract>
+   <abstract>Principal class for the GSWIN32 Bundle.</abstract>
 
-   Copyright (C) 2001,2004 Free Software Foundation, Inc.
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
-   Written By: Adam Fedor <fedor@gnu.org>
-   Date: Oct 2001
-   Modified for Printing Backend Support
    Author: Chad Hardin <cehardin@mac.com>
    Date: June 2004
    
@@ -29,18 +26,16 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#ifndef _GNUstep_H_GSLPRPageLayout
-#define _GNUstep_H_GSLPRPageLayout
+#ifndef _GNUstep_H_GSWIN32PrincipalClass
+#define _GNUstep_H_GSWIN32PrincipalClass
 
-#import "AppKit/NSPageLayout.h"
+#import "GNUstepGUI/GSPrinting.h"
 
-@class NSPrintInfo;
-@class NSView;
-
-@interface GSLPRPageLayout: NSPageLayout
+@interface GSWIN32PrincipalClass : GSPrintingPrincipalClass
 {
 }
 
 @end
 
-#endif // _GNUstep_H_GSLPRPageLayout
+#endif // _GNUstep_H_GSWIN32PrincipalClass
+

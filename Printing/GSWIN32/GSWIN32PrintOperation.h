@@ -1,15 +1,22 @@
-/** <title>GSLPRPrintPanel</title>
+/** <title>GSWIN32PrintOperation</title>
 
-   <abstract>Standard panel for querying user about printing.</abstract>
+   <abstract>Controls generation of EPS, PDF or PS print jobs.</abstract>
 
-   Copyright (C) 2001,2004 Free Software Foundation, Inc.
-
-   Written By: Adam Fedor <fedor@gnu.org>
+   Copyright (C) 1996,2004 Free Software Foundation, Inc.
+   
+   Author:  Gregory Casamento <greg.casamento@gmail.com>
+   Date: 2014
+   Author:  Scott Christley <scottc@net-community.com>
+   Date: 1996
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: November 2000
+   Updated to new specification
+   Author: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
    Modified for Printing Backend Support
    Author: Chad Hardin <cehardin@mac.com>
    Date: June 2004
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -27,19 +34,23 @@
    If not, see <http://www.gnu.org/licenses/> or write to the 
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
-*/
+*/ 
 
-#import <Foundation/NSDebug.h>
-#import "GSLPRPrintPanel.h"
+#ifndef _GNUstep_H_GSWIN32PrintOperation
+#define _GNUstep_H_GSWIN32PrintOperation
 
+#import "GNUstepGUI/GSPrintOperation.h"
 
-@implementation GSLPRPrintPanel
-//
-// Class methods
-//
-+ (id) allocWithZone: (NSZone*)zone
+//GSPrintOperation is subclasses of GSPrintOperation, NOT NSPrintOperation.
+//NSPrintOperation does a lot of work that is pretty generic.
+//GSPrintOperation contains the method that does the actual
+//spooling.  A future Win32 printing printing bundle
+//will likely have to implement much more
+@interface GSWIN32PrintOperation : GSPrintOperation
 {
-  return NSAllocateObject(self, 0, zone);
 }
 
+
 @end
+
+#endif // _GNUstep_H_GSWIN32PrintOperation

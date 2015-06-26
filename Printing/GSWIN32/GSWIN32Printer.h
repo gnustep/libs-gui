@@ -1,12 +1,12 @@
 /* 
-   GSLPRPrintPanel.h
+   GSWIN32Printer.h
 
-   Standard panel to query users for info on a print job
+   Class representing a printer's or printer model's capabilities.
 
-   Copyright (C) 1996,2004 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997,2004 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>      
-   Date: 1996
+   Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: June 1997
    Modified for Printing Backend Support
    Author: Chad Hardin <cehardin@mac.com>
    Date: June 2004
@@ -30,15 +30,17 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#ifndef _GNUstep_H_GSLPRPrintPanel
-#define _GNUstep_H_GSLPRPrintPanel
+#ifndef _GNUstep_H_GSWIN32Printer
+#define _GNUstep_H_GSWIN32Printer
 
-#import "AppKit/NSPrintPanel.h"
+#import "AppKit/NSPrinter.h"
 
-@interface GSLPRPrintPanel : NSPrintPanel
+
+@interface GSWIN32Printer : NSPrinter
 {
 }
 
++(NSDictionary*) printersDictionary;
 @end
 
-#endif // _GNUstep_H_GSLPRPrintPanel
+#endif // _GNUstep_H_GSWIN32Printer

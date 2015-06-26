@@ -1,11 +1,12 @@
-/** <title>GSCUPSPageLayout</title>
+/* 
+   GSWIN32PrincipalClass.m
 
-   <abstract>Standard panel for querying user about page layout.</abstract>
+   Principal class for the GSWIN32 Bundle
 
    Copyright (C) 2004 Free Software Foundation, Inc.
 
-   Written By: Chad Hardin <cehardin@mac.com>
-   Date: October 2004
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -26,16 +27,35 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#ifndef _GNUstep_H_GSCUPSPageLayout
-#define _GNUstep_H_GSCUPSPageLayout
+#import <Foundation/NSDebug.h>
+#import "GSWIN32PrincipalClass.h"
+#import "GSWIN32PrintInfo.h"
+#import "GSWIN32PrintOperation.h"
+#import "GSWIN32Printer.h"
 
-#import "AppKit/NSPageLayout.h"
 
-
-@interface GSCUPSPageLayout: NSPageLayout
+@implementation GSWIN32PrincipalClass
+//
+// Class methods
+//
++(Class) printInfoClass
 {
+  return [GSWIN32PrintInfo class];
+}
+
++(Class) printOperationClass
+{
+  return [GSWIN32PrintOperation class];
+}
+
++(Class) printerClass
+{
+  return [GSWIN32Printer class];
+}
+
++(Class) gsPrintOperationClass
+{
+  return [GSWIN32PrintOperation class];
 }
 
 @end
-
-#endif // _GNUstep_H_GSCUPSPageLayout

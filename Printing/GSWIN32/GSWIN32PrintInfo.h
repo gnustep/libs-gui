@@ -1,8 +1,14 @@
-/** <title>GSLPRPageLayout</title>
+/** <title>GSWIN32PrintInfo</title>
 
-   <abstract></abstract>
+   <abstract>Stores information used in printing.</abstract>
 
-   Copyright (C) 2004 Free Software Foundation, Inc.
+   Copyright (C) 1996,1997,2004 Free Software Foundation, Inc.
+
+   Author: Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: July 1997
+   Author: Adam Fedor <fedor@gnu.org>
+   Date: Oct 2001
+   Modified for Printing Backend Support
    Author: Chad Hardin <cehardin@mac.com>
    Date: June 2004
    
@@ -25,27 +31,15 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <Foundation/NSDebug.h>
-#import "GSLPRPageLayout.h"
+#ifndef _GNUstep_H_GSWIN32PrintInfo
+#define _GNUstep_H_GSWIN32PrintInfo
 
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSPrintInfo.h"
 
-@implementation GSLPRPageLayout
-//
-// Class methods
-//
-+ (void)initialize
+@interface GSWIN32PrintInfo: NSPrintInfo
 {
-  if (self == [GSLPRPageLayout class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
 }
-
-
-+ (id) allocWithZone: (NSZone*)zone
-{
-  return NSAllocateObject(self, 0, zone);
-}
-
 @end
+
+#endif // _GNUstep_H_GSWIN32PrintInfo

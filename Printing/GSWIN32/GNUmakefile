@@ -1,11 +1,11 @@
 #
-#  GSCUPS Printing Backend Bundle makefile for GNUstep GUI Library
+#  GSWIN32 Printing Backend Bundle makefile for GNUstep GUI Library
 #
 #  Copyright (C) 2004 Free Software Foundation, Inc.
 #
 #  Author: Chad Hardin <cehardin@mac.com
 #
-#  Date: October 2004
+#  Date: June 2004
 #  
 #  This file is part of the GNUstep GUI Library.
 #
@@ -32,84 +32,62 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../../config.make
 include ../../Version
 
-GNUSTEP_INSTALLATION_DIR=$(GNUSTEP_SYSTEM_ROOT)
-
-
-
-
-BUNDLE_NAME=GSCUPS
+BUNDLE_NAME=GSWIN32
 BUNDLE_INSTALL_DIR=	$(GNUSTEP_BUNDLES)/GSPrinting
-GSCUPS_PRINCIPAL_CLASS=GSCUPSPrincipalClass
-
-
+GSWIN32_PRINCIPAL_CLASS=GSWIN32PrincipalClass
 
 ifeq ($(GNUSTEP_TARGET_OS),mingw32)
-GSCUPS_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+GSWIN32_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
 endif
 ifeq ($(GNUSTEP_TARGET_OS),cygwin)
-GSCUPS_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+GSWIN32_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
 endif
-
-
-GSCUPS_BUNDLE_LIBS += $(GSCUPS_LIBS)
 
 #
 # Libraries
 #
-#GSCUPS_LIBRARIES_DEPEND_UPON +=
-
+#GSWIN32_LIBRARIES_DEPEND_UPON += 
 
 #
 # Resource files
 #
-#GSCUPS_RESOURCE_FILES = 
-
+#GSWIN32_RESOURCE_FILES = 
 
 #
 # Header files
 #
-GSCUPS_HEADERS= \
- GSCUPSPrincipalClass.h \
- GSCUPSPrintInfo.h \
- GSCUPSPrintOperation.h \
- GSCUPSPrinter.h
-
+GSWIN32_HEADERS= \
+ GSWIN32PrincipalClass.h \
+ GSWIN32PrintInfo.h \
+ GSWIN32PrintOperation.h \
+ GSWIN32Printer.h
 
 #
 # Class files
 #
-GSCUPS_OBJC_FILES=	\
- GSCUPSPrincipalClass.m \
- GSCUPSPrintInfo.m \
- GSCUPSPrintOperation.m \
- GSCUPSPrinter.m
-
+GSWIN32_OBJC_FILES=	\
+ GSWIN32PrincipalClass.m \
+ GSWIN32PrintInfo.m \
+ GSWIN32PrintOperation.m \
+ GSWIN32Printer.m
 
 #
 # C files
 #
-#GSCUPS_C_FILES = 
-
+#GSWIN32_C_FILES = 
 
 #
 # Languages
 #
-#GSCUPS_LANGUAGES= \
+#GSWIN32_LANGUAGES= \
 # English
-
 
 #
 # Localized Resource Files
 #
-#GSCUPS_LOCALIZED_RESOURCE_FILES= \
-# GSCUPSPrintPanel.gorm \
-# GSCUPSPageLayout.gorm
-
-
-
-
-
-
+#GSWIN32_LOCALIZED_RESOURCE_FILES= \
+# GSWIN32PrintPanel.gorm \
+# GSWIN32PageLayout.gorm
 
 #
 # Makefiles

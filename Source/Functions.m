@@ -34,6 +34,7 @@
 
 #import "GSGuiPrivate.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSEvent.h"

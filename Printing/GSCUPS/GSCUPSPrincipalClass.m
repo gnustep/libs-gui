@@ -29,10 +29,8 @@
 
 #import <Foundation/NSDebug.h>
 #import "GSCUPSPrincipalClass.h"
-#import "GSCUPSPageLayout.h"
 #import "GSCUPSPrintInfo.h"
 #import "GSCUPSPrintOperation.h"
-#import "GSCUPSPrintPanel.h"
 #import "GSCUPSPrinter.h"
 
 
@@ -40,10 +38,6 @@
 //
 // Class methods
 //
-+(Class) pageLayoutClass
-{
-  return [GSCUPSPageLayout class];
-}
 
 +(Class) printInfoClass
 {
@@ -55,18 +49,10 @@
   return [GSCUPSPrintOperation class];
 }
 
-
-+(Class) printPanelClass
-{
-  return [GSCUPSPrintPanel class];
-}
-
-
 +(Class) printerClass
 {
   return [GSCUPSPrinter class];
 }
-
 
 +(Class) gsPrintOperationClass
 {

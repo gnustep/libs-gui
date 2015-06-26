@@ -4,6 +4,9 @@ License: LGPL
 Group: Development/Libraries
 Source: ftp://ftp.gnustep.org/pub/gnustep/core/%{gs_name}-%{gs_version}.tar.gz
 Requires: gnustep-base >= 1.15.1
+Packager: GNUstep Development <bug-gnustep@gnu.org>
+Vendor: The GNUstep Project
+URL: http://www.gnustep.org/
 
 %description 
 The GNUstep gui Library is a powerful library of graphical user interface
