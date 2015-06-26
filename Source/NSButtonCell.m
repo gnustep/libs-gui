@@ -973,7 +973,6 @@ typedef struct _GSButtonCellFlags
       buttonState = GSThemeDisabledState;
     }
 
-#if 0 // Testplant-MAL-2015-06-20: Merged but causes button to show up depressed???
   /* If we are first responder, change to the corresponding
      first responder state. Note that GSThemeDisabledState
      doesn't have a first responder variant, currently. */
@@ -988,12 +987,10 @@ typedef struct _GSButtonCellFlags
       else if (buttonState == GSThemeNormalState)
         buttonState = GSThemeFirstResponderState;
     }
-#endif
   
   return buttonState;
 }
 
-#if 1
 - (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   GSThemeControlState buttonState = [self themeControlState];
@@ -1004,54 +1001,7 @@ typedef struct _GSButtonCellFlags
                    style: _bezel_style
                    state: buttonState];
 }
-#else
-- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  unsigned mask;
-  GSThemeControlState buttonState = GSThemeNormalState;
   
-  // set the mask
-  if (_cell.is_highlighted)
-  {
-    mask = _highlightsByMask;
-    if (_cell.state)
-    {
-      mask &= ~_showAltStateMask;
-    }
-  }
-  else if (_cell.state)
-    mask = _showAltStateMask;
-  else
-    mask = NSNoCellMask;
-  
-  /* Determine the background color.
-   We draw when there is a border or when highlightsByMask
-   is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-   as required by our nextstep-like look and feel.  */
-  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-  {
-    buttonState = GSThemeHighlightedState;
-  }
-  
-  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (mask & NSPushInCellMask)
-  {
-    buttonState = GSThemeSelectedState;
-  }
-  
-  if (_cell.is_disabled && buttonState != GSThemeHighlightedState)
-  {
-    buttonState = GSThemeDisabledState;
-  }
-  
-  [[GSTheme theme] drawButton: cellFrame
-                           in: self
-                         view: controlView
-                        style: _bezel_style
-                        state: buttonState];
-}
-#endif
-
 - (void) drawImage: (NSImage*)imageToDisplay
          withFrame: (NSRect)cellFrame 
             inView: (NSView*)controlView

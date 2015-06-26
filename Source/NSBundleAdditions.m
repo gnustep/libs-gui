@@ -34,6 +34,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -281,6 +282,8 @@
 
 - (NSString *) pathForNibResource: (NSString *)fileName
 {
+  // Testplant-MAL-2015-06-26: This seems like a testplant fix
+  // so keeping over the main branches version...
   NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
   NSArray		*languages;
   NSString		*rootPath = [self bundlePath];
