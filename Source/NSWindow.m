@@ -3234,48 +3234,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 + (NSButton *) standardWindowButton: (NSWindowButton)button 
                        forStyleMask: (NSUInteger) mask
 {
-  NSButton *newButton;
-
-  newButton = [[NSButton alloc] init];
-  [newButton setRefusesFirstResponder: YES];
-  [newButton setButtonType: NSMomentaryChangeButton];
-  [newButton setImagePosition: NSImageOnly];
-  [newButton setBordered: YES];
-  [newButton setTag: button];
-  
-  switch (button)
-    {
-      case NSWindowCloseButton:
-        [newButton setImage: [NSImage imageNamed: @"common_Close"]];
-        [newButton setAlternateImage: [NSImage imageNamed: @"common_CloseH"]];
-        /* TODO: -performClose: should (but doesn't currently) highlight the
-           button, which is wrong here. When -performClose: is fixed, we'll need a
-           different method here. */
-        [newButton setAction: @selector(performClose:)];
-        break;
-
-      case NSWindowMiniaturizeButton:
-        [newButton setImage: [NSImage imageNamed: @"common_Miniaturize"]];
-        [newButton setAlternateImage: [NSImage imageNamed: @"common_MiniaturizeH"]];
-        [newButton setAction: @selector(miniaturize:)];
-        break;
-
-      case NSWindowZoomButton:
-        // FIXME
-        [newButton setAction: @selector(zoom:)];
-        break;
-
-      case NSWindowToolbarButton:
-        // FIXME
-        [newButton setAction: @selector(toggleToolbarShown:)];
-        break;
-      case NSWindowDocumentIconButton:
-      default:
-        // FIXME
-        break;
-    }
-
-  return AUTORELEASE(newButton);
+  return [[GSTheme theme] standardWindowButton: button 
+				  forStyleMask: mask];
 }
 
 - (NSButton *) standardWindowButton: (NSWindowButton)button
@@ -5164,6 +5124,7 @@ current key view.<br />
 
   [aCell setKeyEquivalent: @"\r"];
   [aCell setKeyEquivalentModifierMask: 0];
+  [[GSTheme theme] didSetDefaultButtonCell: aCell];
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell

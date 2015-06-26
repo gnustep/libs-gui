@@ -1,3 +1,12 @@
+2015-06-25 20:11-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations for method
+	* Source/GNUmakefile: Add new file GSThemeWindow.m
+	* Source/GSThemeWindow.m: Add method standardWindowButton:
+	forStyleMask:.
+	* Source/NSWindow.m: Call theme methods to return standardWindowButton:
+	forStyleMask:.
+
 2015-06-25 14:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Declarations for new theme

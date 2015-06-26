@@ -235,6 +235,7 @@ GSThemeOpenSavePanels.m \
 GSThemePanel.m \
 GSThemePrintPanels.m \
 GSThemeTools.m \
+GSThemeWindow.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbarView.m \

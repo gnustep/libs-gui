@@ -1465,5 +1465,20 @@ withRepeatedImage: (NSImage*)image
 - (Class) pageLayoutClass;
 @end
 
+@interface GSTheme (NSWindow)
+/**
+ * This method returns the standard window button for the
+ * given mask for the current theme.
+ */ 
+- (NSButton *) standardWindowButton: (NSWindowButton)button
+		       forStyleMask: (NSUInteger) mask;
+				  
+/** 
+ * This method does any additional setup after the default 
+ * cell is set.
+ */
+- (void) didSetDefaultButtonCell: (NSButtonCell *)aCell;
+@end
+
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */
