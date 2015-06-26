@@ -70,11 +70,20 @@ static NSMutableDictionary *cursorDict = nil;
     }
 }
 
+#ifdef WIN32
++ (NSUInteger) count
+{
+  return [gnustep_gui_cursor_stack count];
+}
+#endif
+
+// Testplant-MAL-2015-06-26: Keeping testplant fixes...
 + (NSMutableArray *) stack
 {
   return gnustep_gui_cursor_stack;
 }
 
+// Testplant-MAL-2015-06-26: Keeping testplant fixes...
 + (void) resetStack
 {
   [gnustep_gui_cursor_stack removeAllObjects];
@@ -287,6 +296,7 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
 }
 
+// Testplant-MAL-2015-06-26: Keeping testplant fixes...
 + (NSCursor*) resizeNWSECursor
 {
   return getStandardCursor(@"GSResizeNWSECursor", GSResizeNWSECursor);
@@ -454,6 +464,8 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) mouseEntered: (NSEvent*)theEvent
 {
+  NSDebugLLog(@"NSCursor", @"Cursor mouseEntered:enter %d exit %d",
+              _cursor_flags.is_set_on_mouse_entered, _cursor_flags.is_set_on_mouse_exited);
   if (_cursor_flags.is_set_on_mouse_entered == YES)
     {
       [self set];
@@ -474,7 +486,8 @@ backgroundColorHint:(NSColor *)bg
  */
 - (void) mouseExited: (NSEvent*)theEvent
 {
-  NSDebugLLog(@"NSCursor", @"Cursor mouseExited:");
+  NSDebugLLog(@"NSCursor", @"Cursor mouseExited: enter %d exit %d",
+              _cursor_flags.is_set_on_mouse_entered, _cursor_flags.is_set_on_mouse_exited);
   if (_cursor_flags.is_set_on_mouse_exited == YES)
     {
       [self set];
@@ -668,7 +681,7 @@ backgroundColorHint:(NSColor *)bg
               image = [aDecoder decodeObjectForKey: @"NSImage"];
             }
           
-		  
+          // Testplant-MAL-2015-06-26: Keeping testplant fixes...
 		  if ([[image name] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
 		    {
 			  NSDebugLog(@"An NSCursor object was encoded with the image "

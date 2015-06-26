@@ -29,6 +29,7 @@
 */
 
 #import <Foundation/NSData.h>
+#import <Foundation/NSError.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSNotification.h>
@@ -47,6 +48,16 @@
 #import "NSDocumentFrameworkPrivate.h"
 
 #import "GSGuiPrivate.h"
+
+static inline NSError*
+create_error(int code, NSString* desc)
+{
+  return [NSError errorWithDomain: @"NSDocument"
+                  code: code 
+                  userInfo: [NSDictionary 
+                                dictionaryWithObjectsAndKeys: desc,
+                                NSLocalizedDescriptionKey, nil]];
+}
 
 @implementation NSDocument
 
@@ -629,8 +640,12 @@ withContentsOfURL: (NSURL *)url
   data = [self dataOfType: type error: error];
   
   if (data == nil) 
-    return nil;
-
+    {
+      if (error && !(*error))
+          *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
+                                                     @"Error description"));
+      return nil;
+    }
   return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
 }
 
@@ -730,9 +745,11 @@ withContentsOfURL: (NSURL *)url
                           error: error];
     }
 
-  // FIXME: Set error
   if (error)
-    *error = nil;
+    {
+      *error = create_error(0, NSLocalizedString(@"File wrapper is no file.",
+                                                 @"Error description"));
+    }
   return NO;
 }
 
@@ -894,6 +911,11 @@ withContentsOfURL: (NSURL *)url
                  ofType: type 
                  saveOperation: op])
 	{
+          if (error)
+            {
+              *error = create_error(0, NSLocalizedString(@"Could not write backup file.",
+                                                         @"Error description"));
+            }
 	  return NO;
 	}
 
@@ -907,9 +929,11 @@ withContentsOfURL: (NSURL *)url
 
   if (!isNativeType || (url == nil))
     {
-      // FIXME: Set error
       if (error)
-	*error = nil; 
+        {
+          *error = create_error(0, NSLocalizedString(@"Not a writable type or no URL given.",
+                                                     @"Error description"));
+        }
       return NO;
     }
   
@@ -927,9 +951,11 @@ withContentsOfURL: (NSURL *)url
               if (![self _writeBackupForFile: fileName
                          toFile: backupFilename])
                 {
-                  // FIXME: Set error.
 		  if (error)
-		    *error = nil; 
+                    {
+                      *error = create_error(0, NSLocalizedString(@"Could not write backup file.",
+                                                                 @"Error description"));
+                    }
                   return NO;
                 }
             }
@@ -997,9 +1023,11 @@ withContentsOfURL: (NSURL *)url
                       error: error];
       if (wrapper == nil)
         {
-          // FIXME: Set error
-	  if (error)
-	    *error = nil; 
+	  if (error && !(*error))
+            {
+              *error = create_error(0, NSLocalizedString(@"Could not write file wrapper.",
+                                                         @"Error description"));
+            }
           return NO;
         }
 
