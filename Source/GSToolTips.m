@@ -351,7 +351,8 @@ static BOOL		restoreMouseMoved;
     @selector(view:stringForToolTip:point:userData:)] == YES)
     {
       // From testing on OS X, point is in the view's coordinate system
-      //   The locationInWindow has been converted to this in [NSWindow _checkTrackingRectangles:forEvent:]
+      // The locationInWindow has been converted to this in
+      // [NSWindow _checkTrackingRectangles:forEvent:]
       NSPoint p = [theEvent locationInWindow];
 
       toolTipString = [[provider object] view: view
@@ -683,6 +684,8 @@ static BOOL		restoreMouseMoved;
   [(GSTTView*)([window contentView]) setText: toolTipText];
   [window setFrame: rect display: NO];
   [window orderFront: nil];
+  // Testplant-MAL-2015-06-26: Main branch merge...
+  // Keeping this testplant fix...
   [window display];
   isOpening = NO;
 
