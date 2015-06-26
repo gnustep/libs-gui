@@ -1789,10 +1789,17 @@ void NSBeginInformationalAlertSheet(NSString *title,
 {
   NSArray *options;
   NSUInteger count;
+  NSString *errorText;
+
+  errorText = [error localizedFailureReason];
+  if (errorText == nil)
+    {
+      errorText = [error localizedDescription];
+    }
 
   options = [error localizedRecoveryOptions];
   count = [options count];
-  return [self alertWithMessageText: [error localizedDescription]
+  return [self alertWithMessageText: errorText
                defaultButton: (count > 0) ? [options objectAtIndex: 0] : nil
                alternateButton: (count > 1) ? [options objectAtIndex: 1] : nil
                otherButton: (count > 2) ? [options objectAtIndex: 2] : nil
@@ -2028,6 +2035,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
 		   didEndSelector: (SEL)didEndSelector
 		      contextInfo: (void *)contextInfo
 {
+  // Testplant-MAL-2015-06-26: Main branch merge...
+  // Keeping testplant fixes...
   NSRect  frame = [window frame];
   NSPoint point = frame.origin;
   NSSize  size;
@@ -2036,7 +2045,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
   // Ssetup...
   [self _setupPanel];
   
-  // Position window...
+  // Testplant-MAL-2015-06-26: keeping local fixes...
+  // Position window...positions at top and horizontally centered (roughly)
   size  = [_window frame].size;
   point = NSMakePoint(NSMinX(frame), NSMaxY(frame)-size.height);
   width = frame.size.width - size.width;
