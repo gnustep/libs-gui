@@ -45,9 +45,6 @@
 /*
  * Class variables
  */
-static NSImage	*_branch_image;
-static NSImage	*_highlight_image;
-
 static Class	_colorClass;
 
 // GNUstep user default to have NSBrowserCell in bold if non leaf
@@ -67,8 +64,6 @@ static NSFont *_leafFont;
   if (self == [NSBrowserCell class])
     {
       [self setVersion: 1];
-      ASSIGN(_branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
-      ASSIGN(_highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
 
       /*
        * Cache classes to avoid overheads of poor compiler implementation.
