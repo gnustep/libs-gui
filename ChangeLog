@@ -1,3 +1,7 @@
+2015-06-28  Germán Arias <germanandre@gmx.es>
+
+	* Resources/Spanish.lproj/Localizable.strings: Add translations.
+
 2015-06-26 01:22-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations for

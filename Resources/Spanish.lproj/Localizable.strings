@@ -110,7 +110,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:957 */
 /* Comment: Error description */
 /* Flag: untranslated */
-"Could not write backup file." = "Could not write backup file.";
+"Could not write backup file." = "No se puede escribir el archivo de respaldo.";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -118,18 +118,18 @@ add comments above this one
 /* File: ../Source/NSDocument.m:751 */
 /* Comment: Error description */
 /* Flag: untranslated */
-"File wrapper is no file." = "File wrapper is no file.";
+"File wrapper is no file." = "El wrapper no es un archivo.";
 
 /* File: ../Source/NSDocument.m:935 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Not a writable type or no URL given."
-  = "Not a writable type or no URL given.";
+  = "No se ha especificado un tipo o URL.";
 
 /* File: ../Source/NSDocument.m:1029 */
 /* Comment: Error description */
 /* Flag: untranslated */
-"Could not write file wrapper." = "Could not write file wrapper.";
+"Could not write file wrapper." = "No se puede guardar el wrapper.";
 
 
 /*** Strings from ../Source/Functions.m ***/
