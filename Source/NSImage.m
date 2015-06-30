@@ -96,6 +96,10 @@ NSString *const NSImageNameNetwork                  = @"NSNetwork";
 // OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 NSString *const NSImageNameFolder                   = @"NSFolder";
 
+@interface NSView (Private)
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
+@end
+
 @implementation NSBundle (NSImageAdditions)
 
 - (NSString*) pathForImageResource: (NSString*)name
@@ -499,6 +503,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return NO;
 }
 
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"<%@ %p Name=%@ Size=%@ Reps=%@>",
+                   [self class],
+                   self,
+                   [self name],
+                   NSStringFromSize([self size]),
+                   [self representations]];
+}
+
 /* This methd sets the name of an image, updating the global name dictionary
  * to point to the image (or removing an image from the dictionary if the
  * new name is nil).
@@ -788,7 +802,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   // Set the CTM to the identity matrix with the current translation
   // and the user space scale factor
   {
-    NSAffineTransform *backup = [ctxt GSCurrentCTM];
+    NSAffineTransform *backup = [[ctxt GSCurrentCTM] retain];
     NSAffineTransform *newTransform = [NSAffineTransform transform];
     NSPoint translation = [backup transformPoint: aPoint];
     [newTransform translateXBy: translation.x
@@ -803,6 +817,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	     fraction: delta];
     
     [ctxt GSSetCTM: backup];
+
+    [backup release];
   }
 }
 
@@ -963,10 +979,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   GSRepData *repd;
 
-  repd = [GSRepData new];
-  repd->rep = RETAIN(imageRep);
-  [_reps addObject: repd]; 
-  RELEASE(repd);
+  if (imageRep != nil)
+    {
+      repd = [GSRepData new];
+      repd->rep = RETAIN(imageRep);
+      [_reps addObject: repd]; 
+      RELEASE(repd);
+    }
 }
 
 - (void) addRepresentations: (NSArray *)imageRepArray
@@ -1035,9 +1054,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
       if (_lockedView == nil)
-        [NSException raise: NSImageCacheException
-                     format: @"Cannot lock focus on nil rep"];
-      [_lockedView lockFocus];
+        {
+          [NSException raise: NSImageCacheException
+                      format: @"Cannot lock focus on nil rep"];
+        }
+
+      // FIXME: This is needed to get image caching working while printing. A better solution
+      // needs to remove the viewIsPrinting variable from NSView.
+      [_lockedView _lockFocusInContext: [window graphicsContext] inRect: [_lockedView bounds]];
       if (repd->bg == nil) 
         {
           NSRect fillrect = NSMakeRect(0, 0, _size.width, _size.height);
@@ -2394,61 +2418,65 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
         }
 
       // We end here, when no representation are there or no match is found.
-        {     
-          NSImageRep *cacheRep = nil;
-          GSRepData *repd;
-	  NSSize imageSize = [self size];
-          NSSize repSize;
-	  NSInteger pixelsWide, pixelsHigh;
-
-	  if (rep != nil)
-	    {
-	      repSize = [rep size];
-
-	      if (repSize.width <= 0 || repSize.height <= 0)
-		repSize = imageSize;
-
-	      pixelsWide = [rep pixelsWide];
-	      pixelsHigh = [rep pixelsHigh];
-	      
-	      if (pixelsWide == NSImageRepMatchesDevice ||
-		  pixelsHigh == NSImageRepMatchesDevice)
-		{
-		  // FIXME: Since the cached rep must be a bitmap,
-		  // we must rasterize vector reps at a particular DPI.
-		  // Here we hardcode 72, but we should choose the DPI more intelligently.
-		  pixelsWide = repSize.width; 
-		  pixelsHigh = repSize.height;
-		}
-	    }
-	  else // e.g. when there are no representations at all
-	    {
-	      repSize = imageSize;
-	      // FIXME: assumes 72 DPI. Also truncates, not sure if that is a problem.
-	      pixelsWide = imageSize.width;
-	      pixelsHigh = imageSize.height;
-	    }
-	  
-          if (repSize.width <= 0 || repSize.height <= 0 ||
-	      pixelsWide <= 0 || pixelsHigh <= 0)
+      {
+        NSImageRep *cacheRep = nil;
+        GSRepData *repd;
+        NSSize imageSize = [self size];
+        NSSize repSize;
+        NSInteger pixelsWide, pixelsHigh;
+        
+        if (rep != nil)
+          {
+            repSize = [rep size];
+            
+            if (repSize.width <= 0 || repSize.height <= 0)
+              repSize = imageSize;
+            
+            pixelsWide = [rep pixelsWide];
+            pixelsHigh = [rep pixelsHigh];
+            
+            if (pixelsWide == NSImageRepMatchesDevice ||
+                pixelsHigh == NSImageRepMatchesDevice)
+            {
+              // FIXME: Since the cached rep must be a bitmap,
+              // we must rasterize vector reps at a particular DPI.
+              // Here we hardcode 72, but we should choose the DPI more intelligently.
+              pixelsWide = repSize.width;
+              pixelsHigh = repSize.height;
+            }
+          }
+        else // e.g. when there are no representations at all
+          {
+            repSize = imageSize;
+            // FIXME: assumes 72 DPI. Also truncates, not sure if that is a problem.
+            pixelsWide = imageSize.width;
+            pixelsHigh = imageSize.height;
+          }
+        
+        if (repSize.width <= 0 || repSize.height <= 0 ||
+            pixelsWide <= 0 || pixelsHigh <= 0)
+          return nil;
+        
+        // Create a new cached image rep without any contents.
+        cacheRep = [[cachedClass alloc] initWithSize: repSize
+                                          pixelsWide: pixelsWide
+                                          pixelsHigh: pixelsHigh
+                                               depth: [[NSScreen mainScreen] depth]
+                                            separate: _flags.cacheSeparately
+                                               alpha: [rep hasAlpha]];
+        if (cacheRep == nil)
+          {
             return nil;
-
-          // Create a new cached image rep without any contents.
-          cacheRep = [[cachedClass alloc] 
-                         initWithSize: repSize
-			   pixelsWide: pixelsWide
-			   pixelsHigh: pixelsHigh
-				depth: [[NSScreen mainScreen] depth]
-			     separate: _flags.cacheSeparately
-				alpha: [rep hasAlpha]];
-          repd = [GSRepData new];
-          repd->rep = cacheRep;
-          repd->original = rep; // may be nil!
-          [_reps addObject: repd]; 
-          RELEASE(repd); /* Retained in _reps array. */
-
-          return repd;
-        }
+          }
+        
+        repd = [GSRepData new];
+        repd->rep = cacheRep;
+        repd->original = rep; // may be nil!
+        [_reps addObject: repd]; 
+        RELEASE(repd); /* Retained in _reps array. */
+        
+        return repd;
+      }
     }
 }
 
