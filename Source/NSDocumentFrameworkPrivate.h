@@ -47,9 +47,11 @@
 
 @interface NSDocumentController (RecentDocumentsMenu)
 - (NSMenu *) _recentDocumentsMenu;
-- (void) _setRecentDocumentsMenu: (NSMenu *)menu;
-- (void) _updateRecentDocumentsMenu;
+- (void)     _setRecentDocumentsMenu: (NSMenu *)menu;
+- (void)     _updateRecentDocumentsMenu;
 - (IBAction) _openRecentDocument: (id)sender;
+- (void)     _saveRecentDocuments;
+- (void)     _loadRecentDocuments;
 @end
 
 @interface NSDocument (Private)

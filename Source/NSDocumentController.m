@@ -277,42 +277,8 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   _documents = [[NSMutableArray alloc] init];
   
   /* Get list of recent documents */
-  _recent_documents = [[NSUserDefaults standardUserDefaults] 
-                       objectForKey: NSRecentDocuments];
-  if (_recent_documents)
-    {
-      int i, count, max;
+  [self _loadRecentDocuments];
 
-      _recent_documents = [_recent_documents mutableCopy];
-      count = [_recent_documents count];
-      for (i = 0; i < count; i++)
-        {
-          NSString *str;
-          NSURL *url;
-
-          str = [_recent_documents objectAtIndex: i];
-          url = [NSURL URLWithString: str];
-          if (url == nil)
-            {
-              NSLog(@"NSRecentItems value '%@' is not valid ... ignored", str);
-              [_recent_documents removeObjectAtIndex: i];
-              i--;
-              count--;
-            }
-          else
-            {
-              [_recent_documents replaceObjectAtIndex: i withObject: url];
-            }
-        }
-
-      max = [self maximumRecentDocumentCount];
-      if (count > max)
-	{
-	  [_recent_documents removeObjectsInRange: NSMakeRange(0, count - max)];
-	}
-    } 
-  else
-    _recent_documents = RETAIN([NSMutableArray array]);
   [self setShouldCreateUI: YES];
   
   [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -1347,7 +1313,6 @@ static BOOL _shouldClose = YES;
 - (void) noteNewRecentDocumentURL: (NSURL *)anURL
 {
   NSUInteger index = [_recent_documents indexOfObject: anURL];
-  NSMutableArray *a;
 
   if (index != NSNotFound)
     {
@@ -1362,16 +1327,8 @@ static BOOL _shouldClose = YES;
   [_recent_documents addObject: anURL];
 
   // Save the changed list
-  a = [_recent_documents mutableCopy];
-  index = [a count];
-  while (index-- > 0)
-    {
-      [a replaceObjectAtIndex: index withObject:
-        [[a objectAtIndex: index] absoluteString]];
-    }
-  [[NSUserDefaults standardUserDefaults] 
-    setObject: a forKey: NSRecentDocuments];
-  RELEASE(a);
+  [self _saveRecentDocuments];
+
   [self _updateRecentDocumentsMenu];
 }
 
@@ -1501,14 +1458,24 @@ static NSString *processName = nil;
 
       if ([fm fileExistsAtPath: path isDirectory: &isDir] == NO)
         {
-          if (![fm createDirectoryAtPath: path attributes: nil])
-            return nil;
+          if (![fm createDirectoryAtPath: path
+             withIntermediateDirectories: YES
+                              attributes: nil
+                                   error: NULL])
+            {
+              return nil;
+            }
         }
       else if (isDir == NO)
         {
-          if (![fm removeFileAtPath: path handler: nil] ||
-              ![fm createDirectoryAtPath: path attributes: nil])
-            return nil;
+          if (![fm removeFileAtPath: path handler: nil]
+            || ![fm createDirectoryAtPath: path
+              withIntermediateDirectories: YES
+                               attributes: nil
+                                    error: NULL])
+            {
+              return nil;
+            }
         }
     }
 
@@ -1649,7 +1616,6 @@ static NSString *processName = nil;
 {
   NSMenu *recentMenu;
   BOOL listUpdated;
-  NSMutableArray *a;
   int i;
 
   recentMenu = [self _recentDocumentsMenu];
@@ -1668,40 +1634,32 @@ static NSString *processName = nil;
     {
       NSURL *u = [_recent_documents objectAtIndex: i];
       NSError *error;
-      //  if resource has been deleted
+      // Check if resource has been deleted
       if (![u checkResourceIsReachableAndReturnError:&error])
         {
           [_recent_documents removeObjectAtIndex:i];
           listUpdated = YES;
-          continue;
         }
     }
   if ( listUpdated ) 
     {
       // Save the changed list
-      a = [_recent_documents mutableCopy];
-      i = [a count];
-      while (i-- > 0)
-        {
-          [a replaceObjectAtIndex: i withObject:
-           [[a objectAtIndex: i] absoluteString]];
+      [self _saveRecentDocuments];
         }
-      [[NSUserDefaults standardUserDefaults]
-        setObject: a forKey: NSRecentDocuments];
-      RELEASE(a);
-    }
     
+  // remove them all
   while ([recentMenu numberOfItems] > 0)
     {
-      [recentMenu removeItemAtIndex: 0];	// remove them all
+      [recentMenu removeItemAtIndex: 0];
     }
+
   for (i = [_recent_documents count] - 1; i >= -2; i--)
     {
       // add all items incl. a Clear List item if needed
       NSMenuItem *item;
 
       if (i == -1)
-	{
+        {
           if ([_recent_documents count] == 0)
             continue;	// skip if menu is empty
           item = (NSMenuItem *) [NSMenuItem separatorItem];
@@ -1709,26 +1667,26 @@ static NSString *processName = nil;
           RETAIN(item);
         }
       else if (i == -2)
-	{
+        {
           item = [[NSMenuItem alloc] initWithTitle: _(@"Clear List")
-                                     action: @selector(clearRecentDocuments:) 
+                                            action: @selector(clearRecentDocuments:)
                                      keyEquivalent: nil];
           // disable for empty list
           [item setEnabled: [_recent_documents count] > 0];
         }
       else
-	{
+        {
           // standard item
           NSURL *u = [_recent_documents objectAtIndex: i];	// get URL
           if ([u isFileURL])
             item = [[NSMenuItem alloc]
-	      initWithTitle: [[u path] lastPathComponent] 
-                                       action: @selector(_openRecentDocument:)
-                                       keyEquivalent:nil];
+                    initWithTitle: [[u path] lastPathComponent]
+                    action: @selector(_openRecentDocument:)
+                    keyEquivalent:nil];
           else
-              item = [[NSMenuItem alloc] initWithTitle: [u relativeString]
-                                         action: @selector(_openRecentDocument:)
-                                         keyEquivalent:nil];
+            item = [[NSMenuItem alloc] initWithTitle: [u relativeString]
+                                              action: @selector(_openRecentDocument:)
+                                       keyEquivalent:nil];
           [item setTag: i];
         }
       [item setTarget: self];
@@ -1769,10 +1727,67 @@ static NSString *processName = nil;
 
   [self openDocumentWithContentsOfURL: url display: YES error: &err];
   if (err)
-  {
-    [self presentError: err];
-    [self _updateRecentDocumentsMenu];
-  }
+    {
+      [self presentError: err];
+      [self _updateRecentDocumentsMenu];
+    }
+}
+
+- (void) _saveRecentDocuments
+{
+  NSMutableArray *a = [_recent_documents mutableCopy];
+  NSUInteger index = [a count];
+
+  while (index-- > 0)
+    {
+      [a replaceObjectAtIndex: index withObject:
+        [[a objectAtIndex: index] absoluteString]];
+    }
+  [[NSUserDefaults standardUserDefaults] 
+    setObject: a forKey: NSRecentDocuments];
+  RELEASE(a);
+}
+
+- (void) _loadRecentDocuments
+{
+  _recent_documents = [[NSUserDefaults standardUserDefaults] 
+                       objectForKey: NSRecentDocuments];
+  if (_recent_documents)
+    {
+      int i, count, max;
+
+      _recent_documents = [_recent_documents mutableCopy];
+      count = [_recent_documents count];
+      for (i = 0; i < count; i++)
+        {
+          NSString *str;
+          NSURL *url;
+
+          str = [_recent_documents objectAtIndex: i];
+          url = [NSURL URLWithString: str];
+          if (url == nil)
+            {
+              NSLog(@"NSRecentItems value '%@' is not valid ... ignored", str);
+              [_recent_documents removeObjectAtIndex: i];
+              i--;
+              count--;
+            }
+          else
+            {
+              [_recent_documents replaceObjectAtIndex: i withObject: url];
+            }
+        }
+
+      max = [self maximumRecentDocumentCount];
+      if (count > max)
+	{
+	  [_recent_documents removeObjectsInRange: NSMakeRange(0, count - max)];
+	}
+    } 
+  else
+    {
+      _recent_documents = RETAIN([NSMutableArray array]);
+    }
 }
 
 @end
