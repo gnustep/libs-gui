@@ -56,7 +56,7 @@ enum {
   NSFPSizeBrowser
 };
 
-@interface NSFontPanel : NSPanel <NSCoding, NSTextFieldDelegate>
+@interface NSFontPanel : NSPanel <NSTextFieldDelegate>
 {
   // Attributes
   NSFont *_panelFont;

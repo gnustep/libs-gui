@@ -648,7 +648,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [sizeField setEditable: YES];
   [sizeField setAllowsEditingTextAttributes: NO];
   [sizeField setAlignment: NSCenterTextAlignment];
-  [sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
   [sizeField setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
   [sizeField setDelegate: self];
   [sizeField setTag: NSFPSizeField];
@@ -1107,7 +1106,7 @@ static int score_difference(int weight1, int traits1,
 }
 
 
-- (int) browser: (NSBrowser*)sender  numberOfRowsInColumn: (int)column
+- (NSInteger) browser: (NSBrowser*)sender  numberOfRowsInColumn: (NSInteger)column
 {
   switch ([sender tag])
     {
@@ -1130,7 +1129,7 @@ static int score_difference(int weight1, int traits1,
     }
 }
 
-- (NSString*) browser: (NSBrowser*)sender  titleOfColumn: (int)column
+- (NSString*) browser: (NSBrowser*)sender  titleOfColumn: (NSInteger)column
 {
   switch ([sender tag])
     {
@@ -1189,7 +1188,7 @@ static int score_difference(int weight1, int traits1,
 }
 
 - (BOOL) browser: (NSBrowser *)sender 
-   isColumnValid: (int)column;
+   isColumnValid: (NSInteger)column;
 {
   return NO;
 }
@@ -1199,9 +1198,9 @@ static int score_difference(int weight1, int traits1,
 @implementation NSFontPanel (NSSplitViewDelegate)
 
 - (void) splitView: (NSSplitView *)splitView  
-constrainMinCoordinate: (float *)min 
-     maxCoordinate: (float *)max
-       ofSubviewAt: (int)offset
+constrainMinCoordinate: (CGFloat *)min 
+     maxCoordinate: (CGFloat *)max
+       ofSubviewAt: (NSInteger)offset
 {
   *max = *max - 100;
 }
