@@ -104,8 +104,10 @@
             triggerChangeNotificationsForDependentKey: @"canAdd"];
       [self setKeys: [NSArray arrayWithObject: @"editable"] 
             triggerChangeNotificationsForDependentKey: @"canRemove"];
-      [self setKeys: [NSArray arrayWithObject: @"content"] 
+      [self setKeys: [NSArray arrayWithObjects: @"content", NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"selectedObjects"];
+      [self setKeys: [NSArray arrayWithObjects: @"content", NSContentObjectBinding, nil] 
+            triggerChangeNotificationsForDependentKey: @"selection"];
     }
 }
 
@@ -353,7 +355,7 @@
 - (id) selection
 {
   // TODO
-  return nil;
+  return _content;
 }
 
 
