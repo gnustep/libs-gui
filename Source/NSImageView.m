@@ -81,6 +81,7 @@ static Class imageCellClass;
   [self setImageFrameStyle: NSImageFrameNone];
   [self setImageScaling: NSScaleProportionally];
   [self setEditable: NO];
+  [self setAllowsCutCopyPaste: YES];
 
   return self;
 }
@@ -307,11 +308,13 @@ static Class imageCellClass;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
+  // Testplant-MAL-2015-06-30: merge: left this in from testplant branch...
   if (![self isEditable])
     {
 	  [[self nextResponder] mouseDown:theEvent];
 	  return;
 	}
+
   if ([self initiatesDrag])
     {
       NSPasteboard *pboard;
@@ -402,6 +405,7 @@ static Class imageCellClass;
   if (!self)
     return self;
 
+  [self setAllowsCutCopyPaste: YES];
   if ([aDecoder allowsKeyedCoding])
     {
       //NSArray *dragType = [aDecoder decodeObjectForKey: @"NSDragTypes"];

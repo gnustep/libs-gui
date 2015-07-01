@@ -884,28 +884,28 @@ has the same y origin and height as the line frag rect it is in.
       if (glyph_index == (unsigned int)-1)
         { /* No information is available. Get default font height. */
           NSFont            *f         = [_typingAttributes objectForKey:NSFontAttributeName];
-          NSParagraphStyle  *paragraph = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
-          NSTextAlignment    alignment = [paragraph alignment];
           
           /* will be -1 if there are no text containers */
           *textContainer = num_textcontainers - 1;
           r = NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
           if (num_textcontainers > 0)
           {
+              NSParagraphStyle *paragraph = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+              NSTextAlignment alignment = [paragraph alignment];
+
             tc = textcontainers + num_textcontainers - 1;
             r.origin.x += [tc->textContainer lineFragmentPadding];
-          }
           
           // Apply left/right/center justification...
           if (alignment == NSRightTextAlignment)
           {
-            r.origin.x += [[self firstTextView] frame].size.width;
+                  r.origin.x += [tc->textContainer containerSize].width;
           }
           else if (alignment == NSCenterTextAlignment)
           {
-            r.origin.x += [[self firstTextView] frame].size.width / 2;
+                  r.origin.x += [tc->textContainer containerSize].width / 2;
           }
-          
+	    }
           return r;
         }
       fraction_through = 1.0;
@@ -1389,7 +1389,8 @@ container
   int i, j;
   NSRect *rects;
   NSUInteger count;
-  NSColor *color, *last_color;
+  NSColor *color = nil;
+  NSColor *last_color = nil;
 
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -1419,14 +1420,15 @@ container
 
   glyph_run = run_for_glyph_index(range.location, glyphs, &glyph_pos, &char_pos);
   i = range.location - glyph_pos;
-  last_color = nil;
   first_char_pos = char_pos;
-  while (1)
+  while ((glyph_run != NULL) && (i + glyph_pos < range.location + range.length))
     {
       NSRange r = NSMakeRange(glyph_pos + i, glyph_run->head.glyph_length - i);
 
       if (NSMaxRange(r) > NSMaxRange(range))
+        {
 	r.length = NSMaxRange(range) - r.location;
+        }
 
       color = [_textStorage attribute: NSBackgroundColorAttributeName
 			      atIndex: char_pos
@@ -1459,8 +1461,6 @@ container
       char_pos += glyph_run->head.char_length;
       i = 0;
       glyph_run = (glyph_run_t *)glyph_run->head.next;
-      if (i + glyph_pos >= range.location + range.length)
-	break;
     }
 
   if (!_selected_range.length || _selected_range.location == NSNotFound)
@@ -1864,6 +1864,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	      if (!gbuf_len)
 		{
 		  gbuf[0] = glyph->g;
+		  advancementbuf[0] = [f advancementForGlyph: glyph->g];
 		  gbuf_point = p;
 		  gbuf_len = 1;
 		}
