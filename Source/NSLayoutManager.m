@@ -883,35 +883,37 @@ has the same y origin and height as the line frag rect it is in.
       glyph_index = [self numberOfGlyphs] - 1;
       if (glyph_index == (unsigned int)-1)
         { /* No information is available. Get default font height. */
-          NSFont            *f         = [_typingAttributes objectForKey:NSFontAttributeName];
+          NSFont *f = [_typingAttributes objectForKey:NSFontAttributeName];
           
           /* will be -1 if there are no text containers */
           *textContainer = num_textcontainers - 1;
           r = NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
           if (num_textcontainers > 0)
-          {
+            {
               NSParagraphStyle *paragraph = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
-              NSTextAlignment alignment = [paragraph alignment];
-
-            tc = textcontainers + num_textcontainers - 1;
-            r.origin.x += [tc->textContainer lineFragmentPadding];
-          
-          // Apply left/right/center justification...
-          if (alignment == NSRightTextAlignment)
-          {
+              NSTextAlignment   alignment = [paragraph alignment];
+              
+              tc = textcontainers + num_textcontainers - 1;
+              r.origin.x += [tc->textContainer lineFragmentPadding];
+              
+              // Apply left/right/center justification...
+              if (alignment == NSRightTextAlignment)
+                {
                   r.origin.x += [tc->textContainer containerSize].width;
-          }
-          else if (alignment == NSCenterTextAlignment)
-          {
+                }
+              else if (alignment == NSCenterTextAlignment)
+                {
                   r.origin.x += [tc->textContainer containerSize].width / 2;
-          }
-	    }
+                }
+            }
           return r;
         }
       fraction_through = 1.0;
     }
   else
-    [self _doLayoutToGlyph: glyph_index];
+    {
+      [self _doLayoutToGlyph: glyph_index];
+    }
   
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyph_index)

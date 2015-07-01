@@ -503,7 +503,8 @@ static BOOL menuBarVisible = YES;
       
       if ((_aWindow != nil) && ([_aWindow screen] != nil))
         {
-          origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height - [_aWindow frame].size.height);
+          origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+                               - [_aWindow frame].size.height);
 	  
           [_aWindow setFrameOrigin: origin];
           [_bWindow setFrameOrigin: origin];
@@ -831,6 +832,7 @@ static BOOL menuBarVisible = YES;
   [self menuChanged];
 }
 
+  // Testplant-MAL-2015-07-01: Using testplant branch code...
 - (void) removeAllItems
 {
   [_items makeObjectsPerformSelector:@selector(setMenu:) withObject:nil];
@@ -902,7 +904,7 @@ static BOOL menuBarVisible = YES;
   return nil;
 }
 
-- (id <NSMenuItem>) itemAtIndex: (NSInteger)index
+- (NSMenuItem *) itemAtIndex: (NSInteger)index
 {
   if (index >= [_items count] || index < 0)
     [NSException  raise: NSRangeException
@@ -1093,6 +1095,7 @@ static BOOL menuBarVisible = YES;
 
 - (void) update
 {
+  // Testplant-MAL-2015-07-01: Stop potential recursive invocation...
   if (_menu.isUpdating == NO)
     {
       _menu.isUpdating = YES;
@@ -1243,6 +1246,7 @@ static BOOL menuBarVisible = YES;
         }
       }
       
+      // Testplant-MAL-2015-07-01: Stop potential recursive invocation...
       _menu.isUpdating = NO;
     }
   
@@ -1508,6 +1512,7 @@ static BOOL menuBarVisible = YES;
   return _menu.changedMessagesEnabled;
 }
 
+  // Testplant-MAL-2015-07-01: Using testplant branch code...
 - (NSSize) size
 {
   if (_view)
@@ -1585,10 +1590,10 @@ static BOOL menuBarVisible = YES;
                   forView: (NSView *)view
                  withFont: (NSFont *)font
 {
+  // Testplant-MAL-2015-07-01: Using tetplant branch code...
   NSPoint point = [view frame].origin;
   point = [[view superview] convertPoint:point toView:nil];
-      point = [[view window] convertBaseToScreen: point];
-//  [[menu window] setFrameOrigin:point];
+  point = [[view window] convertBaseToScreen: point];
   [menu _rightMouseDisplay: event];
 }
 
