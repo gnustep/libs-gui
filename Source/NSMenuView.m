@@ -209,6 +209,13 @@ static float menuBarHeight = 0.0;
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
 
+  // FIXME: Should this go in NSMenu instead of here?
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+
   return self;
 }
 
@@ -226,6 +233,8 @@ static float menuBarHeight = 0.0;
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   // We must remove the menu view from the menu list of observers.
   if (_attachedMenu != nil)
     {
@@ -360,14 +369,16 @@ static float menuBarHeight = 0.0;
   ASSIGN(_font, font);
   if (_font != nil)
     {
+      const CGFloat themeHeight = [[GSTheme theme] menuItemHeight];
+
       NSRect r;
   
       r = [_font boundingRectForFont];
       /* Should make up 110, 20 for default font */
       _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 3.);
 
-      if (_cellSize.height < 20)
-        _cellSize.height = 20;
+      if (_cellSize.height < themeHeight)
+        _cellSize.height = themeHeight;
 
       [self setNeedsSizing: YES];
     }
@@ -433,7 +444,7 @@ static float menuBarHeight = 0.0;
 
 - (NSMenuItemCell*) menuItemCellForItemAtIndex: (NSInteger)index
 {
-  if (index < [_itemCells count])
+  if ((index >= 0) && (index < [_itemCells count]))
     return [_itemCells objectAtIndex: index];
   else
     return nil;
@@ -690,6 +701,50 @@ static float menuBarHeight = 0.0;
   return _needsSizing;
 }
 
+- (CGFloat) heightForItem: (NSInteger)idx
+{
+  NSMenuItemCell *cell = [self menuItemCellForItemAtIndex: idx];
+
+  if (cell != nil)
+    {
+      NSMenuItem *item = [cell menuItem];
+      
+      if ([item isSeparatorItem])
+	{
+	  return [[GSTheme theme] menuSeparatorHeight];
+	}
+    }
+  return _cellSize.height;
+}
+
+- (CGFloat) yOriginForItem: (NSInteger)item
+{  
+  const NSInteger count = [_itemCells count];
+  CGFloat total = 0;
+
+  if (item >= 0)
+    {
+      NSInteger i = 0;
+      for (i = (count - 1); i > item; i--)
+	{
+	  total += [self heightForItem: i];
+	}
+    }
+  return total;
+}
+
+- (CGFloat) totalHeight
+{
+  CGFloat total = 0;
+  NSUInteger i = 0;
+
+  for (i = 0; i < [_itemCells count]; i++)
+    {
+      total += [self heightForItem: i];
+    }
+  return total;
+}
+
 - (void) sizeToFit
 {
   BOOL isPullDown =
@@ -717,7 +772,7 @@ static float menuBarHeight = 0.0;
           elem.rect = NSMakeRect (currentX,
                                   0,
                                   (2 * _horizontalEdgePad),
-                                  _cellSize.height);
+                                  [self heightForItem: 0]);
           GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
           currentX += 2 * _horizontalEdgePad;
         }
@@ -735,7 +790,7 @@ static float menuBarHeight = 0.0;
           elem.rect = NSMakeRect (currentX,
                                   0,
                                   (titleWidth + (2 * _horizontalEdgePad)),
-                                  _cellSize.height);
+                                  [self heightForItem: i]);
           GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
 
           currentX += titleWidth + (2 * _horizontalEdgePad);
@@ -903,9 +958,9 @@ static float menuBarHeight = 0.0;
         }
 
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-                                     (howMany * _cellSize.height) 
+                                     [self totalHeight] 
                                      + menuBarHeight)];
-      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+      [_titleView setFrame: NSMakeRect (0, [self totalHeight],
                                         NSWidth (_bounds), menuBarHeight)];
     }
   _needsSizing = NO;
@@ -1003,10 +1058,10 @@ static float menuBarHeight = 0.0;
     {
       NSRect theRect;
 
-      theRect.origin.y
-          = _cellSize.height * ([_itemCells count] - index - 1);
+      theRect.origin.y	= [self yOriginForItem: index];
       theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
+      theRect.size.height = [self heightForItem: index];
 
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
        * else (unless we are a popup). This rect will have to be modified for 
@@ -1058,6 +1113,8 @@ static float menuBarHeight = 0.0;
 {
   NSRect frame = [_window frame];
   NSRect submenuFrame;
+  const CGFloat submenuHorizOverlap = [[GSTheme theme] menuSubmenuHorizontalOverlap];
+  const CGFloat submenuVertOverlap = [[GSTheme theme] menuSubmenuVerticalOverlap];
 
   if (_needsSizing)
     [self sizeToFit];
@@ -1077,7 +1134,7 @@ static float menuBarHeight = 0.0;
             [_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
           NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
-          return NSMakePoint (NSMaxX(frame),
+          return NSMakePoint (NSMaxX(frame) - submenuHorizOverlap,
             subOrigin.y - NSHeight(submenuFrame) - 2 +
             2*[NSMenuView menuBarHeight]);
         }
@@ -1088,12 +1145,12 @@ static float menuBarHeight = 0.0;
           NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
           // FIXME ... why is the offset +1 needed below? 
-          return NSMakePoint (NSMaxX(frame),
+          return NSMakePoint (NSMaxX(frame) - submenuHorizOverlap,
             subOrigin.y - NSHeight(submenuFrame) + aRect.size.height + 1);
         }
       else
         {
-          return NSMakePoint(NSMaxX(frame),
+          return NSMakePoint(NSMaxX(frame) - submenuHorizOverlap,
             NSMaxY(frame) - NSHeight(submenuFrame));
         }
     }
@@ -1103,9 +1160,19 @@ static float menuBarHeight = 0.0;
 	[_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
       NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
-      /*We add +1 for don't lose the track when the user move the
-	mouse from the horizontal menu to a submenu.*/
-      return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame) + 1);
+      /* If menu is in window, we add +1 for don't lose the track when
+	 the user move the mouse from the horizontal menu to a submenu.*/
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) ==
+	  NSWindows95InterfaceStyle)
+	{
+	  return NSMakePoint(subOrigin.x,
+			     subOrigin.y - NSHeight(submenuFrame) + 1 + submenuVertOverlap);
+    }
+      else
+	{
+	  return NSMakePoint(subOrigin.x,
+			     subOrigin.y - NSHeight(submenuFrame) + submenuVertOverlap);
+}
     }
 }
 
@@ -1442,9 +1509,9 @@ static float menuBarHeight = 0.0;
         }
 
       if (style == NSWindows95InterfaceStyle)
-	{
-	  return YES;
-	}
+        {
+          return YES;
+        }
 
       if (subMenusNeedRemoving)
         {
@@ -1466,6 +1533,7 @@ static float menuBarHeight = 0.0;
   BOOL justAttachedNewSubmenu = NO;
   BOOL subMenusNeedRemoving = YES;
   BOOL shouldFinish = YES;
+  BOOL popUpProcessEvents = [[GSTheme theme] doesProcessEventsForPopUpMenu];
   int delayCount = 0;
   int indexOfActionToExecute = -1;
   int firstIndex = -1;
@@ -1512,8 +1580,9 @@ static float menuBarHeight = 0.0;
   eventMask |= NSLeftMouseDownMask;
   
   /*We need know if the user press a modifier key to close the menu
-    when the menu is in a window*/
-  if (style == NSWindows95InterfaceStyle)
+     when the menu is in a window or when is owned by a popup and theme
+     process events. */
+  if (style == NSWindows95InterfaceStyle || popUpProcessEvents)
     {
       eventMask |= NSFlagsChangedMask;
     }
@@ -1527,41 +1596,52 @@ static float menuBarHeight = 0.0;
 	 over the menu, the menu is closed when the user releases the mouse. On
 	 the other hand, when the user clicks on the button and then moves the
 	 mouse the menu is closed upon the next mouse click. */
-      ([[self menu] _ownedByPopUp] &&
-       style == NSMacintoshInterfaceStyle))
+      ([[self menu] _ownedByPopUp] && (style == NSMacintoshInterfaceStyle ||
+				       popUpProcessEvents)))
     {
       /*
        * Ignore the first mouse up if nothing interesting has happened.
        */
       shouldFinish = NO;
     }
+  
   do
     {
-      /* Close the menu if the user press a modifier key and menu
-         is in a window */
-      if (mainWindowMenuView != nil && type == NSFlagsChanged)
-	{
-	  [self setHighlightedItemIndex: -1];
-	  [[[mainWindowMenuView menu] attachedMenu] close];
-	  return NO;
-	}
-
+      if (type == NSFlagsChanged)
+        {
+          /* Close the menu if the user press a modifier key and menu
+           is in a window */
+          if (mainWindowMenuView != nil)
+            {
+              [self setHighlightedItemIndex: -1];
+              [[[mainWindowMenuView menu] attachedMenu] close];
+              return NO;
+            }
+          
+          /* Close the menu if is owned by a popup and theme process events */
+          if ([[self menu] _ownedByPopUp] && popUpProcessEvents)
+            {
+              [[[self menu] _owningPopUp] dismissPopUp];
+              return NO;
+            }
+        }
+      
       if (type == NSLeftMouseUp ||
-	  type == NSRightMouseUp ||
-	  type == NSOtherMouseUp)
+          type == NSRightMouseUp ||
+          type == NSOtherMouseUp)
         {
           shouldFinish = YES;
         }
-
+      
       if (type == NSPeriodic || event == original)
         {
           NSPoint location;
           int index;
-
+          
           location = [_window mouseLocationOutsideOfEventStream];
-          index = [self indexOfItemAtPoint: 
-            [self convertPoint: location fromView: nil]];
-
+          index = [self indexOfItemAtPoint:
+                   [self convertPoint: location fromView: nil]];
+          
           if (event == original)
             {
               firstIndex = index;
@@ -1570,11 +1650,11 @@ static float menuBarHeight = 0.0;
             {
               shouldFinish = YES;
             }
-
+          
           /*
            * 1 - if menus is only partly visible and the mouse is at the
            *     edge of the screen we move the menu so it will be visible.
-           */ 
+           */
           if ([_attachedMenu isPartlyOffScreen])
             {
               NSPoint pointerLoc = [_window convertBaseToScreen: location];
@@ -1585,18 +1665,18 @@ static float menuBarHeight = 0.0;
                * GNUstep screen coordinates start with 1.
                */
               if (pointerLoc.x == 0 || pointerLoc.y == 1
-                || pointerLoc.x == screenFrame.size.width - 1
-                || pointerLoc.y == screenFrame.size.height)
+                  || pointerLoc.x == screenFrame.size.width - 1
+                  || pointerLoc.y == screenFrame.size.height)
                 [_attachedMenu shiftOnScreen];
             }
-
+          
           /*
            * 2 - Check if we have to reset the justAttachedNewSubmenu
            * flag to NO.
            */
           if (justAttachedNewSubmenu && index != -1
-            && index != _highlightedItemIndex)
-            { 
+              && index != _highlightedItemIndex)
+            {
               if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
                 {
                   delayCount ++;
@@ -1610,20 +1690,20 @@ static float menuBarHeight = 0.0;
                   justAttachedNewSubmenu = NO;
                 }
             }
-
-
+          
+          
           // 3 - If we have moved outside this menu, take appropriate action
           if (index == -1)
             {
               NSPoint locationInScreenCoordinates;
               NSWindow *windowUnderMouse;
               NSMenu *candidateMenu;
-
+              
               subMenusNeedRemoving = NO;
-
+              
               locationInScreenCoordinates
-                = [_window convertBaseToScreen: location];
-
+              = [_window convertBaseToScreen: location];
+              
               /*
                * 3a - Check if moved into one of the ancestor menus.
                *      This is tricky, there are a few possibilities:
@@ -1633,124 +1713,122 @@ static float menuBarHeight = 0.0;
                *          We are a root: isTornOff of AppMenu
                */
               candidateMenu = [_attachedMenu supermenu];
-              while (candidateMenu  
-                && !NSMouseInRect (locationInScreenCoordinates, 
-                  [[candidateMenu window] frame], NO) // not found yet
-                && (! ([candidateMenu isTornOff] 
-                  && ![candidateMenu isTransient]))  // no root of display tree
-                && [candidateMenu isAttached]) // has displayed parent
+              while (candidateMenu
+                     && !NSMouseInRect (locationInScreenCoordinates,
+                                        [[candidateMenu window] frame], NO) // not found yet
+                     && (! ([candidateMenu isTornOff]
+                            && ![candidateMenu isTransient]))  // no root of display tree
+                     && [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
                 }
-
+              
               if (candidateMenu != nil
-                && NSMouseInRect (locationInScreenCoordinates,
-                  [[candidateMenu window] frame], NO))
+                  && NSMouseInRect (locationInScreenCoordinates,
+                                    [[candidateMenu window] frame], NO))
                 {
                   BOOL candidateMenuResult;
                   NSMenuView *subMenuView = [[candidateMenu attachedMenu] menuRepresentation];
-
+                  
                   // The call to fetch attachedMenu is not needed. But putting
-                  // it here avoids flicker when we go back to an ancestor 
+                  // it here avoids flicker when we go back to an ancestor
                   // menu and the attached menu is already correct.
                   [subMenuView detachSubmenu];
                   
                   // Reset highlighted index for this menu.
-                  // This way if we return to this submenu later there 
+                  // This way if we return to this submenu later there
                   // won't be a highlighted item.
                   [subMenuView setHighlightedItemIndex: -1];
                   
                   candidateMenuResult = [[candidateMenu menuRepresentation]
-                                          _trackWithEvent: original
-                                          startingMenuView: mainWindowMenuView];
+                                         _trackWithEvent: original
+                                         startingMenuView: mainWindowMenuView];
                   return candidateMenuResult;
                 }
-
+              
               // 3b - Check if we enter the attached submenu
               windowUnderMouse = [[_attachedMenu attachedMenu] window];
               if (windowUnderMouse != nil
-                && NSMouseInRect (locationInScreenCoordinates,
-                  [windowUnderMouse frame], NO))
+                  && NSMouseInRect (locationInScreenCoordinates,
+                                    [windowUnderMouse frame], NO))
                 {
                   BOOL wasTransient = [_attachedMenu isTransient];
                   BOOL subMenuResult;
-
-                  subMenuResult
-                    = [[self attachedMenuView] _trackWithEvent: original
-                                              startingMenuView: mainWindowMenuView];
+                  
+                  subMenuResult = [[self attachedMenuView] _trackWithEvent: original
+                                                          startingMenuView: mainWindowMenuView];
                   if (subMenuResult
-                    && wasTransient == [_attachedMenu isTransient])
+                      && wasTransient == [_attachedMenu isTransient])
                     {
                       [self detachSubmenu];
                     }
                   return subMenuResult;
                 }
-	      
-	      /* We track the menu correctly when this is located
-		in a window */
-	      if (mainWindowMenuView != nil)
-		{
+              
+              /* We track the menu correctly when this is located
+               in a window */
+              if (mainWindowMenuView != nil)
+                {
                   // If the user moves the mouse into the main window
                   // horizontal menu, start tracking again.
                   NSWindow *mainWindow = [mainWindowMenuView window];
-                  NSPoint locationInMainWindow = [mainWindow 
-                    convertScreenToBase: locationInScreenCoordinates];
-		  if ([mainWindowMenuView 
-                        hitTest: locationInMainWindow] != nil)
-		    {
-                      int index = [mainWindowMenuView indexOfItemAtPoint: 
-                        [mainWindowMenuView 
-                          convertPoint: locationInMainWindow
-                              fromView: nil]];
+                  NSPoint locationInMainWindow = [mainWindow
+                                                  convertScreenToBase: locationInScreenCoordinates];
+                  if ([mainWindowMenuView
+                       hitTest: locationInMainWindow] != nil)
+                    {
+                      int index = [mainWindowMenuView indexOfItemAtPoint:
+                                   [mainWindowMenuView
+                                    convertPoint: locationInMainWindow
+                                    fromView: nil]];
                       if (index != -1 &&
                           index != [mainWindowMenuView highlightedItemIndex])
                         {
-		          [self setHighlightedItemIndex: -1];
-		          return [mainWindowMenuView
-                                   _trackWithEvent: original
-                                   startingMenuView: mainWindowMenuView];
+                          [self setHighlightedItemIndex: -1];
+                          return [mainWindowMenuView
+                                  _trackWithEvent: original
+                                  startingMenuView: mainWindowMenuView];
                         }
-		    }
-		}
-            }
-
-          // 4 - We changed the selected item and should update.
-          if (!justAttachedNewSubmenu && index != _highlightedItemIndex)
-            {
-              subMenusNeedRemoving = NO;
-              [self detachSubmenu];
-              [self setHighlightedItemIndex: index];
-
-              // WO: Question?  Why the ivar _items_link
-              if (index >= 0 && [[_items_link objectAtIndex: index] submenu])
-                {
-                  [self attachSubmenuForItemAtIndex: index];
-                  justAttachedNewSubmenu = YES;
-                  delayCount = 0;
+                    }
                 }
             }
-
+          
+          // 4 - We changed the selected item and should update.
+          if (!justAttachedNewSubmenu && index != _highlightedItemIndex)
+          {
+            subMenusNeedRemoving = NO;
+            [self detachSubmenu];
+            [self setHighlightedItemIndex: index];
+            
+            // WO: Question?  Why the ivar _items_link
+            if (index >= 0 && [[_items_link objectAtIndex: index] submenu])
+            {
+              [self attachSubmenuForItemAtIndex: index];
+              justAttachedNewSubmenu = YES;
+              delayCount = 0;
+            }
+          }
+          
           // Update last seen location for the justAttachedNewSubmenu logic.
           lastLocation = location;
         }
-
+      
       do
-	{
-	  event = [NSApp nextEventMatchingMask: eventMask
-				     untilDate: theDistantFuture
-					inMode: NSEventTrackingRunLoopMode
-				       dequeue: YES];
-	  type = [event type];
-	  if (type == NSAppKitDefined)
-	    {
-	      [[event window] sendEvent: event];
-	    }
-	}
+        {
+          event = [NSApp nextEventMatchingMask: eventMask
+                                     untilDate: theDistantFuture
+                                        inMode: NSEventTrackingRunLoopMode
+                                       dequeue: YES];
+          type = [event type];
+          if (type == NSAppKitDefined)
+            {
+              [[event window] sendEvent: event];
+            }
+        }
       while (type == NSAppKitDefined);
-    }
-  while ((type != NSLeftMouseUp &&
-	  type != NSRightMouseUp &&
-	  type != NSOtherMouseUp) || shouldFinish == NO);
+    } while ((type != NSLeftMouseUp &&
+              type != NSRightMouseUp &&
+              type != NSOtherMouseUp) || shouldFinish == NO);
 
   /*
    * Ok, we released the mouse
@@ -1941,6 +2019,12 @@ static float menuBarHeight = 0.0;
   return [_attachedMenu performKeyEquivalent: theEvent];
 }
 
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  // The new theme may have different menu item sizes, 
+  // so the window size for the menu needs to be recalculated.
+  [[self menu] sizeToFit];
+}
 
 /*
  * NSCoding Protocol

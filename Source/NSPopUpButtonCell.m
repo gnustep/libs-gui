@@ -328,9 +328,9 @@ static NSImage *_pbc_image[5];
  */
 - (void) setAltersStateOfSelectedItem: (BOOL)flag
 {
+#if 0
   id <NSMenuItem> selectedItem = [self selectedItem];
 
-#if 0
   if (flag)
     {
       [selectedItem setState: NSOnState];
@@ -909,8 +909,6 @@ static NSImage *_pbc_image[5];
   // TODO: Need to find this out somehow...Testplant-MAL
   static const NSUInteger ButtonMargin = 5;
   
-  CGFloat inset = _imageWidth + ButtonMargin;
-  
   // Special case: image is drawn on the extreme right
   // First inset the title rect...Testplant-MAL
   cellFrame = NSInsetRect(cellFrame, ButtonMargin, 0);
@@ -1281,9 +1279,9 @@ static NSImage *_pbc_image[5];
         }
       if ([aDecoder containsValueForKey: @"NSPullDown"])
         {
-	  BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
-	  [self setPullsDown: pullDown];
-	}
+          BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
+          [self setPullsDown: pullDown];
+        }
       if ([aDecoder containsValueForKey: @"NSUsesItemFromMenu"])
         {
           BOOL usesItem = [aDecoder decodeBoolForKey: @"NSUsesItemFromMenu"];
@@ -1305,13 +1303,13 @@ static NSImage *_pbc_image[5];
         }
       if ([aDecoder containsValueForKey: @"NSSelectedIndex"])
         {
-	  int selectedIdx = [aDecoder decodeIntForKey: 
-					@"NSSelectedIndex"];
-	  [self selectItemAtIndex: selectedIdx];
-	}
+          int selectedIdx = [aDecoder decodeIntForKey:
+                             @"NSSelectedIndex"];
+          [self selectItemAtIndex: (selectedIdx < 0) ? 0 : selectedIdx];
+        }
       else
         {
-	  [self selectItemAtIndex: 0];
+          [self selectItemAtIndex: 0];
         }
       if ([aDecoder containsValueForKey: @"NSMenuItem"])
         {

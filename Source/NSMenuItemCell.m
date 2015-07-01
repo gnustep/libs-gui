@@ -530,29 +530,12 @@ static NSString *commandKeyString = @"#";
   if (_needs_sizing)
     [self calcSize];
 
-#if 0
+#if 0 //Testplant-MAL-2015-06-20: code moved into NSPopUpButtonCell...
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
-#if 0 //Main branch code...
-      //Tesplant-MAL-2015-06-22 - should fix branch version below but need
-      //to fix check mark being displayed on main pop up button rather than
-      //just on the showing the check mark on the selected item in the
-      //drop down list...
       // Special case: draw image on the extreme right 
       cellFrame.origin.x   += [_menuView imageAndTitleOffset];
       cellFrame.size.width -= [_menuView imageAndTitleOffset];
-#else //Testplant branch code - MAL-2015-06-20: ensure correct available width returned...
-      // TODO: Need to find this out somehow...Testplant-MAL
-      static const NSUInteger ButtonMargin = 5;
-      
-      CGFloat inset = _imageWidth + ButtonMargin;
-      
-      // Special case: image is drawn on the extreme right
-      // First inset the title rect...Testplant-MAL
-      cellFrame = NSInsetRect(cellFrame, ButtonMargin, 0);
-      // Adjust for image on right side i.e. down arrow popup indicator...Testplant-MAL
-      cellFrame.size.width -= _imageWidth;
-#endif
       return cellFrame;
     }
 #endif
@@ -610,15 +593,11 @@ static NSString *commandKeyString = @"#";
 
           case NSImageLeft:
             cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
-            // the below line doesn't always clip correctly (eg drop down indicator images)
-            //cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
-                cellFrame.size.width = _titleWidth;
+            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
             break;
 
           case NSImageRight:
-            // the below line doesn't always clip correctly (eg drop down indicator images)
-            //cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
-                cellFrame.size.width = _titleWidth;
+            cellFrame.size.width = cellFrame.size.width - (_imageWidth + GSCellTextImageXDist);
             break;
 
           case NSImageBelow:
