@@ -474,7 +474,12 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
+      _firstLineHeadIndent = [aCoder decodeFloatForKey: @"NSFirstLineHeadIndent"];
+      _headIndent = [aCoder decodeFloatForKey: @"NSHeadIndent"];
+      _paragraphSpacing = [aCoder decodeFloatForKey: @"NSParagraphSpacingBefore"];
+      ASSIGN(_tabStops, [aCoder decodeObjectForKey: @"NSTabStops"]);
+      ASSIGN(_textLists, [aCoder decodeObjectForKey: @"NSTextLists"]);
+      _baseDirection = [aCoder decodeIntForKey: @"NSWritingDirection"];
     }
   else
     {
@@ -540,7 +545,12 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
+      [aCoder encodeFloat: _firstLineHeadIndent forKey: @"NSFirstLineHeadIndent"];
+      [aCoder encodeFloat: _headIndent forKey: @"NSHeadIndent"];
+      [aCoder encodeFloat: _paragraphSpacing forKey: @"NSParagraphSpacingBefore"];
+      [aCoder encodeObject: _tabStops forKey: @"NSTabStops"];
+      [aCoder encodeObject: _textLists forKey: @"NSTextLists"];
+      [aCoder encodeInt: _baseDirection forKey: @"NSWritingDirection"];
     }
   else
     {
