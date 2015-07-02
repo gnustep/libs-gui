@@ -59,6 +59,8 @@
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
 
+#import "GNUstepBase/NSDebug+GNUstepBase.h"
+
 #import "GSGuiPrivate.h"
 #include <math.h>
 
@@ -110,6 +112,8 @@ static NSImage *unexpandable  = nil;
 - (void) _setObjectValue: (id)value
           forTableColumn: (NSTableColumn *)tb
                      row: (int) index;
+// Testplant-MAL-2015-07-01: _numOfRows omitted due to NSTableView 
+// numberOfRows changes to match Cocoa processing sequence...
 @end
 
 // These methods are private...
@@ -125,6 +129,8 @@ static NSImage *unexpandable  = nil;
 - (void) _closeItem: (id)item;
 - (void) _removeChildren: (id)startitem;
 - (void) _noteNumberOfRowsChangedBelowItem: (id)item by: (int)n;
+// Testplant-MAL-2015-07-01: _dataCellForTableColumn incldued due to NSTableView 
+// for group row processing...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
                                  row: (int) rowIndex;
 @end
@@ -914,9 +920,7 @@ static NSImage *unexpandable  = nil;
 {
   int startingColumn;
   int endingColumn;
-  NSTableColumn *tb;
   NSRect drawingRect;
-  NSCell *cell;
   NSCell *imageCell = nil;
   NSRect imageRect;
   int i;
@@ -962,22 +966,27 @@ static NSImage *unexpandable  = nil;
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
+      // Testplant-MAL-2015-07-01: Testplant branch code used due to NSTableView 
+      // for group row processing...which were needed due to Cocoa code flow diffs
+      // for preparedCell... and data cell generation code
       id item = [self itemAtRow: rowIndex];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: i];
+      NSCell *cell = [self _dataCellForTableColumn: tb row: rowIndex];
 
-      tb = [_tableColumns objectAtIndex: i];
-      cell = [self _dataCellForTableColumn: tb row: rowIndex];
+      [self _willDisplayCell: cell
+            forTableColumn: tb
+            row: rowIndex];
       if (i == _editedColumn && rowIndex == _editedRow)
 	    {
           [cell _setInEditing: YES];
 		  [cell setShowsFirstResponder:YES];
-		  [cell setFocusRingType:NSFocusRingTypeDefault];
 		}
-      [self _willDisplayCell: cell
-            forTableColumn: tb
-            row: rowIndex];
+      else
+        {
       [cell setObjectValue: [_dataSource outlineView: self
                                          objectValueForTableColumn: tb
                                          byItem: item]];
+        }
       drawingRect = [self frameOfCellAtColumn: i
                           row: rowIndex];
 
@@ -1041,7 +1050,6 @@ static NSImage *unexpandable  = nil;
         {
           [cell _setInEditing: NO];
 		  [cell setShowsFirstResponder:NO];
-		  [cell setFocusRingType:NSFocusRingTypeDefault];
         }
     }
 }
@@ -1079,7 +1087,7 @@ static NSImage *unexpandable  = nil;
        * item presumably), or perhaps we should treat this as
        * cancelling the drop?
        */
-	NSLog(@"Alert: Invalid drop item %@", item);
+      NSWarnMLog(@"Alert: Invalid drop item %@", item);
       return;
     }
   currentDropItem = item;
@@ -1550,8 +1558,6 @@ Also returns the child index relative to this parent. */
   NSTableColumn *tb;
   NSRect drawingRect;
   unsigned length = 0;
-  int level = 0;
-  float indentationFactor = 0.0;
 
   // We refuse to edit cells if the delegate can not accept results
   // of editing.
@@ -1560,8 +1566,11 @@ Also returns the child index relative to this parent. */
       flag = YES;
     }
 
-  [self scrollRowToVisible: rowIndex];
-  [self scrollColumnToVisible: columnIndex];
+   if (rowIndex != _selectedRow)
+    {
+      [NSException raise:NSInvalidArgumentException
+	      format:@"Attempted to edit unselected row"];
+    }
 
   if (rowIndex < 0 || rowIndex >= _numberOfRows
       || columnIndex < 0 || columnIndex >= _numberOfColumns)
@@ -1569,6 +1578,9 @@ Also returns the child index relative to this parent. */
       [NSException raise: NSInvalidArgumentException
                    format: @"Row/column out of index in edit"];
     }
+
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
 
   if (_textObject != nil)
     {
@@ -1632,6 +1644,8 @@ Also returns the child index relative to this parent. */
       NSImage *image = nil;
       NSCell *imageCell = nil;
       NSRect imageRect;
+      int level = 0;
+      float indentationFactor = 0.0;
 
       item = [self itemAtRow: rowIndex];
       // determine which image to use...
@@ -1710,6 +1724,8 @@ Also returns the child index relative to this parent. */
   return;
 }
 
+// Testplant-MAL-2015-07-01: Testplant branch code used due to NSTableView 
+// changes to match Cocoa processing flow for returning the numberOfRows...
 - (NSInteger) numberOfRows
 {
   return [_items count];
@@ -2253,6 +2269,8 @@ Also returns the child index relative to this parent. */
     }
 }
 
+// Testplant-MAL-2015-07-01: Testplant branch code used due to NSTableView 
+// for group row processing...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
                                  row: (int) rowIndex
 {
