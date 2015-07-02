@@ -3717,6 +3717,16 @@ static inline float computePeriod(NSPoint mouseLocationWin,
           // Check for grouped row...
           if ([self _isGroupRow: _clickedRow])
             theColumn = -1;
+			
+		  // Check for single click on already-selected editable cell to begin editing
+		  if (clickCount == 1 && [self isRowSelected: _clickedRow] && [self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
+			{
+			  [self editColumn: _clickedColumn
+                           row: _clickedRow
+                     withEvent: theEvent
+                        select: YES];
+			  return;
+			}
 
           // Application specific hit test processing is handled within the delegate's should select callbacks
           // if they're implemented...however - I'm not sure when this SHOULD be invoked...
@@ -3734,6 +3744,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
           return;
         }
       
+	  // If we have a doubleAction, send that on a double-click, even for editable cells
+          if (clickCount == 2 && _doubleAction != (SEL)0 && _clickedRow != -1)
+		    {
+			  [self sendAction: _doubleAction to: _target];
+			  return;
+		    }
+			
       if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
           // Send double-action but don't edit

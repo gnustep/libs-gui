@@ -1,4 +1,12 @@
-2015-07-01  Doug Simons <doug.simons@testplant.com>
+2015-07-02  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSTableView.m: Changed click and double-click behavior
+	to match Cocoa: A single-click on an already-selected editable
+	cell will now begin editing. A double-click will send the
+	doubleAction if there is one, and only begin editing if there is
+	no doubleAction assigned.
+
+	2015-07-01  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSTextStorage.m: Fixed a bug with setting _editedRange for
 	multiple edits when the first one is a delete (which results in
