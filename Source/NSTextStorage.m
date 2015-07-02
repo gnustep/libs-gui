@@ -146,14 +146,9 @@ static NSNotificationCenter *nc = nil;
   NSDebugLLog(@"NSText", @"edited:range:changeInLength: called");
 
   /*
-   * Add in any new flags for this edit.
-   */
-  _editedMask |= mask;
-
-  /*
    * Extend edited range to encompass the latest edit.
    */
-  if (_editedRange.length == 0)
+  if (_editedMask == 0)
     {
       _editedRange = old;		// First edit.
     }
@@ -161,6 +156,11 @@ static NSNotificationCenter *nc = nil;
     {
       _editedRange = NSUnionRange (_editedRange, old);
     }
+
+  /*
+   * Add in any new flags for this edit.
+   */
+  _editedMask |= mask;
 
   /*
    * If the number of characters has been increased or decreased -
