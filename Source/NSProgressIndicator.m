@@ -161,6 +161,7 @@
     }
 
   _isRunning = NO;
+// Testplant-MAL-2015-07-01: Keeping testplant branch code...
   _count     = 0;
   [self setNeedsDisplay: YES];
 }
@@ -170,6 +171,7 @@
   return _usesThreadedAnimation;
 }
 
+// Testplant-MAL-2015-07-01: Keeping testplant branch code...
 - (BOOL)isHidden
 {
   if ((_isRunning == NO) && (_isDisplayedWhenStopped == NO))
@@ -305,6 +307,7 @@
   _style = style;
   _count = 0;
   [self setDisplayedWhenStopped:(style == NSProgressIndicatorBarStyle)];
+// Testplant-MAL-2015-07-01: Keeping testplant branch code...
   [self setBezeled:(style == NSProgressIndicatorBarStyle)];
   [self sizeToFit];
   [self setNeedsDisplay: YES];
@@ -341,6 +344,7 @@
 - (void) drawRect: (NSRect)rect
 {
    double val;
+   // Testplant-MAL-2015-07-01: omitting main branch code...
    if (_doubleValue < _minValue)
      val = 0.0;
    else if (_doubleValue > _maxValue)
@@ -425,6 +429,7 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
+      // Testplant-MAL-2015-07-01: Keeping testplant branch code...
       // things which Gorm encodes, but IB doesn't care about.
       // process Gorm encodings that IB doesn't care about first
       // otherwise we overwrite settings read in from XIB...

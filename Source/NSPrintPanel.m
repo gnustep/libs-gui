@@ -49,6 +49,7 @@
 #import "AppKit/NSView.h"
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSPrinting.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static NSPrintPanel *shared_instance = nil;
 
@@ -85,12 +86,11 @@ static NSPrintPanel *shared_instance = nil;
 //
 /** Load the appropriate bundle for the PrintPanel
     and alloc the class from that in our place
-    (eg: GSLPRPrintPanel, GSCUPSPrintPanel).
 */
+
 + (id) allocWithZone: (NSZone*) zone
 {
   Class principalClass;
-
   principalClass = [[GSPrinting printingBundle] principalClass];
 
   if (principalClass == nil)
@@ -462,9 +462,9 @@ static NSPrintPanel *shared_instance = nil;
   else
     {
       NSString *str;
-      str = [NSString stringWithFormat: @"%d", _pages.location];
+      str = [NSString stringWithFormat: @"%lu", (unsigned long) _pages.location];
       [[fromRangeForm cellAtIndex: 0] setStringValue: str];
-      str = [NSString stringWithFormat: @"%d", NSMaxRange(_pages)-1];
+      str = [NSString stringWithFormat: @"%lu", (unsigned long) NSMaxRange(_pages)-1];
       [[toRangeForm cellAtIndex: 0] setStringValue: str];
     }
 }

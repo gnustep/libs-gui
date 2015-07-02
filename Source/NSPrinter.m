@@ -1069,6 +1069,11 @@ static NSMutableDictionary* printerCache;
                   withScanner: ppdData
                   withPPDPath: ppdPath];
         }
+
+
+      // Skip any other data that don't conform with the specification.
+      [ppdData scanUpToCharactersFromSet: newlineSet
+			      intoString: NULL];
     }
 }
 
