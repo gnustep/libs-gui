@@ -67,6 +67,14 @@ static NSCell	*verticalKnobCell = nil;
 static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
 static CGFloat	scrollerWidth = 0.0;
+/**
+ * This is the amount (in userspace points) by which the knob slides over the
+ * button ends of the track. Typical use would be to set it to 1 when both
+ * the knob and the buttons have a 1-point border, so that when the knob is
+ * at its maximum, it overlaps the button by 1 point giving a resulting
+ * 1-point wide border.
+ */
+static CGFloat  scrollerKnobOvershoot = 0.0;
 
 /* This is the distance by which buttons are offset inside the scroller slot.
  */
@@ -417,6 +425,14 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   else
     {
       buttonsOffset = 1.0;
+    }
+  if ([defs objectForKey: @"GSScrollerKnobOvershoot"] != nil)
+    {
+      scrollerKnobOvershoot = [defs floatForKey: @"GSScrollerKnobOvershoot"];
+    }
+  else
+    {
+      scrollerKnobOvershoot = 0.0;
     }
 
   upCell
@@ -769,6 +785,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
+  if (!_scFlags.isEnabled)
+    {
+      [super mouseDown: theEvent];
+      return;
+    }
+
   NSPoint location = [theEvent locationInWindow];
   _hitPart = [self testPart: location];
   [self _setTargetAndActionToCells];
@@ -793,14 +815,10 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 					   fromView: nil]];
 	  if (doubleValue != _doubleValue)
 	    {
-	      NSInterfaceStyle interfaceStyle;
+	      const BOOL scrollsToPoint =
+		![[GSTheme theme] scrollerScrollsByPageForScroller: self];
 
-	      interfaceStyle
-		= NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
-
-              if (interfaceStyle == NSNextStepInterfaceStyle 
-                  || interfaceStyle == NSMacintoshInterfaceStyle
-                  || interfaceStyle == GSWindowMakerInterfaceStyle)
+	      if (scrollsToPoint)
 		{
 		  /* NeXTstep style is to scroll to point.
 		   */
@@ -1033,10 +1051,20 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
  */
 - (void) drawRect: (NSRect)rect
 {
+  if (!_scFlags.isEnabled)
+    {
+      NSRect rect1 = NSIntersectionRect(rect, NSInsetRect(_bounds,
+                                                  buttonsOffset, buttonsOffset));
+      [self drawKnobSlotInRect: rect1
+                     highlight: NO];
+    }
+  else
+    {
   [[GSTheme theme] drawScrollerRect: rect
 		   inView: self
 		   hitPart: _hitPart
 		   isHorizontal: _scFlags.isHorizontal];
+}
 }
 
 /**<p>(Un)Highlight the button specified by <var>whichButton</var>.
@@ -1078,6 +1106,11 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
  */
 - (void) drawKnob
 {
+  if (!_scFlags.isEnabled)
+    {
+      return;
+    }
+
   if (upCell == nil)
     {
       [self drawParts];
@@ -1149,16 +1182,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   CGFloat width, height;
   CGFloat buttonsWidth;
   CGFloat buttonsSize;  
-  NSUsableScrollerParts usableParts;
-  NSInterfaceStyle interfaceStyle;
-  BOOL	arrowsSameEnd = NO;
-
-  interfaceStyle = NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
-
-  if ((interfaceStyle == NSNextStepInterfaceStyle 
-    || interfaceStyle == NSMacintoshInterfaceStyle
-    || interfaceStyle == GSWindowMakerInterfaceStyle))
-    arrowsSameEnd = YES;
+  BOOL	arrowsSameEnd = [[GSTheme theme] scrollerArrowsSameEndForScroller: self];
 
   if (upCell == nil)
     {
@@ -1168,19 +1192,6 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
   buttonsWidth = ([[self class] scrollerWidth] - 2 * buttonsOffset);
   x = y = buttonsOffset;
   buttonsSize = 2 * buttonsWidth + 2 * buttonsOffset;
-
-  /*
-   * If the scroller is disabled then the scroller buttons and the
-   * knob are not displayed at all.
-   */
-  if (!_scFlags.isEnabled)
-    {
-      usableParts = NSNoScrollerParts;
-    }
-  else
-    {
-      usableParts = _usableParts;
-    }
 
   /*
    * Assign to `width' and `height' values describing
@@ -1210,8 +1221,8 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	{
 	  CGFloat knobHeight, knobPosition, slotHeight;
 
-	  if (usableParts == NSNoScrollerParts
-	    || usableParts == NSOnlyScrollerArrows)
+	  if (_usableParts == NSNoScrollerParts
+	    || _usableParts == NSOnlyScrollerArrows)
 	    {
 	      return NSZeroRect;
 	    }
@@ -1225,7 +1236,29 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	    knobHeight = buttonsWidth;
 
 	  /* calc knob's position */
-	  knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight));
+
+	  {
+	    CGFloat knobOvershootAbove = scrollerKnobOvershoot;
+	    CGFloat knobOvershootBelow = scrollerKnobOvershoot;
+	    if (arrowsSameEnd
+		&& _arrowsPosition == NSScrollerArrowsMinEnd)
+	      {
+		knobOvershootBelow = 0;
+	      }
+	    else if (arrowsSameEnd
+		     && _arrowsPosition == NSScrollerArrowsMaxEnd)
+	      {
+		knobOvershootAbove = 0;
+	      }
+	    else if (_arrowsPosition == NSScrollerArrowsNone)
+	      {
+		knobOvershootAbove = 0;
+		knobOvershootBelow = 0;
+	      }
+
+	    knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight + knobOvershootAbove + knobOvershootBelow))
+	      - knobOvershootAbove;
+	  }
 
 	  if (arrowsSameEnd)
 	    {
@@ -1249,7 +1282,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 	 * if the scroller does not have buttons the slot completely
 	 * fills the scroller.
 	 */
-	if (usableParts == NSNoScrollerParts
+	if (_usableParts == NSNoScrollerParts
 	  || _arrowsPosition == NSScrollerArrowsNone)
 	  {
 	    break;
@@ -1271,7 +1304,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
       case NSScrollerDecrementLine:
       case NSScrollerDecrementPage:
-	if (usableParts == NSNoScrollerParts
+	if (_usableParts == NSNoScrollerParts
 	  || _arrowsPosition == NSScrollerArrowsNone)
 	  {
 	    return NSZeroRect;
@@ -1286,7 +1319,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
       case NSScrollerIncrementLine:
       case NSScrollerIncrementPage:
-	if (usableParts == NSNoScrollerParts
+	if (_usableParts == NSNoScrollerParts
 	  || _arrowsPosition == NSScrollerArrowsNone)
 	  {
 	    return NSZeroRect;

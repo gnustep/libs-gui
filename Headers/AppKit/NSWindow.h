@@ -824,8 +824,15 @@ PACKAGE_SCOPE
  * Implemented by the delegate
  */
 
-#ifdef GNUSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+@protocol NSWindowDelegate <NSObject>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSWindowDelegate)
+#endif
+
 - (BOOL) windowShouldClose: (id)sender;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) windowWillBeginSheet: (NSNotification*)aNotification;
@@ -840,9 +847,6 @@ PACKAGE_SCOPE
 - (NSRect) window: (NSWindow *)window 
 willPositionSheet: (NSWindow *)sheet
         usingRect: (NSRect)rect;
-#endif
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
-- (NSWindow *) attachedSheet;
 #endif
 - (NSSize) windowWillResize: (NSWindow*)sender
 		     toSize: (NSSize)frameSize;
@@ -867,6 +871,12 @@ willPositionSheet: (NSWindow *)sheet
 - (void) windowWillMove: (NSNotification*)aNotification;
 @end
 #endif
+
+@interface NSObject (NSWindowDelegateAdditions) <NSWindowDelegate>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
+- (NSWindow *) attachedSheet;
+#endif
+@end
 
 /* Notifications */
 APPKIT_EXPORT NSString *NSWindowDidBecomeKeyNotification;

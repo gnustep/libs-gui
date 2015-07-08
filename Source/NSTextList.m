@@ -161,9 +161,12 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // FIXME
   if ([aCoder allowsKeyedCoding])
     {
+      [aCoder encodeObject: _markerFormat
+                    forKey: @"NSMarkerFormat"];
+      [aCoder encodeInt: _listOptions
+                 forKey: @"NSOptions"];
     }
   else
     {
@@ -172,9 +175,10 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // FIXME
   if ([aDecoder allowsKeyedCoding])
     {
+      ASSIGN(_markerFormat, [aDecoder decodeObjectForKey: @"NSMarkerFormat"]);
+      _listOptions = [aDecoder decodeIntForKey: @"NSOptions"];
     }
   else
     {

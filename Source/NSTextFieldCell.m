@@ -238,6 +238,8 @@
          well). */
       _cell.type = NSTextCellType;
       titleRect = [self titleRectForBounds: cellFrame];
+
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
 	  NSAttributedString *string = [self _drawAttributedString];
 	  NSSize size = [string size];
 	  if (size.width > titleRect.size.width && [string length] > 4)

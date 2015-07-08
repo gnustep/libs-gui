@@ -108,7 +108,7 @@
 {
   NSNib *nib;
 
-  if (_vcFlags.nib_is_loaded)
+  if (_vcFlags.nib_is_loaded || ([self nibName] == nil))
     {
       return;
     }

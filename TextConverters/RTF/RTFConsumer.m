@@ -284,6 +284,9 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (void) appendString: (NSString*)string;
 - (void) appendHelpLink: (NSString*)fileName marker: (NSString *)markerName;
 - (void) appendHelpMarker: (NSString*)markerName;
+- (void) appendField: (int)start
+         instruction: (NSString*)instruction;
+- (void) appendImage: (NSString*) string;
 - (void) reset;
 @end
 
@@ -406,12 +409,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
 @end
 
-
-@interface RTFDConsumer (Private)
-
-- (void) appendImage: (NSString*) string;
-
-@end
 
 @implementation RTFDConsumer
 
@@ -778,6 +775,43 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
     }
 }
 
+- (void) appendField: (int)start
+         instruction: (NSString*)instruction
+{
+  if (!ignore)
+    {
+      int  oldPosition = start;
+      int  textlen = [result length] - start;
+      NSRange insertionRange = NSMakeRange(oldPosition, textlen);
+
+      if ([instruction hasPrefix: @"HYPERLINK "])
+        {
+          NSDictionary *attributes;
+          NSString *link = [instruction substringFromIndex: 10];
+
+          if ([link characterAtIndex: 0] == (unichar)'\"') 
+            {
+              link = [link substringWithRange: NSMakeRange(1, [link length] - 2)];
+            }
+
+          attributes = [[NSDictionary alloc] 
+                                       initWithObjectsAndKeys:
+                           link, NSLinkAttributeName, 
+                                     [NSNumber numberWithInt : 1], NSUnderlineStyleAttributeName,
+                         [NSColor blueColor], NSForegroundColorAttributeName, 
+                         nil];
+          [result addAttributes: attributes
+                         range: insertionRange];
+          DESTROY(attributes);
+        }
+    }
+}
+
+- (void) appendImage: (NSString*)string
+{
+  // Do nothing for RTF
+}
+
 @end
 
 #undef IGNORE
@@ -843,6 +877,11 @@ void GSRTFstop (void *ctxt)
   NSDebugLLog(@"RTFParser", @"End RTF parsing");
 }
 
+int GSRTFgetPosition(void *ctxt)
+{
+  return [((RTFConsumer *)ctxt)->result length];
+}
+
 void GSRTFopenBlock (void *ctxt, BOOL ignore)
 {
   if (!IGNORE)
@@ -902,8 +941,8 @@ void GSRTFregisterFont (void *ctxt, const char *fontName,
   if (!fontName || !*fontName)
     {	
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Error in RTF (font omitted?), position:%d",
-		   TEXTPOSITION];
+		   format: @"Error in RTF (font omitted?), position:%lu",
+		   (unsigned long) TEXTPOSITION];
     }
   // exclude trailing ';' from fontName
   if (';' == fontName[strlen(fontName)-1])
@@ -928,9 +967,9 @@ void GSRTFfontNumber (void *ctxt, int fontNumber)
     {
       /* we're about to set an unknown font */
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Error in RTF (referring to undefined font \\f%d), position:%d",
+		   format: @"Error in RTF (referring to undefined font \\f%d), position:%lu",
 		   fontNumber,
-		   TEXTPOSITION];
+		   (unsigned long) TEXTPOSITION];
     } 
   else 
     {
@@ -1349,3 +1388,18 @@ void GSRTFNeXTHelpMarker (void *ctxt, int num, const char *markername)
   [(RTFDConsumer *)ctxt appendHelpMarker: markerName];
 }
 
+void GSRTFaddField (void *ctxt, int start, const char *inst)
+{
+  NSString *fieldInstruction;
+
+  // Ignore leading blanks
+  while (inst[0] == ' ')
+    {
+      inst++;
+    }
+  fieldInstruction = [[NSString alloc] initWithCString: inst
+                                              encoding: ENCODING];
+      
+  [(RTFDConsumer *)ctxt appendField: start instruction: fieldInstruction];
+  DESTROY(fieldInstruction);
+}

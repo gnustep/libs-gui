@@ -150,7 +150,7 @@ static NSNotificationCenter *nc = nil;
                 {
                   proportion = (NSWidth(frames[i]))/oldTotal;              
                 }
-              key = [NSString stringWithFormat: @"%u", i];
+              key = [NSString stringWithFormat: @"%lu", (unsigned long) i];
               [config setObject: [NSNumber numberWithDouble: proportion]
                          forKey: key];
             }
@@ -432,6 +432,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   /* Silence compiler warnings.  */
+  r = NSZeroRect;
   r1 = NSZeroRect;
   bigRect = NSZeroRect;
 
@@ -828,7 +829,7 @@ static NSNotificationCenter *nc = nil;
               NSNumber	*proportion;
 	      NSString	*key;
 
-	      key = [NSString stringWithFormat: @"%u", i];
+	      key = [NSString stringWithFormat: @"%lu", (unsigned long) i];
               proportion = [config objectForKey: key];
               if (proportion == nil)
                 {
@@ -1123,6 +1124,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     {
       return;
     }
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   if (_never_displayed_before == YES) // be sure to adjust subviews before repositioning the divider
     {
       _never_displayed_before = NO;

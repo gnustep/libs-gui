@@ -390,7 +390,7 @@ has blocked and waited for events.
 */
 - (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  NSInteger  largest   = 0;
+  CGFloat    largest   = 0.0;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;
@@ -400,7 +400,8 @@ has blocked and waited for events.
       NSScreen  *screen = [screens objectAtIndex: index];
       NSRect     sframe = [screen frame];
       NSRect     iframe = NSIntersectionRect(frame, sframe);
-      NSInteger  isize  = NSWidth(iframe) * NSHeight(iframe);
+      CGFloat    isize  = NSWidth(iframe) * NSHeight(iframe);
+
       if (isize > largest)
         {
           largest   = isize;
@@ -693,7 +694,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (self == [NSWindow class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       ccSel = @selector(_checkCursorRectangles:forEvent:);
       ctSel = @selector(_checkTrackingRectangles:forEvent:);
       ccImp = [self instanceMethodForSelector: ccSel];
@@ -899,8 +900,8 @@ many times.
 
 - (NSString*) description
 {
-  return [[super description] stringByAppendingFormat: @"Number: %d Title: %@",
-    [self windowNumber], [self title]];
+  return [[super description] stringByAppendingFormat: @"Number: %ld Title: %@",
+    (long) [self windowNumber], [self title]];
 }
 
 - (void) _startBackendWindow
@@ -1039,8 +1040,10 @@ many times.
                      defer: (BOOL)flag
 {
   NSRect  cframe;
+#if 0
   NSInterfaceStyle style = 
     NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+#endif
 
   NSAssert(NSApp,
     @"The shared NSApplication instance must be created before windows "
@@ -1112,6 +1115,7 @@ many times.
              name: NSColorListDidChangeNotification
            object: nil];
 
+#if 0
   if (style == NSWindows95InterfaceStyle)
     {
       if([self canBecomeMainWindow])
@@ -1119,6 +1123,7 @@ many times.
           [self setMenu: [NSApp mainMenu]];
         }
     }
+#endif
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
   return self;
@@ -1582,6 +1587,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
       [_wv setInputState: GSTitleBarKey];
       [GSServerForWindow(self) setinputfocus: _windowNum];
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
 	  [self _resetToolbarUpdates];
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
@@ -1877,6 +1883,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
           [srv setinputfocus: _windowNum];
         }
       _f.visible = YES;
+       // Testplant-MAL-2015-07-08: keeping testplant branch code...
       [self displayIfNeeded];
     }
   else if ([self isOneShot])
@@ -1973,6 +1980,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 {
   NSRect cRect;
   
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   // Adjust top left point if not on a screen...
   CGFloat yValue = topLeftPoint.y - _frame.size.height;
   NSRect  frame  = NSMakeRect(topLeftPoint.x, yValue, _frame.size.width, _frame.size.height);
@@ -1994,6 +2002,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   topLeftPoint.x = NSMinX(cRect);
   topLeftPoint.y = NSMaxY(cRect);
 
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   /* make sure the new point is inside the screen */
   NSScreen *screen = [self screen];
   if (screen == nil)
@@ -2013,6 +2022,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (BOOL) showsResizeIndicator
 {
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
 }
 
@@ -2089,14 +2099,15 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   // Find the biggest difference
-  maxDiff = abs(newFrame.origin.x - _frame.origin.x);
-  maxDiff = MAX(maxDiff, abs(newFrame.origin.y - _frame.origin.y));
-  maxDiff = MAX(maxDiff, abs(newFrame.size.width - _frame.size.width));
-  maxDiff = MAX(maxDiff, abs(newFrame.size.height - _frame.size.height));
+  maxDiff = fabs(newFrame.origin.x - _frame.origin.x);
+  maxDiff = MAX(maxDiff, fabs(newFrame.origin.y - _frame.origin.y));
+  maxDiff = MAX(maxDiff, fabs(newFrame.size.width - _frame.size.width));
+  maxDiff = MAX(maxDiff, fabs(newFrame.size.height - _frame.size.height));
 
   return (maxDiff * resizeTime) / 150;
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (NSRect) _centerFrame: (NSRect)frame onScreen: (NSScreen*)theScreen
 {
   NSRect centeredFrame = frame;
@@ -2115,11 +2126,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return centeredFrame;
 }
  
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (NSRect) _centerFrame: (NSRect)frame
 {
   return [self _centerFrame:frame onScreen:[NSScreen mainScreen]];
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (void) center
 {
   NSRect frame = [self _centerFrame: _frame onScreen: [self screen]];
@@ -2143,13 +2156,20 @@ titleWithRepresentedFilename(NSString *representedFilename)
       frameRect.origin.y -= difference;
     }
   
+  /* Adjust X origin, if needed */
+  difference = NSMaxX (frameRect) - NSMaxX (screenRect);
+  if (difference > 0)
+    {
+      frameRect.origin.x -= difference;
+    }
+  
   /* If the window is resizable, resize it (if needed) so that the
      bottom edge is on the screen or can be on the screen when the user moves 
      the window */
   difference = NSMaxY (screenRect) - NSMaxY (frameRect);
   if (_styleMask & NSResizableWindowMask)
     {
-      float difference2;
+      CGFloat difference2;
       
       difference2 = screenRect.origin.y - frameRect.origin.y;
       difference2 -= difference; 
@@ -2793,6 +2813,164 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+static void
+checkCursorRectanglesEntered(NSView *theView,  NSEvent *theEvent, NSPoint lastPoint)
+{
+
+  /*
+   * Check cursor rectangles for the subviews
+   */
+  if (theView->_rFlags.has_subviews)
+    {
+      NSArray *sb = theView->_sub_views;
+      NSUInteger count = [sb count];
+
+      if (count > 0)
+        {
+          NSView *subs[count];
+          NSUInteger i;
+
+          [sb getObjects: subs];
+          for (i = 0; i < count; ++i)
+            {
+              if (![subs[i] isHidden])
+                {
+                  checkCursorRectanglesEntered(subs[i], theEvent, lastPoint);
+                }
+            }
+        }
+    }
+
+  if (theView->_rFlags.valid_rects)
+    {
+      NSArray *tr = theView->_cursor_rects;
+      NSUInteger count = [tr count];
+
+      // Loop through cursor rectangles
+      if (count > 0)
+        {
+          GSTrackingRect *rects[count];
+          NSPoint loc = [theEvent locationInWindow];
+          NSUInteger i;
+
+          [tr getObjects: rects];
+
+          for (i = 0; i < count; ++i)
+            {
+              GSTrackingRect *r = rects[i];
+              BOOL last;
+              BOOL now;
+
+              if ([r isValid] == NO)
+                continue;
+
+              /*
+               * Check for presence of point in rectangle.
+               */
+              last = NSMouseInRect(lastPoint, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, NO);
+
+              // Mouse entered
+              if ((!last) && (now))
+                {
+                  NSEvent *e;
+
+                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+                    location: loc
+                    modifierFlags: [theEvent modifierFlags]
+                    timestamp: 0
+                    windowNumber: [theEvent windowNumber]
+                    context: [theEvent context]
+                    eventNumber: 0
+                    trackingNumber: (int)YES
+                    userData: (void*)r];
+                  [NSApp postEvent: e atStart: YES];
+                  //NSLog(@"Add enter event %@ for view %@ rect %@", e, theView, NSStringFromRect(r->rectangle));
+                }
+            }
+        }
+    }
+}
+
+static void
+checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoint)
+{
+  if (theView->_rFlags.valid_rects)
+    {
+      NSArray *tr = theView->_cursor_rects;
+      NSUInteger count = [tr count];
+
+      // Loop through cursor rectangles
+      if (count > 0)
+        {
+          GSTrackingRect *rects[count];
+          NSPoint loc = [theEvent locationInWindow];
+          NSUInteger i;
+
+          [tr getObjects: rects];
+
+          for (i = 0; i < count; ++i)
+            {
+              GSTrackingRect *r = rects[i];
+              BOOL last;
+              BOOL now;
+
+              if ([r isValid] == NO)
+                continue;
+
+              /*
+               * Check for presence of point in rectangle.
+               */
+              last = NSMouseInRect(lastPoint, r->rectangle, NO);
+              now = NSMouseInRect(loc, r->rectangle, NO);
+
+              // Mouse exited
+              if ((last) && (!now))
+                {
+                  NSEvent *e;
+
+                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+                    location: loc
+                    modifierFlags: [theEvent modifierFlags]
+                    timestamp: 0
+                    windowNumber: [theEvent windowNumber]
+                    context: [theEvent context]
+                    eventNumber: 0
+                    trackingNumber: (int)NO
+                    userData: (void*)r];
+                  [NSApp postEvent: e atStart: YES];
+                  //[NSApp postEvent: e atStart: NO];
+                  //NSLog(@"Add exit event %@ for view %@ rect %@", e, theView, NSStringFromRect(r->rectangle));
+                }
+            }
+        }
+    }
+
+  /*
+   * Check cursor rectangles for the subviews
+   */
+  if (theView->_rFlags.has_subviews)
+    {
+      NSArray *sb = theView->_sub_views;
+      NSUInteger count = [sb count];
+
+      if (count > 0)
+        {
+          NSView *subs[count];
+          NSUInteger i;
+
+          [sb getObjects: subs];
+          for (i = 0; i < count; ++i)
+            {
+              if (![subs[i] isHidden])
+                {
+                  checkCursorRectanglesExited(subs[i], theEvent, lastPoint);
+                }
+            }
+        }
+    }
+}
+
 - (void) resetCursorRects
 {
   [self discardCursorRects];
@@ -2814,7 +2992,7 @@ resetCursorRectsForView(NSView *theView)
                                         clickCount: 0
                                           pressure: 0];
           _lastPoint = NSMakePoint(-1,-1);
-          (*ccImp)(self, ccSel, _wv, e);
+          checkCursorRectanglesEntered(_wv, e, _lastPoint);
           _lastPoint = loc;
         }
     }
@@ -3525,6 +3703,7 @@ resetCursorRectsForView(NSView *theView)
           GSTrackingRect *rects[count];
           NSPoint loc = [theEvent locationInWindow];
 	  NSPoint lastPoint = _lastPoint;
+	  NSRect vr = [theView visibleRect];
           NSUInteger i;
 
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
@@ -3536,13 +3715,14 @@ resetCursorRectsForView(NSView *theView)
               BOOL last;
               BOOL now;
               GSTrackingRect *r = rects[i];
+	      NSRect tr = NSIntersectionRect(vr, r->rectangle);
 
               if ([r isValid] == NO)
                 continue;
               /* Check mouse at last point */
-              last = NSMouseInRect(lastPoint, r->rectangle, isFlipped);
+              last = NSMouseInRect(lastPoint, tr, isFlipped);
               /* Check mouse at current point */
-              now = NSMouseInRect(loc, r->rectangle, isFlipped);
+              now = NSMouseInRect(loc, tr, isFlipped);
 
               if ((!last) && (now))                // Mouse entered event
                 {
@@ -3630,92 +3810,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _checkCursorRectangles: (NSView*)theView forEvent: (NSEvent*)theEvent
 {
-  if (theView->_rFlags.valid_rects)
-    {
-      NSArray *tr = theView->_cursor_rects;
-      NSUInteger count = [tr count];
-
-      // Loop through cursor rectangles
-      if (count > 0)
-        {
-          GSTrackingRect *rects[count];
-          NSPoint loc = [theEvent locationInWindow];
-          NSUInteger i;
-
-          [tr getObjects: rects];
-
-          for (i = 0; i < count; ++i)
-            {
-              GSTrackingRect *r = rects[i];
-              BOOL last;
-              BOOL now;
-
-              if ([r isValid] == NO)
-                continue;
-
-              /*
-               * Check for presence of point in rectangle.
-               */
-              last = NSMouseInRect(_lastPoint, r->rectangle, NO);
-              now = NSMouseInRect(loc, r->rectangle, NO);
-
-              // Mouse entered
-              if ((!last) && (now))
-                {
-                  NSEvent *e;
-
-                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-                    location: loc
-                    modifierFlags: [theEvent modifierFlags]
-                    timestamp: 0
-                    windowNumber: [theEvent windowNumber]
-                    context: [theEvent context]
-                    eventNumber: 0
-                    trackingNumber: (int)YES
-                    userData: (void*)r];
-                  [self postEvent: e atStart: YES];
-                }
-              // Mouse exited
-              if ((last) && (!now))
-                {
-                  NSEvent *e;
-
-                  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-                    location: loc
-                    modifierFlags: [theEvent modifierFlags]
-                    timestamp: 0
-                    windowNumber: [theEvent windowNumber]
-                    context: [theEvent context]
-                    eventNumber: 0
-                    trackingNumber: (int)NO
-                    userData: (void*)r];
-                  [self postEvent: e atStart: YES];
-                }
-            }
-        }
-    }
-
-  /*
-   * Check cursor rectangles for the subviews
-   */
-  if (theView->_rFlags.has_subviews)
-    {
-      NSArray *sb = theView->_sub_views;
-      NSUInteger count = [sb count];
-
-      if (count > 0)
-        {
-          NSView *subs[count];
-          NSUInteger i;
-
-          [sb getObjects: subs];
-          for (i = 0; i < count; ++i)
-            {
-              if (![subs[i] isHidden])
-                (*ccImp)(self, ccSel, subs[i], theEvent);
-            }
-        }
-    }
+  // As we add the events to the front of the queue, we need to add the last
+  // events first. That is, first the enter evnts from inner to outer and 
+  // then the exit events
+  checkCursorRectanglesEntered(theView, theEvent, _lastPoint);
+  checkCursorRectanglesExited(theView, theEvent, _lastPoint);
+  //[GSServerForWindow(self) _printEventQueue];
 }
 
 - (void) _processResizeEvent
@@ -3831,6 +3931,7 @@ resetCursorRectsForView(NSView *theView)
                       return;
                     }
                 }
+              // Testplant-MAL-2015-07-08: keeping testplant branch code...
               if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES || ![self canBecomeKeyWindow])
                 {
                   if ([NSHelpManager isContextHelpModeActive])
@@ -3911,6 +4012,7 @@ resetCursorRectsForView(NSView *theView)
         switch (type)
           {
             case NSLeftMouseDragged:
+              // Testplant-MAL-2015-07-08: keeping testplant branch code...
               if (_lastLeftMouseDownView)
                 [_lastLeftMouseDownView mouseDragged: theEvent];
               else
@@ -3962,7 +4064,9 @@ resetCursorRectsForView(NSView *theView)
              * cursor update event.
              */
             if (_f.cursor_rects_enabled)
+              {
                 (*ccImp)(self, ccSel, _wv, theEvent);
+              }
           }
         
         _lastPoint = [theEvent locationInWindow];
@@ -4005,13 +4109,25 @@ resetCursorRectsForView(NSView *theView)
           GSTrackingRect *r =(GSTrackingRect*)[theEvent userData];
           NSCursor *c = (NSCursor*)[r owner];
 
-	  // Don't update the cursor if the window isn't the key window.
-	  if (!_f.is_key)
-	    break;
+          // Don't update the cursor if the window isn't the key window.
+          if (!_f.is_key)
+            {
+              break;
+            }
           
           if ([theEvent trackingNumber]) // It's a mouse entered
             {
-              [c mouseEntered: theEvent];
+	          /* Only send the event mouse entered if the
+	           * cursor rectangle is valid. */
+	          if ([r isValid])
+                {
+                  [c mouseEntered: theEvent];
+
+		          /* This could seems redundant, but ensure the correct
+		           * value to use in events mouse moved. And avoids strange
+		           * issues with cursor. */
+		          _lastPoint = [theEvent locationInWindow];
+                }
             }
           else                           // it is a mouse exited
             {
@@ -4186,7 +4302,9 @@ resetCursorRectsForView(NSView *theView)
                    * to determine if we should send a cursor update
                    * event.  */
                   if (_f.cursor_rects_enabled)
-                    (*ccImp)(self, ccSel, _wv, theEvent);
+                    {
+                      checkCursorRectanglesExited(_wv, theEvent, _lastPoint);
+                    }
                 }
               
               _lastPoint = NSMakePoint(-1, -1);
@@ -4356,6 +4474,7 @@ resetCursorRectsForView(NSView *theView)
                         @selector(concludeDragOperation:), dragInfo);
                     }
                   
+                  // Testplant-MAL-2015-07-08: keeping testplant branch code...
                   // Check for specific cleanup after drag methods...
                   if ([_lastDragView respondsToSelector: @selector(cleanUpAfterDragOperation)])
                     {
@@ -4823,6 +4942,7 @@ current key view.<br />
     }
   sRect.size.height = value;
   
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 #if defined(__MINGW__)
   // Finally, this is for handling possible frame errors due to MSWindows sending
   // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
@@ -4895,6 +5015,7 @@ current key view.<br />
       fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
         * (nRect.size.width / sRect.size.width);
       
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       /*
        * If width of the window goes beyond the screen width, then adjust the window over.
        */
@@ -4917,6 +5038,7 @@ current key view.<br />
       }
     }
 
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   // Another sanity check...
   // Check again whether new window frame shows up on ANY screen...
   if ([self _screenForFrame: fRect] == nil)
@@ -4998,6 +5120,7 @@ current key view.<br />
       fRect.origin.y += menuBarHeight;
     }
   
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   // If window doesn't show up on any screen then just include main screen frame...
   NSScreen *myScreen = [self _screen];
   /*
@@ -5113,10 +5236,10 @@ current key view.<br />
   maxRect = [self constrainFrameRect: maxRect toScreen: [self _screen]];
 
   // Compare the new frame with the current one
-  if ((abs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST)
-    && (abs(NSMaxY(maxRect) - NSMaxY(_frame)) < DIST)
-    && (abs(NSMinX(maxRect) - NSMinX(_frame)) < DIST)
-    && (abs(NSMinY(maxRect) - NSMinY(_frame)) < DIST))
+  if ((fabs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST)
+    && (fabs(NSMaxY(maxRect) - NSMaxY(_frame)) < DIST)
+    && (fabs(NSMinX(maxRect) - NSMinX(_frame)) < DIST)
+    && (fabs(NSMinY(maxRect) - NSMinY(_frame)) < DIST))
     {
       // Already in zoomed mode, reset user frame, if stored
       if (_autosaveName != nil)
@@ -5428,8 +5551,10 @@ current key view.<br />
   [aCoder encodeObject: _miniaturizedTitle];
   [aCoder encodeObject: _windowTitle];
 
-  [aCoder encodeSize: _minimumSize];
-  [aCoder encodeSize: _maximumSize];
+  //  [aCoder encodeSize: _minimumSize];
+  //  [aCoder encodeSize: _maximumSize];
+  [aCoder encodeSize: [self contentMinSize]];
+  [aCoder encodeSize: [self contentMaxSize]];
 
   [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_windowLevel];
 
@@ -5482,6 +5607,7 @@ current key view.<br />
       NSBackingStoreType aBacking;
       NSInteger level;
       id obj;
+      int version = [aDecoder versionForClassName: @"NSWindow"];
 
       aRect = [aDecoder decodeRect];
       [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
@@ -5508,10 +5634,20 @@ current key view.<br />
       obj = [aDecoder decodeObject];
       [self setTitle: obj];
 
+      if (version < 3)
+        {
       aSize = [aDecoder decodeSize];
       [self setMinSize: aSize];
       aSize = [aDecoder decodeSize];
       [self setMaxSize: aSize];
+        }
+      else
+        {
+          aSize = [aDecoder decodeSize];
+          [self setContentMinSize: aSize];
+          aSize = [aDecoder decodeSize];
+          [self setContentMaxSize: aSize];
+        }
 
       [aDecoder decodeValueOfObjCType: @encode(NSInteger)
                                    at: &level];

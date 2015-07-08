@@ -287,7 +287,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           index = [toolbar _indexOfItem: _toolbarItem];
         }
 	  [GSToolbarView setDraggedItemIndex:index];
-      [pboard setString: [NSString stringWithFormat:@"%d", index] 
+      [pboard setString: [NSString stringWithFormat:@"%ld", (long) index] 
               forType: GSMovableToolbarItemPboardType];
           
       [self dragImage: image 
@@ -777,7 +777,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           index = [toolbar _indexOfItem: _toolbarItem];
         }
 	  [GSToolbarView setDraggedItemIndex:index];
-      [pboard setString: [NSString stringWithFormat:@"%d", index] 
+      [pboard setString: [NSString stringWithFormat:@"%ld", (long) index] 
               forType: GSMovableToolbarItemPboardType];
       
       [self dragImage: image 
@@ -1382,13 +1382,18 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   [(NSButton *)_backView setTarget: target];
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (void) setToolTip: (NSString *)toolTip
 {
   ASSIGN(_toolTip, toolTip);
   if (_view)
-    [_view setToolTip: _toolTip];
+    {
+      [_view setToolTip: _toolTip];
+    }
   else if (_backView && [_backView isMemberOfClass:[GSToolbarButton class]])
-    [_backView setToolTip: _toolTip];
+    {
+      [_backView setToolTip: _toolTip];
+    }
 }
 
 - (void) setView: (NSView *)view

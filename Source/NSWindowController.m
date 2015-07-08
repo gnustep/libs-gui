@@ -28,7 +28,6 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
-#import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -356,6 +355,12 @@
         }
       [responder setNextResponder: [self nextResponder]];
       [_window setWindowController: nil];
+
+      // Remove the delegate as well if set to the owner in the NIB file
+      if ([_window delegate] == _owner)
+        {
+          [_window setDelegate: nil];
+        }
     }
 
   ASSIGN(_window, aWindow);

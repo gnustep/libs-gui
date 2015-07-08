@@ -40,7 +40,7 @@
     return nil;
 
   [self setAlignment: NSCenterTextAlignment];
-  [self setTextColor: [NSColor windowFrameTextColor]];
+  [self setTextColor: [[GSTheme theme] tableHeaderTextColorForState: GSThemeNormalState]];
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setDrawsBackground: YES];
   [self setFont: [NSFont titleBarFontOfSize: 0]];
@@ -113,12 +113,12 @@
   if (flag == YES)
     {
       [self setBackgroundColor: [NSColor controlHighlightColor]];
-      [self setTextColor: [NSColor controlTextColor]];
+      [self setTextColor: [[GSTheme theme] tableHeaderTextColorForState: GSThemeHighlightedState]];
     }
   else
     {
       [self setBackgroundColor: [NSColor controlShadowColor]];
-      [self setTextColor: [NSColor windowFrameTextColor]];
+      [self setTextColor: [[GSTheme theme] tableHeaderTextColorForState: GSThemeNormalState]];
     }
 }
 

@@ -68,11 +68,14 @@ typedef void	*GSRTFctxt;
 #define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
-#define YYDEBUG 0
+#define YYDEBUG 1
 
 #include "RTFConsumerFunctions.h"
 /*int GSRTFlex (YYSTYPE *lvalp, RTFscannerCtxt *lctxt); */
 int GSRTFlex(void *lvalp, void *lctxt);
+
+/* */
+int fieldStart = 0;
 
 %}
 
@@ -110,6 +113,15 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token RTFemspace
 %token RTFenspace
 %token RTFbullet
+%token RTFfield
+%token RTFfldinst
+%token RTFfldalt
+%token RTFfldrslt
+%token RTFflddirty
+%token RTFfldedit
+%token RTFfldlock
+%token RTFfldpriv
+%token RTFfttruetype
 %token RTFlquote
 %token RTFrquote
 %token RTFldblquote
@@ -185,25 +197,27 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token	RTFfamilyScript
 %token	RTFfamilyDecor
 %token	RTFfamilyTech
+%token	RTFfamilyBiDi
 
 %type	<number> rtfFontFamily rtfCharset rtfFontStatement
+%type	<text> rtfFieldinst
 
 /*	let's go	*/
 
 %%
 
-rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfCharset rtfIngredients { GSRTFstop(CTXT); } '}'
+rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfIngredients { GSRTFstop(CTXT); } '}'
 		;
 
+/* FIXME: This should change the used encoding */
 rtfCharset: RTFansi { $$ = 1; }
 		|	RTFmac { $$ = 2; }
 		|	RTFpc  { $$ = 3; }
 		|	RTFpca { $$ = 4; }
-			/* If it's an unknown character set, assume ansi. */
-		|	RTFOtherStatement { $$ = 1; free((void*)$1.name); }
 		;
 
 rtfIngredients:	/*	empty	*/
+		|	rtfIngredients rtfCharset
 		|	rtfIngredients rtfFontList
 		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
@@ -220,9 +234,43 @@ rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients rtfNeXTstuff '}' { GS
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, NO); } RTFfield rtfField '}' { GSRTFcloseBlock(CTXT, NO); }
 		|	'{' error '}'
 		;
 
+
+rtfField: { fieldStart = GSRTFgetPosition(CTXT);} rtfFieldMod rtfFieldinst rtfFieldrslt { GSRTFaddField(CTXT, fieldStart, $3); free((void *)$3); }
+		|	error
+		;
+
+rtfFieldMod:	/*	empty	*/
+		|	rtfFieldMod RTFflddirty
+		|	rtfFieldMod RTFfldedit
+		|	rtfFieldMod RTFfldlock
+		|	rtfFieldMod RTFfldpriv
+		;
+
+rtfIgnore:  	/*	empty	*/
+		| RTFignore
+		;
+
+rtfFieldinst: '{' rtfIgnore RTFfldinst RTFtext rtfFieldalt '}' { $$ = $4;}
+		| '{' rtfIgnore RTFfldinst '{' { GSRTFopenBlock(CTXT, YES); } rtfStatementList RTFtext rtfFieldalt '}' { GSRTFcloseBlock(CTXT, YES); } '}' { $$ = $7;}
+		| '{' error '}' { $$ = NULL;}
+		;
+
+rtfFieldalt:  	/*	empty	*/
+		| RTFfldalt
+		;
+
+rtfFieldrslt: '{' rtfIgnore RTFfldrslt rtfIngredients '}' 
+		| '{' error '}'
+		;
+
+rtfStatementList: 	/*	empty	*/
+		| rtfStatementList rtfStatement
+		| rtfStatementList rtfBlock
+		;
 
 /*
 	RTF statements start with a '\', have a alpha name and a number argument
@@ -542,12 +590,19 @@ rtfFonts:
 /* RTFtext introduces the fontName */
 rtfFontStatement:	RTFfont rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $4, $2, $1.parameter);
                                                           free((void *)$4); }
+/* fbidi should be a font family, but it seems to be used differently */
+		|	RTFfont RTFfamilyBiDi rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $5, $3, $1.parameter);
+                                                          free((void *)$5); }
+/* Theme fonts */
+		|	RTFOtherStatement RTFfont RTFfamilyBiDi rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $6, $4, $2.parameter);
+                                                          free((void *)$6); }
 		;
 
 rtfFontAttrs: /* empty */
                 | rtfFontAttrs RTFfcharset 
                 | rtfFontAttrs RTFfprq
                 | rtfFontAttrs RTFcpg
+                | rtfFontAttrs RTFfttruetype
                 | rtfFontAttrs rtfBlock
                 ;
 

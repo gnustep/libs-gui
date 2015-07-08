@@ -1556,6 +1556,7 @@ static GSValidationCenter *vc = nil;
   [self validateVisibleItems];
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (void) _resetToolbarUpdates: (NSWindow *)window
 {
   GSValidationCenter *validationCenter = [GSValidationCenter sharedValidationCenter];

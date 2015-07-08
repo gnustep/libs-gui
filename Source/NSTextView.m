@@ -311,6 +311,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 }
 @end
 
+
 @interface NSTextStorage(NSTextViewUndoSupport)
 - (void) _undoTextChange: (NSTextViewUndoObject *)anObject;
 - (BOOL) _isEditing;
@@ -2168,7 +2169,7 @@ chain if we can't handle it. */
     }
   if ([self respondsToSelector: aSelector])
     {
-      [self performSelector: aSelector];
+      [self performSelector: aSelector withObject: nil];
     }
   else
     {
@@ -2191,6 +2192,11 @@ This method is for user changes; see NSTextView_actions.m.
   if (insertRange.location == NSNotFound)
     {
       NSBeep();
+      return;
+    }
+
+  if (insertString == nil)
+    {
       return;
     }
 
@@ -2728,6 +2734,8 @@ TextDidEndEditing notification _without_ asking the delegate
        immediately. We never coalesce actions when the current selection is
        not empty. */
       event    = [NSApp currentEvent];
+
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       isTyping = (([event type] == NSKeyDown) &&
                   ([[event characters] isEqualToString: replacementString]));
       if (undoManagerCanCoalesce && _undoObject)
@@ -2772,10 +2780,12 @@ TextDidEndEditing notification _without_ asking the delegate
       [undo registerUndoWithTarget: _textStorage
                           selector: @selector(_undoTextChange:)
                             object: undoObject];
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       if (isTyping) // || _tf.isAutoCompleting)
         _undoObject = undoObject;
       else
         RELEASE(undoObject);
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       if (_tf.isAutoCompleting == 1)
         _tf.isAutoCompleting = 2;
     }
@@ -2799,6 +2809,7 @@ After each user-induced change, this method should be called.
 */
 - (void) didChangeText
 {
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   if ([_textStorage _isEditing])
     return;
   
@@ -2872,6 +2883,7 @@ Returns the ranges to which various kinds of user changes should apply.
   return _layoutManager->_selected_range;
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (NSRange) rangeForUserCompletion
 {
   static NSCharacterSet *TheAplhaSet = nil; // ONLY ALPHA CHARACTERS
@@ -4280,6 +4292,7 @@ Figure out how the additional layout stuff is supposed to work.
      method or during the previous call to this method) */
   if (_tf.drag_target_hijacks_insertion_point)
     {
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       // Erase previous insertion point line...
       _drawInsertionPointNow = NO;
       [self setNeedsDisplayInRect: _insertionPointRect avoidAdditionalLayout: YES];
@@ -5609,6 +5622,7 @@ other than copy/paste or dragging. */
               {
                 NSRect cellFrame = NSZeroRect;
 
+                // Testplant-MAL-2015-07-08: keeping testplant branch code...
                 if (startIndex >= [_textStorage length])
                   {
                     NSUInteger glyphIndex  = [_textStorage length]-1;
@@ -5625,6 +5639,7 @@ other than copy/paste or dragging. */
                     NSRect lfRect;
                     NSUInteger glyphIndex;
                     
+                    // Testplant-MAL-2015-07-08: keeping testplant branch code...
                     glyphIndex = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(startIndex, 1)
                                                         actualCharacterRange: NULL].location;
                     lfRect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex
@@ -6073,6 +6088,7 @@ configuation! */
       range.location != NSNotFound && range.length != 0)
     {
       GSAutocompleteWindow *window = [GSAutocompleteWindow defaultWindow];
+      // Testplant-MAL-2015-07-08: keeping testplant branch code...
       _tf.isAutoCompleting = 1;
       [window displayForTextView: self];
       _tf.isAutoCompleting = 0;
@@ -6330,6 +6346,11 @@ or add guards
     // nearest word boundary
     NSString *substring = [[self string] substringWithRange: aRange];
     
+    if (sp == nil)
+      {
+        return;
+      }
+
     do {
       NSRange errorRange = [sp checkSpellingOfString: substring
 					  startingAt: start
@@ -6630,6 +6651,7 @@ or add guards
   [anObject performUndo: self];
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (BOOL) _isEditing
 {
   return (_editCount != 0);

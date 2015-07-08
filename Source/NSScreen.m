@@ -132,6 +132,7 @@ static NSMutableArray *screenArray = nil;
   NSWindow *keyWindow;
 
   keyWindow = [NSApp keyWindow];
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   if ((keyWindow != nil) && ([keyWindow screen] != nil))
     {
       return [keyWindow screen];

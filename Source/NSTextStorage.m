@@ -148,6 +148,7 @@ static NSNotificationCenter *nc = nil;
   /*
    * Extend edited range to encompass the latest edit.
    */
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   if (_editedMask == 0)
     {
       _editedRange = old;		// First edit.
@@ -157,6 +158,7 @@ static NSNotificationCenter *nc = nil;
       _editedRange = NSUnionRange (_editedRange, old);
     }
 
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   /*
    * Add in any new flags for this edit.
    */

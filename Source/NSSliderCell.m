@@ -224,6 +224,25 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
 }
 
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
+{
+  NSBorderType aType;
+  
+  if (_cell.is_bordered)
+    aType = NSLineBorder;
+  else if (_cell.is_bezeled)
+    aType = NSBezelBorder;
+  else
+    aType = NSNoBorder;
+
+  [[GSTheme theme] drawSliderBorderAndBackground: aType 
+					   frame: cellFrame
+					  inCell: self
+				    isHorizontal: ![self isVertical]];
+}
+
+
 /** <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
   <var>flipped</var> indicates whether the control view has a flipped 
    coordinate system.</p>
@@ -274,15 +293,26 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   if (_isVertical == YES)
     {
       origin = _trackRect.origin;
+      origin.x += (_trackRect.size.width - size.width) / 2.0; // center horizontally
       origin.y += (_trackRect.size.height - size.height) * floatValue;
     }
   else
     {
       origin = _trackRect.origin;
       origin.x += (_trackRect.size.width - size.width) * floatValue;
+      origin.y += (_trackRect.size.height - size.height) / 2.0; // center vertically
     }
 
-  return NSMakeRect (origin.x, origin.y, size.width, size.height); 
+  {
+    NSRect result = NSMakeRect (origin.x, origin.y, size.width, size.height);
+
+    if ([self controlView])
+      {
+	result = [[self controlView] centerScanRect: result];
+}
+
+    return result;
+  } 
 }
 
 /** <p>Calculates the rect in which to draw the knob, then calls
@@ -307,10 +337,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 */
 - (void) drawKnob: (NSRect)knobRect
 {
-  NSColor* knobBackgroundColor = [NSColor controlBackgroundColor];
-  [knobBackgroundColor set];
-  NSRectFill (knobRect);
-  
   [_knobCell drawInteriorWithFrame: knobRect inView: _control_view];
 }
 
@@ -326,6 +352,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       NSPoint point;
       NSRect knobRect;
       float fraction, angle, radius;
+      NSImage *image;
 
       if (cellFrame.size.width > cellFrame.size.height)
 	{
@@ -343,54 +370,73 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 				cellFrame.size.width,
 				cellFrame.size.width);
 	}
-      knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
 
+      if ([self controlView])
+	knobRect = [[self controlView] centerScanRect: knobRect];
+
+      image = [NSImage imageNamed: @"common_CircularSlider"];
+      if (image != nil)
+	{
+	  [image drawInRect: knobRect
+		   fromRect: NSZeroRect
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0
+	     respectFlipped: YES
+		      hints: nil];
+	}
+      else
+	{
+	  knobRect = NSInsetRect(knobRect, 1, 1);
       circle = [NSBezierPath bezierPathWithOvalInRect: knobRect];
       [[NSColor controlBackgroundColor] set];    
       [circle fill];
       [[NSColor blackColor] set];
       [circle stroke];
+	}
+
+      knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
 
       fraction = ([self floatValue] - [self minValue]) /
 	([self maxValue] - [self minValue]);
       angle = (fraction * (2.0 * M_PI)) - (M_PI / 2.0);
-      radius = (knobRect.size.height / 2) - 4;
+      radius = (knobRect.size.height / 2) - 6;
       point = NSMakePoint((radius * cos(angle)) + knobCenter.x,
 			  (radius * sin(angle)) + knobCenter.y);
           
-      [[NSBezierPath bezierPathWithOvalInRect: NSMakeRect(point.x - 2,
-							  point.y - 2,
-							  4,
-							  4)] stroke];
+      image = [NSImage imageNamed: @"common_Dimple"];
+	{
+	  NSSize size = [image size];
+	  NSRect dimpleRect = NSMakeRect(point.x - (size.width / 2.0),
+					 point.y - (size.height / 2.0),
+					 size.width,
+					 size.height);
+
+	  if ([self controlView])
+	    dimpleRect = [[self controlView] centerScanRect: dimpleRect];
+
+	  [image drawInRect: dimpleRect
+		   fromRect: NSZeroRect
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0
+	     respectFlipped: YES
+		      hints: nil];
+    }
     }
   else if (_type == NSLinearSlider)
     {
       BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
-      NSImage *image;
-      NSSize size;
 
       if (vertical != _isVertical)
 	{
+	  NSImage *image;
 	  if (vertical == YES)
 	    {
 	      image = [NSImage imageNamed: @"common_SliderVert"];
-	      if (image != nil)
-		{
-		  size = [image size];
-		  [image setScalesWhenResized: YES];
-		  [image setSize: NSMakeSize(cellFrame.size.width, size.height)];
 		}
-	    }
 	  else
 	    {
 	      image = [NSImage imageNamed: @"common_SliderHoriz"];
-	      if (image != nil)
-		{
-		  size = [image size];
-		  [image setScalesWhenResized: YES];
-		  [image setSize: NSMakeSize(size.width, cellFrame.size.height)];
 		}
-	    }
 	  [_knobCell setImage: image];
 	}
       _isVertical = vertical;

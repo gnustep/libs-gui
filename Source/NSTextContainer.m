@@ -96,12 +96,12 @@ use bounds rectangle instead of frame? */
   NSDebugLLog(@"NSText", @"NSTextContainer initWithContainerSize");
   if (aSize.width < 0)
     {
-      NSWarnMLog(@"given negative width", 0);
+      NSWarnMLog(@"given negative width");
       aSize.width = 0;
     }
   if (aSize.height < 0)
     {
-      NSWarnMLog(@"given negative height", 0);
+      NSWarnMLog(@"given negative height");
       aSize.height = 0;
     }
   _layoutManager = nil;
@@ -246,12 +246,12 @@ framework intact.
 
   if (aSize.width < 0)
     {
-      NSWarnMLog(@"given negative width", 0);
+      NSWarnMLog(@"given negative width");
       aSize.width = 0;
     }
   if (aSize.height < 0)
     {
-      NSWarnMLog(@"given negative height", 0);
+      NSWarnMLog(@"given negative height");
       aSize.height = 0;
     }
 

@@ -143,6 +143,7 @@ static void init_string_drawing(void)
     }
 }
 
+// Testplant-MAL-2015-07-08: keeping testplant branch code...
 static int lockedCacheEntries[NUM_CACHE_ENTRIES];
 static unsigned int numLockedCacheEntries = 0;
 #define DEBUG_CACHE_RECURSION_COUNT 0
@@ -194,6 +195,7 @@ static inline void cache_lock()
 
 static inline void cache_unlock()
 {
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   unlock_top_entry();
   [cacheLock unlock];
 }
@@ -245,6 +247,7 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
       c = cache + j;
       if (least_used == -1 || c->used < least_used)
         {
+          // Testplant-MAL-2015-07-08: keeping testplant branch code...
           // Avoid replacing items that are currently being modified by other stack frames...
           if (!is_entry_locked(j))
             {
@@ -340,6 +343,7 @@ static int cache_lookup(int hasSize, NSSize size, int useScreenFonts)
   NSTextContainer *textContainer;
 
   ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  // Testplant-MAL-2015-07-08: keeping testplant branch code...
   lock_entry(ci);
   if (hit)
     {

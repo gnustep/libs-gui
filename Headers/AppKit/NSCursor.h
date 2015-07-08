@@ -51,6 +51,11 @@
   void		*_cid;
 }
 
+// Method needed on Windows to handle the cursor.
+#ifdef WIN32
++ (NSUInteger) count;
+#endif
+
 /*
  * Initializing a New NSCursor Object
  */

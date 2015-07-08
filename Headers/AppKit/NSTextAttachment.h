@@ -72,10 +72,10 @@ enum {
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView;
 - (void)drawWithFrame:(NSRect)cellFrame 
 	       inView:(NSView *)controlView 
-       characterIndex:(unsigned)charIndex;
+       characterIndex:(NSUInteger)charIndex;
 - (void)drawWithFrame:(NSRect)cellFrame 
 	       inView:(NSView *)controlView 
-       characterIndex:(unsigned)charIndex
+       characterIndex:(NSUInteger)charIndex
 	layoutManager:(NSLayoutManager *)layoutManager;
 - (void)highlight:(BOOL)flag 
 	withFrame:(NSRect)cellFrame 
@@ -117,14 +117,14 @@ The class uses -cellSize and -cellBaselineOffset to return a rect.
 -(NSRect) cellFrameForTextContainer: (NSTextContainer *)textContainer
 	       proposedLineFragment: (NSRect)lineFrag
 		      glyphPosition: (NSPoint)position
-		     characterIndex: (unsigned int)charIndex;
+		     characterIndex: (NSUInteger)charIndex;
 
 
 - (BOOL)wantsToTrackMouse;
 - (BOOL)wantsToTrackMouseForEvent:(NSEvent *)theEvent 
 			   inRect:(NSRect)cellFrame 
 			   ofView:(NSView *)controlView
-		 atCharacterIndex:(unsigned)charIndex;
+		 atCharacterIndex:(NSUInteger)charIndex;
 - (BOOL)trackMouse:(NSEvent *)theEvent 
 	    inRect:(NSRect)cellFrame 
 	    ofView:(NSView *)controlView 
@@ -132,7 +132,7 @@ The class uses -cellSize and -cellBaselineOffset to return a rect.
 - (BOOL)trackMouse:(NSEvent *)theEvent 
 	    inRect:(NSRect)cellFrame 
 	    ofView:(NSView *)controlView
-  atCharacterIndex:(unsigned)charIndex 
+  atCharacterIndex:(NSUInteger)charIndex 
       untilMouseUp:(BOOL)flag;
 - (void)setAttachment:(NSTextAttachment *)anObject;
 - (NSTextAttachment *)attachment;
@@ -153,6 +153,11 @@ The class uses -cellSize and -cellBaselineOffset to return a rect.
 @interface NSTextAttachment : NSObject <NSCoding> {
     NSFileWrapper *_fileWrapper;
     id <NSTextAttachmentCell>_cell;
+    struct GSTextAttachmentFlagsType { 
+      // total 32 bits.  31 bits left.
+      unsigned cell_explicitly_set: 1;
+      unsigned unused:31;
+    } _taflags;
 }
 
 /* 
