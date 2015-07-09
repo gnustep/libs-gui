@@ -34,7 +34,6 @@
 #ifndef _GNUstep_H_NSSavePanel
 #define _GNUstep_H_NSSavePanel
 #import <GNUstepBase/GSVersionMacros.h>
-#import <GNUstepBase/GSBlocks.h>
 
 #import <AppKit/NSPanel.h>
 
@@ -59,7 +58,7 @@ enum {
 };
  
 @protocol NSOpenSavePanelDelegate <NSObject>
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST) && GS_PROTOCOLS_HAVE_OPTIONAL
+#ifdef __OBJC2__
 @optional
 #else
 @end
@@ -82,7 +81,6 @@ enum {
 - (BOOL)panel:(id)sender shouldShowFilename:(NSString*)filename;
 @end
 
-DEFINE_BLOCK_TYPE(GSSavePanelCompletionHandler, void, NSInteger);
 
 @interface NSSavePanel : NSPanel
 {
@@ -119,7 +117,6 @@ DEFINE_BLOCK_TYPE(GSSavePanelCompletionHandler, void, NSInteger);
   BOOL _OKButtonPressed;
 
   NSMenu *_showsHiddenFilesMenu;
-  GSSavePanelCompletionHandler _completionHandler;
 }
 
 /*
@@ -207,12 +204,6 @@ DEFINE_BLOCK_TYPE(GSSavePanelCompletionHandler, void, NSInteger);
 		  modalDelegate: (id)delegate
 		 didEndSelector: (SEL)didEndSelector
 		    contextInfo: (void *)contextInfo;
-#endif
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
-- (void) beginSheetModalForWindow:(NSWindow *)window
-                completionHandler:(GSSavePanelCompletionHandler)handler;
-- (void) beginWithCompletionHandler:(GSSavePanelCompletionHandler)handler;
 #endif
 
 /*
