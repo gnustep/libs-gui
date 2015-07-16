@@ -325,12 +325,13 @@ static NSNotificationCenter *nc = nil;
 - (void) _resize: (id) v withOldSplitView: (id) prev
    withFrame: (NSRect) r fromPoint: (NSPoint) p
    withBigRect: (NSRect) bigRect divHorizontal: (CGFloat) divHorizontal
-   divVertical: (CGFloat) divVertical
+   divVertical: (CGFloat) divVertical userInfo:(NSDictionary *)userInfo
 {
   NSRect r1 = NSZeroRect;
 
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
-                    object: self];
+                    object: self
+				  userInfo: userInfo];
 
   /* resize the subviews accordingly */
   r = [prev frame];
@@ -387,7 +388,8 @@ static NSNotificationCenter *nc = nil;
              (int)NSHeight(r1));
 
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
-                    object: self];
+                    object: self
+				  userInfo: userInfo];
 
 }
 
@@ -424,6 +426,7 @@ static NSNotificationCenter *nc = nil;
   NSRect oldRect; //only one can be dragged at a time
   BOOL lit = NO;
   NSCursor *cursor;
+  NSDictionary *userInfo = nil; // userInfo for resize notifications
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -615,6 +618,7 @@ static NSNotificationCenter *nc = nil;
       // Save the old position
       op = p;
     }
+  userInfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:offset] forKey:@"NSSplitViewDividerIndex"];
 
   // user is moving the knob loop until left mouse up
   while ([e type] != NSLeftMouseUp)
@@ -714,7 +718,7 @@ static NSNotificationCenter *nc = nil;
             {
               [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
                 withBigRect: bigRect divHorizontal: divHorizontal
-                divVertical: divVertical];
+                divVertical: divVertical userInfo:userInfo];
               [_window invalidateCursorRectsForView: self];
               [self setNeedsDisplay: YES];
             }
@@ -740,7 +744,7 @@ static NSNotificationCenter *nc = nil;
         {
           [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
             withBigRect: bigRect divHorizontal: divHorizontal
-            divVertical: divVertical];
+            divVertical: divVertical userInfo:userInfo];
           [_window invalidateCursorRectsForView: self];
         }
     }
