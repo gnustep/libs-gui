@@ -88,6 +88,7 @@
 {
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
+  // Testplant-MAL-2015-07-20: Keep Frank LeGrand's fix...
   _original_nextKeyView = nil;
   _selected = nil;
   RELEASE(_items);
@@ -263,22 +264,24 @@
       selectedView = [_selected view];
       if (selectedView != nil)
         {
-	      NSView *firstResponder;
-	  
+          NSView *firstResponder;
+          
           [self addSubview: selectedView];
-	      // FIXME: We should not change this mask
+          // FIXME: We should not change this mask
           [selectedView setAutoresizingMask:
-	      NSViewWidthSizable | NSViewHeightSizable];
+           NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
-	      firstResponder = [_selected initialFirstResponder];
-	      if (firstResponder == nil)
-	        {
-	          firstResponder = [_selected view];
-	          [_selected setInitialFirstResponder: firstResponder];
-	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
-		_original_nextKeyView];
-	        }
-	  [super setNextKeyView: firstResponder];
+          firstResponder = [_selected initialFirstResponder];
+          if (firstResponder == nil)
+            {
+              firstResponder = [_selected view];
+              [_selected setInitialFirstResponder: firstResponder];
+              [firstResponder _setUpKeyViewLoopWithNextKeyView:
+               _original_nextKeyView];
+            }
+          
+          // Testplant-MAL-2015-07-20: Keep Frank LeGrand's fix...
+          [super setNextKeyView: firstResponder];
           [_window makeFirstResponder: firstResponder];
         }
       
