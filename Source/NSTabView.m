@@ -88,6 +88,7 @@
 {
   // Reset the _selected attribute to prevent crash when -dealloc calls
   // -setNextKeyView:
+  _original_nextKeyView = nil;
   _selected = nil;
   RELEASE(_items);
   RELEASE(_font);
@@ -277,7 +278,7 @@
 	      [firstResponder _setUpKeyViewLoopWithNextKeyView:
 		_original_nextKeyView];
 	        }
-	  [self setNextKeyView: firstResponder];
+	  [super setNextKeyView: firstResponder];
           [_window makeFirstResponder: firstResponder];
         }
       
