@@ -44,6 +44,7 @@ Images_RESOURCE_FILES = \
  NSRatingLevelIndicator.tiff \
  NSRemoveTemplate.tiff\
  NSStopProgressFreestandingTemplate.tiff\
+ NSFolder.tiff\
  common_2DCheckMark.tiff \
  common_2DDash.tiff \
  common_3DArrowDown.tiff \
