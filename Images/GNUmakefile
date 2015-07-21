@@ -43,6 +43,7 @@ Images_RESOURCE_FILES = \
  NSComboArrow.tiff \
  NSRatingLevelIndicator.tiff \
  NSRemoveTemplate.tiff\
+ NSStopProgressFreestandingTemplate.tiff\
  common_2DCheckMark.tiff \
  common_2DDash.tiff \
  common_3DArrowDown.tiff \
