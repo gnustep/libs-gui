@@ -864,21 +864,31 @@ static void setNSFont(NSString *key, NSFont *font)
             }
         }
 
-#if 1
-      // Testplant-MAL-2015-06-30: Certain missing fonts would cause GUI problems...
-      // Is this still needed???  Omitting for testing...
       if (fontInfo == nil)
         {
-            Class cls = NSClassFromString(@"WIN32Server");
-            if (cls && [GSCurrentServer() isKindOfClass: cls])
-              {
-                // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
-                fontInfo = RETAIN([GSFontInfo fontInfoForFontName:@"Arial"
-                                              matrix: fontMatrix
-                                              screenFont: screen]);
-              }
+          // Testplant-MAL-2015-06-30: Certain missing fonts would cause GUI problems...
+          NSString *missingFontName = [[NSUserDefaults standardUserDefaults] stringForKey:@"GSDefaultForMissingFont"];
+          if (missingFontName && [missingFontName length])
+            {
+              Class cls = NSClassFromString(@"WIN32Server");
+              if (cls && [GSCurrentServer() isKindOfClass: cls])
+                {
+                  // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
+                  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: missingFontName
+                                                             matrix: fontMatrix
+                                                         screenFont: screen]);
+                }
+              
+              // In case the font for name was missing also...
+              if (cls && [GSCurrentServer() isKindOfClass: cls])
+                {
+                  // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
+                  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: @"Arial"
+                                                             matrix: fontMatrix
+                                                         screenFont: screen]);
+                }
+            }
         }
-#endif
 
       if (fontInfo == nil)
         {
