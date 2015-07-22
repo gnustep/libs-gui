@@ -864,7 +864,7 @@ static void setNSFont(NSString *key, NSFont *font)
             }
         }
 
-#if 0
+#if 1
       // Testplant-MAL-2015-06-30: Certain missing fonts would cause GUI problems...
       // Is this still needed???  Omitting for testing...
       if (fontInfo == nil)
