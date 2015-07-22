@@ -880,7 +880,7 @@ static void setNSFont(NSString *key, NSFont *font)
                 }
               
               // In case the font for name was missing also...
-              if (cls && [GSCurrentServer() isKindOfClass: cls])
+              if (fontInfo == nil)
                 {
                   // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
                   fontInfo = RETAIN([GSFontInfo fontInfoForFontName: @"Arial"
