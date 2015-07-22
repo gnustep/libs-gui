@@ -39,7 +39,7 @@ Images_RESOURCE_FILES = \
  LogoGNUstep.tiff \
  MagnifyGlass.tiff \
  NSAddTemplate.tiff\
- NSActionTemplate.tff\
+ NSActionTemplate.tiff\
  NSPathTemplate.tiff\
  NSComboArrow.tiff \
  NSRatingLevelIndicator.tiff \
