@@ -1351,7 +1351,14 @@ static BOOL flip_hack;
       float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
       DESTROY(self);
-      self = RETAIN([NSFont fontWithName: name size: size]);
+      if ([aDecoder containsValueForKey: @"IBIsSystemFont"])
+     	{
+     	  self = RETAIN([NSFont systemFontOfSize: size]);
+     	}
+      else
+        {
+     	  self = RETAIN([NSFont fontWithName: name size: size]);
+     	}
       if (self == nil)
         {
 	  if ([aDecoder containsValueForKey: @"NSfFlags"])

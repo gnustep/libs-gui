@@ -1,5 +1,10 @@
 2015-07-24 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSFont.m: Look for xib font property IBIsSystemFont.
+	Patch by Paul Landers <paul.landers@testplant.com>.
+
+2015-07-24 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextStorage.m: Fixed a bug with setting _editedRange for
 	multiple edits when the first one is a delete (which results in
 	_editedRange having a length of 0) so it gets replaced instead of
