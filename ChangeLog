@@ -1,3 +1,11 @@
+2015-07-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextStorage.m: Fixed a bug with setting _editedRange for
+	multiple edits when the first one is a delete (which results in
+	_editedRange having a length of 0) so it gets replaced instead of
+	expanded to include all edits.
+	Patch by Doug Simons <doug.simons@testplant.com>
+
 2015-06-28  Germán Arias <germanandre@gmx.es>
 
 	* Resources/Spanish.lproj/Localizable.strings: Add translations.
