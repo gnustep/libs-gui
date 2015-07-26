@@ -630,6 +630,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_nextKeyView = 0;
   //_previousKeyView = 0;
 
+  _alphaValue = 1.0;
+  
   return self;
 }
 
@@ -1638,6 +1640,18 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
     }
 }
+
+
+- (CGFloat) alphaValue
+{
+  return _alphaValue;
+}
+
+- (void)setAlphaValue: (CGFloat)alpha
+{
+  _alphaValue = alpha;
+}
+
 
 - (NSRect) centerScanRect: (NSRect)aRect
 {

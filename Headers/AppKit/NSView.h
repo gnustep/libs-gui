@@ -119,6 +119,7 @@ PACKAGE_SCOPE
   NSInteger _gstate;
   void *_nextKeyView;
   void *_previousKeyView;
+  CGFloat _alphaValue;
 
 @public
   /*
@@ -227,6 +228,15 @@ PACKAGE_SCOPE
 - (BOOL) isFlipped;
 - (BOOL) isRotatedFromBase;
 - (BOOL) isRotatedOrScaledFromBase;
+
+/*
+ * View Layers
+ */
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (CGFloat) alphaValue;
+- (void) setAlphaValue: (CGFloat)alpha;
+#endif
 
 /*
  * Converting Coordinates
