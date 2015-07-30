@@ -3414,7 +3414,7 @@ byExtendingSelection: (BOOL)flag
       flag = YES;
     }
   
-  if (rowIndex != _selectedRow)
+  if (![_selectedRows containsIndex:rowIndex])
     {
       [NSException raise:NSInvalidArgumentException
 	      format:@"Attempted to edit unselected row"];
