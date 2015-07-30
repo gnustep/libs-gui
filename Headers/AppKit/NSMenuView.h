@@ -249,6 +249,12 @@
  */
 - (void) itemRemoved: (NSNotification *)notification;
 
+/**
+   Removes all cells, removes highlighting, marks cell and menu view as 
+   needing to be resized. 
+ */
+- (void) allItemsRemoved;//: (NSNotification *)notification;
+
 /***********************************************************************
  * Working with submenus
  ***********************************************************************/

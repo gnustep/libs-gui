@@ -559,6 +559,16 @@ static float menuBarHeight = 0.0;
   [self setNeedsDisplay: YES];
 }
 
+- (void) allItemsRemoved
+{
+  [self setHighlightedItemIndex: -1];
+  [_itemCells removeAllObjects];
+
+  // Mark the menu view as needing to be resized.
+  [self setNeedsSizing: YES];
+  [self setNeedsDisplay: YES];
+}
+
 /*
  * Working with Submenus.
  */

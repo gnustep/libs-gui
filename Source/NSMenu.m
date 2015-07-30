@@ -839,6 +839,7 @@ static BOOL menuBarVisible = YES;
   [_items removeAllObjects];
   _menu.needsSizing = YES;
   [(NSMenuView*)_view setNeedsSizing: YES];
+  [(NSMenuView*)_view allItemsRemoved];
   [self menuChanged];
 }
 
