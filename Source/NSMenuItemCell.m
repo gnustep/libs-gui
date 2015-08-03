@@ -184,6 +184,11 @@ static NSString *commandKeyString = @"#";
   return color;
 }
 
+- (NSInteger) state
+{
+  return [_menuItem state];
+}
+
 - (void) setMenuItem: (NSMenuItem *)item
 {
   ASSIGN(_menuItem, item);
@@ -759,6 +764,7 @@ static NSString *commandKeyString = @"#";
 
   // Testplant-MAL-2015-06-22: While merging found was [_menuItem state] but
   // I think it should be using [self state] for popups to show properly...
+  // Added 'state' method to NSMenuItemCell to return [_menuItem state] value...
   switch ([self state])
     {
       case NSOnState:

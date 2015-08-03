@@ -1081,6 +1081,7 @@ static NSImage *_pbc_image[5];
   [self attachPopUpWithFrame: frame inView: controlView];
 }
 
+#if 0
 /*
  * Override the implementation in NSMenuItemCell to behave the same
  * as superclass NSButtonCell's implementation, since our direct
@@ -1095,7 +1096,7 @@ static NSImage *_pbc_image[5];
 			style: _bezel_style
 			state: [self themeControlState]];
 }
-
+#endif
 
 /*
  * This drawing uses the same code that is used to draw cells in the menu.
