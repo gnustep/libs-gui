@@ -328,18 +328,19 @@ static NSImage *_pbc_image[5];
  */
 - (void) setAltersStateOfSelectedItem: (BOOL)flag
 {
-#if 0
   id <NSMenuItem> selectedItem = [self selectedItem];
 
-  if (flag)
+  if (_pbcFlags.pullsDown == NO)
     {
-      [selectedItem setState: NSOnState];
+      if (flag)
+        {
+          [selectedItem setState: NSOnState];
+        }
+      else
+        {
+          [selectedItem setState: NSOffState];
+        }
     }
-  else
-    {
-      [selectedItem setState: NSOffState];
-    }
-#endif
   
   _pbcFlags.altersStateOfSelectedItem = flag;
 }
@@ -671,7 +672,7 @@ static NSImage *_pbc_image[5];
       return;
     }
 
-  if (_selectedItem != nil)
+  if ((_selectedItem != nil) && (_pbcFlags.pullsDown == NO))
     {
       if (_pbcFlags.altersStateOfSelectedItem)
         {
@@ -688,7 +689,7 @@ static NSImage *_pbc_image[5];
   [[_menu menuRepresentation] setHighlightedItemIndex: 
                    [_menu indexOfItem: _selectedItem]];
 
-  if (_selectedItem != nil)
+  if ((_selectedItem != nil) && (_pbcFlags.pullsDown == NO))
     {
       if (_pbcFlags.altersStateOfSelectedItem)
         {
