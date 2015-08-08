@@ -40,6 +40,8 @@ Images_RESOURCE_FILES = \
  MagnifyGlass.tiff \
  NSAddTemplate.tiff\
  NSActionTemplate.tiff\
+ NSFontPanelActionButton.tiff\
+ NSFontPanelActionButtonPressed.tiff\
  NSPathTemplate.tiff\
  NSComboArrow.tiff \
  NSRatingLevelIndicator.tiff \
