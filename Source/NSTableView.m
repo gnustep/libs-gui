@@ -5875,7 +5875,7 @@ This method is deprecated, use -columnIndexesInRect:. */
           unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
           GSTableViewFlags tableViewFlags;
           memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
-
+          
           [self setAllowsColumnSelection: tableViewFlags.columnSelection];
           [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
           [self setAllowsEmptySelection: tableViewFlags.emptySelection];
@@ -5884,7 +5884,13 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
           [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
         }
- 
+      
+      if ([aDecoder containsValueForKey: @"NSGridStyleMask"])
+      {
+        _gridStyleMask = [aDecoder decodeIntegerForKey:@"NSGridStyleMask"];
+        [self setDrawsGrid:(_gridStyleMask != NSTableViewGridNone) ? YES : NO];
+      }
+      
       // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];

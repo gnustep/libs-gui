@@ -164,6 +164,8 @@ typedef enum _NSTableViewAnimationOptions
   NSDragOperation _draggingSourceOperationMaskForRemote;
 
   NSInteger _beginEndUpdates;
+  
+  NSTableViewGridLineStyle _gridStyleMask;
 }
 
 /* Data Source */
