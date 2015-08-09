@@ -34,7 +34,7 @@ common_2DDash = GSMenuMixed;
 NSMenuMixedState = GSMenuMixed;
 
 common_ComboBoxEllipsis = GSComboArrow;
-NSComboArrow = GSComboArrow;
+/*NSComboArrow = GSComboArrow;*/
 
 common_ClosedHandCursor = GSClosedHandCursor;
 common_OpenHandCursor = GSOpenHandCursor;
