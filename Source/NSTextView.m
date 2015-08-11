@@ -5165,8 +5165,74 @@ super's implementation of the method to handle any types of data your
 overridden version does not.
 */
 
-  return [self writeSelectionToPasteboard: pboard
-	       types: [NSArray arrayWithObject: type]];
+  BOOL ret = NO;
+
+  if ([type isEqualToString: NSStringPboardType])
+    {
+	    ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
+        forType: NSStringPboardType];
+	  }
+
+  if ([type isEqualToString: NSRTFPboardType])
+    {
+      ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
+        forType: NSRTFPboardType];
+    }
+
+  if ([type isEqualToString: NSRTFDPboardType])
+    {
+      ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
+        forType: NSRTFDPboardType];
+    }
+
+  if ([type isEqualToString: NSSmartPastePboardType] &&
+    [self selectionGranularity] == NSSelectByWord)
+    {
+      ret = [pboard setData: [NSData data]
+        forType: NSSmartPastePboardType];
+    }
+
+  if ([type isEqualToString: NSColorPboardType])
+    {
+      NSColor	*color;
+
+      color = [_textStorage attribute: NSForegroundColorAttributeName
+          atIndex: _layoutManager->_selected_range.location
+          effectiveRange: 0];
+      if (color != nil)
+        {
+          [color writeToPasteboard:  pboard];
+          ret = YES;
+        }
+    }
+
+  if ([type isEqualToString: NSFontPboardType])
+    {
+      NSDictionary	*dict;
+
+      dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
+      if (dict != nil)
+        {
+          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+  	        forType: NSFontPboardType];
+          ret = YES;
+        }
+    }
+  
+  if ([type isEqualToString: NSRulerPboardType])
+    {
+      NSDictionary	*dict;
+
+      dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
+      if (dict != nil)
+        {
+          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+  	        forType: NSRulerPboardType];
+          ret = YES;
+        }
+    }
+  
+  return ret;
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard *)pboard
@@ -5199,70 +5265,8 @@ other than copy/paste or dragging. */
   enumerator = [types objectEnumerator];
   while ((type = [enumerator nextObject]) != nil)
     {
-      if ([type isEqualToString: NSStringPboardType])
-        {
-	  ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
-			forType: NSStringPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSRTFPboardType])
-        {
-	  ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
-			forType: NSRTFPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSRTFDPboardType])
-        {
-	  ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
-			forType: NSRTFDPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSSmartPastePboardType] &&
-	  [self selectionGranularity] == NSSelectByWord)
-	{
-	  ret = [pboard setData: [NSData data]
-			forType: NSSmartPastePboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSColorPboardType])
-        {
-	  NSColor	*color;
-
-	  color = [_textStorage attribute: NSForegroundColorAttributeName
-				  atIndex: _layoutManager->_selected_range.location
-			   effectiveRange: 0];
-	  if (color != nil)
-	    {
-	      [color writeToPasteboard:  pboard];
-	      ret = YES;
-	    }
-	}
-
-      if ([type isEqualToString: NSFontPboardType])
-        {
-	  NSDictionary	*dict;
-
-	  dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
-	  if (dict != nil)
-	    {
-	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-		      forType: NSFontPboardType];
-	      ret = YES;
-	    }
-	}
-
-      if ([type isEqualToString: NSRulerPboardType])
-        {
-	  NSDictionary	*dict;
-
-	  dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
-	  if (dict != nil)
-	    {
-	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-		      forType: NSRulerPboardType];
-	      ret = YES;
-	    }
-	}
+      if ([self writeSelectionToPasteboard:pboard type:type])
+	    ret = YES;
     }
 
   return ret;
