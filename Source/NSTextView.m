@@ -2546,7 +2546,7 @@ Move to NSTextView_actions.m?
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
 
   [self writeSelectionToPasteboard: pb
-			      type: NSFontPboardType];
+			     types: [NSArray arrayWithObject: NSFontPboardType]];
 }
 
 /* Copy the current ruler settings to the ruler pasteboard */
@@ -2555,7 +2555,7 @@ Move to NSTextView_actions.m?
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
 
   [self writeSelectionToPasteboard: pb
-			      type: NSRulerPboardType];
+			     types: [NSArray arrayWithObject: NSRulerPboardType]];
 }
 
 
@@ -3171,21 +3171,36 @@ Scroll so that the beginning of the range is visible.
       if ([self isEditable])
 	{
 	  NSArray *types = nil;
+          NSPasteboard *pb = nil;
 	  NSString *available;
 
 	  if (sel_isEqual(action, @selector(paste:)))
-	    types = [self readablePasteboardTypes];
+            {
+              types = [self readablePasteboardTypes];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteAsPlainText:)))
-	    types = [NSArray arrayWithObject: NSStringPboardType];
+            {
+              types = [NSArray arrayWithObject: NSStringPboardType];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteAsRichText:)))
-	    types = [NSArray arrayWithObject: NSRTFPboardType];
+            {
+              types = [NSArray arrayWithObject: NSRTFPboardType];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteFont:)))
-	    types = [NSArray arrayWithObject: NSFontPboardType];
+            {
+              types = [NSArray arrayWithObject: NSFontPboardType];
+              pb = [NSPasteboard pasteboardWithName: NSFontPboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteRuler:)))
-	    types = [NSArray arrayWithObject: NSRulerPboard];
+            {
+              types = [NSArray arrayWithObject: NSRulerPboard];
+              pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
+            }
 
-	  available = [[NSPasteboard generalPasteboard]
-			availableTypeFromArray: types];
+	  available = [pb availableTypeFromArray: types];
 	  return available != nil;
 	}
       else
@@ -5111,9 +5126,67 @@ support for writing new types of data to the pasteboard. You should invoke
 super's implementation of the method to handle any types of data your
 overridden version does not.
 */
+  BOOL ret = NO;
 
-  return [self writeSelectionToPasteboard: pboard
-	       types: [NSArray arrayWithObject: type]];
+  if ([type isEqualToString: NSStringPboardType])
+    {
+      ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
+                      forType: NSStringPboardType] || ret;
+    }
+  else if ([type isEqualToString: NSRTFPboardType])
+    {
+      ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
+                    forType: NSRTFPboardType] || ret;
+    }
+  else if ([type isEqualToString: NSRTFDPboardType])
+        {
+	  ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
+			forType: NSRTFDPboardType] || ret;
+	}
+  else if ([type isEqualToString: NSSmartPastePboardType] &&
+      [self selectionGranularity] == NSSelectByWord)
+    {
+      ret = [pboard setData: [NSData data]
+			forType: NSSmartPastePboardType] || ret;
+    }
+  else if ([type isEqualToString: NSColorPboardType])
+    {
+      NSColor *color;
+      
+      color = [_textStorage attribute: NSForegroundColorAttributeName
+                              atIndex: _layoutManager->_selected_range.location
+                       effectiveRange: 0];
+      if (color != nil)
+        {
+          [color writeToPasteboard:  pboard];
+          ret = YES;
+        }
+    }
+  else if ([type isEqualToString: NSFontPboardType])
+    {
+      NSDictionary *dict;
+      
+      dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
+      if (dict != nil)
+        {
+          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+                  forType: NSFontPboardType];
+          ret = YES;
+        }
+    }
+  else if ([type isEqualToString: NSRulerPboardType])
+    {
+      NSDictionary *dict;
+      
+      dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
+      if (dict != nil)
+        {
+          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+		      forType: NSRulerPboardType];
+          ret = YES;
+        }
+    }
+  return ret;
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard *)pboard
@@ -5146,70 +5219,10 @@ other than copy/paste or dragging. */
   enumerator = [types objectEnumerator];
   while ((type = [enumerator nextObject]) != nil)
     {
-      if ([type isEqualToString: NSStringPboardType])
+      if ([self writeSelectionToPasteboard: pboard type: type])
         {
-	  ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
-			forType: NSStringPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSRTFPboardType])
-        {
-	  ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
-			forType: NSRTFPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSRTFDPboardType])
-        {
-	  ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
-			forType: NSRTFDPboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSSmartPastePboardType] &&
-	  [self selectionGranularity] == NSSelectByWord)
-	{
-	  ret = [pboard setData: [NSData data]
-			forType: NSSmartPastePboardType] || ret;
-	}
-
-      if ([type isEqualToString: NSColorPboardType])
-        {
-	  NSColor	*color;
-
-	  color = [_textStorage attribute: NSForegroundColorAttributeName
-				  atIndex: _layoutManager->_selected_range.location
-			   effectiveRange: 0];
-	  if (color != nil)
-	    {
-	      [color writeToPasteboard:  pboard];
-	      ret = YES;
-	    }
-	}
-
-      if ([type isEqualToString: NSFontPboardType])
-        {
-	  NSDictionary	*dict;
-
-	  dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
-	  if (dict != nil)
-	    {
-	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-		      forType: NSFontPboardType];
-	      ret = YES;
-	    }
-	}
-
-      if ([type isEqualToString: NSRulerPboardType])
-        {
-	  NSDictionary	*dict;
-
-	  dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
-	  if (dict != nil)
-	    {
-	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-		      forType: NSRulerPboardType];
-	      ret = YES;
-	    }
-	}
+          ret = YES;
+        }
     }
 
   return ret;
@@ -6210,7 +6223,7 @@ or add guards
 
   [self writeSelectionToPasteboard: 
             [NSPasteboard pasteboardWithName: @"Selection"]
-        type: NSStringPboardType];
+        types: [NSArray arrayWithObject: NSStringPboardType]];
 }
 
 /** Extension method that pastes the current selected text from the 

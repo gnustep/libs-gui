@@ -1,3 +1,14 @@
+2015-08-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m: Rewrite
+	writeSelectionToPasteboard:... methods.
+	Based on patch by Adam Fox <adam.fox@testplant.com>
+
+2015-07-26 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSView.h,
+	* Source/NSView.m: Add alphaValue property.
+
 2015-07-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m: Look for xib font property IBIsSystemFont.
