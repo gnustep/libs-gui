@@ -2546,7 +2546,7 @@ Move to NSTextView_actions.m?
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
 
   [self writeSelectionToPasteboard: pb
-			      type: NSFontPboardType];
+			     types: [NSArray arrayWithObject: NSFontPboardType]];
 }
 
 /* Copy the current ruler settings to the ruler pasteboard */
@@ -2555,7 +2555,7 @@ Move to NSTextView_actions.m?
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
 
   [self writeSelectionToPasteboard: pb
-			      type: NSRulerPboardType];
+			     types: [NSArray arrayWithObject: NSRulerPboardType]];
 }
 
 
@@ -6283,7 +6283,7 @@ or add guards
 
   [self writeSelectionToPasteboard: 
             [NSPasteboard pasteboardWithName: @"Selection"]
-        type: NSStringPboardType];
+        types: [NSArray arrayWithObject: NSStringPboardType]];
 }
 
 /** Extension method that pastes the current selected text from the 
