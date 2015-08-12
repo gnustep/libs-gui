@@ -3216,21 +3216,36 @@ Scroll so that the beginning of the range is visible.
       if ([self isEditable])
 	{
 	  NSArray *types = nil;
+	  NSPasteboard *pb = nil;
 	  NSString *available;
 
 	  if (sel_isEqual(action, @selector(paste:)))
-	    types = [self readablePasteboardTypes];
+            {
+              types = [self readablePasteboardTypes];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteAsPlainText:)))
-	    types = [NSArray arrayWithObject: NSStringPboardType];
+            {
+              types = [NSArray arrayWithObject: NSStringPboardType];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteAsRichText:)))
-	    types = [NSArray arrayWithObject: NSRTFPboardType];
+            {
+              types = [NSArray arrayWithObject: NSRTFPboardType];
+              pb = [NSPasteboard generalPasteboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteFont:)))
-	    types = [NSArray arrayWithObject: NSFontPboardType];
+            {
+              types = [NSArray arrayWithObject: NSFontPboardType];
+              pb = [NSPasteboard pasteboardWithName: NSFontPboard];
+            }
 	  else if (sel_isEqual(action, @selector(pasteRuler:)))
-	    types = [NSArray arrayWithObject: NSRulerPboard];
+            {
+              types = [NSArray arrayWithObject: NSRulerPboard];
+              pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
+            }
 
-	  available = [[NSPasteboard generalPasteboard]
-			availableTypeFromArray: types];
+          available = [pb availableTypeFromArray: types];
 	  return available != nil;
 	}
       else
