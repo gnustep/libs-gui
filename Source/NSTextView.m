@@ -5131,23 +5131,23 @@ overridden version does not.
   if ([type isEqualToString: NSStringPboardType])
     {
       ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
-                      forType: NSStringPboardType] || ret;
+                      forType: NSStringPboardType];
     }
   else if ([type isEqualToString: NSRTFPboardType])
     {
       ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
-                    forType: NSRTFPboardType] || ret;
+                    forType: NSRTFPboardType];
     }
   else if ([type isEqualToString: NSRTFDPboardType])
-        {
-	  ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
-			forType: NSRTFDPboardType] || ret;
-	}
+    {
+      ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
+                    forType: NSRTFDPboardType];
+    }
   else if ([type isEqualToString: NSSmartPastePboardType] &&
       [self selectionGranularity] == NSSelectByWord)
     {
       ret = [pboard setData: [NSData data]
-			forType: NSSmartPastePboardType] || ret;
+			forType: NSSmartPastePboardType];
     }
   else if ([type isEqualToString: NSColorPboardType])
     {
@@ -5169,9 +5169,8 @@ overridden version does not.
       dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
       if (dict != nil)
         {
-          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-                  forType: NSFontPboardType];
-          ret = YES;
+          ret = [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+                        forType: NSFontPboardType];
         }
     }
   else if ([type isEqualToString: NSRulerPboardType])
@@ -5181,11 +5180,11 @@ overridden version does not.
       dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
       if (dict != nil)
         {
-          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
-		      forType: NSRulerPboardType];
-          ret = YES;
+          ret = [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+                        forType: NSRulerPboardType];
         }
     }
+
   return ret;
 }
 
