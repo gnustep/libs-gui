@@ -37,6 +37,7 @@
 @class NSString, NSDictionary, NSArray, NSMutableDictionary, NSMutableArray;
 @class NSNibBindingConnector;
 @class GSXibElement;
+@class NSNibConnector;
 
 // Hack: This allows the class name FirstResponder in NSCustomObject and
 // correctly returns nil as the corresponding object.
@@ -156,6 +157,38 @@
 - (id) nibInstantiate;
 - (NSEnumerator *) connectionRecordEnumerator;
 - (NSEnumerator *) objectRecordEnumerator;
+@end
+
+@interface IBUserDefinedRuntimeAttributesPlaceholder : NSObject <NSCoding>
+{
+  NSArray  *runtimeAttributes;
+  NSString *name;
+}
+
+- (void) setName: (NSString *)name;
+- (NSString *) name;
+
+- (void) setRuntimeAttributes: (NSString *)attributes;
+- (NSString *) runtimeAttributes;
+
+@end
+
+@interface IBUserDefinedRuntimeAttribute : NSObject <NSCoding>
+{
+  NSString *typeIdentifier;
+  NSString *keyPath;
+  id value;
+}
+
+- (void) setTypeIdentifier: (NSString *)type;
+- (NSString *) typeIdentifier;
+
+- (void) setKeyPath: (NSString *)keyPath;
+- (NSString *) keyPath;
+
+- (void) setValue: (id)value;
+- (id) value;
+
 @end
 
 @interface GSXibKeyedUnarchiver: NSKeyedUnarchiver

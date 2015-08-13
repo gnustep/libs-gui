@@ -1,24 +1,8 @@
 #import <Foundation/NSObject.h>
+#import <AppKit/NSNibConnector.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import "GNUstepGUI/GSXibElement.h"
-
-@interface IBUserDefinedRuntimeAttributesPlaceholder : NSObject <NSCoding>
-{
-  NSString *typeIdentifier;
-  NSString *keyPath;
-  id value;
-}
-
-- (void) setTypeIdentifier: (NSString *)type;
-- (NSString *) typeIdentifier;
-
-- (void) setKeyPath: (NSString *)keyPath;
-- (NSString *) keyPath;
-
-- (void) setValue: (id)value;
-- (id) value;
-
-@end
+#import "GNUstepGUI/GSXibLoading.h"
 
 @interface IBAccessibilityAttribute : NSObject <NSCoding>
 @end
@@ -29,18 +13,15 @@
 @interface IBLayoutConstant : NSObject <NSCoding>
 @end
 
-@implementation IBUserDefinedRuntimeAttributesPlaceholder
+@implementation IBUserDefinedRuntimeAttribute
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])
     {
-      [coder encodeObject: typeIdentifier
-		   forKey: @"typeIdentifier"];
-      [coder encodeObject: keyPath
-		   forKey: @"keyPath"];
-      [coder encodeObject: value 
-		   forKey: @"value"];
+      [coder encodeObject: typeIdentifier forKey: @"typeIdentifier"];
+      [coder encodeObject: keyPath forKey: @"keyPath"];
+      [coder encodeObject: value forKey: @"value"];
     }
 }
 
@@ -83,6 +64,49 @@
 - (id) value
 {
   return value;
+}
+
+@end
+
+@implementation IBUserDefinedRuntimeAttributesPlaceholder
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+  {
+    [coder encodeObject: name forKey: @"IBUserDefinedRuntimeAttributesPlaceholderName"];
+    [coder encodeObject: runtimeAttributes forKey: @"userDefinedRuntimeAttributes"];
+  }
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+  {
+    [self setName: [coder decodeObjectForKey: @"IBUserDefinedRuntimeAttributesPlaceholderName"]];
+    [self setRuntimeAttributes: [coder decodeObjectForKey: @"userDefinedRuntimeAttributes"]];
+  }
+  return self;
+}
+
+- (void) setName: (NSString *)value
+{
+  ASSIGN(name, value);
+}
+
+- (NSString *) name
+{
+  return name;
+}
+
+- (void) setRuntimeAttributes: (NSString *)attrbutes
+{
+  ASSIGN(runtimeAttributes, attrbutes);
+}
+
+- (NSString *) runtimeAttributes
+{
+  return runtimeAttributes;
 }
 
 @end

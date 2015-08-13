@@ -856,12 +856,30 @@
       value = [properties objectForKey: @"IBAttributePlaceholdersKey"];
       if (value != nil)
         {
-          IBToolTipAttribute *tta = [(NSDictionary*)value objectForKey: @"ToolTip"];
+          NSDictionary *infodict = (NSDictionary*)value;
+          
+          // Process tooltips...
+          IBToolTipAttribute *tooltip = [infodict objectForKey: @"ToolTip"];
 
-          if ([realObj respondsToSelector: @selector(setToolTip:)])
+          if (tooltip && [realObj respondsToSelector: @selector(setToolTip:)])
             {
-              [realObj setToolTip: [tta toolTip]];
+              [realObj setToolTip: [tooltip toolTip]];
             }
+          
+          // Process XIB runtime attributes...
+          if ([infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"])
+            {
+              IBUserDefinedRuntimeAttributesPlaceholder *placeholder =
+                                                        [infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"];
+              NSArray                                   *attributes  = [placeholder runtimeAttributes];
+              NSEnumerator                              *objectiter  = [attributes objectEnumerator];
+              IBUserDefinedRuntimeAttribute             *attribute   = nil;
+              
+              while (attribute = [objectiter nextObject])
+                {
+                  [realObj setValue:[attribute value] forKeyPath:[attribute keyPath]];
+                }
+              }
         }
 
       if ([realObj respondsToSelector: @selector(awakeFromNib)])
