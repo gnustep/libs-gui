@@ -1001,7 +1001,7 @@ typedef struct _GSButtonCellFlags
                    style: _bezel_style
                    state: buttonState];
 }
-  
+
 - (void) drawImage: (NSImage*)imageToDisplay
          withFrame: (NSRect)cellFrame 
             inView: (NSView*)controlView
@@ -1012,60 +1012,66 @@ typedef struct _GSButtonCellFlags
       NSPoint offset;
       NSRect rect;
       CGFloat fraction;
-      NSSize size = [self _scaleImageWithSize: [imageToDisplay size]
-				  toFitInSize: cellFrame.size
-				  scalingType: _imageScaling];
+      NSSize size = [imageToDisplay size];
 
+      // Make sure image does not exceed or touch our frame...
+      // Not the best solution so have at it if you have a better one...
+      if ([self imagePosition] == NSImageOnly)
+        cellFrame = NSInsetRect(cellFrame, 2, 2);
+      
+      size = [self _scaleImageWithSize: [imageToDisplay size]
+                           toFitInSize: cellFrame.size
+                           scalingType: _imageScaling];
+      
       /* Pixel-align size */
 
       if (controlView)
-	{
-	  NSSize sizeInBase = [controlView convertSizeToBase: size];
-	  sizeInBase.width = GSRoundTowardsInfinity(sizeInBase.width);
-	  sizeInBase.height = GSRoundTowardsInfinity(sizeInBase.height);
-	  size = [controlView convertSizeFromBase: sizeInBase];
-	}
+        {
+          NSSize sizeInBase = [controlView convertSizeToBase: size];
+          sizeInBase.width = GSRoundTowardsInfinity(sizeInBase.width);
+          sizeInBase.height = GSRoundTowardsInfinity(sizeInBase.height);
+          size = [controlView convertSizeFromBase: sizeInBase];
+        }
 
       /* Calculate an offset from the cellFrame origin */
      
       offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
-				 (NSHeight(cellFrame) - size.height) / 2.0);
+                           (NSHeight(cellFrame) - size.height) / 2.0);
 
       /* Pixel-align the offset */
 
       if (controlView)
-	{
-	  NSPoint inBase = [controlView convertPointToBase: offset];
-	  
-	  // By convention we will round down and to the right.
-	  // With the standard button design this looks good
-	  // because the bottom and right edges of the button look 'heavier'
-	  // so if the image's center must be offset from the button's geometric
-	  // center, it looks beter if it's closer to the 'heavier' part
-	  
-	  inBase.x = GSRoundTowardsInfinity(inBase.x);
-	  inBase.y = [controlView isFlipped] ? 
-	    GSRoundTowardsInfinity(inBase.y) :
-	    GSRoundTowardsNegativeInfinity(inBase.y);
-	  
-	  offset = [controlView convertPointFromBase: inBase];
-	}
+        {
+          NSPoint inBase = [controlView convertPointToBase: offset];
+          
+          // By convention we will round down and to the right.
+          // With the standard button design this looks good
+          // because the bottom and right edges of the button look 'heavier'
+          // so if the image's center must be offset from the button's geometric
+          // center, it looks beter if it's closer to the 'heavier' part
+          
+          inBase.x = GSRoundTowardsInfinity(inBase.x);
+          inBase.y = ([controlView isFlipped] ? GSRoundTowardsInfinity(inBase.y) :
+                      GSRoundTowardsNegativeInfinity(inBase.y));
+          
+          offset = [controlView convertPointFromBase: inBase];
+        }
 
       /* Draw the image */
 
       rect = NSMakeRect(cellFrame.origin.x + offset.x,
-   		        cellFrame.origin.y + offset.y,
-			size.width,
-			size.height);
+                        cellFrame.origin.y + offset.y,
+                        size.width,
+                        size.height);
       fraction = (![self isEnabled] &&
 		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
       
       [imageToDisplay drawInRect: rect
-			fromRect: NSZeroRect
-		       operation: NSCompositeSourceOver
-			fraction: fraction
-		  respectFlipped: YES
-			   hints: nil];
+                        fromRect: NSZeroRect
+                       operation: NSCompositeSourceOver
+                        fraction: fraction
+                  respectFlipped: YES
+                           hints: nil];
     }
 }
 
@@ -1869,33 +1875,34 @@ typedef struct _GSButtonCellFlags
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
-	  NSUInteger imageScale;
+          NSUInteger imageScale;
           int bFlags2;
-
+          
           bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
           [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
           [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
-          [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) & 
+          [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) &
                                                NSDeviceIndependentModifierFlagsMask)];
-
-	  switch ((bFlags2 >> 6) & 3)
-	    {
-	    case 2:
-	      imageScale = NSImageScaleProportionallyDown;
-	      break;
-	    case 3:
-	      imageScale = NSImageScaleAxesIndependently;
-	      break;
-	    case 0:
-	    default:
-	      imageScale = NSImageScaleNone;
-	      break;
-	    case 1:
-	      imageScale = NSImageScaleProportionallyUpOrDown;
-	      break;
-	    }
-	  [self setImageScaling: imageScale];
+          
+          switch ((bFlags2 >> 6) & 3)
+            {
+              case 2:
+                imageScale = NSImageScaleProportionallyDown;
+                break;
+              case 3:
+                imageScale = NSImageScaleAxesIndependently;
+                break;
+              case 0:
+              default:
+                imageScale = NSImageScaleNone;
+                break;
+              case 1:
+                imageScale = NSImageScaleProportionallyUpOrDown;
+                break;
+            }
+          [self setImageScaling: imageScale];
         }
+      
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {
           id image;
