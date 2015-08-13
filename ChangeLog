@@ -1,3 +1,13 @@
+2015-08-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-initWithCoder:):
+	Fix image scaling value extract from XIB.
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h
+	* Source/GSXibLoading.m
+	* Source/GSXibLoader.m
+	Add IB defined runtime attribute processing for XIB
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+
 2015-08-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Rewrite

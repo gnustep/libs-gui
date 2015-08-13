@@ -32,6 +32,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSXMLParser.h>
@@ -857,11 +858,29 @@
       value = [properties objectForKey: @"IBAttributePlaceholdersKey"];
       if (value != nil)
         {
-          IBToolTipAttribute *tta = [(NSDictionary*)value objectForKey: @"ToolTip"];
+          NSDictionary *infodict = (NSDictionary*)value;
+          
+          // Process tooltips...
+          IBToolTipAttribute *tooltip = [infodict objectForKey: @"ToolTip"];
 
-          if ([realObj respondsToSelector: @selector(setToolTip:)])
+          if (tooltip && [realObj respondsToSelector: @selector(setToolTip:)])
             {
-              [realObj setToolTip: [tta toolTip]];
+              [realObj setToolTip: [tooltip toolTip]];
+            }
+          
+          // Process XIB runtime attributes...
+          if ([infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"])
+            {
+              IBUserDefinedRuntimeAttributesPlaceholder *placeholder =
+                [infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"];
+              NSArray *attributes = [placeholder runtimeAttributes];
+              NSEnumerator *objectIter = [attributes objectEnumerator];
+              IBUserDefinedRuntimeAttribute *attribute;
+              
+              while ((attribute = [objectIter nextObject]) != nil)
+                {
+                  [realObj setValue: [attribute value] forKeyPath: [attribute keyPath]];
+                }
             }
         }
 

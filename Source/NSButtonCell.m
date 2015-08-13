@@ -1877,7 +1877,7 @@ typedef struct _GSButtonCellFlags
           [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) & 
                                                NSDeviceIndependentModifierFlagsMask)];
 
-	  switch (bFlags2 & (3 << 6))
+	  switch ((bFlags2 >> 6) & 3)
 	    {
 	    case 2:
 	      imageScale = NSImageScaleProportionallyDown;
