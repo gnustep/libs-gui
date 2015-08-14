@@ -186,6 +186,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [cells addObject: cell];
     }
 
+  [_pickerMatrix renewRows: 0 columns: count];
   [_pickerMatrix addRowWithCells: cells];
   RELEASE(cells);
   [_pickerMatrix setCellSize: NSMakeSize(size.width / count, size.height)];

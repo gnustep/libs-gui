@@ -1,3 +1,11 @@
+2015-08-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMatrix.m: Warn about wrong cell array size on
+	row/column insert, as Cocoa does.
+	Clean up and more NSInteger changes.
+	* ColorPickers/GSStandardColorPicker.m,
+	* Source/NSColorPanel.m (-_setupPickers): Prevent warning from NSMatrix.
+
 2015-08-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m (-initWithCoder:):

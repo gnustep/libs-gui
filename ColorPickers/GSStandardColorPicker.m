@@ -178,17 +178,17 @@
   [cell setButtonType: NSOnOffButton];
   [cell setBordered: YES];
 
+  count = [pickers count];
   pickerMatrix = [[NSMatrix alloc] initWithFrame: NSMakeRect(0,0,0,0)
                                    mode: NSRadioModeMatrix
                                    prototype: cell
                                    numberOfRows: 0
-                                   numberOfColumns: 0];
+                                   numberOfColumns: count];
   RELEASE(cell);
   [pickerMatrix setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
   [pickerMatrix setIntercellSpacing: NSMakeSize(1, 0)];
   [pickerMatrix setAutosizesCells: YES];
 
-  count = [pickers count];
   for (i = 0; i < count; i++)
     {
       cell = [[pickerMatrix prototype] copy];
