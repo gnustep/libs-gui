@@ -1,3 +1,8 @@
+2015-08-14  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSSplitView.m: Treat an empty autosaveName as nil
+	(some nibs have empty name).
+
 2015-07-16  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSSplitView.m: Add userInfo dictionary containing the

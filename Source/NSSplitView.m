@@ -1053,6 +1053,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) setAutosaveName: (NSString *)autosaveName
 {
+  if ([autosaveName length] == 0)
+    autosaveName = nil;
   ASSIGN(_autosaveName, autosaveName);
 }
 
