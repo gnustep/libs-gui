@@ -875,7 +875,7 @@
               NSEnumerator                              *objectiter  = [attributes objectEnumerator];
               IBUserDefinedRuntimeAttribute             *attribute   = nil;
               
-              while (attribute = [objectiter nextObject])
+              while ((attribute = [objectiter nextObject]))
                 {
                   [realObj setValue:[attribute value] forKeyPath:[attribute keyPath]];
                 }
