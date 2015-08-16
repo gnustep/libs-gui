@@ -1017,7 +1017,7 @@ typedef struct _GSButtonCellFlags
       // Make sure image does not exceed or touch our frame...
       // Not the best solution so have at it if you have a better one...
       if ([self imagePosition] == NSImageOnly)
-        cellFrame = NSInsetRect(cellFrame, 2, 2);
+        cellFrame = NSInsetRect(cellFrame, 4, 4);
       
       size = [self _scaleImageWithSize: [imageToDisplay size]
                            toFitInSize: cellFrame.size
