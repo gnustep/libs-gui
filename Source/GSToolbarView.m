@@ -53,9 +53,9 @@
 #import "NSToolbarFrameworkPrivate.h"
 
 typedef enum {
-  ToolbarViewDefaultHeight = 62,
-  ToolbarViewRegularHeight = 62,
-  ToolbarViewSmallHeight = 52
+  ToolbarViewDefaultHeight = 56,
+  ToolbarViewRegularHeight = 56,
+  ToolbarViewSmallHeight = 48
 } ToolbarViewHeight;
 
 // Borrow this from  NSToolbarItem.m
