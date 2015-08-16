@@ -1,5 +1,10 @@
 2015-08-16 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Resources/Korean.lproj/Localizable.strings: Add Korean translations.
+	Patch by Seong-Gu Lee <sgleehd@gmail.com>
+
+2015-08-16 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSplitView.m (-setAutosaveName:): Treat an empty
 	autosaveName as nil to fix problem with some nibs.
 	Patch by Doug Simons <doug.simons@testplant.com>
