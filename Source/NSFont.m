@@ -878,16 +878,16 @@ static void setNSFont(NSString *key, NSFont *font)
                                                              matrix: fontMatrix
                                                          screenFont: screen]);
                 }
-              
-              // In case the font for name was missing also...
-              if (fontInfo == nil)
-                {
-                  // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
-                  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: @"Arial"
-                                                             matrix: fontMatrix
-                                                         screenFont: screen]);
-                }
             }
+          
+          // In case the 'GSDefaultForMissingFont' font for name was missing also...
+          if (fontInfo == nil)
+          {
+            // HACK FIX FOR MISSING FONT - NEEDS TO BE FIXED...
+            fontInfo = RETAIN([GSFontInfo fontInfoForFontName: @"Arial"
+                                                       matrix: fontMatrix
+                                                   screenFont: screen]);
+          }
         }
 
       if (fontInfo == nil)
