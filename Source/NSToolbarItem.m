@@ -1653,8 +1653,6 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       superview = [[self view] superview];
       /* We must avoid to encode view hierarchy */
       [[self view] removeFromSuperviewWithoutNeedingDisplay];
-      NSLog(@"Encode toolbar item with label %@, view %@ and superview %@", 
-            [self label], [self view], superview);
       // NOTE: Keyed archiver would fail on NSSlider here.
       encodedView = [NSArchiver archivedDataWithRootObject: [self view]];
       [new setView: [NSUnarchiver unarchiveObjectWithData: encodedView]];
