@@ -1,0 +1,496 @@
+/***
+Korean.lproj/Localizable.strings
+updated by make_strings 2015-05-28 23:57:53 +0200
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: ../Source/GSNibLoading.m:183 */
+/* Comment: Info */
+/* File: ../Source/NSApplication.m:2891 */
+/* Comment: Title of the Info Panel */
+/* File: ../Source/NSMenu.m:259 */
+"Info" = "\Uc815\Ubcf4";
+
+/* File: ../Source/GSNibLoading.m:166 */
+/* Comment: Quit */
+/* File: ../Source/NSApplication.m:3455 */
+/* File: ../Source/NSApplication.m:4220 */
+/* File: ../Source/NSDocumentController.m:1015 */
+"Quit" = "\Uc885\Ub8cc";
+
+/* File: ../Source/NSAlert.m:384 */
+/* File: ../Source/NSDocument.m:485 */
+/* File: ../Source/NSDocument.m:832 */
+/* File: ../Source/NSDocument.m:1688 */
+/* File: ../Source/NSDocumentController.m:921 */
+/* File: ../Source/NSDocumentController.m:953 */
+/* File: ../Source/NSSavePanel.m:318 */
+/* File: ../Source/NSSavePanel.m:1333 */
+/* File: ../Source/NSSavePanel.m:1406 */
+"Cancel" = "\Ucde8\Uc18c";
+
+/* File: ../Source/NSAlert.m:389 */
+/* File: ../Source/NSDocument.m:485 */
+"Don't Save" = "\Uc800\Uc7a5\Uc54a\Uc74c";
+
+/* File: ../Source/NSDocument.m:485 */
+/* File: ../Source/NSDocument.m:832 */
+/* File: ../Source/NSDocument.m:1211 */
+/* File: ../Source/NSSavePanel.m:435 */
+/* File: ../Source/NSSavePanel.m:1330 */
+/* File: ../Source/NSSavePanel.m:1369 */
+/* File: ../Source/NSSavePanel.m:1382 */
+/* File: ../Source/NSSavePanel.m:1393 */
+/* File: ../Source/NSSavePanel.m:1404 */
+"Save" = "\Uc800\Uc7a5";
+
+/* File: ../Source/GSHelpManagerPanel.m:101 */
+/* File: ../Source/NSAlert.m:1837 */
+/* File: ../Source/NSPrintOperation.m:678 */
+/* File: ../Source/NSPrintPanel.m:408 */
+/* File: ../Source/NSSavePanel.m:334 */
+"OK" = "\Uc608";
+
+/* File: ../Source/GSPrintOperation.m:157 */
+/* File: ../Source/NSSavePanel.m:1384 */
+/* File: ../Source/NSSavePanel.m:1395 */
+"Dismiss" = "\Uc801\Uc6a9\Uc54a\Uc74c";
+
+/* File: ../Source/GSPrintOperation.m:155 */
+/* File: ../Source/NSFontPanel.m:706 */
+"Preview" = "\Ubbf8\Ub9ac\Ubcf4\Uae30";
+
+/* File: ../Source/NSDocument.m:1686 */
+/* File: ../Source/NSDocument.m:1688 */
+/* File: ../Source/NSFontPanel.m:696 */
+"Revert" = "\Ub418\Ub3cc\Ub9ac\Uae30";
+
+/* File: ../Source/NSColorPanel.m:245 */
+/* File: ../Source/NSToolbarItem.m:1076 */
+"Colors" = "\Uc0c9\Uc0c1";
+
+/* File: ../Source/NSPageLayout.m:967 */
+/* File: ../Source/NSPageLayout.m:1038 */
+/* File: ../Source/NSPrintPanel.m:630 */
+/* File: ../Source/NSPrintPanel.m:676 */
+"Unknown" = "\Ubbf8\Uc815";
+
+/* File: ../Source/GSHelpManagerPanel.m:70 */
+/* File: ../Source/NSHelpPanel.m:154 */
+"Help" = "\Ub3c4\Uc6c0\Ub9d0";
+
+/* File: ../Source/NSDocument.m:1137 */
+/* File: ../Source/NSPrintPanel.m:350 */
+"File Type" = "\Ud30c\Uc77c \Ud615\Uc2dd";
+
+/* File: ../Source/GSCharacterPanel.m:173 */
+/* File: ../Source/NSPageLayout.m:959 */
+"Name" = "\Uc774\Ub984";
+
+/* File: ../Source/GSCharacterPanel.m:154 */
+/* File: ../Source/NSFontPanel.m:738 */
+"Character Panel" = "\Ubb38\Uc790\Ud310";
+
+/* File: ../Source/NSAttributedString.m:1060 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:1083 */
+/* Comment: Error description */
+/* File: ../Source/NSDocument.m:646 */
+/* Comment: Error description */
+"Could not create data for type." = "\Ud615\Uc2dd\Uc5d0 \Ud574\Ub2f9\Ud558\Ub294 \Ub370\Uc774\Ud130\Ub97c \Ub9cc\Ub4e4 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+
+
+/*** Strings from ../Source/Functions.m ***/
+/* File: ../Source/Functions.m:85 */
+"Cannot load the main model file '%@'"
+  = "\Uae30\Ubcf8 \Ubaa8\Ub378 \Ud30c\Uc77c '%@' \Uc744  \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc74c";
+
+
+/*** Strings from ../Source/GSCharacterPanel.m ***/
+/* File: ../Source/GSCharacterPanel.m:182 */
+"Code Point" = "\Ucf54\Ub4dc \Ud3ec\Uc778\Ud2b8";
+/* File: ../Source/GSCharacterPanel.m:191 */
+"Unicode Block" = "\Uc720\Ub2c8\Ucf54\Ub4dc \Ube14\Ub85d";
+
+
+/*** Strings from ../Source/GSInfoPanel.m ***/
+/* File: ../Source/GSInfoPanel.m:451 */
+"Author: " = "\Uc800\Uc790: ";
+/* File: ../Source/GSInfoPanel.m:455 */
+"Authors: " = "\Uc800\Uc790: ";
+/* File: ../Source/GSInfoPanel.m:396 */
+"Copyright Information Not Available"
+  = "\Uc800\Uc791\Uad8c \Uc815\Ubcf4\Uac00 \Uc5c6\Uc2b5\Ub2c8\Ub2e4";
+/* File: ../Source/GSInfoPanel.m:187 */
+/* File: ../Source/GSInfoPanel.m:482 */
+"Current theme" = "\Ud604\Uc7ac \Ud14c\Ub9c8";
+/* File: ../Source/GSInfoPanel.m:339 */
+"Release: " = "\Ubc84\Uc804: ";
+
+
+/*** Strings from ../Source/GSPrintOperation.m ***/
+/* File: ../Source/GSPrintOperation.m:156 */
+"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
+  = "\Ubbf8\Ub9ac\Ubcf4\Uae30 \Uc560\Ud50c\Ub9ac\Ucf00\Uc774\Uc158 '%@' \Uc744  \Uc2e4\Ud589\Ud558\Ub294\Ub370 \Ubb38\Uc81c\Uac00 \Uc788\Uc73c\Ubbc0\Ub85c  NSPreviewApp \Uc0ac\Uc6a9\Uc790 \Uae30\Ubcf8\Uac12\Uc744 \Uc9c0\Uc815\Ud560 \Ud544\Uc694\Uac00 \Uc788\Uc2b5\Ub2c8\Ub2e4";
+
+
+/*** Strings from ../Source/GSTextFinder.m ***/
+/* File: ../Source/GSTextFinder.m:408 */
+"%d replaced" = "%d \Ubc14\Ub01c";
+/* File: ../Source/GSTextFinder.m:381 */
+/* File: ../Source/GSTextFinder.m:332 */
+"Not found" = "\Ucc3e\Uc9c0 \Ubabb\Ud568";
+
+
+/*** Strings from ../Source/GSThemeDrawing.m ***/
+/* File: ../Source/GSThemeDrawing.m:188 */
+"?" = "?";
+
+
+/*** Strings from ../Source/GSThemeInspector.m ***/
+/* File: ../Source/GSThemeInspector.m:141 */
+"Version: %@" = "\Ubc84\Uc804: %@";
+
+
+/*** Strings from ../Source/GSThemePanel.m ***/
+/* File: ../Source/GSThemePanel.m:197 */
+/* File: ../Source/GSThemePanel.m:229 */
+"Make this the default theme" = "\Uc774\Uac83\Uc744 \Uae30\Ubcf8 \Ud14c\Ub9c8\Ub85c \Ud558\Uae30";
+/* File: ../Source/GSThemePanel.m:234 */
+/* File: ../Source/GSThemePanel.m:193 */
+"Revert default theme" = "\Uae30\Ubcf8 \Ud14c\Ub9c8\Ub85c \Ub418\Ub3cc\Ub9ac\Uae30";
+/* File: ../Source/GSThemePanel.m:115 */
+"Themes" = "\Ud14c\Ub9c8";
+
+
+/*** Strings from ../Source/GSToolbarView.m ***/
+/* File: ../Source/GSToolbarView.m:894 */
+"Customize Toolbar" = "\Ud234\Ubc14 \Uc784\Uc758\Uc124\Uc815";
+
+
+/*** Strings from ../Source/NSAlert.m ***/
+/* File: ../Source/NSAlert.m:2007 */
+"Alert" = "\Uacbd\Uace0";
+/* File: ../Source/NSAlert.m:2008 */
+"No information" = "\Uc815\Ubcf4 \Uc5c6\Uc74c";
+
+
+/*** Strings from ../Source/NSApplication.m ***/
+/* File: ../Source/NSApplication.m:138 */
+"Abort" = "\Uc911\Uc9c0";
+/* File: ../Source/NSApplication.m:323 */
+"Backend at path %@ doesn't contain the GSBackend class"
+  = "\Uacbd\Ub85c %@ \Uc5d0 \Uc788\Ub294 \Ubc31\Uc5d4\Ub4dc\Uac00 GSBackend \Ud074\Ub798\Uc2a4\Ub97c \Ud3ec\Ud568\Ud558\Uc9c0 \Uc54a\Uc74c";
+/* File: ../Source/NSApplication.m:311 */
+"Can't create NSBundle object for backend at path %@"
+  = "\Uacbd\Ub85c %@ \Uc5d0 \Uc788\Ub294 \Ubc31\Uc5d4\Ub4dc\Uc5d0 NSBundle \Uac1d\Uccb4\Ub97c \Ub9cc\Ub4e4 \Uc218 \Uc5c6\Uc74c";
+/* File: ../Source/NSApplication.m:316 */
+"Can't load object file from backend at path %@"
+  = "\Uacbd\Ub85c %@ \Uc5d0 \Uc788\Ub294 \Ubc31\Uc5d4\Ub4dc\Uc5d0\Uc11c \Uac1d\Uccb4 \Ud30c\Uc77c\Uc744 \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc74c";
+/* File: ../Source/NSApplication.m:135 */
+"Critical Error in %@" = "%@ \Uc5d0\Uc11c \Uce58\Uba85\Uc801\Uc778 \Uc5d0\Ub7ec";
+/* File: ../Source/NSApplication.m:141 */
+"Debug" = "\Ub514\Ubc84\Uadf8";
+/* File: ../Source/NSApplication.m:4216 */
+"Hide" = "\Uc228\Uae30\Uae30";
+/* File: ../Source/NSApplication.m:1198 */
+"Problem during launch app notification: %@"
+  = "\Uc571 \Uc54c\Ub9bc\Uc744 \Uc2e4\Ud589\Ud558\Ub294 \Ub3c4\Uc911\Uc5d0 \Ubb38\Uc81c\Ubc1c\Uc0dd: %@";
+/* File: ../Source/NSApplication.m:4210 */
+"Show" = "\Ubcf4\Uae30";
+/* File: ../Source/NSApplication.m:304 */
+"Unable to find backend %@" = "\Ubc31\Uc5d4\Ub4dc %@ \Ub97c \Ucc3e\Uc744 \Uc218 \Uc5c6\Uc74c";
+/* File: ../Source/NSApplication.m:972 */
+"[NSApplication -init] called more than once"
+  = "[NSApplication -init] \Uac00 \Ud55c\Ubc88 \Uc774\Uc0c1 \Ud638\Ucd9c\Ub428";
+/* File: ../Source/NSApplication.m:3328 */
+"reported exception - %@" = "\Ubcf4\Uace0\Ub41c \Uc608\Uc678 - %@";
+
+
+/*** Strings from ../Source/NSAttributedString.m ***/
+/* File: ../Source/NSAttributedString.m:927 */
+/* Comment: Error description */
+"Could not load data from URL." = "URL\Uc5d0\Uc11c \Ub370\Uc774\Ud130\Ub97c \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSAttributedString.m:863 */
+/* Comment: Error description */
+"Could not load data." = "\Ub370\Uc774\Ud130\Ub97c \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSAttributedString.m:762 */
+/* Comment: Error description */
+"No data specified for data loading."
+  = "\Ub370\Uc774\Ud130\Ub97c \Ubd88\Ub7ec\Uc624\Ub294\Ub370 \Ub370\Uc774\Ud130\Uac00 \Uc9c0\Uc815\Ub418\Uc9c0 \Uc54a\Uc558\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSAttributedString.m:1033 */
+/* Comment: Error description */
+"No type specified for data." = "\Ub370\Uc774\Ud130\Uc5d0 \Ud615\Uc2dd\Uc774 \Uc9c0\Uc815\Ub418\Uc9c0 \Uc54a\Uc558\Uc2b5\Ub2c8\Ub2e4.";
+
+
+/*** Strings from ../Source/NSBitmapImageRep.m ***/
+/* File: ../Source/NSBitmapImageRep.m:1645 */
+"CCITTFAX3 Compression" = "CCITTFAX3 \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1646 */
+"CCITTFAX4 Compression" = "CCITTFAX4 \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1648 */
+"JPEG Compression" = "JPEG \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1647 */
+"LZW Compression" = "LZW \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1649 */
+"NEXT Compression" = "NEXT \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1644 */
+"No Compression" = "\Uc555\Ucd95 \Uc5c6\Uc74c";
+/* File: ../Source/NSBitmapImageRep.m:1651 */
+"Old JPEG Compression" = "\Uc624\Ub798\Ub41c JPEG \Uc555\Ucd95";
+/* File: ../Source/NSBitmapImageRep.m:1650 */
+"PackBits Compression" = "PackBits \Uc555\Ucd95";
+
+
+/*** Strings from ../Source/NSColorPanel.m ***/
+/* File: ../Source/NSColorPanel.m:309 */
+"Opacity" = "\Ubd88\Ud22c\Uba85\Ub3c4";
+
+
+/*** Strings from ../Source/NSColorSpace.m ***/
+/* File: ../Source/NSColorSpace.m:143 */
+/* Comment: color space */
+"CMYK" = "CMYK";
+/* File: ../Source/NSColorSpace.m:147 */
+/* Comment: color space */
+"DeviceN" = "DeviceN";
+/* File: ../Source/NSColorSpace.m:139 */
+/* Comment: color space */
+"Grayscale" = "\Ud68c\Uc0c9\Uc870";
+/* File: ../Source/NSColorSpace.m:145 */
+/* Comment: color space */
+"LAB" = "LAB";
+/* File: ../Source/NSColorSpace.m:141 */
+/* Comment: color space */
+"RGB" = "RGB";
+/* File: ../Source/NSColorSpace.m:137 */
+/* Comment: color space */
+"unknown" = "\Ubbf8\Uc815";
+
+
+/*** Strings from ../Source/NSDocument.m ***/
+/* File: ../Source/NSDocument.m:1687 */
+"%@ has been edited.  Are you sure you want to undo changes??"
+  = "%@ \Uac00 \Uc218\Uc815\Ub418\Uc5c8\Uc2b5\Ub2c8\Ub2e4. \Ubc14\Ub010 \Uacf3\Uc744 \Ub418\Ub3cc\Ub9bd\Ub2c8\Uae4c?";
+/* File: ../Source/NSDocument.m:484 */
+"%@ has changed.  Save?" = "%@ \Uac00 \Ubc14\Ub00c\Uc5c8\Uc2b5\Ub2c8\Ub2e4. \Uc800\Uc7a5\Ud569\Ub2c8\Uae4c?";
+/* File: ../Source/NSDocument.m:831 */
+"Can't create backup file.  Save anyways?"
+  = "\Ubc31\Uc5c5\Ud30c\Uc77c\Uc744 \Ub9cc\Ub4e4 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.  \Ubb34\Uc2dc\Ud558\Uace0 \Uc800\Uc7a5\Ud569\Ub2c8\Uae4c?";
+/* File: ../Source/NSDocument.m:483 */
+"Close" = "\Ub2eb\Uae30";
+/* File: ../Source/NSDocument.m:153 */
+"Could not load URL %@." =  "URL %@ \Uc744 \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:130 */
+"Could not load file %@." = "\Ud30c\Uc77c %@ \Uc744 \Ubd88\Ub7ec\Uc62c \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:917 */
+/* Comment: Error description */
+/* File: ../Source/NSDocument.m:957 */
+/* Comment: Error description */
+"Could not write backup file." = "\Ubc31\Uc5c5 \Ud30c\Uc77c\Uc744 \Uc800\Uc7a5\Ud560 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:1029 */
+/* Comment: Error description */
+"Could not write file wrapper." = "\Ud30c\Uc77c \Ub798\Ud37c\Ub97c \Uc800\Uc7a5\Ud560 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:830 */
+"File Error" = "\Ud30c\Uc77c \Uc5d0\Ub7ec";
+/* File: ../Source/NSDocument.m:751 */
+/* Comment: Error description */
+"File wrapper is no file." = "\Ud30c\Uc77c \Ub798\Ud37c\Ub294 \Ud30c\Uc77c\Uc774 \Uc544\Ub2d9\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:152 */
+/* File: ../Source/NSDocument.m:129 */
+"Load failed" = "\Ubd88\Ub7ec\Uc624\Uae30 \Uc2e4\Ud328";
+/* File: ../Source/NSDocument.m:935 */
+/* Comment: Error description */
+"Not a writable type or no URL given."
+  = "\Uc4f8 \Uc218 \Uc5c6\Ub294 \Ud615\Uc2dd\Uc774\Uac70\Ub098 URL\Uc774 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSDocument.m:1207 */
+"Save As" = "\Ub2e4\Ub978 \Uc774\Ub984\Uc73c\Ub85c \Uc800\Uc7a5";
+/* File: ../Source/NSDocument.m:1208 */
+"Save To" = "\Ub2e4\Ub978 \Uacbd\Ub85c\Ub85c \Uc800\Uc7a5";
+/* File: ../Source/NSDocument.m:580 */
+"Untitled-%d" = "\Uc81c\Ubaa9\Uc5c6\Uc74c-%d";
+
+
+/*** Strings from ../Source/NSDocumentController.m ***/
+/* File: ../Source/NSDocumentController.m:1671 */
+"Clear List" = "\Ubaa9\Ub85d \Uc0ad\Uc81c";
+/* File: ../Source/NSDocumentController.m:1022 */
+"Power Off" = "\Uc804\Uc6d0 \Ub044\Uae30";
+/* File: ../Source/NSDocumentController.m:974 */
+/* File: ../Source/NSDocumentController.m:932 */
+"Quit Anyway" = "\Ubb34\Uc2dc\Ud558\Uace0 \Uc885\Ub8cc";
+/* File: ../Source/NSDocumentController.m:972 */
+/* File: ../Source/NSDocumentController.m:930 */
+"Review Unsaved" = "\Uc800\Uc7a5\Ub418\Uc9c0 \Uc54a\Uc740 \Ub0b4\Uc6a9 \Uac80\Ud1a0";
+/* File: ../Source/NSDocumentController.m:979 */
+/* File: ../Source/NSDocumentController.m:929 */
+"You have unsaved documents" = "\Uc800\Uc7a5\Ud558\Uc9c0 \Uc54a\Uc740 \Ubb38\Uc11c\Uac00 \Uc788\Uc2b5\Ub2c8\Ub2e4";
+
+
+/*** Strings from ../Source/NSFontPanel.m ***/
+/* File: ../Source/NSFontPanel.m:1138 */
+"Family" = "\Uae00\Uaf34";
+/* File: ../Source/NSFontPanel.m:553 */
+"Font Panel" = "\Uae00\Uaf34 \Ud328\Ub110";
+/* File: ../Source/NSFontPanel.m:578 */
+"Font preview" = "\Uae00\Uaf34 \Ubbf8\Ub9ac\Ubcf4\Uae30";
+/* File: ../Source/NSFontPanel.m:241 */
+"Multiple fonts selected" = "\Uc5ec\Ub7ec \Uae00\Uaf34\Uc774 \Uc120\Ud0dd\Ub418\Uc5c8\Uc2b5\Ub2c8\Ub2e4";
+/* File: ../Source/NSFontPanel.m:818 */
+"NoFace" = "NoFace";
+/* File: ../Source/NSFontPanel.m:810 */
+"NoFamily" = "NoFamily";
+/* File: ../Source/NSFontPanel.m:719 */
+"Set" = "\Uc124\Uc815";
+/* File: ../Source/NSFontPanel.m:639 */
+"Size" = "\Ud06c\Uae30";
+/* File: ../Source/NSFontPanel.m:1142 */
+"Typeface" = "\Uae00\Uaf34\Uc2a4\Ud0c0\Uc77c";
+
+
+/*** Strings from ../Source/NSMenu.m ***/
+/* File: ../Source/NSMenu.m:260 */
+"Services" = "\Uc11c\Ube44\Uc2a4";
+
+
+/*** Strings from ../Source/NSOpenPanel.m ***/
+/* File: ../Source/NSOpenPanel.m:92 */
+"Open" = "\Uc5f4\Uae30";
+
+
+/*** Strings from ../Source/NSPageLayout.m ***/
+/* File: ../Source/NSPageLayout.m:741 */
+/* File: ../Source/NSPageLayout.m:739 */
+"(none)" = "(\Uc5c6\Uc74c)";
+/* File: ../Source/NSPageLayout.m:964 */
+"Bottom Margin" = "\Uc544\Ub798 \Uc5ec\Ubc31";
+/* File: ../Source/NSPageLayout.m:960 */
+"Dimensions" = "\Ud06c\Uae30";
+/* File: ../Source/NSPageLayout.m:1020 */
+"Landscape" = "\Uac00\Ub85c";
+/* File: ../Source/NSPageLayout.m:965 */
+"Left Margin" = "\Uc67c\Ucabd \Uc5ec\Ubc31";
+/* File: ../Source/NSPageLayout.m:961 */
+"Orientation" = "\Ubc29\Ud5a5";
+/* File: ../Source/NSPageLayout.m:1016 */
+"Portrait" = "\Uc138\Ub85c";
+/* File: ../Source/NSPageLayout.m:966 */
+"Right Margin" = "\Uc624\Ub978\Ucabd \Uc5ec\Ubc31";
+/* File: ../Source/NSPageLayout.m:962 */
+"Scale" = "\Ube44\Uc728";
+/* File: ../Source/NSPageLayout.m:963 */
+"Top Margin" = "\Uc704\Ucabd \Uc5ec\Ubc31";
+
+
+/*** Strings from ../Source/NSPrintOperation.m ***/
+/* File: ../Source/NSPrintOperation.m:677 */
+"Error" = "\Uc5d0\Ub7ec";
+/* File: ../Source/NSPrintOperation.m:677 */
+"Printing error: %@" = "\Uc778\Uc1c4 \Uc5d0\Ub7ec: %@";
+
+
+/*** Strings from ../Source/NSPrintPanel.m ***/
+/* File: ../Source/NSPrintPanel.m:179 */
+"1 up" = "1 up";
+/* File: ../Source/NSPrintPanel.m:179 */
+"2 up" = "2 up";
+/* File: ../Source/NSPrintPanel.m:179 */
+"4 up" = "4 up";
+/* File: ../Source/NSPrintPanel.m:179 */
+"6 up" = "6 up";
+/* File: ../Source/NSPrintPanel.m:180 */
+"8 up" = "8 up";
+/* File: ../Source/NSPrintPanel.m:407 */
+"Faxing of print file not implemented"
+  = "\Uc778\Uc1c4\Ud30c\Uc77c \Ud329\Uc2a4\Ubcf4\Ub0b4\Uae30\Ub294 \Uad6c\Ud604\Ub418\Uc9c0 \Uc54a\Uc558\Uc2b5\Ub2c8\Ub2e4";
+/* File: ../Source/NSPrintPanel.m:781 */
+/* File: ../Source/NSPrintPanel.m:774 */
+/* File: ../Source/NSPrintPanel.m:643 */
+"Manual" = "\Uc218\Ub3d9";
+/* File: ../Source/NSPrintPanel.m:145 */
+"Print Panel" = "\Uc778\Uc1c4 \Ud328\Ub110";
+/* File: ../Source/NSPrintPanel.m:407 */
+"Sorry" = "\Ubbf8\Uc548\Ud569\Ub2c8\Ub2e4";
+
+
+/*** Strings from ../Source/NSSavePanel.m ***/
+/* File: ../Source/NSSavePanel.m:277 */
+"Home" = "\Ud648";
+/* File: ../Source/NSSavePanel.m:293 */
+"Mount" = "\Ub9c8\Uc6b4\Ud2b8";
+/* File: ../Source/NSSavePanel.m:434 */
+/* File: ../Source/NSSavePanel.m:251 */
+"Name:" = "\Uc774\Ub984:";
+/* File: ../Source/NSSavePanel.m:1371 */
+"No" = "\Uc544\Ub2c8\Uc624";
+/* File: ../Source/NSSavePanel.m:1797 */
+"Reading Directory " = "\Uc77d\Ub294 \Ub514\Ub809\Ud130\Ub9ac ";
+/* File: ../Source/NSSavePanel.m:1406 */
+"Replace" = "\Ubc14\Uafb8\Uae30";
+/* File: ../Source/NSSavePanel.m:242 */
+"Show Hidden Files" = "\Uc228\Uae40 \Ud30c\Uc77c \Ubcf4\Uae30";
+/* File: ../Source/NSSavePanel.m:1383 */
+"The directory '%@' could not be created."
+  = "\Ub514\Ub809\Ud130\Ub9ac '%@' \Ub97c \Ub9cc\Ub4e4 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.";
+/* File: ../Source/NSSavePanel.m:1370 */
+"The directory '%@' does not exist, do you want to create it?"
+  = "\Ub514\Ub809\Ud130\Ub9ac '%@' \Uac00 \Uc5c6\Uc2b5\Ub2c8\Ub2e4, \Ub9cc\Ub4ed\Ub2c8\Uae4c?";
+/* File: ../Source/NSSavePanel.m:1405 */
+"The file '%@' in '%@' exists. Replace it?"
+  = "\Ud30c\Uc77c '%@' \Uc774 '%@' \Uc5d0 \Uc788\Uc2b5\Ub2c8\Ub2e4. \Ubc14\Uafc9\Ub2c8\Uae4c?";
+/* File: ../Source/NSSavePanel.m:1394 */
+"The path '%@' is not a directory." = "\Uacbd\Ub85c '%@' \Ub294 \Ub514\Ub809\Ud130\Ub9ac\Uac00 \Uc544\Ub2d9\Ub2c8\Ub2e4.";
+/* File: ../Source/NSSavePanel.m:309 */
+"Unmount" = "\Uc5b8\Ub9c8\Uc6b4\Ud2b8";
+/* File: ../Source/NSSavePanel.m:1326 */
+/* File: ../Source/NSSavePanel.m:1318 */
+"Use .%@" = ".%@ \Uc0ac\Uc6a9";
+/* File: ../Source/NSSavePanel.m:1371 */
+"Yes" = "\Uc608";
+/* File: ../Source/NSSavePanel.m:1325 */
+"You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
+  = "\Uc774 \Ubb38\Uc11c\Ub294 \Ud655\Uc7a5\Uc790 '.%@' \Ub85c \Uc800\Uc7a5\Ud560 \Uc218 \Uc5c6\Uc2b5\Ub2c8\Ub2e4.\n\Ud544\Uc694\Ud55c \Ud655\Uc7a5\Uc790\Ub294  '.%@' \Uc785\Ub2c8\Ub2e4.";
+/* File: ../Source/NSSavePanel.m:1317 */
+"You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
+  = "\Ud655\Uc7a5\Uc790 '.%@' \Ub97c \Uc0ac\Uc6a9\Ud558\Uc600\Uc2b5\Ub2c8\Ub2e4.\n\Ud45c\Uc900 \Ud655\Uc7a5\Uc790\Ub294 '.%@'\Uc785\Ub2c8\Ub2e4.";
+
+
+/*** Strings from ../Source/NSSpellChecker.m ***/
+/* File: ../Source/NSSpellChecker.m:731 */
+"Guess" = "\Ucd94\Uce21\Ud558\Uae30";
+
+
+/*** Strings from ../Source/NSTextView.m ***/
+/* File: ../Source/NSTextView.m:652 */
+"Copy" = "\Ubcf5\Uc0ac";
+/* File: ../Source/NSTextView.m:651 */
+"Cut" = "\Uc798\Ub77c\Ub0b4\Uae30";
+/* File: ../Source/NSTextView.m:5904 */
+"No Suggestions" = "\Ucd94\Ucc9c \Uc5c6\Uc74c";
+/* File: ../Source/NSTextView.m:653 */
+"Paste" = "\Ubd99\Uc774\Uae30";
+
+
+/*** Strings from ../Source/NSToolbarItem.m ***/
+/* File: ../Source/NSToolbarItem.m:1122 */
+"Customize" = "\Uc784\Uc758\Uc124\Uc815";
+/* File: ../Source/NSToolbarItem.m:1021 */
+"Flexible Space" = "\Uac00\Ubcc0 \Uacf5\Ubc31";
+/* File: ../Source/NSToolbarItem.m:1099 */
+"Fonts" = "\Uae00\Uaf34";
+/* File: ../Source/NSToolbarItem.m:1145 */
+"Print..." = "\Uc778\Uc1c4...";
+/* File: ../Source/NSToolbarItem.m:949 */
+"Separator" = "\Uad6c\Ubd84\Uc790";
+/* File: ../Source/NSToolbarItem.m:991 */
+"Space" = "\Uacf5\Ubc31";
+
+
+/*** Strings from ../Source/NSWindow.m ***/
+/* File: ../Source/NSWindow.m:5322 */
+"Hide Toolbar" = "\Ud234\Ubc14 \Uc228\Uae30\Uae30";
+/* File: ../Source/NSWindow.m:5324 */
+"Show Toolbar" = "\Ud234\Ubc14 \Ubcf4\Uae30";
