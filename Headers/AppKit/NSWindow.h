@@ -48,6 +48,7 @@
 @class NSNotification;
 @class NSString;
 @class NSUndoManager;
+@class NSCellUndoManager;
 
 @class NSButton;
 @class NSButtonCell;

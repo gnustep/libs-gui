@@ -248,6 +248,8 @@ therefore be stored in the NSLayoutManager to avoid problems.
   // Text checking (spelling/grammar)
   NSTimer *_textCheckingTimer;
   NSRect _lastCheckedRect;
+
+  NSUndoManager *_fieldEditorUndoManager;
 }
 
 
@@ -344,6 +346,7 @@ to the set of non-range taking varieties. */
 -(void) setAllowsUndo: (BOOL)flag; /* mosx */
 -(BOOL) smartInsertDeleteEnabled;
 -(void) setSmartInsertDeleteEnabled: (BOOL)flag;
+-(void)_setFieldEditorUndoManager:(NSUndoManager *)undoManager;
 
 
 /* These methods are like paste: (from NSResponder) but they restrict

@@ -2318,6 +2318,16 @@ static NSColor *dtxtCol;
   _cell.shows_first_responder = YES;
   _cell.in_editing = YES;
 
+  if ([textObject isKindOfClass:[NSTextView class]])
+    {
+	  NSCellUndoManager * undoManager = [[NSCellUndoManager alloc] init];
+	  [undoManager setNextUndoManager:[[controlView window] undoManager]];
+	  [(NSTextView *)textObject _setFieldEditorUndoManager:undoManager];
+	  [undoManager release];
+	  [(NSTextView *)textObject setAllowsUndo:YES];
+    }
+
+
 #if 0
   // Testplant-MAL-2015-06-20: merging removal causes focus ring issues...
   // FIXME: we need to draw the focus ring, this works but

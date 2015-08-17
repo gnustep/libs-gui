@@ -1137,6 +1137,7 @@ that makes decoding and encoding compatible with the old code.
   DESTROY(_defaultParagraphStyle);
   DESTROY(_linkTextAttributes);
   DESTROY(_undoObject);
+  DESTROY(_fieldEditorUndoManager);
 
   [super dealloc];
 }
@@ -1705,7 +1706,7 @@ to make sure syncing is handled properly in all cases.
   [notificationCenter postNotificationName: NSTextDidEndEditingNotification
       object: _notifObject];
 
-  if (_tf.is_field_editor)
+  if (_tf.is_field_editor && ![[self undoManager] isUndoing] && ![[self undoManager] isRedoing] )
     {
 	  [[self undoManager] removeAllActions];
 	}
@@ -2603,10 +2604,23 @@ Move to NSTextView_actions.m?
   if (![_delegate respondsToSelector: @selector(undoManagerForTextView:)]
       || ((undo = [_delegate undoManagerForTextView: self]) == nil))
     {
-      undo = [super undoManager];
+	  if (_fieldEditorUndoManager)
+	    {
+	      undo = _fieldEditorUndoManager;
+	    }
+	  else
+	    {
+          undo = [super undoManager];
+        }
     }
 
   return undo;
+}
+
+-(void)_setFieldEditorUndoManager:(NSUndoManager *)undoManager
+{
+    [_fieldEditorUndoManager autorelease];
+    _fieldEditorUndoManager = [undoManager retain];
 }
 
 /*
