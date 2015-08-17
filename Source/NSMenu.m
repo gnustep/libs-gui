@@ -1269,6 +1269,10 @@ static BOOL menuBarVisible = YES;
   if ((modifiers & NSFunctionKeyMask)
       || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
     relevantModifiersMask |= NSShiftKeyMask;
+  else if ((modifiers & NSShiftKeyMask) 
+      && [keyEquivalent length] > 0 
+      && [[NSCharacterSet lowercaseLetterCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]])
+    keyEquivalent = [keyEquivalent uppercaseString];
 
   if ((type != NSKeyDown && type != NSKeyUp) || [keyEquivalent length] == 0)
     return NO;
