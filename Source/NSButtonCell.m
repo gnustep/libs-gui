@@ -1122,6 +1122,7 @@ typedef struct _GSButtonCellFlags
           || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream] 
                           inRect: cellFrame]))
     {
+      cellFrame = [self drawingRectForBounds:cellFrame];
       [self drawBezelWithFrame: cellFrame inView: controlView];
     }
 }
@@ -1514,6 +1515,17 @@ typedef struct _GSButtonCellFlags
   return s;
 }
 
+- (NSRect)insetFrame:(NSRect)frame withMargins:(GSThemeMargins)margins
+{
+  NSRect result       = frame;
+  result.origin.x    += margins.left;
+  result.origin.y    += ([_control_view isFlipped] ?
+                         margins.top : margins.bottom);
+  result.size.width  -= (margins.left + margins.right);
+  result.size.height -= (margins.top + margins.bottom);
+  return(result);
+}
+
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   if (_cell.is_bordered)
@@ -1550,15 +1562,9 @@ typedef struct _GSButtonCellFlags
         }
 
       border = [[GSTheme theme] buttonMarginsForCell: self
-					       style: _bezel_style 
-					       state: buttonState];
-
-      interiorFrame = theRect;
-      interiorFrame.origin.x += border.left;
-      interiorFrame.size.width -= border.left + border.right;
-      interiorFrame.origin.y += ([_control_view isFlipped] ? 
-				 border.top : border.bottom);
-      interiorFrame.size.height -= border.bottom + border.top;
+                                               style: _bezel_style
+                                               state: buttonState];
+      interiorFrame = [self insetFrame:theRect withMargins:border];
 
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
       if (mask & NSPushInCellMask)
@@ -1570,7 +1576,11 @@ typedef struct _GSButtonCellFlags
     }
   else
     {
-      return theRect;
+      GSThemeMargins margins = [[GSTheme theme] buttonMarginsForCell: self
+                                                               style: _bezel_style
+                                                               state: GSThemeNormalState];
+      NSRect frame = [self insetFrame:theRect withMargins:margins];
+      return frame;
     }
 }
 

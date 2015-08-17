@@ -122,16 +122,6 @@
     }
 }
 
-- (NSRect)insetFrame:(NSRect)frame withMargins:(GSThemeMargins)margins
-{
-  NSRect result       = frame;
-  result.origin.x    += margins.left;
-  result.origin.y    += margins.top;
-  result.size.width  -= (margins.left + margins.right);
-  result.size.height -= (margins.top + margins.bottom);
-  return(result);
-}
-
 - (void) drawButton: (NSRect)frame 
                  in: (NSCell*)cell 
                view: (NSView*)view 
@@ -176,9 +166,6 @@
       tiles = [self tilesNamed: @"NSButton" state: state];
     }
 
-  GSThemeMargins margins = [self buttonMarginsForCell: cell style: style state: state];
-  NSRect drawFrame = [self insetFrame:frame withMargins:margins];
-
   if (tiles == nil)
     {
       switch (style)
@@ -186,36 +173,36 @@
 	  case NSRoundRectBezelStyle:
 	  case NSTexturedRoundedBezelStyle:
 	  case NSRoundedBezelStyle:
-	    [self drawRoundBezel: drawFrame withColor: color];
+	    [self drawRoundBezel: frame withColor: color];
 	    break;
 	  case NSTexturedSquareBezelStyle:
-	    frame = NSInsetRect(drawFrame, 0, 1);
+	    frame = NSInsetRect(frame, 0, 1);
 	  case NSSmallSquareBezelStyle:
 	  case NSRegularSquareBezelStyle:
 	  case NSShadowlessSquareBezelStyle:
 	    [color set];
-	    NSRectFill(drawFrame);
+	    NSRectFill(frame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(drawFrame, 1);
+	    NSFrameRectWithWidth(frame, 1);
 	    break;
 	  case NSThickSquareBezelStyle:
 	    [color set];
-	    NSRectFill(drawFrame);
+	    NSRectFill(frame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(drawFrame, 1.5);
+	    NSFrameRectWithWidth(frame, 1.5);
 	    break;
 	  case NSThickerSquareBezelStyle:
 	    [color set];
-	    NSRectFill(drawFrame);
+	    NSRectFill(frame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(drawFrame, 2);
+	    NSFrameRectWithWidth(frame, 2);
 	    break;
 	  case NSCircularBezelStyle:
-	    frame = NSInsetRect(drawFrame, 3, 3);
-	    [self drawCircularBezel: drawFrame withColor: color]; 
+	    frame = NSInsetRect(frame, 3, 3);
+	    [self drawCircularBezel: frame withColor: color]; 
 	    break;
 	  case NSHelpButtonBezelStyle:
-	    [self drawCircularBezel: drawFrame withColor: color];
+	    [self drawCircularBezel: frame withColor: color];
 	    {
 	      NSDictionary *attributes = [NSDictionary dictionaryWithObject: [NSFont controlContentFontOfSize: 0]
 								     forKey: NSFontAttributeName];
@@ -225,8 +212,8 @@
 
 	      NSRect textRect;
 	      textRect.size = [questionMark size];
-	      textRect.origin.x = NSMidX(drawFrame) - (textRect.size.width / 2);
-	      textRect.origin.y = NSMidY(drawFrame) - (textRect.size.height / 2);
+	      textRect.origin.x = NSMidX(frame) - (textRect.size.width / 2);
+	      textRect.origin.y = NSMidY(frame) - (textRect.size.height / 2);
 
 	      [questionMark drawInRect: textRect];
 	    }
@@ -238,19 +225,19 @@
 	    break;
 	  default:
 	    [color set];
-	    NSRectFill(drawFrame);
+	    NSRectFill(frame);
 
 	    if (state == GSThemeNormalState || state == GSThemeHighlightedState)
 	      {
-		[self drawButton: drawFrame withClip: NSZeroRect];
+		[self drawButton: frame withClip: NSZeroRect];
 	      }
 	    else if (state == GSThemeSelectedState || state == GSThemeSelectedFirstResponderState)
 	      {
-		[self drawGrayBezel: drawFrame withClip: NSZeroRect];
+		[self drawGrayBezel: frame withClip: NSZeroRect];
 	      }
 	    else
 	      {
-		[self drawButton: drawFrame withClip: NSZeroRect];
+		[self drawButton: frame withClip: NSZeroRect];
 	      }
 	}
     }
@@ -258,7 +245,7 @@
     {
       /* Use tiles to draw button border with central part filled with color
        */
-      [self fillRect: drawFrame
+      [self fillRect: frame
 	   withTiles: tiles
 	  background: color];
     }
@@ -339,15 +326,15 @@
             {
               if ([cell controlSize] == NSRegularControlSize)
                 {
-                  margins.left = 10; margins.top = 9; margins.right = 10; margins.bottom = 9;
+                  margins.left = 8; margins.top = 7; margins.right = 8; margins.bottom = 7;
                 }
               else if ([cell controlSize] == NSSmallControlSize)
                 {
-                  margins.left = 8; margins.top = 7; margins.right = 8; margins.bottom = 7;
+                  margins.left = 6; margins.top = 5; margins.right = 6; margins.bottom = 5;
                 }
               else if ([cell controlSize] == NSMiniControlSize)
                 {
-                  margins.left = 7; margins.top = 6; margins.right = 7; margins.bottom = 6;
+                  margins.left = 5; margins.top = 4; margins.right = 5; margins.bottom = 4;
                 }
             }
             break;
