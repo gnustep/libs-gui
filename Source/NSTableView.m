@@ -3675,6 +3675,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
+  BOOL clickedRowSelectedBeforeClick;
   int clickCount = [theEvent clickCount];
   
   // Pathological case -- ignore mouse down
@@ -3718,15 +3719,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
           if ([self _isGroupRow: _clickedRow])
             theColumn = -1;
 			
-		  // Check for single click on already-selected editable cell to begin editing
-		  if (clickCount == 1 && [self isRowSelected: _clickedRow] && [self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
-			{
-			  [self editColumn: _clickedColumn
-                           row: _clickedRow
-                     withEvent: theEvent
-                        select: YES];
-			  return;
-			}
+          clickedRowSelectedBeforeClick = [self isRowSelected: _clickedRow];
 
           // Application specific hit test processing is handled within the delegate's should select callbacks
           // if they're implemented...however - I'm not sure when this SHOULD be invoked...
@@ -4103,15 +4096,26 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       /* If this was a simple click (ie. no dragging), we send our action. */
       if (sendAction)
         {
-          /*
-           _clickedRow and _clickedColumn are already set at the start of
-           this function.
-           
-           TODO: should we ask the data source/column for the cell for this
-           row/column and check whether it has its own action/target?
-           */
-          if (_clickedRow != -1)
-            [self sendAction: _action  to: _target];
+          // Check for single click on already-selected editable cell to begin editing
+          if (clickCount == 1 &&  clickedRowSelectedBeforeClick && [self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
+            {
+              [self editColumn: _clickedColumn
+                           row: _clickedRow
+                     withEvent: theEvent
+                        select: YES];
+            }
+          else
+            {
+              /*
+               _clickedRow and _clickedColumn are already set at the start of
+               this function.
+
+               TODO: should we ask the data source/column for the cell for this
+               row/column and check whether it has its own action/target?
+               */
+              if (_clickedRow != -1)
+                [self sendAction: _action  to: _target];
+            }
         }
     }
   
