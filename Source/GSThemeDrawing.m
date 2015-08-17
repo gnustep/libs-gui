@@ -122,6 +122,16 @@
     }
 }
 
+- (NSRect)insetFrame:(NSRect)frame withMargins:(GSThemeMargins)margins
+{
+  NSRect result       = frame;
+  result.origin.x    += margins.left;
+  result.origin.y    += margins.top;
+  result.size.width  -= (margins.left + margins.right);
+  result.size.height -= (margins.top + margins.bottom);
+  return(result);
+}
+
 - (void) drawButton: (NSRect)frame 
                  in: (NSCell*)cell 
                view: (NSView*)view 
@@ -166,6 +176,9 @@
       tiles = [self tilesNamed: @"NSButton" state: state];
     }
 
+  GSThemeMargins margins = [self buttonMarginsForCell: cell style: style state: state];
+  NSRect drawFrame = [self insetFrame:frame withMargins:margins];
+
   if (tiles == nil)
     {
       switch (style)
@@ -173,36 +186,36 @@
 	  case NSRoundRectBezelStyle:
 	  case NSTexturedRoundedBezelStyle:
 	  case NSRoundedBezelStyle:
-	    [self drawRoundBezel: frame withColor: color];
+	    [self drawRoundBezel: drawFrame withColor: color];
 	    break;
 	  case NSTexturedSquareBezelStyle:
-	    frame = NSInsetRect(frame, 0, 1);
+	    frame = NSInsetRect(drawFrame, 0, 1);
 	  case NSSmallSquareBezelStyle:
 	  case NSRegularSquareBezelStyle:
 	  case NSShadowlessSquareBezelStyle:
 	    [color set];
-	    NSRectFill(frame);
+	    NSRectFill(drawFrame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(frame, 1);
+	    NSFrameRectWithWidth(drawFrame, 1);
 	    break;
 	  case NSThickSquareBezelStyle:
 	    [color set];
-	    NSRectFill(frame);
+	    NSRectFill(drawFrame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(frame, 1.5);
+	    NSFrameRectWithWidth(drawFrame, 1.5);
 	    break;
 	  case NSThickerSquareBezelStyle:
 	    [color set];
-	    NSRectFill(frame);
+	    NSRectFill(drawFrame);
 	    [[NSColor controlShadowColor] set];
-	    NSFrameRectWithWidth(frame, 2);
+	    NSFrameRectWithWidth(drawFrame, 2);
 	    break;
 	  case NSCircularBezelStyle:
-	    frame = NSInsetRect(frame, 3, 3);
-	    [self drawCircularBezel: frame withColor: color]; 
+	    frame = NSInsetRect(drawFrame, 3, 3);
+	    [self drawCircularBezel: drawFrame withColor: color]; 
 	    break;
 	  case NSHelpButtonBezelStyle:
-	    [self drawCircularBezel: frame withColor: color];
+	    [self drawCircularBezel: drawFrame withColor: color];
 	    {
 	      NSDictionary *attributes = [NSDictionary dictionaryWithObject: [NSFont controlContentFontOfSize: 0]
 								     forKey: NSFontAttributeName];
@@ -212,8 +225,8 @@
 
 	      NSRect textRect;
 	      textRect.size = [questionMark size];
-	      textRect.origin.x = NSMidX(frame) - (textRect.size.width / 2);
-	      textRect.origin.y = NSMidY(frame) - (textRect.size.height / 2);
+	      textRect.origin.x = NSMidX(drawFrame) - (textRect.size.width / 2);
+	      textRect.origin.y = NSMidY(drawFrame) - (textRect.size.height / 2);
 
 	      [questionMark drawInRect: textRect];
 	    }
@@ -225,19 +238,19 @@
 	    break;
 	  default:
 	    [color set];
-	    NSRectFill(frame);
+	    NSRectFill(drawFrame);
 
 	    if (state == GSThemeNormalState || state == GSThemeHighlightedState)
 	      {
-		[self drawButton: frame withClip: NSZeroRect];
+		[self drawButton: drawFrame withClip: NSZeroRect];
 	      }
 	    else if (state == GSThemeSelectedState || state == GSThemeSelectedFirstResponderState)
 	      {
-		[self drawGrayBezel: frame withClip: NSZeroRect];
+		[self drawGrayBezel: drawFrame withClip: NSZeroRect];
 	      }
 	    else
 	      {
-		[self drawButton: frame withClip: NSZeroRect];
+		[self drawButton: drawFrame withClip: NSZeroRect];
 	      }
 	}
     }
@@ -245,7 +258,7 @@
     {
       /* Use tiles to draw button border with central part filled with color
        */
-      [self fillRect: frame
+      [self fillRect: drawFrame
 	   withTiles: tiles
 	  background: color];
     }
@@ -257,7 +270,7 @@
 {
   GSDrawTiles	*tiles = nil;
   NSString	*name = [self nameForElement: cell];
-  GSThemeMargins margins;
+  GSThemeMargins margins = { 0 };
 
   if (name == nil)
     {
@@ -274,47 +287,92 @@
     {
       switch (style)
         {
-	  case NSRoundRectBezelStyle:
-	  case NSTexturedRoundedBezelStyle:
-	  case NSRoundedBezelStyle:
-	    margins.left = 5; margins.top = 5; margins.right = 5; margins.bottom = 5;
-	    return margins;
-	  case NSTexturedSquareBezelStyle:
-	    margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
-	    return margins;
-	  case NSSmallSquareBezelStyle:
-	  case NSRegularSquareBezelStyle:
-	  case NSShadowlessSquareBezelStyle:
-	    margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
-	    return margins;
-	  case NSThickSquareBezelStyle:
-	    margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
-	    return margins;
-	  case NSThickerSquareBezelStyle:
-	    margins.left = 4; margins.top = 4; margins.right = 4; margins.bottom = 4;
-	    return margins;
-	  case NSCircularBezelStyle:
-	    margins.left = 5; margins.top = 5; margins.right = 5; margins.bottom = 5;
-	    return margins;
-	  case NSHelpButtonBezelStyle:
-	    margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
-	    return margins;
-	  case NSDisclosureBezelStyle:
-	  case NSRoundedDisclosureBezelStyle:
-	  case NSRecessedBezelStyle:
-	    // FIXME
-	    margins.left = 0; margins.top = 0; margins.right = 0; margins.bottom = 0;
-	    return margins;
-	  default:
-	    margins.left = 2; margins.top = 2; margins.right = 3; margins.bottom = 3;
-	    return margins;
-	}
+          case NSRoundRectBezelStyle:
+            break;
+            
+          case NSTexturedRoundedBezelStyle:
+            {
+              if ([cell controlSize] == NSRegularControlSize)
+                {
+                  margins.left = 1; margins.top = 1; margins.right = 1; margins.bottom = 1;
+                }
+              else if ([cell controlSize] == NSSmallControlSize)
+                {
+                  margins.left = 1; margins.top = 1; margins.right = 1; margins.bottom = 1;
+                }
+            }
+            break;
+            
+          case NSRoundedBezelStyle:
+            {
+              if ([cell controlSize] == NSRegularControlSize)
+                {
+                  margins.left = 6; margins.top = 4; margins.right = 6; margins.bottom = 4;
+                }
+              else if ([cell controlSize] == NSSmallControlSize)
+                {
+                  margins.left = 4; margins.top = 3; margins.right = 4; margins.bottom = 3;
+                }
+            }
+            break;
+            
+          case NSTexturedSquareBezelStyle:
+            margins.left = 3; margins.top = 1; margins.right = 3; margins.bottom = 1;
+            break;
+            
+          case NSRegularSquareBezelStyle:
+            margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
+            break;
+            
+          case NSShadowlessSquareBezelStyle:
+            break;
+            
+          case NSThickSquareBezelStyle:
+            margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+            break;
+            
+          case NSThickerSquareBezelStyle:
+            margins.left = 4; margins.top = 4; margins.right = 4; margins.bottom = 4;
+            break;
+            
+          case NSCircularBezelStyle:
+            {
+              if ([cell controlSize] == NSRegularControlSize)
+                {
+                  margins.left = 10; margins.top = 9; margins.right = 10; margins.bottom = 9;
+                }
+              else if ([cell controlSize] == NSSmallControlSize)
+                {
+                  margins.left = 8; margins.top = 7; margins.right = 8; margins.bottom = 7;
+                }
+              else if ([cell controlSize] == NSMiniControlSize)
+                {
+                  margins.left = 7; margins.top = 6; margins.right = 7; margins.bottom = 6;
+                }
+            }
+            break;
+            
+          case NSHelpButtonBezelStyle:
+            margins.left = 2; margins.top = 3; margins.right = 2; margins.bottom = 3;
+            break;
+            
+          case NSDisclosureBezelStyle:
+          case NSRoundedDisclosureBezelStyle:
+          case NSRecessedBezelStyle:
+            // FIXME
+            margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+            break;
+            
+          default:
+            margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+            break;
+        }
     }
   else
     {
       margins = [tiles themeMargins];
-      return margins;
     }
+  return margins;
 }
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
