@@ -2880,6 +2880,30 @@ typedef enum {
                    inView: tableHeaderView];
       drawingRect.origin.x += width;
     }
+  
+  // Fill out table header to end if needed...
+  //if ([[[GSTheme theme] name] isEqualToString: @"GSTheme"] == NO)
+    {
+      if (lastColumnToDraw == [tableView numberOfColumns] - 1)
+        {
+          // This is really here to handle extending the table headers using the
+          // WinUXTheme (or one equivalent to) that writes directly to the MS windows
+          // device contexts...
+          NSRect clipFrame = [(NSClipView*)[tableView superview] documentVisibleRect];
+          CGFloat maxWidth = NSMaxX(clipFrame);
+          if (drawingRect.origin.x < maxWidth)
+          {
+            drawingRect.size.width = maxWidth - drawingRect.origin.x;
+            column = [columns objectAtIndex: lastColumnToDraw];
+            cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell:@""]);
+            [cell setHighlighted: NO];
+#if 0
+            NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, -2, NSStringFromRect(drawingRect));
+#endif
+            [cell drawWithFrame: drawingRect inView: tableHeaderView];
+          }
+        }
+    }
 }
 
 - (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame
