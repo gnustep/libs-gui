@@ -70,14 +70,14 @@
  */
  
 typedef enum {
-  ItemBackViewDefaultHeight = 54,
-  ItemBackViewRegularHeight = 54,
+  ItemBackViewDefaultHeight = 52,
+  ItemBackViewRegularHeight = 52,
   ItemBackViewSmallHeight = 46
 } ItemBackViewHeight;
 
 typedef enum {
-  ItemBackViewDefaultWidth = 54,
-  ItemBackViewRegularWidth = 54,
+  ItemBackViewDefaultWidth = 52,
+  ItemBackViewRegularWidth = 52,
   ItemBackViewSmallWidth = 46
 } ItemBackViewWidth;
 
