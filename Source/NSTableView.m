@@ -3675,7 +3675,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
-  BOOL clickedRowSelectedBeforeClick;
+  BOOL clickedRowSelectedBeforeClick = NO;
   int clickCount = [theEvent clickCount];
   
   // Pathological case -- ignore mouse down
