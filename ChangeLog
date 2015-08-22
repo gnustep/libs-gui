@@ -1,3 +1,13 @@
+2015-08-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSInputManager.m: Add binding processing code for escape
+	key and make list of bindings easier to extend.
+	* KeyBindings/DefaultKeyBindings.dict: Add default escape key
+	binding to complete: method.
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+	* Source/NSInputManager.m: Fixed alt behaviors for return
+	Patch by Paul Landers <paul.landers@testplant.com>.
+
 2015-08-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m: Remove GC ifdefs.

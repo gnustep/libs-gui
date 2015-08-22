@@ -1,4 +1,6 @@
 { /* -*-c-*- */
+  /* Auto-Completion key */
+  "Escape" = "complete:";
 
   /* Function keys */
   "UpArrow" = "moveUp:";

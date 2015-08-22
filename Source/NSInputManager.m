@@ -39,14 +39,13 @@
 
 /* A table mapping character names to characters, used to interpret
    the character names found in KeyBindings dictionaries.  */
-#define CHARACTER_TABLE_SIZE 78
 
 static struct 
 {
   NSString *name;
   unichar character;
 } 
-character_table[CHARACTER_TABLE_SIZE] =
+character_table[] =
 {
   /* Function keys.  */
   { @"UpArrow", NSUpArrowFunctionKey },
@@ -129,8 +128,11 @@ character_table[CHARACTER_TABLE_SIZE] =
   { @"Tab", NSTabCharacter },
   { @"Enter", NSEnterCharacter },
   { @"FormFeed", NSFormFeedCharacter },
-  { @"CarriageReturn", NSCarriageReturnCharacter }
+  { @"CarriageReturn", NSCarriageReturnCharacter },
+  { @"Escape", 0x1b }
 };
+
+static int CHARACTER_TABLE_SIZE = (sizeof(character_table) / sizeof(character_table[0]));
 
 static NSInputManager *currentInputManager = nil;
 
@@ -674,7 +676,14 @@ static NSInputManager *currentInputManager = nil;
         case NSEnterCharacter:
         case NSFormFeedCharacter:
         case NSCarriageReturnCharacter:
-          [self doCommandBySelector: @selector (insertNewline:)];
+          if (flags & NSAlternateKeyMask)
+            {
+              [self doCommandBySelector: @selector (insertNewlineIgnoringFieldEditor:)];
+            }
+          else
+            {
+              [self doCommandBySelector: @selector (insertNewline:)];
+            }
           break;
           
         case NSHelpFunctionKey:
