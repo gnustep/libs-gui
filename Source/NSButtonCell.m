@@ -1122,6 +1122,10 @@ typedef struct _GSButtonCellFlags
           || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream] 
                           inRect: cellFrame]))
     {
+      // Testplat-MAL-2015-08-22: Turns out this draw is using the full
+      // frame as opposed to the reduced frame.  This ends up drawing
+      // buttons way too big compared to Cocoa version...
+      // Question is: what is the correct solution?
       cellFrame = [self drawingRectForBounds:cellFrame];
       [self drawBezelWithFrame: cellFrame inView: controlView];
     }
