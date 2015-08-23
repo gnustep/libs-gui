@@ -224,6 +224,8 @@ static CGFloat scrollerWidth;
   // For compatibility the ruler should be present but not visible.
   [self setHasHorizontalRuler: YES];
   [self tile];
+  _horizScrollElasticity = NSScrollElasticityAutomatic;
+  _vertScrollElasticity = NSScrollElasticityAutomatic;
 
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -396,6 +398,27 @@ static CGFloat scrollerWidth;
 - (void) setAutohidesScrollers: (BOOL)flag
 {
   _autohidesScrollers = flag;
+}
+
+- (NSScrollElasticity)horizontalScrollElasticity
+{
+  return _horizScrollElasticity;
+}
+
+- (void)setHorizontalScrollElasticity:(NSScrollElasticity)value
+{
+  _horizScrollElasticity = value;
+}
+
+- (NSScrollElasticity)verticalScrollElasticity
+{
+  return _vertScrollElasticity;
+}
+
+
+- (void)setVerticalScrollElasticity:(NSScrollElasticity)value
+{
+  _vertScrollElasticity = value;
 }
 
 - (void) scrollWheel: (NSEvent *)theEvent

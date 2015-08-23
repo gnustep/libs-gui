@@ -4,7 +4,7 @@
    A view that allows you to scroll a document view that's too big to display
    entirely on a window.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: July 1997
@@ -33,6 +33,15 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #import <AppKit/NSView.h>
+
+enum
+{
+  NSScrollElasticityAutomatic = 0,
+  NSScrollElasticityNone      = 1,
+  NSScrollElasticityAllowed   = 2
+};
+typedef NSInteger NSScrollElasticity;
+
 
 @class NSClipView;
 @class NSRulerView;
@@ -64,6 +73,8 @@
   BOOL _hasHeaderView;
   BOOL _hasCornerView;
   BOOL _autohidesScrollers;
+  NSScrollElasticity _horizScrollElasticity;
+  NSScrollElasticity _vertScrollElasticity;
 }
 
 /* Calculating layout */
@@ -141,6 +152,12 @@
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (BOOL)autohidesScrollers;
 - (void)setAutohidesScrollers:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSScrollElasticity)horizontalScrollElasticity;
+- (void)setHorizontalScrollElasticity:(NSScrollElasticity)value;
+- (NSScrollElasticity)verticalScrollElasticity;
+- (void)setVerticalScrollElasticity:(NSScrollElasticity)value;
 #endif
 
 /* Updating display after scrolling */

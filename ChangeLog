@@ -1,3 +1,9 @@
+2015-08-23 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSScrollView.h
+	* Source/NSScrollView.m
+	Add horiz and vert elastiticty properties and constants.
+
 2015-08-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBundleAdditions.m,
