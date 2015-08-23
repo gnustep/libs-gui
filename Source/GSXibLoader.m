@@ -38,7 +38,6 @@
 #import <Foundation/NSXMLParser.h>
 #import <Foundation/NSXMLDocument.h>
 #import <Foundation/NSXMLElement.h>
-#import	<GNUstepBase/GSMime.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
@@ -330,20 +329,18 @@
             } 	 
           else 	 
             { 	 
-              const char *nam = [label cString]; 	 
-              const char *type; 	 
-              unsigned int size; 	 
-              int offset; 	 
-              
-              /* 	 
-               * Use the GNUstep additional function to set the instance 	 
-               * variable directly. 	 
-               * FIXME - need some way to do this for libFoundation and 	 
-               * Foundation based systems. 	 
+              /*
+               * We cannot use the KVC mechanism here, as this would always retain _dst
+               * and it could also affect _setXXX methods and _XXX ivars that aren't
+               * affected by the Cocoa code.
                */ 	 
-              if (GSObjCFindVariable(source, nam, &type, &size, &offset)) 	 
-                { 	 
-                  GSObjCSetVariable(source, offset, size, (void*)&destination);
+              const char *name = [label cString];
+              Class class = object_getClass(source);
+              Ivar ivar = class_getInstanceVariable(class, name);
+              
+              if (ivar != 0)
+                {
+                  object_setIvar(source, ivar, destination);
                 }
             } 	 
 	}
@@ -1583,10 +1580,11 @@ didStartElement: (NSString*)elementName
 
       if ([type isEqualToString: @"base64-UTF8"])
         {
-          NSData *d = [new dataUsingEncoding: NSASCIIStringEncoding];
-          d = [GSMimeDocument decodeBase64: d];
+          NSData *d = [[NSData alloc] initWithBase64EncodedString: new
+                                                          options: 0];
           new = AUTORELEASE([[NSString alloc] initWithData: d 
                                                   encoding: NSUTF8StringEncoding]);
+          RELEASE(d);
         }
 
       // empty strings are not nil!
@@ -1697,9 +1695,8 @@ didStartElement: (NSString*)elementName
     }
   else if ([@"bytes" isEqualToString: elementName])
     {
-      id new = [[element value] dataUsingEncoding: NSASCIIStringEncoding
-                           allowLossyConversion: NO];
-      new = [GSMimeDocument decodeBase64: new];
+      id new = AUTORELEASE([[NSData alloc] initWithBase64EncodedString: [element value]
+                                                               options: 0]);
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];

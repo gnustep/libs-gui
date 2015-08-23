@@ -39,7 +39,6 @@
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSUserDefaults.h>
-#import "GNUstepBase/GSObjCRuntime.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSButtonCell.h"

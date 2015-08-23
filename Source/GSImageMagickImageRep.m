@@ -31,10 +31,10 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSAffineTransform.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSTask.h>
 #import <Foundation/NSProcessInfo.h>
-#import <GNUstepBase/NSDebug+GNUstepBase.h>
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSPasteboard.h"

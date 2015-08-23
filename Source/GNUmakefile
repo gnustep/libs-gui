@@ -121,6 +121,7 @@ NSMenuItemCell.m \
 NSMovie.m \
 NSMovieView.m \
 NSNib.m \
+NSNibConnector.m \
 NSNibBindingConnector.m \
 NSNibAXAttributeConnector.m \
 NSNibAXRelationshipConnector.m \

@@ -1,5 +1,17 @@
 2015-08-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBundleAdditions.m,
+	* Source/NSNibConnector.m: Move NSNibConnector and subclasses in
+	separate file. Add isEqual: method from Gorm. Switch to new
+	libobjc runtime ivar access for NSNibOutletConnector.
+	* Source/GNUmakefile: Add new file NSNibConnector.m
+	* Source/GSXibLoader.m: Similar change to IBOutletConnection.
+	Replace GSMime base64 decode method with standard one.
+	* Source/GSImageMagickImageRep.m,
+	* Source/GSTheme.m: Remove unused #import.
+
+2015-08-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSInputManager.m: Add binding processing code for escape
 	key and make list of bindings easier to extend.
 	* KeyBindings/DefaultKeyBindings.dict: Add default escape key
