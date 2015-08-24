@@ -99,7 +99,10 @@ enum {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
   NSUnscaledWindowMask = 2048,
   NSUnifiedTitleAndToolbarWindowMask = 4096,
-#endif 
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+  NSFullScreenWindowMask = 16384,
+#endif
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };

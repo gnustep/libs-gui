@@ -1,3 +1,8 @@
+2015-08-24 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSWindow.h
+	Define NSFullScreenWindowMask.
+
 2015-08-23 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSScrollView.h
