@@ -480,6 +480,7 @@ static GSTextFinder *sharedTextFinder;
       if ([ignoreCaseButton state] != NSOffState)
 	{
 	  *options |= NSCaseInsensitiveSearch;
+	  *options &= ~NSLiteralSearch; // literal search is always case-sensitive, so it must be removed in this case
 	}
       else
 	{

@@ -1,3 +1,7 @@
+2015-08-25  Doug Simons <doug.simons@testplant.com>
+
+	* Source/GSTextFinder.m: Fix Ignore Case option to work.
+
 2015-08-14  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSSplitView.m: Treat an empty autosaveName as nil
