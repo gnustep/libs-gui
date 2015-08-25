@@ -2545,6 +2545,7 @@ static void autoresize(CGFloat oldContainerSize,
       flush = YES;
       [_window disableFlushWindow];
       aRect = NSIntersectionRect(aRect, visibleRect);
+      aRect = NSIntegralRect(aRect);
       neededRect = NSIntersectionRect(_invalidRect, visibleRect);
   
       /*
@@ -2554,7 +2555,7 @@ static void autoresize(CGFloat oldContainerSize,
        * If the drawn rectangle cuts off a complete part of the
        * _invalidRect, we should remove that part.
        */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES || neededRect.size.width < 1 || neededRect.size.height < 1)
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
@@ -2563,7 +2564,7 @@ static void autoresize(CGFloat oldContainerSize,
       else
 	  {
 		  NSRectEdge sliceEdge = NSNotFound;
-		  int distance = 0;
+		  float distance = 0;
 
 		  // check that intersection of aRect and _invalidRect either has an equal height or width to _invalidRect
 		  // eg, if they are equal heights, we might be a slice on the left or right side
@@ -2588,7 +2589,7 @@ static void autoresize(CGFloat oldContainerSize,
 		  }
 
 		  // remove the drawn area from _invalidRect
-		  if ( sliceEdge != NSNotFound ) {
+		  if ( sliceEdge != NSNotFound && fabsf(distance) >= 1 ) {
 			  NSRect newInvalid;
 			  NSDivideRect(_invalidRect, 0, &newInvalid, distance, sliceEdge);
 			  _invalidRect = newInvalid;
