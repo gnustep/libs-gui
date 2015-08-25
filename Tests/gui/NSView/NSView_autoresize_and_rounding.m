@@ -37,7 +37,14 @@ int CHECK(NSView *view, NSRect frame)
 	return rects_almost_equal(r, frame);
 }
 
-
+@interface TestView : NSView
+@end
+@implementation TestView
+-(BOOL) isFlipped
+{
+  return YES;
+}
+@end
 
 
 int main(int argc, char **argv)
@@ -210,6 +217,27 @@ int main(int argc, char **argv)
           testHopeful = YES;
 	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.5, 0.5, 100, 100)],
 				  NSMakeRect(1, 1, 100, 100)),
+	       "centerScanRect works 1");
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.9, 0.9, 99.9, 99.9)],
+				  NSMakeRect(1, 1, 100, 100)),
+	       "centerScanRect works 2");       
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.9, 0.9, 99.4, 99.4)],
+				  NSMakeRect(1, 1, 99, 99)),
+	       "centerScanRect works 3");
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.4, 0.4, 99.4, 99.4)],
+				  NSMakeRect(0, 0, 100, 100)),
+	       "centerScanRect works 4");
+          testHopeful = NO;
+
+	  [view2 release];
+	}
+
+	{
+	  NSView *view2 = [[TestView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+	  
+          testHopeful = YES;
+	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.5, 0.5, 100, 100)],
+				  NSMakeRect(1, 0, 100, 100)),
 	       "centerScanRect works 1");
 	  PASS(rects_almost_equal([view2 centerScanRect: NSMakeRect(0.9, 0.9, 99.9, 99.9)],
 				  NSMakeRect(1, 1, 100, 100)),

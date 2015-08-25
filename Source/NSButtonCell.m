@@ -1015,47 +1015,23 @@ typedef struct _GSButtonCellFlags
 				  toFitInSize: cellFrame.size
 				  scalingType: _imageScaling];
 
-      /* Pixel-align size */
-
-      if (controlView)
-	{
-	  NSSize sizeInBase = [controlView convertSizeToBase: size];
-	  sizeInBase.width = GSRoundTowardsInfinity(sizeInBase.width);
-	  sizeInBase.height = GSRoundTowardsInfinity(sizeInBase.height);
-	  size = [controlView convertSizeFromBase: sizeInBase];
-	}
-
       /* Calculate an offset from the cellFrame origin */
-     
       offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
-				 (NSHeight(cellFrame) - size.height) / 2.0);
-
-      /* Pixel-align the offset */
-
-      if (controlView)
-	{
-	  NSPoint inBase = [controlView convertPointToBase: offset];
-	  
-	  // By convention we will round down and to the right.
-	  // With the standard button design this looks good
-	  // because the bottom and right edges of the button look 'heavier'
-	  // so if the image's center must be offset from the button's geometric
-	  // center, it looks beter if it's closer to the 'heavier' part
-	  
-	  inBase.x = GSRoundTowardsInfinity(inBase.x);
-	  inBase.y = [controlView isFlipped] ? 
-	    GSRoundTowardsInfinity(inBase.y) :
-	    GSRoundTowardsNegativeInfinity(inBase.y);
-	  
-	  offset = [controlView convertPointFromBase: inBase];
-	}
-
-      /* Draw the image */
+                           (NSHeight(cellFrame) - size.height) / 2.0);
 
       rect = NSMakeRect(cellFrame.origin.x + offset.x,
    		        cellFrame.origin.y + offset.y,
 			size.width,
 			size.height);
+
+      /* Pixel-align */
+      if (nil != controlView)
+        {
+          rect = [controlView centerScanRect: rect];
+        }
+
+      /* Draw the image */
+
       fraction = (![self isEnabled] &&
 		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
       

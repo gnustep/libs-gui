@@ -1979,14 +1979,31 @@ static NSColor *dtxtCol;
   return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
-/**<p>The GNUstep implementation returns -drawingRectForBounds:</p>
+/**<p>Frame the image gets drawn in</p>
  */
 - (NSRect) imageRectForBounds: (NSRect)theRect
 {
-  return [self drawingRectForBounds: theRect];
+  if (_cell.type == NSImageCellType)
+    {
+      NSRect frame = [self drawingRectForBounds: theRect];
+      
+      // Add spacing between border and inside 
+      if (_cell.is_bordered || _cell.is_bezeled)
+        {
+          frame.origin.x += 3;
+          frame.size.width -= 6;
+          frame.origin.y += 1;
+          frame.size.height -= 2;
+        }
+      return frame;
+    }
+  else
+    {
+      return theRect;
+    }
 }
 
-/** <p>TODO</p>
+/** <p>Frame the title gets drawn in</p>
  */
 - (NSRect) titleRectForBounds: (NSRect)theRect
 {
@@ -2050,18 +2067,6 @@ static NSColor *dtxtCol;
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSRect drawingRect = [self drawingRectForBounds: cellFrame];
-
-  //FIXME: Check if this is also neccessary for images,
-  // Add spacing between border and inside 
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      drawingRect.origin.x += 3;
-      drawingRect.size.width -= 6;
-      drawingRect.origin.y += 1;
-      drawingRect.size.height -= 2;
-    }
-
   switch (_cell.type)
     {
       case NSTextCellType:
@@ -2069,7 +2074,7 @@ static NSColor *dtxtCol;
 	  [self _drawEditorWithFrame: cellFrame inView: controlView];
 	else
 	  [self _drawAttributedText: [self _drawAttributedString]
-			    inFrame: drawingRect];
+			    inFrame: [self titleRectForBounds: cellFrame]];
         break;
 
       case NSImageCellType:
@@ -2077,12 +2082,20 @@ static NSColor *dtxtCol;
           {
             NSSize size;
             NSPoint position;
-            
+            NSRect drawingRect = [self imageRectForBounds: cellFrame];
+            NSRect rect;
+           
             size = [_cell_image size];
             position.x = MAX(NSMidX(drawingRect) - (size.width/2.),0.);
             position.y = MAX(NSMidY(drawingRect) - (size.height/2.),0.);
+            rect = NSMakeRect(position.x, position.y, size.width, size.height);
 
-            [_cell_image drawInRect: NSMakeRect(position.x, position.y, size.width, size.height)
+            if (nil != controlView)
+              {
+                rect = [controlView centerScanRect: rect];
+              }
+
+            [_cell_image drawInRect: rect
 			   fromRect: NSZeroRect
 			  operation: NSCompositeSourceOver
 			   fraction: 1.0

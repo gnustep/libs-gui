@@ -1,3 +1,16 @@
+2015-08-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Add tests for
+	centerScanRect: with flipped view.
+	* Source/NSView.m (-centerScanRect:): Change to get the failed
+	tests to pass.
+	* Source/GSThemeTools.m (-drawRoundBezel:withColor:): Make round
+	bezel look a bit nicer.
+	* Source/NSButtonCell.m (-drawImage:withFrame:inView:): Use
+	centerScanRect: instead of similar code.
+	* Source/NSCell.m: Use imageRectForBounds: and titleRectForBounds:
+	in drawInteriorWithFrame:inView:.
+
 2015-08-24 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSWindow.h
