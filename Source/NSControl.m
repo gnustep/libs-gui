@@ -1026,7 +1026,9 @@ static NSNotificationCenter *nc;
         }
       if ([aDecoder containsValueForKey: @"NSEnabled"])
         {
-          [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
+          // Don't use this information as it also comes from the cell
+          // and NSComboBox has always YES here, even when disabled
+          //[self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
         }
       if ([aDecoder containsValueForKey: @"NSTag"])
         {

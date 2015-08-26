@@ -1,3 +1,11 @@
+2015-08-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSTextFinder.m: Fix Ignore Case option to work.
+	Patch by Doug Simons <doug.simons@testplant.com>
+	* Source/NSControl.m (-initWithCoder:): Don't use NSEnabled flag
+	as it is wrong for NSComboBox.
+	* Source/NSComboBoxCell.m (_loadButtonCell): Set enabled on button cell.
+
 2015-08-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tests/gui/NSView/NSView_autoresize_and_rounding.m: Add tests for

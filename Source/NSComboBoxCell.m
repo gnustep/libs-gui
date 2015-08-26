@@ -1885,6 +1885,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   [_buttonCell setBordered: YES];
   [_buttonCell setTarget: self];
   [_buttonCell setAction: @selector(_didClickWithinButton:)];
+  [_buttonCell setEnabled: [self isEnabled]];
 }
 
 - (void) _selectCompleted
