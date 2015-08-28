@@ -1652,6 +1652,18 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   _alphaValue = alpha;
 }
 
+- (CGFloat) frameCenterRotation
+{
+  // FIXME this is dummy, we don't have layers yet
+  return 0.0;
+}
+
+- (void) setFrameCenterRotation:(CGFloat)rot;
+{
+  // FIXME this is dummy, we don't have layers yet
+  // we probably need a Matrix akin frame rotation.
+}
+
 
 - (NSRect) centerScanRect: (NSRect)aRect
 {

@@ -1,3 +1,9 @@
+2015-08-28 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSView.m
+	* Headers/AppKit/NSView.h
+	Add more (dummy) layer property stuff
+
 2015-08-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextFinder.m: Fix Ignore Case option to work.
