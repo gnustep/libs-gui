@@ -2,7 +2,7 @@
 
    <abstract>The window class</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
             Venkat Ajjanagadde <venkat@ocbi.com>
@@ -2655,6 +2655,18 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (void) setDynamicDepthLimit: (BOOL)flag
 {
   _f.dynamic_depth_limit = flag;
+}
+
+- (NSWindowCollectionBehavior)collectionBehaviour
+{
+  //TODO: we don't handle collections yet and perhaps never will fully
+  return 0;
+}
+
+- (void)setCollectionBehaviour:(NSWindowCollectionBehavior)props
+{
+  //TODO we don't handle collections yet. Perhaps certain features can be mapped on existing ones
+  //other features are Expose specific or anyway probably not implementable
 }
 
 /*

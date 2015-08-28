@@ -4,6 +4,10 @@
 	* Headers/AppKit/NSView.h
 	Add more (dummy) layer property stuff
 
+	* Headers/AppKit/NSWindow.h
+	* Source/NSWindow.m
+	Constants and methods for Exposé and other features we don't have and perhaps never will
+
 2015-08-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextFinder.m: Fix Ignore Case option to work.

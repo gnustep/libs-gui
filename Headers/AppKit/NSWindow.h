@@ -107,6 +107,32 @@ enum {
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+enum {
+  NSWindowCollectionBehaviorDefault = 0,
+  NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0,
+  NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1
+};
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+enum {
+  NSWindowCollectionBehaviorManaged = 1 << 2,
+  NSWindowCollectionBehaviorTransient = 1 << 3,
+  NSWindowCollectionBehaviorStationary = 1 << 4,
+};
+enum {
+  NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5,
+  NSWindowCollectionBehaviorIgnoresCycle = 1 << 6
+};
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+enum {
+  NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7,
+  NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
+};
+#endif
+typedef NSUInteger NSWindowCollectionBehavior;
+
 enum _NSSelectionDirection {
   NSDirectSelection,
   NSSelectingNext,
@@ -543,6 +569,11 @@ PACKAGE_SCOPE
 
 - (NSResponder*) firstResponder;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSWindowCollectionBehavior)collectionBehaviour;
+- (void)setCollectionBehaviour:(NSWindowCollectionBehavior)props;
+#endif
+
 /**
  * This method attempts to make aResponder the first responder.<br />
  * If aResponder is already the first responder, this method has no
@@ -740,7 +771,7 @@ PACKAGE_SCOPE
 #endif
 
 /*
- * Window butons
+ * Window buttons
  */
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 + (NSButton *) standardWindowButton: (NSWindowButton)button 
