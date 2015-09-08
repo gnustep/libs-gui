@@ -1,3 +1,9 @@
+2015-09-08  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSOutlineView.m: Update expandItem:expandChildren:
+	and collapseItem:collapseChildren: to expand or collapse all
+	when item is nil (as updated in OSX 10.5).
+	
 2015-08-25  Doug Simons <doug.simons@testplant.com>
 
 	* Source/GSTextFinder.m: Fix Ignore Case option to work.

@@ -250,17 +250,21 @@ static NSImage *unexpandable  = nil;
       canCollapse = [_delegate outlineView: self shouldCollapseItem: item];
     }
 
-  if ([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
+  if ((item == nil || ([self isExpandable: item] && [self isItemExpanded: item])) && canCollapse)
     {
-      NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
+	  NSMutableDictionary *infoDict = nil;
+	  if (item != nil)
+	    {
+          infoDict = [NSMutableDictionary dictionary];
 
-      [infoDict setObject: item forKey: @"NSObject"];
+          [infoDict setObject: item forKey: @"NSObject"];
 
-      // Send out the notification to let observers know that this is about
-      // to occur.
-      [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
-          object: self
-          userInfo: infoDict];
+          // Send out the notification to let observers know that this is about
+          // to occur.
+          [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
+              object: self
+              userInfo: infoDict];
+		}
 
       // recursively find all children and call this method to close them.
       // Note: The children must be collapsed before their parent item so
@@ -286,14 +290,17 @@ static NSImage *unexpandable  = nil;
             }
         }
 
-      // collapse...
-      [self _closeItem: item];
+	  if (item != nil)
+	    {
+          // collapse...
+          [self _closeItem: item];
 
-      // Send out the notification to let observers know that this has
-      // occured.
-      [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
-          object: self
-          userInfo: infoDict];
+          // Send out the notification to let observers know that this has
+          // occured.
+          [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
+              object: self
+              userInfo: infoDict];
+	    }
 
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
@@ -325,10 +332,10 @@ static NSImage *unexpandable  = nil;
     }
 
   // if the item is expandable
-  if ([self isExpandable: item])
+  if (item == nil || [self isExpandable: item])
     {
       // if it is not already expanded and it can be expanded, then expand
-      if (![self isItemExpanded: item] && canExpand)
+      if (item != nil && ![self isItemExpanded: item] && canExpand)
         {
           NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
 
