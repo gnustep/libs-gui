@@ -2639,7 +2639,7 @@ this file describes this.
 
       if (!layout_char)
 	new_last_glyph = 0;
-      else if (layout_char >= [_textStorage length])
+      else if (layout_char == [_textStorage length])
 	new_last_glyph = [self numberOfGlyphs];
       else
 	new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
@@ -2917,7 +2917,7 @@ no_soft_invalidation:
 (of selection, wrt range, before change)
       --------------------------
       after     after     location += lengthChange;
-      in        after     length = NSMaxRange(sel)-NSMaxRange(range)-lengthChange; location=NSMaxRange(range);
+      in        after     length = NSMaxRange(sel)-(NSMaxRange(range)-lengthChange); location=NSMaxRange(range);
       in        in        length = 0; location=NSMaxRange(range);
       before    after     length += lengthChange;
       before    in        length = range.location-location;
@@ -2939,7 +2939,7 @@ no_soft_invalidation:
 	{
 	  if (NSMaxRange(_selected_range) > NSMaxRange(range) - lengthChange)
 	    { /* in after */
-	      newRange.length = NSMaxRange(_selected_range) - NSMaxRange(range) - lengthChange;
+	      newRange.length = NSMaxRange(_selected_range) - (NSMaxRange(range) - lengthChange);
 	      newRange.location = NSMaxRange(range);
 	    }
 	  else
@@ -2959,6 +2959,10 @@ no_soft_invalidation:
       else
 	{ /* before before */
 	}
+	/* sanity check */
+	if (NSMaxRange(newRange) > [_textStorage length]) 
+		newRange = NSMakeRange(MIN(range.location, [_textStorage length]), 0);
+		
 
       /* If there are text views attached to us, let them handle the
       change. */

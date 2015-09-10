@@ -1,3 +1,9 @@
+2015-09-10  Doug Simons <doug.simons@testplant.com> and Paul Landers <paul.landers@testplant.com>
+
+	* Source/NSLayoutManager.m: Fix a bug that would try to adjust
+	the length of the selected range to a negative number, leading
+	to an exception and eventual crashes.
+	
 2015-09-08  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSOutlineView.m: Update expandItem:expandChildren:
