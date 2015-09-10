@@ -536,7 +536,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) drawRect: (NSRect)rect
 {  
-  if (_showLabel)
+  if (_showLabel && NSIntersectsRect(rect, [self bounds]))
     {
       NSAttributedString *attrString;
       NSDictionary *attr;
