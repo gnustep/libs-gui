@@ -2617,8 +2617,7 @@ static void autoresize(CGFloat oldContainerSize,
       [self drawRect: aRect];
       [self unlockFocusNeedsFlush: flush];
 #if !defined(USE_INVALID_RECT_CLEANUP)
-      if (_rFlags.has_subviews == YES)
-        _rFlags.needs_display = NO;
+      _rFlags.needs_display = NO;
 #endif
     }
 
