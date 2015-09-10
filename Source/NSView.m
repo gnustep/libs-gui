@@ -2545,7 +2545,6 @@ static void autoresize(CGFloat oldContainerSize,
       flush = YES;
       [_window disableFlushWindow];
       aRect = NSIntersectionRect(aRect, visibleRect);
-      aRect = NSIntegralRect(aRect);
       neededRect = NSIntersectionRect(_invalidRect, visibleRect);
   
       /*
@@ -2555,46 +2554,52 @@ static void autoresize(CGFloat oldContainerSize,
        * If the drawn rectangle cuts off a complete part of the
        * _invalidRect, we should remove that part.
        */
+#if 0
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES || neededRect.size.width < 1 || neededRect.size.height < 1)
+#else
+      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+#endif
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
         }
+#if 0 // Testplant-MAL-2015-09-10: removing due to flicker issue...
       // Testplant-MAL-2015-07-08: keeping testplant branch code...
       else
-	  {
-		  NSRectEdge sliceEdge = NSNotFound;
-		  float distance = 0;
-
-		  // check that intersection of aRect and _invalidRect either has an equal height or width to _invalidRect
-		  // eg, if they are equal heights, we might be a slice on the left or right side
-		  NSRect invalidAndRedrawn = NSIntersectionRect(aRect, neededRect);
-		  if ( invalidAndRedrawn.size.height == neededRect.size.height ) {
-			  // then check that aRect contains one of the side (corner?) points of _invalidRect (inclusive)
-			  if ( NSPointInRect(NSMakePoint(NSMinX(neededRect), NSMidY(neededRect)), aRect) ) {
-				  sliceEdge = NSMinXEdge;
-				  distance = invalidAndRedrawn.size.width;
-			  } else if ( NSPointInRect(NSMakePoint(NSMaxX(neededRect), NSMidY(neededRect)), aRect) ) {
-				  sliceEdge = NSMaxXEdge;
-				  distance = invalidAndRedrawn.size.width;
-			  }
-		  } else if ( invalidAndRedrawn.size.width  == neededRect.size.width  ) {
-			  if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMinY(neededRect)), aRect) ) {
-				  sliceEdge = NSMinYEdge;
-				  distance = invalidAndRedrawn.size.height;
-			  } else if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMaxY(neededRect)), aRect) ) {
-				  sliceEdge = NSMaxYEdge;
-				  distance = invalidAndRedrawn.size.height;
-			  }
-		  }
-
-		  // remove the drawn area from _invalidRect
-		  if ( sliceEdge != NSNotFound && fabsf(distance) >= 1 ) {
-			  NSRect newInvalid;
-			  NSDivideRect(_invalidRect, 0, &newInvalid, distance, sliceEdge);
-			  _invalidRect = newInvalid;
-		  }
-	  }
+        {
+          NSRectEdge sliceEdge = NSNotFound;
+          float distance = 0;
+          
+          // check that intersection of aRect and _invalidRect either has an equal height or width to _invalidRect
+          // eg, if they are equal heights, we might be a slice on the left or right side
+          NSRect invalidAndRedrawn = NSIntersectionRect(aRect, neededRect);
+          if ( invalidAndRedrawn.size.height == neededRect.size.height ) {
+            // then check that aRect contains one of the side (corner?) points of _invalidRect (inclusive)
+            if ( NSPointInRect(NSMakePoint(NSMinX(neededRect), NSMidY(neededRect)), aRect) ) {
+              sliceEdge = NSMinXEdge;
+              distance = invalidAndRedrawn.size.width;
+            } else if ( NSPointInRect(NSMakePoint(NSMaxX(neededRect), NSMidY(neededRect)), aRect) ) {
+              sliceEdge = NSMaxXEdge;
+              distance = invalidAndRedrawn.size.width;
+            }
+          } else if ( invalidAndRedrawn.size.width  == neededRect.size.width  ) {
+            if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMinY(neededRect)), aRect) ) {
+              sliceEdge = NSMinYEdge;
+              distance = invalidAndRedrawn.size.height;
+            } else if ( NSPointInRect(NSMakePoint(NSMidX(neededRect), NSMaxY(neededRect)), aRect) ) {
+              sliceEdge = NSMaxYEdge;
+              distance = invalidAndRedrawn.size.height;
+            }
+          }
+          
+          // remove the drawn area from _invalidRect
+          if ( sliceEdge != NSNotFound && fabsf(distance) >= 1 ) {
+            NSRect newInvalid;
+            NSDivideRect(_invalidRect, 0, &newInvalid, distance, sliceEdge);
+            _invalidRect = newInvalid;
+          }
+        }
+#endif
     }
   
   if (NSIsEmptyRect(aRect) == NO)
@@ -2605,6 +2610,7 @@ static void autoresize(CGFloat oldContainerSize,
       [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
       [self unlockFocusNeedsFlush: flush];
+      _rFlags.needs_display = NO;
     }
 
   /*
