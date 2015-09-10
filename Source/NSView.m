@@ -79,6 +79,9 @@
 #import "GSGuiPrivate.h"
 #import "NSViewPrivate.h"
 
+//#define USE_INVALID_RECT_CLEANUP
+
+
 /*
  * We need a fast array that can store objects without retain/release ...
  */
@@ -2545,6 +2548,9 @@ static void autoresize(CGFloat oldContainerSize,
       flush = YES;
       [_window disableFlushWindow];
       aRect = NSIntersectionRect(aRect, visibleRect);
+#if defined(USE_INVALID_RECT_CLEANUP)
+      aRect = NSIntegralRect(aRect);
+#endif
       neededRect = NSIntersectionRect(_invalidRect, visibleRect);
   
       /*
@@ -2554,7 +2560,7 @@ static void autoresize(CGFloat oldContainerSize,
        * If the drawn rectangle cuts off a complete part of the
        * _invalidRect, we should remove that part.
        */
-#if 0
+#if defined(USE_INVALID_RECT_CLEANUP)
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES || neededRect.size.width < 1 || neededRect.size.height < 1)
 #else
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
@@ -2563,7 +2569,7 @@ static void autoresize(CGFloat oldContainerSize,
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
         }
-#if 0 // Testplant-MAL-2015-09-10: removing due to flicker issue...
+#if defined(USE_INVALID_RECT_CLEANUP)
       // Testplant-MAL-2015-07-08: keeping testplant branch code...
       else
         {
@@ -2610,7 +2616,10 @@ static void autoresize(CGFloat oldContainerSize,
       [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
       [self unlockFocusNeedsFlush: flush];
-      _rFlags.needs_display = NO;
+#if !defined(USE_INVALID_RECT_CLEANUP)
+      if (_rFlags.has_subviews == YES)
+        _rFlags.needs_display = NO;
+#endif
     }
 
   /*
