@@ -79,7 +79,7 @@
 #import "GSGuiPrivate.h"
 #import "NSViewPrivate.h"
 
-//#define USE_INVALID_RECT_CLEANUP
+#define USE_INVALID_RECT_CLEANUP
 
 
 /*
