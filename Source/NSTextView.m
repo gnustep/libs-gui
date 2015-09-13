@@ -141,6 +141,8 @@ Interface for a bunch of internal methods that need to be cleaned up.
  * Used to implement the blinking insertion point
  */
 - (void) _blink: (NSTimer *)t;
+- (void) _stopInsertionTimer;
+- (void) _startInsertionTimer;
 
 /*
  * these NSLayoutManager- like method is here only informally
@@ -1118,6 +1120,7 @@ that makes decoding and encoding compatible with the old code.
     name: NSTextDidChangeNotification
     object: self];
   [_textCheckingTimer invalidate];
+  [self _stopInsertionTimer];
 
   [[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(_updateState:)
     target: self
@@ -4178,32 +4181,6 @@ Figure out how the additional layout stuff is supposed to work.
   return nil;
 }
 
-- (void) _stopInsertionTimer
-{
-  if (_insertionPointTimer != nil)
-    {
-      [_insertionPointTimer invalidate];
-      DESTROY(_insertionPointTimer);
-    }
-}
- 	  	 
-- (void) _startInsertionTimer
-{
-  if (_insertionPointTimer != nil)
-    {
-      NSWarnMLog(@"Starting insertion timer with existing one running");
-      [self _stopInsertionTimer];
-    }
-  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-                                                          target: self
-                                                        selector: @selector(_blink:)
-                                                        userInfo: nil
-                                                         repeats: YES];
-  [[NSRunLoop currentRunLoop] addTimer: _insertionPointTimer
-                               forMode: NSModalPanelRunLoopMode];
-  RETAIN(_insertionPointTimer);
-}
-
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
   NSRect new;
@@ -6165,6 +6142,32 @@ or add guards
      event processing in the gui runloop, we need to manually update
      the window.  */
   [self displayIfNeeded];
+}
+
+- (void) _stopInsertionTimer
+{
+  if (_insertionPointTimer != nil)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY(_insertionPointTimer);
+    }
+}
+ 	  	 
+- (void) _startInsertionTimer
+{
+  if (_insertionPointTimer != nil)
+    {
+      NSWarnMLog(@"Starting insertion timer with existing one running");
+      [self _stopInsertionTimer];
+    }
+  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                                          target: self
+                                                        selector: @selector(_blink:)
+                                                        userInfo: nil
+                                                         repeats: YES];
+  [[NSRunLoop currentRunLoop] addTimer: _insertionPointTimer
+                               forMode: NSModalPanelRunLoopMode];
+  RETAIN(_insertionPointTimer);
 }
 
 - (NSRect) rectForCharacterRange: (NSRange)aRange

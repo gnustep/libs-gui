@@ -1,3 +1,17 @@
+2015-09-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m: Invalidate insertion point timer in
+	dealloc.
+	* Source/NSToolbarItem.m: Check for drawing rect within bounds
+	before drawing toolbar item.
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+
+2015-09-10  Doug Simons <doug.simons@testplant.com> and Paul Landers <paul.landers@testplant.com>
+
+	* Source/NSLayoutManager.m: Fix a bug that would try to adjust
+	the length of the selected range to a negative number, leading
+	to an exception and eventual crashes.
+
 2015-08-28 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSView.m
@@ -6,7 +20,8 @@
 
 	* Headers/AppKit/NSWindow.h
 	* Source/NSWindow.m
-	Constants and methods for Exposé and other features we don't have and perhaps never will
+	Constants and methods for Exposé and other features we don't have
+	and perhaps never will.
 
 2015-08-26 Fred Kiefer <FredKiefer@gmx.de>
 
