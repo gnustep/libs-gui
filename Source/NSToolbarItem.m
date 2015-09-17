@@ -1463,7 +1463,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     {
       enabled = [target validateUserInterfaceItem: self];
     }
-  [self setEnabled: enabled];
+  if ( [self isEnabled] !=  enabled )
+      [self setEnabled: enabled];
 }
 
 - (NSView *) view
