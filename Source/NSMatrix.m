@@ -2717,6 +2717,17 @@ static SEL getSel;
     }
 }
 
+- (NSString*) toolTipForCell: (NSCell*)cell
+{
+  // FIXME
+  return @"";
+}
+
+- (void) setToolTip: (NSString*)toolTipString forCell: (NSCell*)cell
+{
+  // FIXME
+}
+
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];

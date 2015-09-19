@@ -2017,6 +2017,9 @@ See -runModalForWindow:
   [sheet setParentWindow: docWindow];
   [docWindow setAttachedSheet: sheet];
 
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowWillBeginSheetNotification
+                        object: docWindow];
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
@@ -2031,6 +2034,9 @@ See -runModalForWindow:
 
   [docWindow setAttachedSheet: nil];
   [sheet setParentWindow: nil];
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowDidEndSheetNotification
+                        object: docWindow];
 }
 
 /**

@@ -1761,7 +1761,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   copy = (NSBitmapImageRep*)[super copyWithZone: zone];
 
-  copy->_properties = [_properties copyWithZone: zone];
+  copy->_properties = [_properties mutableCopyWithZone: zone];
   copy->_imageData = [_imageData mutableCopyWithZone: zone];
   copy->_imagePlanes = NSZoneMalloc(zone, sizeof(unsigned char*) * MAX_PLANES);
   if (_imageData == nil)

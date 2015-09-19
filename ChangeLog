@@ -1,3 +1,20 @@
+2015-09-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenu.h,
+	* Source/externs.m: Add NSMenuDidEndTrackingNotification.
+	* Headers/AppKit/NSMatrix.h,
+	* Source/NSMatrix.m: Define delegate protocol and add (empty) tool
+	tip methods.
+	* Source/NSApplication.m: Send begin and end sheet notifications.
+        * Source/NSDocumentController.m: Replace all usages of
+	shouldCreateUI with the display parameter.
+	* Source/NSMenuItem.m: Decode atributes of separator item.
+	* Source/NSBitmapImageRep.m (-copyWithZone): Make a mutable copy
+	of the properties as well.
+	* Source/NSActionCell.m (-setAttributedStringValue:): Update the
+	control view.
+	Patches based on changes by Josh Freeman <pikopixel@twilightedge.com>
+
 2015-09-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Invalidate insertion point timer in

@@ -651,7 +651,7 @@ static Class imageClass;
           isSeparator = [aDecoder decodeBoolForKey: @"NSIsSeparator"];
         }
 
-      if (isSeparator)
+      if (isSeparator && ![self isSeparatorItem])
         {
           RELEASE(self);
 
@@ -660,7 +660,7 @@ static Class imageClass;
 	  // should not be autoreleased.  Do a retain
 	  // to prevent it from being released automatically.
 	  //
-          return RETAIN([NSMenuItem separatorItem]);
+          self = RETAIN([NSMenuItem separatorItem]);
         }
 
       //

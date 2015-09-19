@@ -505,13 +505,10 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
     }
 
   [self addDocument: document];
-  if ([self shouldCreateUI])
+  if (display)
     {
       [document makeWindowControllers];
-      if (display)
-        {
-          [document showWindows];
-        }
+      [document showWindows];
     }
 
   return document;
@@ -520,7 +517,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 /**
  * Creates an [NSDocument] object from the data at the absolute path
  * given in fileName.  Causes the document to be displayed if display
- * is YES, unless the -shouldCreateUI method returns NO.
+ * is YES.
  */
 - (id) openDocumentWithContentsOfFile: (NSString*)fileName 
                               display: (BOOL)display
@@ -540,7 +537,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
       [self addDocument: document];
 
-      if ([self shouldCreateUI])
+      if (display)
         {
           [document makeWindowControllers];
         }
@@ -549,7 +546,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   // remember this document as opened
   [self noteNewRecentDocument: document];
 
-  if (display && [self shouldCreateUI])
+  if (display)
     {
       [document showWindows];
     }
@@ -560,7 +557,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 /**
  * Creates an [NSDocument] object from the data at the supplied url.<br />
  * Causes the document to be displayed if display
- * is YES, unless the -shouldCreateUI method returns NO.
+ * is YES.
  */
 - (id) openDocumentWithContentsOfURL: (NSURL *)url display: (BOOL)display
 {
@@ -579,7 +576,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
       
       [self addDocument: document];
 
-      if ([self shouldCreateUI])
+      if (display)
         {
           [document makeWindowControllers];
         }
@@ -588,7 +585,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   // remember this document as opened
   [self noteNewRecentDocument: document];
 
-  if (display && [self shouldCreateUI])
+  if (display)
     {
       [document showWindows];
     }
@@ -596,7 +593,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   return document;
 }
 
-- (id) openUntitledDocumentAndDisplay: (BOOL)flag 
+- (id) openUntitledDocumentAndDisplay: (BOOL)display 
                                 error: (NSError **)err
 {
   NSString *type;
@@ -605,7 +602,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
   if (OVERRIDDEN(openUntitledDocumentOfType:display:))
     {
-      return [self openUntitledDocumentOfType: type display: flag];
+      return [self openUntitledDocumentOfType: type display: display];
     }
   else
     {
@@ -618,13 +615,10 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
         }
 
       [self addDocument: document];
-      if ([self shouldCreateUI])
+      if (display)
         {
           [document makeWindowControllers];
-          if (flag)
-            {
-              [document showWindows];
-            }
+          [document showWindows];
         }
 
       return document;
@@ -632,13 +626,13 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 }
 
 - (id) openDocumentWithContentsOfURL: (NSURL *)url
-                             display: (BOOL)flag
+                             display: (BOOL)display
                                error: (NSError **)err
 {
   if (OVERRIDDEN(openDocumentWithContentsOfFile:display:) && [url isFileURL])
     {
       return [self openDocumentWithContentsOfFile: [url path] 
-                   display: flag];
+                   display: display];
     }
   else
     {
@@ -664,7 +658,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
       
           [self addDocument: document];
           
-          if ([self shouldCreateUI])
+          if (display)
             {
               [document makeWindowControllers];
             }
@@ -673,7 +667,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
       // remember this document as opened
       [self noteNewRecentDocument: document];
       
-      if (flag && [self shouldCreateUI])
+      if (display)
         {
           [document showWindows];
         }

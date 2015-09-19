@@ -49,6 +49,9 @@ typedef enum _NSMatrixMode {
   NSTrackModeMatrix 
 } NSMatrixMode;
 
+@protocol NSMatrixDelegate <NSControlTextEditingDelegate>
+@end
+
 @interface NSMatrix : NSControl <NSCoding>
 {
   __strong id		**_cells;
@@ -303,6 +306,12 @@ typedef enum _NSMatrixMode {
  * Managing the Cursor 
  */
 - (void) resetCursorRects;
+
+/*
+ * Handling tool tips
+ */
+- (NSString *) toolTipForCell: (NSCell *)cell;
+- (void) setToolTip: (NSString *)toolTipString forCell: (NSCell *)cell;
 
 @end
 
