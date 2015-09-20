@@ -1,3 +1,15 @@
+2015-09-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSThemeDrawing.m (-drawTableViewRect:inView:): Use
+	correct imp type.
+	* Source/NSButtonCell.m (-setBackgroundColor:): Update the
+	control view.
+	* Source/NSSegmentedCell.m (-drawSegment:inFrame:withView:): Draw
+	image if available.
+	* Source/NSPopUpButtonCell.m (-initWithCoder:): Add work around
+	for NSClassSwapper cell replacement.
+	Patches based on changes by Josh Freeman <pikopixel@twilightedge.com>
+
 2015-09-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenu.h,

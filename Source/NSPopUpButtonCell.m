@@ -1243,8 +1243,27 @@ static NSImage *_pbc_image[5];
     {
       /* First decode menu, menu items must be available to set the selection */
       menu = [aDecoder decodeObjectForKey: @"NSMenu"];
-      [self setMenu: nil];
-      [self setMenu: menu];
+      if (menu)
+        {
+          NSEnumerator *menuItemEnumerator;
+          NSMenuItem *menuItem;
+
+          [self setMenu: nil];
+          [self setMenu: menu];
+
+          // FIXME: This special handling is needed bacause the NSClassSwapper
+          // might have replaced the cell, but the items still refere to it.
+          menuItemEnumerator = [[menu itemArray] objectEnumerator];
+
+          while ((menuItem = [menuItemEnumerator nextObject]) != nil)
+            {
+              if (sel_isEqual([menuItem action], @selector(_popUpItemAction:))
+                  && ([menuItem target] != self))
+                {
+                  [menuItem setTarget: self];
+                }
+            }
+        }
 
       if ([aDecoder containsValueForKey: @"NSAltersState"])
         {

@@ -931,6 +931,14 @@ typedef struct _GSButtonCellFlags
 - (void) setBackgroundColor: (NSColor *)color
 {
   ASSIGN(_backgroundColor, color);
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
+    }
 }
 
 - (GSThemeControlState) themeControlState

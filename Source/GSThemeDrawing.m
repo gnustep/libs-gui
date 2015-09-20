@@ -2999,11 +2999,13 @@ typedef enum {
   //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
   {
     SEL sel = @selector(drawRow:clipRect:);
-    IMP imp = [tableView methodForSelector: sel];
+    void (*imp)(id, SEL, NSInteger, NSRect);
+    
+    imp = (void (*)(id, SEL, NSInteger, NSRect))[tableView methodForSelector: sel];
     
     for (i = startingRow; i <= endingRow; i++)
       {
-        (*imp)(tableView, sel, i, aRect);
+        imp(tableView, sel, i, aRect);
       }
   }
 }
