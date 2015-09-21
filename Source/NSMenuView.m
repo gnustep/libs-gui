@@ -1932,7 +1932,11 @@ static float menuBarHeight = 0.0;
 {
   BOOL result = NO;
   NSMenuView *mainWindowMenuView = nil;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
+  [nc postNotificationName: NSMenuDidBeginTrackingNotification
+                    object: [self menu]];
+ 
   if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self) ==
       NSWindows95InterfaceStyle &&
       ![[self menu] isTransient] &&
@@ -1952,6 +1956,8 @@ static float menuBarHeight = 0.0;
     [localException raise];
   NS_ENDHANDLER
   [_window _releaseMouse: self];
+  [nc postNotificationName: NSMenuDidEndTrackingNotification
+                    object: [self menu]];
   return result;
 }
 

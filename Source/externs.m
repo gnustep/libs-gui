@@ -416,6 +416,7 @@ NSString* const NSMenuWillSendActionNotification = @"NSMenuWillSendActionNotific
 NSString* const NSMenuDidAddItemNotification = @"NSMenuDidAddItemNotification";
 NSString* const NSMenuDidRemoveItemNotification = @"NSMenuDidRemoveItemNotification";
 NSString* const NSMenuDidChangeItemNotification = @"NSMenuDidChangeItemNotification";
+NSString* const NSMenuDidBeginTrackingNotification = @"NSMenuDidBeginTrackingNotification";
 NSString* const NSMenuDidEndTrackingNotification = @"NSMenuDidEndTrackingNotification";
 
 // NSPopUpButton notification

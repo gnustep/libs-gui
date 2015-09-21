@@ -820,6 +820,7 @@ APPKIT_EXPORT NSString* const NSMenuWillSendActionNotification;
 APPKIT_EXPORT NSString* const NSMenuDidAddItemNotification;
 APPKIT_EXPORT NSString* const NSMenuDidRemoveItemNotification;
 APPKIT_EXPORT NSString* const NSMenuDidChangeItemNotification;
+APPKIT_EXPORT NSString* const NSMenuDidBeginTrackingNotification;
 APPKIT_EXPORT NSString* const NSMenuDidEndTrackingNotification;
 
 #endif // _GNUstep_H_NSMenu

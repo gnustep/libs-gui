@@ -1,3 +1,9 @@
+2015-09-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenu.h,
+	* Source/externs.m: Add NSMenuDidBeginTrackingNotification.
+	* Source/NSMenuView.m (-trackWithEvent:): send tracking notifications.
+
 2015-09-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSThemeDrawing.m (-drawTableViewRect:inView:): Use
