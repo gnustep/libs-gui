@@ -2568,6 +2568,22 @@ static void computeNewSelection
   return NO;
 }
 
+- (void)setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle)s
+{
+  // FIXME implement me really
+  _selectionHighlightStyle = s;
+  if (_selectionHighlightStyle == NSTableViewSelectionHighlightStyleSourceList)
+    {
+      // should also set draggingDestinationFeedbackStyle to NSTableViewDraggingDestinationFeedbackStyleSourceList
+      // but we don't have it yet anyway
+    }
+}
+
+- (NSTableViewSelectionHighlightStyle) selectionHighlightStyle
+{
+  return _selectionHighlightStyle;
+}
+
 /*
  * Selecting Columns and Rows
  */

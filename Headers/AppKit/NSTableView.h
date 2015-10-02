@@ -68,6 +68,15 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 } NSTableViewColumnAutoresizingStyle;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+typedef enum _NSTableViewSelectionHighlightStyle
+{
+  NSTableViewSelectionHighlightStyleNone = -1,
+  NSTableViewSelectionHighlightStyleRegular = 0,
+  NSTableViewSelectionHighlightStyleSourceList = 1
+} NSTableViewSelectionHighlightStyle;
+#endif
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 typedef enum _NSTableViewAnimationOptions
 {
@@ -81,6 +90,7 @@ typedef enum _NSTableViewAnimationOptions
 } NSTableViewAnimationOptions;
 #endif
 
+
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
 {
   /*
@@ -91,6 +101,7 @@ typedef enum _NSTableViewAnimationOptions
   BOOL               _drawsGrid;
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
+  NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
   float              _rowHeight;
   NSSize             _intercellSpacing;
   id                 _delegate;
@@ -199,6 +210,10 @@ typedef enum _NSTableViewAnimationOptions
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors;
 - (BOOL) usesAlternatingRowBackgroundColors;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void)setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle)s;
+- (NSTableViewSelectionHighlightStyle) selectionHighlightStyle;
 #endif
 
 /* Columns */

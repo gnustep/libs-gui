@@ -1,3 +1,9 @@
+2015-10-02 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSTableView.h
+	* Source/NSTableView.m
+	Add NSTableViewSelectionHighlightStyle type and stub accessors.
+
 2015-09-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m (-initWithContextInfo:): Set some
