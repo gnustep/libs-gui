@@ -323,12 +323,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 				  initWithCapacity: 1];
       usedFonts = nil;
 
-      // Set some default values
-      [self setShouldAntialias: YES];
-      [self setImageInterpolation: NSImageInterpolationNone];
-      [self setPatternPhase: NSMakePoint(0.0, 0.0)];
-      [self setCompositingOperation: NSCompositeSourceOver];
-
       /*
        * The classMethodTable dictionary and the list of all contexts must both
        * be protected from other threads.

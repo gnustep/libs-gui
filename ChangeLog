@@ -1,3 +1,8 @@
+2015-10-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGraphicsContext.m (-initWithContextInfo:): Move the
+	default setting into back.
+
 2015-10-02 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSTableView.h
