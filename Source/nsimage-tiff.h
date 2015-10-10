@@ -41,7 +41,8 @@
 
 /* Structure to store common information about a tiff. */
 typedef struct {
-    uint32  imageNumber;
+    uint16  numImages;	      /* number of images in tiff */
+    uint16  imageNumber;      /* number of current image */
     uint32  subfileType;
     uint32  width;
     uint32  height;
@@ -53,7 +54,6 @@ typedef struct {
     uint16 extraSamples;     /* Alpha */
     int     assocAlpha;
     int     quality;	      /* compression quality (for jpeg) 1 to 255 */
-    int     numImages;	      /* number of images in tiff */
     int     error;
     float   xdpi;
     float   ydpi;

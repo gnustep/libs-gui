@@ -1518,7 +1518,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   NSData *data;
 
   // As a result of using bitmap representations, new drawing wont show on the tiff data.
-  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]];
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self _representationsWithCachedImages: NO]];
 
   if (!data)
     {
@@ -1547,7 +1547,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   NSData *data;
 
   // As a result of using bitmap representations, new drawing wont show on the tiff data.
-  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self _representationsWithCachedImages: NO]
                       usingCompression: comp
                       factor: aFloat];
 

@@ -152,9 +152,10 @@ TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
     case SEEK_SET: chand->position = offset; break;
     case SEEK_CUR: chand->position += offset; break;
     case SEEK_END: 
+      // FIXME: Not sure whether this check is correct
       if (offset > 0 && chand->mode == 'r')
         return 0;
-      chand->position += offset; break;
+      chand->position = chand->size - ((chand->size > 0) ? 1 : 0) + offset;
       break;
     }
   return chand->position;
@@ -260,6 +261,7 @@ NSTiffGetImageCount(TIFF* image)
     {
       dircount++;
     } 
+  TIFFSetDirectory(image, 0);
   return dircount;
 }
 
@@ -472,17 +474,25 @@ int
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   void*	buf = (void*)data;
-  uint16        sample_info[2];
+  uint16        sample_info[1];
   int		i;
   unsigned int 	row;
   int           error = 0;
   tmsize_t      scan_line_size;
 
+  if (info->numImages > 1)
+    {
+      /* Set the page number */
+      TIFFSetField(image, TIFFTAG_PAGENUMBER, info->imageNumber, info->numImages);
+    }
+
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
   TIFFSetField(image, TIFFTAG_COMPRESSION, info->compression);
   if (info->compression == COMPRESSION_JPEG)
-    TIFFSetField(image, TIFFTAG_JPEGQUALITY, info->quality);
+    {
+      TIFFSetField(image, TIFFTAG_JPEGQUALITY, info->quality);
+    }
   TIFFSetField(image, TIFFTAG_SUBFILETYPE, info->subfileType);
   TIFFSetField(image, TIFFTAG_BITSPERSAMPLE, info->bitsPerSample);
   TIFFSetField(image, TIFFTAG_SAMPLESPERPIXEL, info->samplesPerPixel);
@@ -549,7 +559,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	return -1;
 	break;
     }
-    
+
+  // Write out the directory as there may be more images comming
+  TIFFWriteDirectory(image);
+  TIFFFlush(image);
+
   return error;
 }
 

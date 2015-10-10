@@ -1,3 +1,14 @@
+2015-10-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/nsimage-tiff.h: Correct field types.
+	* Source/NSImage.m (-TIFFRepresentation)
+	(TIFFRepresentationUsingCompression:factor:): Pass on bitmaps only.
+	* Source/NSBitmapImageRep.m: Implement methods to generate tiff
+	for multiple bitmaps.
+	* Source/tiff.m: Fix long standing bug in TiffHandleSeek.
+	In NSTiffWrite write image tiff directory to allow for multiple
+	images.
+
 2015-10-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m (-initWithContextInfo:): Move the
