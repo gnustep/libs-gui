@@ -32,9 +32,15 @@
 #import <Foundation/NSObject.h>
 #import <Foundation/NSDate.h>
 
+@class NSAnimationContext;
+
+DEFINE_BLOCK_TYPE_NO_ARGS(GSAnimationContextCompletionHandler, void);
+DEFINE_BLOCK_TYPE(GSAnimationContextChanges, void, NSAnimationContext*);
+
 @interface NSAnimationContext : NSObject
 {
   NSTimeInterval _duration;
+  GSAnimationContextCompletionHandler _completionHandler;
 }
 
 // Begin and end grouping
@@ -44,9 +50,16 @@
 // Retrieve current context
 + (NSAnimationContext *)currentContext;
 
+// run
++ (void)runAnimationGroup: (GSAnimationContextChanges)changes
+  completionHandler: (GSAnimationContextCompletionHandler)completionHandler;
+
 // Properties...
 - (void) setDuration: (NSTimeInterval)duration;
 - (NSTimeInterval) duration;
+				      
+- (GSAnimationContextCompletionHandler) completionHandler;
+- (void) setCompletiionHandler: (GSAnimationContextCompletionHandler) completionHandler;
 
 @end
 

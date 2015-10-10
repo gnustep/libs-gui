@@ -1,3 +1,9 @@
+2015-10-10 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSAnimationContext.h
+	* Source/NSAnimationContext.m: Additional stub methods for
+	NSAnimationContext.
+
 2015-10-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/nsimage-tiff.h: Correct field types.

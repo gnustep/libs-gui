@@ -46,6 +46,12 @@ static NSAnimationContext *_currentContext = nil;
   return _currentContext;
 }
 
+// run
++ (void)runAnimationGroup: (GSAnimationContextChanges)changes
+        completionHandler: (GSAnimationContextCompletionHandler)completionHandler
+{
+}
+
 // Properties...
 - (void) setDuration: (NSTimeInterval)duration
 {
@@ -55,6 +61,25 @@ static NSAnimationContext *_currentContext = nil;
 - (NSTimeInterval) duration
 {
   return _duration;
+}
+
+- (GSAnimationContextCompletionHandler) completionHandler
+{
+  return _completionHandler;
+}
+
+- (void) setCompletiionHandler: (GSAnimationContextCompletionHandler) completionHandler
+{
+  _completionHandler = completionHandler;
+}
+
+- (void *) timingFunction
+{
+  return NULL;
+}
+
+- (void) setTimingFunction: (void *)timingFunction
+{
 }
 
 @end
