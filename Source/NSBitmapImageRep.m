@@ -2088,29 +2088,30 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
           for (y = 0; y < _pixelsHigh; y++)
             {
-              line_offset = _bytesPerRow * y + _bitsPerPixel / 8;
+              line_offset = _bytesPerRow * y;
               for (x = 0; x < _pixelsWide; x++)
                 {
-                  offset = x + line_offset;
+                  offset = (_bitsPerPixel * x) / 8 + line_offset;
                   a = _imagePlanes[0][offset + ai];
-                  if ((a != 0) && (a != 255))
+                  if (a != 255)
                     {
-                      for (i = start; i < end; i++)
+                      if (a == 0)
                         {
-                          NSUInteger v = _imagePlanes[0][offset + i];
-                          NSUInteger c;
-                          
-                          c = (v * 255) / a;
-                          if (c >= 255)
+                          for (i = start; i < end; i++)
                             {
-                              v = 255;
+                              _imagePlanes[0][offset + i] = 0;
                             }
-                          else
+                        }
+                      else
+                        {
+                          for (i = start; i < end; i++)
                             {
-                              v = c;
+                              NSUInteger v = _imagePlanes[0][offset + i];
+                              NSUInteger t = a * v + 0x80;
+                              
+                              v = ((t >> 8) + t) >> 8;
+                              _imagePlanes[0][offset + i] = v;
                             }
-                          
-                          _imagePlanes[0][offset + i] = v;
                         }
                     }
                 }
@@ -2205,30 +2206,29 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
           for (y = 0; y < _pixelsHigh; y++)
             {
-              line_offset = _bytesPerRow * y + _bitsPerPixel / 8;
+              line_offset = _bytesPerRow * y;
               for (x = 0; x < _pixelsWide; x++)
                 {
-                  offset = x + line_offset;
+                  offset = (_bitsPerPixel * x) / 8 + line_offset;
                   a = _imagePlanes[0][offset + ai];
-                  if (a != 255)
+                  if ((a != 0) && (a != 255))
                     {
-                      if (a == 0)
+                      for (i = start; i < end; i++)
                         {
-                          for (i = start; i < end; i++)
+                          NSUInteger v = _imagePlanes[0][offset + i];
+                          NSUInteger c;
+                          
+                          c = (v * 255) / a;
+                          if (c >= 255)
                             {
-                              _imagePlanes[0][offset + i] = 0;
+                              v = 255;
                             }
-                        }
-                      else
-                        {
-                          for (i = start; i < end; i++)
+                          else
                             {
-                              NSUInteger v = _imagePlanes[0][offset + i];
-                              NSUInteger t = a * v + 0x80;
-                              
-                              v = ((t >> 8) + t) >> 8;
-                              _imagePlanes[0][offset + i] = v;
+                              v = c;
                             }
+                          
+                          _imagePlanes[0][offset + i] = v;
                         }
                     }
                 }
