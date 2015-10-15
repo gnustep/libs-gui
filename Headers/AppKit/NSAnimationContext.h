@@ -59,7 +59,7 @@ DEFINE_BLOCK_TYPE(GSAnimationContextChanges, void, NSAnimationContext*);
 - (NSTimeInterval) duration;
 				      
 - (GSAnimationContextCompletionHandler) completionHandler;
-- (void) setCompletiionHandler: (GSAnimationContextCompletionHandler) completionHandler;
+- (void) setCompletionHandler: (GSAnimationContextCompletionHandler) completionHandler;
 
 @end
 

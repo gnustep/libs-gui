@@ -68,7 +68,7 @@ static NSAnimationContext *_currentContext = nil;
   return _completionHandler;
 }
 
-- (void) setCompletiionHandler: (GSAnimationContextCompletionHandler) completionHandler
+- (void) setCompletionHandler: (GSAnimationContextCompletionHandler) completionHandler
 {
   _completionHandler = completionHandler;
 }
