@@ -848,116 +848,77 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   return 0.0;
 }
 
-- (BOOL) trackMouse: (NSEvent*)theEvent
-	     inRect: (NSRect)cellFrame
-	     ofView: (NSView*)controlView
-       untilMouseUp: (BOOL)flag
+- (BOOL) startTrackingAt: (NSPoint)startPoint inView: (NSView*)controlView
 {
-  float delay;
-  float interval;
-  id target = [self target];
-  SEL action = [self action];
-  NSUInteger eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-                           | NSLeftMouseDraggedMask | NSMouseMovedMask;
-  NSEventType eventType = [theEvent type];
-  BOOL isContinuous = [self isContinuous];
-  float oldFloatValue = [self floatValue];
-  NSRect slotRect = [self trackRect];
-  BOOL isVertical = [self isVertical];
-  double minValue = [self minValue];
-  double maxValue = [self maxValue];
-  BOOL isFlipped = [controlView isFlipped];
-  NSPoint location = [theEvent locationInWindow];
-  NSPoint point = [controlView convertPoint: location fromView: nil];
-  NSRect knobRect = [self knobRectFlipped: isFlipped];
-
-  _mouse_down_flags = [theEvent modifierFlags];
-  if (![self isEnabled])
+  // If the point is in the view then yes start tracking
+  if ([controlView mouse: startPoint inRect: [controlView bounds]])
     {
-      return NO;
-    }
+      BOOL isFlipped = [controlView isFlipped];
+      NSRect knobRect = [self knobRectFlipped: isFlipped];
 
-  if (![controlView mouse: point inRect: knobRect])
-    {
-      // Mouse is not on the knob, move the knob to the mouse position
-      float floatValue;
-
-      floatValue = _floatValueForMousePoint(point, knobRect, 
-					    slotRect, isVertical, 
-					    minValue, maxValue,
-					    self, isFlipped,
-					    (_type == NSCircularSlider)); 
-      [self setFloatValue: floatValue];
-      if (isContinuous)
+      if (![controlView mouse: startPoint inRect: knobRect])
         {
-	  [(NSControl*)controlView sendAction: action to: target];
-	}
-    }
-      
-  if (isContinuous)
-    {
-      [self getPeriodicDelay: &delay interval: &interval];
-      [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
-      eventMask |= NSPeriodicMask;
-    }
+          // Mouse is not on the knob, move the knob to the mouse position
+          float floatValue;
+          NSRect slotRect = [self trackRect];
+          BOOL isVertical = [self isVertical];
+          double minValue = [self minValue];
+          double maxValue = [self maxValue];
+          
+          floatValue = _floatValueForMousePoint(startPoint, knobRect, 
+                                                slotRect, isVertical, 
+                                                minValue, maxValue,
+                                                self, isFlipped,
+                                                (_type == NSCircularSlider)); 
+          if (_allowsTickMarkValuesOnly)
+            {
+              floatValue = [self closestTickMarkValueToValue: floatValue]; 
+            }
+          [self setFloatValue: floatValue];
+          if ([self isContinuous])
+            {
+              [(NSControl*)controlView sendAction: [self action] to: [self target]];
+            }
+        }
 
-  while (eventType != NSLeftMouseUp)
-    {
-      theEvent = [NSApp nextEventMatchingMask: eventMask
-			untilDate: [NSDate distantFuture]
-			inMode: NSEventTrackingRunLoopMode
-			dequeue: YES];
-      eventType = [theEvent type];
-
-      if (eventType == NSPeriodic)
-        {
-	  NSWindow *w = [controlView window];
-
-	  location = [w mouseLocationOutsideOfEventStream];
-	}
-      else
-        {
-	  location = [theEvent locationInWindow];
-	}
-      point = [controlView convertPoint: location fromView: nil];
-
-      if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
-        {
-	  float floatValue;
-
-	  floatValue = _floatValueForMousePoint(point, knobRect,
-						slotRect, isVertical, 
-						minValue, maxValue, 
-						self, isFlipped,
-						(_type == NSCircularSlider)); 
-	  if (floatValue != oldFloatValue)
-	    {
-	      if (_allowsTickMarkValuesOnly)
-		{
-		  floatValue = [self closestTickMarkValueToValue:floatValue]; 
-		}
-
-	      [self setFloatValue: floatValue];
-	      if (isContinuous)
-	        {
-		  [(NSControl*)controlView sendAction: action to: target];
-		}
-	      oldFloatValue = floatValue;
-	    }
-	  knobRect.origin = point;
-	}
-    }
-
-  // If the cell is not continuous send the action at the end of the drag
-  if (!isContinuous)
-    {
-      [(NSControl*)controlView sendAction: action to: target];
+      return YES;
     }
   else
     {
-      [NSEvent stopPeriodicEvents];
+      return NO;
     }
+}
 
+- (BOOL) continueTracking: (NSPoint)lastPoint
+                       at: (NSPoint)currentPoint
+                   inView: (NSView*)controlView
+{
+  if (currentPoint.x != lastPoint.x || currentPoint.y != lastPoint.y)
+    {
+      float floatValue;
+      BOOL isFlipped = [controlView isFlipped];
+      NSRect knobRect = [self knobRectFlipped: isFlipped];
+      float oldFloatValue = [self floatValue];
+      NSRect slotRect = [self trackRect];
+      BOOL isVertical = [self isVertical];
+      double minValue = [self minValue];
+      double maxValue = [self maxValue];
+
+      floatValue = _floatValueForMousePoint(currentPoint, knobRect,
+                                            slotRect, isVertical, 
+                                            minValue, maxValue, 
+                                            self, isFlipped,
+                                            (_type == NSCircularSlider)); 
+      if (_allowsTickMarkValuesOnly)
+        {
+          floatValue = [self closestTickMarkValueToValue: floatValue]; 
+        }
+      if (floatValue != oldFloatValue)
+        {
+          [self setFloatValue: floatValue];
+          // The action gets triggered in trackMouse:...untilMouseUp:
+        }
+    }
   return YES;
 }
 

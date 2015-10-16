@@ -1,3 +1,11 @@
+2015-10-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-trackMouse:...untilMouseUp:): Check enabled
+	and use isContinuous method.
+	* Source/NSSliderCell.m: Replace specific implementation of
+	-trackMouse:...untilMouseUp: with super class one and move
+	specific code into helper methods.
+
 2015-10-15 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/AppKit.h

@@ -1643,8 +1643,15 @@ static NSColor *dtxtCol;
              NSStringFromRect(cellFrame), point.x, point.y);
 
   _mouse_down_flags = [theEvent modifierFlags];
+  if (![self isEnabled])
+    {
+      return NO;
+    }
+
   if (![self startTrackingAt: point inView: controlView])
-    return NO;
+    {
+      return NO;
+    }
 
   if (![controlView mouse: point inRect: cellFrame])
     return NO; // point is not in cell
@@ -1653,7 +1660,7 @@ static NSColor *dtxtCol;
       && [theEvent type] == NSLeftMouseDown)
     [self _sendActionFrom: controlView];
 
-  if (_action_mask & NSPeriodicMask)
+  if ([self isContinuous])
     {
       [self getPeriodicDelay: &delay interval: &interval];
       [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
@@ -1759,8 +1766,10 @@ static NSColor *dtxtCol;
               inView: controlView
            mouseIsUp: mouseWentUp];
 
-  if (_action_mask & NSPeriodicMask)
-    [NSEvent stopPeriodicEvents];
+  if ([self isContinuous])
+    {
+      [NSEvent stopPeriodicEvents];
+    }
 
   if (mouseWentUp)
     {
