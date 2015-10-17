@@ -39,6 +39,7 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSRange.h>
+#import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
@@ -50,6 +51,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFileWrapper.h"
 #import "AppKit/NSFont.h"
+#import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontManager.h"
 // For the colour name spaces
 #import "AppKit/NSGraphics.h"
@@ -1519,9 +1521,20 @@ static NSMutableDictionary *cachedCSets = nil;
   return nil;
 }
 
+- (NSFontDescriptor*)_substituteFontDescriptorFor: (unichar)uchar
+{
+  NSString *chars = [NSString stringWithCharacters: &uchar length: 1];
+  NSCharacterSet *requiredCharacterSet = [NSCharacterSet characterSetWithCharactersInString: chars];
+  NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys: requiredCharacterSet, NSFontCharacterSetAttribute, nil];
+  NSSet *mandatoryKeys = [NSSet setWithObjects: NSFontCharacterSetAttribute, nil];
+  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fontAttributes];
+  return [fd matchingFontDescriptorWithMandatoryKeys: mandatoryKeys];
+}
+
 - (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont
 {
   NSFont *subFont;
+  NSFontDescriptor *descriptor;
 
   // Caching one font may lead to the selected substitution font not being
   // from the prefered list, although there is one there with this character.
@@ -1538,13 +1551,29 @@ static NSMutableDictionary *cachedCSets = nil;
       return subFont;
     }
 
+  // Fast way with font descriptors
+  descriptor = [self _substituteFontDescriptorFor: uchar];
+  if (descriptor != nil)
+    {
+      NSCharacterSet *newSet = [descriptor objectForKey: NSFontCharacterSetAttribute];
+      if ([newSet characterIsMember: uchar])
+        {
+          NSString *fName = [descriptor objectForKey: NSFontFamilyAttribute];
+ 
+          ASSIGN(lastFont, fName);
+          ASSIGN(lastSet, newSet);
+          return [self _substituteFontWithName: fName font: baseFont];
+        }
+    }
+
+  
   subFont = [self _substituteFontFor: uchar font: baseFont fromList: 
                       [[NSFontManager sharedFontManager] availableFonts]];
   if (subFont != nil)
     {
       return subFont;
     }
-  
+
   return nil;
 }
 

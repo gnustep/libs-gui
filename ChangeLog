@@ -1,3 +1,11 @@
+2015-10-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m (-_substituteFontFor:font:): Use
+	font descriptors for faster replacement font detection.
+	* Source/GSFontInfo.m
+	(GSFontEnumerator-matchingFontDescriptorsFor:): Special handling
+	for NSFontCharacterSetAttribute.
+
 2015-10-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-trackMouse:...untilMouseUp:): Check enabled

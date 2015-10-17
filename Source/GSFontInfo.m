@@ -229,6 +229,14 @@ static GSFontEnumerator *sharedEnumerator = nil;
                         break;
                       }
                   }
+                else if ([key isEqual: NSFontCharacterSetAttribute])
+                  {
+                    if (![valueB isSupersetOfSet: valueA])
+                      {
+                        match = NO;
+                        break;
+                      }
+                  }
                 else 
                   {
                     if (![valueA isEqual: valueB])
