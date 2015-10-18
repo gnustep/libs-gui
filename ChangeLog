@@ -1,3 +1,8 @@
+2015-10-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSegmentedCell.m (-drawSegment:inFrame:withView:):
+	Use centerScanRect: to position the image.
+
 2015-10-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-_substituteFontFor:font:): Use

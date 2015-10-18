@@ -595,6 +595,11 @@
       position.y = MAX(NSMidY(frame) - (size.height/2.), 0.);
       destinationRect = NSMakeRect(position.x, position.y, size.width, size.height);
 
+      if (nil != view)
+        {
+          destinationRect = [view centerScanRect: destinationRect];
+        }
+
       [segmentImage drawInRect: destinationRect
                       fromRect: NSZeroRect
                      operation: NSCompositeSourceOver
