@@ -268,14 +268,6 @@
       if ([_window isReleasedWhenClosed])
 	{
 	  RETAIN(self);
-	  if ([_window delegate] == self) 
-	    {
-	      [_window setDelegate: nil];
-	    }
-	  if ([_window windowController] == self) 
-	    {
-	      [_window setWindowController: nil];
-	    }
 	  
 	  /*
 	   * If the window is set to isReleasedWhenClosed, it will release

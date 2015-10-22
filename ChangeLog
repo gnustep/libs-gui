@@ -1,3 +1,9 @@
+2015-10-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindowController.m (-_windowWillClose:): Don't unset
+	the delegate and the controller of the window, this gets done in
+	setWindow: a bit later.
+
 2015-10-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSegmentedCell.m (-drawSegment:inFrame:withView:):
