@@ -1380,6 +1380,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   char *bytes = 0;
   long length = 0;
   int num = 0;
+  NSData *data;
 
   image = NSTiffOpenDataWrite(&bytes, &length);
   if (image == 0)
@@ -1412,7 +1413,17 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
 
   NSTiffClose(image);
-  return [NSData dataWithBytesNoCopy: bytes length: length];
+  data = [NSData dataWithBytesNoCopy: bytes length: length];
+  if (num > 0)
+    {
+      return data;
+    }
+  else
+    {
+      // FIXME: Not sure wether this is the correct behaviour, at least it was
+      // the old one of this method.
+      return nil;
+    }
 }
 
 /** Produces an NSData object containing a TIFF representation of all
@@ -1429,6 +1440,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   TIFF *image;
   char *bytes = 0;
   long length = 0;
+  int num = 0;
+  NSData *data;
 
   image = NSTiffOpenDataWrite(&bytes, &length);
   if (image == 0)
@@ -1444,6 +1457,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           [(NSBitmapImageRep*)rep _fillTIFFInfo: &info
                                usingCompression: compression
                                          factor: factor];
+          info.imageNumber = num++;
+          info.numImages = [anArray count];
+          info.subfileType = FILETYPE_PAGE;
           if (NSTiffWrite(image, &info, [(NSBitmapImageRep*)rep bitmapData]) != 0)
             {
               [NSException raise: NSTIFFException format: @"Writing data"];
@@ -1452,7 +1468,17 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
 
   NSTiffClose(image);
-  return [NSData dataWithBytesNoCopy: bytes length: length];
+  data = [NSData dataWithBytesNoCopy: bytes length: length];
+  if (num > 0)
+    {
+      return data;
+    }
+  else
+    {
+      // FIXME: Not sure wether this is the correct behaviour, at least it was
+      // the old one of this method.
+      return nil;
+    }
 }
 
 /** Returns an NSData object containing a TIFF representation of the
