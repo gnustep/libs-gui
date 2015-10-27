@@ -1,3 +1,10 @@
+2015-10-27 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSMatrix.h
+	* Source/NSMatrix.m
+	Change also internal methods and ivars to reflect NSInteger transition
+	of rows and columns.
+
 2015-10-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m

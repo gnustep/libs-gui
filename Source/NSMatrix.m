@@ -2,7 +2,7 @@
 
    <abstract>Matrix class for grouping controls</abstract>
 
-   Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
@@ -1222,7 +1222,7 @@ static SEL getSel;
   [self setNeedsDisplay: YES];
 }
 
-- (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
+- (void) _selectCell: (NSCell *)aCell atRow: (NSInteger)row column: (NSInteger)column
 {
   if (aCell)
     {
@@ -1395,8 +1395,8 @@ static SEL getSel;
        * So, cells from A to E are selected and, if S is outside the
        * range from A to E, cells from S to its closest point are unselected
        */
-      int selStart = MIN(anchorPos, endPos);
-      int selEnd = MAX(anchorPos, endPos);
+      NSInteger selStart = MIN(anchorPos, endPos);
+      NSInteger selEnd = MAX(anchorPos, endPos);
       [self _setState: flag ? NSOnState : NSOffState
 	    highlight: flag
 	    startIndex: selStart
@@ -1442,14 +1442,14 @@ static SEL getSel;
       MPoint anchorPoint = POINT_FROM_INDEX(anchorPos);
       MPoint endPoint = POINT_FROM_INDEX(endPos);
       MPoint startPoint = POINT_FROM_INDEX(startPos);
-      int minx_AE = MIN(anchorPoint.x, endPoint.x);
-      int miny_AE = MIN(anchorPoint.y, endPoint.y);
-      int maxx_AE = MAX(anchorPoint.x, endPoint.x);
-      int maxy_AE = MAX(anchorPoint.y, endPoint.y);
-      int minx_AS = MIN(anchorPoint.x, startPoint.x);
-      int miny_AS = MIN(anchorPoint.y, startPoint.y);
-      int maxx_AS = MAX(anchorPoint.x, startPoint.x);
-      int maxy_AS = MAX(anchorPoint.y, startPoint.y);
+      NSInteger minx_AE = MIN(anchorPoint.x, endPoint.x);
+      NSInteger miny_AE = MIN(anchorPoint.y, endPoint.y);
+      NSInteger maxx_AE = MAX(anchorPoint.x, endPoint.x);
+      NSInteger maxy_AE = MAX(anchorPoint.y, endPoint.y);
+      NSInteger minx_AS = MIN(anchorPoint.x, startPoint.x);
+      NSInteger miny_AS = MIN(anchorPoint.y, startPoint.y);
+      NSInteger maxx_AS = MAX(anchorPoint.x, startPoint.x);
+      NSInteger maxy_AS = MAX(anchorPoint.y, startPoint.y);
       
       [self _setState: flag ? NSOnState : NSOffState
 	    highlight: flag

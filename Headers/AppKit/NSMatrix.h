@@ -1,7 +1,7 @@
 /* 
    NSMatrix.h
 
-   Copyright (C) 1996,1997,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author:  Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
@@ -56,10 +56,10 @@ typedef enum _NSMatrixMode {
 {
   __strong id		**_cells;
   BOOL		**_selectedCells;
-  int		_maxRows;
-  int		_maxCols;
-  int		_numRows;
-  int		_numCols;
+  NSInteger	_maxRows;
+  NSInteger	_maxCols;
+  NSInteger	_numRows;
+  NSInteger	_numCols;
   NSZone	*_myZone;
   Class		_cellClass;
   id		_cellPrototype;
@@ -78,8 +78,8 @@ typedef enum _NSMatrixMode {
   SEL		_doubleAction;
   SEL		_errorAction;
   id		_selectedCell;
-  int		_selectedRow;
-  int		_selectedColumn;
+  NSInteger	_selectedRow;
+  NSInteger	_selectedColumn;
   BOOL		_allowsEmptySelection;
   BOOL		_selectionByRect;
   BOOL		_drawsBackground;
@@ -87,8 +87,8 @@ typedef enum _NSMatrixMode {
   BOOL		_autosizesCells;
   BOOL		_autoscroll;
   id            _reserved1;
-  int		_dottedRow;
-  int		_dottedColumn;
+  NSInteger	_dottedRow;
+  NSInteger	_dottedColumn;
 }
 
 /*
