@@ -2002,7 +2002,7 @@ static  NSMapTable              *mimeMap = NULL;
     // Testplant-MAL-2015.10.27...
     // Fix issue with waiting forever if gpbs crashes within a
     // certain processing window...
-    [conn setReplyTimeout:5.0];
+    [conn setReplyTimeout:2.0];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
