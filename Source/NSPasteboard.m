@@ -1999,6 +1999,10 @@ static  NSMapTable              *mimeMap = NULL;
           Protocol      *p = @protocol(GSPasteboardSvr);
 
 	  [conn enableMultipleThreads];
+    // Testplant-MAL-2015.10.27...
+    // Fix issue with waiting forever if gpbs crashes within a
+    // certain processing window...
+    [conn setReplyTimeout:5.0];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
