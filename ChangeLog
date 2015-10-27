@@ -1,3 +1,9 @@
+2015-10-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (-_pbs): Fix waiting forever if gpbs
+	crashes within a certain window.
+	Patch by Marcian Lytwyn <gna@advcsi.com>.
+
 2015-10-27 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSMatrix.h
