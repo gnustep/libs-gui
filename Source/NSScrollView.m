@@ -1534,6 +1534,17 @@ GSOppositeEdge(NSRectEdge edge)
   return _vertScroller;
 }
 
+- (BOOL)allowsMagnification
+{
+  //we need an ivar for this
+  return NO;
+}
+
+- (void)setAllowsMagnification:(BOOL)m
+{
+  //we need an ivar for this
+}
+
 /*
  * NSCoding protocol
  */

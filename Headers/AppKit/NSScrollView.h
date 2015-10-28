@@ -159,6 +159,10 @@ typedef NSInteger NSScrollElasticity;
 - (NSScrollElasticity)verticalScrollElasticity;
 - (void)setVerticalScrollElasticity:(NSScrollElasticity)value;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (BOOL)allowsMagnification;
+- (void)setAllowsMagnification:(BOOL)m;
+#endif
 
 /* Updating display after scrolling */
 - (void)reflectScrolledClipView:(NSClipView*)aClipView;
