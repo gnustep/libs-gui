@@ -1,5 +1,11 @@
 2015-10-28 Riccardo Mottola <rm@gnu.org>
 
+	* Headers/AppKit/NSApplication.h
+	* Source/NSApplication.m
+	Primitive presentationOptions implementation.
+
+2015-10-28 Riccardo Mottola <rm@gnu.org>
+
 	* Headers/AppKit/NSScrollView.h
 	* Source/NSScrollView.m
 	Stub 10.8 methods for allowsMagnification.

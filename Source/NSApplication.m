@@ -2,7 +2,7 @@
 
    <abstract>The one and only application class.</abstract>
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -3696,6 +3696,25 @@ struct _DelegateWrapper
 {
   // FIXME
   return 0;
+}
+
+- (NSApplicationPresentationOptions) currentPresentationOptions
+{
+  return _presentationOptions;
+}
+
+- (NSApplicationPresentationOptions) presentationOptions
+{
+  return _presentationOptions;
+}
+
+/**
+ * Currently unimplemented and unused in GNUstep, it could be extended to handle
+ * special GNUstep needs too
+ */
+- (void)setPresentationOptions: (NSApplicationPresentationOptions)options
+{
+  _presentationOptions = options;
 }
 
 /*
