@@ -2657,13 +2657,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
   _f.dynamic_depth_limit = flag;
 }
 
-- (NSWindowCollectionBehavior)collectionBehaviour
+- (NSWindowCollectionBehavior)collectionBehavior
 {
   //TODO: we don't handle collections yet and perhaps never will fully
   return 0;
 }
 
-- (void)setCollectionBehaviour:(NSWindowCollectionBehavior)props
+- (void)setCollectionBehavior:(NSWindowCollectionBehavior)props
 {
   //TODO we don't handle collections yet. Perhaps certain features can be mapped on existing ones
   //other features are Expose specific or anyway probably not implementable

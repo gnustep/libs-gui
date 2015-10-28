@@ -570,8 +570,8 @@ PACKAGE_SCOPE
 - (NSResponder*) firstResponder;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (NSWindowCollectionBehavior)collectionBehaviour;
-- (void)setCollectionBehaviour:(NSWindowCollectionBehavior)props;
+- (NSWindowCollectionBehavior)collectionBehavior;
+- (void)setCollectionBehavior:(NSWindowCollectionBehavior)props;
 #endif
 
 /**
