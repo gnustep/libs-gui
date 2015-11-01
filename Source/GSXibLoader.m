@@ -1077,10 +1077,13 @@
 
 - (NSData *) _preProcessXib: (NSData *)data
 {
-  NSData *result = data;
+  NSData *result = nil;
+
+#if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
 							options:0
 							  error:NULL];
+  result = data;
   if (document == nil)
     {
       NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
@@ -1236,12 +1239,13 @@
 	  RELEASE(document);
 	}
     }
-
+#endif
   return result;
 }
 
 - (id) initForReadingWithData: (NSData*)data
 {
+#if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLParser *theParser;
   NSData *theData = data;
 
@@ -1277,7 +1281,7 @@
   NS_ENDHANDLER
 
   DESTROY(theParser);
-    
+#endif    
   return self;
 }
 

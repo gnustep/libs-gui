@@ -1,5 +1,12 @@
 2015-11-01  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GNUmakefile.preamble:
+	* Source/GSXibLoader.m:
+	Check to see if base was built with libxml2 before trying to use
+	classes which depend on it.
+
+2015-11-01  Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSImage.m: Alter loading of image by name so that before we
 	try t load from the app's main bundle, we try loading an image of the
 	same name from the current theme's ThemeImages/bundleIdentifier
