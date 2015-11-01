@@ -397,9 +397,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
       NSString* file; 
       
-      if ((array == nil) || ([array count] == 0) ||
-          (file = [array objectAtIndex: 0]) == nil || 
-          ![self _loadFromFile: file])
+      if ((array == nil) || ([array count] == 0)
+        || (file = [array objectAtIndex: 0]) == nil
+        || ![self _loadFromFile: file])
         {
           RELEASE(self);
           return nil;
@@ -1210,12 +1210,16 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	      const NSSize repRes = GSResolutionOfImageRep(rep);
 	      if (GSSizeIsIntegerMultipleOfSize(repRes, dres))
 		{
-		  const NSSize repResDifference = NSMakeSize(fabs(repRes.width - dres.width),
-							     fabs(repRes.height - dres.height));
-		  const NSSize closestResolutionDifference = NSMakeSize(fabs(closestRes.width - dres.width),
-									fabs(closestRes.height - dres.height));
-		  if (repResDifference.width < closestResolutionDifference.width &&
-		      repResDifference.height < closestResolutionDifference.height)
+		  const NSSize repResDifference
+                    = NSMakeSize(fabs(repRes.width - dres.width),
+                      fabs(repRes.height - dres.height));
+		  const NSSize closestResolutionDifference
+                    = NSMakeSize(fabs(closestRes.width - dres.width),
+                      fabs(closestRes.height - dres.height));
+		  if (repResDifference.width
+                    < closestResolutionDifference.width
+                    && repResDifference.height
+                    < closestResolutionDifference.height)
 		    {
 		      closestRes = repRes;
 		    }
@@ -1478,10 +1482,10 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
     while ((rep = [enumerator nextObject]) != nil)
       {
 	const NSSize repSize = [rep size];
-	if ((repSize.width >= desiredSize.width) &&
-	    (repSize.height >= desiredSize.height) &&
-	    (repSize.width < bestSize.width) &&
-	    (repSize.height < bestSize.height))
+	if ((repSize.width >= desiredSize.width)
+          && (repSize.height >= desiredSize.height)
+          && (repSize.width < bestSize.width)
+          && (repSize.height < bestSize.height))
 	  {
 	    bestSize = repSize;
 	    bestRep = rep;
@@ -1515,10 +1519,14 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 // Producing TIFF Data for the Image 
 - (NSData *) TIFFRepresentation
 {
-  NSData *data;
+  NSArray       *reps;
+  NSData        *data;
 
-  // As a result of using bitmap representations, new drawing wont show on the tiff data.
-  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self _representationsWithCachedImages: NO]];
+  /* As a result of using bitmap representations,
+   * new drawing wont show on the tiff data.
+   */
+  reps = [self _representationsWithCachedImages: NO];
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: reps];
 
   if (!data)
     {
@@ -1544,22 +1552,28 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 - (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
                                          factor: (float)aFloat
 {
-  NSData *data;
+  NSArray       *reps;
+  NSData        *data;
 
-  // As a result of using bitmap representations, new drawing wont show on the tiff data.
-  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self _representationsWithCachedImages: NO]
-                      usingCompression: comp
-                      factor: aFloat];
+  /* As a result of using bitmap representations,
+   * new drawing wont show on the tiff data.
+   */
+  reps = [self _representationsWithCachedImages: NO];
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: reps
+                                          usingCompression: comp
+                                                    factor: aFloat];
 
   if (!data)
     {
       NSBitmapImageRep *rep;
       NSSize size = [self size];
       
-      // If there isn't a bitmap representation to output, create one and store it.
+      /* If there isn't a bitmap representation to output,
+       * create one and store it.
+       */
       [self lockFocus];
       rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
-                       NSMakeRect(0.0, 0.0, size.width, size.height)];
+        NSMakeRect(0.0, 0.0, size.width, size.height)];
       [self unlockFocus];
       if (nil != rep)
         {
@@ -1694,7 +1708,8 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       if ([coder containsValueForKey: @"NSName"])
         {
           RELEASE(self);
-          return RETAIN([NSImage imageNamed: [coder decodeObjectForKey: @"NSName"]]);
+          return RETAIN([NSImage imageNamed:
+            [coder decodeObjectForKey: @"NSName"]]);
         }
       if ([coder containsValueForKey: @"NSColor"])
         {
@@ -1718,8 +1733,10 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           NSArray *reps;
           NSUInteger i;
 
-          // FIXME: NSReps is in a strange format. It is a mutable array with one 
-          // element which is an array with a first element 0 and than the image rep.  
+          /* FIXME: NSReps is in a strange format. It is a mutable array
+           * with one element which is an array with a first element 0
+           * and than the image rep.  
+           */
           reps = [coder decodeObjectForKey: @"NSReps"];
           reps = [reps objectAtIndex: 0];
           for (i = 1; i < [reps count]; i++)
@@ -1736,12 +1753,17 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
                       NSURL *tmp = (NSURL*)rep;
                       rep = [NSImageRep imageRepWithContentsOfURL: rep];
                       
-                      // If we are unable to resolved the URL, try to get it from the 
-                      // resources folder.
+                      /* If we are unable to resolved the URL,
+                       * try to get it from the resources folder.
+                       */
                       if (rep == nil)
                         {
-                          NSString *fileName = [[tmp absoluteString] lastPathComponent];
-                          NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
+                          NSString *fileName;
+                          NSString *path;
+
+                          fileName = [[tmp absoluteString] lastPathComponent];
+                          path = [[NSBundle mainBundle]
+                            pathForImageResource: fileName];
                           rep = [NSImageRep imageRepWithContentsOfFile: path];
                         }
                       
@@ -2022,8 +2044,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       ext = nil;
     }
 
-	*aType = ext;
-	return name;
+  *aType = ext;
+  return name;
 }
 
 + (NSString *) _pathForImageNamed: (NSString *)aName 
@@ -2052,6 +2074,31 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
     }
 
   return nil;
+}
+
+/* We support application specific images in a subdirectory where the
+ * subdirectory name is the app's bundle identifier.
+ * Loading from this location takes precedence over loading from the 
+ * app's main bundle.
+ */
++ (NSString *) _pathForThemeAppImageNamed: (NSString *)aName
+                                   ofType: (NSString *)ext 
+{
+  NSString      *ident = [[NSBundle mainBundle] bundleIdentifier];
+  NSString      *path = nil;
+
+  if (nil != ident)
+    {
+      NSString  *subdir;
+
+      subdir = [@"ThemeImages" stringByAppendingPathComponent: ident]; 
+      path = [self _pathForImageNamed: aName 
+                               ofType: ext 
+                         subdirectory: subdir
+                             inBundle: [[GSTheme theme] bundle]];
+    }
+
+  return path;   
 }
 
 /* 
@@ -2094,7 +2141,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
       while ((aliasName = [e nextObject]) != nil)
         {
-          NSAssert([[aliasName pathExtension] length] == 0, @"nsmapping.strings "
+          NSAssert([[aliasName pathExtension] length] == 0,
+            @"nsmapping.strings "
             "must include no extensions in image file names");
 
           path = [self _pathForImageNamed: aliasName 
@@ -2107,7 +2155,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
         }
     }
 
-  /* If not found, search among the theme images using the image name directly */
+  /* If not found, search among the theme images using the image name directly
+   */
   if (path == nil)
     {
       path = [self _pathForImageNamed: aName 
@@ -2141,17 +2190,23 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 + (NSString *) _pathForImageNamed: (NSString *)aName
 {
   NSString	*ext = nil;
-  NSString	*proposedName = [self _resourceNameForImageNamed: aName type: &ext];
-  NSString	*path = nil;
+  NSString	*proposedName;
+  NSString	*path;
   
   // FIXME: This should use [NSBundle pathForImageResource] if possible, but 
   // this will only allow imageUnfilteredFileTypes.
+  proposedName = [self _resourceNameForImageNamed: aName type: &ext];
   
+  path = [self _pathForThemeAppImageNamed: proposedName ofType: ext];
+
   /* First search locally */
-  path = [self _pathForImageNamed: proposedName 
-                           ofType: ext 
-                     subdirectory: nil 
-                         inBundle: [NSBundle mainBundle]];
+  if (nil == path)
+    {
+      path = [self _pathForImageNamed: proposedName 
+                               ofType: ext 
+                         subdirectory: nil 
+                             inBundle: [NSBundle mainBundle]];
+    }
 
   /* If not found then search in theme */
   if (path == nil)
@@ -2383,9 +2438,11 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	      if (pixelsWide == NSImageRepMatchesDevice ||
 		  pixelsHigh == NSImageRepMatchesDevice)
 		{
-		  // FIXME: Since the cached rep must be a bitmap,
-		  // we must rasterize vector reps at a particular DPI.
-		  // Here we hardcode 72, but we should choose the DPI more intelligently.
+		  /* FIXME: Since the cached rep must be a bitmap,
+		   * we must rasterize vector reps at a particular DPI.
+		   * Here we hardcode 72, but we should choose the DPI
+		   * more intelligently.
+		   */
 		  pixelsWide = repSize.width; 
 		  pixelsHigh = repSize.height;
 		}
@@ -2393,7 +2450,9 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	  else // e.g. when there are no representations at all
 	    {
 	      repSize = imageSize;
-	      // FIXME: assumes 72 DPI. Also truncates, not sure if that is a problem.
+	      /* FIXME: assumes 72 DPI. Also truncates,
+               * not sure if that is a problem.
+               */
 	      pixelsWide = imageSize.width;
 	      pixelsHigh = imageSize.height;
 	    }

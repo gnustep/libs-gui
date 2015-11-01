@@ -111,18 +111,30 @@ NSString        *GSSliderVerticalTrack = @"GSSliderVerticalTrack";
 NSString        *GSBoxBorder = @"GSBoxBorder";
 
 /* NSTabView parts */
-NSString        *GSTabViewSelectedTabFill = @"GSTabViewSelectedTabFill";
-NSString        *GSTabViewUnSelectedTabFill = @"GSTabViewUnSelectedTabFill";
-NSString        *GSTabViewBackgroundTabFill = @"GSTabViewBackgroundTabFill";
-NSString        *GSTabViewBottomSelectedTabFill = @"GSTabViewBottomSelectedTabFill";
-NSString        *GSTabViewBottomUnSelectedTabFill = @"GSTabViewBottomUnSelectedTabFill";
-NSString        *GSTabViewBottomBackgroundTabFill = @"GSTabViewBottomBackgroundTabFill";
-NSString        *GSTabViewLeftSelectedTabFill = @"GSTabViewLeftSelectedTabFill";
-NSString        *GSTabViewLeftUnSelectedTabFill = @"GSTabViewLeftUnSelectedTabFill";
-NSString        *GSTabViewLeftBackgroundTabFill = @"GSTabViewLeftBackgroundTabFill";
-NSString        *GSTabViewRightSelectedTabFill = @"GSTabViewRightSelectedTabFill";
-NSString        *GSTabViewRightUnSelectedTabFill = @"GSTabViewRightUnSelectedTabFill";
-NSString        *GSTabViewRightBackgroundTabFill = @"GSTabViewRightBackgroundTabFill";
+NSString        *GSTabViewSelectedTabFill
+  = @"GSTabViewSelectedTabFill";
+NSString        *GSTabViewUnSelectedTabFill
+  = @"GSTabViewUnSelectedTabFill";
+NSString        *GSTabViewBackgroundTabFill
+  = @"GSTabViewBackgroundTabFill";
+NSString        *GSTabViewBottomSelectedTabFill
+  = @"GSTabViewBottomSelectedTabFill";
+NSString        *GSTabViewBottomUnSelectedTabFill
+  = @"GSTabViewBottomUnSelectedTabFill";
+NSString        *GSTabViewBottomBackgroundTabFill
+  = @"GSTabViewBottomBackgroundTabFill";
+NSString        *GSTabViewLeftSelectedTabFill
+  = @"GSTabViewLeftSelectedTabFill";
+NSString        *GSTabViewLeftUnSelectedTabFill
+  = @"GSTabViewLeftUnSelectedTabFill";
+NSString        *GSTabViewLeftBackgroundTabFill
+  = @"GSTabViewLeftBackgroundTabFill";
+NSString        *GSTabViewRightSelectedTabFill
+  = @"GSTabViewRightSelectedTabFill";
+NSString        *GSTabViewRightUnSelectedTabFill
+  = @"GSTabViewRightUnSelectedTabFill";
+NSString        *GSTabViewRightBackgroundTabFill
+  = @"GSTabViewRightBackgroundTabFill";
 
 
 NSString	*GSThemeDidActivateNotification
@@ -184,14 +196,22 @@ GSStringFromSegmentStyle(NSSegmentStyle segmentStyle)
 {
   switch (segmentStyle)
     {
-      case NSSegmentStyleAutomatic:       return @"NSSegmentStyleAutomatic";
-      case NSSegmentStyleRounded:         return @"NSSegmentStyleRounded";
-      case NSSegmentStyleTexturedRounded: return @"NSSegmentStyleTexturedRounded";
-      case NSSegmentStyleRoundRect:       return @"NSSegmentStyleRoundRect";
-      case NSSegmentStyleTexturedSquare:  return @"NSSegmentStyleTexturedSquare";
-      case NSSegmentStyleCapsule:         return @"NSSegmentStyleCapsule";
-      case NSSegmentStyleSmallSquare:     return @"NSSegmentStyleSmallSquare";
-      default:                            return nil;
+      case NSSegmentStyleAutomatic:
+        return @"NSSegmentStyleAutomatic";
+      case NSSegmentStyleRounded:
+        return @"NSSegmentStyleRounded";
+      case NSSegmentStyleTexturedRounded:
+        return @"NSSegmentStyleTexturedRounded";
+      case NSSegmentStyleRoundRect:
+        return @"NSSegmentStyleRoundRect";
+      case NSSegmentStyleTexturedSquare:
+        return @"NSSegmentStyleTexturedSquare";
+      case NSSegmentStyleCapsule:
+        return @"NSSegmentStyleCapsule";
+      case NSSegmentStyleSmallSquare:
+        return @"NSSegmentStyleSmallSquare";
+      default:
+        return nil;
     }
 }
 
@@ -200,26 +220,46 @@ GSStringFromBezelStyle(NSBezelStyle bezelStyle)
 {
   switch (bezelStyle)
     {
-      case NSRoundedBezelStyle:           return @"NSRoundedBezelStyle";
-      case NSRegularSquareBezelStyle:     return @"NSRegularSquareBezelStyle";
-      case NSThickSquareBezelStyle:       return @"NSThickSquareBezelStyle";
-      case NSThickerSquareBezelStyle:     return @"NSThickerSquareBezelStyle";
-      case NSDisclosureBezelStyle:        return @"NSDisclosureBezelStyle";
-      case NSShadowlessSquareBezelStyle:  return @"NSShadowlessSquareBezelStyle";
-      case NSCircularBezelStyle:          return @"NSCircularBezelStyle";
-      case NSTexturedSquareBezelStyle:    return @"NSTexturedSquareBezelStyle";
-      case NSHelpButtonBezelStyle:        return @"NSHelpButtonBezelStyle";
-      case NSSmallSquareBezelStyle:       return @"NSSmallSquareBezelStyle";
-      case NSTexturedRoundedBezelStyle:   return @"NSTexturedRoundedBezelStyle";
-      case NSRoundRectBezelStyle:         return @"NSRoundRectBezelStyle";
-      case NSRecessedBezelStyle:          return @"NSRecessedBezelStyle";
-      case NSRoundedDisclosureBezelStyle: return @"NSRoundedDisclosureBezelStyle";
-      case NSNeXTBezelStyle:              return @"NSNeXTBezelStyle";
-      case NSPushButtonBezelStyle:        return @"NSPushButtonBezelStyle";
-      case NSSmallIconButtonBezelStyle:   return @"NSSmallIconButtonBezelStyle";
-      case NSMediumIconButtonBezelStyle:  return @"NSMediumIconButtonBezelStyle";
-      case NSLargeIconButtonBezelStyle:   return @"NSLargeIconButtonBezelStyle";
-      default:                            return nil;
+      case NSRoundedBezelStyle:
+        return @"NSRoundedBezelStyle";
+      case NSRegularSquareBezelStyle:
+        return @"NSRegularSquareBezelStyle";
+      case NSThickSquareBezelStyle:
+        return @"NSThickSquareBezelStyle";
+      case NSThickerSquareBezelStyle:
+        return @"NSThickerSquareBezelStyle";
+      case NSDisclosureBezelStyle:
+        return @"NSDisclosureBezelStyle";
+      case NSShadowlessSquareBezelStyle:
+        return @"NSShadowlessSquareBezelStyle";
+      case NSCircularBezelStyle:
+        return @"NSCircularBezelStyle";
+      case NSTexturedSquareBezelStyle:
+        return @"NSTexturedSquareBezelStyle";
+      case NSHelpButtonBezelStyle:
+        return @"NSHelpButtonBezelStyle";
+      case NSSmallSquareBezelStyle:
+        return @"NSSmallSquareBezelStyle";
+      case NSTexturedRoundedBezelStyle:
+        return @"NSTexturedRoundedBezelStyle";
+      case NSRoundRectBezelStyle:
+        return @"NSRoundRectBezelStyle";
+      case NSRecessedBezelStyle:
+        return @"NSRecessedBezelStyle";
+      case NSRoundedDisclosureBezelStyle:
+        return @"NSRoundedDisclosureBezelStyle";
+      case NSNeXTBezelStyle:
+        return @"NSNeXTBezelStyle";
+      case NSPushButtonBezelStyle:
+        return @"NSPushButtonBezelStyle";
+      case NSSmallIconButtonBezelStyle:
+        return @"NSSmallIconButtonBezelStyle";
+      case NSMediumIconButtonBezelStyle:
+        return @"NSMediumIconButtonBezelStyle";
+      case NSLargeIconButtonBezelStyle:
+        return @"NSLargeIconButtonBezelStyle";
+      default:
+        return nil;
     }
 }
 
@@ -241,14 +281,14 @@ GSStringFromTabViewType(NSTabViewType type)
 {
   switch (type)
     {
-    case NSTopTabsBezelBorder: return @"NSTopTabsBezelBorder";
-    case NSBottomTabsBezelBorder: return @"NSBottomTabsBezelBorder";
-    case NSLeftTabsBezelBorder: return @"NSLeftTabsBezelBorder";
-    case NSRightTabsBezelBorder: return @"NSRightTabsBezelBorder";
-    case NSNoTabsBezelBorder: return @"NSNoTabsBezelBorder";
-    case NSNoTabsLineBorder: return @"NSNoTabsLineBorder";
-    case NSNoTabsNoBorder: return @"NSNoTabsNoBorder";
-    default: return nil;
+      case NSTopTabsBezelBorder: return @"NSTopTabsBezelBorder";
+      case NSBottomTabsBezelBorder: return @"NSBottomTabsBezelBorder";
+      case NSLeftTabsBezelBorder: return @"NSLeftTabsBezelBorder";
+      case NSRightTabsBezelBorder: return @"NSRightTabsBezelBorder";
+      case NSNoTabsBezelBorder: return @"NSNoTabsBezelBorder";
+      case NSNoTabsLineBorder: return @"NSNoTabsLineBorder";
+      case NSNoTabsNoBorder: return @"NSNoTabsNoBorder";
+      default: return nil;
     }
 }
 
@@ -257,12 +297,12 @@ GSStringFromImageFrameStyle(NSImageFrameStyle type)
 {
   switch (type)
     {
-    case NSImageFrameNone: return @"NSImageFrameNone";
-    case NSImageFramePhoto: return @"NSImageFramePhoto";
-    case NSImageFrameGrayBezel: return @"NSImageFrameGrayBezel";
-    case NSImageFrameGroove: return @"NSImageFrameGroove";
-    case NSImageFrameButton: return @"NSImageFrameButton";
-    default: return nil;
+      case NSImageFrameNone: return @"NSImageFrameNone";
+      case NSImageFramePhoto: return @"NSImageFramePhoto";
+      case NSImageFrameGrayBezel: return @"NSImageFrameGrayBezel";
+      case NSImageFrameGroove: return @"NSImageFrameGroove";
+      case NSImageFrameButton: return @"NSImageFrameButton";
+      default: return nil;
     }
 }
 
@@ -1149,13 +1189,15 @@ typedef	struct {
 	    fullName = [aName stringByAppendingString: @"Disabled"];
 	    break;
 	  case GSThemeHighlightedFirstResponderState:
-	    fullName = [aName stringByAppendingString: @"HighlightedFirstResponder"];
+	    fullName
+              = [aName stringByAppendingString: @"HighlightedFirstResponder"];
 	    break;
 	  case GSThemeHighlightedState:
 	    fullName = [aName stringByAppendingString: @"Highlighted"];
 	    break;
 	  case GSThemeSelectedFirstResponderState:
-	    fullName = [aName stringByAppendingString: @"SelectedFirstResponder"];
+	    fullName
+              = [aName stringByAppendingString: @"SelectedFirstResponder"];
 	    break;
 	  case GSThemeSelectedState:
 	    fullName = [aName stringByAppendingString: @"Selected"];

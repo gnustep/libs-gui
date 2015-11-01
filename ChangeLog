@@ -1,3 +1,18 @@
+2015-11-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImage.m: Alter loading of image by name so that before we
+	try t load from the app's main bundle, we try loading an image of the
+	same name from the current theme's ThemeImages/bundleIdentifier
+	subdirectory.  This allows a theme to provide an alternative image
+	for any named image normally provided by the app, as discussed this
+	morning.
+	NB. I adopted Ivan's suggestion of requiring a bundle identifier even
+	though we thought we could use the app name as a fallback ... since
+	it seems cleaner (and we can always edit the app's property list to
+	add a bundle identifier if it somehow got omitted by the developer).
+	Also reformatted some code/comments to conform to coding standards
+	and not exceed 80 character line limit.
+
 2015-10-28 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSApplication.h
