@@ -432,7 +432,11 @@ static NSImage *unexpandable  = nil;
       return YES;
     }
   // Check the array to determine if it is expanded.
-  return([_expandedItems containsObject: item]);
+  if ([_expandedItems indexOfObjectIdenticalTo: item] == NSNotFound)
+    {
+      return NO;
+    }
+  return YES;
 }
 
 /**
@@ -2078,7 +2082,7 @@ Also returns the child index relative to this parent. */
   // close the item...
   if (item != nil)
     {
-      [_expandedItems removeObject: item];
+      [_expandedItems removeObjectIdenticalTo: item];
     }
 
   // For the close method it doesn't matter what order they are
@@ -2167,7 +2171,7 @@ Also returns the child index relative to this parent. */
       [self _removeChildren: child];
       NSMapRemove(_itemDict, child);
       [_items removeObject: child];
-      [_expandedItems removeObject: child];
+      [_expandedItems removeObjectIdenticalTo: child];
     }
   [anarray removeAllObjects];
   [self _noteNumberOfRowsChangedBelowItem: startitem by: -numChildren];

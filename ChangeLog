@@ -1,3 +1,11 @@
+2015-11-02  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOutlineView.m:
+	The _expandedItems array needs to be managed using tests for identical
+	members rather than equal members, to handle the case where a view has
+	multiple equal members (we don't want all equal items expanded, only
+	the exact item.
+
 2015-11-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GNUmakefile.preamble:
