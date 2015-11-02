@@ -204,7 +204,11 @@
 	  A theme subclass may override the -imageClass method to change the
 	  class used to load each image from the bundle ... thus allowing
 	  customisation of not just the images but also of the image
-	  behavior in the (very rare) cases where this is desirable.
+	  behavior in the (very rare) cases where this is desirable.<br />
+          Finally, a theme may provide application specific images which are
+          loaded <em>in preference to</em> named images from the application's
+          own bundle.  These images are simply stored in a subdirectory whose
+          name is the same as the application's bundleIdentifier.
 	</desc>
       </deflist>
     </section>
