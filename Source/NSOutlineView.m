@@ -2100,7 +2100,7 @@ Also returns the child index relative to this parent. */
   for (i = 0; i < numChildren; i++)
     {
       id child = [removeAll objectAtIndex: i];
-      [_items removeObject: child];
+      [_items removeObjectIdenticalTo: child];
     }
   [self _noteNumberOfRowsChangedBelowItem: item by: -numChildren];
 }
@@ -2181,7 +2181,7 @@ Also returns the child index relative to this parent. */
 
       [self _removeChildren: child];
       NSMapRemove(_itemDict, child);
-      [_items removeObject: child];
+      [_items removeObjectIdenticalTo: child];
       [_expandedItems removeObjectIdenticalTo: child];
     }
   [anarray removeAllObjects];
