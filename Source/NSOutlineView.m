@@ -4,7 +4,10 @@
    This class is a subclass of NSTableView which provides the user with a way
    to display tree structured data in an outline format.
    It is particularly useful for show hierarchical data such as a
-   class inheritance tree or any other set of relationships.
+   class inheritance tree or any other set of relationships.<br />
+   NB. While it its illegal to have the same item in the view more than once,
+   it is possible to have multiple equal items since tests for pointer
+   equality are used rather than calls to the -isEqual: method.
    </abstract>
 
    Copyright (C) 2001 Free Software Foundation, Inc.
@@ -483,7 +486,7 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Returns the parent of the given item or nil
+ * Returns the parent of the given item or nil if the item is not found.
  */
 - (id) parentForItem: (id)item
 {
@@ -496,7 +499,7 @@ static NSImage *unexpandable  = nil;
     {
       NSMutableArray *childArray = NSMapGet(_itemDict, parent);
 
-      if ((index = [childArray indexOfObject: item]) != NSNotFound)
+      if ((index = [childArray indexOfObjectIdenticalTo: item]) != NSNotFound)
         {
           return (parent == [NSNull null]) ? (id)nil : (id)parent;
         }
@@ -536,7 +539,7 @@ static NSImage *unexpandable  = nil;
     {
       NSMutableArray *childArray = NSMapGet(_itemDict, parent);
 
-      if ((index = [childArray indexOfObject: object]) != NSNotFound)
+      if ((index = [childArray indexOfObjectIdenticalTo: object]) != NSNotFound)
         {
           parent = (parent == [NSNull null]) ? (id)nil : (id)parent;
           dsobj = [_dataSource outlineView: self
@@ -577,7 +580,7 @@ static NSImage *unexpandable  = nil;
   if (item == nil)
     return -1;
 
-  row = [_items indexOfObject: item];
+  row = [_items indexOfObjectIdenticalTo: item];
   return (row == NSNotFound) ? -1 : row;
 }
 
@@ -1073,8 +1076,7 @@ static NSImage *unexpandable  = nil;
 - (void) setDropItem: (id)item
       dropChildIndex: (NSInteger)childIndex
 {
-
-  if (item != nil && [_items indexOfObject: item] == NSNotFound)
+  if (item != nil && [_items indexOfObjectIdenticalTo: item] == NSNotFound)
     {
       /* FIXME raise an exception, or perhaps we should support
        * setting an item which is not visible (inside a collapsed
@@ -1196,7 +1198,7 @@ static NSImage *unexpandable  = nil;
 // TODO: Move a method common to -drapOnRootIndicator and the one below to GSTheme
 - (void) drawDropOnIndicatorWithDropItem: (id)currentDropItem
 {
-  int row = [_items indexOfObject: currentDropItem];
+  int row = [_items indexOfObjectIdenticalTo: currentDropItem];
   int level = [self levelForItem: currentDropItem];
   NSRect newRect = [self frameOfCellAtColumn: 0
                                          row: row];
@@ -1685,7 +1687,8 @@ Also returns the child index relative to this parent. */
           
           // move the drawing rect over like in the drawRow routine...
           drawingRect.origin.x += indentationFactor + 5 + imageRect.size.width;
-          drawingRect.size.width -= indentationFactor + 5 + imageRect.size.width;
+          drawingRect.size.width
+            -= indentationFactor + 5 + imageRect.size.width;
         }
       else
         {
@@ -1813,7 +1816,8 @@ Also returns the child index relative to this parent. */
   if ([_dataSource 
 	respondsToSelector: @selector(outlineView:sortDescriptorsDidChange:)])
     {
-      [_dataSource outlineView: self sortDescriptorsDidChange: oldSortDescriptors];
+      [_dataSource outlineView: self
+      sortDescriptorsDidChange: oldSortDescriptors];
     }
 }
 
@@ -2111,13 +2115,14 @@ Also returns the child index relative to this parent. */
   // Load the children of the item if needed
   if ([self _isItemLoaded: item] == NO)
     {
-      [self _loadDictionaryStartingWith: item atLevel: [self levelForItem: item]];
+      [self _loadDictionaryStartingWith: item
+                                atLevel: [self levelForItem: item]];
     }
 
   object = NSMapGet(_itemDict, sitem);
   numChildren = numDescendants = [object count];
 
-  insertionPoint = [_items indexOfObject: item];
+  insertionPoint = [_items indexOfObjectIdenticalTo: item];
   if (insertionPoint == NSNotFound)
     {
       insertionPoint = 0;
@@ -2190,7 +2195,7 @@ Also returns the child index relative to this parent. */
   /* Note: We update the selected row indexes directly instead of calling
    * -selectRowIndexes:extendingSelection: to avoid posting bogus selection
    * did change notifications. */
-  rowIndex = [_items indexOfObject: item];
+  rowIndex = [_items indexOfObjectIdenticalTo: item];
   rowIndex = (rowIndex == NSNotFound) ? 0 : rowIndex + 1;
   nextIndex = [_selectedRows indexGreaterThanOrEqualToIndex: rowIndex];
   if (nextIndex != NSNotFound)
