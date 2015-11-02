@@ -2096,47 +2096,89 @@ titleWithRepresentedFilename(NSString *representedFilename)
  */
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: (NSScreen*)screen
 {
-  NSRect screenRect = [screen visibleFrame];
+  NSRect screenRect;
   CGFloat difference;
 
-  /* Move top edge of the window inside the screen */
-  difference = NSMaxY (frameRect) - NSMaxY (screenRect);
-  if (difference > 0)
+  if (nil == screen)
     {
-      frameRect.origin.y -= difference;
+      return frameRect;
     }
 
-  /* Adjust X origin, if needed */
-  difference = NSMaxX (frameRect) - NSMaxX (screenRect);
-  if (difference > 0)
+  screenRect = [screen visibleFrame];
+
+  if (NSHeight(frameRect) < NSHeight(screenRect))
     {
-      frameRect.origin.x -= difference;
-    }
-  
-  /* If the window is resizable, resize it (if needed) so that the
-     bottom edge is on the screen or can be on the screen when the user moves 
-     the window */
-  difference = NSMaxY (screenRect) - NSMaxY (frameRect);
-  if (_styleMask & NSResizableWindowMask)
-    {
-      CGFloat difference2;
-      
-      difference2 = screenRect.origin.y - frameRect.origin.y;
-      difference2 -= difference; 
-      // Take in account the space between the top of window and the top of the 
-      // screen which can be used to move the bottom of the window on the screen
-      if (difference2 > 0)
+      /* Move top edge of the window inside the screen */
+      difference = NSMaxY (frameRect) - NSMaxY (screenRect);
+      if (difference > 0)
         {
-          frameRect.size.height -= difference2;
-          frameRect.origin.y += difference2;
+          frameRect.origin.y -= difference;
         }
-        
-      /* Ensure that resizing doesn't makewindow smaller than minimum */
-      difference2 = _minimumSize.height - frameRect.size.height;
-      if (difference2 > 0)
+      else 
         {
-          frameRect.size.height += difference2;
-          frameRect.origin.y -= difference2;
+          /* Move bottom edge of the window inside the screen */
+          difference = screenRect.origin.y - frameRect.origin.y;
+          if (difference > 0)
+            {
+              frameRect.origin.y += difference;
+            }
+        }
+    }
+  else
+    {
+      /* If the window is resizable, resize it so that 
+         it fits on the screen. */
+      if (_styleMask & NSResizableWindowMask)
+        {
+          /* Ensure that resizing doesn't make window smaller than minimum */
+          if (_minimumSize.height < NSHeight(screenRect))
+            {
+              frameRect.origin.y = NSMinY(screenRect);
+              frameRect.size.height = NSHeight(screenRect);
+            }
+          else
+            {
+              frameRect.origin.y = NSMaxY(screenRect) - _minimumSize.height;
+              frameRect.size.height = _minimumSize.height;
+            }
+        }
+    }
+
+  if (NSWidth(frameRect) < NSWidth(screenRect))
+    {
+      /* Move right edge of the window inside the screen */
+      difference = NSMaxX (frameRect) - NSMaxX (screenRect);
+      if (difference > 0)
+        {
+          frameRect.origin.x -= difference;
+        }
+      else 
+        {
+          /* Move left edge of the window inside the screen */
+          difference = screenRect.origin.x - frameRect.origin.x;
+          if (difference > 0)
+            {
+              frameRect.origin.x += difference;
+            }
+        }
+    }
+  else
+    {
+      /* If the window is resizable, resize it so that 
+         it fits on the screen. */
+      if (_styleMask & NSResizableWindowMask)
+        {
+          /* Ensure that resizing doesn't make window smaller than minimum */
+          if (_minimumSize.width < NSWidth(screenRect))
+            {
+              frameRect.origin.x = NSMinX(screenRect);
+              frameRect.size.width = NSWidth(screenRect);
+            }
+          else
+            {
+              frameRect.origin.x = NSMaxX(screenRect) - _minimumSize.width;
+              frameRect.size.width = _minimumSize.width;
+            }
         }
     }
 

@@ -1,3 +1,8 @@
+2015-11-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-constrainFrameRect:toScreen:) Handle screen
+	being nil and resize only if moving is not enough.
+
 2015-11-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSOutlineView.m:
