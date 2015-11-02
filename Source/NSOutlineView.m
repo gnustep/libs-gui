@@ -1943,12 +1943,12 @@ Also returns the child index relative to this parent. */
 
 - (void) _initOutlineDefaults
 {
-  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+  _itemDict = NSCreateMapTable(keyCallBacks,
                                NSObjectMapValueCallBacks,
                                64);
   _items = [[NSMutableArray alloc] init];
   _expandedItems = [[NSMutableArray alloc] init];
-  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+  _levelOfItems = NSCreateMapTable(keyCallBacks,
                                    NSObjectMapValueCallBacks,
                                    64);
 
