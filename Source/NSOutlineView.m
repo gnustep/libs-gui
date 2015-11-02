@@ -65,6 +65,7 @@
 #import "GSGuiPrivate.h"
 #include <math.h>
 
+static NSMapTableKeyCallBacks keyCallBacks;
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
@@ -144,6 +145,11 @@ static NSImage *unexpandable  = nil;
     {
       [self setVersion: current_version];
       nc = [NSNotificationCenter defaultCenter];
+      /* We need special map table callbacks, to check for identical
+       * objects rather than merely equal objects.
+       */
+      keyCallBacks = NSObjectMapKeyCallBacks;
+      keyCallBacks.isEqual = NSOwnedPointerMapKeyCallBacks.isEqual;
 #if 0
 /* Old Interface Builder style. */
       collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
@@ -208,7 +214,7 @@ static NSImage *unexpandable  = nil;
  * Causes the outline column, the column containing the expand/collapse
  * gadget, to resize based on the amount of space needed by widest content.
  */
-- (BOOL)autoResizesOutlineColumn
+- (BOOL) autoResizesOutlineColumn
 {
   return _autoResizesOutlineColumn;
 }
@@ -217,7 +223,7 @@ static NSImage *unexpandable  = nil;
  * Causes the outline column, the column containing the expand/collapse
  * gadget, to resize based on the amount of space needed by widest content.
  */
-- (BOOL)autosaveExpandedItems
+- (BOOL) autosaveExpandedItems
 {
   return _autosaveExpandedItems;
 }
@@ -649,7 +655,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Sets the amount, in points, that each level is to be indented by.
  */
-- (void)setIndentationPerLevel: (CGFloat)newIndentLevel
+- (void) setIndentationPerLevel: (CGFloat)newIndentLevel
 {
   _indentationPerLevel = newIndentLevel;
 }
@@ -719,10 +725,10 @@ static NSImage *unexpandable  = nil;
 
   // create a new empty one
   _items = [[NSMutableArray alloc] init];
-  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+  _itemDict = NSCreateMapTable(keyCallBacks,
                                NSObjectMapValueCallBacks,
                                64);
-  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+  _levelOfItems = NSCreateMapTable(keyCallBacks,
                                    NSObjectMapValueCallBacks,
                                    64);
 
@@ -847,8 +853,8 @@ static NSImage *unexpandable  = nil;
       position += _columnOrigins[_clickedColumn];
 
       if ([self isExpandable:item]
-          && location.x >= position
-                && location.x <= position + [image size].width)
+        && location.x >= position
+        && location.x <= position + [image size].width)
         {
           BOOL withChildren =
 	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
