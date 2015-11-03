@@ -642,6 +642,15 @@ static BOOL		restoreMouseMoved;
     [[NSAttributedString alloc] initWithString: toolTipString
 				    attributes: attributes];
   textSize = [toolTipText size];
+  if (textSize.width > 300)
+    {
+      NSRect rect;
+      rect = [toolTipText boundingRectWithSize: NSMakeSize(300, 1e7)
+                                       options: 0];
+      textSize = rect.size;
+      // This extra pixel is needed, otherwise the last line gets cut off.
+      textSize.height += 1;
+    }
 
   /* Create window just off the current mouse position
    * Constrain it to be on screen, shrinking if necessary.

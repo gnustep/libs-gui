@@ -1,3 +1,8 @@
+2015-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSToolTips.m (-_timedOut:): Break long tool tips into
+	multiple lines.
+
 2015-11-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-constrainFrameRect:toScreen:) Handle screen
