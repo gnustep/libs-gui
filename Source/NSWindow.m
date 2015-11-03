@@ -2142,6 +2142,11 @@ titleWithRepresentedFilename(NSString *representedFilename)
               frameRect.size.height = _minimumSize.height;
             }
         }
+      else
+        {
+          /* Move top edge of the window to the screen limit */
+          frameRect.origin.y -= NSMaxY(frameRect) - NSMaxY(screenRect);
+        }
     }
 
   if (NSWidth(frameRect) < NSWidth(screenRect))
@@ -2179,6 +2184,11 @@ titleWithRepresentedFilename(NSString *representedFilename)
               frameRect.origin.x = NSMaxX(screenRect) - _minimumSize.width;
               frameRect.size.width = _minimumSize.width;
             }
+        }
+      else
+        {
+          /* Move right edge of the window to the screen limit */
+          frameRect.origin.x -= NSMaxX(frameRect) - NSMaxX(screenRect);
         }
     }
 
