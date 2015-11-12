@@ -3836,9 +3836,14 @@ struct _DelegateWrapper
 
 
   {
-    NSRect iconContentRect = GSGetIconFrame(_app_icon_window);
-    NSRect iconFrame = [_app_icon_window frameRectForContentRect: iconContentRect];
-    NSRect iconViewFrame = NSMakeRect(0, 0, iconContentRect.size.width, iconContentRect.size.height);
+    NSRect iconContentRect;
+    NSRect iconFrame;
+    NSRect iconViewFrame;
+
+    iconContentRect = GSGetIconFrame(_app_icon_window);
+    iconFrame = [_app_icon_window frameRectForContentRect: iconContentRect];
+    iconViewFrame = NSMakeRect(0, 0,
+      iconContentRect.size.width, iconContentRect.size.height);
     [_app_icon_window setFrame: iconFrame display: YES];
 
     iv = [[NSAppIconView alloc] initWithFrame: iconViewFrame]; 
