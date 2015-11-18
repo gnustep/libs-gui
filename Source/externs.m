@@ -614,6 +614,12 @@ NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItem";
 NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItem";
 NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItem";
 
+NSString *NSImageNameTrashEmpty = @"NSImageTrashEmpty";
+NSString *NSImageNameTrashFull = @"NSImageTrashFull";
+
+// Misc named images
+NSString *NSImageNameMultipleDocuments = @"NSImageNameMultipleDocuments";
+
 /*
  * NSTextView userInfo for notifications 
  */

@@ -1,3 +1,17 @@
+2015-11-19 Riccardo Mottola <rm@gnu.org>
+
+	* Images/common_MultipleSelection.tiff
+	* Images/common_RecyclerEmpty.tiff
+	* Images/common_RecyclerFull.tiff
+	* Images/GNUmakefile
+	Added icons
+
+	* Headers/AppKit/NSImage.h
+	* Images/nsmapping.strings
+	* Source/externs.m
+
+	Provide NSImageNameTrashEmpty NSImageNameTrashFull NSImageNameMultipleDocuments image, both constants and actual icon.
+
 2015-11-12  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: Move theme based image lookup code to the

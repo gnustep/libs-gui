@@ -3,7 +3,7 @@
 
    Load, manipulate and display images
 
-   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Written by:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -44,6 +44,12 @@
 @class NSImageRep;
 @class NSColor;
 @class NSView;
+
+/* Named images */
+
+APPKIT_EXPORT NSString *NSImageNameMultipleDocuments;
+APPKIT_EXPORT NSString *NSImageNameTrashEmpty;
+APPKIT_EXPORT NSString *NSImageNameTrashFull;
 
 /** Defines how an NSImage is to be cached.  Possible values are:
  *  <list>

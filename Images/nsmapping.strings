@@ -48,12 +48,16 @@ common_ToolbarCustomizeToolbarItem = NSToolbarCustomizeToolbarItemImage;
 common_Printer = NSToolbarPrint;
 common_ToolbarShowColorsItem = NSToolbarShowColors;
 common_ToolbarShowFontsItem = NSToolbarShowFonts;
-
+common_RecyclerEmpty = NSImageTrashEmpty;
+common_RecyclerFull = NSImageTrashFull;
+ 
 /* Misc. */
 
+common_MultipleSelection = NSImageNameMultipleDocuments;
 common_ToolbarShowColorsItem = NSColorPanel;
 common_Root_PC = NSComputer;
 GSStop = NSStopProgressTemplate;
 common_ToolbarShowFontsItem = NSFontPanel;
 common_Folder = NSFolder;
 common_Info = NSInfo;
+

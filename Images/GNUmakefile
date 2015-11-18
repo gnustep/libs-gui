@@ -1,6 +1,6 @@
 #
 #  Images makefile for GNUstep GUI Library
-#  Copyright (C) 2009-2010 Free Software Foundation, Inc.
+#  Copyright (C) 2009-2015 Free Software Foundation, Inc.
 #
 #  Author: Nicola Pero <nicola.pero@meta-innovation.com>
 #  Date: September 2009
@@ -159,6 +159,10 @@ Images_RESOURCE_FILES = \
  common_ProgressSpinning_8.tiff \
  nsmapping.strings \
  page_landscape.tiff \
- page_portrait.tiff
+ page_portrait.tiff \
+ common_MultipleSelection.tiff \
+ common_RecyclerEmpty.tiff \
+ common_RecyclerFull.tiff \
+
 
 include $(GNUSTEP_MAKEFILES)/resource-set.make
