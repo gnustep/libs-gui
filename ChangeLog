@@ -1,3 +1,9 @@
+2015-11-23  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSColorPanel.m: Improve the user experience when using
+	the magnifying glass to select a color from the screen. Also,
+	allow typing Escape to cancel the magnify mode.
+
 2015-09-10  Doug Simons <doug.simons@testplant.com> and Paul Landers <paul.landers@testplant.com>
 
 	* Source/NSLayoutManager.m: Fix a bug that would try to adjust

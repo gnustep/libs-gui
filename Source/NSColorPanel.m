@@ -58,6 +58,7 @@
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/IMLoading.h"
 
+#import "unistd.h"
 
 #import "GSGuiPrivate.h"
 
@@ -372,6 +373,13 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 {
   NSEvent *currentEvent;
   NSCursor *cursor;
+  NSColor *color = nil;
+  BOOL cancel = NO;
+  BOOL liveFeedback = YES; // set to show color dynamically in the panel while mouse is moving
+#if defined(__MINGW__)
+  liveFeedback = NO; // live feedback causes serious problems on Windows
+#endif
+  liveFeedback = NO; // even on Linux the experience is better without the feedback (at least on CentOS 6.5)
 
   [self _captureMouse: self];
 
@@ -387,30 +395,54 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
   NS_DURING
     {
+      NSPoint mouseLoc;
+      NSImage *img;
       do {
-	NSPoint mouseLoc;
-	NSImage *img;
         CREATE_AUTORELEASE_POOL(pool);
  	
-	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
+	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask | NSKeyDownMask | NSKeyUpMask
 					  untilDate: [NSDate distantFuture]
 					     inMode: NSEventTrackingRunLoopMode
 					    dequeue: YES];
-	
-	mouseLoc = [self convertBaseToScreen: [self mouseLocationOutsideOfEventStream]];
-	
-	img = [GSCurrentServer() contentsOfScreen: [[self screen] screenNumber]
-					   inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
-	
-	if (img != nil)
+	if ([currentEvent type] == NSKeyUp || [currentEvent type] == NSKeyDown)
 	  {
-	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
-	    NSColor *color = [rep colorAtX: 0 y: 0];
-	    [self setColor: color];
+	    if ([[currentEvent charactersIgnoringModifiers] isEqualToString:@"\e"])
+	      {
+	        cancel = YES; // allow Escape to cancel the magnifier
+	      }
 	  }
-       [pool drain];
-     } while ([currentEvent type] != NSLeftMouseUp && 
+	else if (liveFeedback)
+	  {
+	    mouseLoc = [self convertBaseToScreen: [self mouseLocationOutsideOfEventStream]];
+	
+	    img = [GSCurrentServer() contentsOfScreen: [[self screen] screenNumber]
+					       inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
+	
+	    if (img != nil)
+	      {
+	        NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
+	        color = [rep colorAtX: 0 y: 0];
+	        [_colorWell setColor: color]; // show color for feedback, but don't send action yet
+	      }
+	  }
+        [pool drain];
+      } while (!cancel && 
+	       [currentEvent type] != NSLeftMouseUp && 
 	       [currentEvent type] != NSLeftMouseDown);
+
+      if (!liveFeedback && !cancel)
+        {
+          mouseLoc = [self convertBaseToScreen: [self mouseLocationOutsideOfEventStream]];
+          img = [GSCurrentServer() contentsOfScreen: [[self screen] screenNumber]
+					     inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
+          if (img != nil)
+            {
+              NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
+              color = [rep colorAtX: 0 y: 0];
+            }
+        }
+      if (color && !cancel)
+        [self setColor: color];
     }
   NS_HANDLER
     {
