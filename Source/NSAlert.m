@@ -92,7 +92,7 @@ static NSString	*defaultTitle = @" ";
  |                       s    |                                             |
  |                       s    |                                             |
  |    ...................s....|.........................................    |
- |    : Message           s                    s                        ;    |
+ |    : Message          s                    s                        ;    |
  |    :                  s                    s                        :    |
  |    :                  s                    s                        :    |
  |----:                  s                    s                        :----|
@@ -192,6 +192,7 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 
 @interface	GSAlertPanel: NSPanel
 {
+  NSButton	*supButton;
   NSButton	*defButton;
   NSButton	*altButton;
   NSButton	*othButton;
@@ -221,6 +222,14 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 - (void) buttonAction: (id)sender;
 - (NSInteger) result;
 - (BOOL) isActivePanel;
+
+// Suppression button support...
+- (BOOL)showsSuppressionButton;
+- (void) setShowsSuppressionButton:(BOOL)flag;
+- (NSString*)suppressionTitle;
+- (void) setSuppressionButtonTitle:(NSString*)title;
+- (NSInteger)suppressionButtonState;
+- (void) setSuppressionButtonState:(NSInteger)state;
 @end
 
 
@@ -250,6 +259,8 @@ static const float ButtonMinWidth = 72.0;
 
 #define SIZE_SCALE 0.6
 #define MessageFont [NSFont messageFontOfSize: 14]
+
+#define useControl(control)  ([control superview] != nil)
 
 + (void) initialize
 {
@@ -285,12 +296,18 @@ static const float ButtonMinWidth = 72.0;
     {
       criticalAlertPanel = nil;
     }
+  
+  // If scroll view is being used then avoid dual
+  // release cycle on messageField object...
+  if (!useControl(scroll))
+    RELEASE(messageField);
+
   RELEASE(defButton);
   RELEASE(altButton);
   RELEASE(othButton);
   RELEASE(icoButton);
+  RELEASE(supButton);
   RELEASE(titleField);
-  RELEASE(messageField);
   RELEASE(scroll);
   [super dealloc];
 }
@@ -299,7 +316,7 @@ static NSScrollView*
 makeScrollViewWithRect(NSRect rect)
 {
   float		lineHeight = [MessageFont boundingRectForFont].size.height;
-  NSScrollView	*scroll = [[NSScrollView alloc]initWithFrame: rect];
+  NSScrollView	*scroll = [[NSScrollView alloc] initWithFrame: rect];
 
   [scroll setBorderType: NSLineBorder];
   [scroll setBackgroundColor: [NSColor controlBackgroundColor]];
@@ -324,8 +341,6 @@ makeScrollViewWithRect(NSRect rect)
   [button setFont: [NSFont systemFontOfSize: 0]];
   return button;
 }
-
-#define useControl(control)  ([control superview] != nil)
 
 static void
 setControl(NSView* content, id control, NSString *title)
@@ -508,6 +523,11 @@ setKeyEquivalent(NSButton *button)
   altButton = [self _makeButtonWithRect: rect tag: NSAlertAlternateReturn];
   othButton = [self _makeButtonWithRect: rect tag: NSAlertOtherReturn];
   
+  supButton = [[NSButton alloc] initWithFrame: rect];
+  [supButton setHidden: NO];
+  [supButton setButtonType: NSSwitchButton];
+  [content addSubview: supButton];
+
   rect.size.height = 80.0;
   scroll = makeScrollViewWithRect(rect);
   
@@ -563,7 +583,6 @@ setKeyEquivalent(NSButton *button)
     }
 
   wsize.height = -LineBottom;
-
 
   // Let's count the buttons.
   bsize.width = ButtonMinWidth;
@@ -631,7 +650,7 @@ setKeyEquivalent(NSButton *button)
 	  boundingRectWithSize: NSMakeSize(width, 1e6)
 		       options: 0].size;
       [messageField setFrame: rect];
-
+      
       /*
        * But only the messageField can impose a great height, therefore
        * we check it along in the next paragraph.
@@ -642,6 +661,14 @@ setKeyEquivalent(NSButton *button)
     {
       wsize.height += MessageVertMargin;
     }
+
+  // Adjust for suppression button...
+  if ([supButton isHidden] == NO)
+  {
+    NSRect frame  = [supButton frame];
+    wsize.height += NSHeight(frame) + MessageVertMargin;
+    wsize.width   = fmax((NSWidth(frame) + 2*MessageHorzMargin), wsize.width);
+  }
 
   // Strategically placed here, we resize the window.
   if (ssize.height < wsize.height)
@@ -665,6 +692,7 @@ setKeyEquivalent(NSButton *button)
     {
       wsize.width = WinMinWidth;
     }
+
   bounds = NSMakeRect(0, 0, wsize.width, wsize.height);
   bounds = [NSWindow frameRectForContentRect: bounds styleMask: mask];
   [self setMaxSize: bounds.size];
@@ -676,7 +704,7 @@ setKeyEquivalent(NSButton *button)
   // Now we can place the buttons.
   if (numberOfButtons > 0)
     {
-      position = bounds.origin.x + bounds.size.width - ButtonMargin;
+      position = NSMaxX(bounds) - ButtonMargin;
       for (i = 0; i < 3; i++)
 	{
 	  if (useControl(buttons[i]))
@@ -697,28 +725,37 @@ setKeyEquivalent(NSButton *button)
   // Finaly, place the message.
   if (useControl(messageField))
     {
-      NSRect	mrect = [messageField frame];
-
+      NSRect mrect = [messageField frame];
+      NSRect srect = NSZeroRect;
+      
       if (needsScroll)
 	{
-	  NSRect	srect;
-	  float		width;
+	  float width;
 
 	  // The scroll view takes all the space that is available.
-	  srect.origin.x = bounds.origin.x + MessageHorzMargin;
+	  srect.origin.x = NSMinX(bounds) + MessageHorzMargin;
+          srect.origin.y = NSMinY(bounds) + MessageVertMargin;
+          
+          // Adjust for bottom buttons...
 	  if (numberOfButtons > 0)
 	    {
-	      srect.origin.y = bounds.origin.y + ButtonBottom
-		+ bsize.height + MessageVertMargin;
+	      srect.origin.y = ButtonBottom + bsize.height;
 	    }
-	  else
-	    {
-	      srect.origin.y = bounds.origin.y + MessageVertMargin;
-	    }
-	  srect.size.width = bounds.size.width - 2 * MessageHorzMargin;
-	  srect.size.height = bounds.origin.y + bounds.size.height
-	    + MessageTop - srect.origin.y;
-	  [scroll setFrame: srect];
+
+	  srect.size.width  = NSWidth(bounds) - 2 * MessageHorzMargin;
+	  srect.size.height = NSMaxY(bounds) + MessageTop - srect.origin.y;
+          
+          // Adjust for suppression button...
+          if ([supButton isHidden] == NO)
+          {
+            srect.origin.y    += (NSHeight([supButton frame]) + MessageVertMargin);
+            srect.size.height -= (NSHeight([supButton frame]) + MessageVertMargin);
+          }
+
+          // Set the scroll view frame...
+          [scroll setFrame: srect];
+          
+          // Ensure it's in the view hierarchy...
 	  if (!useControl(scroll))
 	    {
 	      [content addSubview: scroll];
@@ -728,16 +765,13 @@ setKeyEquivalent(NSButton *button)
 	     exceed the scroll view's visible rectangle and we do not
 	     need a horizontal scroller. */
 	  [messageField removeFromSuperview];
-	  width =
-	    [NSScrollView contentSizeForFrameSize: srect.size
-			    hasHorizontalScroller: NO
-			      hasVerticalScroller: YES
-				       borderType: [scroll borderType]].width;
+          width = [NSScrollView contentSizeForFrameSize: srect.size
+                                  hasHorizontalScroller: NO
+                                    hasVerticalScroller: YES
+                                             borderType: [scroll borderType]].width;
 	  mrect.origin = NSZeroPoint;
-	  mrect.size =
-	    [[messageField attributedStringValue]
-	      boundingRectWithSize: NSMakeSize(width, 1e6)
-			   options: 0].size;
+          mrect.size = [[messageField attributedStringValue] boundingRectWithSize: NSMakeSize(width, 1e6)
+                                                                          options: 0].size;
 	  [messageField setFrame: mrect];
 	  [scroll setDocumentView: messageField];
 	}
@@ -750,24 +784,79 @@ setKeyEquivalent(NSButton *button)
 	   * the window has a minimum size, thus may be greater
 	   * than expected.
 	   */
-	  mrect.origin.x = (wsize.width - mrect.size.width)/2;
-	  vmargin = bounds.size.height + LineBottom-mrect.size.height;
+	  mrect.origin.x = (wsize.width - NSWidth(mrect))/2;
+	  vmargin = NSHeight(bounds) + LineBottom-NSHeight(mrect);
+          
+          // Adjust for button height...
 	  if (numberOfButtons > 0)
 	    {
 	      vmargin -= ButtonBottom + bsize.height;
 	    }
-	  vmargin/= 2.0; // if negative, it'll bite up and down.
-	  mrect.origin.y = bounds.origin.y + vmargin;
+          
+          // Adjust for suppression button beight...
+          if ([supButton isHidden] == NO)
+            vmargin -= NSHeight([supButton frame]);
+          
+	  vmargin /= 2.0; // if negative, it'll bite up and down.
+	  mrect.origin.y = NSMinY(bounds) + vmargin;
+          
+          // Adjust for control buttons...
 	  if (numberOfButtons > 0)
 	    {
 	      mrect.origin.y += ButtonBottom + bsize.height;
 	    }
+          
+          // Adjust for suppression button...
+          if ([supButton isHidden] == NO)
+            mrect.origin.y += NSHeight([supButton frame]) + MessageVertMargin;
+          
+          // Setup the message frame rectangle...
 	  [messageField setFrame: mrect];
 	}
     }
   else if (useControl(scroll))
     {
       [scroll removeFromSuperview];
+      
+      // Position the suppression button frame...
+      if ([supButton isHidden] == NO)
+        {
+          // Generate our vertical margin value...
+          CGFloat vmargin = NSMinY(bounds) + (MessageVertMargin/2);
+          NSRect  suprect = [supButton frame];
+          
+          // Adjust for buttons...
+          if (numberOfButtons > 0)
+            vmargin -= NSMaxY([buttons[0] frame]);
+          
+          // Set initial position...
+          suprect.origin.x = (wsize.width - NSWidth(suprect)) / 2;
+          suprect.origin.y = (NSMinY(bounds) - (vmargin/2) - NSHeight(suprect));
+          
+          // Set the frame...
+          [supButton setFrame:suprect];
+        }
+    }
+  
+  // Position the suppression button frame...
+  if ([supButton isHidden] == NO)
+    {
+      // Generate our vertical margin value...
+      NSRect  suprect = [supButton frame];
+      CGFloat baseY   = NSMinY(bounds) + (MessageVertMargin / 2);
+      
+      // Adjust for buttons...
+      if (numberOfButtons > 0)
+        baseY += NSMaxY([buttons[0] frame]);
+      else
+        baseY += ButtonBottom;
+      
+      // Set initial position...
+      suprect.origin.x = (wsize.width - NSWidth(suprect)) / 2;
+      suprect.origin.y = baseY;
+      
+      // Set the frame...
+      [supButton setFrame:suprect];
     }
 
   isGreen = NO;
@@ -986,6 +1075,38 @@ setKeyEquivalent(NSButton *button)
   [self sizePanelToFit];
   isGreen = YES;
   result = NSAlertErrorReturn; 	/* If no button was pressed	*/
+}
+
+- (BOOL)showsSuppressionButton
+{
+  return(![supButton isHidden]);
+}
+
+- (void)setShowsSuppressionButton:(BOOL)flag
+{
+  [supButton setHidden:!flag];
+}
+
+- (NSString*)suppressionTitle
+{
+  return([supButton title]);
+}
+
+- (void)setSuppressionButtonTitle:(NSString *)title
+{
+  [supButton setTitle:title];
+  [supButton sizeToFit];
+  [self sizePanelToFit];
+}
+
+- (NSInteger)suppressionButtonState
+{
+  return([supButton state]);
+}
+
+- (void)setSuppressionButtonState:(NSInteger)state
+{
+  [supButton setState:state];
 }
 
 @end /* GSAlertPanel */
@@ -1857,6 +1978,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
 {
   _buttons = [[NSMutableArray alloc] init];
   _style = NSWarningAlertStyle;
+  _suppression_button = [[NSButton alloc] init];
+  [_suppression_button setTitle:@"Do not show this message again"];
   return self;
 } 
 
@@ -2007,6 +2130,11 @@ void NSBeginInformationalAlertSheet(NSString *title,
              title: _message_text != nil ? _message_text : _(@"Alert")
 	     message: _informative_text != nil ? _informative_text : _(@"No information")];
       [panel setButtons: _buttons];
+      
+      // Setup suppression button...
+      [panel setShowsSuppressionButton:_shows_suppression_button];
+      [panel setSuppressionButtonState:[_suppression_button state]];
+      [panel setSuppressionButtonTitle:[_suppression_button title]];
     }
 }
 
@@ -2024,7 +2152,10 @@ void NSBeginInformationalAlertSheet(NSString *title,
       [self _setupPanel];
       [NSApp runModalForWindow: _window];
       [_window orderOut: self];
-      _result = [(GSAlertPanel*)_window result];
+
+      GSAlertPanel *panel = (GSAlertPanel*)_window;
+      _result = [panel result];
+      [_suppression_button setState:[panel suppressionButtonState]];
       DESTROY(_window);
       return _result;
     }
@@ -2042,7 +2173,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
   NSSize  size;
   CGFloat width;
   
-  // Ssetup...
+  // Setup...
   [self _setupPanel];
   
   // Testplant-MAL-2015-06-26: keeping local fixes...
@@ -2082,6 +2213,21 @@ void NSBeginInformationalAlertSheet(NSString *title,
 - (id) window
 {
   return _window;
+}
+
+- (BOOL)showsSuppressionButton
+{
+  return(_shows_suppression_button);
+}
+
+- (void)setShowsSuppressionButton:(BOOL)showsSuppressionButton
+{
+  _shows_suppression_button = showsSuppressionButton;
+}
+
+- (NSButton *)suppressionButton
+{
+  return(_suppression_button);
 }
 
 @end
