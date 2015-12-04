@@ -48,6 +48,7 @@ Images_RESOURCE_FILES = \
  NSRemoveTemplate.tiff\
  NSStopProgressFreestandingTemplate.tiff\
  NSFolder.tiff\
+ NSInfo.tiff\
  common_2DCheckMark.tiff \
  common_2DDash.tiff \
  common_3DArrowDown.tiff \
