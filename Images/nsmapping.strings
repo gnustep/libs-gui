@@ -56,4 +56,4 @@ common_Root_PC = NSComputer;
 GSStop = NSStopProgressTemplate;
 common_ToolbarShowFontsItem = NSFontPanel;
 common_Folder = NSFolder;
-common_Info = NSInfo;
+/*common_Info = NSInfo;*/
