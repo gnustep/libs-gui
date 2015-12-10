@@ -3357,11 +3357,15 @@ typedef enum {
       if (![box isOpaque])
         {
           color = [NSColor clearColor];
-    }
+        }
       else
         {
           color = [box fillColor];
-}
+        }
+    }
+  else if ([[box fillColor] isEqual:[NSColor clearColor]] == NO)
+    {
+      color = [box fillColor];
     }
   else
     {
@@ -3390,28 +3394,33 @@ typedef enum {
       NSRectFill(clipRect);
 
       switch (borderType)
-	{
-	case NSNoBorder: 
-	  break;
-	case NSLineBorder: 
-	  if (boxType == NSBoxCustom)
-	    {
-	      [[box borderColor] set];
-	      NSFrameRectWithWidth([box borderRect], [box borderWidth]);
-	    }
-	  else
-	    {
-	      [[NSColor controlDarkShadowColor] set];
-	      NSFrameRect([box borderRect]);
-	    }
-	  break;
-	case NSBezelBorder:
-	  [[GSTheme theme] drawDarkBezel: [box borderRect] withClip: clipRect];
-	  break;
-	case NSGrooveBorder: 
-	  [[GSTheme theme] drawGroove: [box borderRect] withClip: clipRect];
-	  break;
-	}
+        {
+          case NSNoBorder:
+            break;
+          case NSLineBorder: 
+            if (boxType == NSBoxCustom)
+              {
+                [[box borderColor] set];
+                NSFrameRectWithWidth([box borderRect], [box borderWidth]);
+              }
+            else if ([box borderColor] != [NSColor clearColor])
+              {
+                [[box borderColor] set];
+                NSFrameRect([box borderRect]);
+              }
+            else
+              {
+                [[NSColor controlDarkShadowColor] set];
+                NSFrameRect([box borderRect]);
+              }
+            break;
+          case NSBezelBorder:
+            [[GSTheme theme] drawDarkBezel: [box borderRect] withClip: clipRect];
+            break;
+          case NSGrooveBorder: 
+            [[GSTheme theme] drawGroove: [box borderRect] withClip: clipRect];
+            break;
+        }
     }
   else
     {
