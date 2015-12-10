@@ -1117,7 +1117,7 @@ typedef struct _GSButtonCellFlags
   // The inside check could also be done via a track rect, but then this would
   // only work with specially prepared controls. Therefore we dont use 
   // _mouse_inside here.
-  if ((_cell.is_bordered)
+  if ((_cell.is_bordered) && (_bezel_style != NSCircularBezelStyle)
       && (!_shows_border_only_while_mouse_inside 
           || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream] 
                           inRect: cellFrame]))
