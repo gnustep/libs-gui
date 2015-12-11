@@ -3365,6 +3365,8 @@ typedef enum {
     }
   else if ([[box fillColor] isEqual:[NSColor clearColor]] == NO)
     {
+      // This isn't right per docs but Apple does do something like
+      // this...anyone with a better idea please have at it...
       color = [box fillColor];
     }
   else
@@ -3403,8 +3405,10 @@ typedef enum {
                 [[box borderColor] set];
                 NSFrameRectWithWidth([box borderRect], [box borderWidth]);
               }
-            else if ([box borderColor] != [NSColor clearColor])
+            else if ([[box borderColor] isEqual:[NSColor clearColor]] == NO)
               {
+                // This isn't right per docs but Apple does do something like
+                // this...anyone with a better idea please have at it...
                 [[box borderColor] set];
                 NSFrameRect([box borderRect]);
               }
