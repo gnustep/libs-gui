@@ -323,6 +323,7 @@
             break;
             
           case NSCircularBezelStyle:
+#if 0 // Apple doesn't seem to inset and/or draw a border around these...
             {
               if ([cell controlSize] == NSRegularControlSize)
                 {
@@ -337,6 +338,7 @@
                   margins.left = 5; margins.top = 4; margins.right = 5; margins.bottom = 4;
                 }
             }
+#endif
             break;
             
           case NSHelpButtonBezelStyle:
