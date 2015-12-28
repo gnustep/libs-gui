@@ -1240,8 +1240,10 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+#if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
+#endif
     }
   NS_ENDHANDLER
 
@@ -1275,8 +1277,10 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+#if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
+#endif
     }
   NS_ENDHANDLER
 
@@ -1925,7 +1929,10 @@ static  NSMapTable              *mimeMap = NULL;
 + (id) _lostServer: (NSNotification*)notification
 {
   id	obj = the_server;
-
+#if 0
+  NSLog(@"%s:notification: %@", __PRETTY_FUNCTION__, notification);
+#endif
+  
   the_server = nil;
   [[NSNotificationCenter defaultCenter]
     removeObserver: self
@@ -1999,10 +2006,10 @@ static  NSMapTable              *mimeMap = NULL;
           Protocol      *p = @protocol(GSPasteboardSvr);
 
 	  [conn enableMultipleThreads];
-    // Testplant-MAL-2015.10.27...
-    // Fix issue with waiting forever if gpbs crashes within a
-    // certain processing window...
-    [conn setReplyTimeout:2.0];
+          // Testplant-MAL-2015.10.27...
+          // Fix issue with waiting forever if gpbs crashes within a
+          // certain processing window...
+          [conn setReplyTimeout:2.0];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
