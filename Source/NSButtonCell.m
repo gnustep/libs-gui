@@ -807,6 +807,7 @@ typedef struct _GSButtonCellFlags
         [self setAlignment: NSLeftTextAlignment];
         [self setBordered: NO];
         [self setBezeled: NO];
+        [self setBezelStyle:NSRegularSquareBezelStyle];
         [self setImageDimsWhenDisabled: NO];
         break;
       case NSRadioButton: 
