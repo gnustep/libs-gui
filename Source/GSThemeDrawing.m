@@ -308,7 +308,9 @@
             break;
             
           case NSRegularSquareBezelStyle:
+#if 0 // Seems these should be zero to match Cocoa output...
             margins.left = 2; margins.top = 2; margins.right = 2; margins.bottom = 2;
+#endif
             break;
             
           case NSShadowlessSquareBezelStyle:
