@@ -3238,7 +3238,12 @@ typedef enum {
 
   if (boxType == NSBoxSeparator)
     {
-      [[box borderColor] set];
+      color = [box borderColor];
+      if (!color || [color isEqual:[NSColor clearColor]])
+        {
+    	  color = [NSColor controlShadowColor];
+        }
+      [color set];
       NSRectFill([box borderRect]);
       return;
     }
