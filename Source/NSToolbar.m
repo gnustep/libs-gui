@@ -683,6 +683,11 @@ static GSValidationCenter *vc = nil;
       return;
     }
 
+  if (!_visible)
+    {
+      [self setVisible:YES];
+    }
+	
   palette = [GSToolbarCustomizationPalette palette];
 
   if (palette != nil)
