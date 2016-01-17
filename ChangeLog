@@ -1,3 +1,22 @@
+2016-01-17 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSBezierPath.m (-setLineDash:):
+	Cherrypicked r39277 by Marcian Lytwtyn <gna@advcsi.com>: NSZoneRealloc
+	called without saving the return value.
+
+	Aside from merging the patch, opted to undo the patch's check for
+	count > _dash_count, as NSZoneRealloc() should be allowed to reduce the
+	allocated block's size.
+
+	* Source/GSThemeDrawing.m (-drawBoxInClipRect:boxType:...):
+	Cherrypicked r39276 by Paul Landers <paul.landers@testplant.com>:
+	Use controlShadowColor when the color for NSBoxSeparator is not set.
+	Xcode is not setting colors for these types of boxes in xibs.
+
+	* Source/NSToolbar.m (-runCustomizationPalette:):
+	Cherrypicked r39256 by Paul Landers <paul.landers@testplant.com>:
+	Show toolbar before customizing.
+
 2015-11-19 Riccardo Mottola <rm@gnu.org>
 
 	* Images/common_MultipleSelection.tiff
