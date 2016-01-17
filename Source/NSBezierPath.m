@@ -500,8 +500,8 @@ static CGFloat default_miter_limit = 10.0;
 
   if (_dash_pattern == NULL)
     _dash_pattern = NSZoneMalloc(myZone, count * sizeof(CGFloat));
-  else
-    NSZoneRealloc(myZone, _dash_pattern, count * sizeof(CGFloat));
+  else if (count > _dash_count)
+    _dash_pattern = NSZoneRealloc(myZone, _dash_pattern, count * sizeof(CGFloat));
 
   _dash_count = count;
   _dash_phase = phase;
