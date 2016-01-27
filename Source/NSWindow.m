@@ -2765,6 +2765,7 @@ discardCursorRectsForView(NSView *theView)
   if (aView->_rFlags.valid_rects)
     {
       [aView discardCursorRects];
+    }
 
       if (_f.cursor_rects_valid)
         {
@@ -2783,7 +2784,6 @@ discardCursorRectsForView(NSView *theView)
             }
           _f.cursor_rects_valid = NO;
         }
-    }
 }
 
 static void

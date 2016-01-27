@@ -1,10 +1,15 @@
+2016-01-27  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSWindow.m: Fix -invalidateCursorRectsForView: to
+	update cursor rects for a view that didn't previously have any.
+
 2015-11-25  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSColorPanel.m: Fix -dragColor:withEvent:fromView: to
 	show a correct color swatch while dragging on Windows (previously
 	the dragged swatch always appeared black).
 
-	2015-11-23  Doug Simons <doug.simons@testplant.com>
+2015-11-23  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSColorPanel.m: Improve the user experience when using
 	the magnifying glass to select a color from the screen. Also,
