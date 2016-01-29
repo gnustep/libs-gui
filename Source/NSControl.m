@@ -50,13 +50,6 @@
 #import "AppKit/NSWindow.h"
 #import "GSBindingHelpers.h"
 #import "NSViewPrivate.h"
-#import "GNUstepGUI/GSTheme.h"
-
-#if defined(__MINGW__)
-@interface NSView ()
-- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
-@end
-#endif
 
 /*
  * Class variables
@@ -676,26 +669,6 @@ static NSNotificationCenter *nc;
 {
   return [_cell isOpaque];
 }
-
-#if defined(__MINGW__)
-- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
-{
-  // Our drawing bypasses the dirtyRect and draws the entire control causing issues
-  // if the dirty rectangle is a partial rectangle since only the dirty rectangle
-  // gets flushed.  This causes problems with cairo drawing on windows since the
-  // theme drawing (i.e. like WinUXTheme) draws directly into the HDC then does not
-  // get flushed out causing partial control/text...
-  if ([[[GSTheme theme] name] isEqualToString: @"GNUstep"] == NO)
-  {
-    // We'll have to assume that any them outside ours is mixing HDC and cairo drawing...
-    [super _lockFocusInContext: ctxt inRect: _bounds];
-    return;
-  }
-  
-  // Otherwise use the dirty rectangle given us...
-  [super _lockFocusInContext: ctxt inRect: rect];
-}
-#endif
 
 - (void) drawRect: (NSRect)dirtyRect
 {
