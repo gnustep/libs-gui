@@ -204,7 +204,11 @@
 	  A theme subclass may override the -imageClass method to change the
 	  class used to load each image from the bundle ... thus allowing
 	  customisation of not just the images but also of the image
-	  behavior in the (very rare) cases where this is desirable.
+	  behavior in the (very rare) cases where this is desirable.<br />
+          Finally, a theme may provide application specific images which are
+          loaded <em>in preference to</em> named images from the application's
+          own bundle.  These images are simply stored in a subdirectory whose
+          name is the same as the application's bundleIdentifier.
 	</desc>
       </deflist>
     </section>
@@ -235,8 +239,8 @@
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
 @class NSBundle;
+@class NSBrowserCell;
 @class NSDictionary;
-
 @class NSButton;
 @class NSColor;
 @class NSColorList;
@@ -1163,6 +1167,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (float) resizebarHeight;
 
+- (float) titlebarButtonSize;
+
+- (float) titlebarPaddingRight;
+
+- (float) titlebarPaddingTop;
+
+- (float) titlebarPaddingLeft;
+
 - (void) drawWindowBorder: (NSRect)rect
                 withFrame: (NSRect)frame 
              forStyleMask: (unsigned int)styleMask
@@ -1456,6 +1468,61 @@ withRepeatedImage: (NSImage*)image
  */
 - (Class) pageLayoutClass;
 @end
+
+@interface GSTheme (NSWindow)
+/**
+ * This method returns the standard window button for the
+ * given mask for the current theme.
+ */ 
+- (NSButton *) standardWindowButton: (NSWindowButton)button
+		       forStyleMask: (NSUInteger) mask;
+				  
+/** 
+ * This method does any additional setup after the default 
+ * cell is set.
+ */
+- (void) didSetDefaultButtonCell: (NSButtonCell *)aCell;
+@end
+					 
+@interface GSTheme (NSBrowserCell)
+/** 
+ * Draw editor in cell
+ */
+- (void) drawEditorForCell: (NSCell *)cell
+		 withFrame: (NSRect)cellFrame
+	       	    inView: (NSView *)view;
+
+/** 
+ * Draw attributed text in cell
+ */
+- (void) drawInCell: (NSCell *)cell
+     attributedText: (NSAttributedString *)stringValue
+	    inFrame: (NSRect)cellFrame;
+
+/** 
+ * Draw the interior of the browser cell
+ */
+- (void) drawBrowserInteriorWithFrame: (NSRect)cellFrame 
+			     withCell: (NSBrowserCell *)cell
+			       inView: (NSView *)controlView
+			    withImage: (NSImage *)theImage
+		       alternateImage: (NSImage *)alternateImage
+			isHighlighted: (BOOL)isHighlighted
+				state: (int)state
+			       isLeaf: (BOOL)isLeaf;
+
+/** 
+ * This method returns the branch image
+ */
+- (NSImage *) branchImage;
+
+/** 
+ * This method returns the highlighted version of 
+ * the branch image
+ */
+- (NSImage *) highlightedBranchImage;
+@end
+
 
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

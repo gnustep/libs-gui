@@ -48,6 +48,7 @@ NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
 NSAnimation.m \
+NSAnimationContext.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -120,6 +121,7 @@ NSMenuItemCell.m \
 NSMovie.m \
 NSMovieView.m \
 NSNib.m \
+NSNibConnector.m \
 NSNibBindingConnector.m \
 NSNibAXAttributeConnector.m \
 NSNibAXRelationshipConnector.m \
@@ -234,6 +236,7 @@ GSThemeOpenSavePanels.m \
 GSThemePanel.m \
 GSThemePrintPanels.m \
 GSThemeTools.m \
+GSThemeWindow.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbarView.m \
@@ -278,6 +281,7 @@ NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
 NSAnimation.h \
+NSAnimationContext.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \

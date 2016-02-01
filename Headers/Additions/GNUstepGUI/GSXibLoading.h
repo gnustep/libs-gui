@@ -168,8 +168,8 @@
 - (void) setName: (NSString *)name;
 - (NSString *) name;
 
-- (void) setRuntimeAttributes: (NSString *)attributes;
-- (NSString *) runtimeAttributes;
+- (void) setRuntimeAttributes: (NSArray *)attributes;
+- (NSArray *) runtimeAttributes;
 
 @end
 

@@ -2,7 +2,7 @@
 
    <abstract>Encapsulates all drawing functionality</abstract>
 
-   Copyright <copy>(C) 1996 Free Software Foundation, Inc.</copy>
+   Copyright <copy>(C) 1996-2015 Free Software Foundation, Inc.</copy>
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -119,6 +119,7 @@ PACKAGE_SCOPE
   NSInteger _gstate;
   void *_nextKeyView;
   void *_previousKeyView;
+  CGFloat _alphaValue;
 
 @public
   /*
@@ -227,6 +228,17 @@ PACKAGE_SCOPE
 - (BOOL) isFlipped;
 - (BOOL) isRotatedFromBase;
 - (BOOL) isRotatedOrScaledFromBase;
+
+/*
+ * View Layers
+ */
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (CGFloat) alphaValue;
+- (void) setAlphaValue: (CGFloat)alpha;
+- (CGFloat) frameCenterRotation;
+- (void) setFrameCenterRotation:(CGFloat)rot;
+#endif
 
 /*
  * Converting Coordinates

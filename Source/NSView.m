@@ -630,6 +630,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_nextKeyView = 0;
   //_previousKeyView = 0;
 
+  _alphaValue = 1.0;
+  
   return self;
 }
 
@@ -1638,6 +1640,30 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
     }
 }
+
+
+- (CGFloat) alphaValue
+{
+  return _alphaValue;
+}
+
+- (void)setAlphaValue: (CGFloat)alpha
+{
+  _alphaValue = alpha;
+}
+
+- (CGFloat) frameCenterRotation
+{
+  // FIXME this is dummy, we don't have layers yet
+  return 0.0;
+}
+
+- (void) setFrameCenterRotation:(CGFloat)rot;
+{
+  // FIXME this is dummy, we don't have layers yet
+  // we probably need a Matrix akin frame rotation.
+}
+
 
 - (NSRect) centerScanRect: (NSRect)aRect
 {
@@ -2810,7 +2836,6 @@ in the main thread.
 	  const NSRect inBase =  [self convertRectToBase: _invalidRect];
 	  const NSRect inBaseRounded = NSIntegralRect(inBase);
 	  _invalidRect = [self convertRectFromBase: inBaseRounded];
-
         }
       else
         {
