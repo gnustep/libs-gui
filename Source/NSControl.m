@@ -1022,10 +1022,22 @@ static NSNotificationCenter *nc;
 
           [self setCell: cell];
           RELEASE(cell);
-        }
-      if ([aDecoder containsValueForKey: @"NSEnabled"])
-        {
-          [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
+          
+          // NSCell has it's own enable bit in NSCellFlags which DOES NOT
+          // match the NSButton NSEnabled keyed setting so we'll ignore it
+          // unless we've actually created a cell ourselves.  As a matter of fact,
+          // the NSEnabled keyed value setting in the XIB is YES regardless of the
+          // enabled setting in IB - only the cell's NSCellFlags value is updated.  Not
+          // sure if and/or when this may have changed in IB if at all...
+          // This is most probably NOT the way to handle this as the NSEnabled
+          // keyed value could be something that was added by another XCode/IB version
+          // but GNUstep buttons are in an incorrect display state at first display unless
+          // some code gets executed that sets the flag manually.
+          // So, in the meantime, we'll move the decoding of it here for now...
+          if ([aDecoder containsValueForKey: @"NSEnabled"])
+          {
+            [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
+          }
         }
       if ([aDecoder containsValueForKey: @"NSTag"])
         {
