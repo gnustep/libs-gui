@@ -68,7 +68,7 @@
  * pattern: initWithToolbarItemIdentifier: returns differents concrete subclass 
  * in accordance with the item identifier.
  */
- 
+// TESTPLANT-MAL-02022016 - numbers tweaked to match Cocoa output...
 typedef enum {
   ItemBackViewDefaultHeight = 52,
   ItemBackViewRegularHeight = 52,
