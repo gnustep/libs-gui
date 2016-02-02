@@ -5178,27 +5178,23 @@ overridden version does not.
 	    ret = [pboard setString: [[self string] substringWithRange: _layoutManager->_selected_range] 
         forType: NSStringPboardType];
 	  }
-
-  if ([type isEqualToString: NSRTFPboardType])
+  else if ([type isEqualToString: NSRTFPboardType])
     {
       ret = [pboard setData: [self RTFFromRange: _layoutManager->_selected_range]
         forType: NSRTFPboardType];
     }
-
-  if ([type isEqualToString: NSRTFDPboardType])
+  else if ([type isEqualToString: NSRTFDPboardType])
     {
       ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
         forType: NSRTFDPboardType];
     }
-
-  if ([type isEqualToString: NSSmartPastePboardType] &&
+  else if ([type isEqualToString: NSSmartPastePboardType] &&
     [self selectionGranularity] == NSSelectByWord)
     {
       ret = [pboard setData: [NSData data]
         forType: NSSmartPastePboardType];
     }
-
-  if ([type isEqualToString: NSColorPboardType])
+  else if ([type isEqualToString: NSColorPboardType])
     {
       NSColor	*color;
 
@@ -5211,30 +5207,26 @@ overridden version does not.
           ret = YES;
         }
     }
-
-  if ([type isEqualToString: NSFontPboardType])
+  else if ([type isEqualToString: NSFontPboardType])
     {
       NSDictionary	*dict;
 
       dict = [_textStorage fontAttributesInRange: _layoutManager->_selected_range];
       if (dict != nil)
         {
-          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+          ret = [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
   	        forType: NSFontPboardType];
-          ret = YES;
         }
     }
-  
-  if ([type isEqualToString: NSRulerPboardType])
+  else if ([type isEqualToString: NSRulerPboardType])
     {
       NSDictionary	*dict;
 
       dict = [_textStorage rulerAttributesInRange: _layoutManager->_selected_range];
       if (dict != nil)
         {
-          [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+          ret = [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
   	        forType: NSRulerPboardType];
-          ret = YES;
         }
     }
   
@@ -5951,7 +5943,7 @@ static const NSInteger GSSpellingSuggestionMenuItemTag = 1;
       
       NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
       NSString *word = [[self string] substringWithRange: [self selectedRange]];
-      if ([sp checkSpellingOfString: word startingAt: 0].location != NSNotFound)
+      if (sp != nil && [sp checkSpellingOfString: word startingAt: 0].location != NSNotFound)
 	{
 	  /*NSArray *guesses = [sp guessesForWordRange: wordRange
 	    inString: [self string]
