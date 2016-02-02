@@ -2328,12 +2328,14 @@ static NSColor *dtxtCol;
     }
 
 
-#if 0
+#if 1
   // Testplant-MAL-2015-06-20: merging removal causes focus ring issues...
   // FIXME: we need to draw the focus ring, this works but
   // there's something wrong about telling the view to come
   // back here and draw.
-  [controlView setKeyboardFocusRingNeedsDisplayInRect:NSMakeRect (aRect.origin.x - 2.0, aRect.origin.y - 2.0, aRect.size.width + 4.0, aRect.size.height + 4.0)];
+  NSRect focusFrame = NSMakeRect (aRect.origin.x - 2.0, aRect.origin.y - 2.0,
+                                  aRect.size.width + 4.0, aRect.size.height + 4.0);
+  [controlView setKeyboardFocusRingNeedsDisplayInRect:focusFrame];
 #endif
 }
 
