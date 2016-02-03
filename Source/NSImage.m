@@ -2,7 +2,7 @@
 
    <abstract>Load, manipulate and display images</abstract>
 
-   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
    
    Author: Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -1066,6 +1066,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  fraction: delta
     respectFlipped: NO
 	     hints: nil];
+}
+
+- (void) drawInRect: (NSRect)rect
+{
+  [self drawInRect: rect
+          fromRect: NSZeroRect
+         operation: NSCompositeSourceOver
+          fraction: 1.0];
 }
 
 - (void) drawInRect: (NSRect)dstRect

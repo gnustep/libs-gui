@@ -3,7 +3,7 @@
 
    Load, manipulate and display images
 
-   Copyright (C) 1996-2015 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
 
    Written by:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -368,6 +368,16 @@ typedef enum {
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints;
 
+#endif
+
+/**
+ * <p>Draws the entire image in <code>rect</code> scaling if needed.<br>
+ * Drawing is done using <code>NSCompositeSourceOver</code>.
+ * </p>
+ */
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) drawInRect: (NSRect)rect;
 #endif
 
 //
