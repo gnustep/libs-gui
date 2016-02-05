@@ -1224,7 +1224,7 @@ static BOOL menuBarVisible = YES;
               }
             NS_HANDLER
             {
-              NSLog(@"Error Occurred While Updating Menu %@: %@", [self title], localException);
+              NSLog(@"%s:Error Occurred While Updating Menu %@: %@", __PRETTY_FUNCTION__, [self title], localException);
             }
             NS_ENDHANDLER
             // Reenable displaying of menus

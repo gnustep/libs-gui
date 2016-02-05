@@ -1240,6 +1240,8 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
 #if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
@@ -1277,6 +1279,8 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
 #if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
@@ -1349,6 +1353,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       count = 0;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1430,6 +1436,8 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1557,6 +1565,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1657,6 +1667,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1720,6 +1732,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1746,6 +1760,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       type = nil;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1771,6 +1787,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       result = nil;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1793,6 +1811,8 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1818,6 +1838,8 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       d = nil;
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -2202,6 +2224,8 @@ description, [cmd stringByDeletingLastPathComponent]);
     }
   NS_HANDLER
     {
+      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
+        [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
