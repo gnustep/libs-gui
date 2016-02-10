@@ -1809,8 +1809,8 @@ launchIdentifiers: (NSArray **)identifiers
 {
   NSArray		*volumes;
   NSMutableArray	*names;
-  unsigned		count;
-  unsigned		i;
+  NSUInteger		count;
+  NSUInteger		i;
 
   volumes = [self mountedLocalVolumePaths];
   count = [volumes count];
@@ -1920,6 +1920,8 @@ launchIdentifiers: (NSArray **)identifiers
       [names addObject: path];
     }
 #else
+  /* we resort in parsing mtab manually and removing then reserved mount names
+     defined in preferences GSReservedMountNames (SystemPreferences) */
   NSString	*mtabPath;
   NSString	*mtab;
   NSArray	*mounts, *reservedMountNames;
