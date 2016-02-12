@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `getmntinfo' function. */
 #undef HAVE_GETMNTINFO
 
+/* Define to 1 if you have the `GifQuantizeBuffer' function. */
+#undef HAVE_GIFQUANTIZEBUFFER
+
 /* Have ImageMagick */
 #undef HAVE_IMAGEMAGICK
 
@@ -96,11 +99,17 @@
 /* Define to 1 if you have the <sys/mntent.h> header file. */
 #undef HAVE_SYS_MNTENT_H
 
+/* Define to 1 if you have the <sys/statvfs.h> header file. */
+#undef HAVE_SYS_STATVFS_H
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <sys/vfs.h> header file. */
+#undef HAVE_SYS_VFS_H
 
 /* Define to 1 if you have the <unicode/uchar.h> header file. */
 #undef HAVE_UNICODE_UCHAR_H

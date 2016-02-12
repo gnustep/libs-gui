@@ -4036,6 +4036,30 @@ _ACEOF
 fi
 done
 
+for ac_header in sys/statvfs.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/statvfs.h" "ac_cv_header_sys_statvfs_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_statvfs_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_STATVFS_H 1
+_ACEOF
+
+fi
+
+done
+
+for ac_header in sys/vfs.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/vfs.h" "ac_cv_header_sys_vfs_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_vfs_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_VFS_H 1
+_ACEOF
+
+fi
+
+done
+
 
 #--------------------------------------------------------------------
 # Simple way to add a bunch of paths to the flags
