@@ -1,3 +1,8 @@
+2016-02-12 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m
+	Try to support volume information on Linux better as well as using GSRemovableMediaPaths defaults for removable information (compared to nothing at all).
+
 2016-02-03 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSImage.h

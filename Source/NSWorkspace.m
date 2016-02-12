@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-2010 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -45,6 +45,16 @@
 #else
 #undef	HAVE_GETMNTENT
 #endif
+#endif
+
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+#if defined (HAVE_SYS_VFS_H)
+#include <sys/vfs.h>
+  #ifdef __linux__
+  #include <linux/magic.h>
+  #endif
 #endif
 
 #import <Foundation/NSBundle.h>
@@ -1149,9 +1159,16 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		      description: (NSString **)description
 			     type: (NSString **)fileSystemType
 {
-#if defined (HAVE_GETMNTINFO)
-  /* FIXME Check for presence of statfs call explicitly. Not all systems
-     with getmntinfo do have a statfs calls. In particular, NetBSD offers
+  NSArray *removables;
+
+  /* since we might not be able to get information about removable volumes
+     we use the information from the preferences which can be set in Systempreferences
+   */
+  removables = [[[NSUserDefaults standardUserDefaults] persistentDomainForName: NSGlobalDomain] objectForKey: @"GSRemovableMediaPaths"];
+  
+#if defined (HAVE_SYS_STATVFS_H) || defined (HAVE_SYS_VFS_H)
+  /* FIXME Check for presence of statfs call explicitly. 
+     In particular, NetBSD offers
      only a statvfs calls for compatibility with POSIX. Other BSDs and
      Linuxes have statvfs as well, but this returns less information than
      the 4.4BSD statfs call. The NetBSD statvfs, on the other hand, is just
@@ -1180,15 +1197,51 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   uid = geteuid();
   enc = [NSString defaultCStringEncoding];
   *removableFlag = NO; // FIXME
-  *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
+  if ([removables containsObject: fullPath])
+    *removableFlag = YES;
+
+  *writableFlag = (m.f_flags & ST_RDONLY) == 0;
+  *unmountableFlag = NO;
+
+#if defined(ST_ROOTFS) // new NetBSD, Linux
+  *unmountableFlag =
+    (m.f_flag & ST_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
+#elsif defined (MNT_ROOTFS)
   *unmountableFlag =
     (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
+#endif
+
   *description = @"filesystem"; // FIXME
+
+#if defined (__linux__)
+  if (m.f_type == EXT2_SUPER_MAGIC)
+    *fileSystemType = @"EXT2";
+  else if (m.f_type == EXT3_SUPER_MAGIC)
+    *fileSystemType = @"EXT3";
+  else if (m.f_type == EXT4_SUPER_MAGIC)
+    *fileSystemType = @"EXT4";
+  else if (m.f_type == ISOFS_SUPER_MAGIC)
+    *fileSystemType = @"ISO9660";
+#ifdef JFS_SUPER_MAGIC
+  else if (m.f_type == JFS_SUPER_MAGIC)
+    *fileSystemType = @"JFS";
+#endif
+  else if (m.f_type == MSDOS_SUPER_MAGIC)
+    *fileSystemType = @"MSDOS";
+  else if (m.f_type == NFS_SUPER_MAGIC)
+    *fileSystemType = @"NFS";
+  else
+     *fileSystemType = @"Other";
+#else
   *fileSystemType =
     [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
+#endif
 
   return YES;
 #else
+  NSLog(@"getFileSystemInfoForPath not supported on your OS");
+  if ([removables containsObject: fullPath])
+    *removableFlag = YES;
   // FIXME
   return NO;
 #endif
@@ -1971,7 +2024,8 @@ launchIdentifiers: (NSArray **)identifiers
            }
         }
     }
-#endif  
+#endif
+
   return names;
 }
 
