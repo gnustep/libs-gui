@@ -1,3 +1,8 @@
+2016-02-13 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m (unmountAndEjectDeviceAtPath:)
+	Enhance unmount with eject support on certain platforms, generate NSWorkspaceWillUnmountNotification notification.
+
 2016-02-12 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m

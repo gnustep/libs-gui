@@ -1804,44 +1804,87 @@ launchIdentifiers: (NSArray **)identifiers
 }
 
 /*
- * Unmounting a Device	
+ * Unmounting a Device and eject if possible
  */
 - (BOOL) unmountAndEjectDeviceAtPath: (NSString*)path
 {
+  NSUInteger    systype = [[NSProcessInfo processInfo] operatingSystem];
   NSDictionary	*userinfo;
   NSTask	*task;
-  BOOL		flag = NO;
+
+  /* let's check if it is a local volume we may unmount */
+  if (![[self mountedLocalVolumePaths] containsObject:path])
+    {
+      NSLog(@"unmountAndEjectDeviceAtPath: Path %@ not mounted");
+      return NO;
+    }
 
   userinfo = [NSDictionary dictionaryWithObject: path
 					 forKey: @"NSDevicePath"];
   [_workspaceCenter postNotificationName: NSWorkspaceWillUnmountNotification
 				  object: self
 				userInfo: userinfo];
-
-  // FIXME This is system specific
-  task = [NSTask launchedTaskWithLaunchPath: @"eject"
+  task = [NSTask launchedTaskWithLaunchPath: @"umount"
 				  arguments: [NSArray arrayWithObject: path]];
-  if (task != nil)
+      
+  if (task)
     {
       [task waitUntilExit];
       if ([task terminationStatus] != 0)
 	{
 	  return NO;
-	}
-      else
-	{
-	  flag = YES;
-	}
+	} 
     }
   else
     {
       return NO;
     }
 
-  [_workspaceCenter postNotificationName: NSWorkspaceDidUnmountNotification
-				  object: self
-				userInfo: userinfo];
-  return flag;
+  [[self notificationCenter] postNotificationName: NSWorkspaceDidUnmountNotification
+					   object: self
+					 userInfo: userinfo];
+
+  /* this is system specific and we try our best
+     and the failure of eject doesn't mean unmount failed */
+  task = nil;
+  if (systype == NSGNULinuxOperatingSystem)
+    {
+      task = [NSTask launchedTaskWithLaunchPath: @"eject"
+				      arguments: [NSArray arrayWithObject: path]];
+    }
+  else if (systype == NSBSDOperatingSystem || systype == NSSolarisOperatingSystem)
+    {
+      NSString *mountDir;
+
+      // Note: it would be better to check the device, not the mount point
+      mountDir = [path lastPathComponent];
+      if ([mountDir rangeOfString:@"cd"].location != NSNotFound ||
+	  [mountDir rangeOfString:@"dvd"].location != NSNotFound)
+	{
+	  task = [NSTask launchedTaskWithLaunchPath: @"eject"
+					  arguments: [NSArray arrayWithObject: @"cdrom"]];
+	}
+      else if ([mountDir rangeOfString:@"fd"].location != NSNotFound ||
+	  [mountDir rangeOfString:@"floppy"].location != NSNotFound)
+	{
+	  task = [NSTask launchedTaskWithLaunchPath: @"eject"
+					  arguments: [NSArray arrayWithObject: @"floppy"]];
+	}
+    }
+  else
+    {
+      NSLog(@"Don't know how to eject on %@", systype);
+    }
+  if (task != nil)
+    {
+      [task waitUntilExit];
+      if ([task terminationStatus] != 0)
+	{
+	  NSLog(@"eject failed");
+	}
+    }
+
+  return YES;
 }
 
 /*
