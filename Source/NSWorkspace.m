@@ -1206,7 +1206,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 #if defined(ST_ROOTFS) // new NetBSD, Linux
   *unmountableFlag =
     (m.f_flag & ST_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-#elsif defined (MNT_ROOTFS)
+#elif defined (MNT_ROOTFS)
   *unmountableFlag =
     (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
 #endif
