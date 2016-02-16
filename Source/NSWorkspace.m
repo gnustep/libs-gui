@@ -32,9 +32,9 @@
 
 #import "config.h"
 
-#if	defined(HAVE_GETMNTINFO)
 #include <unistd.h>
 #include <sys/types.h>
+#if	defined(HAVE_GETMNTINFO)
 #include <sys/param.h>
 #include <sys/mount.h>
 #elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
