@@ -1815,7 +1815,7 @@ launchIdentifiers: (NSArray **)identifiers
   /* let's check if it is a local volume we may unmount */
   if (![[self mountedLocalVolumePaths] containsObject:path])
     {
-      NSLog(@"unmountAndEjectDeviceAtPath: Path %@ not mounted");
+      NSLog(@"unmountAndEjectDeviceAtPath: Path %@ not mounted", path);
       return NO;
     }
 
@@ -1873,7 +1873,7 @@ launchIdentifiers: (NSArray **)identifiers
     }
   else
     {
-      NSLog(@"Don't know how to eject on %@", systype);
+      NSLog(@"Don't know how to eject");
     }
   if (task != nil)
     {
@@ -1998,13 +1998,18 @@ launchIdentifiers: (NSArray **)identifiers
    * FIXME We won't get here on Solaris at all because it defines the
    * mntent struct in sys/mnttab.h instead of sys/mntent.h.
    */
-# ifndef MNTTAB
+# ifdef _PATH_MOUNTED
+#  define MOUNTED_PATH _PATH_MOUNTED
+# elif defined(MOUNTED)
+#  define MOUNTED_PATH MOUNTED
+# else
 #  define MNTTAB "/etc/mtab"
+#  warning "Mounted path file for you OS guessed to /etc/mtab";
 # endif
-  NSFileManager	*mgr = [NSFileManager defaultManager];
-  FILE		*fptr = fopen(MNTTAB, "r");
-  struct mntent	*m;
 
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  FILE		*fptr = setmntent(MOUNTED_PATH, "r");
+  struct mntent	*m;
 
   names = [NSMutableArray arrayWithCapacity: 8];
   while ((m = getmntent(fptr)) != 0)
@@ -2015,6 +2020,7 @@ launchIdentifiers: (NSArray **)identifiers
 					      length: strlen(m->MNT_MEMB)];
       [names addObject: path];
     }
+  endmntent(fptr);
 #else
   /* we resort in parsing mtab manually and removing then reserved mount names
      defined in preferences GSReservedMountNames (SystemPreferences) */

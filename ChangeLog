@@ -1,3 +1,8 @@
+2016-02-16 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m (mountedLocalVolumePaths)
+	Use standard setmntent to open file and remember to close it with endmntent! Try better guess to use system defines to get mttab path.
+
 2016-02-13 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (unmountAndEjectDeviceAtPath:)
