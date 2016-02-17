@@ -26,7 +26,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 	-I../Source/$(GNUSTEP_TARGET_DIR)
 
 # Additional LDFLAGS to pass to the linker
-ADDITIONAL_LDFLAGS += -L/opt/csw/lib -R/opt/csw/lib -R/opt/csw/gcc4/lib
+# ADDITIONAL_LDFLAGS += 
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Model/$(GNUSTEP_OBJ_DIR)
