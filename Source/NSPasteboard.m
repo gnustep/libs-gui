@@ -1240,6 +1240,7 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
 #if 0
@@ -1279,6 +1280,7 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
 #if 0
@@ -1353,6 +1355,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       count = 0;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1436,6 +1439,7 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1565,6 +1569,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1667,6 +1672,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1732,6 +1738,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       ok = NO;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1760,6 +1767,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       type = nil;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1787,6 +1795,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       result = nil;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1811,6 +1820,7 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_HANDLER
     {
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -1838,6 +1848,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       d = nil;
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
@@ -2224,6 +2235,7 @@ description, [cmd stringByDeletingLastPathComponent]);
     }
   NS_HANDLER
     {
+      NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
       if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
         [[NSApp class] printStackTrace];
       [NSException raise: NSPasteboardCommunicationException
