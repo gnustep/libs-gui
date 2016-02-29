@@ -1200,7 +1200,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   if ([removables containsObject: fullPath])
     *removableFlag = YES;
 
+  *writableFlag = 1;
+  // FIXME TODO maybe we need an explicit configure check for f_flags
+#if !defined(__GNU__)
   *writableFlag = (m.f_flags & ST_RDONLY) == 0;
+#endif
   *unmountableFlag = NO;
 
 #if defined(ST_ROOTFS) // new NetBSD, Linux
@@ -1213,6 +1217,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   *description = @"filesystem"; // FIXME
 
+  *fileSystemType = nil;
 #if defined (__linux__)
   if (m.f_type == EXT2_SUPER_MAGIC)
     *fileSystemType = @"EXT2";
@@ -1235,7 +1240,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 #elif defined(__sun__)
   *fileSystemType =
     [[NSString alloc] initWithCString: m.f_basetype encoding: enc];
-#else
+#elf !defined(__GNU__)
+  // FIXME we disable this for HURD, but we need to check for struct member in configure
   *fileSystemType =
     [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
 #endif
