@@ -1240,7 +1240,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 #elif defined(__sun__)
   *fileSystemType =
     [[NSString alloc] initWithCString: m.f_basetype encoding: enc];
-#elf !defined(__GNU__)
+#elif !defined(__GNU__)
   // FIXME we disable this for HURD, but we need to check for struct member in configure
   *fileSystemType =
     [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
