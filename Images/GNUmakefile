@@ -163,6 +163,7 @@ Images_RESOURCE_FILES = \
  common_MultipleSelection.tiff \
  common_RecyclerEmpty.tiff \
  common_RecyclerFull.tiff \
+ NSColorPanel.tiff \
 
 
 include $(GNUSTEP_MAKEFILES)/resource-set.make

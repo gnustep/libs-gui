@@ -50,6 +50,7 @@
 APPKIT_EXPORT NSString *NSImageNameMultipleDocuments;
 APPKIT_EXPORT NSString *NSImageNameTrashEmpty;
 APPKIT_EXPORT NSString *NSImageNameTrashFull;
+APPKIT_EXPORT NSString *NSImageNameColorPanel;
 
 /** Defines how an NSImage is to be cached.  Possible values are:
  *  <list>

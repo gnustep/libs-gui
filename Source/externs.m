@@ -3,7 +3,7 @@
 
    External data
 
-   Copyright (C) 1997 Free Software Foundation, Inc.
+   Copyright (C) 1997-2016 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: August 1997
@@ -713,6 +713,10 @@ id NSNotApplicableMarker = @"<NOT APPLICABLE MARKER>";
 // NSNib
 NSString *NSNibTopLevelObjects = @"NSTopLevelObjects";
 NSString *NSNibOwner = @"NSOwner";
+
+// NSImage directly mapped NS named images constants
+NSString *NSImageNameColorPanel = @"NSColorPanel";
+
 
 extern void __objc_gui_force_linking (void);
 
