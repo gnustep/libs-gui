@@ -714,9 +714,11 @@
 	}
       else
         {
-          NSLog(@"(removal) Missing handling of '%@' attributes.",
+			if ([[NSUserDefaults standardUserDefaults] boolForKey:@"GSTokensWarning"]) {
+				NSLog(@"(removal) Missing handling of '%@' attributes.",
                 attributeName);
-          // ##TODO: attributes missing e.g. NSKernAttributeName
+			// ##TODO: attributes missing e.g. NSKernAttributeName
+			}
         }
     }
 
@@ -1118,9 +1120,11 @@
 	}
       else
         {
-          NSLog(@"(addition) Missing handling of '%@' attributes.",
+			if ([[NSUserDefaults standardUserDefaults] boolForKey:@"GSTokensWarning"]) {
+				NSLog(@"(addition) Missing handling of '%@' attributes.",
                 attributeName);
-          // ##TODO: attributes missing e.g. NSKernAttributeName
+				// ##TODO: attributes missing e.g. NSKernAttributeName
+			}	
         }
     }
   return result;
