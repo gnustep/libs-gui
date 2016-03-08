@@ -1,5 +1,4 @@
 #import <Foundation/NSObject.h>
-#import <AppKit/NSNibConnector.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSXibLoading.h"
@@ -99,12 +98,12 @@
   return name;
 }
 
-- (void) setRuntimeAttributes: (NSString *)attrbutes
+- (void) setRuntimeAttributes: (NSArray *)attrbutes
 {
   ASSIGN(runtimeAttributes, attrbutes);
 }
 
-- (NSString *) runtimeAttributes
+- (NSArray *) runtimeAttributes
 {
   return runtimeAttributes;
 }
