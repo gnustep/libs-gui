@@ -329,20 +329,18 @@
             } 	 
           else 	 
             { 	 
-              const char *nam = [label cString]; 	 
-              const char *type; 	 
-              unsigned int size; 	 
-              int offset; 	 
-              
               /* 	 
-               * Use the GNUstep additional function to set the instance 	 
-               * variable directly. 	 
-               * FIXME - need some way to do this for libFoundation and 	 
-               * Foundation based systems. 	 
+               * We cannot use the KVC mechanism here, as this would always retain _dst
+               * and it could also affect _setXXX methods and _XXX ivars that aren't
+               * affected by the Cocoa code.
                */ 	 
-              if (GSObjCFindVariable(source, nam, &type, &size, &offset)) 	 
+              const char *name = [label cString];
+              Class class = object_getClass(source);
+              Ivar ivar = class_getInstanceVariable(class, name);
+              
+              if (ivar != 0)
                 { 	 
-                  GSObjCSetVariable(source, offset, size, (void*)&destination);
+                  object_setIvar(source, ivar, destination);
                 }
             } 	 
 	}
@@ -410,7 +408,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
       
       // Load the connection ID....
@@ -423,6 +421,7 @@
         {
           // 4.6+ XIBs....
           NSString *string = [coder decodeObjectForKey: @"id"];
+
           if (string && [string isKindOfClass:[NSString class]] && [string length])
             {
               connectionID = [string intValue];
@@ -432,7 +431,7 @@
               NSString *format = [NSString stringWithFormat:@"%s:class: %@ - connection ID is missing or zero!",
                                   __PRETTY_FUNCTION__, NSStringFromClass([self class])];
               [NSException raise: NSInvalidArgumentException
-                          format: format];
+                          format: @"%@", format];
             }
         }
       else
@@ -441,7 +440,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
     }
   else
@@ -581,7 +580,7 @@
                               __PRETTY_FUNCTION__,
                               NSStringFromClass([self class])];
           [NSException raise: NSInvalidArgumentException
-                      format: format];
+                      format: @"%@", format];
         }
       
       if ([coder containsValueForKey: @"object"])
@@ -872,10 +871,10 @@
               IBUserDefinedRuntimeAttributesPlaceholder *placeholder =
                                                         [infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"];
               NSArray                                   *attributes  = [placeholder runtimeAttributes];
-              NSEnumerator                              *objectiter  = [attributes objectEnumerator];
-              IBUserDefinedRuntimeAttribute             *attribute   = nil;
+              NSEnumerator *objectIter = [attributes objectEnumerator];
+              IBUserDefinedRuntimeAttribute *attribute;
               
-              while ((attribute = [objectiter nextObject]))
+              while ((attribute = [objectIter nextObject]) != nil)
                 {
                   [realObj setValue:[attribute value] forKeyPath:[attribute keyPath]];
                 }
@@ -911,7 +910,7 @@
 }
 
 - (void) awake: (NSArray *)rootObjects 
-   inContainer: (IBObjectContainer *)objects 
+   inContainer: (id)objects 
    withContext: (NSDictionary *)context
 {
   NSEnumerator *en;
@@ -993,7 +992,9 @@
               rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
               objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
               NSDebugLLog(@"XIB", @"rootObjects %@", rootObjects);
-              [self awake: rootObjects inContainer: objects withContext: context];
+              [self awake: rootObjects 
+		    inContainer: objects 
+		    withContext: context];
               loaded = YES;
               RELEASE(unarchiver);
 	    }
@@ -1065,10 +1066,13 @@
 
 - (NSData *) _preProcessXib: (NSData *)data
 {
-  NSData *result = data;
+  NSData *result = nil;
+
+#if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
 							options:0
 							  error:NULL];
+  result = data;
   if (document == nil)
     {
       NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
@@ -1150,15 +1154,15 @@
               NSString *className = [customClassDict objectForKey:key];
               NSString *objectRecordXpath = nil;
 
-              //PRE-4.6 XIBs...
               objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
                     @"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
                     keyValue];
+		  
               objectRecords     = [document nodesForXPath:objectRecordXpath error:NULL];
 
-              // If that didn't work then it could be a 4.6+ XIB...
               if (objectRecords == nil)
               {
+		      // If that didn't work then it could be a 4.6+ XIB...
                 objectRecordXpath = [NSString stringWithFormat:@"//object[@class=\"IBObjectRecord\"]/"
                                      @"string[@key=\"id\"][text()=\"%@\"]/../reference",
                                      keyValue];
@@ -1182,7 +1186,8 @@
 
                               refId = [[record attributeForName:@"ref"] stringValue];
                               refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
-                              classNodes = [document nodesForXPath:refXpath error:NULL];
+				  classNodes = [document nodesForXPath:refXpath
+								 error:NULL];
                               if([classNodes count] > 0)
                                 {
                                   id classAttr = nil;
@@ -1223,12 +1228,13 @@
       RELEASE(document);
     }
     }
-
+#endif
   return result;
 }
 
 - (id) initForReadingWithData: (NSData*)data
 {
+#if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLParser *theParser;
   NSData *theData = data;
 
@@ -1264,7 +1270,7 @@
   NS_ENDHANDLER
 
   DESTROY(theParser);
-    
+#endif    
   return self;
 }
 
