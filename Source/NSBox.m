@@ -649,6 +649,8 @@
     }
   else
     {
+        [self setBorderColor:[NSColor clearColor]];
+        [self setFillColor:[NSColor clearColor]];
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
         _offsets = [aDecoder decodeSize];
         [aDecoder decodeValueOfObjCType: @encode(int)
