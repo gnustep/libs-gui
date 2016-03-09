@@ -164,6 +164,12 @@ Images_RESOURCE_FILES = \
  common_RecyclerEmpty.tiff \
  common_RecyclerFull.tiff \
  NSColorPanel.tiff \
+ NSFontPanel.tiff \
+ NSCaution.tiff \
+ NSInfo.tiff \
+ NSPreferencesGeneral.tiff \
+ NSAdvanced.tiff \
+ NSUserAccounts.tiff \
 
 
 include $(GNUSTEP_MAKEFILES)/resource-set.make
