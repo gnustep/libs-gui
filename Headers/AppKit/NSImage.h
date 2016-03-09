@@ -48,9 +48,20 @@
 /* Named images */
 
 APPKIT_EXPORT NSString *NSImageNameMultipleDocuments;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSImageNameUserAccounts;
+APPKIT_EXPORT NSString *NSImageNamePreferencesGeneral;
+APPKIT_EXPORT NSString *NSImageNameAdvanced;
+APPKIT_EXPORT NSString *NSImageNameInfo;
+APPKIT_EXPORT NSString *NSImageNameFontPanel;
+APPKIT_EXPORT NSString *NSImageNameColorPanel;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSImageNameTrashEmpty;
 APPKIT_EXPORT NSString *NSImageNameTrashFull;
-APPKIT_EXPORT NSString *NSImageNameColorPanel;
+APPKIT_EXPORT NSString *NSImageNameCaution;
+#endif
 
 /** Defines how an NSImage is to be cached.  Possible values are:
  *  <list>

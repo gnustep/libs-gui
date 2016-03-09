@@ -1,3 +1,9 @@
+2016-03-09 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSImage.h
+	* Source/externs.m
+	Some new 10.5 and 10.6 named images.
+
 2016-03-08 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (iconForFile)

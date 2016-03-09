@@ -715,7 +715,13 @@ NSString *NSNibTopLevelObjects = @"NSTopLevelObjects";
 NSString *NSNibOwner = @"NSOwner";
 
 // NSImage directly mapped NS named images constants
+NSString *NSImageNameUserAccounts = @"NSUserAccounts";
+NSString *NSImageNamePreferencesGeneral = @"NSPreferencesGeneral";
+NSString *NSImageNameAdvanced = @"NSAdvanced";
+NSString *NSImageNameInfo = @"NSInfo";
+NSString *NSImageNameFontPanel = @"NSFontPanel";
 NSString *NSImageNameColorPanel = @"NSColorPanel";
+NSString *NSImageNameCaution = @"NSCaution";
 
 
 extern void __objc_gui_force_linking (void);
