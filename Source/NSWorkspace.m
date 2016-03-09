@@ -537,8 +537,6 @@ static NSDictionary		*extPreferences = nil;
 
 static NSString			*urlPrefPath = nil;
 static NSDictionary		*urlPreferences = nil;
-// FIXME: Won't work for MINGW32
-static NSString			*_rootPath = @"/";
 
 /*
  * Class methods
@@ -748,7 +746,7 @@ static NSString			*_rootPath = @"/";
     forKey: NSHomeDirectory()];
 
   /* it would be nice to use different root icons... */
-  [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
+  [folderPathIconDict setObject: @"Root_PC" forKey: NSOpenStepRootDirectory()];
 
   for (i = 0; i < [libraryDirs count]; i++)
     {
