@@ -3,7 +3,7 @@
 
    Load, manipulate and display images
 
-   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
 
    Written by:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -44,6 +44,13 @@
 @class NSImageRep;
 @class NSColor;
 @class NSView;
+
+/* Named images */
+
+APPKIT_EXPORT NSString *NSImageNameMultipleDocuments;
+APPKIT_EXPORT NSString *NSImageNameTrashEmpty;
+APPKIT_EXPORT NSString *NSImageNameTrashFull;
+APPKIT_EXPORT NSString *NSImageNameColorPanel;
 
 /** Defines how an NSImage is to be cached.  Possible values are:
  *  <list>
@@ -401,6 +408,16 @@ APPKIT_EXTERN NSString *const NSImageNameFolder;
      respectFlipped: (BOOL)respectFlipped
 	      hints: (NSDictionary*)hints;
 
+#endif
+
+/**
+ * <p>Draws the entire image in <code>rect</code> scaling if needed.<br>
+ * Drawing is done using <code>NSCompositeSourceOver</code>.
+ * </p>
+ */
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) drawInRect: (NSRect)rect;
 #endif
 
 //

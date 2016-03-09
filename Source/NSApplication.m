@@ -2,7 +2,7 @@
 
    <abstract>The one and only application class.</abstract>
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -2022,6 +2022,9 @@ See -runModalForWindow:
   [sheet setParentWindow: docWindow];
   [docWindow setAttachedSheet: sheet];
 
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowWillBeginSheetNotification
+                        object: docWindow];
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
@@ -2036,6 +2039,9 @@ See -runModalForWindow:
 
   [docWindow setAttachedSheet: nil];
   [sheet setParentWindow: nil];
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowDidEndSheetNotification
+                        object: docWindow];
 }
 
 /**
@@ -3697,6 +3703,25 @@ struct _DelegateWrapper
   return 0;
 }
 
+- (NSApplicationPresentationOptions) currentPresentationOptions
+{
+  return _presentationOptions;
+}
+
+- (NSApplicationPresentationOptions) presentationOptions
+{
+  return _presentationOptions;
+}
+
+/**
+ * Currently unimplemented and unused in GNUstep, it could be extended to handle
+ * special GNUstep needs too
+ */
+- (void)setPresentationOptions: (NSApplicationPresentationOptions)options
+{
+  _presentationOptions = options;
+}
+
 /*
  * NSCoding protocol
  */
@@ -3815,6 +3840,7 @@ struct _DelegateWrapper
 
 
 
+  // TESTPLANT-MAL-2016: Keeping local version...
   {
     NSRect iconContentRect = GSGetIconFrame(_app_icon_window);
     NSRect iconFrame = [_app_icon_window frameRectForContentRect: iconContentRect];

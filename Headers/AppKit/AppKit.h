@@ -3,7 +3,7 @@
 
    Main include file for GNUstep GUI Library
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -45,6 +45,7 @@
 #import <AppKit/NSGraphics.h>
 
 #import <AppKit/NSActionCell.h>
+#import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSBitmapImageRep.h>

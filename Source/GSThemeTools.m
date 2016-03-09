@@ -409,16 +409,16 @@
 
 - (void) drawRoundBezel: (NSRect)cellFrame withColor: (NSColor*)backgroundColor
 {
-  NSBezierPath *p = [NSBezierPath bezierPath];
+  NSBezierPath *p;
   NSPoint point;
   CGFloat radius;
 
   // make smaller than enclosing frame
-  cellFrame = NSInsetRect(cellFrame, 4, floor(cellFrame.size.height * 0.1875));
+  cellFrame = NSInsetRect(cellFrame, 4, 4);
   radius = cellFrame.size.height / 2.0;
   point = cellFrame.origin;
   point.x += radius;
-  point.y += radius;
+  point.y += radius - 0.5;
 
   // Draw initial path to enclose the button...
   // left half-circle
@@ -446,13 +446,13 @@
 
   // Add highlights...
   point = cellFrame.origin;
-  point.x += radius;
-  point.y += radius;
+  point.x += radius - 0.5;
+  point.y += radius - 0.5;
   p = [NSBezierPath bezierPath];
-  [p setLineWidth: 2.0];
+  [p setLineWidth: 1.0];
   [p appendBezierPathWithArcWithCenter: point
 				radius: radius
-			    startAngle: 120.0
+			    startAngle: 135.0
 			      endAngle: 270.0];
 
   // line to first point and right halfcircle
@@ -460,7 +460,7 @@
   [p appendBezierPathWithArcWithCenter: point
 				radius: radius
 			    startAngle: 270.0
-			      endAngle: 270.0];
+			      endAngle: 315.0];
   [[NSColor controlLightHighlightColor] set];
   [p stroke];
 }

@@ -75,15 +75,18 @@
 @interface NSTableView (Private)
 - (float *)_columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell forTableColumn: (NSTableColumn *)tb row: (int)index;
+// TESTPLANT-MAL-2016: Keeping for tableview grouped row support AKA Cocoa...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb row: (int) rowIndex;
 - (BOOL)_isGroupRow: (NSInteger)rowIndex;
 @end
-
+ 
+// TESTPLANT-MAL-2016: Keeping for tableview grouped row support AKA Cocoa...
 @interface NSTableView (PrivateAccess)
 - (NSIndexSet*)_selectedRowIndexes;
 - (NSIndexSet*)_selectedColumnIndexes;
 @end
 
+// TESTPLANT-MAL-2016: Keeping for tableview grouped row support AKA Cocoa...
 @implementation NSTableView (PrivateAccess)
 - (NSIndexSet *)_selectedRowIndexes
 {
@@ -98,6 +101,11 @@
 
 @interface NSCell (Private)
 - (void) _setInEditing: (BOOL)flag;
+- (BOOL) _inEditing;
+- (void) _drawEditorWithFrame: (NSRect)cellFrame
+                       inView: (NSView *)controlView;
+- (void) _drawAttributedText: (NSAttributedString*)aString 
+                     inFrame: (NSRect)aRect;
 @end
 
 @implementation	GSTheme (Drawing)
@@ -271,6 +279,7 @@
       tiles = [self tilesNamed: @"NSButton" state: state];
     } 
 
+  // TESTPLANT-MAL-2016: KEEPING ALL Testplant changes here...
   if (tiles == nil)
     {
       switch (style)
@@ -381,7 +390,8 @@
     }
   else
     {
-      [self fillRect: frame withTiles: tiles];
+      [self fillRect: frame
+           withTiles: tiles];
     }
 }
 
@@ -524,7 +534,8 @@
     }
   else
     {
-      NSInterfaceStyle interfaceStyle =  NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
+      NSInterfaceStyle interfaceStyle = 
+	NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", aScroller);
       
       if ((interfaceStyle == NSNextStepInterfaceStyle 
 	   || interfaceStyle == NSMacintoshInterfaceStyle
@@ -1503,7 +1514,8 @@ static NSImage *spinningImages[MaxCount];
     }
   else
     {
-      [self fillRect: bounds withTiles: tiles];
+      [self fillRect: bounds
+           withTiles: tiles];
 
       return [tiles contentRectForRect: bounds
                              isFlipped: [[NSView focusView] isFlipped]];
@@ -1534,7 +1546,8 @@ static NSImage *spinningImages[MaxCount];
 {
   NSColor *color;
 
-  color = [self colorNamed: @"tableHeaderTextColor" state: state];
+  color = [self colorNamed: @"tableHeaderTextColor"
+		     state: state];
   if (color == nil)
     {
       if (state == GSThemeHighlightedState)
@@ -1621,6 +1634,10 @@ static NSImage *spinningImages[MaxCount];
 /* These include the black border. */
 #define TITLE_HEIGHT 23.0
 #define RESIZE_HEIGHT 9.0
+#define TITLEBAR_BUTTON_SIZE 15.0
+#define TITLEBAR_PADDING_TOP 4.0
+#define TITLEBAR_PADDING_RIGHT 4.0
+#define TITLEBAR_PADDING_LEFT 4.0
 
 - (float) titlebarHeight
 {
@@ -1630,6 +1647,26 @@ static NSImage *spinningImages[MaxCount];
 - (float) resizebarHeight
 {
   return RESIZE_HEIGHT;
+}
+
+- (float) titlebarButtonSize
+{
+  return TITLEBAR_BUTTON_SIZE;
+}
+
+- (float) titlebarPaddingRight
+{
+  return TITLEBAR_PADDING_RIGHT;
+}
+
+- (float) titlebarPaddingTop
+{
+  return TITLEBAR_PADDING_TOP;
+}
+
+- (float) titlebarPaddingLeft
+{
+  return TITLEBAR_PADDING_LEFT;
 }
 
 static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
@@ -2572,7 +2609,8 @@ typedef enum {
         {
           NSPoint p1,p2;
           int     i, visibleColumns;
-          float   hScrollerWidth = [browser hasHorizontalScroller] ?  [NSScroller scrollerWidth] : 0;
+	  float   hScrollerWidth = [browser hasHorizontalScroller] ? 
+	    [NSScroller scrollerWidth] : 0;
       
           // Columns borders
           [self drawGrayBezel: bounds withClip: rect];
@@ -2605,7 +2643,8 @@ typedef enum {
       NSRect colFrame = [browser frameOfColumn: [browser firstVisibleColumn]];
       NSRect scrollViewRect = NSUnionRect(baseRect, colFrame);
 
-      GSDrawTiles *tiles = [self tilesNamed: @"NSScrollView" state: GSThemeNormalState];
+      GSDrawTiles *tiles = [self tilesNamed: @"NSScrollView"
+				      state: GSThemeNormalState];
 
       [self fillRect: scrollViewRect
            withTiles: tiles];
@@ -3059,6 +3098,7 @@ typedef enum {
     	}
     }
   
+  // Draw vertical lines
   if (numberOfColumns > 0)
     {
       NSInteger i;
@@ -3492,7 +3532,8 @@ typedef enum {
         }
 
       
-      [[GSTheme theme] fillRect: [box borderRect] withTiles: tiles];
+      [[GSTheme theme] fillRect: [box borderRect]
+		      withTiles: tiles];
       
       // Restore clipping path
       [NSGraphicsContext restoreGraphicsState];

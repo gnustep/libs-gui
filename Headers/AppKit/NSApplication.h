@@ -3,7 +3,7 @@
 
    The one and only application class
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2105 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -149,6 +149,27 @@ enum _NSApplicationPrintReply
 typedef NSUInteger NSApplicationPrintReply;
 #endif
 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+typedef enum _NSApplicationPresentationOptions
+{
+  NSApplicationPresentationDefault                    = 0,
+  NSApplicationPresentationAutoHideDock               = (1 <<  0),
+  NSApplicationPresentationHideDock                   = (1 <<  1),
+  NSApplicationPresentationAutoHideMenuBar            = (1 <<  2),
+  NSApplicationPresentationHideMenuBar                = (1 <<  3),
+  NSApplicationPresentationDisableAppleMenu           = (1 <<  4),
+  NSApplicationPresentationDisableProcessSwitching    = (1 <<  5),
+  NSApplicationPresentationDisableForceQuit           = (1 <<  6),
+  NSApplicationPresentationDisableSessionTermination  = (1 <<  7),
+  NSApplicationPresentationDisableHideApplication     = (1 <<  8),
+  NSApplicationPresentationDisableMenuBarTransparency = (1 <<  9),
+  NSApplicationPresentationFullScreen                 = (1 << 10),
+  NSApplicationPresentationAutoHideToolbar            = (1 << 11)
+} NSApplicationPresentationOptions;
+  
+#endif
+  
 APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
 APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
@@ -177,6 +198,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
   NSWindow		*_hidden_key;
   NSWindow              *_hidden_main;
   GSInfoPanel           *_infoPanel;
+  NSApplicationPresentationOptions _presentationOptions;
 
   /* This autorelease pool should only be created and used by -run, with
      a single exception (which is why it is stored here as an ivar): the
@@ -396,6 +418,12 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  */
 - (void) cancelUserAttentionRequest: (NSInteger)request;
 - (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSApplicationPresentationOptions) currentPresentationOptions;
+- (NSApplicationPresentationOptions) presentationOptions;
+- (void)setPresentationOptions: (NSApplicationPresentationOptions)options;
 #endif
 
 @end

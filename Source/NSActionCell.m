@@ -268,6 +268,26 @@ static Class controlClass;
     }
 }
 
+- (void) setAttributedStringValue: (NSAttributedString*)attribStr
+{
+  [super setAttributedStringValue: attribStr];
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: controlClass])
+	{
+	  if (_cell.in_editing)
+	    {
+	      [self _updateFieldEditor:
+		      [(NSControl *)_control_view currentEditor]];
+	    }
+          else
+            {
+              [(NSControl *)_control_view updateCell: self];
+            }
+	}
+    }
+}
+
 /*
  * Target and Action 
  */
