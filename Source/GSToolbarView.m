@@ -52,6 +52,7 @@
 
 #import "NSToolbarFrameworkPrivate.h"
 
+// TESTPLANT-MAL-2015: Modified to match closer with Cocoa...
 typedef enum {
   ToolbarViewDefaultHeight = 56,
   ToolbarViewRegularHeight = 56,
