@@ -675,8 +675,10 @@ static NSString			*_rootPath = @"/";
   NSArray *sysAppDir;
   NSArray *downloadDir;
   NSArray *desktopDir;
+  NSArray *imgDir;
+  NSArray *musicDir;
   NSString *sysDir;
-  int i;
+  NSUInteger i;
 
   if (sharedWorkspace != self)
     {
@@ -725,6 +727,10 @@ static NSString			*_rootPath = @"/";
     NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
     NSSystemDomainMask, YES);
+  imgDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
+    NSUserDomainMask, YES);
+  musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
+    NSUserDomainMask, YES);
  
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
@@ -740,10 +746,7 @@ static NSString			*_rootPath = @"/";
 
   [folderPathIconDict setObject: @"HomeDirectory"
     forKey: NSHomeDirectory()];
-  [folderPathIconDict setObject: @"ImageFolder"
-    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
-  [folderPathIconDict setObject: @"MusicFolder"
-    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Music"]];
+
   /* it would be nice to use different root icons... */
   [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
 
@@ -766,6 +769,16 @@ static NSString			*_rootPath = @"/";
     {
       [folderPathIconDict setObject: @"Desktop"
 	forKey: [desktopDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [imgDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"ImageFolder"
+	forKey: [imgDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [musicDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"MusicFolder"
+	forKey: [musicDir objectAtIndex: i]];
     }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
