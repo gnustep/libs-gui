@@ -1,3 +1,8 @@
+2016-03-10 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m
+	Add fall-back that if a folder image is not found, the generic folde ricon is picked up. Also add Movies special folders.
+
 2016-03-09 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSImage.h

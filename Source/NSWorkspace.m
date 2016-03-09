@@ -675,6 +675,7 @@ static NSDictionary		*urlPreferences = nil;
   NSArray *desktopDir;
   NSArray *imgDir;
   NSArray *musicDir;
+  NSArray *videoDir;
   NSString *sysDir;
   NSUInteger i;
 
@@ -729,7 +730,9 @@ static NSDictionary		*urlPreferences = nil;
     NSUserDomainMask, YES);
   musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
     NSUserDomainMask, YES);
- 
+  videoDir = NSSearchPathForDirectoriesInDomains(NSMoviesDirectory,
+    NSUserDomainMask, YES);
+
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
   if ([sysAppDir count] > 0)
@@ -777,6 +780,11 @@ static NSDictionary		*urlPreferences = nil;
     {
       [folderPathIconDict setObject: @"MusicFolder"
 	forKey: [musicDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [videoDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"VideoFolder"
+	forKey: [videoDir objectAtIndex: i]];
     }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
@@ -1457,8 +1465,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (iconImage == nil)
 		    {
 		      iconImage = [NSImage _standardImageWithName: iconName];
-		      /* the dictionary retains the image */
-		      [folderIconCache setObject: iconImage forKey: iconName];
+                      if (!iconImage)
+                        {
+                          /* no specific image found in theme, fall-back to folder */
+                          NSLog(@"no image found for %@", iconName);
+                          iconImage = [NSImage _standardImageWithName: @"Folder"];
+                        }
+                      /* the dictionary retains the image */
+                      [folderIconCache setObject: iconImage forKey: iconName];
 		    }
 		  image = iconImage;
 		}
