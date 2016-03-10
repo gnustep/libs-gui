@@ -933,6 +933,14 @@ typedef struct _GSButtonCellFlags
 - (void) setBackgroundColor: (NSColor *)color
 {
   ASSIGN(_backgroundColor, color);
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+}
+    }
 }
 
 - (GSThemeControlState) themeControlState
@@ -1013,57 +1021,27 @@ typedef struct _GSButtonCellFlags
       NSPoint offset;
       NSRect rect;
       CGFloat fraction;
-      NSSize size = [imageToDisplay size];
-
-      // Make sure image does not exceed or touch our frame...
-      // Not the best solution so have at it if you have a better one...
-      if ([self imagePosition] == NSImageOnly)
-        cellFrame = NSInsetRect(cellFrame, 4, 4);
-      
-      size = [self _scaleImageWithSize: [imageToDisplay size]
+      NSSize size = [self _scaleImageWithSize: [imageToDisplay size]
                            toFitInSize: cellFrame.size
                            scalingType: _imageScaling];
       
-      /* Pixel-align size */
-
-      if (controlView)
-        {
-          NSSize sizeInBase = [controlView convertSizeToBase: size];
-          sizeInBase.width = GSRoundTowardsInfinity(sizeInBase.width);
-          sizeInBase.height = GSRoundTowardsInfinity(sizeInBase.height);
-          size = [controlView convertSizeFromBase: sizeInBase];
-        }
-
       /* Calculate an offset from the cellFrame origin */
-     
       offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
                            (NSHeight(cellFrame) - size.height) / 2.0);
 
-      /* Pixel-align the offset */
+      rect = NSMakeRect(cellFrame.origin.x + offset.x,
+   		        cellFrame.origin.y + offset.y,
+			size.width,
+			size.height);
 
-      if (controlView)
+      /* Pixel-align */
+      if (nil != controlView)
         {
-          NSPoint inBase = [controlView convertPointToBase: offset];
-          
-          // By convention we will round down and to the right.
-          // With the standard button design this looks good
-          // because the bottom and right edges of the button look 'heavier'
-          // so if the image's center must be offset from the button's geometric
-          // center, it looks beter if it's closer to the 'heavier' part
-          
-          inBase.x = GSRoundTowardsInfinity(inBase.x);
-          inBase.y = ([controlView isFlipped] ? GSRoundTowardsInfinity(inBase.y) :
-                      GSRoundTowardsNegativeInfinity(inBase.y));
-          
-          offset = [controlView convertPointFromBase: inBase];
+          rect = [controlView centerScanRect: rect];
         }
 
       /* Draw the image */
 
-      rect = NSMakeRect(cellFrame.origin.x + offset.x,
-                        cellFrame.origin.y + offset.y,
-                        size.width,
-                        size.height);
       fraction = (![self isEnabled] &&
 		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
       
@@ -1584,8 +1562,7 @@ typedef struct _GSButtonCellFlags
       GSThemeMargins margins = [[GSTheme theme] buttonMarginsForCell: self
                                                                style: _bezel_style
                                                                state: GSThemeNormalState];
-      NSRect frame = [self insetFrame:theRect withMargins:margins];
-      return frame;
+      return [self insetFrame:theRect withMargins:margins];
     }
 }
 

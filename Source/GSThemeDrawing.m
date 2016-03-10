@@ -365,7 +365,7 @@
             break;
             
           default:
-            margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
+            //margins.left = 3; margins.top = 3; margins.right = 3; margins.bottom = 3;
             break;
         }
     }
