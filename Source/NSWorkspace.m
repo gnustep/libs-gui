@@ -1394,13 +1394,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   */
   if ([fileType isEqual: NSFileTypeSymbolicLink] == YES)
     {
-      NSString *linkPath;
-      
-      linkPath = [mgr pathContentOfSymbolicLinkAtPath:fullPath];
-      if ([linkPath isAbsolutePath])
-	fullPath = linkPath;
-      else
-	fullPath = [[[fullPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:linkPath] stringByStandardizingPath];
+      fullPath = [fullPath stringByResolvingSymlinksInPath];
 
       /* now we reget the target attributes */
       attributes = [mgr fileAttributesAtPath: fullPath traverseLink: NO];
