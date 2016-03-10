@@ -1384,23 +1384,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSDictionary	*attributes;
   NSString	*fileType;
 
-  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: NO];
-  fileType = [attributes fileType];
-
   /*
     If we have a symobolic link, get not only the original path attributes,
     but also the original path, to resolve the correct icon.
     mac resolves the original icon
   */
-  if ([fileType isEqual: NSFileTypeSymbolicLink] == YES)
-    {
-      fullPath = [fullPath stringByResolvingSymlinksInPath];
+  fullPath = [fullPath stringByResolvingSymlinksInPath];
 
-      /* now we reget the target attributes */
-      attributes = [mgr fileAttributesAtPath: fullPath traverseLink: NO];
-      fileType = [attributes fileType];
-    }
-  
+  /* now we get the target attributes of the traversed link */
+  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: NO];
+  fileType = [attributes fileType];
+
   if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
       NSString *iconPath = nil;

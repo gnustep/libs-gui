@@ -1,6 +1,11 @@
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
+	Always traverse links explicitely and get the original path to do icon lookup, not just for Symliks. The symlink may be infact in the middle of the path, not just the last one.
+
+2016-03-10 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m
 	Simplify code by using stringByDeletingLastPathComponent
 
 2016-03-10 Riccardo Mottola <rm@gnu.org>
