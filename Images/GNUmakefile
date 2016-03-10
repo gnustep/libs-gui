@@ -135,6 +135,7 @@ Images_RESOURCE_FILES = \
  common_UnknownTool.tiff \
  common_Unmount.tiff \
  common_UpAndDownArrowSmall.tiff \
+ common_VideoFolder.tiff \
  common_copyCursor.tiff \
  common_linkCursor.tiff \
  common_noCursor.tiff \
