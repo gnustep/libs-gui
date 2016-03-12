@@ -912,24 +912,8 @@ restart: ;
 	  if (y > 0 && f_descender + y > descender)
 	    descender = f_descender + y;
 
-	  baseline = line_height - descender;
-          if ((max_line_height > 0 && (ascender + descender) > max_line_height) )
-            {
-              if (max_line_height > line_height)
-                {
-                  NSLog(@"line 920, %f", max_line_height);
-                  line_height = max_line_height;
-                  baseline = max_line_height - descender;
-                  goto restart;
-                }
-            }
-          else if ((ascender + descender) > line_height)
-            {
-              NSLog(@"line 9258 mlh %f, a+s %f, lh %f, diff %f", max_line_height, ascender + descender, line_height, line_height - (ascender + descender));
-              line_height = ascender + descender;
-              baseline = ascender;
-              goto restart;
-            }
+	  COMPUTE_BASELINE;
+	  WANT_LINE_HEIGHT(ascender + descender);
 	}
 
 	if (g->g == GSAttachmentGlyph)
@@ -979,7 +963,7 @@ restart: ;
 
 	    /* Update ascender and descender. Adjust line height and
 	    baseline if necessary. */
-	    baseline = line_height - descender;
+	    COMPUTE_BASELINE;
 	    WANT_LINE_HEIGHT(ascender + descender);
 
 	    g->size = r.size;
