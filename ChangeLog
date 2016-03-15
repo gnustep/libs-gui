@@ -1,7 +1,9 @@
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
-	Always traverse links explicitely and get the original path to do icon lookup, not just for Symliks. The symlink may be infact in the middle of the path, not just the last one.
+	Always traverse links explicitely and get the original path to do icon
+	lookup, not just for Symliks. The symlink may be infact in the middle
+	of the path, not just the last one.
 
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
@@ -11,7 +13,8 @@
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
-	Add fall-back that if a folder image is not found, the generic folde ricon is picked up. Also add Movies special folders.
+	Add fall-back that if a folder image is not found, the generic folder
+	icon is picked up. Also add Movies special folders.
 
 2016-03-09 Riccardo Mottola <rm@gnu.org>
 
@@ -22,27 +25,33 @@
 2016-03-08 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (iconForFile)
-	When looking for an icon, check if it is a symbolic link and get the icon of its destination. Behaviour verified on Apple.
+	When looking for an icon, check if it is a symbolic link and
+	get the icon of its destination. Behaviour verified on Apple.
 
 2016-02-16 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (mountNewRemovableMedia)
-	Add missing implementation, by mounting exclusively the path specified in GSRemovableMediaPaths.
+	Add missing implementation, by mounting exclusively the path
+	specified in GSRemovableMediaPaths.
 
 2016-02-16 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (mountedLocalVolumePaths)
-	Use standard setmntent to open file and remember to close it with endmntent! Try better guess to use system defines to get mttab path.
+	Use standard setmntent to open file and remember to close it with
+	endmntent! Try better guess to use system defines to get mttab path.
 
 2016-02-13 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m (unmountAndEjectDeviceAtPath:)
-	Enhance unmount with eject support on certain platforms, generate NSWorkspaceWillUnmountNotification notification.
+	Enhance unmount with eject support on certain platforms, generate
+	NSWorkspaceWillUnmountNotification notification.
 
 2016-02-12 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
-	Try to support volume information on Linux better as well as using GSRemovableMediaPaths defaults for removable information (compared to nothing at all).
+	Try to support volume information on Linux better as well as using
+	GSRemovableMediaPaths defaults for removable information (compared
+	to nothing at all).
 
 2016-02-03 Riccardo Mottola <rm@gnu.org>
 
