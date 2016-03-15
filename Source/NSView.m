@@ -1227,6 +1227,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      [self setNeedsDisplay: YES];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
