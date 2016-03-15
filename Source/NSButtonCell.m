@@ -1021,9 +1021,17 @@ typedef struct _GSButtonCellFlags
       NSPoint offset;
       NSRect rect;
       CGFloat fraction;
+
+      // TESTPLANT-MAL-2016: Button images are too big within the button frames
+      // Remove this code at your own peril...
+      // Make sure image does not exceed or touch our frame...
+      // Not the best solution so have at it if you have a better one...
+      if ([self imagePosition] == NSImageOnly)
+        cellFrame = NSInsetRect(cellFrame, 4, 4);
+        
       NSSize size = [self _scaleImageWithSize: [imageToDisplay size]
-                           toFitInSize: cellFrame.size
-                           scalingType: _imageScaling];
+                                  toFitInSize: cellFrame.size
+                                  scalingType: _imageScaling];
       
       /* Calculate an offset from the cellFrame origin */
       offset = NSMakePoint((NSWidth(cellFrame) - size.width) / 2.0,
