@@ -1,3 +1,8 @@
+2016-03-21 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSImage.m
+	Actually allocate a NSMutableArray, since that is the expected return type.
+
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m

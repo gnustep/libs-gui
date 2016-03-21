@@ -1606,7 +1606,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   count = [_reps count];
   if (count == 0)
     {
-      return [NSArray array];
+      return [NSMutableArray array];
     }
   else
     {
@@ -1623,7 +1623,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
               j++;
             }
         }
-      return [NSArray arrayWithObjects: repList count: j];
+      return [NSMutableArray arrayWithObjects: repList count: j];
     }
 }
 
