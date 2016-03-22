@@ -3,7 +3,7 @@
 
    Interface for workspace.
 
-   Copyright (C) 1996-2002 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -111,7 +111,7 @@ typedef NSUInteger NSWorkspaceIconCreationOptions;
 		       source: (NSString*)source
 		  destination: (NSString*)destination
 			files: (NSArray*)files
-			  tag: (int*)tag;
+			  tag: (NSInteger*)tag;
 - (BOOL) selectFile: (NSString*)fullPath
   inFileViewerRootedAtPath: (NSString*)rootFullpath;
 

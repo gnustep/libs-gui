@@ -1054,7 +1054,7 @@ static NSDictionary		*urlPreferences = nil;
 		       source: (NSString*)source
 		  destination: (NSString*)destination
 		        files: (NSArray*)files
-			  tag: (int*)tag
+			  tag: (NSInteger*)tag
 {
   id app;
 

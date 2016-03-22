@@ -1,3 +1,9 @@
+2016-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSWorkspace.h
+	* Source/NSWorkspace.m
+	tag is NSInteger* not int* in recent AppKit
+
 2016-03-21 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSImage.m
