@@ -224,6 +224,8 @@ static CGFloat scrollerWidth;
   // For compatibility the ruler should be present but not visible.
   [self setHasHorizontalRuler: YES];
   [self tile];
+  _horizScrollElasticity = NSScrollElasticityAutomatic;
+  _vertScrollElasticity = NSScrollElasticityAutomatic;
 
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -396,6 +398,27 @@ static CGFloat scrollerWidth;
 - (void) setAutohidesScrollers: (BOOL)flag
 {
   _autohidesScrollers = flag;
+}
+
+- (NSScrollElasticity)horizontalScrollElasticity
+{
+  return _horizScrollElasticity;
+}
+
+- (void)setHorizontalScrollElasticity:(NSScrollElasticity)value
+{
+  _horizScrollElasticity = value;
+}
+
+- (NSScrollElasticity)verticalScrollElasticity
+{
+  return _vertScrollElasticity;
+}
+
+
+- (void)setVerticalScrollElasticity:(NSScrollElasticity)value
+{
+  _vertScrollElasticity = value;
 }
 
 - (void) scrollWheel: (NSEvent *)theEvent
@@ -913,7 +936,7 @@ static CGFloat scrollerWidth;
       // Testplant-MAL-2015-07-08: keeping testplant branch code...
       _reflectScrolledClipView_HRecursionCnt--;
     }
-  
+
   if (_hasHeaderView)
     {
       NSPoint headerClipViewOrigin;
@@ -1366,17 +1389,12 @@ GSOppositeEdge(NSRectEdge edge)
 
 - (BOOL) isOpaque
 {
-#if 0
   // FIXME: Only needs to be NO in a corner case,
   // when [[GSTheme theme] scrollViewUseBottomCorner] is NO
   // and the theme tile for the bottom corner is transparent.
   // So maybe cache the value of 
   // [[GSTheme theme] scrollViewUseBottomCorner] and check it here.
   return NO;
-#else
-  // Testplant-MAL-2015-07-08: keeping testplant branch code...
-  return [_contentView isOpaque];
-#endif
 }
 
 - (NSBorderType) borderType
@@ -1530,6 +1548,17 @@ GSOppositeEdge(NSRectEdge edge)
 - (NSScroller*) verticalScroller
 {
   return _vertScroller;
+}
+
+- (BOOL)allowsMagnification
+{
+  //we need an ivar for this
+  return NO;
+}
+
+- (void)setAllowsMagnification:(BOOL)m
+{
+  //we need an ivar for this
 }
 
 /*

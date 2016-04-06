@@ -1060,11 +1060,11 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
     }
   else
     {
-  [[GSTheme theme] drawScrollerRect: rect
-		   inView: self
-		   hitPart: _hitPart
-		   isHorizontal: _scFlags.isHorizontal];
-}
+      [[GSTheme theme] drawScrollerRect: rect
+                                 inView: self
+                                hitPart: _hitPart
+                           isHorizontal: _scFlags.isHorizontal];
+    }
 }
 
 /**<p>(Un)Highlight the button specified by <var>whichButton</var>.
@@ -1127,7 +1127,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 - (void) drawKnobSlot
 {
   [self drawKnobSlotInRect: [self rectForPart: NSScrollerKnobSlot] 
-        highlight: NO];
+                 highlight: NO];
 }
 
 - (void) drawKnobSlotInRect: (NSRect)slotRect highlight: (BOOL)flag
