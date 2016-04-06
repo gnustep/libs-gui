@@ -671,6 +671,7 @@ static NSDictionary		*urlPreferences = nil;
   NSArray *documentDir;
   NSArray *libraryDirs;
   NSArray *sysAppDir;
+  NSArray *appDirs;
   NSArray *downloadDir;
   NSArray *desktopDir;
   NSArray *imgDir;
@@ -726,6 +727,8 @@ static NSDictionary		*urlPreferences = nil;
     NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
     NSSystemDomainMask, YES);
+  appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
+    NSAllDomainsMask, YES);
   imgDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
     NSUserDomainMask, YES);
   musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
@@ -755,6 +758,11 @@ static NSDictionary		*urlPreferences = nil;
     {
       [folderPathIconDict setObject: @"LibraryFolder"
 	forKey: [libraryDirs objectAtIndex: i]];
+    }
+  for (i = 0; i < [appDirs count]; i++)
+    {
+      [folderPathIconDict setObject: @"ApplicationFolder"
+	forKey: [appDirs objectAtIndex: i]];
     }
   for (i = 0; i < [documentDir count]; i++)
     {

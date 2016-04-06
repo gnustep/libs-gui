@@ -49,6 +49,7 @@ Images_RESOURCE_FILES = \
  common_3DArrowRight.tiff \
  common_3DArrowRightH.tiff \
  common_3DArrowUp.tiff \
+ common_ApplicationFolder.tiff \
  common_ArrowDown.tiff \
  common_ArrowDownH.tiff \
  common_ArrowLeft.tiff \
