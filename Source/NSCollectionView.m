@@ -599,6 +599,48 @@ static NSString *placeholderItem = nil;
   [self setNeedsDisplay: YES];
 }
 
+- (NSSize)_minVisibleSize
+{
+  NSSize minSize = NSMakeSize(_itemSize.width * _numberOfColumns, 1e20);
+  
+  if (_numberOfColumns != 0 )
+  {
+    NSInteger rows = ceil((CGFloat)[_content count] / (CGFloat)_numberOfColumns);
+    minSize.height = _itemSize.height * rows;
+  }
+  return minSize;
+}
+
+- (void)setFrame:(NSRect)newFrame
+{
+  // FIXME: This SHOULD be moved to a central location for NSSCrollView/NSClipView processing
+  // Are we under a clip view...
+  if ([[self superview] respondsToSelector: @selector(documentVisibleRect)])
+  {
+    NSSize clipSize = [(NSClipView *)_super_view documentVisibleRect].size;
+    NSSize minSize  = [self _minVisibleSize];
+    
+    // FIXME: Process width...
+    newFrame.size.height = MAX(minSize.height, clipSize.height);
+  }
+  [super setFrame: newFrame];
+}
+
+- (void)setFrameSize:(NSSize)newSize
+{
+  // FIXME: This SHOULD be moved to a central location for NSSCrollView/NSClipView processing
+  // Are we under a clip view...implementation similar to NSTableView...
+  if ([[self superview] respondsToSelector: @selector(documentVisibleRect)])
+  {
+    NSSize clipSize = [(NSClipView *)_super_view documentVisibleRect].size;
+    NSSize minSize  = [self _minVisibleSize];
+
+    // FIXME: Process width...
+    newSize.height  = MAX(minSize.height, clipSize.height);
+  }
+  [super setFrameSize: newSize];
+}
+
 - (void) resizeSubviewsWithOldSize: (NSSize)aSize
 {
   NSSize currentSize = [self frame].size;
