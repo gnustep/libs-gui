@@ -671,23 +671,12 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOffState]; // ensure that state resets fully
   [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOnState];
 
-  // Prepare to display the popup
-  cvWin = [_control_view window];
-  cellFrame = [_control_view frame];
-  cellFrame = [[_control_view superview] convertRect:cellFrame toView:nil]; // convert to window coordinates
-  cellFrame.origin = [cvWin convertBaseToScreen:cellFrame.origin]; // convert to screen coordinates
-  mr = [popupmenu menuRepresentation];
+  // TESTPLANT-MAL-04122016: Fix popup menu processing...
+  [pbcell trackMouse: [NSApp currentEvent]
+              inRect: [_control_view bounds]
+              ofView: _control_view
+        untilMouseUp: YES];
 
-  // Ask the MenuView to attach the menu to this rect
-  [mr setWindowFrameForAttachingToRect: cellFrame
-      onScreen: [cvWin screen]
-      preferredEdge: NSMinYEdge
-      popUpSelectedItem: -1];
-  
-  // Last, display the window
-  [[mr window] orderFrontRegardless];
-
-  [mr mouseDown: [NSApp currentEvent]];
   newSelectedItemIndex = [pbcell indexOfSelectedItem];
   if (newSelectedItemIndex != selectedItemIndex && newSelectedItemIndex != -1
       && newSelectedItemIndex < [template numberOfItems])
