@@ -606,6 +606,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
+  [pbcell setAltersStateOfSelectedItem:NO];
 
   // Fill the popup menu 
   for (i = 0; i < [template numberOfItems]; i++)
@@ -646,12 +647,9 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 
           for (j = 0; j < recentCount; j++)
             {
-              id <NSMenuItem> searchItem = [popupmenu addItemWithTitle: 
-                                                                    [_recent_searches objectAtIndex: j]
-                                                                action: 
-                                                                    @selector(_searchForRecent:)
-                                                         keyEquivalent: 
-                                                                    [item keyEquivalent]];
+              id <NSMenuItem> searchItem = [popupmenu addItemWithTitle:[_recent_searches objectAtIndex: j]
+                                                                action:@selector(_searchForRecent:)
+                                                         keyEquivalent:[item keyEquivalent]];
               [searchItem setTarget: self];
             }
         }
@@ -667,9 +665,6 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
     } 
 
   [pbcell setMenu:popupmenu];
-  [pbcell selectItemAtIndex:selectedItemIndex];
-  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOffState]; // ensure that state resets fully
-  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOnState];
 
   // TESTPLANT-MAL-04122016: Fix popup menu processing...
   [pbcell trackMouse: [NSApp currentEvent]
@@ -677,18 +672,28 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
               ofView: _control_view
         untilMouseUp: YES];
 
-  newSelectedItemIndex = [pbcell indexOfSelectedItem];
-  if (newSelectedItemIndex != selectedItemIndex && newSelectedItemIndex != -1
-      && newSelectedItemIndex < [template numberOfItems])
+  // TESTPLANT-MAL-04252016: Fix search field template maintenance processing...
+  // Copy over the user defined menu item states from the menu copy back to the template...
+  // Discussion: Apple Cocoa maintains the state of user defined items in the template after
+  // the user defined delegate method executes.  This allows the user to change/manipulate
+  // their application menu items in whatever way they want.  We're going to just copy over
+  // the state back for now.  However, should  user application change some other properties
+  // within the menu item(s) in their callback method those property states will currently be lost...
+  if ([pbcell indexOfSelectedItem] != NSNotFound)
     {
-      int tag = [[template itemAtIndex:newSelectedItemIndex] tag];
-      if (tag != NSSearchFieldRecentsTitleMenuItemTag && tag != NSSearchFieldClearRecentsMenuItemTag
-          && tag != NSSearchFieldNoRecentsMenuItemTag && tag != NSSearchFieldRecentsMenuItemTag
-          && ![[template itemAtIndex:newSelectedItemIndex] isSeparatorItem])
+      NSMenuItem *item;
+      NSEnumerator *menuEnum = [[popupmenu itemArray] objectEnumerator];
+      while ((item = [menuEnum nextObject]))
         {
-          //new selected item within the template that's not a template special item
-          [[template itemAtIndex:selectedItemIndex] setState:NSOffState];
-          [[template itemAtIndex:newSelectedItemIndex] setState:NSOnState];
+          int tag = [item tag];
+          if (tag != NSSearchFieldRecentsTitleMenuItemTag &&
+              tag != NSSearchFieldClearRecentsMenuItemTag &&
+              tag != NSSearchFieldNoRecentsMenuItemTag &&
+              tag != NSSearchFieldRecentsMenuItemTag &&
+              [item isSeparatorItem] == NO)
+            {
+              [[template itemWithTitle:[item title]] setState:[item state]];
+            }
         }
     }
   AUTORELEASE(popupmenu);
