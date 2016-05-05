@@ -1,6 +1,6 @@
 /*  -*-objc-*-
    NSAttributedString.h
-
+P
    Categories which add capabilities to NSAttributedString 
 
    Copyright (C) 1999 Free Software Foundation, Inc.
@@ -119,6 +119,8 @@ APPKIT_EXPORT NSString *NSMacSimpleTextDocumentType;
 APPKIT_EXPORT NSString *NSHTMLTextDocumentType;
 APPKIT_EXPORT NSString *NSDocFormatTextDocumentType;
 APPKIT_EXPORT NSString *NSWordMLTextDocumentType;
+APPKIT_EXPORT NSString *NSOfficeOpenXMLTextDocumentType;
+APPKIT_EXPORT NSString *NSOpenDocumentTextDocumentType;
 
 // for HTML export
 
