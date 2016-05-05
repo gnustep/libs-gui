@@ -583,6 +583,8 @@ NSString *NSMacSimpleTextDocumentType = @"NSMacSimpleText";
 NSString *NSHTMLTextDocumentType = @"NSHTML";
 NSString *NSDocFormatTextDocumentType = @"NSDocFormat";
 NSString *NSWordMLTextDocumentType = @"NSWordML";
+NSString *NSOfficeOpenXMLTextDocumentType = @"NSOfficeOpenXML"
+NSString *NSOpenDocumentTextDocumentType = @"NSOpenDocumentText"
 
 NSString *NSExcludedElementsDocumentAttribute = @"ExcludedElements";
 NSString *NSTextEncodingNameDocumentAttribute = @"TextEncodingName";
