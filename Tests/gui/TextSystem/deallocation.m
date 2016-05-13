@@ -25,8 +25,19 @@ main(int argc, char **argv)
   NSTextView *tv;
   CREATE_AUTORELEASE_POOL(arp);
 
-  // Create shared application object (required by NSTextView)
-  [NSApplication sharedApplication];
+  START_SET("TextSystem GNUstep deallocation")
+
+  NS_DURING
+  {
+    // Create shared application object (required by NSTextView)
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
 
   // Set up text network retaining all elements
   ts = [NSTextStorage new];
@@ -69,6 +80,8 @@ main(int argc, char **argv)
   pass([tv textContainer] == nil, "NSTextView -textContainer returns nil");
   pass([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
   pass([tv textStorage] == nil, "NSTextView -textStorage returns nil");
+
+  END_SET("TextSystem GNUstep deallocation")
 
   DESTROY(arp);
   return 0;

@@ -5,6 +5,8 @@ Check that the layour process doesn't get stuck if we try to make a cell fill
 the entire height of a line frag.
 */
 
+#include "Testing.h"
+
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSString.h>
 #include <AppKit/NSApplication.h>
@@ -42,7 +44,18 @@ int main(int argc, char **argv)
 	NSTextContainer *tc;
 	NSTextAttachment *ta;
 
-	[NSApplication sharedApplication];
+	START_SET("TextSystem GNUstep repeatedAttachmentCellHeight");
+
+	NS_DURING
+	{
+		[NSApplication sharedApplication];
+	}
+	NS_HANDLER
+	{
+	if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+		SKIP("It looks like GNUstep backend is not yet installed");
+	}
+	NS_ENDHANDLER
 
 	text=[[NSTextStorage alloc] init];
 	lm=[[NSLayoutManager alloc] init];
@@ -62,6 +75,8 @@ int main(int argc, char **argv)
 		range: NSMakeRange(3,1)];
 	[text endEditing];
 	[lm usedRectForTextContainer: tc];
+
+	END_SET("TextSystem GNUstep repeatedAttachmentCellHeight");
 
 	DESTROY(arp);
 	return 0;

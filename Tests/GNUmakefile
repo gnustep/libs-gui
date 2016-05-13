@@ -42,11 +42,29 @@ endif
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+TOP_DIR := $(shell dirname $(CURDIR))
+
 all::
 	@(echo If you want to run the gnustep-gui testsuite, please type \'make check\')
 
 check::
-	gnustep-tests gui
+	(\
+	GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES="$(TOP_DIR)/gui.make";\
+	ADDITIONAL_INCLUDE_DIRS="-I$(TOP_DIR)/Headers -I$(TOP_DIR)/Source/$(GNUSTEP_TARGET_DIR) -I$(TOP_DIR)/Headers/Additions";\
+	ADDITIONAL_LIB_DIRS="-L$(TOP_DIR)/Source/$(GNUSTEP_OBJ_DIR)";\
+	LD_LIBRARY_PATH="$(TOP_DIR)/Source/$(GNUSTEP_OBJ_DIR):${LD_LIBRARY_PATH}";\
+	PATH="$(TOP_DIR)/Tools/$(GNUSTEP_OBJ_DIR):${PATH}";\
+	export GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES;\
+	export ADDITIONAL_INCLUDE_DIRS;\
+	export ADDITIONAL_LIB_DIRS;\
+	export LD_LIBRARY_PATH;\
+	export PATH;\
+	if [ "$(DEBUG)" = "" ]; then \
+	  gnustep-tests gui;\
+        else \
+	  gnustep-tests --debug gui;\
+        fi; \
+	)
 
 clean::
 	-gnustep-tests --clean

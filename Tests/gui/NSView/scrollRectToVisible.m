@@ -29,7 +29,20 @@ int main(int argc, char **argv)
 	NSClipView *cv=[[NSClipView alloc] initWithFrame: NSMakeRect(0,0,10,10)];
 	NSView *v=[[NSView alloc] initWithFrame: NSMakeRect(0,0,100,100)];
 	[cv setDocumentView: v];
-  [NSApplication sharedApplication];
+
+  START_SET("NView GNUstep scrollRectToVisible")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
+
   window = [[NSWindow alloc] initWithContentRect: NSMakeRect(100,100,200,200)
                                        styleMask: NSClosableWindowMask
                                          backing: NSBackingStoreRetained
@@ -84,8 +97,9 @@ int main(int argc, char **argv)
 	[v scrollRectToVisible: NSMakeRect(15,15,5,5)];
 	TEST(NSMakeRect(10,10,10,10),"12");
 
+	END_SET("NView GNUstep scrollRectToVisible")
+
 	DESTROY(arp);
 
 	return 0;
 }
-

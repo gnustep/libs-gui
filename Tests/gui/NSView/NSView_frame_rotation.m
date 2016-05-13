@@ -18,7 +18,19 @@ int main(int argc, char **argv)
 	NSView *view;
 	int passed;
 
-	[NSApplication sharedApplication];
+	START_SET("NView GNUstep frame_rotation")
+
+	NS_DURING
+	{
+		[NSApplication sharedApplication];
+	}
+	NS_HANDLER
+	{
+	if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+		SKIP("It looks like GNUstep backend is not yet installed")
+	}
+	NS_ENDHANDLER
+
 	window=[[NSWindow alloc] init];
 	view=[[NSView alloc] init];
 
@@ -53,6 +65,8 @@ int main(int argc, char **argv)
 	CHECK(0.0)
 
 	pass(passed,"-frameRotation/-setFrameRotation work");
+
+	END_SET("NView GNUstep frame_rotation")
 
 	DESTROY(arp);
 	return 0;

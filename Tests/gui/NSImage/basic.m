@@ -12,7 +12,18 @@ int main()
   id testObject2;
   NSArray *testObjects;
 
-  [NSApplication sharedApplication];  
+  START_SET("NSImage GNUstep basic")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
 
   test_alloc(@"NSImage");
 
@@ -29,6 +40,8 @@ int main()
   test_NSCopying(@"NSImage",
                  @"NSImage",
 		 testObjects, NO, NO);
+
+  END_SET("NSImage GNUstep basic")
 
   [arp release];
   return 0;

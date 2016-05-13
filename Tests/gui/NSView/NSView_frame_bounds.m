@@ -54,7 +54,19 @@ int main(int argc, char **argv)
 	NSView *view1;
 	int passed = 1;
 
-	[NSApplication sharedApplication];
+	START_SET("NView GNUstep frame_bounds")
+
+	NS_DURING
+	{
+		[NSApplication sharedApplication];
+	}
+	NS_HANDLER
+	{
+		if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+			SKIP("It looks like GNUstep backend is not yet installed")
+	}
+	NS_ENDHANDLER
+
 	window = [[NSWindow alloc] initWithContentRect: NSMakeRect(100,100,200,200)
 		styleMask: NSClosableWindowMask
 		backing: NSBackingStoreRetained
@@ -109,6 +121,8 @@ int main(int argc, char **argv)
 	passed = CHECK(view1, NSMakeRect(20,20,100,100),NSMakeRect(-40.3553,-3.33333,70.7107,47.1405)) && passed;
 
 	pass(passed,"NSView -frame and -bounds work");
+
+	END_SET("NView GNUstep frame_bounds")
 
 	DESTROY(arp);
 	return 0;

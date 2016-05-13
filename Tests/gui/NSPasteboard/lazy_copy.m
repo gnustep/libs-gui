@@ -40,10 +40,13 @@ int main(int argc, char **argv)
 	pb=[NSPasteboard pasteboardWithName: @"lazy copy test"];
 	s=[pb stringForType: NSStringPboardType];
 
+	testHopeful = YES;
 	pass([s isEqual: theString], "NSPasteboard handles lazy setting of data");
+	testHopeful = NO;
 
 	DESTROY(arp);
 
 	return 0;
 }
+
 

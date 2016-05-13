@@ -13,7 +13,18 @@ int main()
   id testObject2;
   NSArray *testObjects;
 
-  [NSApplication sharedApplication];  
+  START_SET("NSCell GNUstep basic")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
 
   test_alloc(@"NSCell");
 
@@ -29,6 +40,7 @@ int main()
                  @"NSCell",
 		 testObjects, NO, NO);
 
+  END_SET("NSCell GNUstep basic")
   [arp release];
   return 0;
 }

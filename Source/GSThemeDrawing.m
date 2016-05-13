@@ -1030,13 +1030,13 @@
 - (CGFloat) menuSubmenuHorizontalOverlap
 {
   return [[NSUserDefaults standardUserDefaults]
-				   floatForKey: @"GSMenuSubmenuHorizontalOverlap"];
+    floatForKey: @"GSMenuSubmenuHorizontalOverlap"];
 }
 
 - (CGFloat) menuSubmenuVerticalOverlap
 {
   return [[NSUserDefaults standardUserDefaults]
-				   floatForKey: @"GSMenuSubmenuVerticalOverlap"];
+    floatForKey: @"GSMenuSubmenuVerticalOverlap"];
 }
 
 - (void) drawSeparatorItemForMenuItemCell: (NSMenuItemCell *)cell
@@ -1044,8 +1044,9 @@
                                    inView: (NSView *)controlView
                              isHorizontal: (BOOL)isHorizontal
 {
-  GSDrawTiles *tiles = [self tilesNamed: GSMenuSeparatorItem state: GSThemeNormalState];
+  GSDrawTiles *tiles;
  
+  tiles = [self tilesNamed: GSMenuSeparatorItem state: GSThemeNormalState];
   if (tiles == nil)
     {
       NSBezierPath *path = [NSBezierPath bezierPath];
@@ -1053,7 +1054,7 @@
       NSPoint start = NSMakePoint(inset, cellFrame.size.height / 2 + 
 				         cellFrame.origin.y + 0.5);
       NSPoint end = NSMakePoint(cellFrame.size.width - inset, 
-	                        cellFrame.size.height / 2 + cellFrame.origin.y + 0.5);
+        cellFrame.size.height / 2 + cellFrame.origin.y + 0.5);
 
       [[self menuSeparatorColor] set];
 

@@ -97,7 +97,19 @@ int main(int argc, char **argv)
 	NSView *view1,*view2;
 	int passed=1;
 
-	[NSApplication sharedApplication];
+	START_SET("NView GNUstep converRect")
+
+	NS_DURING
+	{
+		[NSApplication sharedApplication];
+	}
+	NS_HANDLER
+	{
+		if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+		SKIP("It looks like GNUstep backend is not yet installed")
+	}
+	NS_ENDHANDLER
+
 	window=[[NSWindow alloc] initWithContentRect: NSMakeRect(100,100,200,200)
 		styleMask: NSClosableWindowMask
 		backing: NSBackingStoreRetained
@@ -129,6 +141,8 @@ int main(int argc, char **argv)
 	passed=check([window contentView],view2,NSMakeRect(20,55.3553,10,10),NSMakeRect(0,0,10,10)) && passed;
 
 	pass(passed,"NSView -convertRect:fromView: and -convertRect:toView: work");
+
+	END_SET("NView GNUstep converRect")
 
 	DESTROY(arp);
 	return 0;

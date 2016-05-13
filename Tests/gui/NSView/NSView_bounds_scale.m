@@ -93,8 +93,20 @@ int main(int argc, char **argv)
   NSView *view1;
   CGFloat ts[6];
   int passed = 1;
-  
-  [NSApplication sharedApplication];
+
+  START_SET("NView GNUstep bounds_scale")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
+
   window = [[NSWindow alloc] initWithContentRect: NSMakeRect(100,100,200,200)
                                        styleMask: NSClosableWindowMask
                                          backing: NSBackingStoreRetained
@@ -188,6 +200,8 @@ int main(int argc, char **argv)
   testHopeful = YES;
   pass(passed,"NSView -scaleUnitSquareToSize works");
   testHopeful = NO;
+
+  END_SET("NView GNUstep bounds_scale")
 
   DESTROY(arp);
   return 0;

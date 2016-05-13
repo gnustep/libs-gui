@@ -1,3 +1,26 @@
+2016-05-13 Eric Heintzmann <heintzmann.eric@free.fr>
+
+        * Tests/GNUmakefile:
+        * Tests/gui/NSCell/basic.m:
+        * Tests/gui/NSCell/objectValue.m:
+        * Tests/gui/NSEvent/delta.m:
+        * Tests/gui/NSImage/basic.m:
+        * Tests/gui/NSPasteboard/lazy_copy.m:
+        * Tests/gui/NSPopUpButton/defaultSelection.m:
+        * Tests/gui/NSSavePanel/setDelegate_reload.m:
+        * Tests/gui/NSSliderCell/minMax.m:
+        * Tests/gui/NSView/NSView_autoresize_and_rounding.m:
+        * Tests/gui/NSView/NSView_bounds_scale.m:
+        * Tests/gui/NSView/NSView_convertRect.m:
+        * Tests/gui/NSView/NSView_frame_bounds.m:
+        * Tests/gui/NSView/NSView_frame_rotation.m:
+        * Tests/gui/NSView/scrollRectToVisible.m:
+        * Tests/gui/TextSystem/deallocation.m:
+        * Tests/gui/TextSystem/repeatedAttachmentCellHeight.m:
+	Updates to more cleanly handle attempts to execute regression tests
+	when the GUI is not installed (test what we can, and report the
+	problem).
+
 2016-04-06 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m

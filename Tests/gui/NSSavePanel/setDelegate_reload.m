@@ -44,8 +44,19 @@ int main(int argc, char **argv)
   NSSavePanel *p;
   NSMatrix *m;
 
-  [NSApplication sharedApplication];
-  
+  START_SET("NSSavePanel GNUstep setDelegate")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
+
   p = [NSSavePanel savePanel];
   [p setShowsHiddenFiles: NO];
   [p setDirectory: [[[[[NSBundle mainBundle] bundlePath]
@@ -80,7 +91,9 @@ int main(int argc, char **argv)
   pass([m numberOfRows] == 1
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate: (2)");
-  
+
+  END_SET("NSSavePanel GNUstep setDelegate")
+
   [arp release];
   return 0;
 }

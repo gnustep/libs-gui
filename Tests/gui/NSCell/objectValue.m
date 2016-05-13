@@ -12,8 +12,19 @@ int main()
   CREATE_AUTORELEASE_POOL(arp);
   NSCell *cell;
   NSNumber *num;
+
+  START_SET("NSCell GNUstep objectValue")
   
-  [NSApplication sharedApplication];  
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
   cell = [[NSCell alloc] init];
   num = [NSNumber numberWithFloat:55.0]; 
   [cell setObjectValue:num];
@@ -31,6 +42,8 @@ int main()
   pass ([[cell objectValue] isEqual:[NSImage imageNamed:@"GNUstep"]],
         "-objectValue with NSImage works");
  
+  END_SET("NSCell GNUstep objectValue")
+
   DESTROY(arp);
   return 0;
 }

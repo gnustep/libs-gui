@@ -12,8 +12,20 @@ int main()
   CREATE_AUTORELEASE_POOL(arp);
   NSSliderCell *cell;
   NSNumber *num;
-  
-  [NSApplication sharedApplication];  
+
+  START_SET("NSSliderCell GNUstep minMax")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+       SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
+
   cell = [[NSSliderCell alloc] init];
 
   pass([cell isContinuous], "slider continuous by default");
@@ -121,6 +133,7 @@ int main()
   pass([cell doubleValue] == 9.0, "setting 15 floatValue sets value to max");
   pass([cell intValue] == 9, "setting 15 floatValue sets value to max (integer)");
 
+  END_SET("NSSliderCell GNUstep minMax")
 
   DESTROY(arp);
   return 0;
