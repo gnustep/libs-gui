@@ -1,3 +1,8 @@
+2016-05-20 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSTabViewItem.m
+	Optimize case for nil label and thus fix crasher on SPARCs
+
 2016-05-13 Eric Heintzmann <heintzmann.eric@free.fr>
 
         * Tests/GNUmakefile:
