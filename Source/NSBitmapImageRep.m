@@ -1508,7 +1508,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   if (image == 0)
     {
       [NSException raise: NSTIFFException 
-		   format: @"Opening data stream for writting"];
+		   format: @"Opening data stream for writing"];
     }
 
   [self _fillTIFFInfo: &info

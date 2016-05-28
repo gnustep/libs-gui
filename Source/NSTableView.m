@@ -3916,7 +3916,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 	  if (done == NO)
 	    {
 	      /* in certain cases we are working with events that have already
-	       * occured and been dequeued by NSCell classes, in these cases
+	       * occurred and been dequeued by NSCell classes, in these cases
 	       * getNextEvent is set to NO, use the current event.
 	       */
 	      if (getNextEvent == YES)

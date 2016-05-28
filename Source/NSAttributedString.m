@@ -192,7 +192,7 @@ Class converter_bundles(NSString *format, BOOL producer)
 
 /*
   Return a suitable converter for the text format supplied as argument.
-  If producer is YES a class capable of writting that format is returned,
+  If producer is YES a class capable of writing that format is returned,
   otherwise a class able to read the format is returned.
  */
 static Class converter_class(NSString *format, BOOL producer)

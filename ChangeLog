@@ -1,3 +1,25 @@
+2016-05-28 Eric Heintzmann <heintzmann.eric@free.fr> 
+
+	* ChangeLog.1:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/gopen.1:
+	* Documentation/make_services.1:
+	* Printing/GSCUPS/GNUmakefile.preamble:
+	* Printing/GSLPR/GNUmakefile.preamble:
+	* Printing/GSWIN32/GNUmakefile.preamble:
+	* Source/GSGormLoader.m:
+	* Source/GSNibLoader.m:
+	* Source/GSXibLoader.m:
+	* Source/NSAttributedString.m:
+	* Source/NSBitmapImageRep+JPEG.m:
+	* Source/NSBitmapImageRep.m:
+	* Source/NSNib.m:
+	* Source/NSOutlineView.m:
+	* Source/NSTableView.m:
+	* Source/NSView.m:
+	* Source/nsimage-tiff.h:
+	Spelling errors corrected by lintian
+
 2016-05-20 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSTabViewItem.m

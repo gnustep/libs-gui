@@ -292,7 +292,7 @@ static NSImage *unexpandable  = nil;
       [self _closeItem: item];
 
       // Send out the notification to let observers know that this has
-      // occured.
+      // occurred.
       [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
           object: self
           userInfo: infoDict];
@@ -347,7 +347,7 @@ static NSImage *unexpandable  = nil;
           [self _openItem: item];
 
           // Send out the notification to let observers know that this has
-          // occured.
+          // occurred.
           [nc postNotificationName: NSOutlineViewItemDidExpandNotification
               object: self
               userInfo: infoDict];

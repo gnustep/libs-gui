@@ -4548,7 +4548,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   viewIsPrinting = nil;
 }
 
-/* An exception occured while printing. Clean up */
+/* An exception occurred while printing. Clean up */
 - (void) _cleanupPrinting
 {
   [self _invalidateCoordinates];

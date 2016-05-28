@@ -5370,7 +5370,7 @@ Mon Apr 21 18:57:30 1997  Ovidiu Predescu <ovidiu@net-community.com>
 	(-run): Get the events from NSDefaultRunLoopMode mode instead of nil.
 	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Check for a
 	matching event into the events queue in the order in which the events
-	occured. Temporary retain the event found before removing it from the
+	occurred. Temporary retain the event found before removing it from the
 	events queue to avoid an unneeded deallocation.
 	Inside the loop fire the timers then wait for inputs on the input
 	sources of run loop.

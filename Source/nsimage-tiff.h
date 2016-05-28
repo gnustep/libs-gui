@@ -30,7 +30,7 @@
 /*
     Warning:  This header file should not be used for reading and
     writing tiff files.  You should use the NSImage and NSBitmapImageRep
-    classes for general reading/writting of tiff files.
+    classes for general reading/writing of tiff files.
 */
 
 #ifndef _GNUstep_H_tiff
