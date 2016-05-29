@@ -1241,10 +1241,6 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
 #if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
@@ -1283,10 +1279,6 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
 #if 0
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
@@ -1360,10 +1352,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       count = 0;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1446,10 +1434,6 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1578,10 +1562,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       ok = NO;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1683,10 +1663,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       ok = NO;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1751,10 +1727,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       ok = NO;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1782,10 +1754,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       type = nil;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1812,10 +1780,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       result = nil;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1839,10 +1803,6 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -1869,10 +1829,6 @@ static  NSMapTable              *mimeMap = NULL;
     {
       d = nil;
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
@@ -2258,10 +2214,6 @@ description, [cmd stringByDeletingLastPathComponent]);
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if defined(__MINGW__)
-      if ([[NSApp class] respondsToSelector:@selector(printStackTrace)])
-        [[NSApp class] printStackTrace];
-#endif
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
     }
