@@ -7,9 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel BÃ¶hringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-   Source by Daniel Böhringer integrated into Scott Christley's preliminary
+   Source by Daniel BÃ¶hringer integrated into Scott Christley's preliminary
    implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>

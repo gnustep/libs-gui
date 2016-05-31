@@ -6,7 +6,7 @@
 
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
-   Author:  Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel BÃ¶hringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
    Update: Richard Frith-Macdonald <richard@brainstorm.co.uk> March 1999 
    

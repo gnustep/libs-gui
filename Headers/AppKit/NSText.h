@@ -9,7 +9,7 @@
    Date: 1996
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
-   Author: Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel BÃ¶hringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: December 2000

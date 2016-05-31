@@ -1,3 +1,14 @@
+2016-05-31  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Headers/Additions/GNUstepGUI/GSTheme.h:
+        * Headers/AppKit/NSOpenPanel.h:
+        * Headers/AppKit/NSParagraphStyle.h:
+        * Headers/AppKit/NSText.h:
+        * Headers/AppKit/NSTextAttachment.h:
+        * Headers/AppKit/NSTextStorage.h:
+	Fixed faulty character encoding (should be utf-8) and a couple of
+	documentation markmup errors.
+
 2016-05-28 Eric Heintzmann <heintzmann.eric@free.fr> 
 
 	* ChangeLog.1:
@@ -63,7 +74,8 @@
 2016-03-21 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSImage.m
-	Actually allocate a NSMutableArray, since that is the expected return type.
+	Actually allocate a NSMutableArray, since that is the expected
+	return type.
 
 2016-03-10 Riccardo Mottola <rm@gnu.org>
 
@@ -157,8 +169,8 @@
 	* Images/nsmapping.strings
 	* Source/externs.m
 
-	Provide NSImageNameTrashEmpty NSImageNameTrashFull NSImageNameMultipleDocuments
-	image, both constants and actual icon.
+	Provide NSImageNameTrashEmpty NSImageNameTrashFull
+	NSImageNameMultipleDocuments images, both constants and actual icon.
 
 2015-11-12  Richard Frith-Macdonald <rfm@gnu.org>
 
