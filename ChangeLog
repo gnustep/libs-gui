@@ -1,3 +1,12 @@
+2016-06-02 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSBitmapImageRep+PNG.m:
+	Convert image before storing it.
+        * Headers/Additions/GNUstepGUI/GSNibLoading.h,
+        * Source/GSNibLoading.m:
+	Add class NSIBUserDefinedRuntimeAttributesConnector to handle
+	newer NIB files.
+
 2016-05-31  Richard Frith-Macdonald <rfm@gnu.org>
 
         * Headers/Additions/GNUstepGUI/GSTheme.h:
@@ -64,7 +73,7 @@
 	* Source/NSWorkspace.m
 	* Images/GNUMakefile
 	Add Application folder (patch by Bertrand Dekoninck)
-	
+
 2016-03-22 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSWorkspace.h
