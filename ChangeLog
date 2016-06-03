@@ -1,3 +1,10 @@
+2016-06-03  Yavor Doganov  <yavor@gnu.org>
+
+	* Documentation/GSSpeechServer.1:
+	* Documentation/say.1:
+	* Documentation/GNUmakefile:
+	Install tiny man pages for the GSSpeechServer and say tools.
+
 2016-06-02 Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSBitmapImageRep+PNG.m:
