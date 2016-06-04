@@ -55,6 +55,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRepPrivate.h"
 #import "NSBitmapImageRep+PNG.h"
 
 

@@ -51,6 +51,7 @@
 #import "NSBitmapImageRep+PNG.h"
 #import "NSBitmapImageRep+PNM.h"
 #import "NSBitmapImageRep+ICNS.h"
+#import "NSBitmapImageRepPrivate.h"
 #import "GSGuiPrivate.h"
 
 #include "nsimage-tiff.h"
@@ -58,31 +59,6 @@
 /* Maximum number of planes */
 #define MAX_PLANES 5
 
-/* Backend methods (optional) */
-@interface NSBitmapImageRep (GSPrivate)
-// GNUstep extension
-+ (BOOL) _bitmapIsTIFF: (NSData *)data;
-+ (NSArray*) _imageRepsWithTIFFData: (NSData *)imageData;
-- (NSBitmapImageRep *) _initBitmapFromTIFF: (NSData *)imageData;
-- (NSBitmapImageRep *) _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
-- (void) _fillTIFFInfo: (NSTiffInfo*)info
-      usingCompression: (NSTIFFCompression)type
-                factor: (float)factor;
-
-// Internal
-+ (int) _localFromCompressionType: (NSTIFFCompression)type;
-+ (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
-- (void) _premultiply;
-- (void) _unpremultiply;
-- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (NSInteger)bps
-                                     samplesPerPixel: (NSInteger)spp
-                                            hasAlpha: (BOOL)alpha
-                                            isPlanar: (BOOL)isPlanar
-                                      colorSpaceName: (NSString*)colorSpaceName
-                                        bitmapFormat: (NSBitmapFormat)bitmapFormat 
-                                         bytesPerRow: (NSInteger)rowBytes
-                                        bitsPerPixel: (NSInteger)pixelBits;
-@end
 
 /**
   <unit>
