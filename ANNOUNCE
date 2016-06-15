@@ -1,19 +1,18 @@
 1 ANNOUNCE
 **********
 
-This is version 0.24.1 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.25.0 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
 
 It is a library of graphical user interface classes written completely
 in the Objective-C language; the classes are based upon Apple's Cocoa
-framework (which came from the OpenStep specification as release by
-NeXT Software, Inc).  The library has been enhanced in a number of ways
-to take advantage of the GNU system.  These classes include graphical
-objects such as buttons, text fields, popup lists, browser lists, and
-windows; there are also many associated classes for handling events,
-colors, fonts, pasteboards and images.
+framework.  The library has been enhanced in a number of ways to take
+advantage of the GNU system.  These classes include graphical objects
+such as buttons, text fields, popup lists, browser lists, and windows;
+there are also many associated classes for handling events, colors,
+fonts, pasteboards and images.
 
    The GNUstep GUI Library is designed in two parts.  The first part is
 the front-end component which is independent of platform and display
@@ -25,24 +24,46 @@ the application, and the library can be easily ported to other display
 systems.
 
    The GNUstep GUI Library requires the GNU Objective-C compiler, the
-GNUstep Base Library, the TIFF Graphics library, and a back-end
-component like the GNUstep 'Back' Backend.
+GNUstep Base Library, the TIFF Graphics library, Independent JPEG
+Group's libjpeg library, and a back-end component from the GNUstep
+'Back' library.
 
-1.2 Noteworthy changes in version `0.24.1'
+  Additional functionality may be enabled by installing additional
+libraries. For example, to build the Cairo backend in the GNUstep Back
+library, you will need to install Cairo.
+
+1.2 Noteworthy changes in version `0.25.0'
 ==========================================
 
-From a look through ChangeLog, we can see a lot of bugfixes for this
-release, with the main focus on avoiding display glitches and improving
-OSX compatibility.
+- Fixes for new GIF library versions
+- Theming of named images for spe$cific applications by the use of the
+  CFBundleIdentifier in the theme
+- New icons and corresponding constants for special folders, recycler
+  and others
+- Improvements in NSWorkspace icon lookup
+- Improvements in removable media commands, imported and cleaned from
+  GWorkspace
+- Numerous bug fixes and improvements in Cocoa compatibility
+- Numerous theme tweaks
+- Spanish locale
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.24.1.tar.gz distribution file has been placed at
+The gnustep-gui-0.25.0.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
+It is accompanied by gnustep-gui-0.25.0.tar.gz.sig, a PGP signature
+which you can validate by putting both files in the same directory
+and using:
+`gpg --verify gnustep-gui-0.25.0.tar.gz.sig'
+
+Signature has been created using the key with the following
+fingerprint:
+`83AA E47C E829 A414 6EF8  3420 CA86 8D4C 9914 9679'
+
 Read the INSTALL file or the GNUstep-HOWTO for installation
-instructions.
+Instructions.
 
 1.4 Where do I send bug reports?
 ================================
