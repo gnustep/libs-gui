@@ -7,7 +7,7 @@ The currently released version of the library is `0.25.0'.
 ==========================================
 
 - Fixes for new GIF library versions
-- Theming of named images for spe$cific applications by the use of the
+- Theming of named images for specific applications by the use of the
   CFBundleIdentifier in the theme
 - New icons and corresponding constants for special folders, recycler
   and others
