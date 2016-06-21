@@ -4036,6 +4036,17 @@ _ACEOF
 fi
 done
 
+for ac_func in statvfs
+do :
+  ac_fn_c_check_func "$LINENO" "statvfs" "ac_cv_func_statvfs"
+if test "x$ac_cv_func_statvfs" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STATVFS 1
+_ACEOF
+
+fi
+done
+
 for ac_header in sys/statvfs.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "sys/statvfs.h" "ac_cv_header_sys_statvfs_h" "$ac_includes_default"
@@ -4059,6 +4070,44 @@ _ACEOF
 fi
 
 done
+
+
+ac_fn_c_check_member "$LINENO" "struct statfs" "f_flags" "ac_cv_member_struct_statfs_f_flags" "
+#if	defined(HAVE_GETMNTINFO)
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+#if defined (HAVE_SYS_VFS_H)
+#include <sys/vfs.h>
+#endif
+
+"
+if test "x$ac_cv_member_struct_statfs_f_flags" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_STATFS_F_FLAGS 1
+_ACEOF
+
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct statvfs" "f_flag" "ac_cv_member_struct_statvfs_f_flag" "
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+
+"
+if test "x$ac_cv_member_struct_statvfs_f_flag" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_STATVFS_F_FLAG 1
+_ACEOF
+
+
+fi
 
 
 #--------------------------------------------------------------------

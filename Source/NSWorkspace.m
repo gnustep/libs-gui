@@ -1210,7 +1210,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
   */
-#if (defined (__NetBSD__) && __NetBSD_Version__ >= 300000000) || (defined(__sun__) && defined(__svr4__)) 
+#if (defined (__NetBSD__) && defined (HAVE_STATVFS)) || (defined(__sun__) && defined(__svr4__)) 
 #define statfs statvfs
 #define f_flags f_flag
 #endif
@@ -1228,8 +1228,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     *removableFlag = YES;
 
   *writableFlag = 1;
-  // FIXME TODO maybe we need an explicit configure check for f_flags
-#if !defined(__GNU__)
+#if defined(HAVE_STRUCT_STATFS_F_FLAGS) || defined(HAVE_STRUCT_STATVFS_F_FLAG)
   *writableFlag = (m.f_flags & ST_RDONLY) == 0;
 #endif
   *unmountableFlag = NO;

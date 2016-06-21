@@ -155,8 +155,27 @@ AC_CHECK_MEMBER(struct mntent.mnt_dir,[AC_DEFINE(MNT_MEMB,mnt_dir,mntent structu
 AC_CHECK_MEMBER(struct mntent.mnt_mountp,[AC_DEFINE(MNT_MEMB,mnt_mountp,mntent structure member name)],,[#include <sys/mntent.h>])
 AC_FUNC_GETMNTENT
 AC_CHECK_FUNCS(getmntinfo)
+AC_CHECK_FUNCS(statvfs)
 AC_CHECK_HEADERS(sys/statvfs.h)
 AC_CHECK_HEADERS(sys/vfs.h)
+
+AC_CHECK_MEMBERS([struct statfs.f_flags],[],[],[
+#if	defined(HAVE_GETMNTINFO)
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+#if defined (HAVE_SYS_VFS_H)
+#include <sys/vfs.h>
+#endif
+])
+AC_CHECK_MEMBERS([struct statvfs.f_flag],[],[],[
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+])
 
 #--------------------------------------------------------------------
 # Simple way to add a bunch of paths to the flags

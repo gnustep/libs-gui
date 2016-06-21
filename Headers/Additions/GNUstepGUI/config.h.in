@@ -27,7 +27,7 @@
 /* Define to 1 if you have the `GifQuantizeBuffer' function. */
 #undef HAVE_GIFQUANTIZEBUFFER
 
-/* Have ImageMagick */
+/* Don't have ImageMagick */
 #undef HAVE_IMAGEMAGICK
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -84,6 +84,9 @@
 /* Define to 1 if you have the <sndfile.h> header file. */
 #undef HAVE_SNDFILE_H
 
+/* Define to 1 if you have the `statvfs' function. */
+#undef HAVE_STATVFS
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
@@ -95,6 +98,12 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define to 1 if `f_flags' is a member of `struct statfs'. */
+#undef HAVE_STRUCT_STATFS_F_FLAGS
+
+/* Define to 1 if `f_flag' is a member of `struct statvfs'. */
+#undef HAVE_STRUCT_STATVFS_F_FLAG
 
 /* Define to 1 if you have the <sys/mntent.h> header file. */
 #undef HAVE_SYS_MNTENT_H
