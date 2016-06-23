@@ -2302,7 +2302,10 @@ static NSColor *dtxtCol;
     {
       // Testplant-MAL-2015-06-20: Korean/Chinese/etc characters not properly
       // horizontally centered if you set to infinity - should be at text size...
-      maxSize = titleRect.size;
+      // Testplant-MAL-2016-06-23: This *seems* to have been fixed - maybe from a
+      // from the main branch - so reverting to previous code...
+      //maxSize = titleRect.size;
+      maxSize = NSMakeSize(1e6, 1e6);
     }
   [ct setContainerSize: maxSize];
   [ct setWidthTracksTextView: wraps];
