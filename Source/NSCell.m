@@ -2304,8 +2304,8 @@ static NSColor *dtxtCol;
       // horizontally centered if you set to infinity - should be at text size...
       // Testplant-MAL-2016-06-23: This *seems* to have been fixed - maybe from a
       // from the main branch - so reverting to previous code...
-      //maxSize = titleRect.size;
-      maxSize = NSMakeSize(1e6, 1e6);
+      // maxSize = titleRect.size;
+      maxSize = NSMakeSize(1e7, NSHeight(titleRect));
     }
   [ct setContainerSize: maxSize];
   [ct setWidthTracksTextView: wraps];
