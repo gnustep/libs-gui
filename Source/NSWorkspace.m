@@ -1210,7 +1210,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
   */
-#if (defined (__NetBSD__) && defined (HAVE_STATVFS)) || (defined(__sun__) && defined(__svr4__)) 
+#if (defined (__NetBSD__) && defined (HAVE_STATVFS)) || (defined(__sun__) && defined(__svr4__)) || (defined(HAVE_STATVFS) && !defined(HAVE_STATFS))
 #define statfs statvfs
 #define f_flags f_flag
 #endif
