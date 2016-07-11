@@ -1209,27 +1209,28 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      The statvfs call on Solaris returns a structure that includes a
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
+
+     Always prefer the POSIX statvfs() call if available because more standard.
+     Specific features to be added specifically.
   */
-#if (defined (__NetBSD__) && defined (HAVE_STATVFS)) || (defined(__sun__) && defined(__svr4__)) || (defined(HAVE_STATVFS) && !defined(HAVE_STATFS))
-#define statfs statvfs
-#define f_flags f_flag
+#if !defined(HAVE_STATVFS)
+#define statvfs statfs
+#define f_flag f_flags
 #endif
   uid_t uid;
-  struct statfs m;
-  NSStringEncoding enc;
+  struct statvfs m;
 
-  if (statfs([fullPath fileSystemRepresentation], &m))
+  if (statvfs([fullPath fileSystemRepresentation], &m))
     return NO;
 
   uid = geteuid();
-  enc = [NSString defaultCStringEncoding];
   *removableFlag = NO; // FIXME
   if ([removables containsObject: fullPath])
     *removableFlag = YES;
 
   *writableFlag = 1;
 #if defined(HAVE_STRUCT_STATFS_F_FLAGS) || defined(HAVE_STRUCT_STATVFS_F_FLAG)
-  *writableFlag = (m.f_flags & ST_RDONLY) == 0;
+  *writableFlag = (m.f_flag & ST_RDONLY) == 0;
 #endif
   *unmountableFlag = NO;
 
@@ -1238,38 +1239,40 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     (m.f_flag & ST_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
 #elif defined (MNT_ROOTFS)
   *unmountableFlag =
-    (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
+    (m.f_flag & MNT_ROOTFS) == 0;
 #endif
 
   *description = @"filesystem"; // FIXME
 
   *fileSystemType = nil;
 #if defined (__linux__)
-  if (m.f_type == EXT2_SUPER_MAGIC)
+  struct statfs m2;
+
+  statfs([fullPath fileSystemRepresentation], &m2);
+  if (m2.f_type == EXT2_SUPER_MAGIC)
     *fileSystemType = @"EXT2";
-  else if (m.f_type == EXT3_SUPER_MAGIC)
+  else if (m2.f_type == EXT3_SUPER_MAGIC)
     *fileSystemType = @"EXT3";
-  else if (m.f_type == EXT4_SUPER_MAGIC)
+  else if (m2.f_type == EXT4_SUPER_MAGIC)
     *fileSystemType = @"EXT4";
-  else if (m.f_type == ISOFS_SUPER_MAGIC)
+  else if (m2.f_type == ISOFS_SUPER_MAGIC)
     *fileSystemType = @"ISO9660";
 #ifdef JFS_SUPER_MAGIC
-  else if (m.f_type == JFS_SUPER_MAGIC)
+  else if (m2.f_type == JFS_SUPER_MAGIC)
     *fileSystemType = @"JFS";
 #endif
-  else if (m.f_type == MSDOS_SUPER_MAGIC)
+  else if (m2.f_type == MSDOS_SUPER_MAGIC)
     *fileSystemType = @"MSDOS";
-  else if (m.f_type == NFS_SUPER_MAGIC)
+  else if (m2.f_type == NFS_SUPER_MAGIC)
     *fileSystemType = @"NFS";
   else
-     *fileSystemType = @"Other";
+    *fileSystemType = @"Other";
 #elif defined(__sun__)
   *fileSystemType =
-    [[NSString alloc] initWithCString: m.f_basetype encoding: enc];
+    [[NSString alloc] initWithCString: m.f_basetype encoding: [NSString defaultCStringEncoding]];
 #elif !defined(__GNU__)
   // FIXME we disable this for HURD, but we need to check for struct member in configure
-  *fileSystemType =
-    [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
+  //  *fileSystemType = [[NSString alloc] initWithCString: m.f_fstypename encoding: [NSString defaultCStringEncoding]];
 #endif
 
   return YES;

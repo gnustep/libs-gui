@@ -1,3 +1,8 @@
+2016-07-12 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m
+	Prefer statvfs() over statfs(), use both on linux, disable fs name on unknown systems.
+
 2016-07-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/config.h.in
