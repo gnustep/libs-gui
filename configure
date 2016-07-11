@@ -4036,6 +4036,17 @@ _ACEOF
 fi
 done
 
+for ac_func in statfs
+do :
+  ac_fn_c_check_func "$LINENO" "statfs" "ac_cv_func_statfs"
+if test "x$ac_cv_func_statfs" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STATFS 1
+_ACEOF
+
+fi
+done
+
 for ac_func in statvfs
 do :
   ac_fn_c_check_func "$LINENO" "statvfs" "ac_cv_func_statvfs"

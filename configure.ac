@@ -155,6 +155,7 @@ AC_CHECK_MEMBER(struct mntent.mnt_dir,[AC_DEFINE(MNT_MEMB,mnt_dir,mntent structu
 AC_CHECK_MEMBER(struct mntent.mnt_mountp,[AC_DEFINE(MNT_MEMB,mnt_mountp,mntent structure member name)],,[#include <sys/mntent.h>])
 AC_FUNC_GETMNTENT
 AC_CHECK_FUNCS(getmntinfo)
+AC_CHECK_FUNCS(statfs)
 AC_CHECK_FUNCS(statvfs)
 AC_CHECK_HEADERS(sys/statvfs.h)
 AC_CHECK_HEADERS(sys/vfs.h)
