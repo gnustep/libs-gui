@@ -676,6 +676,77 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
     }
 }
 
+- (void) openDocumentWithContentsOfURL: (NSURL*)url
+                               display: (BOOL)display
+                     completionHandler: (GSCompletionBlock1)completionHandler
+{
+  NSError *err = nil;
+  BOOL existing = NO;
+  
+  if (OVERRIDDEN(openDocumentWithContentsOfURL:display:error:))
+    {
+      NSDocument *document = [self openDocumentWithContentsOfURL: url 
+                                                         display: display
+                                                           error: &err];
+      CALL_BLOCK(completionHandler, document, existing, err);
+    }
+  else
+    {
+      if (OVERRIDDEN(openDocumentWithContentsOfFile:display:) && [url isFileURL])
+        {
+          NSDocument *document = [self openDocumentWithContentsOfFile: [url path] 
+                                                              display: display];
+          CALL_BLOCK(completionHandler, document, existing, err);
+        }
+      else
+        {
+          NSDocument *document = [self documentForURL: url];
+          
+          if (document == nil)
+            {
+              NSString *type = [self typeForContentsOfURL: url error: &err];
+              
+              if (type == nil)
+                {
+                  CALL_BLOCK(completionHandler, document, existing, err);
+                  return;
+                }
+              
+              document = [self makeDocumentWithContentsOfURL: url  
+                                                      ofType: type 
+                                                       error: &err];
+              
+              if (document == nil)
+                {
+                  CALL_BLOCK(completionHandler, document, existing, err);
+                  return;
+                }
+              
+              [self addDocument: document];
+              
+              if (display)
+                {
+                  [document makeWindowControllers];
+                }
+            }
+          else
+            {
+              existing = YES;
+            }
+          
+          // remember this document as opened
+          [self noteNewRecentDocument: document];
+          
+          if (display)
+            {
+              [document showWindows];
+            }
+          
+          CALL_BLOCK(completionHandler, document, existing, err);
+        }
+    }
+}
+
 - (BOOL) reopenDocumentForURL: (NSURL *)url
             withContentsOfURL: (NSURL *)contents
                         error: (NSError **)err
@@ -704,6 +775,53 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
     }
 
   return NO;
+}
+
+- (void) reopenDocumentForURL: (NSURL*)url
+            withContentsOfURL: (NSURL*)contents
+                      display: (BOOL)display
+            completionHandler: (GSCompletionBlock1)completionHandler
+{
+  NSError *err = nil;
+  BOOL existing = NO;
+  
+  if (OVERRIDDEN(reopenDocumentForURL:withContentsOfURL:error:))
+    {
+      [self reopenDocumentForURL: url
+               withContentsOfURL: contents
+                           error: &err];
+    }
+  else
+    {
+      NSDocument *document = nil;
+      NSString *type = [self typeForContentsOfURL: contents error: &err];
+      
+      if (type == nil)
+        {
+          CALL_BLOCK(completionHandler, document, existing, err);
+          return;
+        }
+      
+      document = [self makeDocumentForURL: url
+                        withContentsOfURL: contents
+                                   ofType: type
+                                    error: &err];
+      if (document)
+        {
+          [self addDocument:document];
+
+          // remember this document as opened
+          [self noteNewRecentDocument: document];
+
+          if ([self shouldCreateUI])
+            {
+              [document makeWindowControllers];
+              [document showWindows];
+            }  
+        }
+
+      CALL_BLOCK(completionHandler, document, existing, err);
+    }
 }
 
 - (NSOpenPanel *) _setupOpenPanel
@@ -777,6 +895,50 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   return nil;
 }
 
+- (void) beginOpenPanelWithCompletionHandler: (GSCompletionBlock2)completionHandler
+{
+  if (OVERRIDDEN(URLsFromRunningOpenPanel) || OVERRIDDEN(runModalOpenPanel:forTypes:))
+    {
+      NSArray *urls = [self URLsFromRunningOpenPanel];
+      CALL_BLOCK(completionHandler, urls);
+      return;
+    }
+  else
+    {
+#if __has_feature(blocks)
+      NSArray *types = [self _openableFileExtensions];
+      __block NSOpenPanel *openPanel = [self _setupOpenPanel];
+      __block GSCompletionBlock2 ch = completionHandler;
+
+      GSCompletionBlock3 block =
+        ^(NSInteger result)
+        {
+          if (result == NSOKButton)
+            {
+              CALL_BLOCK(ch, [openPanel URLs]);
+            }
+          else
+            {
+              CALL_BLOCK(ch, nil);
+            }
+        }
+       [self beginOpenPanel: openPanel forTypes: types completionHandler: block];
+#else
+      NSArray *urls = [self URLsFromRunningOpenPanel];
+      CALL_BLOCK(completionHandler, urls);
+#endif
+    }
+}
+
+- (void) beginOpenPanel: (NSOpenPanel*)openPanel
+               forTypes: (NSArray*)types
+      completionHandler: (GSCompletionBlock3)completionHandler
+{
+  // FIXME
+  NSInteger result = [self runModalOpenPanel: openPanel forTypes: types];
+  CALL_BLOCK(completionHandler, result);
+}
+
 - (IBAction) saveAllDocuments: (id)sender
 {
   NSDocument *document;
@@ -800,11 +962,25 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
   urlEnum = [[self URLsFromRunningOpenPanel] objectEnumerator];
   while ((url = [urlEnum nextObject]))
     {
+#if __has_feature(blocks)
+  GSCompletionBlock1 block =
+    ^(NSDocument *document, BOOL existing, NSError *err)
+    {
+      if (err)
+        {
+          [self presentError: err];
+        }
+    };
+  [self openDocumentWithContentsOfURL: url display: YES completionHandler: block];
+#else
+      // FIXME: Should be calling openDocumentWithContentsOfURL:display:completionHandler:
+      // but this requires Block support
       [self openDocumentWithContentsOfURL: url display: YES error: &err];
       if (err && ![self presentError: err])
         {
           break;
         }
+#endif
     }
 }
         
@@ -974,6 +1150,14 @@ static BOOL _shouldClose = YES;
                     nil);
 }
 
+- (id) duplicateDocumentWithContentsOfURL: (NSURL*)url
+                                  copying: (BOOL)duplicateByCopying
+                              displayName: (NSString*)displayNameOrNil
+                                    error: (NSError**)outError
+{
+  // FIXME: Implementation missing
+  return nil;
+}
 
 #ifdef OPENSTEP_ONLY
 /*

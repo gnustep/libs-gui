@@ -1,3 +1,8 @@
+2016-07-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDocumentController.h,
+        * Source/NSDocumentController.m: Add 10.7 methods.
+
 2016-07-12 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
