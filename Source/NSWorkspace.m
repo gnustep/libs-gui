@@ -814,7 +814,7 @@ static NSDictionary		*urlPreferences = nil;
       unichar *buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
       [fullPath getCharacters: buffer range: NSMakeRange(0, [fullPath length])];
       buffer[[fullPath length]] = 0;
-      BOOL success = (ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
+      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
                                     NULL, SW_SHOWNORMAL) > 32);
       free(buffer);
       return success;
