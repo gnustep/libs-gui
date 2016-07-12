@@ -1213,32 +1213,52 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
   */
-#if !defined(HAVE_STATVFS)
-#define statvfs statfs
-#define f_flag f_flags
-#endif
   uid_t uid;
-  struct statvfs m;
+  BOOL isRootFS;
+  BOOL hasOwnership;
 
+#if defined(HAVE_STATVFS)
+  #define USING_STATVFS 1
+  struct statvfs m;
   if (statvfs([fullPath fileSystemRepresentation], &m))
     return NO;
-
+#elif defined (HAVE_STATFS)
+  #define USING_STATFS 1
+  struct statfs m;
+  if (statfs([fullPath fileSystemRepresentation], &m))
+    return NO;  
+#endif
   uid = geteuid();
 
   *writableFlag = 1;
-#if defined(HAVE_STRUCT_STATFS_F_FLAGS) || defined(HAVE_STRUCT_STATVFS_F_FLAG)
+#if  defined(HAVE_STRUCT_STATVFS_F_FLAG)
   *writableFlag = (m.f_flag & ST_RDONLY) == 0;
-#endif
-  *unmountableFlag = NO;
-
-#if defined(ST_ROOTFS) // new NetBSD
-  *unmountableFlag =
-    (m.f_flag & ST_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-#elif defined (MNT_ROOTFS) // FreeBSD
-  *unmountableFlag =
-    (m.f_flag & MNT_ROOTFS) == 0;
+#elif defined(HAVE_STRUCT_STATFS_F_FLAGS)
+  *writableFlag = (m.f_flags & ST_RDONLY) == 0;
 #endif
 
+
+  isRootFS = NO;
+#if defined(ST_ROOTFS)
+  isRootFS = (m.f_flag & ST_ROOTFS);
+#elif defined (MNT_ROOTFS)
+  isRootFS = (m.f_flag & MNT_ROOTFS);
+#endif
+
+  hasOwnership = NO;
+#if (defined(USING_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER)) || (defined(USING_STATVFS) &&  defined(HAVE_STRUCT_STATVFS_F_OWNER))
+  if (uid == 0 || uid == m.f_owner)
+    hasOwnership = YES;
+#elif (defined(USING_STATVFS) && !defined(USING_STATFS) && defined (HAVE_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER))
+  // FreeBSD only?
+  struct statfs m2;
+  statfs([fullPath fileSystemRepresentation], &m2);
+  if (uid == 0 || uid == m2.f_owner)
+    hasOwnership = YES;
+#endif
+  
+  *unmountableFlag = !isRootFS && hasOwnership;
+  
   *description = @"filesystem"; // FIXME
 
   *fileSystemType = nil;
@@ -2064,8 +2084,12 @@ launchIdentifiers: (NSArray **)identifiers
 #elif defined (HAVE_GETMNTINFO)
   NSFileManager	*mgr = [NSFileManager defaultManager];
   unsigned int	i, n;
+#if defined(HAVE_STATVFS) && defined (__NetBSD__)
+  struct statvfs *m;
+#else
   struct statfs	*m;
-
+#endif
+  
   n = getmntinfo(&m, MNT_NOWAIT);
   names = [NSMutableArray arrayWithCapacity: n];
   for (i = 0; i < n; i++)

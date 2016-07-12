@@ -105,8 +105,14 @@
 /* Define to 1 if `f_flags' is a member of `struct statfs'. */
 #undef HAVE_STRUCT_STATFS_F_FLAGS
 
+/* Define to 1 if `f_owner' is a member of `struct statfs'. */
+#undef HAVE_STRUCT_STATFS_F_OWNER
+
 /* Define to 1 if `f_flag' is a member of `struct statvfs'. */
 #undef HAVE_STRUCT_STATVFS_F_FLAG
+
+/* Define to 1 if `f_owner' is a member of `struct statvfs'. */
+#undef HAVE_STRUCT_STATVFS_F_OWNER
 
 /* Define to 1 if you have the <sys/mntent.h> header file. */
 #undef HAVE_SYS_MNTENT_H

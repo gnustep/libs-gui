@@ -160,7 +160,7 @@ AC_CHECK_FUNCS(statvfs)
 AC_CHECK_HEADERS(sys/statvfs.h)
 AC_CHECK_HEADERS(sys/vfs.h)
 
-AC_CHECK_MEMBERS([struct statfs.f_flags],[],[],[
+AC_CHECK_MEMBERS([struct statfs.f_flags, struct statfs.f_owner],[],[],[
 #if	defined(HAVE_GETMNTINFO)
 #include <sys/param.h>
 #include <sys/mount.h>
@@ -172,7 +172,7 @@ AC_CHECK_MEMBERS([struct statfs.f_flags],[],[],[
 #include <sys/vfs.h>
 #endif
 ])
-AC_CHECK_MEMBERS([struct statvfs.f_flag],[],[],[
+AC_CHECK_MEMBERS([struct statvfs.f_flag, struct statvfs.f_owner],[],[],[
 #if defined (HAVE_SYS_STATVFS_H)
 #include <sys/statvfs.h>
 #endif

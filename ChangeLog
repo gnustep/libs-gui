@@ -1,3 +1,10 @@
+2016-07-13 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSWorkspace.m
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* configure.ac
+	Check explicitely for f_owner and use f_owner and f_flag if checked.
+
 2016-07-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSDocumentController.h,
