@@ -1193,15 +1193,18 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    */
   removables = [[[NSUserDefaults standardUserDefaults] persistentDomainForName: NSGlobalDomain] objectForKey: @"GSRemovableMediaPaths"];
   
+  *removableFlag = NO;
+  if ([removables containsObject: fullPath])
+    *removableFlag = YES;
+  
 #if defined (HAVE_SYS_STATVFS_H) || defined (HAVE_SYS_VFS_H)
-  /* FIXME Check for presence of statfs call explicitly. 
-     In particular, NetBSD offers
-     only a statvfs calls for compatibility with POSIX. Other BSDs and
-     Linuxes have statvfs as well, but this returns less information than
-     the 4.4BSD statfs call. The NetBSD statvfs, on the other hand, is just
-     a statfs in disguise, i.e., it provides all information available in
-     the 4.4BSD statfs call. Therefore, we go ahead an just #define statfs
-     as statvfs on NetBSD.
+  /* We use statvfs() if available to get information but statfs()
+     will provide more information on different systems, but in a non
+     standard way. Thus e.g. on Linux two calls are needed.
+     The NetBSD statvfs is a statfs in disguise, i.e., it provides all
+     information available in      the 4.4BSD statfs call. 
+     Other BSDs and      Linuxes have statvfs as well, but this returns less
+     information than      the 4.4BSD statfs call.
      Note that the POSIX statvfs is not really helpful for us here. The
      only information that could be extracted from the data returned by
      that syscall is the ST_RDONLY flag. There is no owner field nor a
@@ -1209,9 +1212,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      The statvfs call on Solaris returns a structure that includes a
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
-
-     Always prefer the POSIX statvfs() call if available because more standard.
-     Specific features to be added specifically.
   */
 #if !defined(HAVE_STATVFS)
 #define statvfs statfs
@@ -1224,9 +1224,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     return NO;
 
   uid = geteuid();
-  *removableFlag = NO; // FIXME
-  if ([removables containsObject: fullPath])
-    *removableFlag = YES;
 
   *writableFlag = 1;
 #if defined(HAVE_STRUCT_STATFS_F_FLAGS) || defined(HAVE_STRUCT_STATVFS_F_FLAG)
@@ -1234,10 +1231,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 #endif
   *unmountableFlag = NO;
 
-#if defined(ST_ROOTFS) // new NetBSD, Linux
+#if defined(ST_ROOTFS) // new NetBSD
   *unmountableFlag =
     (m.f_flag & ST_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-#elif defined (MNT_ROOTFS)
+#elif defined (MNT_ROOTFS) // FreeBSD
   *unmountableFlag =
     (m.f_flag & MNT_ROOTFS) == 0;
 #endif
@@ -1275,14 +1272,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   //  *fileSystemType = [[NSString alloc] initWithCString: m.f_fstypename encoding: [NSString defaultCStringEncoding]];
 #endif
 
-  return YES;
-#else
+#else /* no statfs() nor statvfs() */
   NSLog(@"getFileSystemInfoForPath not supported on your OS");
-  if ([removables containsObject: fullPath])
-    *removableFlag = YES;
-  // FIXME
-  return NO;
 #endif
+  
+  return YES;
 }
 
 /**
