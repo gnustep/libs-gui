@@ -1,3 +1,10 @@
+2016-07-16 18:12-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPrintInfo.m: Add a comment so it's clear what
+	this method is meant for.
+	* Source/NSView.m: In beginPage:label:bBox:fonts: align top level
+	view with current page dimensions.
+
 2016-07-13 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m

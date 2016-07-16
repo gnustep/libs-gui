@@ -155,8 +155,8 @@ static NSPrintInfo *sharedPrintInfo = nil;
   [self setVerticalPagination: NSAutoPagination];
   [self setHorizontalPagination: NSClipPagination];
   [self setJobDisposition: NSPrintSpoolJob];
-  [self setHorizontallyCentered: YES];
-  [self setVerticallyCentered: YES];
+  [self setHorizontallyCentered: NO];
+  [self setVerticallyCentered: NO];
 
   printer = [NSPrintInfo defaultPrinter];
   [self setPrinter: printer];
