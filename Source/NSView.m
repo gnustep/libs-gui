@@ -4239,7 +4239,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   NSGraphicsContext *ctxt = [printOp context];
   NSSize paperSize = [info paperSize];
   float scale = (double)([self frame].size.width/paperSize.width);
-  float xoff = 0;
+  float xoff = 0.0;
   float yoff = (paperSize.height - self.frame.size.height) / scale;
 
   [ctxt  beginPage: ordinalNum
