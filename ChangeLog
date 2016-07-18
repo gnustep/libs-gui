@@ -1,3 +1,7 @@
+2016-07-18 11:59-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSView.m: Move to new branch.
+
 2016-07-18 11:46-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSView.m: Revert previous changes.  Moving to a branch.
