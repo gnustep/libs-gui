@@ -1,3 +1,9 @@
+2016-07-18 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSView.m:
+	Use CGFloat as original structures do and double for scale instead of
+	CGFloat -> double -> float.
+
 2016-07-16 18:12-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSPrintInfo.m: Add a comment so it's clear what
