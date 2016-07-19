@@ -4240,7 +4240,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   NSSize paperSize = [info paperSize];
   CGFloat scale = (double)([self frame].size.width/paperSize.width);
   CGFloat xoff = 0.0;
-  CGFloat yoff = (paperSize.height - self.frame.size.height) / scale;
+  CGFloat yoff = (paperSize.height - [self frame].size.height) / scale;
 
   [ctxt  beginPage: ordinalNum
          label: aString
