@@ -4235,12 +4235,26 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
              fonts: (NSString*)fontNames
 {
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSPrintInfo *info = [printOp printInfo];
   NSGraphicsContext *ctxt = [printOp context];
+  NSSize paperSize = [info paperSize];
+  CGFloat scale = (double)([self frame].size.width/paperSize.width);
+  CGFloat xoff = 0.0;
+  CGFloat yoff = (paperSize.height - self.frame.size.height) / scale;
 
   [ctxt  beginPage: ordinalNum
          label: aString
          bBox: pageRect
          fonts: fontNames];
+  
+  // Need to align the view being printed based on the size of the page.
+
+  // Add to scale the page down
+  DPSscale(ctxt, scale, scale);
+  
+  // Add translation
+  DPStranslate(ctxt, xoff, yoff);
+
 }
 
 - (void) beginPageSetupRect: (NSRect)aRect placement: (NSPoint)location
@@ -4270,6 +4284,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) addToPageSetup
 {
+  // Override this method when you want to add something to the view specific to printing.
 }
 
 - (void) beginSetup
