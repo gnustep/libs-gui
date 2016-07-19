@@ -2,7 +2,7 @@
 
    <abstract>The font descriptor class</abstract>
 
-   Copyright (C) 2007 Free Software Foundation, Inc.
+   Copyright (C) 2007-2016 Free Software Foundation, Inc.
 
    Author: H. Nikolaus Schaller <hns@computer.org>
    Date: 2006
@@ -268,7 +268,7 @@
           withString: @""
           options: 0
           range: NSMakeRange(0, [family length])];
-  if ([face isEqualToString: @"Regular"])
+  if (!face || [face isEqualToString: @"Regular"])
     return family;
   return [NSString stringWithFormat: @"%@-%@", family, face];
 }
