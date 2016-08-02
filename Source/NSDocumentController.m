@@ -921,7 +921,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
             {
               CALL_BLOCK(ch, nil);
             }
-        }
+        };
        [self beginOpenPanel: openPanel forTypes: types completionHandler: block];
 #else
       NSArray *urls = [self URLsFromRunningOpenPanel];

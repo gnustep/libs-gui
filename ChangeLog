@@ -1,3 +1,8 @@
+2016-08-02 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSDocumentController.m: Add missing semicolon.
+	Patch by Galen Rhodes <galenrhodes@me.com>.
+
 2016-07-19  Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSFontDescriptor.m
