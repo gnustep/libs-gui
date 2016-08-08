@@ -2087,7 +2087,16 @@ description, [cmd stringByDeletingLastPathComponent]);
 			 name: @"GSStartup-GPBS"
 		       object: nil];
 
+#if defined(__MINGW32__)
+	      NSTask *task = AUTORELEASE([NSTask new]);
+	      [task setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"CON"]];
+	      [task setStandardOutput:[NSFileHandle fileHandleForWritingAtPath:@"CON"]];
+	      [task setLaunchPath:cmd];
+	      [task setArguments:args];
+	      [task launch];
+#else
 	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
+#endif
 	      RELEASE(args);
 
 	      timeoutDate = [NSDate dateWithTimeIntervalSinceNow: 5.0];
