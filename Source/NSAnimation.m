@@ -329,18 +329,18 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
       NSDebugMLLog (@"NSAnimationDelegate",
                     @"[delegate animationValueForProgress] (cached)");
       value = (*_delegate_animationValueForProgress)
-                (GS_GC_UNHIDE (_currentDelegate),
+                (_currentDelegate,
                  @selector (animation:valueForProgress:),
                  self, _currentProgress);
     }
   else // method is not cached (the animation did not start yet)
     if ( _delegate != nil
-         && [GS_GC_UNHIDE (_delegate) respondsToSelector:
+         && [_delegate respondsToSelector:
                @selector (animation:valueForProgress:)] )
       {
         NSDebugMLLog (@"NSAnimationDelegate",
                       @"[delegate animationValueForProgress]");
-        value = [GS_GC_UNHIDE (_delegate) animation: self
+        value = [_delegate animation: self
                                    valueForProgress: _currentProgress];
       }
     else // default -- FIXME ??
@@ -369,7 +369,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
-  d = (_delegate == nil)? nil : GS_GC_UNHIDE (_delegate);
+  d = (_delegate == nil)? nil : _delegate;
   _NSANIMATION_UNLOCK;
   return d;
 }
@@ -689,7 +689,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
-  _delegate = (delegate == nil)? nil : GS_GC_HIDE (delegate);
+  _delegate = (delegate == nil)? nil : delegate;
   _NSANIMATION_UNLOCK;
 }
 
@@ -770,7 +770,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
       NSDebugMLLog(@"NSAnimationDelegate", @"Cache delegation methods");
       // delegation methods are cached while the animation is running
-      delegate = GS_GC_UNHIDE(_delegate);
+      delegate = _delegate;
       _delegate_animationDidReachProgressMark =
         ([delegate respondsToSelector: @selector (animation:didReachProgressMark:)]) ?
         (void (*)(id,SEL,NSAnimation*,NSAnimationProgress))
@@ -969,7 +969,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
   _NSANIMATION_LOCK;
 
-  delegate = GS_GC_UNHIDE (_currentDelegate);
+  delegate = _currentDelegate;
 
   if (_delegate_animationShouldStart) // method is cached (the animation is running)
     {
@@ -990,7 +990,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
 
   _NSANIMATION_LOCK;
 
-  delegate = GS_GC_UNHIDE (_currentDelegate);
+  delegate = _currentDelegate;
   if (_currentProgress < 1.0)
     {
       if (_delegate_animationDidStop) // method is cached (the animation is running)
@@ -1107,18 +1107,18 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
     {
       NSDebugMLLog(@"NSAnimationDelegate",
                    @"[delegate animationdidReachProgressMark] (cached)");
-      _delegate_animationDidReachProgressMark (GS_GC_UNHIDE(_currentDelegate),
+      _delegate_animationDidReachProgressMark (_currentDelegate,
                                                @selector(animation:didReachProgressMark:),
                                                self,progress);
     }
   else // method is not cached (the animation did not start yet)
     if ( _delegate != nil
-         && [GS_GC_UNHIDE (_delegate)
+         && [_delegate
               respondsToSelector: @selector(animation:didReachProgressMark:)] )
       {
         NSDebugMLLog(@"NSAnimationDelegate",
                      @"[delegate animationdidReachProgressMark]");
-        [GS_GC_UNHIDE (_delegate) animation: self didReachProgressMark: progress];
+        [_delegate animation: self didReachProgressMark: progress];
       }
 
   // posts a notification
