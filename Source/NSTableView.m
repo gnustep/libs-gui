@@ -170,7 +170,7 @@ typedef struct _tableViewFlags
 @end
 
 @interface NSTableView (EventLoopHelper)
-- (void) _trackCellAtColumn:(int)column row:(int)row withEvent:(NSEvent *)ev;
+- (void) _trackCellAtColumn:(NSInteger)column row:(NSInteger)row withEvent:(NSEvent *)ev;
 - (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent clickedRow:(NSUInteger)clickedRow;
 @end
 
