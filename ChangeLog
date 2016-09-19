@@ -1,3 +1,10 @@
+2016-09-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSFontInfo.m (-fontDescriptor): Simplify creation of font
+	descriptor. Use only the minimal attributes.
+	* Source/NSFontDescriptor.m (-postscriptName): Generate PS name
+	from font name itself.
+
 2016-08-02 Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSDocumentController.m: Add missing semicolon.

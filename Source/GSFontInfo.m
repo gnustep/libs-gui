@@ -767,40 +767,34 @@ static GSFontEnumerator *sharedEnumerator = nil;
   if (fontDescriptor == nil)
     {
       // Create a new one
-      NSAffineTransform *transform = [NSAffineTransform new];
-      NSAffineTransformStruct ats;
-      NSDictionary *attributes;
-      NSDictionary *fontTraits;
-      float fweight = (weight - 6) / 6.0;
-      float fslant = italicAngle / 30.0;
-
-      ats.m11 = matrix[0];
-      ats.m12 = matrix[1];
-      ats.m21 = matrix[2];
-      ats.m22 = matrix[3];
-      ats.tX = matrix[4];
-      ats.tY = matrix[5];
-      [transform setTransformStruct: ats];
-
-      fontTraits = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   [NSNumber numberWithUnsignedInt: traits], 
-                                 NSFontSymbolicTrait,
-                                 [NSNumber numberWithFloat: fweight], 
-                                 NSFontWeightTrait,
-                                 [NSNumber numberWithFloat: fslant], 
-                                 NSFontSlantTrait,
-                                 nil];
-      attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   familyName, NSFontFamilyAttribute,
-                                 fontName, NSFontNameAttribute,
-                                 //fontFace, NSFontFaceAttribute,
-                                 fontTraits, NSFontTraitsAttribute,
-                                 transform, NSFontMatrixAttribute,
-                                 nil];
-      RELEASE(transform);
-      fontDescriptor = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+      if ((matrix[0] == matrix[3]) && (matrix[1] == 0.0) &&
+          (matrix[2] == 0.0) && (matrix[4] == 0.0) && (matrix[5] == 0.0))
+        {
+          ASSIGN(fontDescriptor, [NSFontDescriptor fontDescriptorWithName: fontName
+                                                                     size: matrix[0]]);
+        }
+      else
+        {
+          NSAffineTransform *transform = [NSAffineTransform new];
+          NSAffineTransformStruct ats;
+          NSDictionary *attributes;
+      
+          ats.m11 = matrix[0];
+          ats.m12 = matrix[1];
+          ats.m21 = matrix[2];
+          ats.m22 = matrix[3];
+          ats.tX = matrix[4];
+          ats.tY = matrix[5];
+          [transform setTransformStruct: ats];
+          
+          attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                       fontName, NSFontNameAttribute,
+                                     transform, NSFontMatrixAttribute,
+                                     nil];
+          RELEASE(transform);
+          fontDescriptor = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+        }
     }
-
   return fontDescriptor;
 }
 
