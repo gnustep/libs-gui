@@ -5552,7 +5552,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   // Build a string of texts, each representing a line from the tableView,
   // separated by "\n":
   NSString *descriptionsList = nil;
-  unsigned int index = [rows firstIndex];
+  NSInteger index = [rows firstIndex];
   while (index != NSNotFound)
   {
     NSString *draggedItemString = [self _objectStringForTableColumn:[cols objectAtIndex:0]

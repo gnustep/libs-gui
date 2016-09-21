@@ -2308,12 +2308,17 @@ Also returns the child index relative to this parent. */
                               objectValueForTableColumn:column
                                                  byItem:item];
         
+      draggedItemString = [draggedObject description];
       // Pad the string to match its indentation level:
       int level = [self levelForRow:row];
-      NSString *pad = [@"" stringByPaddingToLength:(level*4)
-                                        withString:@" "
-                                   startingAtIndex:0];
-      draggedItemString = [pad stringByAppendingString:[draggedObject description]];
+      if (level > 0)
+        {
+          NSString *pad = [@"" stringByPaddingToLength:(level*4)
+                                            withString:@" "
+                                       startingAtIndex:0];
+        
+          draggedItemString = [pad stringByAppendingString:draggedItemString];
+        }
     }
   return draggedItemString;
 }
