@@ -55,10 +55,15 @@
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSSavePanel.h"
 #import "AppKit/NSTextField.h"
+#import "AppKit/NSWindowController.h"
 #import "AppKit/NSWorkspace.h"
 
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSTheme.h"
+
+#if defined(_WIN32)
+#import "objc/blocks_runtime.h"
+#endif
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
@@ -858,8 +863,9 @@ selectCellWithString: (NSString*)title
 */
 - (void) setTitle: (NSString*)title
 {
+  // keep the window title in sync with the title field
+  [super setTitle:title];
   [_titleField setStringValue: title];
-  [super setTitle:title]; // keep the window title in sync with the title field
 
   // TODO: Improve the following by managing 
   // vertical alignment better.
@@ -1108,7 +1114,22 @@ selectCellWithString: (NSString*)title
  */
 - (NSInteger) runModal
 {
-  return [self runModalForDirectory: [self directory] file: [self filename]];
+  return [self runModalForDirectory: [self directory]
+                               file: [[self filename] lastPathComponent]];
+}
+
+- (void) beginSheetModalForWindow:(NSWindow *)window
+                completionHandler:(GSSavePanelCompletionHandler)handler
+{
+  NSInteger result = [NSApp runModalForWindow: self
+                             relativeToWindow: window];
+  CALL_BLOCK(handler, result);
+}
+
+- (void) beginWithCompletionHandler:(GSSavePanelCompletionHandler)handler
+{
+  self->_completionHandler = Block_copy(handler);
+  [self makeKeyAndOrderFront: self];
 }
 
 /**<p> Initializes the panel to the directory specified by path and,
@@ -1187,7 +1208,7 @@ selectCellWithString: (NSString*)title
 
   if (_allowedFileTypes == nil ||
       [_allowedFileTypes indexOfObject: @""] != NSNotFound)
-    return _fullFileName;
+    return AUTORELEASE([_fullFileName copy]);
 
   /* add file type extension if the file name does not have an extension or
      the file name's extension is not one of the allowed extensions and the
@@ -1202,7 +1223,7 @@ selectCellWithString: (NSString*)title
     }
   else
     {
-      return _fullFileName;
+      return AUTORELEASE([_fullFileName copy]);
     }
 }
 
@@ -1219,7 +1240,16 @@ selectCellWithString: (NSString*)title
 {
   ASSIGN(_directory, pathToColumn(_browser, [_browser lastColumn]));
   [self _updateDefaultDirectory];
+
+  if (self->_completionHandler == NULL)
   [NSApp stopModalWithCode: NSCancelButton];
+  else
+    {
+      CALL_BLOCK(self->_completionHandler, NSCancelButton);
+      Block_release(self->_completionHandler);
+      self->_completionHandler = NULL;
+    }
+
   [_okButton setEnabled: NO];
   [self close];
 }
@@ -1390,7 +1420,16 @@ selectCellWithString: (NSString*)title
       return;
 
   [self _updateDefaultDirectory];
+
+  if (self->_completionHandler == NULL)
   [NSApp stopModalWithCode: NSOKButton];
+  else
+    {
+      CALL_BLOCK(self->_completionHandler, NSOKButton);
+      Block_release(self->_completionHandler);
+      self->_completionHandler = NULL;
+    }
+
   [_okButton setEnabled: NO];
   [self close];
 }
