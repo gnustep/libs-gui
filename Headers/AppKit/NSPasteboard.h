@@ -175,11 +175,6 @@ APPKIT_EXPORT NSString *NSRulerPboard;
  */
 APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 
-@class NSPasteboard;
-  
-// Protocol definitions...
-@protocol NSPasteboardWriting
-@end
   
 @interface NSPasteboard : NSObject
 {

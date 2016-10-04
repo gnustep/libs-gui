@@ -1241,7 +1241,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if 0
+#if 0 // Testplant-MAL-10042016: keeping branch code due to GPBS instability
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
 #endif
@@ -1279,7 +1279,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       NSLog(@"%s:exception: %@", __PRETTY_FUNCTION__, localException);
-#if 0
+#if 0 // Testplant-MAL-10042016: keeping branch code due to GPBS instability
       [NSException raise: NSPasteboardCommunicationException
 		  format: @"%@", [localException reason]];
 #endif
@@ -1940,9 +1940,6 @@ static  NSMapTable              *mimeMap = NULL;
 + (id) _lostServer: (NSNotification*)notification
 {
   id	obj = the_server;
-#if 0
-  NSLog(@"%s:notification: %@", __PRETTY_FUNCTION__, notification);
-#endif
   
   the_server = nil;
   [[NSNotificationCenter defaultCenter]
@@ -2088,6 +2085,7 @@ description, [cmd stringByDeletingLastPathComponent]);
 		       object: nil];
 
 #if defined(__MINGW32__)
+          // Testplant-MAL-10042016: keeping branch code
 	      NSTask *task = AUTORELEASE([NSTask new]);
 	      [task setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"NUL"]];
 	      [task setStandardOutput:[NSFileHandle fileHandleForWritingAtPath:@"NUL"]];
