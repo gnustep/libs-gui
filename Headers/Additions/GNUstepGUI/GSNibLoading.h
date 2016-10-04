@@ -341,4 +341,31 @@ typedef struct _GSWindowTemplateFlags
 - (void) setKeyPath: (NSString *)keyPath;
 - (void) setOptions: (NSDictionary *)options;
 @end
+
+@interface NSIBUserDefinedRuntimeAttributesConnector : NSObject <NSCoding>
+{
+  id _object;
+  NSArray *_keyPaths;
+  NSArray *_values;
+}
+
+- (void) instantiateWithObjectInstantiator: (id)instantiator;
+- (void) establishConnection;
+/*
+- (void) replaceObject: (id)anObject withObject: (id)anotherObject;
+- (void) setLabel: (id)label;
+- (id) label;
+- (void) setDestination: (id)destination;
+- (id) destination;
+- (void) setSource: (id)source;
+- (id) source;
+*/
+- (void) setObject: (id)object;
+- (id) object;
+- (void) setValues: (id)values;
+- (id) values;
+- (void) setKeyPaths: (id)keyPaths;
+- (id) keyPaths;
+@end
+
 #endif /* _GNUstep_H_GSNibCompatibility */

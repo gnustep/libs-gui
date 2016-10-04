@@ -2,7 +2,7 @@
 
    <abstract>Matrix class for grouping controls</abstract>
 
-   Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
@@ -118,15 +118,15 @@ static NSNotificationCenter *nc;
 
 /* Some stuff needed to compute the selection in the list mode. */
 typedef struct {
-  int x;
-  int y;
+  NSInteger x;
+  NSInteger y;
 } MPoint;
 
 typedef struct {
-  int x;
-  int y;
-  int width;
-  int height;
+  NSInteger x;
+  NSInteger y;
+  NSInteger width;
+  NSInteger height;
 } MRect;
 
 typedef struct _GSMatrixFlags {
@@ -163,27 +163,27 @@ typedef struct _GSMatrixFlags {
 #endif
 } GSMatrixFlags;
 
-static inline MPoint MakePoint (int x, int y)
+static inline MPoint MakePoint (NSInteger x, NSInteger y)
 {
   MPoint point = { x, y };
   return point;
 }
 
 @interface NSMatrix (PrivateMethods)
-- (void) _renewRows: (int)row
-	    columns: (int)col
-	   rowSpace: (int)rowSpace
-	   colSpace: (int)colSpace;
-- (void) _setState: (int)state
+- (void) _renewRows: (NSInteger)row
+	    columns: (NSInteger)col
+	   rowSpace: (NSInteger)rowSpace
+	   colSpace: (NSInteger)colSpace;
+- (void) _setState: (NSInteger)state
 	 highlight: (BOOL)highlight
-	startIndex: (int)start
-	  endIndex: (int)end;
-- (BOOL) _selectNextSelectableCellAfterRow: (int)row
-				    column: (int)column;
-- (BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
-					 column: (int)column;
-- (void) _setKeyRow: (int) row
-             column: (int) column;
+	startIndex: (NSInteger)start
+	  endIndex: (NSInteger)end;
+- (BOOL) _selectNextSelectableCellAfterRow: (NSInteger)row
+				    column: (NSInteger)column;
+- (BOOL) _selectPreviousSelectableCellBeforeRow: (NSInteger)row
+					 column: (NSInteger)column;
+- (void) _setKeyRow: (NSInteger)row
+             column: (NSInteger)column;
 @end
 
 enum {
@@ -348,7 +348,9 @@ static SEL getSel;
      numberOfColumns: (NSInteger)colsWide
 {
   if ( ! ( self = [super initWithFrame: frameRect] ) )
+    {
     return nil;
+    }
 
   [self setCellClass: classId];
   [self _privateFrame: frameRect
@@ -371,7 +373,9 @@ static SEL getSel;
      numberOfColumns: (NSInteger)colsWide
 {
   if (! ( self = [super initWithFrame: frameRect] ) )
+    {
     return nil;
+    }
 
   [self setPrototype: aCell];
   [self _privateFrame: frameRect
@@ -400,11 +404,7 @@ static SEL getSel;
 	  [_cells[i][j] release];
 	}
       NSZoneFree(_myZone, _cells[i]);
-#if     GS_WITH_GC
-      _selectedCells[i] = 0;
-#else
       NSZoneFree(_myZone, _selectedCells[i]);
-#endif
     }
   NSZoneFree(_myZone, _cells);
   NSZoneFree(_myZone, _selectedCells);
@@ -469,8 +469,8 @@ static SEL getSel;
  */
 - (void) insertColumn: (NSInteger)column withCells: (NSArray*)cellArray
 {
-  int	count = [cellArray count];
-  int	i = _numCols + 1;
+  NSInteger count = [cellArray count];
+  NSInteger i = _numCols + 1;
 
   if (column < 0)
     {
@@ -480,6 +480,16 @@ static SEL getSel;
 #else
       [NSException raise: NSRangeException
 		  format: @"insert negative column (%d) in matrix", (int)column];
+#endif
+    }
+
+  if ((cellArray != nil) && (count != _numRows))
+    {
+#if	NSMATRIX_STRICT_CHECKING == 0
+      NSLog(@"Wrong number of cells (%d) in column insert in matrix", (int)count);
+#else
+      [NSException raise: NSRangeException
+		  format: @"Wrong number of cells (%d) in column insert in matrix", (int)count];
 #endif
     }
 
@@ -548,7 +558,11 @@ static SEL getSel;
 
   if (_mode == NSRadioModeMatrix && _allowsEmptySelection == NO
     && _selectedCell == nil)
-    [self selectCellAtRow: 0 column: 0];
+    {
+      [self selectCellAtRow: 0 column: 0];
+    }
+
+  [self setNeedsDisplay: YES];
 }
 
 /**<p>Inserts a new row at index <var>row</var>.</p>
@@ -566,8 +580,8 @@ static SEL getSel;
  */
 - (void) insertRow: (NSInteger)row withCells: (NSArray*)cellArray
 {
-  int	count = [cellArray count];
-  int	i = _numRows + 1;
+  NSInteger count = [cellArray count];
+  NSInteger i = _numRows + 1;
 
   if (row < 0)
     {
@@ -577,6 +591,16 @@ static SEL getSel;
 #else
       [NSException raise: NSRangeException
 		  format: @"insert negative row (%d) in matrix", (int)row];
+#endif
+    }
+
+  if ((cellArray != nil) && (count != _numCols))
+    {
+#if	NSMATRIX_STRICT_CHECKING == 0
+      NSLog(@"Wrong number of cells (%d) in row insert in matrix", (int)count);
+#else
+      [NSException raise: NSRangeException
+		  format: @"Wrong number of cells (%d) in row insert in matrix", (int)count];
 #endif
     }
 
@@ -642,6 +666,8 @@ static SEL getSel;
     {
       [self selectCellAtRow: 0 column: 0];
     }
+
+  [self setNeedsDisplay: YES];
 }
 
 /**<p>Makes and returns new cell at row <var>row</var> and 
@@ -731,11 +757,11 @@ static SEL getSel;
 {
   if (column >= 0 && column < _numCols)
     {
-      int i;
+      NSInteger i;
 
       for (i = 0; i < _maxRows; i++)
 	{
-	  int	j;
+	  NSInteger j;
 
 	  AUTORELEASE(_cells[i][column]);
 	  for (j = column + 1; j < _maxCols; j++)
@@ -784,15 +810,13 @@ static SEL getSel;
 {
   if (row >= 0 && row < _numRows)
     {
-      int	i;
+      NSInteger i;
 
-#if	GS_WITH_GC == 0
       for (i = 0; i < _maxCols; i++)
 	{
-	  [_cells[row][i] autorelease];
+	  AUTORELEASE(_cells[row][i]);
 	}
       NSZoneFree(_myZone, _selectedCells[row]);
-#endif
       NSZoneFree(_myZone, _cells[row]);
       for (i = row + 1; i < _maxRows; i++)
 	{
@@ -860,7 +884,7 @@ static SEL getSel;
   NSMutableArray	*sorted;
   IMP			add;
   IMP			get;
-  int			i, j, index = 0;
+  NSInteger i, j, index = 0;
 
   sorted = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [sorted methodForSelector: @selector(addObject:)];
@@ -890,7 +914,7 @@ static SEL getSel;
   NSMutableArray	*sorted;
   IMP			add;
   IMP			get;
-  int			i, j, index = 0;
+  NSInteger i, j, index = 0;
 
   sorted = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [sorted methodForSelector: @selector(addObject:)];
@@ -1000,11 +1024,11 @@ static SEL getSel;
 	 column: (NSInteger*)column
 	 ofCell: (NSCell*)aCell
 {
-  int	i;
+  NSInteger i;
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -1038,7 +1062,9 @@ static SEL getSel;
   NSCell	*aCell = [self cellAtRow: row column: column];
 
   if (!aCell)
+    {
     return;
+    }
 
   if (_mode == NSRadioModeMatrix)
     {
@@ -1082,15 +1108,17 @@ static SEL getSel;
  */
 - (void) deselectAllCells
 {
-  int		i;
+  NSInteger i;
 
   if (_numRows > 0 && _numCols > 0 &&
       !_allowsEmptySelection && _mode == NSRadioModeMatrix)
+    {
     return;
+    }
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -1125,7 +1153,7 @@ static SEL getSel;
  */
 - (void) deselectSelectedCell
 {
-  int i,j;
+  NSInteger i,j;
 
   if (!_selectedCell
     || (!_allowsEmptySelection && (_mode == NSRadioModeMatrix)))
@@ -1157,7 +1185,7 @@ static SEL getSel;
  */
 - (void) selectAll: (id)sender
 {
-  int i, j;
+  NSInteger i, j;
 
   /* Can't select all if only one can be selected.  */
   if (_mode == NSRadioModeMatrix)
@@ -1194,7 +1222,7 @@ static SEL getSel;
   [self setNeedsDisplay: YES];
 }
 
-- (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
+- (void) _selectCell: (NSCell *)aCell atRow: (NSInteger)row column: (NSInteger)column
 {
   if (aCell)
     {
@@ -1291,11 +1319,11 @@ static SEL getSel;
 - (BOOL) selectCellWithTag: (NSInteger)anInt
 {
   id	aCell;
-  int	i = _numRows;
+  NSInteger i = _numRows;
 
   while (i-- > 0)
     {
-      int	j = _numCols;
+      NSInteger j = _numCols;
 
       while (j-- > 0)
 	{
@@ -1316,11 +1344,11 @@ static SEL getSel;
 - (NSArray*) selectedCells
 {
   NSMutableArray	*array = [NSMutableArray array];
-  int	i;
+  NSInteger i;
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -1367,8 +1395,8 @@ static SEL getSel;
        * So, cells from A to E are selected and, if S is outside the
        * range from A to E, cells from S to its closest point are unselected
        */
-      int selStart = MIN(anchorPos, endPos);
-      int selEnd = MAX(anchorPos, endPos);
+      NSInteger selStart = MIN(anchorPos, endPos);
+      NSInteger selEnd = MAX(anchorPos, endPos);
       [self _setState: flag ? NSOnState : NSOffState
 	    highlight: flag
 	    startIndex: selStart
@@ -1414,14 +1442,14 @@ static SEL getSel;
       MPoint anchorPoint = POINT_FROM_INDEX(anchorPos);
       MPoint endPoint = POINT_FROM_INDEX(endPos);
       MPoint startPoint = POINT_FROM_INDEX(startPos);
-      int minx_AE = MIN(anchorPoint.x, endPoint.x);
-      int miny_AE = MIN(anchorPoint.y, endPoint.y);
-      int maxx_AE = MAX(anchorPoint.x, endPoint.x);
-      int maxy_AE = MAX(anchorPoint.y, endPoint.y);
-      int minx_AS = MIN(anchorPoint.x, startPoint.x);
-      int miny_AS = MIN(anchorPoint.y, startPoint.y);
-      int maxx_AS = MAX(anchorPoint.x, startPoint.x);
-      int maxy_AS = MAX(anchorPoint.y, startPoint.y);
+      NSInteger minx_AE = MIN(anchorPoint.x, endPoint.x);
+      NSInteger miny_AE = MIN(anchorPoint.y, endPoint.y);
+      NSInteger maxx_AE = MAX(anchorPoint.x, endPoint.x);
+      NSInteger maxy_AE = MAX(anchorPoint.y, endPoint.y);
+      NSInteger minx_AS = MIN(anchorPoint.x, startPoint.x);
+      NSInteger miny_AS = MIN(anchorPoint.y, startPoint.y);
+      NSInteger maxx_AS = MAX(anchorPoint.x, startPoint.x);
+      NSInteger maxy_AS = MAX(anchorPoint.y, startPoint.y);
       
       [self _setState: flag ? NSOnState : NSOffState
 	    highlight: flag
@@ -1463,7 +1491,7 @@ static SEL getSel;
   and being correct comes first.
   */
   {
-    int i, j;
+    NSInteger i, j;
     for (i = _numRows - 1; i >= 0; i--)
       {
 	for (j = _numCols - 1; j >= 0; j--)
@@ -1500,11 +1528,11 @@ static SEL getSel;
  */
 - (id) cellWithTag: (NSInteger)anInt
 {
-  int	i = _numRows;
+  NSInteger i = _numRows;
 
   while (i-- > 0)
     {
-      int	j = _numCols;
+      NSInteger j = _numCols;
 
       while (j-- > 0)
 	{
@@ -1525,13 +1553,13 @@ static SEL getSel;
 {
   NSMutableArray	*c;
   IMP			add;
-  int			i;
+  NSInteger i;
 
   c = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [c methodForSelector: @selector(addObject:)];
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -1540,8 +1568,6 @@ static SEL getSel;
     }
   return c;
 }
-
-
 
 - (void) selectText: (id)sender
 {
@@ -1599,7 +1625,9 @@ static SEL getSel;
   // more appropriate.  This is going to start editing if and only if
   // the cell is also 'editable'.
   if ([_cells[row][column] isSelectable] == NO)
+    {
     return nil;
+    }
 
   if (_textObject)
     {
@@ -1619,11 +1647,12 @@ static SEL getSel;
   {
     NSText *text = [_window fieldEditor: YES
 			forObject: self];
-    int length;
+    NSUInteger length;
 
-    if ([text superview] != nil)
-      if ([text resignFirstResponder] == NO)
+    if (([text superview] != nil) && ([text resignFirstResponder] == NO))
+      {
 	return nil;
+      }
 
     [self _selectCell: _cells[row][column] atRow: row column: column];
 
@@ -1706,7 +1735,9 @@ static SEL getSel;
   // MacOS-X asks us to inform the cell if possible.
   if ((_selectedCell != nil) && [_selectedCell respondsToSelector: 
 						 @selector(textDidChange:)])
+    {
     [_selectedCell textDidChange: aNotification];
+    }
 
   [super textDidChange: aNotification];
 
@@ -1882,8 +1913,10 @@ static SEL getSel;
 	{
 	  if ([_delegate control: self
 			 isValidObject: newObjectValue] == NO)
+            {
 	    return NO;
 	}
+    }
     }
 
   // In all other cases
@@ -1924,8 +1957,8 @@ static SEL getSel;
 - (void) sizeToCells
 {
   NSSize newSize;
-  int nc = _numCols;
-  int nr = _numRows;
+  NSInteger nc = _numCols;
+  NSInteger nr = _numRows;
 
   if (!nc)
     nc = 1;
@@ -1961,8 +1994,7 @@ static SEL getSel;
    * cellSizes.  We resize the matrix to have that cellSize, and
    * that's it.  */
   NSSize newSize = NSZeroSize;
-
-  int i, j;
+  NSInteger i, j;
 
   for (i = 0; i < _numRows; i++)
     {
@@ -2002,11 +2034,11 @@ static SEL getSel;
 
 - (void) setScrollable: (BOOL)flag
 {
-  int	i;
+  NSInteger i;
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -2018,9 +2050,9 @@ static SEL getSel;
 
 - (void) drawRect: (NSRect)rect
 {
-  int i, j;
-  int row1, col1;	// The cell at the upper left corner
-  int row2, col2;	// The cell at the lower right corner
+  NSInteger i, j;
+  NSInteger row1, col1;	// The cell at the upper left corner
+  NSInteger row2, col2;	// The cell at the lower right corner
 
   if (_drawsBackground)
     {
@@ -2037,31 +2069,49 @@ static SEL getSel;
   col2 = NSMaxX(rect) / (_cellSize.width + _intercell.width);
 
   if (row1 < 0)
+    {
     row1 = 0;
+    }
   else if (row1 >= _numRows)
+    {
     row1 = _numRows - 1;
+    }
 
   if (col1 < 0)
+    {
     col1 = 0;
+    }
   else if (col1 >= _numCols)
+    {
     col1 = _numCols - 1;
+    }
 
   if (row2 < 0)
+    {
     row2 = 0;
+    }
   else if (row2 >= _numRows)
+    {
     row2 = _numRows - 1;
+    }
 
   if (col2 < 0)
+    {
     col2 = 0;
+    }
   else if (col2 >= _numCols)
+    {
     col2 = _numCols - 1;
+    }
 
   /* Draw the cells within the drawing rectangle. */
   for (i = row1; i <= row2 && i < _numRows; i++)
+    {
     for (j = col1; j <= col2 && j < _numCols; j++)
       {
         [self drawCellAtRow: i column: j];
       }
+}
 }
 
 - (BOOL) isOpaque
@@ -2141,7 +2191,9 @@ static SEL getSel;
   if (_selectedCell)
     {
       if ([_selectedCell isEnabled] == NO)
+        {
 	return NO;
+        }
 
       return [self sendAction: [_selectedCell action] 
 		   to:         [_selectedCell target]]; 
@@ -2175,13 +2227,13 @@ static SEL getSel;
 		 to: (id)anObject
         forAllCells: (BOOL)flag
 {
-  int	i;
+  NSInteger i;
 
   if (flag)
     {
       for (i = 0; i < _numRows; i++)
 	{
-	  int	j;
+	  NSInteger j;
 
 	  for (j = 0; j < _numCols; j++)
 	    {
@@ -2197,7 +2249,7 @@ static SEL getSel;
     {
       for (i = 0; i < _numRows; i++)
 	{
-	  int	j;
+	  NSInteger j;
 
 	  for (j = 0; j < _numCols; j++)
 	    {
@@ -2490,7 +2542,7 @@ static SEL getSel;
 {
   NSInteger row, column;
   NSPoint lastLocation = [theEvent locationInWindow];
-  int clickCount;
+  NSInteger clickCount;
 
   /*
    * Pathological case -- ignore mouse down
@@ -2580,7 +2632,9 @@ static SEL getSel;
   NSRect	rect;
 
   if ([self getRow: &row column: &col ofCell: aCell] == NO)
+    {
     return;	// Not a cell in this matrix - we can't update it.
+    }
 
   rect = [self cellFrameAtRow: row column: col];
   [self setNeedsDisplayInRect: rect];
@@ -2647,11 +2701,11 @@ static SEL getSel;
 
 - (void) resetCursorRects
 {
-  int	i;
+  NSInteger i;
 
   for (i = 0; i < _numRows; i++)
     {
-      int	j;
+      NSInteger j;
 
       for (j = 0; j < _numCols; j++)
 	{
@@ -2661,6 +2715,17 @@ static SEL getSel;
 		 inView: self];
 	}
     }
+}
+
+- (NSString*) toolTipForCell: (NSCell*)cell
+{
+  // FIXME
+  return @"";
+}
+
+- (void) setToolTip: (NSString*)toolTipString forCell: (NSCell*)cell
+{
+  // FIXME
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -2745,7 +2810,7 @@ static SEL getSel;
   id cell;
   int rows = 0, columns = 0;
   NSArray *array;
-  int i = 0, count = 0;
+  NSInteger i = 0, count = 0;
 
   self = [super initWithCoder: aDecoder];
   if (!self)
@@ -2836,7 +2901,7 @@ static SEL getSel;
 
       for (i = 0; i < count; i++)
         {
-          int row, column;
+          NSInteger row, column;
           
           cell = [array objectAtIndex: i];
           row = i / columns;
@@ -2916,7 +2981,7 @@ static SEL getSel;
 
       for (i = 0; i < count; i++)
         {
-          int row, column;
+          NSInteger row, column;
 
           cell = [array objectAtIndex: i];
           row = i / columns;
@@ -3173,7 +3238,7 @@ static SEL getSel;
  */
 - (void) setEnabled: (BOOL)flag
 {
-  int i, j;
+  NSInteger i, j;
 
   for (i = 0; i < _numRows; i++)
     {
@@ -3368,7 +3433,7 @@ static SEL getSel;
 - (void) _move: (unichar)pos
 {
   BOOL selectCell = NO;
-  int h, i, lastDottedRow, lastDottedColumn;
+  NSInteger h, i, lastDottedRow, lastDottedColumn;
 
   if (_mode == NSRadioModeMatrix || _mode == NSListModeMatrix)
     selectCell = YES;
@@ -3928,14 +3993,14 @@ static SEL getSel;
  * NB. new spaces in the matrix are pre-initialised with nil values so
  * that replacing them doesn't cause attempts to release random memory.
  */
-- (void) _renewRows: (int)row
-	    columns: (int)col
-	   rowSpace: (int)rowSpace
-	   colSpace: (int)colSpace
+- (void) _renewRows: (NSInteger)row
+	    columns: (NSInteger)col
+	   rowSpace: (NSInteger)rowSpace
+	   colSpace: (NSInteger)colSpace
 {
-  int		i, j;
-  int		oldMaxC;
-  int		oldMaxR;
+  NSInteger i, j;
+  NSInteger oldMaxC;
+  NSInteger oldMaxR;
   SEL		mkSel = @selector(makeCellAtRow:column:);
   IMP		mkImp = [self methodForSelector: mkSel];
 
@@ -3963,7 +4028,7 @@ static SEL getSel;
 
   /*
    * Update matrix dimension before we actually change it - so that
-   * makeCellAtRow:column: diesn't think we are trying to make a cell
+   * makeCellAtRow:column: doesn't think we are trying to make a cell
    * outside the array bounds.
    * Our implementation doesn't care, but a subclass might use
    * putCell:atRow:column: to implement it, and that checks bounds.
@@ -3979,18 +4044,13 @@ static SEL getSel;
 
   if (col > oldMaxC)
     {
-      int	end = col - 1;
+      NSInteger end = col - 1;
 
       for (i = 0; i < oldMaxR; i++)
 	{
 	  _cells[i] = NSZoneRealloc(_myZone, _cells[i], col * sizeof(id));
-#if     GS_WITH_GC
-	  _selectedCells[i] = NSReallocateCollectable(
-	    _selectedCells[i], col * sizeof(BOOL), 0);
-#else
-	  _selectedCells[i] = NSZoneRealloc(_myZone,
-	    _selectedCells[i], col * sizeof(BOOL));
-#endif
+	  _selectedCells[i] = NSZoneRealloc(_myZone, _selectedCells[i], 
+                                            col * sizeof(BOOL));
 
 	  for (j = oldMaxC; j < col; j++)
 	    {
@@ -4010,7 +4070,7 @@ static SEL getSel;
 
   if (row > oldMaxR)
     {
-      int	end = row - 1;
+      NSInteger end = row - 1;
 
       _cells = NSZoneRealloc(_myZone, _cells, row * sizeof(id*));
       _selectedCells
@@ -4020,11 +4080,8 @@ static SEL getSel;
       for (i = oldMaxR; i < row; i++)
 	{
 	  _cells[i] = NSZoneMalloc(_myZone, _maxCols * sizeof(id));
-#if     GS_WITH_GC
-	  _selectedCells[i] = NSAllocateCollectable(_maxCols * sizeof(BOOL), 0);
-#else
 	  _selectedCells[i] = NSZoneMalloc(_myZone, _maxCols * sizeof(BOOL));
-#endif
+
 	  if (i == end)
 	    {
 	      for (j = 0; j < _maxCols; j++)
@@ -4057,19 +4114,19 @@ static SEL getSel;
 //NSLog(@"%x - end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, _maxRows, _maxCols, _numRows, _numCols, row, col);
 }
 
-- (void) _setState: (int)state
+- (void) _setState: (NSInteger)state
 	 highlight: (BOOL)highlight
-	startIndex: (int)start
-	  endIndex: (int)end
+	startIndex: (NSInteger)start
+	  endIndex: (NSInteger)end
 {
-  int		i;
+  NSInteger i;
   MPoint	startPoint = POINT_FROM_INDEX(start);
   MPoint	endPoint = POINT_FROM_INDEX(end);
 
   for (i = startPoint.y; i <= endPoint.y; i++)
     {
-      int	j;
-      int	colLimit;
+      NSInteger j;
+      NSInteger colLimit;
 
       if (_selectionByRect || i == startPoint.y)
 	{
@@ -4109,10 +4166,10 @@ static SEL getSel;
 }
 
 // Return YES on success; NO if no selectable cell found.
--(BOOL) _selectNextSelectableCellAfterRow: (int)row
-				   column: (int)column
+-(BOOL) _selectNextSelectableCellAfterRow: (NSInteger)row
+				   column: (NSInteger)column
 {
-  int i,j;
+  NSInteger i, j;
 
   if (row > -1)
     {
@@ -4147,10 +4204,10 @@ static SEL getSel;
   return NO;
 }
 
--(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
-					column: (int)column
+-(BOOL) _selectPreviousSelectableCellBeforeRow: (NSInteger)row
+					column: (NSInteger)column
 {
-  int i,j;
+  NSInteger i,j;
 
   if (row < _numRows)
     {
@@ -4185,7 +4242,7 @@ static SEL getSel;
   return NO;
 }
 
-- (void) _setKeyRow: (int)row column: (int)column
+- (void) _setKeyRow: (NSInteger)row column: (NSInteger)column
 {
   if (_dottedRow == row && _dottedColumn == column)
     {
@@ -4204,4 +4261,5 @@ static SEL getSel;
                                          column: _dottedColumn]];
     }
 }
+
 @end

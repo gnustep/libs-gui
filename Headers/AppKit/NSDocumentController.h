@@ -106,6 +106,31 @@
 	  contextInfo: (void*)context;
 - (NSError*) willPresentError: (NSError*)err;
 #endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST) 
+DEFINE_BLOCK_TYPE(GSCompletionBlock1, void, NSDocument*, BOOL, NSError*);
+DEFINE_BLOCK_TYPE(GSCompletionBlock2, void, NSArray*);
+
+- (id) duplicateDocumentWithContentsOfURL: (NSURL*)url
+                                  copying: (BOOL)duplicateByCopying
+                              displayName: (NSString*)displayNameOrNil
+                                    error: (NSError**)outError;
+- (void) openDocumentWithContentsOfURL: (NSURL*)url
+                               display: (BOOL)displayDocument
+                     completionHandler: (GSCompletionBlock1)completionHandler;
+- (void) reopenDocumentForURL: (NSURL*)urlOrNil
+            withContentsOfURL: (NSURL*)contentsURL
+                      display: (BOOL)displayDocument
+            completionHandler: (GSCompletionBlock1)completionHandler;
+- (void) beginOpenPanelWithCompletionHandler: (GSCompletionBlock2)completionHandler;
+
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST) 
+DEFINE_BLOCK_TYPE(GSCompletionBlock3, void, NSInteger);
+
+- (void) beginOpenPanel: (NSOpenPanel*)openPanel
+               forTypes: (NSArray*)inTypes
+      completionHandler: (GSCompletionBlock3)completionHandler;
+#endif
 
 /*" With or without UI "*/
 - (BOOL) shouldCreateUI;

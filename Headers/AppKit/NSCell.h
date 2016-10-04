@@ -447,6 +447,13 @@ typedef NSInteger NSBackgroundStyle;
 	    inRect:(NSRect)cellFrame
 	    ofView:(NSView *)controlView
 	    untilMouseUp:(BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSBackgroundStyle)backgroundStyle;
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle;
+- (NSUInteger)hitTestForEvent:(NSEvent *)event
+                       inRect:(NSRect)cellFrame
+                       ofView:(NSView *)controlView;
+#endif
 
 //
 // Managing the Cursor 
@@ -519,12 +526,6 @@ typedef NSInteger NSBackgroundStyle;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL)allowsUndo;
 - (void)setAllowsUndo:(BOOL)flag;
-#endif
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (NSBackgroundStyle)backgroundStyle;
-- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle;
-- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView;
 #endif
 
 @end

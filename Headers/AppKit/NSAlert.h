@@ -67,8 +67,8 @@ enum {
   id _delegate;
   NSAlertStyle _style;
   BOOL _shows_help;
-  BOOL _shows_suppression_button;
-  NSButton *_suppression_button;
+  BOOL _shows_suppression_button; // Testplant-MAL-10042016
+  NSButton *_suppression_button;  // Testplant-MAL-10042016
   id _modalDelegate;
   SEL _didEndSelector;
   NSInteger _result;
@@ -108,6 +108,7 @@ enum {
 - (id) window;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+// Testplant-MAL-10042016
 - (BOOL)showsSuppressionButton;
 - (void)setShowsSuppressionButton:(BOOL)showsSuppressionButton;
 - (NSButton*)suppressionButton;

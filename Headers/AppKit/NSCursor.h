@@ -124,8 +124,8 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) resizeRightCursor;
 + (NSCursor*) resizeUpCursor;
 + (NSCursor*) resizeUpDownCursor;
-+ (NSCursor*) resizeNWSECursor;
-+ (NSCursor*) resizeNESWCursor;
++ (NSCursor*) resizeNWSECursor; // Testplant-MAL-10042016
++ (NSCursor*) resizeNESWCursor; // Testplant-MAL-10042016
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
@@ -157,9 +157,9 @@ typedef enum {
   GSResizeDownCursor,
   GSResizeUpDownCursor,
   GSContextualMenuCursor,
-  GSDisappearingItemCursor,
-  GSResizeNWSECursor,
-  GSResizeNESWCursor
+  GSDisappearingItemCursor, // Testplant-MAL-10042016
+  GSResizeNWSECursor,       // Testplant-MAL-10042016
+  GSResizeNESWCursor        // Testplant-MAL-10042016
 } GSCursorTypes;
 
 #endif /* _GNUstep_H_NSCursor */

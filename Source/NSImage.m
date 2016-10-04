@@ -1641,7 +1641,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
   count = [_reps count];
   if (count == 0)
     {
-      return [NSArray array];
+      return [NSMutableArray array];
     }
   else
     {
@@ -1658,7 +1658,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
               j++;
             }
         }
-      return [NSArray arrayWithObjects: repList count: j];
+      return [NSMutableArray arrayWithObjects: repList count: j];
     }
 }
 
@@ -2024,6 +2024,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
                        */
                       if (rep == nil)
                         {
+                          // Testplant-MAL-10042016: keeping branch code...
                           NSString *fileName = [[tmp absoluteString] lastPathComponent];
                           NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
                           rep = [NSImageRep imageRepWithContentsOfFile: path];

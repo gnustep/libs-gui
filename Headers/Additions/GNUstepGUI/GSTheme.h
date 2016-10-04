@@ -1057,8 +1057,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  *
  * <p>The title color is mapped to the theme state as described below:</p>
  * <deflist>
- * <item>GSThemeSelectedState</item><desc>[NSColor+selectedMenuItemTextColor]</desc>
- * <item>GSThemeDisabledState</item><desc>[NSColor+controlTextColor] or 
+ * <term>GSThemeSelectedState</term>
+ * <desc>[NSColor+selectedMenuItemTextColor]</desc>
+ * <term>GSThemeDisabledState</term>
+ * <desc>[NSColor+controlTextColor] or 
  * [NSColor+disabledControlTextColor]</desc>
  * </deflist>
  */
@@ -1080,7 +1082,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSColor *) menuSeparatorColor;
 /**
- * <p>Returns the left and right inset used to draw a separator line in a menu.</p>
+ * <p>Returns the left and right inset used to draw a separator line in a
+ * menu.</p>
  *
  * <p>By default, returns 3.0.</p>
  *
@@ -1113,7 +1116,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * -isSeparatorItem</p>
  *
  * <p>You can provide an image tile named <em>GSMenuSeparatorItem</em> to 
- * draw the separator.</br>
+ * draw the separator.<br />
  * Can be overridden in subclasses to customize the drawing.</p>
  *
  * <p>See also -menuSeparatorColor and -menuSeparatorInset</p>

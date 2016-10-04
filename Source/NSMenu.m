@@ -1595,10 +1595,6 @@ static BOOL menuBarVisible = YES;
                   forView: (NSView *)view
                  withFont: (NSFont *)font
 {
-  // Testplant-MAL-2015-07-01: Using tetplant branch code...
-  NSPoint point = [view frame].origin;
-  point = [[view superview] convertPoint:point toView:nil];
-  point = [[view window] convertBaseToScreen: point];
   [menu _rightMouseDisplay: event];
 }
 
