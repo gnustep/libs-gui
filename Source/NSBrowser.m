@@ -1407,27 +1407,8 @@ static BOOL browserUseBezels;
 */
 - (void) setSeparatesColumns: (BOOL)flag
 {
-#if 0 // Testplant-MAL-Merge-2015-06-20 - Should this be excluded from merge?
-  NSBrowserColumn *bc;
-  NSScrollView    *sc;
-  NSBorderType    bt;
-  NSInteger       i, columnCount;
-#endif
-
-  // if this flag already set or browser is titled -- do nothing
   if (_separatesColumns == flag || _isTitled)
     return;
-
-#if 0 // Testplant-MAL-Merge-2015-06-20 - Should this be excluded from merge?
-  columnCount = [_browserColumns count];
-  bt = flag ? NSBezelBorder : NSNoBorder;
-  for (i = 0; i < columnCount; i++)
-    {
-      bc = [_browserColumns objectAtIndex: i];
-      sc = [bc columnScrollView];
-      [sc setBorderType:bt];
-    }
-#endif
 
   _separatesColumns = flag;
   [self tile];

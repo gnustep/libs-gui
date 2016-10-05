@@ -630,7 +630,7 @@
           [self setContentView: cv];
           RELEASE(cv);
         }
-      
+      // Testplant-MAL-10052016: keeping branch code...
       [self setBorderColor:[NSColor clearColor]];
       if ([aDecoder containsValueForKey:@"NSBorderColor2"])
         {
@@ -639,6 +639,7 @@
             [self setBorderColor:color];
         }
       
+      // Testplant-MAL-10052016: keeping branch code...
       [self setFillColor:[NSColor clearColor]];
       if ([aDecoder containsValueForKey:@"NSFillColor2"])
         {
@@ -649,6 +650,7 @@
     }
   else
     {
+        // Testplant-MAL-10052016: keeping branch code...
         [self setBorderColor:[NSColor clearColor]];
         [self setFillColor:[NSColor clearColor]];
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
