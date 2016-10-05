@@ -2594,6 +2594,22 @@ static void computeNewSelection
   return NO;
 }
 
+- (void)setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle)s
+{
+  // FIXME implement me really
+  _selectionHighlightStyle = s;
+  if (_selectionHighlightStyle == NSTableViewSelectionHighlightStyleSourceList)
+    {
+      // should also set draggingDestinationFeedbackStyle to NSTableViewDraggingDestinationFeedbackStyleSourceList
+      // but we don't have it yet anyway
+    }
+}
+
+- (NSTableViewSelectionHighlightStyle) selectionHighlightStyle
+{
+  return _selectionHighlightStyle;
+}
+
 /*
  * Selecting Columns and Rows
  */
@@ -3076,7 +3092,7 @@ byExtendingSelection: (BOOL)flag
   /* Ask the delegate if we can select all columns or rows */
   if (_selectingColumns == YES)
     {
-      if ([_selectedColumns count] == (unsigned)_numberOfColumns)
+      if ([_selectedColumns count] == (NSUInteger)_numberOfColumns)
 	{
 	  // Nothing to do !
 	  return;
@@ -3096,14 +3112,14 @@ byExtendingSelection: (BOOL)flag
     }
   else // selecting rows
     {
-      if ([_selectedRows count] == (unsigned)_numberOfRows)
+      if ([_selectedRows count] == (NSUInteger)_numberOfRows)
 	{
 	  // Nothing to do !
 	  return;
 	}
 
       {
-	int row; 
+	NSInteger row; 
 	
 	for (row = 0; row < _numberOfRows; row++)
 	  {
@@ -3405,7 +3421,7 @@ byExtendingSelection: (BOOL)flag
   NSText *t;
   NSTableColumn *tb;
   NSRect drawingRect;
-  unsigned length = 0;
+  NSUInteger length = 0;
 
   // We refuse to edit cells if the delegate can not accept results 
   // of editing.
@@ -4061,7 +4077,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
           if (done == NO)
           {
             /* in certain cases we are working with events that have already
-             * occured and been dequeued by NSCell classes, in these cases
+	       * occurred and been dequeued by NSCell classes, in these cases
              * getNextEvent is set to NO, use the current event.
              */
             if (getNextEvent == YES)
@@ -4210,18 +4226,18 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (void) keyDown:(NSEvent *)theEvent
 {
-   int oldRow = -1;
-   int currentRow = _selectedRow;
-   int originalRow = -1;
+   NSInteger oldRow = -1;
+   NSInteger currentRow = _selectedRow;
+   NSInteger originalRow = -1;
    NSString *characters = [theEvent characters];
-   unsigned int len = [characters length];
-   unsigned int modifiers = [theEvent modifierFlags];
-   int rowHeight = [self rowHeight];
+   NSUInteger len = [characters length];
+   NSUInteger modifiers = [theEvent modifierFlags];
+   CGFloat rowHeight = [self rowHeight];
    NSRect visRect = [self visibleRect];
    BOOL modifySelection = YES;
    NSPoint noModPoint = NSZeroPoint;
-   int visRows;
-   unsigned int i;
+   NSInteger visRows;
+   NSUInteger i;
    BOOL gotMovementKey = NO;
    
    // will not contain partial rows.
@@ -5153,11 +5169,14 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if (_headerView != nil)
     {
+      CGFloat innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+				   boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
+
       [_headerView setFrameSize: 
 		     NSMakeSize (_frame.size.width,
 				 [_headerView frame].size.height)];
       [_cornerView setFrameSize: 
-		     NSMakeSize ([NSScroller scrollerWidth] + 1,
+		     NSMakeSize ([NSScroller scrollerWidth] + innerBorderWidth,
 				 [_headerView frame].size.height)];
       [_headerView setNeedsDisplay: YES];
       [_cornerView setNeedsDisplay: YES];
@@ -6513,83 +6532,11 @@ This method is deprecated, use -columnIndexesInRect:. */
   [self displayIfNeeded];
 }
 
-- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
+- (void) _drawDropIndicator
 {
-  NSPoint p = [sender draggingLocation];
-  NSRect newRect;
-  int row;
-  int quarterPosition, positionInRow;
-  int currentRow;
-  NSDragOperation dragOperation;
+  NSRect newRect = NSZeroRect;
 
-  p = [self convertPoint: p fromView: nil];
-  /* This is a crude method of scrolling the view while dragging so
-     the user can drag to any cell even if it's not
-     visible. Unfortunately we don't receive events when the drag is
-     outside the view, so the pointer must still be in the view to
-     drag.
-  */
-  if (p.y < NSMinY([self visibleRect])+3)
-    {
-      currentRow = [self rowAtPoint: p] - 1;
-      if (currentRow > 0)
-        [self scrollRowToVisible: currentRow];
-    }
-  else if (p.y > NSMaxY([self visibleRect])-3)
-    {
-      currentRow = [self rowAtPoint: p] + 1;
-      if (currentRow < _numberOfRows)
-        [self scrollRowToVisible: currentRow];
-    }
-
-  positionInRow = (int)(p.y - _bounds.origin.y) % (int)_rowHeight;
-  quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
-
-  if ((quarterPosition - oldDropRow * 4 <= 2) &&
-      (quarterPosition - oldDropRow * 4 >= -3))
-    {
-      row = oldDropRow;
-    }
-  else
-    {
-      row = (quarterPosition + 2) / 4;
-    }
-
-  // Are we in the two middle quarters of the row? Use TableViewDropOn
-  if ((positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4)
-   || row > _numberOfRows)
-    {
-      currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
-      currentDropOperation = NSTableViewDropOn;
-      if (currentDropRow >= _numberOfRows)
-        currentDropRow = -1;
-    }
-  else // drop above
-    {
-      currentDropRow = row;
-      currentDropOperation = NSTableViewDropAbove;
-    }
-
-  dragOperation = [sender draggingSourceOperationMask];
-  if ((lastQuarterPosition != quarterPosition)
-      || (currentDragOperation != dragOperation))
-    {
-      currentDragOperation = dragOperation;
-      if ([_dataSource respondsToSelector: 
-             @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
-        {
-          currentDragOperation = [_dataSource tableView: self
-                                              validateDrop: sender
-                                              proposedRow: currentDropRow
-                                              proposedDropOperation: currentDropOperation];
-        }
-      
-      lastQuarterPosition = quarterPosition;
-      
-      if ((currentDropRow != oldDropRow) || (currentDropOperation != oldDropOperation))
-	{
   [self lockFocus];
-	  
   [self setNeedsDisplayInRect: oldDraggingRect];
   [self displayIfNeeded];
 
@@ -6600,7 +6547,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	   newRect = [self bounds];
 	   NSFrameRectWithWidth(newRect, 2.0);
 	   oldDraggingRect = newRect;
-	      currentDropRow = _numberOfRows;
 	}
   else if (currentDropOperation == NSTableViewDropAbove)
 	{
@@ -6636,12 +6582,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  newRect.size.width = _bounds.size.width + 2;
 	  newRect.origin.x -= _intercellSpacing.height / 2;
 	  newRect.size.height += _intercellSpacing.height;
-	      oldDraggingRect = newRect;
-	      oldDraggingRect.origin.y -= 1;
-	      oldDraggingRect.size.height += 2;
 
 	  newRect.size.height -= 1;
-
 	  newRect.origin.x += 3;
 	  newRect.size.width -= 3;
 
@@ -6652,27 +6594,117 @@ This method is deprecated, use -columnIndexesInRect:. */
 			//newRect.size.width -= 2;
 			newRect.size.height += 1;
 		}
-	      else
-		{
-		}
-
 	  NSFrameRectWithWidth(newRect, 2.0);
-	      //	      NSRectFill(newRect);
 
+	  oldDraggingRect = newRect;
+	  oldDraggingRect.origin.y -= 1;
+	  oldDraggingRect.size.height += 2;
 	}
 
 	[_window flushWindow];
 	[self unlockFocus];
+}
 
-	  oldDropRow = currentDropRow;
-	  oldDropOperation = currentDropOperation;
+/* This is a crude method of scrolling the view while dragging so the user can 
+drag to any cell even if it's not visible. Unfortunately we don't receive 
+events when the drag is outside the view, so the pointer must still be in the 
+view to drag. */
+- (void) _scrollRowAtPointToVisible: (NSPoint)p
+{
+  NSInteger currentRow;
+
+  if (p.y < NSMinY([self visibleRect]) + 3)
+    {
+      currentRow = [self rowAtPoint: p] - 1;
+      if (currentRow > 0)
+        [self scrollRowToVisible: currentRow];
     }
+  else if (p.y > NSMaxY([self visibleRect]) - 3)
+    {
+      currentRow = [self rowAtPoint: p] + 1;
+      if (currentRow < _numberOfRows)
+        [self scrollRowToVisible: currentRow];
     }
+}
+  
+- (NSInteger) _computedRowAtPoint: (NSPoint)p
+{
+  return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+}
 
+- (void) _setDropOperationAndRow: (NSInteger)row
+              usingPositionInRow: (NSInteger)positionInRow 
+                         atPoint: (NSPoint)p
+{
+  NSParameterAssert(row > -1);
+  BOOL isPositionInsideMiddleQuartersOfRow = 
+    (positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4);
+  BOOL isDropOn = (row > _numberOfRows || isPositionInsideMiddleQuartersOfRow); 
 
+  [self setDropRow: (isDropOn ? [self _computedRowAtPoint: p] : row)
+     dropOperation: (isDropOn ? NSTableViewDropOn : NSTableViewDropAbove)];
+}
+
+- (NSInteger) _dropRowFromQuarterPosition: (NSInteger)quarterPosition
+{
+  if ((quarterPosition - oldDropRow * 4 <= 2) &&
+      (quarterPosition - oldDropRow * 4 >= -3))
+    {
+      return oldDropRow;
+    }
+  else
+    {
+      return (quarterPosition + 2) / 4;
+    }
+}
+
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
+{
+  NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
+  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (int)_rowHeight;
+  NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
+  NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
+  NSDragOperation dragOperation = [sender draggingSourceOperationMask];
+  BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
+    && currentDragOperation == dragOperation);
+
+  [self _scrollRowAtPointToVisible: p];
+
+  if (isSameDropTargetThanBefore)
     return currentDragOperation;
+
+  /* Remember current drop target */
+  currentDragOperation = dragOperation;
+  lastQuarterPosition = quarterPosition;
+ 
+  /* The user can retarget this default drop using -setDropRow:dropOperation: 
+     in -tableView:validateDrop:proposedRow:proposedDropOperation:. */
+  [self _setDropOperationAndRow: row 
+             usingPositionInRow: positionInRow 
+                        atPoint: p];
+
+  if ([_dataSource respondsToSelector: 
+      @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
+    {
+      currentDragOperation = [_dataSource tableView: self
+                                       validateDrop: sender
+                                        proposedRow: currentDropRow
+                              proposedDropOperation: currentDropOperation];
     }
   
+  /* -setDropRow:dropOperation: can changes both currentDropRow and 
+     currentDropOperation. Whether we have to redraw the drop indicator depends 
+     on this change. */
+  if (currentDropRow != oldDropRow || currentDropOperation != oldDropOperation)
+    {
+      [self _drawDropIndicator]; 
+      oldDropRow = (currentDropRow > -1 ? currentDropRow : _numberOfRows);
+      oldDropOperation = currentDropOperation;
+    }
+
+  return currentDragOperation;
+}
+
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
   if ([_dataSource respondsToSelector: @selector(tableView:acceptDrop:row:dropOperation:)])
@@ -6913,7 +6945,22 @@ For a more detailed explanation, -setSortDescriptors:. */
                                                               row: rowIndex];
 
   return cellIsEditable && columnIsEditable && delegateAllowsEditing;
+}
+
+- (BOOL) _isCellSelectableColumn: (int) columnIndex
+                             row: (int) rowIndex
+{
+  if (![self _isEditableColumn: columnIndex row: rowIndex])
+    {
+      return NO;
     }
+  else
+    {
+      NSCell *cell = [self preparedCellAtColumn: columnIndex row: rowIndex];
+
+      return [cell isSelectable];
+    }
+}
 
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
@@ -7025,7 +7072,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   return NO;
 }
 
-- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet *)columnIndexes
+- (void) reloadDataForRowIndexes: (NSIndexSet*)rowIndexes
+                   columnIndexes: (NSIndexSet*)columnIndexes
 {
   [self reloadData];
 }
@@ -7050,20 +7098,22 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger)columnForView:(NSView *)view
 {
-  return(NSNotFound);
+  return NSNotFound;
 }
 
-- (void)insertRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions
+- (void) insertRowsAtIndexes: (NSIndexSet*)indexes
+               withAnimation: (NSTableViewAnimationOptions)animationOptions
 {
 }
 
-- (void)removeRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions
+- (void) removeRowsAtIndexes: (NSIndexSet*)indexes
+               withAnimation: (NSTableViewAnimationOptions)animationOptions
 {
 }
 
 - (NSInteger)rowForView:(NSView *)view
 {
-  return(NSNotFound);
+  return NSNotFound;
 }
 
 - (NSMenu *)menuForEvent:(NSEvent *)event
