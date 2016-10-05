@@ -1,6 +1,6 @@
 /** <title>NSTabViewItem</title>
 
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000-2016 Free Software Foundation, Inc.
 
    Author: Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
@@ -98,11 +98,16 @@
 
 - (NSSize) sizeOfLabel: (BOOL)shouldTruncateLabel
 {
-  NSDictionary *  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-			       [_tabview font], NSFontAttributeName,
-			       nil];
+  NSDictionary *  attr;
   NSString *string;
   NSSize rSize;
+
+  if (nil == _label)
+    return NSZeroSize;
+
+  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+	       [_tabview font], NSFontAttributeName,
+	       nil];
 
   if (shouldTruncateLabel) 
     {
@@ -177,6 +182,9 @@
 {
   NSDictionary *attr;
   NSString *string;
+
+  if (nil == _label)
+    return;
 
   _rect = tabRect;
 

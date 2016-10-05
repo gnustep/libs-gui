@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2007 Free Software Foundation, Inc.
  *
- * Author:	Gregory John Casamento <greg_casamento@yahoo.com>
+ * Author:	Gregory John Casamento <greg.casamento@gmail.com>
  * Date:	2007
  * 
  * This file is part of GNUstep.
@@ -544,16 +544,12 @@
             withView: (NSView *)view
 {
   id segment = [_items objectAtIndex: seg];
-  NSString *label = [segment label];
-  NSSize textSize = [label sizeWithAttributes: [NSDictionary dictionary]];
-  NSRect textFrame = frame;
-  CGFloat x_offset = (frame.size.width - textSize.width) / 2;
+  NSString *label = [self labelForSegment: seg];
+  NSImage *segmentImage = [self imageForSegment: seg];
   GSThemeControlState state = GSThemeNormalState;
   BOOL roundedLeft = NO;
   BOOL roundedRight = NO;
 
-  textFrame.origin.x += x_offset;
-  textFrame.size.width -= x_offset;
   [segment setFrame: frame];
 
   if([segment isSelected])
@@ -562,10 +558,14 @@
     }
 
   if (seg == 0)
+    {
     roundedLeft = YES;
+    }
 
   if (seg == ([_items count] - 1))
+    {
     roundedRight = YES;
+    }
 
    [[GSTheme theme] drawSegmentedControlSegment: self
                                       withFrame: frame
@@ -574,7 +574,37 @@
                                           state: state
                                     roundedLeft: roundedLeft
                                    roundedRight: roundedRight];
-  [self _drawText: [segment label] inFrame: textFrame];
+   if (label)
+     {
+       NSSize textSize = [label sizeWithAttributes: [self _nonAutoreleasedTypingAttributes]];
+       NSRect textFrame = frame;
+       CGFloat x_offset = (frame.size.width - textSize.width) / 2;
+
+       textFrame.origin.x += x_offset;
+       textFrame.size.width -= x_offset;
+       [self _drawText: label inFrame: textFrame];
+}
+
+  if (segmentImage)
+    {
+      NSSize size = [segmentImage size];
+      NSPoint position;
+      NSRect destinationRect;
+ 
+      position.x = MAX(NSMidX(frame) - (size.width/2.), 0.);
+      position.y = MAX(NSMidY(frame) - (size.height/2.), 0.);
+      destinationRect = NSMakeRect(position.x, position.y, size.width, size.height);
+
+      if (nil != view)
+        {
+          destinationRect = [view centerScanRect: destinationRect];
+        }
+
+      [segmentImage drawInRect: destinationRect
+                      fromRect: NSZeroRect
+                     operation: NSCompositeSourceOver
+                      fraction: 1.0];
+    }
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 

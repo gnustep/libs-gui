@@ -322,6 +322,7 @@ static NSNotificationCenter *nc = nil;
  * Utility function handling the splitview resize after
  * the divider has been moved
  */
+// Testplant-MAL-2016-10-05: DPS modified code for notification userinfo...
 - (void) _resize: (id) v withOldSplitView: (id) prev
    withFrame: (NSRect) r fromPoint: (NSPoint) p
    withBigRect: (NSRect) bigRect divHorizontal: (CGFloat) divHorizontal
@@ -1053,6 +1054,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) setAutosaveName: (NSString *)autosaveName
 {
+  // Testplant-MAL-2016-10-05: DPS modified code for nil autosave names...
   if ([autosaveName length] == 0)
     autosaveName = nil;
   ASSIGN(_autosaveName, autosaveName);
