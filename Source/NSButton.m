@@ -36,7 +36,6 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
-#import "GNUstepGUI/GSTheme.h"
 
 //
 // class variables

@@ -683,7 +683,7 @@ typedef struct _GSButtonCellFlags
    returns NO</p>*/
 - (BOOL) isOpaque
 {
-#if 0
+#if 0 // Testplant-MAL-10052016: keeping branch code...
   // May not be opaque, due to themes
   return NO;
 #else
@@ -807,6 +807,7 @@ typedef struct _GSButtonCellFlags
         [self setAlignment: NSLeftTextAlignment];
         [self setBordered: NO];
         [self setBezeled: NO];
+        // Testplant-MAL-10052016: keeping branch code...
         [self setBezelStyle:NSRegularSquareBezelStyle];
         [self setImageDimsWhenDisabled: NO];
         break;
@@ -1506,6 +1507,7 @@ typedef struct _GSButtonCellFlags
   return s;
 }
 
+// Testplant-MAL-10052016: keeping branch code...
 - (NSRect)insetFrame:(NSRect)frame withMargins:(GSThemeMargins)margins
 {
   NSRect result       = frame;
@@ -1555,6 +1557,7 @@ typedef struct _GSButtonCellFlags
       border = [[GSTheme theme] buttonMarginsForCell: self
                                                style: _bezel_style
                                                state: buttonState];
+      // Testplant-MAL-10052016: keeping branch code...
       interiorFrame = [self insetFrame:theRect withMargins:border];
 
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
@@ -1567,6 +1570,7 @@ typedef struct _GSButtonCellFlags
     }
   else
     {
+      // Testplant-MAL-10052016: keeping branch code...
       GSThemeMargins margins = [[GSTheme theme] buttonMarginsForCell: self
                                                                style: _bezel_style
                                                                state: GSThemeNormalState];
