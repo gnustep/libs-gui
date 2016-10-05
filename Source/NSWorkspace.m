@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-2010 Free Software Foundation, Inc.
+   Copyright (C) 1996-2016 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -32,9 +32,9 @@
 
 #import "config.h"
 
-#if	defined(HAVE_GETMNTINFO)
 #include <unistd.h>
 #include <sys/types.h>
+#if	defined(HAVE_GETMNTINFO)
 #include <sys/param.h>
 #include <sys/mount.h>
 #elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
@@ -45,6 +45,16 @@
 #else
 #undef	HAVE_GETMNTENT
 #endif
+#endif
+
+#if defined (HAVE_SYS_STATVFS_H)
+#include <sys/statvfs.h>
+#endif
+#if defined (HAVE_SYS_VFS_H)
+#include <sys/vfs.h>
+  #ifdef __linux__
+  #include <linux/magic.h>
+  #endif
 #endif
 
 #import <Foundation/NSBundle.h>
@@ -674,10 +684,14 @@ static NSString			*_rootPath = @"/";
   NSArray *documentDir;
   NSArray *libraryDirs;
   NSArray *sysAppDir;
+  NSArray *appDirs;
   NSArray *downloadDir;
   NSArray *desktopDir;
+  NSArray *imgDir;
+  NSArray *musicDir;
+  NSArray *videoDir;
   NSString *sysDir;
-  int i;
+  NSUInteger i;
 
   if (sharedWorkspace != self)
     {
@@ -726,6 +740,14 @@ static NSString			*_rootPath = @"/";
     NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
     NSSystemDomainMask, YES);
+  appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
+    NSAllDomainsMask, YES);
+  imgDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
+    NSUserDomainMask, YES);
+  musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
+    NSUserDomainMask, YES);
+  videoDir = NSSearchPathForDirectoriesInDomains(NSMoviesDirectory,
+    NSUserDomainMask, YES);
  
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
@@ -741,17 +763,19 @@ static NSString			*_rootPath = @"/";
 
   [folderPathIconDict setObject: @"HomeDirectory"
     forKey: NSHomeDirectory()];
-  [folderPathIconDict setObject: @"ImageFolder"
-    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Images"]];
-  [folderPathIconDict setObject: @"MusicFolder"
-    forKey: [NSHomeDirectory () stringByAppendingPathComponent: @"Music"]];
+
   /* it would be nice to use different root icons... */
-  [folderPathIconDict setObject: @"Root_PC" forKey: _rootPath];
+  [folderPathIconDict setObject: @"Root_PC" forKey: NSOpenStepRootDirectory()];
 
   for (i = 0; i < [libraryDirs count]; i++)
     {
       [folderPathIconDict setObject: @"LibraryFolder"
 	forKey: [libraryDirs objectAtIndex: i]];
+    }
+  for (i = 0; i < [appDirs count]; i++)
+    {
+      [folderPathIconDict setObject: @"ApplicationFolder"
+	forKey: [appDirs objectAtIndex: i]];
     }
   for (i = 0; i < [documentDir count]; i++)
     {
@@ -767,6 +791,21 @@ static NSString			*_rootPath = @"/";
     {
       [folderPathIconDict setObject: @"Desktop"
 	forKey: [desktopDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [imgDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"ImageFolder"
+	forKey: [imgDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [musicDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"MusicFolder"
+	forKey: [musicDir objectAtIndex: i]];
+    }
+  for (i = 0; i < [videoDir count]; i++)
+    {
+      [folderPathIconDict setObject: @"VideoFolder"
+	forKey: [videoDir objectAtIndex: i]];
     }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
@@ -1036,7 +1075,7 @@ static NSString			*_rootPath = @"/";
 		       source: (NSString*)source
 		  destination: (NSString*)destination
 		        files: (NSArray*)files
-			  tag: (int*)tag
+			  tag: (NSInteger*)tag
 {
   id app;
 
@@ -1160,15 +1199,25 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		      description: (NSString **)description
 			     type: (NSString **)fileSystemType
 {
-#if defined (HAVE_GETMNTINFO)
-  /* FIXME Check for presence of statfs call explicitly. Not all systems
-     with getmntinfo do have a statfs calls. In particular, NetBSD offers
-     only a statvfs calls for compatibility with POSIX. Other BSDs and
-     Linuxes have statvfs as well, but this returns less information than
-     the 4.4BSD statfs call. The NetBSD statvfs, on the other hand, is just
-     a statfs in disguise, i.e., it provides all information available in
-     the 4.4BSD statfs call. Therefore, we go ahead an just #define statfs
-     as statvfs on NetBSD.
+  NSArray *removables;
+
+  /* since we might not be able to get information about removable volumes
+     we use the information from the preferences which can be set in Systempreferences
+   */
+  removables = [[[NSUserDefaults standardUserDefaults] persistentDomainForName: NSGlobalDomain] objectForKey: @"GSRemovableMediaPaths"];
+  
+  *removableFlag = NO;
+  if ([removables containsObject: fullPath])
+    *removableFlag = YES;
+  
+#if defined (HAVE_SYS_STATVFS_H) || defined (HAVE_SYS_VFS_H)
+  /* We use statvfs() if available to get information but statfs()
+     will provide more information on different systems, but in a non
+     standard way. Thus e.g. on Linux two calls are needed.
+     The NetBSD statvfs is a statfs in disguise, i.e., it provides all
+     information available in      the 4.4BSD statfs call. 
+     Other BSDs and      Linuxes have statvfs as well, but this returns less
+     information than      the 4.4BSD statfs call.
      Note that the POSIX statvfs is not really helpful for us here. The
      only information that could be extracted from the data returned by
      that syscall is the ST_RDONLY flag. There is no owner field nor a
@@ -1177,32 +1226,90 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
   */
-#if defined (__NetBSD__) && __NetBSD_Version__ >= 300000000 
-#define statfs statvfs
-#define f_flags f_flag
-#endif
   uid_t uid;
-  struct statfs m;
-  NSStringEncoding enc;
+  BOOL isRootFS;
+  BOOL hasOwnership;
 
+#if defined(HAVE_STATVFS)
+  #define USING_STATVFS 1
+  struct statvfs m;
+  if (statvfs([fullPath fileSystemRepresentation], &m))
+    return NO;
+#elif defined (HAVE_STATFS)
+  #define USING_STATFS 1
+  struct statfs m;
   if (statfs([fullPath fileSystemRepresentation], &m))
     return NO;
-
-  uid = geteuid();
-  enc = [NSString defaultCStringEncoding];
-  *removableFlag = NO; // FIXME
-  *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
-  *unmountableFlag =
-    (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-  *description = @"filesystem"; // FIXME
-  *fileSystemType =
-    [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
-
-  return YES;
-#else
-  // FIXME
-  return NO;
 #endif
+  uid = geteuid();
+
+  *writableFlag = 1;
+#if  defined(HAVE_STRUCT_STATVFS_F_FLAG)
+  *writableFlag = (m.f_flag & ST_RDONLY) == 0;
+#elif defined(HAVE_STRUCT_STATFS_F_FLAGS)
+  *writableFlag = (m.f_flags & ST_RDONLY) == 0;
+#endif
+
+
+  isRootFS = NO;
+#if defined(ST_ROOTFS)
+  isRootFS = (m.f_flag & ST_ROOTFS);
+#elif defined (MNT_ROOTFS)
+  isRootFS = (m.f_flag & MNT_ROOTFS);
+#endif
+
+  hasOwnership = NO;
+#if (defined(USING_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER)) || (defined(USING_STATVFS) &&  defined(HAVE_STRUCT_STATVFS_F_OWNER))
+  if (uid == 0 || uid == m.f_owner)
+    hasOwnership = YES;
+#elif (defined(USING_STATVFS) && !defined(USING_STATFS) && defined (HAVE_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER))
+  // FreeBSD only?
+  struct statfs m2;
+  statfs([fullPath fileSystemRepresentation], &m2);
+  if (uid == 0 || uid == m2.f_owner)
+    hasOwnership = YES;
+#endif
+  
+  *unmountableFlag = !isRootFS && hasOwnership;
+  
+  *description = @"filesystem"; // FIXME
+
+  *fileSystemType = nil;
+#if defined (__linux__)
+  struct statfs m2;
+
+  statfs([fullPath fileSystemRepresentation], &m2);
+  if (m2.f_type == EXT2_SUPER_MAGIC)
+    *fileSystemType = @"EXT2";
+  else if (m2.f_type == EXT3_SUPER_MAGIC)
+    *fileSystemType = @"EXT3";
+  else if (m2.f_type == EXT4_SUPER_MAGIC)
+    *fileSystemType = @"EXT4";
+  else if (m2.f_type == ISOFS_SUPER_MAGIC)
+    *fileSystemType = @"ISO9660";
+#ifdef JFS_SUPER_MAGIC
+  else if (m2.f_type == JFS_SUPER_MAGIC)
+    *fileSystemType = @"JFS";
+#endif
+  else if (m2.f_type == MSDOS_SUPER_MAGIC)
+    *fileSystemType = @"MSDOS";
+  else if (m2.f_type == NFS_SUPER_MAGIC)
+    *fileSystemType = @"NFS";
+  else
+    *fileSystemType = @"Other";
+#elif defined(__sun__)
+  *fileSystemType =
+    [[NSString alloc] initWithCString: m.f_basetype encoding: [NSString defaultCStringEncoding]];
+#elif !defined(__GNU__)
+  // FIXME we disable this for HURD, but we need to check for struct member in configure
+  //  *fileSystemType = [[NSString alloc] initWithCString: m.f_fstypename encoding: [NSString defaultCStringEncoding]];
+#endif
+
+#else /* no statfs() nor statvfs() */
+  NSLog(@"getFileSystemInfoForPath not supported on your OS");
+#endif
+  
+  return YES;
 }
 
 /**
@@ -1314,8 +1421,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSDictionary	*attributes;
   NSString	*fileType;
 
-  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: YES];
-  fileType = [attributes objectForKey: NSFileType];
+  /*
+    If we have a symobolic link, get not only the original path attributes,
+    but also the original path, to resolve the correct icon.
+    mac resolves the original icon
+  */
+  fullPath = [fullPath stringByResolvingSymlinksInPath];
+
+  /* now we get the target attributes of the traversed link */
+  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: NO];
+  fileType = [attributes fileType];
+
   if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
       NSString *iconPath = nil;
@@ -1374,6 +1490,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (iconImage == nil)
 		    {
 		      iconImage = [NSImage _standardImageWithName: iconName];
+		      if (!iconImage)
+		        {
+		          /* no specific image found in theme, fall-back to folder */
+		          NSLog(@"no image found for %@", iconName);
+		          iconImage = [NSImage _standardImageWithName: @"Folder"];
+		        }
 		      /* the dictionary retains the image */
 		      [folderIconCache setObject: iconImage forKey: iconName];
 		    }
@@ -1762,44 +1884,87 @@ launchIdentifiers: (NSArray **)identifiers
 }
 
 /*
- * Unmounting a Device	
+ * Unmounting a Device and eject if possible
  */
 - (BOOL) unmountAndEjectDeviceAtPath: (NSString*)path
 {
+  NSUInteger    systype = [[NSProcessInfo processInfo] operatingSystem];
   NSDictionary	*userinfo;
   NSTask	*task;
-  BOOL		flag = NO;
+
+  /* let's check if it is a local volume we may unmount */
+  if (![[self mountedLocalVolumePaths] containsObject:path])
+    {
+      NSLog(@"unmountAndEjectDeviceAtPath: Path %@ not mounted", path);
+      return NO;
+    }
 
   userinfo = [NSDictionary dictionaryWithObject: path
 					 forKey: @"NSDevicePath"];
   [_workspaceCenter postNotificationName: NSWorkspaceWillUnmountNotification
 				  object: self
 				userInfo: userinfo];
-
-  // FIXME This is system specific
-  task = [NSTask launchedTaskWithLaunchPath: @"eject"
+  task = [NSTask launchedTaskWithLaunchPath: @"umount"
 				  arguments: [NSArray arrayWithObject: path]];
-  if (task != nil)
+
+  if (task)
     {
       [task waitUntilExit];
       if ([task terminationStatus] != 0)
-	{
-	  return NO;
+        {
+          return NO;
+        }
 	}
-      else
-	{
-	  flag = YES;
-	}
-    }
   else
     {
       return NO;
     }
 
-  [_workspaceCenter postNotificationName: NSWorkspaceDidUnmountNotification
+  [[self notificationCenter] postNotificationName: NSWorkspaceDidUnmountNotification
 				  object: self
 				userInfo: userinfo];
-  return flag;
+
+  /* this is system specific and we try our best
+     and the failure of eject doesn't mean unmount failed */
+  task = nil;
+  if (systype == NSGNULinuxOperatingSystem)
+    {
+      task = [NSTask launchedTaskWithLaunchPath: @"eject"
+				      arguments: [NSArray arrayWithObject: path]];
+}
+  else if (systype == NSBSDOperatingSystem || systype == NSSolarisOperatingSystem)
+    {
+      NSString *mountDir;
+
+      // Note: it would be better to check the device, not the mount point
+      mountDir = [path lastPathComponent];
+      if ([mountDir rangeOfString:@"cd"].location != NSNotFound ||
+          [mountDir rangeOfString:@"dvd"].location != NSNotFound)
+        {
+          task = [NSTask launchedTaskWithLaunchPath: @"eject"
+					  arguments: [NSArray arrayWithObject: @"cdrom"]];
+        }
+      else if ([mountDir rangeOfString:@"fd"].location != NSNotFound ||
+	  [mountDir rangeOfString:@"floppy"].location != NSNotFound)
+        {
+          task = [NSTask launchedTaskWithLaunchPath: @"eject"
+					  arguments: [NSArray arrayWithObject: @"floppy"]];
+        }
+    }
+  else
+    {
+      NSLog(@"Don't know how to eject");
+    }
+  if (task != nil)
+    {
+      [task waitUntilExit];
+      if ([task terminationStatus] != 0)
+        {
+          NSLog(@"eject failed");
+        }
+    }
+
+  return YES;
 }
 
 /*
@@ -1812,16 +1977,58 @@ launchIdentifiers: (NSArray **)identifiers
 
 - (NSArray*) mountNewRemovableMedia
 {
-  // FIXME
-  return nil;
+  NSArray *removables;
+  NSArray *mountedMedia = [self mountedRemovableMedia]; 
+  NSMutableArray *willMountMedia = [NSMutableArray array];
+  NSMutableArray *newlyMountedMedia = [NSMutableArray array];
+  NSUInteger i;
+
+  /* we use the system preferences to know which ones to mount */
+  removables = [[[NSUserDefaults standardUserDefaults] persistentDomainForName: NSGlobalDomain] objectForKey: @"GSRemovableMediaPaths"];
+
+  for (i = 0; i < [removables count]; i++)
+    {
+      NSString *removable = [removables objectAtIndex: i];
+    
+      if ([mountedMedia containsObject: removable] == NO)
+        {
+          [willMountMedia addObject: removable];
+        }
+    }  
+
+  for (i = 0; i < [willMountMedia count]; i++)
+    {
+      NSString *media = [willMountMedia objectAtIndex: i];
+      NSTask *task = [NSTask launchedTaskWithLaunchPath: @"mount"
+                                              arguments: [NSArray arrayWithObject: media]];
+      
+      if (task)
+        {
+          [task waitUntilExit];
+      
+          if ([task terminationStatus] == 0)
+            {
+              NSDictionary *userinfo = [NSDictionary dictionaryWithObject: media 
+                                                                   forKey: @"NSDevicePath"];
+
+              [[self notificationCenter] postNotificationName: NSWorkspaceDidMountNotification
+                                                       object: self
+                                                     userInfo: userinfo];
+              
+              [newlyMountedMedia addObject: media];
+            }
+        }
+    }
+
+  return newlyMountedMedia;
 }
 
 - (NSArray*) mountedRemovableMedia
 {
   NSArray		*volumes;
   NSMutableArray	*names;
-  unsigned		count;
-  unsigned		i;
+  NSUInteger		count;
+  NSUInteger		i;
 
   volumes = [self mountedLocalVolumePaths];
   count = [volumes count];
@@ -1890,7 +2097,11 @@ launchIdentifiers: (NSArray **)identifiers
 #elif defined (HAVE_GETMNTINFO)
   NSFileManager	*mgr = [NSFileManager defaultManager];
   unsigned int	i, n;
+#if defined(HAVE_STATVFS) && defined (__NetBSD__)
+  struct statvfs *m;
+#else
   struct statfs	*m;
+#endif
 
   n = getmntinfo(&m, MNT_NOWAIT);
   names = [NSMutableArray arrayWithCapacity: n];
@@ -1913,13 +2124,18 @@ launchIdentifiers: (NSArray **)identifiers
    * FIXME We won't get here on Solaris at all because it defines the
    * mntent struct in sys/mnttab.h instead of sys/mntent.h.
    */
-# ifndef MNTTAB
+# ifdef _PATH_MOUNTED
+#  define MOUNTED_PATH _PATH_MOUNTED
+# elif defined(MOUNTED)
+#  define MOUNTED_PATH MOUNTED
+# else
 #  define MNTTAB "/etc/mtab"
+#  warning "Mounted path file for you OS guessed to /etc/mtab";
 # endif
-  NSFileManager	*mgr = [NSFileManager defaultManager];
-  FILE		*fptr = fopen(MNTTAB, "r");
-  struct mntent	*m;
 
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  FILE		*fptr = setmntent(MOUNTED_PATH, "r");
+  struct mntent	*m;
 
   names = [NSMutableArray arrayWithCapacity: 8];
   while ((m = getmntent(fptr)) != 0)
@@ -1930,7 +2146,10 @@ launchIdentifiers: (NSArray **)identifiers
 					      length: strlen(m->MNT_MEMB)];
       [names addObject: path];
     }
+  endmntent(fptr);
 #else
+  /* we resort in parsing mtab manually and removing then reserved mount names
+     defined in preferences GSReservedMountNames (SystemPreferences) */
   NSString	*mtabPath;
   NSString	*mtab;
   NSArray	*mounts, *reservedMountNames;
@@ -1981,6 +2200,7 @@ launchIdentifiers: (NSArray **)identifiers
         }
     }
 #endif  
+
   return names;
 }
 
