@@ -2,7 +2,7 @@
 
    <abstract>The window class</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2015 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
             Venkat Ajjanagadde <venkat@ocbi.com>
@@ -2707,6 +2707,18 @@ titleWithRepresentedFilename(NSString *representedFilename)
   _f.dynamic_depth_limit = flag;
 }
 
+- (NSWindowCollectionBehavior)collectionBehavior
+{
+  //TODO: we don't handle collections yet and perhaps never will fully
+  return 0;
+}
+
+- (void)setCollectionBehavior:(NSWindowCollectionBehavior)props
+{
+  //TODO we don't handle collections yet. Perhaps certain features can be mapped on existing ones
+  //other features are Expose specific or anyway probably not implementable
+}
+
 /*
  * Cursor management
  */
@@ -4903,7 +4915,7 @@ current key view.<br />
   sRect.size.height = value;
   
 // Testplant-MAL-2015-07-08: keeping testplant branch code...
-#if defined(__MINGW__)
+#if defined(_WIN32)
   // Finally, this is for handling possible frame errors due to MSWindows sending
   // x/y frame position of -32000/32893 on a minimize.  These are now ignored in the
   // backend but since they were stored before, if the application was quit with

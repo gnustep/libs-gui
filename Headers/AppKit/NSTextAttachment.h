@@ -5,9 +5,9 @@
    
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel Bšhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-   Source by Daniel Böhringer integrated into GNUstep gui
+   Source by Daniel Bšhringer integrated into GNUstep gui
    by Felipe A. Rodriguez <far@ix.netcom.com> 
    
    This file is part of the GNUstep GUI Library.
