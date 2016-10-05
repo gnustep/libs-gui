@@ -46,11 +46,6 @@
 #import "AppKit/NSView.h"
 #import "GNUstepGUI/GSFontInfo.h"
 
-#if 0
-// Testplant-MAL-2015-06-30: Certain missing fonts would cause GUI problems...
-// Is this still needed???  Omitting for testing...
-#include <GNUstepGUI/GSDisplayServer.h>
-#endif
 
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 

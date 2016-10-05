@@ -911,9 +911,7 @@ has the same y origin and height as the line frag rect it is in.
       fraction_through = 1.0;
     }
   else
-    {
       [self _doLayoutToGlyph: glyph_index];
-    }
   
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyph_index)
@@ -2959,11 +2957,13 @@ no_soft_invalidation:
       else
 	{ /* before before */
 	}
+
 	/* sanity check */
 	if (NSMaxRange(newRange) > [_textStorage length]) 
+        {
 		newRange = NSMakeRange(MIN(range.location, [_textStorage length]), 0);
+        }
 		
-
       /* If there are text views attached to us, let them handle the
       change. */
       if ([self firstTextView])

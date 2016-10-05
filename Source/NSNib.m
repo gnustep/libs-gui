@@ -68,7 +68,7 @@
     }
   NS_HANDLER
     {
-      NSLog(@"Exception occured while loading model: %@", [localException reason]);
+      NSLog(@"Exception occurred while loading model: %@", [localException reason]);
     }
   NS_ENDHANDLER
 }
@@ -101,7 +101,7 @@
             }
           NS_HANDLER
             {
-              NSLog(@"Exception occured while loading model: %@", [localException reason]);
+              NSLog(@"Exception occurred while loading model: %@", [localException reason]);
             }
           NS_ENDHANDLER
         }

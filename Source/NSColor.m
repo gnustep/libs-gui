@@ -1388,7 +1388,6 @@ systemColorWithName(NSString *name)
 //
 - (void) drawSwatchInRect: (NSRect)rect
 {
-  // Testplant-MAL-2015-06-25 Merged with GUI trunk...
   if ([self alphaComponent] < 1.0)
     {
       NSBezierPath *triangle = [NSBezierPath bezierPath];

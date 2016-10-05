@@ -45,8 +45,6 @@ static struct
   NSString *name;
   unichar character;
 } 
-
-// Testplant-MAL-2015-06-30: Removed main branch constant definition...
 character_table[] =
 {
   /* Function keys.  */
@@ -134,7 +132,6 @@ character_table[] =
   { @"Escape", 0x1b }
 };
 
-// Testplant-MAL-2015-06-30: This replaces main branch constant definition...
 static int CHARACTER_TABLE_SIZE = (sizeof(character_table) / sizeof(character_table[0]));
 
 static NSInputManager *currentInputManager = nil;
@@ -679,7 +676,6 @@ static NSInputManager *currentInputManager = nil;
         case NSEnterCharacter:
         case NSFormFeedCharacter:
         case NSCarriageReturnCharacter:
-          // Testplant-MAL-2015-06-30: Included from testplant branch...
           if (flags & NSAlternateKeyMask)
             {
               [self doCommandBySelector: @selector (insertNewlineIgnoringFieldEditor:)];
