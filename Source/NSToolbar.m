@@ -423,7 +423,7 @@ static GSValidationCenter *vc = nil;
 {
   GSValidationObject *vobj;
   NSMutableArray *observersWindow;
-  NSMutableArray *windows;
+  NSArray *windows;
   NSEnumerator *e;
   NSWindow *w;
 

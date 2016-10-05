@@ -1669,6 +1669,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 - (NSRect) centerScanRect: (NSRect)aRect
 {
   NSAffineTransform	*matrix;
+  CGFloat x_org;
+  CGFloat y_org;
 
   /*
    *	Hmm - we assume that the windows coordinate system is centered on the
@@ -1683,10 +1685,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       aRect.size.height = -aRect.size.height;
     }
 
+  x_org = aRect.origin.x;
+  y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
-  aRect.origin.y = GSRoundTowardsInfinity(aRect.origin.y);
-  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
-  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height);
+  aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
+  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width + (x_org - aRect.origin.x) / 2.0);
+  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height + (y_org - aRect.origin.y) / 2.0);
 
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
@@ -2578,8 +2582,8 @@ static void autoresize(CGFloat oldContainerSize,
        * If the rect we are going to display contains the _invalidRect
        * then we can empty _invalidRect. Do this before the drawing,
        * as drawRect: may change this value.
-       * If the drawn rectangle cuts off a complete part of the
-       * _invalidRect, we should remove that part.
+       * FIXME: If the drawn rectangle cuts of a complete part of the
+       * _invalidRect, we should try to reduce this.
        */
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
         {
@@ -4543,7 +4547,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   viewIsPrinting = nil;
 }
 
-/* An exception occured while printing. Clean up */
+/* An exception occurred while printing. Clean up */
 - (void) _cleanupPrinting
 {
   [self _invalidateCoordinates];
