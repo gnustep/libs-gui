@@ -3410,6 +3410,7 @@ typedef enum {
     }
   else if ([[box fillColor] isEqual:[NSColor clearColor]] == NO)
     {
+      // Testplant-MAL-10052016: keeping branch code...
       // This isn't right per docs but Apple does do something like
       // this...anyone with a better idea please have at it...
       color = [box fillColor];
@@ -3457,6 +3458,7 @@ typedef enum {
               }
             else if ([[box borderColor] isEqual:[NSColor clearColor]] == NO)
               {
+                // Testplant-MAL-10052016: keeping branch code...
                 // This isn't right per docs but Apple does do something like
                 // this...anyone with a better idea please have at it...
                 [[box borderColor] set];

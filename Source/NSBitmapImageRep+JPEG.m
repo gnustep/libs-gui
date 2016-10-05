@@ -74,7 +74,7 @@ struct gs_jpeg_error_mgr
   jmp_buf  setjmpBuffer;
 
   /* a pointer to the last error message, nil if  no
-     error occured. if present, string is autoreleased.  */
+     error occurred. if present, string is autoreleased.  */
   NSString *error;
 };
 typedef struct gs_jpeg_error_mgr *gs_jpeg_error_mgr_ptr;
@@ -407,7 +407,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   // establish return context for error handling
   if (setjmp(jerrMgr.setjmpBuffer))
     {
-      /* assign the description of possible occured error to errorMsg */
+      /* assign the description of possible occurred error to errorMsg */
       if (errorMsg)
 	*errorMsg = (jerrMgr.error ? (id)jerrMgr.error : (id)nil);
       gs_jpeg_memory_src_destroy(&cinfo);
@@ -564,7 +564,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   // establish return context for error handling
   if (setjmp(jerrMgr.setjmpBuffer))
     {
-      /* assign the description of possible occured error to errorMsg */
+      /* assign the description of possible occurred error to errorMsg */
       if (errorMsg)
 	*errorMsg = (jerrMgr.error ? (id)jerrMgr.error : (id)nil);
       gs_jpeg_memory_dest_destroy(&cinfo);
