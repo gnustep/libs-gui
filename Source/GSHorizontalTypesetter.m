@@ -1230,6 +1230,7 @@ restart: ;
       reentrant. Thus, if we are already in use and can't lock our lock,
       we create a new instance and let it handle the call. */
       
+      // Testplant-MAL-10052016: Recursion monitoring to detect problems...
       static NSUInteger RecursionCount = 0;
       RecursionCount++;
       if (RecursionCount > 1)

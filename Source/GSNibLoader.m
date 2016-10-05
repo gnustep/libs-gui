@@ -110,7 +110,7 @@
     }
   NS_HANDLER
     {
-      NSLog(@"Exception occured while loading model: %@",[localException reason]);
+      NSLog(@"Exception occurred while loading model: %@",[localException reason]);
       // TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER

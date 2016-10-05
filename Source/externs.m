@@ -3,7 +3,7 @@
 
    External data
 
-   Copyright (C) 1997 Free Software Foundation, Inc.
+   Copyright (C) 1997-2016 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: August 1997
@@ -416,6 +416,8 @@ NSString* const NSMenuWillSendActionNotification = @"NSMenuWillSendActionNotific
 NSString* const NSMenuDidAddItemNotification = @"NSMenuDidAddItemNotification";
 NSString* const NSMenuDidRemoveItemNotification = @"NSMenuDidRemoveItemNotification";
 NSString* const NSMenuDidChangeItemNotification = @"NSMenuDidChangeItemNotification";
+NSString* const NSMenuDidBeginTrackingNotification = @"NSMenuDidBeginTrackingNotification";
+NSString* const NSMenuDidEndTrackingNotification = @"NSMenuDidEndTrackingNotification";
 
 // NSPopUpButton notification
 NSString *NSPopUpButtonWillPopUpNotification = @"NSPopUpButtonWillPopUpNotification";
@@ -612,6 +614,12 @@ NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItem";
 NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItem";
 NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItem";
 
+NSString *NSImageNameTrashEmpty = @"NSImageTrashEmpty";
+NSString *NSImageNameTrashFull = @"NSImageTrashFull";
+
+// Misc named images
+NSString *NSImageNameMultipleDocuments = @"NSImageNameMultipleDocuments";
+
 /*
  * NSTextView userInfo for notifications 
  */
@@ -705,6 +713,16 @@ id NSNotApplicableMarker = @"<NOT APPLICABLE MARKER>";
 // NSNib
 NSString *NSNibTopLevelObjects = @"NSTopLevelObjects";
 NSString *NSNibOwner = @"NSOwner";
+
+// NSImage directly mapped NS named images constants
+NSString *NSImageNameUserAccounts = @"NSUserAccounts";
+NSString *NSImageNamePreferencesGeneral = @"NSPreferencesGeneral";
+NSString *NSImageNameAdvanced = @"NSAdvanced";
+NSString *NSImageNameInfo = @"NSInfo";
+NSString *NSImageNameFontPanel = @"NSFontPanel";
+NSString *NSImageNameColorPanel = @"NSColorPanel";
+NSString *NSImageNameCaution = @"NSCaution";
+
 
 extern void __objc_gui_force_linking (void);
 

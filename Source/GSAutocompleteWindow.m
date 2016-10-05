@@ -181,20 +181,10 @@ static GSAutocompleteWindow *gsWindow = nil;
         }
     }
   
-#if 0
-  // Testplant-MAL-2015-06-25: Fix for main branch code...
-  // String size caching could cache one of our strings with the wrong sizing
-  widestWord = [NSString stringWithFormat:@"%@#",widestWord];
-  // Width
-  windowWidth  = ([cell _sizeText: widestWord].width + [NSScroller scrollerWidth] + 2*bsize.width);
-  //  windowWidth *= 1.1;
-#else
-  // Testplant-MAL-2015-06-25: GUI main branch code...
   // Width
   cell = [[_tableView tableColumnWithIdentifier: @"content"] dataCell];
   windowWidth = 1.1*[cell _sizeText: widestWord].width
     + [NSScroller scrollerWidth] + 2*bsize.width;
-#endif
 
   //Height
   windowHeight = 2*bsize.height + [_tableView rowHeight]*num
@@ -224,7 +214,6 @@ static GSAutocompleteWindow *gsWindow = nil;
 	   [_textView convertRect: stringRect toView: nil].origin];
 
   // Calculate the origin point to the window.
-  // Testplant-MAL-2015-06-25: Main branch code merge...
   if (style == NSMacintoshInterfaceStyle
       || style == NSWindows95InterfaceStyle)
     {

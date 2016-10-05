@@ -45,6 +45,7 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
@@ -1955,6 +1956,14 @@ static BOOL _isInInterfaceBuilder = NO;
           [obj instantiateWithInstantiator: self];          
           [obj establishConnection];
         }
+      else
+        {
+          if ([obj respondsToSelector: @selector(instantiateWithObjectInstantiator:)])
+            {
+              [obj instantiateWithObjectInstantiator: self];          
+              [obj establishConnection];
+            }
+        }
     }
 
   // awaken all objects except proxy objects.
@@ -2256,7 +2265,7 @@ static BOOL _isInInterfaceBuilder = NO;
         }
       if (_marker != nil)
         {
-          [coder encodeObject: _file forKey: @"NSMarker"];
+          [coder encodeObject: _marker forKey: @"NSMarker"];
         }      
     }
   else
@@ -2367,4 +2376,118 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   return self;
 }
+@end
+
+@implementation NSIBUserDefinedRuntimeAttributesConnector
+- (void) setObject: (id)object
+{
+  ASSIGN(_object, object);
+}
+
+- (id) object
+{
+  return _object;
+}
+
+- (void) setValues: (id)values
+{
+  ASSIGN(_values, values);
+}
+
+- (id) values
+{
+  return _values;
+}
+
+- (void) setKeyPaths: (id)keyPaths
+{
+  ASSIGN(_keyPaths, keyPaths);
+}
+
+- (id) keyPaths
+{
+  return _keyPaths;
+}
+
+- (void) dealloc
+{
+  RELEASE(_object);
+  RELEASE(_keyPaths);
+  RELEASE(_values);
+  [super dealloc];
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      if (_object != nil)
+        {
+          [coder encodeObject: _object forKey: @"NSObject"];
+        }
+      if (_keyPaths != nil)
+        {
+          [coder encodeObject: _keyPaths forKey: @"NSKeyPaths"];
+        }      
+      if (_values != nil)
+        {
+          [coder encodeObject: _values forKey: @"NSValues"];
+        }      
+    }
+  else
+    {
+      [coder encodeObject: _object];
+      [coder encodeObject: _keyPaths];
+      [coder encodeObject: _values];
+    }
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSObject"])
+        {
+          ASSIGN(_object, [coder decodeObjectForKey: @"NSObject"]);
+        }
+      if ([coder containsValueForKey: @"NSKeyPaths"])
+        {
+          ASSIGN(_keyPaths, [coder decodeObjectForKey: @"NSKeyPaths"]);
+        }
+      if ([coder containsValueForKey: @"NSValues"])
+        {
+          ASSIGN(_values, [coder decodeObjectForKey: @"NSValues"]);
+        }
+    }
+  else
+    {
+      ASSIGN(_object, [coder decodeObject]);
+      ASSIGN(_keyPaths, [coder decodeObject]);
+      ASSIGN(_values, [coder decodeObject]);
+    }
+  
+  return self;
+}
+
+- (void) establishConnection
+{
+  // Loop over key paths and values and use KVC on object
+  NSEnumerator *keyEn = [_keyPaths objectEnumerator];
+  NSEnumerator *valEn = [_values objectEnumerator];
+  id key;
+
+  while ((key = [keyEn nextObject]) != nil)
+    {
+      id val = [valEn nextObject];
+
+      [_object setValue: val forKeyPath: key];
+    }
+}
+
+- (void) instantiateWithObjectInstantiator: (id)instantiator
+{
+  [self setObject: [(id<GSInstantiator>)instantiator instantiateObject: _object]];
+  // FIXME Should handle values too
+}
+
 @end
