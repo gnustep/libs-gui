@@ -51,7 +51,6 @@
 #import "NSBitmapImageRep+PNG.h"
 #import "NSBitmapImageRep+PNM.h"
 #import "NSBitmapImageRep+ICNS.h"
-#import "NSBitmapImageRepPrivate.h"
 #import "GSGuiPrivate.h"
 
 #include "nsimage-tiff.h"
@@ -59,6 +58,25 @@
 /* Maximum number of planes */
 #define MAX_PLANES 5
 
+/* Backend methods (optional) */
+@interface NSBitmapImageRep (GSPrivate)
+// GNUstep extension
+- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
+
+// Internal
++ (int) _localFromCompressionType: (NSTIFFCompression)type;
++ (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
+- (void) _premultiply;
+- (void) _unpremultiply;
+- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (NSInteger)bps
+                                     samplesPerPixel: (NSInteger)spp
+                                            hasAlpha: (BOOL)alpha
+                                            isPlanar: (BOOL)isPlanar
+                                      colorSpaceName: (NSString*)colorSpaceName
+                                        bitmapFormat: (NSBitmapFormat)bitmapFormat 
+                                         bytesPerRow: (NSInteger)rowBytes
+                                        bitsPerPixel: (NSInteger)pixelBits;
+@end
 
 /**
   <unit>
@@ -80,36 +98,39 @@
 /** Returns YES if the image stored in data can be read and decoded */
 + (BOOL) canInitWithData: (NSData *)data
 {
+  TIFF	*image = NULL;
+
   if (data == nil)
     {
       return NO;
     }
 
-#if HAVE_LIBPNG
   if ([self _bitmapIsPNG: data])
     return YES;
-#endif
 
   if ([self _bitmapIsPNM: data])
     return YES;
 
-#if HAVE_LIBJPEG
   if ([self _bitmapIsJPEG: data])
     return YES;
-#endif
 
-#if HAVE_LIBUNGIF || HAVE_LIBGIF
   if ([self _bitmapIsGIF: data])
     return YES;
-#endif
 
   if ([self _bitmapIsICNS: data])
     return YES;
 
-  if ([self _bitmapIsTIFF: data])
-    return YES;
+  image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
-  return NO;
+  if (image != NULL)
+    {
+      NSTiffClose (image);
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
 }
 
 /** Returns a list of image filename extensions that are understood by
@@ -168,6 +189,10 @@
 */
 + (NSArray*) imageRepsWithData: (NSData *)imageData
 {
+  int		 i, images;
+  TIFF		 *image;
+  NSMutableArray *array;
+
   if (imageData == nil)
     {
       NSLog(@"NSBitmapImageRep: nil image data");
@@ -234,20 +259,36 @@
       return [self _imageRepsWithICNSData: imageData];
     }
 
-  if ([self _bitmapIsTIFF: imageData])
+  image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
+  if (image == NULL)
     {
-      return [self _imageRepsWithTIFFData: imageData];
+      NSLog(@"NSBitmapImageRep: unable to parse TIFF data");
+      return [NSArray array];
     }
 
-  NSLog(@"NSBitmapImageRep: unable to parse bitmap image data");
-  return [NSArray array];
+  images = NSTiffGetImageCount(image);
+  NSDebugLLog(@"NSImage", @"Image contains %d directories", images);
+  array = [NSMutableArray arrayWithCapacity: images];
+  for (i = 0; i < images; i++)
+    {
+      NSBitmapImageRep* imageRep;
+      imageRep = [[self alloc] _initFromTIFFImage: image number: i];
+      if (imageRep)
+	{
+	  [array addObject: imageRep];
+          RELEASE(imageRep);
+	}
+    }
+  NSTiffClose(image);
+
+  return array;
 }
 
 /** Loads only the default (first) image from the image contained in
    data. */
 - (id) initWithData: (NSData *)imageData
 {
-  Class class;
+  TIFF *image;
 
   if (imageData == nil)
     {
@@ -255,30 +296,36 @@
       return nil;
     }
 
-  class = [self class];
-  if ([class _bitmapIsPNG: imageData])
+  if ([object_getClass(self) _bitmapIsPNG: imageData])
     return [self _initBitmapFromPNG: imageData];
 
-  if ([class _bitmapIsPNM: imageData])
+  if ([object_getClass(self) _bitmapIsPNM: imageData])
     return [self _initBitmapFromPNM: imageData
 		       errorMessage: NULL];
 
-  if ([class _bitmapIsJPEG: imageData])
+  if ([object_getClass(self) _bitmapIsJPEG: imageData])
     return [self _initBitmapFromJPEG: imageData
 			errorMessage: NULL];
 
-  if ([class _bitmapIsGIF: imageData])
+  if ([object_getClass(self) _bitmapIsGIF: imageData])
     return [self _initBitmapFromGIF: imageData
 		       errorMessage: NULL];
 
-  if ([class _bitmapIsICNS: imageData])
+  if ([object_getClass(self) _bitmapIsICNS: imageData])
     return [self _initBitmapFromICNS: imageData];
 
-  if ([class _bitmapIsTIFF: imageData])
-    return [self _initBitmapFromTIFF: imageData];
+  image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
+  if (image == NULL)
+    {
+      RELEASE(self);
+      NSLog(@"Tiff read invalid TIFF info from data");
+      return nil;
+    }
 
-  DESTROY(self);
-  return nil;
+  [self _initFromTIFFImage: image number: -1];
+  NSTiffClose(image);
+
+  return self;
 }
 
 /** Initialize with bitmap data from a rect within the focused view */
@@ -1346,115 +1393,48 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 //
 /** Produces an NSData object containing a TIFF representation of all
    the images stored in anArray.  BUGS: Currently this only works if the
-   images are NSBitmapImageRep objects.  */
+   images are NSBitmapImageRep objects, and it only creates an TIFF from the
+   first image in the array.  */
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
+  //FIXME: This only outputs one of the ImageReps
   NSEnumerator *enumerator = [anArray objectEnumerator];
   NSImageRep *rep;
-  TIFF *image;
-  NSTiffInfo info;
-  char *bytes = 0;
-  long length = 0;
-  int num = 0;
-  NSData *data;
-
-  image = NSTiffOpenDataWrite(&bytes, &length);
-  if (image == 0)
-    {
-      [NSException raise: NSTIFFException 
-		   format: @"Opening data stream for writing"];
-    }
 
   while ((rep = [enumerator nextObject]) != nil)
     {
       if ([rep isKindOfClass: self])
         {
-          NSTIFFCompression compression;
-          float factor;
-          NSBitmapImageRep *bitmap = (NSBitmapImageRep*)rep;
-
-          [bitmap getCompression: &compression
-                          factor: &factor];
-          [bitmap _fillTIFFInfo: &info
-               usingCompression: compression
-                         factor: factor];
-          info.imageNumber = num++;
-          info.numImages = [anArray count];
-          info.subfileType = FILETYPE_PAGE;
-          if (NSTiffWrite(image, &info, [bitmap bitmapData]) != 0)
-            {
-              [NSException raise: NSTIFFException format: @"Writing data"];
-            }
-        }
+	  return [(NSBitmapImageRep*)rep TIFFRepresentation];
+	}
     }
 
-  NSTiffClose(image);
-  data = [NSData dataWithBytesNoCopy: bytes length: length];
-  if (num > 0)
-    {
-      return data;
-    }
-  else
-    {
-      // FIXME: Not sure wether this is the correct behaviour, at least it was
-      // the old one of this method.
-      return nil;
-    }
+  return nil;
 }
 
 /** Produces an NSData object containing a TIFF representation of all
    the images stored in anArray. The image is compressed according to
    the compression type and factor. BUGS: Currently this only works if
-   the images are NSBitmapImageRep objects. */
+   the images are NSBitmapImageRep objects, and it only creates an
+   TIFF from the first image in the array. */
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
-				usingCompression: (NSTIFFCompression)compression
+				usingCompression: (NSTIFFCompression)type
 					  factor: (float)factor
 {
+  //FIXME: This only outputs one of the ImageReps
   NSEnumerator *enumerator = [anArray objectEnumerator];
   NSImageRep *rep;
-  NSTiffInfo info;
-  TIFF *image;
-  char *bytes = 0;
-  long length = 0;
-  int num = 0;
-  NSData *data;
-
-  image = NSTiffOpenDataWrite(&bytes, &length);
-  if (image == 0)
-    {
-      [NSException raise: NSTIFFException 
-		   format: @"Opening data stream for writing"];
-    }
 
   while ((rep = [enumerator nextObject]) != nil)
     {
       if ([rep isKindOfClass: self])
         {
-          [(NSBitmapImageRep*)rep _fillTIFFInfo: &info
-                               usingCompression: compression
+	  return [(NSBitmapImageRep*)rep TIFFRepresentationUsingCompression: type
 		     factor: factor];
-          info.imageNumber = num++;
-          info.numImages = [anArray count];
-          info.subfileType = FILETYPE_PAGE;
-          if (NSTiffWrite(image, &info, [(NSBitmapImageRep*)rep bitmapData]) != 0)
-            {
-              [NSException raise: NSTIFFException format: @"Writing data"];
-            }
-        }
+	}
     }
 
-  NSTiffClose(image);
-  data = [NSData dataWithBytesNoCopy: bytes length: length];
-  if (num > 0)
-    {
-      return data;
-    }
-  else
-    {
-      // FIXME: Not sure wether this is the correct behaviour, at least it was
-      // the old one of this method.
-      return nil;
-    }
+  return nil;
 }
 
 /** Returns an NSData object containing a TIFF representation of the
@@ -1472,7 +1452,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 /** Returns an NSData object containing a TIFF representation of the
     receiver. The TIFF data is compressed using compresssion type
     and factor.  */
-- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)compression
+- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
 					factor: (float)factor
 {
   NSTiffInfo	info;
@@ -1480,16 +1460,56 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   char		*bytes = 0;
   long		length = 0;
 
+  info.imageNumber = 0;
+  info.subfileType = 255;
+  info.width = _pixelsWide;
+  info.height = _pixelsHigh;
+  info.bitsPerSample = _bitsPerSample;
+  info.samplesPerPixel = _numColors;
+
+  if ([self canBeCompressedUsing: type] == NO)
+    {
+      type = NSTIFFCompressionNone;
+      factor = 0;
+    }
+
+  if (_isPlanar)
+    info.planarConfig = PLANARCONFIG_SEPARATE;
+  else
+    info.planarConfig = PLANARCONFIG_CONTIG;
+
+  if ([_colorSpace isEqual: NSDeviceRGBColorSpace]
+      || [_colorSpace isEqual: NSCalibratedRGBColorSpace])
+    info.photoInterp = PHOTOMETRIC_RGB;
+  else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+	   || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
+    info.photoInterp = PHOTOMETRIC_MINISBLACK;
+  else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
+	   || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
+    info.photoInterp = PHOTOMETRIC_MINISWHITE;
+  else
+    {
+      NSWarnMLog(@"Unknown colorspace %@.", _colorSpace);
+      info.photoInterp = PHOTOMETRIC_RGB;
+    }
+
+  info.extraSamples = (_hasAlpha) ? 1 : 0;
+  info.assocAlpha = (_format & NSAlphaNonpremultipliedBitmapFormat) ? 0 : 1;
+  info.compression = [NSBitmapImageRep _localFromCompressionType: type];
+  if (factor < 0)
+    factor = 0;
+  if (factor > 1)
+    factor = 1;
+  info.quality = factor * 100;
+  info.numImages = 1;
+  info.error = 0;
+
   image = NSTiffOpenDataWrite(&bytes, &length);
   if (image == 0)
     {
       [NSException raise: NSTIFFException 
-		   format: @"Opening data stream for writing"];
+		   format: @"Opening data stream for writting"];
     }
-
-  [self _fillTIFFInfo: &info
-     usingCompression: compression
-               factor: factor];
   if (NSTiffWrite(image, &info, [self bitmapData]) != 0)
     {
       [NSException raise: NSTIFFException format: @"Writing data"];
@@ -1513,35 +1533,13 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   NSEnumerator *enumerator = [imageReps objectEnumerator];
   NSImageRep *rep;
 
-  if (storageType == NSTIFFFileType)
+  while ((rep = [enumerator nextObject]) != nil)
     {
-      NSNumber *comp_property = [properties objectForKey: NSImageCompressionMethod];
-      NSNumber *factor_property = [properties objectForKey: NSImageCompressionFactor];
-      
-      if ((comp_property != nil) && (factor_property != nil))
+      if ([rep isKindOfClass: self])
         {
-          float factor = [factor_property floatValue];
-          NSTIFFCompression compression = [comp_property unsignedShortValue];
-
-          return [self TIFFRepresentationOfImageRepsInArray: imageReps
-                                           usingCompression: compression
-                                                     factor: factor];
-        }
-      else
-        {
-          return [self TIFFRepresentationOfImageRepsInArray: imageReps];
-        }
-    }
-  else
-    {
-      while ((rep = [enumerator nextObject]) != nil)
-        {
-          if ([rep isKindOfClass: self])
-            {
-            return [(NSBitmapImageRep*)rep representationUsingType: storageType
-                                                        properties: properties];
-            }
-        }
+	  return [(NSBitmapImageRep*)rep representationUsingType: storageType
+		     properties: properties];
+	}
     }
 
   return nil;
@@ -1763,7 +1761,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   copy = (NSBitmapImageRep*)[super copyWithZone: zone];
 
-  copy->_properties = [_properties mutableCopyWithZone: zone];
+  copy->_properties = [_properties copyWithZone: zone];
   copy->_imageData = [_imageData mutableCopyWithZone: zone];
   copy->_imagePlanes = NSZoneMalloc(zone, sizeof(unsigned char*) * MAX_PLANES);
   if (_imageData == nil)
@@ -1868,71 +1866,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   return NSTIFFCompressionNone;
 }
 
-+ (BOOL) _bitmapIsTIFF: (NSData *)data
-{
-  TIFF *image = NSTiffOpenDataRead((char *)[data bytes], [data length]);
-
-  if (image != NULL)
-    {
-      NSTiffClose(image);
-      return YES;
-    }
-  else
-    {
-      return NO;
-    }
-}
-
-+ (NSArray*) _imageRepsWithTIFFData: (NSData *)imageData
-{
-  int		 i, images;
-  TIFF		 *image;
-  NSMutableArray *array;
-
-  image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
-  if (image == NULL)
-    {
-      NSLog(@"NSBitmapImageRep: unable to parse TIFF data");
-      return [NSArray array];
-    }
-
-  images = NSTiffGetImageCount(image);
-  NSDebugLLog(@"NSImage", @"Image contains %d directories", images);
-  array = [NSMutableArray arrayWithCapacity: images];
-  for (i = 0; i < images; i++)
-    {
-      NSBitmapImageRep* imageRep;
-      imageRep = [[self alloc] _initFromTIFFImage: image number: i];
-      if (imageRep)
-	{
-	  [array addObject: imageRep];
-          RELEASE(imageRep);
-	}
-    }
-  NSTiffClose(image);
-
-  return array;
-}
-
-- (NSBitmapImageRep *) _initBitmapFromTIFF: (NSData *)imageData
-{
-  TIFF *image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
-
-  if (image == NULL)
-    {
-      RELEASE(self);
-      NSLog(@"Tiff read invalid TIFF info from data");
-      return nil;
-    }
-
-  [self _initFromTIFFImage: image number: -1];
-  NSTiffClose(image);
-  return self;
-}
 
 /* Given a TIFF image (from the libtiff library), load the image information
    into our data structure.  Reads the specified image. */
-- (NSBitmapImageRep *) _initFromTIFFImage: (TIFF *)image number: (int)imageNumber
+- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber
 {
   NSString* space;
   NSTiffInfo* info;
@@ -2003,56 +1940,6 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   return self;
 }
 
-- (void) _fillTIFFInfo: (NSTiffInfo*)info
-      usingCompression: (NSTIFFCompression)type
-                factor: (float)factor
-{
-  info->numImages = 1;
-  info->imageNumber = 0;
-  info->subfileType = 255;
-  info->width = _pixelsWide;
-  info->height = _pixelsHigh;
-  info->bitsPerSample = _bitsPerSample;
-  info->samplesPerPixel = _numColors;
-
-  if (_isPlanar)
-    info->planarConfig = PLANARCONFIG_SEPARATE;
-  else
-    info->planarConfig = PLANARCONFIG_CONTIG;
-
-  if ([_colorSpace isEqual: NSDeviceRGBColorSpace]
-      || [_colorSpace isEqual: NSCalibratedRGBColorSpace])
-    info->photoInterp = PHOTOMETRIC_RGB;
-  else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
-	   || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
-    info->photoInterp = PHOTOMETRIC_MINISBLACK;
-  else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
-	   || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
-    info->photoInterp = PHOTOMETRIC_MINISWHITE;
-  else
-    {
-      NSWarnMLog(@"Unknown colorspace %@.", _colorSpace);
-      info->photoInterp = PHOTOMETRIC_RGB;
-    }
-
-  info->extraSamples = (_hasAlpha) ? 1 : 0;
-  info->assocAlpha = (_format & NSAlphaNonpremultipliedBitmapFormat) ? 0 : 1;
-
-  if ([self canBeCompressedUsing: type] == NO)
-    {
-      type = NSTIFFCompressionNone;
-      factor = 0;
-    }
-
-  info->compression = [NSBitmapImageRep _localFromCompressionType: type];
-  if (factor < 0)
-    factor = 0;
-  if (factor > 1)
-    factor = 1;
-  info->quality = factor * 100;
-  info->error = 0;
-}
-
 - (void) _premultiply
 {
   NSInteger x, y;
@@ -2081,66 +1968,25 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   if (_bitsPerSample == 8)
     {
-      if (!_isPlanar)
-        {
-          // Optimize for the most common case
-          NSUInteger a;
-          NSInteger offset;
-          NSInteger line_offset;
+      NSUInteger a;
 
       for (y = 0; y < _pixelsHigh; y++)
         {
-              line_offset = _bytesPerRow * y;
           for (x = 0; x < _pixelsWide; x++)
             {
-                  offset = (_bitsPerPixel * x) / 8 + line_offset;
-                  a = _imagePlanes[0][offset + ai];
-                  if (a != 255)
-                    {
-                      if (a == 0)
-                        {
-                          for (i = start; i < end; i++)
-                            {
-                              _imagePlanes[0][offset + i] = 0;
-                            }
-                        }
-                      else
-                        {
-                          for (i = start; i < end; i++)
-                            {
-                              NSUInteger v = _imagePlanes[0][offset + i];
-                              NSUInteger t = a * v + 0x80;
-                              
-                              v = ((t >> 8) + t) >> 8;
-                              _imagePlanes[0][offset + i] = v;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-      else
-        {
-          NSUInteger a;
-
-          for (y = 0; y < _pixelsHigh; y++)
-            {
-              for (x = 0; x < _pixelsWide; x++)
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              a = pixelData[ai];
+              if (a != 255)
                 {
-                  //[self getPixel: pixelData atX: x y: y];
-                  getP(self, getPSel, pixelData, x, y);
-                  a = pixelData[ai];
-                  if (a != 255)
+                  for (i = start; i < end; i++)
                     {
-                      for (i = start; i < end; i++)
-                        {
-                          NSUInteger t = a * pixelData[i] + 0x80;
+                      NSUInteger t = a * pixelData[i] + 0x80;
 
-                          pixelData[i] = ((t >> 8) + t) >> 8;
-                        }
-                      //[self setPixel: pixelData atX: x y: y];
-                      setP(self, setPSel, pixelData, x, y);
+                      pixelData[i] = ((t >> 8) + t) >> 8;
                     }
+                  //[self setPixel: pixelData atX: x y: y];
+                  setP(self, setPSel, pixelData, x, y);
                 }
             }
         }
@@ -2199,73 +2045,33 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
   if (_bitsPerSample == 8)
     {
-      if (!_isPlanar)
-        {
-          // Optimize for the most common case
-          NSUInteger a;
-          NSInteger offset;
-          NSInteger line_offset;
+      NSUInteger a;
 
       for (y = 0; y < _pixelsHigh; y++)
         {
-              line_offset = _bytesPerRow * y;
-              for (x = 0; x < _pixelsWide; x++)
-                {
-                      offset = (_bitsPerPixel * x) / 8 + line_offset;
-                      a = _imagePlanes[0][offset + ai];
-                      if ((a != 0) && (a != 255))
-                        {
-                          for (i = start; i < end; i++)
-                            {
-                              NSUInteger v = _imagePlanes[0][offset + i];
-                              NSUInteger c;
-                          
-                              c = (v * 255) / a;
-                              if (c >= 255)
-                                {
-                                  v = 255;
-                                }
-                              else
-                                {
-                                  v = c;
-                                }
-                          
-                              _imagePlanes[0][offset + i] = v;
-                            }
-                        }
-                    }
-                }
-        }
-      else
-        {
-          NSUInteger a;
-          
-          for (y = 0; y < _pixelsHigh; y++)
+          for (x = 0; x < _pixelsWide; x++)
             {
-              for (x = 0; x < _pixelsWide; x++)
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              a = pixelData[ai];
+              if ((a != 0) && (a != 255))
                 {
-                  //[self getPixel: pixelData atX: x y: y];
-                  getP(self, getPSel, pixelData, x, y);
-                  a = pixelData[ai];
-                  if ((a != 0) && (a != 255))
+                  for (i = start; i < end; i++)
                     {
-                      for (i = start; i < end; i++)
-                        {
-                          NSUInteger c;
+                      NSUInteger c;
                       
-                          c = (pixelData[i] * 255) / a;
-                          if (c >= 255)
-                            {
-                              pixelData[i] = 255;
-                            }
-                          else
-                            {
-                              pixelData[i] = c;
-                            }
+                      c = (pixelData[i] * 255) / a;
+                      if (c >= 255)
+                        {
+                          pixelData[i] = 255;
                         }
-                      //[self setPixel: pixelData atX: x y: y];
-                      setP(self, setPSel, pixelData, x, y);
+                      else
+                        {
+                          pixelData[i] = c;
+                        }
                     }
+                  //[self setPixel: pixelData atX: x y: y];
+                  setP(self, setPSel, pixelData, x, y);
                 }
             }
         }
