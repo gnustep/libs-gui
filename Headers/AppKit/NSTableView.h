@@ -102,7 +102,7 @@ typedef enum _NSTableViewAnimationOptions
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
   NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
-  float              _rowHeight;
+  CGFloat              _rowHeight;
   NSSize             _intercellSpacing;
   id                 _delegate;
   NSTableHeaderView *_headerView;
@@ -110,13 +110,13 @@ typedef enum _NSTableViewAnimationOptions
   SEL                _action;
   SEL                _doubleAction;
   id                 _target;
-  int                _clickedRow;
-  int                _clickedColumn;
+  NSInteger          _clickedRow;
+  NSInteger          _clickedColumn;
   NSTableColumn     *_highlightedTableColumn;
   NSMutableIndexSet    *_selectedColumns;
   NSMutableIndexSet    *_selectedRows;
-  int                _selectedColumn;
-  int                _selectedRow;
+  NSInteger          _selectedColumn;
+  NSInteger          _selectedRow;
   BOOL               _allowsMultipleSelection;
   BOOL               _allowsEmptySelection;
   BOOL               _allowsColumnSelection;
@@ -125,8 +125,8 @@ typedef enum _NSTableViewAnimationOptions
   BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
   NSText            *_textObject;
-  int                _editedRow;
-  int                _editedColumn;
+  NSInteger          _editedRow;
+  NSInteger          _editedColumn;
   NSCell            *_editedCell;
   BOOL               _autosaveTableColumns;
   NSString          *_autosaveName;
@@ -141,8 +141,8 @@ typedef enum _NSTableViewAnimationOptions
   /*
    * Ivars Acting as Cache 
    */
-  int    _numberOfRows;
-  int    _numberOfColumns;
+  NSInteger    _numberOfRows;
+  NSInteger    _numberOfColumns;
   /* YES if _delegate responds to
      tableView:willDisplayCell:forTableColumn:row: */
   BOOL   _del_responds;
@@ -155,13 +155,13 @@ typedef enum _NSTableViewAnimationOptions
    * origin of each column).  When a column width is changed through
    * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
    * which updates the cache.  */
-  float *_columnOrigins;
+  CGFloat *_columnOrigins;
 
   /*
    *  We keep the superview's width in order to know when to
    *  size the last column to fit
    */
-  float _superview_width;
+  CGFloat _superview_width;
 
   /* if YES [which happens only during a sizeToFit], we are doing
      computations on sizes so we ignore tile (produced for example by

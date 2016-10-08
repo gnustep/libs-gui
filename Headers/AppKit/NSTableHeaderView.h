@@ -39,7 +39,7 @@
 @interface NSTableHeaderView : NSView
 {
   NSTableView *_tableView;
-  int _resizedColumn;
+  NSInteger _resizedColumn;
 }
 /*
  * Setting the table view 

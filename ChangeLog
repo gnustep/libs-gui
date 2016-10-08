@@ -1,3 +1,14 @@
+2016-10-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSOutlineView.h
+	* Headers/AppKit/NSTableHeaderView.h
+	* Headers/AppKit/NSTableView.h
+	* Source/GSThemeDrawing.m
+	* Source/NSOutlineView.m
+	* Source/NSTableHeaderView.m
+	* Source/NSTableView.m:
+	Some int -> NSInteger and float -> CGFloat transitions.
+
 2016-09-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSFontInfo.m (-fontDescriptor): Simplify creation of font

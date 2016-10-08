@@ -75,11 +75,11 @@ static NSNotificationCenter *nc = nil;
 static const int currentVersion = 5;
 
 static NSRect oldDraggingRect;
-static int oldDropRow;
+static NSInteger oldDropRow;
 static NSTableViewDropOperation oldDropOperation;
 static NSTableViewDropOperation currentDropOperation;
-static int currentDropRow;
-static int lastQuarterPosition;
+static NSInteger currentDropRow;
+static NSInteger lastQuarterPosition;
 static NSDragOperation currentDragOperation;
 
 /*
@@ -117,46 +117,46 @@ typedef struct _tableViewFlags
 @interface NSTableView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
 - (void) _postSelectionDidChangeNotification;
-- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
-					   newIndex: (int) newIndex;
+- (void) _postColumnDidMoveNotificationWithOldIndex: (NSInteger) oldIndex
+					   newIndex: (NSInteger) newIndex;
 - (void) _postColumnDidResizeNotification;
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn;
-- (BOOL) _shouldSelectRow: (int)rowIndex;
+- (BOOL) _shouldSelectRow: (NSInteger)rowIndex;
 
 - (BOOL) _shouldSelectionChange;
 - (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors;
 - (void) _didClickTableColumn: (NSTableColumn *)tc;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-			    row: (int) rowIndex;
+			    row: (NSInteger) rowIndex;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index;
+		      row: (NSInteger)index;
 
 - (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
-			     row: (int)index;
+			     row: (NSInteger)index;
 - (void)_setObjectValue: (id)value
 	 forTableColumn: (NSTableColumn *)tb
-		    row: (int)index;
+		    row: (NSInteger)index;
 
-- (BOOL) _isEditableColumn: (int)columnIndex
-                       row: (int)rowIndex;
-- (BOOL) _isCellSelectableColumn: (int)columnIndex
-                             row: (int)rowIndex;
-- (BOOL) _isCellEditableColumn: (int)columnIndex
-			   row: (int)rowIndex;
-- (int) _numRows;
+- (BOOL) _isEditableColumn: (NSInteger)columnIndex
+                       row: (NSInteger)rowIndex;
+- (BOOL) _isCellSelectableColumn: (NSInteger)columnIndex
+                             row: (NSInteger)rowIndex;
+- (BOOL) _isCellEditableColumn: (NSInteger)columnIndex
+			   row: (NSInteger)rowIndex;
+- (NSInteger) _numRows;
 @end
 
 @interface NSTableView (SelectionHelper)
 - (void) _setSelectingColumns: (BOOL)flag;
 - (NSArray *) _indexSetToArray: (NSIndexSet*)indexSet;
 - (NSArray *) _selectedRowArray;
-- (BOOL) _selectRow: (int)rowIndex;
-- (BOOL) _selectUnselectedRow: (int)rowIndex;
-- (BOOL) _unselectRow: (int)rowIndex;
+- (BOOL) _selectRow: (NSInteger)rowIndex;
+- (BOOL) _selectUnselectedRow: (NSInteger)rowIndex;
+- (BOOL) _unselectRow: (NSInteger)rowIndex;
 - (void) _unselectAllRows;
 - (NSArray *) _selectedColumArray;
 - (void) _unselectAllColumns;
@@ -235,10 +235,10 @@ static void computeNewSelection
 (NSTableView *tv,
  NSIndexSet *_oldSelectedRows,
  NSMutableIndexSet *_selectedRows,
- int _originalRow,
- int _oldRow,
- int _currentRow,
- int *_selectedRow,
+ NSInteger _originalRow,
+ NSInteger _oldRow,
+ NSInteger _currentRow,
+ NSInteger *_selectedRow,
  unsigned selectionMode)
 {
   if (!(selectionMode & ALLOWS_MULTIPLE))
@@ -249,7 +249,7 @@ static void computeNewSelection
 	  // we will unselect the selected row
 	  // ic, sc : ok
         {
-	  int count = [_selectedRows count];
+	  NSUInteger count = [_selectedRows count];
 
 	  if ((count == 0) && (_oldRow == -1))
 	    {
@@ -305,7 +305,7 @@ static void computeNewSelection
 	  // we'll be selecting exactly one row
 	  // ic, sc : ok
         {
-	  int count = [_selectedRows count];
+	  NSUInteger count = [_selectedRows count];
 	  
 	  if ([tv _shouldSelectRow: _currentRow] == NO)
 	    {
@@ -373,8 +373,8 @@ static void computeNewSelection
 	// this is the first pass
 	{
 	  BOOL notified = NO;
-	  int i;
-	  int diff = _currentRow - _originalRow;
+	  NSInteger i;
+	  NSInteger diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
@@ -409,7 +409,7 @@ static void computeNewSelection
 	}
       else // new multiple selection, after first pass
 	{ 
-	  int oldDiff, newDiff, i;
+	  NSInteger oldDiff, newDiff, i;
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 	  if (oldDiff >= 0 && newDiff >= 0)
@@ -641,8 +641,8 @@ static void computeNewSelection
 	// this is the first pass
 	// we'll clear the selection first
 	{
-	  int diff, i;
-	  int count = [_selectedRows count];
+	  NSInteger diff, i;
+	  NSUInteger count = [_selectedRows count];
 	  BOOL notified = NO;
       	  diff = _currentRow - _originalRow;
 
@@ -681,7 +681,7 @@ static void computeNewSelection
 	}
       else // new multiple selection, after first pass
 	{ 
-	  int oldDiff, newDiff, i;
+	  NSInteger oldDiff, newDiff, i;
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 	  if (oldDiff >= 0 && newDiff >= 0)
@@ -885,8 +885,8 @@ static void computeNewSelection
 	      // let's clear the old selection
 	      // this code is copied from another case
 	      // (AM = 1, SD=0, AE=1, AR=*, first pass)
-	      int diff, i;
-	      int count = [_selectedRows count];
+	      NSInteger diff, i;
+	      NSUInteger count = [_selectedRows count];
 	      BOOL notified = NO;
 	      diff = _currentRow - _originalRow;
 	      
@@ -927,7 +927,7 @@ static void computeNewSelection
 	      // let's add to the old selection
 	      // this code is copied from another case
 	      // (AM=1, SD=1, AE=*, AR=1)
-	      int diff, i;
+	      NSInteger diff, i;
 	      BOOL notified = NO;
 	      diff = _currentRow - _originalRow;
 	      
@@ -968,7 +968,7 @@ static void computeNewSelection
 	{
 	  // this code is copied from another case
 	  // (AM=1, SD=0, AE=1, AR=*, after first pass)
-	  int oldDiff, newDiff, i;
+	  NSInteger oldDiff, newDiff, i;
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 	  if (oldDiff >= 0 && newDiff >= 0)
@@ -1154,7 +1154,7 @@ static void computeNewSelection
 	{
 	  // this code is copied from another case
 	  // (AM=1, SD=1, AE=*, AR=1, after first pass)
-	  int oldDiff, newDiff, i;
+	  NSInteger oldDiff, newDiff, i;
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 
@@ -1381,7 +1381,7 @@ static void computeNewSelection
       if (_oldRow == -1)
 	// this is the first pass
 	{
-	  int diff, i;
+	  NSInteger diff, i;
 	  BOOL notified = NO;
 
       	  diff = _currentRow - _originalRow;
@@ -1440,7 +1440,7 @@ static void computeNewSelection
 	}
       else // new multiple antiselection, after first pass
 	{ 
-	  int oldDiff, newDiff, i;
+	  NSInteger oldDiff, newDiff, i;
 
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
@@ -1668,8 +1668,8 @@ static void computeNewSelection
       if (_oldRow == -1)
 	// this is the first pass
 	{
-	  int diff, i;
-	  int count = [_selectedRows count];
+	  NSInteger diff, i;
+	  NSUInteger count = [_selectedRows count];
 	  BOOL notified = NO;
       	  diff = _currentRow - _originalRow;
 
@@ -1731,8 +1731,8 @@ static void computeNewSelection
 	}
       else // new multiple antiselection, after first pass
 	{ 
-	  int oldDiff, newDiff, i;
-	  int count = [_selectedRows count];
+	  NSInteger oldDiff, newDiff, i;
+	  NSUInteger count = [_selectedRows count];
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 	  if (oldDiff >= 0 && newDiff >= 0)
@@ -1979,11 +1979,11 @@ static void computeNewSelection
 
 @interface NSTableView (TableViewInternalPrivate)
 - (void) _setSelectingColumns: (BOOL)flag;
-- (BOOL) _editNextEditableCellAfterRow: (int)row
-				column: (int)column;
-- (BOOL) _editPreviousEditableCellBeforeRow: (int)row
-				     column: (int)column;
-- (void) _editNextCellAfterRow:(int)row inColumn:(int)column;
+- (BOOL) _editNextEditableCellAfterRow: (NSInteger)row
+				column: (NSInteger)column;
+- (BOOL) _editPreviousEditableCellBeforeRow: (NSInteger)row
+				     column: (NSInteger)column;
+- (void) _editNextCellAfterRow:(NSInteger)row inColumn:(NSInteger)column;
 - (void) _autosaveTableColumns;
 - (void) _autoloadTableColumns;
 @end
@@ -2117,18 +2117,18 @@ static void computeNewSelection
   if (_numberOfColumns > 1)
     {
       _columnOrigins = NSZoneRealloc (NSDefaultMallocZone (), _columnOrigins,
-				      (sizeof (float)) * _numberOfColumns);
+				      (sizeof (CGFloat)) * _numberOfColumns);
     }
   else 
     {
-      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (float));
+      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (CGFloat));
     }      
   [self tile];
 }
 
 - (void) removeTableColumn: (NSTableColumn *)aColumn
 {
-  int columnIndex = [self columnWithIdentifier: [aColumn identifier]];
+  NSInteger columnIndex = [self columnWithIdentifier: [aColumn identifier]];
 
   if (columnIndex == -1)
     {
@@ -2156,7 +2156,7 @@ static void computeNewSelection
   if (_numberOfColumns > 0)
     {
       _columnOrigins = NSZoneRealloc (NSDefaultMallocZone (), _columnOrigins,
-				      (sizeof (float)) * _numberOfColumns);
+				      (sizeof (CGFloat)) * _numberOfColumns);
     }
   else 
     {
@@ -2169,9 +2169,9 @@ static void computeNewSelection
 {
   /* The range of columns which need to be shifted, 
      extremes included */
-  int minRange, maxRange;
+  NSInteger minRange, maxRange;
   /* Amount of shift for these columns */
-  int shift;
+  NSInteger shift;
   BOOL selected = NO;
 
   if ((columnIndex < 0) || (columnIndex > (_numberOfColumns - 1)))
@@ -2251,7 +2251,7 @@ static void computeNewSelection
   /* Post notification */
 
   [self _postColumnDidMoveNotificationWithOldIndex: columnIndex
-	newIndex: newIndex];
+                                          newIndex: newIndex];
 
   [self _autosaveTableColumns];
 }
@@ -2266,7 +2266,7 @@ static void computeNewSelection
 {
   NSEnumerator	*enumerator = [_tableColumns objectEnumerator];
   NSTableColumn	*tb;
-  int           return_value = 0;
+  NSInteger      return_value = 0;
   
   while ((tb = [enumerator nextObject]) != nil)
     {
@@ -2282,7 +2282,7 @@ static void computeNewSelection
 
 - (NSTableColumn *) tableColumnWithIdentifier:(id)anObject
 {
-  int indexOfColumn = [self columnWithIdentifier: anObject];
+  NSInteger indexOfColumn = [self columnWithIdentifier: anObject];
 
   if (indexOfColumn == -1)
     return nil;
@@ -3434,15 +3434,15 @@ byExtendingSelection: (BOOL)flag
 }
 
 
-static inline float computePeriod(NSPoint mouseLocationWin,
-			   float minYVisible, 
-			   float maxYVisible)
+static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
+                                           CGFloat minYVisible, 
+                                           CGFloat maxYVisible)
 {
     /* We have three zones of speed. 
        0   -  50 pixels: period 0.2  <zone 1>
        50  - 100 pixels: period 0.1  <zone 2>
        100 - 150 pixels: period 0.01 <zone 3> */
-    float distance = 0;
+    CGFloat distance = 0;
     
     if (mouseLocationWin.y < minYVisible) 
       {
@@ -3567,7 +3567,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
-  int clickCount = [theEvent clickCount];
+  NSInteger clickCount = [theEvent clickCount];
 
   // Pathological case -- ignore mouse down
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
@@ -3664,10 +3664,10 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 				 toView: nil];
       CGFloat minYVisible = NSMinY (visibleRect);
       CGFloat maxYVisible = NSMaxY (visibleRect);
-      float oldPeriod = 0;
-      int originalRow = _clickedRow;
-      int oldRow = -1;
-      int currentRow = -1;
+      NSTimeInterval oldPeriod = 0;
+      NSInteger originalRow = _clickedRow;
+      NSInteger oldRow = -1;
+      NSInteger currentRow = -1;
       BOOL getNextEvent = YES;
       BOOL sendAction = NO;
 
@@ -3855,7 +3855,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 	      else
 		{
 		  // Mouse dragged out of the table
-		  float period = computePeriod(mouseLocationWin, 
+		  NSTimeInterval period = computePeriod(mouseLocationWin, 
 					       minYVisible, 
 					       maxYVisible);
 
@@ -3977,13 +3977,13 @@ if (!x) \
 }
 static BOOL selectContiguousRegion(NSTableView *self,
   				   NSIndexSet *_selectedRows,
-				   int originalRow,
-				   int oldRow,
-				   int currentRow)
+				   NSInteger originalRow,
+				   NSInteger oldRow,
+				   NSInteger currentRow)
 {
-  int first = (oldRow < currentRow) ? oldRow : currentRow;
-  int last = (oldRow < currentRow) ? currentRow : oldRow;
-  int row;
+  NSInteger first = (oldRow < currentRow) ? oldRow : currentRow;
+  NSInteger last = (oldRow < currentRow) ? currentRow : oldRow;
+  NSInteger row;
   BOOL notified = NO;
 
   if (![_selectedRows containsIndex: currentRow])
@@ -4217,8 +4217,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	  
 	  if ((!(modifiers & NSShiftKeyMask && _allowsMultipleSelection)))
 	    {
-	      int first = [_selectedRows firstIndex];
-	      int last = [_selectedRows lastIndex];
+	      NSUInteger first = [_selectedRows firstIndex];
+	      NSUInteger last = [_selectedRows lastIndex];
 
 	      if ((first == last && first == currentRow) == 0)
 	        {
@@ -4348,7 +4348,7 @@ Hidden table columns are never tested. */
 {
   NSRange range = [self columnsInRect: aRect];
   NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndexesInRange: range];
-  int i;
+  NSUInteger i;
 
   for (i = range.location; i < range.length; i++)
     {
@@ -4383,7 +4383,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (NSRange) rowsInRect: (NSRect)aRect
 {
   NSRange range;
-  int lastRowInRect;
+  NSInteger lastRowInRect;
 
   range.location = [self rowAtPoint: aRect.origin];
   lastRowInRect = [self rowAtPoint: 
@@ -4408,7 +4408,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   else
     {
-      int i = 0;
+      NSInteger i = 0;
       
       while ((i < _numberOfColumns) && (aPoint.x >= _columnOrigins[i]))
 	{
@@ -4427,10 +4427,10 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   else
     {
-      int return_value;
+      NSInteger return_value;
 
       aPoint.y -= _bounds.origin.y;
-      return_value = (int) (aPoint.y / _rowHeight);
+      return_value = (NSInteger) (aPoint.y / _rowHeight);
       /* This could happen if point lies on the grid line or below the last row */
       if (return_value >= _numberOfRows)
 	{
@@ -4499,13 +4499,15 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   if ((_super_view != nil) && (_numberOfColumns > 0))
     {
-      float excess_width;
-      float last_column_width;
+      CGFloat excess_width;
+      CGFloat last_column_width;
       NSTableColumn *lastColumn;
 
       lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
       if ([lastColumn isResizable] == NO)
-	return;
+        {
+          return;
+        }
       excess_width = NSMaxX([self convertRect: [_super_view bounds] 
 				     fromView: _super_view]) - NSMaxX(_bounds);
       last_column_width = [lastColumn width] + excess_width;
@@ -4520,7 +4522,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
       
       if (rowsHeight < docRect.size.height)
@@ -4542,7 +4544,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
       
       if (rowsHeight < docRect.size.height)
@@ -4568,17 +4570,17 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) sizeToFit
 {
   NSTableColumn *tb;
-  int i, j;
-  float remainingWidth;
+  NSInteger i, j;
+  CGFloat remainingWidth;
   columnSorting *columnInfo;
-  float *currentWidth;
-  float *maxWidth;
-  float *minWidth;
+  CGFloat *currentWidth;
+  CGFloat *maxWidth;
+  CGFloat *minWidth;
   BOOL *isResizable;
-  int numberOfCurrentColumns = 0;
-  float previousPoint;
-  float nextPoint;
-  float toAddToCurrentColumns;
+  NSInteger numberOfCurrentColumns = 0;
+  CGFloat previousPoint;
+  CGFloat nextPoint;
+  CGFloat toAddToCurrentColumns;
 
   if ((_super_view == nil) || (_numberOfColumns == 0))
     return;
@@ -4587,11 +4589,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 			    sizeof(columnSorting) * 2 
 			    * _numberOfColumns);
   currentWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			      sizeof(float) * _numberOfColumns);
+			      sizeof(CGFloat) * _numberOfColumns);
   maxWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			  sizeof(float) * _numberOfColumns);
+			  sizeof(CGFloat) * _numberOfColumns);
   minWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			  sizeof(float) * _numberOfColumns);
+			  sizeof(CGFloat) * _numberOfColumns);
   isResizable = NSZoneMalloc(NSDefaultMallocZone(),
 			     sizeof(BOOL) * _numberOfColumns);
 
@@ -4656,7 +4658,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  if (numberOfCurrentColumns > 0 && 
 	      (nextPoint - previousPoint) > 0.)
 	    {
-	      int verification = 0;
+	      NSInteger verification = 0;
 	      
 	      if ((nextPoint - previousPoint) * numberOfCurrentColumns
 		  <= remainingWidth)
@@ -4912,7 +4914,7 @@ This method is deprecated, use -columnIndexesInRect:. */
                     {
                       /* We shouldn't allow empty selection - try
                          selecting the last row */
-                      int lastRow = _numberOfRows - 1;
+                      NSInteger lastRow = _numberOfRows - 1;
                       
                       if (lastRow > -1)
                         {
@@ -4955,16 +4957,16 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) tile
 {
-  float table_width = 0;
-  float table_height;
+  CGFloat table_width = 0;
+  CGFloat table_height;
 
   if (_tilingDisabled == YES)
     return;
 
   if (_numberOfColumns > 0)
     {
-      int i;
-      float width;
+      NSInteger i;
+      CGFloat width;
   
       _columnOrigins[0] = _bounds.origin.x;
       width = [[_tableColumns objectAtIndex: 0] width];
@@ -5147,7 +5149,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
   id textMovement;
-  int row, column;
+  NSInteger row, column;
 
   /* Save values */
   row = _editedRow;
@@ -5486,6 +5488,9 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   else
     {
+      float rowHeight;
+      int number;
+
       [super encodeWithCoder: aCoder];
       [aCoder encodeConditionalObject: _dataSource];
       [aCoder encodeObject: _tableColumns];
@@ -5495,12 +5500,15 @@ This method is deprecated, use -columnIndexesInRect:. */
       [aCoder encodeObject: _cornerView];
       [aCoder encodeConditionalObject: _delegate];
       [aCoder encodeConditionalObject: _target];
-      
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+
+      number = _numberOfRows;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &number];
+      number = _numberOfColumns;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &number];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      rowHeight = _rowHeight;
+      [aCoder encodeValueOfObjCType: @encode(float) at: &rowHeight];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
       [aCoder encodeSize: _intercellSpacing];
       
@@ -5675,6 +5683,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       int version = [aDecoder versionForClassName: 
                                   @"NSTableView"];
       id aDelegate;
+      float rowHeight;
+      int number;
 
       [self _initDefaults];
       _dataSource      = [aDecoder decodeObject];
@@ -5691,10 +5701,13 @@ This method is deprecated, use -columnIndexesInRect:. */
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
                      withObject: self];
 
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &number];
+      _numberOfRows = number;
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &number];
+      _numberOfColumns = number;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &rowHeight];
+      _rowHeight = rowHeight;
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
       _intercellSpacing = [aDecoder decodeSize];
       
@@ -5723,7 +5736,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       if (_numberOfColumns > 0)
         {
           _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-                                         sizeof(float) * _numberOfColumns);
+                                         sizeof(CGFloat) * _numberOfColumns);
         }
       [self tile]; /* Initialize _columnOrigins */
     }
@@ -5733,7 +5746,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) updateCell: (NSCell*)aCell
 {
-  int i, j;
+  NSInteger i, j;
 
   if (aCell == nil)
     return;
@@ -5756,8 +5769,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 				    NSMinY(visibleRect));
 	  NSPoint bottom = NSMakePoint(NSMinX(visibleRect),
 				       NSMaxY(visibleRect));
-	  int firstVisibleRow = [self rowAtPoint: top];
-	  int lastVisibleRow = [self rowAtPoint: bottom];
+	  NSInteger firstVisibleRow = [self rowAtPoint: top];
+	  NSInteger lastVisibleRow = [self rowAtPoint: bottom];
 
 	  if (firstVisibleRow == -1)
 	    firstVisibleRow = 0;
@@ -5778,13 +5791,13 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (void) _userResizedTableColumn: (int)index
-			   width: (float)width
+- (void) _userResizedTableColumn: (NSInteger)index
+			   width: (CGFloat)width
 {
   [[_tableColumns objectAtIndex: index] setWidth: width];
 }
 
-- (float *) _columnOrigins
+- (CGFloat *) _columnOrigins
 {
   return _columnOrigins;
 }
@@ -5837,8 +5850,8 @@ This method is deprecated, use -columnIndexesInRect:. */
   [self _didClickTableColumn: tc];
 }
 
-- (void) _editNextCellAfterRow: (int) row
-		inColumn: (int) column
+- (void) _editNextCellAfterRow: (NSInteger) row
+		inColumn: (NSInteger) column
 {
   if (++row >= _numberOfRows)
     row = 0;
@@ -5858,10 +5871,10 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
--(BOOL) _editNextEditableCellAfterRow: (int)row
-                               column: (int)column
+-(BOOL) _editNextEditableCellAfterRow: (NSInteger)row
+                               column: (NSInteger)column
 {
-  int i, j;
+  NSInteger i, j;
   
   if (row > -1)
     {
@@ -5926,10 +5939,10 @@ This method is deprecated, use -columnIndexesInRect:. */
   return NO;
 }
 
--(BOOL) _editPreviousEditableCellBeforeRow: (int)row
-				    column: (int)column
+-(BOOL) _editPreviousEditableCellBeforeRow: (NSInteger)row
+				    column: (NSInteger)column
 {
-  int i, j;
+  NSInteger i, j;
 
   if (row > -1)
     {
@@ -6068,9 +6081,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   if (_autoresizesAllColumnsToFit == YES)
     {
-      float visible_width = [self convertRect: [_super_view bounds] 
+      CGFloat visible_width = [self convertRect: [_super_view bounds] 
 				  fromView: _super_view].size.width;
-      float table_width = 0;
+      CGFloat table_width = 0;
 
       if (_numberOfColumns > 0)
         {
@@ -6114,9 +6127,9 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   else
     {
-      float visible_width = [self convertRect: [_super_view bounds] 
+      CGFloat visible_width = [self convertRect: [_super_view bounds] 
 				  fromView: _super_view].size.width;
-      float table_width = 0;
+      CGFloat table_width = 0;
 
       if (_numberOfColumns > 0)
         {
@@ -6333,7 +6346,7 @@ view to drag. */
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
-  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (int)_rowHeight;
+  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (NSInteger)_rowHeight;
   NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
   NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
@@ -6490,16 +6503,16 @@ For a more detailed explanation, -setSortDescriptors:. */
       object: self];
 }
 
-- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
-					   newIndex: (int) newIndex
+- (void) _postColumnDidMoveNotificationWithOldIndex: (NSInteger) oldIndex
+					   newIndex: (NSInteger) newIndex
 {
   [nc postNotificationName: NSTableViewColumnDidMoveNotification
       object: self
       userInfo: [NSDictionary 
 		  dictionaryWithObjectsAndKeys:
-		  [NSNumber numberWithInt: newIndex],
+		  [NSNumber numberWithInteger: newIndex],
 		  @"NSNewColumn",
-		    [NSNumber numberWithInt: oldIndex],
+		    [NSNumber numberWithInteger: oldIndex],
 		  @"NSOldColumn",
 		  nil]];
 }
@@ -6530,12 +6543,12 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _shouldSelectRow: (int)rowIndex
+- (BOOL) _shouldSelectRow: (NSInteger)rowIndex
 {
   if ([_delegate respondsToSelector: 
 		   @selector (tableView:shouldSelectRow:)] == YES) 
     {
-      if ([_delegate tableView: self  shouldSelectRow: rowIndex] == NO)
+      if ([_delegate tableView: self shouldSelectRow: rowIndex] == NO)
 	{
 	  return NO;
 	}
@@ -6579,7 +6592,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 }
 
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-			    row: (int) rowIndex
+			    row: (NSInteger) rowIndex
 {
   if ([_delegate respondsToSelector: 
 		     @selector(tableView:shouldEditTableColumn:row:)])
@@ -6591,8 +6604,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _isEditableColumn: (int) columnIndex
-                       row: (int) rowIndex
+- (BOOL) _isEditableColumn: (NSInteger) columnIndex
+                       row: (NSInteger) rowIndex
 {
   NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
 
@@ -6600,8 +6613,8 @@ For a more detailed explanation, -setSortDescriptors:. */
                                                               row: rowIndex];
 }
 
-- (BOOL) _isCellSelectableColumn: (int) columnIndex
-                             row: (int) rowIndex
+- (BOOL) _isCellSelectableColumn: (NSInteger) columnIndex
+                             row: (NSInteger) rowIndex
 {
   if (![self _isEditableColumn: columnIndex row: rowIndex])
     {
@@ -6615,8 +6628,8 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
 }
 
-- (BOOL) _isCellEditableColumn: (int) columnIndex
-			   row: (int) rowIndex
+- (BOOL) _isCellEditableColumn: (NSInteger) columnIndex
+			   row: (NSInteger) rowIndex
 {
   if (![self _isEditableColumn: columnIndex row: rowIndex])
     {
@@ -6632,7 +6645,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index
+		      row: (NSInteger)index
 {
   if (_del_responds)
     {
@@ -6644,7 +6657,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 }
 
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
-			      row: (int) index
+			      row: (NSInteger) index
 {
   id result = nil;
   GSKeyValueBinding *theBinding;
@@ -6669,7 +6682,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _setObjectValue: (id)value
 	  forTableColumn: (NSTableColumn *)tb
-		     row: (int) index
+		     row: (NSInteger) index
 {
   if ([_dataSource respondsToSelector:
 		    @selector(tableView:setObjectValue:forTableColumn:row:)])
@@ -6685,7 +6698,7 @@ For a more detailed explanation, -setSortDescriptors:. */
  * implemented in NSTableView and subclasses 
  * by default returns the DataSource's -numberOfRowsInTableView:
  */
-- (int) _numRows
+- (NSInteger) _numRows
 {
   GSKeyValueBinding *theBinding;
 
@@ -6812,7 +6825,7 @@ For a more detailed explanation, -setSortDescriptors:. */
       
   while (index != NSNotFound)
     {
-      NSNumber *num  = [NSNumber numberWithInt: index];
+      NSNumber *num  = [NSNumber numberWithUnsignedInteger: index];
 
       [array addObject: num]; 
       index = [indexSet indexGreaterThanIndex: index];
@@ -6826,7 +6839,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   return [self _indexSetToArray: _selectedRows];
 }
 
-- (BOOL) _selectRow: (int)rowIndex
+- (BOOL) _selectRow: (NSInteger)rowIndex
 {
   if (![self _shouldSelectRow: rowIndex])
     {
@@ -6839,7 +6852,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _selectUnselectedRow: (int)rowIndex
+- (BOOL) _selectUnselectedRow: (NSInteger)rowIndex
 {
   if ([_selectedRows containsIndex: rowIndex])
     {
@@ -6852,7 +6865,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _unselectRow: (int)rowIndex
+- (BOOL) _unselectRow: (NSInteger)rowIndex
 {
   if (![_selectedRows containsIndex: rowIndex])
     {

@@ -54,9 +54,9 @@
 #define mouse_sensitivity 4
 
 @interface NSTableView (GNUstepPrivate)
-- (void) _userResizedTableColumn: (int)index
-                           width: (float)width;
-- (float *) _columnOrigins;
+- (void) _userResizedTableColumn: (NSInteger)index
+                           width: (CGFloat)width;
+- (CGFloat *) _columnOrigins;
 - (void) _mouseDownInHeaderOfTableColumn: (NSTableColumn *)tc;
 - (void) _clickTableColumn: (NSTableColumn *)tc;
 @end
@@ -487,7 +487,7 @@
             maxCoord = NSMaxX(bounds);
           }
           {
-            float *_c = [_tableView _columnOrigins];
+            CGFloat *_c = [_tableView _columnOrigins];
             _cO_minus1 = malloc((numberOfColumns + 3) * sizeof(CGFloat));
             _cO = _cO_minus1 + 1;
             memcpy(_cO, _c, numberOfColumns * sizeof(CGFloat));

@@ -178,7 +178,9 @@ namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 /*
  * Constants
  */
-extern const int NSOutlineViewDropOnItemIndex;
+enum {
+  NSOutlineViewDropOnItemIndex = -1
+};
 
 /*
  * Notifications

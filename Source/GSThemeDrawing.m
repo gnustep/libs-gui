@@ -68,7 +68,7 @@
 #define COLOR_WELL_BORDER_WIDTH 7.0
 
 @interface NSTableView (Private)
-- (float *)_columnOrigins;
+- (CGFloat *)_columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (int)index;
@@ -2959,12 +2959,12 @@ typedef enum {
 - (void) drawTableViewRect: (NSRect)aRect
 		    inView: (NSView *)view
 {
-  int startingRow;
-  int endingRow;
-  int i;
+  NSInteger startingRow;
+  NSInteger endingRow;
+  NSInteger i;
   NSTableView *tableView = (NSTableView *)view;
-  int numberOfRows = [tableView numberOfRows];
-  int numberOfColumns = [tableView numberOfColumns];
+  NSInteger numberOfRows = [tableView numberOfRows];
+  NSInteger numberOfColumns = [tableView numberOfColumns];
   BOOL drawsGrid = [tableView drawsGrid];
 
   /* Draw background */
@@ -3016,8 +3016,8 @@ typedef enum {
 			      selectingColumns: (BOOL)selectingColumns
 {
   NSTableView *tableView = (NSTableView *)view;
-  int numberOfRows = [tableView numberOfRows];
-  int numberOfColumns = [tableView numberOfColumns];
+  NSInteger numberOfRows = [tableView numberOfRows];
+  NSInteger numberOfColumns = [tableView numberOfColumns];
   NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
   NSColor *backgroundColor = [tableView backgroundColor];
@@ -3109,21 +3109,21 @@ typedef enum {
 {
   NSTableView *tableView = (NSTableView *)view;
   // int numberOfRows = [tableView numberOfRows];
-  int numberOfColumns = [tableView numberOfColumns];
+  NSInteger numberOfColumns = [tableView numberOfColumns];
   // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];
   id dataSource = [tableView dataSource];
-  float *columnOrigins = [tableView _columnOrigins];
-  int editedRow = [tableView editedRow];
-  int editedColumn = [tableView editedColumn];
+  CGFloat *columnOrigins = [tableView _columnOrigins];
+  NSInteger editedRow = [tableView editedRow];
+  NSInteger editedColumn = [tableView editedColumn];
   NSArray *tableColumns = [tableView tableColumns];
-  int startingColumn; 
-  int endingColumn;
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
   NSTableColumn *tb;
   NSRect drawingRect;
   NSCell *cell;
-  int i;
-  float x_pos;
+  NSInteger i;
+  CGFloat x_pos;
   const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
   NSColor *tempColor = nil;
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
