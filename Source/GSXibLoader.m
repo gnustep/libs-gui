@@ -37,6 +37,7 @@
 #import <Foundation/NSXMLParser.h>
 #import <Foundation/NSXMLDocument.h>
 #import <Foundation/NSXMLElement.h>
+#import	<GNUstepBase/GSMime.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
@@ -1033,7 +1034,7 @@
     }
   NS_HANDLER
     {
-      NSLog(@"Exception occurred while loading model: %@",[localException reason]);
+      NSLog(@"Exception occured while loading model: %@",[localException reason]);
       // TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER
@@ -1274,7 +1275,7 @@
     }
   NS_HANDLER
     {
-      NSLog(@"Exception occurred while parsing Xib: %@",[localException reason]);
+      NSLog(@"Exception occured while parsing Xib: %@",[localException reason]);
       DESTROY(self);
     }
   NS_ENDHANDLER
@@ -1583,11 +1584,10 @@ didStartElement: (NSString*)elementName
 
       if ([type isEqualToString: @"base64-UTF8"])
         {
-          NSData *d = [[NSData alloc] initWithBase64EncodedString: new
-                                                          options: 0];
+          NSData *d = [new dataUsingEncoding: NSASCIIStringEncoding];
+          d = [GSMimeDocument decodeBase64: d];
           new = AUTORELEASE([[NSString alloc] initWithData: d 
                                                   encoding: NSUTF8StringEncoding]);
-          RELEASE(d);
         }
 
       // empty strings are not nil!
@@ -1698,8 +1698,9 @@ didStartElement: (NSString*)elementName
     }
   else if ([@"bytes" isEqualToString: elementName])
     {
-      id new = AUTORELEASE([[NSData alloc] initWithBase64EncodedString: [element value]
-                                                               options: 0]);
+      id new = [[element value] dataUsingEncoding: NSASCIIStringEncoding
+                           allowLossyConversion: NO];
+      new = [GSMimeDocument decodeBase64: new];
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
