@@ -44,6 +44,7 @@
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontManager.h"
 #import "AppKit/NSView.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSFontInfo.h"
 
 

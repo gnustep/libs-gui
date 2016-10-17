@@ -43,6 +43,7 @@
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSUndoManager.h>
 
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSAttributedString.h"
