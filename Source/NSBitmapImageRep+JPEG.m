@@ -53,6 +53,12 @@ typedef int jpeg_boolean;
 #define boolean jpeg_boolean
 #endif
 #endif // __MINGW32__
+
+#if defined(__MINGW64__)
+#define interface struct
+#define CINTERFACE
+#endif
+
 #include <jpeglib.h>
 #include <setjmp.h>
 
