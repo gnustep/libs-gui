@@ -55,7 +55,6 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSGraphics.h"
-#import "NSBitmapImageRepPrivate.h"
 #import "NSBitmapImageRep+PNG.h"
 
 
@@ -321,19 +320,10 @@ static void writer_func(png_structp png_struct, png_bytep data,
   NSNumber * gammaNumber = nil;
   double gamma = 0.0;
   
-  // Need to convert to non-pre-multiplied format
-  if ([self isPlanar] || !(_format & NSAlphaNonpremultipliedBitmapFormat))
+  // FIXME: Need to convert to non-pre-multiplied format
+  if ([self isPlanar])	// don't handle planar yet
   {
-    NSBitmapImageRep *converted = [self _convertToFormatBitsPerSample: _bitsPerSample
-                                                      samplesPerPixel: _numColors
-                                                             hasAlpha: _hasAlpha
-                                                             isPlanar: NO
-                                                       colorSpaceName: _colorSpace
-                                                         bitmapFormat: _format | NSAlphaNonpremultipliedBitmapFormat 
-                                                          bytesPerRow: _bytesPerRow
-                                                         bitsPerPixel: _bitsPerPixel];
-
-    return [converted _PNGRepresentationWithProperties: properties];
+    return nil;
   } 
   // get the image parameters
   width = [self pixelsWide];
