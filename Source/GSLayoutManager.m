@@ -3259,7 +3259,14 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
     
   for (i=0; i<length; i++)
     {
-      advances[i] = [run->font advancementForGlyph: glyph_list[i]];
+      if (glyph_list[i] != NSControlGlyph)
+        {
+          advances[i] = [run->font advancementForGlyph: glyph_list[i]];
+        }
+      else
+        {
+          advances[i] = NSZeroSize;
+        }
     }
 
   [self insertGlyphs: glyph_list
