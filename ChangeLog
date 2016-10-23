@@ -1,5 +1,10 @@
 2016-10-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m (NSMiniWindowView -setImage:): Try to handle
+	an image value of nil. This is needed for Emacs.
+
+2016-10-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSLayoutManager.m (-advancementForGlyphAtIndex:):
 	Simplify this method and move it in the file.
 	* Source/NSLayoutManager.m: Use the pre-computed advancement

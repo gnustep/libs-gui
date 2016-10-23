@@ -576,8 +576,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSImage *imgCopy = [anImage copy];
 
   [imgCopy setScalesWhenResized: YES];
-  [imgCopy setSize: scaledIconSizeForSize([imgCopy size])];
- 
+  if (imgCopy != nil)
+    {
+      [imgCopy setSize: scaledIconSizeForSize([imgCopy size])];
+    }
+  
   if (imageCell == nil)
     {
       imageCell = [[NSCell alloc] initImageCell: imgCopy];
