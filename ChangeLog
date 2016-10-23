@@ -1,3 +1,10 @@
+2016-10-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m (-advancementForGlyphAtIndex:):
+	Simplify this method and move it in the file.
+	* Source/NSLayoutManager.m: Use the pre-computed advancement
+	instead of calculating it every time.
+
 2016-10-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m: Don't try to get the advancement for

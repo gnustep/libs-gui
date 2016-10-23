@@ -986,43 +986,6 @@ Fills in all glyph holes up to last. only looking at levels below level
   return cpos + r->glyphs[glyphIndex - pos].char_offset;
 }
 
-/**
- * GNUstep extension
- */
-- (NSSize) advancementForGlyphAtIndex: (unsigned int)glyphIndex
-{
-  glyph_run_t *r;
-  unsigned int pos, cpos;
-
-  if (glyphs->glyph_length <= glyphIndex)
-    {
-      [self _generateGlyphsUpToGlyph: glyphIndex];
-      if (glyphs->glyph_length <= glyphIndex)
-        {
-          [NSException raise: NSRangeException
-                       format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
-          return NSMakeSize(0,0);
-        }
-    }
-
-  r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
-  if (!r)
-    {
-      [NSException raise: NSRangeException
-                   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
-      return NSMakeSize(0,0);
-    }
-
-  if (r->head.glyph_length <= glyphIndex - pos)
-    {
-      [NSException raise: NSRangeException
-		  format: @"%s internal error!", __PRETTY_FUNCTION__];
-      return NSMakeSize(0,0);
-    }
-
-  return r->glyphs[glyphIndex - pos].advancement;
-}
-
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
                        actualGlyphRange: (NSRange *)actualGlyphRange
 {
@@ -1677,6 +1640,15 @@ places where we switch.
   if (range)
     *range = NSMakeRange(pos, r->head.glyph_length);
   return r->font;
+}
+
+/**
+ * GNUstep extension
+ */
+- (NSSize) advancementForGlyphAtIndex: (unsigned int)idx
+{
+  GET_GLYPH
+  return r->glyphs[idx].advancement;
 }
 
 - (void) insertGlyph: (NSGlyph)aGlyph

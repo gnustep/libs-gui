@@ -193,7 +193,6 @@ first. Remaining cases, highest priority first:
 {
   NSRange r;
   NSPoint p;
-  NSFont *f;
   NSUInteger i;
 
   r = [self rangeOfNominallySpacedGlyphsContainingIndex: glyphIndex
@@ -205,19 +204,9 @@ first. Remaining cases, highest priority first:
       return NSMakePoint(0, 0);
     }
 
-  i = r.location;
-  f = [self effectiveFontForGlyphAtIndex: i
-	    range: &r];
-  /* TODO: this is rather inefficient and doesn't deal with non-shown
-  glyphs */
-  for (; i < glyphIndex; i++)
+  for (i = r.location; i < glyphIndex; i++)
     {
-      if (i == r.location + r.length)
-	{
-	  f = [self effectiveFontForGlyphAtIndex: i
-		    range: &r];
-	}
-      p.x += [f advancementForGlyph: [self glyphAtIndex: i]].width;
+      p.x += [self advancementForGlyphAtIndex: i].width;
     }
   return p;
 }
@@ -330,7 +319,7 @@ container? necessary? */
 	      if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 		  r->glyphs[i].g != NSControlGlyph)
 		{
-		  x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+		  x0 += r->glyphs[i].advancement.width;
 		}
 	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
 	    }
@@ -377,7 +366,7 @@ container? necessary? */
 	      if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 		  r->glyphs[i].g != NSControlGlyph)
 		{
-		  x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+		  x1 += r->glyphs[i].advancement.width;
 		}
 	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
 	    }
@@ -777,7 +766,7 @@ anything visible
             }
           last_visible = j + glyph_pos;
 
-          cur = prev + [r->font advancementForGlyph: r->glyphs[j].g].width;
+          cur = prev + r->glyphs[j].advancement.width;
           if (j + glyph_pos + 1 == lp->pos + lp->length && next > cur)
             cur = next;
 
@@ -960,7 +949,7 @@ has the same y origin and height as the line frag rect it is in.
 	if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 	    r->glyphs[i].g != NSControlGlyph)
 	  {
-	    x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+	    x0 += r->glyphs[i].advancement.width;
 	  }
 	GLYPH_STEP_FORWARD(r, i, gpos, cpos)
       }
@@ -968,7 +957,7 @@ has the same y origin and height as the line frag rect it is in.
     if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 	r->glyphs[i].g != NSControlGlyph)
       {
-	x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+	x1 += r->glyphs[i].advancement.width;
       }
   }
 
@@ -1864,7 +1853,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 	      if (!gbuf_len)
 		{
 		  gbuf[0] = glyph->g;
-		  advancementbuf[0] = [f advancementForGlyph: glyph->g];
+		  advancementbuf[0] = glyph->advancement;
 		  gbuf_point = p;
 		  gbuf_len = 1;
 		}
@@ -1879,11 +1868,11 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 		      gbuf_point = p;
 		    }
 		  gbuf[gbuf_len] = glyph->g;
-		  advancementbuf[gbuf_len] = [f advancementForGlyph: glyph->g];
+		  advancementbuf[gbuf_len] = glyph->advancement;
 		  gbuf_len++;
 		}
 	    }
-	  p.x += [f advancementForGlyph: glyph->g].width;
+	  p.x += glyph->advancement.width;
 	}
     }
   if (gbuf_len)
@@ -2184,7 +2173,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
 	  start.y += [largestFont pointSize] * 0.07;
 	  end.y += [largestFont pointSize] * 0.07;
 
-	  end.x += [largestFont advancementForGlyph: [self glyphAtIndex: (NSMaxRange(glyphRangeToDraw) - 1)]].width;
+	  end.x += [self advancementForGlyphAtIndex: (NSMaxRange(glyphRangeToDraw) - 1)].width;
 	  
 	  start = NSMakePoint(start.x + containerOrigin.x + fragmentRect.origin.x, start.y + containerOrigin.y + fragmentRect.origin.y);
 	  end = NSMakePoint(end.x + containerOrigin.x + fragmentRect.origin.x, end.y + containerOrigin.y + fragmentRect.origin.y);
@@ -2234,7 +2223,7 @@ static void GSDrawPatternLine(NSPoint start, NSPoint end, NSInteger pattern, CGF
   start.y += [largestFont pointSize] * 0.07;
   end.y += [largestFont pointSize] * 0.07;
 
-  end.x += [largestFont advancementForGlyph: [self glyphAtIndex: (NSMaxRange(range) - 1)]].width;
+  end.x += [self advancementForGlyphAtIndex: (NSMaxRange(range) - 1)].width;
 	  
   start = NSMakePoint(start.x + containerOrigin.x + fragmentRect.origin.x, start.y + containerOrigin.y + fragmentRect.origin.y);
   end = NSMakePoint(end.x + containerOrigin.x + fragmentRect.origin.x, end.y + containerOrigin.y + fragmentRect.origin.y);
