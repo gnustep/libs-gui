@@ -133,7 +133,11 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSString			*name;
   NSDictionary			*apps = nil;
   BOOL				modified = NO;
+  unsigned	                sleeps = 0;
+  NSLock                        *mlock = nil;
 
+  mlock = [[NSLock alloc] init];
+  [mlock lock]; // start critical section
   if (path == nil)
     {
       path = [NSTemporaryDirectory()
@@ -144,8 +148,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     }
   if ([lock tryLock] == NO)
     {
-      unsigned	sleeps = 0;
-
       /*
        * If the lock is really old ... assume the app has died and break it.
        */
@@ -256,8 +258,40 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     {
       [file writeToFile: path atomically: YES];
     }
-  [lock unlock];
 
+  NS_DURING
+    {
+      sleeps = 0;
+      [lock unlock];
+    }
+  NS_HANDLER
+    {
+      for (sleeps = 0; sleeps < 10; sleeps++)
+	{
+	  NS_DURING
+	    {
+	      [lock unlock];
+	      NSLog(@"Unlocked %@", lock);
+	      break;
+	    }
+	  NS_HANDLER
+	    {
+	      sleeps++;
+	      if (sleeps >= 10)
+		{
+		  NSLog(@"Unable to unlock %@", lock);
+		  break;
+		}      
+	      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+	      continue;
+	    }
+	  NS_ENDHANDLER;
+	}
+    }
+  NS_ENDHANDLER;
+  [mlock unlock];  // end critical section
+  [mlock release];
+  
   if (active == YES)
     {
       NSString	*activeName = [file objectForKey: @"GSActive"];

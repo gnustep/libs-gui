@@ -1,3 +1,12 @@
+2016-10-24 04:03-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWorkspace.m: Change to GSLaunchd(...) function to
+	correct lock issue which is ocurring on some systems.  Added
+	a mutex lock to create a critical section and a retry mechanism
+	in case the distributed lock is not released on the first try.
+	This change appears to correct the issue.  Tested by myself and
+	Riccardo.
+
 2016-10-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (NSMiniWindowView -setImage:): Try to handle
@@ -10,6 +19,7 @@
 	* Source/NSLayoutManager.m: Use the pre-computed advancement
 	instead of calculating it every time.
 
+>>>>>>> .r40169
 2016-10-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m: Don't try to get the advancement for
