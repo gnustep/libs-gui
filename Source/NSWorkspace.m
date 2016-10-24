@@ -111,6 +111,7 @@ static NSImage	*multipleFiles = nil;
 static NSImage	*unknownApplication = nil;
 static NSImage	*unknownTool = nil;
 
+NSLock  *mlock = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 static NSString *GSWorkspacePreferencesChanged =
@@ -134,9 +135,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSDictionary			*apps = nil;
   BOOL				modified = NO;
   unsigned	                sleeps = 0;
-  NSLock                        *mlock = nil;
 
-  mlock = [[NSLock alloc] init];
   [mlock lock]; // start critical section
   if (path == nil)
     {
@@ -177,6 +176,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 	}
       if (sleeps >= 10)
         {
+          [mlock unlock];
           NSLog(@"Unable to obtain lock %@", lock);
           return nil;
 	}
@@ -282,7 +282,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 		  NSLog(@"Unable to unlock %@", lock);
 		  break;
 		}      
-	      [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+	      [NSThread sleepForTimeInterval: 0.1];
 	      continue;
 	    }
 	  NS_ENDHANDLER;
@@ -290,7 +290,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     }
   NS_ENDHANDLER;
   [mlock unlock];  // end critical section
-  [mlock release];
   
   if (active == YES)
     {
@@ -595,6 +594,7 @@ static NSDictionary		*urlPreferences = nil;
 	}
 
       beenHere = YES;
+      mlock = [NSLock new];
 
       NS_DURING
 	{
