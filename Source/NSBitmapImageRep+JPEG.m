@@ -33,6 +33,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSGraphics.h"
+#import "NSBitmapImageRepPrivate.h"
 #import "NSBitmapImageRep+JPEG.h"
 #import "GSGuiPrivate.h"
 
@@ -527,33 +528,30 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   int				height;
   int				row_stride;
   int				quality = 90;
-  NSNumber			*qualityNumber = nil;
-  NSNumber			*progressiveNumber = nil;
-  NSString			*colorSpace = nil;
-  BOOL                          isRGB;
+  NSNumber			*qualityNumber;
+  NSNumber			*progressiveNumber;
+  NSString			*colorSpace;
   struct jpeg_compress_struct	cinfo;
   struct gs_jpeg_error_mgr      jerrMgr;
   JSAMPROW			row_pointer[1]; // pointer to a single row
 
-  // TODO: handles planar images 
-
-  if ([self isPlanar])
+  if ([self isPlanar] || [self hasAlpha])
     {
-      NSString * em = @"JPEG image rep: Planar Image, not handled yet !";
-      if (errorMsg != NULL)
-        *errorMsg = em;
-      else
-        NSLog (@"JPEG image rep: Planar Image, not handled yet !");
-      return nil;
+      // note we will strip alpha from RGBA
+      NSBitmapImageRep *converted = [self _convertToFormatBitsPerSample: _bitsPerSample
+                                                        samplesPerPixel: [self hasAlpha] ? _numColors - 1 : _numColors
+                                                               hasAlpha: NO
+                                                               isPlanar: NO
+                                                         colorSpaceName: _colorSpace
+                                                           bitmapFormat: _format & ~NSAlphaNonpremultipliedBitmapFormat & ~NSAlphaFirstBitmapFormat
+                                                            bytesPerRow: 0
+                                                           bitsPerPixel: 0];
+      
+      return [converted _JPEGRepresentationWithProperties: properties
+                                             errorMessage: errorMsg];
     }
 
   memset((void*)&cinfo, 0, sizeof(struct jpeg_compress_struct));
-
-  imageSource = [self bitmapData];
-  sPP = [self samplesPerPixel];
-  width = [self size].width;
-  height = [self size].height;
-  row_stride = width * sPP;
 
   /* Establish the our custom error handler */
   gs_jpeg_error_mgr_init(&jerrMgr);
@@ -580,33 +578,49 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   gs_jpeg_memory_dest_create (&cinfo, &ret);
 
-  // set parameters
-
   colorSpace = [self colorSpaceName];
-  isRGB = ([colorSpace isEqualToString: NSDeviceRGBColorSpace]
-           || [colorSpace isEqualToString: NSCalibratedRGBColorSpace]);
+  imageSource = [self bitmapData];
+  sPP = [self samplesPerPixel];
+  width = [self size].width;
+  height = [self size].height;
+  row_stride = width * sPP;
+
+  // set parameters
   cinfo.image_width  = width;
   cinfo.image_height = height;
-  // note we will strip alpha from RGBA
-  cinfo.input_components = (isRGB && [self hasAlpha])? 3 : sPP;
-  cinfo.in_color_space = JCS_UNKNOWN;
-  if (isRGB) cinfo.in_color_space = JCS_RGB;
-  if (sPP == 1) cinfo.in_color_space = JCS_GRAYSCALE;
-  if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
-    cinfo.in_color_space = JCS_CMYK;
-  if (cinfo.in_color_space == JCS_UNKNOWN)
-    NSLog(@"JPEG image rep: Using unknown color space with unpredictable results");
+  cinfo.input_components = sPP;
+  if (sPP == 1)
+    {
+      cinfo.in_color_space = JCS_GRAYSCALE;
+    }
+  else if ([colorSpace isEqualToString: NSDeviceRGBColorSpace]
+           || [colorSpace isEqualToString: NSCalibratedRGBColorSpace])
+    {
+      cinfo.in_color_space = JCS_RGB;
+    }
+  else if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
+    {
+      cinfo.in_color_space = JCS_CMYK;
+    }
+  else
+    {
+      NSLog(@"JPEG image rep: Using unknown color space with unpredictable results");
+
+      gs_jpeg_memory_dest_destroy (&cinfo);
+      jpeg_destroy_compress(&cinfo);
+      return nil;
+    }
 
   jpeg_set_defaults (&cinfo);
 
   // set quality
   // we expect a value between 0..1, 0 being lowest, 1 highest quality
-
   qualityNumber = [properties objectForKey: NSImageCompressionFactor];
   if (qualityNumber != nil)
     {
       quality = (int) ([qualityNumber floatValue] * 100.0);
     }
+  jpeg_set_quality (&cinfo, quality, TRUE);
 
   // set progressive mode
   progressiveNumber = [properties objectForKey: NSImageProgressive];
@@ -620,48 +634,19 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 #endif
     }
 
-
   // compress the image
-
-  jpeg_set_quality (&cinfo, quality, TRUE);
   jpeg_start_compress (&cinfo, TRUE);
 
-  if (isRGB && [self hasAlpha])	// strip alpha channel before encoding
+  while (cinfo.next_scanline < cinfo.image_height)
     {
-      unsigned char * RGB, * pRGB, * pRGBA;
-      unsigned int iRGB, iRGBA;
-      RGB = malloc(sizeof(unsigned char)*3*width);
-      while (cinfo.next_scanline < cinfo.image_height)
-	{
-	  iRGBA = cinfo.next_scanline * row_stride;
-	  pRGBA = &imageSource[iRGBA];
-	  pRGB = RGB;
-	  for (iRGB = 0; iRGB < 3*width; iRGB += 3)
-	    {
-	      memcpy(pRGB, pRGBA, 3);
-	      pRGB +=3;
-	      pRGBA +=4;
-	    }
-	  row_pointer[0] = RGB;
-	  jpeg_write_scanlines (&cinfo, row_pointer, 1);
-	}
-      free(RGB);
-    }
-  else	// no alpha channel
-    {
-      while (cinfo.next_scanline < cinfo.image_height)
-	{
-	  int	index = cinfo.next_scanline * row_stride;
-
-	  row_pointer[0] = &imageSource[index];
-	  jpeg_write_scanlines (&cinfo, row_pointer, 1);
-	}
+      int index = cinfo.next_scanline * row_stride;
+      
+      row_pointer[0] = &imageSource[index];
+      jpeg_write_scanlines (&cinfo, row_pointer, 1);
     }
 
   jpeg_finish_compress(&cinfo);
-
   gs_jpeg_memory_dest_destroy (&cinfo);
-
   jpeg_destroy_compress(&cinfo);
 
   return AUTORELEASE(ret);
