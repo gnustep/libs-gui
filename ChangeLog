@@ -1,3 +1,8 @@
+2016-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m: Set the TIFF subfield type to 0
+	instead of 255.
+
 2016-10-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+JPEG.m: Try to handle images with alpha
@@ -24,7 +29,6 @@
 	* Source/NSLayoutManager.m: Use the pre-computed advancement
 	instead of calculating it every time.
 
->>>>>>> .r40169
 2016-10-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m: Don't try to get the advancement for

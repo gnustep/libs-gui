@@ -2009,7 +2009,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 {
   info->numImages = 1;
   info->imageNumber = 0;
-  info->subfileType = 255;
+  info->subfileType = 0;
   info->width = _pixelsWide;
   info->height = _pixelsHigh;
   info->bitsPerSample = _bitsPerSample;
