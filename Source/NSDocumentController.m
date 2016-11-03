@@ -1699,7 +1699,8 @@ static NSString *processName = nil;
       autosaved = [NSArray arrayWithContentsOfFile: path];
       if (autosaved)
         {
-          int i, n = [autosaved count];
+          NSUInteger i;
+	  NSUInteger n = [autosaved count];
           NSFileManager *fm = [NSFileManager defaultManager];
 
           for (i = 0; i < n; i++)
