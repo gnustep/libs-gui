@@ -5623,7 +5623,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   return [image autorelease];
 }
 
-- (void) setDropRow: (int)row
+- (void) setDropRow: (NSInteger)row
       dropOperation: (NSTableViewDropOperation)operation
 {
   if (row < -1 || row > _numberOfRows 
