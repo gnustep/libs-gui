@@ -410,7 +410,7 @@ GSCurrentServer(void)
   return [GSSlideView _slideImage: image from: from to: to];
 }
 
-- (void) restrictWindow: (int)win toImage: (NSImage*)image
+- (void) restrictWindow: (NSInteger)win toImage: (NSImage*)image
 {
   [self subclassResponsibility: _cmd];
 }
@@ -527,7 +527,7 @@ GSCurrentServer(void)
     win. Concrete subclasses must call this function when creating a
     window. Do not call this method in any other case, particularly
     for a window that has already been created */
-- (void) _setWindowOwnedByServer: (int)win
+- (void) _setWindowOwnedByServer: (NSInteger)win
 {
   if (windowmaps != NULL)
     {
@@ -547,7 +547,7 @@ GSCurrentServer(void)
     Use -styleoffsets::::: to determine the extent of the decorations
     and determine the size of the drawable area inside them.
 */
-- (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
+- (NSInteger) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 {
   int sn = [[server_info objectForKey: GSScreenNumber] intValue];
 
@@ -556,7 +556,7 @@ GSCurrentServer(void)
 
 /** Like -window::: only there is an additional argument to specify which
     screen the window will display on */
-- (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
+- (NSInteger) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen
 {
   [self subclassResponsibility: _cmd];
@@ -565,7 +565,7 @@ GSCurrentServer(void)
 
 /** Destroys the representation of the window and frees and memory
     associated with it. */
-- (void) termwindow: (int) win
+- (void) termwindow: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -584,25 +584,25 @@ GSCurrentServer(void)
 
 /** Sets the style of the window. See [NSWindow-styleMask] for a
     description of the available styles */
-- (void) stylewindow: (unsigned int) style : (int) win
+- (void) stylewindow: (unsigned int) style : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Changes window's the backing store to type */
-- (void) windowbacking: (NSBackingStoreType)type : (int) win
+- (void) windowbacking: (NSBackingStoreType)type : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the window title */
-- (void) titlewindow: (NSString *) window_title : (int) win
+- (void) titlewindow: (NSString *) window_title : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Miniaturizes the window */
-- (void) miniwindow: (int) win
+- (void) miniwindow: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -621,7 +621,7 @@ GSCurrentServer(void)
     typically by calling [NSGraphicsContext-GSSetDevice:::],
     although depending on the concrete implmentation, more information
     than this may need to be exchanged. */
-- (void) windowdevice: (int)winNum
+- (void) windowdevice: (NSInteger)winNum
 {
   [self setWindowdevice: winNum forContext: GSCurrentContext()];
 }
@@ -630,7 +630,7 @@ GSCurrentServer(void)
     typically by calling [NSGraphicsContext-GSSetDevice:::],
     although depending on the concrete implmentation, more information
     than this may need to be exchanged. */
-- (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt
+- (void) setWindowdevice: (NSInteger)win forContext: (NSGraphicsContext *)ctxt
 {
   [self subclassResponsibility: _cmd];
 }
@@ -675,7 +675,7 @@ GSCurrentServer(void)
  *   </desc>
  * </deflist>
  */
-- (void) orderwindow: (int) op : (int) otherWin : (int) win
+- (void) orderwindow: (int) op : (NSInteger) otherWin : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -685,7 +685,7 @@ GSCurrentServer(void)
  * The position is expressed as an offset from the bottom left
  * corner of the screen.
  */ 
-- (void) movewindow: (NSPoint)loc : (int) win
+- (void) movewindow: (NSPoint)loc : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -695,7 +695,7 @@ GSCurrentServer(void)
  * any border/decorations.  Its position is expressed as an offset from
  * the bottom left corner of the screen.
  */
-- (void) placewindow: (NSRect)frame : (int) win
+- (void) placewindow: (NSRect)frame : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -705,7 +705,7 @@ GSCurrentServer(void)
  * any border/decorations.  Its position is expressed as an offset from
  * the bottom left corner of the screen.
  */
-- (NSRect) windowbounds: (int) win
+- (NSRect) windowbounds: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
   return NSZeroRect;
@@ -717,13 +717,13 @@ GSCurrentServer(void)
  * -orderwindow::: method in the case where the position is 'above' or
  * 'below' and the other window number is zero.
  */
-- (void) setwindowlevel: (int) level : (int) win
+- (void) setwindowlevel: (int) level : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Returns the window level as in [NSWindow -level] */
-- (int) windowlevel: (int) win
+- (int) windowlevel: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
   return 0;
@@ -751,26 +751,26 @@ GSCurrentServer(void)
 }
 
 /** Returns the depth of the window */
-- (int) windowdepth: (int) win
+- (int) windowdepth: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
   return 0;
 }
 
 /** Set the maximum size (pixels) of the window */
-- (void) setmaxsize: (NSSize)size : (int) win
+- (void) setmaxsize: (NSSize)size : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Set the minimum size (pixels) of the window */
-- (void) setminsize: (NSSize)size : (int) win
+- (void) setminsize: (NSSize)size : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Set the resize incremenet of the window */
-- (void) setresizeincrements: (NSSize)size : (int) win
+- (void) setresizeincrements: (NSSize)size : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -778,7 +778,7 @@ GSCurrentServer(void)
 /** Causes buffered graphics to be flushed to the screen.
  * The value of rect is expressed in OpenStep window coordinates.
  */
-- (void) flushwindowrect: (NSRect)rect : (int) win
+- (void) flushwindowrect: (NSRect)rect : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -798,7 +798,7 @@ GSCurrentServer(void)
 }
 
 /** Sets the document edited flag for the window */
-- (void) docedited: (int) edited : (int) win
+- (void) docedited: (int) edited : (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -806,26 +806,26 @@ GSCurrentServer(void)
 /** Sets the input state for the window given by the
     GSWindowInputState constant.  Instructs the window manager that the
     specified window is 'key', 'main', or just a normal window.  */
-- (void) setinputstate: (int)state : (int)win
+- (void) setinputstate: (int)state : (NSInteger)win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Forces focus to the window so that all key events are sent to this
     window */
-- (void) setinputfocus: (int) win
+- (void) setinputfocus: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the transparancy value for the whole window */
-- (void) setalpha: (float)alpha : (int) win
+- (void) setalpha: (float)alpha : (NSInteger) win
 {
   //[self subclassResponsibility: _cmd];
 }
 
 /** Sets the window shadow */
-- (void) setShadow: (BOOL)hasShadow : (int)win
+- (void) setShadow: (BOOL)hasShadow : (NSInteger)win
 {
   //[self subclassResponsibility: _cmd];
 }
@@ -850,7 +850,7 @@ GSCurrentServer(void)
  * The location is expressed as an offset from the bottom left corner
  * of the screen.
  */
-- (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win
+- (NSPoint) mouseLocationOnScreen: (int)aScreen window: (NSInteger *)win
 {
   [self subclassResponsibility: _cmd];
   return NSZeroPoint;
@@ -860,7 +860,7 @@ GSCurrentServer(void)
     directed only to the window win. If successful, the return value
     is YES and this message must be balanced by a -releasemouse
     message.  */
-- (BOOL) capturemouse: (int) win
+- (BOOL) capturemouse: (NSInteger) win
 {
   [self subclassResponsibility: _cmd];
   return NO;
@@ -938,13 +938,13 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) setParentWindow: (int)parentWin 
-          forChildWindow: (int)childWin
+- (void) setParentWindow: (NSInteger)parentWin 
+          forChildWindow: (NSInteger)childWin
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) setIgnoreMouse: (BOOL)ignoreMouse : (int)win
+- (void) setIgnoreMouse: (BOOL)ignoreMouse : (NSInteger)win
 {
   // Do nothing if not overridden by subclass
 }
