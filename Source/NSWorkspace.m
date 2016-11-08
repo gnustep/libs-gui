@@ -549,7 +549,7 @@ static NSDictionary		*extPreferences = nil;
 static NSString			*urlPrefPath = nil;
 static NSDictionary		*urlPreferences = nil;
 // FIXME: Won't work for MINGW32
-static NSString			*_rootPath = @"/";
+//static NSString			*_rootPath = @"/";
 
 /*
  * Class methods
@@ -2086,7 +2086,7 @@ launchIdentifiers: (NSArray **)identifiers
 	  end++;
 	}
       len = (end - ptr);
-      path = [mgr stringWithFileSystemRepresentation: (const char *)ptr length: len];
+      path = [mgr stringWithFileSystemRepresentation: ptr length: len];
       [names addObject: path];
     }
   if (base != buf)
