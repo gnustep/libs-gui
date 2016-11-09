@@ -479,7 +479,7 @@ GSCurrentServer(void)
    Returns a display dependant pointer that describes the internal
    window representation for win. On X-Windows, for example, this is a
    pointer to the <code>Window</code> variable. */
-- (void *) windowDevice: (int)win
+- (void *) windowDevice: (NSInteger)win
 {
   [self subclassResponsibility: _cmd];
   return NULL;

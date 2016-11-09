@@ -105,7 +105,7 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (NSArray *) screenList;
 
 - (void *) serverDevice;
-- (void *) windowDevice: (int)win;
+- (void *) windowDevice: (NSInteger)win;
 
 - (void) beep;
 
