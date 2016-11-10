@@ -450,8 +450,28 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
 - (void) drawInRect: (NSRect)rect
 {
-  [self drawWithRect: rect
-             options: NSStringDrawingUsesLineFragmentOrigin];
+  NSAttributedString *attrstring = self;
+  
+  // Redo string to fit in rectangle...
+  // Apple drawing does this by default...
+  NSSize titleSize = [self size];
+  
+  if (titleSize.width > rect.size.width && [self length] > 4)
+  {
+    {
+      attrstring = [[self mutableCopy] autorelease];
+      
+      //unichar ell = 0x2026;
+      NSString *ellipsis = @"...";
+      do
+      {
+        NSRange replaceRange = NSMakeRange(([attrstring length] / 2)-2, 4);
+        [(NSMutableAttributedString *)attrstring replaceCharactersInRange:replaceRange withString:ellipsis];
+      } while ([attrstring length] > 4 && [attrstring size].width > rect.size.width);
+    }
+  }
+
+  [attrstring drawWithRect: rect options: NSStringDrawingUsesLineFragmentOrigin];
 }
 
 - (void) drawWithRect: (NSRect)rect
