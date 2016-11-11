@@ -262,7 +262,7 @@
 			  } while ([string length] > 4 && [string size].width > titleRect.size.width);
     }
 }
-      [string drawInRect: titleRect];
+      [string drawWithRect: titleRect options: NSStringDrawingUsesLineFragmentOrigin];
     }
 }
 

@@ -3142,7 +3142,7 @@ static NSColor *dtxtCol;
   aRect.size.height = titleSize.height;
   aString = [self _resizeAttributedString:aString forRect:aRect];
   
-  [aString drawInRect: aRect];
+  [aString drawWithRect: aRect options: NSStringDrawingUsesLineFragmentOrigin];
 }
 
 - (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame
