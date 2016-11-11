@@ -157,7 +157,7 @@
       NSRect textRect = NSInsetRect(frame, 2, 2);
 
       NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
-      [_text drawInRect: textRect];
+      [_text drawWithRect: textRect options: NSStringDrawingUsesLineFragmentOrigin];
     }
 }
 @end
@@ -644,7 +644,6 @@ static BOOL		restoreMouseMoved;
   textSize = [toolTipText size];
 
   // TESTPLANT-MAL-03092016: Merged...
-#if 0
   if (textSize.width > 300)
     {
       NSRect rect;
@@ -654,7 +653,6 @@ static BOOL		restoreMouseMoved;
       // This extra pixel is needed, otherwise the last line gets cut off.
       textSize.height += 1;
     }
-#endif
 
   /* Create window just off the current mouse position
    * Constrain it to be on screen, shrinking if necessary.
