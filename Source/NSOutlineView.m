@@ -2317,8 +2317,15 @@ Also returns the child index relative to this parent. */
                                             withString:@" "
                                        startingAtIndex:0];
         
-          draggedItemString = [pad stringByAppendingString:draggedItemString];
+      if ([draggedObject isKindOfClass:[NSAttributedString class]])
+        {
+          draggedItemString = [pad stringByAppendingString:[draggedObject string]];	
+        } 
+      else
+        {
+          draggedItemString = [pad stringByAppendingString:[draggedObject description]];
         }
+      }
     }
   return draggedItemString;
 }
