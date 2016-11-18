@@ -1524,11 +1524,17 @@ static NSMutableDictionary *cachedCSets = nil;
 - (NSFontDescriptor*)_substituteFontDescriptorFor: (unichar)uchar
 {
   NSString *chars = [NSString stringWithCharacters: &uchar length: 1];
-  NSCharacterSet *requiredCharacterSet = [NSCharacterSet characterSetWithCharactersInString: chars];
-  NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys: requiredCharacterSet, NSFontCharacterSetAttribute, nil];
-  NSSet *mandatoryKeys = [NSSet setWithObjects: NSFontCharacterSetAttribute, nil];
-  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fontAttributes];
-  return [fd matchingFontDescriptorWithMandatoryKeys: mandatoryKeys];
+  
+  // Emoticons can be pasted that won't be parsed properly...
+  if (chars != nil)
+    {
+	  NSCharacterSet *requiredCharacterSet = [NSCharacterSet characterSetWithCharactersInString: chars];
+	  NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys: requiredCharacterSet, NSFontCharacterSetAttribute, nil];
+	  NSSet *mandatoryKeys = [NSSet setWithObjects: NSFontCharacterSetAttribute, nil];
+	  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fontAttributes];
+	  return [fd matchingFontDescriptorWithMandatoryKeys: mandatoryKeys];
+    }
+  return nil;
 }
 
 - (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont
