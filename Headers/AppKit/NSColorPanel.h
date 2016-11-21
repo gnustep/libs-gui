@@ -132,7 +132,7 @@ enum {
 	 fromView:(NSView *)sourceView;
 - (void)setColor:(NSColor *)aColor;
 
-- (float)alpha;
+- (CGFloat)alpha;
 - (NSColor *)color;
 
 @end

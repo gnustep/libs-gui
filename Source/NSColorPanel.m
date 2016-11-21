@@ -56,8 +56,6 @@
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSDisplayServer.h"
-#import "GNUstepGUI/IMLoading.h"
-
 
 #import "GSGuiPrivate.h"
 
@@ -65,8 +63,7 @@
 static NSLock *_gs_gui_color_panel_lock = nil;
 static NSColorPanel *_gs_gui_color_panel = nil;
 static int _gs_gui_color_picker_mask = NSColorPanelAllModesMask;
-// FIXME: This should be NSWheelModeColorPanel 
-static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
+static int _gs_gui_color_picker_mode = NSWheelModeColorPanel;
 
 
 @implementation NSApplication (NSColorPanel)
@@ -86,7 +83,6 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 @interface NSColorPanel (PrivateMethods)
 - (void) _loadPickers;
 - (void) _loadPickerAtPath: (NSString *)path;
-- (void) _fixupMatrix;
 - (void) _setupPickers;
 - (void) _showNewPicker: (id)sender;
 - (id) _initWithoutGModel;
@@ -154,18 +150,6 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 	  NSLog(@"%@ does not contain a valid color picker.", path);
 	}
     }
-}
-
-// FIXME - this is a HACK to get around problems in the gmodel code
-- (void) _fixupMatrix
-{
-  NSButtonCell *prototype;
-
-  [_pickerMatrix setFrame: NSMakeRect(4, 190, 192, 36)];
-  prototype = [[NSButtonCell alloc] initImageCell: nil];
-  [prototype setButtonType: NSOnOffButton];
-  [_pickerMatrix setPrototype: prototype];
-  RELEASE(prototype);
 }
 
 - (void) _setupPickers
@@ -462,6 +446,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [_gs_gui_color_panel_lock lock];
       if (!_gs_gui_color_panel)
         {
+          //  if (![NSBundle loadNibNamed: @"ColorPanel" owner: self]);
+
 	  // Keep this two lines separated so the check in [init] works.
 	  _gs_gui_color_panel = [self alloc];
 	  [_gs_gui_color_panel init];
@@ -491,9 +477,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   _gs_gui_color_picker_mode = mode;
 }
 
-/**<p>Drags <var>aColor</var> frome <var>sourceView</var> at the location
+/**<p>Drags <var>aColor</var> from <var>sourceView</var> at the location
    give by the event <var>anEvent</var> ( [NSView-convertPoint:fromView:] ).
-   The type declare into the pasteboard is NSColorPboardType</p>
+   The type declared into the pasteboard is NSColorPboardType</p>
    <p>See Also: [NSView-convertPoint:fromView:] 
    [NSView-dragImage:at:offset:event:pasteboard:source:slideBack:</p>
  */
@@ -539,7 +525,6 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       return _gs_gui_color_panel;
   }
 
-  //  if (![NSBundle loadNibNamed: @"ColorPanel" owner: self]);
   [self _initWithoutGModel];
 
   [self _loadPickers];
@@ -593,7 +578,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 }
 
 /**<p> Sets the accessoryView to a view. The old view ( if exists ) will be 
-    remove ( and release ). You need to retain it if you want to use
+    removed ( and released ). You need to retain it if you want to use
     it later</p>
     <p>See Also: -accessoryView</p>
  */
@@ -610,8 +595,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 /**<p>Sets the NSColorPanl action method to <var>aSelector</var> The
    action message is usally send in -setColor:, when the picker is updated,
-   when a new picker is show, when the alpha is changed or when one of the
-   color well at the bottom is selected.</p>
+   when a new picker is shown, when the alpha is changed or when one of the
+   color wells at the bottom is selected.</p>
  */
 - (void) setAction: (SEL)aSelector
 {
@@ -660,7 +645,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   if (flag)
     {
       NSRect newFrame = [_pickerBox frame];
-      float offset = [_alphaSlider frame].size.height + 4;
+      CGFloat offset = [_alphaSlider frame].size.height + 4.0;
 
       [_alphaSlider setFrameOrigin: newFrame.origin];
       [[_pickerBox superview] addSubview: _alphaSlider];
@@ -670,7 +655,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
   else
     {
-      // Remove the alpha slider, and add its size to the pickeBox
+      // Remove the alpha slider, and add its size to the pickerBox
       [_alphaSlider removeFromSuperview];
       [_pickerBox setFrame: NSUnionRect([_pickerBox frame],
                                         [_alphaSlider frame])];
@@ -718,7 +703,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     1.0 if the NSColorPanel does not show alpha</p>
     <p>See Also: -showsAlpha -setShowsAlpha:</p>    
  */
-- (float) alpha
+- (CGFloat) alpha
 {
   if ([self showsAlpha])
     return [_alphaSlider floatValue] / MAX_ALPHA_VALUE;
@@ -734,7 +719,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   return [_colorWell color];
 }
 
-/** <p>Sets the NSColor displayed to aColor. This method post a
+/** <p>Sets the NSColor displayed to aColor. This method posts a
     NSColorPanelColorDidChangeNotification notification if needed.</p>
     <p>See Also: -color [NSColorWell-setColor:]
     </p>

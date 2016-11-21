@@ -1,5 +1,12 @@
 2016-11-21 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSColorPanel.h: Change -alpha to CGFloat.
+	* Source/NSColorPanel.m: Remove left over GModel loading code.
+	Set default mode to colour wheel.
+	Small cleanups mostly in comments.
+
+2016-11-21 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColorPanel.m (-_initWithoutGModel): Correct target for
 	bottom wells.
 	* Source/NSColorWell.m (-performClick:): Add this method and use
