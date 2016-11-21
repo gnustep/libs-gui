@@ -350,7 +350,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     [well setColor: colour];
     [well setBordered: NO];
     [well setEnabled: YES];
-    [well setTarget: _colorWell];
+    [well setTarget: self];
     [well setAction: @selector(_bottomWellAction:)];
     [swatchView addSubview: well];
     RELEASE(well);

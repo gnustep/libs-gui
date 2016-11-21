@@ -1,3 +1,11 @@
+2016-11-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorPanel.m (-_initWithoutGModel): Correct target for
+	bottom wells.
+	* Source/NSColorWell.m (-performClick:): Add this method and use
+	it in -mouseUp:.
+	Patch by Josh Freeman <pikopixel@twilightedge.com>.
+
 2016-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m: Set the TIFF subfield type to 0

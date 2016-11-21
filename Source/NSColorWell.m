@@ -366,20 +366,25 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
   if (inside)
     {
-      if (_is_active == NO)
-	{
-	  [self activate: YES];
-	}
-      else
-	{
-	  [self deactivate];
-	}
+      [self performClick: self];
     }
 }
 
 - (id) objectValue
 {
   return [self color];
+}
+
+- (void) performClick: (id)sender
+{
+  if ([self isActive])
+    {
+      [self deactivate];
+    }
+  else
+    {
+      [self activate: YES];
+    }
 }
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
