@@ -1188,9 +1188,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     {
       r1.origin.y += position - old_position;
       r1.size.height -= position - old_position;
-      if (NSHeight(r) < 1.)
+      if (NSHeight(r1) < 1.)
         {
-          r.size.height = 1.;
+          r1.size.height = 1.;
         }
     }
   else
