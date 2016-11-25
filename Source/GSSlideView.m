@@ -77,7 +77,7 @@
   float imgDist = sqrt((imgSize.width * imgSize.width) + 
 		       (imgSize.height * imgSize.height));
   int steps = (int)(dist/imgDist);
-  int windowNumber = [_window windowNumber];
+  NSInteger windowNumber = [_window windowNumber];
   GSDisplayServer *server = GSServerForWindow(_window);
 
 

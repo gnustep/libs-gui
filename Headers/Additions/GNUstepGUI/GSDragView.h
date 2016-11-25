@@ -127,7 +127,7 @@
 		    action: (NSDragOperation)action
 		  position: (NSPoint)eventLocation
 		 timestamp: (NSTimeInterval)time
-		  toWindow: (int)dWindowNumber;
+		  toWindow: (NSInteger)dWindowNumber;
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
 			    windowRef: (int*)mouseWindowRef;
 

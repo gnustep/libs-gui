@@ -347,7 +347,7 @@ static	GSDragView *sharedDragView = nil;
                     action: (NSDragOperation)action
                   position: (NSPoint)eventLocation
                  timestamp: (NSTimeInterval)time
-                  toWindow: (int)dWindowNumber
+                  toWindow: (NSInteger)dWindowNumber
 {
 }
 

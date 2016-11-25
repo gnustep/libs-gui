@@ -1174,7 +1174,7 @@ void NSSetFocusRingStyle(NSFocusRingPlacement placement)
 }
 
 void 
-NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
+NSConvertGlobalToWindowNumber(int globalNum, NSInteger *winNum)
 {
   NSArray *windows = GSAllWindows();
   NSUInteger count = [windows count];
@@ -1194,7 +1194,7 @@ NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
 }
 
 void 
-NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum)
+NSConvertWindowNumberToGlobal(NSInteger winNum, unsigned int *globalNum)
 {
   *globalNum = (int)(intptr_t)[GSWindowWithNumber(winNum) windowRef];
 }

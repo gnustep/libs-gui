@@ -53,7 +53,7 @@ this, either directly, or indirectly (by using the backend).
 @interface GSWindowDecorationView : NSView
 {
   NSWindow *window; /* not retained */
-  int windowNumber;
+  NSInteger windowNumber;
   NSRect contentRect;
   int inputState;
   BOOL documentEdited;
@@ -82,7 +82,7 @@ this, either directly, or indirectly (by using the backend).
 Called when the backend window is created or destroyed. When it's destroyed,
 windowNumber will be 0.
 */
-- (void) setWindowNumber: (int)windowNumber;			  
+- (void) setWindowNumber: (NSInteger)windowNumber;
 
 // Flags controlling if elements are present
 - (void) setHasMenu: (BOOL) flag;

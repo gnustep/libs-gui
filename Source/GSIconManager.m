@@ -31,8 +31,8 @@
 #import "GSIconManager.h"
 
 @protocol GSIconManager
- - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
- - (void) removeWindow: (unsigned int)aWindowNumber;
+ - (NSRect) setWindow: (NSInteger)aWindowNumber appProcessId: (int)aProcessId;
+ - (void) removeWindow: (NSInteger)aWindowNumber;
  - (NSSize) getSizeWindow;
  - (id) retain;
  - (void) release; 

@@ -72,7 +72,7 @@ static NSString *NSCurrentServerThreadKey;
 GSDisplayServer *
 GSServerForWindow(NSWindow *window)
 {
-  int num;
+  NSInteger num;
 
   if (windowmaps == NULL)
     {

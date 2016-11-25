@@ -234,8 +234,8 @@ APPKIT_EXPORT NSWindow* GSWindowWithNumber(NSInteger num);
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 // Window operations
-APPKIT_EXPORT void NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum);
-APPKIT_EXPORT void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum);
+APPKIT_EXPORT void NSConvertGlobalToWindowNumber(int globalNum, NSInteger *winNum);
+APPKIT_EXPORT void NSConvertWindowNumberToGlobal(NSInteger winNum, unsigned int *globalNum);
 
 // Rectangle drawing
 APPKIT_EXPORT NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 

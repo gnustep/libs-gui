@@ -426,7 +426,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
     [GSServerForWindow(window) titlewindow: title : windowNumber];
 }
 
-- (void) setWindowNumber: (int)theWindowNumber
+- (void) setWindowNumber: (NSInteger)theWindowNumber
 {
   windowNumber = theWindowNumber;
   if (!windowNumber)
