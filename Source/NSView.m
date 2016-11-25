@@ -1976,9 +1976,9 @@ static void autoresize(CGFloat oldContainerSize,
 		       BOOL sizeFlexible,
 		       BOOL maxMarginFlexible)
 {
-  const CGFloat change = newContainerSize - oldContainerSize;
-  const CGFloat oldContentSize = *contentSizeInOut;
-  const CGFloat oldContentPosition = *contentPositionInOut;
+  const CGFloat change = floor(newContainerSize) - floor(oldContainerSize);
+  const CGFloat oldContentSize = floor(*contentSizeInOut);
+  const CGFloat oldContentPosition = floor(*contentPositionInOut);
   CGFloat flexibleSpace = 0.0;
 
   // See how much flexible space we have to distrube the change over
