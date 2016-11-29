@@ -1234,7 +1234,7 @@ restart: ;
       static NSUInteger RecursionCount = 0;
       RecursionCount++;
       if (RecursionCount > 1)
-        NSLog(@"%s:entering %d level recursion", __PRETTY_FUNCTION__, RecursionCount);
+        NSLog(@"%s:entering %ld level recursion", __PRETTY_FUNCTION__, (long)RecursionCount);
 
       GSHorizontalTypesetter *temp;
 
