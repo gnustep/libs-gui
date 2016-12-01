@@ -370,6 +370,8 @@ static BOOL		restoreMouseMoved;
                                          selector: @selector(_timedOut:)
                                          userInfo: toolTipString
                                           repeats: YES];
+  // WHy is this here...as it's essentially a no-op...timer has already been
+  // scheduled in the RunLoop in the previous line...
   [[NSRunLoop currentRunLoop] addTimer: timer forMode: NSModalPanelRunLoopMode];
   timedObject = self;
   timedTag = [theEvent trackingNumber];
@@ -627,20 +629,20 @@ static BOOL		restoreMouseMoved;
       [self _endDisplay];
     }
 
-  size = [[NSUserDefaults standardUserDefaults]
-	   floatForKey: @"NSToolTipsFontSize"];
+  size = [[NSUserDefaults standardUserDefaults] floatForKey: @"NSToolTipsFontSize"];
 
   if (size <= 0)
     {
+#if defined(__linux__) && defined(__x86_64__)
+      size = 11.0;
+#else
       size = 10.0;
+#endif
     }
 
   attributes = [NSMutableDictionary dictionary];
-  [attributes setObject: [NSFont toolTipsFontOfSize: size]
-		 forKey: NSFontAttributeName];
-  toolTipText =
-    [[NSAttributedString alloc] initWithString: toolTipString
-				    attributes: attributes];
+  [attributes setObject: [NSFont toolTipsFontOfSize: size] forKey: NSFontAttributeName];
+  toolTipText = [[NSAttributedString alloc] initWithString: toolTipString attributes: attributes];
   textSize = [toolTipText size];
 
   // TESTPLANT-MAL-03092016: Merged...
