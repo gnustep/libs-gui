@@ -94,6 +94,32 @@
 #define	nKV(O)	((GSIArray)(O->_nextKeyView))
 #define	pKV(O)	((GSIArray)(O->_previousKeyView))
 
+#ifdef fpclassify
+#define GSIsNAN(n) (fpclassify(n) == FP_NAN)
+#define GSIsInf(n) (fpclassify(n) == FP_INFINITE)
+#else
+#warning C99 macro fpclassify not found: Cannot determine NAN/Inf float-values
+#define GSIsNAN(n) (0)
+#define GSIsInf(n) (0)
+#endif
+
+#define GSIsNegPoint(point) ((point.x < 0.0) || (point.y < 0.0))
+#define GSIsNegSize(size)   ((size.width < 0.0) || (size.height < 0.0))
+
+#define GSIsNanPoint(point) (GSIsNAN(point.x) || GSIsNAN(point.y))
+#define GSIsNanSize(size)   (GSIsNAN(size.width) || GSIsNAN(size.height))
+#define GSIsInfPoint(point) (GSIsInf(point.x) || GSIsInf(point.y))
+#define GSIsInfSize(size)   (GSIsInf(size.width) || GSIsInf(size.height))
+
+#define GSIsNegRect(rect)   (GSIsNegPoint(rect.origin) || GSIsNegSize(rect.size))
+#define GSIsNanRect(rect)   (GSIsNanPoint(rect.origin) || GSIsNanSize(rect.size))
+#define GSIsInfRect(rect)   (GSIsInfPoint(rect.origin) || GSIsInfSize(rect.size))
+
+#define GSIsOOBValue(value) (GSIsNAN(value) || GSIsInf(value))
+#define GSIsOOBPoint(point) (GSIsNanPoint(point) || GSIsInfPoint(point))
+#define GSIsOOBSize(size)   (GSIsNanSize(size) || GSIsInfSize(size))
+#define GSIsOOBRect(rect)   (GSIsNanRect(rect) || GSIsInfRect(rect) || GSIsNegRect(rect))
+
 /* Variable tells this view and subviews that we're printing. Not really
    a class variable because we want it visible to subviews also
 */
@@ -606,6 +632,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _frame = frameRect;			// Set frame rectangle
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
+  _autoresizingFrameError = NSZeroRect;
 
   // _frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
   // _boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
@@ -1140,9 +1167,9 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 {
   NSSize scale;
 
-  if (bs.width == 0)
+  if (GSRoundTowardsInfinity(bs.width) == 0)
     {
-      if (fs.width == 0)
+      if (GSRoundTowardsInfinity(fs.width) == 0)
         scale.width = 1;
       else
         scale.width = FLT_MAX;
@@ -1151,9 +1178,9 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     {
       scale.width = fs.width / bs.width;
     }
-  if (bs.height == 0)
+  if (GSRoundTowardsInfinity(bs.height) == 0)
     {
-      if (fs.height == 0)
+      if (GSRoundTowardsInfinity(fs.height) == 0)
         scale.height = 1;
       else
         scale.height = FLT_MAX;
@@ -1976,12 +2003,12 @@ static void autoresize(CGFloat oldContainerSize,
 		       BOOL sizeFlexible,
 		       BOOL maxMarginFlexible)
 {
-  const CGFloat change = floor(newContainerSize) - floor(oldContainerSize);
-  const CGFloat oldContentSize = floor(*contentSizeInOut);
-  const CGFloat oldContentPosition = floor(*contentPositionInOut);
+  const CGFloat change = (newContainerSize) - (oldContainerSize);
+  const CGFloat oldContentSize = (*contentSizeInOut);
+  const CGFloat oldContentPosition = (*contentPositionInOut);
   CGFloat flexibleSpace = 0.0;
 
-  // See how much flexible space we have to distrube the change over
+  // See how much flexible space we have to distribute the change over
 
   if (sizeFlexible)
     flexibleSpace += oldContentSize;
@@ -1992,7 +2019,10 @@ static void autoresize(CGFloat oldContainerSize,
   if (maxMarginFlexible)
     flexibleSpace += oldContainerSize - oldContentPosition - oldContentSize;
 
-
+  // Watch for TINY double precision numbers - otherwise the divide in the else
+  // case will cause an Inf result for changePerPoint...
+  flexibleSpace = GSRoundTowardsInfinity(flexibleSpace);
+  
   if (flexibleSpace <= 0.0)
     {
       /**
@@ -2053,7 +2083,7 @@ static void autoresize(CGFloat oldContainerSize,
       newFrame.size.height -= _autoresizingFrameError.size.height;
     }
 
-  superViewFrameSize = NSMakeSize(0,0);
+  superViewFrameSize = NSZeroSize;
   if (_super_view)
     superViewFrameSize = [_super_view frame].size;
 
