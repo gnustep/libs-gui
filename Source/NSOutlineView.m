@@ -32,6 +32,7 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSAttributedString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
