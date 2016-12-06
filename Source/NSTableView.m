@@ -2143,11 +2143,11 @@ static void computeNewSelection
   if (_numberOfColumns > 1)
     {
       _columnOrigins = NSZoneRealloc (NSDefaultMallocZone (), _columnOrigins,
-				      (sizeof (float)) * _numberOfColumns);
+				      (sizeof (CGFloat)) * _numberOfColumns);
     }
   else 
     {
-      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (float));
+      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (CGFloat));
     }      
   [self tile];
 }
@@ -2182,7 +2182,7 @@ static void computeNewSelection
   if (_numberOfColumns > 0)
     {
       _columnOrigins = NSZoneRealloc (NSDefaultMallocZone (), _columnOrigins,
-				      (sizeof (float)) * _numberOfColumns);
+				      (sizeof (CGFloat)) * _numberOfColumns);
     }
   else 
     {
@@ -4583,9 +4583,9 @@ This method is deprecated, use -columnIndexesInRect:. */
       int i = 0;
       
       while ((i < _numberOfColumns) && (aPoint.x >= _columnOrigins[i]))
-	{
-	  i++;
-	}
+        {
+          i++;
+        }
       return i - 1;
     }
 }
@@ -5141,8 +5141,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) tile
 {
-  float table_width = 0;
-  float table_height;
+  CGFloat table_width = 0;
+  CGFloat table_height;
 
   if (_tilingDisabled == YES)
     return;
@@ -5150,17 +5150,17 @@ This method is deprecated, use -columnIndexesInRect:. */
   if (_numberOfColumns > 0)
     {
       int i;
-      float width;
+      CGFloat width;
   
       _columnOrigins[0] = _bounds.origin.x;
       width = [[_tableColumns objectAtIndex: 0] width];
       table_width += width;
       for (i = 1; i < _numberOfColumns; i++)
-	{
-	  _columnOrigins[i] = _columnOrigins[i - 1] + width;
-	  width = [[_tableColumns objectAtIndex: i] width];
-	  table_width += width;
-	}
+        {
+          _columnOrigins[i] = _columnOrigins[i - 1] + width;
+          width = [[_tableColumns objectAtIndex: i] width];
+          table_width += width;
+        }
     }
   /* + 1 for the last grid line */
   table_height = (_numberOfRows * _rowHeight) + 1;
@@ -6002,7 +6002,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       if (_numberOfColumns > 0)
         {
           _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-                                         sizeof(float) * _numberOfColumns);
+                                         sizeof(CGFloat) * _numberOfColumns);
         }
       [self tile]; /* Initialize _columnOrigins */
     }
@@ -6064,7 +6064,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   [[_tableColumns objectAtIndex: index] setWidth: width];
 }
 
-- (float *) _columnOrigins
+- (CGFloat *) _columnOrigins
 {
   return _columnOrigins;
 }

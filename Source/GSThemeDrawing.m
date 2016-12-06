@@ -73,7 +73,7 @@
 #define COLOR_WELL_BORDER_WIDTH 7.0
 
 @interface NSTableView (Private)
-- (float *)_columnOrigins;
+- (CGFloat *)_columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell forTableColumn: (NSTableColumn *)tb row: (int)index;
 // TESTPLANT-MAL-2016: Keeping for tableview grouped row support AKA Cocoa...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb row: (int) rowIndex;
@@ -3291,7 +3291,7 @@ typedef enum {
   // NSIndexSet *selectedRows = [tableView _selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];
   id dataSource = [tableView dataSource];
-  float *columnOrigins = [tableView _columnOrigins];
+  CGFloat *columnOrigins = [tableView _columnOrigins];
   int editedRow = [tableView editedRow];
   int editedColumn = [tableView editedColumn];
   int startingColumn;
@@ -3299,7 +3299,7 @@ typedef enum {
   NSRect drawingRect;
   NSCell *cell;
   int i;
-  float x_pos;
+  CGFloat x_pos;
 
   if (dataSource == nil)
     {
@@ -3345,9 +3345,9 @@ typedef enum {
       x_pos = NSMinX (clipRect);
       i = 0;
       while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-      {
-        i++;
-      }
+        {
+          i++;
+        }
       startingColumn = (i - 1);
       
       if (startingColumn == -1)
@@ -3357,9 +3357,9 @@ typedef enum {
       x_pos = NSMaxX (clipRect);
       // Nota Bene: we do *not* reset i
       while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-      {
-        i++;
-      }
+        {
+          i++;
+        }
       endingColumn = (i - 1);
       
       if (endingColumn == -1)

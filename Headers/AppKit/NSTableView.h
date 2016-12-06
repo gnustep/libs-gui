@@ -157,7 +157,7 @@ typedef enum _NSTableViewAnimationOptions
    * origin of each column).  When a column width is changed through
    * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
    * which updates the cache.  */
-  float *_columnOrigins;
+  CGFloat *_columnOrigins;
 
   /*
    *  We keep the superview's width in order to know when to
