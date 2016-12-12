@@ -70,7 +70,7 @@
 
 // Private methods with broadcast support
 - (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
-                               atIndex: (int)index 
+                               atIndex: (NSInteger)index
                              broadcast: (BOOL)broadcast;
 - (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast;
 - (void) _setAllowsUserCustomization: (BOOL)flag broadcast: (BOOL)broadcast;

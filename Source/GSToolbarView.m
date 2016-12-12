@@ -208,6 +208,7 @@ static NSInteger draggedItemIndex = NSNotFound;
 {
   if (self == [GSToolbarView class])
     {
+      [self setVersion: current_version];
     }
 }
 
@@ -254,12 +255,12 @@ static NSInteger draggedItemIndex = NSNotFound;
 
 // Dragging related methods
 
-+ (int) draggedItemIndex
++ (NSInteger) draggedItemIndex
 {
   return draggedItemIndex;
 }
 
-+ (void) setDraggedItemIndex:(int)sourceIndex
++ (void) setDraggedItemIndex:(NSInteger)sourceIndex
 {
   draggedItemIndex = sourceIndex;
 }
@@ -302,7 +303,7 @@ static NSInteger draggedItemIndex = NSNotFound;
               itemRect = [[visibleBackViews objectAtIndex:index] frame];
               if (location.x < (itemRect.origin.x + (itemRect.size.width/2)))
                 {
-                  NSLog(@"To the LEFT of %d", index);
+                  //NSLog(@"To the LEFT of %d", index);
                   return index;
                 }
             }
@@ -315,7 +316,7 @@ static NSInteger draggedItemIndex = NSNotFound;
               itemRect = [[visibleBackViews objectAtIndex:index] frame];
               if (location.x > (itemRect.origin.x + (itemRect.size.width/2)))
                 {
-                  NSLog(@"To the RIGHT of %d", index);
+                  //NSLog(@"To the RIGHT of %d", index);
                   return index;
                 }
             }

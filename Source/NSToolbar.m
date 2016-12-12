@@ -1269,7 +1269,7 @@ static GSValidationCenter *vc = nil;
 }
 
 - (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
-                               atIndex: (int)index 
+                               atIndex: (NSInteger)index
                              broadcast: (BOOL)broadcast
 {
   NSToolbarItem *item = nil;

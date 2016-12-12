@@ -60,8 +60,8 @@ typedef enum {
   float _heightFromLayout;
 }
 
-+ (int) draggedItemIndex;
-+ (void) setDraggedItemIndex:(int)sourceIndex;
++ (NSInteger) draggedItemIndex;
++ (void) setDraggedItemIndex:(NSInteger)sourceIndex;
 
 - (id) initWithFrame: (NSRect)frame;
 
