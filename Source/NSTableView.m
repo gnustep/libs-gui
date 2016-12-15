@@ -3725,6 +3725,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
           [self deselectAll:self];
           [self displayIfNeeded];
+          [[self headerView] setNeedsDisplay:YES];
         }
       else
         {
@@ -3796,6 +3797,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
                               currentRow, \
                               &_selectedRow, \
                               selectionMode); \
+          if (_clickedColumn != -1) \
+          { \
+            [[self headerView] setNeedsDisplayInRect:[[self headerView] headerRectOfColumn:_clickedColumn]]; \
+          } \
           [self displayIfNeeded]; \
         } \
       } while (0);

@@ -520,7 +520,7 @@
                   p = [self convertPoint: unconverted fromView: nil].x;
                   if (mouseDragged == NO)
                     {
-                      NSLog(@"TODO: Deselect the column");
+                      [self setNeedsDisplay:YES];
                     }
                   mouseDragged = YES;
                   if (p < minVisCoord || p > maxVisCoord)
