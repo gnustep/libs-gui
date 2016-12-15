@@ -111,7 +111,7 @@ static NSImage	*multipleFiles = nil;
 static NSImage	*unknownApplication = nil;
 static NSImage	*unknownTool = nil;
 
-NSLock  *mlock = nil;
+static NSLock   *mlock = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 static NSString *GSWorkspacePreferencesChanged =

@@ -1,3 +1,8 @@
+2016-12-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWorkspace.m: Change mlock into a private variable to
+	avoid name conflict with a libc function on Linux.
+
 2016-11-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSColorPanel.h: Change -alpha to CGFloat.
