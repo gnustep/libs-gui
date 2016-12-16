@@ -59,6 +59,7 @@ NSBitmapImageRep+ICNS.m \
 NSBitmapImageRep+JPEG.m \
 NSBitmapImageRep+PNG.m \
 NSBitmapImageRep+PNM.m \
+NSBitmapImageRep+SVG.m \
 NSBox.m \
 NSBrowser.m \
 NSBrowserCell.m \
