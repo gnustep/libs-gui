@@ -66,7 +66,7 @@ static const int ClippedItemsViewWidth = 28;
 // Internal
 static const int current_version = 1;
 
-static NSInteger draggedItemIndex = NSNotFound;
+static NSUInteger draggedItemIndex = NSNotFound;
 
 /*
  * Toolbar related code
@@ -251,19 +251,19 @@ static NSInteger draggedItemIndex = NSNotFound;
 
 // Dragging related methods
 
-+ (int) draggedItemIndex
++ (NSUInteger) draggedItemIndex
 {
   return draggedItemIndex;
 }
 
-+ (void) setDraggedItemIndex:(int)sourceIndex
++ (void) setDraggedItemIndex:(NSUInteger)sourceIndex
 {
   draggedItemIndex = sourceIndex;
 }
 
 - (int) _insertionIndexAtPoint: (NSPoint)location
 {
-  int index;
+  NSUInteger index;
   NSArray *visibleBackViews = [self _visibleBackViews];
 
   location = [_clipView convertPoint:location fromView:nil];
@@ -299,7 +299,6 @@ static NSInteger draggedItemIndex = NSNotFound;
               itemRect = [[visibleBackViews objectAtIndex:index] frame];
               if (location.x < (itemRect.origin.x + (itemRect.size.width/2)))
                 {
-                  NSLog(@"To the LEFT of %d", index);
                   return index;
                 }
             }
@@ -307,12 +306,12 @@ static NSInteger draggedItemIndex = NSNotFound;
       else
         {
           // dragging to the right of current location
+          // Never called for [visibleBackViews count] == 0
           for (index=[visibleBackViews count]-1; index > draggedItemIndex; index--)
             {
               itemRect = [[visibleBackViews objectAtIndex:index] frame];
               if (location.x > (itemRect.origin.x + (itemRect.size.width/2)))
                 {
-                  NSLog(@"To the RIGHT of %d", index);
                   return index;
                 }
             }
@@ -320,6 +319,8 @@ static NSInteger draggedItemIndex = NSNotFound;
       return draggedItemIndex;
     }
 }
+
+#define OUTSIDE_INDEX (NSNotFound - 1)
 
 - (NSDragOperation) updateItemWhileDragging:(id <NSDraggingInfo>)info exited:(BOOL)exited
 {
@@ -341,7 +342,7 @@ static NSInteger draggedItemIndex = NSNotFound;
       if (![item allowsDuplicatesInToolbar])
         {
           NSArray *items = [toolbar items];
-          NSInteger index;
+          NSUInteger index;
           for (index=0; index<[items count]; index++)
             {
               NSToolbarItem *anItem = [items objectAtIndex:index];
@@ -353,7 +354,7 @@ static NSInteger draggedItemIndex = NSNotFound;
             }
         }
     }	
-  else if (draggedItemIndex == -1)
+  else if (draggedItemIndex == OUTSIDE_INDEX)
     {
       // re-entering after being dragged off -- treat as unknown location
       draggedItemIndex = NSNotFound;
@@ -367,7 +368,7 @@ static NSInteger draggedItemIndex = NSNotFound;
       if (exited)
         {
           [toolbar _removeItemAtIndex:draggedItemIndex broadcast:YES];
-          draggedItemIndex = -1; // no longer in our items
+          draggedItemIndex = OUTSIDE_INDEX; // no longer in our items
         }
       else
         {
@@ -386,7 +387,7 @@ static NSInteger draggedItemIndex = NSNotFound;
           broadcast: YES];	
       draggedItemIndex = newIndex;
     }
-	return NSDragOperationGeneric;
+  return NSDragOperationGeneric;
 }
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
