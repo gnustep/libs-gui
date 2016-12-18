@@ -4425,6 +4425,10 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       return -1;
     }
+  else if (_rowHeight == 0.0)
+    {
+      return -1;
+    }
   else
     {
       NSInteger return_value;

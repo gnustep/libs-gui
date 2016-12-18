@@ -1,3 +1,9 @@
+2016-12-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m: Don't try to get the advancement for
+	GSAttachmentGlyph.
+	* Source/NSTableView.m: Protect against rowHeigh being zero.
+
 2016-12-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSToolbarView.h

@@ -3231,7 +3231,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
     
   for (i=0; i<length; i++)
     {
-      if (glyph_list[i] != NSControlGlyph)
+      if ((glyph_list[i] != NSControlGlyph) && (glyph_list[i] != GSAttachmentGlyph))
         {
           advances[i] = [run->font advancementForGlyph: glyph_list[i]];
         }
