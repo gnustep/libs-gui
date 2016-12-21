@@ -140,6 +140,11 @@ GSCurrentServer(void)
     }
 }
 
++ (void) _printEventQueue
+{
+  [GSCurrentServer() _printEventQueue];
+}
+
 /** Set the concrete subclass that will provide the device dependant
     implementation.
 */
@@ -1054,22 +1059,29 @@ GSCurrentServer(void)
        * We return the event RETAINED - the caller must release it.
        */
       if (event)
-	{
-	  RETAIN(event);
-	  if (flag)
-	    {
-	      [event_queue removeObjectAtIndex: pos];
-	    }
-	  return AUTORELEASE(event);
-	}
+        {
+          RETAIN(event);
+          if (flag)
+            {
+              [event_queue removeObjectAtIndex: pos];
+            }
+          return AUTORELEASE(event);
+        }
+      else if ((flag == NO) && ([limit timeIntervalSinceNow] < 0.0))
+        {
+          // Avoid invoking the run loop as it does not adhere to Cocoa
+          // behavior causing problems with performers firing that should not fire
+          // until later...
+          break;
+        }
       if (loop == nil)
-	{
-	  loop = [NSRunLoop currentRunLoop];
-	}
+        {
+          loop = [NSRunLoop currentRunLoop];
+        }
       if ([loop runMode: mode beforeDate: limit] == NO)
-	{
-	  break;	// Nothing we can do ... no input handlers.
-	}
+        {
+          break;	// Nothing we can do ... no input handlers.
+        }
     }
   while ([limit timeIntervalSinceNow] > 0.0);
 
