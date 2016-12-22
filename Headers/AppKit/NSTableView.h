@@ -102,7 +102,7 @@ typedef enum _NSTableViewAnimationOptions
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
   NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
-  float              _rowHeight;
+  CGFloat              _rowHeight;
   NSSize             _intercellSpacing;
   id                 _delegate;
   NSTableHeaderView *_headerView;
@@ -110,13 +110,13 @@ typedef enum _NSTableViewAnimationOptions
   SEL                _action;
   SEL                _doubleAction;
   id                 _target;
-  int                _clickedRow;
-  int                _clickedColumn;
+  NSInteger          _clickedRow;
+  NSInteger          _clickedColumn;
   NSTableColumn     *_highlightedTableColumn;
   NSMutableIndexSet    *_selectedColumns;
   NSMutableIndexSet    *_selectedRows;
-  int                _selectedColumn;
-  int                _selectedRow;
+  NSInteger          _selectedColumn;
+  NSInteger          _selectedRow;
   BOOL               _allowsMultipleSelection;
   BOOL               _allowsEmptySelection;
   BOOL               _allowsColumnSelection;
@@ -125,15 +125,15 @@ typedef enum _NSTableViewAnimationOptions
   BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
   NSText            *_textObject;
-  int                _editedRow;
-  int                _editedColumn;
+  NSInteger          _editedRow;
+  NSInteger          _editedColumn;
   NSCell            *_editedCell;
   BOOL               _autosaveTableColumns;
   NSString          *_autosaveName;
   BOOL              _verticalMotionDrag;
   NSArray           *_sortDescriptors;
   NSTableViewColumnAutoresizingStyle _columnAutoresizingStyle;
-  
+
   /*
    * Ivars Acting as Control... 
    */
@@ -142,9 +142,9 @@ typedef enum _NSTableViewAnimationOptions
   /*
    * Ivars Acting as Cache 
    */
-  BOOL   _reloadNumberOfRows;
-  int    _numberOfRows;
-  int    _numberOfColumns;
+  BOOL         _reloadNumberOfRows;
+  NSInteger    _numberOfRows;
+  NSInteger    _numberOfColumns;
   /* YES if _delegate responds to
      tableView:willDisplayCell:forTableColumn:row: */
   BOOL   _del_responds;
@@ -163,7 +163,7 @@ typedef enum _NSTableViewAnimationOptions
    *  We keep the superview's width in order to know when to
    *  size the last column to fit
    */
-  float _superview_width;
+  CGFloat _superview_width;
 
   /* if YES [which happens only during a sizeToFit], we are doing
      computations on sizes so we ignore tile (produced for example by
@@ -175,7 +175,6 @@ typedef enum _NSTableViewAnimationOptions
   NSDragOperation _draggingSourceOperationMaskForRemote;
 
   NSInteger _beginEndUpdates;
-  
   NSTableViewGridLineStyle _gridStyleMask;
 }
 
@@ -373,16 +372,16 @@ typedef enum _NSTableViewAnimationOptions
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
-- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet *)columnIndexes;
+- (void) reloadDataForRowIndexes: (NSIndexSet*)rowIndexes columnIndexes: (NSIndexSet*)columnIndexes;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
-- (void)beginUpdates;
-- (void)endUpdates;
-- (NSInteger)columnForView:(NSView *)view;
-- (void)insertRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions;
-- (void)removeRowsAtIndexes:(NSIndexSet *)indexes withAnimation:(NSTableViewAnimationOptions)animationOptions;
-- (NSInteger)rowForView:(NSView *)view;
+- (void) beginUpdates;
+- (void) endUpdates;
+- (NSInteger) columnForView: (NSView*)view;
+- (void) insertRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
+- (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
+- (NSInteger) rowForView: (NSView*)view;
 #endif
 
 @end /* interface of NSTableView */
