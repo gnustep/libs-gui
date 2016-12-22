@@ -394,6 +394,8 @@ static NSArray *imagePasteboardTypes = nil;
 
 static NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
+static NSDictionary *_XcodeImageMappings = nil;
+
 /* Find the GSRepData object holding a representation */
 static GSRepData*
 repd_for_rep(NSArray *_reps, NSImageRep *rep)
@@ -418,6 +420,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
 + (void) _reloadCachedImages;
++ (NSArray*) _XcodeImagePaths;
++ (NSDictionary*) _XcodeImageMappings;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
@@ -439,7 +443,18 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       // Initial version
       [self setVersion: 1];
-
+      
+      {
+        if (_XcodeImageMappings == nil)
+        {
+          @synchronized([self class])
+          {
+            _XcodeImageMappings = @{ @"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff" : @"IBeamCursor" };
+            RETAIN(_XcodeImageMappings);
+          }
+        }
+      }
+      
       // initialize the class variables
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
       path = [NSBundle pathForLibraryResource: @"nsmapping"
@@ -2025,26 +2040,33 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
                       if (rep == nil)
                         {
                           // Testplant-MAL-10042016: keeping branch code...
-                          NSString *fileName = [[tmp absoluteString] lastPathComponent];
-                          NSString *path = [[NSBundle mainBundle] pathForImageResource: fileName];
-                          rep = [NSImageRep imageRepWithContentsOfFile: path];
+                          // This hack is a workaround on the issue where Xcode is including its cursor image
+                          // on NSTextView's scroll view: We set the name of the image so we can catch it
+                          // in the NSCursor's initWithCoder:
+                          NSString *filePath = [tmp absoluteString];
+                          NSString *fileName = [filePath lastPathComponent];
+                          NSString *path     = [[NSBundle mainBundle] pathForImageResource: fileName];
 
-						  // This hack is a workaround on the issue where Xcode is including its cursor image
-						  // on NSTextView's scroll view: We set the name of the image so we can catch it
-						  // in the NSCursor's initWithCoder:
-						  if ([[tmp absoluteString] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
-						    {
-							  [self setName:[tmp absoluteString]];
-							}
-						  else if ([[tmp absoluteString] rangeOfString:@"/Xcode.app/"].length > 0
-						    || [[tmp absoluteString] rangeOfString:@"/DVTKit.framework/"].length > 0)
-							{
-							  NSDebugLog (@"WARNING: Decoding image with absolute path %@."
-								@" Xcode may have inserted this in your XIB and the"
-								@" image may not be available in the app's resources"
-								, [tmp absoluteString]);
-							}
-							
+                          // Check Xcode known hard-encoded image references...
+                          if (path == nil)
+                            {
+                              if ([[[self class] _XcodeImagePaths] containsObject:filePath])
+                                {
+                                  [self setName:[tmp absoluteString]];
+                                }
+                              else if (([filePath rangeOfString:@"/Xcode.app/"].length > 0) ||
+                                       ([filePath rangeOfString:@"/DVTKit.framework/"].length > 0))
+                                {
+                                  NSDebugLog (@"WARNING: Decoding image with absolute path %@."
+                                  @" Xcode may have inserted this in your XIB and the"
+                                  @" image may not be available in the app's resources"
+                                  , [tmp absoluteString]);
+                                }
+                            }
+                          else
+                            {
+                              rep = [NSImageRep imageRepWithContentsOfFile: path];
+                            }
                         }
                       
                       // If the representation was found, add it...
@@ -2300,6 +2322,16 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       [self addRepresentation: image];
     }
   return ok;
+}
+
++ (NSArray *)_XcodeImagePaths
+{
+  return [_XcodeImageMappings allKeys];
+}
+
++ (NSDictionary *)_XcodeImageMappings
+{
+  return _XcodeImageMappings;
 }
 
 - (BOOL) _loadFromFile: (NSString *)fileName

@@ -41,6 +41,11 @@
 
 #import "GNUstepGUI/GSDisplayServer.h"
 
+@interface NSImage (Private)
++ (NSDictionary *)_XcodeImageMappings;
++ (NSArray *)_XcodeImagePaths;
+@end
+
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;
 static NSCursor *gnustep_gui_current_cursor;
@@ -608,7 +613,7 @@ backgroundColorHint:(NSColor *)bg
       DESTROY(self);
       if ([aDecoder containsValueForKey: @"NSCursorType"])
         {
-	  int type = [aDecoder decodeIntForKey: @"NSCursorType"];
+          int type = [aDecoder decodeIntForKey: @"NSCursorType"];
 
           switch (type)
             {
@@ -666,7 +671,7 @@ backgroundColorHint:(NSColor *)bg
               break;
             }
           RETAIN(self);
-	}
+        }
       else
         {
           NSPoint hotSpot = NSMakePoint(0, 0);
@@ -682,20 +687,31 @@ backgroundColorHint:(NSColor *)bg
             }
           
           // Testplant-MAL-2015-06-26: Keeping testplant fixes...
-		  if ([[image name] isEqualToString:@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff"])
-		    {
-			  NSDebugLog(@"An NSCursor object was encoded with the image "
-				@"file://localhost/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Resources/DVTIbeamCursor.tiff. "
-				@"This cursor was automatically substituted with [NSCursor IBeamCursor].");
-			
-			  [image setName:nil];
-			  self = RETAIN([NSCursor IBeamCursor]);
-			}
-		  else
-		    {
-			  self = [[NSCursor alloc] initWithImage: image
-											 hotSpot: hotSpot];
-			}
+          if ([[NSImage _XcodeImagePaths] containsObject:[image name]])
+            {
+              NSString *selectorName = [[NSImage _XcodeImageMappings] objectForKey:[image name]];
+              SEL selector = NSSelectorFromString(selectorName);
+              
+              if (selector == NULL)
+                {
+                  NSDebugLog(@"An NSCursor object was encoded with the image %@ which was not automatically substituted with NSCursor substitute due to missing selector: %@.", [image name], selectorName);
+                }
+              else
+                {
+                  NSDebugLog(@"An NSCursor object was encoded with the image %@. This cursor was automatically substituted with NSCursor substitute (%@).", [image name], selectorName);
+                
+                  self = RETAIN([NSCursor performSelector:selector]);
+                  [image setName:nil];
+                }
+            }
+          else if (image == nil)
+            {
+              NSLog(@"%s:NSCursor object was encoded with image which was not found", __PRETTY_FUNCTION__);
+            }
+          else
+            {
+              self = [[NSCursor alloc] initWithImage: image hotSpot: hotSpot];
+            }
         }
     }
   else
