@@ -140,11 +140,6 @@ GSCurrentServer(void)
     }
 }
 
-+ (void) _printEventQueue
-{
-  [GSCurrentServer() _printEventQueue];
-}
-
 /** Set the concrete subclass that will provide the device dependant
     implementation.
 */
