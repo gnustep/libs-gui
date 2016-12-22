@@ -146,12 +146,10 @@ typedef struct _tableViewFlags
 	 forTableColumn: (NSTableColumn *)tb
 		    row: (NSInteger)index;
 
-- (BOOL) _isEditableColumn: (NSInteger)columnIndex
-                       row: (NSInteger)rowIndex;
 - (BOOL) _isCellSelectableColumn: (NSInteger)columnIndex
                              row: (NSInteger)rowIndex;
 - (BOOL) _isCellEditableColumn: (NSInteger)columnIndex
-			   row: (NSInteger)rowIndex;
+                           row: (NSInteger)rowIndex;
 - (NSInteger) _numRowsFromBindingOrDatasource;
 - (NSInteger) _numberOfRows;
 @end
@@ -6956,8 +6954,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   return YES;
 }
 
-- (BOOL) _isEditableColumn: (NSInteger) columnIndex
-                       row: (NSInteger) rowIndex
+- (BOOL) _isCellEditableColumn: (NSInteger) columnIndex
+                           row: (NSInteger) rowIndex
 {
   NSTableColumn *tableColumn = [_tableColumns objectAtIndex: columnIndex];
   NSCell *cell = [self _dataCellForTableColumn: tableColumn row: rowIndex];
@@ -6973,7 +6971,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (BOOL) _isCellSelectableColumn: (NSInteger) columnIndex
                              row: (NSInteger) rowIndex
 {
-  if (![self _isEditableColumn: columnIndex row: rowIndex])
+  if (![self _isCellEditableColumn: columnIndex row: rowIndex])
     {
       return NO;
     }
