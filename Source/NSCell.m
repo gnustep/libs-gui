@@ -1655,8 +1655,15 @@ static NSColor *dtxtCol;
              NSStringFromRect(cellFrame), point.x, point.y);
 
   _mouse_down_flags = [theEvent modifierFlags];
+  if (![self isEnabled])
+    {
+      return NO;
+    }
+
   if (![self startTrackingAt: point inView: controlView])
+    {
     return NO;
+    }
 
   if (![controlView mouse: point inRect: cellFrame])
     return NO; // point is not in cell
@@ -1665,7 +1672,7 @@ static NSColor *dtxtCol;
       && [theEvent type] == NSLeftMouseDown)
     [self _sendActionFrom: controlView];
 
-  if (_action_mask & NSPeriodicMask)
+  if ([self isContinuous])
     {
       [self getPeriodicDelay: &delay interval: &interval];
       [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
@@ -1771,8 +1778,10 @@ static NSColor *dtxtCol;
               inView: controlView
            mouseIsUp: mouseWentUp];
 
-  if (_action_mask & NSPeriodicMask)
-    [NSEvent stopPeriodicEvents];
+  if ([self isContinuous])
+    {
+      [NSEvent stopPeriodicEvents];
+    }
 
   if (mouseWentUp)
     {
@@ -1823,8 +1832,14 @@ static NSColor *dtxtCol;
         
       case NSNullCellType:
       default:
-        hitResult = NSCellHitContentArea;
-        // FIXME: If the cell not disabled, and it would track, OR in NSCellHitTrackableArea...
+      if (_cell.is_disabled == NO)
+        {
+          hitResult = NSCellHitContentArea | NSCellHitTrackableArea;
+        }
+      else
+        {
+          hitResult = NSCellHitContentArea;
+        }
         break;
     }
   
@@ -2335,6 +2350,7 @@ static NSColor *dtxtCol;
   _cell.shows_first_responder = YES;
   _cell.in_editing = YES;
 
+  // TESTPLANT-MAL-12282916: Paul Landers added this code...need to keep it...
   if ([textObject isKindOfClass:[NSTextView class]])
     {
 	  NSCellUndoManager * undoManager = [[NSCellUndoManager alloc] init];
@@ -3069,6 +3085,7 @@ static NSColor *dtxtCol;
     }
 }
 
+// TESTPLANT-MAL-12282016: Keeping branch code...
 - (NSAttributedString*)_resizeAttributedString: (NSAttributedString*)attrstring forRect:(NSRect)titleRect
 {
   // Redo string based on selected truncation mask...
@@ -3140,8 +3157,10 @@ static NSColor *dtxtCol;
    */
   aRect.origin.y = NSMidY (aRect) - titleSize.height/2; 
   aRect.size.height = titleSize.height;
+  // TESTPLANT-MAL-12282016: Keeping branch code...
   aString = [self _resizeAttributedString:aString forRect:aRect];
   
+  // TESTPLANT-MAL-12282016: Keeping branch code...
   [aString drawWithRect: aRect options: NSStringDrawingUsesLineFragmentOrigin];
 }
 
@@ -3163,6 +3182,7 @@ static NSColor *dtxtCol;
    */
   cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
   cellFrame.size.height = titleSize.height;
+  // TESTPLANT-MAL-12282016: Keeping branch code...
   aString = [self _resizeDrawString:aString withAttrbutes:attributes forRect:cellFrame];
   
   [aString drawInRect: cellFrame  withAttributes: attributes];
@@ -3187,6 +3207,7 @@ static NSColor *dtxtCol;
 }
 
 // Private helper method
+// TESTPLANT-MAL-12282016: Keeping branch code...
 - (void) _drawFocusRingWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   BOOL inFocus = NO;
