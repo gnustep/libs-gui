@@ -1,6 +1,6 @@
 /** <title>NSMenu</title>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999,2016 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: Aug 2001
@@ -746,7 +746,7 @@ static BOOL menuBarVisible = YES;
   
   // Create the notification for the menu representation.
   d = [NSDictionary
-	  dictionaryWithObject: [NSNumber numberWithInt: index]
+	  dictionaryWithObject: [NSNumber numberWithInteger: index]
 	  forKey: @"NSMenuItemIndex"];
   inserted = [NSNotification
 		 notificationWithName: NSMenuDidAddItemNotification
@@ -796,7 +796,7 @@ static BOOL menuBarVisible = YES;
 
 - (void) removeItem: (id <NSMenuItem>)anItem
 {
-  int index = [self indexOfItem: anItem];
+  NSInteger index = [self indexOfItem: anItem];
 
   if (-1 == index)
     return;
@@ -818,7 +818,7 @@ static BOOL menuBarVisible = YES;
   _menu.needsSizing = YES;
   [(NSMenuView*)_view setNeedsSizing: YES];
   
-  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
+  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInteger: index]
 		    forKey: @"NSMenuItemIndex"];
   removed = [NSNotification
 		notificationWithName: NSMenuDidRemoveItemNotification
@@ -844,7 +844,7 @@ static BOOL menuBarVisible = YES;
   _menu.needsSizing = YES;
   [(NSMenuView*)_view setNeedsSizing: YES];
 
-  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
+  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInteger: index]
 		    forKey: @"NSMenuItemIndex"];
   changed = [NSNotification
 	      notificationWithName: NSMenuDidChangeItemNotification
@@ -866,8 +866,8 @@ static BOOL menuBarVisible = YES;
  */
 - (id <NSMenuItem>) itemWithTag: (NSInteger)aTag
 {
-  unsigned i;
-  unsigned count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -881,8 +881,8 @@ static BOOL menuBarVisible = YES;
 
 - (id <NSMenuItem>) itemWithTitle: (NSString*)aString
 {
-  unsigned i;
-  unsigned count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -951,8 +951,8 @@ static BOOL menuBarVisible = YES;
 - (NSInteger) indexOfItemWithTarget: (id)anObject
 		    andAction: (SEL)actionSelector
 {
-  unsigned i;
-  unsigned count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -973,7 +973,8 @@ static BOOL menuBarVisible = YES;
 
 - (NSInteger) indexOfItemWithRepresentedObject: (id)anObject
 {
-  NSInteger i, count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -989,7 +990,8 @@ static BOOL menuBarVisible = YES;
 
 - (NSInteger) indexOfItemWithSubmenu: (NSMenu *)anObject
 {
-  NSInteger i, count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   for (i = 0; i < count; i++)
     {
@@ -1083,15 +1085,40 @@ static BOOL menuBarVisible = YES;
   return _menu.autoenable;
 }
 
+- (void) _updateSubmenu
+{
+  if ([self isAttached] || [self isTornOff])
+    {
+      // Update the menu items when the menu is visible...
+      [self update];
+    }
+  else
+    {
+      // ...else only progress to submenus
+      NSUInteger i;
+      NSUInteger count = [_items count];
+
+      for (i = 0; i < count; i++)
+        {
+          NSMenuItem *item = [_items objectAtIndex: i];
+          
+          if ([item hasSubmenu])
+            {
+              [[item submenu] _updateSubmenu];
+            }
+        }
+    }
+}
+
 - (void) update
 {
   if (_delegate)
     {
-      if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
+      if ([_delegate respondsToSelector: @selector(menuNeedsUpdate:)])
         {
-          [_delegate menuNeedsUpdate:self];
+          [_delegate menuNeedsUpdate: self];
         }
-      else if ([_delegate respondsToSelector:@selector(numberOfItemsInMenu:)])
+      else if ([_delegate respondsToSelector: @selector(numberOfItemsInMenu:)])
         {
           NSInteger num;
 
@@ -1133,9 +1160,8 @@ static BOOL menuBarVisible = YES;
 
   if ([self autoenablesItems])
     {
-      unsigned i, count;
-
-      count = [_items count];  
+      NSUInteger i;
+      NSUInteger count = [_items count];
       
       // Temporary disable automatic displaying of menu.
       [self setMenuChangedMessagesEnabled: NO];
@@ -1150,9 +1176,10 @@ static BOOL menuBarVisible = YES;
 	      BOOL	      wasEnabled = [item isEnabled];
 	      BOOL	      shouldBeEnabled;
 
-	      // Update the submenu items if any.
 	      if ([item hasSubmenu])
-	        [[item submenu] update];
+                {
+                  [[item submenu] _updateSubmenu];
+                }
 
 	      // If there is no action - there can be no validator for the item.
 	      if (action)
@@ -1239,12 +1266,12 @@ static BOOL menuBarVisible = YES;
 //
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  unsigned      i;
-  unsigned      count = [_items count];
-  NSEventType   type = [theEvent type];
-  unsigned int modifiers = [theEvent modifierFlags];
-  NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
-  unsigned int relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+  NSUInteger i;
+  NSUInteger count = [_items count];
+  NSEventType type = [theEvent type];
+  NSUInteger modifiers = [theEvent modifierFlags];
+  NSString *keyEquivalent = [theEvent charactersIgnoringModifiers];
+  NSUInteger relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
   /* Take shift key into account only for control keys and arrow and function keys */
   if ((modifiers & NSFunctionKeyMask)
       || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
@@ -1272,7 +1299,6 @@ static BOOL menuBarVisible = YES;
 	  // menus so that users don't get confused.
 	  if ([item submenu] == [NSApp servicesMenu])
 	    continue;
-	  // Recurse through submenus whether active or not.
           // Recurse through submenus whether active or not.
           if ([[item submenu] performKeyEquivalent: theEvent])
             {
@@ -1282,7 +1308,7 @@ static BOOL menuBarVisible = YES;
         }
       else
         {
-          unsigned int mask = [item keyEquivalentModifierMask];
+          NSUInteger mask = [item keyEquivalentModifierMask];
 
           if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
             && (modifiers & relevantModifiersMask) == (mask & relevantModifiersMask))
@@ -1614,7 +1640,8 @@ static BOOL menuBarVisible = YES;
   NSString	*dName;
   NSArray	*dItems;
   BOOL		dAuto;
-  unsigned	i;
+  NSUInteger i;
+  NSUInteger count;
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -1658,9 +1685,10 @@ static BOOL menuBarVisible = YES;
   /*
    * Make sure that items and submenus are set correctly.
    */
-  for (i = 0; i < [dItems count]; i++)
+  count = [dItems count];
+  for (i = 0; i < count; i++)
     {
-      NSMenuItem	*item = [dItems objectAtIndex: i];
+      NSMenuItem *item = [dItems objectAtIndex: i];
       [self addItem: item];
     }
   [self setMenuChangedMessagesEnabled: YES];
@@ -1709,8 +1737,8 @@ static BOOL menuBarVisible = YES;
 - (id) copyWithZone: (NSZone*)zone
 {
   NSMenu *new = [[NSMenu allocWithZone: zone] initWithTitle: _title];
-  unsigned i;
-  unsigned count = [_items count];
+  NSUInteger i;
+  NSUInteger count = [_items count];
 
   [new setAutoenablesItems: _menu.autoenable];
   for (i = 0; i < count; i++)
@@ -1730,7 +1758,7 @@ static BOOL menuBarVisible = YES;
 
 - (void) setTornOff: (BOOL)flag
 {
-  NSMenu	*supermenu;
+  NSMenu *supermenu;
 
   _menu.is_tornoff = flag; 
 
@@ -1788,7 +1816,7 @@ static BOOL menuBarVisible = YES;
     {
       [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
     }
-  [self _showTornOffMenuIfAny:notification];
+  [self _showTornOffMenuIfAny: notification];
 }
 
 - (void) _showOnActivateApp: (NSNotification*)notification
