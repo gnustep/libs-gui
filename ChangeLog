@@ -1,3 +1,9 @@
+2017-01-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-_isVisible, -_isMain): Add two helper
+	methods. And make sure we update the menu items before display and
+	keyEquivalent processing.
+
 2016-12-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-update): Update only visible submenus.

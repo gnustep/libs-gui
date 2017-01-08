@@ -144,6 +144,8 @@ static BOOL menuBarVisible = YES;
 - (void) _setGeometry;
 - (void) _updateUserDefaults: (id) notification;
 - (void) _organizeMenu;
+- (BOOL) _isVisible;
+- (BOOL) _isMain;
 
 @end
 
@@ -157,9 +159,7 @@ static BOOL menuBarVisible = YES;
 - (BOOL) canBecomeKeyWindow
 {
   /* See [NSWindow-_lossOfKeyOrMainWindow] */
-  if (self == (NSMenuPanel *)[[NSApp mainMenu] window])
-    return YES;
-  return NO;
+  return [_the_menu _isMain];
 }
 
 - (void) orderFrontRegardless
@@ -199,7 +199,7 @@ static BOOL menuBarVisible = YES;
     }
   if (_superMenu == nil)
     {
-      if ([NSApp mainMenu] == self)
+      if ([self _isMain])
 	{
 	  return @"\033";	/* Root menu.	*/
 	}
@@ -260,7 +260,7 @@ static BOOL menuBarVisible = YES;
   NSString *servicesString = _(@"Services");
   int i;
 
-  if ([self isEqual: [NSApp mainMenu]] == YES)
+  if ([self _isMain])
     {
       NSString *appTitle;
       NSMenu *appMenu;
@@ -537,7 +537,7 @@ static BOOL menuBarVisible = YES;
             menuLocations = nil;
 
           if ([_aWindow isVisible]
-              && ([self isTornOff] || ([NSApp mainMenu] == self)))
+              && ([self isTornOff] || ([self _isMain])))
             {
               if (menuLocations == nil)
                 {
@@ -570,6 +570,16 @@ static BOOL menuBarVisible = YES;
 {
   [[GSTheme theme] rightMouseDisplay: self
 			    forEvent: theEvent];
+}
+
+- (BOOL) _isVisible
+{
+  return [_aWindow isVisible] || [_bWindow isVisible];
+}
+
+- (BOOL) _isMain
+{
+  return [NSApp mainMenu] == self;
 }
 
 @end
@@ -712,7 +722,7 @@ static BOOL menuBarVisible = YES;
  - (void) menuChanged
 {
   // propagate notification up to the main menu
-  if (self == [NSApp mainMenu])
+  if ([self _isMain])
     _menu.mainMenuChanged = YES;
   else
     [[self supermenu] menuChanged];
@@ -1087,7 +1097,7 @@ static BOOL menuBarVisible = YES;
 
 - (void) _updateSubmenu
 {
-  if ([self isAttached] || [self isTornOff])
+  if ([self _isVisible])
     {
       // Update the menu items when the menu is visible...
       [self update];
@@ -1252,7 +1262,7 @@ static BOOL menuBarVisible = YES;
       _menu.mainMenuChanged = NO;
     }
 
-  if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
+  if (_menu.needsSizing && [self _isVisible])
     {
       NSDebugLLog (@"NSMenu", @" Calling Size To Fit (A)");
       [self sizeToFit];
@@ -1272,14 +1282,21 @@ static BOOL menuBarVisible = YES;
   NSUInteger modifiers = [theEvent modifierFlags];
   NSString *keyEquivalent = [theEvent charactersIgnoringModifiers];
   NSUInteger relevantModifiersMask = NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask;
+
+  if ((type != NSKeyDown && type != NSKeyUp) || [keyEquivalent length] == 0)
+    return NO;
+             
   /* Take shift key into account only for control keys and arrow and function keys */
   if ((modifiers & NSFunctionKeyMask)
       || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
     relevantModifiersMask |= NSShiftKeyMask;
 
-  if ((type != NSKeyDown && type != NSKeyUp) || [keyEquivalent length] == 0)
-    return NO;
-             
+  if (![self _isVisible])
+    {
+      // Need to enable items as the automatic mechanism is switched off for invisible menus 
+      [self update];
+    }
+  
   for (i = 0; i < count; i++)
     {
       NSMenuItem *item = [_items objectAtIndex: i];
@@ -1377,7 +1394,7 @@ static BOOL menuBarVisible = YES;
 
   _menu.needsSizing = YES;
   [(NSMenuView*)_view setNeedsSizing: YES];
-  if ([_aWindow isVisible] || [_bWindow isVisible])
+  if ([self _isVisible])
     {
       [self sizeToFit];
     }
@@ -1618,8 +1635,7 @@ static BOOL menuBarVisible = YES;
       [encoder encodeObject: _title forKey: @"NSTitle"];
       [encoder encodeObject: _items forKey: @"NSMenuItems"];
       
-      // if there is no supermenu, make it the main menu.
-      if ([self supermenu] == nil && ![self _ownedByPopUp])
+      if ([self _isMain])
 	{
 	  [encoder encodeObject: @"_NSMainMenu" forKey: @"NSName"];
 	}
@@ -1782,7 +1798,7 @@ static BOOL menuBarVisible = YES;
     {
       return;
     }
-  if ([NSApp mainMenu] != self)
+  if (![self _isMain])
     {
       NSString		*key;
 
@@ -1821,7 +1837,7 @@ static BOOL menuBarVisible = YES;
 
 - (void) _showOnActivateApp: (NSNotification*)notification
 {
-  if ([NSApp mainMenu] == self)
+  if ([self _isMain])
   {
     [self display];
     // we must make sure that any attached submenu is visible too.
@@ -1861,6 +1877,7 @@ static BOOL menuBarVisible = YES;
                    @"trying to display while already displayed transient");
     }
 
+  [self update];
   if (_menu.needsSizing)
     {
       [self sizeToFit];
@@ -2138,7 +2155,7 @@ static BOOL menuBarVisible = YES;
   // Don't move the main menu bar in Macintosh interface style, this is
   // annoying (in particular, since the effective screen range is reduced
   // by the height of the menu bar!)
-  if (style == NSMacintoshInterfaceStyle && [self isEqual: [NSApp mainMenu]])
+  if (style == NSMacintoshInterfaceStyle && [self _isMain])
     return;
 
   // 1 - determine the amount we need to shift in the y direction.
