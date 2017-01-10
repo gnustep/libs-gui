@@ -112,7 +112,7 @@ static NSImage *unexpandable  = nil;
                               row: (int)index;
 - (void) _setObjectValue: (id)value
           forTableColumn: (NSTableColumn *)tb
-                     row: (int) index;
+                     row: (NSInteger) index;
 // Testplant-MAL-2015-07-01: _numOfRows omitted due to NSTableView 
 // numberOfRows changes to match Cocoa processing sequence...
 @end
@@ -1929,7 +1929,7 @@ Also returns the child index relative to this parent. */
 
 - (void) _setObjectValue: (id)value
           forTableColumn: (NSTableColumn *)tb
-                     row: (int) index
+                     row: (NSInteger) index
 {
   if ([_dataSource respondsToSelector:
     @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
