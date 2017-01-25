@@ -1471,7 +1471,7 @@ systemColorWithName(NSString *name)
               RELEASE(scanner);
               RELEASE(str);
             }
-          
+
           if (colorSpace == 1)
             {
               self = RETAIN([NSColor colorWithCalibratedRed: red
@@ -1873,7 +1873,7 @@ systemColorWithName(NSString *name)
     }
   NSAssert([[list name] isEqual: @"System"], NSInvalidArgumentException);
   [NSColorList _setThemeSystemColorList: list];
-
+  
   /* We always update the system dictionary and send a notification, since
    * the theme may have given us a pre-existing color list, but have changed
    * one or more of the colors in it.
@@ -1909,7 +1909,7 @@ static	NSRecursiveLock     *namedColorLock = nil;
 }
 
 - (NSColor*) initWithCatalogName: (NSString *)listName
-		       colorName: (NSString *)colorName
+                       colorName: (NSString *)colorName
 {
   NSMutableDictionary	*d;
   NSColor		*c;
@@ -2018,7 +2018,7 @@ static	NSRecursiveLock     *namedColorLock = nil;
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
-			       device: (NSDictionary *)deviceDescription
+                               device: (NSDictionary *)deviceDescription
 {
   NSColorList	*list;
   NSColor	*real;
@@ -2096,13 +2096,22 @@ static	NSRecursiveLock     *namedColorLock = nil;
     {
       listName               = [aDecoder decodeObjectForKey: @"NSCatalogName"];
       colorName              = [aDecoder decodeObjectForKey: @"NSColorName"];
-      NSColor     *color     = (NSColor*)[aDecoder decodeObjectForKey: @"NSColor"];
       NSColorList *colorList = [NSColorList colorListNamed: listName];
-      
-      if ([colorList colorWithKey:colorName] == nil)
+      NSColor     *color     = (NSColor*)[colorList colorWithKey:colorName];
+
+      if (color == nil)
         {
-          NSWarnMLog(@"adding to color list: %@ name: %@ color: %@", listName, colorName, color);
-          [[NSColorList colorListNamed:listName] setColor:color forKey:colorName];
+          color = [aDecoder decodeObjectForKey: @"NSColor"];
+          if (color == nil)
+            {
+              NSWarnMLog(@"no color available for listName: %@ colorName: %@ color: %@", listName, colorName, color);
+              [[NSColorList colorListNamed: listName] setColor: [NSColor redColor] forKey: colorName];
+            }
+          else
+            {
+              NSWarnMLog(@"adding to color list: %@ colorName: %@ color: %@", listName, colorName, color);
+              [[NSColorList colorListNamed: listName] setColor: color forKey: colorName];
+            }
         }
     }
   else

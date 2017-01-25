@@ -84,35 +84,6 @@ static NSInteger currentDropRow;
 static NSInteger lastQuarterPosition;
 static NSDragOperation currentDragOperation;
 
-/*
- * Nib compatibility struct.  This structure is used to 
- * pull the attributes out of the nib that we need to fill
- * in the flags.
- */
-typedef struct _tableViewFlags
-{
-#if GS_WORDS_BIGENDIAN == 1
-  unsigned int columnOrdering:1;
-  unsigned int columnResizing:1;
-  unsigned int drawsGrid:1;
-  unsigned int emptySelection:1;
-  unsigned int multipleSelection:1;
-  unsigned int columnSelection:1;
-  unsigned int columnAutosave:1;
-  unsigned int _unused:24;
-#else
-  unsigned int _unused:24;
-  unsigned int columnAutosave:1;
-  unsigned int unknown1:1;
-  unsigned int columnSelection:1;
-  unsigned int multipleSelection:1;
-  unsigned int emptySelection:1;
-  unsigned int drawsGrid:1;
-  unsigned int columnResizing:1;
-  unsigned int columnOrdering:1;
-#endif
-} GSTableViewFlags;
-
 #define ALLOWS_MULTIPLE (1)
 #define ALLOWS_EMPTY (1 << 1)
 #define SHIFT_DOWN (1 << 2)
@@ -2019,7 +1990,7 @@ static void computeNewSelection
 {
   _isValidating     = NO;
   _drawsGrid        = YES;
-  _rowHeight        = 16.0;
+  _rowHeight        = 17.0; // XIB 5 defaults to 17 so we'll use that...
   _intercellSpacing = NSMakeSize (5.0, 2.0);
   ASSIGN(_selectedColumns, [NSMutableIndexSet indexSet]);
   ASSIGN(_selectedRows, [NSMutableIndexSet indexSet]);

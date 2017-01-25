@@ -267,6 +267,11 @@ static CGFloat scrollerWidth;
 
       [_contentView removeFromSuperview];
       [self addSubview: aView];
+
+      // Testplant-MAL-01092017: XIB 5 support...
+      if (_headerClipView && ([[self subviews] count] == 1))
+        [self addSubview: _headerClipView];
+
       // This must be done after adding it as a subview,
       // otherwise it will get unset again.
       _contentView = aView;
@@ -1686,13 +1691,13 @@ GSOppositeEdge(NSRectEdge edge)
       if (hScroller != nil && _hasHorizScroller)
         {
           [self setHorizontalScroller: hScroller];
-	  [hScroller setHidden: NO];
+          [hScroller setHidden: NO];
         }
 
       if (vScroller != nil && _hasVertScroller)
         {
           [self setVerticalScroller: vScroller];
-	  [vScroller setHidden: NO];
+          [vScroller setHidden: NO];
         }
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
@@ -1700,7 +1705,7 @@ GSOppositeEdge(NSRectEdge edge)
           _hasHeaderView = YES;
           _headerClipView = [aDecoder decodeObjectForKey: @"NSHeaderClipView"];
         }
-
+      
       // set the document view into the content.
       [self setContentView: content];
       [self tile];

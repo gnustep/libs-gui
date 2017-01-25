@@ -52,6 +52,7 @@
 
 #import "GNUstepGUI/GSNibLoading.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSFontManager.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenuView.h"
@@ -339,6 +340,10 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   if ([coder allowsKeyedCoding])
     {
+      _windowStyle = 0;
+      _viewClass = @"NSView";
+      _windowClass = @"NSWindow";
+      
       if ([coder containsValueForKey: @"NSViewClass"])
         {
           ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
@@ -346,6 +351,10 @@ static BOOL _isInInterfaceBuilder = NO;
       if ([coder containsValueForKey: @"NSWindowClass"])
         {
           ASSIGN(_windowClass, [coder decodeObjectForKey: @"NSWindowClass"]);
+        }
+      else
+        {
+          ASSIGN(_windowClass, @"NSWindow");
         }
       if ([coder containsValueForKey: @"NSWindowStyleMask"])
         {
@@ -401,7 +410,7 @@ static BOOL _isInInterfaceBuilder = NO;
         }
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
-	  ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
+          ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
         }
       if ([coder containsValueForKey: @"NSWindowTitle"])
         {
@@ -467,12 +476,11 @@ static BOOL _isInInterfaceBuilder = NO;
                        format: @"Unable to find class '%@'", _windowClass];
         }
       
-      _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
-                      initWithContentRect: _windowRect
-                      styleMask: _windowStyle
-                      backing: _backingStoreType
-                      defer: _flags.isDeferred];
-      
+      _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithContentRect: _windowRect
+                                                                             styleMask: _windowStyle
+                                                                               backing: _backingStoreType
+                                                                                 defer: _flags.isDeferred];
+
       // set flags...
       [_realObject setHidesOnDeactivate: _flags.isHiddenOnDeactivate];
       [_realObject setReleasedWhenClosed: !(_flags.isNotReleasedOnClose)];
@@ -493,10 +501,10 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setTitle: _title];
 
       if ([_viewClass isKindOfClass: [NSToolbar class]])
-	{
+        {
           // FIXME: No idea what is going on here
-	  [_realObject setToolbar: (NSToolbar*)_viewClass];
-	}
+          [_realObject setToolbar: (NSToolbar*)_viewClass];
+        }
 	  
       [_realObject setContentMinSize: _minSize];
       [_realObject setContentMaxSize: _maxSize];
@@ -506,11 +514,11 @@ static BOOL _isInInterfaceBuilder = NO;
       // FIXME What is the point of calling -setFrame:display: here? It looks
       // like an effective no op to me.
       // resize the window...
-      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
-                                       styleMask: [self windowStyle]]
+      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect]
+                                                     styleMask: [self windowStyle]]
                    display: NO];
       [_realObject setFrameAutosaveName: _autosaveName];
-    } 
+    }
   return _realObject;
 }
 
@@ -914,6 +922,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSCustomObject
+
 - (void) setClassName: (NSString *)name
 {
   ASSIGNCOPY(_className, name);
@@ -999,16 +1008,22 @@ static BOOL _isInInterfaceBuilder = NO;
                        format: @"Unable to find class '%@'", _className];
         }
 
-      if (GSObjCIsKindOf(aClass, [NSApplication class]) || 
-	 [_className isEqual: @"NSApplication"])
-	{
-	  _object = RETAIN([aClass sharedApplication]);
-	}
+      if ((GSObjCIsKindOf(aClass, [NSApplication class])) ||
+          ([_className isEqual: @"NSApplication"]))
+        {
+          _object = RETAIN([aClass sharedApplication]);
+        }
+      else if ((GSObjCIsKindOf(aClass, [NSFontManager class])) ||
+               ([_className isEqual: @"NSFontManager"]))
+        {
+          _object = RETAIN([aClass sharedFontManager]);
+        }
       else
-	{
-	  _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
-	}      
+        {
+          _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+        }
     }
+
   return _object;
 }
 

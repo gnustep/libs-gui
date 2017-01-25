@@ -555,11 +555,12 @@
         }
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-          int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+          GSTabViewTypeFlagsUnion mask;
+          mask.value = [aDecoder decodeIntForKey: @"NSTvFlags"];
 
-          [self setControlTint: ((vFlags & 0x70000000) >> 28)];
-          [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
-          [self setTabViewType: (vFlags & 0x00000007)];
+          [self setControlTint: mask.flags.controlTint];
+          [self setControlSize: mask.flags.controlSize];
+          [self setTabViewType: mask.flags.tabViewBorderType];
         }
       if ([aDecoder containsValueForKey: @"NSTabViewItems"])
         {

@@ -90,6 +90,35 @@ typedef enum _NSTableViewAnimationOptions
 } NSTableViewAnimationOptions;
 #endif
 
+/*
+ * Nib compatibility struct.  This structure is used to
+ * pull the attributes out of the nib that we need to fill
+ * in the flags.
+ */
+typedef struct _tableViewFlags
+{
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int columnOrdering:1;
+  unsigned int columnResizing:1;
+  unsigned int drawsGrid:1;
+  unsigned int emptySelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int columnSelection:1;
+  unsigned int columnAutosave:1;
+  unsigned int _unused:24;
+#else
+  unsigned int _unused:24;
+  unsigned int columnAutosave:1;
+  unsigned int unknown1:1;
+  unsigned int columnSelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int emptySelection:1;
+  unsigned int drawsGrid:1;
+  unsigned int columnResizing:1;
+  unsigned int columnOrdering:1;
+#endif
+} GSTableViewFlags;
+
 
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
 {

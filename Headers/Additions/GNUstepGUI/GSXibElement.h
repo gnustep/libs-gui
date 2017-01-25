@@ -38,7 +38,7 @@
 @interface GSXibElement: NSObject
 {
   NSString *type;
-  NSDictionary *attributes;
+  NSMutableDictionary *attributes;
   NSString *value;
   NSMutableDictionary *elements;
   NSMutableArray *values;
@@ -60,3 +60,6 @@
 
 #endif
 
+@interface GSXib5Element : GSXibElement
+- (void) setAttribute: (id)attribute forKey: (NSString*)key;
+@end

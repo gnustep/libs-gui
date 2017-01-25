@@ -34,11 +34,11 @@
 
 @implementation GSXibElement
 
-- (GSXibElement*) initWithType: (NSString*)typeName 
-               andAttributes: (NSDictionary*)attribs
+- (GSXibElement*) initWithType: (NSString*)typeName
+                 andAttributes: (NSDictionary*)attribs
 {
   ASSIGN(type, typeName);
-  ASSIGN(attributes, attribs);
+  ASSIGN(attributes, AUTORELEASE([attribs mutableCopy]));
   elements = [[NSMutableDictionary alloc] init];
   values = [[NSMutableArray alloc] init];
 
@@ -114,3 +114,11 @@
 
 @end
 
+@implementation GSXib5Element
+
+- (void) setAttribute: (id)attribute forKey: (NSString*)key
+{
+  [attributes setObject:attribute forKey:key];
+}
+
+@end

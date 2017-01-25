@@ -163,6 +163,184 @@ enum {
 };
 typedef NSInteger NSBackgroundStyle;
 
+enum __NSControlSize {
+  NSControlSizeRegular,
+  NSControlSizeSmall,
+  NSControlSizeMini
+};
+
+typedef struct _GSCellFlags {
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int        state:1;
+  unsigned int        highlighted:1;
+  unsigned int        disabled:1;
+  unsigned int        editable:1;
+  
+  NSCellType          type:2;
+  unsigned int        vCentered:1;
+  unsigned int        hCentered:1;
+  
+  unsigned int        bordered:1;
+  unsigned int        bezeled:1;
+  unsigned int        selectable:1;
+  unsigned int        scrollable:1;
+  
+  unsigned int        continuous:1;
+  unsigned int        actOnMouseDown:1;
+  unsigned int        isLeaf:1;
+  unsigned int        invalidObjectValue:1;
+  
+  unsigned int        invalidFont:1;
+  NSLineBreakMode     lineBreakMode:3;
+  
+  unsigned int        weakTargetHelperFlag:1;
+  unsigned int        allowsAppearanceEffects:1;
+  unsigned int        singleLineMode:1;
+  unsigned int        actOnMouseDragged:1;
+  
+  unsigned int        isLoaded:1;
+  unsigned int        truncateLastLine:1;
+  unsigned int        dontActOnMouseUp:1;
+  unsigned int        isWhite:1;
+  
+  unsigned int        useUserKeyEquivalent:1;
+  unsigned int        showsFirstResponder:1;
+  unsigned int        focusRingType:2;
+  
+#if 0 // FROM COCOA...
+  // 32 BIT BREAK
+  unsigned int        wasSelectable:1;
+  unsigned int        hasInvalidObject:1;
+  unsigned int        allowsEditingTextAttributes:1;
+  unsigned int        importsGraphics:1;
+  NSTextAlignment     alignment:3;
+  unsigned int        layoutDirectionRTL:1;
+  unsigned int        backgroundStyle:3;
+  unsigned int        cellReserved2:4;
+  unsigned int        refusesFirstResponder:1;
+  unsigned int        needsHighlightedText:1;
+  unsigned int        dontAllowsUndo:1;
+  unsigned int        currentlyEditing:1;
+  unsigned int        allowsMixedState:1;
+  unsigned int        inMixedState:1;
+  unsigned int        sendsActionOnEndEditing:1;
+  unsigned int        inSendAction:1;
+  unsigned int        menuWasSet:1;
+  unsigned int        controlTint:3;
+  unsigned int        controlSize:2;
+  unsigned int        branchImageDisabled:1;
+  unsigned int        drawingInRevealover:1;
+  unsigned int        needsHighlightedTextHint:1;
+#endif
+#else
+#if 0 // FROM COCOA...
+  unsigned int        needsHighlightedTextHint:1;
+  unsigned int        drawingInRevealover:1;
+  unsigned int        branchImageDisabled:1;
+  unsigned int        controlSize:2;
+  unsigned int        controlTint:3;
+  unsigned int        menuWasSet:1;
+  unsigned int        inSendAction:1;
+  unsigned int        sendsActionOnEndEditing:1;
+  unsigned int        inMixedState:1;
+  unsigned int        allowsMixedState:1;
+  unsigned int        currentlyEditing:1;
+  unsigned int        dontAllowsUndo:1;
+  unsigned int        needsHighlightedText:1;
+  unsigned int        refusesFirstResponder:1;
+  unsigned int        cellReserved2:4;
+  unsigned int        backgroundStyle:3;
+  unsigned int        layoutDirectionRTL:1;
+  NSTextAlignment     alignment:3;
+  unsigned int        importsGraphics:1;
+  unsigned int        allowsEditingTextAttributes:1;
+  unsigned int        hasInvalidObject:1;
+  unsigned int        wasSelectable:1;
+  // 32 BIT BREAK
+#endif
+  
+  unsigned int        focusRingType:2;
+  unsigned int        showsFirstResponder:1;
+  unsigned int        useUserKeyEquivalent:1;
+  unsigned int        isWhite:1;
+  unsigned int        dontActOnMouseUp:1;
+  unsigned int        truncateLastLine:1;
+  unsigned int        isLoaded:1;
+  unsigned int        actOnMouseDragged:1;
+  unsigned int        singleLineMode:1;
+  unsigned int        allowsAppearanceEffects:1;
+  unsigned int        weakTargetHelperFlag:1;
+  NSLineBreakMode     lineBreakMode:3;
+  unsigned int        invalidFont:1;
+  unsigned int        invalidObjectValue:1;
+  unsigned int        isLeaf:1;
+  unsigned int        actOnMouseDown:1;
+  unsigned int        continuous:1;
+  unsigned int        scrollable:1;
+  unsigned int        selectable:1;
+  unsigned int        bezeled:1;
+  unsigned int        bordered:1;
+  unsigned int        hCentered:1;
+  unsigned int        vCentered:1;
+  NSCellType          type:2;
+  unsigned int        editable:1;
+  unsigned int        disabled:1;
+  unsigned int        highlighted:1;
+  unsigned int        state:1;
+#endif
+} GSCellFlags;
+
+typedef union _GSCellFlagsUnion
+{
+  GSCellFlags flags;
+  uint32_t    value;
+} GSCellFlagsUnion;
+
+typedef struct _GSCellflags2
+{
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int unused1:1;
+  unsigned int allowsEditingTextAttributes:1;
+  unsigned int importsGraphics:1;
+  unsigned int alignment:3;
+  unsigned int refusesFirstResponder:1;
+  unsigned int allowsMixedState:1;
+  unsigned int unused2:1;
+  unsigned int sendsActionOnEndEditing:1;
+  unsigned int unused3:2;
+  unsigned int controlSize:3;
+  unsigned int unused4:4;
+  unsigned int doesNotAllowUndo:1;
+  unsigned int lineBreakMode:3;
+  unsigned int unused5:1;
+  unsigned int controlTint:3;
+  unsigned int unused6:5;
+#else
+  unsigned int unused6:5;
+  unsigned int controlTint:3;
+  unsigned int unused5:1;
+  unsigned int lineBreakMode:3;
+  unsigned int doesNotAllowUndo:1;
+  unsigned int unused4:4;
+  unsigned int controlSize:3;
+  unsigned int unused3:2;
+  unsigned int sendsActionOnEndEditing:1;
+  unsigned int unused2:1;
+  unsigned int allowsMixedState:1;
+  unsigned int refusesFirstResponder:1;
+  unsigned int alignment:3;
+  unsigned int importsGraphics:1;
+  unsigned int allowsEditingTextAttributes:1;
+  unsigned int unused1:1;
+#endif
+} GSCellFlags2;
+
+typedef union _GSCellFlags2Union
+{
+  GSCellFlags2 flags;
+  uint32_t     value;
+} GSCellFlags2Union;
+
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
@@ -170,7 +348,7 @@ typedef NSInteger NSBackgroundStyle;
   NSImage *_cell_image;
   NSFont *_font;
   id _object_value;
-  struct GSCellFlagsType { 
+  struct GSCellFlagsType {
     // total 32 bits.  0 bits left.
     unsigned contents_is_attributed_string: 1;
     unsigned is_highlighted: 1;

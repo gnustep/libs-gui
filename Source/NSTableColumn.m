@@ -311,7 +311,11 @@ Return the resizing mask that describes whether the column is resizable and how
 it resizes. */
 - (void) setResizingMask: (NSUInteger)resizingMask
 {
-  _resizing_mask = resizingMask;
+  if (_resizing_mask != resizingMask)
+    {
+      _resizing_mask = resizingMask;
+      [self setResizable:(_resizing_mask & NSTableColumnUserResizingMask ? YES : NO)];
+    }
 }
 
 /**

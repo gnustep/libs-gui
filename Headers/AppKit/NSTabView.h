@@ -45,6 +45,31 @@ typedef enum {
 @class NSFont;
 @class NSTabViewItem;
 
+typedef struct _GSTabViewTypeFlags
+{
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int reserved1:1;
+  unsigned int controlTint:3;
+  unsigned int controlSize:2;
+  unsigned int reserved2:18;
+  unsigned int tabPosition:5;
+  unsigned int tabViewBorderType:3;
+#else
+  unsigned int tabViewBorderType:3;
+  unsigned int tabPosition:5;
+  unsigned int reserved2:18;
+  unsigned int controlSize:2;
+  unsigned int controlTint:3;
+  unsigned int reserved1:1;
+#endif
+} GSTabViewTypeFlags;
+
+typedef union _GSTabViewTypeFlagsUnion
+{
+  GSTabViewTypeFlags flags;
+  unsigned int       value;
+} GSTabViewTypeFlagsUnion;
+
 @interface NSTabView : NSView <NSCoding>
 {
   NSMutableArray *_items;

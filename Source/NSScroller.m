@@ -249,23 +249,26 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
   if ([aDecoder allowsKeyedCoding])
     {
+      // Set default action - overridden by XIB when changed...
+      [self setAction: NSSelectorFromString(@"_doScroller:")];
+      
       if (_frame.size.width > _frame.size.height)
         {
-	  _scFlags.isHorizontal = YES;
-	}
+          _scFlags.isHorizontal = YES;
+        }
       else
         {
-	  _scFlags.isHorizontal = NO;
-	}
+          _scFlags.isHorizontal = NO;
+        }
 
       if (_scFlags.isHorizontal)
         {
-	  _doubleValue = 0.0;
-	}
+          _doubleValue = 0.0;
+        }
       else
         {
-	  _doubleValue = 1.0;
-	}
+          _doubleValue = 1.0;
+        }
 
       if ([aDecoder containsValueForKey: @"NSAction"])
         {
@@ -282,32 +285,32 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
         }
       if ([aDecoder containsValueForKey: @"NSCurValue"])
         {
-	  float value = [aDecoder decodeFloatForKey: @"NSCurValue"];
+          float value = [aDecoder decodeFloatForKey: @"NSCurValue"];
           [self setFloatValue: value];
-	}
+        }
       if ([aDecoder containsValueForKey: @"NSPercent"])
         {
-	  float percent = [aDecoder decodeFloatForKey: @"NSPercent"];
+          float percent = [aDecoder decodeFloatForKey: @"NSPercent"];
           [self setKnobProportion: percent / 100.0];
-	}
+        }
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
           int flags;
-
-	  flags = [aDecoder decodeIntForKey: @"NSsFlags"];
-	  // is horiz is set above...
+          
+          flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+          // is horiz is set above...
           [self setControlTint: ((flags >> 16) & 7)];
           [self setArrowsPosition: ((flags >> 29) & 3)];
           _usableParts = ((flags >> 27) & 3);
-	}
+        }
       if ([aDecoder containsValueForKey: @"NSsFlags2"])
         {
           int flags2;
-
-	  flags2 = [aDecoder decodeIntForKey: @"NSsFlags2"];
+          
+          flags2 = [aDecoder decodeIntForKey: @"NSsFlags2"];
           [self setControlSize: ((flags2 >> 26) & 3)];
-	}
+        }
 
       // setup...
       _hitPart = NSScrollerNoPart;

@@ -38,6 +38,9 @@
 enum {
   NSSplitViewDividerStyleThick = 1,
   NSSplitViewDividerStyleThin = 2,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+  NSSplitViewDividerStylePaneSplitter = 3,
+#endif
 };
 typedef NSInteger NSSplitViewDividerStyle;
 #endif

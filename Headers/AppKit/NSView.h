@@ -96,6 +96,33 @@ typedef enum _NSFocusRingType {
   NSFocusRingTypeExterior = 2
 } NSFocusRingType;
 
+typedef struct _GSvFlags
+{
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int isHidden:1;
+  unsigned int unused1:3;
+  unsigned int unused2:4;
+  unsigned int unused3:4;
+  unsigned int unused4:4;
+  unsigned int unused5:4;
+  unsigned int unused6:3;
+  unsigned int autoresizesSubviews:1;
+  unsigned int unused7:2;
+  unsigned int autoresizingMask:6;
+#else
+  unsigned int autoresizingMask:6;
+  unsigned int unused7:2;
+  unsigned int autoresizesSubviews:1;
+  unsigned int unused6:3;
+  unsigned int unused5:4;
+  unsigned int unused4:4;
+  unsigned int unused3:4;
+  unsigned int unused2:4;
+  unsigned int unused1:3;
+  unsigned int isHidden:1;
+#endif
+} GSvFlags;
+
 @interface NSView : NSResponder
 {
   NSRect _frame;

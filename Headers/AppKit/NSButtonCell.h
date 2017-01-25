@@ -114,6 +114,87 @@ typedef enum _NSGradientType {
     NSGradientConvexStrong
 } NSGradientType;
 
+typedef struct _GSButtonCellFlags
+{
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int isPushin:1;
+  unsigned int changeContents:1;
+  unsigned int changeBackground:1;
+  unsigned int changeGray:1;
+  
+  unsigned int highlightByContents:1;
+  unsigned int highlightByBackground:1;
+  unsigned int highlightByGray:1;
+  unsigned int drawing:1;
+  
+  unsigned int isBordered:1;
+  unsigned int imageDoesOverlap:1;
+  unsigned int isHorizontal:1;
+  unsigned int isBottomOrLeft:1;
+  
+  unsigned int isImageAndText:1;
+  unsigned int isImageSizeDiff:1;
+  unsigned int hasKeyEquiv:1;
+  unsigned int lastState:1;
+  
+  unsigned int isTransparent:1;
+  unsigned int inset:2; // inset:2
+  unsigned int doesNotDimImage:1; //doesn't dim:1
+  
+  unsigned int gradient:3; // gradient:3
+  unsigned int useButtonImageSource:1;
+  
+  unsigned int unused2:8; // alt mnemonic loc.
+#else
+  unsigned int unused2:8; // alt mnemonic loc.
+  unsigned int useButtonImageSource:1;
+  unsigned int gradient:3; // gradient:3
+  unsigned int doesNotDimImage:1; // doesn't dim:1
+  unsigned int inset:2; // inset:2
+  unsigned int isTransparent:1;
+  unsigned int lastState:1;
+  unsigned int hasKeyEquiv:1;
+  unsigned int isImageSizeDiff:1;
+  unsigned int isImageAndText:1;
+  unsigned int isBottomOrLeft:1;
+  unsigned int isHorizontal:1;
+  unsigned int imageDoesOverlap:1;
+  unsigned int isBordered:1;
+  unsigned int drawing:1;
+  unsigned int highlightByGray:1;
+  unsigned int highlightByBackground:1;
+  unsigned int highlightByContents:1;
+  unsigned int changeGray:1;
+  unsigned int changeBackground:1;
+  unsigned int changeContents:1;
+  unsigned int isPushin:1;
+#endif
+} GSButtonCellFlags;
+
+typedef struct _GSButtonCellFlags2 {
+#if GS_WORDS_BIGENDIAN == 1
+  unsigned int	keyEquivalentModifierMask:24;
+  unsigned int	imageScaling:2;
+  unsigned int	bezelStyle2:1;
+  unsigned int	mouseInside:1;
+  unsigned int	showsBorderOnlyWhileMouseInside:1;
+  unsigned int	bezelStyle:3;
+#else
+  unsigned int	bezelStyle:3;
+  unsigned int	showsBorderOnlyWhileMouseInside:1;
+  unsigned int	mouseInside:1;
+  unsigned int	bezelStyle2:1;
+  unsigned int	imageScaling:2;
+  unsigned int	keyEquivalentModifierMask:24;
+#endif
+} GSButtonCellFlags2;
+
+@interface NSCell (Private)
+- (NSSize) _scaleImageWithSize: (NSSize)imageSize
+                   toFitInSize: (NSSize)canvasSize
+                   scalingType: (NSImageScaling)scalingType;
+@end
+
 
 @interface NSButtonCell : NSActionCell
 {

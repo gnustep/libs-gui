@@ -59,59 +59,6 @@
 
 #include <math.h>
 
-typedef struct _GSButtonCellFlags 
-{
-#if GS_WORDS_BIGENDIAN == 1
-  unsigned int isPushin:1;
-  unsigned int changeContents:1;
-  unsigned int changeBackground:1;
-  unsigned int changeGray:1;
-  unsigned int highlightByContents:1;
-  unsigned int highlightByBackground:1;
-  unsigned int highlightByGray:1;
-  unsigned int drawing:1;
-  unsigned int isBordered:1;
-  unsigned int imageDoesOverlap:1;
-  unsigned int isHorizontal:1;
-  unsigned int isBottomOrLeft:1;
-  unsigned int isImageAndText:1;
-  unsigned int isImageSizeDiff:1;
-  unsigned int hasKeyEquiv:1;
-  unsigned int lastState:1;
-  unsigned int isTransparent:1;
-  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
-  unsigned int useButtonImageSource:1;
-  unsigned int unused2:8; // alt mnemonic loc.
-#else
-  unsigned int unused2:8; // alt mnemonic loc.
-  unsigned int useButtonImageSource:1;
-  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
-  unsigned int isTransparent:1;
-  unsigned int lastState:1;
-  unsigned int hasKeyEquiv:1;
-  unsigned int isImageSizeDiff:1;
-  unsigned int isImageAndText:1;
-  unsigned int isBottomOrLeft:1;
-  unsigned int isHorizontal:1;
-  unsigned int imageDoesOverlap:1;
-  unsigned int isBordered:1;
-  unsigned int drawing:1;
-  unsigned int highlightByGray:1;
-  unsigned int highlightByBackground:1;
-  unsigned int highlightByContents:1;
-  unsigned int changeGray:1;
-  unsigned int changeBackground:1;
-  unsigned int changeContents:1;
-  unsigned int isPushin:1;
-#endif
-} GSButtonCellFlags;
-
-@interface NSCell (Private)
-- (NSSize) _scaleImageWithSize: (NSSize)imageSize
-                   toFitInSize: (NSSize)canvasSize
-                   scalingType: (NSImageScaling)scalingType;
-@end
-
 /**<p> TODO Description</p>
  */
 @implementation NSButtonCell
@@ -1105,10 +1052,11 @@ typedef struct _GSButtonCellFlags
   // The inside check could also be done via a track rect, but then this would
   // only work with specially prepared controls. Therefore we dont use 
   // _mouse_inside here.
-  if ((_cell.is_bordered) && (_bezel_style != NSCircularBezelStyle)
-      && (!_shows_border_only_while_mouse_inside 
-          || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream] 
-                          inRect: cellFrame]))
+  if ((_cell.is_bordered) &&
+      (_bezel_style != NSCircularBezelStyle) &&
+      (!_shows_border_only_while_mouse_inside
+       || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream]
+                      inRect: cellFrame]))
     {
       // Testplat-MAL-2015-08-22: Turns out this draw is using the full
       // frame as opposed to the reduced frame.  This ends up drawing
@@ -1698,7 +1646,9 @@ typedef struct _GSButtonCellFlags
       buttonCellFlags.changeGray = [self cellAttribute: NSChangeGrayCell];
 
       // set these to zero...
-      buttonCellFlags.unused1 = 0; // 32;
+      buttonCellFlags.inset = 0; // 32;
+      buttonCellFlags.doesNotDimImage = 0; // 32;
+      buttonCellFlags.gradient = 0; // 32;
       buttonCellFlags.unused2 = 0; // 255;
       buttonCellFlags.lastState = 0;
       buttonCellFlags.isImageSizeDiff = 0;
@@ -1836,8 +1786,9 @@ typedef struct _GSButtonCellFlags
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
-          unsigned int bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
+          unsigned int      bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
           GSButtonCellFlags buttonCellFlags;
+
           memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
 
           [self setTransparent: buttonCellFlags.isTransparent];
@@ -1859,49 +1810,61 @@ typedef struct _GSButtonCellFlags
                 to: buttonCellFlags.changeGray]; 
           
           if (buttonCellFlags.imageDoesOverlap)
+          {
             if (buttonCellFlags.isImageAndText)
               [self setImagePosition: NSImageOverlaps];
             else
               [self setImagePosition: NSImageOnly];
+          }
           else if (buttonCellFlags.isImageAndText)
+          {
             if (buttonCellFlags.isHorizontal)
+            {
               if (buttonCellFlags.isBottomOrLeft)
                 [self setImagePosition: NSImageLeft];
               else
                 [self setImagePosition: NSImageRight];
+            }
             else
+            {
               if (buttonCellFlags.isBottomOrLeft)
                 [self setImagePosition: NSImageBelow];
               else
                 [self setImagePosition: NSImageAbove];
+            }
+          }
           else
+          {
             [self setImagePosition: NSNoImage];
+          }
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
-          NSUInteger imageScale;
-          int bFlags2;
-          
-          bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
-          [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
-          [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
-          [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) &
+          unsigned int       bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
+          GSButtonCellFlags2 buttonCellFlags2;
+          NSUInteger         imageScale;
+
+          memcpy((void *)&buttonCellFlags2, (void *)&bFlags2, sizeof(struct _GSButtonCellFlags2));
+
+          [self setShowsBorderOnlyWhileMouseInside: buttonCellFlags2.showsBorderOnlyWhileMouseInside];
+          [self setBezelStyle: buttonCellFlags2.bezelStyle | (buttonCellFlags2.bezelStyle2 << 3)];
+          [self setKeyEquivalentModifierMask: (buttonCellFlags2.keyEquivalentModifierMask &
                                                NSDeviceIndependentModifierFlagsMask)];
           
-          switch ((bFlags2 >> 6) & 3)
+          switch (buttonCellFlags2.imageScaling)
             {
+              case 3:
+                imageScale = NSImageScaleAxesIndependently;
+                break;
               case 2:
                 imageScale = NSImageScaleProportionallyDown;
                 break;
-              case 3:
-                imageScale = NSImageScaleAxesIndependently;
+              case 1:
+                imageScale = NSImageScaleProportionallyUpOrDown;
                 break;
               case 0:
               default:
                 imageScale = NSImageScaleNone;
-                break;
-              case 1:
-                imageScale = NSImageScaleProportionallyUpOrDown;
                 break;
             }
           [self setImageScaling: imageScale];

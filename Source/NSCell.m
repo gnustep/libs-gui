@@ -2668,52 +2668,55 @@ static NSColor *dtxtCol;
       
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
-          unsigned long cFlags;
-          NSUInteger mask = 0;
-          cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
-          
-          [self setFocusRingType: (cFlags & 0x3)];
-          [self setShowsFirstResponder: ((cFlags & 0x4) == 0x4)];
+          NSUInteger    mask = 0;
+          GSCellFlags   cellFLags;
+          unsigned long flagValue = [aDecoder decodeIntForKey: @"NSCellFlags"];
+          memcpy(&cellFLags, &flagValue, sizeof(cellFLags));
+          //NSWarnMLog(@"title: %@ cellFLags: %u", [self title], flagValue);
+
+          [self setFocusRingType: cellFLags.focusRingType];
+          [self setShowsFirstResponder: cellFLags.showsFirstResponder];
           // This bit flag is the other way around!
-          if ((cFlags & 0x20) != 0x20)
+          if (cellFLags.dontActOnMouseUp == NO)
               mask |= NSLeftMouseUpMask;
           // This bit flag is the other way around!
-          [self setWraps: ((cFlags & 0x40) != 0x40)];
-          if ((cFlags & 0x100) == 0x100)
+          [self setWraps: cellFLags.truncateLastLine == NO];
+          if (cellFLags.actOnMouseDragged)
             mask |= NSLeftMouseDraggedMask;
-          if ((cFlags & 0x40000) == 0x40000)
+          if (cellFLags.actOnMouseDown)
             mask |= NSLeftMouseDownMask;
-          if ((cFlags & 0x80000) == 0x80000)
+          if (cellFLags.continuous)
             mask |= NSPeriodicMask;
           [self sendActionOn: mask];
-          [self setScrollable: ((cFlags & 0x100000) == 0x100000)];
-          [self setSelectable: ((cFlags & 0x200000) == 0x200000)];
-          [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
-          [self setBordered: ((cFlags & 0x800000) == 0x800000)];
-          [self setType: ((cFlags & 0xC000000) >> 26)];
-          [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
+          [self setScrollable: cellFLags.scrollable];
+          [self setSelectable: cellFLags.selectable];
+          [self setBezeled: cellFLags.bezeled];
+          [self setBordered: cellFLags.bordered];
+          [self setType: cellFLags.type];
+          [self setEditable: cellFLags.editable];
           // This bit flag is the other way around!
-          [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
-          [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
-          [self setState: ((cFlags & 0x80000000) == 0x80000000) ? NSOnState : NSOffState];
+          [self setEnabled: (cellFLags.disabled == NO)];
+          [self setHighlighted: cellFLags.highlighted];
+          [self setState: cellFLags.state ? NSOnState : NSOffState];
         }
       if ([aDecoder containsValueForKey: @"NSCellFlags2"])
         {
-          int cFlags2;
-      
-          cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
-          [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
-	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
-          [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
-          [self setSendsActionOnEndEditing: ((cFlags2 & 0x400000) == 0x400000)];
-          [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
-          [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
-          [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];
-          [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
-          [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
+          GSCellFlags2Union cFlags2;
+          cFlags2.value = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+          //NSWarnMLog(@"title: %@ cFlags2: %u", [self title], cFlags2.value);
 
+          [self setControlTint: cFlags2.flags.controlTint];
+          [self setLineBreakMode: cFlags2.flags.lineBreakMode];
+          [self setControlSize: cFlags2.flags.controlSize];
+          [self setSendsActionOnEndEditing: cFlags2.flags.sendsActionOnEndEditing];
+          [self setAllowsMixedState: cFlags2.flags.allowsMixedState];
+          [self setRefusesFirstResponder: cFlags2.flags.refusesFirstResponder];
+          [self setAlignment: cFlags2.flags.alignment];
+          [self setImportsGraphics: cFlags2.flags.importsGraphics];
+          [self setAllowsEditingTextAttributes: cFlags2.flags.allowsEditingTextAttributes];
+          
           // These bit flags are the other way around!
-          [self setAllowsUndo: ((cFlags2 & 0x1000) != 0x1000)];
+          [self setAllowsUndo: (cFlags2.flags.doesNotAllowUndo ? NO : YES)];
         }
       if ([aDecoder containsValueForKey: @"NSSupport"])
         {

@@ -4726,13 +4726,15 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
         }
       if ([aDecoder containsValueForKey: @"NSvFlags"])
         {
+          GSvFlags   VFlags;
           NSUInteger vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
-	  
+          memcpy(&VFlags, &vFlags, sizeof(VFlags));
+          
           // We are lucky here, Apple use the same constants
           // in the lower bits of the flags
-          [self setAutoresizingMask: vFlags & 0x3F];
-          [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
-          [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
+          [self setAutoresizingMask: VFlags.autoresizingMask];
+          [self setAutoresizesSubviews: VFlags.autoresizesSubviews];
+          [self setHidden: VFlags.isHidden];
         }
 
       // iterate over subviews and put them into the view...

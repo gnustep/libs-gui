@@ -295,6 +295,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   [c setTarget: self];
   [c setKeyEquivalent: @"\e"];
   [c setKeyEquivalentModifierMask: 0];
+  [self setTitle: @""];
 }
 
 - (void) resetSearchButtonCell
@@ -520,24 +521,30 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   if (self != nil)
     {
       if ([aDecoder allowsKeyedCoding])
-	{
-	  [self setSearchButtonCell: [aDecoder decodeObjectForKey: @"NSSearchButtonCell"]];
-	  [self setCancelButtonCell: [aDecoder decodeObjectForKey: @"NSCancelButtonCell"]];
-	  [self setRecentsAutosaveName: [aDecoder decodeObjectForKey: @"NSRecentsAutosaveName"]];
-	  [self setSendsWholeSearchString: [aDecoder decodeBoolForKey: @"NSSendsWholeSearchString"]];
-	  [self setMaximumRecents: [aDecoder decodeIntForKey: @"NSMaximumRecents"]];
-	}
+        {
+          [self setSearchButtonCell: [aDecoder decodeObjectForKey: @"NSSearchButtonCell"]];
+          [self setCancelButtonCell: [aDecoder decodeObjectForKey: @"NSCancelButtonCell"]];
+          [self setRecentsAutosaveName: [aDecoder decodeObjectForKey: @"NSRecentsAutosaveName"]];
+          [self setSendsWholeSearchString: [aDecoder decodeBoolForKey: @"NSSendsWholeSearchString"]];
+          [self setMaximumRecents: [aDecoder decodeIntForKey: @"NSMaximumRecents"]];
+          
+          if ([[aDecoder class] coderVersion] > 0)
+            {
+              [self setDrawsBackground: YES];
+              [self setBackgroundColor: [NSColor whiteColor]];
+            }
+        }
       else
-	{
-          NSInteger max;
+        {
+                NSInteger max;
 
-	  [self setSearchButtonCell: [aDecoder decodeObject]];
-	  [self setCancelButtonCell: [aDecoder decodeObject]];
-	  [self setRecentsAutosaveName: [aDecoder decodeObject]];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &max];
-          [self setMaximumRecents: max];
-	}
+          [self setSearchButtonCell: [aDecoder decodeObject]];
+          [self setCancelButtonCell: [aDecoder decodeObject]];
+          [self setRecentsAutosaveName: [aDecoder decodeObject]];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &max];
+                [self setMaximumRecents: max];
+        }
       
       [self resetCancelButtonCell];
       [self resetSearchButtonCell];
