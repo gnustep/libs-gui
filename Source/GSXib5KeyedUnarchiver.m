@@ -292,7 +292,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
             ClassNamePrefixes = @[ @"NS", @"IB" ];
             RETAIN(ClassNamePrefixes);
 
-            XmlReferenceAttributes = @[ @"headerView" ];
+            XmlReferenceAttributes = @[ @"headerView", @"initialItem" ];
             RETAIN(XmlReferenceAttributes);
 
             XmlKeyMapTable = @{ @"NSIsSeparator"          : @"isSeparatorItem",
@@ -318,7 +318,8 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                 @"windowPositionMask"     : @"initialPositionMask",
                                 @"NSWindowRect"           : @"contentRect",
                                 @"NSInsertionColor"       : @"insertionPointColor",
-                                @"NSIsVertical"           : @"vertical" };
+                                @"NSIsVertical"           : @"vertical",
+                                @"NSSelectedTabViewItem"  : @"initialItem" };
             RETAIN(XmlKeyMapTable);
             
             XmlKeysDefined = @[ @"NSWTFlags", @"NSvFlags", @"NSBGColor",
@@ -330,7 +331,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                 @"NSDocView",
                                 @"NSSliderType",
                                 @"NSWhite", @"NSRGB", @"NSCYMK",
-                                @"NSContents", @"NSAlternateContents",
+                                //@"NSContents", @"NSAlternateContents", @"NSAlternateImage",
                                 @"NSCellFlags", @"NSCellFlags2",
                                 @"NSButtonFlags", @"NSButtonFlags2",
                                 @"NSSelectedIndex", @"NSAltersState",
@@ -352,7 +353,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
             
             XmlKeyToDecoderSelectorMap = @{ @"NSIntercellSpacingHeight"   : @"decodeIntercellSpacingHeightForElement:",
                                             @"NSIntercellSpacingWidth"    : @"decodeIntercellSpacingWidthForElement:",
-                                            @"columnAutoresizingStyle"    : @"decodeColumnAutoresizingStyleForElement:",
+                                            @"NSColumnAutoresizingStyle"  : @"decodeColumnAutoresizingStyleForElement:",
                                             @"NSName"                     : @"decodeNameForElement:",
                                             @"NSSliderType"               : @"decodeSliderCellTypeForElement:",
                                             @"NSTickMarkPosition"         : @"decodeSliderCellTickMarkPositionForElement:",
@@ -449,7 +450,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
 }
 
 #pragma mark - Instance level support method(s)...
-- (void)setContext:(NSDictionary *)context
+- (void)setContext: (NSDictionary *)context
 {
   ASSIGN(_context, context);
 }
@@ -489,6 +490,12 @@ static NSArray      *XmlReferenceAttributes  = nil;
 #endif
   
   return self;
+}
+
+- (void)dealloc
+{
+  RELEASE(_context);
+  [super dealloc];
 }
 
 #pragma mark - XML decoding method(s)...
@@ -618,19 +625,19 @@ didStartElement: (NSString*)elementName
 // methods - however note - there are a couple that may be duplicated...
 - (id) decodeIntercellSpacingHeightForElement: (GSXib5Element*)element
 {
-  element = [element elementForKey: @"intercellSpacing"];
+  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
   return [element attributeForKey: @"height"];
 }
 
 - (id) decodeIntercellSpacingWidthForElement: (GSXib5Element*)element
 {
-  element = [element elementForKey: @"intercellSpacing"];
+  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
   return [element attributeForKey: @"width"];
 }
 
 - (id) decodeColumnAutoresizingStyleForElement: (GSXib5Element*)element
 {
-  NSString    *style = [element elementForKey: @"columnAutoresizingStyle"];
+  NSString    *style = [element attributeForKey: @"columnAutoresizingStyle"];
   NSUInteger   value = NSTableViewUniformColumnAutoresizingStyle;
   
   if ([@"none" isEqualToString: style])
@@ -835,8 +842,8 @@ didStartElement: (NSString*)elementName
       uint32_t               value;
     } GSWindowTemplateFlagsUnion;
     
-    GSWindowTemplateFlagsUnion   mask = { 0 };
-    GSXib5Element               *winPosMaskEleme  = [currentElement elementForKey: @"initialPositionMask"];
+    GSWindowTemplateFlagsUnion   mask = { { 0 } };
+    GSXib5Element               *winPosMaskEleme  = (GSXib5Element*)[currentElement elementForKey: @"initialPositionMask"];
     NSUInteger                   winPosMask       = [[self decodeWindowPositionMaskForElement:winPosMaskEleme] unsignedIntegerValue];
     
     mask.flags.isHiddenOnDeactivate =  [[attributes objectForKey: @"hidesOnDeactivate"] boolValue];
@@ -879,7 +886,7 @@ didStartElement: (NSString*)elementName
   NSString           *autosizesCells       = [element attributeForKey: @"autosizesCells"];
   NSString           *drawsBackground      = [element attributeForKey: @"drawsBackground"];
   NSString           *selectionByRect      = [element attributeForKey: @"selectionByRect"];
-  GSMatrixFlagsUnion  mask                 = { 0 };
+  GSMatrixFlagsUnion  mask                 = { { 0 } };
 
   // mode...
   if ([@"list" isEqualToString: mode])
@@ -971,7 +978,7 @@ didStartElement: (NSString*)elementName
   // the cells in a single array by column/row...
   for (row = 0; row < numRows; ++row)
   {
-    for (col = 0; col < [columns count]; ++col)
+    for (col = 0; col < numCols; ++col)
     {
       // Add the row/column object...
       [object addObject: [[columns objectAtIndex: col] objectAtIndex: row]];
@@ -1055,9 +1062,8 @@ didStartElement: (NSString*)elementName
 
 - (id)decodePullsDownForElement: (GSXib5Element*)element
 {
-  id         object    = nil;
   NSString  *pullsDown = [element attributeForKey: @"pullsDown"];
-  BOOL       value     = YES;
+  BOOL       value     = YES; // Default if not present...
   
   if (pullsDown)
     value = [pullsDown boolValue];
@@ -1067,9 +1073,8 @@ didStartElement: (NSString*)elementName
 
 - (id)decodeAutoenablesItemsForElement: (GSXib5Element*)element
 {
-  id         object           = nil;
   NSString  *autoenablesItems = [element attributeForKey: @"autoenablesItems"];
-  BOOL       value            = YES;
+  BOOL       value            = YES; // Default if not present...
   
   if (autoenablesItems)
     value = [autoenablesItems boolValue];
@@ -1080,7 +1085,7 @@ didStartElement: (NSString*)elementName
 - (id)decodeAltersStateForElement: (GSXib5Element*)element
 {
   NSString  *altersState = [element attributeForKey: @"altersStateOfSelectedItem"];
-  BOOL       value       = YES;
+  BOOL       value       = YES; // Default if not present...
   
   if (altersState)
     value = [altersState boolValue];
@@ -1176,7 +1181,7 @@ didStartElement: (NSString*)elementName
 - (id)decodeTitlePositionForElement: (GSXib5Element*)element
 {
   NSString        *titlePosition = [element attributeForKey: @"titlePosition"];
-  NSTitlePosition  value         = NSAtTop; // Cocoa default...
+  NSTitlePosition  value         = NSAtTop; // Default if not present...
 
   if (titlePosition)
     {
@@ -1207,25 +1212,25 @@ didStartElement: (NSString*)elementName
   CGFloat       size       = [[attributes objectForKey: @"size"] floatValue];
   
   if (size == 0)
-  {
-    NSString *metaFont = [[attributes objectForKey: @"metaFont"] lowercaseString];
-    
-    // Default the value...
-    size = 13;
-    
-    if ([@"system" isEqualToString: metaFont])
+    {
+      NSString *metaFont = [[attributes objectForKey: @"metaFont"] lowercaseString];
+      
+      // Default the value per Cocoa...
       size = 13;
-    else if ([metaFont containsString: @"small"])
-      size = 11;
-    else if ([metaFont containsString: @"mini"])
-      size = 9;
-    else if ([metaFont containsString: @"medium"])
-      size = 13;
-    else if ([metaFont containsString: @"menu"])
-      size = 13;
-    else if (metaFont)
-      NSWarnMLog(@"unknown meta font value: %@", metaFont);
-  }
+      
+      if ([metaFont containsString: @"system"])
+        size = 13;
+      else if ([metaFont containsString: @"small"])
+        size = 11;
+      else if ([metaFont containsString: @"mini"])
+        size = 9;
+      else if ([metaFont containsString: @"medium"])
+        size = 13;
+      else if ([metaFont containsString: @"menu"])
+        size = 13;
+      else if (metaFont)
+        NSWarnMLog(@"unknown meta font value: %@", metaFont);
+    }
   
   return [NSNumber numberWithFloat: size];
 }
@@ -1234,10 +1239,10 @@ didStartElement: (NSString*)elementName
 {
   static NSArray *MetaFontSystemNames = nil;
   if (MetaFontSystemNames == nil)
-  {
-    MetaFontSystemNames = @[ @"system", @"message" ];
-    RETAIN(MetaFontSystemNames);
-  }
+    {
+      MetaFontSystemNames = @[ @"system", @"message" ];
+      RETAIN(MetaFontSystemNames);
+    }
   
   NSDictionary *attributes = [element attributes];
   NSString     *metaFont   = [[attributes objectForKey: @"metaFont"] lowercaseString];
@@ -1265,13 +1270,15 @@ didStartElement: (NSString*)elementName
         NSWarnMLog(@"unknown divider style: %@", dividerStyle);
     }
   
-  return [NSNumber numberWithInteger: dividerStyle];
+  return [NSNumber numberWithInteger: style];
 }
 
 - (id) decodeProgressIndicatorFlagsForElement: (GSXib5Element*)element
 {
   unsigned int  flags                 = 0;
+#if 0
   NSString     *bezeled               = [element attributeForKey: @"bezeled"];
+#endif
   NSString     *style                 = [element attributeForKey: @"style"];
   NSString     *controlSize           = [element attributeForKey: @"controlSize"];
   NSString     *indeterminate         = [element attributeForKey: @"indeterminate"];
@@ -1301,14 +1308,14 @@ didStartElement: (NSString*)elementName
   NSString     *richText           = [element attributeForKey: @"richText"];
   NSString     *smartInsertDelete  = [element attributeForKey: @"smartInsertDelete"];
   NSString     *usesFontPanel      = [element attributeForKey: @"usesFontPanel"];
-  NSString     *allowsNonContiguousLayout = [element attributeForKey: @"allowsNonContiguousLayout"];
-  NSString     *spellingCorrection = [element attributeForKey: @"spellingCorrection"];
-  NSString     *continuousSpellChecking = [element attributeForKey: @"continuousSpellChecking"];
   NSString     *usesRuler          = [element attributeForKey: @"usesRuler"];
   NSString     *drawsBackground    = [element attributeForKey: @"drawsBackground"];
+  NSString     *continuousSpellChecking = [element attributeForKey: @"continuousSpellChecking"];
   
 #if 0
   // FIXME: if and when these are added to NSTextView...
+  NSString     *allowsNonContiguousLayout           = [element attributeForKey: @"allowsNonContiguousLayout"];
+  NSString     *spellingCorrection                  = [element attributeForKey: @"spellingCorrection"];
   NSString     *allowsImageEditing                  = [element attributeForKey: @"allowsImageEditing"];
   NSString     *allowsDocumentBackgroundColorChange = [element attributeForKey: @"allowsDocumentBackgroundColorChange"];
 #endif
@@ -1567,11 +1574,8 @@ didStartElement: (NSString*)elementName
 
 - (id) decodeScrollViewHeaderClipViewForElement: (GSXib5Element*)element
 {
-  Class class   = NSClassFromString([element attributeForKey: @"class"]);
-  id    object  = nil;
-  
   NSTableHeaderView *headerView = [self decodeObjectForKey: @"headerView"];
-  object                        = [[NSClipView alloc] initWithFrame: [headerView frame]];
+  id                 object     = [[NSClipView alloc] initWithFrame: [headerView frame]];
 #if 0
   [object setAutoresizesSubviews: YES];
   [object setAutoresizingMask: NSViewWidthSizable | NSViewMaxYMargin];
@@ -1610,8 +1614,7 @@ didStartElement: (NSString*)elementName
     uint32_t         value;
   } GSTableViewFlagsUnion;
   
-  id                     object        = nil;
-  GSTableViewFlagsUnion  mask          = { 0 };
+  GSTableViewFlagsUnion  mask          = { { 0 } };
   NSDictionary          *attributes    = [element attributes];
   NSDictionary          *gridStyleMask = [[element elementForKey: @"gridStyleMask"] attributes];
   
@@ -1637,8 +1640,7 @@ didStartElement: (NSString*)elementName
 
 - (id) decodeTabViewFlagsForElement: (GSXib5Element*)element
 {
-  id                       object       = nil;
-  GSTabViewTypeFlagsUnion  mask         = { 0 };
+  GSTabViewTypeFlagsUnion  mask         = { { 0 } };
   NSDictionary            *attributes   = [element attributes];
   NSString                *type         = [attributes objectForKey: @"type"];
   NSString                *controlSize  = [attributes objectForKey: @"controlSize"];
@@ -1757,9 +1759,9 @@ didStartElement: (NSString*)elementName
         uint32_t value;
       } GSvFlagsUnion;
 
-      GSvFlagsUnion  mask             = { 0 };
+      GSvFlagsUnion  mask             = { { 0 } };
       NSDictionary  *attributes       = [element attributes];
-      GSXib5Element *autoresizingMask = [element elementForKey: @"autoresizingMask"];
+      GSXib5Element *autoresizingMask = (GSXib5Element*)[element elementForKey: @"autoresizingMask"];
       
       mask.flags.autoresizingMask    = [[self decodeAutoresizingMaskForElement: autoresizingMask] unsignedIntegerValue];
       mask.flags.isHidden            = [[attributes objectForKey: @"hidden"] boolValue];
@@ -1828,13 +1830,13 @@ didStartElement: (NSString*)elementName
   
   if ([class isSubclassOfClass: [NSCell class]])
     {
-      if ([element attributeForKey: @"title"])
+      if ([element attributeForKey: @"alternateTitle"])
         {
-          object = [element attributeForKey: @"title"];
+          object = [element attributeForKey: @"alternateTitle"];
         }
-      else if ([element attributeForKey: @"image"])
+      else if ([element attributeForKey: @"alternateImage"])
         {
-          object = [NSImage imageNamed: [element attributeForKey: @"image"]];
+          object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
         }
 #if defined(DEBUG_XIB5)
       NSWarnMLog(@"object: %@", object);
@@ -1877,13 +1879,15 @@ didStartElement: (NSString*)elementName
   
   if ([class isSubclassOfClass: [NSCell class]])
   {
-    GSCellFlagsUnion   mask          = { 0 };
+    GSCellFlagsUnion   mask          = { { 0 } };
     NSDictionary      *attributes    = [element attributes];
+#if 0
     NSString          *title         = [attributes objectForKey: @"title"];
-    NSString          *imageName     = [attributes objectForKey: @"image"];
     NSString          *lineBreakMode = [attributes objectForKey: @"lineBreakMode"];
-    NSString          *focusRingType = [attributes objectForKey: @"focusRingType"];
     NSString          *bezelStyle    = [attributes objectForKey: @"bezelStyle"];
+#endif
+    NSString          *imageName     = [attributes objectForKey: @"image"];
+    NSString          *focusRingType = [attributes objectForKey: @"focusRingType"];
     NSString          *borderStyle   = [attributes objectForKey: @"borderStyle"];
 #if defined(DEBUG_XIB5)
     NSWarnMLog(@"attributes: %@", attributes);
@@ -1954,9 +1958,11 @@ didStartElement: (NSString*)elementName
 
   if ([class isSubclassOfClass: [NSCell class]])
   {
-    GSCellFlags2Union  mask         = { 0 };
+    GSCellFlags2Union  mask         = { { 0 } };
     NSDictionary      *attributes   = [element attributes];
+#if 0
     NSString          *type         = [attributes objectForKey: @"type"];
+#endif
     NSString          *alignment    = [attributes objectForKey: @"alignment"];
     NSString          *controlSize  = [attributes objectForKey: @"controlSize"];
     
@@ -2016,7 +2022,7 @@ didStartElement: (NSString*)elementName
       uint32_t          value;
     } GSButtonCellFlagsUnion;
     
-    GSButtonCellFlagsUnion   mask       = { 0 };
+    GSButtonCellFlagsUnion   mask       = { { 0 } };
     NSDictionary            *behavior   = [[element elementForKey: @"behavior"] attributes];
     NSDictionary            *attributes = [element attributes];
     NSString                *imagePos   = [attributes objectForKey: @"imagePosition"];
@@ -2073,7 +2079,7 @@ didStartElement: (NSString*)elementName
       uint32_t           value;
     } GSButtonCellFlags2Union;
     
-    GSButtonCellFlags2Union  mask         = { 0 };
+    GSButtonCellFlags2Union  mask         = { { 0 } };
     NSDictionary            *attributes   = [element attributes];
     NSString                *bezelStyle   = [attributes objectForKey:@"bezelStyle"];
     NSString                *imageScaling = [attributes objectForKey:@"imageScaling"];
@@ -2251,7 +2257,7 @@ didStartElement: (NSString*)elementName
 {
   // Unfortunately cell classes can be overridden by their encompassing class so
   // we need to check for these manually...
-  GSXib5Element *element = [topElement elementForKey: @"cell"];
+  GSXib5Element *element = (GSXib5Element*)[topElement elementForKey: @"cell"];
   id             object  = nil;
 
   if (element != nil)
@@ -2343,11 +2349,15 @@ didStartElement: (NSString*)elementName
     theObject = [theObject nibInstantiate];
   }
   
-  // We are going to awaken objects here for now...
-  if ([theObject respondsToSelector: @selector(awakeFromNib)])
-    [theObject awakeFromNib];
-  
   return theObject;
+}
+
+- (void) awakeObjectFromNib: (id)object
+{
+  // We are going to awaken objects here - we're assuming that all
+  // have been nibInstantiated when needed...
+  if ([object respondsToSelector: @selector(awakeFromNib)])
+    [object awakeFromNib];
 }
 
 - (Ivar) getClassVariableForObject: (id)object forName: (NSString*)property
@@ -2485,7 +2495,7 @@ didStartElement: (NSString*)elementName
   // Process runtime attributes for object...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"])
     {
-      GSXib5Element                   *ibDefinedRuntimeAttr = [element elementForKey: @"userDefinedRuntimeAttributes"];
+      GSXib5Element                   *ibDefinedRuntimeAttr = (GSXib5Element*)[element elementForKey: @"userDefinedRuntimeAttributes"];
       NSArray                         *runtimeAttributes    = [self objectForXib: ibDefinedRuntimeAttr];
       NSEnumerator                    *iter                 = [runtimeAttributes objectEnumerator];
       IBUserDefinedRuntimeAttribute5  *runtimeAttribute     = nil;
@@ -2498,6 +2508,9 @@ didStartElement: (NSString*)elementName
         [theObject setValue: [runtimeAttribute value] forKeyPath: [runtimeAttribute keyPath]];
       }
     }
+  
+  // Awake from nib...
+  [self awakeObjectFromNib: theObject];
   
   return object;
 }
@@ -2791,8 +2804,8 @@ didStartElement: (NSString*)elementName
   // If the request element exists...
   if ([currentElement elementForKey: key])
   {
-    GSXib5Element *element = [currentElement elementForKey: key];
-    NSDictionary  *object = [element attributes];
+    GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
+    NSDictionary  *object  = [element attributes];
     
     point.x = [[object objectForKey:@"x"] doubleValue];
     point.y = [[object objectForKey:@"y"] doubleValue];
@@ -2823,8 +2836,8 @@ didStartElement: (NSString*)elementName
   // If the request element exists...
   if ([currentElement elementForKey: key])
   {
-    GSXib5Element *element = [currentElement elementForKey: key];
-    NSDictionary  *object = [element attributes];
+    GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
+    NSDictionary  *object  = [element attributes];
     
     size.width  = [[object objectForKey:@"width"] doubleValue];
     size.height = [[object objectForKey:@"height"] doubleValue];
@@ -2879,7 +2892,7 @@ didStartElement: (NSString*)elementName
 - (NSRange) decodeRangeForKey: (NSString*)key
 {
   NSRange        range   = NSMakeRange(0, 0);
-  GSXib5Element *element = [currentElement elementForKey: key];
+  GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
 
   // If the request element exists...
   if (element)
@@ -2917,6 +2930,19 @@ didStartElement: (NSString*)elementName
                ([@"NSIntercellSpacingWidth" isEqualToString: key]))
         {
           hasValue = [currentElement elementForKey: @"intercellSpacing"] != nil;
+        }
+      else if ([@"NSContents" isEqualToString: key])
+        {
+          hasValue  = [currentElement attributeForKey: @"title"] != nil;
+          hasValue |= [currentElement attributeForKey: @"image"] != nil;
+        }
+      else if ([@"NSAlternateImage" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"alternateImage"] != nil;
+        }
+      else if ([@"NSAlternateContents" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"alternateTitle"] != nil;
         }
       else if ([XmlKeysDefined containsObject: key])
         {
