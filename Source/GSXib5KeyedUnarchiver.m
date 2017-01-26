@@ -2285,6 +2285,7 @@ didStartElement: (NSString*)elementName
 {
   id object = [super objectForXib: element];
   
+  // If no object check other possibilities related to XIB 5...
   if (object == nil)
     {
       NSString *elementName = [element type];
@@ -2334,6 +2335,10 @@ didStartElement: (NSString*)elementName
                                                                  options: NSDataBase64DecodingIgnoreUnknownCharacters];
               object       = AUTORELEASE([[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding]);
               RELEASE(data);
+              
+              // Replace previous object...
+              if ([element attributeForKey: @"id"])
+                [decoded setObject: object forKey: [element attributeForKey: @"id"]];
             }
         }
     }
