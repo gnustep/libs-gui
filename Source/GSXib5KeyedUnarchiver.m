@@ -2321,6 +2321,22 @@ didStartElement: (NSString*)elementName
         }
 #endif
     }
+  else // Check for required fixes for XIB 5 processing changes to old element types...
+    {
+      NSString *elementName = [element type];
+
+      if ([@"string" isEqualToString: elementName])
+        {
+          // <string> now has base64-UTF8 as a bool attribute...
+          if ([[element attributeForKey: @"base64-UTF8"] boolValue])
+            {
+              NSData *data = [[NSData alloc] initWithBase64EncodedString: object
+                                                                 options: NSDataBase64DecodingIgnoreUnknownCharacters];
+              object       = AUTORELEASE([[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding]);
+              RELEASE(data);
+            }
+        }
+    }
   
   return object;
 }
@@ -2642,7 +2658,7 @@ didStartElement: (NSString*)elementName
           object = [currentElement attributeForKey: key];
         }
     }
-  
+
 #if 0
   if (object == nil)
     NSWarnMLog(@"no object for key: %@", key);
