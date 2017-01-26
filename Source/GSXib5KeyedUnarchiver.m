@@ -1724,15 +1724,15 @@ didStartElement: (NSString*)elementName
       
       // copiesOnScroll - defaults to ON...
       if ([attributes objectForKey: @"copiesOnScroll"] == nil)
-        mask |= (1 << 2);
+        mask |= (1 << 1);
       else
-        mask |= ([[attributes objectForKey: @"copiesOnScroll"] boolValue] ? (1 << 2) : 0);
+        mask |= ([[attributes objectForKey: @"copiesOnScroll"] boolValue] ? (1 << 1) : 0);
       
       // drawsBackground - defaults to ON...
       if ([attributes objectForKey: @"drawsBackground"] == nil)
-        mask |= (1 << 4);
+        mask |= (1 << 2);
       else
-        mask |= ([[attributes objectForKey: @"drawsBackground"] boolValue] ? (1 << 4) : 0);
+        mask |= ([[attributes objectForKey: @"drawsBackground"] boolValue] ? (1 << 2) : 0);
       
       
       // Return value...
