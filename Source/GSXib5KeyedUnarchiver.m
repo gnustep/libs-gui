@@ -348,7 +348,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                             @"windowStyleMask"          : @"decodeWindowStyleMaskForElement:",
                                             @"windowPositionMask"       : @"decodeWindowPositionMaskForElement:",
                                             //@"modifierMask"             : @"decodeModifierMaskForElement:",
-                                            @"tableViewGridLines"       : @"decodeTableViewGridLinesForElement" };
+                                            @"tableViewGridLines"       : @"decodeTableViewGridLinesForElement:" };
             RETAIN(XmlTagToDecoderSelectorMap);
             
             XmlKeyToDecoderSelectorMap = @{ @"NSIntercellSpacingHeight"   : @"decodeIntercellSpacingHeightForElement:",
