@@ -331,7 +331,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                 @"NSDocView",
                                 @"NSSliderType",
                                 @"NSWhite", @"NSRGB", @"NSCYMK",
-                                //@"NSContents", @"NSAlternateContents", @"NSAlternateImage",
+                                //@"NSContents", @"NSAlternateContents",
                                 @"NSCellFlags", @"NSCellFlags2",
                                 @"NSButtonFlags", @"NSButtonFlags2",
                                 @"NSSelectedIndex", @"NSAltersState",
@@ -2956,10 +2956,6 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
-        }
-      else if ([@"NSAlternateImage" isEqualToString: key])
-        {
-          hasValue = [currentElement attributeForKey: @"alternateImage"] != nil;
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {
