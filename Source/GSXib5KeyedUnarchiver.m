@@ -33,6 +33,8 @@
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
@@ -295,31 +297,32 @@ static NSArray      *XmlReferenceAttributes  = nil;
             XmlReferenceAttributes = @[ @"headerView", @"initialItem" ];
             RETAIN(XmlReferenceAttributes);
 
-            XmlKeyMapTable = @{ @"NSIsSeparator"          : @"isSeparatorItem",
-                                //@"NSName"                 : @"systemMenu",
-                                @"NSClassName"            : @"customClass",
-                                @"NSCatalogName"          : @"catalog",
-                                @"NSColorName"            : @"name",
-                                @"NSSelectedIndex"        : @"selectedItem",
-                                @"NSNoAutoenable"         : @"autoenablesItems",
-                                @"NSPullDown"             : @"pullsDown",
-                                @"NSProtoCell"            : @"prototype",
-                                @"IBIsSystemFont"         : @"metaFont",
-                                //@"NSHeaderClipView"       : @"headerView",
-                                @"NSHScroller"            : @"horizontalScroller",
-                                @"NSVScroller"            : @"verticalScroller",
-                                @"NSKeyEquiv"             : @"keyEquivalent",
-                                @"NSKeyEquivModMask"      : @"keyEquivalentModifierMask",
-                                @"NSOffsets"              : @"contentViewMargins",
-                                @"NSWindowStyleMask"      : @"styleMask",
-                                @"NSWindowView"           : @"contentView",
-                                @"NSWindowClass"          : @"customClass",
-                                @"NSWindowTitle"          : @"title",
-                                @"windowPositionMask"     : @"initialPositionMask",
-                                @"NSWindowRect"           : @"contentRect",
-                                @"NSInsertionColor"       : @"insertionPointColor",
-                                @"NSIsVertical"           : @"vertical",
-                                @"NSSelectedTabViewItem"  : @"initialItem" };
+            XmlKeyMapTable = @{ @"NSIsSeparator"                    : @"isSeparatorItem",
+                                //@"NSName"                           : @"systemMenu",
+                                @"NSClassName"                      : @"customClass",
+                                @"NSCatalogName"                    : @"catalog",
+                                @"NSColorName"                      : @"name",
+                                @"NSSelectedIndex"                  : @"selectedItem",
+                                @"NSNoAutoenable"                   : @"autoenablesItems",
+                                @"NSPullDown"                       : @"pullsDown",
+                                @"NSProtoCell"                      : @"prototype",
+                                @"IBIsSystemFont"                   : @"metaFont",
+                                //@"NSHeaderClipView"                 : @"headerView",
+                                @"NSHScroller"                      : @"horizontalScroller",
+                                @"NSVScroller"                      : @"verticalScroller",
+                                @"NSKeyEquiv"                       : @"keyEquivalent",
+                                @"NSKeyEquivModMask"                : @"keyEquivalentModifierMask",
+                                @"NSOffsets"                        : @"contentViewMargins",
+                                @"NSWindowStyleMask"                : @"styleMask",
+                                @"NSWindowView"                     : @"contentView",
+                                @"NSWindowClass"                    : @"customClass",
+                                @"NSWindowTitle"                    : @"title",
+                                @"windowPositionMask"               : @"initialPositionMask",
+                                @"NSWindowRect"                     : @"contentRect",
+                                @"NSInsertionColor"                 : @"insertionPointColor",
+                                @"NSIsVertical"                     : @"vertical",
+                                @"NSSelectedTabViewItem"            : @"initialItem",
+                                @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips" };
             RETAIN(XmlKeyMapTable);
             
             XmlKeysDefined = @[ @"NSWTFlags", @"NSvFlags", @"NSBGColor",
@@ -330,6 +333,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                 @"NSMenuItem",
                                 @"NSDocView",
                                 @"NSSliderType",
+                                @"NSCellPrototype", @"NSBrFlags",
                                 @"NSWhite", @"NSRGB", @"NSCYMK",
                                 //@"NSContents", @"NSAlternateContents",
                                 @"NSCellFlags", @"NSCellFlags2",
@@ -356,6 +360,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                             @"NSColumnAutoresizingStyle"  : @"decodeColumnAutoresizingStyleForElement:",
                                             @"NSName"                     : @"decodeNameForElement:",
                                             @"NSSliderType"               : @"decodeSliderCellTypeForElement:",
+                                            @"NSColumnResizingType"       : @"decodeColumnResizingTypeForElement:",
                                             @"NSTickMarkPosition"         : @"decodeSliderCellTickMarkPositionForElement:",
                                             @"NSCells"                    : @"decodeCellsForElement:",
                                             @"NSNumCols"                  : @"decodeNumberOfColumnsInMatrixForElement:",
@@ -365,6 +370,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                             @"NSAltersState"              : @"decodeAltersStateForElement:",
                                             @"NSMenuItem"                 : @"decodeMenuItemForElement:",
                                             @"selectedItem"               : @"decodeSelectedIndexForElement:",
+                                            @"NSCellPrototype"            : @"decodeCellPrototypeForElement:",
                                             @"NSTitleCell"                : @"decodeTitleCellForElement:",
                                             @"NSBorderType"               : @"decodeBorderTypeForElement:",
                                             @"NSBoxType"                  : @"decodeBoxTypeForElement:",
@@ -383,6 +389,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                             @"NSsFlags"                   : @"decodeScrollClassFlagsForElement:",
                                             @"NSHeaderClipView"           : @"decodeScrollViewHeaderClipViewForElement:",
                                             @"NSBGColor"                  : @"decodeBackgroundColorForElement:",
+                                            @"NSBrFlags"                  : @"decodeBrowserFlagsForElement:",
                                             @"NScvFlags"                  : @"decodeClipViewFlagsForElement:",
                                             @"NSTvFlags"                  : @"decodeTViewFlagsForElement:",
                                             @"NSvFlags"                   : @"decodeViewFlagsForElement:",
@@ -1032,11 +1039,26 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
+- (id)decodeColumnResizingTypeForElement: (GSXib5Element*)element
+{
+  NSUInteger  value              = NSBrowserNoColumnResizing; // Default...
+  NSString   *columnResizingType = [element attributeForKey: @"columnResizingType"];
+  
+  if ([@"user" isEqualToString: columnResizingType])
+    value = NSBrowserUserColumnResizing;
+  else if ([@"auto" isEqualToString: columnResizingType])
+    value = NSBrowserAutoColumnResizing;
+  else if (columnResizingType)
+    NSWarnMLog(@"unknown column resizing  type: %@", columnResizingType);
+  
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
 - (id)decodeSliderCellTypeForElement: (GSXib5Element*)element
 {
   NSUInteger  value      = NSCircularSlider; // Default...
   NSString   *sliderType = [element attributeForKey: @"sliderType"];
-
+  
   if ([@"linear" isEqualToString: sliderType])
     value = NSLinearSlider;
   else if ([@"circular" isEqualToString: sliderType])
@@ -1111,6 +1133,18 @@ didStartElement: (NSString*)elementName
   NSUInteger   index    = [items indexOfObjectIdenticalTo: item];
   
   return [NSNumber numberWithUnsignedInteger: index];
+}
+
+- (id)decodeCellPrototypeForElement: (GSXib5Element*)element
+{
+  id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
+  
+  [object setType: NSPushInCell];
+  [object setWraps: NO];
+  [object sendActionOn: NSLeftMouseUpMask];
+  [object setEnabled: YES];
+  
+  return object;
 }
 
 - (id)decodeTitleCellForElement: (GSXib5Element*)element
@@ -1706,6 +1740,39 @@ didStartElement: (NSString*)elementName
     object = [self decodeTabViewFlagsForElement: element];
   
   return object;
+}
+
+- (id) decodeBrowserFlagsForElement: (GSXib5Element*)element
+{
+  id           object      = nil;
+  NSUInteger    mask       = 0;
+  NSDictionary *attributes = [element attributes];
+  
+  // Set the flags...
+  if ([[attributes objectForKey: @"hasHorizontalScroller"] boolValue])
+    mask |= 0x10000;
+  if ([[attributes objectForKey: @"allowsEmptySelection"] boolValue])
+    mask |= 0x20000;
+  if ([[attributes objectForKey: @"sendsActionOnArrowKeys"] boolValue])
+    mask |= 0x40000;
+  if ([[attributes objectForKey: @"acceptsArrowKeys"] boolValue])
+    mask |= 0x100000;
+  if ([[attributes objectForKey: @"separatesColumns"] boolValue])
+    mask |= 0x4000000;
+  if ([[attributes objectForKey: @"takesTitleFromPreviousColumn"] boolValue])
+    mask |= 0x8000000;
+  if ([[attributes objectForKey: @"titled"] boolValue])
+    mask |= 0x10000000;
+  if ([[attributes objectForKey: @"reusesColumns"] boolValue])
+    mask |= 0x20000000;
+  if ([[attributes objectForKey: @"allowsBranchSelection"] boolValue])
+    mask |= 0x40000000;
+  if ([[attributes objectForKey: @"allowsMultipleSelection"] boolValue])
+    mask |= 0x80000000;
+  if ([[attributes objectForKey: @"prefersAllColumnUserResizing"] boolValue])
+    mask |= 0; // FIXME: do we handle this yet???
+
+  return [NSNumber numberWithUnsignedInt: mask];
 }
 
 - (id) decodeClipViewFlagsForElement: (GSXib5Element*)element
