@@ -1744,7 +1744,6 @@ didStartElement: (NSString*)elementName
 
 - (id) decodeBrowserFlagsForElement: (GSXib5Element*)element
 {
-  id           object      = nil;
   NSUInteger    mask       = 0;
   NSDictionary *attributes = [element attributes];
   
