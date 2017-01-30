@@ -153,6 +153,7 @@ typedef struct _tableViewFlags
   BOOL               _allowsColumnReordering;
   BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
+  BOOL               _usesAlternatingRowBackgroundColors;
   NSText            *_textObject;
   NSInteger          _editedRow;
   NSInteger          _editedColumn;
