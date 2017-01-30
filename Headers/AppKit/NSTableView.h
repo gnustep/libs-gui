@@ -131,7 +131,7 @@ typedef struct _tableViewFlags
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
   NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
-  CGFloat              _rowHeight;
+  CGFloat            _rowHeight;
   NSSize             _intercellSpacing;
   id                 _delegate;
   NSTableHeaderView *_headerView;
@@ -142,8 +142,8 @@ typedef struct _tableViewFlags
   NSInteger          _clickedRow;
   NSInteger          _clickedColumn;
   NSTableColumn     *_highlightedTableColumn;
-  NSMutableIndexSet    *_selectedColumns;
-  NSMutableIndexSet    *_selectedRows;
+  NSMutableIndexSet *_selectedColumns;
+  NSMutableIndexSet *_selectedRows;
   NSInteger          _selectedColumn;
   NSInteger          _selectedRow;
   BOOL               _allowsMultipleSelection;

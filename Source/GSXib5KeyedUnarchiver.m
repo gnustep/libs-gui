@@ -278,6 +278,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                                    @"column"                        : @"NSMutableArray",
                                                    @"tabStops"                      : @"NSMutableArray",
                                                    @"userDefinedRuntimeAttributes"  : @"NSMutableArray",
+                                                   @"resources"                     : @"NSMutableArray",
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
                                                    //@"outlet"                        : @"IBOutletConnection5",
@@ -328,7 +329,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
             XmlKeysDefined = @[ @"NSWTFlags", @"NSvFlags", @"NSBGColor",
                                 @"NSSize", //@"IBIsSystemFont",
                                 @"NSHeaderClipView", @"NSHScroller", @"NSVScroller", @"NSsFlags",
-                                @"NSTvFlags", @"NScvFlags",
+                                @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
                                 @"NSSupport", @"NSName",
                                 @"NSMenuItem",
                                 @"NSDocView",
@@ -1553,11 +1554,13 @@ didStartElement: (NSString*)elementName
 {
   NSTableHeaderView *headerView = [self decodeObjectForKey: @"headerView"];
   id                 object     = [[NSClipView alloc] initWithFrame: [headerView frame]];
+  
 #if 0
   [object setAutoresizesSubviews: YES];
   [object setAutoresizingMask: NSViewWidthSizable | NSViewMaxYMargin];
-  [object setDocumentView: headerView];
 #endif
+  [object setNextKeyView: headerView];
+  [object setDocumentView: headerView];
   
   return object;
 }
@@ -1600,17 +1603,25 @@ didStartElement: (NSString*)elementName
   NSWarnMLog(@"gridStyleMask: %@", gridStyleMask);
 #endif
   
-  mask.flags.columnOrdering     = [[attributes objectForKey: @"columnReordering"] boolValue];
-  mask.flags.columnResizing     = [[attributes objectForKey: @"columnResizing"] boolValue];
+  mask.flags.columnOrdering     = YES; // check if present - see below...
+  mask.flags.columnResizing     = YES; // check if present - see below...
   mask.flags.drawsGrid          = (gridStyleMask != nil);
   mask.flags.emptySelection     = YES; // check if present - see below...
-  mask.flags.multipleSelection  = [[attributes objectForKey: @"multipleSelection"] boolValue];
+  mask.flags.multipleSelection  = YES; // check if present - see below...
   mask.flags.columnSelection    = [[attributes objectForKey: @"columnSelection"] boolValue];
-  mask.flags.columnAutosave     = [[attributes objectForKey: @"autosaveColumns"] boolValue];
+  mask.flags.columnAutosave     = YES; // check if present - see below...
   
+  if ([attributes objectForKey: @"columnReordering"])
+    mask.flags.columnOrdering = [[attributes objectForKey: @"columnReordering"] boolValue];
+  if ([attributes objectForKey: @"columnResizing"])
+    mask.flags.columnResizing = [[attributes objectForKey: @"columnResizing"] boolValue];
   if ([attributes objectForKey: @"emptySelection"])
     mask.flags.emptySelection = [[attributes objectForKey: @"emptySelection"] boolValue];
-  
+  if ([attributes objectForKey: @"multipleSelection"])
+    mask.flags.multipleSelection = [[attributes objectForKey: @"multipleSelection"] boolValue];
+  if ([attributes objectForKey: @"autosaveColumns"])
+    mask.flags.columnAutosave = [[attributes objectForKey: @"autosaveColumns"] boolValue];
+
   // Unknown: typeSelect,
   
   return [NSNumber numberWithUnsignedInteger: mask.value];
@@ -2365,6 +2376,62 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - Object creation support methods...
+- (id) nibInstantiate: (id)object
+{
+  id theObject = object;
+  
+  // Check whether object needs to be instantiated and awaken...
+  if ([theObject respondsToSelector: @selector(nibInstantiate)])
+  {
+    // If this is the file's owner see if there is a value in the context...
+    if ([theObject isKindOfClass: [NSCustomObject5 class]])
+    {
+      // Cross reference the file's owner object from the context data...
+      if ([[(NSCustomObject5*)theObject userLabel] isEqualToString: @"File's Owner"])
+      {
+        if ([_context objectForKey: NSNibOwner])
+        {
+          [(NSCustomObject*)theObject setRealObject: [_context objectForKey: NSNibOwner]];
+        }
+      }
+    }
+    
+    // Instantiate the real object...
+    theObject = [theObject nibInstantiate];
+  }
+  
+  return theObject;
+}
+
+- (void) awakeObjectFromNib: (id)object
+{
+  // We are going to awaken objects here - we're assuming that all
+  // have been nibInstantiated when needed...
+  if ([object respondsToSelector: @selector(awakeFromNib)])
+    [object awakeFromNib];
+}
+
+- (Ivar) getClassVariableForObject: (id)object forName: (NSString*)property
+{
+  const char *name  = [property cString];
+  Class       class = object_getClass(object);
+  Ivar        ivar  = class_getInstanceVariable(class, name);
+  
+  // If not found...
+  if (ivar == 0)
+  {
+    // Try other permutations...
+    if ([property characterAtIndex: 0] == '_')
+    {
+      // Try removing the '_' prefix automatically added by Xcode...
+      ivar = [self getClassVariableForObject: object forName: [property substringFromIndex: 1]];
+    }
+  }
+  
+  return ivar;
+}
+
 #pragma mark - Overridden decoding methods from base class...
 - (id) objectForXib: (GSXibElement*)element
 {
@@ -2429,61 +2496,6 @@ didStartElement: (NSString*)elementName
     }
   
   return object;
-}
-
-- (id) nibInstantiate: (id)object
-{
-  id theObject = object;
-  
-  // Check whether object needs to be instantiated and awaken...
-  if ([theObject respondsToSelector: @selector(nibInstantiate)])
-  {
-    // If this is the file's owner see if there is a value in the context...
-    if ([theObject isKindOfClass: [NSCustomObject5 class]])
-    {
-      // Cross reference the file's owner object from the context data...
-      if ([[(NSCustomObject5*)theObject userLabel] isEqualToString: @"File's Owner"])
-      {
-        if ([_context objectForKey: NSNibOwner])
-        {
-          [(NSCustomObject*)theObject setRealObject: [_context objectForKey: NSNibOwner]];
-        }
-      }
-    }
-    
-    // Instantiate the real object...
-    theObject = [theObject nibInstantiate];
-  }
-  
-  return theObject;
-}
-
-- (void) awakeObjectFromNib: (id)object
-{
-  // We are going to awaken objects here - we're assuming that all
-  // have been nibInstantiated when needed...
-  if ([object respondsToSelector: @selector(awakeFromNib)])
-    [object awakeFromNib];
-}
-
-- (Ivar) getClassVariableForObject: (id)object forName: (NSString*)property
-{
-  const char *name  = [property cString];
-  Class       class = object_getClass(object);
-  Ivar        ivar  = class_getInstanceVariable(class, name);
-  
-  // If not found...
-  if (ivar == 0)
-  {
-    // Try other permutations...
-    if ([property characterAtIndex: 0] == '_')
-    {
-      // Try removing the '_' prefix automatically added by Xcode...
-      ivar = [self getClassVariableForObject: object forName: [property substringFromIndex: 1]];
-    }
-  }
-  
-  return ivar;
 }
 
 - (id) decodeObjectForXib: (GSXibElement*)element
@@ -2742,11 +2754,17 @@ didStartElement: (NSString*)elementName
           GSXib5Element *element  = [objects objectForKey:idString];
           object                  = [self objectForXib: element];
         }
-      else
+      else if ([currentElement attributeForKey: key])
         {
           // New xib stores values as attributes...
           object = [currentElement attributeForKey: key];
         }
+#if defined(DEBUG)
+      else // DEBUG ONLY...
+        {
+          NSWarnMLog(@"no element/attribute for key: %@", key);
+        }
+#endif
     }
 
 #if 0

@@ -2918,7 +2918,7 @@ typedef enum {
 }
 
 - (void)drawTableHeaderRect: (NSRect)aRect
-		     inView: (NSView *)view
+                     inView: (NSView *)view
 {
   NSTableHeaderView *tableHeaderView = (NSTableHeaderView *)view;
   NSTableView *tableView = [tableHeaderView tableView];
@@ -2996,15 +2996,15 @@ typedef enum {
 }
 
 - (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame
-				     withCell: (NSCell *)cell
-				       inView: (NSView *)controlView
+                                     withCell: (NSCell *)cell
+                                       inView: (NSView *)controlView
 {
   // Default implementation of this method does nothing.
 }
 
 - (void) drawTableViewBackgroundInClipRect: (NSRect)aRect
-				    inView: (NSView *)view
-		       withBackgroundColor: (NSColor *)backgroundColor
+                                    inView: (NSView *)view
+                       withBackgroundColor: (NSColor *)backgroundColor
 {
   NSTableView *tableView = (NSTableView *)view;
 
@@ -3012,45 +3012,45 @@ typedef enum {
   NSRectFill (aRect);
   
   if ([tableView usesAlternatingRowBackgroundColors])
-    {
-      const CGFloat rowHeight = [tableView rowHeight];
-      NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
-      NSInteger endingRow;
-      NSInteger i;
-      
-      NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
-      const NSUInteger rowColorCount = [rowColors count];
-      
-      NSRect rowRect;
-      
-      if (rowHeight <= 0
-    	  || rowColorCount == 0
-    	  || aRect.size.height <= 0)
-    	return;
-
-      if (startingRow <= 0)
-    	startingRow = 0;
-      
-      rowRect = [tableView rectOfRow: startingRow];
-      rowRect.origin.x = aRect.origin.x;
-      rowRect.size.width = aRect.size.width;
-      
-      endingRow = startingRow + ceil(aRect.size.height / rowHeight);
-      
-      for (i = startingRow; i <= endingRow; i++)
-    	{
-    	  NSColor *color = [rowColors objectAtIndex: (i % rowColorCount)];
-	  
-    	  [color set];
-    	  NSRectFill(rowRect);
-	  
-    	  rowRect.origin.y += rowHeight;
-        }
-    }
+  {
+    const CGFloat rowHeight = [tableView rowHeight];
+    NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
+    NSInteger endingRow;
+    NSInteger i;
+    
+    NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
+    const NSUInteger rowColorCount = [rowColors count];
+    
+    NSRect rowRect;
+    
+    if (rowHeight <= 0
+        || rowColorCount == 0
+        || aRect.size.height <= 0)
+      return;
+    
+    if (startingRow <= 0)
+      startingRow = 0;
+    
+    rowRect = [tableView rectOfRow: startingRow];
+    rowRect.origin.x = aRect.origin.x;
+    rowRect.size.width = aRect.size.width;
+    
+    endingRow = startingRow + ceil(aRect.size.height / rowHeight);
+    
+    for (i = startingRow; i <= endingRow; i++)
+      {
+        NSColor *color = [rowColors objectAtIndex: (i % rowColorCount)];
+        
+        [color set];
+        NSRectFill(rowRect);
+        
+        rowRect.origin.y += rowHeight;
+      }
+  }
 }
 
 - (void) drawTableViewGridInClipRect: (NSRect)aRect
-			      inView: (NSView *)view
+                              inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
 
@@ -3115,7 +3115,7 @@ typedef enum {
 }
 
 - (void) drawTableViewRect: (NSRect)aRect
-		    inView: (NSView *)view
+                    inView: (NSView *)view
 {
   int startingRow;
   int endingRow;
@@ -3185,24 +3185,24 @@ typedef enum {
   // Set the fill color
   {
     NSColor *selectionColor;
-
+    
     selectionColor = [self colorNamed: @"highlightedTableRowBackgroundColor"
-				state: GSThemeNormalState];
-
+                                state: GSThemeNormalState];
+    
     if (selectionColor == nil)
       {
-	// Switch to the alternate color of the backgroundColor is white.
-	if([backgroundColor isEqual: [NSColor whiteColor]])
-	  {
-	    selectionColor = [NSColor colorWithCalibratedRed: 0.86
-						                           green: 0.92
-							                        blue: 0.99
-						                           alpha: 1.0];
-	  }
-	else
-	  {
-	    selectionColor = [NSColor whiteColor];
-	  }
+        // Switch to the alternate color of the backgroundColor is white.
+        if([backgroundColor isEqual: [NSColor whiteColor]])
+          {
+            selectionColor = [NSColor colorWithCalibratedRed: 0.86
+                                                       green: 0.92
+                                                        blue: 0.99
+                                                       alpha: 1.0];
+          }
+        else
+          {
+            selectionColor = [NSColor whiteColor];
+          }
       }
     [selectionColor set];
   }
@@ -3216,41 +3216,48 @@ typedef enum {
 
       selectedRowsCount = [selectedRows count];      
       if (selectedRowsCount == 0)
-    	return;
+        return;
       
       /* highlight selected rows */
       startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(clipRect))];
       endingRow   = [tableView rowAtPoint: NSMakePoint(0, NSMaxY(clipRect))];
       
       if (startingRow == -1)
-    	startingRow = 0;
+        startingRow = 0;
       if (endingRow == -1)
-    	endingRow = numberOfRows - 1;
+        endingRow = numberOfRows - 1;
       
+      // FIXME: Take alternating row coloring into account...
+      NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
+      const NSUInteger rowColorCount = [rowColors count];
+
       row = [selectedRows indexGreaterThanOrEqualToIndex: startingRow];
       while ((row != NSNotFound) && (row <= endingRow))
-    	{
-    	  NSColor *selectionColor = nil;
-	  
-    	  // Switch to the alternate color of the backgroundColor is white.
-    	  if([backgroundColor isEqual: [NSColor whiteColor]])
-    	    {
-    	      selectionColor = [NSColor colorWithCalibratedRed: 0.86
+        {
+          NSColor *selectionColor = nil;
+          
+          if ([tableView usesAlternatingRowBackgroundColors])
+            backgroundColor = [rowColors objectAtIndex: (row % rowColorCount)];
+          
+          // Switch to the alternate color if the backgroundColor is white.
+          if([backgroundColor isEqual: [NSColor whiteColor]])
+            {
+              selectionColor = [NSColor colorWithCalibratedRed: 0.86
                                                          green: 0.92
                                                           blue: 0.99
                                                          alpha: 1.0];
-    	    }
-	      else
-    	    {
-	          selectionColor = [NSColor whiteColor];
-	        }
+            }
+          else
+            {
+              selectionColor = [NSColor whiteColor];
+            }
 
-    	  //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
-	      //						 clipRect));
-    	  [selectionColor set];
-	      NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
-    	  row = [selectedRows indexGreaterThanIndex: row];
-    	}	  
+          //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
+          //						 clipRect));
+          [selectionColor set];
+          NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
+          row = [selectedRows indexGreaterThanIndex: row];
+        }	  
     }
   else // Selecting columns
     {
@@ -3281,9 +3288,9 @@ typedef enum {
     }
 }
 
-- (void) drawTableViewRow: (int)rowIndex 
-		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view
+- (void) drawTableViewRow: (int)rowIndex
+                 clipRect: (NSRect)clipRect
+                   inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
   // int numberOfRows = [tableView numberOfRows];

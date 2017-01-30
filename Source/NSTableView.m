@@ -5175,8 +5175,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)clipRect
 {
   [[GSTheme theme] drawTableViewRow: rowIndex
-		   clipRect: clipRect
-		   inView: self];
+                           clipRect: clipRect
+                             inView: self];
 }
 
 - (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes
@@ -5187,27 +5187,30 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) drawGridInClipRect: (NSRect)aRect
 {
   [[GSTheme theme] drawTableViewGridInClipRect: aRect
-		   inView: self];
+                                        inView: self];
 }
 
 - (void) highlightSelectionInClipRect: (NSRect)clipRect
 {
   [[GSTheme theme] highlightTableViewSelectionInClipRect: clipRect
-		   inView: self
-		   selectingColumns: _selectingColumns];
+                                                  inView: self
+                                        selectingColumns: _selectingColumns];
 }
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
 {
   [[GSTheme theme] drawTableViewBackgroundInClipRect: clipRect
-		   inView: self
-		   withBackgroundColor: _backgroundColor];
+                                              inView: self
+                                 withBackgroundColor: _backgroundColor];
 }
 
 - (void) drawRect: (NSRect)aRect
 {
+  if ([[self autosaveName] isEqualToString:@"ConnectionList"])
+    NSLog(@"%s:%ld:aRect: %@ clipFrame: %@", __PRETTY_FUNCTION__, (long)__LINE__,
+          NSStringFromRect(aRect), NSStringFromRect([[self superview] frame]));
   [[GSTheme theme] drawTableViewRect: aRect
-		   inView: self];
+                              inView: self];
 }
 
 - (BOOL) isOpaque
@@ -5923,6 +5926,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       if ([aDecoder containsValueForKey: @"NSColumnAutoresizingStyle"])
         {
           _columnAutoresizingStyle = [aDecoder decodeIntForKey: @"NSColumnAutoresizingStyle"];
+          if ([[self autosaveName] isEqualToString: @"ConnectionList"])
+            NSLog(@"%s:%ld: _columnAutoresizingStyle: %ld", __PRETTY_FUNCTION__, (long)__LINE__, _columnAutoresizingStyle);
           if (_columnAutoresizingStyle == NSTableViewUniformColumnAutoresizingStyle)
             {
               [self setAutoresizesAllColumnsToFit:YES];
@@ -6065,7 +6070,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 }
 
 - (void) _userResizedTableColumn: (NSInteger)index
-			   width: (CGFloat)width
+                           width: (CGFloat)width
 {
   [[_tableColumns objectAtIndex: index] setWidth: width];
 }
@@ -6081,8 +6086,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	respondsToSelector:
 	  @selector(tableView:mouseDownInHeaderOfTableColumn:)])
     {
-      [_delegate tableView: self
-		 mouseDownInHeaderOfTableColumn: tc];
+      [_delegate tableView: self mouseDownInHeaderOfTableColumn: tc];
     }
 }
 
