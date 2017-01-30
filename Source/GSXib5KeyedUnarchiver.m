@@ -574,9 +574,6 @@ didStartElement: (NSString*)elementName
       NSString      *key     = [attributes objectForKey: @"key"];
       NSString      *ref     = [attributes objectForKey: @"id"];
       
-      // FIXME: We should use proper memory management here
-      AUTORELEASE(element);
-      
       if ([@"array" isEqualToString: [currentElement type]])
         {
           // For arrays
@@ -602,6 +599,8 @@ didStartElement: (NSString*)elementName
 
       // Set as current element being processed...
       currentElement = element;
+      
+      AUTORELEASE(element);
     }
 }
 
@@ -630,90 +629,8 @@ didStartElement: (NSString*)elementName
 #pragma mark - Decoding method(s)...
 // All this code should eventually move into their respective initWithCoder class
 // methods - however note - there are a couple that may be duplicated...
-- (id) decodeIntercellSpacingHeightForElement: (GSXib5Element*)element
-{
-  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
-  return [element attributeForKey: @"height"];
-}
 
-- (id) decodeIntercellSpacingWidthForElement: (GSXib5Element*)element
-{
-  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
-  return [element attributeForKey: @"width"];
-}
-
-- (id) decodeColumnAutoresizingStyleForElement: (GSXib5Element*)element
-{
-  NSString    *style = [element attributeForKey: @"columnAutoresizingStyle"];
-  NSUInteger   value = NSTableViewUniformColumnAutoresizingStyle;
-  
-  if ([@"none" isEqualToString: style])
-    value = NSTableViewNoColumnAutoresizing;
-  else if ([@"firstColumnOnly" isEqualToString: style])
-    value = NSTableViewFirstColumnOnlyAutoresizingStyle;
-  else if ([@"lastColumnOnly" isEqualToString: style])
-    value = NSTableViewLastColumnOnlyAutoresizingStyle;
-  else if ([@"sequential" isEqualToString: style])
-    value = NSTableViewSequentialColumnAutoresizingStyle;
-  else if ([@"reverseSequential" isEqualToString: style])
-    value = NSTableViewReverseSequentialColumnAutoresizingStyle;
-  
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"value: %lu", value);
-#endif
-  
-  return [NSNumber numberWithUnsignedInteger: value];
-}
-
-- (id) decodeWindowStyleMaskForElement: (GSXib5Element*)element
-{
-  NSDictionary *attributes = [element attributes];
-  
-  if (attributes)
-  {
-    NSUInteger mask = 0;
-    
-    if ([[attributes objectForKey: @"titled"] boolValue])
-      mask |= NSTitledWindowMask;
-    if ([[attributes objectForKey: @"closable"] boolValue])
-      mask |= NSClosableWindowMask;
-    if ([[attributes objectForKey: @"miniaturizable"] boolValue])
-      mask |= NSMiniaturizableWindowMask;
-    if ([[attributes objectForKey: @"resizable"] boolValue])
-      mask |= NSResizableWindowMask;
-    
-#if defined(DEBUG_XIB5)
-    NSWarnMLog(@"mask: %lu", mask);
-#endif
-    
-    return [NSNumber numberWithUnsignedInteger: mask];
-  }
-  
-  return nil;
-}
-
-- (id) decodeTableColumnResizingMaskForElement: (GSXib5Element*)element
-{
-  NSDictionary *attributes = [element attributes];
-  
-  if (attributes)
-    {
-      NSUInteger mask = NSTableColumnNoResizing;
-      
-      if ([[attributes objectForKey: @"resizeWithTable"] boolValue])
-        mask |= NSTableColumnAutoresizingMask;
-      if ([[attributes objectForKey: @"userResizable"] boolValue])
-        mask |= NSTableColumnUserResizingMask;
-      
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"mask: %lu", mask);
-#endif
-      return [NSNumber numberWithUnsignedInteger: mask];
-    }
-  
-  return nil;
-}
-
+#pragma mark - NSView...
 - (id) decodeAutoresizingMaskForElement: (GSXib5Element*)element
 {
   NSDictionary *attributes = [element attributes];
@@ -744,87 +661,42 @@ didStartElement: (NSString*)elementName
   return nil;
 }
 
-- (id) decodeModifierMaskForElement: (GSXib5Element*)element
+- (id) decodeViewFlagsForElement: (GSXib5Element*)element
 {
-  id            object     = nil;
-  NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
-
-  if (attributes == nil)
+  Class class   = NSClassFromString([element attributeForKey: @"class"]);
+  id    object  = nil;
+  
+  if ([class isSubclassOfClass: [NSView class]] == NO)
     {
-      // Seems that Apple decided to omit this attribute IF Control key alone
-      // is applied.  If this key is present WITH NO setting then that NULL
-      // value is used for the modifier mask...
-      object = [NSNumber numberWithUnsignedInteger: NSCommandKeyMask];
+      NSWarnMLog(@"called for a class that is NOT a sub-class of NSView - class: %@", NSStringFromClass(class));
     }
   else
     {
-      // If the modifier mask element is present then no modifier attributes
-      // equates to no key modifiers applied...
-      NSUInteger mask = 0;
+      typedef union _GSvFlagsUnion
+      {
+        GSvFlags flags;
+        uint32_t value;
+      } GSvFlagsUnion;
       
-      if ([[attributes objectForKey:@"option"] boolValue])
-      {
-        mask |= NSAlternateKeyMask;
-      }
-      if ([[attributes objectForKey:@"alternate"] boolValue])
-      {
-        mask |= NSAlternateKeyMask;
-      }
-      if ([[attributes objectForKey:@"command"] boolValue])
-      {
-        mask |= NSCommandKeyMask;
-      }
-      if ([[attributes objectForKey:@"control"] boolValue])
-      {
-        mask |= NSControlKeyMask;
-      }
-      if ([[attributes objectForKey:@"shift"] boolValue])
-      {
-        mask |= NSShiftKeyMask;
-      }
-      if ([[attributes objectForKey:@"numeric"] boolValue])
-      {
-        mask |= NSNumericPadKeyMask;
-      }
-      if ([[attributes objectForKey:@"help"] boolValue])
-      {
-        mask |= NSHelpKeyMask;
-      }
-      if ([[attributes objectForKey:@"function"] boolValue])
-      {
-        mask |= NSFunctionKeyMask;
-      }
+      GSvFlagsUnion  mask             = { { 0 } };
+      NSDictionary  *attributes       = [element attributes];
+      GSXib5Element *autoresizingMask = (GSXib5Element*)[element elementForKey: @"autoresizingMask"];
       
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"mask: %lu", mask);
-#endif
+      mask.flags.autoresizingMask    = [[self decodeAutoresizingMaskForElement: autoresizingMask] unsignedIntegerValue];
+      mask.flags.isHidden            = [[attributes objectForKey: @"hidden"] boolValue];
+      mask.flags.autoresizesSubviews = YES;
       
-      object = [NSNumber numberWithUnsignedInteger: mask];
+      if ([attributes objectForKey: @"autoresizesSubviews"])
+        mask.flags.autoresizesSubviews = [[attributes objectForKey: @"autoresizesSubviews"] boolValue];
+      
+      // Return value...
+      object = [NSNumber numberWithUnsignedInt: mask.value];
     }
   
   return object;
 }
 
-- (id) decodeTableViewGridLinesForElement: (GSXib5Element*)element
-{
-  NSUInteger    mask       = NSTableViewGridNone;
-  NSDictionary *attributes = [element attributes];
-
-  if ([[attributes objectForKey: @"dashed"] boolValue])
-    mask |= NSTableViewDashedHorizontalGridLineMask;
-  else if ([[attributes objectForKey: @"horizontal"] boolValue])
-    mask |= NSTableViewSolidHorizontalGridLineMask;
-
-  if ([[attributes objectForKey: @"vertical"] boolValue])
-    mask |= NSTableViewSolidHorizontalGridLineMask;
-
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"mask: %p", mask);
-#endif
-  
-  return [NSNumber numberWithUnsignedInteger: mask];
-}
-
+#pragma mark - NSClipView...
 - (id) decodeClipViewDocumentViewForElement: (GSXib5Element*)element
 {
   NSArray *subviews = [self decodeObjectForKey: @"subviews"];
@@ -837,6 +709,7 @@ didStartElement: (NSString*)elementName
   return nil;
 }
 
+#pragma mark - NSWindow...
 - (id) decodeWindowTemplateFlagsForElement: (GSXib5Element*)element
 {
   NSDictionary *attributes = [element attributes];
@@ -886,6 +759,34 @@ didStartElement: (NSString*)elementName
   return nil;
 }
 
+- (id) decodeWindowStyleMaskForElement: (GSXib5Element*)element
+{
+  NSDictionary *attributes = [element attributes];
+  
+  if (attributes)
+    {
+      NSUInteger mask = 0;
+      
+      if ([[attributes objectForKey: @"titled"] boolValue])
+        mask |= NSTitledWindowMask;
+      if ([[attributes objectForKey: @"closable"] boolValue])
+        mask |= NSClosableWindowMask;
+      if ([[attributes objectForKey: @"miniaturizable"] boolValue])
+        mask |= NSMiniaturizableWindowMask;
+      if ([[attributes objectForKey: @"resizable"] boolValue])
+        mask |= NSResizableWindowMask;
+      
+#if defined(DEBUG_XIB5)
+      NSWarnMLog(@"mask: %lu", mask);
+#endif
+      
+      return [NSNumber numberWithUnsignedInteger: mask];
+    }
+  
+  return nil;
+}
+
+#pragma mark - NSForm/NSMatrix...
 - (id)decodeMatrixFlagsForElement: (GSXib5Element*)element
 {
   NSString           *mode                 = [element attributeForKey: @"mode"];
@@ -897,25 +798,25 @@ didStartElement: (NSString*)elementName
 
   // mode...
   if ([@"list" isEqualToString: mode])
-  {
-    mask.flags.isList = 1;
-  }
+    {
+      mask.flags.isList = 1;
+    }
   else if ([@"highlight" isEqualToString: mode])
-  {
-    mask.flags.isHighlight = 1;
-  }
+    {
+      mask.flags.isHighlight = 1;
+    }
   else if ([@"radio" isEqualToString: mode])
-  {
-    mask.flags.isRadio = 1;
-  }
+    {
+      mask.flags.isRadio = 1;
+    }
   else if ([@"track" isEqualToString: mode])
-  {
-    // What do we do with this type???
-  }
+    {
+      // What do we do with this type???
+    }
   else if (mode)
-  {
-    NSWarnMLog(@"unknown matrix mode: %@", mode);
-  }
+    {
+      NSWarnMLog(@"unknown matrix mode: %@", mode);
+    }
   
   // allows empty selection...
   if (allowsEmptySelection == nil)
@@ -949,10 +850,10 @@ didStartElement: (NSString*)elementName
   Class class   = NSClassFromString([element attributeForKey: @"class"]);
   
   if ([class isSubclassOfClass: [NSMatrix class]])
-  {
-    NSArray *cells = [self decodeObjectForKey: @"cells"];
-    object         = [NSNumber numberWithUnsignedInteger: [cells count]];
-  }
+    {
+      NSArray *cells = [self decodeObjectForKey: @"cells"];
+      object         = [NSNumber numberWithUnsignedInteger: [cells count]];
+    }
   
   return object;
 }
@@ -963,11 +864,11 @@ didStartElement: (NSString*)elementName
   Class class   = NSClassFromString([element attributeForKey: @"class"]);
   
   if ([class isSubclassOfClass: [NSMatrix class]])
-  {
-    NSArray *cells  = [self decodeObjectForKey: @"cells"];
-    NSArray *column = [cells objectAtIndex: 0];
-    object          = [NSNumber numberWithUnsignedInteger: [column count]];
-  }
+    {
+      NSArray *cells  = [self decodeObjectForKey: @"cells"];
+      NSArray *column = [cells objectAtIndex: 0];
+      object          = [NSNumber numberWithUnsignedInteger: [column count]];
+    }
   
   return object;
 }
@@ -984,13 +885,13 @@ didStartElement: (NSString*)elementName
   // NSForm's cells now encoded as two dimensional array but we need
   // the cells in a single array by column/row...
   for (row = 0; row < numRows; ++row)
-  {
-    for (col = 0; col < numCols; ++col)
     {
-      // Add the row/column object...
-      [object addObject: [[columns objectAtIndex: col] objectAtIndex: row]];
+      for (col = 0; col < numCols; ++col)
+        {
+          // Add the row/column object...
+          [object addObject: [[columns objectAtIndex: col] objectAtIndex: row]];
+        }
     }
-  }
   
   return object;
 }
@@ -1020,6 +921,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - NSSlider...
 - (id)decodeSliderCellTickMarkPositionForElement: (GSXib5Element*)element
 {
   NSUInteger  value            = NSTickMarkBelow; // Default...
@@ -1035,21 +937,6 @@ didStartElement: (NSString*)elementName
     value = NSTickMarkRight;
   else if (tickMarkPosition)
     NSWarnMLog(@"unknown slider cell tick mark position: %@", tickMarkPosition);
-  
-  return [NSNumber numberWithUnsignedInteger: value];
-}
-
-- (id)decodeColumnResizingTypeForElement: (GSXib5Element*)element
-{
-  NSUInteger  value              = NSBrowserNoColumnResizing; // Default...
-  NSString   *columnResizingType = [element attributeForKey: @"columnResizingType"];
-  
-  if ([@"user" isEqualToString: columnResizingType])
-    value = NSBrowserUserColumnResizing;
-  else if ([@"auto" isEqualToString: columnResizingType])
-    value = NSBrowserAutoColumnResizing;
-  else if (columnResizingType)
-    NSWarnMLog(@"unknown column resizing  type: %@", columnResizingType);
   
   return [NSNumber numberWithUnsignedInteger: value];
 }
@@ -1082,6 +969,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - NSMenu/NSMenuItem...
 - (id)decodePullsDownForElement: (GSXib5Element*)element
 {
   NSString  *pullsDown = [element attributeForKey: @"pullsDown"];
@@ -1135,18 +1023,6 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: index];
 }
 
-- (id)decodeCellPrototypeForElement: (GSXib5Element*)element
-{
-  id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
-  
-  [object setType: NSPushInCell];
-  [object setWraps: NO];
-  [object sendActionOn: NSLeftMouseUpMask];
-  [object setEnabled: YES];
-  
-  return object;
-}
-
 - (id)decodeTitleCellForElement: (GSXib5Element*)element
 {
   id        object  = nil;
@@ -1190,6 +1066,68 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
+- (id) decodeModifierMaskForElement: (GSXib5Element*)element
+{
+  id            object     = nil;
+  NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
+  
+  if (attributes == nil)
+    {
+      // Seems that Apple decided to omit this attribute IF Control key alone
+      // is applied.  If this key is present WITH NO setting then that NULL
+      // value is used for the modifier mask...
+      object = [NSNumber numberWithUnsignedInteger: NSCommandKeyMask];
+    }
+  else
+    {
+      // If the modifier mask element is present then no modifier attributes
+      // equates to no key modifiers applied...
+      NSUInteger mask = 0;
+      
+      if ([[attributes objectForKey:@"option"] boolValue])
+        {
+          mask |= NSAlternateKeyMask;
+        }
+      if ([[attributes objectForKey:@"alternate"] boolValue])
+        {
+          mask |= NSAlternateKeyMask;
+        }
+      if ([[attributes objectForKey:@"command"] boolValue])
+        {
+          mask |= NSCommandKeyMask;
+        }
+      if ([[attributes objectForKey:@"control"] boolValue])
+        {
+          mask |= NSControlKeyMask;
+        }
+      if ([[attributes objectForKey:@"shift"] boolValue])
+        {
+          mask |= NSShiftKeyMask;
+        }
+      if ([[attributes objectForKey:@"numeric"] boolValue])
+        {
+          mask |= NSNumericPadKeyMask;
+        }
+      if ([[attributes objectForKey:@"help"] boolValue])
+        {
+          mask |= NSHelpKeyMask;
+        }
+      if ([[attributes objectForKey:@"function"] boolValue])
+        {
+          mask |= NSFunctionKeyMask;
+        }
+      
+#if defined(DEBUG_XIB5)
+      NSWarnMLog(@"mask: %lu", mask);
+#endif
+      
+      object = [NSNumber numberWithUnsignedInteger: mask];
+    }
+  
+  return object;
+}
+
+#pragma mark - NSBox...
 - (id)decodeBoxTypeForElement: (GSXib5Element*)element
 {
   NSString  *boxType = [element attributeForKey: @"boxType"];
@@ -1240,6 +1178,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
+#pragma mark - NSFont...
 - (id)decodeFontSizeForElement: (GSXib5Element*)element
 {
   NSDictionary *attributes = [element attributes];
@@ -1307,6 +1246,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithInteger: style];
 }
 
+#pragma mark - NSProgressIndicator...
 - (id) decodeProgressIndicatorFlagsForElement: (GSXib5Element*)element
 {
   unsigned int  flags                 = 0;
@@ -1330,6 +1270,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithInt: flags];
 }
 
+#pragma mark - NSTextView...
 - (id) decodeTextViewFlagsForElement: (GSXib5Element*)element
 {
   unsigned int  flags              = 0;
@@ -1399,6 +1340,7 @@ didStartElement: (NSString*)elementName
   return AUTORELEASE(object);
 }
 
+#pragma mark - NSColor...
 - (id) decodeColorSpaceForElement: (GSXib5Element*)element
 {
   // <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1506,6 +1448,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - NSScrollView/NSScroller...
 - (id) decodeScrollerFlagsForElement: (GSXib5Element*)element
 {
   NSUInteger    mask                  = NSBezelBorder; // Default...
@@ -1640,6 +1583,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - NSTableView...
 - (id) decodeTableViewFlagsForElement: (GSXib5Element*)element
 {
   typedef union _GSTableViewFlagsUnion
@@ -1672,6 +1616,84 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: mask.value];
 }
 
+- (id) decodeTableViewGridLinesForElement: (GSXib5Element*)element
+{
+  NSUInteger    mask       = NSTableViewGridNone;
+  NSDictionary *attributes = [element attributes];
+  
+  if ([[attributes objectForKey: @"dashed"] boolValue])
+    mask |= NSTableViewDashedHorizontalGridLineMask;
+  else if ([[attributes objectForKey: @"horizontal"] boolValue])
+    mask |= NSTableViewSolidHorizontalGridLineMask;
+  
+  if ([[attributes objectForKey: @"vertical"] boolValue])
+    mask |= NSTableViewSolidHorizontalGridLineMask;
+  
+#if defined(DEBUG_XIB5)
+  NSWarnMLog(@"mask: %p", mask);
+#endif
+  
+  return [NSNumber numberWithUnsignedInteger: mask];
+}
+
+- (id) decodeIntercellSpacingHeightForElement: (GSXib5Element*)element
+{
+  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
+  return [element attributeForKey: @"height"];
+}
+
+- (id) decodeIntercellSpacingWidthForElement: (GSXib5Element*)element
+{
+  element = (GSXib5Element*)[element elementForKey: @"intercellSpacing"];
+  return [element attributeForKey: @"width"];
+}
+
+- (id) decodeColumnAutoresizingStyleForElement: (GSXib5Element*)element
+{
+  NSString    *style = [element attributeForKey: @"columnAutoresizingStyle"];
+  NSUInteger   value = NSTableViewUniformColumnAutoresizingStyle;
+  
+  if ([@"none" isEqualToString: style])
+    value = NSTableViewNoColumnAutoresizing;
+  else if ([@"firstColumnOnly" isEqualToString: style])
+    value = NSTableViewFirstColumnOnlyAutoresizingStyle;
+  else if ([@"lastColumnOnly" isEqualToString: style])
+    value = NSTableViewLastColumnOnlyAutoresizingStyle;
+  else if ([@"sequential" isEqualToString: style])
+    value = NSTableViewSequentialColumnAutoresizingStyle;
+  else if ([@"reverseSequential" isEqualToString: style])
+    value = NSTableViewReverseSequentialColumnAutoresizingStyle;
+  
+#if defined(DEBUG_XIB5)
+  NSWarnMLog(@"value: %lu", value);
+#endif
+  
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id) decodeTableColumnResizingMaskForElement: (GSXib5Element*)element
+{
+  NSDictionary *attributes = [element attributes];
+  
+  if (attributes)
+    {
+      NSUInteger mask = NSTableColumnNoResizing;
+      
+      if ([[attributes objectForKey: @"resizeWithTable"] boolValue])
+        mask |= NSTableColumnAutoresizingMask;
+      if ([[attributes objectForKey: @"userResizable"] boolValue])
+        mask |= NSTableColumnUserResizingMask;
+      
+#if defined(DEBUG_XIB5)
+      NSWarnMLog(@"mask: %lu", mask);
+#endif
+      return [NSNumber numberWithUnsignedInteger: mask];
+    }
+  
+  return nil;
+}
+
+#pragma mark - NSTabView...
 - (id) decodeTabViewFlagsForElement: (GSXib5Element*)element
 {
   GSTabViewTypeFlagsUnion  mask         = { { 0 } };
@@ -1728,6 +1750,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: mask.value];
 }
 
+#pragma mark - NSTableView/NSTabView...
 - (id) decodeTViewFlagsForElement: (GSXib5Element*)element
 {
   NSString *classname = [element attributeForKey: @"class"];
@@ -1742,6 +1765,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+#pragma mark - NSBrowser...
 - (id) decodeBrowserFlagsForElement: (GSXib5Element*)element
 {
   NSUInteger    mask       = 0;
@@ -1774,6 +1798,34 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInt: mask];
 }
 
+- (id)decodeCellPrototypeForElement: (GSXib5Element*)element
+{
+  id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
+  
+  [object setType: NSPushInCell];
+  [object setWraps: NO];
+  [object sendActionOn: NSLeftMouseUpMask];
+  [object setEnabled: YES];
+  
+  return object;
+}
+
+- (id)decodeColumnResizingTypeForElement: (GSXib5Element*)element
+{
+  NSUInteger  value              = NSBrowserNoColumnResizing; // Default...
+  NSString   *columnResizingType = [element attributeForKey: @"columnResizingType"];
+  
+  if ([@"user" isEqualToString: columnResizingType])
+    value = NSBrowserUserColumnResizing;
+  else if ([@"auto" isEqualToString: columnResizingType])
+    value = NSBrowserAutoColumnResizing;
+  else if (columnResizingType)
+    NSWarnMLog(@"unknown column resizing  type: %@", columnResizingType);
+  
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
+#pragma mark - NSCell...
 - (id) decodeClipViewFlagsForElement: (GSXib5Element*)element
 {
   Class class   = NSClassFromString([element attributeForKey: @"class"]);
@@ -1803,41 +1855,6 @@ didStartElement: (NSString*)elementName
       
       // Return value...
       object = [NSNumber numberWithUnsignedInt: mask];
-    }
-  
-  return object;
-}
-
-- (id) decodeViewFlagsForElement: (GSXib5Element*)element
-{
-  Class class   = NSClassFromString([element attributeForKey: @"class"]);
-  id    object  = nil;
-  
-  if ([class isSubclassOfClass: [NSView class]] == NO)
-    {
-      NSWarnMLog(@"called for a class that is NOT a sub-class of NSView - class: %@", NSStringFromClass(class));
-    }
-  else
-    {
-      typedef union _GSvFlagsUnion
-      {
-        GSvFlags flags;
-        uint32_t value;
-      } GSvFlagsUnion;
-
-      GSvFlagsUnion  mask             = { { 0 } };
-      NSDictionary  *attributes       = [element attributes];
-      GSXib5Element *autoresizingMask = (GSXib5Element*)[element elementForKey: @"autoresizingMask"];
-      
-      mask.flags.autoresizingMask    = [[self decodeAutoresizingMaskForElement: autoresizingMask] unsignedIntegerValue];
-      mask.flags.isHidden            = [[attributes objectForKey: @"hidden"] boolValue];
-      mask.flags.autoresizesSubviews = YES;
-
-      if ([attributes objectForKey: @"autoresizesSubviews"])
-        mask.flags.autoresizesSubviews = [[attributes objectForKey: @"autoresizesSubviews"] boolValue];
-      
-      // Return value...
-      object = [NSNumber numberWithUnsignedInt: mask.value];
     }
   
   return object;
@@ -2023,58 +2040,123 @@ didStartElement: (NSString*)elementName
   Class     class = NSClassFromString([element attributeForKey: @"class"]);
 
   if ([class isSubclassOfClass: [NSCell class]])
-  {
-    GSCellFlags2Union  mask         = { { 0 } };
-    NSDictionary      *attributes   = [element attributes];
+    {
+      GSCellFlags2Union  mask         = { { 0 } };
+      NSDictionary      *attributes   = [element attributes];
 #if 0
-    NSString          *type         = [attributes objectForKey: @"type"];
+      NSString          *type         = [attributes objectForKey: @"type"];
 #endif
-    NSString          *alignment    = [attributes objectForKey: @"alignment"];
-    NSString          *controlSize  = [attributes objectForKey: @"controlSize"];
-    
+      NSString          *alignment    = [attributes objectForKey: @"alignment"];
+      NSString          *controlSize  = [attributes objectForKey: @"controlSize"];
+      
 #if defined(DEBUG_XIB5)
-    NSWarnMLog(@"attributes: %@", attributes);
+      NSWarnMLog(@"attributes: %@", attributes);
 #endif
-    
-    mask.flags.allowsEditingTextAttributes  = 0;
-    mask.flags.importsGraphics              = 0;
-    mask.flags.lineBreakMode                = [self decodeLineBreakModeForAttributes: attributes];
-    mask.flags.refusesFirstResponder        = [[attributes objectForKey: @"refusesFirstResponder"] boolValue];
-    mask.flags.allowsMixedState             = [[attributes objectForKey: @"allowsMixedState"] boolValue];
-    mask.flags.sendsActionOnEndEditing      = [[attributes objectForKey: @"sendsActionOnEndEditing"] boolValue];
-    mask.flags.controlSize                  = NSRegularControlSize;
-    mask.flags.doesNotAllowUndo             = 0;
-    mask.flags.controlTint                  = NSDefaultControlTint;
+      
+      mask.flags.allowsEditingTextAttributes  = 0;
+      mask.flags.importsGraphics              = 0;
+      mask.flags.lineBreakMode                = [self decodeLineBreakModeForAttributes: attributes];
+      mask.flags.refusesFirstResponder        = [[attributes objectForKey: @"refusesFirstResponder"] boolValue];
+      mask.flags.allowsMixedState             = [[attributes objectForKey: @"allowsMixedState"] boolValue];
+      mask.flags.sendsActionOnEndEditing      = [[attributes objectForKey: @"sendsActionOnEndEditing"] boolValue];
+      mask.flags.controlSize                  = NSRegularControlSize;
+      mask.flags.doesNotAllowUndo             = 0;
+      mask.flags.controlTint                  = NSDefaultControlTint;
 
-    // Alignment
-    mask.flags.alignment = NSNaturalTextAlignment;
-    if ([@"left" isEqualToString: alignment])
-      mask.flags.alignment = NSLeftTextAlignment;
-    else if ([@"center" isEqualToString: alignment])
-      mask.flags.alignment = NSCenterTextAlignment;
-    else if ([@"right" isEqualToString: alignment])
-      mask.flags.alignment = NSRightTextAlignment;
-    else if ([@"justified" isEqualToString: alignment])
-      mask.flags.alignment = NSJustifiedTextAlignment;
-    else if (alignment)
-      NSWarnMLog(@"unknown text alignment: %@", alignment);
-    
-    // Control size...
-    if ([@"small" isEqualToString: controlSize])
-      mask.flags.controlSize = NSSmallControlSize;
-    else if ([@"mini" isEqualToString: controlSize])
-      mask.flags.controlSize = NSMiniControlSize;
-    else if ([@"regular" isEqualToString: controlSize])
-      mask.flags.controlSize = NSRegularControlSize;
-    else if (controlSize)
-      NSWarnMLog(@"unknown control size: %@", controlSize);
-    
-    value = [NSNumber numberWithUnsignedInteger: mask.value];
-  }
+      // Alignment
+      mask.flags.alignment = NSNaturalTextAlignment;
+      if ([@"left" isEqualToString: alignment])
+        mask.flags.alignment = NSLeftTextAlignment;
+      else if ([@"center" isEqualToString: alignment])
+        mask.flags.alignment = NSCenterTextAlignment;
+      else if ([@"right" isEqualToString: alignment])
+        mask.flags.alignment = NSRightTextAlignment;
+      else if ([@"justified" isEqualToString: alignment])
+        mask.flags.alignment = NSJustifiedTextAlignment;
+      else if (alignment)
+        NSWarnMLog(@"unknown text alignment: %@", alignment);
+      
+      // Control size...
+      if ([@"small" isEqualToString: controlSize])
+        mask.flags.controlSize = NSSmallControlSize;
+      else if ([@"mini" isEqualToString: controlSize])
+        mask.flags.controlSize = NSMiniControlSize;
+      else if ([@"regular" isEqualToString: controlSize])
+        mask.flags.controlSize = NSRegularControlSize;
+      else if (controlSize)
+        NSWarnMLog(@"unknown control size: %@", controlSize);
+      
+      value = [NSNumber numberWithUnsignedInteger: mask.value];
+    }
   
   return value;
 }
 
+- (id) decodeCellNormalImageForElement: (GSXib5Element*)element
+{
+  Class class   = NSClassFromString([element attributeForKey: @"class"]);
+  id    object  = nil;
+  
+  if ([class isSubclassOfClass: [NSCell class]])
+    {
+      if ([element attributeForKey: @"image"])
+        {
+          object = [NSImage imageNamed: [element attributeForKey: @"image"]];
+        }
+      else
+        {
+          NSString *type = [element attributeForKey: @"type"];
+          
+          if ([@"radio" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSRadioButton"];
+            }
+          else if ([@"check" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSSwitch"];
+            }
+        }
+#if defined(DEBUG_XIB5)
+      NSWarnMLog(@"object: %@", object);
+#endif
+    }
+  
+  return object;
+}
+
+- (id) decodeCellAlternateImageForElement: (GSXib5Element*)element
+{
+  Class class   = NSClassFromString([element attributeForKey: @"class"]);
+  id    object  = nil;
+  
+  if ([class isSubclassOfClass: [NSCell class]])
+    {
+      if ([element attributeForKey: @"alternateImage"])
+        {
+          object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
+        }
+      else
+        {
+          NSString *type = [element attributeForKey: @"type"];
+          
+          if ([@"radio" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSRadioButton"];
+            }
+          else if ([@"check" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSSwitch"];
+            }
+        }
+    }
+#if defined(DEBUG_XIB5)
+  NSWarnMLog(@"object: %@", object);
+#endif
+  
+  return object;
+}
+
+#pragma mark - NSButton...
 - (id) decodeButtonFlags1ForElement: (GSXib5Element*)element
 {
   NSNumber *value = nil;
@@ -2224,69 +2306,6 @@ didStartElement: (NSString*)elementName
   return value;
 }
 
-- (id) decodeCellNormalImageForElement: (GSXib5Element*)element
-{
-  Class class   = NSClassFromString([element attributeForKey: @"class"]);
-  id    object  = nil;
-  
-  if ([class isSubclassOfClass: [NSCell class]])
-  {
-    if ([element attributeForKey: @"image"])
-    {
-      object = [NSImage imageNamed: [element attributeForKey: @"image"]];
-    }
-    else
-    {
-      NSString *type = [element attributeForKey: @"type"];
-      
-      if ([@"radio" isEqualToString: type])
-      {
-        object = [NSImage imageNamed: @"NSRadioButton"];
-      }
-      else if ([@"check" isEqualToString: type])
-      {
-        object = [NSImage imageNamed: @"NSSwitch"];
-      }
-    }
-#if defined(DEBUG_XIB5)
-    NSWarnMLog(@"object: %@", object);
-#endif
-  }
-  
-  return object;
-}
-
-- (id) decodeCellAlternateImageForElement: (GSXib5Element*)element
-{
-  Class class   = NSClassFromString([element attributeForKey: @"class"]);
-  id    object  = nil;
-  
-  if ([class isSubclassOfClass: [NSCell class]])
-  {
-    if ([element attributeForKey: @"alternateImage"])
-    {
-      object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
-    }
-    else
-    {
-      NSString *type = [element attributeForKey: @"type"];
-      
-      if ([@"radio" isEqualToString: type])
-      {
-        object = [NSImage imageNamed: @"NSRadioButton"];
-      }
-      else if ([@"check" isEqualToString: type])
-      {
-        object = [NSImage imageNamed: @"NSSwitch"];
-      }
-    }
-  }
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"object: %@", object);
-#endif
-  
-  return object;
-}
 
 - (id) decodeButtonStateForElement: (GSXib5Element*)element
 {
