@@ -5900,6 +5900,7 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setAllowsColumnResizing: tableViewFlags.columnResizing];
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
           [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
+          [self setUsesAlternatingRowBackgroundColors: tableViewFlags.alternatingRowBackgroundColors];
         }
       
       if ([aDecoder containsValueForKey: @"NSGridStyleMask"])
@@ -5942,16 +5943,6 @@ This method is deprecated, use -columnIndexesInRect:. */
               NSLog(@"%s:unsupported column autoresizing style: %d", __PRETTY_FUNCTION__, _columnAutoresizingStyle);
             }
         }
-      
-      // Check for XIB 5 attributes not used previously...
-      if ([[aDecoder class] coderVersion] > 0)
-      {
-        if ([aDecoder containsValueForKey: @"alternatingRowBackgroundColors"])
-        {
-          BOOL flag = [aDecoder decodeBoolForKey: @"alternatingRowBackgroundColors"];
-          [self setUsesAlternatingRowBackgroundColors: flag];
-        }
-      }
 
       [self tile]; /* Initialize _columnOrigins */
     }
