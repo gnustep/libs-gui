@@ -104,10 +104,15 @@ typedef struct _tableViewFlags
   unsigned int emptySelection:1;
   unsigned int multipleSelection:1;
   unsigned int columnSelection:1;
+  unsigned int unknown1:1;
   unsigned int columnAutosave:1;
-  unsigned int _unused:24;
+  unsigned int alternatingRowBackgroundColors:1;
+  unsigned int unknown2:3;
+  unsigned int _unused:20;
 #else
-  unsigned int _unused:24;
+  unsigned int _unused:20;
+  unsigned int unknown2:3;
+  unsigned int alternatingRowBackgroundColors:1;
   unsigned int columnAutosave:1;
   unsigned int unknown1:1;
   unsigned int columnSelection:1;
