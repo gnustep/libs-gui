@@ -54,8 +54,8 @@
 #define mouse_sensitivity 4
 
 @interface NSTableView (GNUstepPrivate)
-- (void) _userResizedTableColumn: (int)index
-                           width: (float)width;
+- (void) _userResizedTableColumn: (NSInteger)index
+                           width: (CGFloat)width;
 - (CGFloat *) _columnOrigins;
 - (void) _mouseDownInHeaderOfTableColumn: (NSTableColumn *)tc;
 - (void) _clickTableColumn: (NSTableColumn *)tc;
