@@ -1603,14 +1603,17 @@ didStartElement: (NSString*)elementName
   NSWarnMLog(@"gridStyleMask: %@", gridStyleMask);
 #endif
   
-  mask.flags.columnOrdering     = YES; // check if present - see below...
-  mask.flags.columnResizing     = YES; // check if present - see below...
-  mask.flags.drawsGrid          = (gridStyleMask != nil);
-  mask.flags.emptySelection     = YES; // check if present - see below...
-  mask.flags.multipleSelection  = YES; // check if present - see below...
-  mask.flags.columnSelection    = [[attributes objectForKey: @"columnSelection"] boolValue];
-  mask.flags.columnAutosave     = YES; // check if present - see below...
+  // These are the defaults...
+  mask.flags.columnOrdering                 = YES; // check if present - see below...
+  mask.flags.columnResizing                 = YES; // check if present - see below...
+  mask.flags.drawsGrid                      = (gridStyleMask != nil);
+  mask.flags.emptySelection                 = YES; // check if present - see below...
+  mask.flags.multipleSelection              = YES;
+  mask.flags.columnSelection                = [[attributes objectForKey: @"columnSelection"] boolValue];
+  mask.flags.columnAutosave                 = YES;
+  mask.flags.alternatingRowBackgroundColors = [[attributes objectForKey: @"alternatingRowBackgroundColors"] boolValue];
   
+  // Overide the defaults with any attributes present...
   if ([attributes objectForKey: @"columnReordering"])
     mask.flags.columnOrdering = [[attributes objectForKey: @"columnReordering"] boolValue];
   if ([attributes objectForKey: @"columnResizing"])
@@ -2759,7 +2762,7 @@ didStartElement: (NSString*)elementName
           // New xib stores values as attributes...
           object = [currentElement attributeForKey: key];
         }
-#if defined(DEBUG)
+#if 0 //defined(DEBUG)
       else // DEBUG ONLY...
         {
           NSWarnMLog(@"no element/attribute for key: %@", key);
@@ -2767,10 +2770,6 @@ didStartElement: (NSString*)elementName
 #endif
     }
 
-#if 0
-  if (object == nil)
-    NSWarnMLog(@"no object for key: %@", key);
-#endif
 #if defined(DEBUG_XIB5)
   NSWarnMLog(@"DONE: key: %@ currentElement: %@ id: %@", key, [currentElement type], [currentElement attributeForKey: @"id"]);
 #endif
