@@ -2956,8 +2956,8 @@ typedef enum {
       width = [column width];
       drawingRect.size.width = width;
       cell = [column headerCell];
-      if ((column == highlightedTableColumn)
-          || [tableView isColumnSelected: i])
+      if ((column == highlightedTableColumn) ||
+          [tableView isColumnSelected: i])
         {
           [cell setHighlighted: YES];
         }
@@ -3013,15 +3013,13 @@ typedef enum {
   
   if ([tableView usesAlternatingRowBackgroundColors])
   {
-    const CGFloat rowHeight = [tableView rowHeight];
-    NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
-    NSInteger endingRow;
-    NSInteger i;
-    
-    NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
-    const NSUInteger rowColorCount = [rowColors count];
-    
-    NSRect rowRect;
+    NSArray          *rowColors     = [NSColor controlAlternatingRowBackgroundColors];
+    const NSUInteger  rowColorCount = [rowColors count];
+    const CGFloat     rowHeight     = [tableView rowHeight];
+    NSInteger         startingRow   = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
+    NSInteger         endingRow;
+    NSInteger         i;
+    NSRect            rowRect;
     
     if (rowHeight <= 0
         || rowColorCount == 0
@@ -3207,6 +3205,10 @@ typedef enum {
     [selectionColor set];
   }
 #endif
+  NSColor *selectionColor = [NSColor colorWithCalibratedRed: 163 / 255.0
+                                                      green: 205 / 255.0
+                                                       blue: 254 / 255.0
+                                                      alpha: 1.0];
 
   if (selectingColumns == NO)
     {
@@ -3226,34 +3228,10 @@ typedef enum {
         startingRow = 0;
       if (endingRow == -1)
         endingRow = numberOfRows - 1;
-      
-      // FIXME: Take alternating row coloring into account...
-      NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
-      const NSUInteger rowColorCount = [rowColors count];
 
       row = [selectedRows indexGreaterThanOrEqualToIndex: startingRow];
       while ((row != NSNotFound) && (row <= endingRow))
         {
-          NSColor *selectionColor = nil;
-          
-          if ([tableView usesAlternatingRowBackgroundColors])
-            backgroundColor = [rowColors objectAtIndex: (row % rowColorCount)];
-          
-          // Switch to the alternate color if the backgroundColor is white.
-          if([backgroundColor isEqual: [NSColor whiteColor]])
-            {
-              selectionColor = [NSColor colorWithCalibratedRed: 0.86
-                                                         green: 0.92
-                                                          blue: 0.99
-                                                         alpha: 1.0];
-            }
-          else
-            {
-              selectionColor = [NSColor whiteColor];
-            }
-
-          //NSHighlightRect(NSIntersectionRect([tableView rectOfRow: row],
-          //						 clipRect));
           [selectionColor set];
           NSRectFill(NSIntersectionRect([tableView rectOfRow: row], clipRect));
           row = [selectedRows indexGreaterThanIndex: row];
@@ -3263,27 +3241,28 @@ typedef enum {
     {
       NSUInteger selectedColumnsCount;
       NSUInteger column;
-      NSInteger startingColumn, endingColumn;
+      NSInteger  startingColumn, endingColumn;
       
       selectedColumnsCount = [selectedColumns count];
       
       if (selectedColumnsCount == 0)
-	    return;
+        return;
       
       /* highlight selected columns */
       startingColumn = [tableView columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
-      endingColumn = [tableView columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
+      endingColumn   = [tableView columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
 
       if (startingColumn == -1)
-	    startingColumn = 0;
+        startingColumn = 0;
       if (endingColumn == -1)
-	    endingColumn = numberOfColumns - 1;
+        endingColumn = numberOfColumns - 1;
 
       column = [selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
       while ((column != NSNotFound) && (column <= endingColumn))
         {
-            NSHighlightRect(NSIntersectionRect([tableView rectOfColumn: column], clipRect));
-            column = [selectedColumns indexGreaterThanIndex: column];
+          [selectionColor set];
+          NSRectFill(NSIntersectionRect([tableView rectOfColumn: column], clipRect));
+          column = [selectedColumns indexGreaterThanIndex: column];
         }	  
     }
 }
