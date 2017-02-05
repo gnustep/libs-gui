@@ -81,6 +81,7 @@
 
 @end
 
+#pragma mark - Extended XIB 5 NSCustomObject...
 @interface NSCustomObject5 : NSCustomObject
 {
   NSString *_userLabel;
@@ -137,7 +138,7 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-
+#pragma mark - Extended XIB 5 NSWindowTemplate...
 @interface NSWindowTemplate5 : NSWindowTemplate
 {
   BOOL _visibleAtLaunch;
@@ -162,21 +163,54 @@ static NSString *ApplicationClass = nil;
 
 - (id) nibInstantiate
 {
-  // Instantiate the real object...
-  id object = [super nibInstantiate];
+  if (_realObject == nil)
+  {
+    // Instantiate the real object...
+    [super nibInstantiate];
+    
+    // >= XIB 5 - startup visible windows...
+    if (_visibleAtLaunch)
+      {
+        // bring visible windows to front...
+        [(NSWindow *)_realObject orderFront: self];
+      }
+  }
   
-  // >= XIB 5 - startup visible windows...
-  if (_visibleAtLaunch)
-    {
-      // bring visible windows to front...
-      [(NSWindow *)object orderFront: self];
-    }
-  
-  return object;
+  return _realObject;
 }
 
 @end
 
+#pragma mark - Extended XIB 5 IBActionConnection...
+@interface IBActionConnection5 : IBActionConnection
+@end
+
+@implementation IBActionConnection5
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+  {
+    if ([coder allowsKeyedCoding])
+    {
+      ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
+      ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+      ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+    }
+    else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+  }
+  return self;
+}
+
+@end
+
+#pragma mark - Extended XIB 5 IBOutletConnection...
 @interface IBOutletConnection5 : IBOutletConnection
 @end
 
@@ -186,26 +220,32 @@ static NSString *ApplicationClass = nil;
 {
   self = [super initWithCoder: coder];
   if (self)
+  {
+    if ([coder allowsKeyedCoding])
     {
-      if ([coder allowsKeyedCoding])
-        {
-          if ([coder containsValueForKey: @"property"])
-            {
-              ASSIGN(label, [coder decodeObjectForKey: @"property"]);
-            }
-        }
-      else
-        {
-          [NSException raise: NSInvalidArgumentException
-                      format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-           NSStringFromClass([coder class])];
-        }
+      ASSIGN(label, [coder decodeObjectForKey: @"property"]);
+      ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+      ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
     }
+    else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+  }
   return self;
+}
+
+- (void) establishConnection
+{
+  [super establishConnection];
+  RETAIN(destination);
 }
 
 @end
 
+#pragma mark - Extended XIB 5 IBUserDefinedRuntimeAttribute...
 @interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
 @end
 
@@ -247,6 +287,7 @@ static NSString *ApplicationClass = nil;
 @end
 
 
+#pragma mark - XIB 5 GSXib5KeyedUnarchiver Implementation...
 @implementation GSXib5KeyedUnarchiver
 
 static NSDictionary *XmltagToObjectClassCrossReference = nil;
@@ -258,7 +299,9 @@ static NSDictionary *XmlTagToDecoderSelectorMap = nil;
 static NSDictionary *XmlKeyToDecoderSelectorMap = nil;
 static NSArray      *XmlKeysDefined  = nil;
 static NSArray      *XmlReferenceAttributes  = nil;
+static NSArray      *XmlConnectionRecordTags  = nil;
 
+#pragma mark -
 + (void) initialize
 {
   if (self == [GSXib5KeyedUnarchiver class])
@@ -282,7 +325,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
                                                    //@"outlet"                        : @"IBOutletConnection5",
-                                                   //@"action"                        : @"IBActionConnection",
+                                                   //@"action"                        : @"IBActionConnection5",
                                                    @"window"                        : @"NSWindowTemplate5" };
             RETAIN(XmltagToObjectClassCrossReference);
 
@@ -297,6 +340,9 @@ static NSArray      *XmlReferenceAttributes  = nil;
 
             XmlReferenceAttributes = @[ @"headerView", @"initialItem" ];
             RETAIN(XmlReferenceAttributes);
+            
+            XmlConnectionRecordTags = @[ @"action", @"outlet" ];
+            RETAIN(XmlConnectionRecordTags);
 
             XmlKeyMapTable = @{ @"NSIsSeparator"                    : @"isSeparatorItem",
                                 //@"NSName"                           : @"systemMenu",
@@ -326,7 +372,8 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                 @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips" };
             RETAIN(XmlKeyMapTable);
             
-            XmlKeysDefined = @[ @"NSWTFlags", @"NSvFlags", @"NSBGColor",
+            XmlKeysDefined = @[ @"NSWindowBacking", @"NSWTFlags",
+                                @"NSvFlags", @"NSBGColor",
                                 @"NSSize", //@"IBIsSystemFont",
                                 @"NSHeaderClipView", @"NSHScroller", @"NSVScroller", @"NSsFlags",
                                 @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
@@ -403,6 +450,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
                                             @"NSNormalImage"              : @"decodeCellNormalImageForElement:",
                                             @"NSAlternateImage"           : @"decodeCellAlternateImageForElement:",
                                             @"NSWTFlags"                  : @"decodeWindowTemplateFlagsForElement:",
+                                            @"NSWindowBacking"            : @"decodeWindowBackingStoreForElement:",
                                             @"NSDocView"                  : @"decodeClipViewDocumentViewForElement:",
                                             @"NSWhite"                    : @"decodeColorWhiteForElement:",
                                             @"NSRGB"                      : @"decodeColorRGBForElement:",
@@ -457,28 +505,59 @@ static NSArray      *XmlReferenceAttributes  = nil;
   return NSClassFromString([self classNameForXibTag:xibTag]);
 }
 
-#pragma mark - Instance level support method(s)...
-- (void)setContext: (NSDictionary *)context
+#pragma mark - Instance level decoding support method(s)...
+- (GSXib5Element*) connectionRecordForElement: (GSXib5Element*)element
 {
-  ASSIGN(_context, context);
+  // Mimic the old IBConnectionRecord instance...
+  if ([XmlConnectionRecordTags containsObject: [element type]])
+    {
+      NSDictionary  *attributes       = @{ @"class"      : @"IBConnectionRecord",
+                                           @"id"         : [[NSUUID UUID] UUIDString] };
+      GSXib5Element *connectionRecord = [[GSXib5Element alloc] initWithType: @"object"
+                                                              andAttributes: attributes];
+      //[element setAttribute: @"connection" forKey: @"key"];
+      [connectionRecord setElement: element forKey: @"connection"];
+      return AUTORELEASE(connectionRecord);
+    }
+  
+  return nil;
+}
+
+- (GSXib5Element*) orderedObjectForElement: (GSXib5Element*)element
+{
+  // Mimic the old IBObjectRecord instance...
+  NSDictionary  *attributes   = @{ @"class" : @"IBObjectRecord",
+                                   @"id"    : [[NSUUID UUID] UUIDString] };
+  GSXib5Element *objectRecord = [[GSXib5Element alloc] initWithType: @"object"
+                                                      andAttributes: attributes];
+  GSXib5Element *parent       = [[GSXib5Element alloc] initWithType: @"nil"
+                                                      andAttributes: @{ @"key" : @"parent" }];
+  GSXib5Element *children     = [[GSXib5Element alloc] initWithType: @"nil"
+                                                      andAttributes: @{ @"key" : @"children" }];
+
+  //[element setAttribute: @"connection" forKey: @"key"];
+  [objectRecord setElement: element forKey: @"object"];
+  [objectRecord setElement: parent forKey: @"parent"];
+  [objectRecord setElement: children forKey: @"children"];
+  return AUTORELEASE(objectRecord);
 }
 
 #pragma mark - Instance initialization method(s)...
 - (id) initForReadingWithData: (NSData*)data
 {
 #if     GNUSTEP_BASE_HAVE_LIBXML
-  NSXMLParser *theParser;
-  NSData *theData = data;
+  NSXMLParser *theParser  = nil;
+  NSData      *theData    = data;
 
   if (theData == nil)
   {
     return nil;
   }
   
-  objects = [[NSMutableDictionary alloc] init];
-  stack = [[NSMutableArray alloc] init];
-  decoded = [[NSMutableDictionary alloc] init];
+  // Initialize...
+  [self _initCommon];
   
+  // Createe the parser and parse the data...
   theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];
   
@@ -489,7 +568,7 @@ static NSArray      *XmlReferenceAttributes  = nil;
   }
   NS_HANDLER
   {
-    NSLog(@"Exception occurred while parsing Xib: %@",[localException reason]);
+    NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
     DESTROY(self);
   }
   NS_ENDHANDLER
@@ -500,9 +579,51 @@ static NSArray      *XmlReferenceAttributes  = nil;
   return self;
 }
 
+- (void) _initCommon
+{
+  [super _initCommon];
+  
+  // Create our object(s)...
+  _connectionRecords    = [[GSXib5Element alloc] initWithType: @"array"
+                                                andAttributes: @{ @"key" : @"connectionRecords" }];
+  _objectRecords        = [[GSXib5Element alloc] initWithType: @"object"
+                                                andAttributes: @{ @"class" : @"IBMutableOrderedSet",
+                                                                  @"key"   : @"objectRecords" }];
+  _orderedObjects       = [[GSXib5Element alloc] initWithType: @"array"
+                                                andAttributes: @{ @"key" : @"orderedObjects" }];
+  _flattenedProperties  = [[GSXib5Element alloc] initWithType: @"object"
+                                                andAttributes: @{ @"class" : @"NSMutableDictionary",
+                                                                  @"key"   : @"flattenedProperties" }];
+  _runtimeAttributes    = [[GSXib5Element alloc] initWithType: @"object"
+                                                andAttributes: @{ @"class" : @"NSMutableDictionary",
+                                                                  @"key"   : @"connectionRecords" }];
+  
+  // We will imitate the old XIB loading using an IBObjectContainer
+  // stored with key "IBDocument.Objects"...
+  _IBObjectContainer = [[GSXib5Element alloc] initWithType: @"object"
+                                             andAttributes: @{ @"class" : @"IBObjectContainer",
+                                                               @"key"   : @"IBDocument.Objects" }];
+  
+  // Create the linked set of XIB elements...
+  [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
+  [_IBObjectContainer setElement: _objectRecords forKey: @"objectRecords"];
+  [_IBObjectContainer setElement: _flattenedProperties forKey: @"flattenedProperties"];
+  
+  // objectRecords...
+  [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
+  
+   // flattenedProperties...
+  [_flattenedProperties setElement: _runtimeAttributes forKey: [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey",
+                                                                [[NSUUID UUID] UUIDString]]];
+}
+
 - (void)dealloc
 {
-  RELEASE(_context);
+  RELEASE(_IBObjectContainer);
+  RELEASE(_connectionRecords);
+  RELEASE(_objectRecords);
+  RELEASE(_flattenedProperties);
+  RELEASE(_runtimeAttributes);
   [super dealloc];
 }
 
@@ -545,12 +666,12 @@ didStartElement: (NSString*)elementName
       
       if ([attributes objectForKey:@"key"] == nil)
         {
-          // Special cases to allow current initWithCoder methods to obtain objects...
-          if ([@"objects" isEqualToString:elementName])
+          // Special cases to allow current initWithCoder methods to obtain objects..._IBObjectContainer
+          if ([@"objects" isEqualToString: elementName])
             {
-              [attributes setObject:@"IBDocument.RootObjects" forKey:@"key"];
+              [attributes setObject: @"IBDocument.RootObjects" forKey: @"key"];
             }
-          else if (([@"items" isEqualToString:elementName]) &&
+          else if (([@"items" isEqualToString: elementName]) &&
                    ([[currentElement attributeForKey: @"class"] isEqualToString:@"NSMenu"]))
             {
               [attributes setObject: @"NSMenuItems" forKey: @"key"];
@@ -566,6 +687,11 @@ didStartElement: (NSString*)elementName
         if ([[attributes objectForKey: @"userLabel"] isEqualToString: @"Application"])
           [attributes setObject:@"NSApplication" forKey:@"customClass"];
       
+      // If there is no ID assigned to this element we're going to arbritrarily
+      // add one since we need to cross-reference objects...
+      if ([attributes objectForKey: @"id"] == nil)
+        [attributes setObject: [[NSUUID UUID] UUIDString] forKey: @"id"];
+      
       // FOR DEBUG...CAN BE REMOVED...
       [attributes setObject: elementName forKey: @"key5"];
 
@@ -577,13 +703,36 @@ didStartElement: (NSString*)elementName
       
       if ([@"array" isEqualToString: [currentElement type]])
         {
-          // For arrays
+          // For arrays...
           [currentElement addElement: element];
+
+          // Need to store element for making the connections...
+          if ([XmlConnectionRecordTags containsObject: elementName])
+            {
+              // Get the parent of the parent object...
+              // The current object at this point is the 'connections' array element.
+              // The parent of connections array element IS the object ID we need...
+              GSXib5Element *parent = [stack objectAtIndex: [stack count]-1];
+              NSString      *objKey = (([@"action" isEqualToString: elementName]) ?
+                                       @"destination" : @"target");
+              
+              // Store the ID reference of the parent object...
+              [element setAttribute: [parent attributeForKey: @"id"] forKey: objKey];
+
+              // Add a connection record element that includes this element...
+              [_connectionRecords addElement: [self connectionRecordForElement: element]];
+            }
         }
       else
         {
           // For elements...
           [currentElement setElement: element forKey: key];
+          
+          // If top level document add our generated connection records...
+          if ([@"document" isEqualToString: elementName])
+            {
+              [element setElement: _IBObjectContainer forKey: @"IBDocument.Objects"];
+            }
         }
 
       // Reference(s)...
@@ -592,7 +741,7 @@ didStartElement: (NSString*)elementName
           [objects setObject: element forKey: ref];
         }
       
-      if ([XmltagsNotStacked containsObject:elementName] == NO)
+      if ([XmltagsNotStacked containsObject: elementName] == NO)
         {
           // Push element onto stack...
           [stack addObject: currentElement];
@@ -616,15 +765,42 @@ didStartElement: (NSString*)elementName
 #endif
   
   // Skip certain element names - for now...
-  if ([XmltagsToSkip containsObject:elementName] == NO)
+  if ([XmltagsToSkip containsObject: elementName] == NO)
     {
-      if ([XmltagsNotStacked containsObject:elementName] == NO)
+      if ([XmltagsNotStacked containsObject: elementName] == NO)
         {
           // Pop element...
           currentElement = [stack lastObject];
           [stack removeLastObject];
         }
     }
+}
+
+#pragma mark - Finish decoding connections (actions/outlets) and runtime attributes...
+- (void)processRuntimeAttributes: (NSArray*)runtimeAttributes forObject: (id)object
+{
+  NSEnumerator                    *iter             = [runtimeAttributes objectEnumerator];
+  IBUserDefinedRuntimeAttribute5  *runtimeAttribute = nil;
+  id                               theObject        = [self nibInstantiate: object];
+  
+  while ((runtimeAttribute = [iter nextObject]) != nil)
+  {
+#if defined(DEBUG_XIB5)
+    NSWarnMLog(@"processing object (%@) runtime attr: %@", object, runtimeAttribute);
+#endif
+    [theObject setValue: [runtimeAttribute value] forKeyPath: [runtimeAttribute keyPath]];
+  }
+}
+
+- (void)processRuntimeAttributes: (NSDictionary*)runtimeAttributes
+{
+  NSEnumerator *iter = [runtimeAttributes keyEnumerator];
+  id            key  = nil; // Key IS object...
+  
+  while ((key = [iter nextObject]))
+  {
+    [self processRuntimeAttribute: [runtimeAttributes objectForKey: key] forObject: key];
+  }
 }
 
 #pragma mark - Decoding method(s)...
@@ -728,22 +904,54 @@ didStartElement: (NSString*)elementName
     NSUInteger                   winPosMask       = [[self decodeWindowPositionMaskForElement:winPosMaskEleme] unsignedIntegerValue];
     
     mask.flags.isHiddenOnDeactivate =  [[attributes objectForKey: @"hidesOnDeactivate"] boolValue];
-    mask.flags.isNotReleasedOnClose = ![[attributes objectForKey: @"releasedWhenClosed"] boolValue];
-    mask.flags.isDeferred           = ![[attributes objectForKey: @"visibleAtLaunch"] boolValue];
+    mask.flags.isNotReleasedOnClose = !([attributes objectForKey: @"releasedWhenClosed"] ?
+                                        [[attributes objectForKey: @"releasedWhenClosed"] boolValue] : YES);
+    mask.flags.isDeferred           =  ([attributes objectForKey: @"deferred"] ?
+                                        [[attributes objectForKey: @"deferred"] boolValue] : YES);
     mask.flags.isOneShot            =  ([attributes objectForKey: @"oneShot"] ?
                                         [[attributes objectForKey: @"oneShot"] boolValue] : YES);
     
-    mask.flags.isVisible            =  [[attributes objectForKey: @"visibleAtLaunch"] boolValue];
-    mask.flags.wantsToBeColor       =  0; //[[attributes objectForKey: @"visibleAtLaunch"] boolValue];
-    mask.flags.dynamicDepthLimit    =  0; //[[attributes objectForKey: @"visibleAtLaunch"] boolValue];
+    mask.flags.isVisible            =  ([attributes objectForKey: @"visibleAtLaunch"] ?
+                                        [[attributes objectForKey: @"visibleAtLaunch"] boolValue] : YES);
+    mask.flags.wantsToBeColor       =  0; // ???;
+    mask.flags.dynamicDepthLimit    =  0; // ???;
     mask.flags.autoPositionMask     =  winPosMask;
     mask.flags.savePosition         =  [attributes objectForKey: @"frameAutosaveName"] != nil;
-    mask.flags.style                =  0; //[[attributes objectForKey: @"visibleAtLaunch"] boolValue];
+    mask.flags.style                =  0; // ???
+    mask.flags.isNotShadowed        = !([attributes objectForKey: @"hasShadow"] ?
+                                        [[attributes objectForKey: @"hasShadow"] boolValue] : YES);
+    
+    // File GSNibLoading.m: 422. In -[NSWindowTemplate initWithCoder:] _flags: 0xf0781400 style: 147 backing: 2
+    // File GSNibLoading.m: 422. In -[NSWindowTemplate initWithCoder:] _flags: 0xf0001000 style: 147 backing: 2
+
+#if 0 // FIXME:
+    mask.flags.allowsToolTipsWhenApplicationIsInactive = ([attributes objectForKey: @"allowsToolTipsWhenApplicationIsInactive"] ?
+                                                          [[attributes objectForKey: @"allowsToolTipsWhenApplicationIsInactive"] boolValue] :
+                                                          YES);
+#endif
     
     return [NSNumber numberWithUnsignedInteger: mask.value];
   }
   
   return nil;
+}
+
+- (id) decodeWindowBackingStoreForElement: (GSXib5Element*)element
+{
+  NSUInteger   value       = NSBackingStoreBuffered; // Default for Cocoa...
+  NSString    *backingType = [element attributeForKey: @"backingType"];
+  
+  if (backingType)
+    {
+      if ([@"retained" isEqualToString: backingType])
+        value = NSBackingStoreRetained;
+      else if ([@"nonretained" isEqualToString: backingType])
+        value = NSBackingStoreNonretained;
+      else
+        NSWarnMLog(@"unknown backing store type: %@", backingType);
+    }
+  
+  return [NSNumber numberWithUnsignedInteger: value];
 }
 
 - (id) decodeWindowPositionMaskForElement: (GSXib5Element*)element
@@ -776,7 +984,17 @@ didStartElement: (NSString*)elementName
         mask |= NSMiniaturizableWindowMask;
       if ([[attributes objectForKey: @"resizable"] boolValue])
         mask |= NSResizableWindowMask;
-      
+      if ([[attributes objectForKey: @"texturedBackground"] boolValue])
+        mask |= NSTexturedBackgroundWindowMask;
+      if ([[attributes objectForKey: @"unifiedTitleAndToolbar"] boolValue])
+        mask |= NSUnifiedTitleAndToolbarWindowMask;
+      if ([[attributes objectForKey: @"fullSizeContentView"] boolValue])
+        mask |= NSWindowStyleMaskFullSizeContentView;
+      if ([[attributes objectForKey: @"utility"] boolValue])
+        mask |= NSWindowStyleMaskUtilityWindow;
+      if ([[attributes objectForKey: @"nonactivatingPanel"] boolValue])
+        mask |= NSWindowStyleMaskNonactivatingPanel;
+
 #if defined(DEBUG_XIB5)
       NSWarnMLog(@"mask: %lu", mask);
 #endif
@@ -1221,10 +1439,10 @@ didStartElement: (NSString*)elementName
   NSDictionary *attributes = [element attributes];
   NSString     *metaFont   = [[attributes objectForKey: @"metaFont"] lowercaseString];
   BOOL          isSystem   = [MetaFontSystemNames containsObject: metaFont];
-  NSWarnMLog(@"isSystemFont %ld", (long)isSystem);
   return [NSNumber numberWithBool: isSystem];
 }
 
+#pragma mark - NSSplitView...
 - (id) decodeDividerStyleForElement: (GSXib5Element*)element
 {
   NSString                *dividerStyle = [element attributeForKey: @"dividerStyle"];
@@ -1260,9 +1478,9 @@ didStartElement: (NSString*)elementName
   NSString     *displayedWhenStopped  = [element attributeForKey: @"displayedWhenStopped"];
   
   if ([indeterminate boolValue])
-    flags |= 0x02;
+    flags |= 0x0002;
   if ([@"small" isEqualToString: controlSize])
-    flags |= 0x100;
+    flags |= 0x0100;
   if ([@"spinning" isEqualToString: style])
     flags |= 0x1000;
   if ((displayedWhenStopped == nil) || ([displayedWhenStopped boolValue]))
@@ -1682,7 +1900,7 @@ didStartElement: (NSString*)elementName
   NSWarnMLog(@"value: %lu", value);
 #endif
   
-  return [NSNumber numberWithUnsignedInteger: value];
+  return [NSString stringWithFormat: @"%ld",value];
 }
 
 - (id) decodeTableColumnResizingMaskForElement: (GSXib5Element*)element
@@ -2379,62 +2597,6 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-#pragma mark - Object creation support methods...
-- (id) nibInstantiate: (id)object
-{
-  id theObject = object;
-  
-  // Check whether object needs to be instantiated and awaken...
-  if ([theObject respondsToSelector: @selector(nibInstantiate)])
-  {
-    // If this is the file's owner see if there is a value in the context...
-    if ([theObject isKindOfClass: [NSCustomObject5 class]])
-    {
-      // Cross reference the file's owner object from the context data...
-      if ([[(NSCustomObject5*)theObject userLabel] isEqualToString: @"File's Owner"])
-      {
-        if ([_context objectForKey: NSNibOwner])
-        {
-          [(NSCustomObject*)theObject setRealObject: [_context objectForKey: NSNibOwner]];
-        }
-      }
-    }
-    
-    // Instantiate the real object...
-    theObject = [theObject nibInstantiate];
-  }
-  
-  return theObject;
-}
-
-- (void) awakeObjectFromNib: (id)object
-{
-  // We are going to awaken objects here - we're assuming that all
-  // have been nibInstantiated when needed...
-  if ([object respondsToSelector: @selector(awakeFromNib)])
-    [object awakeFromNib];
-}
-
-- (Ivar) getClassVariableForObject: (id)object forName: (NSString*)property
-{
-  const char *name  = [property cString];
-  Class       class = object_getClass(object);
-  Ivar        ivar  = class_getInstanceVariable(class, name);
-  
-  // If not found...
-  if (ivar == 0)
-  {
-    // Try other permutations...
-    if ([property characterAtIndex: 0] == '_')
-    {
-      // Try removing the '_' prefix automatically added by Xcode...
-      ivar = [self getClassVariableForObject: object forName: [property substringFromIndex: 1]];
-    }
-  }
-  
-  return ivar;
-}
-
 #pragma mark - Overridden decoding methods from base class...
 - (id) objectForXib: (GSXibElement*)element
 {
@@ -2448,11 +2610,34 @@ didStartElement: (NSString*)elementName
       if (([@"outlet" isEqualToString: elementName]) ||
           ([@"action" isEqualToString: elementName]))
         {
+#if 1
+          NSString      *classname        = nil;
+          GSXib5Element *connectionRecord = [[GSXib5Element alloc] initWithType: @"object" andAttributes: @{}];
+          NSString      *targID           = [element attributeForKey: @"target"];
+          NSString      *destID           = [element attributeForKey: @"destination"];
+          GSXib5Element *targElem         = [objects objectForKey: targID];
+          GSXib5Element *destElem         = [objects objectForKey: destID];
+          id             targObj          = [self objectForXib: targElem];
+          id             destObj          = [self objectForXib: destElem];
+//          NSWarnMLog(@"targID: %@ destID: %@ targObj: %@ destOBJ: %@", targID, destID, targObj, destObj);
+          
+          [(GSXib5Element*)element setAttribute: targObj forKey: @"target"];
+          [(GSXib5Element*)element setAttribute: destObj forKey: @"destination"];
+          
+          if ([@"outlet" isEqualToString: elementName])
+            classname = @"IBOutletConnection5";
+          else
+            classname = @"IBActionConnection5";
+          
+          // Decode the object...
+          object = [self decodeObjectForXib: element forClassName: classname withID: [element attributeForKey: @"id"]];
+#else
           // Use the attributes for this result...
           object = [element attributes];
-          
+
           if ([element attributeForKey: @"id"])
             [decoded setObject: object forKey: [element attributeForKey: @"id"]];
+#endif
         }
       else if ([@"range" isEqualToString: elementName])
         {
@@ -2470,12 +2655,6 @@ didStartElement: (NSString*)elementName
           if ([element attributeForKey: @"id"])
             [decoded setObject: object forKey: [element attributeForKey: @"id"]];
         }
-#if 0
-      else if ([[[elementName substringFromIndex:[elementName length]-4] lowercaseString] isEqualToString:@"mask"])
-        {
-          object = AUTORELEASE([[element attributes] copy]);
-        }
-#endif
     }
   else // Check for required fixes for XIB 5 processing changes to old element types...
     {
@@ -2505,8 +2684,13 @@ didStartElement: (NSString*)elementName
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
 {
-  id object     = [super decodeObjectForXib: element forClassName: classname withID: objID];
-  id theObject  = [self nibInstantiate:object];
+  id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
+
+
+  // Create an ordered object for this element...
+  // This probably needs to be qualified but I have yet to determine
+  // what that should be right now...
+  [_orderedObjects addElement: [self orderedObjectForElement: element]];
 
   // XIB 5 now stores connections etc as part of element objects...
   // NOTE: This code should follow the normal IBRecord-type processing.  However,
@@ -2520,118 +2704,14 @@ didStartElement: (NSString*)elementName
   // Process tooltips...
   if ([element attributeForKey: @"toolTip"])
     {
-      if ([theObject respondsToSelector: @selector(setToolTip:)])
-        [theObject setToolTip: [element attributeForKey: @"toolTip"]];
+      if ([object respondsToSelector: @selector(setToolTip:)])
+        [object setToolTip: [element attributeForKey: @"toolTip"]];
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-        [theObject setHeaderToolTip: [element attributeForKey: @"toolTip"]];
+        [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
 #if defined(DEBUG_XIB5)
-      NSWarnMLog(@"object: %@ toolTip: %@", theObject, [element attributeForKey: @"toolTip"]);
+      NSWarnMLog(@"object: %@ toolTip: %@", object, [element attributeForKey: @"toolTip"]);
 #endif
     }
-  
-  // Process actions/outlets...
-  if ([element elementForKey: @"connections"])
-    {
-      NSArray *connections = [self objectForXib: [element elementForKey: @"connections"]];
-
-      // Process actions for object...
-      {
-        NSPredicate *predicate    = [NSPredicate predicateWithFormat:@"key == 'action'"];
-        NSArray     *actions      = [connections filteredArrayUsingPredicate: predicate];
-        
-        if ([actions count])
-        {
-          NSDictionary *action   = [actions objectAtIndex: 0];
-          NSString     *targetID = [action objectForKey: @"target"];
-          id            target   = [self objectForXib: [objects objectForKey: targetID]];
-          NSString     *selector = [action objectForKey: @"selector"];
-          
-          // Check whether target needs instantiation and awakening...
-          target = [self nibInstantiate: target];
-
-          [theObject setTarget: target];
-          [theObject setAction: NSSelectorFromString(selector)];
-        }
-      }
-  
-      // Process outlets for object...
-      {
-        NSPredicate   *predicate    = [NSPredicate predicateWithFormat:@"key == 'outlet'"];
-        NSArray       *outlets      = [connections filteredArrayUsingPredicate: predicate];
-        NSEnumerator  *iter         = [outlets objectEnumerator];
-        NSDictionary  *outlet       = nil;
-
-        while ((outlet = [iter nextObject]) != nil)
-        {
-#if defined(DEBUG_XIB5)
-          NSWarnMLog(@"processing outlet: %@", outlet);
-#endif
-          NSString      *property     = [outlet objectForKey: @"property"];
-          NSString      *destID       = [outlet objectForKey: @"destination"];
-          GSXib5Element *destElem     = [objects objectForKey: destID];
-          id             destination  = [self objectForXib: destElem];
-          NSString      *selectorName = [NSString stringWithFormat: @"set%@%@:",
-                                         [[property substringToIndex: 1] uppercaseString],
-                                         [property substringFromIndex: 1]];
-          SEL            selector     = NSSelectorFromString(selectorName);
-          
-          
-          // Check whether destination needs instantiation and awakening...
-          destination = [self nibInstantiate: destination];
-          
-#if defined(DEBUG_XIB5)
-          NSWarnMLog(@"source: %@ dest: %@ property: %@", theObject, destination, property);
-#endif
-
-          if (selector && [theObject respondsToSelector: selector])
-          {
-            [theObject performSelector: selector withObject: destination];
-          }
-          else
-          {
-            /*
-             * We cannot use the KVC mechanism here, as this would always retain _dst
-             * and it could also affect _setXXX methods and _XXX ivars that aren't
-             * affected by the Cocoa code.
-             */
-            Ivar ivar = [self getClassVariableForObject: theObject forName: property];
-            
-            if (ivar != 0)
-            {
-              // This shouldn't be needed...
-              RETAIN(destination);
-              
-              // Set the iVar...
-              object_setIvar(theObject, ivar, destination);
-            }
-            else
-            {
-              NSWarnMLog(@"class '%@' has no instance var named: %@", [theObject className], property);
-            }
-          }
-        }
-      }
-    }
-
-  // Process runtime attributes for object...
-  if ([element elementForKey: @"userDefinedRuntimeAttributes"])
-    {
-      GSXib5Element                   *ibDefinedRuntimeAttr = (GSXib5Element*)[element elementForKey: @"userDefinedRuntimeAttributes"];
-      NSArray                         *runtimeAttributes    = [self objectForXib: ibDefinedRuntimeAttr];
-      NSEnumerator                    *iter                 = [runtimeAttributes objectEnumerator];
-      IBUserDefinedRuntimeAttribute5  *runtimeAttribute     = nil;
-      
-      while ((runtimeAttribute = [iter nextObject]) != nil)
-      {
-#if defined(DEBUG_XIB5)
-        NSWarnMLog(@"processing object (%@) runtime attr: %@", object, runtimeAttribute);
-#endif
-        [theObject setValue: [runtimeAttribute value] forKeyPath: [runtimeAttribute keyPath]];
-      }
-    }
-  
-  // Awake from nib...
-  [self awakeObjectFromNib: theObject];
   
   return object;
 }
@@ -2823,14 +2903,14 @@ didStartElement: (NSString*)elementName
       value = [super decodeDoubleForKey:key];
     }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    value = [self decodeDoubleForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      value = [self decodeDoubleForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-  {
-    SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-    value        = [[self performSelector: selector withObject: currentElement] doubleValue];
-  }
+    {
+      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+      value        = [[self performSelector: selector withObject: currentElement] doubleValue];
+    }
   else if ([currentElement attributeForKey: key])
     {
       value = [[currentElement attributeForKey: key] doubleValue];
@@ -2858,18 +2938,18 @@ didStartElement: (NSString*)elementName
 {
   int value = 0;
   
-  if ([self containsValueForKey:key])
+  if ([XmlKeyToDecoderSelectorMap objectForKey: key])
+  {
+    SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+    value        = [[self performSelector: selector withObject: currentElement] intValue];
+  }
+  else if ([self containsValueForKey:key])
   {
     value = [super decodeIntForKey:key];
   }
   else if ([XmlKeyMapTable objectForKey: key])
   {
     value = [self decodeIntForKey: [XmlKeyMapTable objectForKey: key]];
-  }
-  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-  {
-    SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-    value        = [[self performSelector: selector withObject: currentElement] intValue];
   }
   else if ([currentElement attributeForKey: key])
   {
@@ -3083,17 +3163,9 @@ didStartElement: (NSString*)elementName
               // Target is stored in the action XIB element - if present - which is
               // stored under the connections array element...
               NSArray     *connections = [self objectForXib: [currentElement elementForKey: @"connections"]];
-              NSPredicate *predicate   = [NSPredicate predicateWithFormat:@"key == 'action'"];
+              NSPredicate *predicate   = [NSPredicate predicateWithFormat:@"className == 'IBActionConnection'"];
               NSArray     *actions     = [connections filteredArrayUsingPredicate: predicate];
               hasValue = ([actions count] != 0);
-              
-#if defined(DEBUG_XIB5)
-              // FOR DEBUG...
-              if ([actions count] == 0)
-              {
-                NSWarnMLog(@"no action available for target request");
-              }
-#endif
             }
         }
     }

@@ -33,9 +33,13 @@
 
 @interface GSXib5KeyedUnarchiver : GSXibKeyedUnarchiver
 {
-  NSDictionary    *_context;
+  GSXib5Element *_IBObjectContainer;
+  GSXib5Element *_connectionRecords;
+  GSXib5Element *_objectRecords;
+  GSXib5Element *_orderedObjects;
+  GSXib5Element *_flattenedProperties;
+  GSXib5Element *_runtimeAttributes;
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
-- (void) setContext: (NSDictionary*)context;
 @end

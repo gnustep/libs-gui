@@ -43,6 +43,7 @@
   NSMutableDictionary *decoded;
 }
 
+- (void) _initCommon;
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID;

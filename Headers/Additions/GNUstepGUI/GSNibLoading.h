@@ -77,9 +77,13 @@ typedef struct _GSWindowTemplateFlags
   unsigned int autoPositionMask:6;
   unsigned int savePosition:1;
   unsigned int style:2;
-  unsigned int _unused:16; // currently not used, contains Cocoa specific info
+  unsigned int _unused2:3;
+  unsigned int isNotShadowed:1;
+  unsigned int _unused:12; // currently not used, contains Cocoa specific info
 #else
-  unsigned int _unused:16; // currently not used, contains Cocoa specific info
+  unsigned int _unused:12; // currently not used, contains Cocoa specific info
+  unsigned int isNotShadowed:1;
+  unsigned int _unused2:3;
   unsigned int style:2;
   unsigned int savePosition:1;
   unsigned int autoPositionMask:6;

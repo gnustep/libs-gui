@@ -279,6 +279,14 @@
   return result;
 }
 
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat: @" - label: %@: ", label];
+  [description appendFormat: @" source: %@: ", NSStringFromClass([source class])];
+  [description appendFormat: @" destination: %@: ", NSStringFromClass([destination class])];
+  return AUTORELEASE(description);
+}
 - (id) nibInstantiate
 {
   if ([source respondsToSelector: @selector(nibInstantiate)])
@@ -346,7 +354,13 @@
                       { 	 
                         object_setIvar(source, ivar, destination);
                       }
-                  } 	 
+#if defined(DEBUG)
+                    else
+                      {
+                        NSWarnMLog(@"class '%@' has no instance var named: %@", NSStringFromClass(class), label);
+                      }
+#endif
+                  }
         }
     }
   NS_HANDLER
@@ -812,7 +826,7 @@
 {
   NSEnumerator *en;
   id obj;
-
+  
   // iterate over connections, instantiate, and then establish them.
   en = [connectionRecords objectEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -1014,14 +1028,6 @@
         if (unarchiver == nil)
           {
             unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
-            
-            // XIB 5 loading makes connections, etc - during loading as it's all embedded
-            // now within the object's XML definition...so the unarchiver needs the context
-            // information for at least the file's owner...
-            if (unarchiver)
-              {
-                [(GSXib5KeyedUnarchiver*)unarchiver setContext: context];
-              }
           }
 
         if (unarchiver != nil)

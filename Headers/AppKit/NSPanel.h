@@ -40,10 +40,10 @@ extern "C" {
 @class NSString;
 
 enum {
-  NSUtilityWindowMask = 16,
-  NSDocModalWindowMask = 32,
-  NSNonactivatingPanelMask = 128,
-  NSHUDWindowMask = 8192
+  NSUtilityWindowMask = NSWindowStyleMaskUtilityWindow,
+  NSDocModalWindowMask = NSWindowStyleMaskDocModalWindow,
+  NSNonactivatingPanelMask = NSWindowStyleMaskNonactivatingPanel,
+  NSHUDWindowMask = NSWindowStyleMaskHUDWindow
 };
 
 enum {

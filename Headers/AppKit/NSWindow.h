@@ -90,22 +90,32 @@ enum {
 
 enum {
   NSBorderlessWindowMask = 0,
-  NSTitledWindowMask = 1,
-  NSClosableWindowMask = 2,
-  NSMiniaturizableWindowMask = 4,
-  NSResizableWindowMask = 8,
+  NSTitledWindowMask = 1 << 0,
+  NSClosableWindowMask = 1 << 1,
+  NSMiniaturizableWindowMask = 1 << 2,
+  NSResizableWindowMask = 1 << 3,
+  NSWindowStyleMaskUtilityWindow = 1 << 4,
+  NSWindowStyleMaskDocModalWindow = 1 << 6,
+  NSWindowStyleMaskNonactivatingPanel = 1 << 7, // Specifies that a panel that does not activate the owning application
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-  NSTexturedBackgroundWindowMask = 256,
+  NSTexturedBackgroundWindowMask = 1 << 8,
 #endif 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
   NSUnscaledWindowMask = 2048,
-  NSUnifiedTitleAndToolbarWindowMask = 4096,
+  NSUnifiedTitleAndToolbarWindowMask = 1 << 12,
 #endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+  NSWindowStyleMaskHUDWindow = 1 << 13, // Specifies a heads up display panel
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
   NSFullScreenWindowMask = 16384,
+  NSWindowStyleMaskFullScreen = 1 << 14,
 #endif
-  NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
-  NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+  NSWindowStyleMaskFullSizeContentView = 1 << 15,
+#endif
+  NSIconWindowMask = 64,	/* GNUstep extension - app icon window i.e. NSWindowStyleMaskDocModalWindow */
+  NSMiniWindowMask = 128	/* GNUstep extension - miniwindows i.e. NSWindowStyleMaskNonactivatingPanel	*/
 };
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)

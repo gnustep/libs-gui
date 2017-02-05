@@ -57,7 +57,7 @@
                                                  error:NULL];
       if ([documentNodes count] > 0)
         {
-          NSLog(@"This is an XCode 5 XIB file.");
+          NSWarnMLog(@"This is an XCode 5 XIB file.");
           return nil;
         }
       else
@@ -205,6 +205,13 @@
   return result;
 }
 
+- (void) _initCommon
+{
+  objects = [[NSMutableDictionary alloc] init];
+  stack = [[NSMutableArray alloc] init];
+  decoded = [[NSMutableDictionary alloc] init];
+}
+
 - (id) initForReadingWithData: (NSData*)data
 {
 #if     GNUSTEP_BASE_HAVE_LIBXML
@@ -223,9 +230,6 @@
       return nil;
     }
   
-  objects = [[NSMutableDictionary alloc] init];
-  stack = [[NSMutableArray alloc] init];
-  decoded = [[NSMutableDictionary alloc] init];
   
   theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];

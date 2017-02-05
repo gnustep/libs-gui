@@ -327,6 +327,7 @@ static BOOL _isInInterfaceBuilder = NO;
           _flags.isDeferred = deferred;
           _flags.isOneShot = oneShot;
           _flags.isVisible = visible;
+          _flags.isNotShadowed = ![window hasShadow];
           _flags.wantsToBeColor = wantsToBeColor;
           _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
           _flags.autoPositionMask = autoPositionMask;
@@ -417,7 +418,7 @@ static BOOL _isInInterfaceBuilder = NO;
           ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
           _windowStyle |= NSTitledWindowMask;
         }
-
+      
       _baseWindowClass = [NSWindow class];
     }
   else
@@ -475,7 +476,7 @@ static BOOL _isInInterfaceBuilder = NO;
           [NSException raise: NSInternalInconsistencyException
                        format: @"Unable to find class '%@'", _windowClass];
         }
-      
+
       _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithContentRect: _windowRect
                                                                              styleMask: _windowStyle
                                                                                backing: _backingStoreType
@@ -493,6 +494,7 @@ static BOOL _isInInterfaceBuilder = NO;
       // [_realObject setAutoPosition: _flags.autoPosition];
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
       // [_realObject setFrameAutosaveName: _autosaveName]; // done after setting the min/max sizes
+      [_realObject setHasShadow: !_flags.isNotShadowed];
 
       // reset attributes...
       [_realObject setContentView: _view];
@@ -516,7 +518,7 @@ static BOOL _isInInterfaceBuilder = NO;
       // resize the window...
       [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect]
                                                      styleMask: [self windowStyle]]
-                   display: NO];
+                    display: NO];
       [_realObject setFrameAutosaveName: _autosaveName];
     }
   return _realObject;
