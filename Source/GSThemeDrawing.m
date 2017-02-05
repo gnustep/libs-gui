@@ -99,7 +99,7 @@
 }
 @end
 
-@interface NSCell (Private)
+@interface NSCell (GNUstepPrivate)
 - (void) _setInEditing: (BOOL)flag;
 - (BOOL) _inEditing;
 - (void) _drawEditorWithFrame: (NSRect)cellFrame
