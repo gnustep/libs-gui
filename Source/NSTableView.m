@@ -2117,6 +2117,7 @@ static void computeNewSelection
     {
       _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (CGFloat));
     }      
+  [self _resizeTableView];
   [self tile];
 }
 
@@ -2156,6 +2157,7 @@ static void computeNewSelection
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }      
+  [self _resizeTableView];
   [self tile];
 }
 
