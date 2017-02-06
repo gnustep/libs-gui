@@ -230,7 +230,9 @@
       return nil;
     }
   
-  
+  // Initialize...
+  [self _initCommon];
+
   theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];
   
