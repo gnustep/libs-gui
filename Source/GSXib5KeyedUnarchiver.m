@@ -1420,14 +1420,12 @@ didStartElement: (NSString*)elementName
       // Default the value per Cocoa...
       size = 13;
       
-      if ([metaFont containsString: @"system"])
-        size = 13;
+      if ([metaFont containsString: @"mini"])
+        size = 9;
       else if ([metaFont containsString: @"small"])
         size = 11;
-      else if ([metaFont containsString: @"mini"])
-        size = 9;
       else if ([metaFont containsString: @"medium"])
-        size = 13;
+        size = 12;
       else if ([metaFont containsString: @"menu"])
         size = 13;
       else if (metaFont)
@@ -1787,8 +1785,8 @@ didStartElement: (NSString*)elementName
   [object setAutoresizesSubviews: YES];
   [object setAutoresizingMask: NSViewWidthSizable | NSViewMaxYMargin];
 #endif
-  [object setNextKeyView: headerView];
-  [object setDocumentView: headerView];
+  [object setNextKeyView: (NSView*)headerView];
+  [object setDocumentView: (NSView*)headerView];
   
   return object;
 }
@@ -1907,10 +1905,10 @@ didStartElement: (NSString*)elementName
     value = NSTableViewReverseSequentialColumnAutoresizingStyle;
   
 #if defined(DEBUG_XIB5)
-  NSWarnMLog(@"value: %lu", value);
+  NSWarnMLog(@"value: %"PRIuPTR, value);
 #endif
   
-  return [NSString stringWithFormat: @"%ld",value];
+  return [NSString stringWithFormat: @"%"PRIuPTR,value];
 }
 
 - (id) decodeTableColumnResizingMaskForElement: (GSXib5Element*)element
@@ -2620,16 +2618,13 @@ didStartElement: (NSString*)elementName
       if (([@"outlet" isEqualToString: elementName]) ||
           ([@"action" isEqualToString: elementName]))
         {
-#if 1
           NSString      *classname        = nil;
-          GSXib5Element *connectionRecord = [[GSXib5Element alloc] initWithType: @"object" andAttributes: @{}];
           NSString      *targID           = [element attributeForKey: @"target"];
           NSString      *destID           = [element attributeForKey: @"destination"];
           GSXib5Element *targElem         = [objects objectForKey: targID];
           GSXib5Element *destElem         = [objects objectForKey: destID];
           id             targObj          = [self objectForXib: targElem];
           id             destObj          = [self objectForXib: destElem];
-//          NSWarnMLog(@"targID: %@ destID: %@ targObj: %@ destOBJ: %@", targID, destID, targObj, destObj);
           
           [(GSXib5Element*)element setAttribute: targObj forKey: @"target"];
           [(GSXib5Element*)element setAttribute: destObj forKey: @"destination"];
@@ -2641,13 +2636,6 @@ didStartElement: (NSString*)elementName
           
           // Decode the object...
           object = [self decodeObjectForXib: element forClassName: classname withID: [element attributeForKey: @"id"]];
-#else
-          // Use the attributes for this result...
-          object = [element attributes];
-
-          if ([element attributeForKey: @"id"])
-            [decoded setObject: object forKey: [element attributeForKey: @"id"]];
-#endif
         }
       else if ([@"range" isEqualToString: elementName])
         {
@@ -2700,17 +2688,8 @@ didStartElement: (NSString*)elementName
   // Create an ordered object for this element...
   // This probably needs to be qualified but I have yet to determine
   // what that should be right now...
-  [_orderedObjects addElement: [self orderedObjectForElement: element]];
+  [_orderedObjects addElement: [self orderedObjectForElement: (GSXib5Element*)element]];
 
-  // XIB 5 now stores connections etc as part of element objects...
-  // NOTE: This code should follow the normal IBRecord-type processing.  However,
-  //       obejcts are no longer referenced within the action/outlets/tooltips/etc
-  //       constructs.  The connection constructs are now embedded within the object
-  //       defined constructs so can be cross-referenced and instiated in real-time.
-  //       We can eventually reconstruct the constructs manually to eventually follow
-  //       the XIB loading process that was defined by the previous XIB format, but to
-  //       expedite this code for use by Testplant I've decided to short cut that for now.
-  //
   // Process tooltips...
   if ([element attributeForKey: @"toolTip"])
     {
@@ -2825,7 +2804,10 @@ didStartElement: (NSString*)elementName
         {
           // This is the key Cocoa uses for fonts...
           // OR images - depending on what's encoded
-          object = [self decodeObjectForKey: @"font"];
+          if ([self containsValueForKey: @"font"])
+            object = [self decodeObjectForKey: @"font"];
+          else if ([self containsValueForKey: @"image"])
+            object = [self decodeObjectForKey: @"image"];
         }
       else if (([@"NSName" isEqualToString: key]) && ([@"font" isEqualToString: [currentElement attributeForKey: @"key"]]))
         {
