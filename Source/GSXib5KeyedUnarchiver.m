@@ -1428,6 +1428,8 @@ didStartElement: (NSString*)elementName
         size = 12;
       else if ([metaFont containsString: @"menu"])
         size = 13;
+      else if ([metaFont containsString: @"system"])
+        size = 13;
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
