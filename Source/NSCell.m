@@ -2672,7 +2672,6 @@ static NSColor *dtxtCol;
           GSCellFlags   cellFLags;
           unsigned long flagValue = [aDecoder decodeIntForKey: @"NSCellFlags"];
           memcpy(&cellFLags, &flagValue, sizeof(cellFLags));
-          //NSWarnMLog(@"title: %@ cellFLags: %u", [self title], flagValue);
 
           [self setFocusRingType: cellFLags.focusRingType];
           [self setShowsFirstResponder: cellFLags.showsFirstResponder];
@@ -2703,7 +2702,6 @@ static NSColor *dtxtCol;
         {
           GSCellFlags2Union cFlags2;
           cFlags2.value = [aDecoder decodeIntForKey: @"NSCellFlags2"];
-          //NSWarnMLog(@"title: %@ cFlags2: %u", [self title], cFlags2.value);
 
           [self setControlTint: cFlags2.flags.controlTint];
           [self setLineBreakMode: cFlags2.flags.lineBreakMode];
