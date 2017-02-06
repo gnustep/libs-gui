@@ -1127,6 +1127,16 @@ didStartElement: (NSString*)elementName
       if (([@"main" isEqualToString: object]) &&
           ([@"MainMenu" isEqualToString: [element attributeForKey: @"userLabel"]]))
         object = @"_NSMainMenu";
+      else if ([@"apple" isEqualToString: object])
+        object = @"_NSAppleMenu";
+      else if ([@"window" isEqualToString: object])
+        object = @"_NSWindowsMenu";
+      else if ([@"services" isEqualToString: object])
+        object = @"_NSServicesMenu";
+      else if ([@"recentDocuments" isEqualToString: object])
+        object = @"_NSRecentDocumentsMenu";
+      else if ([@"font" isEqualToString: object])
+        object = @"_NSFontMenu";
     }
   else if ([element attributeForKey: @"name"])
     {
