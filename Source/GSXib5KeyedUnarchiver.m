@@ -355,6 +355,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSProtoCell"                      : @"prototype",
                                 @"IBIsSystemFont"                   : @"metaFont",
                                 //@"NSHeaderClipView"                 : @"headerView",
+                                @"NSBorderColor2"                   : @"borderColor",
+                                @"NSFillColor2"                     : @"fillColor",
                                 @"NSHScroller"                      : @"horizontalScroller",
                                 @"NSVScroller"                      : @"verticalScroller",
                                 @"NSKeyEquiv"                       : @"keyEquivalent",
