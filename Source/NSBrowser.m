@@ -702,6 +702,7 @@ static BOOL browserUseBezels;
   NSUInteger indexOfSubStrings;
   NSInteger column;
   BOOL useDelegate = NO;
+  NSWarnMLog(@"path: %@", path);
 
   if ([_browserDelegate respondsToSelector:
     @selector(browser:selectCellWithString:inColumn:)])
@@ -826,6 +827,7 @@ static BOOL browserUseBezels;
       [self addColumn];
       column++;
     }
+  NSWarnMLog(@"path: %@ subStrings: %@", path, subStrings);
 
   // Clean up local memory usage
   RELEASE(subStrings);
@@ -885,7 +887,7 @@ static BOOL browserUseBezels;
    * people should not depend on methods that return strings to return
    * immutable strings.
    */
-
+  NSWarnMLog(@"sep: %@", separator);
   return AUTORELEASE (separator);
 }
 
@@ -2929,6 +2931,7 @@ static BOOL browserUseBezels;
       NSCell *proto = [aDecoder decodeObjectForKey: @"NSCellPrototype"];
       NSString *title = [aDecoder decodeObjectForKey: @"NSFirstColumnTitle"];
       NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
+      NSString *colAutosavename = [aDecoder decodeObjectForKey: @"NSColumnsAutosaveName"];
       long flags;
       NSSize bs;
       
@@ -2989,7 +2992,8 @@ static BOOL browserUseBezels;
       [self setCellPrototype: proto];
       [self setPathSeparator: sep];
       [self setTitle: title ofColumn: 0];
-
+      [self setColumnsAutosaveName: colAutosavename];
+      
       if ([aDecoder containsValueForKey: @"NSBrFlags"])
         {
           flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
