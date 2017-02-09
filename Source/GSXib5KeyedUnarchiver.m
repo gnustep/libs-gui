@@ -43,6 +43,7 @@
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -311,6 +312,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
         // Only check one since we're going to load all once...
         if (XmltagToObjectClassCrossReference == nil)
           {
+            // These define XML tags (i.e. <objects ...) that should be allocated as the
+            // associated class...
             XmltagToObjectClassCrossReference = @{ @"objects"                       : @"NSMutableArray",
                                                    @"items"                         : @"NSMutableArray",
                                                    @"tabViewItems"                  : @"NSMutableArray",
@@ -344,6 +347,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
             XmlConnectionRecordTags = @[ @"action", @"outlet" ];
             RETAIN(XmlConnectionRecordTags);
 
+            // These cross-reference from the OLD key to the NEW key that can be referenced
+            // and it's value or object returned verbatum...
             XmlKeyMapTable = @{ @"NSIsSeparator"                    : @"isSeparatorItem",
                                 //@"NSName"                           : @"systemMenu",
                                 @"NSClassName"                      : @"customClass",
@@ -355,6 +360,10 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSProtoCell"                      : @"prototype",
                                 @"IBIsSystemFont"                   : @"metaFont",
                                 //@"NSHeaderClipView"                 : @"headerView",
+                                @"NSMinColumnWidth"                 : @"minColumnWidth",
+                                @"NSNumberOfVisibleColumns"         : @"maxVisibleColumns",
+                                @"NSPreferedColumnWidth"            : @"defaultColumnWidth",
+                                //@"NSPreferedColumnWidth"            : @"preferredColumnWidth",
                                 @"NSBorderColor2"                   : @"borderColor",
                                 @"NSFillColor2"                     : @"fillColor",
                                 @"NSHScroller"                      : @"horizontalScroller",
@@ -374,16 +383,19 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips" };
             RETAIN(XmlKeyMapTable);
             
+            // These define keys that typically are a combination of key values stored as separate
+            // attributes...
             XmlKeysDefined = @[ @"NSWindowBacking", @"NSWTFlags",
                                 @"NSvFlags", @"NSBGColor",
                                 @"NSSize", //@"IBIsSystemFont",
-                                @"NSHeaderClipView", @"NSHScroller", @"NSVScroller", @"NSsFlags",
+                                //@"NSHeaderClipView",
+                                @"NSHScroller", @"NSVScroller", @"NSsFlags",
                                 @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
                                 @"NSSupport", @"NSName",
                                 @"NSMenuItem",
                                 @"NSDocView",
                                 @"NSSliderType",
-                                @"NSCellPrototype", @"NSBrFlags",
+                                @"NSCellPrototype", @"NSBrFlags", //@"NSMinColumnWidth",
                                 @"NSWhite", @"NSRGB", @"NSCYMK",
                                 //@"NSContents", @"NSAlternateContents",
                                 @"NSCellFlags", @"NSCellFlags2",
@@ -393,10 +405,11 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                 @"NSTitleCell", @"NSOffsets",
                                 @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
-                                @"NSSharedData", @"NSFlags",
+                                @"NSSharedData", @"NSFlags", @"NSTVFlags", @"NSDefaultParagraphStyle",
                                 @"NSpiFlags" ];
             RETAIN(XmlKeysDefined);
             
+            // These define XML tags (i.e. '<autoresizingMask ') to an associated decode method...
             XmlTagToDecoderSelectorMap = @{ @"tableColumnResizingMask"  : @"decodeTableColumnResizingMaskForElement:",
                                             @"autoresizingMask"         : @"decodeAutoresizingMaskForElement:",
                                             @"windowStyleMask"          : @"decodeWindowStyleMaskForElement:",
@@ -405,6 +418,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"tableViewGridLines"       : @"decodeTableViewGridLinesForElement:" };
             RETAIN(XmlTagToDecoderSelectorMap);
             
+            // These define XML keys (i.e. '<object key="name"') to an associated decode method...
             XmlKeyToDecoderSelectorMap = @{ @"NSIntercellSpacingHeight"   : @"decodeIntercellSpacingHeightForElement:",
                                             @"NSIntercellSpacingWidth"    : @"decodeIntercellSpacingWidthForElement:",
                                             @"NSColumnAutoresizingStyle"  : @"decodeColumnAutoresizingStyleForElement:",
@@ -421,6 +435,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSMenuItem"                 : @"decodeMenuItemForElement:",
                                             @"selectedItem"               : @"decodeSelectedIndexForElement:",
                                             @"NSCellPrototype"            : @"decodeCellPrototypeForElement:",
+                                            //@"NSMinColumnWidth"           : @"decodeMinimumColumnWidthForElement:",
                                             @"NSTitleCell"                : @"decodeTitleCellForElement:",
                                             @"NSBorderType"               : @"decodeBorderTypeForElement:",
                                             @"NSBoxType"                  : @"decodeBoxTypeForElement:",
@@ -433,8 +448,10 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSSize"                     : @"decodeFontSizeForElement:",
                                             //@"IBIsSystemFont"             : @"decodeFontTypeForElement:",
                                             @"NSpiFlags"                  : @"decodeProgressIndicatorFlagsForElement:",
-                                            @"NSFlags"                    : @"decodeTextViewFlagsForElement:",
+                                            @"NSFlags"                    : @"decodeTextViewSharedDataFlagsForElement:",
                                             @"NSSharedData"               : @"decodeSharedDataForElement:",
+                                            @"NSDefaultParagraphStyle"    : @"decodeDefaultParagraphStyleForElement:",
+                                            @"NSTVFlags"                  : @"decodeTextViewFlagsForElement:",
                                             @"NSMatrixFlags"              : @"decodeMatrixFlagsForElement:",
                                             @"NSsFlags"                   : @"decodeScrollClassFlagsForElement:",
                                             @"NSHeaderClipView"           : @"decodeScrollViewHeaderClipViewForElement:",
@@ -1502,7 +1519,7 @@ didStartElement: (NSString*)elementName
 }
 
 #pragma mark - NSTextView...
-- (id) decodeTextViewFlagsForElement: (GSXib5Element*)element
+- (id) decodeTextViewSharedDataFlagsForElement: (GSXib5Element*)element
 {
   unsigned int  flags              = 0;
   NSString     *allowsUndo         = [element attributeForKey: @"allowsUndo"];
@@ -1569,6 +1586,44 @@ didStartElement: (NSString*)elementName
   id object = [[NSClassFromString(@"NSTextViewSharedData") alloc] initWithCoder: self];
   
   return AUTORELEASE(object);
+}
+
+- (id) decodeTextViewFlagsForElement: (GSXib5Element*)element
+{
+  unsigned int flags = 0;
+  
+  if ([[element attributeForKey: @"horizontallyResizable"] boolValue])
+    flags |= 0x01;
+  if ([[element attributeForKey: @"verticallyResizable"] boolValue])
+    flags |= 0x02;
+  
+  return [NSNumber numberWithUnsignedInt: flags];
+}
+
+- (id) decodeDefaultParagraphStyleForElement: (GSXib5Element*)element
+{
+  NSMutableParagraphStyle *paragraphStyle        = AUTORELEASE([NSMutableParagraphStyle new]);
+  NSString                *baseWritingDirection  = [element attributeForKey: @"baseWritingDirection"];
+  NSString                *selectionGranularity  = [element attributeForKey: @"selectionGranularity"];
+  
+  if (baseWritingDirection == nil)
+    [paragraphStyle setBaseWritingDirection: NSWritingDirectionNaturalDirection];
+  else if ([@"" isEqualToString: baseWritingDirection])
+    [paragraphStyle setBaseWritingDirection: NSWritingDirectionLeftToRight];
+  else if ([@"rightToLeft" isEqualToString: baseWritingDirection])
+    [paragraphStyle setBaseWritingDirection: NSWritingDirectionRightToLeft];
+  else
+    NSWarnMLog(@"unknown base writing direction: %@", baseWritingDirection);
+  
+  if (selectionGranularity == nil)
+    ; // NSSelectByCharacter
+  else if ([@"word" isEqualToString: selectionGranularity])
+    ; // NSSelectByWord
+  else if ([@"paragraph" isEqualToString: selectionGranularity])
+    ; // NSSelectByParagraph
+  
+  return nil;
+  return AUTORELEASE(paragraphStyle);
 }
 
 #pragma mark - NSColor...
@@ -2052,6 +2107,11 @@ didStartElement: (NSString*)elementName
   [object setEnabled: YES];
   
   return object;
+}
+
+- (id)decodeMinimumColumnWidthForElement: (GSXib5Element*)element
+{
+  return [NSNumber numberWithInteger: [[element attributeForKey: @"minColumnWidth"] integerValue]];
 }
 
 - (id)decodeColumnResizingTypeForElement: (GSXib5Element*)element
@@ -2818,6 +2878,14 @@ didStartElement: (NSString*)elementName
           // We have to be careful with NSName as it is used by Cocoa in at least three places...
           object = [currentElement attributeForKey: @"name"];
         }
+      else if ([@"NSFirstColumnTitle" isEqualToString: key])
+        {
+          object = @"Browser";
+        }
+      else if ([@"NSPathSeparator" isEqualToString: key])
+        {
+          object = @"/";
+        }
       else if ([key hasPrefix:@"NS"])
         {
           // Try a key minus a (potential) NS prefix...
@@ -3138,6 +3206,10 @@ didStartElement: (NSString*)elementName
       else if ([@"NSAlternateContents" isEqualToString: key])
         {
           hasValue = [currentElement attributeForKey: @"alternateTitle"] != nil;
+        }
+      else if ([@"NSHeaderClipView" isEqualToString: key])
+        {
+          hasValue = [currentElement elementForKey: @"headerView"] != nil;
         }
       else if ([XmlKeysDefined containsObject: key])
         {
