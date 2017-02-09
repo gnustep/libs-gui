@@ -700,6 +700,11 @@ If a text view is added to an empty text network, it keeps its attributes.
   RELEASE(layoutManager);
 
   textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
+  [textContainer setWidthTracksTextView: YES];
+  [textContainer setHeightTracksTextView: NO];
+  [layoutManager setBackgroundLayoutEnabled: YES];
+  [layoutManager setShowsControlCharacters: NO];
+  [layoutManager setShowsInvisibleCharacters: NO];
   [layoutManager addTextContainer: textContainer];
   RELEASE(textContainer);
 
@@ -978,7 +983,7 @@ that makes decoding and encoding compatible with the old code.
         }
       else
         {
-	  NSTextContainer *container = [self buildUpTextNetwork: _frame.size];
+	  NSTextContainer *container = [self buildUpTextNetwork: [self maxSize]];
 	  [container setTextView: self];
         }
 
