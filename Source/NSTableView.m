@@ -3663,45 +3663,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
   return(NSCellHitNone);
 }
 
-- (void)mouseEntered:(NSEvent *)event
-{
-  NSWarnMLog(@"self: %@ event: %@", self, event);
-  [super mouseEntered: event];
-}
-
-- (void)mouseMoved:(NSEvent *)event
-{
-  NSWarnMLog(@"self: %@ event: %@", self, event);
-  [super mouseMoved: event];
-}
-
-#if 0
-- (void)mouseDragged:(NSEvent *)event
-{
-//  NSWarnMLog(@"self: %@ event: %@", self, event);
-  NSPoint locInWin = [event locationInWindow];
-  NSPoint locInView = [self convertPoint: locInWin toView: nil];
-  NSRect  bounds = [self bounds];
-  NSRect  frameTop = NSMakeRect(0, 0, bounds.size.width, 10);
-  NSRect  frameBot = NSMakeRect(0, NSMaxY(bounds), bounds.size.width, NSMaxY(bounds)-10);
-//  NSWarnMLog(@"locInWin: %@ locInView: %@ bounds: %@ frameTop: %@ frameBot: %@",
-//             NSStringFromPoint(locInWin),
-//             NSStringFromPoint(locInView),
-//             NSStringFromRect(bounds),
-//             NSStringFromRect(frameTop),
-//             NSStringFromRect(frameBot));
-  //if (NSPointInRect(locInView, frameTop) || NSPointInRect(locInView, frameBot))
-    [self autoscroll: event];
-  [super mouseDragged: event];
-}
-#endif
-
-- (void)mouseExited:(NSEvent *)event
-{
-  NSWarnMLog(@"self: %@ event: %@", self, event);
-  [super mouseExited: event];
-}
-
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint initialLocation = [theEvent locationInWindow];
@@ -3956,10 +3917,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
               
             case NSLeftMouseDown:
             case NSLeftMouseDragged:
-              NSWarnMLog(@"NSLeftMouseDown | NSLeftMouseDragged: dragOperationPossible: %ld mouseWin: %@ initLoc: %@",
-                         (long)dragOperationPossible,
-                         NSStringFromPoint(mouseLocationWin),
-                         NSStringFromPoint(initialLocation));
               if (fabs(mouseLocationWin.x - initialLocation.x) > 1
                   || fabs(mouseLocationWin.y - initialLocation.y) > 1)
               {
@@ -3981,7 +3938,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
                 {
                   if ([self _startDragOperationWithEvent: theEvent clickedRow:_clickedRow])
                   {
-                    NSWarnMLog(@"_startDragOperationWithEvent");
                     RELEASE(oldSelectedRows);
                     IF_NO_GC(DESTROY(arp));
                     return;
@@ -3998,7 +3954,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
                 // mouse dragged within table
                 if (startedPeriodicEvents == YES)
                 {
-                  NSWarnMLog(@"stopPeriodicEvents");
                   [NSEvent stopPeriodicEvents];
                   startedPeriodicEvents = NO;
                 }
@@ -4046,9 +4001,9 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
               else
               {
                 // Mouse dragged out of the table
-                NSTimeInterval period = computePeriod(mouseLocationWin,
-                                                      minYVisible,
-                                                      maxYVisible);
+		  NSTimeInterval period = computePeriod(mouseLocationWin, 
+                                             minYVisible,
+                                             maxYVisible);
                 
                 if (startedPeriodicEvents == YES)
                 {
@@ -4061,7 +4016,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
                 }
                 /* Start periodic events */
                 oldPeriod = period;
-                NSWarnMLog(@"startPeriodicEvents: %f", oldPeriod);
                 [NSEvent startPeriodicEventsAfterDelay: 0
                                             withPeriod: oldPeriod];
                 startedPeriodicEvents = YES;
@@ -4072,7 +4026,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
               }
               break;
             case NSPeriodic:
-              NSWarnMLog(@"NSPeriodic");
               if (mouseBelowView == YES)
               {
                 if (currentRow == -1 && oldRow != -1)
@@ -6543,7 +6496,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>) sender
 {
-  NSWarnMLog(@"self: %@ sender: %@", self, sender);
   currentDropRow = -1;
   currentDropOperation = -1;
   oldDropRow = -1;
@@ -6555,7 +6507,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) draggingExited: (id <NSDraggingInfo>) sender
 {
-  NSWarnMLog(@"self: %@ sender: %@", self, sender);
   [self setNeedsDisplayInRect: oldDraggingRect];
   [self displayIfNeeded];
 }
@@ -6695,7 +6646,6 @@ view to drag. */
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
   BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
     && currentDragOperation == dragOperation);
-  NSWarnMLog(@"self: %@ sender: %@", self, sender);
 
   [self _scrollRowAtPointToVisible: p];
 

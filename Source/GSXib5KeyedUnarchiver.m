@@ -1608,7 +1608,7 @@ didStartElement: (NSString*)elementName
   
   if (baseWritingDirection == nil)
     [paragraphStyle setBaseWritingDirection: NSWritingDirectionNaturalDirection];
-  else if ([@"leftToRight" isEqualToString: baseWritingDirection])
+  else if ([@"" isEqualToString: baseWritingDirection])
     [paragraphStyle setBaseWritingDirection: NSWritingDirectionLeftToRight];
   else if ([@"rightToLeft" isEqualToString: baseWritingDirection])
     [paragraphStyle setBaseWritingDirection: NSWritingDirectionRightToLeft];
@@ -2884,7 +2884,6 @@ didStartElement: (NSString*)elementName
         }
       else if ([@"NSPathSeparator" isEqualToString: key])
         {
-          // This would allow to do system dependent path separator decoding...
           object = @"/";
         }
       else if ([key hasPrefix:@"NS"])
