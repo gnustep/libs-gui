@@ -3,7 +3,7 @@
    <abstract>Categories which add drawing capabilities to NSAttributedString
    and NSString.</abstract>
 
-   Copyright (C) 1999, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2003, 2004, 2017 Free Software Foundation, Inc.
 
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Mar 1999 - rewrite from scratch
@@ -53,6 +53,8 @@ For bigger values the width gets ignored.
 A size of 16 and these constants give a hit rate of 80%-90% for normal app
 use (based on real world statistics gathered with the help of some users
 from #GNUstep).
+We use the last entry of the cache as a scratch element to set up an initial 
+text network.
 */
 #define NUM_CACHE_ENTRIES 16
 #define HIT_BOOST         2
@@ -62,8 +64,8 @@ from #GNUstep).
 typedef struct
 {
   int used;
-  unsigned int string_hash;
-  int hasSize, useScreenFonts;
+  NSUInteger string_hash;
+  BOOL hasSize, useScreenFonts;
 
   NSTextStorage *textStorage;
   NSLayoutManager *layoutManager;
@@ -75,11 +77,8 @@ typedef struct
 
 
 static BOOL did_init = NO;
-static cache_t cache[NUM_CACHE_ENTRIES];
+static cache_t cache[NUM_CACHE_ENTRIES + 1];
 
-static NSTextStorage   *scratchTextStorage;
-static NSLayoutManager *scratchLayoutManager;
-static NSTextContainer *scratchTextContainer;
 
 static NSRecursiveLock *cacheLock = nil;
 
@@ -128,18 +127,9 @@ static void init_string_drawing(void)
       [layoutManager addTextContainer: textContainer];
       [textContainer release];
       
-      if (i < NUM_CACHE_ENTRIES)
-	{
-	  cache[i].textStorage = textStorage;
-	  cache[i].layoutManager = layoutManager;
-	  cache[i].textContainer = textContainer;
-	}
-      else
-	{
-	  scratchTextStorage = textStorage;
-	  scratchLayoutManager = layoutManager;
-	  scratchTextContainer = textContainer;
-	}
+      cache[i].textStorage = textStorage;
+      cache[i].layoutManager = layoutManager;
+      cache[i].textContainer = textContainer;
     }
 }
 
@@ -163,13 +153,11 @@ static inline void cache_unlock()
   [cacheLock unlock];
 }
 
-static inline BOOL is_size_match(cache_t *c, int hasSize, NSSize size)
+static inline BOOL is_size_match(cache_t *c, cache_t *scratch)
 {
-  if ((!c->hasSize && !hasSize) ||
-      (c->hasSize && hasSize && c->givenSize.width == size.width
-       && c->givenSize.height == size.height) /* ||
-      (!c->hasSize && hasSize && size.width >= NSMaxX(c->usedRect)
-      && size.height >= NSMaxY(c->usedRect))*/)
+  if ((!c->hasSize && !scratch->hasSize) ||
+      (c->hasSize && scratch->hasSize
+       && NSEqualSizes(c->givenSize, scratch->givenSize)))
     {
       return YES;
     }
@@ -179,21 +167,33 @@ static inline BOOL is_size_match(cache_t *c, int hasSize, NSSize size)
     }
 }
 
-static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
+static inline BOOL is_match(cache_t *c, cache_t *scratch)
+{
+  if (c->string_hash != scratch->string_hash
+      || c->useScreenFonts != scratch->useScreenFonts)
+    return NO;
+
+#ifdef STATS
+  hash_hits++;
+#endif
+
+  if (![scratch->textStorage isEqualToAttributedString: c->textStorage])
+    return NO;
+
+  /* String and attributes match, check size. */
+  return is_size_match(c, scratch);
+}
+
+static cache_t *cache_match(cache_t *scratch, BOOL *matched)
 {
   int i, j;
   cache_t *c;
-  int least_used;
-  int replace;
-  int orig_used;
-  unsigned int string_hash = [[scratchTextStorage string] hash];
+  int least_used = -1;
+  int replace = -1;
 
 #ifdef STATS
   total++;
 #endif
-
-  *matched = 1;
-  replace = least_used = -1;
 
   /*
   A deterministic pattern for replacing cache entries can hit ugly worst
@@ -206,7 +206,9 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
   for (i = 0; i < NUM_CACHE_ENTRIES; i++, j++)
     {
       if (j == NUM_CACHE_ENTRIES)
-	j = 0;
+        {
+          j = 0;
+        }
       c = cache + j;
       if (least_used == -1 || c->used < least_used)
 	{
@@ -217,32 +219,27 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
       if (!c->used)
 	continue;
 
-      orig_used = c->used;
-      if (c->used > MISS_COST)
-	c->used -= MISS_COST;
-      else
-	c->used = 1;
-
-      if (c->string_hash != string_hash
-	  || c->useScreenFonts != useScreenFonts)
-	continue;
-
-#ifdef STATS
-      hash_hits++;
-#endif
-
-      if (![scratchTextStorage isEqualToAttributedString: c->textStorage])
-	continue;
-
-      /* String and attributes match, check size. */
-      if (is_size_match(c, hasSize, size))
+      if (is_match(c, scratch))
 	{
-	  c->used = orig_used + HIT_BOOST;
 #ifdef STATS
 	  hits++;
 #endif
-	  return j;
+
+	  c->used += HIT_BOOST;
+          *matched = YES;
+	  return c;
 	}
+      else
+        {
+          if (c->used > MISS_COST)
+            {
+              c->used -= MISS_COST;
+            }
+          else
+            {
+              c->used = 1;
+            }
+        }
     }
 
   NSCAssert(replace != -1, @"Couldn't find a cache entry to replace.");
@@ -250,30 +247,56 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
 #ifdef STATS
   misses++;
 #endif
-  *matched = 0;
+  *matched = NO;
 
-  c = cache + replace;
-  c->used = 1;
-  c->string_hash = string_hash;
-  c->hasSize = hasSize;
-  c->useScreenFonts = useScreenFonts;
-  c->givenSize = size;
+  /* We did not find a matching entry, return the least used one */
+  return cache + replace;
+}
 
-  {
-    id temp;
+static cache_t *cache_lookup(BOOL hasSize, NSSize size, BOOL useScreenFonts)
+{
+  BOOL hit;
+  cache_t *c;
+  cache_t *scratch = cache + NUM_CACHE_ENTRIES;
 
-#define SWAP(a, b) temp = a; a = b; b = temp;
-    SWAP(scratchTextStorage, c->textStorage)
-    SWAP(scratchLayoutManager, c->layoutManager)
-    SWAP(scratchTextContainer, c->textContainer)
-#undef SWAP
-  }
+  scratch->used = 1;
+  scratch->string_hash = [[scratch->textStorage string] hash];
+  scratch->hasSize = hasSize;
+  scratch->useScreenFonts = useScreenFonts;
+  scratch->givenSize = size;
+  
+  c = cache_match(scratch, &hit);
+  if (!hit)
+    {
+      // Swap c and scratch
+      cache_t temp;
 
-  return replace;
+      temp = *c;
+      *c = *scratch;
+      *scratch = temp;
+
+      // Cache miss, need to set up the text system
+      if (hasSize)
+        {
+          [c->textContainer setContainerSize: NSMakeSize(size.width, size.height)];
+        }
+      else
+        {
+          [c->textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
+        }
+      [c->layoutManager setUsesScreenFonts: useScreenFonts];
+      
+      c->usedRect = [c->layoutManager usedRectForTextContainer: c->textContainer];
+    }
+
+  return c;
 }
 
 static inline void prepare_string(NSString *string, NSDictionary *attributes)
 {
+  cache_t *scratch = cache + NUM_CACHE_ENTRIES;
+  NSTextStorage *scratchTextStorage = scratch->textStorage;
+
   [scratchTextStorage beginEditing];
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
                                     withString: string];
@@ -287,39 +310,14 @@ static inline void prepare_string(NSString *string, NSDictionary *attributes)
 
 static inline void prepare_attributed_string(NSAttributedString *string)
 {
+  cache_t *scratch = cache + NUM_CACHE_ENTRIES;
+  NSTextStorage *scratchTextStorage = scratch->textStorage;
+
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
                           withAttributedString: string];
 }
 
-static int cache_lookup(int hasSize, NSSize size, int useScreenFonts)
-{
-  cache_t *c;
-  int ci, hit;
-  NSLayoutManager *layoutManager;
-  NSTextContainer *textContainer;
-
-  ci = cache_match(hasSize, size, useScreenFonts, &hit);
-  if (hit)
-    {
-      return ci;
-    }
-  // Cache miss, need to set up the text system
-  c = &cache[ci];
-  layoutManager = c->layoutManager;
-  textContainer = c->textContainer;
-  
-  if (hasSize)
-    [textContainer setContainerSize: NSMakeSize(size.width, size.height)];
-  else
-    [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
-  [layoutManager setUsesScreenFonts: useScreenFonts];
-  
-  c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
-
-  return ci;
-}
-
-static int use_screen_fonts(void)
+static BOOL use_screen_fonts(void)
 {
   NSGraphicsContext		*ctxt = GSCurrentContext();
   NSAffineTransform		*ctm = GSCurrentCTM(ctxt);
@@ -327,11 +325,11 @@ static int use_screen_fonts(void)
 
   if (ts.m11 != 1.0 || ts.m12 != 0.0 || ts.m21 != 0.0 || fabs(ts.m22) != 1.0)
     {
-      return 0;
+      return NO;
     }
   else
     {
-      return 1;
+      return YES;
     }
 }
 
@@ -351,19 +349,15 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
 - (void) drawAtPoint: (NSPoint)point
 {
-  int ci;
   cache_t *c;
-
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   cache_lock();
-
   NS_DURING
     {
       prepare_attributed_string(self);
-      ci = cache_lookup(0, NSZeroSize, use_screen_fonts());
-      c = &cache[ci];
+      c = cache_lookup(NO, NSZeroSize, use_screen_fonts());
       
       r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
       
@@ -412,9 +406,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
               options: (NSStringDrawingOptions)options
 {
   // FIXME: This ignores options
-  int ci;
   cache_t *c;
-
   NSRange r;
   BOOL need_clip = NO;
   NSGraphicsContext *ctxt = GSCurrentContext();
@@ -423,12 +415,10 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     return;
       
   cache_lock();
-
   NS_DURING
     {
       prepare_attributed_string(self);
-      ci = cache_lookup(1, rect.size, use_screen_fonts());
-      c = &cache[ci];
+      c = cache_lookup(YES, rect.size, use_screen_fonts());
       
       /*
 	If the used rect fits completely in the rect we draw in, we save time
@@ -500,16 +490,16 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
                         options: (NSStringDrawingOptions)options
 {
   // FIXME: This ignores options
-  int ci;
+  cache_t *c;
   NSRect result = NSZeroRect;
-  int hasSize = NSEqualSizes(NSZeroSize, size) ? 0 : 1;
+  BOOL hasSize = !NSEqualSizes(NSZeroSize, size);
 
   cache_lock();
   NS_DURING
     {    
       prepare_attributed_string(self);
-      ci = cache_lookup(hasSize, size, 1);
-      result = cache[ci].usedRect;
+      c = cache_lookup(hasSize, size, NO);
+      result = c->usedRect;
     }
   NS_HANDLER
     {
@@ -529,9 +519,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
 - (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary *)attrs
 {
-  int ci;
   cache_t *c;
-
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -539,8 +527,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   NS_DURING
     {
       prepare_string(self, attrs);
-      ci = cache_lookup(0, NSZeroSize, use_screen_fonts());
-      c = &cache[ci];
+      c = cache_lookup(NO, NSZeroSize, use_screen_fonts());
       
       r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
       
@@ -590,9 +577,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
            attributes: (NSDictionary *)attrs
 {
   // FIXME: This ignores options
-  int ci;
   cache_t *c;
-
   NSRange r;
   BOOL need_clip = NO;
   NSGraphicsContext *ctxt = GSCurrentContext();
@@ -604,8 +589,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   NS_DURING
     {    
       prepare_string(self, attrs);
-      ci = cache_lookup(1, rect.size, use_screen_fonts());
-      c = &cache[ci];
+      c = cache_lookup(YES, rect.size, use_screen_fonts());
       
       /*
 	If the used rect fits completely in the rect we draw in, we save time
@@ -679,16 +663,16 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
                      attributes: (NSDictionary *)attrs
 {
   // FIXME: This ignores options
-  int ci;
+  cache_t *c;
   NSRect result = NSZeroRect;
-  int hasSize = NSEqualSizes(NSZeroSize, size) ? 0 : 1;
+  BOOL hasSize = !NSEqualSizes(NSZeroSize, size);
 
   cache_lock();
   NS_DURING
     {
       prepare_string(self, attrs);
-      ci = cache_lookup(hasSize, size, 1);
-      result = cache[ci].usedRect;
+      c = cache_lookup(hasSize, size, NO);
+      result = c->usedRect;
     }
   NS_HANDLER
     {

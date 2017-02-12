@@ -1,3 +1,7 @@
+2017-02-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStringDrawing.m: Clean up string drawing cache code.
+
 2017-01-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-_isVisible, -_isMain): Add two helper
