@@ -4391,6 +4391,12 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                 {
                   action = NSDragOperationNone;
                 }
+              
+              // Support for autoscrolling...
+              if ([theEvent subtype] == GSAppKitDraggingUpdate)
+                {
+                  [v autoscroll: theEvent];
+                }
 
               e = [NSEvent otherEventWithType: NSAppKitDefined
                            location: [theEvent locationInWindow]
