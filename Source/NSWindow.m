@@ -80,6 +80,7 @@
 #import "AppKit/NSWindowController.h"
 #import "AppKit/PSOperators.h"
 
+#import "GNUstepGUI/GSDragView.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSTrackingRect.h"
 #import "GNUstepGUI/GSDisplayServer.h"
@@ -105,6 +106,7 @@ static GSToolTips *toolTipVisible = nil;
 static id<GSWindowDecorator> windowDecorator = nil;
 
 
+NSView *GSDragViewForEvent(NSView *wv, NSEvent *theEvent, id<NSDraggingInfo> dragInfo);
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @interface NSObject (DragInfoBackend)
@@ -3869,14 +3871,14 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     }
                 }
               /* Activate the app *after* making the receiver key, as app
-                 activation tries to make the previous key window key.
-		 However, don't activate the app after a single click into
-		 the app icon or a miniwindow. This allows dragging app
-		 icons and miniwindows without unnecessarily switching
-		 applications (cf. Sect. 4 of the OpenStep UI Guidelines).
-	      */
+               activation tries to make the previous key window key.
+               However, don't activate the app after a single click into
+               the app icon or a miniwindow. This allows dragging app
+               icons and miniwindows without unnecessarily switching
+               applications (cf. Sect. 4 of the OpenStep UI Guidelines).
+               */
               if ((_styleMask & (NSIconWindowMask | NSMiniWindowMask)) == 0
-	          && [NSApp isActive] == NO)
+                  && [NSApp isActive] == NO)
                 {
                   v = nil;
                   [NSApp activateIgnoringOtherApps: YES];
@@ -3928,10 +3930,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     [self mouseDown: theEvent];
                 }
             }
-	  else
-	    {
-              NSDebugLLog(@"NSEvent", @"Discard (window closed) %@", theEvent);
-	    }
+          else
+            {
+                    NSDebugLLog(@"NSEvent", @"Discard (window closed) %@", theEvent);
+            }
           _lastPoint = [theEvent locationInWindow];
           break;
         }
@@ -3947,7 +3949,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 
       case NSOtherMouseDown:
           v = [_wv hitTest: [theEvent locationInWindow]];
-	  ASSIGN(_lastOtherMouseDownView, v);
+          ASSIGN(_lastOtherMouseDownView, v);
           [v otherMouseDown: theEvent];
           _lastPoint = [theEvent locationInWindow];
           break;
@@ -3963,7 +3965,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 
       case NSRightMouseDown:
         v = [_wv hitTest: [theEvent locationInWindow]];
-	ASSIGN(_lastRightMouseDownView, v);
+        ASSIGN(_lastRightMouseDownView, v);
         [v rightMouseDown: theEvent];
         _lastPoint = [theEvent locationInWindow];
         break;
@@ -3984,11 +3986,28 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
         switch (type)
           {
             case NSLeftMouseDragged:
+              v = GSDragViewForEvent(_wv, theEvent, [GSServerForWindow(self) dragInfo]);
+#if 0
+              NSWarnMLog(@"NSLeftMouseDragged %p - v: %@ _lastLeftMouseDownView: %@ eventLoc: %@", self,
+                         v, _lastLeftMouseDownView, NSStringFromPoint([theEvent locationInWindow]));
+#endif
               // Testplant-MAL-2015-07-08: keeping testplant branch code...
-              if (_lastLeftMouseDownView)
-                [_lastLeftMouseDownView mouseDragged: theEvent];
+#if 0
+              if ([[GSDragView sharedDragView] isDragging] && v)
+                {
+                  _lastLeftMouseDownView = v;
+                  [v mouseDragged: theEvent];
+                }
               else
-                [self mouseDragged: theEvent];
+#endif
+              if (_lastLeftMouseDownView)
+                {
+                  [_lastLeftMouseDownView mouseDragged: theEvent];
+                }
+              else
+                {
+                  [self mouseDragged: theEvent];
+                }
               break;
             case NSOtherMouseDragged:
               [_lastOtherMouseDownView otherMouseDragged: theEvent];
@@ -4341,19 +4360,12 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               BOOL        isEntry;
 
               dragInfo = [GSServerForWindow(self) dragInfo];
-              v = [_wv hitTest: [theEvent locationInWindow]];
-              
-              while (v != nil)
-                {
-                  if (v->_rFlags.has_draginfo != 0
-                      && GSViewAcceptsDrag(v, dragInfo))
-                    break;
-                  v = [v superview];
-                }
+              v = GSDragViewForEvent(_wv, theEvent, dragInfo);
               if (v == nil)
-                {
-                  v = _wv;
-                }
+              {
+                v = _wv;
+              }
+
               if (_lastDragView == v)
                 {
                   isEntry = NO;
@@ -4391,7 +4403,15 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                 {
                   action = NSDragOperationNone;
                 }
-
+              
+#if 1
+              // Support for autoscrolling...
+              if ([theEvent subtype] == GSAppKitDraggingUpdate)
+              {
+                [v autoscroll: theEvent];
+              }
+#endif
+              
               e = [NSEvent otherEventWithType: NSAppKitDefined
                            location: [theEvent locationInWindow]
                            modifierFlags: 0
@@ -5931,6 +5951,21 @@ current key view.<br />
 }
 
 @end
+
+NSView *GSDragViewForEvent(NSView *wv, NSEvent *theEvent, id<NSDraggingInfo> dragInfo)
+{
+  NSView *v = [wv hitTest: [theEvent locationInWindow]];
+
+  while (v != nil)
+  {
+    if (v->_rFlags.has_draginfo != 0
+        && GSViewAcceptsDrag(v, dragInfo))
+      break;
+    v = [v superview];
+  }
+  
+  return v;
+}
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
 {

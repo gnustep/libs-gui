@@ -27,8 +27,10 @@
 */
 
 #import "config.h"
-#import <Foundation/NSNotification.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
 
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSCursor.h"
@@ -491,6 +493,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
  */
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
+  static CGFloat ScrollingMargin = 15.0;
+  
+  CGFloat scrollingMargin;
   NSPoint new;
   NSPoint delta;
   NSRect r;
@@ -500,22 +505,27 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       return NO;
     }
   
-  new = [_documentView convertPoint: [theEvent locationInWindow] 
-		       fromView: nil];
+  // Use defaults value if present...
+  scrollingMargin = [[NSUserDefaults standardUserDefaults]  floatForKey: @"GSAutoScrollingMargin"];
+  if (scrollingMargin == 0) // otherwise use static coded default...
+    scrollingMargin = ScrollingMargin;
+  
+  new = [_documentView convertPoint: [theEvent locationInWindow]
+                           fromView: nil];
 
   r = [self documentVisibleRect];
 
-  if (new.x < NSMinX(r))
-    delta.x = new.x - NSMinX(r);
-  else if (new.x > NSMaxX(r))
-    delta.x = new.x - NSMaxX(r);
+  if ((new.x > NSMinX(r)) && (new.x < NSMinX(r)+scrollingMargin))
+    delta.x = (new.x - NSMinX(r)) - scrollingMargin;
+  else if ((new.x > NSMaxX(r)-scrollingMargin) && (new.x < NSMaxX(r)))
+    delta.x = scrollingMargin - (NSMaxX(r) - new.x);
   else
     delta.x = 0;
 
-  if (new.y < NSMinY(r))
-    delta.y = new.y - NSMinY(r);
-  else if (new.y > NSMaxY(r))
-    delta.y = new.y - NSMaxY(r);
+  if ((new.y > NSMinY(r)) && (new.y < NSMinY(r)+scrollingMargin))
+    delta.y = (new.y - NSMinY(r)) - scrollingMargin;
+  else if ((new.y > NSMaxY(r)-scrollingMargin) && (new.y < NSMaxY(r)))
+    delta.y = scrollingMargin - (NSMaxY(r) - new.y);
   else
     delta.y = 0;
 
@@ -523,6 +533,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   new.y = _bounds.origin.y + delta.y;
 
   new = [self constrainScrollPoint: new];
+//  NSWarnMLog(@"self: %@ theEventLocInWin: %@ docVisRect: %@ docPnt: %@ delta: %@ new: %@ equ: %ld", self,
+//             NSStringFromPoint([theEvent locationInWindow]),
+//             NSStringFromRect(r),
+//             NSStringFromPoint([_documentView convertPoint: [theEvent locationInWindow] fromView: nil]),
+//             NSStringFromPoint(delta),
+//             NSStringFromPoint(new),
+//             (long)(NSEqualPoints(new, _bounds.origin)));
   if (NSEqualPoints(new, _bounds.origin))
     return NO;
 

@@ -129,7 +129,7 @@
 		 timestamp: (NSTimeInterval)time
 		  toWindow: (NSInteger)dWindowNumber;
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
-			    windowRef: (int*)mouseWindowRef;
+			    windowRef: (NSInteger*)mouseWindowRef;
 
 @end
 #endif

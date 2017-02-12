@@ -357,7 +357,7 @@ static	GSDragView *sharedDragView = nil;
   set, if there is a native window, but no GNUstep window at this location.
  */
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
-                            windowRef: (int*)mouseWindowRef
+                            windowRef: (NSInteger*)mouseWindowRef
 {
   NSInteger win;
 
@@ -890,7 +890,7 @@ static	GSDragView *sharedDragView = nil;
   //--- Store old values -----------------------------------------------------
   NSWindow *oldDestWindow = destWindow;
   BOOL oldDestExternal = destExternal;
-  int mouseWindowRef; 
+  NSInteger mouseWindowRef;
   BOOL changeCursor = NO;
  
   //--- Move drag image to the new position -----------------------------------

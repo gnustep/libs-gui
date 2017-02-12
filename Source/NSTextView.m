@@ -5784,6 +5784,7 @@ other than copy/paste or dragging. */
                                                    inMode: NSEventTrackingRunLoopMode
                                                   dequeue: YES];
           }
+        NSWarnMLog(@"currentEvent: %@", currentEvent);
         if (currentEvent && [currentEvent type] == NSLeftMouseUp)
           break;
         
