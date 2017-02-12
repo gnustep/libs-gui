@@ -1,5 +1,11 @@
 2017-02-12 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSStringDrawing.m: Use shared drawing code.
+	* Source/NSStringDrawing.m (cache_lookup): Try to handle case of
+	empty string.
+
+2017-02-12 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSStringDrawing.m: Clean up string drawing cache code.
 
 2017-01-08 Fred Kiefer <FredKiefer@gmx.de>

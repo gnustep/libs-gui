@@ -285,8 +285,17 @@ static cache_t *cache_lookup(BOOL hasSize, NSSize size, BOOL useScreenFonts)
           [c->textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
         }
       [c->layoutManager setUsesScreenFonts: useScreenFonts];
-      
-      c->usedRect = [c->layoutManager usedRectForTextContainer: c->textContainer];
+
+      if ([c->textStorage length] == 0)
+        {
+          // FIXME: We should use attributes from the original data
+          CGFloat h = [[NSFont userFontOfSize: 0] defaultLineHeightForFont];
+          c->usedRect = NSMakeRect(0.0, 0.0, 0.0, h);
+        }
+      else
+        {
+          c->usedRect = [c->layoutManager usedRectForTextContainer: c->textContainer];
+        }
     }
 
   return c;
@@ -344,42 +353,111 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 +(void) _setFontFlipHack: (BOOL)flip;
 @end
 
+static void draw_at_point(cache_t *c, NSPoint point)
+{
+  NSRange r;
+  BOOL need_flip = ![[NSView focusView] isFlipped];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
+
+  if (need_flip)
+    {
+      DPSscale(ctxt, 1, -1);
+      point.y = -point.y;
+      
+      /*
+        Adjust point.y so the lower left corner of the used rect is at the
+        point that was passed to us.
+      */
+      point.y -= NSMaxY(c->usedRect);
+	  
+      [NSFont _setFontFlipHack: YES];
+    }
+      
+  [c->layoutManager drawBackgroundForGlyphRange: r
+                                        atPoint: point];
+  [c->layoutManager drawGlyphsForGlyphRange: r
+                                    atPoint: point];
+
+  if (need_flip)
+    {
+      DPSscale(ctxt, 1, -1);
+      [NSFont _setFontFlipHack: NO];
+    }
+}
+
+static void draw_in_rect(cache_t *c, NSRect rect)
+{
+  NSRange r;
+  BOOL need_flip = ![[NSView focusView] isFlipped];
+  BOOL need_clip = NO;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  /*
+    If the used rect fits completely in the rect we draw in, we save time
+    by avoiding the DPSrectclip (and the state save and restore).
+    
+    This isn't completely safe; the used rect isn't guaranteed to contain
+    all parts of all glyphs.
+  */
+  if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
+      && NSMaxX(c->usedRect) <= rect.size.width
+      && NSMaxY(c->usedRect) <= rect.size.height)
+    {
+      need_clip = NO;
+    }
+  else
+    {
+      need_clip = YES;
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
+                  rect.size.width, rect.size.height);
+    }
+    
+  r = [c->layoutManager
+          glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
+                                                rect.size.height)
+          inTextContainer: c->textContainer];
+
+  if (need_flip)
+    {
+      DPSscale(ctxt, 1, -1);
+      rect.origin.y = -NSMaxY(rect);
+      [NSFont _setFontFlipHack: YES];
+    }
+  
+  [c->layoutManager drawBackgroundForGlyphRange: r
+                                        atPoint: rect.origin];
+  [c->layoutManager drawGlyphsForGlyphRange: r
+                                    atPoint: rect.origin];
+  
+  if (need_flip)
+    {
+      DPSscale(ctxt, 1, -1);
+      [NSFont _setFontFlipHack: NO];
+    }
+
+  if (need_clip)
+    {
+      /* Restore the original clipping path. */
+      DPSgrestore(ctxt);
+    }
+}
 
 @implementation NSAttributedString (NSStringDrawing)
 
 - (void) drawAtPoint: (NSPoint)point
 {
   cache_t *c;
-  NSRange r;
-  NSGraphicsContext *ctxt = GSCurrentContext();
 
   cache_lock();
   NS_DURING
     {
       prepare_attributed_string(self);
       c = cache_lookup(NO, NSZeroSize, use_screen_fonts());
-      
-      r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
-      
-      if (![[NSView focusView] isFlipped])
-	{
-	  DPSscale(ctxt, 1, -1);
-	  point.y = -point.y;
-	  
-	  /*
-	    Adjust point.y so the lower left corner of the used rect is at the
-	    point that was passed to us.
-	  */
-	  point.y -= NSMaxY(c->usedRect);
-	  
-	  [NSFont _setFontFlipHack: YES];
-	}
-      
-      [c->layoutManager drawBackgroundForGlyphRange: r
-	atPoint: point];
-      
-      [c->layoutManager drawGlyphsForGlyphRange: r
-	atPoint: point];
+
+      draw_at_point(c, point);
     }
   NS_HANDLER
     {
@@ -388,12 +466,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_ENDHANDLER;
   cache_unlock();
-
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-      [NSFont _setFontFlipHack: NO];
-    }
 }
 
 - (void) drawInRect: (NSRect)rect
@@ -407,9 +479,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 {
   // FIXME: This ignores options
   cache_t *c;
-  NSRange r;
-  BOOL need_clip = NO;
-  NSGraphicsContext *ctxt = GSCurrentContext();
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
     return;
@@ -419,44 +488,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     {
       prepare_attributed_string(self);
       c = cache_lookup(YES, rect.size, use_screen_fonts());
-      
-      /*
-	If the used rect fits completely in the rect we draw in, we save time
-	by avoiding the DPSrectclip (and the state save and restore).
-	
-	This isn't completely safe; the used rect isn't guaranteed to contain
-	all parts of all glyphs.
-      */
-      if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
-	  && NSMaxX(c->usedRect) <= rect.size.width
-	  && NSMaxY(c->usedRect) <= rect.size.height)
-	{
-	  need_clip = NO;
-	}
-      else
-	{
-	  need_clip = YES;
-	  DPSgsave(ctxt);
-	  DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
-		      rect.size.width, rect.size.height);
-	}
-      
-      r = [c->layoutManager
-	    glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
-						  rect.size.height)
-	    inTextContainer: c->textContainer];
-      
-      if (![[NSView focusView] isFlipped])
-	{
-	  DPSscale(ctxt, 1, -1);
-	  rect.origin.y = -NSMaxY(rect);
-	  [NSFont _setFontFlipHack: YES];
-	}
-      
-      [c->layoutManager drawBackgroundForGlyphRange: r
-	atPoint: rect.origin];
-      [c->layoutManager drawGlyphsForGlyphRange: r
-	atPoint: rect.origin];
+      draw_in_rect(c, rect);
     }
   NS_HANDLER
     {
@@ -465,18 +497,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_ENDHANDLER;
   cache_unlock();
-
-  [NSFont _setFontFlipHack: NO];
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-    }
-
-  if (need_clip)
-    {
-      /* Restore the original clipping path. */
-      DPSgrestore(ctxt);
-    }
 }
 
 - (NSSize) size
@@ -520,35 +540,13 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 - (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary *)attrs
 {
   cache_t *c;
-  NSRange r;
-  NSGraphicsContext *ctxt = GSCurrentContext();
 
   cache_lock();
   NS_DURING
     {
       prepare_string(self, attrs);
       c = cache_lookup(NO, NSZeroSize, use_screen_fonts());
-      
-      r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
-      
-      if (![[NSView focusView] isFlipped])
-	{
-	  DPSscale(ctxt, 1, -1);
-	  point.y = -point.y;
-	  
-	  /*
-	    Adjust point.y so the lower left corner of the used rect is at the
-	    point that was passed to us.
-	  */
-	  point.y -= NSMaxY(c->usedRect);
-	  
-	  [NSFont _setFontFlipHack: YES];
-	}
-      
-      [c->layoutManager drawBackgroundForGlyphRange: r
-	atPoint: point];
-      [c->layoutManager drawGlyphsForGlyphRange: r
-	atPoint: point];
+      draw_at_point(c, point);
     }
   NS_HANDLER
     {
@@ -557,12 +555,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_ENDHANDLER;
   cache_unlock();
-
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-      [NSFont _setFontFlipHack: NO];
-    }
 }
 
 - (void) drawInRect: (NSRect)rect withAttributes: (NSDictionary *)attrs
@@ -578,9 +570,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 {
   // FIXME: This ignores options
   cache_t *c;
-  NSRange r;
-  BOOL need_clip = NO;
-  NSGraphicsContext *ctxt = GSCurrentContext();
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
     return;
@@ -590,44 +579,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     {    
       prepare_string(self, attrs);
       c = cache_lookup(YES, rect.size, use_screen_fonts());
-      
-      /*
-	If the used rect fits completely in the rect we draw in, we save time
-	by avoiding the DPSrectclip (and the state save and restore).
-	
-	This isn't completely safe; the used rect isn't guaranteed to contain
-	all parts of all glyphs.
-      */
-      if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
-	  && NSMaxX(c->usedRect) <= rect.size.width
-	  && NSMaxY(c->usedRect) <= rect.size.height)
-	{
-	  need_clip = NO;
-	}
-      else
-	{
-	  need_clip = YES;
-	  DPSgsave(ctxt);
-	  DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
-		      rect.size.width, rect.size.height);
-	}
-      
-      r = [c->layoutManager
-	    glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
-						  rect.size.height)
-	    inTextContainer: c->textContainer];
-      
-      if (![[NSView focusView] isFlipped])
-	{
-	  DPSscale(ctxt, 1, -1);
-	  rect.origin.y = -NSMaxY(rect);
-	  [NSFont _setFontFlipHack: YES];
-	}
-      
-      [c->layoutManager drawBackgroundForGlyphRange: r
-	atPoint: rect.origin];
-      [c->layoutManager drawGlyphsForGlyphRange: r
-	atPoint: rect.origin];      
+      draw_in_rect(c, rect);
     }
   NS_HANDLER
     {
@@ -636,18 +588,6 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_ENDHANDLER;
   cache_unlock();
-      
-  [NSFont _setFontFlipHack: NO];
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-    }
-
-  if (need_clip)
-    {
-      /* Restore the original clipping path. */
-      DPSgrestore(ctxt);
-    }
 }
 
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
