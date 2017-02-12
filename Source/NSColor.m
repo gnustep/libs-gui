@@ -187,6 +187,7 @@ void initSystemColors(void)
   NSString *gray;
   NSString *darkGray;
   NSString *black;
+  NSString *alternateRowColor;
   
   // Set up a dictionary containing the names of all the system colors
   // as keys and with colors in string format as values.
@@ -200,7 +201,9 @@ void initSystemColors(void)
 		       (double)NSDarkGray, (double)NSDarkGray, (double)NSDarkGray];
   black = [NSString stringWithFormat: @"%g %g %g",
 		    (double)NSBlack, (double)NSBlack, (double)NSBlack];
-  
+  alternateRowColor = [NSString stringWithFormat: @"%g %g %g",
+                       (double)0.94901960784314, (double)0.94901960784314, (double)0.94901960784314];
+
   colorStrings = [[NSMutableDictionary alloc]
 		     initWithObjectsAndKeys:
 		     black, @"alternateSelectedControlColor",
@@ -240,7 +243,7 @@ void initSystemColors(void)
 		     white, @"windowFrameTextColor",
 
 		     white, @"rowBackgroundColor",
-		     lightGray, @"alternateRowBackgroundColor",
+		     alternateRowColor, @"alternateRowBackgroundColor",
 		     nil];
   
   systemColors = RETAIN([NSColorList colorListNamed: @"System"]);
