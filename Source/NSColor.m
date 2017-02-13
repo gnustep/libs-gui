@@ -244,6 +244,7 @@ void initSystemColors(void)
 
 		     white, @"rowBackgroundColor",
 		     alternateRowColor, @"alternateRowBackgroundColor",
+		     lightGray, @"selectedInactiveColor",
 		     nil];
   
   systemColors = RETAIN([NSColorList colorListNamed: @"System"]);
