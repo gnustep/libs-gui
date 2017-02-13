@@ -1615,6 +1615,9 @@ didStartElement: (NSString*)elementName
   else
     NSWarnMLog(@"unknown base writing direction: %@", baseWritingDirection);
   
+  // Line break mode...
+  [paragraphStyle setLineBreakMode: [self decodeLineBreakModeForAttributes: [element attributes]]];
+  
   if (selectionGranularity == nil)
     ; // NSSelectByCharacter
   else if ([@"word" isEqualToString: selectionGranularity])
@@ -1622,8 +1625,7 @@ didStartElement: (NSString*)elementName
   else if ([@"paragraph" isEqualToString: selectionGranularity])
     ; // NSSelectByParagraph
   
-  return nil;
-  return AUTORELEASE(paragraphStyle);
+  return paragraphStyle;
 }
 
 #pragma mark - NSColor...
