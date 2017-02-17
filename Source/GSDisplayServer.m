@@ -416,8 +416,8 @@ GSCurrentServer(void)
 }
 
 - (int) findWindowAt: (NSPoint)screenLocation 
-           windowRef: (int*)windowRef 
-           excluding: (int)win
+           windowRef: (NSInteger*)windowRef
+           excluding: (NSInteger)win
 {
   [self subclassResponsibility: _cmd];
   return 0;

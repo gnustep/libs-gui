@@ -93,8 +93,8 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (BOOL) slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to;
 - (void) restrictWindow: (NSInteger)win toImage: (NSImage*)image;
 - (int) findWindowAt: (NSPoint)screenLocation 
-           windowRef: (int*)windowRef 
-           excluding: (int)win;
+           windowRef: (NSInteger*)windowRef
+           excluding: (NSInteger)win;
 
 
 /* Screen information */

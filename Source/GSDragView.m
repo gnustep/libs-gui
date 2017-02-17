@@ -915,8 +915,8 @@ static	GSDragView *sharedDragView = nil;
       dragPoint = [destWindow convertScreenToBase: dragPosition];
     }
             
-  NSDebugLLog(@"NSDragging", @"mouse window %d (%@) at %@\n",
-    mouseWindowRef, destWindow, NSStringFromPoint(dragPosition));
+  NSDebugLLog(@"NSDragging", @"mouse window %ld (%@) at %@\n",
+              (long)mouseWindowRef, destWindow, NSStringFromPoint(dragPosition));
             
   //--- send exit message if necessary -------------------------------------
   if ((mouseWindowRef != targetWindowRef) && targetWindowRef)
