@@ -285,17 +285,9 @@ static cache_t *cache_lookup(BOOL hasSize, NSSize size, BOOL useScreenFonts)
           [c->textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
         }
       [c->layoutManager setUsesScreenFonts: useScreenFonts];
-
-      if ([c->textStorage length] == 0)
-        {
-          // FIXME: We should use attributes from the original data
-          CGFloat h = [[NSFont userFontOfSize: 0] defaultLineHeightForFont];
-          c->usedRect = NSMakeRect(0.0, 0.0, 0.0, h);
-        }
-      else
-        {
-          c->usedRect = [c->layoutManager usedRectForTextContainer: c->textContainer];
-        }
+      // Layout the whole container
+      [c->layoutManager glyphRangeForTextContainer: c->textContainer];
+      c->usedRect = [c->layoutManager usedRectForTextContainer: c->textContainer];
     }
 
   return c;

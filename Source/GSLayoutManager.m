@@ -2601,7 +2601,14 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
   if (tc->usedRectValid)
-    return tc->usedRect;
+    {
+      used = tc->usedRect;
+      if (tc->textContainer == extra_textcontainer)
+        {
+          used = NSUnionRect(used, extra_used_rect);
+        }
+      return used;
+    }
 
   if (tc->num_linefrags)
     {
@@ -2626,9 +2633,15 @@ forStartOfGlyphRange: (NSRange)glyphRange
       used = NSMakeRect(x0, y0, x1 - x0, y1 - y0);
     }
   else
-    used = NSZeroRect;
+    {
+      used = NSZeroRect;
+    }  
   tc->usedRect = used;
   tc->usedRectValid = YES;
+  if (tc->textContainer == extra_textcontainer)
+    {
+      used = NSUnionRect(used, extra_used_rect);
+    }
   return used;
 }
 

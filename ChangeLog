@@ -1,3 +1,11 @@
+2017-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m (-usedRectForTextContainer:): Add extra
+	line rect when needed.
+	* Source/NSTextView.m (sizeToFit): Don't add extra line rect, as
+	it is now already included.
+	* Source/NSStringDrawing.m (cache_lookup): Remove hack for empty string.
+
 2017-02-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSStringDrawing.m: Use shared drawing code.

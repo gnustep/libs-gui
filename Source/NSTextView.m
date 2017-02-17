@@ -1933,13 +1933,7 @@ incorrectly. */
   if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
     {
       NSRect r = [_layoutManager usedRectForTextContainer: _textContainer];
-      NSSize s2;
-      if (_textContainer == [_layoutManager extraLineFragmentTextContainer])
-	{
-	  r = NSUnionRect(r, [_layoutManager extraLineFragmentUsedRect]);
-	}
-
-      s2 = NSMakeSize(NSMaxX(r), NSMaxY(r));
+      NSSize s2 = NSMakeSize(NSMaxX(r), NSMaxY(r));
 
       if (_tf.is_horizontally_resizable)
 	size.width = s2.width + 2 * _textContainerInset.width;
