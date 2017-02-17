@@ -3322,21 +3322,24 @@ byExtendingSelection: (BOOL)flag
         {
           NSString *error;
 	  
-          if ([formatter getObjectValue: &newObjectValue 
-                         forString: string 
-                         errorDescription: &error] == YES)
+          if ([formatter getObjectValue: &newObjectValue
+                              forString: string
+                       errorDescription: &error] == YES)
             {
-              [_editedCell setObjectValue: newObjectValue];
-              
-              if (_dataSource_editable)
+              if ([[_editedCell objectValue] isEqual: newObjectValue] == NO)
                 {
-                  NSTableColumn *tb;
-              
-                  tb = [_tableColumns objectAtIndex: _editedColumn];
+                  [_editedCell setObjectValue: newObjectValue];
                   
-                  [self _setObjectValue: newObjectValue
-                        forTableColumn: tb
-                        row: _editedRow];
+                  if (_dataSource_editable)
+                    {
+                      NSTableColumn *tb;
+                      
+                      tb = [_tableColumns objectAtIndex: _editedColumn];
+                      
+                      [self _setObjectValue: newObjectValue
+                             forTableColumn: tb
+                                        row: _editedRow];
+                    }
                 }
               return;
             }
@@ -3364,22 +3367,25 @@ byExtendingSelection: (BOOL)flag
           // Generate an attributed string per Cocoa behavior...
           id object = string;
           
-          if ([_editedCell allowsEditingTextAttributes])
-          {
-            NSTextView *textView = (NSTextView*)_textObject;
-            object = AUTORELEASE([[NSAttributedString alloc] initWithAttributedString:[textView textStorage]]);
-          }
-
-          [_editedCell setObjectValue: object];
-          
-          if (_dataSource_editable)
+          if ([[_editedCell objectValue] isEqual: object] == NO)
             {
-              // Need to pass string or attributedString based on cell settings...
-              NSTableColumn *tb     = [_tableColumns objectAtIndex: _editedColumn];
+              if ([_editedCell allowsEditingTextAttributes])
+                {
+                  NSTextView *textView = (NSTextView*)_textObject;
+                  object = AUTORELEASE([[NSAttributedString alloc] initWithAttributedString:[textView textStorage]]);
+                }
               
-              [self _setObjectValue: object // newObjectValue
-                     forTableColumn: tb
-                                row: _editedRow];
+              [_editedCell setObjectValue: object];
+              
+              if (_dataSource_editable)
+                {
+                  // Need to pass string or attributedString based on cell settings...
+                  NSTableColumn *tb     = [_tableColumns objectAtIndex: _editedColumn];
+                  
+                  [self _setObjectValue: object // newObjectValue
+                         forTableColumn: tb
+                                    row: _editedRow];
+                }
             }
         }
 
