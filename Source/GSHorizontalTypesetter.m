@@ -503,6 +503,43 @@ For bigger values the width gets ignored.
                     line_height + [curParagraphStyle lineSpacing]);
 }
 
+- (void) _addExtraLineFragment
+{
+  NSRect r, r2, remain;
+  CGFloat line_height;
+
+  /*
+    We aren't actually interested in the glyph data, but we want the
+    attributes for the final character so we can make the extra line
+    frag rect match it. This call makes sure that curFont is set.
+  */
+  if (curGlyph)
+    {
+      [self _cacheMoveTo: curGlyph - 1];
+    }
+  else
+    {
+      curFont = [NSFont userFontOfSize: 0];
+    }
+  
+  line_height = [curFont defaultLineHeightForFont];
+  r = [self _getProposedRectFor: YES
+                 withLineHeight: line_height];
+  r = [curTextContainer lineFragmentRectForProposedRect: r
+                                         sweepDirection: NSLineSweepRight
+                                      movementDirection: NSLineMovesDown
+                                          remainingRect: &remain];
+  
+  if (!NSIsEmptyRect(r))
+    {
+      r2 = r;
+      r2.size.width = 1;
+      [curLayoutManager setExtraLineFragmentRect: r
+                                        usedRect: r2
+                                   textContainer: curTextContainer];
+    }
+}
+
 /*
 Return values 0, 1, 2 are mostly the same as from
 -layoutGlyphsInLayoutManager:.... Additions:
@@ -567,37 +604,11 @@ Return values 0, 1, 2 are mostly the same as from
       new-line, we set the extra line frag rect here so the insertion point
       will be properly positioned after a trailing newline in the text.
       */
-      NSRect r, r2, remain;
-
-      if (!newParagraph || !curGlyph)
+      if (newParagraph)
         {
-          return 2;
+          [self _addExtraLineFragment];
         }
 
-      /*
-      We aren't actually interested in the glyph data, but we want the
-      attributes for the final character so we can make the extra line
-      frag rect match it. This call makes sure that cur* are set.
-      */
-      [self _cacheMoveTo: curGlyph - 1];
-
-      line_height = [curFont defaultLineHeightForFont];
-      r = [self _getProposedRectFor: newParagraph
-                 withLineHeight: line_height];
-
-      r = [curTextContainer lineFragmentRectForProposedRect: r
-                            sweepDirection: NSLineSweepRight
-                            movementDirection: NSLineMovesDown
-                            remainingRect: &remain];
-
-      if (!NSIsEmptyRect(r))
-        {
-          r2 = r;
-          r2.size.width = 1;
-          [curLayoutManager setExtraLineFragmentRect: r
-                            usedRect: r2
-                            textContainer: curTextContainer];
-        }
       return 2;
     }
 
