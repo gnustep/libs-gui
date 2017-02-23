@@ -383,8 +383,14 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips" };
             RETAIN(XmlKeyMapTable);
             
-            // These define keys that typically are a combination of key values stored as separate
-            // attributes...
+            // These define keys that are alwasy "CONTAINED" since they typically are a combination of key values
+            // stored as separate and/or multiple attributed values that may be combined as in the case of flags
+            // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
+            // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
+            // below that provides a cross referenced to an asociated decoding method...
+            // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
+            // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
+            // list (i.e. NSContents, NSAlternateContents, NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
             XmlKeysDefined = @[ @"NSWindowBacking", @"NSWTFlags",
                                 @"NSvFlags", @"NSBGColor",
                                 @"NSSize", //@"IBIsSystemFont",
@@ -409,7 +415,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSpiFlags" ];
             RETAIN(XmlKeysDefined);
             
-            // These define XML tags (i.e. '<autoresizingMask ') to an associated decode method...
+            // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
             XmlTagToDecoderSelectorMap = @{ @"tableColumnResizingMask"  : @"decodeTableColumnResizingMaskForElement:",
                                             @"autoresizingMask"         : @"decodeAutoresizingMaskForElement:",
                                             @"windowStyleMask"          : @"decodeWindowStyleMaskForElement:",
@@ -418,7 +424,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"tableViewGridLines"       : @"decodeTableViewGridLinesForElement:" };
             RETAIN(XmlTagToDecoderSelectorMap);
             
-            // These define XML keys (i.e. '<object key="name"') to an associated decode method...
+            // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
+            // The associated decode method may process MULTIPLE keyed attributes as in such cases as
+            // decoding the integer flag masks...
             XmlKeyToDecoderSelectorMap = @{ @"NSIntercellSpacingHeight"   : @"decodeIntercellSpacingHeightForElement:",
                                             @"NSIntercellSpacingWidth"    : @"decodeIntercellSpacingWidthForElement:",
                                             @"NSColumnAutoresizingStyle"  : @"decodeColumnAutoresizingStyleForElement:",
