@@ -221,13 +221,13 @@
       // Tiling also marks it as needing redisplay
       [_tableView tile];
       
-      [[NSNotificationCenter defaultCenter] 
-	postNotificationName: NSTableViewColumnDidResizeNotification
-	object: _tableView
-	userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-				  self, @"NSTableColumn", 
-				  [NSNumber numberWithFloat: oldWidth],
-				@"NSOldWidth", nil]];
+      NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                self, @"NSTableColumn",
+                                [NSNumber numberWithFloat: oldWidth], @"NSOldWidth",
+                                nil];
+      [[NSNotificationCenter defaultCenter] postNotificationName: NSTableViewColumnDidResizeNotification
+                                                          object: _tableView
+                                                        userInfo: userInfo];
     }
 }
 
@@ -522,6 +522,9 @@ to YES. */
       self = [self initWithIdentifier: identifier];
       if (!self)
         return nil;
+
+      // Cocoa default - NO resizing unless XIB says so...
+      _resizing_mask = NSTableColumnNoResizing;
 
       if ([aDecoder containsValueForKey: @"NSDataCell"])
         {
