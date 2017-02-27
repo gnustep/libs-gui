@@ -111,6 +111,7 @@ static NSImage	*multipleFiles = nil;
 static NSImage	*unknownApplication = nil;
 static NSImage	*unknownTool = nil;
 
+static NSLock   *mlock = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 static NSString *GSWorkspacePreferencesChanged =
@@ -133,7 +134,9 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSString			*name;
   NSDictionary			*apps = nil;
   BOOL				modified = NO;
+  unsigned	                sleeps = 0;
 
+  [mlock lock]; // start critical section
   if (path == nil)
     {
       path = [NSTemporaryDirectory()
@@ -144,8 +147,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     }
   if ([lock tryLock] == NO)
     {
-      unsigned	sleeps = 0;
-
       /*
        * If the lock is really old ... assume the app has died and break it.
        */
@@ -158,7 +159,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 	  NS_HANDLER
 	    {
               NSLog(@"Unable to break lock %@ ... %@", lock, localException);
-			  return nil;
 	    }
 	  NS_ENDHANDLER
         }
@@ -176,6 +176,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 	}
       if (sleeps >= 10)
         {
+          [mlock unlock];
           NSLog(@"Unable to obtain lock %@", lock);
           return nil;
 	}
@@ -260,14 +261,35 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 
   NS_DURING
     {
-	   [lock unlock];
-	}
+      sleeps = 0;
+      [lock unlock];
+    }
   NS_HANDLER
     {
-      NSLog(@"Unable to un-lock %@ ... %@", lock, localException);
-      return nil;
+      for (sleeps = 0; sleeps < 10; sleeps++)
+	{
+	  NS_DURING
+	    {
+	      [lock unlock];
+	      NSLog(@"Unlocked %@", lock);
+	      break;
+	    }
+	  NS_HANDLER
+	    {
+	      sleeps++;
+	      if (sleeps >= 10)
+		{
+		  NSLog(@"Unable to unlock %@", lock);
+		  break;
+		}      
+	      [NSThread sleepForTimeInterval: 0.1];
+	      continue;
+	    }
+	  NS_ENDHANDLER;
+	}
     }
-  NS_ENDHANDLER
+  NS_ENDHANDLER;
+  [mlock unlock];  // end critical section
   
   if (active == YES)
     {
@@ -548,8 +570,6 @@ static NSDictionary		*extPreferences = nil;
 
 static NSString			*urlPrefPath = nil;
 static NSDictionary		*urlPreferences = nil;
-// FIXME: Won't work for MINGW32
-//static NSString			*_rootPath = @"/";
 
 /*
  * Class methods
@@ -574,6 +594,7 @@ static NSDictionary		*urlPreferences = nil;
 	}
 
       beenHere = YES;
+      mlock = [NSLock new];
 
       NS_DURING
 	{
@@ -748,7 +769,7 @@ static NSDictionary		*urlPreferences = nil;
     NSUserDomainMask, YES);
   videoDir = NSSearchPathForDirectoriesInDomains(NSMoviesDirectory,
     NSUserDomainMask, YES);
- 
+
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;
   if ([sysAppDir count] > 0)
@@ -1239,7 +1260,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   #define USING_STATFS 1
   struct statfs m;
   if (statfs([fullPath fileSystemRepresentation], &m))
-    return NO;
+    return NO;  
 #endif
   uid = geteuid();
 
@@ -1490,14 +1511,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (iconImage == nil)
 		    {
 		      iconImage = [NSImage _standardImageWithName: iconName];
-		      if (!iconImage)
-		        {
-		          /* no specific image found in theme, fall-back to folder */
-		          NSLog(@"no image found for %@", iconName);
-		          iconImage = [NSImage _standardImageWithName: @"Folder"];
-		        }
-		      /* the dictionary retains the image */
-		      [folderIconCache setObject: iconImage forKey: iconName];
+                      if (!iconImage)
+                        {
+                          /* no specific image found in theme, fall-back to folder */
+                          NSLog(@"no image found for %@", iconName);
+                          iconImage = [NSImage _standardImageWithName: @"Folder"];
+                        }
+                      /* the dictionary retains the image */
+                      [folderIconCache setObject: iconImage forKey: iconName];
 		    }
 		  image = iconImage;
 		}
@@ -1906,23 +1927,23 @@ launchIdentifiers: (NSArray **)identifiers
 				userInfo: userinfo];
   task = [NSTask launchedTaskWithLaunchPath: @"umount"
 				  arguments: [NSArray arrayWithObject: path]];
-
+      
   if (task)
     {
       [task waitUntilExit];
       if ([task terminationStatus] != 0)
-        {
-          return NO;
-        }
-	}
+	{
+	  return NO;
+	} 
+    }
   else
     {
       return NO;
     }
 
   [[self notificationCenter] postNotificationName: NSWorkspaceDidUnmountNotification
-				  object: self
-				userInfo: userinfo];
+					   object: self
+					 userInfo: userinfo];
 
   /* this is system specific and we try our best
      and the failure of eject doesn't mean unmount failed */
@@ -1931,7 +1952,7 @@ launchIdentifiers: (NSArray **)identifiers
     {
       task = [NSTask launchedTaskWithLaunchPath: @"eject"
 				      arguments: [NSArray arrayWithObject: path]];
-}
+    }
   else if (systype == NSBSDOperatingSystem || systype == NSSolarisOperatingSystem)
     {
       NSString *mountDir;
@@ -1939,17 +1960,17 @@ launchIdentifiers: (NSArray **)identifiers
       // Note: it would be better to check the device, not the mount point
       mountDir = [path lastPathComponent];
       if ([mountDir rangeOfString:@"cd"].location != NSNotFound ||
-          [mountDir rangeOfString:@"dvd"].location != NSNotFound)
-        {
-          task = [NSTask launchedTaskWithLaunchPath: @"eject"
+	  [mountDir rangeOfString:@"dvd"].location != NSNotFound)
+	{
+	  task = [NSTask launchedTaskWithLaunchPath: @"eject"
 					  arguments: [NSArray arrayWithObject: @"cdrom"]];
-        }
+	}
       else if ([mountDir rangeOfString:@"fd"].location != NSNotFound ||
 	  [mountDir rangeOfString:@"floppy"].location != NSNotFound)
-        {
-          task = [NSTask launchedTaskWithLaunchPath: @"eject"
+	{
+	  task = [NSTask launchedTaskWithLaunchPath: @"eject"
 					  arguments: [NSArray arrayWithObject: @"floppy"]];
-        }
+	}
     }
   else
     {
@@ -1959,9 +1980,9 @@ launchIdentifiers: (NSArray **)identifiers
     {
       [task waitUntilExit];
       if ([task terminationStatus] != 0)
-        {
-          NSLog(@"eject failed");
-        }
+	{
+	  NSLog(@"eject failed");
+	}
     }
 
   return YES;
@@ -2102,7 +2123,7 @@ launchIdentifiers: (NSArray **)identifiers
 #else
   struct statfs	*m;
 #endif
-
+  
   n = getmntinfo(&m, MNT_NOWAIT);
   names = [NSMutableArray arrayWithCapacity: n];
   for (i = 0; i < n; i++)
@@ -2199,7 +2220,7 @@ launchIdentifiers: (NSArray **)identifiers
            }
         }
     }
-#endif  
+#endif
 
   return names;
 }
