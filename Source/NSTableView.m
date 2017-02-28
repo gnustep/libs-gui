@@ -4798,39 +4798,39 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       tb = [_tableColumns objectAtIndex: i];
       isResizable[i] = [tb isResizable];
-      if (isResizable[i] == YES)
-	{
-	  minWidth[i] = [tb minWidth];
-	  maxWidth[i] = [tb maxWidth];
-	  
-	  if (minWidth[i] < 0)
-	    minWidth[i] = 0;
-	  if (minWidth[i] > maxWidth[i])
-	    {
-	      minWidth[i] = [tb width];
-	      maxWidth[i] = minWidth[i];
-	    }
-	  columnInfo[i * 2].width = minWidth[i];
-	  columnInfo[i * 2].isMax = 0;
-	  currentWidth[i] = minWidth[i];
-	  remainingWidth -= minWidth[i];
-	  
-	  columnInfo[i * 2 + 1].width = maxWidth[i];
-	  columnInfo[i * 2 + 1].isMax = 1;
-	}
-      else
-	{
-	  minWidth[i] = [tb width];
-	  columnInfo[i * 2].width = minWidth[i];
-	  columnInfo[i * 2].isMax = 0;
-	  currentWidth[i] = minWidth[i];
-	  remainingWidth -= minWidth[i];
-	  
-	  maxWidth[i] = minWidth[i];
-	  columnInfo[i * 2 + 1].width = maxWidth[i];
-	  columnInfo[i * 2 + 1].isMax = 1;
-	}
-    } 
+      if ((isResizable[i] == YES) && ([tb isHidden] == NO))
+        {
+          minWidth[i] = [tb minWidth];
+          maxWidth[i] = [tb maxWidth];
+          
+          if (minWidth[i] < 0)
+            minWidth[i] = 0;
+          if (minWidth[i] > maxWidth[i])
+            {
+              minWidth[i] = [tb width];
+              maxWidth[i] = minWidth[i];
+            }
+          columnInfo[i * 2].width = minWidth[i];
+          columnInfo[i * 2].isMax = 0;
+          currentWidth[i] = minWidth[i];
+          remainingWidth -= minWidth[i];
+          
+          columnInfo[i * 2 + 1].width = maxWidth[i];
+          columnInfo[i * 2 + 1].isMax = 1;
+        }
+      else if ([tb isHidden] == NO)
+        {
+          minWidth[i] = [tb width];
+          columnInfo[i * 2].width = minWidth[i];
+          columnInfo[i * 2].isMax = 0;
+          currentWidth[i] = minWidth[i];
+          remainingWidth -= minWidth[i];
+          
+          maxWidth[i] = minWidth[i];
+          columnInfo[i * 2 + 1].width = maxWidth[i];
+          columnInfo[i * 2 + 1].isMax = 1;
+        }
+    }
 
   // sort the info we have
   quick_sort_internal(columnInfo, 0, 2 * _numberOfColumns - 1);
@@ -4841,99 +4841,92 @@ This method is deprecated, use -columnIndexesInRect:. */
   if (remainingWidth >= 0.)
     {
       for (i = 1; i < 2 * _numberOfColumns; i++)
-	{
-	  nextPoint = columnInfo[i].width;
-	  
-	  if (numberOfCurrentColumns > 0 && 
-	      (nextPoint - previousPoint) > 0.)
-	    {
-	      NSInteger verification = 0;
-	      
-	      if ((nextPoint - previousPoint) * numberOfCurrentColumns
-		  <= remainingWidth)
-		{
-		  toAddToCurrentColumns = nextPoint - previousPoint;
-		  remainingWidth -= 
-		    (nextPoint - previousPoint) * numberOfCurrentColumns;
+        {
+          nextPoint = columnInfo[i].width;
+          
+          if (numberOfCurrentColumns > 0 && (nextPoint - previousPoint) > 0.)
+            {
+              NSInteger verification = 0;
+              
+              if ((nextPoint - previousPoint) * numberOfCurrentColumns <= remainingWidth)
+                {
+                  toAddToCurrentColumns = nextPoint - previousPoint;
+                  remainingWidth -= (nextPoint - previousPoint) * numberOfCurrentColumns;
 
-		  for (j = 0; j < _numberOfColumns; j++)
-		    {
-		      if (minWidth[j] <= previousPoint
-			  && maxWidth[j] >= nextPoint)
-			{
-			  verification++;
-			  currentWidth[j] += toAddToCurrentColumns;
-			}
-		    }
-		  if (verification != numberOfCurrentColumns)
-		    {
-		      NSLog(@"[NSTableView sizeToFit]: unexpected error");
-		    }
-		}
-	      else
-		{
-		  int remainingInt = floor(remainingWidth);
-		  int quotient = remainingInt / numberOfCurrentColumns;
-		  int remainder = remainingInt - quotient * numberOfCurrentColumns;
-		  int oldRemainder = remainder;
+                  for (j = 0; j < _numberOfColumns; j++)
+                    {
+                      if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
+                        {
+                          verification++;
+                          currentWidth[j] += toAddToCurrentColumns;
+                        }
+                    }
+                  if (verification != numberOfCurrentColumns)
+                    {
+                      NSLog(@"[NSTableView sizeToFit]: unexpected error");
+                    }
+                }
+              else
+                {
+                  int remainingInt  = floor(remainingWidth);
+                  int quotient      = remainingInt / numberOfCurrentColumns;
+                  int remainder     = remainingInt - quotient * numberOfCurrentColumns;
+                  int oldRemainder  = remainder;
 
-		  for (j = _numberOfColumns - 1; j >= 0; j--)
-		    {
-		      if (minWidth[j] <= previousPoint
-			  && maxWidth[j] >= nextPoint)
-			{
-			  currentWidth[j] += quotient;
-			  if (remainder > 0 
-			      && maxWidth[j] >= currentWidth[j] + 1)
-			    {
-			      remainder--;
-			      currentWidth[j]++;
-			    }
-			}
-		    }
-		  while (oldRemainder > remainder && remainder > 0)
-		    {
-		      oldRemainder = remainder;
-		      for (j = 0; j < _numberOfColumns; j++)
-			{
-			  if (minWidth[j] <= previousPoint
-			      && maxWidth[j] >= nextPoint)
-			    {
-			      if (remainder > 0 
-				  && maxWidth[j] >= currentWidth[j] + 1)
-				{
-				  remainder--;
-				  currentWidth[j]++;
-				}
-			    }
-			  
-			}
-		    }
-		  if (remainder > 0)
-		    NSLog(@"There is still free space to fill.\
- However it seems better to use integer width for the columns");
-		  else
-		    remainingWidth = 0.;
-		}
-	      
-	      
-	    }
-	  else if (numberOfCurrentColumns < 0)
-	    {
-	      NSLog(@"[NSTableView sizeToFit]: unexpected error");
-	    }
-	  
-	  if (columnInfo[i].isMax)
-	    numberOfCurrentColumns--;
-	  else
-	    numberOfCurrentColumns++;
-	  previousPoint = nextPoint;
-	  
-	  if (remainingWidth == 0.)
-	    {
-	      break;
-	    }
-	}
+                  for (j = _numberOfColumns - 1; j >= 0; j--)
+                    {
+                      if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
+                        {
+                          currentWidth[j] += quotient;
+                          if (remainder > 0 
+                              && maxWidth[j] >= currentWidth[j] + 1)
+                            {
+                              remainder--;
+                              currentWidth[j]++;
+                            }
+                        }
+                    }
+                  while (oldRemainder > remainder && remainder > 0)
+                    {
+                      oldRemainder = remainder;
+                      for (j = 0; j < _numberOfColumns; j++)
+                        {
+                          if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
+                            {
+                              if (remainder > 0 && maxWidth[j] >= currentWidth[j] + 1)
+                                {
+                                  remainder--;
+                                  currentWidth[j]++;
+                                }
+                            }
+                          
+                        }
+                    }
+                  if (remainder > 0)
+                    NSLog(@"There is still free space to fill.\
+             However it seems better to use integer width for the columns");
+                  else
+                    remainingWidth = 0.;
+                }
+              
+              
+            }
+          else if (numberOfCurrentColumns < 0)
+            {
+              NSLog(@"[NSTableView sizeToFit]: unexpected error");
+            }
+          
+          if (columnInfo[i].isMax)
+            numberOfCurrentColumns--;
+          else
+            numberOfCurrentColumns++;
+          previousPoint = nextPoint;
+          
+          if (remainingWidth == 0.)
+            {
+              break;
+            }
+        }
     }
 
   _tilingDisabled = YES;
