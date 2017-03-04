@@ -525,6 +525,7 @@ to YES. */
 
       // Cocoa default - NO resizing unless XIB says so...
       _resizing_mask = NSTableColumnNoResizing;
+      _is_resizable  = NO;
 
       if ([aDecoder containsValueForKey: @"NSDataCell"])
         {
