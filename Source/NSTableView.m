@@ -39,6 +39,7 @@
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSPredicate.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSSortDescriptor.h>
 #import <Foundation/NSUserDefaults.h>
@@ -137,6 +138,13 @@ static NSDragOperation currentDragOperation;
 - (void) _unselectAllColumns;
 @end
 
+@interface NSTableView (ColumnHelper)
+- (NSArray*) _visibleColumns;
+- (NSArray*) _resizableColumns;
+- (NSArray*) _hiddenColumns;
+- (CGFloat) _currentColumnWidth: (NSArray*)columns remainingWidth: (CGFloat*)remainingWidth;
+@end
+
 @interface NSTableView (EventLoopHelper)
 - (void) _trackCellAtColumn:(NSInteger)column row:(NSInteger)row withEvent:(NSEvent *)ev;
 - (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent clickedRow:(NSUInteger)clickedRow;
@@ -159,42 +167,42 @@ void quick_sort_internal(columnSorting *data, int p, int r)
     {
       int q;
       {
-	CGFloat x = data[p].width;
-	BOOL y = data[p].isMax;
-	int i = p - 1;
-	int j = r + 1;
-	columnSorting exchange;
-	while (1)
-	  {
-	    j--;
-	    for (; 
-		(data[j].width > x)
-		  || ((data[j].width == x) 
-		      && (data[j].isMax == YES)
-		      && (y == NO));
-		j--)
-	      ;
-
-	    i++;
-	    for (;
-		(data[i].width < x)
-		  || ((data[i].width == x) 
-		      && (data[i].isMax == NO)
-		      && (y == YES));
-		i++)
-	      ;
-	    if (i < j)
-	      {
-		exchange = data[j];
-		data[j] = data[i];
-		data[i] = exchange;
-	      }
-	    else
-	      {
-		q = j;
-		break;
-	      }
-	  }
+        CGFloat x = data[p].width;
+        BOOL y = data[p].isMax;
+        int i = p - 1;
+        int j = r + 1;
+        columnSorting exchange;
+        while (1)
+          {
+            j--;
+            for (;
+                 (data[j].width > x)
+                 || ((data[j].width == x)
+                     && (data[j].isMax == YES)
+                     && (y == NO));
+                 j--)
+              ;
+            
+            i++;
+            for (;
+                 (data[i].width < x)
+                 || ((data[i].width == x)
+                     && (data[i].isMax == NO)
+                     && (y == YES));
+                 i++)
+              ;
+            if (i < j)
+              {
+                exchange = data[j];
+                data[j] = data[i];
+                data[i] = exchange;
+              }
+            else
+              {
+                q = j;
+                break;
+              }
+          }
       }
       quick_sort_internal(data, p, q);
       quick_sort_internal(data, q + 1, r);
@@ -2116,7 +2124,14 @@ static void computeNewSelection
   else 
     {
       _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (CGFloat));
-    }      
+    }
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"resizing: XXX: %f", _lastRemainingWidth);
+  _lastRemainingWidth = 0;
   [self _resizeTableView];
   [self tile];
 }
@@ -2156,7 +2171,14 @@ static void computeNewSelection
   else 
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
-    }      
+    }
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"resizing: XXX: %f", _lastRemainingWidth);
+  _lastRemainingWidth = 0;
   [self _resizeTableView];
   [self tile];
 }
@@ -4718,6 +4740,30 @@ This method is deprecated, use -columnIndexesInRect:. */
   [self setFrame: _frame];
 }
 
+- (void) _tableColumnDidChangeState: (NSTableColumn*)column
+{
+  if ([column isHidden])
+  {
+    if ([_tableColumns indexOfObject: column] == NSNotFound)
+    {
+      NSWarnMLog(@"column not found in visible list: %@", [column identifier]);
+    }
+    else
+    {
+    }
+  }
+  else
+  {
+    if ([_tableColumnsHidden indexOfObject: column] == NSNotFound)
+    {
+      NSWarnMLog(@"column not found in hidden list: %@", [column identifier]);
+    }
+    else
+    {
+    }
+  }
+}
+
 - (void) _resizeTableView
 {
   if (_columnAutoresizingStyle == NSTableViewUniformColumnAutoresizingStyle)
@@ -4735,7 +4781,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   }
 }
 
-- (void) sizeLastColumnToFit
+- (void) _sizeLastColumnToFitWidth: (CGFloat)newWidth
 {
   if ((_super_view != nil) && (_numberOfColumns > 0))
   {
@@ -4743,20 +4789,80 @@ This method is deprecated, use -columnIndexesInRect:. */
     CGFloat last_column_width;
     NSTableColumn *lastColumn;
     
+    // Check the last column sizing...
     lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
     if ([lastColumn isResizable] == NO)
     {
       return;
     }
-    excess_width = NSMaxX([self convertRect: [_super_view bounds]
-                                   fromView: _super_view]) - NSMaxX(_bounds);
+    
+    CGFloat currentWidth = 0;
+    NSTableColumn *column;
+    for (column in _tableColumns)
+      currentWidth += [column width];
+    excess_width = (newWidth - currentWidth); // - NSMaxX(_bounds);
     last_column_width = [lastColumn width] + excess_width;
+    if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+        ([[self autosaveName] containsString: @"ConnectionList"]) ||
+        ([[self autosaveName] containsString: @"ScriptTable"]) ||
+        ([[self autosaveName] containsString: @"ScriptElements"]) ||
+        ([[self autosaveName] containsString: @"BonjourClient"]))
+      NSWarnMLog(@"%@:_lastRemainingWidth: %f currentWidth: %f newWidth: %f excess_width: %f [lastColumn width]: %f last_column_width: %f",
+                 [self autosaveName],
+                 _lastRemainingWidth, currentWidth, newWidth, excess_width, [lastColumn width], last_column_width);
     // This will automatically retile the table
     [lastColumn setWidth: last_column_width];
+    _lastRemainingWidth = newWidth;
   }
 }
 
-- (void) sizeToFit
+- (void) sizeLastColumnToFit
+{
+  if ((_super_view != nil) && (_numberOfColumns > 0))
+  {
+    CGFloat excess_width;
+    CGFloat last_column_width;
+    NSTableColumn *lastColumn;
+    CGFloat remainingWidth;
+
+    remainingWidth = NSMaxX([self convertRect: [_super_view bounds] fromView: _super_view]);
+
+    // First ensure we're sized to the current superview bounds...
+    if (_lastRemainingWidth == 0)
+    {
+      [self _sizeLastColumnToFitWidth: remainingWidth];
+    }
+
+    if (_lastRemainingWidth == remainingWidth)
+      return;
+    
+    // Nex check the last column sizing...
+    lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
+    if ([lastColumn isResizable] == NO)
+    {
+      return;
+    }
+    excess_width =  remainingWidth - NSMaxX(_bounds);
+    last_column_width = [lastColumn width] + excess_width;
+    if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+        ([[self autosaveName] containsString: @"ConnectionList"]) ||
+        ([[self autosaveName] containsString: @"ScriptTable"]) ||
+        ([[self autosaveName] containsString: @"ScriptElements"]) ||
+        ([[self autosaveName] containsString: @"BonjourClient"]))
+      NSWarnMLog(@"%@:_lastRemainingWidth: %f remainingWidth: %f NSMaxX(_bounds): %f excess_width: %f [lastColumn width]: %f last_column_width: %f",
+                 [self autosaveName],
+                 _lastRemainingWidth, remainingWidth, NSMaxX(_bounds), excess_width, [lastColumn width], last_column_width);
+    // This will automatically retile the table
+    [lastColumn setWidth: last_column_width];
+    _lastRemainingWidth = remainingWidth;
+  }
+}
+
+// This method does the entire resizing using the minWidth algorithm and
+// MUST be invoked if column(s) are added or removed...
+// This method does not maintain the user's resizing of an individual column
+// and therefore should be invoked to resize everything only when needed...
+- (void) _sizeToFitWidth: (CGFloat) newWidth
 {
   NSTableColumn *tb;
   NSInteger i, j;
@@ -4765,82 +4871,91 @@ This method is deprecated, use -columnIndexesInRect:. */
   CGFloat *currentWidth;
   CGFloat *maxWidth;
   CGFloat *minWidth;
-  BOOL *isResizable;
   NSInteger numberOfCurrentColumns = 0;
   CGFloat previousPoint;
   CGFloat nextPoint;
   CGFloat toAddToCurrentColumns;
-
+  
   if ((_super_view == nil) || (_numberOfColumns == 0))
     return;
-
+  
   columnInfo = NSZoneMalloc(NSDefaultMallocZone(),
-			    sizeof(columnSorting) * 2 
-			    * _numberOfColumns);
+                            sizeof(columnSorting) * 2
+                            * _numberOfColumns);
   currentWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			      sizeof(CGFloat) * _numberOfColumns);
+                              sizeof(CGFloat) * _numberOfColumns);
   maxWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			  sizeof(CGFloat) * _numberOfColumns);
+                          sizeof(CGFloat) * _numberOfColumns);
   minWidth = NSZoneMalloc(NSDefaultMallocZone(),
-			  sizeof(CGFloat) * _numberOfColumns);
-  isResizable = NSZoneMalloc(NSDefaultMallocZone(),
-			     sizeof(BOOL) * _numberOfColumns);
-
-  remainingWidth = NSMaxX([self convertRect: [_super_view bounds] 
-				fromView: _super_view]);
+                          sizeof(CGFloat) * _numberOfColumns);
+  
+  remainingWidth = newWidth;
+  
+  // Do visible columns against the remaining width...
+  NSMutableArray *columns = [self _visibleColumns];
+  
+  // Avoid hidden/unresizable columns for resizing...
+  //columns = AUTORELEASE([[self _resizableColumns] mutableCopy]);
+  
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"%@:newWidth: %f remainingWidth: %f _lastRemainingWidth: %f", [self autosaveName],
+               newWidth, remainingWidth, _lastRemainingWidth);
 
   /*
    *  We store the minWidth and the maxWidth of every column
    *  because we'll use those values *a lot*
    *  At the same time we set every column to its mininum width
    */
-  for (i = 0; i < _numberOfColumns; i++)
+  for (i = 0; i < [columns count]; i++)
     {
-      tb = [_tableColumns objectAtIndex: i];
-      isResizable[i] = [tb isResizable];
-      if ((isResizable[i] == YES) && ([tb isHidden] == NO))
-        {
-          minWidth[i] = [tb minWidth];
-          maxWidth[i] = [tb maxWidth];
-          
-          if (minWidth[i] < 0)
-            minWidth[i] = 0;
-          if (minWidth[i] > maxWidth[i])
-            {
-              minWidth[i] = [tb width];
-              maxWidth[i] = minWidth[i];
-            }
-          columnInfo[i * 2].width = minWidth[i];
-          columnInfo[i * 2].isMax = 0;
-          currentWidth[i] = minWidth[i];
-          remainingWidth -= minWidth[i];
-          
-          columnInfo[i * 2 + 1].width = maxWidth[i];
-          columnInfo[i * 2 + 1].isMax = 1;
-        }
-      else if ([tb isHidden] == NO)
+      tb = [columns objectAtIndex: i];
+      if ([tb isResizable] == YES)
+      {
+        minWidth[i] = [tb minWidth];
+        maxWidth[i] = [tb maxWidth];
+        
+        if (minWidth[i] < 0)
+          minWidth[i] = 0;
+        if (minWidth[i] > maxWidth[i])
         {
           minWidth[i] = [tb width];
-          columnInfo[i * 2].width = minWidth[i];
-          columnInfo[i * 2].isMax = 0;
-          currentWidth[i] = minWidth[i];
-          remainingWidth -= minWidth[i];
-          
           maxWidth[i] = minWidth[i];
-          columnInfo[i * 2 + 1].width = maxWidth[i];
-          columnInfo[i * 2 + 1].isMax = 1;
         }
+        columnInfo[i * 2].width = minWidth[i];
+        columnInfo[i * 2].isMax = 0;
+        currentWidth[i] = minWidth[i];
+        remainingWidth -= minWidth[i];
+        
+        columnInfo[i * 2 + 1].width = maxWidth[i];
+        columnInfo[i * 2 + 1].isMax = 1;
+      }
+      else
+      {
+        minWidth[i] = [tb width];
+        columnInfo[i * 2].width = minWidth[i];
+        columnInfo[i * 2].isMax = 0;
+        currentWidth[i] = minWidth[i];
+        remainingWidth -= minWidth[i];
+        
+        maxWidth[i] = minWidth[i];
+        columnInfo[i * 2 + 1].width = maxWidth[i];
+        columnInfo[i * 2 + 1].isMax = 1;
+      }
     }
-
+  
   // sort the info we have
-  quick_sort_internal(columnInfo, 0, 2 * _numberOfColumns - 1);
-
+  quick_sort_internal(columnInfo, 0, 2 * [columns count] - 1);
+  
   previousPoint = columnInfo[0].width;
   numberOfCurrentColumns = 1;
   
   if (remainingWidth >= 0.)
     {
-      for (i = 1; i < 2 * _numberOfColumns; i++)
+      for (i = 1; i < 2 * [columns count]; i++)
         {
           nextPoint = columnInfo[i].width;
           
@@ -4852,8 +4967,8 @@ This method is deprecated, use -columnIndexesInRect:. */
                 {
                   toAddToCurrentColumns = nextPoint - previousPoint;
                   remainingWidth -= (nextPoint - previousPoint) * numberOfCurrentColumns;
-
-                  for (j = 0; j < _numberOfColumns; j++)
+                  
+                  for (j = 0; j < [columns count]; j++)
                     {
                       if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
                         {
@@ -4863,23 +4978,22 @@ This method is deprecated, use -columnIndexesInRect:. */
                     }
                   if (verification != numberOfCurrentColumns)
                     {
-                      NSLog(@"[NSTableView sizeToFit]: unexpected error");
+                      NSLog(@"%s:1:unexpected error", __PRETTY_FUNCTION__);
                     }
                 }
               else
                 {
                   int remainingInt  = floor(remainingWidth);
                   int quotient      = remainingInt / numberOfCurrentColumns;
-                  int remainder     = remainingInt - quotient * numberOfCurrentColumns;
+                  int remainder     = remainingInt % numberOfCurrentColumns;
                   int oldRemainder  = remainder;
-
-                  for (j = _numberOfColumns - 1; j >= 0; j--)
+                  
+                  for (j = [columns count] - 1; j >= 0; j--)
                     {
                       if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
                         {
                           currentWidth[j] += quotient;
-                          if (remainder > 0 
-                              && maxWidth[j] >= currentWidth[j] + 1)
+                          if (remainder > 0 && maxWidth[j] >= currentWidth[j] + 1)
                             {
                               remainder--;
                               currentWidth[j]++;
@@ -4889,7 +5003,7 @@ This method is deprecated, use -columnIndexesInRect:. */
                   while (oldRemainder > remainder && remainder > 0)
                     {
                       oldRemainder = remainder;
-                      for (j = 0; j < _numberOfColumns; j++)
+                      for (j = 0; j < [columns count]; j++)
                         {
                           if (minWidth[j] <= previousPoint && maxWidth[j] >= nextPoint)
                             {
@@ -4899,22 +5013,19 @@ This method is deprecated, use -columnIndexesInRect:. */
                                   currentWidth[j]++;
                                 }
                             }
-                          
                         }
                     }
                   if (remainder > 0)
                     NSLog(@"There is still free space to fill.\
-             However it seems better to use integer width for the columns");
+                          However it seems better to use integer width for the columns");
                   else
                     remainingWidth = 0.;
                 }
-              
-              
             }
           else if (numberOfCurrentColumns < 0)
-            {
-              NSLog(@"[NSTableView sizeToFit]: unexpected error");
-            }
+          {
+            NSLog(@"%s:2:unexpected error", __PRETTY_FUNCTION__);
+          }
           
           if (columnInfo[i].isMax)
             numberOfCurrentColumns--;
@@ -4923,118 +5034,211 @@ This method is deprecated, use -columnIndexesInRect:. */
           previousPoint = nextPoint;
           
           if (remainingWidth == 0.)
-            {
-              break;
-            }
+          {
+            break;
+          }
         }
     }
 
   _tilingDisabled = YES;
-
+  
   remainingWidth = 0.;
-  for (i = 0; i < _numberOfColumns; i++)
+  for (i = 0; i < [columns count]; i++)
     {
-      if (isResizable[i] == YES)
-	{
-	  tb = [_tableColumns objectAtIndex: i];
-	  remainingWidth += currentWidth[i];
-	  [tb setWidth: currentWidth[i]];
-	}
-      else
-	{
-	  remainingWidth += minWidth[i];
-	}
+      tb = [columns objectAtIndex: i];
+      remainingWidth += currentWidth[i];
+      [tb setWidth: currentWidth[i]];
     }
-
+  _lastRemainingWidth = newWidth;
+  
   _tilingDisabled = NO;
   NSZoneFree(NSDefaultMallocZone(), columnInfo);
   NSZoneFree(NSDefaultMallocZone(), currentWidth);
   NSZoneFree(NSDefaultMallocZone(), maxWidth);
   NSZoneFree(NSDefaultMallocZone(), minWidth);
-  NSZoneFree(NSDefaultMallocZone(), isResizable);
-
+  
   [self tile];
 }
-/*
+
+// This method does the resizing using an adjusting algorithm that attempts
+// to maintain the user's resized column state...
+// There should be a better way but this method tries to adjust the columns
+// using the resizable ones on a percentage calculation...
 - (void) sizeToFit
 {
-  NSCell *cell;
-  NSEnumerator	*enumerator;
-  NSTableColumn	*tb;
-  float table_width;
-  float width;
-  float candidate_width;
-  int row;
+  NSTableColumn *tb;
+  NSInteger      i, j;
+  CGFloat        remainingWidth;
 
-  _tilingDisabled = YES;
+  if ((_super_view == nil) || (_numberOfColumns == 0))
+    return;
+  
+  remainingWidth = NSMaxX([self convertRect: [_super_view bounds] fromView: _super_view]);
 
-  // First Step
-  // Resize Each Column to its Minimum Width
-  table_width = _bounds.origin.x;
-  enumerator = [_tableColumns objectEnumerator];
-  while ((tb = [enumerator nextObject]) != nil)
+  // Do a FULL resize of the table...
+  if (_lastRemainingWidth == 0)
+  {
+    [self _sizeToFitWidth: remainingWidth];
+    return;
+  }
+  else if (_lastRemainingWidth == remainingWidth)
+  {
+    if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+        ([[self autosaveName] containsString: @"ConnectionList"]) ||
+        ([[self autosaveName] containsString: @"ScriptTable"]) ||
+        ([[self autosaveName] containsString: @"ScriptElements"]) ||
+        ([[self autosaveName] containsString: @"BonjourClient"]))
+      NSWarnMLog(@"%@:NO CHANGE:remainingWidth: %f _lastRemainingWidth: %f", [self autosaveName],
+                 remainingWidth, _lastRemainingWidth);
+    // If there is NOT change then exit...
+    return;
+  }
+  
+  // Do visible columns for the remaining width...
+  NSMutableArray *columns = [self _visibleColumns];
+  [self _currentColumnWidth: columns remainingWidth: NULL];
+  
+  for (i = 0; i < [columns count]; i++)
     {
-      // Compute min width of column 
-      width = [[tb headerCell] cellSize].width;
-      for (row = 0; row < _numberOfRows; row++)
-	{
-	  cell = [self _dataCellForTableColumn: tb row: row];
-	  [cell setObjectValue: [_dataSource tableView: self
-					     objectValueForTableColumn: tb
-					     row: row]]; 
-	  [self _willDisplayCell: cell
-	        forTableColumn: tb
-	        row: row];
-	  candidate_width = [cell cellSize].width;
+      tb = [columns objectAtIndex: i];
+      remainingWidth -= [[columns objectAtIndex: i] width];
+      if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+          ([[self autosaveName] containsString: @"ConnectionList"]) ||
+          ([[self autosaveName] containsString: @"ScriptTable"]) ||
+          ([[self autosaveName] containsString: @"ScriptElements"]) ||
+          ([[self autosaveName] containsString: @"BonjourClient"]))
+        NSWarnMLog(@"%@: tb[%ld]: %@ (%ld-%ld-%ld) cur: %f min: %f max: %f", [self autosaveName],
+                   (long)i, [tb identifier],
+                   (long)[tb isHidden],
+                   (long)[tb resizingMask],
+                   (long)[tb isResizable],
+                   [tb width], [tb minWidth], [tb maxWidth]);
+    }
+  //remainingWidth -= _lastRemainingWidth;
+  
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"%@:remainingWidth: %f _lastRemainingWidth: %f", [self autosaveName],
+               remainingWidth, _lastRemainingWidth);
+  
+  // Avoid hidden/unresizable columns for resizing...
+  columns = AUTORELEASE([[self _resizableColumns] mutableCopy]);
 
-	  if (_drawsGrid)
-	    candidate_width += 4;
+  if (fabs(remainingWidth) > 1.0)
+    {
+      NSMutableArray *removeCols    = [NSMutableArray array];
+      CGFloat         totalPrecents = 0;
+      NSInteger       counter       = 0;
+      CGFloat         percents[[columns count]];
+      
+      for (i = 0; i < [columns count]; ++i)
+      {
+        tb = [columns objectAtIndex: i];
+        CGFloat width = [tb width];
+        
+        if (remainingWidth < 0)
+        {
+          if (width - [tb minWidth] < fabs(remainingWidth))
+          {
+            [removeCols addObject: tb];
+            continue;
+          }
+          percents[ counter ] = width - [tb minWidth];
+        }
+        else
+        {
+          if ([tb maxWidth] - width < remainingWidth)
+          {
+            [removeCols addObject: tb];
+            continue;
+          }
+          percents[ counter ] = [tb maxWidth] - width;
+        }
+        totalPrecents += percents[ counter ];
+        
+        if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+            ([[self autosaveName] containsString: @"ConnectionList"]) ||
+            ([[self autosaveName] containsString: @"ScriptTable"]) ||
+            ([[self autosaveName] containsString: @"ScriptElements"]) ||
+            ([[self autosaveName] containsString: @"BonjourClient"]))
+          NSWarnMLog(@"%@:ID: %@ percents[ i ]: %f", [self autosaveName], [tb identifier], percents[ counter ]);
+        ++counter;
+      }
+      [columns removeObjectsInArray: removeCols];
+      [removeCols removeAllObjects];
+      if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+          ([[self autosaveName] containsString: @"ConnectionList"]) ||
+          ([[self autosaveName] containsString: @"ScriptTable"]) ||
+          ([[self autosaveName] containsString: @"ScriptElements"]) ||
+          ([[self autosaveName] containsString: @"BonjourClient"]))
+        NSWarnMLog(@"%@:totalPrecents: %f counter: %ld [columns count]: %ld", [self autosaveName], totalPrecents, counter, [columns count]);
 
-	  if (candidate_width > width)
-	    {
-	      width = candidate_width;
-	    }
-	}
-      width += _intercellSpacing.width;
-      [tb setWidth: width];
-      // It is necessary to ask the column for the width, since it might have 
-      // been changed by the column to constrain it to a min or max width
-      table_width += [tb width];
+      for (i = 0; i < [columns count]; ++i)
+      {
+        tb = [columns objectAtIndex: i];
+        percents[ i ] /= totalPrecents;
+        if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+            ([[self autosaveName] containsString: @"ConnectionList"]) ||
+            ([[self autosaveName] containsString: @"ScriptTable"]) ||
+            ([[self autosaveName] containsString: @"ScriptElements"]) ||
+            ([[self autosaveName] containsString: @"BonjourClient"]))
+          NSWarnMLog(@"%@:ID: %@ percents[ i ]: %f", [self autosaveName], [tb identifier], percents[ i ]);
+      }
+
+      // Disable tiling for the resizing loop
+      _tilingDisabled = YES;
+      
+      while ((fabs(remainingWidth) > 0.01) && [columns count])
+        {
+          CGFloat origRemainingWidth = remainingWidth;
+          [removeCols removeAllObjects];
+          if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+              ([[self autosaveName] containsString: @"ConnectionList"]) ||
+              ([[self autosaveName] containsString: @"ScriptTable"]) ||
+              ([[self autosaveName] containsString: @"ScriptElements"]) ||
+              ([[self autosaveName] containsString: @"BonjourClient"]))
+            NSWarnMLog(@"%@:remainingWidth: %f origRemainingWidth: %f [columns count]: %ld", [self autosaveName],
+                       remainingWidth, origRemainingWidth, (long)[columns count]);
+
+          for (i = 0; i < [columns count]; ++i)
+            {
+              tb = [columns objectAtIndex: i];
+              CGFloat width = [tb width];
+              CGFloat newWidth = width + (origRemainingWidth * percents[i]);
+              [tb setWidth: newWidth];
+              if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+                  ([[self autosaveName] containsString: @"ConnectionList"]) ||
+                  ([[self autosaveName] containsString: @"ScriptTable"]) ||
+                  ([[self autosaveName] containsString: @"ScriptElements"]) ||
+                  ([[self autosaveName] containsString: @"BonjourClient"]))
+                NSWarnMLog(@"%@:ID: %@ width: %f newWidth: %f [tb width]: %f", [self autosaveName], [tb identifier],
+                           width, newWidth, [tb width]);
+              remainingWidth -= ([tb width] - width); // * ((remainingWidth < 0) ? -1 : 1);
+
+              if (([tb width] == width) || ([tb width] != newWidth))
+                {
+                  [removeCols addObject: tb];
+                }
+            }
+          [columns removeObjectsInArray: removeCols];
+        }
+      if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+          ([[self autosaveName] containsString: @"ConnectionList"]) ||
+          ([[self autosaveName] containsString: @"ScriptTable"]) ||
+          ([[self autosaveName] containsString: @"ScriptElements"]) ||
+          ([[self autosaveName] containsString: @"BonjourClient"]))
+        NSWarnMLog(@"%@:remainingWidth: %f", [self autosaveName], remainingWidth);
+      
+      // Renable tiling, save and re-tile...
+      _tilingDisabled = NO;
+      _lastRemainingWidth = NSMaxX([self convertRect: [_super_view bounds] fromView: _super_view]) - remainingWidth;
+      [self tile];
     }
 
-  // Second Step
-  // If superview (clipview) is bigger than that, divide remaining space 
-  // between all columns
-  if ((_super_view != nil) && (_numberOfColumns > 0))
-    {
-      float excess_width;
-
-      excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
-				      fromView: _super_view]);
-      excess_width -= table_width;
-      // Since we resized each column at its minimum width, 
-      // it's useless to try shrinking more: we can't
-      if (excess_width <= 0)
-	{
-	  _tilingDisabled = NO;
-	  [self tile];
-	  NSLog(@"exiting sizeToFit");
-	  return;
-	}
-      excess_width = excess_width / _numberOfColumns;
-
-      enumerator = [_tableColumns objectEnumerator];
-      while ((tb = [enumerator nextObject]) != nil)
-	{
-	  [tb setWidth: ([tb width] + excess_width)];
-	}
-    }
-
-  _tilingDisabled = NO;
-  [self tile];
-  NSLog(@"exiting sizeToFit");
 }
-*/
 
 - (void) noteNumberOfRowsChanged
 {
@@ -5132,8 +5336,8 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       NSRect superviewBounds; // Get this *after* [self setFrame:]
       superviewBounds = [_super_view bounds];
-      if ((superviewBounds.origin.y <= _frame.origin.y) 
-        && (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
+      if ((superviewBounds.origin.y <= _frame.origin.y) &&
+          (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
         {
           [self setNeedsDisplay: YES];
         }
@@ -5245,30 +5449,30 @@ This method is deprecated, use -columnIndexesInRect:. */
       // If the row is over the top, or it is partially visible 
       // on top,
       if ((rowRect.origin.y < visibleRect.origin.y))	
-	{
-	  // Then make it visible on top
-	  NSPoint newOrigin;  
-	  
-	  newOrigin.x = visibleRect.origin.x;
-	  newOrigin.y = rowRect.origin.y;
-	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
-	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  return;
-	}
+        {
+          // Then make it visible on top
+          NSPoint newOrigin;  
+          
+          newOrigin.x = visibleRect.origin.x;
+          newOrigin.y = rowRect.origin.y;
+          newOrigin = [self convertPoint: newOrigin  toView: _super_view];
+          [(NSClipView *)_super_view scrollToPoint: newOrigin];
+          return;
+        }
       // If the row is under the bottom, or it is partially visible on
       // the bottom,
       if (NSMaxY (rowRect) > NSMaxY (visibleRect))
-	{
-	  // Then make it visible on bottom
-	  NSPoint newOrigin;  
-	  
-	  newOrigin.x = visibleRect.origin.x;
-	  newOrigin.y = visibleRect.origin.y;
-	  newOrigin.y += NSMaxY (rowRect) - NSMaxY (visibleRect);
-	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
-	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  return;
-	}
+        {
+          // Then make it visible on bottom
+          NSPoint newOrigin;  
+          
+          newOrigin.x = visibleRect.origin.x;
+          newOrigin.y = visibleRect.origin.y;
+          newOrigin.y += NSMaxY (rowRect) - NSMaxY (visibleRect);
+          newOrigin = [self convertPoint: newOrigin  toView: _super_view];
+          [(NSClipView *)_super_view scrollToPoint: newOrigin];
+          return;
+        }
     }
 }
 
@@ -5283,31 +5487,31 @@ This method is deprecated, use -columnIndexesInRect:. */
       // If the row is out on the left, or it is partially visible 
       // on the left
       if ((columnRect.origin.x < visibleRect.origin.x))	
-	{
-	  // Then make it visible on the left
-	  NSPoint newOrigin;  
-	  
-	  newOrigin.x = columnRect.origin.x;
-	  newOrigin.y = visibleRect.origin.y;
-	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
-	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  return;
-	}
+        {
+          // Then make it visible on the left
+          NSPoint newOrigin;  
+          
+          newOrigin.x = columnRect.origin.x;
+          newOrigin.y = visibleRect.origin.y;
+          newOrigin = [self convertPoint: newOrigin  toView: _super_view];
+          [(NSClipView *)_super_view scrollToPoint: newOrigin];
+          return;
+        }
       diff = NSMaxX (columnRect) - NSMaxX (visibleRect);
       // If the row is out on the right, or it is partially visible on
       // the right,
       if (diff > 0)
-	{
-	  // Then make it visible on the right
-	  NSPoint newOrigin;
+        {
+          // Then make it visible on the right
+          NSPoint newOrigin;
 
-	  newOrigin.x = visibleRect.origin.x;
-	  newOrigin.y = visibleRect.origin.y;
-	  newOrigin.x += diff;
-	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
-	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  return;
-	}
+          newOrigin.x = visibleRect.origin.x;
+          newOrigin.y = visibleRect.origin.y;
+          newOrigin.x += diff;
+          newOrigin = [self convertPoint: newOrigin  toView: _super_view];
+          [(NSClipView *)_super_view scrollToPoint: newOrigin];
+          return;
+        }
     }
 }
 
@@ -5941,7 +6145,13 @@ This method is deprecated, use -columnIndexesInRect:. */
         {
           _columnAutoresizingStyle = [aDecoder decodeIntForKey: @"NSColumnAutoresizingStyle"];
         }
-      
+      if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+          ([[self autosaveName] containsString: @"ConnectionList"]) ||
+          ([[self autosaveName] containsString: @"ScriptTable"]) ||
+          ([[self autosaveName] containsString: @"ScriptElements"]) ||
+          ([[self autosaveName] containsString: @"BonjourClient"]))
+        NSWarnMLog(@"%@:_lastRemainingWidth: %f", [self autosaveName], _lastRemainingWidth);
+
       [self _resizeTableView];
       [self tile]; /* Initialize _columnOrigins */
     }
@@ -6025,46 +6235,53 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       tb = [_tableColumns objectAtIndex: i];
       if ([self _dataCellForTableColumn: tb row: -1] == aCell)
-	{
-	  [self setNeedsDisplayInRect: [self rectOfColumn: i]];
-	}
+        {
+          [self setNeedsDisplayInRect: [self rectOfColumn: i]];
+        }
       else
-	{
-	  NSRect columnRect = [self rectOfColumn: i];
-	  NSRect rowRect;
-	  NSRect visibleRect = [self convertRect: [_super_view bounds]
-				     toView: self];
-	  NSPoint top = NSMakePoint(NSMinX(visibleRect),
-				    NSMinY(visibleRect));
-	  NSPoint bottom = NSMakePoint(NSMinX(visibleRect),
-				       NSMaxY(visibleRect));
-	  NSInteger firstVisibleRow = [self rowAtPoint: top];
-	  NSInteger lastVisibleRow = [self rowAtPoint: bottom];
+        {
+          NSRect columnRect = [self rectOfColumn: i];
+          NSRect rowRect;
+          NSRect visibleRect = [self convertRect: [_super_view bounds]
+                   toView: self];
+          NSPoint top = NSMakePoint(NSMinX(visibleRect),
+                  NSMinY(visibleRect));
+          NSPoint bottom = NSMakePoint(NSMinX(visibleRect),
+                     NSMaxY(visibleRect));
+          NSInteger firstVisibleRow = [self rowAtPoint: top];
+          NSInteger lastVisibleRow = [self rowAtPoint: bottom];
 
-	  if (firstVisibleRow == -1)
-	    firstVisibleRow = 0;
+          if (firstVisibleRow == -1)
+            firstVisibleRow = 0;
 
-	  if (lastVisibleRow == -1)
-	    lastVisibleRow = _numberOfColumns - 1;
+          if (lastVisibleRow == -1)
+            lastVisibleRow = _numberOfColumns - 1;
 
-	  for (j = firstVisibleRow; j < lastVisibleRow; j++)
-	    {
-	      if ([self _dataCellForTableColumn: tb row: j] == aCell)
-		{
-		  rowRect = [self rectOfRow: j];
-		  [self setNeedsDisplayInRect:
-			  NSIntersectionRect(columnRect, rowRect)];
-		}
-	    }
-	}
+          for (j = firstVisibleRow; j < lastVisibleRow; j++)
+            {
+              if ([self _dataCellForTableColumn: tb row: j] == aCell)
+                {
+                  rowRect = [self rectOfRow: j];
+                  [self setNeedsDisplayInRect:
+                    NSIntersectionRect(columnRect, rowRect)];
+                }
+            }
+        }
     }
 }
 
 - (void) _userResizedTableColumn: (NSInteger)index
                            width: (CGFloat)width
 {
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"%@:index: %ld width: %f [_super_view bounds].size.width: %f _lastRemainingWidth: %f",
+               [self autosaveName], (long)index, width, [_super_view bounds].size.width, _lastRemainingWidth);
   [[_tableColumns objectAtIndex: index] setWidth: width];
-  [self sizeLastColumnToFit];
+  [self _sizeLastColumnToFitWidth:[_super_view bounds].size.width];
 }
 
 - (CGFloat *) _columnOrigins
@@ -6313,11 +6530,18 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) _autoloadTableColumns
 {
-  if (_autosaveTableColumns && _autosaveName != nil) 
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    return;
+  
+  if (_autosaveTableColumns && _autosaveName != nil)
     { 
       NSUserDefaults     *defaults;
       NSDictionary       *config;
       NSString           *tableKey;
+      NSWarnMLog(@"%@:", [self autosaveName]);
 
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", 
@@ -6335,15 +6559,22 @@ This method is deprecated, use -columnIndexesInRect:. */
               col = [self tableColumnWithIdentifier: colKey];
               
               if (col != nil)
-          {
-            colDesc = [config objectForKey: colKey];
-            [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
-            [self moveColumn: [self columnWithIdentifier: colKey]
-            toColumn: [[colDesc objectAtIndex: 1] intValue]];
-          }
+                {
+                  colDesc = [config objectForKey: colKey];
+                  [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
+                  [self moveColumn: [self columnWithIdentifier: colKey]
+                  toColumn: [[colDesc objectAtIndex: 1] intValue]];
+                }
             }
+          if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+              ([[self autosaveName] containsString: @"ConnectionList"]) ||
+              ([[self autosaveName] containsString: @"ScriptTable"]) ||
+              ([[self autosaveName] containsString: @"ScriptElements"]) ||
+              ([[self autosaveName] containsString: @"BonjourClient"]))
+            NSWarnMLog(@"resizing: XXX: %f", _lastRemainingWidth);
+          _lastRemainingWidth = 0;
+          [self _resizeTableView];
         }
-      [self _resizeTableView];
     }
 }
 
@@ -6396,6 +6627,13 @@ This method is deprecated, use -columnIndexesInRect:. */
       table_width = (_columnOrigins[_numberOfColumns - 1] +
                      [[_tableColumns objectAtIndex: _numberOfColumns - 1] width]);
     }
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"ScriptTable"]) ||
+      ([[self autosaveName] containsString: @"ScriptElements"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"%@:[_super_view bounds].size.width: %f _lastRemainingWidth: %f",
+               [self autosaveName], [_super_view bounds].size.width, _lastRemainingWidth);
 
   if (_autoresizesAllColumnsToFit == YES)
     {
@@ -6404,24 +6642,24 @@ This method is deprecated, use -columnIndexesInRect:. */
 #if 0 // Need to fix this...
       if (table_width - _superview_width <= 0.001
 	   && table_width - _superview_width >= -0.001)
-	{
-	  // the last column had been sized to fit
-	  [self _resizeTableView];
-	}
+        {
+          // the last column had been sized to fit
+          [self _resizeTableView];
+        }
       else if (table_width <= _superview_width
 		&& table_width >= visible_width)
-	{
-	  // the tableView was too small and is now too large
-	  [self _resizeTableView];
-	}
+        {
+          // the tableView was too small and is now too large
+          [self _resizeTableView];
+        }
       else if (table_width >= _superview_width
 	       && table_width <= visible_width)
-	{
-	  // the tableView was too large and is now too small
-	  if (_numberOfColumns > 0)
-	    [self scrollColumnToVisible: 0];
-	  [self _resizeTableView];
-	}
+        {
+          // the tableView was too large and is now too small
+          if (_numberOfColumns > 0)
+            [self scrollColumnToVisible: 0];
+          [self _resizeTableView];
+        }
 #else
       [self _resizeTableView];
 #endif
@@ -6434,24 +6672,24 @@ This method is deprecated, use -columnIndexesInRect:. */
 #if 0 // Need to fix this...
       if (table_width - _superview_width <= 0.001
 	   && table_width - _superview_width >= -0.001)
-	{
-	  // the last column had been sized to fit
-	  [self _resizeTableView];
-	}
+        {
+          // the last column had been sized to fit
+          [self _resizeTableView];
+        }
       else if (table_width <= _superview_width
 		&& table_width >= visible_width)
-	{
-	  // the tableView was too small and is now too large
-	  [self _resizeTableView];
-	}
+        {
+          // the tableView was too small and is now too large
+          [self _resizeTableView];
+        }
       else if (table_width >= _superview_width
 	       && table_width <= visible_width)
-	{
-	  // the tableView was too large and is now too small
-	  if (_numberOfColumns > 0)
-	    [self scrollColumnToVisible: 0];
-	  [self _resizeTableView];
-	}
+        {
+          // the tableView was too large and is now too small
+          if (_numberOfColumns > 0)
+            [self scrollColumnToVisible: 0];
+          [self _resizeTableView];
+        }
 #else
       [self _resizeTableView];
 #endif
@@ -7304,6 +7542,66 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return [super valueForKey: aKey];
     }
+}
+
+@end
+
+@implementation NSTableView (ColumnHelper)
+
+- (NSArray*) _visibleColumns
+{
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isHidden == NO"];
+  return [_tableColumns filteredArrayUsingPredicate: predicate];
+}
+
+- (NSArray*) _resizableColumns
+{
+  NSArray     *columns   = [self _visibleColumns];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"resizingMask != 0"];
+  return [columns filteredArrayUsingPredicate: predicate];
+}
+
+- (NSArray*) _hiddenColumns
+{
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isHidden == YES"];
+  return [_tableColumns filteredArrayUsingPredicate: predicate];
+}
+
+- (CGFloat) _currentColumnWidth: (NSArray*)columns remainingWidth: (CGFloat*)remainingWidth
+{
+  NSInteger i             = 0;
+  CGFloat   currentWidth  = 0;
+  CGFloat   remWidth      = (remainingWidth ? *remainingWidth : 0);
+  
+  for (i = 0; i < [columns count]; i++)
+  {
+    NSTableColumn *tb = [columns objectAtIndex: i];
+#if 0
+    if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+        ([[self autosaveName] containsString: @"ConnectionList"]) ||
+        ([[self autosaveName] containsString: @"BonjourClient"]))
+      NSWarnMLog(@"%@: tb[%ld]: %@ (%ld-%ld-%ld) cur: %f min: %f max: %f", [self autosaveName],
+                 (long)i, [tb identifier],
+                 (long)[tb isHidden],
+                 (long)[tb resizingMask],
+                 (long)[tb isResizable],
+                 [tb width], [tb minWidth], [tb maxWidth]);
+#endif
+    currentWidth += [tb width];
+    if (([tb isHidden] == NO) || (([tb resizingMask] & NSTableColumnAutoresizingMask) == 0))
+    {
+      remWidth -= [tb width];
+    }
+  }
+  if (remainingWidth)
+    *remainingWidth = remWidth;
+#if 1
+  if (([[self autosaveName] containsString: @"ScheduleTable"]) ||
+      ([[self autosaveName] containsString: @"ConnectionList"]) ||
+      ([[self autosaveName] containsString: @"BonjourClient"]))
+    NSWarnMLog(@"currentWidth: %f remainingWidth: %f", currentWidth, (remainingWidth ? *remainingWidth : 0));
+#endif
+  return currentWidth;
 }
 
 @end

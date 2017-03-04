@@ -132,6 +132,7 @@ typedef struct _tableViewFlags
    */
   id                 _dataSource;
   NSMutableArray    *_tableColumns;
+  NSMutableArray    *_tableColumnsHidden;
   BOOL               _drawsGrid;
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
@@ -167,6 +168,7 @@ typedef struct _tableViewFlags
   NSString          *_autosaveName;
   BOOL              _verticalMotionDrag;
   NSArray           *_sortDescriptors;
+  CGFloat            _lastRemainingWidth;
   NSTableViewColumnAutoresizingStyle _columnAutoresizingStyle;
 
   /*
