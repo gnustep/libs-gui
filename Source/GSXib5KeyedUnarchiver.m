@@ -347,8 +347,17 @@ static NSArray      *XmlConnectionRecordTags  = nil;
             XmlConnectionRecordTags = @[ @"action", @"outlet" ];
             RETAIN(XmlConnectionRecordTags);
 
-            // These cross-reference from the OLD key to the NEW key that can be referenced
-            // and it's value or object returned verbatum...
+            // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
+            // or object returned verbatum.  IF an OLD XIB key does not exist and contains the 'NS' prefix
+            // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
+            // whether that key exists and use it's presence during 'containsValueForKey:' processing, and
+            // use it's value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
+            // that cannot be generated autoamatically by this processing.
+            // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
+            // Note, that unless the associated cross referenced key contains an aattribute that matches the
+            // original OLD key type you will need to potentially add a decoding method, and if so, the
+            // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to it's associated decoding
+            // method for cross referencing...
             XmlKeyMapTable = @{ @"NSIsSeparator"                    : @"isSeparatorItem",
                                 //@"NSName"                           : @"systemMenu",
                                 @"NSClassName"                      : @"customClass",
