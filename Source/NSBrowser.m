@@ -702,7 +702,6 @@ static BOOL browserUseBezels;
   NSUInteger indexOfSubStrings;
   NSInteger column;
   BOOL useDelegate = NO;
-  NSWarnMLog(@"path: %@", path);
 
   if ([_browserDelegate respondsToSelector:
     @selector(browser:selectCellWithString:inColumn:)])
@@ -887,7 +886,6 @@ static BOOL browserUseBezels;
    * people should not depend on methods that return strings to return
    * immutable strings.
    */
-  NSWarnMLog(@"sep: %@", separator);
   return AUTORELEASE (separator);
 }
 
