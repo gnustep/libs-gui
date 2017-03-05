@@ -83,6 +83,45 @@ typedef enum {
   NSImageCacheNever
 } NSImageCacheMode;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+APPKIT_EXTERN NSString *const NSImageNameQuickLookTemplate;
+APPKIT_EXTERN NSString *const NSImageNameBluetoothTemplate;
+APPKIT_EXTERN NSString *const NSImageNameIChatTheaterTemplate;
+APPKIT_EXTERN NSString *const NSImageNameSlideshowTemplate;
+APPKIT_EXTERN NSString *const NSImageNameActionTemplate;
+APPKIT_EXTERN NSString *const NSImageNameSmartBadgeTemplate;
+APPKIT_EXTERN NSString *const NSImageNameIconViewTemplate;
+APPKIT_EXTERN NSString *const NSImageNameListViewTemplate;
+APPKIT_EXTERN NSString *const NSImageNameColumnViewTemplate;
+APPKIT_EXTERN NSString *const NSImageNameFlowViewTemplate;
+APPKIT_EXTERN NSString *const NSImageNamePathTemplate;
+APPKIT_EXTERN NSString *const NSImageNameInvalidDataFreestandingTemplate;
+APPKIT_EXTERN NSString *const NSImageNameLockLockedTemplate;
+APPKIT_EXTERN NSString *const NSImageNameLockUnlockedTemplate;
+APPKIT_EXTERN NSString *const NSImageNameGoRightTemplate;
+APPKIT_EXTERN NSString *const NSImageNameGoLeftTemplate;
+APPKIT_EXTERN NSString *const NSImageNameRightFacingTriangleTemplate;
+APPKIT_EXTERN NSString *const NSImageNameLeftFacingTriangleTemplate;
+APPKIT_EXTERN NSString *const NSImageNameAddTemplate;
+APPKIT_EXTERN NSString *const NSImageNameRemoveTemplate;
+APPKIT_EXTERN NSString *const NSImageNameRevealFreestandingTemplate;
+APPKIT_EXTERN NSString *const NSImageNameFollowLinkFreestandingTemplate;
+APPKIT_EXTERN NSString *const NSImageNameEnterFullScreenTemplate;
+APPKIT_EXTERN NSString *const NSImageNameExitFullScreenTemplate;
+APPKIT_EXTERN NSString *const NSImageNameStopProgressTemplate;
+APPKIT_EXTERN NSString *const NSImageNameStopProgressFreestandingTemplate;
+APPKIT_EXTERN NSString *const NSImageNameRefreshTemplate;
+APPKIT_EXTERN NSString *const NSImageNameRefreshFreestandingTemplate;
+APPKIT_EXTERN NSString *const NSImageNameBonjour;
+APPKIT_EXTERN NSString *const NSImageNameComputer;
+APPKIT_EXTERN NSString *const NSImageNameFolderBurnable;
+APPKIT_EXTERN NSString *const NSImageNameFolderSmart;
+APPKIT_EXTERN NSString *const NSImageNameNetwork;
+#endif
+ 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+APPKIT_EXTERN NSString *const NSImageNameFolder;
+#endif
 
 @interface NSImage : NSObject <NSCoding, NSCopying>
 {

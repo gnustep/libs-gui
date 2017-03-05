@@ -161,6 +161,17 @@
     }
 
   _isRunning = NO;
+  _count = 0;
+  [self setNeedsDisplay: YES];
+}
+
+- (BOOL) isHidden
+{
+  if (!_isRunning && !_isDisplayedWhenStopped)
+    {
+      return YES;
+    }
+  return [super isHidden];
 }
 
 - (BOOL) usesThreadedAnimation
@@ -296,6 +307,7 @@
   _style = style;
   _count = 0;
   [self setDisplayedWhenStopped: (style == NSProgressIndicatorBarStyle)];
+  [self setBezeled: (style == NSProgressIndicatorBarStyle)];
   [self sizeToFit];
   [self setNeedsDisplay: YES];
 }
@@ -331,9 +343,6 @@
 - (void) drawRect: (NSRect)rect
 {
    double val;
-
-   if (!_isRunning && !_isDisplayedWhenStopped)
-     return;
 
    if (_doubleValue < _minValue)
      val = 0.0;
@@ -419,50 +428,9 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
-      if ([aDecoder containsValueForKey: @"NSMaxValue"])
-        {
-          double max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
-          
-          [self setMaxValue: max];
-        }
-      else
-        {
-          _maxValue = 100.0;
-        }
-      if ([aDecoder containsValueForKey: @"NSMinValue"])
-        {
-          double min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
-          
-          [self setMinValue: min];
-        }
-      else
-        {
-          _minValue = 0.0;
-        }
-
-      if ([aDecoder containsValueForKey: @"NSpiFlags"])
-        {
-          int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
-          
-          _isIndeterminate = ((flags & 2) == 2);
-          _controlTint = NSDefaultControlTint;
-          _controlSize = (flags & 0x100) ? NSSmallControlSize : NSRegularControlSize;
-          [self setStyle: (flags & 0x1000) ? NSProgressIndicatorSpinningStyle 
-                : NSProgressIndicatorBarStyle];
-          _isDisplayedWhenStopped = ((flags & 0x2000) != 0x2000);
-          // ignore the rest, since they are not pertinent to GNUstep.
-        }
-      else
-        {
-          _isIndeterminate = YES;
-          _isDisplayedWhenStopped = YES;
-          _controlTint = NSDefaultControlTint;
-          _controlSize = NSRegularControlSize;
-          [self setStyle: NSProgressIndicatorBarStyle];
-        }
-
       // things which Gorm encodes, but IB doesn't care about.
+      // process Gorm encodings that IB doesn't care about first
+      // otherwise we overwrite settings read in from XIB...
       if ([aDecoder containsValueForKey: @"GSDoubleValue"])
         {
           _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
@@ -506,6 +474,49 @@
       else
         {
           _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
+        }
+
+      // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
+      if ([aDecoder containsValueForKey: @"NSMaxValue"])
+        {
+          double max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
+          
+          [self setMaxValue: max];
+        }
+      else
+        {
+          _maxValue = 100.0;
+        }
+      if ([aDecoder containsValueForKey: @"NSMinValue"])
+        {
+          double min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+          
+          [self setMinValue: min];
+        }
+      else
+        {
+          _minValue = 0.0;
+        }
+
+      if ([aDecoder containsValueForKey: @"NSpiFlags"])
+        {
+          int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+          
+          _isIndeterminate = ((flags & 2) == 2);
+          _controlTint = NSDefaultControlTint;
+          _controlSize = (flags & 0x100) ? NSSmallControlSize : NSRegularControlSize;
+          [self setStyle: (flags & 0x1000) ? NSProgressIndicatorSpinningStyle 
+                : NSProgressIndicatorBarStyle];
+          _isDisplayedWhenStopped = ((flags & 0x2000) != 0x2000);
+          // ignore the rest, since they are not pertinent to GNUstep.
+        }
+      else
+        {
+          _isIndeterminate = YES;
+          _isDisplayedWhenStopped = YES;
+          _controlTint = NSDefaultControlTint;
+          _controlSize = NSRegularControlSize;
+          [self setStyle: NSProgressIndicatorBarStyle];
         }
     }
   else
