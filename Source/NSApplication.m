@@ -2118,8 +2118,8 @@ See -runModalForWindow:
 	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to %@", 
 			(int)type, window);
 	  else
-	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to %@", 
-			(int)type, window);
+	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %@ to %@", 
+			theEvent, window);
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)
