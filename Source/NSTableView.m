@@ -6171,8 +6171,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) _userResizedTableColumn: (NSInteger)index
                            width: (CGFloat)width
 {
+  _lastRemainingWidth -= (width - [[_tableColumns objectAtIndex: index] width]);
   [[_tableColumns objectAtIndex: index] setWidth: width];
-  [self _sizeLastColumnToFitWidth:[_super_view bounds].size.width];
+  [self _resizeTableView];
 }
 
 - (CGFloat *) _columnOrigins
