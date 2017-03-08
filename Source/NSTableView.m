@@ -142,6 +142,8 @@ static NSDragOperation currentDragOperation;
 - (NSArray*) _visibleColumns;
 - (NSArray*) _resizableColumns;
 - (NSArray*) _hiddenColumns;
+- (CGFloat) _columnOriginForColumn: (NSTableColumn*)column;
+- (CGFloat) _columnOriginForColumnAtIndex: (NSInteger) columnIndex;
 - (CGFloat) _currentColumnWidth: (NSArray*)columns remainingWidth: (CGFloat*)remainingWidth;
 @end
 
@@ -2125,7 +2127,6 @@ static void computeNewSelection
     {
       _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (CGFloat));
     }
-
   _lastRemainingWidth = 0;
   [self _resizeTableView];
   [self tile];
@@ -2167,7 +2168,6 @@ static void computeNewSelection
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }
-
   _lastRemainingWidth = 0;
   [self _resizeTableView];
   [self tile];
@@ -4490,6 +4490,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
       return NSZeroRect;
     }
 
+  // If not visible...
+  if ([[_tableColumns objectAtIndex: columnIndex] isHidden])
+    return NSZeroRect;
+  
   rect.origin.x = _columnOrigins[columnIndex];
   rect.origin.y = _bounds.origin.y;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
@@ -4583,13 +4587,18 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   else
     {
-      NSInteger i = 0;
+      NSInteger i = 1;
+      NSInteger index = 1;
       
-      while ((i < _numberOfColumns) && (aPoint.x >= _columnOrigins[i]))
+      for (i = 1; i < _numberOfColumns; ++i)
         {
-          i++;
+          if ([[_tableColumns objectAtIndex: i] isHidden])
+            continue;
+          if (aPoint.x <= _columnOrigins[i])
+            break;
+          index++;
         }
-      return i - 1;
+      return index - 1;
     }
 }
 
@@ -4732,26 +4741,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) _tableColumnDidChangeState: (NSTableColumn*)column
 {
-  if ([column isHidden])
-  {
-    if ([_tableColumns indexOfObject: column] == NSNotFound)
-    {
-      NSWarnMLog(@"column not found in visible list: %@", [column identifier]);
-    }
-    else
-    {
-    }
-  }
-  else
-  {
-    if ([_tableColumnsHidden indexOfObject: column] == NSNotFound)
-    {
-      NSWarnMLog(@"column not found in hidden list: %@", [column identifier]);
-    }
-    else
-    {
-    }
-  }
+  _lastRemainingWidth = 0;
+  [self _resizeTableView];
 }
 
 - (void) _resizeTableView
@@ -5064,7 +5055,6 @@ This method is deprecated, use -columnIndexesInRect:. */
       tb = [columns objectAtIndex: i];
       remainingWidth -= [[columns objectAtIndex: i] width];
     }
-  //remainingWidth -= _lastRemainingWidth;
   
   // Avoid hidden/unresizable columns for resizing...
   columns = AUTORELEASE([[self _resizableColumns] mutableCopy]);
@@ -5100,7 +5090,6 @@ This method is deprecated, use -columnIndexesInRect:. */
           percents[ counter ] = [tb maxWidth] - width;
         }
         totalPrecents += percents[ counter ];
-        
         ++counter;
       }
       [columns removeObjectsInArray: removeCols];
@@ -5256,23 +5245,38 @@ This method is deprecated, use -columnIndexesInRect:. */
   if (_tilingDisabled == YES)
     return;
 
-  if (_numberOfColumns > 0)
-    {
-      NSInteger i;
-      CGFloat width;
+  // Tile only VISIBLE columns, setting in hidden ones to zero...
+  NSArray *columns = [self tableColumns];
   
-      _columnOrigins[0] = _bounds.origin.x;
-      width = [[_tableColumns objectAtIndex: 0] width];
-      table_width += width;
-      for (i = 1; i < _numberOfColumns; i++)
+  if ([columns count] > 0)
+    {
+      NSInteger i = 0;
+  
+      while ([[_tableColumns objectAtIndex: i] isHidden])
         {
-          _columnOrigins[i] = _columnOrigins[i - 1] + width;
-          width = [[_tableColumns objectAtIndex: i] width];
-          table_width += width;
+          _columnOrigins[i++] = 0;
+        }
+      if (i < [columns count])
+        {
+          CGFloat lastOrigin = _bounds.origin.x;
+          CGFloat lastWidth  = 0;
+          for ( ; i < [columns count]; i++)
+            {
+              if ([[columns objectAtIndex: i] isHidden])
+              {
+                _columnOrigins[i] = 0;
+                continue;
+              }
+              _columnOrigins[i] = lastOrigin + lastWidth;
+              lastWidth = [[columns objectAtIndex: i] width];
+              table_width += lastWidth;
+              lastOrigin = _columnOrigins[i];
+            }
         }
     }
   /* + 1 for the last grid line */
   table_height = (_numberOfRows * _rowHeight) + 1;
+  table_width  = fmax(table_width, [_super_view bounds].size.width);
   [self setFrameSize: NSMakeSize (table_width, table_height)];
   [self setNeedsDisplay: YES];
 
@@ -5323,7 +5327,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
 {
-  [[GSTheme theme] drawTableViewBackgroundInClipRect: clipRect
+  [[GSTheme theme] drawTableViewBackgroundInClipRect: [_super_view bounds]
                                               inView: self
                                  withBackgroundColor: _backgroundColor];
 }
@@ -6171,8 +6175,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) _userResizedTableColumn: (NSInteger)index
                            width: (CGFloat)width
 {
-  _lastRemainingWidth -= (width - [[_tableColumns objectAtIndex: index] width]);
+  CGFloat lastWidth = [[_tableColumns objectAtIndex: index] width];
   [[_tableColumns objectAtIndex: index] setWidth: width];
+  
+  // Resize the table columns...
+  //_lastRemainingWidth -= (width - [[_tableColumns objectAtIndex: index] width]);
   [self _resizeTableView];
 }
 
@@ -6429,8 +6436,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       NSString           *tableKey;
 
       defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", 
-			   _autosaveName];
+      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", _autosaveName];
       config = [defaults objectForKey: tableKey];
       if (config != nil) 
         {
@@ -7439,6 +7445,26 @@ For a more detailed explanation, -setSortDescriptors:. */
   return [_tableColumns filteredArrayUsingPredicate: predicate];
 }
 
+- (CGFloat) _columnOriginForColumn: (NSTableColumn*)column;
+{
+  if ([column isHidden])
+    return 0;
+  return [self _columnOriginForColumnAtIndex: [_tableColumns indexOfObject: column]];
+}
+
+- (CGFloat) _columnOriginForColumnAtIndex: (NSInteger) columnIndex
+{
+  if (columnIndex == NSNotFound)
+    return 0;
+  if ((columnIndex < 0) || (columnIndex >= _numberOfColumns))
+    return 0;
+  NSTableColumn *column = [_tableColumns objectAtIndex: columnIndex];
+  if ([column isHidden])
+    return 0;
+  
+  return _columnOrigins[ columnIndex ];
+}
+
 - (CGFloat) _currentColumnWidth: (NSArray*)columns remainingWidth: (CGFloat*)remainingWidth
 {
   NSInteger i             = 0;
@@ -7456,7 +7482,6 @@ For a more detailed explanation, -setSortDescriptors:. */
   }
   if (remainingWidth)
     *remainingWidth = remWidth;
-
   return currentWidth;
 }
 

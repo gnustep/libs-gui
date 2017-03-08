@@ -73,6 +73,10 @@
 #import "AppKit/NSTableView.h"
 #import "GSBindingHelpers.h"
 
+@interface NSTableView (GNUstepPrivate)
+- (void) _tableColumnDidChangeState: (NSTableColumn*)column;
+@end
+
 /**
   <p>
   NSTableColumn objects represent columns in NSTableViews.  
@@ -351,7 +355,13 @@ it resizes. */
 Set whether the column is invisible or not. */
 - (void) setHidden: (BOOL)hidden
 {
-  _is_hidden = hidden;
+  // If the flag is changing...
+  if (_is_hidden != hidden)
+  {
+    // Save and notify the table to resize columns based on hidden ones...
+    _is_hidden = hidden;
+    [[self tableView] _tableColumnDidChangeState: self];
+  }
 }
 
 /**

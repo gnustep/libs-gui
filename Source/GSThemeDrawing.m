@@ -28,8 +28,10 @@
 
 #import "GSThemePrivate.h"
 
-#import "Foundation/NSUserDefaults.h"
+#import "Foundation/NSDebug.h"
 #import "Foundation/NSIndexSet.h"
+#import "Foundation/NSPredicate.h"
+#import "Foundation/NSUserDefaults.h"
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
@@ -97,6 +99,12 @@
 {
   return _selectedColumns;
 }
+@end
+
+@interface NSTableView (ColumnHelper)
+- (NSArray*) _visibleColumns;
+- (NSArray*) _resizableColumns;
+- (NSArray*) _hiddenColumns;
 @end
 
 @interface NSCell (GNUstepPrivate)
@@ -2924,74 +2932,58 @@ typedef enum {
   NSTableView *tableView = [tableHeaderView tableView];
   NSArray *columns;
   int firstColumnToDraw;
-  int lastColumnToDraw;
   NSRect drawingRect;
   NSTableColumn *column;
   NSTableColumn *highlightedTableColumn;
   float width;
-  int i;
   NSCell *cell;
 
   if (tableView == nil)
     return;
-
-  firstColumnToDraw = [tableHeaderView columnAtPoint: NSMakePoint (aRect.origin.x,
-                                                        aRect.origin.y)];
-  if (firstColumnToDraw == -1)
-    firstColumnToDraw = 0;
-
-  lastColumnToDraw = [tableHeaderView columnAtPoint: NSMakePoint (NSMaxX (aRect),
-                                                       aRect.origin.y)];
-  if (lastColumnToDraw == -1)
-    lastColumnToDraw = [tableView numberOfColumns] - 1;
-
+  
+  // Draw only visible columns based on hidden setting...
+  columns = [tableView _visibleColumns];
+  
+  // If no visible columns then return...
+  if ([columns count] == 0)
+    return;
+  
+  firstColumnToDraw = [[tableView tableColumns] indexOfObject: [columns firstObject]];
   drawingRect = [tableHeaderView headerRectOfColumn: firstColumnToDraw];
-  
-  columns = [tableView tableColumns];
   highlightedTableColumn = [tableView highlightedTableColumn];
-  
-  for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
+
+  NSEnumerator *iter = [columns objectEnumerator];
+  while ((column = [iter nextObject]))
     {
-      column = [columns objectAtIndex: i];
+      NSInteger index = [[tableView tableColumns] indexOfObject: column];
       width = [column width];
       drawingRect.size.width = width;
       cell = [column headerCell];
-      if ((column == highlightedTableColumn) ||
-          [tableView isColumnSelected: i])
-        {
-          [cell setHighlighted: YES];
-        }
+      if ((column == highlightedTableColumn) || [tableView isColumnSelected: index])
+      {
+        [cell setHighlighted: YES];
+      }
       else
-        {
-          [cell setHighlighted: NO];
-        }
-      [cell drawWithFrame: drawingRect
-                   inView: tableHeaderView];
+      {
+        [cell setHighlighted: NO];
+      }
+      [cell drawWithFrame: drawingRect inView: tableHeaderView];
       drawingRect.origin.x += width;
     }
   
   // Fill out table header to end if needed...
-  //if ([[[GSTheme theme] name] isEqualToString: @"GSTheme"] == NO)
+  // This is really here to handle extending the table headers using the
+  // WinUXTheme (or one equivalent to) that writes directly to the MS windows
+  // device contexts...
+  NSRect clipFrame = [(NSClipView*)[tableView superview] documentVisibleRect];
+  CGFloat maxWidth = NSMaxX(clipFrame);
+  if (drawingRect.origin.x < maxWidth)
     {
-      if (lastColumnToDraw == [tableView numberOfColumns] - 1)
-        {
-          // This is really here to handle extending the table headers using the
-          // WinUXTheme (or one equivalent to) that writes directly to the MS windows
-          // device contexts...
-          NSRect clipFrame = [(NSClipView*)[tableView superview] documentVisibleRect];
-          CGFloat maxWidth = NSMaxX(clipFrame);
-          if (drawingRect.origin.x < maxWidth)
-          {
-            drawingRect.size.width = maxWidth - drawingRect.origin.x;
-            column = [columns objectAtIndex: lastColumnToDraw];
-            cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell:@""]);
-            [cell setHighlighted: NO];
-#if 0
-            NSLog(@"%s:---> i: %d drawRect: %@", __PRETTY_FUNCTION__, -2, NSStringFromRect(drawingRect));
-#endif
-            [cell drawWithFrame: drawingRect inView: tableHeaderView];
-          }
-        }
+      drawingRect.size.width = maxWidth - drawingRect.origin.x;
+      column = [columns lastObject];
+      cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell:@""]);
+      [cell setHighlighted: NO];
+      [cell drawWithFrame: drawingRect inView: tableHeaderView];
     }
 }
 
@@ -3062,8 +3054,6 @@ typedef enum {
 
   NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(minX, minY)];
   NSInteger endingRow = [tableView rowAtPoint: NSMakePoint(minX, maxY)];
-  NSInteger startingColumn = [tableView columnAtPoint: NSMakePoint(minX, minY)];
-  NSInteger endingColumn = [tableView columnAtPoint: NSMakePoint(maxX, minY)];
 
   NSGraphicsContext *ctxt = GSCurrentContext ();
   NSColor *gridColor = [tableView gridColor];
@@ -3074,12 +3064,6 @@ typedef enum {
   if (endingRow == -1)
     endingRow = numberOfRows - 1;
 
-  if (startingColumn == -1)
-    startingColumn = 0;
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
-
-
   DPSgsave (ctxt);
   [gridColor set];
 
@@ -3088,25 +3072,33 @@ typedef enum {
     {
       NSInteger i;
       for (i = startingRow; i <= endingRow; i++)
-    	{
-    	  NSRect rowRect = [tableView rectOfRow: i];
-    	  rowRect.origin.y += rowRect.size.height - 1;
-    	  rowRect.size.height = 1;
-    	  NSRectFill(rowRect);
-    	}
+        {
+          NSRect rowRect = [tableView rectOfRow: i];
+          rowRect.origin.y += rowRect.size.height - 1;
+          rowRect.size.height = 1;
+          NSRectFill(rowRect);
+        }
     }
   
   // Draw vertical lines
   if (numberOfColumns > 0)
     {
       NSInteger i;
-      for (i = startingColumn; i <= endingColumn; i++)
-    	{
-    	  NSRect colRect = [tableView rectOfColumn: i];
-    	  colRect.origin.x += colRect.size.width - 1;
-    	  colRect.size.width = 1;
-    	  NSRectFill(colRect);
-    	}
+      CGFloat lastX = 0;
+      CGFloat maxX = NSMaxX([[tableView superview] bounds])-1;
+      NSTableColumn *column = nil;
+      NSArray *columns = [tableView _visibleColumns];
+      NSEnumerator *iter = [columns objectEnumerator];
+      
+      while ((column = [iter nextObject]) && (lastX < maxX))
+        {
+          i = [[tableView tableColumns] indexOfObject: column];
+          NSRect colRect = [tableView rectOfColumn: i];
+          colRect.origin.x += colRect.size.width - 1;
+          colRect.size.width = 1;
+          NSRectFill(colRect);
+          lastX = colRect.origin.x;
+        }
     }
 
   DPSgrestore (ctxt);
@@ -3237,16 +3229,11 @@ typedef enum {
           row = [selectedRows indexGreaterThanIndex: row];
         }	  
     }
-  else // Selecting columns
+  else if ([selectedColumns count] > 0) // Selecting columns
     {
-      NSUInteger selectedColumnsCount;
+      NSUInteger selectedColumnsCount = [selectedColumns count];
       NSUInteger column;
       NSInteger  startingColumn, endingColumn;
-      
-      selectedColumnsCount = [selectedColumns count];
-      
-      if (selectedColumnsCount == 0)
-        return;
       
       /* highlight selected columns */
       startingColumn = [tableView columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
@@ -3272,19 +3259,13 @@ typedef enum {
                    inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
-  // int numberOfRows = [tableView numberOfRows];
   int numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView _selectedRowIndexes];
-  // NSColor *backgroundColor = [tableView backgroundColor];
   id dataSource = [tableView dataSource];
   CGFloat *columnOrigins = [tableView _columnOrigins];
   int editedRow = [tableView editedRow];
   int editedColumn = [tableView editedColumn];
-  int startingColumn;
-  int endingColumn;
   NSRect drawingRect;
   NSCell *cell;
-  int i;
   CGFloat x_pos;
 
   if (dataSource == nil)
@@ -3326,34 +3307,14 @@ typedef enum {
     {
       /* Using columnAtPoint: here would make it called twice per row per drawn
        rect - so we avoid it and do it natively */
+      NSArray       *columns = [tableView _visibleColumns];
+      NSTableColumn *column  = nil;
+      NSEnumerator  *iter    = [columns objectEnumerator];
       
-      /* Determine starting column as fast as possible */
-      x_pos = NSMinX (clipRect);
-      i = 0;
-      while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+      /* Draw the rows  */
+      while ((column = [iter nextObject]))
         {
-          i++;
-        }
-      startingColumn = (i - 1);
-      
-      if (startingColumn == -1)
-        startingColumn = 0;
-      
-      /* Determine ending column as fast as possible */
-      x_pos = NSMaxX (clipRect);
-      // Nota Bene: we do *not* reset i
-      while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-        {
-          i++;
-        }
-      endingColumn = (i - 1);
-      
-      if (endingColumn == -1)
-        endingColumn = numberOfColumns - 1;
-
-      /* Draw the row between startingColumn and endingColumn */
-      for (i = startingColumn; i <= endingColumn; i++)
-        {
+          NSInteger i = [[tableView tableColumns] indexOfObject: column];
           cell = [tableView preparedCellAtColumn: i row:rowIndex];
           if (i == editedColumn && rowIndex == editedRow)
             {
