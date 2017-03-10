@@ -169,6 +169,7 @@ typedef struct _tableViewFlags
   BOOL              _verticalMotionDrag;
   NSArray           *_sortDescriptors;
   CGFloat            _lastRemainingWidth;
+  BOOL               _disableAutosave;
   NSTableViewColumnAutoresizingStyle _columnAutoresizingStyle;
 
   /*

@@ -4743,6 +4743,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   _lastRemainingWidth = 0;
   [self _resizeTableView];
+  [self _autosaveTableColumns];
 }
 
 - (void) _resizeTableView
@@ -5558,16 +5559,16 @@ This method is deprecated, use -columnIndexesInRect:. */
   if (flag)
     {
       [self _autoloadTableColumns];
-      [nc addObserver: self 
-          selector: @selector(_autosaveTableColumns)
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];
+      [nc addObserver: self
+             selector: @selector(_autosaveTableColumns)
+                 name: NSTableViewColumnDidResizeNotification
+               object: self];
     }
   else
     {
-      [nc removeObserver: self 
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];    
+      [nc removeObserver: self
+                    name: NSTableViewColumnDidResizeNotification
+                  object: self];
     }
 }
 
@@ -6011,22 +6012,6 @@ This method is deprecated, use -columnIndexesInRect:. */
         {
           ASSIGN(_sortDescriptors, [aDecoder decodeObjectForKey: @"NSSortDescriptors"]);
         }
-
-      if ([aDecoder containsValueForKey: @"NSTvFlags"])
-        {
-          unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-          GSTableViewFlags tableViewFlags;
-          memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
-          
-          [self setAllowsColumnSelection: tableViewFlags.columnSelection];
-          [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
-          [self setAllowsEmptySelection: tableViewFlags.emptySelection];
-          [self setDrawsGrid: tableViewFlags.drawsGrid];
-          [self setAllowsColumnResizing: tableViewFlags.columnResizing];
-          [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
-          [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
-          [self setUsesAlternatingRowBackgroundColors: tableViewFlags.alternatingRowBackgroundColors];
-        }
       
       if ([aDecoder containsValueForKey: @"NSGridStyleMask"])
       {
@@ -6049,6 +6034,24 @@ This method is deprecated, use -columnIndexesInRect:. */
         [self setAutosaveName:[aDecoder decodeObjectForKey: @"NSAutosaveName"]];
       }
       
+      // Reordered code section to AFTER autosave name restore to allow for table column
+      // restore operation...
+      if ([aDecoder containsValueForKey: @"NSTvFlags"])
+      {
+        unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+        GSTableViewFlags tableViewFlags;
+        memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
+        
+        [self setAllowsColumnSelection: tableViewFlags.columnSelection];
+        [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
+        [self setAllowsEmptySelection: tableViewFlags.emptySelection];
+        [self setDrawsGrid: tableViewFlags.drawsGrid];
+        [self setAllowsColumnResizing: tableViewFlags.columnResizing];
+        [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
+        [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
+        [self setUsesAlternatingRowBackgroundColors: tableViewFlags.alternatingRowBackgroundColors];
+      }
+
       if ([aDecoder containsValueForKey: @"NSColumnAutoresizingStyle"])
         {
           _columnAutoresizingStyle = [aDecoder decodeIntForKey: @"NSColumnAutoresizingStyle"];
@@ -6394,7 +6397,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) _autosaveTableColumns
 {
-  if (_autosaveTableColumns && _autosaveName != nil) 
+  if ((_disableAutosave == NO) && _autosaveTableColumns && _autosaveName != nil)
     {
       NSUserDefaults      *defaults;
       NSString            *tableKey;
@@ -6403,24 +6406,23 @@ This method is deprecated, use -columnIndexesInRect:. */
       id                  en;
 
       defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", 
-			   _autosaveName];
+      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", _autosaveName];
       config = [NSMutableDictionary new];
       
       en = [[self tableColumns] objectEnumerator];
       while ((column = [en nextObject]) != nil)
-	{
-	  NSArray *array;
-	  NSNumber *width, *identNum;
-	  NSObject *ident;
-	  
-	  width = [NSNumber numberWithInt: [column width]];
-	  ident = [column identifier];
-	  identNum = [NSNumber numberWithInt: [self columnWithIdentifier: 
-						      ident]];
-	  array = [NSArray arrayWithObjects: width, identNum, nil];  
-	  [config setObject: array  forKey: ident];      
-	} 
+        {
+          NSArray *array;
+          NSNumber *width, *identNum, *isHidden;
+          NSObject *ident;
+          
+          width = [NSNumber numberWithInt: [column width]];
+          isHidden = [NSNumber numberWithBool: [column isHidden]];
+          ident = [column identifier];
+          identNum = [NSNumber numberWithInt: [self columnWithIdentifier: ident]];
+          array = [NSArray arrayWithObjects: width, identNum, isHidden, nil];
+          [config setObject: array  forKey: ident];      
+        } 
       [defaults setObject: config  forKey: tableKey];
       [defaults synchronize];
       RELEASE (config);
@@ -6438,25 +6440,46 @@ This method is deprecated, use -columnIndexesInRect:. */
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", _autosaveName];
       config = [defaults objectForKey: tableKey];
-      if (config != nil) 
+      if (config != nil)
         {
           NSEnumerator *en = [[config allKeys] objectEnumerator];
           NSString *colKey;
           NSArray *colDesc; 
           NSTableColumn *col;
+
+          // Disable autosave during restore...
+          _disableAutosave = YES;
           
-          while ((colKey = [en nextObject]) != nil) 
+          while ((colKey = [en nextObject]) != nil)
             {
               col = [self tableColumnWithIdentifier: colKey];
               
-              if (col != nil)
+              if (col == nil)
+                {
+                  NSWarnMLog(@"column not found for identifier: %@", colKey);
+                }
+              else
                 {
                   colDesc = [config objectForKey: colKey];
                   [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
-                  [self moveColumn: [self columnWithIdentifier: colKey]
-                  toColumn: [[colDesc objectAtIndex: 1] intValue]];
+                  
+                  // Position the table column...
+                  NSInteger fromCol = [self columnWithIdentifier: colKey];
+                  NSInteger toColumn = [[colDesc objectAtIndex: 1] intValue];
+                  [self moveColumn: fromCol toColumn: toColumn];
+                  
+                  // Newer column information saved includes hidden, etc...
+                  if ([colDesc count] > 2)
+                  {
+                    [col setHidden: [[colDesc objectAtIndex: 2] boolValue]];
+                  }
                 }
             }
+          
+          // Disable autosave during restore...
+          _disableAutosave = NO;
+
+          // Reset resizing...
           _lastRemainingWidth = 0;
           [self _resizeTableView];
         }
