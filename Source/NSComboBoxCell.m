@@ -168,6 +168,7 @@ static GSComboWindow *gsWindow = nil;
   
   column = [[NSTableColumn alloc] initWithIdentifier: @"content"];
   cell = [[NSCell alloc] initTextCell: @""];
+  [cell setLineBreakMode: NSLineBreakByTruncatingTail];
   [column setDataCell: cell];
   RELEASE(cell);
   [_tableView addTableColumn: column];
@@ -184,7 +185,7 @@ static GSComboWindow *gsWindow = nil;
                                                                borderRect.size.height)];
   [scrollView setHasVerticalScroller: YES];
   [scrollView setDocumentView: _tableView];
-  [_tableView release];
+  RELEASE(_tableView);
   [box setContentView: scrollView];
   RELEASE(scrollView);
   
@@ -202,6 +203,16 @@ static GSComboWindow *gsWindow = nil;
 {
   // Browser, table view and scroll view were not retained so don't release them
   [super dealloc];
+}
+
+- (void)setFrame:(NSRect)frameRect display:(BOOL)flag
+{
+  [super setFrame: frameRect display: flag];
+
+  // Column needs to track with frame size changes - and since this class breaks
+  // the GNUstep table view paradigm relationship (NSClipView/NSTableView) and is
+  // now resized outside the normal sequence we fudge it here...
+  [[[_tableView tableColumns] objectAtIndex: 0] setWidth: frameRect.size.width];
 }
 
 - (void) layoutWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
