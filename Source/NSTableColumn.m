@@ -555,7 +555,10 @@ to YES. */
         }
       else
         {
-          [self setEditable: NO];
+          if ([[aDecoder class] coderVersion] > 0)
+            [self setEditable: YES]; // Default for XIB5...
+          else
+            [self setEditable: NO]; // Default for older XIBs...
         }
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
