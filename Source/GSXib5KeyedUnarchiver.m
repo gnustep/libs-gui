@@ -394,7 +394,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips",
                                 @"NSSegmentImages"                  : @"segments",
                                 @"NSSegmentItemLabel"               : @"label",
-                                @"NSSegmentItemImage"               : @"image" };
+                                @"NSSegmentItemImage"               : @"image",
+                                @"NSIsEditable"                     : @"editable" };
             RETAIN(XmlKeyMapTable);
             
             // These define keys that are alwasy "CONTAINED" since they typically are a combination of key values
