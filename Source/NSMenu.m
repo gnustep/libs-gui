@@ -568,8 +568,11 @@ static BOOL menuBarVisible = YES;
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
 {
-  [[GSTheme theme] rightMouseDisplay: self
-			    forEvent: theEvent];
+  // Testplant-MAL-03102017: added...
+  // Notify delegate if it responds to selector...
+  if ([self delegate] && [[self delegate] respondsToSelector:@selector(menuWillOpen:)])
+    [[self delegate] performSelector: @selector(menuWillOpen:) withObject: self];
+  [[GSTheme theme] rightMouseDisplay: self forEvent: theEvent];
 }
 
 @end
