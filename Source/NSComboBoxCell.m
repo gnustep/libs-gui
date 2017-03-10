@@ -205,16 +205,6 @@ static GSComboWindow *gsWindow = nil;
   [super dealloc];
 }
 
-- (void)setFrame:(NSRect)frameRect display:(BOOL)flag
-{
-  [super setFrame: frameRect display: flag];
-
-  // Column needs to track with frame size changes - and since this class breaks
-  // the GNUstep table view paradigm relationship (NSClipView/NSTableView) and is
-  // now resized outside the normal sequence we fudge it here...
-  [[[_tableView tableColumns] objectAtIndex: 0] setWidth: frameRect.size.width];
-}
-
 - (void) layoutWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
   NSSize bsize = [[GSTheme theme] sizeForBorderType: NSLineBorder];
@@ -276,6 +266,11 @@ static GSComboWindow *gsWindow = nil;
   [self setFrame: [self frameRectForContentRect: NSMakeRect(0, 0, popUpWidth, 
      2 * bsize.height + (itemHeight + intercellSpacing.height) * (num - 1)
      + itemHeight)] display: NO];
+  
+  // Column needs to track with frame size changes - and since this class breaks
+  // the GNUstep table view paradigm relationship (NSClipView/NSTableView) and is
+  // now resized outside the normal sequence we fudge it here...
+  [[[_tableView tableColumns] objectAtIndex: 0] setWidth: textCellWidth];
 }
 
 - (void) positionWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
