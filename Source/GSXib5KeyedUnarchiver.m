@@ -325,6 +325,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                    @"tabStops"                      : @"NSMutableArray",
                                                    @"userDefinedRuntimeAttributes"  : @"NSMutableArray",
                                                    @"resources"                     : @"NSMutableArray",
+                                                   @"segments"                      : @"NSMutableArray",
+                                                   @"segment"                       : @"NSSegmentItem",
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
                                                    //@"outlet"                        : @"IBOutletConnection5",
@@ -389,7 +391,10 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSInsertionColor"                 : @"insertionPointColor",
                                 @"NSIsVertical"                     : @"vertical",
                                 @"NSSelectedTabViewItem"            : @"initialItem",
-                                @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips" };
+                                @"NSControlAllowsExpansionToolTips" : @"allowsExpansionToolTips",
+                                @"NSSegmentImages"                  : @"segments",
+                                @"NSSegmentItemLabel"               : @"label",
+                                @"NSSegmentItemImage"               : @"image" };
             RETAIN(XmlKeyMapTable);
             
             // These define keys that are alwasy "CONTAINED" since they typically are a combination of key values
@@ -491,7 +496,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSWhite"                    : @"decodeColorWhiteForElement:",
                                             @"NSRGB"                      : @"decodeColorRGBForElement:",
                                             @"NSColorSpace"               : @"decodeColorSpaceForElement:",
-                                            @"NSCYMK"                     : @"decodeColorCYMKForElement:" };
+                                            @"NSCYMK"                     : @"decodeColorCYMKForElement:",
+                                            @"NSSegmentItemImage"         : @"decodeSegmentItemImageForElement:"};
             RETAIN(XmlKeyToDecoderSelectorMap);
         }
     }
@@ -2471,6 +2477,22 @@ didStartElement: (NSString*)elementName
               object = [NSImage imageNamed: @"NSSwitch"];
             }
         }
+    }
+#if defined(DEBUG_XIB5)
+  NSWarnMLog(@"object: %@", object);
+#endif
+  
+  return object;
+}
+
+#pragma mark - NSegmentedControl/NSSegmentedCell...
+- (id) decodeSegmentItemImageForElement: (GSXib5Element*)element
+{
+  id object = nil;
+  
+  if ([element attributeForKey: @"image"])
+    {
+      object = [NSImage imageNamed: [element attributeForKey: @"image"]];
     }
 #if defined(DEBUG_XIB5)
   NSWarnMLog(@"object: %@", object);
