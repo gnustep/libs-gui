@@ -826,7 +826,6 @@ static BOOL browserUseBezels;
       [self addColumn];
       column++;
     }
-  NSWarnMLog(@"path: %@ subStrings: %@", path, subStrings);
 
   // Clean up local memory usage
   RELEASE(subStrings);
