@@ -930,8 +930,6 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  int startingColumn;
-  int endingColumn;
   NSRect drawingRect;
   NSCell *imageCell = nil;
   NSRect imageRect;
@@ -943,9 +941,6 @@ static NSImage *unexpandable  = nil;
       return;
     }
 
-  /* Using columnAtPoint: here would make it called twice per row per drawn
-     rect - so we avoid it and do it natively */
-
   if (rowIndex >= _numberOfRows)
     {
       return;
@@ -953,12 +948,15 @@ static NSImage *unexpandable  = nil;
 
   /* Determine starting column as fast as possible */
   NSArray *columns = [self _visibleColumns];
-  startingColumn = [_tableColumns indexOfObject: [columns firstObject]];
-  endingColumn   = [_tableColumns indexOfObject: [columns lastObject]];
-
+  NSTableColumn *column = nil;
+  NSEnumerator *iter = [columns objectEnumerator];
+  
   /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
+  while ((column = [iter nextObject]))
     {
+      // Drawing visible columns only now based on hidden setting...
+      i = [_tableColumns indexOfObject: column];
+      
       // Testplant-MAL-2015-07-01: Testplant branch code used due to NSTableView 
       // for group row processing...which were needed due to Cocoa code flow diffs
       // for preparedCell... and data cell generation code
