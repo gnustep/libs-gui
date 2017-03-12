@@ -90,6 +90,10 @@ static NSImage *collapsed = nil;
 static NSImage *expanded  = nil;
 static NSImage *unexpandable  = nil;
 
+@interface NSTableView (GNUstepPrivate)
+- (NSArray*) _visibleColumns;
+@end
+
 @interface NSOutlineView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
 - (void) _postSelectionDidChangeNotification;
@@ -948,28 +952,9 @@ static NSImage *unexpandable  = nil;
     }
 
   /* Determine starting column as fast as possible */
-  x_pos = NSMinX (aRect);
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (aRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
+  NSArray *columns = [self _visibleColumns];
+  startingColumn = [_tableColumns indexOfObject: [columns firstObject]];
+  endingColumn   = [_tableColumns indexOfObject: [columns lastObject]];
 
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
