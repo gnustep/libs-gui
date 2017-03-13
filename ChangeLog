@@ -1,3 +1,10 @@
+2017-03-13 02:57-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSSpeechRecognizer.h
+	* Source/NSSpeechRecognizer.h: Skeleton implementation of
+	speech recognizer.
+	* Source/GNUmakefile: Add new source files to makefile
+
 2017-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSImage.h

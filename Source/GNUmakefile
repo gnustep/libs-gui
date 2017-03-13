@@ -159,6 +159,7 @@ NSShadow.m \
 NSSlider.m \
 NSSliderCell.m \
 NSSound.m  \
+NSSpeechRecognizer.m \
 NSSpeechSynthesizer.m \
 NSSpellChecker.m \
 NSSplitView.m \
@@ -380,6 +381,7 @@ NSShadow.h \
 NSSlider.h \
 NSSliderCell.h \
 NSSound.h  \
+NSSpeechRecognizer.h \
 NSSpeechSynthesizer.h \
 NSSpellChecker.h \
 NSSpellServer.h \
