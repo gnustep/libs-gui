@@ -157,6 +157,13 @@ static Class imageClass;
   return self;
 }
 
+- (NSString *)description
+{
+  NSMutableString *description = AUTORELEASE([[super description] mutableCopy]);
+  [description appendFormat: @"Title: %@", [self title]];
+  return description;
+}
+
 - (void) _updateKeyEquivalent
 {
   // Update keyEquivalent based on any entries in NSUserKeyEquivalents in the defaults database
