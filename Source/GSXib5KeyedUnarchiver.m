@@ -2071,7 +2071,7 @@ didStartElement: (NSString*)elementName
     mask |= 0x20000;
   if ([[attributes objectForKey: @"sendsActionOnArrowKeys"] boolValue])
     mask |= 0x40000;
-  if ((allowsEmptySelection == nil) || [allowsEmptySelection boolValue])
+  if ((acceptsArrowKeys == nil) || [acceptsArrowKeys boolValue])
     mask |= 0x100000;
   if ([[attributes objectForKey: @"separatesColumns"] boolValue])
     mask |= 0x4000000;
