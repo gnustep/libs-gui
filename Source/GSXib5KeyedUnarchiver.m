@@ -372,7 +372,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"IBIsSystemFont"                   : @"metaFont",
                                 //@"NSHeaderClipView"                 : @"headerView",
                                 @"NSMinColumnWidth"                 : @"minColumnWidth",
-                                @"NSNumberOfVisibleColumns"         : @"maxVisibleColumns",
+                                //@"NSNumberOfVisibleColumns"         : @"maxVisibleColumns",
                                 @"NSPreferedColumnWidth"            : @"defaultColumnWidth",
                                 //@"NSPreferedColumnWidth"            : @"preferredColumnWidth",
                                 @"NSBorderColor2"                   : @"borderColor",
@@ -398,7 +398,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSIsEditable"                     : @"editable" };
             RETAIN(XmlKeyMapTable);
             
-            // These define keys that are alwasy "CONTAINED" since they typically are a combination of key values
+            // These define keys that are always "CONTAINED" since they typically are a combination of key values
             // stored as separate and/or multiple attributed values that may be combined as in the case of flags
             // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
             // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
@@ -416,12 +416,12 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSMenuItem",
                                 @"NSDocView",
                                 @"NSSliderType",
-                                @"NSCellPrototype", @"NSBrFlags", //@"NSMinColumnWidth",
+                                @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
                                 @"NSWhite", @"NSRGB", @"NSCYMK",
                                 //@"NSContents", @"NSAlternateContents",
                                 @"NSCellFlags", @"NSCellFlags2",
                                 @"NSButtonFlags", @"NSButtonFlags2",
-                                @"NSSelectedIndex", @"NSAltersState",
+                                @"NSSelectedIndex", @"NSAltersState", //@"NSUsesItemFromMenu",
                                 @"NSNormalImage", @"NSAlternateImage",
                                 @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                 @"NSTitleCell", @"NSOffsets",
@@ -448,6 +448,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSName"                     : @"decodeNameForElement:",
                                             @"NSSliderType"               : @"decodeSliderCellTypeForElement:",
                                             @"NSColumnResizingType"       : @"decodeColumnResizingTypeForElement:",
+                                            @"NSNumberOfVisibleColumns"   : @"decodeNumberOfVisibleColumnsForElement:",
                                             @"NSTickMarkPosition"         : @"decodeSliderCellTickMarkPositionForElement:",
                                             @"NSCells"                    : @"decodeCellsForElement:",
                                             @"NSNumCols"                  : @"decodeNumberOfColumnsInMatrixForElement:",
@@ -457,6 +458,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSAltersState"              : @"decodeAltersStateForElement:",
                                             @"NSMenuItem"                 : @"decodeMenuItemForElement:",
                                             @"selectedItem"               : @"decodeSelectedIndexForElement:",
+                                            @"NSPreferredEdge"            : @"decodePreferredEdgeForElement:",
+                                            @"NSArrowPosition"            : @"decodeArrorPositionForElement:",
                                             @"NSCellPrototype"            : @"decodeCellPrototypeForElement:",
                                             //@"NSMinColumnWidth"           : @"decodeMinimumColumnWidthForElement:",
                                             @"NSTitleCell"                : @"decodeTitleCellForElement:",
@@ -1037,10 +1040,6 @@ didStartElement: (NSString*)elementName
         mask |= NSWindowStyleMaskUtilityWindow;
       if ([[attributes objectForKey: @"nonactivatingPanel"] boolValue])
         mask |= NSWindowStyleMaskNonactivatingPanel;
-
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"mask: %lu", mask);
-#endif
       
       return [NSNumber numberWithUnsignedInteger: mask];
     }
@@ -1284,17 +1283,6 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeSelectedIndexForElement: (GSXib5Element*)element
-{
-  // We need to get the index into the menuitems for menu...
-  NSMenu      *menu     = [self decodeObjectForKey: @"menu"];
-  NSMenuItem  *item     = [self decodeMenuItemForElement: element];
-  NSArray     *items    = [menu itemArray];
-  NSUInteger   index    = [items indexOfObjectIdenticalTo: item];
-  
-  return [NSNumber numberWithUnsignedInteger: index];
-}
-
 - (id)decodeTitleCellForElement: (GSXib5Element*)element
 {
   id        object  = nil;
@@ -1388,10 +1376,6 @@ didStartElement: (NSString*)elementName
         {
           mask |= NSFunctionKeyMask;
         }
-      
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"mask: %lu", mask);
-#endif
       
       object = [NSNumber numberWithUnsignedInteger: mask];
     }
@@ -1772,25 +1756,25 @@ didStartElement: (NSString*)elementName
   
   // borderType - do this one first to avoid or'ing...
   if (borderType == nil)
-  {
-    mask = NSBezelBorder;
-  }
+    {
+      mask = NSBezelBorder;
+    }
   else if ([@"none" isEqualToString: borderType])
-  {
-    mask = NSNoBorder;
-  }
+    {
+      mask = NSNoBorder;
+    }
   else if ([@"line" isEqualToString: borderType])
-  {
-    mask = NSLineBorder;
-  }
+    {
+      mask = NSLineBorder;
+    }
   else if ([@"groove" isEqualToString: borderType])
-  {
-    mask = NSGrooveBorder;
-  }
+    {
+      mask = NSGrooveBorder;
+    }
   else if (borderType)
-  {
-    NSWarnMLog(@"unknown border type: %@", borderType);
-  }
+    {
+      NSWarnMLog(@"unknown border type: %@", borderType);
+    }
 
   if (hasHorizontalScroller)
     mask |= ([hasHorizontalScroller boolValue] ? (1 << 4) : 0);
@@ -1910,10 +1894,6 @@ didStartElement: (NSString*)elementName
   NSDictionary          *attributes    = [element attributes];
   NSDictionary          *gridStyleMask = [[element elementForKey: @"gridStyleMask"] attributes];
   
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"gridStyleMask: %@", gridStyleMask);
-#endif
-  
   // These are the defaults...
   mask.flags.columnOrdering                 = YES; // check if present - see below...
   mask.flags.columnResizing                 = YES; // check if present - see below...
@@ -1954,10 +1934,6 @@ didStartElement: (NSString*)elementName
   if ([[attributes objectForKey: @"vertical"] boolValue])
     mask |= NSTableViewSolidHorizontalGridLineMask;
   
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"mask: %p", mask);
-#endif
-  
   return [NSNumber numberWithUnsignedInteger: mask];
 }
 
@@ -1989,10 +1965,6 @@ didStartElement: (NSString*)elementName
   else if ([@"reverseSequential" isEqualToString: style])
     value = NSTableViewReverseSequentialColumnAutoresizingStyle;
   
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"value: %"PRIuPTR, value);
-#endif
-  
   return [NSString stringWithFormat: @"%"PRIuPTR,value];
 }
 
@@ -2008,10 +1980,7 @@ didStartElement: (NSString*)elementName
         mask |= NSTableColumnAutoresizingMask;
       if ([[attributes objectForKey: @"userResizable"] boolValue])
         mask |= NSTableColumnUserResizingMask;
-      
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"mask: %lu", mask);
-#endif
+
       return [NSNumber numberWithUnsignedInteger: mask];
     }
   
@@ -2026,10 +1995,6 @@ didStartElement: (NSString*)elementName
   NSString                *type         = [attributes objectForKey: @"type"];
   NSString                *controlSize  = [attributes objectForKey: @"controlSize"];
   NSString                *controlTint  = [attributes objectForKey: @"controlTint"];
-  
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"attributes: %@", attributes);
-#endif
   
   // Set defaults...
   mask.flags.controlTint        = NSDefaultControlTint;
@@ -2093,22 +2058,25 @@ didStartElement: (NSString*)elementName
 #pragma mark - NSBrowser...
 - (id) decodeBrowserFlagsForElement: (GSXib5Element*)element
 {
-  NSUInteger    mask       = 0;
-  NSDictionary *attributes = [element attributes];
+  NSUInteger    mask                         = 0;
+  NSDictionary *attributes                   = [element attributes];
+  id            takesTitleFromPreviousColumn = [attributes objectForKey: @"takesTitleFromPreviousColumn"];
+  id            allowsEmptySelection         = [attributes objectForKey: @"allowsEmptySelection"];
+  id            acceptsArrowKeys             = [attributes objectForKey: @"acceptsArrowKeys"];
   
   // Set the flags...
   if ([[attributes objectForKey: @"hasHorizontalScroller"] boolValue])
     mask |= 0x10000;
-  if ([[attributes objectForKey: @"allowsEmptySelection"] boolValue])
+  if ((allowsEmptySelection == nil) || ([allowsEmptySelection boolValue] == NO))
     mask |= 0x20000;
   if ([[attributes objectForKey: @"sendsActionOnArrowKeys"] boolValue])
     mask |= 0x40000;
-  if ([[attributes objectForKey: @"acceptsArrowKeys"] boolValue])
+  if ((allowsEmptySelection == nil) || [allowsEmptySelection boolValue])
     mask |= 0x100000;
   if ([[attributes objectForKey: @"separatesColumns"] boolValue])
     mask |= 0x4000000;
-  if ([[attributes objectForKey: @"takesTitleFromPreviousColumn"] boolValue])
-    mask |= 0x8000000;
+  if ((takesTitleFromPreviousColumn == nil) || [takesTitleFromPreviousColumn boolValue])
+    mask |= 0x8000000; // Cocoa default is YES if Omitted...
   if ([[attributes objectForKey: @"titled"] boolValue])
     mask |= 0x10000000;
   if ([[attributes objectForKey: @"reusesColumns"] boolValue])
@@ -2153,6 +2121,16 @@ didStartElement: (NSString*)elementName
     NSWarnMLog(@"unknown column resizing  type: %@", columnResizingType);
   
   return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id)decodeNumberOfVisibleColumnsForElement: (GSXib5Element*)element
+{
+  NSInteger value = 0; // Cocoa default...
+  
+  if ([element attributeForKey: @"maxVisibleColumns"])
+    value = [[element attributeForKey: @"maxVisibleColumns"] integerValue];
+  
+  return [NSNumber numberWithInteger: value];
 }
 
 #pragma mark - NSCell...
@@ -2652,7 +2630,6 @@ didStartElement: (NSString*)elementName
   return value;
 }
 
-
 - (id) decodeButtonStateForElement: (GSXib5Element*)element
 {
   id          object = nil;
@@ -2709,6 +2686,58 @@ didStartElement: (NSString*)elementName
     }
   
   return object;
+}
+
+#pragma mark - NSPopUpButton/NSPopUpButtonCell...
+- (id)decodeSelectedIndexForElement: (GSXib5Element*)element
+{
+  // We need to get the index into the menuitems for menu...
+  NSMenu      *menu     = [self decodeObjectForKey: @"menu"];
+  NSMenuItem  *item     = [self decodeMenuItemForElement: element];
+  NSArray     *items    = [menu itemArray];
+  NSUInteger   index    = [items indexOfObjectIdenticalTo: item];
+  
+  return [NSNumber numberWithUnsignedInteger: index];
+}
+
+- (id)decodePreferredEdgeForElement: (GSXib5Element*)element
+{
+  NSUInteger  value         = NSMinXEdge;
+  NSString   *preferredEdge = [element attributeForKey: @"preferredEdge"];
+  
+  if (preferredEdge)
+    {
+      if ([@"minX" isEqualToString: preferredEdge])
+        value = NSMinXEdge;
+      else if ([@"maxX" isEqualToString: preferredEdge])
+        value = NSMaxXEdge;
+      else if ([@"minY" isEqualToString: preferredEdge])
+        value = NSMinYEdge;
+      else if ([@"maxY" isEqualToString: preferredEdge])
+        value = NSMaxYEdge;
+      else
+        NSWarnMLog(@"unknown preferred edge value: %@", preferredEdge);
+    }
+  
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id)decodeArrorPositionForElement: (GSXib5Element*)element
+{
+  NSUInteger  value         = NSPopUpArrowAtBottom; // If omitted Cocoa default...
+  NSString   *arrowPosition = [element attributeForKey: @"arrowPosition"];
+  
+  if (arrowPosition)
+  {
+    if ([@"noArrow" isEqualToString: arrowPosition])
+      value = NSPopUpNoArrow;
+    else if ([@"arrowAtCenter" isEqualToString: arrowPosition])
+      value = NSPopUpArrowAtCenter;
+    else
+      NSWarnMLog(@"unknown arrow position value: %@", arrowPosition);
+  }
+  
+  return [NSNumber numberWithUnsignedInteger: value];
 }
 
 #pragma mark - Overridden decoding methods from base class...
@@ -3046,32 +3075,32 @@ didStartElement: (NSString*)elementName
   int value = 0;
   
   if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-  {
-    SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-    value        = [[self performSelector: selector withObject: currentElement] intValue];
-  }
+    {
+      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+      value        = [[self performSelector: selector withObject: currentElement] intValue];
+    }
   else if ([self containsValueForKey:key])
-  {
-    value = [super decodeIntForKey:key];
-  }
+    {
+      value = [super decodeIntForKey:key];
+    }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    value = [self decodeIntForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      value = [self decodeIntForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([currentElement attributeForKey: key])
-  {
-    value = [[currentElement attributeForKey: key] integerValue];
-  }
+    {
+      value = [[currentElement attributeForKey: key] integerValue];
+    }
   else if ([key hasPrefix:@"NS"])
-  {
-    NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-    newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-    value = [self decodeIntegerForKey:newKey];
-  }
+    {
+      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
+      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
+      value = [self decodeIntegerForKey:newKey];
+    }
   else
-  {
-    NSWarnMLog(@"no INT for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no INT for key: %@", key);
+    }
   
   return value;
 }
@@ -3113,27 +3142,27 @@ didStartElement: (NSString*)elementName
   
   // If the request element exists...
   if ([currentElement elementForKey: key])
-  {
-    GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
-    NSDictionary  *object  = [element attributes];
-    
-    point.x = [[object objectForKey:@"x"] doubleValue];
-    point.y = [[object objectForKey:@"y"] doubleValue];
-  }
+    {
+      GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
+      NSDictionary  *object  = [element attributes];
+      
+      point.x = [[object objectForKey:@"x"] doubleValue];
+      point.y = [[object objectForKey:@"y"] doubleValue];
+    }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    point = [self decodePointForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      point = [self decodePointForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([key hasPrefix:@"NS"])
-  {
-    NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-    newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
-    point = [self decodePointForKey: newKey];
-  }
+    {
+      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
+      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+      point = [self decodePointForKey: newKey];
+    }
   else
-  {
-    NSWarnMLog(@"no POINT for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no POINT for key: %@", key);
+    }
   
   return point;
 
@@ -3145,28 +3174,28 @@ didStartElement: (NSString*)elementName
   
   // If the request element exists...
   if ([currentElement elementForKey: key])
-  {
-    GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
-    NSDictionary  *object  = [element attributes];
-    
-    size.width  = [[object objectForKey:@"width"] doubleValue];
-    size.height = [[object objectForKey:@"height"] doubleValue];
-  }
+    {
+      GSXib5Element *element = (GSXib5Element*)[currentElement elementForKey: key];
+      NSDictionary  *object  = [element attributes];
+      
+      size.width  = [[object objectForKey:@"width"] doubleValue];
+      size.height = [[object objectForKey:@"height"] doubleValue];
+    }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    size = [self decodeSizeForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      size = [self decodeSizeForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([key hasPrefix:@"NS"])
-  {
-    NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-    NSString *prefix = [[newKey substringToIndex:1] lowercaseString];
-    newKey           = [prefix stringByAppendingString: [newKey substringFromIndex:1]];
-    size             = [self decodeSizeForKey: newKey];
-  }
+    {
+      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
+      NSString *prefix = [[newKey substringToIndex:1] lowercaseString];
+      newKey           = [prefix stringByAppendingString: [newKey substringFromIndex:1]];
+      size             = [self decodeSizeForKey: newKey];
+    }
   else
-  {
-    NSWarnMLog(@"no SIZE for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no SIZE for key: %@", key);
+    }
   
   return size;
 }
@@ -3177,24 +3206,24 @@ didStartElement: (NSString*)elementName
   
   // If the request element exists...
   if ([currentElement elementForKey: key])
-  {
-    frame.origin  = [self decodePointForKey: key];
-    frame.size    = [self decodeSizeForKey: key];
-  }
+    {
+      frame.origin  = [self decodePointForKey: key];
+      frame.size    = [self decodeSizeForKey: key];
+    }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    frame = [self decodeRectForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      frame = [self decodeRectForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([key hasPrefix:@"NS"])
-  {
-    NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-    newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
-    frame = [self decodeRectForKey: newKey];
-  }
+    {
+      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
+      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+      frame = [self decodeRectForKey: newKey];
+    }
   else
-  {
-    NSWarnMLog(@"no RECT for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no RECT for key: %@", key);
+    }
   
   return frame;
 }
@@ -3206,14 +3235,14 @@ didStartElement: (NSString*)elementName
 
   // If the request element exists...
   if (element)
-  {
-    range.location  = [[element attributeForKey: @"location"] integerValue];
-    range.length    = [[element attributeForKey: @"length"] integerValue];
-  }
+    {
+      range.location  = [[element attributeForKey: @"location"] integerValue];
+      range.length    = [[element attributeForKey: @"length"] integerValue];
+    }
   else
-  {
-    NSWarnMLog(@"no RANGE for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no RANGE for key: %@", key);
+    }
   
   return range;
 }
