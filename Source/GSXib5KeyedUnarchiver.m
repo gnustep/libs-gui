@@ -822,33 +822,6 @@ didStartElement: (NSString*)elementName
     }
 }
 
-#pragma mark - Finish decoding connections (actions/outlets) and runtime attributes...
-- (void)processRuntimeAttributes: (NSArray*)runtimeAttributes forObject: (id)object
-{
-  NSEnumerator                    *iter             = [runtimeAttributes objectEnumerator];
-  IBUserDefinedRuntimeAttribute5  *runtimeAttribute = nil;
-  id                               theObject        = [self nibInstantiate: object];
-  
-  while ((runtimeAttribute = [iter nextObject]) != nil)
-  {
-#if defined(DEBUG_XIB5)
-    NSWarnMLog(@"processing object (%@) runtime attr: %@", object, runtimeAttribute);
-#endif
-    [theObject setValue: [runtimeAttribute value] forKeyPath: [runtimeAttribute keyPath]];
-  }
-}
-
-- (void)processRuntimeAttributes: (NSDictionary*)runtimeAttributes
-{
-  NSEnumerator *iter = [runtimeAttributes keyEnumerator];
-  id            key  = nil; // Key IS object...
-  
-  while ((key = [iter nextObject]))
-  {
-    [self processRuntimeAttribute: [runtimeAttributes objectForKey: key] forObject: key];
-  }
-}
-
 #pragma mark - Decoding method(s)...
 // All this code should eventually move into their respective initWithCoder class
 // methods - however note - there are a couple that may be duplicated...
