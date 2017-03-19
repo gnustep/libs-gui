@@ -191,17 +191,4 @@
 
 @end
 
-
-@interface GSXibKeyedUnarchiver: NSKeyedUnarchiver
-{
-  NSMutableDictionary *objects;
-  NSMutableArray *stack;
-  GSXibElement *currentElement;
-  NSMutableDictionary *decoded;
-}
-
-- (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element;
-- (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element;
-@end
-
 #endif

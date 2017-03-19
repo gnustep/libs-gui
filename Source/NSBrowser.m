@@ -2870,6 +2870,10 @@ static BOOL browserUseBezels;
 
       [aCoder encodeInt: _columnResizing forKey: @"NSColumnResizingType"];
       //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
+      if (nil != [self columnsAutosaveName])
+        {
+          [aCoder encodeObject: [self columnsAutosaveName] forKey: @"NSColumnsAutosaveName"];
+        }
     }
   else
     {
@@ -3023,6 +3027,12 @@ static BOOL browserUseBezels;
       if ([aDecoder containsValueForKey: @"NSPreferedColumnWidth"])
         {
           //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
+        }
+
+      if ([aDecoder containsValueForKey: @"NSColumnsAutosaveName"])
+        {
+          [self setColumnsAutosaveName: [aDecoder decodeObjectForKey:
+                                                    @"NSColumnsAutosaveName"]];
         }
     }
   else

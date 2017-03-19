@@ -254,6 +254,7 @@ GSNibLoader.m \
 GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
+GSXibKeyedUnarchiver.m \
 GSXibObjectContainer.m \
 GSXibParser.m \
 GSHelpAttachment.m 

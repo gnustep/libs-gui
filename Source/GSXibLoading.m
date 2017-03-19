@@ -65,6 +65,18 @@
   return value;
 }
 
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+
+  [description appendString: @" <"];
+  [description appendFormat: @" type: %@", typeIdentifier];
+  [description appendFormat: @" keyPath: %@", keyPath];
+  [description appendFormat: @" value: %@", value];
+  [description appendString: @">"];
+  return AUTORELEASE(description);
+}
+
 @end
 
 @implementation IBUserDefinedRuntimeAttributesPlaceholder
