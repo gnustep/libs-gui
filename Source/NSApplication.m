@@ -2764,9 +2764,13 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (NSArray*) windows
 {
   // Omit the app icon window
-  NSMutableArray *windows = AUTORELEASE([GSAllWindows() mutableCopy]);
-  [windows removeObject: [self iconWindow]];
-  return windows;
+  if ([self iconWindow])
+  {
+    NSMutableArray *windows = AUTORELEASE([GSAllWindows() mutableCopy]);
+    [windows removeObject: [self iconWindow]];
+    return windows;
+  }
+  return GSAllWindows();
 }
 
 /**
