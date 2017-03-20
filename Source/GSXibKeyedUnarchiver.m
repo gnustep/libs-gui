@@ -625,6 +625,36 @@ didStartElement: (NSString*)elementName
       
       return new;
     }
+  else if ([@"point" isEqualToString: elementName])
+    {
+      NSPoint point = [self decodePointForKey: [element attributeForKey: @"key"]];
+      id      new   = [NSValue valueWithPoint: point];
+      
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
+    }
+  else if ([@"size" isEqualToString: elementName])
+    {
+      NSSize size = [self decodeSizeForKey: [element attributeForKey: @"key"]];
+      id     new  = [NSValue valueWithSize: size];
+      
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
+    }
+  else if ([@"rect" isEqualToString: elementName])
+    {
+      NSRect rect = [self decodeRectForKey: [element attributeForKey: @"key"]];
+      id     new  = [NSValue valueWithRect: rect];
+      
+      if (objID != nil)
+        [decoded setObject: new forKey: objID];
+      
+      return new;
+    }
   else if ([@"reference" isEqualToString: elementName])
     {
       NSString *ref = [element attributeForKey: @"ref"];
@@ -668,7 +698,7 @@ didStartElement: (NSString*)elementName
   else if ([@"bytes" isEqualToString: elementName])
     {
       id new = AUTORELEASE([[NSData alloc] initWithBase64EncodedString: [element value]
-                                                               options: 0]);
+                                                               options: NSDataBase64DecodingIgnoreUnknownCharacters]);
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
@@ -802,7 +832,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  return [o boolValue];
 	}
@@ -847,7 +878,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  return [o doubleValue];
 	}
@@ -868,7 +900,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  return [o floatValue];
 	}
@@ -889,7 +922,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  long long l = [o longLongValue];
 
@@ -912,7 +946,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  long long l = [o longLongValue];
 

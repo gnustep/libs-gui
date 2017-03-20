@@ -1,3 +1,8 @@
+2017-03-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibKeyedUnarchiver.m:
+	Merge some of the changes from the testplant branch.
+
 2017-03-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m: Add encoding of NSColumnsAutosaveName.
