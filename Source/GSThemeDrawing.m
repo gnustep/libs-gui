@@ -3024,6 +3024,7 @@ typedef enum {
     rowRect = [tableView rectOfRow: startingRow];
     rowRect.origin.x = aRect.origin.x;
     rowRect.size.width = aRect.size.width;
+    rowRect.size.height = rowHeight;
     
     endingRow = startingRow + ceil(aRect.size.height / rowHeight);
     
