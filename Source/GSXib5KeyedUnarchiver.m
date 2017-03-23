@@ -111,7 +111,7 @@ static NSString *ApplicationClass = nil;
       {
         @synchronized([self class])
         {
-          ASSIGN(ApplicationClass, _className);
+          ASSIGNCOPY(ApplicationClass, _className);
         }
       }
     }
@@ -195,9 +195,12 @@ static NSString *ApplicationClass = nil;
   {
     if ([coder allowsKeyedCoding])
     {
+      // label and source string tags have changed for XIB5...
       ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
       ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-      ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+      // destination string tag is still the same (so far) and loaded
+      // by base class...
+      //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
     }
     else
     {
@@ -224,9 +227,12 @@ static NSString *ApplicationClass = nil;
   {
     if ([coder allowsKeyedCoding])
     {
+      // label and source string tags have changed for XIB5...
       ASSIGN(label, [coder decodeObjectForKey: @"property"]);
       ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-      ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+      // destination string tag is still the same (so far) and loaded
+      // by base class...
+      //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
     }
     else
     {
@@ -238,11 +244,14 @@ static NSString *ApplicationClass = nil;
   return self;
 }
 
+#if 0
 - (void) establishConnection
 {
   [super establishConnection];
+  // For some reason I needed this originally - but not now...
   RETAIN(destination);
 }
+#endif
 
 @end
 
@@ -585,6 +594,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   [objectRecord setElement: element forKey: @"object"];
   [objectRecord setElement: parent forKey: @"parent"];
   [objectRecord setElement: children forKey: @"children"];
+  
+  RELEASE(parent);
+  RELEASE(children);
   return AUTORELEASE(objectRecord);
 }
 
@@ -659,8 +671,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
   
    // flattenedProperties...
-  [_flattenedProperties setElement: _runtimeAttributes forKey: [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey",
-                                                                [[NSUUID UUID] UUIDString]]];
+  NSString *runtimeAttributesKey = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", [[NSUUID UUID] UUIDString]];
+  [_flattenedProperties setElement: _runtimeAttributes forKey: runtimeAttributesKey];
 }
 
 - (void)dealloc
@@ -670,6 +682,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   RELEASE(_objectRecords);
   RELEASE(_flattenedProperties);
   RELEASE(_runtimeAttributes);
+  RELEASE(_orderedObjects);
   [super dealloc];
 }
 
@@ -2791,7 +2804,6 @@ didStartElement: (NSString*)elementName
                    withID: (NSString*)objID
 {
   id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
-
 
   // Create an ordered object for this element...
   // This probably needs to be qualified but I have yet to determine
