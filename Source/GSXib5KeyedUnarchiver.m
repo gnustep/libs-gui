@@ -1289,7 +1289,7 @@ didStartElement: (NSString*)elementName
       [object setFont: font];
     }
   
-  return object;
+  return AUTORELEASE(object);
 }
 
 - (id)decodeBorderTypeForElement: (GSXib5Element*)element
@@ -1843,7 +1843,7 @@ didStartElement: (NSString*)elementName
   [object setNextKeyView: (NSView*)headerView];
   [object setDocumentView: (NSView*)headerView];
   
-  return object;
+  return AUTORELEASE(object);
 }
 
 - (id) decodeScrollClassFlagsForElement: (GSXib5Element*)element
@@ -2086,7 +2086,7 @@ didStartElement: (NSString*)elementName
   [object sendActionOn: NSLeftMouseUpMask];
   [object setEnabled: YES];
   
-  return object;
+  return AUTORELEASE(object);
 }
 
 - (id)decodeMinimumColumnWidthForElement: (GSXib5Element*)element
@@ -2189,6 +2189,7 @@ didStartElement: (NSString*)elementName
           NSFont       *font        = [self decodeObjectForKey: @"font"];
           NSDictionary *attributes  = [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName];
           object                    = [[NSAttributedString alloc] initWithString: object attributes: attributes];
+          AUTORELEASE(object);
         }
 #endif
       
