@@ -641,6 +641,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 {
   [super _initCommon];
   
+  _orderedObjectsDict = RETAIN([NSMutableDictionary dictionary]);
+  
   // Create our object(s)...
   _connectionRecords    = [[GSXib5Element alloc] initWithType: @"array"
                                                 andAttributes: @{ @"key" : @"connectionRecords" }];
@@ -683,6 +685,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   RELEASE(_flattenedProperties);
   RELEASE(_runtimeAttributes);
   RELEASE(_orderedObjects);
+  RELEASE(_orderedObjectsDict);
   [super dealloc];
 }
 
@@ -2809,8 +2812,15 @@ didStartElement: (NSString*)elementName
   // Create an ordered object for this element...
   // This probably needs to be qualified but I have yet to determine
   // what that should be right now...
-  [_orderedObjects addElement: [self orderedObjectForElement: (GSXib5Element*)element]];
-
+  // OK - I think we need at least this qualifier here to avoid excess and
+  // objects and memory leaks...
+  if ([element attributeForKey: @"id"] && [_orderedObjectsDict objectForKey: [element attributeForKey: @"id"]] == nil)
+    {
+      id orderedObject = [self orderedObjectForElement: (GSXib5Element*)element];
+      [_orderedObjectsDict setObject: orderedObject forKey: [element attributeForKey: @"id"]];
+      [_orderedObjects addElement: orderedObject];
+    }
+  
   // Process tooltips...
   if ([element attributeForKey: @"toolTip"])
     {
