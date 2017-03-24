@@ -1,3 +1,8 @@
+2017-03-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+JPEG.m(-_JPEGRepresentationWithProperties:errorMessage:):
+	Correct JPEG export which was using size instead of pixelsWide and pixelsHigh.
+
 2017-03-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibKeyedUnarchiver.m:

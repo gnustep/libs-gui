@@ -581,9 +581,9 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   colorSpace = [self colorSpaceName];
   imageSource = [self bitmapData];
   sPP = [self samplesPerPixel];
-  width = [self size].width;
-  height = [self size].height;
-  row_stride = width * sPP;
+  width = [self pixelsWide];
+  height = [self pixelsHigh];
+  row_stride = [self bytesPerRow];
 
   // set parameters
   cinfo.image_width  = width;
