@@ -937,6 +937,7 @@ didStartElement: (NSString*)elementName
     GSWindowTemplateFlagsUnion   mask = { { 0 } };
     GSXib5Element               *winPosMaskEleme  = (GSXib5Element*)[currentElement elementForKey: @"initialPositionMask"];
     NSUInteger                   winPosMask       = [[self decodeWindowPositionMaskForElement:winPosMaskEleme] unsignedIntegerValue];
+    NSString                    *autorecalculatesKeyViewLoop = [element attributeForKey: @"autorecalculatesKeyViewLoop"];
     
     mask.flags.isHiddenOnDeactivate =  [[attributes objectForKey: @"hidesOnDeactivate"] boolValue];
     mask.flags.isNotReleasedOnClose = !([attributes objectForKey: @"releasedWhenClosed"] ?
@@ -955,6 +956,7 @@ didStartElement: (NSString*)elementName
     mask.flags.style                =  0; // ???
     mask.flags.isNotShadowed        = !([attributes objectForKey: @"hasShadow"] ?
                                         [[attributes objectForKey: @"hasShadow"] boolValue] : YES);
+    mask.flags.autorecalculatesKeyViewLoop = (autorecalculatesKeyViewLoop ? [autorecalculatesKeyViewLoop boolValue] : YES);
     
     // File GSNibLoading.m: 422. In -[NSWindowTemplate initWithCoder:] _flags: 0xf0781400 style: 147 backing: 2
     // File GSNibLoading.m: 422. In -[NSWindowTemplate initWithCoder:] _flags: 0xf0001000 style: 147 backing: 2

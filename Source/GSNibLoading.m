@@ -332,6 +332,7 @@ static BOOL _isInInterfaceBuilder = NO;
           _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
           _flags.autoPositionMask = autoPositionMask;
           _flags.savePosition = YES; // not yet implemented.
+          _flags.autorecalculatesKeyViewLoop = [window autorecalculatesKeyViewLoop];
         }
     }
   return self;
@@ -495,6 +496,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
       // [_realObject setFrameAutosaveName: _autosaveName]; // done after setting the min/max sizes
       [_realObject setHasShadow: !_flags.isNotShadowed];
+      [_realObject setAutorecalculatesKeyViewLoop: _flags.autorecalculatesKeyViewLoop];
 
       // reset attributes...
       [_realObject setContentView: _view];
