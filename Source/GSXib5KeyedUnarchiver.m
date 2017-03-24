@@ -2931,7 +2931,7 @@ didStartElement: (NSString*)elementName
           [object setBezelStyle: NSRoundedBezelStyle];
 #endif
         }
-      else if (([@"NSSupport" isEqualToString: key]))
+      else if ([@"NSSupport" isEqualToString: key])
         {
           // This is the key Cocoa uses for fonts...
           // OR images - depending on what's encoded
@@ -2994,33 +2994,38 @@ didStartElement: (NSString*)elementName
   BOOL flag = NO;
   
   if ([super containsValueForKey:key])
-  {
-    flag = [super decodeBoolForKey:key];
-  }
+    {
+      flag = [super decodeBoolForKey:key];
+    }
+  else if ([@"NSIsBordered" isEqualToString: key])
+    {
+      flag = ([currentElement attributeForKey: @"bordered"] ?
+              [[currentElement attributeForKey: @"bordered"] boolValue] : YES);
+    }
   else if ([XmlKeyMapTable objectForKey: key])
-  {
-    flag = [self decodeBoolForKey: [XmlKeyMapTable objectForKey: key]];
-  }
+    {
+      flag = [self decodeBoolForKey: [XmlKeyMapTable objectForKey: key]];
+    }
   else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-  {
-    SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-    flag         = [[self performSelector: selector withObject: currentElement] boolValue];
-  }
+    {
+      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+      flag         = [[self performSelector: selector withObject: currentElement] boolValue];
+    }
   else if ([currentElement attributeForKey: key])
-  {
-    flag = [[currentElement attributeForKey: key] boolValue];
-  }
+    {
+      flag = [[currentElement attributeForKey: key] boolValue];
+    }
   else if ([key hasPrefix:@"NS"])
-  {
-    NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-    newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-    flag = [self decodeBoolForKey:newKey];
-  }
+    {
+      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
+      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
+      flag = [self decodeBoolForKey:newKey];
+    }
 #if 0
   else
-  {
-    NSWarnMLog(@"no BOOL for key: %@", key);
-  }
+    {
+      NSWarnMLog(@"no BOOL for key: %@", key);
+    }
 #endif
   
   return flag;
