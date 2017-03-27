@@ -57,7 +57,6 @@
                                                  error:NULL];
       if ([documentNodes count] > 0)
         {
-          NSWarnMLog(@"This is an XCode 5 XIB file.");
           return nil;
         }
       else
