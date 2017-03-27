@@ -2358,7 +2358,7 @@ didStartElement: (NSString*)elementName
       NSWarnMLog(@"attributes: %@", attributes);
 #endif
       
-      mask.flags.allowsEditingTextAttributes  = 0;
+      mask.flags.allowsEditingTextAttributes  = [[attributes objectForKey: @"allowsEditingTextAttributes"] boolValue];
       mask.flags.importsGraphics              = 0;
       mask.flags.lineBreakMode                = [self decodeLineBreakModeForAttributes: attributes];
       mask.flags.refusesFirstResponder        = [[attributes objectForKey: @"refusesFirstResponder"] boolValue];
