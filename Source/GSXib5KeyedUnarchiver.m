@@ -38,6 +38,7 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
+#import "AppKit/NSFormCell.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSMenu.h"
@@ -2167,6 +2168,10 @@ didStartElement: (NSString*)elementName
   if ([class isSubclassOfClass: [NSCell class]] == NO)
     {
       NSWarnMLog(@"called for a class that is NOT a sub-class of NSCell - class: %@", NSStringFromClass(class));
+    }
+  else if ([class isSubclassOfClass: [NSFormCell class]])
+    {
+      object = [element attributeForKey: @"stringValue"];
     }
   else
     {
