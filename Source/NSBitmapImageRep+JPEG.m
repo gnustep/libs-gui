@@ -2,7 +2,7 @@
 
    Methods for reading jpeg images
 
-   Copyright (C) 2003-2014 Free Software Foundation, Inc.
+   Copyright (C) 2003-2017 Free Software Foundation, Inc.
    
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
@@ -393,6 +393,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   JSAMPARRAY sclbuffer = NULL;
   unsigned char *imgbuffer = NULL;
   BOOL isProgressive;
+  unsigned x_density, y_density;
 
   if (!(self = [super init]))
     return nil;
@@ -505,6 +506,30 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   [self setProperty: NSImageProgressive
           withValue: [NSNumber numberWithBool: isProgressive]];
+
+  x_density = cinfo.X_density;
+  y_density = cinfo.Y_density;
+  if (x_density > 0 && y_density > 0)
+    {
+      unsigned short d_unit;
+      
+      d_unit = cinfo.density_unit;
+      /* we have dots/cm, convert to dots/inch*/
+      if (d_unit == 2)
+        {
+          x_density = (x_density * 254)/100;
+          y_density = (y_density * 254)/100;
+        }
+
+      if (!(x_density == 72 && y_density == 72))
+        {
+          NSSize pointSize;
+
+          pointSize = NSMakeSize((double)cinfo.output_width * (72.0 / (double)x_density),
+                                 (double)cinfo.output_height * (72.0 / (double)y_density));
+          [self setSize: pointSize];
+        }
+    }
 
   _imageData = [[NSData alloc]
     initWithBytesNoCopy: imgbuffer

@@ -1,3 +1,8 @@
+2017-03-28 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m (-_initBitmapFromJPEG:errorMessage:)
+	Parse density data and set size accordingly.
+
 2017-03-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+JPEG.m(-_JPEGRepresentationWithProperties:errorMessage:):
