@@ -393,7 +393,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   JSAMPARRAY sclbuffer = NULL;
   unsigned char *imgbuffer = NULL;
   BOOL isProgressive;
-  unsigned x_density, y_density;
+  double x_density, y_density;
 
   if (!(self = [super init]))
     return nil;
@@ -507,8 +507,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   [self setProperty: NSImageProgressive
           withValue: [NSNumber numberWithBool: isProgressive]];
 
-  x_density = cinfo.X_density;
-  y_density = cinfo.Y_density;
+  x_density = (double) cinfo.X_density;
+  y_density = (double) cinfo.Y_density;
   if (x_density > 0 && y_density > 0)
     {
       unsigned short d_unit;
@@ -517,16 +517,16 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
       /* we have dots/cm, convert to dots/inch*/
       if (d_unit == 2)
         {
-          x_density = (x_density * 254)/100;
-          y_density = (y_density * 254)/100;
+          x_density = x_density * 2.54;
+          y_density = y_density * 2.54;
         }
 
       if (!(x_density == 72 && y_density == 72))
         {
           NSSize pointSize;
 
-          pointSize = NSMakeSize((double)cinfo.output_width * (72.0 / (double)x_density),
-                                 (double)cinfo.output_height * (72.0 / (double)y_density));
+          pointSize = NSMakeSize((double)cinfo.output_width * 72.0 / x_density,
+                                 (double)cinfo.output_height * 72.0 / y_density);
           [self setSize: pointSize];
         }
     }
