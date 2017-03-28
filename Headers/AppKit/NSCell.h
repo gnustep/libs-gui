@@ -206,59 +206,7 @@ typedef struct _GSCellFlags {
   unsigned int        useUserKeyEquivalent:1;
   unsigned int        showsFirstResponder:1;
   unsigned int        focusRingType:2;
-  
-#if 0 // FROM COCOA...
-  // 32 BIT BREAK
-  unsigned int        wasSelectable:1;
-  unsigned int        hasInvalidObject:1;
-  unsigned int        allowsEditingTextAttributes:1;
-  unsigned int        importsGraphics:1;
-  NSTextAlignment     alignment:3;
-  unsigned int        layoutDirectionRTL:1;
-  unsigned int        backgroundStyle:3;
-  unsigned int        cellReserved2:4;
-  unsigned int        refusesFirstResponder:1;
-  unsigned int        needsHighlightedText:1;
-  unsigned int        dontAllowsUndo:1;
-  unsigned int        currentlyEditing:1;
-  unsigned int        allowsMixedState:1;
-  unsigned int        inMixedState:1;
-  unsigned int        sendsActionOnEndEditing:1;
-  unsigned int        inSendAction:1;
-  unsigned int        menuWasSet:1;
-  unsigned int        controlTint:3;
-  unsigned int        controlSize:2;
-  unsigned int        branchImageDisabled:1;
-  unsigned int        drawingInRevealover:1;
-  unsigned int        needsHighlightedTextHint:1;
-#endif
 #else
-#if 0 // FROM COCOA...
-  unsigned int        needsHighlightedTextHint:1;
-  unsigned int        drawingInRevealover:1;
-  unsigned int        branchImageDisabled:1;
-  unsigned int        controlSize:2;
-  unsigned int        controlTint:3;
-  unsigned int        menuWasSet:1;
-  unsigned int        inSendAction:1;
-  unsigned int        sendsActionOnEndEditing:1;
-  unsigned int        inMixedState:1;
-  unsigned int        allowsMixedState:1;
-  unsigned int        currentlyEditing:1;
-  unsigned int        dontAllowsUndo:1;
-  unsigned int        needsHighlightedText:1;
-  unsigned int        refusesFirstResponder:1;
-  unsigned int        cellReserved2:4;
-  unsigned int        backgroundStyle:3;
-  unsigned int        layoutDirectionRTL:1;
-  NSTextAlignment     alignment:3;
-  unsigned int        importsGraphics:1;
-  unsigned int        allowsEditingTextAttributes:1;
-  unsigned int        hasInvalidObject:1;
-  unsigned int        wasSelectable:1;
-  // 32 BIT BREAK
-#endif
-  
   unsigned int        focusRingType:2;
   unsigned int        showsFirstResponder:1;
   unsigned int        useUserKeyEquivalent:1;
