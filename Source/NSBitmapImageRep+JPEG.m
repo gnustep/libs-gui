@@ -521,7 +521,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
           y_density = y_density * 2.54;
         }
 
-      if (!(x_density == 72 && y_density == 72))
+      /* consider density only if we have a valid unit */
+      if (d_unit && !(x_density == 72 && y_density == 72))
         {
           NSSize pointSize;
 
