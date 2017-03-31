@@ -1,3 +1,9 @@
+2017-04-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-displayTransient): Update menu before displaying.
+	* Source/NSMenuView.m (-attachSubmenuForItemAtIndex:): Use NSMenu
+	display method.
+
 2017-03-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m: Check for surrogate UTF16

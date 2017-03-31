@@ -1913,6 +1913,7 @@ static BOOL menuBarVisible = YES;
       return;
     }
 
+  [self update];
   if (_menu.needsSizing)
     {
       [self sizeToFit];

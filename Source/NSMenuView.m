@@ -616,11 +616,7 @@ static float menuBarHeight = 0.0;
   else
     {
       NSDebugLLog (@"NSMenu",  @"Will open normal: %@", attachableMenu);
-      // FIXME: Only resize when needed
-      [attachableMenu sizeToFit];
-      [[attachableMenu window] setFrameOrigin: [self locationForSubmenu: attachableMenu]];
-      [_attachedMenu _attachMenu: attachableMenu];
-      [[attachableMenu window] orderFrontRegardless];
+      [attachableMenu display];
     }
 }
 
