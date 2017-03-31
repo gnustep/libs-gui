@@ -1524,11 +1524,20 @@ static NSMutableDictionary *cachedCSets = nil;
 - (NSFontDescriptor*)_substituteFontDescriptorFor: (unichar)uchar
 {
   NSString *chars = [NSString stringWithCharacters: &uchar length: 1];
-  NSCharacterSet *requiredCharacterSet = [NSCharacterSet characterSetWithCharactersInString: chars];
-  NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys: requiredCharacterSet, NSFontCharacterSetAttribute, nil];
-  NSSet *mandatoryKeys = [NSSet setWithObjects: NSFontCharacterSetAttribute, nil];
-  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fontAttributes];
-  return [fd matchingFontDescriptorWithMandatoryKeys: mandatoryKeys];
+
+  // If we cannot get a string from a single unichar, it most likely is part of a surrogate pair
+  if (nil != chars)
+    {
+      NSCharacterSet *requiredCharacterSet = [NSCharacterSet characterSetWithCharactersInString: chars];
+      NSDictionary *fontAttributes = [NSDictionary dictionaryWithObjectsAndKeys: requiredCharacterSet, NSFontCharacterSetAttribute, nil];
+      NSSet *mandatoryKeys = [NSSet setWithObjects: NSFontCharacterSetAttribute, nil];
+      NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fontAttributes];
+      return [fd matchingFontDescriptorWithMandatoryKeys: mandatoryKeys];
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont
@@ -1620,6 +1629,11 @@ static NSMutableDictionary *cachedCSets = nil;
           [string getCharacters: chars range: NSMakeRange(start, dist)];
         }
       uchar = chars[i - start];
+      if (uchar >= 0xd800 && uchar <= 0xdfff)
+        {
+          // Currently we don't handle surrogate pairs
+          continue;
+        }
       
       if (!NSLocationInRange(i, fontRange))
         {

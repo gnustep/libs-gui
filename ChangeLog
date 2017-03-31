@@ -1,3 +1,9 @@
+2017-03-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m: Check for surrogate UTF16
+	characters to prevent nil strings when trying to attempt fonst
+	substitution.
+
 2017-03-31 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m (-_initBitmapFromJPEG:errorMessage:)
