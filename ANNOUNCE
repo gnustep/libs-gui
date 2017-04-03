@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.25.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.25.1 of the GNUstep GUI library ('gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -29,52 +29,50 @@ Group's libjpeg library, and a back-end component from the GNUstep
 'Back' library.
 
    Additional functionality may be enabled by installing additional
-libraries. For example, to build the Cairo backend in the GNUstep Back
+libraries.  For example, to build the Cairo backend in the GNUstep Back
 library, you will need to install Cairo.
 
-1.2 Noteworthy changes in version `0.25.0'
+1.2 Noteworthy changes in version '0.25.1'
 ==========================================
 
-- Fixes for new GIF library versions
-- Theming of named images for specific applications by the use of the
-  CFBundleIdentifier in the theme
-- New icons and corresponding constants for special folders, recycler
-  and others
-- Improvements in NSWorkspace icon lookup
-- Improvements in removable media commands, imported and cleaned from
-  GWorkspace
-- Numerous bug fixes and improvements in Cocoa compatibility
-- Numerous theme tweaks
-- Spanish locale
+   * JPEG (saving) alpha channel fixes and size with resolution != 72
+   * JPEG resolution read support
+   * TIFF saving fixes
+   * Improved volumes mounting and support
+   * Portability improvements in volume mounting and support
+   * Corrected layout of empty strings
+   * Only update visible menus
 
-1.3 Where can you get it?  How can you compile it?
-==================================================
+1.3 Where can you get it? How can you compile it?
+=================================================
 
-The gnustep-gui-0.25.0.tar.gz distribution file has been placed at
-`ftp://ftp.gnustep.org/pub/gnustep/core'.
+The gnustep-gui-0.25.1.tar.gz distribution file has been placed at
+<ftp://ftp.gnustep.org/pub/gnustep/core>.
 
-It is accompanied by gnustep-gui-0.25.0.tar.gz.sig, a PGP signature
-which you can validate by putting both files in the same directory
-and using:
-`gpg --verify gnustep-gui-0.25.0.tar.gz.sig'
+   It is accompanied by gnustep-back-{No value for
+'GNUSTEP-BACK-VERSION'}.tar.gz.sig, a PGP signature which you can
+validate by putting both files in the same directory and using:
 
-Signature has been created using the key with the following
+     gpg --verify gnustep-gui-0.25.1.tar.gz.sig
+
+   Signature has been created using the key with the following
 fingerprint:
-`83AA E47C E829 A414 6EF8  3420 CA86 8D4C 9914 9679'
 
-Read the INSTALL file or the GNUstep-HOWTO for installation
-Instructions.
+     83AA E47C E829 A414 6EF8  3420 CA86 8D4C 9914 9679
+
+   Read the INSTALL file or the GNUstep-HOWTO for installation
+instructions.
 
 1.4 Where do I send bug reports?
 ================================
 
 Please log bug reports on the GNUstep project page
-`http://savannah.gnu.org/bugs/?group=gnustep' or send bug reports to
+<http://savannah.gnu.org/bugs/?group=gnustep> or send bug reports to
 <bug-gnustep@gnu.org>.
 
 1.5 Obtaining GNU Software
 ==========================
 
-Check out the GNUstep web site. (`http://www.gnustep.org/'), and the
-GNU web site. (`http://www.gnu.org/')
+Check out the GNUstep web site.  (<http://www.gnustep.org/>), and the
+GNU web site.  (<http://www.gnu.org/>)
 
