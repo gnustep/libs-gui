@@ -9,27 +9,37 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.25.1}
+
+@itemize @bullet
+@item JPEG (saving) alpha channel fixes and size with resolution != 72
+@item JPEG resolution read support
+@item TIFF saving fixes
+@item Improved volumes mounting and support
+@item Portability improvements in volume mounting and support
+@item Corrected layout of empty strings
+@item Only update visible menus
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.25.0}
 
-- Fixes for new GIF library versions
-- Theming of named images for specific applications by the use of the
-  CFBundleIdentifier in the theme
-- New icons and corresponding constants for special folders, recycler
-  and others
-- Improvements in NSWorkspace icon lookup
-- Improvements in removable media commands, imported and cleaned from
-  GWorkspace
-- Numerous bug fixes and improvements in Cocoa compatibility
-- Numerous theme tweaks
-- Spanish locale
+@itemize @bullet
+@item Fixes for new GIF library versions
+@item Theming of named images for specific applications by the use of the CFBundleIdentifier in the theme
+@item New icons and corresponding constants for special folders, recycler and others
+@item Improvements in NSWorkspace icon lookup
+@item Improvements in removable media commands, imported and cleaned from GWorkspace
+@item Numerous bug fixes and improvements in Cocoa compatibility
+@item Numerous theme tweaks
+@item Spanish locale
+@end itemize
 
 @section Noteworthy changes in version @samp{0.24.1}
 
 From a look through ChangeLog, we can see a lot of bugfixes for this release,
 with the main focus on avoiding display glitches and improving OSX
 compatibility.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.24.0}
 
