@@ -475,6 +475,7 @@ GSSoundSource.h \
 GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
+GSXibKeyedUnarchiver.h \
 GSXibObjectContainer.h \
 GSXibParser.h \
 GSHelpAttachment.h

@@ -48,7 +48,7 @@
 #import "GNUstepGUI/GSXibParser.h"
 #import "GNUstepGUI/GSXibObjectContainer.h"
 #import "GNUstepGUI/GSXibElement.h"
-#import "GSXibKeyedUnarchiver.h"
+#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;

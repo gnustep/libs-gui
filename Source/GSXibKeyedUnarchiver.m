@@ -31,7 +31,7 @@
  Boston, MA 02110-1301, USA.
  */
 
-#import "GSXibKeyedUnarchiver.h"
+#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSNibLoading.h"
 
