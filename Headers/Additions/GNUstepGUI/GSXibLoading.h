@@ -33,6 +33,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
 @class NSString, NSDictionary, NSArray, NSMutableDictionary, NSMutableArray;
 @class NSNibBindingConnector;

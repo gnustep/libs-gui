@@ -1,3 +1,11 @@
+2017-04-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h: Moved from Source.
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
+	* Source/GSXibLoader.m,
+	* Source/GSXibKeyedUnarchiver.m,
+	* Source/GNUmakefile: Use and install moved header file.
+
 2017-04-04 Ivan Vucica <ivan@vucica.net>
 
 	* Releasing 0.25.1.
