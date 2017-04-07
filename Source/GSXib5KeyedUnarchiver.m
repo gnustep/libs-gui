@@ -2617,6 +2617,9 @@ didStartElement: (NSString*)elementName
       mask.flags.imageScaling = 0;
     }
     
+    // keyEquivalentModifierMask...
+    mask.flags.keyEquivalentModifierMask = [[self decodeModifierMaskForElement: element] unsignedIntValue];
+
     // Return value...
     value = [NSNumber numberWithUnsignedInteger: mask.value];
   }
