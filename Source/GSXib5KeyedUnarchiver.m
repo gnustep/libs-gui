@@ -469,7 +469,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSMenuItem"                 : @"decodeMenuItemForElement:",
                                             @"selectedItem"               : @"decodeSelectedIndexForElement:",
                                             @"NSPreferredEdge"            : @"decodePreferredEdgeForElement:",
-                                            @"NSArrowPosition"            : @"decodeArrorPositionForElement:",
+                                            @"NSArrowPosition"            : @"decodeArrowPositionForElement:",
                                             @"NSCellPrototype"            : @"decodeCellPrototypeForElement:",
                                             //@"NSMinColumnWidth"           : @"decodeMinimumColumnWidthForElement:",
                                             @"NSTitleCell"                : @"decodeTitleCellForElement:",
@@ -2703,7 +2703,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeArrorPositionForElement: (GSXib5Element*)element
+- (id)decodeArrowPositionForElement: (GSXib5Element*)element
 {
   NSUInteger  value         = NSPopUpArrowAtBottom; // If omitted Cocoa default...
   NSString   *arrowPosition = [element attributeForKey: @"arrowPosition"];
