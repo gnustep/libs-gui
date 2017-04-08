@@ -36,7 +36,7 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
-@interface NSCell (Private)
+@interface NSCell (GNUstepPrivate)
 - (NSSize) _scaleImageWithSize: (NSSize)imageSize
                    toFitInSize: (NSSize)canvasSize
                    scalingType: (NSImageScaling)scalingType;
