@@ -171,6 +171,12 @@ typedef struct _GSButtonCellFlags
 #endif
 } GSButtonCellFlags;
 
+typedef union _GSButtonCellFlagsUnion
+{
+  GSButtonCellFlags flags;
+  uint32_t          value;
+} GSButtonCellFlagsUnion;
+
 typedef struct _GSButtonCellFlags2 {
 #if GS_WORDS_BIGENDIAN == 1
   unsigned int	keyEquivalentModifierMask:24;
@@ -188,6 +194,12 @@ typedef struct _GSButtonCellFlags2 {
   unsigned int	keyEquivalentModifierMask:24;
 #endif
 } GSButtonCellFlags2;
+
+typedef union _GSButtonCellFlags2Union
+{
+  GSButtonCellFlags2 flags;
+  uint32_t           value;
+} GSButtonCellFlags2Union;
 
 @interface NSCell (Private)
 - (NSSize) _scaleImageWithSize: (NSSize)imageSize

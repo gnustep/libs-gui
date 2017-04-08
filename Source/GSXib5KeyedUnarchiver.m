@@ -1323,12 +1323,12 @@ didStartElement: (NSString*)elementName
   id            object     = nil;
   NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
   
-  if (attributes == nil)
+  if ((attributes == nil) || ([attributes count] == 0))
     {
       // Seems that Apple decided to omit this attribute IF Control key alone
       // is applied.  If this key is present WITH NO setting then that NULL
       // value is used for the modifier mask...
-      object = [NSNumber numberWithUnsignedInteger: NSCommandKeyMask];
+      object = [NSNumber numberWithUnsignedInteger: 0];
     }
   else
     {
@@ -2421,9 +2421,6 @@ didStartElement: (NSString*)elementName
               object = [NSImage imageNamed: @"NSSwitch"];
             }
         }
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"object: %@", object);
-#endif
     }
   
   return object;
@@ -2454,9 +2451,6 @@ didStartElement: (NSString*)elementName
             }
         }
     }
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"object: %@", object);
-#endif
   
   return object;
 }
@@ -2470,9 +2464,6 @@ didStartElement: (NSString*)elementName
     {
       object = [NSImage imageNamed: [element attributeForKey: @"image"]];
     }
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"object: %@", object);
-#endif
   
   return object;
 }
@@ -2483,54 +2474,49 @@ didStartElement: (NSString*)elementName
   NSNumber *value = nil;
   Class     class = NSClassFromString([element attributeForKey: @"class"]);
 
-  if ([class isSubclassOfClass: [NSButtonCell class]])
-  {
-    typedef union _GSButtonCellFlagsUnion
+  if ([class isSubclassOfClass: [NSButtonCell class]] == NO)
     {
-      GSButtonCellFlags flags;
-      uint32_t          value;
-    } GSButtonCellFlagsUnion;
-    
-    GSButtonCellFlagsUnion   mask       = { { 0 } };
-    NSDictionary            *behavior   = [[element elementForKey: @"behavior"] attributes];
-    NSDictionary            *attributes = [element attributes];
-    NSString                *imagePos   = [attributes objectForKey: @"imagePosition"];
-    
-    mask.flags.isPushin               = [[behavior objectForKey: @"pushIn"]  boolValue];
-    mask.flags.changeContents         = [[behavior objectForKey: @"changeContents"]  boolValue];
-    mask.flags.changeBackground       = [[behavior objectForKey: @"changeBackground"]  boolValue];
-    mask.flags.changeGray             = [[behavior objectForKey: @"changeGray"]  boolValue];
-    
-    mask.flags.highlightByContents    = [[behavior objectForKey: @"lightByContents"]  boolValue];
-    mask.flags.highlightByBackground  = [[behavior objectForKey: @"lightByBackground"]  boolValue];
-    mask.flags.highlightByGray        = [[behavior objectForKey: @"lightByGray"]  boolValue];
-    mask.flags.drawing                = [[behavior objectForKey: @"drawing"]  boolValue];
-    
-    mask.flags.isBordered             = [attributes objectForKey: @"borderStyle"] != nil;
-    mask.flags.imageDoesOverlap       = [@"only" isEqualToString: imagePos];
-    mask.flags.imageDoesOverlap      |= [@"overlaps" isEqualToString: imagePos];
-    mask.flags.isHorizontal           = [@"left" isEqualToString: imagePos];
-    mask.flags.isHorizontal          |= [@"right" isEqualToString: imagePos];
-    mask.flags.isBottomOrLeft         = [@"left" isEqualToString: imagePos];
-    mask.flags.isBottomOrLeft        |= [@"bottom" isEqualToString: imagePos];
-    
-    mask.flags.isImageAndText         = [@"only" isEqualToString: [attributes objectForKey: @"imagePosition"]] == NO;
-    mask.flags.isImageSizeDiff        = 1; // FIXME...
-    //mask.flags.hasKeyEquiv            = [[behavior objectForKey: @"hasKeyEquiv"]  boolValue];
-    //mask.flags.lastState              = [[behavior objectForKey: @"lastState"]  boolValue];
+      NSWarnMLog(@"attempt to access button flags 2 for NON-NSButtonCell based class");
+    }
+  else
+    {
+      GSButtonCellFlagsUnion   mask       = { { 0 } };
+      NSDictionary            *behavior   = [[element elementForKey: @"behavior"] attributes];
+      NSDictionary            *attributes = [element attributes];
+      NSString                *imagePos   = [attributes objectForKey: @"imagePosition"];
+      
+      mask.flags.isPushin               = [[behavior objectForKey: @"pushIn"]  boolValue];
+      mask.flags.changeContents         = [[behavior objectForKey: @"changeContents"]  boolValue];
+      mask.flags.changeBackground       = [[behavior objectForKey: @"changeBackground"]  boolValue];
+      mask.flags.changeGray             = [[behavior objectForKey: @"changeGray"]  boolValue];
+      
+      mask.flags.highlightByContents    = [[behavior objectForKey: @"lightByContents"]  boolValue];
+      mask.flags.highlightByBackground  = [[behavior objectForKey: @"lightByBackground"]  boolValue];
+      mask.flags.highlightByGray        = [[behavior objectForKey: @"lightByGray"]  boolValue];
+      mask.flags.drawing                = [[behavior objectForKey: @"drawing"]  boolValue];
+      
+      mask.flags.isBordered             = [attributes objectForKey: @"borderStyle"] != nil;
+      mask.flags.imageDoesOverlap       = [@"only" isEqualToString: imagePos];
+      mask.flags.imageDoesOverlap      |= [@"overlaps" isEqualToString: imagePos];
+      mask.flags.isHorizontal           = [@"left" isEqualToString: imagePos];
+      mask.flags.isHorizontal          |= [@"right" isEqualToString: imagePos];
+      mask.flags.isBottomOrLeft         = [@"left" isEqualToString: imagePos];
+      mask.flags.isBottomOrLeft        |= [@"bottom" isEqualToString: imagePos];
+      
+      mask.flags.isImageAndText         = [@"only" isEqualToString: [attributes objectForKey: @"imagePosition"]] == NO;
+      mask.flags.isImageSizeDiff        = 1; // FIXME...
+      //mask.flags.hasKeyEquiv            = [[behavior objectForKey: @"hasKeyEquiv"]  boolValue];
+      //mask.flags.lastState              = [[behavior objectForKey: @"lastState"]  boolValue];
 
-    mask.flags.isTransparent          = [[behavior objectForKey: @"transparent"]  boolValue];
-    mask.flags.inset                  = [[attributes objectForKey: @"inset"] intValue];
-    mask.flags.doesNotDimImage        = [[behavior objectForKey: @"doesNotDimImage"] boolValue];
-    mask.flags.useButtonImageSource   = 0; //[attributes objectForKey: @"imagePosition"] != nil;
-    //mask.flags.unused2                = [[behavior objectForKey: @"XXXXX"]  boolValue]; // alt mnem loc???
-    
-    // Return the value...
-    value = [NSNumber numberWithUnsignedInteger: mask.value];
-  }
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"mask: %@", value);
-#endif
+      mask.flags.isTransparent          = [[behavior objectForKey: @"transparent"]  boolValue];
+      mask.flags.inset                  = [[attributes objectForKey: @"inset"] intValue];
+      mask.flags.doesNotDimImage        = [[behavior objectForKey: @"doesNotDimImage"] boolValue];
+      mask.flags.useButtonImageSource   = 0; //[attributes objectForKey: @"imagePosition"] != nil;
+      //mask.flags.unused2                = [[behavior objectForKey: @"XXXXX"]  boolValue]; // alt mnem loc???
+      
+      // Return the value...
+      value = [NSNumber numberWithUnsignedInteger: mask.value];
+    }
   
   return value;
 }
@@ -2540,92 +2526,87 @@ didStartElement: (NSString*)elementName
   NSNumber *value = nil;
   Class     class = NSClassFromString([element attributeForKey: @"class"]);
   
-  if ([class isSubclassOfClass: [NSButtonCell class]])
-  {
-    typedef union _GSButtonCellFlags2Union
+  if ([class isSubclassOfClass: [NSButtonCell class]] == NO)
     {
-      GSButtonCellFlags2 flags;
-      uint32_t           value;
-    } GSButtonCellFlags2Union;
-    
-    GSButtonCellFlags2Union  mask         = { { 0 } };
-    NSDictionary            *attributes   = [element attributes];
-    NSString                *bezelStyle   = [attributes objectForKey:@"bezelStyle"];
-    NSString                *imageScaling = [attributes objectForKey:@"imageScaling"];
-    
-    if (bezelStyle)
+      NSWarnMLog(@"attempt to access button flags 2 for NON-NSButtonCell based class");
+    }
+  else
     {
-      uint32_t flag = NSRegularSquareBezelStyle; // Default if not specified...
+      GSButtonCellFlags2Union  mask         = { { 0 } };
+      NSDictionary            *attributes   = [element attributes];
+      NSString                *bezelStyle   = [attributes objectForKey:@"bezelStyle"];
+      NSString                *imageScaling = [attributes objectForKey:@"imageScaling"];
       
-      if ([@"rounded" isEqualToString: bezelStyle])
-        flag = NSRoundedBezelStyle;
-      else if ([@"regularSquare" isEqualToString: bezelStyle])
-        flag = NSRegularSquareBezelStyle;
-      else if ([@"disclosure" isEqualToString: bezelStyle])
-        flag = NSDisclosureBezelStyle;
-      else if ([@"shadowlessSquare" isEqualToString: bezelStyle])
-        flag = NSShadowlessSquareBezelStyle;
-      else if ([@"circular" isEqualToString: bezelStyle])
-        flag = NSCircularBezelStyle;
-      else if ([@"texturedSquare" isEqualToString: bezelStyle])
-        flag = NSTexturedSquareBezelStyle;
-      else if ([@"helpButton" isEqualToString: bezelStyle])
-        flag = NSHelpButtonBezelStyle;
-      else if ([@"smallSquare" isEqualToString: bezelStyle])
-        flag = NSSmallSquareBezelStyle;
-      else if ([@"texturedRounded" isEqualToString: bezelStyle])
-        flag = NSTexturedRoundedBezelStyle;
-      else if ([@"roundedRectangle" isEqualToString: bezelStyle])
-        flag = NSRoundRectBezelStyle;
-      else if ([@"roundedRect" isEqualToString: bezelStyle])
-        flag = NSRoundRectBezelStyle;
-      else if ([@"recessed" isEqualToString: bezelStyle])
-        flag = NSRecessedBezelStyle;
-      else if ([@"roundedDisclosure" isEqualToString: bezelStyle])
-        flag = NSRoundedDisclosureBezelStyle;
-#if 0
-      else if ([@"inline" isEqualToString: bezelStyle])
-        flag = NSInlineBezelStyle; // New value added in Cocoa version???
-#endif
+      if (bezelStyle)
+        {
+          uint32_t flag = NSRegularSquareBezelStyle; // Default if not specified...
+          
+          if ([@"rounded" isEqualToString: bezelStyle])
+            flag = NSRoundedBezelStyle;
+          else if ([@"regularSquare" isEqualToString: bezelStyle])
+            flag = NSRegularSquareBezelStyle;
+          else if ([@"disclosure" isEqualToString: bezelStyle])
+            flag = NSDisclosureBezelStyle;
+          else if ([@"shadowlessSquare" isEqualToString: bezelStyle])
+            flag = NSShadowlessSquareBezelStyle;
+          else if ([@"circular" isEqualToString: bezelStyle])
+            flag = NSCircularBezelStyle;
+          else if ([@"texturedSquare" isEqualToString: bezelStyle])
+            flag = NSTexturedSquareBezelStyle;
+          else if ([@"helpButton" isEqualToString: bezelStyle])
+            flag = NSHelpButtonBezelStyle;
+          else if ([@"smallSquare" isEqualToString: bezelStyle])
+            flag = NSSmallSquareBezelStyle;
+          else if ([@"texturedRounded" isEqualToString: bezelStyle])
+            flag = NSTexturedRoundedBezelStyle;
+          else if ([@"roundedRectangle" isEqualToString: bezelStyle])
+            flag = NSRoundRectBezelStyle;
+          else if ([@"roundedRect" isEqualToString: bezelStyle])
+            flag = NSRoundRectBezelStyle;
+          else if ([@"recessed" isEqualToString: bezelStyle])
+            flag = NSRecessedBezelStyle;
+          else if ([@"roundedDisclosure" isEqualToString: bezelStyle])
+            flag = NSRoundedDisclosureBezelStyle;
+  #if 0
+          else if ([@"inline" isEqualToString: bezelStyle])
+            flag = NSInlineBezelStyle; // New value added in Cocoa version???
+  #endif
+          else
+            NSWarnMLog(@"unknown bezelStyle: %@", bezelStyle);
+          
+          mask.flags.bezelStyle  = (flag & 7);
+          mask.flags.bezelStyle2 = (flag & 8) >> 3;
+          if (flag == 0)
+            NSWarnMLog(@"_bezel_style: %ld", (long)mask.value);
+        }
+      
+      // Image scaling...
+      if ([@"axesIndependently" isEqualToString: imageScaling])
+        {
+          mask.flags.imageScaling = 3;
+        }
+      else if ([@"proportionallyDown" isEqualToString: imageScaling])
+        {
+          mask.flags.imageScaling = 2;
+        }
+      else if ([@"proportionallyUpOrDown" isEqualToString: imageScaling])
+        {
+          mask.flags.imageScaling = 1;
+        }
       else
-        NSWarnMLog(@"unknown bezelStyle: %@", bezelStyle);
+        {
+          // Warn about unknown image scaling to add later...
+          if (imageScaling && [imageScaling length])
+            NSWarnMLog(@"unknown image scaling: %@", imageScaling);
+          mask.flags.imageScaling = 0;
+        }
       
-      mask.flags.bezelStyle  = (flag & 7);
-      mask.flags.bezelStyle2 = (flag & 8) >> 3;
-      if (flag == 0)
-        NSWarnMLog(@"_bezel_style: %ld", (long)mask.value);
-    }
-    
-    // Image scaling...
-    if ([@"axesIndependently" isEqualToString: imageScaling])
-    {
-      mask.flags.imageScaling = 3;
-    }
-    else if ([@"proportionallyDown" isEqualToString: imageScaling])
-    {
-      mask.flags.imageScaling = 2;
-    }
-    else if ([@"proportionallyUpOrDown" isEqualToString: imageScaling])
-    {
-      mask.flags.imageScaling = 1;
-    }
-    else
-    {
-      // Warn about unknown image scaling to add later...
-      if (imageScaling && [imageScaling length])
-        NSWarnMLog(@"unknown image scaling: %@", imageScaling);
-      mask.flags.imageScaling = 0;
-    }
-    
-    // keyEquivalentModifierMask...
-    mask.flags.keyEquivalentModifierMask = [[self decodeModifierMaskForElement: element] unsignedIntValue];
+      // keyEquivalentModifierMask...
+      mask.flags.keyEquivalentModifierMask = [[self decodeModifierMaskForElement: element] unsignedIntValue];
 
-    // Return value...
-    value = [NSNumber numberWithUnsignedInteger: mask.value];
-  }
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"mask: %@", value);
-#endif
+      // Return value...
+      value = [NSNumber numberWithUnsignedInteger: mask.value];
+    }
   
   return value;
 }

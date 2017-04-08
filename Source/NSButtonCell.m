@@ -1840,18 +1840,17 @@
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
-          unsigned int       bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
-          GSButtonCellFlags2 buttonCellFlags2;
-          NSUInteger         imageScale;
+          GSButtonCellFlags2Union mask = { { 0 } };
+          NSUInteger              imageScale = NSImageScaleNone;
 
-          memcpy((void *)&buttonCellFlags2, (void *)&bFlags2, sizeof(struct _GSButtonCellFlags2));
+          // Get the button flags 2 value...
+          mask.value = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
 
-          [self setShowsBorderOnlyWhileMouseInside: buttonCellFlags2.showsBorderOnlyWhileMouseInside];
-          [self setBezelStyle: buttonCellFlags2.bezelStyle | (buttonCellFlags2.bezelStyle2 << 3)];
-          [self setKeyEquivalentModifierMask: (buttonCellFlags2.keyEquivalentModifierMask &
-                                               NSDeviceIndependentModifierFlagsMask)];
+          [self setShowsBorderOnlyWhileMouseInside: mask.flags.showsBorderOnlyWhileMouseInside];
+          [self setBezelStyle: mask.flags.bezelStyle | (mask.flags.bezelStyle2 << 3)];
+          [self setKeyEquivalentModifierMask: (mask.flags.keyEquivalentModifierMask & NSDeviceIndependentModifierFlagsMask)];
           
-          switch (buttonCellFlags2.imageScaling)
+          switch (mask.flags.imageScaling)
             {
               case 3:
                 imageScale = NSImageScaleAxesIndependently;
