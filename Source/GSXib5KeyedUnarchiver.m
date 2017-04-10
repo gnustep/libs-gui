@@ -1323,13 +1323,20 @@ didStartElement: (NSString*)elementName
   id            object     = nil;
   NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
   
-  if ((attributes == nil) || ([attributes count] == 0))
+  if (attributes == nil)
     {
       // Seems that Apple decided to omit this attribute IF Control key alone
       // is applied.  If this key is present WITH NO setting then that NULL
       // value is used for the modifier mask...
-      object = [NSNumber numberWithUnsignedInteger: 0];
+      object = [NSNumber numberWithUnsignedInteger: NSCommandKeyMask];
     }
+  else if ([attributes count] == 1)
+  {
+    // Seems that Apple decided to omit this attribute IF Control key alone
+    // is applied.  If this key is present WITH NO setting then that NULL
+    // value is used for the modifier mask...
+    object = [NSNumber numberWithUnsignedInteger: 0];
+  }
   else
     {
       // If the modifier mask element is present then no modifier attributes
