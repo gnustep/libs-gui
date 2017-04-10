@@ -1331,12 +1331,12 @@ didStartElement: (NSString*)elementName
       object = [NSNumber numberWithUnsignedInteger: NSCommandKeyMask];
     }
   else if ([attributes count] == 1)
-  {
-    // Seems that Apple decided to omit this attribute IF Control key alone
-    // is applied.  If this key is present WITH NO setting then that NULL
-    // value is used for the modifier mask...
-    object = [NSNumber numberWithUnsignedInteger: 0];
-  }
+    {
+      // Seems that Apple decided to omit this attribute IF Control key alone
+      // is applied.  If this key is present WITH NO setting then that NULL
+      // value is used for the modifier mask...
+      object = [NSNumber numberWithUnsignedInteger: 0];
+    }
   else
     {
       // If the modifier mask element is present then no modifier attributes
@@ -2273,75 +2273,72 @@ didStartElement: (NSString*)elementName
   Class     class = NSClassFromString([element attributeForKey: @"class"]);
   
   if ([class isSubclassOfClass: [NSCell class]])
-  {
-    GSCellFlagsUnion   mask          = { { 0 } };
-    NSDictionary      *attributes    = [element attributes];
+    {
+      GSCellFlagsUnion   mask          = { { 0 } };
+      NSDictionary      *attributes    = [element attributes];
 #if 0
-    NSString          *title         = [attributes objectForKey: @"title"];
-    NSString          *lineBreakMode = [attributes objectForKey: @"lineBreakMode"];
-    NSString          *bezelStyle    = [attributes objectForKey: @"bezelStyle"];
+      NSString          *title         = [attributes objectForKey: @"title"];
+      NSString          *lineBreakMode = [attributes objectForKey: @"lineBreakMode"];
+      NSString          *bezelStyle    = [attributes objectForKey: @"bezelStyle"];
 #endif
-    NSString          *imageName     = [attributes objectForKey: @"image"];
-    NSString          *focusRingType = [attributes objectForKey: @"focusRingType"];
-    NSString          *borderStyle   = [attributes objectForKey: @"borderStyle"];
-#if defined(DEBUG_XIB5)
-    NSWarnMLog(@"attributes: %@", attributes);
-#endif
-    
-    mask.flags.state                    = [[attributes objectForKey:@"state"] isEqualToString: @"on"];
-    mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
-    mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
-                                           [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
-    mask.flags.editable                 = [[attributes objectForKey: @"editable"] boolValue];
-    mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
-    mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
-    mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
-    //mask.flags.bezeled                  = ((bezelStyle != nil) && ([@"regularSquare" isEqualToString: bezelStyle] == NO));
-    mask.flags.bezeled                  = [[borderStyle lowercaseString] containsString: @"bezel"];
-    mask.flags.selectable               = [[attributes objectForKey: @"selectable"] boolValue];
-    mask.flags.scrollable               = [[attributes objectForKey: @"scrollable"] boolValue];
-    mask.flags.lineBreakMode            = [self decodeLineBreakModeForAttributes: attributes];
-    mask.flags.truncateLastLine         = [[attributes objectForKey: @"truncatesLastVisibleLine"] boolValue];
-    mask.flags.continuous               = [[attributes objectForKey: @"continuous"] boolValue];
-    mask.flags.singleLineMode           = [[attributes objectForKey: @"usesSingleLineMode"] boolValue];
+      NSString          *imageName     = [attributes objectForKey: @"image"];
+      NSString          *focusRingType = [attributes objectForKey: @"focusRingType"];
+      NSString          *borderStyle   = [attributes objectForKey: @"borderStyle"];
+      
+      mask.flags.state                    = [[attributes objectForKey:@"state"] isEqualToString: @"on"];
+      mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
+      mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
+                                             [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
+      mask.flags.editable                 = [[attributes objectForKey: @"editable"] boolValue];
+      mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
+      mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
+      mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
+      //mask.flags.bezeled                  = ((bezelStyle != nil) && ([@"regularSquare" isEqualToString: bezelStyle] == NO));
+      mask.flags.bezeled                  = [[borderStyle lowercaseString] containsString: @"bezel"];
+      mask.flags.selectable               = [[attributes objectForKey: @"selectable"] boolValue];
+      mask.flags.scrollable               = [[attributes objectForKey: @"scrollable"] boolValue];
+      mask.flags.lineBreakMode            = [self decodeLineBreakModeForAttributes: attributes];
+      mask.flags.truncateLastLine         = [[attributes objectForKey: @"truncatesLastVisibleLine"] boolValue];
+      mask.flags.singleLineMode           = [[attributes objectForKey: @"usesSingleLineMode"] boolValue];
+      mask.flags.continuous               = [[attributes objectForKey: @"continuous"] boolValue];
+      mask.flags.actOnMouseDown           = (mask.flags.continuous ? YES : NO);
+      mask.flags.actOnMouseDragged        = (mask.flags.continuous ? YES : NO);
 
-    // FIXME: these are unknowns for now...
-    mask.flags.actOnMouseDown           = NO;
-    mask.flags.isLeaf                   = NO;
-    mask.flags.invalidObjectValue       = NO;
-    mask.flags.invalidFont              = NO;
-    mask.flags.weakTargetHelperFlag     = NO;
-    mask.flags.allowsAppearanceEffects  = NO;
-    mask.flags.actOnMouseDragged        = NO;
-    mask.flags.isLoaded                 = NO;
-    mask.flags.dontActOnMouseUp         = NO;
-    mask.flags.isWhite                  = NO;
-    mask.flags.useUserKeyEquivalent     = NO;
-    mask.flags.showsFirstResponder      = NO;
-    
+      // FIXME: these are unknowns for now...
+      mask.flags.isLeaf                   = NO;
+      mask.flags.invalidObjectValue       = NO;
+      mask.flags.invalidFont              = NO;
+      mask.flags.weakTargetHelperFlag     = NO;
+      mask.flags.allowsAppearanceEffects  = NO;
+      mask.flags.isLoaded                 = NO;
+      mask.flags.dontActOnMouseUp         = NO;
+      mask.flags.isWhite                  = NO;
+      mask.flags.useUserKeyEquivalent     = NO;
+      mask.flags.showsFirstResponder      = NO;
+      
 #if 0
-    if ((title == nil) && (imageName == nil))
-      mask.flags.type = NSNullCellType;
-    else if (title == nil)
-      mask.flags.type = NSImageCellType;
-    else
-      mask.flags.type = NSTextCellType;
+      if ((title == nil) && (imageName == nil))
+        mask.flags.type = NSNullCellType;
+      else if (title == nil)
+        mask.flags.type = NSImageCellType;
+      else
+        mask.flags.type = NSTextCellType;
 #else
-    if (imageName)
-      mask.flags.type = NSImageCellType;
-    else
-      mask.flags.type = NSTextCellType;
+      if (imageName)
+        mask.flags.type = NSImageCellType;
+      else
+        mask.flags.type = NSTextCellType;
 #endif
-    
-    mask.flags.focusRingType = NSFocusRingTypeDefault;
-    if ([@"exterior" isEqualToString: focusRingType])
-      mask.flags.focusRingType = NSFocusRingTypeExterior;
-    else if ([@"none" isEqualToString: focusRingType])
-      mask.flags.focusRingType = NSFocusRingTypeNone;
-    
-    // Return mask...
-    value = [NSNumber numberWithUnsignedInteger: mask.value];
-  }
+      
+      mask.flags.focusRingType = NSFocusRingTypeDefault;
+      if ([@"exterior" isEqualToString: focusRingType])
+        mask.flags.focusRingType = NSFocusRingTypeExterior;
+      else if ([@"none" isEqualToString: focusRingType])
+        mask.flags.focusRingType = NSFocusRingTypeNone;
+      
+      // Return mask...
+      value = [NSNumber numberWithUnsignedInteger: mask.value];
+    }
   
   return value;
 }
