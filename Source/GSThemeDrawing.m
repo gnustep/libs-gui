@@ -76,9 +76,9 @@
 
 @interface NSTableView (Private)
 - (CGFloat *)_columnOrigins;
-- (void) _willDisplayCell: (NSCell*)cell forTableColumn: (NSTableColumn *)tb row: (int)index;
+- (void) _willDisplayCell: (NSCell*)cell forTableColumn: (NSTableColumn *)tb row: (NSInteger)index;
 // TESTPLANT-MAL-2016: Keeping for tableview grouped row support AKA Cocoa...
-- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb row: (int) rowIndex;
+- (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb row: (NSInteger) rowIndex;
 - (BOOL)_isGroupRow: (NSInteger)rowIndex;
 @end
  

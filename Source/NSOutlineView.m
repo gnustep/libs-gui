@@ -137,7 +137,7 @@ static NSImage *unexpandable  = nil;
 // Testplant-MAL-2015-07-01: _dataCellForTableColumn incldued due to NSTableView 
 // for group row processing...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex;
+                                 row: (NSInteger) rowIndex;
 @end
 
 @interface	NSOutlineView (Private)
@@ -2263,7 +2263,7 @@ Also returns the child index relative to this parent. */
 // Testplant-MAL-2015-07-01: Testplant branch code used due to NSTableView 
 // for group row processing...
 - (NSCell *) _dataCellForTableColumn: (NSTableColumn *)tb
-                                 row: (int) rowIndex
+                                 row: (NSInteger) rowIndex
 {
   NSCell *cell = nil;
   if ([_delegate respondsToSelector:
