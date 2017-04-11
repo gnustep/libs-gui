@@ -105,15 +105,15 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldSelectRow: (int)rowIndex;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-                            row: (int) rowIndex;
+                            row: (NSInteger) rowIndex;
 - (void) _willDisplayCell: (NSCell*)cell
            forTableColumn: (NSTableColumn *)tb
-                      row: (int)index;
+                      row: (NSInteger)index;
 - (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
-                              row: (int)index;
+                              row: (NSInteger)index;
 - (void) _setObjectValue: (id)value
           forTableColumn: (NSTableColumn *)tb
                      row: (NSInteger) index;
@@ -1831,7 +1831,7 @@ Also returns the child index relative to this parent. */
 }
 
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-                            row: (int) rowIndex
+                            row: (NSInteger) rowIndex
 {
   if ([_delegate respondsToSelector:
     @selector(outlineView:shouldEditTableColumn:item:)])
@@ -1850,7 +1850,7 @@ Also returns the child index relative to this parent. */
 
 - (void) _willDisplayCell: (NSCell*)cell
            forTableColumn: (NSTableColumn *)tb
-                      row: (int)index
+                      row: (NSInteger)index
 {
   if (_del_responds)
     {
@@ -1893,7 +1893,7 @@ Also returns the child index relative to this parent. */
 }
 
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
-                              row: (int) index
+                              row: (NSInteger) index
 {
   id result = nil;
 
