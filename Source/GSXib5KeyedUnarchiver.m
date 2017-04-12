@@ -1158,8 +1158,7 @@ didStartElement: (NSString*)elementName
     {
       object = [element attributeForKey: @"systemMenu"];
       
-      if (([@"main" isEqualToString: object]) &&
-          ([@"MainMenu" isEqualToString: [element attributeForKey: @"userLabel"]]))
+      if ([@"main" isEqualToString: object])
         object = @"_NSMainMenu";
       else if ([@"apple" isEqualToString: object])
         object = @"_NSAppleMenu";
