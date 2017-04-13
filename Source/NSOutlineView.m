@@ -746,6 +746,11 @@ static NSImage *unexpandable  = nil;
 /**
  * Sets the delegate of the outlineView.
  */
+- (SEL) _toolTipSelector
+{
+  return @selector(outlineView:toolTipForCell:rect:tableColumn:item:mouseLocation:);
+}
+
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(outlineView:willDisplayCell:forTableColumn:item:);
@@ -770,6 +775,37 @@ static NSImage *unexpandable  = nil;
   SET_DELEGATE_NOTIFICATION(ItemWillCollapse);
 
   _del_responds = [_delegate respondsToSelector: sel];
+  
+  // Tooltip support...
+  [self _setToolTipTracking];
+}
+
+- (NSString *)view:(NSView *)view
+  stringForToolTip:(NSToolTipTag)tag
+             point:(NSPoint)point
+          userData:(void *)data
+{
+  NSInteger   column = [self columnAtPoint: point];
+  NSInteger   row    = [self rowAtPoint: point];
+  
+  if ((column != -1) && (row != -1))
+  {
+    if (_delegate && [_delegate respondsToSelector: [self _toolTipSelector]])
+    {
+      NSCell *cell = [self preparedCellAtColumn: column row: row];
+      NSRect frame = [self frameOfCellAtColumn: column row: row];
+      frame        = [cell drawingRectForBounds: frame];
+      return [_delegate outlineView: self
+                     toolTipForCell: cell
+                               rect: &frame
+                        tableColumn: [[self tableColumns] objectAtIndex: column]
+                               item: [self itemAtRow: row]
+                      mouseLocation: point];
+    }
+    NSWarnMLog(@"attempt to retrieve tooltip without delegate support for %@", NSStringFromSelector([self _toolTipSelector]));
+  }
+  
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder

@@ -1291,11 +1291,11 @@ static NSImage *_pbc_image[5];
                   [menuItem setTarget: self];
                 }
               else if ([[aDecoder class] coderVersion] > 0)
-              {
-                // Fix for XIB 5 parsing - unfortunately...
-                [menuItem setAction: @selector(_popUpItemAction:)];
-                [menuItem setTarget: self];
-              }
+                {
+                  // Fix for XIB 5 parsing - unfortunately...
+                  [menuItem setAction: @selector(_popUpItemAction:)];
+                  [menuItem setTarget: self];
+                }
             }
         }
 

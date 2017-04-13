@@ -3981,6 +3981,14 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
       case NSMouseMoved:
+        
+        /*
+         * We need to go through all of the views, and if there is any with
+         * a tracking rectangle then we need to determine if we should send
+         * a NSMouseEntered or NSMouseExited event.
+         */
+        (*ctImp)(self, ctSel, _wv, theEvent);
+
         switch (type)
           {
             case NSLeftMouseDragged:
@@ -4013,20 +4021,13 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     {
                       [toolTipVisible mouseMoved: theEvent];
                     }
-                  else
+                  //else
                     {
                       [v mouseMoved: theEvent];
                     }
                 }
               break;
           }
-
-        /*
-         * We need to go through all of the views, and if there is any with
-         * a tracking rectangle then we need to determine if we should send
-         * a NSMouseEntered or NSMouseExited event.
-         */
-        (*ctImp)(self, ctSel, _wv, theEvent);
         
         if (_f.is_key)
           {

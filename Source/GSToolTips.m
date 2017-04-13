@@ -25,6 +25,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSString.h>
@@ -63,13 +64,16 @@
  */
 @interface	GSTTProvider : NSObject
 {
-  id		object;
-  void		*data;
+  id         object;
+  void      *data;
+  NSInteger  _trackingNumber;
 }
 - (void*) data;
 - (id) initWithObject: (id)o userData: (void*)d;
 - (id) object;
 - (void) setObject: (id)o;
+- (NSInteger) trackingNumber;
+- (void) setTrackingNumber: (NSInteger)trackingNumber;
 @end
 
 @implementation	GSTTProvider
@@ -115,6 +119,16 @@
       object = [[object description] copy];
     }
 }
+
+- (NSInteger)trackingNumber
+{
+  return _trackingNumber;
+}
+
+- (void)setTrackingNumber:(NSInteger)trackingNumber
+{
+  _trackingNumber = trackingNumber;
+}
 @end
 
 @interface GSTTView : NSView
@@ -123,6 +137,7 @@
 }
 
 - (void)setText: (NSAttributedString *)text;
+- (NSAttributedString*)text;
 @end
  	  	 
 @implementation GSTTView
@@ -144,7 +159,12 @@
       [self setNeedsDisplay: YES];
     }
 }
- 	  	 
+
+- (NSAttributedString*)text
+{
+  return _text;
+}
+
 - (void) drawRect: (NSRect)dirtyRect
 {
   if (_text)
@@ -204,6 +224,12 @@
 - (void) _endDisplay;
 - (void) _endDisplay:(NSTrackingRectTag)tag;
 - (void) _timedOut: (NSTimer *)timer;
+- (GSTTProvider*) provider;
+- (void) setProvider: (GSTTProvider*)provider;
+- (NSAttributedString*) _attributedStringForString: (NSString*)toolTipString;
+- (NSSize) _sizeForToolTipText: (NSAttributedString*)toolTipText;
+- (NSString*) _toolTipForProvider: (GSTTProvider*)provider location: (NSPoint)location;
+- (void) _setToolTip: (NSString*)toolTipString atLocation: (NSPoint)mouseLocation;
 @end
 /*
 typedef struct NSView_struct
@@ -229,13 +255,13 @@ static BOOL		restoreMouseMoved;
 + (void) initialize
 {
   viewsMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-			     NSObjectMapValueCallBacks, 8);
-           
+                              NSObjectMapValueCallBacks, 8);
+  
   window = [[GSTTPanel alloc] initWithContentRect: NSMakeRect(0,0,100,25)
-				       styleMask: NSBorderlessWindowMask
-					 backing: NSBackingStoreRetained
-					   defer: YES];
-    
+                                        styleMask: NSBorderlessWindowMask
+                                          backing: NSBackingStoreRetained
+                                            defer: YES];
+  
   [window setBackgroundColor:
     [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
   [window setReleasedWhenClosed: NO];
@@ -291,8 +317,7 @@ static BOOL		restoreMouseMoved;
       return -1;	// No provider object.
     }
 
-  provider = [[GSTTProvider alloc] initWithObject: anObject
-					 userData: data];
+  provider = [[GSTTProvider alloc] initWithObject: anObject userData: data];
   tag = [view addTrackingRect: aRect
                         owner: self
                      userData: provider
@@ -327,6 +352,7 @@ static BOOL		restoreMouseMoved;
 - (id) initForView: (NSView*)aView
 {
   view = aView;
+  _provider = nil;
   toolTipTag = -1;
   return self;
 }
@@ -334,7 +360,7 @@ static BOOL		restoreMouseMoved;
 - (void) mouseEntered: (NSEvent *)theEvent
 {
   GSTTProvider	*provider;
-  NSString	*toolTipString;
+  NSString      *toolTipString;
 
   if (timer != nil)
     {
@@ -347,31 +373,16 @@ static BOOL		restoreMouseMoved;
     }
 
   provider = (GSTTProvider*)[theEvent userData];
-  if ([[provider object] respondsToSelector:
-    @selector(view:stringForToolTip:point:userData:)] == YES)
-    {
-      // From testing on OS X, point is in the view's coordinate system
-      // The locationInWindow has been converted to this in
-      // [NSWindow _checkTrackingRectangles:forEvent:]
-      NSPoint p = [theEvent locationInWindow];
-
-      toolTipString = [[provider object] view: view
-			     stringForToolTip: [theEvent trackingNumber]
-					point: p
-				     userData: [provider data]];
-    }
-  else
-    {
-      toolTipString = [provider object];
-    }
+  [provider setTrackingNumber: [theEvent trackingNumber]];
+  [self setProvider: provider];
+  toolTipString = [self _toolTipForProvider: provider
+                                   location: [theEvent locationInWindow]];
 
   timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
                                            target: self
                                          selector: @selector(_timedOut:)
                                          userInfo: toolTipString
                                           repeats: YES];
-  // WHy is this here...as it's essentially a no-op...timer has already been
-  // scheduled in the RunLoop in the previous line...
   [[NSRunLoop currentRunLoop] addTimer: timer forMode: NSModalPanelRunLoopMode];
   timedObject = self;
   timedTag = [theEvent trackingNumber];
@@ -399,19 +410,20 @@ static BOOL		restoreMouseMoved;
 
 - (void) mouseMoved: (NSEvent *)theEvent
 {
-  NSPoint mouseLocation;
+  NSPoint mouseLocation = [NSEvent mouseLocation];
+  NSPoint locationInWindow = [view convertPoint: [theEvent locationInWindow] fromView:nil];
   NSPoint origin;
+  NSString *tooltipString;
 
-  if (window == nil)
+  if ((window == nil) || (timer != nil))
     {
       return;
     }
-
-  mouseLocation = [NSEvent mouseLocation];
-
-  origin = NSMakePoint(mouseLocation.x + offset.width,
-    mouseLocation.y + offset.height);
-
+  
+  tooltipString = [self _toolTipForProvider: [self provider] location: locationInWindow];
+  if ([[[(GSTTView*)([window contentView]) text] string] isEqualToString: tooltipString] == NO)
+    [self _setToolTip: tooltipString atLocation: mouseLocation];
+  origin = NSMakePoint(mouseLocation.x + offset.width, mouseLocation.y + offset.height);
   [window setFrameOrigin: origin];
 }
 
@@ -566,11 +578,8 @@ static BOOL		restoreMouseMoved;
       timedObject = nil;
       timedTag = NSNotFound;
     }
-  if (window != nil)
-    {
-      [window setFrame: NSZeroRect display: NO];
-      [window orderOut:self];
-    }
+
+  [self _setToolTip: nil atLocation: NSZeroPoint];
   if (restoreMouseMoved == YES)
     {
       restoreMouseMoved = NO;
@@ -578,35 +587,141 @@ static BOOL		restoreMouseMoved;
     }
 }
 
+- (NSAttributedString*) _attributedStringForString: (NSString*)toolTipString
+{
+  if (toolTipString)
+    {
+      NSUserDefaults      *userDefaults = [NSUserDefaults standardUserDefaults];
+      NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+      CGFloat             size = [userDefaults floatForKey: @"NSToolTipsFontSize"];
+      
+      if (size <= 0)
+        {
+#if defined(__linux__) && defined(__x86_64__)
+          size = 11.0;
+#else
+          size = 10.0;
+#endif
+        }
+      [attributes setObject: [NSFont toolTipsFontOfSize: size] forKey: NSFontAttributeName];
+      return [[NSAttributedString alloc] initWithString: toolTipString attributes: attributes];
+    }
+  
+  return nil;
+}
+
+- (NSSize) _sizeForToolTipText: (NSAttributedString*)toolTipText
+{
+  NSSize textSize = [toolTipText size];
+  
+  // TESTPLANT-MAL-03092016: Merged...
+  if (textSize.width > 300)
+  {
+    NSRect rect;
+    rect = [toolTipText boundingRectWithSize: NSMakeSize(300, 1e7)
+                                     options: 0];
+    textSize = rect.size;
+    // This extra pixel is needed, otherwise the last line gets cut off.
+    textSize.height += 1;
+  }
+  
+  return textSize;
+}
+
+- (void) _setToolTip: (NSString*)toolTipString atLocation: (NSPoint)mouseLocation
+{
+  if (toolTipString == nil)
+    {
+      if (window != nil)
+      {
+        [window setFrame: NSZeroRect display: NO];
+        [window orderOut:self];
+      }
+      [(GSTTView*)([window contentView]) setText: nil];
+    }
+  else
+    {
+      NSAttributedString	*toolTipText = [self _attributedStringForString: toolTipString];
+      NSSize               textSize    = [self _sizeForToolTipText: toolTipText];
+      NSRect               visible;
+      NSRect               rect;
+
+      /* Create window just off the current mouse position
+       * Constrain it to be on screen, shrinking if necessary.
+       */
+      rect = NSMakeRect(mouseLocation.x + 8,
+                        mouseLocation.y - 16 - (textSize.height+3),
+                        textSize.width + 4, textSize.height + 4);
+      visible = [[NSScreen mainScreen] visibleFrame];
+      if (NSMaxY(rect) > NSMaxY(visible))
+        {
+          rect.origin.y -= (NSMaxY(rect) - NSMaxY(visible));
+        }
+      if (NSMinY(rect) < NSMinY(visible))
+        {
+          rect.origin.y += (NSMinY(visible) - NSMinY(rect));
+        }
+      if (NSMaxY(rect) > NSMaxY(visible))
+        {
+          rect.origin.y = visible.origin.y;
+          rect.size.height = visible.size.height;
+        }
+      
+      if (NSMaxX(rect) > NSMaxX(visible))
+        {
+          rect.origin.x -= (NSMaxX(rect) - NSMaxX(visible));
+        }
+      if (NSMinX(rect) < NSMinX(visible))
+        {
+          rect.origin.x += (NSMinX(visible) - NSMinX(rect));
+        }
+      if (NSMaxX(rect) > NSMaxX(visible))
+        {
+          rect.origin.x = visible.origin.x;
+          rect.size.width = visible.size.width;
+        }
+      offset.height = rect.origin.y - mouseLocation.y;
+      offset.width = rect.origin.x - mouseLocation.x;
+      
+      isOpening = YES;
+      [(GSTTView*)([window contentView]) setText: toolTipText];
+      [window setFrame: rect display: NO];
+      [window orderFront: nil];
+      // Testplant-MAL-2015-06-26: Main branch merge...
+      // Keeping this testplant fix...
+      [window display];
+      isOpening = NO;
+    }
+}
+
 /* The delay timed out -- display the tooltip */
 - (void) _timedOut: (NSTimer *)aTimer
 {
-  CGFloat               size;
-  NSString		*toolTipString;
-  NSAttributedString	*toolTipText = nil;
+  CGFloat   size;
+  NSString *toolTipString;
   NSSize		textSize;
   NSPoint		mouseLocation = [NSEvent mouseLocation];
   NSRect		visible;
   NSRect		rect;
-  NSMutableDictionary	*attributes;
 
   // retain and autorelease the timer's userinfo because we
   // may  invalidate the timer (which releases the userinfo),
   // but need the userinfo object to remain valid for the
   // remainder of this method.
   toolTipString = [[[aTimer userInfo] retain] autorelease];
-  if ( (nil == toolTipString) ||
-       ([toolTipString isEqualToString: @""]) )
+#if 0
+  if ( (nil == toolTipString) || ([toolTipString isEqualToString: @""]) )
     {
       return;
     }
-
+#endif
+  
   if (timer != nil)
     {
       if ([timer isValid])
-	{
-	  [timer invalidate];
-	}
+        {
+          [timer invalidate];
+        }
       timer = nil;
       timedObject = nil;
       timedTag = NSNotFound;
@@ -629,81 +744,36 @@ static BOOL		restoreMouseMoved;
       [self _endDisplay];
     }
 
-  size = [[NSUserDefaults standardUserDefaults] floatForKey: @"NSToolTipsFontSize"];
-
-  if (size <= 0)
-    {
-#if defined(__linux__) && defined(__x86_64__)
-      size = 11.0;
-#else
-      size = 10.0;
-#endif
-    }
-
-  attributes = [NSMutableDictionary dictionary];
-  [attributes setObject: [NSFont toolTipsFontOfSize: size] forKey: NSFontAttributeName];
-  toolTipText = [[NSAttributedString alloc] initWithString: toolTipString attributes: attributes];
-  textSize = [toolTipText size];
-
-  // TESTPLANT-MAL-03092016: Merged...
-  if (textSize.width > 300)
-    {
-      NSRect rect;
-      rect = [toolTipText boundingRectWithSize: NSMakeSize(300, 1e7)
-                                       options: 0];
-      textSize = rect.size;
-      // This extra pixel is needed, otherwise the last line gets cut off.
-      textSize.height += 1;
-    }
-
-  /* Create window just off the current mouse position
-   * Constrain it to be on screen, shrinking if necessary.
-   */
-  rect = NSMakeRect(mouseLocation.x + 8,
-    mouseLocation.y - 16 - (textSize.height+3),
-    textSize.width + 4, textSize.height + 4);
-  visible = [[NSScreen mainScreen] visibleFrame];
-  if (NSMaxY(rect) > NSMaxY(visible))
-    {
-      rect.origin.y -= (NSMaxY(rect) - NSMaxY(visible));
-    }
-  if (NSMinY(rect) < NSMinY(visible))
-    {
-      rect.origin.y += (NSMinY(visible) - NSMinY(rect));
-    }
-  if (NSMaxY(rect) > NSMaxY(visible))
-    {
-      rect.origin.y = visible.origin.y;
-      rect.size.height = visible.size.height;
-    }
-    
-  if (NSMaxX(rect) > NSMaxX(visible))
-    {
-      rect.origin.x -= (NSMaxX(rect) - NSMaxX(visible));
-    }
-  if (NSMinX(rect) < NSMinX(visible))
-    {
-      rect.origin.x += (NSMinX(visible) - NSMinX(rect));
-    }
-  if (NSMaxX(rect) > NSMaxX(visible))
-    {
-      rect.origin.x = visible.origin.x;
-      rect.size.width = visible.size.width;
-    }
-  offset.height = rect.origin.y - mouseLocation.y;
-  offset.width = rect.origin.x - mouseLocation.x;
-
-  isOpening = YES;
-  [(GSTTView*)([window contentView]) setText: toolTipText];
-  [window setFrame: rect display: NO];
-  [window orderFront: nil];
-  // Testplant-MAL-2015-06-26: Main branch merge...
-  // Keeping this testplant fix...
-  [window display];
-  isOpening = NO;
-
-  RELEASE(toolTipText);
+  [self _setToolTip: toolTipString atLocation: mouseLocation];
 }
 
+- (void)setProvider:(GSTTProvider *)provider
+{
+  _provider = provider;
+}
+
+- (GSTTProvider *)provider
+{
+  return _provider;
+}
+
+- (NSString*) _toolTipForProvider: (GSTTProvider*)provider location: (NSPoint)location
+{
+  const SEL  theSelector    = @selector(view:stringForToolTip:point:userData:);
+  NSString  *toolTipString  = nil;
+  
+  if ([[provider object] respondsToSelector: theSelector] == YES)
+  {
+    // From testing on OS X, point is in the view's coordinate system
+    // The locationInWindow has been converted to this in
+    // [NSWindow _checkTrackingRectangles:forEvent:]
+    return [[provider object] view: view
+                  stringForToolTip: [provider trackingNumber]
+                             point: location
+                          userData: [provider data]];
+  }
+  
+  return [provider object];
+}
 @end
 

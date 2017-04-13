@@ -4709,6 +4709,10 @@ This method is deprecated, use -columnIndexesInRect:. */
         }
     }
   [super setFrame: tmpRect];
+  
+  // Tooltip support...
+  if (NSEqualRects(tmpRect, _frame) == NO)
+    [self _setToolTipTracking];
 }
 
 - (void) setFrameSize: (NSSize)frameSize
@@ -4860,10 +4864,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   remainingWidth = newWidth;
   
   // Do visible columns against the remaining width...
-  NSMutableArray *columns = [self _visibleColumns];
-  
-  // Avoid hidden/unresizable columns for resizing...
-  //columns = AUTORELEASE([[self _resizableColumns] mutableCopy]);
+  NSArray *columns = [self _visibleColumns];
 
   /*
    *  We store the minWidth and the maxWidth of every column
@@ -5048,17 +5049,17 @@ This method is deprecated, use -columnIndexesInRect:. */
   }
   
   // Do visible columns for the remaining width...
-  NSMutableArray *columns = [self _visibleColumns];
-  [self _currentColumnWidth: columns remainingWidth: NULL];
+  NSArray *visColumns = [self _visibleColumns];
+  [self _currentColumnWidth: visColumns remainingWidth: NULL];
   
-  for (i = 0; i < [columns count]; i++)
+  for (i = 0; i < [visColumns count]; i++)
     {
-      tb = [columns objectAtIndex: i];
-      remainingWidth -= [[columns objectAtIndex: i] width];
+      tb = [visColumns objectAtIndex: i];
+      remainingWidth -= [[visColumns objectAtIndex: i] width];
     }
   
   // Avoid hidden/unresizable columns for resizing...
-  columns = AUTORELEASE([[self _resizableColumns] mutableCopy]);
+  NSMutableArray *columns = [[self _resizableColumns] mutableCopy];
 
   if (fabs(remainingWidth) > 1.0)
     {
@@ -5131,7 +5132,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       _lastRemainingWidth = NSMaxX([self convertRect: [_super_view bounds] fromView: _super_view]) - remainingWidth;
       [self tile];
     }
-
+  
+  RELEASE(columns);
 }
 
 - (void) noteNumberOfRowsChanged
@@ -5576,10 +5578,65 @@ This method is deprecated, use -columnIndexesInRect:. */
  * Delegate 
  */
 
+- (NSString *)view:(NSView *)view
+  stringForToolTip:(NSToolTipTag)tag
+             point:(NSPoint)point
+          userData:(void *)data
+{
+  const SEL   theSelector = @selector(tableView:toolTipForCell:rect:tableColumn:row:mouseLocation:);
+  NSInteger   column      = [self columnAtPoint: point];
+  NSInteger   row         = [self rowAtPoint: point];
+
+  if ((column != -1) && (row != -1))
+    {
+      if (_delegate && [_delegate respondsToSelector:theSelector])
+        {
+          NSCell *cell = [self preparedCellAtColumn: column row: row];
+          NSRect frame = [self frameOfCellAtColumn: column row: row];
+          frame        = [cell drawingRectForBounds: frame];
+          return [_delegate tableView: self
+                       toolTipForCell: [self preparedCellAtColumn: column row: row]
+                                 rect: &frame
+                          tableColumn: [[self tableColumns] objectAtIndex: column]
+                                  row: row
+                        mouseLocation: point];
+        }
+      NSWarnMLog(@"attempt to retrieve tooltip without delegate support for %@", NSStringFromSelector([self _toolTipSelector]));
+    }
+  
+  return nil;
+}
+
+- (NSRect) adjustScroll:(NSRect)newVisible
+{
+  NSRect returnRect = [super adjustScroll:newVisible];
+  [self _setToolTipTracking: newVisible];
+  return returnRect;
+}
+
+- (SEL) _toolTipSelector
+{
+  return @selector(tableView:toolTipForCell:rect:tableColumn:row:mouseLocation:);
+}
+
+- (void) _setToolTipTracking: (NSRect)frame
+{
+  // Tooltip support...
+  [self removeAllToolTips];
+  if ([_delegate respondsToSelector: [self _toolTipSelector]])
+    [self addToolTipRect: frame owner: self userData: nil];
+}
+
+- (void) _setToolTipTracking
+{
+  // Tooltip support...
+  [self _setToolTipTracking: [self visibleRect]];
+}
+
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-
+  
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = anObject;
@@ -5597,6 +5654,9 @@ This method is deprecated, use -columnIndexesInRect:. */
   
   /* Cache */
   _del_responds = [_delegate respondsToSelector: sel];
+  
+  // Tooltip support...
+  [self _setToolTipTracking];
 }
 
 - (id) delegate

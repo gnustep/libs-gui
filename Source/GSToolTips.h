@@ -31,11 +31,13 @@
 @class	NSTimer;
 @class	NSView;
 @class	NSWindow;
+@class  GSTTProvider;
 
 @interface	GSToolTips : NSObject
 {
-  NSView		*view;
-  NSTrackingRectTag	toolTipTag;
+  NSView            *view;
+  GSTTProvider      *_provider;
+  NSTrackingRectTag  toolTipTag;
 }
 
 /** Destroy object handling tips for aView.
