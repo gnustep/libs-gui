@@ -4711,8 +4711,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   [super setFrame: tmpRect];
   
   // Tooltip support...
-  if (NSEqualRects(tmpRect, _frame) == NO)
-    [self _setToolTipTracking];
+  [self _setToolTipTracking];
 }
 
 - (void) setFrameSize: (NSSize)frameSize
