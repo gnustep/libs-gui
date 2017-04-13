@@ -5622,7 +5622,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   // Tooltip support...
   [self removeAllToolTips];
-  if ([_delegate respondsToSelector: [self _toolTipSelector]])
+  //if ([_delegate respondsToSelector: [self _toolTipSelector]])
     [self addToolTipRect: frame owner: self userData: nil];
 }
 
