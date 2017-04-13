@@ -3573,10 +3573,9 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
   if ([characters length] == 0)
     return;
 
-  // FIXME: Why is this here, is the code still needed or a left over hack?
   // Try to process the event as a key equivalent
   // without Command having being pressed
-  if ([self performKeyEquivalent: new_event])
+  if ([self performKeyEquivalent: theEvent])
     return;
 
   // Otherwise, pass the event up
