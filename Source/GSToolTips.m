@@ -221,6 +221,7 @@
 
 
 @interface	GSToolTips (Private)
++ (NSTimeInterval) _toolTipTimeout;
 - (void) _endDisplay;
 - (void) _endDisplay:(NSTrackingRectTag)tag;
 - (void) _timedOut: (NSTimer *)timer;
@@ -378,7 +379,7 @@ static BOOL		restoreMouseMoved;
   toolTipString = [self _toolTipForProvider: provider
                                    location: [theEvent locationInWindow]];
 
-  timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+  timer = [NSTimer scheduledTimerWithTimeInterval: [GSToolTips _toolTipTimeout]
                                            target: self
                                          selector: @selector(_timedOut:)
                                          userInfo: toolTipString
@@ -551,6 +552,14 @@ static BOOL		restoreMouseMoved;
 @end
 
 @implementation	GSToolTips (Private)
+
++ (NSTimeInterval) _toolTipTimeout
+{
+  NSTimeInterval timeout = [[NSUserDefaults standardUserDefaults] doubleForKey: @"NSInitialToolTipDelay"] / 1000.0;
+  if (timeout == 0)
+    timeout = 1.0;
+  return timeout;
+}
 
 - (void) _endDisplay
 {
