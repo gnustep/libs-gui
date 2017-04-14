@@ -539,9 +539,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
     while ((prefix = [iter nextObject]))
     {
       NSString *theClassName = [NSString stringWithFormat:@"%@%@",prefix,baseString];
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"%@ - trying: %@", xibTag, theClassName);
-#endif
+
       if (NSClassFromString(theClassName))
       {
         className = theClassName;
@@ -550,9 +548,6 @@ static NSArray      *XmlConnectionRecordTags  = nil;
     }
   }
   
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"xibTag: %@ className: %@", xibTag, className);
-#endif
   return className;
 }
 
@@ -700,10 +695,6 @@ didStartElement: (NSString*)elementName
   NSMutableDictionary *attributes  = AUTORELEASE([attributeDict mutableCopy]);
   NSString            *className   = nil;
   NSString            *elementType = elementName;
-  
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"elementName: %@ className: %@ namespaceURI: %@ qName: %@ attrs: %@", elementName, className, namespaceURI, qualifiedName, attributes);
-#endif
 
   // Skip certain element names - for now...
   if ([XmltagsToSkip containsObject:elementName] == NO)
@@ -822,11 +813,6 @@ didStartElement: (NSString*)elementName
    namespaceURI: (NSString*)namespaceURI
   qualifiedName: (NSString*)qName
 {
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"%s:elementName: %@ namespaceURI: %@ qName: %@", __PRETTY_FUNCTION__,
-             elementName, namespaceURI, qName);
-#endif
-  
   // Skip certain element names - for now...
   if ([XmltagsToSkip containsObject: elementName] == NO)
     {
@@ -865,9 +851,6 @@ didStartElement: (NSString*)elementName
     if ([[attributes objectForKey: @"flexibleMaxY"] boolValue])
       mask |= NSViewMaxYMargin;
     
-#if defined(DEBUG_XIB5)
-    NSWarnMLog(@"attributes: %@ mask: %p", attributes, mask);
-#endif
     return [NSNumber numberWithUnsignedInt: mask];
   }
   
@@ -1328,7 +1311,6 @@ didStartElement: (NSString*)elementName
       if (([element elementForKey: @"keyEquivalent"]) &&
           ([[element elementForKey: @"keyEquivalent"] attributeForKey: @"base64-UTF8"]))
       {
-        NSWarnMLog(@"no modifier mask for title: %@", [element attributeForKey: @"title"]);
         object = [NSNumber numberWithUnsignedInt: 0];
       }
     else
@@ -2211,10 +2193,6 @@ didStartElement: (NSString*)elementName
           AUTORELEASE(object);
         }
 #endif
-      
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"object: %@", object);
-#endif
     }
   
   return object;
@@ -2235,9 +2213,6 @@ didStartElement: (NSString*)elementName
         {
           object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
         }
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"object: %@", object);
-#endif
     }
   
   return object;
@@ -2359,10 +2334,6 @@ didStartElement: (NSString*)elementName
 #endif
       NSString          *alignment    = [attributes objectForKey: @"alignment"];
       NSString          *controlSize  = [attributes objectForKey: @"controlSize"];
-      
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"attributes: %@", attributes);
-#endif
       
       mask.flags.allowsEditingTextAttributes  = [[attributes objectForKey: @"allowsEditingTextAttributes"] boolValue];
       mask.flags.importsGraphics              = 0;
@@ -2609,7 +2580,6 @@ didStartElement: (NSString*)elementName
       
       // keyEquivalentModifierMask...
       mask.value |= [[self decodeModifierMaskForElement: element] unsignedIntValue];
-      NSWarnMLog(@"title: %@ %p", [element attributeForKey: @"title"], mask.value);
       
       // Return value...
       value = [NSNumber numberWithUnsignedInteger: mask.value];
@@ -2826,9 +2796,6 @@ didStartElement: (NSString*)elementName
         [object setToolTip: [element attributeForKey: @"toolTip"]];
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
-#if defined(DEBUG_XIB5)
-      NSWarnMLog(@"object: %@ toolTip: %@", object, [element attributeForKey: @"toolTip"]);
-#endif
     }
   
   return object;
@@ -2836,9 +2803,6 @@ didStartElement: (NSString*)elementName
 
 - (id)decodeObjectForKey:(NSString *)key
 {
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"STARTING: key: %@ currentElement: %@ id: %@", key, [currentElement type], [currentElement attributeForKey: @"id"]);
-#endif
   id object = [super decodeObjectForKey:key];
   
   // If not object try some other cases before defaulting to remove 'NS' prefix if present...
@@ -2864,10 +2828,6 @@ didStartElement: (NSString*)elementName
 
           unsigned int      bFlags = 0x8444000;
           GSButtonCellFlags buttonCellFlags;
-
-#if defined(DEBUG_XIB5)
-          NSWarnMLog(@"title: %@ bFlags: %u", [object title], bFlags);
-#endif
           
           memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
           
@@ -2979,10 +2939,6 @@ didStartElement: (NSString*)elementName
         }
 #endif
     }
-
-#if defined(DEBUG_XIB5)
-  NSWarnMLog(@"DONE: key: %@ currentElement: %@ id: %@", key, [currentElement type], [currentElement attributeForKey: @"id"]);
-#endif
   
   return object;
 }
