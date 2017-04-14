@@ -1848,7 +1848,7 @@
 
           [self setShowsBorderOnlyWhileMouseInside: mask.flags.showsBorderOnlyWhileMouseInside];
           [self setBezelStyle: mask.flags.bezelStyle | (mask.flags.bezelStyle2 << 3)];
-          [self setKeyEquivalentModifierMask: (mask.flags.keyEquivalentModifierMask & NSDeviceIndependentModifierFlagsMask)];
+          [self setKeyEquivalentModifierMask: (mask.value & NSDeviceIndependentModifierFlagsMask)];
           
           switch (mask.flags.imageScaling)
             {
