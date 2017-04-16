@@ -6031,7 +6031,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  NSArray *array;
 	  NSNumber *width, *identNum;
-	  NSObject *ident;
+	  id ident;
 	  
 	  width = [NSNumber numberWithInt: [column width]];
 	  ident = [column identifier];

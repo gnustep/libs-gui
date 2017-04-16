@@ -1815,7 +1815,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 		  unsigned int char_index =
 		    [self characterRangeForGlyphRange: NSMakeRange(g, 1)
 				     actualGlyphRange: NULL].location;
-		  NSObject<NSTextAttachmentCell> *cell = [[_textStorage attribute: NSAttachmentAttributeName
+		  id<NSTextAttachmentCell> cell = [[_textStorage attribute: NSAttachmentAttributeName
 			atIndex: char_index
 			effectiveRange: NULL] attachmentCell];
 		  NSRect cellFrame;

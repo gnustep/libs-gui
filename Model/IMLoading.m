@@ -43,7 +43,6 @@
 
 void __dummy_IMLoading_functionForLinking()
 {
-  __dummy_IMLoading_functionForLinking();
 }
 
 @implementation GMModel
@@ -207,18 +206,3 @@ BOOL _fileOwnerDecoded = NO;
 }
 
 @end /* GMModel */
-
-
-#if GNU_RUNTIME
-#include "IMConnectors.h"
-
-__attribute__((unused))
-static void __dummyFunctionForLinking (void)
-{
-  [IMCustomObject new];
-  [IMConnector new];
-
-  __dummyFunctionForLinking();
-}
-
-#endif

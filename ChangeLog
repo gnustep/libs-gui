@@ -1,3 +1,17 @@
+2017-04-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Model/IMLoading.m
+	* Source/GSTextStorage.m
+	* Source/GSToolbarView.m
+	* Source/NSLayoutManager.m
+	* Source/NSTableView.m
+	Fix some clang static analyser warnings reported by
+	Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>.
+
+2017-04-06 Ivan Vucica <ivan@vucica.net>
+
+	* Releasing 0.25.1.
+
 2017-04-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h: Moved from Source.
@@ -5,10 +19,6 @@
 	* Source/GSXibLoader.m,
 	* Source/GSXibKeyedUnarchiver.m,
 	* Source/GNUmakefile: Use and install moved header file.
-
-2017-04-04 Ivan Vucica <ivan@vucica.net>
-
-	* Releasing 0.25.1.
 
 2017-04-01 Fred Kiefer <FredKiefer@gmx.de>
 

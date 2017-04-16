@@ -89,7 +89,7 @@ cacheEqual(id A, id B)
 
 static NSDictionary	*blank;
 static NSLock		*attrLock = nil;
-static __strong GSIMapTable_t	attrMap;
+static GSIMapTable_t	attrMap;
 static SEL		lockSel;
 static SEL		unlockSel;
 static IMP		lockImp;
