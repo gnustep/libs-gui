@@ -1,3 +1,7 @@
+2017-04-22 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Version: Correct required base version that has been off for a year.
+
 2017-04-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Printing/GSCUPS/GSCUPSPrinter.m: Add include to get deprecated
