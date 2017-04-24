@@ -3,7 +3,7 @@
 
    Functions for dealing with tiff images.
 
-   Copyright (C) 1996,1999-2010 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999-2010, 2017 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -488,6 +488,12 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
+  if (info->xdpi && info->ydpi)
+    {
+      TIFFSetField(image, TIFFTAG_XRESOLUTION, info->xdpi);
+      TIFFSetField(image, TIFFTAG_YRESOLUTION, info->ydpi);
+      TIFFSetField(image, TIFFTAG_RESOLUTIONUNIT, 2);
+    }
   TIFFSetField(image, TIFFTAG_COMPRESSION, info->compression);
   if (info->compression == COMPRESSION_JPEG)
     {
