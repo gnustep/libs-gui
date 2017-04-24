@@ -2,7 +2,7 @@
 
    <abstract>Bitmap image representation.</abstract>
 
-   Copyright (C) 1996-2014 Free Software Foundation, Inc.
+   Copyright (C) 1996-2017 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
@@ -2014,6 +2014,16 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info->height = _pixelsHigh;
   info->bitsPerSample = _bitsPerSample;
   info->samplesPerPixel = _numColors;
+
+  // resolution/density
+  if (_pixelsWide != (int)(_size.width) || _pixelsHigh != (int)(_size.height))
+    {
+      float x_density, y_density;
+      x_density = _pixelsWide * 72 / _size.width;
+      y_density = _pixelsHigh * 72 / _size.height;
+      info->xdpi = x_density;
+      info->ydpi = y_density;
+    }
 
   if (_isPlanar)
     info->planarConfig = PLANARCONFIG_SEPARATE;
