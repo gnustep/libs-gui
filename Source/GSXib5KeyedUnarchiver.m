@@ -336,6 +336,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                    @"userDefinedRuntimeAttributes"  : @"NSMutableArray",
                                                    @"resources"                     : @"NSMutableArray",
                                                    @"segments"                      : @"NSMutableArray",
+                                                   @"objectValues"                  : @"NSMutableArray",
                                                    @"segment"                       : @"NSSegmentItem",
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
@@ -405,7 +406,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSSegmentImages"                  : @"segments",
                                 @"NSSegmentItemLabel"               : @"label",
                                 @"NSSegmentItemImage"               : @"image",
-                                @"NSIsEditable"                     : @"editable" };
+                                @"NSIsEditable"                     : @"editable",
+                                @"NSPopUpListData"                  : @"objectValues" };
             RETAIN(XmlKeyMapTable);
             
             // These define keys that are always "CONTAINED" since they typically are a combination of key values
