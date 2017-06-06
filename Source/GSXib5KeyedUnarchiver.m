@@ -513,7 +513,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSRGB"                      : @"decodeColorRGBForElement:",
                                             @"NSColorSpace"               : @"decodeColorSpaceForElement:",
                                             @"NSCYMK"                     : @"decodeColorCYMKForElement:",
-                                            @"NSSegmentItemImage"         : @"decodeSegmentItemImageForElement:"};
+                                            @"NSSegmentItemImage"         : @"decodeSegmentItemImageForElement:",
+                                            @"NSDividerStyle"             : @"decodeDividerStyleForElement:" };
             RETAIN(XmlKeyToDecoderSelectorMap);
         }
     }
@@ -3066,7 +3067,7 @@ didStartElement: (NSString*)elementName
 {
   NSInteger value = 0;
   
-  if ([self containsValueForKey:key])
+  if ([super containsValueForKey:key])
     {
       value = [super decodeIntegerForKey:key];
     }

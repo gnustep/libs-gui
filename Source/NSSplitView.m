@@ -45,6 +45,7 @@
 #import <Foundation/NSUserDefaults.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSCursor.h"
 #import "AppKit/NSEvent.h"
@@ -70,6 +71,7 @@ static NSNotificationCenter *nc = nil;
 {
   if ((self = [super initWithFrame: frameRect]) != nil)
     {
+      _dividerStyle = NSSplitViewDividerStyleThick; // Cocoa default...
       _dividerWidth = [self dividerThickness];
       _draggedBarWidth = [self dividerThickness] + 2; // default bigger than dividerThickness
       _isVertical = NO;
@@ -985,11 +987,12 @@ static NSNotificationCenter *nc = nil;
    * setDimpleImage:resetDividerThickness:YES below)
    */
   if (_dividerStyle == NSSplitViewDividerStyleThin)
-    return 3;
+    return 2;
   if (_dividerStyle == NSSplitViewDividerStyleThick)
     return 6;
   if (_dividerStyle == NSSplitViewDividerStylePaneSplitter)
     return 6;
+  NSWarnMLog(@"unsupported divider style: %ld", (long)_dividerStyle);
   return 0;
 }
 
@@ -1001,30 +1004,57 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return p;
 }
 
-- (void) drawDividerInRect: (NSRect)aRect
+- (void) drawThickDividerInRect: (NSRect) aRect
 {
   NSPoint dimpleOrigin;
   NSSize dimpleSize;
-
+  
   /* focus is already on self */
   if (!_dimpleImage)
-    {
-      return;
-    }
-
+  {
+    return;
+  }
+  
   dimpleSize = [_dimpleImage size];
-
+  
   dimpleOrigin = centerSizeInRect(dimpleSize, aRect);
   /*
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
   if ([self isFlipped])
-    {
-      dimpleOrigin.y += dimpleSize.height;
-    }
-  [_dimpleImage compositeToPoint: dimpleOrigin 
-                operation: NSCompositeSourceOver];
+  {
+    dimpleOrigin.y += dimpleSize.height;
+  }
+  [_dimpleImage compositeToPoint: dimpleOrigin
+                       operation: NSCompositeSourceOver];
+}
+
+- (void) drawThinDividerInRect: (NSRect) aRect
+{
+  CGFloat lineWidth  = (_isVertical ? aRect.size.width : aRect.size.height);
+  NSPoint startPoint = aRect.origin;
+  NSPoint endPoint   = NSMakePoint(NSMaxX(aRect), NSMinY(aRect));
+  NSBezierPath *path = [NSBezierPath bezierPath];
+  
+  if (_isVertical)
+  {
+    endPoint = NSMakePoint(NSMinX(aRect), NSMaxY(aRect));
+  }
+  
+  [path setLineWidth: lineWidth];
+  [path moveToPoint: startPoint];
+  [path lineToPoint: endPoint];
+  [path closePath];
+  [path stroke];
+}
+
+- (void) drawDividerInRect: (NSRect)aRect
+{
+  if (_dividerStyle == NSSplitViewDividerStyleThick)
+    [self drawThickDividerInRect: aRect];
+  else if (_dividerStyle == NSSplitViewDividerStyleThin)
+    [self drawThinDividerInRect: aRect];
 }
 
 /* Vertical splitview has a vertical split bar */
@@ -1417,18 +1447,16 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
         {
           [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
         }
-      NSWarnMLog(@"NSIsVertical: %@", [aDecoder decodeObjectForKey: @"NSIsVertical"]);
 
       if ([aDecoder containsValueForKey: @"NSAutosaveName"])
-      {
-        [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
-      }
+        {
+          [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
+        }
       
       if ([aDecoder containsValueForKey: @"NSDividerStyle"])
-      {
-        NSWarnMLog(@"divStyle: %@", [aDecoder decodeObjectForKey: @"NSDividerStyle"]);
-        [self setDividerStyle: [aDecoder decodeIntegerForKey: @"NSDividerStyle"]];
-      }
+        {
+          [self setDividerStyle: [aDecoder decodeIntegerForKey: @"NSDividerStyle"]];
+        }
 
       _dividerWidth = [self dividerThickness];
       _draggedBarWidth = [self dividerThickness] + 2; // default bigger than dividerThickness
