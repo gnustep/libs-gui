@@ -71,7 +71,7 @@ static NSNotificationCenter *nc = nil;
   if ((self = [super initWithFrame: frameRect]) != nil)
     {
       _dividerWidth = [self dividerThickness];
-      _draggedBarWidth = 8; // default bigger than dividerThickness
+      _draggedBarWidth = [self dividerThickness] + 2; // default bigger than dividerThickness
       _isVertical = NO;
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
@@ -984,7 +984,13 @@ static NSNotificationCenter *nc = nil;
    * dividerThickness (or, without need for subclassing, invoke
    * setDimpleImage:resetDividerThickness:YES below)
    */
-  return 6;
+  if (_dividerStyle == NSSplitViewDividerStyleThin)
+    return 3;
+  if (_dividerStyle == NSSplitViewDividerStyleThick)
+    return 6;
+  if (_dividerStyle == NSSplitViewDividerStylePaneSplitter)
+    return 6;
+  return 0;
 }
 
 static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
@@ -1346,13 +1352,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (NSSplitViewDividerStyle) dividerStyle
 {
-  // FIXME
-  return NSSplitViewDividerStyleThick;
+  return _dividerStyle;
 }
 
 - (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle
 {
-  // FIXME
+  _dividerStyle = dividerStyle;
 }
 
 /*
@@ -1405,18 +1410,28 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       id subview = nil;
       NSEnumerator *en = [[self subviews] objectEnumerator];
 
+      // Defaults...
+      _dividerStyle = NSSplitViewDividerStyleThick; // Cocoa default...
+      
       if ([aDecoder containsValueForKey: @"NSIsVertical"])
         {
           [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
         }
+      NSWarnMLog(@"NSIsVertical: %@", [aDecoder decodeObjectForKey: @"NSIsVertical"]);
 
       if ([aDecoder containsValueForKey: @"NSAutosaveName"])
-        {
-          [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
-        }
+      {
+        [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
+      }
+      
+      if ([aDecoder containsValueForKey: @"NSDividerStyle"])
+      {
+        NSWarnMLog(@"divStyle: %@", [aDecoder decodeObjectForKey: @"NSDividerStyle"]);
+        [self setDividerStyle: [aDecoder decodeIntegerForKey: @"NSDividerStyle"]];
+      }
 
       _dividerWidth = [self dividerThickness];
-      _draggedBarWidth = 8; // default bigger than dividerThickness
+      _draggedBarWidth = [self dividerThickness] + 2; // default bigger than dividerThickness
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
       _never_displayed_before = YES;
