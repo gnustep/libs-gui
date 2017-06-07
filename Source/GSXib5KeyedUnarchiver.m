@@ -407,7 +407,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSSegmentItemLabel"               : @"label",
                                 @"NSSegmentItemImage"               : @"image",
                                 @"NSIsEditable"                     : @"editable",
-                                @"NSPopUpListData"                  : @"objectValues" };
+                                @"NSPopUpListData"                  : @"objectValues",
+                                @"NSMaxNumberOfGridRows"            : @"maxNumberOfRows",
+                                @"NSMaxNumberOfGridColumns"         : @"maxNumberOfColumns" };
             RETAIN(XmlKeyMapTable);
             
             // These define keys that are always "CONTAINED" since they typically are a combination of key values
@@ -514,6 +516,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSColorSpace"               : @"decodeColorSpaceForElement:",
                                             @"NSCYMK"                     : @"decodeColorCYMKForElement:",
                                             @"NSSegmentItemImage"         : @"decodeSegmentItemImageForElement:",
+                                            @"NSBackgroundColors"         : @"decodeBackgroundColorsForElement:",
                                             @"NSDividerStyle"             : @"decodeDividerStyleForElement:" };
             RETAIN(XmlKeyToDecoderSelectorMap);
         }
@@ -1486,6 +1489,23 @@ didStartElement: (NSString*)elementName
     }
   
   return [NSNumber numberWithInteger: style];
+}
+
+- (id) decodeBackgroundColorsForElement: (GSXib5Element*)element
+{
+  NSMutableArray *backgroundColors = [NSMutableArray array];
+  NSColor        *primaryColor     = [self decodeObjectForKey: @"primaryBackgroundColor"];
+  NSColor        *secondaryColor   = [self decodeObjectForKey: @"secondaryBackgroundColor"];
+  
+  // If primary only - just one background color...
+  if (primaryColor)
+    [backgroundColors addObject: primaryColor];
+
+  // If secondary included - indicates alternating background color scheme...
+  if (secondaryColor)
+    [backgroundColors addObject: secondaryColor];
+  
+  return backgroundColors;
 }
 
 #pragma mark - NSProgressIndicator...
