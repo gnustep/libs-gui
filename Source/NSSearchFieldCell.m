@@ -198,6 +198,13 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 
 - (void) setRecentsAutosaveName: (NSString *)name
 {
+  // TESTPLANT-MAL-06132017:
+  // There's a bug in the search fields recents autosave name in IB write processing.  It
+  // will encode en empty string in the XIB5 files for some reason when the autosave name was set
+  // then cleared in the IB GUI settings.  Not sure what do do in this case - should we ignore
+  // this or allow it to reset the autosave name to nil???
+  if (name && ([name length] == 0))
+    name = nil; // We'll clear it for now...
   ASSIGN(_recents_autosave_name, name);
   [self _loadSearches];
 }
