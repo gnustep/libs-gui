@@ -1055,6 +1055,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     [self drawThickDividerInRect: aRect];
   else if (_dividerStyle == NSSplitViewDividerStyleThin)
     [self drawThinDividerInRect: aRect];
+  else if (_dividerStyle == NSSplitViewDividerStylePaneSplitter)
+    [self drawThickDividerInRect: aRect];
 }
 
 /* Vertical splitview has a vertical split bar */
