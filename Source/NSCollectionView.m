@@ -445,6 +445,10 @@ static NSString *placeholderItem = nil;
       
       x += _itemSize.width + _horizontalMargin;
     }
+  
+  if (_maxNumberOfColumns == 1)
+    itemFrame.size.width = self.frame.size.width;
+  
   return itemFrame;
 }
 
@@ -478,13 +482,15 @@ static NSString *placeholderItem = nil;
           [item setSelected: YES];
         }
       // Testplant-MAL-2015-06-26: Keeping testplant fixes...
-	  // Frank LeGrand 4/25/13:
-	  // We set this initial rect as a workaround for a weird display
-	  // issue in our app where the item view would get drawn in front
-	  // of another view (a transparent NSBox) whereas it should stay
-	  // behind.
-	  NSRect initRect = NSMakeRect (-10000,-10000,100,100);
-	  [[item view] setFrame:initRect];
+      // Frank LeGrand 4/25/13:
+      // We set this initial rect as a workaround for a weird display
+      // issue in our app where the item view would get drawn in front
+      // of another view (a transparent NSBox) whereas it should stay
+      // behind.
+#if 0
+      NSRect initRect = NSMakeRect (-10000,-10000,100,100);
+      [[item view] setFrame:initRect];
+#endif
       [self addSubview: [item view]];
       RELEASE(item);
     }
@@ -643,6 +649,7 @@ static NSString *placeholderItem = nil;
 
 - (void) resizeSubviewsWithOldSize: (NSSize)aSize
 {
+  [super resizeSubviewsWithOldSize: aSize];
   NSSize currentSize = [self frame].size;
   if (!NSEqualSizes(currentSize, aSize))
     {
