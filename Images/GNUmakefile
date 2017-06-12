@@ -40,6 +40,7 @@ Images_RESOURCE_FILES = \
  MagnifyGlass.tiff \
  NSAddTemplate.tiff\
  NSActionTemplate.tiff\
+ NSDropDownIndicatorTemplate.png\
  NSFontPanelActionButton.tiff\
  NSFontPanelActionButtonPressed.tiff\
  NSPathTemplate.tiff\

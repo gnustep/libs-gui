@@ -2421,6 +2421,10 @@ didStartElement: (NSString*)elementName
             {
               object = [NSImage imageNamed: @"NSSwitch"];
             }
+          else if ([@"disclosure" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate"];
+            }
         }
     }
   
@@ -2449,6 +2453,10 @@ didStartElement: (NSString*)elementName
           else if ([@"check" isEqualToString: type])
             {
               object = [NSImage imageNamed: @"NSSwitch"];
+            }
+          else if ([@"disclosure" isEqualToString: type])
+            {
+              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate"];
             }
         }
     }
