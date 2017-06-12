@@ -409,7 +409,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSIsEditable"                     : @"editable",
                                 @"NSPopUpListData"                  : @"objectValues",
                                 @"NSMaxNumberOfGridRows"            : @"maxNumberOfRows",
-                                @"NSMaxNumberOfGridColumns"         : @"maxNumberOfColumns" };
+                                @"NSMaxNumberOfGridColumns"         : @"maxNumberOfColumns",
+                                @"NSKey"                            : @"sortKey" };
             RETAIN(XmlKeyMapTable);
             
             // These define keys that are always "CONTAINED" since they typically are a combination of key values
