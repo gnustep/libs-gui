@@ -1,3 +1,9 @@
+2017-06-12 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSAttributedString.m,
+	* Source/externs.m:
+	Merge pull request from TheDharc <brunosonic@gmail.com>.
+
 2017-04-24 Riccardo Mottola <rm@gnu.org>
 
         * Source/tiff.m
