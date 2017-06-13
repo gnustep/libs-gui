@@ -1098,7 +1098,7 @@
     mask = _showAltStateMask;
   else
     mask = NSNoCellMask;
-
+  
   /*
    * Determine the image and the title that will be
    * displayed. If the NSContentsCellMask is set the
@@ -1106,7 +1106,7 @@
    * if highlighting is set (when a button is pushed it's
    * content is changed to the face of reversed state).
    */
-  if (mask & NSContentsCellMask)
+  if (mask & (NSContentsCellMask | NSChangeBackgroundCellMask))
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)

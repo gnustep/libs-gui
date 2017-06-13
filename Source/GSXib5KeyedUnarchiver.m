@@ -2456,7 +2456,7 @@ didStartElement: (NSString*)elementName
             }
           else if ([@"disclosure" isEqualToString: type])
             {
-              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate"];
+              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate-reversed"];
             }
         }
     }

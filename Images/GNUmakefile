@@ -41,6 +41,7 @@ Images_RESOURCE_FILES = \
  NSAddTemplate.tiff\
  NSActionTemplate.tiff\
  NSDropDownIndicatorTemplate.png\
+ NSDropDownIndicatorTemplate-reversed.png\
  NSFontPanelActionButton.tiff\
  NSFontPanelActionButtonPressed.tiff\
  NSPathTemplate.tiff\
