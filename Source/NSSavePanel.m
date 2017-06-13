@@ -1656,16 +1656,15 @@ createRowsForColumn: (NSInteger)column
           column: (NSInteger)column;
 @end 
 
-static int compareFilenames (id elem1, id elem2, void *context)
+static NSComparisonResult compareFilenames (id elem1, id elem2, void *context)
 {
   /* TODO - use IMP optimization here.  */
-  NSSavePanel *s = context;
   NSSavePanel *self = (NSSavePanel *)context;
 
-  return (int)[s->_delegate panel: self
-		compareFilename: elem1
-		with: elem2
-		caseSensitive: YES];
+  return [self->_delegate panel: self
+             compareFilename: elem1
+                        with: elem2
+               caseSensitive: YES];
 }
 
 

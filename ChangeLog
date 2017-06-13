@@ -1,3 +1,8 @@
+2017-06-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/externs.m: Added semicolons missing in last commit.
+	* Source/NSSavePanel.m: Fix return type of sorting function.
+
 2017-06-12 Ivan Vucica <ivan@vucica.net>
 
 	* Source/NSAttributedString.m,
