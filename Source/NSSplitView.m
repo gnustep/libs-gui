@@ -987,7 +987,7 @@ static NSNotificationCenter *nc = nil;
    * setDimpleImage:resetDividerThickness:YES below)
    */
   if (_dividerStyle == NSSplitViewDividerStyleThin)
-    return 2;
+    return 1;
   if (_dividerStyle == NSSplitViewDividerStyleThick)
     return 6;
   if (_dividerStyle == NSSplitViewDividerStylePaneSplitter)
