@@ -1,3 +1,9 @@
+2017-06-17 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m
+	Save resolution information if it is different from 72 dpi.
+
+
 2017-06-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/externs.m: Added semicolons missing in last commit.

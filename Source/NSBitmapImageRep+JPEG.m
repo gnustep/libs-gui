@@ -552,6 +552,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   int				sPP;
   int				width;
   int				height;
+  NSSize                        size;
   int				row_stride;
   int				quality = 90;
   NSNumber			*qualityNumber;
@@ -638,6 +639,20 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
     }
 
   jpeg_set_defaults (&cinfo);
+
+  // resolution/density
+  size = [self size];
+  if (width != (int)(size.width) || height != (int)(size.height))
+    {
+      unsigned x_density, y_density;
+
+      x_density = (unsigned)floorf(width * 72 / size.width + 0.5);
+      y_density = (unsigned)floorf(height * 72 / size.height + 0.5);
+      cinfo.X_density = x_density;
+      cinfo.Y_density = y_density;
+      cinfo.density_unit = 1;
+    }
+
 
   // set quality
   // we expect a value between 0..1, 0 being lowest, 1 highest quality
