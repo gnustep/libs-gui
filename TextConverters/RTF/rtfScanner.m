@@ -118,7 +118,7 @@ int lexStreamPosition (RTFscannerCtxt *lctxt)
   return lctxt->streamPosition - lctxt->pushbackCount;
 }
 
-char *my_strdup (const char *str)
+char *gnustep_my_strdup (const char *str)
 {
   char *copy = str? malloc (strlen (str) + 1): 0;
   return !copy? 0: strcpy(copy, str);
@@ -306,7 +306,7 @@ GSLexError readCommand (RTFscannerCtxt *lctxt,
   if (!(foundToken = findStringFromKeywordArray(cmdNameBf, RTFcommands, 
 						CArraySize(RTFcommands))))
     {
-      if (!(lvalp->cmd.name = my_strdup(cmdNameBf))) 
+      if (!(lvalp->cmd.name = gnustep_my_strdup(cmdNameBf))) 
 	{
 	  return LEXoutOfMemory;
 	}
