@@ -1652,14 +1652,24 @@ GSOppositeEdge(NSRectEdge edge)
 
       [docView setPostsFrameChangedNotifications: NO];
       [docView setPostsBoundsChangedNotifications: NO];
-      _hLineScroll = 10;
-      _hPageScroll = 10;
-      _vLineScroll = 10;
-      _vPageScroll = 10;
+      _hLineScroll = 10; // Cocoa default...
+      _hPageScroll = 10; // Cocoa default...
+      _vLineScroll = 10; // Cocoa default...
+      _vPageScroll = 10; // Cocoa default...
       _scrollsDynamically = YES;
       /* _autohidesScroller, _rulersVisible, _hasHorizRuler and _hasVertRuler 
          implicitly set to NO */
 
+      // XIB 5 keys...
+      if ([aDecoder containsValueForKey: @"horizontalLineScroll"])
+        _hLineScroll = [aDecoder decodeIntegerForKey: @"horizontalLineScroll"];
+      if ([aDecoder containsValueForKey: @"horizontalPageScroll"])
+        _hPageScroll = [aDecoder decodeIntegerForKey: @"horizontalPageScroll"];
+      if ([aDecoder containsValueForKey: @"verticalLineScroll"])
+        _vLineScroll = [aDecoder decodeIntegerForKey: @"verticalLineScroll"];
+      if ([aDecoder containsValueForKey: @"verticalPageScroll"])
+        _vPageScroll = [aDecoder decodeIntegerForKey: @"verticalPageScroll"];
+      
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
           int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
