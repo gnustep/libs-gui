@@ -1761,7 +1761,7 @@ didStartElement: (NSString*)elementName
 #pragma mark - NSScrollView/NSScroller...
 - (id) decodeScrollerFlagsForElement: (GSXib5Element*)element
 {
-  NSUInteger     mask           = (NSScrollerArrowsDefaultSetting << 29) | (NSControlSizeRegular << 16); // Default...
+  NSUInteger     mask           = (NSAllScrollerParts << 27); // Default...
   NSDictionary  *attributes     = [element attributes];
   NSString      *arrowsPosition = [attributes objectForKey: @"arrowsPosition"];
   NSString      *controlTint    = [attributes objectForKey: @"controlTint"];
@@ -1855,9 +1855,6 @@ didStartElement: (NSString*)elementName
   // autohidesScrollers - if not present then disable...
   if ([attributes objectForKey: @"autohidesScrollers"])
     mask |= ([[attributes objectForKey: @"autohidesScrollers"] boolValue] ? (1 << 9) : 0);
-  
-  // HACK: GNUstep currently has an issue with enabling scrollers when not hidden from XIB???
-  mask |= (1 << 9);
 
   // Return value...
   return [NSNumber numberWithUnsignedInt: mask];
