@@ -337,12 +337,14 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                    @"resources"                     : @"NSMutableArray",
                                                    @"segments"                      : @"NSMutableArray",
                                                    @"objectValues"                  : @"NSMutableArray",
+                                                   @"prototypeCellViews"            : @"NSMutableArray",
                                                    @"segment"                       : @"NSSegmentItem",
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
                                                    //@"outlet"                        : @"IBOutletConnection5",
                                                    //@"action"                        : @"IBActionConnection5",
-                                                   @"window"                        : @"NSWindowTemplate5" };
+                                                   @"window"                        : @"NSWindowTemplate5",
+                                                   @"tableCellView"                 : @"NSView" };
             RETAIN(XmltagToObjectClassCrossReference);
 
             XmltagsNotStacked = @[ @"document" ];
@@ -425,7 +427,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 @"NSvFlags", @"NSBGColor",
                                 @"NSSize", //@"IBIsSystemFont",
                                 //@"NSHeaderClipView",
-                                @"NSHScroller", @"NSVScroller", @"NSsFlags",
+                                @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
                                 @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
                                 @"NSSupport", @"NSName",
                                 @"NSMenuItem",
@@ -495,6 +497,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"NSTVFlags"                  : @"decodeTextViewFlagsForElement:",
                                             @"NSMatrixFlags"              : @"decodeMatrixFlagsForElement:",
                                             @"NSsFlags"                   : @"decodeScrollClassFlagsForElement:",
+                                            @"NSsFlags2"                  : @"decodeScrollerFlags2ForElement:",
                                             @"NSHeaderClipView"           : @"decodeScrollViewHeaderClipViewForElement:",
                                             @"NSBGColor"                  : @"decodeBackgroundColorForElement:",
                                             @"NSBrFlags"                  : @"decodeBrowserFlagsForElement:",
@@ -904,11 +907,10 @@ didStartElement: (NSString*)elementName
 {
   NSArray *subviews = [self decodeObjectForKey: @"subviews"];
   
-  if ([subviews count] == 0)
-    NSWarnMLog(@"no clipview document view for element: %@", element);
-  else
+  if ([subviews count])
     return [subviews objectAtIndex: 0];
   
+  NSWarnMLog(@"no clipview document view for element: %@", element);
   return nil;
 }
 
@@ -1607,9 +1609,14 @@ didStartElement: (NSString*)elementName
 {
   unsigned int flags = 0;
   
+  // horizontallyResizable...
   if ([[element attributeForKey: @"horizontallyResizable"] boolValue])
     flags |= 0x01;
-  if ([[element attributeForKey: @"verticallyResizable"] boolValue])
+  
+  // verticallyResizable...
+  if ([element attributeForKey: @"verticallyResizable"] == nil)
+    flags |= 0x02;
+  else if ([[element attributeForKey: @"verticallyResizable"] boolValue])
     flags |= 0x02;
   
   return [NSNumber numberWithUnsignedInt: flags];
@@ -1754,52 +1761,55 @@ didStartElement: (NSString*)elementName
 #pragma mark - NSScrollView/NSScroller...
 - (id) decodeScrollerFlagsForElement: (GSXib5Element*)element
 {
-  NSUInteger    mask                  = NSBezelBorder; // Default...
-  NSDictionary *attributes            = [element attributes];
-  NSString     *borderType            = [attributes objectForKey: @"borderType"];
-  NSString     *hasHorizontalScroller = [attributes objectForKey: @"hasHorizontalScroller"];
-  NSString     *hasVerticalScroller   = [attributes objectForKey: @"hasVerticalScroller"];
-  NSString     *autohidesScrollers    = [attributes objectForKey: @"autohidesScrollers"];
-  
-  // borderType - do this one first to avoid or'ing...
-  if (borderType == nil)
-    {
-      mask = NSBezelBorder;
-    }
-  else if ([@"none" isEqualToString: borderType])
-    {
-      mask = NSNoBorder;
-    }
-  else if ([@"line" isEqualToString: borderType])
-    {
-      mask = NSLineBorder;
-    }
-  else if ([@"groove" isEqualToString: borderType])
-    {
-      mask = NSGrooveBorder;
-    }
-  else if (borderType)
-    {
-      NSWarnMLog(@"unknown border type: %@", borderType);
-    }
+  NSUInteger     mask           = (NSScrollerArrowsDefaultSetting << 29) | (NSControlSizeRegular << 16); // Default...
+  NSDictionary  *attributes     = [element attributes];
+  NSString      *arrowsPosition = [attributes objectForKey: @"arrowsPosition"];
+  NSString      *controlTint    = [attributes objectForKey: @"controlTint"];
 
-  if (hasHorizontalScroller)
-    mask |= ([hasHorizontalScroller boolValue] ? (1 << 4) : 0);
-  else // otherwise  the default is 'has'...
-    mask |= (1 << 4);
+  // Decode arrows position...
+  if (arrowsPosition == nil)
+    mask |= (NSScrollerArrowsDefaultSetting << 29);
+  else if ([@"none" isEqualToString: arrowsPosition])
+    mask |= (NSScrollerArrowsNone << 29);
+  else if ([@"default" isEqualToString: arrowsPosition])
+    mask |= (NSScrollerArrowsDefaultSetting << 29);
+  else
+    NSWarnMLog(@"unknown scroller arrows position: %@", arrowsPosition);
   
-  if (hasVerticalScroller)
-    mask |= ([hasVerticalScroller boolValue] ? (1 << 5) : 0);
-  else // otherwise the default is 'has'...
-    mask |= (1 << 5);
-  
-  if (autohidesScrollers)
-    mask |= ([autohidesScrollers boolValue] ? (1 << 9) : 0);
-  else // otherwise the default is 'has'...
-    mask |= (1 << 9);
+  // Decode control tint...
+  if (controlTint == nil)
+    mask |= NSDefaultControlTint << 16;
+  else if ([@"blue" isEqualToString: controlTint])
+    mask |= NSBlueControlTint << 16;
+  else if ([@"graphite" isEqualToString: controlTint])
+    mask |= NSGraphiteControlTint << 16;
+  else if ([@"clear" isEqualToString: controlTint])
+    mask |= NSClearControlTint << 16;
+  else
+    NSWarnMLog(@"unknown control tint: %@", controlTint);
   
   // Return value...
   return [NSNumber numberWithUnsignedInt: mask];
+}
+
+- (id) decodeScrollerFlags2ForElement: (GSXib5Element*)element
+{
+  NSUInteger     mask         = 0;
+  NSDictionary  *attributes   = [element attributes];
+  NSString      *controlSize  = [attributes objectForKey: @"controlSize"];
+  
+  if (controlSize == nil)
+    mask |= NSControlSizeRegular << 26;
+  else if ([@"small" isEqualToString: controlSize])
+    mask |= NSControlSizeSmall << 26;
+  else if ([@"mini" isEqualToString: controlSize])
+    mask |= NSControlSizeMini << 26;
+  else if ([@"regular" isEqualToString: controlSize])
+    mask |= NSControlSizeRegular << 26;
+  else
+    NSWarnMLog(@"unknown scroller control size: %@", controlSize);
+
+  return [NSNumber numberWithUnsignedInteger: mask];
 }
 
 - (id) decodeScrollViewFlagsForElement: (GSXib5Element*)element
@@ -1825,7 +1835,7 @@ didStartElement: (NSString*)elementName
     {
       mask = NSGrooveBorder;
     }
-  else if (borderType)
+  else
     {
       NSWarnMLog(@"unknown border type: %@", borderType);
     }
@@ -1842,12 +1852,13 @@ didStartElement: (NSString*)elementName
   else
     mask |= ([[attributes objectForKey: @"hasHorizontalScroller"] boolValue] ? (1 << 5) : 0);
   
-  // autohidesScrollers
-  if ([attributes objectForKey: @"autohidesScrollers"] == nil)
-    mask |= (1 << 9);
-  else
+  // autohidesScrollers - if not present then disable...
+  if ([attributes objectForKey: @"autohidesScrollers"])
     mask |= ([[attributes objectForKey: @"autohidesScrollers"] boolValue] ? (1 << 9) : 0);
   
+  // HACK: GNUstep currently has an issue with enabling scrollers when not hidden from XIB???
+  mask |= (1 << 9);
+
   // Return value...
   return [NSNumber numberWithUnsignedInt: mask];
 }
@@ -2807,6 +2818,7 @@ didStartElement: (NSString*)elementName
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
 {
+  // Try decoding the object using super first...
   id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
 
   // Create an ordered object for this element...
@@ -2829,7 +2841,7 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
-  
+
   return object;
 }
 
