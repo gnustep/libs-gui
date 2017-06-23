@@ -269,7 +269,7 @@ static CGFloat scrollerWidth;
       [self addSubview: aView];
 
       // Testplant-MAL-01092017: XIB 5 support...
-      if (_headerClipView && ([[self subviews] count] == 1))
+      if (_headerClipView && ([_headerClipView superview] == nil))
         [self addSubview: _headerClipView];
 
       // This must be done after adding it as a subview,
@@ -402,7 +402,11 @@ static CGFloat scrollerWidth;
  */
 - (void) setAutohidesScrollers: (BOOL)flag
 {
-  _autohidesScrollers = flag;
+  if (_autohidesScrollers != flag)
+    {
+      _autohidesScrollers = flag;
+      // Hide scrollers that have no scrolling position...
+    }
 }
 
 - (NSScrollElasticity)horizontalScrollElasticity
@@ -1702,12 +1706,18 @@ GSOppositeEdge(NSRectEdge edge)
         {
           [self setHorizontalScroller: hScroller];
           [hScroller setHidden: NO];
+          // Force the scroller to get added as a subview...
+          [self setHasHorizontalScroller: NO];
+          [self setHasHorizontalScroller: YES];
         }
 
       if (vScroller != nil && _hasVertScroller)
         {
           [self setVerticalScroller: vScroller];
           [vScroller setHidden: NO];
+          // Force the scroller to get added as a subview...
+          [self setHasVerticalScroller: NO];
+          [self setHasVerticalScroller: YES];
         }
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
