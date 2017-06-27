@@ -339,6 +339,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                    @"objectValues"                  : @"NSMutableArray",
                                                    @"prototypeCellViews"            : @"NSMutableArray",
                                                    @"segment"                       : @"NSSegmentItem",
+                                                   @"customCell"                    : @"NSCell",
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
                                                    //@"outlet"                        : @"IBOutletConnection5",
