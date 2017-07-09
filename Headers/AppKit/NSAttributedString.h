@@ -1,6 +1,6 @@
 /*  -*-objc-*-
    NSAttributedString.h
-P
+
    Categories which add capabilities to NSAttributedString 
 
    Copyright (C) 1999 Free Software Foundation, Inc.
