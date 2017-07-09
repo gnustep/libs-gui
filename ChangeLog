@@ -1,8 +1,11 @@
+2017-07-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* .gitignore: Add a .gitignore file.
+
 2017-06-17 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m
 	Save resolution information if it is different from 72 dpi.
-
 
 2017-06-13 Fred Kiefer <FredKiefer@gmx.de>
 
