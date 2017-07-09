@@ -157,15 +157,16 @@ enum {
                         | NSLeftMouseDraggedMask | NSMouseMovedMask
                         | NSRightMouseUpMask | NSOtherMouseUpMask)
 };
+typedef unsigned long long NSEventMask;
 
 /*
  * Convert an NSEvent Type to it's respective Event Mask
  */
 // FIXME: Should we use the inline trick from NSGeometry.h here? 
-static inline NSUInteger
+static inline NSEventMask
 NSEventMaskFromType(NSEventType type);
 
-static inline NSUInteger
+static inline NSEventMask
 NSEventMaskFromType(NSEventType type)
 {
   return (1 << type);
@@ -184,15 +185,18 @@ enum {
   NSHelpKeyMask = 64 << 16,
   NSFunctionKeyMask = 128 << 16
 };
+typedef NSUInteger NSEventModifierFlags;
+
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-typedef enum
+enum
 {
   NSUnknownPointingDevice,
   NSPenPointingDevice,
   NSCursorPointingDevice,
   NSEraserPointingDevice
-} NSPointingDeviceType;
+};
+typedef NSUInteger NSPointingDeviceType;
 
 enum
 {
@@ -200,6 +204,7 @@ enum
   NSPenLowerSideMask = 2,
   NSPenUpperSideMask = 4
 };
+typedef NSUInteger NSEventButtonMask;
 
 enum
 {
@@ -348,7 +353,7 @@ enum
 - (BOOL) isARepeat;
 - (unsigned short) keyCode;
 - (NSPoint) locationInWindow;
-- (NSUInteger) modifierFlags;
+- (NSEventModifierFlags) modifierFlags;
 - (float) pressure;
 - (short) subtype;
 - (NSTimeInterval) timestamp;
@@ -358,11 +363,15 @@ enum
 - (NSWindow *) window;
 - (NSInteger) windowNumber;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSEventMask) associatedEventsMask;
+#endif
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSInteger) absoluteX;
 - (NSInteger) absoluteY;
 - (NSInteger) absoluteZ;
-- (NSUInteger) buttonMask;
+- (NSEventButtonMask) buttonMask;
 - (NSUInteger) capabilityMask;
 - (NSUInteger) deviceID;
 - (BOOL) isEnteringProximity;
@@ -380,6 +389,22 @@ enum
 - (NSUInteger) vendorPointingDeviceType;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
++ (NSEvent*) eventWithEventRef: (const void *)eventRef;
+//+ (NSEvent*) eventWithCGEvent: (CGEventRef)cgEvent;
+- (const void *) eventRef;
+//- (CGEventRef) CGEvent;
++ (void) setMouseCoalescingEnabled: (BOOL)flag;
++ (BOOL) isMouseCoalescingEnabled;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
++ (NSEventModifierFlags) modifierFlags;
++ (NSTimeInterval) keyRepeatDelay;
++ (NSTimeInterval) keyRepeatInterval;
++ (NSUInteger) pressedMouseButtons;
++ (NSTimeInterval) doubleClickInterval;
+#endif
 @end
 
 enum {

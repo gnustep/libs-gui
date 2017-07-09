@@ -937,7 +937,7 @@ static const char *eventTypes[] = {
 /**
  * Returns the modifier flag bits associated with the event.
  */
-- (NSUInteger) modifierFlags
+- (NSEventModifierFlags) modifierFlags
 {
   return modifier_flags;
 }
@@ -1058,6 +1058,12 @@ static const char *eventTypes[] = {
   return window_num;
 }
 
+- (NSEventMask) associatedEventsMask
+{
+  // FIXME
+  return 0;
+}
+
 /*
  * Methods for tablet events
  */
@@ -1079,7 +1085,7 @@ static const char *eventTypes[] = {
   return 0;
 }
 
-- (NSUInteger) buttonMask
+- (NSEventButtonMask) buttonMask
 {
   // FIXME
   return 0;
@@ -1170,6 +1176,59 @@ static const char *eventTypes[] = {
 }
 
 - (NSUInteger) vendorPointingDeviceType
+{
+  // FIXME
+  return 0;
+}
+
++ (NSEvent*) eventWithEventRef: (const void *)eventRef
+{
+  // FIXME
+  return nil;
+}
+
+- (const void *) eventRef
+{
+  // FIXME
+  return NULL;
+}
+
++ (void) setMouseCoalescingEnabled: (BOOL)flag
+{
+  // FIXME
+}
+
++ (BOOL) isMouseCoalescingEnabled
+{
+  // FIXME
+  return YES;
+}
+
++ (NSEventModifierFlags) modifierFlags
+{
+  // FIXME
+  return 0;
+}
+
++ (NSTimeInterval) keyRepeatDelay
+{
+  // FIXME
+  return 0;
+}
+
++ (NSTimeInterval) keyRepeatInterval
+{
+  // FIXME
+  return 0;
+}
+
++ (NSUInteger) pressedMouseButtons
+{
+  // FIXME
+  return 0;
+}
+
++ (NSTimeInterval) doubleClickInterval
 {
   // FIXME
   return 0;
