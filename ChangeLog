@@ -1,5 +1,10 @@
 2017-07-09 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSEvent.h
+	* Source/NSEvent.m: Add some newer Cocoa methods with dummy implementations.
+
+2017-07-09 Fred Kiefer <FredKiefer@gmx.de>
+
 	* .gitignore: Add a .gitignore file.
 
 2017-06-17 Riccardo Mottola <rm@gnu.org>
