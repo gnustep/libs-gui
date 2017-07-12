@@ -177,6 +177,15 @@ enum {
 
 @end
 
+typedef struct CGImage *CGImageRef;
+@interface NSImageRep (GSQuartz)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (CGImageRef)CGImageForProposedRect: (NSRect *)proposedDestRect 
+                         context: (NSGraphicsContext *)referenceContext 
+                           hints: (NSDictionary *)hints;
+#endif
+@end
+
 APPKIT_EXPORT NSString *NSImageRepRegistryChangedNotification;
 
 #endif // _GNUstep_H_NSImageRep
