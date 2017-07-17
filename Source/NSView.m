@@ -5086,6 +5086,40 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 }
 
+- (NSViewLayerContentsPlacement) layerContentsPlacement
+{
+  // FIXME (when views have CALayer support)
+  return NSViewLayerContentsPlacementScaleAxesIndependently;
+}
+
+- (void) setLayerContentsPlacement: (NSViewLayerContentsPlacement)placement
+{
+  // FIXME (when views have CALayer support)
+  static BOOL logged = NO;
+  if (!logged)
+    {
+      NSLog(@"warning: stub no-op implementation of -[NSView setLayerContentsPlacement:]");
+      logged = YES;
+    }
+}
+
+- (NSViewLayerContentsRedrawPolicy) layerContentsRedrawPolicy
+{
+  // FIXME (when views have CALayer support)
+  return NSViewLayerContentsRedrawNever;
+}
+
+- (void) setLayerContentsRedrawPolicy: (NSViewLayerContentsRedrawPolicy) pol
+{
+  // FIXME (when views have CALayer support)
+  static BOOL logged = NO;
+  if (!logged)
+    {
+      NSLog(@"warning: stub no-op implementation of -[NSView setLayerContentsRedrawPolicy:]");
+      logged = YES;
+    }
+}
+
 @end
 
 @implementation NSView(KeyViewLoop)
