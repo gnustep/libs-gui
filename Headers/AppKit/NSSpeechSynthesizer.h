@@ -151,8 +151,13 @@ extern NSString *NSSpeechDictionaryEntryPhonemes;
 - (NSString *) phonemesFromText: (NSString *)text;
 @end
 
-// Speech synthesizer delegate informal protocol...
+@protocol NSSpeechSynthesizerDelegate <NSObject>
+#if GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSSpeechSynthesizerDelegate)
+#endif
 - (void)speechSynthesizer: (NSSpeechSynthesizer *)sender
  didEncounterErrorAtIndex: (NSUInteger)index 
                  ofString: (NSString *)string 
