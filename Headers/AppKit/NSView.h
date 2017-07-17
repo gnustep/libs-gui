@@ -72,6 +72,31 @@ enum _NSBorderType {
 };
 typedef NSUInteger NSBorderType;
 
+typedef NSInteger NSViewLayerContentsRedrawPolicy;
+enum {
+  NSViewLayerContentsRedrawNever = 0,
+  NSViewLayerContentsRedrawOnSetNeedsDisplay = 1,
+  NSViewLayerContentsRedrawDuringViewResize = 2,
+  NSViewLayerContentsRedrawBeforeViewResize = 3,
+  NSViewLayerContentsRedrawCrossfade = 4
+};
+
+typedef NSInteger NSViewLayerContentsPlacement;
+enum {
+  NSViewLayerContentsPlacementScaleAxesIndependently = 0,
+  NSViewLayerContentsPlacementScaleProportionallyToFit = 1,
+  NSViewLayerContentsPlacementScaleProportionallyToFill = 2,
+  NSViewLayerContentsPlacementCenter = 3,
+  NSViewLayerContentsPlacementTop = 4,
+  NSViewLayerContentsPlacementTopRight = 5,
+  NSViewLayerContentsPlacementRight = 6,
+  NSViewLayerContentsPlacementBottomRight = 7,
+  NSViewLayerContentsPlacementBottom = 8,
+  NSViewLayerContentsPlacementBottomLeft = 9,
+  NSViewLayerContentsPlacementLeft = 10,
+  NSViewLayerContentsPlacementTopLeft = 11
+};
+
 /*
  * autoresize constants which NSView uses in
  * determining the parts of a view which are
@@ -588,6 +613,19 @@ PACKAGE_SCOPE
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSAttributedString *)pageFooter;
 - (NSAttributedString *)pageHeader;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+#if GS_HAS_DECLARED_PROPERTIES
+@property (nonatomic) NSViewLayerContentsPlacement layerContentsPlacement;
+@property (nonatomic) NSViewLayerContentsRedrawPolicy layerContentsRedrawPolicy;
+#else
+- (NSViewLayerContentsPlacement) layerContentsPlacement;
+- (void) setLayerContentsPlacement: (NSViewLayerContentsPlacement)placement;
+
+- (NSViewLayerContentsRedrawPolicy) layerContentsRedrawPolicy;
+- (void) setLayerContentsRedrawPolicy: (NSViewLayerContentsRedrawPolicy) pol;
+#endif
 #endif
 
 @end
