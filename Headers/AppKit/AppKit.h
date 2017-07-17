@@ -193,6 +193,7 @@
 #import <AppKit/NSTreeNode.h>
 #import <AppKit/NSUserDefaultsController.h>
 #import <AppKit/NSUserInterfaceItemIdentification.h>
+#import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>
 #import <AppKit/NSWindowController.h>
