@@ -175,6 +175,26 @@ APPKIT_EXPORT NSString *NSRulerPboard;
  */
 APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+APPKIT_EXPORT NSString *const NSPasteboardTypeString;
+APPKIT_EXPORT NSString *const NSPasteboardTypePDF;
+APPKIT_EXPORT NSString *const NSPasteboardTypeTIFF;
+APPKIT_EXPORT NSString *const NSPasteboardTypePNG;
+APPKIT_EXPORT NSString *const NSPasteboardTypeRTF;
+APPKIT_EXPORT NSString *const NSPasteboardTypeRTFD;
+APPKIT_EXPORT NSString *const NSPasteboardTypeHTML;
+APPKIT_EXPORT NSString *const NSPasteboardTypeTabularText;
+APPKIT_EXPORT NSString *const NSPasteboardTypeFont;
+APPKIT_EXPORT NSString *const NSPasteboardTypeRuler;
+APPKIT_EXPORT NSString *const NSPasteboardTypeColor;
+APPKIT_EXPORT NSString *const NSPasteboardTypeSound;
+APPKIT_EXPORT NSString *const NSPasteboardTypeMultipleTextSelection;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+APPKIT_EXPORT NSString *const NSPasteboardTypeTextFinderOptions;
+#endif
+#endif
+
 
 @interface NSPasteboard : NSObject
 {
