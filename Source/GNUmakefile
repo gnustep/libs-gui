@@ -44,6 +44,7 @@ libgnustep-gui_C_FILES =
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
+NSAccessibility.m \
 NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
@@ -282,6 +283,8 @@ APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
 AppKitExceptions.h \
+NSAccessibility.h \
+NSAccessibilityConstants.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
