@@ -1755,6 +1755,55 @@ GSOppositeEdge(NSRectEdge edge)
   return self;
 }
 
+- (BOOL)automaticallyAdjustsContentInsets
+{
+  // FIXME
+  return NO;
+}
+
+- (void)setAutomaticallyAdjustsContentInsets: (BOOL)adjusts
+{
+  static BOOL logged = NO;
+  if (!logged)
+    {
+      NSLog(@"warning: stub no-op implementation of"
+            "-[NSScrollView setAutomaticallyAdjustsContentInsets:]");
+      logged = YES;
+    }
+}
+
+- (NSEdgeInsets)contentInsets
+{
+  // FIXME
+  return NSEdgeInsetsZero;
+}
+- (void)setContentInsets: (NSEdgeInsets)edgeInsets
+{
+  static BOOL logged = NO;
+  if (!logged)
+    {
+      NSLog(@"warning: stub no-op implementation of"
+            "-[NSScrollView setContentInsets:]");
+      logged = YES;
+    }
+}
+
+- (NSEdgeInsets)scrollerInsets
+{
+  // FIXME
+  return NSEdgeInsetsZero;
+}
+- (void)setScrollerInsets: (NSEdgeInsets)insets
+{
+  static BOOL logged = NO;
+  if (!logged)
+    {
+      NSLog(@"warning: stub no-op implementation of"
+            "-[NSScrollView setScrollerInsets:]");
+      logged = YES;
+    }
+}
+
 @end
 
 @implementation NSScrollView (GSPrivate)
