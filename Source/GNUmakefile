@@ -430,6 +430,7 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
 NSSpellProtocol.h \
+NSUserInterfaceItemIdentification.h \
 NSUserInterfaceValidation.h \
 DPSOperators.h \
 PSOperators.h 
