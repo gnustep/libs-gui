@@ -5120,6 +5120,18 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 }
 
+- (NSUserInterfaceLayoutDirection) userInterfaceLayoutDirection
+{
+  // FIXME
+  return NSUserInterfaceLayoutDirectionLeftToRight;
+}
+
+- (void) setUserInterfaceLayoutDirection: (NSUserInterfaceLayoutDirection)dir
+{
+  // FIXME: implement this
+  return;
+}
+
 @end
 
 @implementation NSView(KeyViewLoop)
