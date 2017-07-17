@@ -416,6 +416,7 @@ NSTrackingArea.h \
 NSTreeController.h \
 NSTreeNode.h \
 NSUserDefaultsController.h \
+NSUserInterfaceLayout.h \
 NSView.h \
 NSViewController.h \
 NSWindow.h \
