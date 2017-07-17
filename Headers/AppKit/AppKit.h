@@ -181,6 +181,7 @@
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTabView.h>
 #import <AppKit/NSTabViewItem.h>
+#import <AppKit/NSTextAlternatives.h>
 #import <AppKit/NSTextAttachment.h>
 #import <AppKit/NSTextContainer.h>
 #import <AppKit/NSTextList.h>
