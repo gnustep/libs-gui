@@ -102,6 +102,7 @@
 #import <AppKit/NSPrintOperation.h>
 #import <AppKit/NSPrintPanel.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSRunningApplication.h>
 #import <AppKit/NSSavePanel.h>
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSScroller.h>

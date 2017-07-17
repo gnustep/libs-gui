@@ -145,6 +145,7 @@ NSProgressIndicator.m \
 NSResponder.m \
 NSRulerMarker.m \
 NSRulerView.m \
+NSRunningApplication.m \
 NSSavePanel.m \
 NSSearchField.m \
 NSSearchFieldCell.m \
@@ -368,6 +369,7 @@ NSProgressIndicator.h \
 NSResponder.h \
 NSRulerMarker.h \
 NSRulerView.h \
+NSRunningApplication.h \
 NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
