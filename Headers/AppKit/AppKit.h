@@ -198,6 +198,7 @@
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>
+#import <AppKit/NSVisualEffectView.h>
 #import <AppKit/NSWindowController.h>
 #endif
 

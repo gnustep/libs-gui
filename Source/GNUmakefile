@@ -199,6 +199,7 @@ NSTreeNode.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSViewController.m \
+NSVisualEffectView.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
@@ -423,6 +424,7 @@ NSUserDefaultsController.h \
 NSUserInterfaceLayout.h \
 NSView.h \
 NSViewController.h \
+NSVisualEffectView.h \
 NSWindow.h \
 NSWindowController.h \
 NSWorkspace.h \
