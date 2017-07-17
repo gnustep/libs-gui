@@ -107,6 +107,7 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSScrollView.h>
 #import <AppKit/NSSelection.h>
+#import <AppKit/NSSharingService.h>
 #import <AppKit/NSSlider.h>
 #import <AppKit/NSSliderCell.h>
 #import <AppKit/NSSpellChecker.h>
