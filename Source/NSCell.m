@@ -2848,6 +2848,18 @@ static NSColor *dtxtCol;
     }
   return self;
 }
+
+- (NSUserInterfaceLayoutDirection) userInterfaceLayoutDirection
+{
+  // FIXME
+  return NSUserInterfaceLayoutDirectionLeftToRight;
+}
+
+- (void) setUserInterfaceLayoutDirection: (NSUserInterfaceLayoutDirection)dir
+{
+  // FIXME: implement this
+  return;
+}
 @end
 
 @implementation NSCell (PrivateMethods)
