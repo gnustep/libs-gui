@@ -40,6 +40,7 @@
 {
   ASSIGN(_markerFormat, format); 
   _listOptions = mask;
+  _startingItemNumber = 1;
 
   return self;
 }
@@ -184,6 +185,16 @@
     {
     }
   return self;
+}
+
+- (NSInteger) startingItemNumber
+{
+  return _startingItemNumber;
+}
+
+- (void) setStartingItemNumber: (NSInteger)start
+{
+  _startingItemNumber = start;
 }
 
 @end
