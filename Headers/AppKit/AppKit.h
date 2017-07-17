@@ -44,6 +44,8 @@
 //
 #import <AppKit/NSGraphics.h>
 
+#import <AppKit/NSAccessibility.h>
+#import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSApplication.h>
