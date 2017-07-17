@@ -64,6 +64,12 @@ extern NSString *NSSpeechModePhoneme;
 extern NSString *NSSpeechModeNormal;
 extern NSString *NSSpeechModeLiteral;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+extern NSString *NSSpeechResetProperty;
+extern NSString *NSSpeechOutputToFileURLProperty;
+extern NSString *NSSpeechPitchBaseProperty;
+#endif
+
 // values for speech status...
 extern NSString *NSSpeechStatusOutputBusy;
 extern NSString *NSSpeechStatusOutputPaused;

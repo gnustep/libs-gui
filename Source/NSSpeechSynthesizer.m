@@ -58,6 +58,10 @@ NSString *NSSpeechModePhoneme = @"NSSpeechModePhoneme";
 NSString *NSSpeechModeNormal = @"NSSpeechModeNormal";
 NSString *NSSpeechModeLiteral = @"NSSpeechModeLiteral";
 
+NSString *NSSpeechResetProperty = @"NSSpeechResetProperty";
+NSString *NSSpeechOutputToFileURLProperty = @"NSSpeechOutputToFileURLProperty";
+NSString *NSSpeechPitchBaseProperty = @"NSSpeechPitchBaseProperty";
+
 // values for speech status...
 NSString *NSSpeechStatusOutputBusy = @"NSSpeechStatusOutputBusy";
 NSString *NSSpeechStatusOutputPaused = @"NSSpeechStatusOutputPaused";
