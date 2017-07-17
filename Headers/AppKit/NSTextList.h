@@ -42,6 +42,7 @@ enum {
 {
 	NSString *_markerFormat;
 	unsigned int _listOptions;
+	NSInteger _startingItemNumber;
 }
 
 - (id) initWithMarkerFormat: (NSString *)format 
@@ -49,6 +50,15 @@ enum {
 - (unsigned int) listOptions;
 - (NSString *) markerForItemNumber: (int)item;
 - (NSString *) markerFormat;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+#if GS_HAS_DECLARED_PROPERTIES
+@property NSInteger startingItemNumber;
+#else
+- (NSInteger) startingItemNumber;
+- (void) setStartingItemNumber: (NSInteger)start;
+#endif
+#endif
 
 @end
 
