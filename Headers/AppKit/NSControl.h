@@ -90,6 +90,10 @@
 - (void) takeIntegerValueFrom: (id)sender;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (NSSize) sizeThatFits: (NSSize)size;
+#endif
+
 - (void) setStringValue: (NSString *)aString;
 - (NSString *) stringValue;
 
