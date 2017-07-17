@@ -266,23 +266,50 @@ NSString *NSImageRepRegistryChangedNotification =
 @"NSImageRepRegistryChangedNotification";
 
 // Pasteboard Type Globals
-NSString *NSStringPboardType = @"NSStringPboardType";
-NSString *NSColorPboardType = @"NSColorPboardType";
+NSString *const NSPasteboardTypeString = @"NSStringPboardType";
+NSString *const NSStringPboardType = NSPasteboardTypeString;
+
+NSString *const NSPasteboardTypeColor = @"NSColorPboardType";
+NSString *const NSColorPboardType = NSPasteboardTypeColor;
+
+NSString *const NSPasteboardTypeFont = @"NSFontPboardType";
+NSString *const NSFontPboardType = NSPasteboardTypeFont;
+
+NSString *const NSPasteboardTypeRuler = @"NSRulerPboardType";
+NSString *const NSRulerPboardType = NSPasteboardTypeRuler;
+
+NSString *const NSPasteboardTypeTabularText = @"NSTabularTextPboardType";
+NSString *const NSTabularTextPboardType = NSPasteboardTypeTabularText;
+
+NSString *const NSPasteboardTypeRTF = @"NSRTFPboardType";
+NSString *const NSRTFPboardType = NSPasteboardTypeRTF;
+
+NSString *const NSPasteboardTypeRTFD = @"NSRTFDPboardType";
+NSString *const NSRTFDPboardType = NSPasteboardTypeRTFD;
+
+NSString *const NSPasteboardTypeTIFF = @"NSTIFFPboardType";
+NSString *const NSTIFFPboardType = NSPasteboardTypeTIFF;
+
+NSString *const NSPasteboardTypePDF = @"NSPDFPboardType";
+NSString *const NSPDFPboardType = NSPasteboardTypePDF;
+
+NSString *const NSPasteboardTypeHTML = @"NSHTMLPboardType";
+NSString *const NSHTMLPboardType = NSPasteboardTypeHTML;
+
+NSString *NSPasteboardTypePNG = @"NSPasteboardTypePNG";
+NSString *NSPasteboardTypeSound = @"NSPasteboardTypeSound";
+NSString *NSPasteboardTypeMultipleTextSelection =
+  @"NSPasteboardTypeMultipleTextSelection";
+NSString *NSPasteboardTypeTextFinderOptions =
+  @"NSPasteboardTypeTextFinderOptions";
+
 NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
 NSString *NSFilenamesPboardType = @"NSFilenamesPboardType";
-NSString *NSFontPboardType = @"NSFontPboardType";
-NSString *NSRulerPboardType = @"NSRulerPboardType";
 NSString *NSPostScriptPboardType = @"NSPostScriptPboardType";
-NSString *NSTabularTextPboardType = @"NSTabularTextPboardType";
-NSString *NSRTFPboardType = @"NSRTFPboardType";
-NSString *NSRTFDPboardType = @"NSRTFDPboardType";
-NSString *NSTIFFPboardType = @"NSTIFFPboardType";
 NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
 NSString *NSGeneralPboardType = @"NSGeneralPboardType";
-NSString *NSPDFPboardType = @"NSPDFPboardType";
 NSString *NSPICTPboardType = @"NSPICTPboardType";
 NSString *NSURLPboardType = @"NSURLPboardType";
-NSString *NSHTMLPboardType = @"NSHTMLPboardType";
 NSString *NSVCardPboardType = @"NSVCardPboardType";
 NSString *NSFilesPromisePboardType = @"NSFilesPromisePboardType";
 

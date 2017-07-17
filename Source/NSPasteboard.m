@@ -553,6 +553,15 @@
 #import "GNUstepGUI/GSServicesManager.h"
 #import "GNUstepGUI/GSPasteboardServer.h"
 
+/*
+ * FIXME
+ * We should learn to handle 
+ * NSPasteboardTypePNG
+ * NSPasteboardTypeSound
+ * NSPasteboardTypeMultipleTextSelection
+ * NSPasteboardTypeTextFinderOptions
+ */
+
 static NSString	*contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 
