@@ -164,6 +164,23 @@ typedef NSInteger NSScrollElasticity;
 - (void)setAllowsMagnification:(BOOL)m;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+#if GS_HAS_DECLARED_PROPERTIES
+@property BOOL automaticallyAdjustsContentInsets;
+@property NSEdgeInsets contentInsets;
+@property NSEdgeInsets scrollerInsets;
+#else
+- (BOOL)automaticallyAdjustsContentInsets;
+- (void)setAutomaticallyAdjustsContentInsets: (BOOL)adjusts;
+
+- (NSEdgeInsets)contentInsets;
+- (void)setContentInsets:(NSEdgeInsets)edgeInsets;
+
+- (NSEdgeInsets)scrollerInsets;
+- (void)setScrollerInsets:(NSEdgeInsets)insets;
+#endif
+#endif
+
 /* Updating display after scrolling */
 - (void)reflectScrolledClipView:(NSClipView*)aClipView;
 
