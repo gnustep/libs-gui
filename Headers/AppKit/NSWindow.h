@@ -103,6 +103,9 @@ enum {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
   NSFullScreenWindowMask = 16384,
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+  NSFullSizeContentViewWindowMask = 1 << 15,
+#endif
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
