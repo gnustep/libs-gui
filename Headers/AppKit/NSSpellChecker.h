@@ -44,6 +44,14 @@
 @class NSDictionary;
 @class NSMutableDictionary;
 
+typedef NSInteger NSCorrectionIndicatorType;
+enum
+{
+  NSCorrectionIndicatorTypeDefault = 0,
+  NSCorrectionIndicatorTypeReversion,
+  NSCorrectionIndicatorTypeGuesses
+};
+
 @interface NSSpellChecker : NSObject
 {
 @private
