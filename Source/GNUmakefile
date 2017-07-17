@@ -178,6 +178,7 @@ NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
 NSText.m \
+NSTextAlternatives.m \
 NSTextAttachment.m \
 NSTextBlock.m \
 NSTextContainer.m \
@@ -407,6 +408,7 @@ NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
 NSText.h \
+NSTextAlternatives.h \
 NSTextAttachment.h \
 NSTextContainer.h \
 NSTextField.h \
