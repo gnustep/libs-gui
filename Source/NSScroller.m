@@ -49,6 +49,9 @@
 
 #import "GNUstepGUI/GSTheme.h"
 
+NSString *NSPreferredScrollerStyleDidChangeNotification =
+  @"NSPreferredScrollerStyleDidChangeNotification";
+
 /**<p>TODO Description</p>
  */
 @implementation NSScroller
@@ -128,6 +131,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
       scrollerWidth = [[GSTheme theme] defaultScrollerWidth];  
     }
   return scrollerWidth;
+}
+
++ (NSScrollerStyle)preferredScrollerStyle
+{
+  // FIXME: a theme should define this?
+  return NSScrollerStyleLegacy;
 }
 
 - (BOOL) isFlipped
