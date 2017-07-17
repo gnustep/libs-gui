@@ -1892,7 +1892,10 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 - (void) _setSelectedItem: (NSInteger)index
 {
   _selectedItem = index;
-  [self setStringValue: [self _stringValueAtIndex: index]];
+  if (index == -1)
+    [self setStringValue: nil];
+  else
+    [self setStringValue: [self _stringValueAtIndex: index]];
 }
 
 - (void) _loadButtonCell
