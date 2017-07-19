@@ -3213,7 +3213,9 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
   glyph_run_t *run;
   int i;
   unsigned int gpos, cpos;
-  NSSize advances[length];
+  // TESTPLANT-MAL-07312017: Would be nice to optimize this...
+  // UGLY - but we've been seeing stack overwrite crashes due to this...
+  NSSize *advances = malloc(sizeof(NSSize)*length);
 
   run = [self run_for_character_index: index : &gpos : &cpos];
   if (!run)
@@ -3235,11 +3237,12 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
         }
     }
 
-  [self insertGlyphs: glyph_list
-    withAdvancements: advances
-	      length: length
-	forStartingGlyphAtIndex: glyph
+  [self insertGlyphs: glyph_list withAdvancements: advances
+              length: length forStartingGlyphAtIndex: glyph
       characterIndex: index];
+  
+  // Cleanup...
+  free(advances);
 }
 
 - (NSUInteger) layoutOptions
