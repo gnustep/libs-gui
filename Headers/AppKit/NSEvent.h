@@ -434,6 +434,7 @@ typedef NSUInteger NSEventSwipeTrackingOptions;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSEventPhase) phase;
 - (NSEventPhase) momentumPhase;
 #endif
 @end
