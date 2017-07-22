@@ -1234,4 +1234,10 @@ static const char *eventTypes[] = {
   return 0;
 }
 
+- (NSEventPhase) momentumPhase
+{
+  // FIXME
+  return NSEventPhaseNone;
+}
+
 @end

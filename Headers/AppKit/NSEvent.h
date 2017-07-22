@@ -229,6 +229,33 @@ enum
 
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+enum {
+  NSEventPhaseNone = 0,
+  NSEventPhaseBegan = 1,
+  NSEventPhaseStationary = 2,
+  NSEventPhaseChanged = 4,
+  NSEventPhaseEnded = 8,
+  NSEventPhaseCancelled = 16,
+  NSEventPhaseMayBegin = 32
+};
+typedef NSUInteger NSEventPhase;
+
+enum {
+  NSEventGestureAxisNone = 0,
+  NSEventGestureAxisHorizontal,
+  NSEventGestureAxisVertical
+};
+typedef NSInteger NSEventGestureAxis;
+
+enum {
+  NSEventSwipeTrackingLockDirection = 1,
+  NSEventSwipeTrackingClampGestureAmount = 2
+};
+typedef NSUInteger NSEventSwipeTrackingOptions;
+
+#endif
+
 @interface NSEvent : NSObject <NSCoding, NSCopying>
 {
   NSEventType	event_type;
@@ -404,6 +431,10 @@ enum
 + (NSTimeInterval) keyRepeatInterval;
 + (NSUInteger) pressedMouseButtons;
 + (NSTimeInterval) doubleClickInterval;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSEventPhase) momentumPhase;
 #endif
 @end
 

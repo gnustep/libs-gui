@@ -1,3 +1,9 @@
+2017-07-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSEvent.h
+	* Source/NSEvent.m: Add some newer Cocoa enums and one method with
+	dummy implementation.
+
 2017-07-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSEvent.h
