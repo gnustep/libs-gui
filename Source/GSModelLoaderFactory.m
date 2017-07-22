@@ -161,7 +161,7 @@ static NSMutableDictionary *_modelMap = nil;
       NSEnumerator *oen = [sortedArray objectEnumerator];
       Class cls = nil;
 
-      while ((cls = [oen nextObject]) != nil && result == NO)
+      while ((cls = [oen nextObject]) != nil && result == nil)
 	{
 	  NSString *path = [modelPath stringByAppendingPathExtension: 
 					(NSString *)[cls type]];
