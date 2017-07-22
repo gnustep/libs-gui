@@ -196,6 +196,14 @@ enum
 };
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+typedef NSInteger NSWritingDirectionFormatType;
+enum {
+  NSWritingDirectionEmbedding = (0 << 1),
+  NSWritingDirectionOverride = (1 << 1)
+};
+#endif
+
 @interface NSAttributedString (AppKit)
 - (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
