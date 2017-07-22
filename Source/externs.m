@@ -566,6 +566,8 @@ NSString *NSToolTipAttributeName = @"NSToolTip";
 NSString *NSUnderlineColorAttributeName = @"NSUnderlineColor";
 NSString *NSUnderlineStyleAttributeName = @"NSUnderline";
 
+NSString *NSTextAlternativesAttributeName = @"NSTextAlternatives";
+
 NSString *NSCharacterShapeAttributeName = @"NSCharacterShape";
 NSString *NSGlyphInfoAttributeName = @"NSGlyphInfo";
 

@@ -78,6 +78,10 @@ APPKIT_EXPORT NSString *NSToolTipAttributeName;
 APPKIT_EXPORT NSString *NSUnderlineColorAttributeName;
 APPKIT_EXPORT NSString *NSUnderlineStyleAttributeName;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSTextAlternativesAttributeName;
+#endif
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSGlyphInfoAttributeName;
 #endif
