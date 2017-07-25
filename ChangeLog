@@ -1,3 +1,52 @@
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSUserInterfaceLayout.h
+	* Source/GNUmakefile:	
+	Define interface layout enums to be used by AppKit. This improves
+	compatibility with the reference platform.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSUserInterfaceItemIdentification.h
+	* Source/GNUmakefile:	
+	Introduce the NSUserInterfaceItemIdentification protocol, which required
+	an user interface class provide an unique identifier.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSSharingService.h
+	* Source/GNUmakefile
+	* Source/NSSharingService.m:	
+	Define the NSSharingService class as an unimplemented stub for
+	compatibility purposes.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSView.h
+	* Source/NSView.m:	
+	Define layer-related properties in NSView for compatibility purposes,
+	and keep their getters and setters as stubs, since they will not have
+	any effect before NSView-CALayer integration is implemented.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSPasteboard.h
+	* Source/NSPasteboard.m
+	* Source/externs.m:	
+	Define new constants for NSPasteboard type identifiers. Most of them are
+	aliases to the old "Pboard"-style types, although some new ones are not
+	fully implemented.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSSpeechSynthesizer.h:	
+	Modern applications require NSSpeechSynthesizerDelegate to be an actual
+	@protocol in order to conform to it. Here, we allow it to be one if we
+	are on an Objective-C runtime that supports it.
+
 2017-07-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSModelLoaderFactory.m (-supportedModelFileAtPath:): Fix
