@@ -50,6 +50,8 @@
 @class NSBitmapImageRep;
 @class NSGradient;
 
+typedef struct CGContext *CGContextRef;
+
 /*
  * Backing Store Types
  */
@@ -200,6 +202,12 @@ typedef enum _GSColorSpace
 + (NSGraphicsContext *) graphicsContextWithBitmapImageRep: (NSBitmapImageRep *)bitmap;
 + (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
                                                 flipped: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (CGContextRef) CGContext;
++ (NSGraphicsContext *) graphicsContextWithCGContext: (CGContextRef)ctx
+                                             flipped: (BOOL)flipped;
 #endif
 
 - (NSDictionary *) attributes;
@@ -530,7 +538,6 @@ transform between current user space and image space for this image.</desc>
             fromPoint: (NSPoint)startPoint
               toPoint: (NSPoint)endPoint
               options: (NSUInteger)options;
-
 @end
 
 /* NSGraphicContext constants */
