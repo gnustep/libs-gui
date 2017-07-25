@@ -58,6 +58,9 @@ enum _NSWritingDirection {
     NSWritingDirectionLeftToRight,
     NSWritingDirectionRightToLeft
 };
+enum {
+  NSWritingDirectionNatural = NSWritingDirectionNaturalDirection
+};
 typedef NSInteger NSWritingDirection;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)

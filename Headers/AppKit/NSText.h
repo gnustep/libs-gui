@@ -78,6 +78,11 @@ typedef enum _NSTextAlignment {
 } NSTextAlignment;
 
 enum {
+  NSTextWritingDirectionEmbedding = (0 << 1),
+  NSTextWritingDirectionOverride = (1 << 1)
+};
+
+enum {
   NSIllegalTextMovement	= 0,
   NSReturnTextMovement	= 0x10,
   NSTabTextMovement	= 0x11,

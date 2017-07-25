@@ -44,6 +44,7 @@ libgnustep-gui_C_FILES =
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
+NSAccessibility.m \
 NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
@@ -97,6 +98,7 @@ NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
+NSGestureRecognizer.m \
 NSGradient.m \
 NSGlyphGenerator.m \
 NSGraphicsContext.m \
@@ -145,6 +147,7 @@ NSProgressIndicator.m \
 NSResponder.m \
 NSRulerMarker.m \
 NSRulerView.m \
+NSRunningApplication.m \
 NSSavePanel.m \
 NSSearchField.m \
 NSSearchFieldCell.m \
@@ -197,6 +200,7 @@ NSTreeNode.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSViewController.m \
+NSVisualEffectView.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
@@ -279,6 +283,8 @@ APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
 AppKitExceptions.h \
+NSAccessibility.h \
+NSAccessibilityConstants.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
@@ -325,6 +331,7 @@ NSFontManager.h \
 NSFontPanel.h \
 NSForm.h \
 NSFormCell.h \
+NSGestureRecognizer.h \
 NSGradient.h \
 NSGlyphGenerator.h \
 NSGraphicsContext.h \
@@ -368,6 +375,7 @@ NSProgressIndicator.h \
 NSResponder.h \
 NSRulerMarker.h \
 NSRulerView.h \
+NSRunningApplication.h \
 NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
@@ -419,6 +427,7 @@ NSUserDefaultsController.h \
 NSUserInterfaceLayout.h \
 NSView.h \
 NSViewController.h \
+NSVisualEffectView.h \
 NSWindow.h \
 NSWindowController.h \
 NSWorkspace.h \

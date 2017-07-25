@@ -41,6 +41,7 @@
 #import <AppKit/NSText.h>
 // for NSFocusRingType
 #import <AppKit/NSView.h>
+#import <AppKit/NSUserInterfaceLayout.h>
 
 @class NSString;
 @class NSMutableDictionary;
@@ -276,6 +277,15 @@ enum {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSFocusRingType)focusRingType;
 - (void)setFocusRingType:(NSFocusRingType)type;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+#if GS_HAS_DECLARED_PROPERTIES
+@property NSUserInterfaceLayoutDirection userInterfaceLayoutDirection;
+#else
+- (NSUserInterfaceLayoutDirection) userInterfaceLayoutDirection;
+- (void) setUserInterfaceLayoutDirection: (NSUserInterfaceLayoutDirection)dir;
+#endif
 #endif
 
 //

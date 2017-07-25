@@ -1122,6 +1122,12 @@ static NSNotificationCenter *nc;
     }
 }
 
+- (NSSize) sizeThatFits: (NSSize)size
+{
+  // FIXME: This is a stub
+  return size;
+}
+
 @end
 
 @implementation NSControl(KeyViewLoop)

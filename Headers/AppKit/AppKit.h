@@ -44,6 +44,8 @@
 //
 #import <AppKit/NSGraphics.h>
 
+#import <AppKit/NSAccessibility.h>
+#import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSApplication.h>
@@ -102,6 +104,7 @@
 #import <AppKit/NSPrintOperation.h>
 #import <AppKit/NSPrintPanel.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSRunningApplication.h>
 #import <AppKit/NSSavePanel.h>
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSScroller.h>
@@ -138,6 +141,7 @@
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapper.h>
 #import <AppKit/NSFontDescriptor.h>
+#import <AppKit/NSGestureRecognizer.h>
 #import <AppKit/NSGlyphGenerator.h>
 #import <AppKit/NSGradient.h>
 #import <AppKit/NSGraphicsContext.h>
@@ -196,6 +200,7 @@
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>
+#import <AppKit/NSVisualEffectView.h>
 #import <AppKit/NSWindowController.h>
 #endif
 
