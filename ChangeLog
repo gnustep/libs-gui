@@ -1,5 +1,83 @@
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
+	* Headers/AppKit/NSAttributedString.h
+	* Source/externs.m:	
+	Define an (unimplemented) NSAttributedString attribute for an
+	NSTextAlternatives object.
+	
+	Define an (unimplemented) NSAttributedString attribute for Unicode
+	writing direction.
+	
+	* Headers/AppKit/NSParagraphStyle.h
+	* Headers/AppKit/NSText.h:	
+	Define constants for defining an attributed string's writing direction.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSCell.h
+	* Headers/AppKit/NSView.h
+	* Source/NSCell.m
+	* Source/NSView.m:	
+	Implement stubs for the layout direction properties in NSCell and
+	NSView. Currently, they default to left-to-right layouting.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSAccessibility.h
+	* Headers/AppKit/NSAccessibilityConstants.h
+	* Source/GNUmakefile
+	* Source/NSAccessibility.m:	
+	Declare base NSAccessibility functions and constants, which have been
+	implemented as stubs.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSWindow.h:	
+	Define a missing enum value for a window mask. This mask remains
+	unimplemented.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSControl.h
+	* Source/NSControl.m:	
+	Create a stub for the -[NSControl sizeThatFits:] function.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+	
+	* Headers/AppKit/NSScrollView.h
+	* Source/NSScrollView.m:	
+	Create stubs for the content/scroller inset properties in NSScrollView.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+	* Headers/AppKit/AppKit.h
+	* Source/GNUmakefile:
+	Create new classes in the GUI library.
+
+	* Headers/AppKit/NSRunningApplication.h
+	* Source/NSRunningApplication.m:	
+	Create a stub for the NSRunningApplication class.
+	
+	* Headers/AppKit/NSGestureRecognizer.h
+	* Source/NSGestureRecognizer.m:	
+	Create stub for the NSGestureRecognizer class.
+	
+	* Headers/AppKit/NSVisualEffectView.h
+	* Source/NSVisualEffectView.m:	
+	Create stub for the NSVisualEffectView class.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+	* Headers/AppKit/NSSpeechSynthesizer.h
+	* Source/NSSpeechSynthesizer.m:	
+	Define new constants in NSSpeechSynthesizer. These are not yet handled
+	by the implementation.
+	
+	* Headers/AppKit/NSSpellChecker.h:	
+	Define new constants on NSSpellChecker. They are not yet handled by the
+	implementation.
+
+2017-07-25  Daniel Ferreira <dtf@stanford.edu>
+
 	* Headers/AppKit/AppKit.h
 	* Headers/AppKit/NSUserInterfaceLayout.h
 	* Source/GNUmakefile:	
