@@ -232,6 +232,13 @@ NSGraphicsContext	*GSCurrentContext(void)
   return new;
 }
 
++ (NSGraphicsContext *)graphicsContextWithCGContext: (CGContextRef)context
+					    flipped: (BOOL)flipped
+{
+  return [NSGraphicsContext graphicsContextWithGraphicsPort: (void *)context
+						    flipped: flipped];
+}
+
 + (void) restoreGraphicsState
 {
   NSGraphicsContext *ctxt;
@@ -353,6 +360,11 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (void *) graphicsPort
 {
   return _graphicsPort;
+}
+
+- (CGContextRef)CGContext
+{
+  return (CGContextRef)[self graphicsPort];
 }
 
 - (BOOL) isDrawingToScreen
