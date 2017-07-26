@@ -3,7 +3,7 @@
 
    External data
 
-   Copyright (C) 1997-2016 Free Software Foundation, Inc.
+   Copyright (C) 1997-2017 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: August 1997
@@ -267,34 +267,34 @@ NSString *NSImageRepRegistryChangedNotification =
 
 // Pasteboard Type Globals
 NSString *const NSPasteboardTypeString = @"NSStringPboardType";
-NSString *const NSStringPboardType = NSPasteboardTypeString;
+NSString *const NSStringPboardType = @"NSStringPboardType";
 
 NSString *const NSPasteboardTypeColor = @"NSColorPboardType";
-NSString *const NSColorPboardType = NSPasteboardTypeColor;
+NSString *const NSColorPboardType = @"NSColorPboardType";
 
 NSString *const NSPasteboardTypeFont = @"NSFontPboardType";
-NSString *const NSFontPboardType = NSPasteboardTypeFont;
+NSString *const NSFontPboardType = @"NSFontPboardType";
 
 NSString *const NSPasteboardTypeRuler = @"NSRulerPboardType";
-NSString *const NSRulerPboardType = NSPasteboardTypeRuler;
+NSString *const NSRulerPboardType = @"NSRulerPboardType";
 
 NSString *const NSPasteboardTypeTabularText = @"NSTabularTextPboardType";
-NSString *const NSTabularTextPboardType = NSPasteboardTypeTabularText;
+NSString *const NSTabularTextPboardType = @"NSTabularTextPboardType";
 
 NSString *const NSPasteboardTypeRTF = @"NSRTFPboardType";
-NSString *const NSRTFPboardType = NSPasteboardTypeRTF;
+NSString *const NSRTFPboardType = @"NSRTFPboardType";
 
 NSString *const NSPasteboardTypeRTFD = @"NSRTFDPboardType";
-NSString *const NSRTFDPboardType = NSPasteboardTypeRTFD;
+NSString *const NSRTFDPboardType = @"NSRTFDPboardType";
 
 NSString *const NSPasteboardTypeTIFF = @"NSTIFFPboardType";
-NSString *const NSTIFFPboardType = NSPasteboardTypeTIFF;
+NSString *const NSTIFFPboardType = @"NSTIFFPboardType";
 
 NSString *const NSPasteboardTypePDF = @"NSPDFPboardType";
-NSString *const NSPDFPboardType = NSPasteboardTypePDF;
+NSString *const NSPDFPboardType = @"NSPDFPboardType";
 
 NSString *const NSPasteboardTypeHTML = @"NSHTMLPboardType";
-NSString *const NSHTMLPboardType = NSPasteboardTypeHTML;
+NSString *const NSHTMLPboardType = @"NSHTMLPboardType";
 
 NSString *NSPasteboardTypePNG = @"NSPasteboardTypePNG";
 NSString *NSPasteboardTypeSound = @"NSPasteboardTypeSound";
