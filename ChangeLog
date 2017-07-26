@@ -14,6 +14,45 @@
 	* Headers/AppKit/NSRunningApplication.h: Remove property attribute
 	"strong" as gcc does not support this.
 
+2017-07-26  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSTextList.h
+	* Source/NSTextList.m:	
+	Add the `startingItemNumber` property to NSTextList introduced in macOS
+	10.6.
+
+2017-07-26  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSPasteboardItem.h
+	* Source/GNUmakefile
+	* Source/NSPasteboardItem.m:	
+	Implement the NSPasteboardItem class. For now, it remains relatively
+	useless since NSPasteboard does not yet know how to use it. However, it
+	should be pluggable into NSPasteboard once NSPasteboard learns about
+	NSPasteboardReading and NSPasteboardWriting.
+
+	* Headers/AppKit/NSPasteboard.h:	
+	Define the NSPasteboardReading and NSPasteboardWriting protocols
+	introduced in OSX 10.6, which remain unimplemented in NSPasteboard.
+
+2017-07-26  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSTextAlternatives.h
+	* Source/GNUmakefile
+	* Source/NSTextAlternatives.m:	
+	Implement NSTextAlternatives, a class usually used for choosing
+	alternatives from a basic string usually for dictation purposes.
+
+2017-07-26  Daniel Ferreira <dtf@stanford.edu>
+
+	* Headers/AppKit/NSScroller.h
+	* Source/NSScroller.m:	
+	As of macOS 10.7, scrollers gained two types: Legacy and Overlay. Here,
+	we define these styles as well as a method to determine which is the
+	"default" style to be used.
+
 2017-07-25 Riccardo Mottola <rm@gnu.org>
 
 	* Source/externs.m
