@@ -1,20 +1,27 @@
+2017-07-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSRunningApplication.h: Remove property attribute
+	"strong" as gcc does not support this.
+
 2017-07-25 Riccardo Mottola <rm@gnu.org>
 
 	* Source/externs.m
-	Do not initialize a string constant with another string constant or it breaks GCC build as is. Better proposals to ensure the exact same string pointer is used welcome.
+	Do not initialize a string constant with another string constant
+	or it breaks GCC build as is. Better proposals to ensure the exact
+	same string pointer is used welcome.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
 	* Headers/AppKit/NSAttributedString.h
-	* Source/externs.m:	
+	* Source/externs.m:
 	Define an (unimplemented) NSAttributedString attribute for an
 	NSTextAlternatives object.
-	
+
 	Define an (unimplemented) NSAttributedString attribute for Unicode
 	writing direction.
-	
+
 	* Headers/AppKit/NSParagraphStyle.h
-	* Headers/AppKit/NSText.h:	
+	* Headers/AppKit/NSText.h:
 	Define constants for defining an attributed string's writing direction.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
@@ -22,7 +29,7 @@
 	* Headers/AppKit/NSCell.h
 	* Headers/AppKit/NSView.h
 	* Source/NSCell.m
-	* Source/NSView.m:	
+	* Source/NSView.m:
 	Implement stubs for the layout direction properties in NSCell and
 	NSView. Currently, they default to left-to-right layouting.
 
@@ -32,26 +39,26 @@
 	* Headers/AppKit/NSAccessibility.h
 	* Headers/AppKit/NSAccessibilityConstants.h
 	* Source/GNUmakefile
-	* Source/NSAccessibility.m:	
+	* Source/NSAccessibility.m:
 	Declare base NSAccessibility functions and constants, which have been
 	implemented as stubs.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
-	* Headers/AppKit/NSWindow.h:	
+	* Headers/AppKit/NSWindow.h:
 	Define a missing enum value for a window mask. This mask remains
 	unimplemented.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
 	* Headers/AppKit/NSControl.h
-	* Source/NSControl.m:	
+	* Source/NSControl.m:
 	Create a stub for the -[NSControl sizeThatFits:] function.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
-	
+
 	* Headers/AppKit/NSScrollView.h
-	* Source/NSScrollView.m:	
+	* Source/NSScrollView.m:
 	Create stubs for the content/scroller inset properties in NSScrollView.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
@@ -60,24 +67,24 @@
 	Create new classes in the GUI library.
 
 	* Headers/AppKit/NSRunningApplication.h
-	* Source/NSRunningApplication.m:	
+	* Source/NSRunningApplication.m:
 	Create a stub for the NSRunningApplication class.
-	
+
 	* Headers/AppKit/NSGestureRecognizer.h
-	* Source/NSGestureRecognizer.m:	
+	* Source/NSGestureRecognizer.m:
 	Create stub for the NSGestureRecognizer class.
-	
+
 	* Headers/AppKit/NSVisualEffectView.h
-	* Source/NSVisualEffectView.m:	
+	* Source/NSVisualEffectView.m:
 	Create stub for the NSVisualEffectView class.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 	* Headers/AppKit/NSSpeechSynthesizer.h
-	* Source/NSSpeechSynthesizer.m:	
+	* Source/NSSpeechSynthesizer.m:
 	Define new constants in NSSpeechSynthesizer. These are not yet handled
 	by the implementation.
-	
-	* Headers/AppKit/NSSpellChecker.h:	
+
+	* Headers/AppKit/NSSpellChecker.h:
 	Define new constants on NSSpellChecker. They are not yet handled by the
 	implementation.
 
@@ -85,7 +92,7 @@
 
 	* Headers/AppKit/AppKit.h
 	* Headers/AppKit/NSUserInterfaceLayout.h
-	* Source/GNUmakefile:	
+	* Source/GNUmakefile:
 	Define interface layout enums to be used by AppKit. This improves
 	compatibility with the reference platform.
 
@@ -93,7 +100,7 @@
 
 	* Headers/AppKit/AppKit.h
 	* Headers/AppKit/NSUserInterfaceItemIdentification.h
-	* Source/GNUmakefile:	
+	* Source/GNUmakefile:
 	Introduce the NSUserInterfaceItemIdentification protocol, which required
 	an user interface class provide an unique identifier.
 
@@ -102,14 +109,14 @@
 	* Headers/AppKit/AppKit.h
 	* Headers/AppKit/NSSharingService.h
 	* Source/GNUmakefile
-	* Source/NSSharingService.m:	
+	* Source/NSSharingService.m:
 	Define the NSSharingService class as an unimplemented stub for
 	compatibility purposes.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
 	* Headers/AppKit/NSView.h
-	* Source/NSView.m:	
+	* Source/NSView.m:
 	Define layer-related properties in NSView for compatibility purposes,
 	and keep their getters and setters as stubs, since they will not have
 	any effect before NSView-CALayer integration is implemented.
@@ -118,14 +125,14 @@
 
 	* Headers/AppKit/NSPasteboard.h
 	* Source/NSPasteboard.m
-	* Source/externs.m:	
+	* Source/externs.m:
 	Define new constants for NSPasteboard type identifiers. Most of them are
 	aliases to the old "Pboard"-style types, although some new ones are not
 	fully implemented.
 
 2017-07-25  Daniel Ferreira <dtf@stanford.edu>
 
-	* Headers/AppKit/NSSpeechSynthesizer.h:	
+	* Headers/AppKit/NSSpeechSynthesizer.h:
 	Modern applications require NSSpeechSynthesizerDelegate to be an actual
 	@protocol in order to conform to it. Here, we allow it to be one if we
 	are on an Objective-C runtime that supports it.
