@@ -63,7 +63,7 @@ enum {
 @property (readonly) pid_t processIdentifier;
 @property (readonly) NSInteger executableArchitecture;
 @property (readonly, copy) NSDate *launchDate;
-@property (readonly) NSImage *icon;
+@property (readonly, retain) NSImage *icon;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 @property (readonly) BOOL ownsMenuBar;

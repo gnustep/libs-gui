@@ -1,3 +1,8 @@
+2017-07-28 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/AppKit/NSRunningApplication.h: We can actually use retain
+	as an equivalent property when not using ARC.
+
 2017-07-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSRunningApplication.h: Remove property attribute
