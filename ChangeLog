@@ -1,3 +1,9 @@
+2017-07-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-attachSubmenuForItemAtIndex:): We should
+	not use [NSMenu display] for NSWindows95InterfaceStyle as there we
+	have two NSMenuViews for the NSMenu.
+
 2017-07-28 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/AppKit/NSRunningApplication.h: We can actually use retain

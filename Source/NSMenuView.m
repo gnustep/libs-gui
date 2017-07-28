@@ -616,7 +616,20 @@ static float menuBarHeight = 0.0;
   else
     {
       NSDebugLLog (@"NSMenu",  @"Will open normal: %@", attachableMenu);
-      [attachableMenu display];
+      // Check for the main menu of NSWindows95InterfaceStyle case.
+      // There we have a separate NSMenuView embedded in the window.
+      if ([_attachedMenu menuRepresentation] == self)
+        {
+          [attachableMenu display];
+        }
+      else
+        {
+          [attachableMenu update];
+          [attachableMenu sizeToFit];
+          [[attachableMenu window] setFrameOrigin: [self locationForSubmenu: attachableMenu]];
+          [_attachedMenu _attachMenu: attachableMenu];
+          [[attachableMenu window] orderFrontRegardless];
+        }
     }
 }
 
