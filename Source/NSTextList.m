@@ -88,6 +88,7 @@
   unichar square = 0x25A0;
 
   // FIXME: Needs optimisation and roman numbers
+  // FIXME: Take _startingItemNumber into account.
   [s replaceOccurrencesOfString: @"{box}" 
      withString: [NSString stringWithCharacters: &box length: 1] 
      options: 0 
@@ -168,6 +169,7 @@
                     forKey: @"NSMarkerFormat"];
       [aCoder encodeInt: _listOptions
                  forKey: @"NSOptions"];
+      // FIXME: encode _startingItemNumber correctly.
     }
   else
     {
@@ -180,6 +182,7 @@
     {
       ASSIGN(_markerFormat, [aDecoder decodeObjectForKey: @"NSMarkerFormat"]);
       _listOptions = [aDecoder decodeIntForKey: @"NSOptions"];
+     // FIXME: decode _startingItemNumber correctly.
     }
   else
     {
