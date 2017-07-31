@@ -48,7 +48,7 @@
 
 - (NSArray *)types
 {
-  return RETAIN([NSArray arrayWithArray: _types]); 
+  return [NSArray arrayWithArray: _types];
 }
 
 - (BOOL)setDataProvider:(id<NSPasteboardItemDataProvider>)dataProvider
