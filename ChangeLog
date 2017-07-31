@@ -1,3 +1,10 @@
+2017-07-31 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSTextList.m: Add _startingItemNumber-related TODOs to
+	NSTextList.
+	* Source/NSPasteboardItem: Remove RETAIN() when returning
+	-[NSPasteboardItem types].
+
 2017-07-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m (-attachSubmenuForItemAtIndex:): We should
