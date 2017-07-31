@@ -27,14 +27,19 @@
 
 #ifndef _GNUstep_H_NSPasteboardItem
 #define _GNUstep_H_NSPasteboardItem 
+#import <GNUstepBase/GSVersionMacros.h>
 
+#import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
 #import <AppKit/NSPasteboard.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSDictionary.h>
-#import <CoreFoundation/CFBase.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+
+@class NSArray;
+@class NSData;
+@class NSMutableArray;
+@class NSMutableDictionary;
+@class NSString;
 
 @protocol NSPasteboardItemDataProvider;
 

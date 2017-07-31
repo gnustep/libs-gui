@@ -30,8 +30,8 @@
  * NSPasteboardReading + NSPasteboardWriting.
  */
 
-#import <AppKit/NSPasteboardItem.h>
 #import <Foundation/Foundation.h>
+#import <AppKit/NSPasteboardItem.h>
 
 @implementation NSPasteboardItem
 - (id)init
@@ -54,6 +54,8 @@
 - (BOOL)setDataProvider:(id<NSPasteboardItemDataProvider>)dataProvider
                forTypes:(NSArray *)types
 {
+  NSUInteger i;
+
   if (![dataProvider conformsToProtocol: @protocol(NSPasteboardItemDataProvider)])
     {
       NSLog(@"Pasteboard item data provider %@ must conform to"
@@ -61,7 +63,7 @@
       return NO;
     }
 
-  for (NSUInteger i = 0; i < [types count]; i++)
+  for (i = 0; i < [types count]; i++)
     {
       NSString *type = [types objectAtIndex: i];
       [_providerMap setObject: dataProvider forKey: type];
