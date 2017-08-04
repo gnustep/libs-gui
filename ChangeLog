@@ -1,7 +1,11 @@
+2017-08-04 Alex Myczko <alex@aiei.ch>
+
+	* ColorPickers/Polish.lproj: Added translation.
+
 2017-08-02 Alex Myczko <alex@aiei.ch>
 
 	* ColorPickers/German.lproj: Added translation.
-	
+
 2017-07-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPasteboardItem.h
