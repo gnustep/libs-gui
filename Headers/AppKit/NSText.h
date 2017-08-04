@@ -69,13 +69,24 @@
 @class NSColor;
 @class NSFont;
 
-typedef enum _NSTextAlignment {
+typedef NSInteger NSTextAlignment;
+enum {
   NSLeftTextAlignment = 0,
   NSRightTextAlignment,
   NSCenterTextAlignment,
   NSJustifiedTextAlignment,
   NSNaturalTextAlignment
-} NSTextAlignment;
+};
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+enum {
+  NSTextAlignmentLeft = NSLeftTextAlignment,
+  NSTextAlignmentRight = NSRightTextAlignment,
+  NSTextAlignmentCenter = NSCenterTextAlignment,
+  NSTextAlignmentJustified = NSJustifiedTextAlignment,
+  NSTextAlignmentNatural = NSNaturalTextAlignment
+};
+#endif
 
 enum {
   NSTextWritingDirectionEmbedding = (0 << 1),
