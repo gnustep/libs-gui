@@ -1,3 +1,14 @@
+2017-08-04  Daniel Ferreira <dtf@stanford.edu>
+
+	* .travis.yml
+	* travis-deps.sh:
+	Add a Travis CI build to gnustep-gui to check if everything is really
+	okay before accepting patches.
+
+	Recent events have shown that bad patches have passed through the review
+	process, specially when it comes to breaking compatibility with GCC. A
+	CI routine would distinctly avoid these cases.
+
 2017-08-04 Alex Myczko <alex@aiei.ch>
 
 	* ColorPickers/Polish.lproj: Added translation.
