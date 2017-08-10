@@ -288,4 +288,17 @@ APPKIT_EXPORT NSString *NSAFMVersion;
 APPKIT_EXPORT NSString *NSAFMWeight;
 APPKIT_EXPORT NSString *NSAFMXHeight;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+typedef CGFloat NSFontWeight;
+APPKIT_EXPORT const CGFloat NSFontWeightUltraLight;
+APPKIT_EXPORT const CGFloat NSFontWeightThin;
+APPKIT_EXPORT const CGFloat NSFontWeightLight;
+APPKIT_EXPORT const CGFloat NSFontWeightRegular;
+APPKIT_EXPORT const CGFloat NSFontWeightMedium;
+APPKIT_EXPORT const CGFloat NSFontWeightSemibold;
+APPKIT_EXPORT const CGFloat NSFontWeightBold;
+APPKIT_EXPORT const CGFloat NSFontWeightHeavy;
+APPKIT_EXPORT const CGFloat NSFontWeightBlack;
+#endif
+
 #endif // _GNUstep_H_NSFont
