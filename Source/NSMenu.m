@@ -878,7 +878,7 @@ static BOOL menuBarVisible = YES;
 /*
  * Finding Menu Items
  */
-- (id <NSMenuItem>) itemWithTag: (NSInteger)aTag
+- (NSMenuItem*) itemWithTag: (NSInteger)aTag
 {
   unsigned i;
   unsigned count = [_items count];

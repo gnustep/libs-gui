@@ -573,7 +573,7 @@
  *   <item>[(NSMenuItem)-tag]</item>
  *  </list>
  */
-- (id <NSMenuItem>) itemWithTag: (NSInteger)aTag;
+- (NSMenuItem*) itemWithTag: (NSInteger)aTag;
 
 /** Returns an item with aString as its title.
  */
