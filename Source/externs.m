@@ -326,6 +326,8 @@ NSString *NSRulerPboard = @"NSRulerPboard";
 NSString *NSPasteboardCommunicationException
 = @"NSPasteboardCommunicationException";
 
+NSString *_NXSmartPaste = @"NeXT smart paste pasteboard type";
+
 // Printing Information Dictionary Keys
 NSString *NSPrintAllPages = @"NSPrintAllPages";
 NSString *NSPrintBottomMargin = @"NSBottomMargin";
@@ -757,7 +759,6 @@ NSString *NSImageNameInfo = @"NSInfo";
 NSString *NSImageNameFontPanel = @"NSFontPanel";
 NSString *NSImageNameColorPanel = @"NSColorPanel";
 NSString *NSImageNameCaution = @"NSCaution";
-
 
 extern void __objc_gui_force_linking (void);
 
