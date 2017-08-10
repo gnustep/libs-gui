@@ -147,6 +147,16 @@ const CGFloat NSGray = 0.5;
 const CGFloat NSLightGray = .667;
 const CGFloat NSWhite = 1;
 
+const CGFloat NSFontWeightUltraLight = -0.8;
+const CGFloat NSFontWeightThin = -0.6;
+const CGFloat NSFontWeightLight = -0.4;
+const CGFloat NSFontWeightRegular = 0;
+const CGFloat NSFontWeightMedium = 0.23;
+const CGFloat NSFontWeightSemibold = 0.3;
+const CGFloat NSFontWeightBold = 0.4;
+const CGFloat NSFontWeightHeavy = 0.56;
+const CGFloat NSFontWeightBlack = 0.62;
+
 // NSColor notification
 NSString *NSSystemColorsDidChangeNotification =
             @"NSSystemColorsDidChangeNotification";
