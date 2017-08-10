@@ -171,6 +171,9 @@ APPKIT_EXPORT NSString *NSWebPreferencesDocumentOption;
 APPKIT_EXPORT NSString *NSWebResourceLoadDelegateDocumentOption;
 APPKIT_EXPORT NSString *NSTextSizeMultiplierDocumentOption;
 
+// Private Attributes
+APPKIT_EXPORT NSString *NSTextInsertionUndoableAttributeName;
+
 /* Currently supported values for NSUnderlineStyleAttributeName.  */
 enum _NSUnderlineStyle
 {
