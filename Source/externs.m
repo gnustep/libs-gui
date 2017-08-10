@@ -599,6 +599,9 @@ NSString *NSEditorDocumentAttribute = @"Editor";
 NSString *NSCreationTimeDocumentAttribute = @"CreationTime";
 NSString *NSModificationTimeDocumentAttribute = @"ModificationTime";
 
+NSString *NSTextInsertionUndoableAttributeName =
+  @"NSTextInsertionUndoableAttributeName";
+
 const unsigned NSUnderlineByWordMask = 0x01;
 
 NSString *NSSpellingStateAttributeName = @"NSSpellingState";
