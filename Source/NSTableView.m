@@ -2876,8 +2876,8 @@ byExtendingSelection: (BOOL)flag
     {
       if ([indexes lastIndex] >= _numberOfRows)
         {
-          [NSException raise: NSInvalidArgumentException
-                      format: @"Row index out of table in selectRow"];
+          // TESTPLANT-MAL-08142017: Cocoa seems to just return in this case...
+          return;
         }
       
       /* This check is not fully correct, as both sets may contain just
