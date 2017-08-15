@@ -112,7 +112,7 @@
 @end
 
 #if defined(__clang__)
-@protocol NSComboBoxDelegate <NSObject>
+@protocol NSComboBoxDelegate <NSTextFieldDelegate>
 @optional
 #else
 @interface NSObject (NSComboBoxDelegate)
