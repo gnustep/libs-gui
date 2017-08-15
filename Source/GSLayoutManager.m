@@ -754,6 +754,11 @@ Fills in all glyph holes up to last. only looking at levels below level
           (last - glyphs->glyph_length) * (glyphs->char_length / (glyphs->glyph_length + 1));
 
       [self _generateGlyphsUpToCharacter: char_last];
+      
+      // TESTPLANT-MAL-08152017: Not sure why but there are times that this condition
+      // happens causing an infinite loop...
+      if (char_last > glyphs->char_length)
+        break;
     }
 }
 
