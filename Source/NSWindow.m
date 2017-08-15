@@ -5653,6 +5653,11 @@ current key view.<br />
   return _attachedSheet;
 }
 
+- (NSWindow *) sheetParent
+{
+  return nil;
+}
+
 @end
 
 @implementation NSWindow (Toolbar)

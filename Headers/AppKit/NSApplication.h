@@ -750,6 +750,16 @@ NSShowSystemInfoPanel(NSDictionary *options);
  */
 APPKIT_EXPORT NSApplication	*NSApp;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+enum
+{
+  NSModalResponseStop = -1000,
+  NSModalResponseAbort = -1001,
+  NSModalResponseContinue = -1002
+};
+typedef NSInteger NSModalResponse;
+#endif
+
 #if defined(__cplusplus)
 }
 #endif
