@@ -277,7 +277,7 @@
   if ((attrStr == nil) || ([[attrStr string] length] == 0))
     {
       attrStr = [self placeholderAttributedString];
-      if (attrStr == nil)
+      if ((attrStr == nil) || ([[attrStr string] length] == 0))
         {
           NSString *string;
           NSDictionary *attributes;
