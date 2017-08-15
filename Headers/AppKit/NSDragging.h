@@ -37,6 +37,7 @@
 @class NSPasteboard;
 @class NSImage;
 @class NSURL;
+@class NSDraggingSession;
 
 enum _NSDragOperation {
   NSDragOperationNone = 0,
@@ -51,6 +52,15 @@ enum _NSDragOperation {
 };
 
 typedef NSUInteger NSDragOperation;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+typedef NSInteger NSDraggingContext;
+enum
+{
+  NSDraggingContextOutsideApplication = 0,
+  NSDraggingContextWithinApplication
+};
+#endif
 
 @protocol NSDraggingInfo
 
@@ -103,6 +113,29 @@ typedef NSUInteger NSDragOperation;
 - (BOOL)wantsPeriodicDraggingUpdates;
 #endif
 @end
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+@protocol NSDraggingSource <NSObject>
+- (NSDragOperation) draggingSession:(NSDraggingSession *)session
+sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
+
+#if GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
+@interface NSObject (NSDraggingSource107)
+#endif
+- (void) draggingSession: (NSDraggingSession *)session
+        willBeginAtPoint: (NSPoint)screenPoint;
+- (void) draggingSession: (NSDraggingSession *)session
+            movedToPoint: (NSPoint)screenPoint;
+- (void) draggingSession: (NSDraggingSession *)session
+            endedAtPoint: (NSPoint)screenPoint
+               operation: (NSDragOperation)operation;
+
+- (BOOL) ignoreModifierKeysForDraggingSession:(NSDraggingSession *)session;
+@end
+#endif
 
 @interface NSObject (NSDraggingSource)
 
