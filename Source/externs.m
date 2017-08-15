@@ -620,6 +620,15 @@ NSString *NSSpellingStateAttributeName = @"NSSpellingState";
 const unsigned NSSpellingStateSpellingFlag = 1;
 const unsigned NSSpellingStateGrammarFlag = 2;
 
+NSString *NSSpellCheckerDidChangeAutomaticSpellingCorrectionNotification =
+  @"NSSpellCheckerDidChangeAutomaticSpellingCorrectionNotification";
+NSString *NSSpellCheckerDidChangeAutomaticTextReplacementNotification =
+  @"NSSpellCheckerDidChangeAutomaticTextReplacementNotification";
+NSString *NSSpellCheckerDidChangeAutomaticQuoteSubstitutionNotification =
+  @"NSSpellCheckerDidChangeAutomaticQuoteSubstitutionNotification";
+NSString *NSSpellCheckerDidChangeAutomaticDashSubstitutionNotification =
+  @"NSSpellCheckerDidChangeAutomaticDashSubstitutionNotification";
+
 
 NSString *NSPlainTextDocumentType = @"NSPlainText";
 NSString *NSRTFTextDocumentType = @"NSRTF";
