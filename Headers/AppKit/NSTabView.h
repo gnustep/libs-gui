@@ -132,7 +132,12 @@ typedef union _GSTabViewTypeFlagsUnion
 
 @end
 
+#if defined(__clang__)
+@protocol NSTabViewDelegate <NSObject>
+@optional
+#else
 @interface NSObject(NSTabViewDelegate)
+#endif
 - (BOOL)tabView:(NSTabView *)tabView shouldSelectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem;
