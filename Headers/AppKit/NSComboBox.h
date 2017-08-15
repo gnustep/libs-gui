@@ -94,7 +94,12 @@
 #endif
 @end
 
+#if defined(__clang__)
+@protocol NSComboBoxDataSource <NSObject>
+@optional
+#else
 @interface NSObject (NSComboBoxDataSource)
+#endif
 - (NSInteger) numberOfItemsInComboBox: (NSComboBox *)aComboBox;
 - (id) comboBox: (NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index;
 - (NSUInteger) comboBox: (NSComboBox *)aComboBox 
@@ -104,6 +109,21 @@
 - (NSString *) comboBox: (NSComboBox *)aComboBox 
 	completedString: (NSString *)aString;
 #endif
+@end
+
+#if defined(__clang__)
+@protocol NSComboBoxDelegate <NSObject>
+@optional
+#else
+@interface NSObject (NSComboBoxDelegate)
+#endif
+
+/* Notifications */
+- (void)comboBoxWillPopUp:(NSNotification *)notification;
+- (void)comboBoxWillDismiss:(NSNotification *)notification;
+- (void)comboBoxSelectionDidChange:(NSNotification *)notification;
+- (void)comboBoxSelectionIsChanging:(NSNotification *)notification;
+
 @end
 
 @interface NSObject (NSComboBoxNotifications)
