@@ -87,6 +87,13 @@ enum {
   NSScreenSaverWindowLevel = 1000  // 12
 };
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
+enum {
+  NSModalResponseOK = 1,
+  NSModalResponseCancel = 0
+};
+#endif
+
 enum {
   NSBorderlessWindowMask = 0,
   NSTitledWindowMask = 1,
@@ -808,6 +815,14 @@ PACKAGE_SCOPE
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL) displaysWhenScreenProfileChanges;
 - (void) setDisplaysWhenScreenProfileChanges: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) NSWindow *sheetParent;
+#else
+- (NSWindow *) sheetParent;
+#endif
 #endif
 
 @end
