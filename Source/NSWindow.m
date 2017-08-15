@@ -5658,6 +5658,11 @@ current key view.<br />
   return nil;
 }
 
+- (CGFloat) backingScaleFactor
+{
+  return 0;
+}
+
 @end
 
 @implementation NSWindow (Toolbar)
