@@ -274,7 +274,7 @@
   NSAttributedString *attrStr;
 
   attrStr = [super _drawAttributedString];
-  if (attrStr == nil)
+  if ((attrStr == nil) || ([[attrStr string] length] == 0))
     {
       attrStr = [self placeholderAttributedString];
       if (attrStr == nil)
@@ -338,6 +338,8 @@
         {
           [aCoder encodeInt: [self bezelStyle] forKey: @"NSTextBezelStyle"];
         }
+      if ([self placeholderString])
+        [aCoder encodeObject: [self placeholderString] forKey: @"NSPlaceholderString"];
     }
   else
     {
@@ -374,6 +376,10 @@
         {
           [self setBezelStyle: [aDecoder decodeIntForKey: 
                                              @"NSTextBezelStyle"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSPlaceholderString"])
+        {
+          [self setPlaceholderString: [aDecoder decodeObjectForKey: @"NSPlaceholderString"]];
         }
     }
   else
