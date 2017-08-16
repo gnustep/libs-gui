@@ -108,6 +108,14 @@ enum
 			    wrap:(BOOL)wrapFlag
 	  inSpellDocumentWithTag:(int)tag
 		       wordCount:(int *)wordCount;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSRange)checkGrammarOfString:(NSString *)stringToCheck
+		     startingAt:(NSInteger)startingOffset
+		       language:(NSString *)language
+		           wrap:(BOOL)wrapFlag
+	 inSpellDocumentWithTag:(NSInteger)tag
+			details:(NSArray **)details;
+#endif
 - (NSArray *)guessesForWord:(NSString *)word;
 
 //
