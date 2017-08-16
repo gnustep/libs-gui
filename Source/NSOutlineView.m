@@ -705,7 +705,7 @@ static NSImage *unexpandable  = nil;
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
   [self tile];
-  [self reloadData];
+  //[self reloadData];
 }
 
 /**
