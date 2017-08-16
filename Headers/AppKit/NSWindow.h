@@ -141,6 +141,13 @@ enum {
   NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8
 };
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+enum
+{
+  NSWindowCollectionBehaviorFullScreenAllowsTiling = 1 << 11,
+  NSWindowCollectionBehaviorFullScreenDisallowsTiling = 1 << 12
+};
+#endif
 typedef NSUInteger NSWindowCollectionBehavior;
 
 enum _NSSelectionDirection {
@@ -160,7 +167,7 @@ enum _NSWindowButton
   NSWindowDocumentIconButton
 };
 typedef NSUInteger NSWindowButton;
-#endif 
+#endif
 
 APPKIT_EXPORT NSSize NSIconSize;
 APPKIT_EXPORT NSSize NSTokenSize;
