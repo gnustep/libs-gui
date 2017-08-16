@@ -979,29 +979,6 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-// TESTPLANT-MAL-08162017: Added...needs to be worked in similar to
-// NSStackView processing for arranged subviews and seems to be based
-// on auto layout constraints...
-- (NSArray*) arrangedSubviews
-{
-  // TESTPLANT-MAL-08162017-FIXME:
-  // needs to be an attribute that holds the arranged subviews...
-  return [self subviews];
-}
-
-- (BOOL)arrangesAllSubviews
-{
-  return _arrangesAllSubviews;
-}
-// TESTPLANT-MAL-08162017: END ADDED SECTION
-
-- (void)addArrangedSubview:(NSView *)view
-{
-  // TESTPLANT-MAL-08162017-FIXME:
-  // needs to be added to the internal attribute that holds the arranged subviews...
-  [self addSubview: view];
-}
-
 - (CGFloat) dividerThickness
 {
   /*
@@ -1523,6 +1500,59 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   return self;
 }
+
+#pragma mark - Arrange subviews support starting in OS X 10.11...
+// TESTPLANT-MAL-08162017: Added...needs to be worked in similar to
+// NSStackView processing for arranged subviews and seems to be based
+// on auto layout constraints...
+- (NSArray*) arrangedSubviews
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be an attribute that holds the arranged subviews...
+  return [self subviews];
+}
+
+- (BOOL) arrangesAllSubviews
+{
+  return _arrangesAllSubviews;
+}
+
+- (void) setArrangesAllSubviews: (BOOL) flag
+{
+  // TESTPLANT-MAL-08162017-FIXME: in cases we need to do the arrangement
+  // processing...
+  _arrangesAllSubviews = flag;
+}
+
+- (void) addArrangedSubview:(NSView *)view
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be added to the internal attribute that holds the arranged subviews...
+  //[_arrangedSubviews addObject: view];
+}
+
+- (void)insertArrangedSubview:(NSView *)view atIndex:(NSInteger)index
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be removed to the internal attribute that holds the arranged subviews...
+  if (index < 0) || ((index >= [_arrangedSubviews count]))
+  {
+    // FIXME: Log and/or exception???
+  }
+  else
+  {
+    //[_arrangedSubviews insertObject: view atIndex: index];
+  }
+}
+
+- (void) removeArrangedSubview:(NSView *)view
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be removed to the internal attribute that holds the arranged subviews...
+  //[_arrangedSubviews removeObject: view];
+}
+
+// TESTPLANT-MAL-08162017: END ADDED SECTION
 
 @end
 
