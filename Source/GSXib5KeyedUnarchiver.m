@@ -1386,6 +1386,8 @@ didStartElement: (NSString*)elementName
   {
     if ([@"secondary" isEqualToString: boxType])
       value = NSBoxSecondary;
+    else if ([@"separator" isEqualToString: boxType])
+      value = NSBoxSeparator;
     else if ([@"oldStyle" isEqualToString: boxType])
       value = NSBoxOldStyle;
     else if ([@"custom" isEqualToString: boxType])
