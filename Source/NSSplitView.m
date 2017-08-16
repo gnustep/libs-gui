@@ -1535,14 +1535,14 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   // TESTPLANT-MAL-08162017-FIXME:
   // needs to be removed to the internal attribute that holds the arranged subviews...
-  if (index < 0) || ((index >= [_arrangedSubviews count]))
-  {
-    // FIXME: Log and/or exception???
-  }
+  if ((index < 0) || (index >= [_arrangedSubviews count]))
+    {
+      // FIXME: Log and/or exception???
+    }
   else
-  {
-    //[_arrangedSubviews insertObject: view atIndex: index];
-  }
+    {
+      //[_arrangedSubviews insertObject: view atIndex: index];
+    }
 }
 
 - (void) removeArrangedSubview:(NSView *)view
