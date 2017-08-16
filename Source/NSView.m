@@ -621,12 +621,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (frameRect.size.width < 0)
     {
-      NSWarnMLog(@"given negative width");
+      NSWarnMLog(@"given negative width: %f current: %f", frameRect.size.width, [self frame].size.width);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSWarnMLog(@"given negative height");
+      NSWarnMLog(@"given negative height: %f current: %f", frameRect.size.height, [self frame].size.height);
       frameRect.size.height = 0;
     }
   _frame = frameRect;			// Set frame rectangle
@@ -1207,12 +1207,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 
   if (frameRect.size.width < 0)
     {
-      NSWarnMLog(@"given negative width");
+      NSWarnMLog(@"given negative width: %f current: %f", frameRect.size.width, [self frame].size.width);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSWarnMLog(@"given negative height");
+      NSWarnMLog(@"given negative height: %f current: %f", frameRect.size.height, [self frame].size.height);
       frameRect.size.height = 0;
     }
 
@@ -1289,12 +1289,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   NSRect newFrame = _frame;
   if (newSize.width < 0)
     {
-      NSWarnMLog(@"given negative width");
+      NSWarnMLog(@"given negative width: %f current: %f", newSize.width, [self frame].size.width);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSWarnMLog(@"given negative height");
+      NSWarnMLog(@"given negative height: %f current: %f", newSize.height, [self frame].size.height);
       newSize.height = 0;
     }
   if (NSEqualSizes(_frame.size, newSize) == NO)
@@ -1415,12 +1415,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   NSDebugLLog(@"NSView", @"setBounds %@", NSStringFromRect(aRect));
   if (aRect.size.width < 0)
     {
-      NSWarnMLog(@"given negative width");
+      NSWarnMLog(@"given negative width: %f current: %f", aRect.size.width, [self frame].size.width);
       aRect.size.width = 0;
     }
   if (aRect.size.height < 0)
     {
-      NSWarnMLog(@"given negative height");
+      NSWarnMLog(@"given negative height: %f current: %f", aRect.size.height, [self frame].size.height);
       aRect.size.height = 0;
     }
 
@@ -1509,12 +1509,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 
   if (newSize.width < 0)
     {
-      NSWarnMLog(@"given negative width");
+      NSWarnMLog(@"given negative width: %f current: %f", newSize.width, [self frame].size.width);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSWarnMLog(@"given negative height");
+      NSWarnMLog(@"given negative height: %f current: %f", newSize.height, [self frame].size.height);
       newSize.height = 0;
     }
 
@@ -1600,12 +1600,12 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     {
       if (newSize.width < 0)
         {
-          NSWarnMLog(@"given negative width");
+          NSWarnMLog(@"given negative width: %f current: %f", newSize.width, [self frame].size.width);
           newSize.width = 0;
         }
       if (newSize.height < 0)
         {
-          NSWarnMLog(@"given negative height");
+          NSWarnMLog(@"given negative height: %f current: %f", newSize.height, [self frame].size.height);
           newSize.height = 0;
         }
 
