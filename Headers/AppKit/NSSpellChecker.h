@@ -80,6 +80,8 @@ enum
   id _correctButton;
 }
 
++ (BOOL)isAutomaticTextReplacementEnabled;
+
 //
 // Making a Checker available 
 //

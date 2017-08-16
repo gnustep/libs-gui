@@ -162,6 +162,11 @@ static int __documentTag = 0;
     }
 }
 
++ (BOOL)isAutomaticTextReplacementEnabled
+{
+  return NO;
+}
+
 //
 // Making a Checker available 
 //
