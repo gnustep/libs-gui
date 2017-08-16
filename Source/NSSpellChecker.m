@@ -449,6 +449,16 @@ static int __documentTag = 0;
   return nil;
 }
 
+- (NSRange)checkGrammarOfString:(NSString *)stringToCheck
+		     startingAt:(NSInteger)startingOffset
+		       language:(NSString *)language
+		           wrap:(BOOL)wrapFlag
+	 inSpellDocumentWithTag:(NSInteger)tag
+			details:(NSArray **)details
+{
+  return NSMakeRange(NSNotFound, 0);
+}
+
 //
 // Setting the Language 
 //
