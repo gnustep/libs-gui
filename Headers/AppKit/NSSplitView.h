@@ -58,6 +58,7 @@ typedef NSInteger NSSplitViewDividerStyle;
   BOOL      _never_displayed_before;
   BOOL      _is_pane_splitter;
   NSSplitViewDividerStyle _dividerStyle;
+  BOOL      _arrangesAllSubviews;
 }
 
 - (void) setDelegate: (id)anObject;
@@ -87,6 +88,12 @@ typedef NSInteger NSSplitViewDividerStyle;
 - (NSColor *) dividerColor;
 - (NSSplitViewDividerStyle) dividerStyle;
 - (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+- (NSArray*) arrangedSubviews;
+- (BOOL)arrangesAllSubviews;
+- (void)addArrangedSubview:(NSView *)view;
 #endif
 
 @end

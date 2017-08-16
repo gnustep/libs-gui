@@ -979,7 +979,30 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (CGFloat) dividerThickness 
+// TESTPLANT-MAL-08162017: Added...needs to be worked in similar to
+// NSStackView processing for arranged subviews and seems to be based
+// on auto layout constraints...
+- (NSArray*) arrangedSubviews
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be an attribute that holds the arranged subviews...
+  return [self subviews];
+}
+
+- (BOOL)arrangesAllSubviews
+{
+  return _arrangesAllSubviews;
+}
+// TESTPLANT-MAL-08162017: END ADDED SECTION
+
+- (void)addArrangedSubview:(NSView *)view
+{
+  // TESTPLANT-MAL-08162017-FIXME:
+  // needs to be added to the internal attribute that holds the arranged subviews...
+  [self addSubview: view];
+}
+
+- (CGFloat) dividerThickness
 {
   /*
    * You need to override this method in subclasses to change the
