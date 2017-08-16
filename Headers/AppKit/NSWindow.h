@@ -833,6 +833,11 @@ PACKAGE_SCOPE
 #endif
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
++ (NSInteger)windowNumberAtPoint:(NSPoint)point
+     belowWindowWithWindowNumber:(NSInteger)windowNumber;
+#endif
+
 @end
 
 @class NSToolbar;

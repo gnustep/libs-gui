@@ -5663,6 +5663,12 @@ current key view.<br />
   return 0;
 }
 
++ (NSInteger)windowNumberAtPoint:(NSPoint)point
+     belowWindowWithWindowNumber:(NSInteger)windowNumber
+{
+  return 0;
+}
+
 @end
 
 @implementation NSWindow (Toolbar)
