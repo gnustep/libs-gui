@@ -81,6 +81,7 @@ enum
 }
 
 + (BOOL)isAutomaticTextReplacementEnabled;
++ (BOOL)isAutomaticDashSubstitutionEnabled;
 
 //
 // Making a Checker available 
