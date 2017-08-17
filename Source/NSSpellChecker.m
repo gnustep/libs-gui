@@ -172,6 +172,11 @@ static int __documentTag = 0;
   return NO;
 }
 
++ (BOOL)isAutomaticQuoteSubstitutionEnabled
+{
+  return NO;
+}
+
 //
 // Making a Checker available 
 //

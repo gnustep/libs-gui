@@ -82,6 +82,7 @@ enum
 
 + (BOOL)isAutomaticTextReplacementEnabled;
 + (BOOL)isAutomaticDashSubstitutionEnabled;
++ (BOOL)isAutomaticQuoteSubstitutionEnabled;
 
 //
 // Making a Checker available 
