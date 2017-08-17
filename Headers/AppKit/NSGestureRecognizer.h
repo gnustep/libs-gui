@@ -33,7 +33,10 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSEvent.h>
 
+@class NSView;
+
 @interface NSGestureRecognizer : NSObject <NSCoding>
+- (NSPoint)locationInView:(NSView *)view;
 @end
 
 @protocol NSGestureRecognizerDelegate <NSObject>

@@ -39,4 +39,9 @@
 {
   return;
 }
+
+- (NSPoint)locationInView:(NSView *)view
+{
+  return NSZeroPoint;
+}
 @end
