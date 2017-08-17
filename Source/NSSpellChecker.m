@@ -167,6 +167,11 @@ static int __documentTag = 0;
   return NO;
 }
 
++ (BOOL)isAutomaticDashSubstitutionEnabled
+{
+  return NO;
+}
+
 //
 // Making a Checker available 
 //
