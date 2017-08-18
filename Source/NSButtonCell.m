@@ -1464,6 +1464,11 @@
                          margins.top : margins.bottom);
   result.size.width  -= (margins.left + margins.right);
   result.size.height -= (margins.top + margins.bottom);
+  
+  // TESTPLANT-MAL-08182017: ensure width/height >= 0...
+  result.size.width   = MAX(0, result.size.width);
+  result.size.height  = MAX(0, result.size.height);
+
   return(result);
 }
 
