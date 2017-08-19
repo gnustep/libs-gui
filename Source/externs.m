@@ -657,6 +657,12 @@ NSString *NSWebResourceLoadDelegateDocumentOption = @"WebResourceLoadDelegate";
 // NSTextTab
 NSString *NSTabColumnTerminatorsAttributeName = @"NSTabColumnTerminatorsAttributeName"; 
 
+// Private Exports
+NSString *NSMarkedClauseSegmentAttributeName =
+  @"NSMarkedClauseSegmentAttributeName";
+NSString *NSTextInputReplacementRangeAttributeName =
+  @"NSTextInputReplacementRangeAttributeName";
+
 // NSToolbar notifications
 NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";
 NSString *NSToolbarWillAddItemNotification = @"NSToolbarWillAddItemNotification";
