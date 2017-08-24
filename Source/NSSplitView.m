@@ -57,6 +57,10 @@
 
 static NSNotificationCenter *nc = nil;
 
+@interface NSSplitView ()
+- (NSRect) _dividerRectForIndex: (NSUInteger)index;
+@end
+
 @implementation NSSplitView
 
 + (void) initialize
@@ -430,7 +434,7 @@ static NSNotificationCenter *nc = nil;
   BOOL lit = NO;
   NSCursor *cursor;
   NSDictionary *userInfo = nil; // userInfo for resize notifications
-
+  
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
     {
@@ -459,7 +463,20 @@ static NSNotificationCenter *nc = nil;
         {
           NSDebugLLog(@"NSSplitView",
             @"NSSplitView got mouseDown in subview area");
-          return;
+          
+          // If this is the first view then we're done...
+          if (i == 0)
+            return;
+          
+          // Otherwise, check whether the delegate wants a larger rectangle
+          // for the divider grab area that may overlap the view and validate
+          // the point within that area...
+          r = [self _dividerRectForIndex: i-1];
+          if (NSPointInRect(p, r) == NO)
+            return;
+          
+          // Force the view processing below to select this view...
+          p = r.origin;
         }
       if (_isVertical == NO)
         {
@@ -520,7 +537,7 @@ static NSNotificationCenter *nc = nil;
           prev = v;
         }
     }
-
+  
   /* Check if the delegate wants to constrain the spliview divider to
      certain positions */
   if (_delegate 
@@ -1337,6 +1354,32 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   SET_DELEGATE_NOTIFICATION(WillResizeSubviews);
 }
 
+- (NSRect) _dividerRectForIndex: (NSUInteger)index
+{
+  const SEL selector = @selector(splitView:effectiveRect:forDrawnRect:ofDividerAtIndex:);
+  NSRect rect = [[[self subviews] objectAtIndex: index] frame];
+  {
+    if (_isVertical == NO)
+      {
+        rect.origin.y = NSMaxY (rect);
+        rect.size.height = _dividerWidth;
+      }
+    else
+      {
+        rect.origin.x = NSMaxX (rect);
+        rect.size.width = _dividerWidth;
+      }
+    rect = NSIntersectionRect(rect, [self visibleRect]);
+    
+    // TESTPLANT-MAL-08242017: Check with delegate for hit rect...
+    if (_delegate && [_delegate respondsToSelector: selector])
+      {
+        rect = [_delegate splitView: self effectiveRect: rect forDrawnRect: rect ofDividerAtIndex: index];
+      }
+  }
+  return rect;
+}
+
 - (void) resetCursorRects
 {
   NSArray *subs = [self subviews];
@@ -1344,7 +1387,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   const NSUInteger count = [subs count];
   const NSRect visibleRect = [self visibleRect];
   NSCursor *cursor;
-
+  
   if (_isVertical)
     {
       cursor = [NSCursor resizeLeftRightCursor];
@@ -1356,24 +1399,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   for (i = 0; (i + 1) < count; i++)
     {
-      NSView *v = [subs objectAtIndex: i];
-      NSRect divRect = [v frame];
-      if (_isVertical == NO)
-        {
-          divRect.origin.y = NSMaxY (divRect);
-          divRect.size.height = _dividerWidth;
-        }
-      else
-        {
-          divRect.origin.x = NSMaxX (divRect);
-          divRect.size.width = _dividerWidth;
-        }
-      divRect = NSIntersectionRect(divRect, visibleRect);
+      NSRect divRect = [self _dividerRectForIndex: i];
 
       if (!NSEqualRects(NSZeroRect, divRect))
-	{
-	  [self addCursorRect: divRect cursor: cursor];
-	}
+        {
+          [self addCursorRect: divRect cursor: cursor];
+        }
     }
 }
 
