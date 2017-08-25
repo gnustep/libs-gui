@@ -741,7 +741,7 @@ static NSNotificationCenter *nc = nil;
                || (_isVertical == NO && p.y != op.y))
             {
               NSPoint point = NSMakePoint(p.x+poffset.x, p.y+poffset.y);
-              [self _resize: v withOldSplitView: prev withFrame: r fromPoint: point 
+              [self _resize: v withOldSplitView: prev withFrame: r fromPoint: point
                 withBigRect: bigRect divHorizontal: divHorizontal
                 divVertical: divVertical userInfo:userInfo];
               [_window invalidateCursorRectsForView: self];
@@ -767,7 +767,8 @@ static NSNotificationCenter *nc = nil;
       if ((_isVertical == YES && p.x != op.x)
         || (_isVertical == NO && p.y != op.y))
         {
-          [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
+          NSPoint point = NSMakePoint(p.x+poffset.x, p.y+poffset.y);
+          [self _resize: v withOldSplitView: prev withFrame: r fromPoint: point
             withBigRect: bigRect divHorizontal: divHorizontal
             divVertical: divVertical userInfo:userInfo];
           [_window invalidateCursorRectsForView: self];
