@@ -1753,10 +1753,11 @@ didStartElement: (NSString*)elementName
 
 - (id) decodeBackgroundColorForElement: (GSXib5Element*)element
 {
-  id    object  = nil;
+  id object = [self decodeObjectForKey: @"backgroundColor"];
   
-  // Return value...
-  object = [NSColor whiteColor];
+  // Return a default color if none available...
+  if (object == nil)
+    object = [NSColor whiteColor];
   
   return object;
 }
