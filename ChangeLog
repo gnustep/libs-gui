@@ -1,3 +1,8 @@
+2017-08-25 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep.m
+	Initialize density to 0, so that in case it is unset (72dpi) it is not a random value in case the struct is not zeroed.
+
 2017-08-09  Svetlana Tkachenko
 
 	*  ColorPickers/Russian.lproj/StandardPicker.strings

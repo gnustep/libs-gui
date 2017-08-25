@@ -2016,6 +2016,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info->samplesPerPixel = _numColors;
 
   // resolution/density
+  info->xdpi = 0;
+  info->ydpi = 0;
   if (_pixelsWide != (int)(_size.width) || _pixelsHigh != (int)(_size.height))
     {
       float x_density, y_density;
