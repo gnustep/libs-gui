@@ -411,8 +411,9 @@ static NSNotificationCenter *nc = nil;
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSApplication *app = [NSApplication sharedApplication];
-  NSPoint p = NSZeroPoint, 
-    op = NSZeroPoint;
+  NSPoint p = NSZeroPoint;
+  NSPoint op = NSZeroPoint;
+  NSPoint poffset = NSZeroPoint;
   NSEvent *e;
   NSRect r, r1, bigRect, vis;
   id v = nil, prev = nil;
@@ -474,6 +475,9 @@ static NSNotificationCenter *nc = nil;
           r = [self _dividerRectForIndex: i-1];
           if (NSPointInRect(p, r) == NO)
             return;
+          
+          // Capture the offset for use during the resize loop below...
+          poffset = NSMakePoint(r.origin.x-p.x, r.origin.y-p.y);
           
           // Force the view processing below to select this view...
           p = r.origin;
@@ -736,7 +740,8 @@ static NSNotificationCenter *nc = nil;
           if ((_isVertical == YES && p.x != op.x)
                || (_isVertical == NO && p.y != op.y))
             {
-              [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
+              NSPoint point = NSMakePoint(p.x+poffset.x, p.y+poffset.y);
+              [self _resize: v withOldSplitView: prev withFrame: r fromPoint: point 
                 withBigRect: bigRect divHorizontal: divHorizontal
                 divVertical: divVertical userInfo:userInfo];
               [_window invalidateCursorRectsForView: self];
