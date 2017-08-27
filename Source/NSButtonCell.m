@@ -819,6 +819,9 @@ typedef struct _GSButtonCellFlags
         [self setBezeled: NO];
         [self setImageDimsWhenDisabled: NO];
         break;
+      default:
+        NSLog(@"Using unsupported button type %d", buttonType);
+        break;
     }
 }
 

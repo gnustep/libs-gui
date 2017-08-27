@@ -1,5 +1,12 @@
 2017-08-27 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSButtonCell.m (-setButtonType:): Warn about unsupported
+	button types.
+	* Source/NSCell.m (-performClickWithFrame:inView:): Highlight the
+	cell only if drawing is possible.
+
+2017-08-27 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCell.m (-trackMouse:...untilMouseUp:): Rewrote mouse
 	tracking logic to be closer to the Cocoa definition.
 

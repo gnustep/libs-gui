@@ -1479,7 +1479,7 @@ static NSColor *dtxtCol;
 
   [self setNextState];
 
-  if (controlView != nil)
+  if ((controlView != nil) && [controlView canDraw])
     {  
       NSWindow *cvWin = [controlView window];
       NSDate *limit = [NSDate dateWithTimeIntervalSinceNow: 0.1];
