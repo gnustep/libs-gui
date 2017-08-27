@@ -1,39 +1,45 @@
+2017-08-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-trackMouse:...untilMouseUp:): Rewrote mouse
+	tracking logic to be closer to the Cocoa definition.
+
 2017-08-25 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep.m
-	Initialize density to 0, so that in case it is unset (72dpi) it is not a random value in case the struct is not zeroed.
+	Initialize density to 0, so that in case it is unset (72dpi) it is
+	not a random value in case the struct is not zeroed.
 
 2017-08-24  Daniel Ferreira <dtf@stanford.edu>
 
-	* Source/externs.m:	
+	* Source/externs.m:
 	Define some private NSAttributedString attribute name definitions. Their
 	functionality is not yet implemented.
 
 2017-08-24  Daniel Ferreira <dtf@stanford.edu>
 
-	* Headers/AppKit/NSWindow.h:	
+	* Headers/AppKit/NSWindow.h:
 	Define new values for the NSWindowCollectionBehavior enum for
 	compatibility purposes.
 
 2017-08-24  Daniel Ferreira <dtf@stanford.edu>
-	
+
 	* Headers/AppKit/NSGestureRecognizer.h
-	* Source/NSGestureRecognizer.m:	
+	* Source/NSGestureRecognizer.m:
 	Implement stub for -[NSGestureRecognizer locationInView:] for
 	compatibility purposes.
 
 	* Headers/AppKit/NSWindow.h
-	* Source/NSWindow.m:	
+	* Source/NSWindow.m:
 	Add stub for +[NSWindow windowNumberAtPoint:belowWindowWithWindowNumber:]
 	for compatibility purposes.
 
 	* Headers/AppKit/NSSpellChecker.h
-	* Source/NSSpellChecker.m:	
+	* Source/NSSpellChecker.m:
 	Add a stub for the -checkGrammarOfString:... method for compatibility
 	purposes.
 
 	* Headers/AppKit/NSSpellChecker.h
-	* Source/NSSpellChecker.m:	
+	* Source/NSSpellChecker.m:
 	Add stubs for:
 	- +[NSSpellChecker isAutomaticTextReplacementEnabled],
 	- +[NSSpellChecker isAutomaticDashSubstitutionEnabled]
@@ -42,40 +48,40 @@
 
 2017-08-15  Daniel Ferreira <dtf@stanford.edu>
 
-	* Headers/AppKit/NSDragging.h:	
+	* Headers/AppKit/NSDragging.h:
 	Create NSDraggingSource protocol for increased compatibility with GUI.
 
-	* Headers/AppKit/NSSpellChecker.h:	
+	* Headers/AppKit/NSSpellChecker.h:
 	Add definitions for the NSCorrectionResponse for increased
 	compatibility.
 
 	* Headers/AppKit/NSWindow.h
-	* Source/NSWindow.m:	
+	* Source/NSWindow.m:
 	Add stub for -[NSWindow backingScaleFactor] for compatibility purposes.
 
 	* Headers/AppKit/NSApplication.h
 	* Headers/AppKit/NSWindow.h
-	* Source/NSWindow.m:	
+	* Source/NSWindow.m:
 	Define constants and stubs related to modal sheets in GUI for increased
 	compatibility.
 
 	* Headers/AppKit/NSFont.h
-	* Source/externs.m:	
+	* Source/externs.m:
 	Define font weight constants introduced in macOS 10.11.
 
-	* Source/externs.m:	
+	* Source/externs.m:
 	Export the private _NXSmartPaste constant for compatibility purposes.
 
 	* Headers/AppKit/NSAttributedString.h
-	* Source/externs.m:	
+	* Source/externs.m:
 	Add a stub for NSTextInsertionUndoableAttributeName, a private
 	NSAttributedString attribute.
 
-	* Headers/AppKit/NSButtonCell.h:	
+	* Headers/AppKit/NSButtonCell.h:
 	Define new button cell constants in the NSButtonCell header. These
 	buttons are not yet implemented, however.
 
-	* Headers/AppKit/NSText.h:	
+	* Headers/AppKit/NSText.h:
 	Define new-style NSTextAlignment* constants on GUI for compatibility
 	purposes with new macOS versions.
 
