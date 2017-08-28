@@ -2344,7 +2344,7 @@ static void computeNewSelection
   _dataSource = anObject;
 
   [self tile];
-  //[self reloadData];
+  [self reloadData];
 }
 
 /* 
