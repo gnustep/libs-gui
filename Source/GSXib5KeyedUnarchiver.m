@@ -269,27 +269,27 @@ static NSString *ApplicationClass = nil;
   
   if (self)
     {
-    if([coder allowsKeyedCoding])
-      {
-        [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
-        
-        // Decode value properly...
-        if ([@"boolean" isEqualToString: typeIdentifier])
-          [self setValue: [NSNumber numberWithBool: ([@"YES" isEqualToString: value] ? YES : NO)]];
-        else if ([@"image" isEqualToString: typeIdentifier])
-          [self setValue: [NSImage imageNamed: value]];
-#if 0
-        else if ([@"number" isEqualToString: typeIdentifier])
-          [self setValue [coder decodeObjectForKey: @"value"]];
-        else if ([@"point" isEqualToString: typeIdentifier])
-          [self setValue: [coder decodeObjectForKey: @"point"]];
-        else if ([@"size" isEqualToString: typeIdentifier])
-          [self setValue: [code decodeObjectForKey: @"size"]];
-        else if ([@"rect" isEqualToString: typeIdentifier])
-          [self setValue: [coder decodeObjectForKey: @"value"]];
-        NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
-#endif
-      }
+      if([coder allowsKeyedCoding])
+        {
+          [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
+          
+          // Decode value properly...
+          if ([@"boolean" isEqualToString: typeIdentifier])
+            [self setValue: [NSNumber numberWithBool: ([@"YES" isEqualToString: value] ? YES : NO)]];
+          else if ([@"image" isEqualToString: typeIdentifier])
+            [self setValue: [NSImage imageNamed: value]];
+          else if ([@"number" isEqualToString: typeIdentifier])
+            [self setValue: [coder decodeObjectForKey: @"value"]];
+          else if ([@"point" isEqualToString: typeIdentifier])
+            [self setValue: [coder decodeObjectForKey: @"value"]];
+          else if ([@"size" isEqualToString: typeIdentifier])
+            [self setValue: [coder decodeObjectForKey: @"size"]];
+          else if ([@"rect" isEqualToString: typeIdentifier])
+            [self setValue: [coder decodeObjectForKey: @"value"]];
+          else if ([@"nil" isEqualToString: typeIdentifier])
+            [self setValue: nil];
+          NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
+        }
     }
   
   return self;
@@ -596,15 +596,63 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                       andAttributes: @{ @"key" : @"parent" }];
   GSXib5Element *children     = [[GSXib5Element alloc] initWithType: @"nil"
                                                       andAttributes: @{ @"key" : @"children" }];
+  GSXib5Element *reference    = [[GSXib5Element alloc] initWithType: @"reference"
+                                                      andAttributes: @{ @"key" : @"object", @"ref" : [element attributeForKey: @"id"] }];
 
   //[element setAttribute: @"connection" forKey: @"key"];
   [objectRecord setElement: element forKey: @"object"];
   [objectRecord setElement: parent forKey: @"parent"];
   [objectRecord setElement: children forKey: @"children"];
+  [objectRecord setElement: reference forKey: @"reference"];
   
   RELEASE(parent);
   RELEASE(children);
+  RELEASE(reference);
   return AUTORELEASE(objectRecord);
+}
+
+- (void) addRuntimeAttributesForElement: (GSXib5Element*)element forID: (NSString*)idString
+{
+  NSString      *refID        = [NSString stringWithFormat:@"%@.IBAttributePlaceholdersKey",idString];
+  GSXib5Element *objectRecord = (GSXib5Element*)[_flattenedProperties elementForKey: refID];
+  
+  // Mimic the old IBAttributePlaceholders instance...
+  if (objectRecord == nil)
+    {
+      objectRecord                  = [[GSXib5Element alloc] initWithType: @"dictionary"
+                                                            andAttributes: @{ @"class" : @"NSMutableDictionary",
+                                                                              @"id"    : refID } ];
+      GSXib5Element *stringRecord   = [[GSXib5Element alloc] initWithType: @"string"
+                                                            andAttributes: @{ @"key" : @"NS.key.0" }];
+      GSXib5Element *placeholderRec = [[GSXib5Element alloc] initWithType: @"object"
+                                                            andAttributes: @{ @"class" : @"IBUserDefinedRuntimeAttributesPlaceholder",
+                                                                              @"key"   : @"IBUserDefinedRuntimeAttributesPlaceholderName" }];
+      GSXib5Element *placeStringRec = [[GSXib5Element alloc] initWithType: @"string"
+                                                            andAttributes: @{ @"key" : @"name" }];
+      GSXib5Element *referenceRec   = [[GSXib5Element alloc] initWithType: @"reference"
+                                                            andAttributes: @{ @"key" : @"object",
+                                                                              @"ref" : [element attributeForKey: @"id"] }];
+      
+      // Setup placeholder record...
+      [placeStringRec setValue: @"IBUserDefinedRuntimeAttributesPlaceholderName"];
+      [placeholderRec setElement: placeStringRec forKey: @"name"];
+      [placeholderRec setElement: referenceRec forKey: @"object"];
+      [placeholderRec setElement: element forKey: @"userDefinedRuntimeAttributes"];
+      
+      // Attach placeholder and string records to the object record...
+      [objectRecord setElement: stringRecord forKey: @"NS.key.0"];
+      [objectRecord setElement: placeholderRec forKey: @"IBUserDefinedRuntimeAttributesPlaceholderName"];
+      
+      // Add to flattened properties...
+      [_flattenedProperties setElement: objectRecord forKey: refID];
+      
+      // Cleanup...
+      RELEASE(stringRecord);
+      RELEASE(placeholderRec);
+      RELEASE(placeStringRec);
+      RELEASE(referenceRec);
+      RELEASE(objectRecord);
+    }
 }
 
 #pragma mark - Instance initialization method(s)...
@@ -658,10 +706,10 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                                   @"key"   : @"objectRecords" }];
   _orderedObjects       = [[GSXib5Element alloc] initWithType: @"array"
                                                 andAttributes: @{ @"key" : @"orderedObjects" }];
-  _flattenedProperties  = [[GSXib5Element alloc] initWithType: @"object"
+  _flattenedProperties  = [[GSXib5Element alloc] initWithType: @"dictionary"
                                                 andAttributes: @{ @"class" : @"NSMutableDictionary",
                                                                   @"key"   : @"flattenedProperties" }];
-  _runtimeAttributes    = [[GSXib5Element alloc] initWithType: @"object"
+  _runtimeAttributes    = [[GSXib5Element alloc] initWithType: @"dictionary"
                                                 andAttributes: @{ @"class" : @"NSMutableDictionary",
                                                                   @"key"   : @"connectionRecords" }];
   
@@ -680,8 +728,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
   
    // flattenedProperties...
-  NSString *runtimeAttributesKey = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", [[NSUUID UUID] UUIDString]];
-  [_flattenedProperties setElement: _runtimeAttributes forKey: runtimeAttributesKey];
+//  NSString *runtimeAttributesKey = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", [[NSUUID UUID] UUIDString]];
+//  [_flattenedProperties setElement: _runtimeAttributes forKey: runtimeAttributesKey];
 }
 
 - (void)dealloc
@@ -2843,6 +2891,16 @@ didStartElement: (NSString*)elementName
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
 
+  // Process IB runtime attributes for element...
+  if ([element elementForKey: @"userDefinedRuntimeAttributes"] && // Ensure we don't process the placeholders...
+      ([[element attributeForKey: @"class"] isEqualToString: @"IBUserDefinedRuntimeAttributesPlaceholder"] == NO))
+    {
+      // Create the flattened property data for the runtime attributes in the OLD XIB format...
+      id runtimeAttributes = [element elementForKey: @"userDefinedRuntimeAttributes"];
+      id orderedObject     = [_orderedObjectsDict objectForKey: [element attributeForKey: @"id"]];
+      [self addRuntimeAttributesForElement: runtimeAttributes forID: [orderedObject attributeForKey: @"id"]];
+    }
+  
   return object;
 }
 
@@ -2893,33 +2951,33 @@ didStartElement: (NSString*)elementName
           [object setCellAttribute: NSChangeGrayCell to: buttonCellFlags.changeGray];
           
           if (buttonCellFlags.imageDoesOverlap)
-          {
-            if (buttonCellFlags.isImageAndText)
-              [object setImagePosition: NSImageOverlaps];
-            else
-              [object setImagePosition: NSImageOnly];
-          }
+            {
+              if (buttonCellFlags.isImageAndText)
+                [object setImagePosition: NSImageOverlaps];
+              else
+                [object setImagePosition: NSImageOnly];
+            }
           else if (buttonCellFlags.isImageAndText)
-          {
-            if (buttonCellFlags.isHorizontal)
             {
-              if (buttonCellFlags.isBottomOrLeft)
-                [object setImagePosition: NSImageLeft];
+              if (buttonCellFlags.isHorizontal)
+                {
+                  if (buttonCellFlags.isBottomOrLeft)
+                    [object setImagePosition: NSImageLeft];
+                  else
+                    [object setImagePosition: NSImageRight];
+                }
               else
-                [object setImagePosition: NSImageRight];
+                {
+                  if (buttonCellFlags.isBottomOrLeft)
+                    [object setImagePosition: NSImageBelow];
+                  else
+                    [object setImagePosition: NSImageAbove];
+                }
             }
-            else
-            {
-              if (buttonCellFlags.isBottomOrLeft)
-                [object setImagePosition: NSImageBelow];
-              else
-                [object setImagePosition: NSImageAbove];
-            }
-          }
           else
-          {
-            [object setImagePosition: NSNoImage];
-          }
+            {
+              [object setImagePosition: NSNoImage];
+            }
 #if 0
           [object setBordered: NO];
           [object setCellAttribute: NSPushInCell to: NO];
