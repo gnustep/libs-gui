@@ -287,6 +287,7 @@
   [description appendFormat: @" destination: %@: ", NSStringFromClass([destination class])];
   return AUTORELEASE(description);
 }
+
 - (id) nibInstantiate
 {
   if ([source respondsToSelector: @selector(nibInstantiate)])
@@ -722,6 +723,7 @@
       if ([coder containsValueForKey: @"flattenedProperties"])
         {
           ASSIGN(flattenedProperties, [coder decodeObjectForKey: @"flattenedProperties"]);
+          NSWarnMLog(@"flattenedProperties: %@", flattenedProperties);
         }
       if ([coder containsValueForKey: @"objectRecords"])
         {
@@ -757,6 +759,17 @@
   DESTROY(localizations);
   DESTROY(sourceID);
   [super dealloc];
+}
+
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat: @" - sourceID: %@: ", sourceID];
+  [description appendFormat: @" maxID: %@: ", maxID];
+  [description appendFormat: @" objectRecords: %@: ", objectRecords];
+  [description appendFormat: @" flattenedProperties: %@: ", flattenedProperties];
+  [description appendFormat: @" connectionRecords: %@: ", connectionRecords];
+  return AUTORELEASE(description);
 }
 
 - (NSEnumerator*) connectionRecordEnumerator
@@ -850,7 +863,7 @@
         }
 
       properties = [self propertiesForObjectID: [obj objectID]];
-      NSDebugLLog(@"XIB", @"object %ld props %@", (long)[obj objectID], properties);
+      NSDebugLLog(@"XIB", @"object %@ props %@", [obj objectID], properties);
 
       //value = [properties objectForKey: @"windowTemplate.maxSize"];
       //value = [properties objectForKey: @"CustomClassName"];
@@ -869,7 +882,7 @@
             }
         }
 
-      // Tool tips
+      // Tool tips/runtime attributes
       value = [properties objectForKey: @"IBAttributePlaceholdersKey"];
       if (value != nil)
         {
@@ -882,7 +895,7 @@
             {
               [realObj setToolTip: [tooltip toolTip]];
             }
-          
+
           // Process XIB runtime attributes...
           if ([infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"])
             {
@@ -896,7 +909,7 @@
                 {
                   [realObj setValue:[attribute value] forKeyPath:[attribute keyPath]];
                 }
-              }
+            }
         }
 
       if ([realObj respondsToSelector: @selector(awakeFromNib)])

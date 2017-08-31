@@ -119,6 +119,13 @@
   return runtimeAttributes;
 }
 
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat: @" runtimeAttributes: %@", runtimeAttributes];
+  return AUTORELEASE(description);
+}
+
 @end
 
 @implementation IBAccessibilityAttribute
