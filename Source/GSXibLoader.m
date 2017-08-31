@@ -723,7 +723,6 @@
       if ([coder containsValueForKey: @"flattenedProperties"])
         {
           ASSIGN(flattenedProperties, [coder decodeObjectForKey: @"flattenedProperties"]);
-          NSWarnMLog(@"flattenedProperties: %@", flattenedProperties);
         }
       if ([coder containsValueForKey: @"objectRecords"])
         {
