@@ -57,43 +57,67 @@
 }
 
 + (BOOL) loadNibNamed: (NSString *)aNibName
+                owner: (id)owner
+{
+    NSBundle	*bundle;
+    if (owner == nil || aNibName == nil)
+    {
+        return NO;
+    }
+    
+    /*
+     * First look for the NIB in the bundle corresponding to the owning class,
+     * since the class may have been loaded dynamically and the bundle may
+     * contain class-specific NIB resources as well as code.
+     * If that fails, try to load the NIB from the main application bundle,
+     * which is where most NIB resources are to be found.
+     * Possibly this is the wrong order ... since it's conceivable that an
+     * application may supply an alternative NIB which it would like to have
+     * used in preference to the one in the classes bundle.  However I could
+     * not find the behavior documented anywhere and the current order is
+     * most consistent with the the way the code behaved before I changed it.
+     */
+    bundle = [self bundleForClass: [owner class]];
+    if (bundle != nil && [bundle loadNibNamed:aNibName owner:owner topLevelObjects:NULL] == YES)
+    {
+        return YES;
+    }
+    else
+    {
+        return [[self mainBundle] loadNibNamed:aNibName owner:owner topLevelObjects:NULL];
+    }
+}
+
+- (BOOL) loadNibNamed: (NSString *)aNibName
 	        owner: (id)owner
+      topLevelObjects:(NSArray**)tlo
 {
   NSDictionary	*table;
-  NSBundle	*bundle;
-
+  
   if (owner == nil || aNibName == nil)
     {
       return NO;
     }
   table = [NSDictionary dictionaryWithObject: owner forKey: NSNibOwner];
 
-  /*
-   * First look for the NIB in the bundle corresponding to the owning class,
-   * since the class may have been loaded dynamically and the bundle may
-   * contain class-specific NIB resources as well as code.
-   * If that fails, try to load the NIB from the main application bundle,
-   * which is where most NIB resources are to be found.
-   * Possibly this is the wrong order ... since it's conceivable that an
-   * application may supply an alternative NIB which it would like to have
-   * used in preference to the one in the classes bundle.  However I could
-   * not find the behavior documented anywhere and the current order is
-   * most consistent with the the way the code behaved before I changed it.
-   */
-  bundle = [self bundleForClass: [owner class]];
-  if (bundle != nil && [bundle loadNibFile: aNibName
-			 externalNameTable: table
-				  withZone: [owner zone]] == YES)
-    {
-      return YES;
-    }
-  else
-    {
-      bundle = [self mainBundle];
-    }
-  return [bundle loadNibFile: aNibName
+ 
+  BOOL success = [self loadNibFile: aNibName
 	   externalNameTable: table
 		    withZone: [owner zone]];
+    
+    // Testplant-PGL 8-SEP-2017
+    // when using the newer topLevelObjects API, conform to the cocoa standard of letting the caller own the TLOs.
+    // these were previously retained by [GSXibLoader awake:withContext:] so we need to autorelease them.
+    // see cocoa docs for loadNibNamed:owner:topLevelObjects:
+  if (success && tlo && [table objectForKey:NSNibTopLevelObjects])
+    {
+      *tlo = [table objectForKey:NSNibTopLevelObjects];
+      for (NSObject *obj in *tlo)
+        {
+          [obj autorelease];
+        }
+    }
+  return success;
 }
 
 - (NSString *) pathForNibResource: (NSString *)fileName

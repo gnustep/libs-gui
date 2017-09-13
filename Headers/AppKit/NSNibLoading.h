@@ -57,6 +57,10 @@
 
 + (BOOL) loadNibNamed: (NSString *)aNibName
 	        owner: (id)owner;
+        
+- (BOOL) loadNibNamed: (NSString *)aNibName
+                owner: (id)owner
+      topLevelObjects:(NSArray**)tlo;
 
 - (BOOL) loadNibFile: (NSString *)fileName
    externalNameTable: (NSDictionary *)context
