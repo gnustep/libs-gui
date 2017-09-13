@@ -1245,13 +1245,6 @@ places where we switch.
       [self _invalidateEverything];
       return;
     }
-  // TESTPLANT-MAL-09082017: Edge case when within LAST character position...
-  else if ((range.location+range.length+1) >= [_textStorage length])
-    {
-      // Full invalidation
-      [self _invalidateEverything];
-      return;
-    }
 
   /*
   Find out what range we actually need to invalidate. This depends on how
