@@ -58,9 +58,11 @@
 + (BOOL) loadNibNamed: (NSString *)aNibName
 	        owner: (id)owner;
         
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (BOOL) loadNibNamed: (NSString *)aNibName
                 owner: (id)owner
       topLevelObjects:(NSArray**)tlo;
+#endif
 
 - (BOOL) loadNibFile: (NSString *)fileName
    externalNameTable: (NSDictionary *)context
