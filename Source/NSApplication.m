@@ -1740,6 +1740,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * -stopModalWithCode: , or -abortModal , at which time -endModalSession:
  * is called automatically.
  */
+- (NSDate*) _runModalForWindowLimitForMode: (NSString*) mode
+{
+  NSDate *limit = [[NSRunLoop currentRunLoop] limitDateForMode: mode];
+  if (limit == nil)
+    limit = [NSDate dateWithTimeIntervalSinceNow: 0.5];
+  return limit;
+}
+
 - (NSInteger) runModalForWindow: (NSWindow*)theWindow
 {
   NSModalSession theSession = 0;
@@ -1747,11 +1755,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   NS_DURING
     {
-      NSDate		*limit;
       GSDisplayServer	*srv;
 
       theSession = [self beginModalSessionForWindow: theWindow];
-      limit = [NSDate distantFuture];
       srv = GSCurrentServer();
 
       while (code == NSRunContinuesResponse)
@@ -1762,6 +1768,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	  code = [self runModalSession: theSession];
 	  if (code == NSRunContinuesResponse)
 	    {
+              NSDate *limit;
+              // Wee need to run the timers, etc and limit the interval
+              // to that context...
+              limit = [self _runModalForWindowLimitForMode: NSDefaultRunLoopMode];
+
 	      /*
 	       * Wait until there are more events to handle.
 	       */
