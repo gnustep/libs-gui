@@ -59,6 +59,7 @@
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSWindow.h"
 #import "GSGuiPrivate.h"
+#import "GNUstepBase/NSDebug+GNUstepBase.h"
 #import "GNUstepGUI/GSServicesManager.h"
 
 // prototype for function to create name for server
@@ -106,32 +107,46 @@ extern NSString *GSSpellServerName(NSString *checkerDictionary, NSString *langua
 - (id)_launchSpellCheckerForLanguage: (NSString *)language
 {
   id<NSSpellServerPrivateProtocol> proxy = nil;
-  NSDictionary *spellCheckers = [_allServices objectForKey: @"BySpell"];
-  NSDictionary *checkerDictionary = [spellCheckers objectForKey: language];
-  NSString *spellServicePath = [checkerDictionary objectForKey: @"ServicePath"];
-  NSString *vendor = [checkerDictionary objectForKey: @"NSSpellChecker"];
-  NSDate *finishBy;
-
-  NSString *port = GSSpellServerName(vendor, language);
-  double seconds = 30.0;
-
-  NSLog(@"Language: %@", language);
-  NSLog(@"Service to start: %@", spellServicePath);
-  NSLog(@"Port: %@",port);
-
-  finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
-  proxy = GSContactApplication(spellServicePath, port, finishBy);
-  if (proxy == nil)
+  if ([[NSUserDefaults standardUserDefaults] boolForKey: @"GSDisableSpellCheckerServer"])
     {
-      NSLog(@"Failed to contact spell checker for language '%@'", language);
+      GSOnceMLog(@"WARNING: spell checker disabled - reset 'GSDisableSpellCheckerServer' to NO in defaults to re-enable");
     }
   else
     {
-      NSLog(@"Set proxy");
-      [(NSDistantObject *)proxy setProtocolForProxy: 
-			    @protocol(NSSpellServerPrivateProtocol)];
+      NSDictionary *spellCheckers = [_allServices objectForKey: @"BySpell"];
+      NSDictionary *checkerDictionary = [spellCheckers objectForKey: language];
+      NSString *spellServicePath = [checkerDictionary objectForKey: @"ServicePath"];
+      NSString *vendor = [checkerDictionary objectForKey: @"NSSpellChecker"];
+      NSDate *finishBy;
+
+      NSString *port = GSSpellServerName(vendor, language);
+      double seconds = 30.0;
+
+      NSLog(@"Language: %@", language);
+      NSLog(@"Service to start: %@", spellServicePath);
+      NSLog(@"Port: %@",port);
+
+      if ((spellServicePath == nil) || ([spellServicePath length] == 0))
+      {
+        NSLog(@"spell checker service path invalid: '%@'", spellServicePath);
+      }
+      else
+        {
+          finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
+          proxy = GSContactApplication(spellServicePath, port, finishBy);
+          if (proxy == nil)
+            {
+              NSLog(@"Failed to contact spell checker for language '%@'", language);
+            }
+          else
+            {
+              NSLog(@"Set proxy");
+              [(NSDistantObject *)proxy setProtocolForProxy: 
+                  @protocol(NSSpellServerPrivateProtocol)];
+            }
+        }
     }
-			  
+  
   return proxy;
 }
 
