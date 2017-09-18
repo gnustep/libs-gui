@@ -439,7 +439,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                 //@"NSContents", @"NSAlternateContents",
                                 @"NSCellFlags", @"NSCellFlags2",
                                 @"NSButtonFlags", @"NSButtonFlags2",
-                                @"NSSelectedIndex", @"NSAltersState", //@"NSUsesItemFromMenu",
+                                @"NSSelectedIndex", @"NSAltersState", @"NSUsesItemFromMenu",
                                 @"NSNormalImage", @"NSAlternateImage",
                                 @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                 @"NSTitleCell", @"NSOffsets",
@@ -475,6 +475,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                             @"autoenablesItems"           : @"decodeAutoenablesItemsForElement:",
                                             @"NSAltersState"              : @"decodeAltersStateForElement:",
                                             @"NSMenuItem"                 : @"decodeMenuItemForElement:",
+                                            @"NSUsesItemFromMenu"         : @"decodeUsesItemFromMenuForElement:",
                                             @"selectedItem"               : @"decodeSelectedIndexForElement:",
                                             @"NSPreferredEdge"            : @"decodePreferredEdgeForElement:",
                                             @"NSArrowPosition"            : @"decodeArrowPositionForElement:",
@@ -2788,6 +2789,17 @@ didStartElement: (NSString*)elementName
   }
   
   return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id)decodeUsesItemFromMenuForElement: (GSXib5Element*)element
+{
+  BOOL      value            = YES; // If omitted Cocoa default...
+  NSString *usesItemFromMenu = [element attributeForKey: @"usesItemFromMenu"];
+  
+  if (usesItemFromMenu)
+    value = [usesItemFromMenu boolValue];
+  
+  return [NSNumber numberWithBool: value];
 }
 
 #pragma mark - Overridden decoding methods from base class...
