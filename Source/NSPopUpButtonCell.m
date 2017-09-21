@@ -123,7 +123,8 @@ static NSImage *_pbc_image[5];
 
   [self _initMenu];
   [self setPullsDown: flag];
-  _pbcFlags.usesItemFromMenu = YES;
+  [self setAltersStateOfSelectedItem: YES];
+  [self setUsesItemFromMenu: YES];
   [self setPreferredEdge: NSMaxYEdge];
   [self setArrowPosition: NSPopUpArrowAtCenter];
 
