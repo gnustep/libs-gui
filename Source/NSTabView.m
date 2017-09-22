@@ -162,6 +162,9 @@
     {
       [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
+
+    /* TODO (Optimize) - just mark the tabs rect as needing redisplay */
+    [self setNeedsDisplay: YES];
 }
 
 - (NSInteger) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
