@@ -634,6 +634,9 @@ static BOOL		restoreMouseMoved;
     textSize.height += 1;
   }
   
+  // Need to fudge the result just a bit due to occasionally cutoff characters...
+  textSize.width += 1;
+  
   return textSize;
 }
 
