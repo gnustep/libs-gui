@@ -1,3 +1,14 @@
+2017-10-01 Ivan Vucica <ivan@vucica.net>
+
+	* Documentation/ReleaseNotes.gsdoc:
+	Backfill 0.24.1 through 0.25.1. Add stub 0.26.0 entry.
+
+	* Documentation/news.texi:
+	Add stub 0.26.0 entry.
+
+	* Version:
+	Bump to 0.26.0.
+
 2017-08-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSStepperCell.m (-trackMouse:...untilMouseUp:): Adjust

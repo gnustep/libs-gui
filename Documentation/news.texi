@@ -9,6 +9,13 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.26.0}
+
+@itemize @bullet
+@item This list is yet to be written.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.25.1}
 
 @itemize @bullet
@@ -21,7 +28,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item Only update visible menus
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.25.0}
 
 @itemize @bullet

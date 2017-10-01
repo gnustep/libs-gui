@@ -16,9 +16,84 @@
       <heading>Gui Release Notes</heading>
       <p>
         The release notes include descriptions of API changes, behavior
-	changes and other information that might help developers and users
-	migrate to using a newer version of the library.
+        changes and other information that might help developers and users
+        migrate to using a newer version of the library.
       </p>
+
+      <section>
+        <heading>0.26.0</heading>
+        <p>
+          Bumped due to binary incompatibilities between 0.25.0 and 0.25.1. Also
+          including numerous compatibility improvements from the Summer of Code
+          project.
+        </p>
+        <deflist>
+          <term>TODO</term>
+          <desc>This list is yet to be written.</desc>
+        </deflist>
+      </section>
+
+      <section>
+        <heading>0.25.1</heading>
+        <p>
+          New release.
+        </p>
+        <deflist>
+          <term>Image library fixes.</term>
+          <desc>
+            JPEG (saving) alpha channel fixes and size with resolution != 72.
+            JPEG resolution read support.
+            TIFF saving fixes.
+          </desc>
+          <term>Mounting.</term>
+          <desc>Improved volumes mounting and support. Portability improvements
+          in volume mounting and support</desc>
+          <term>Text layout.</term>
+          <desc>Corrected layout of empty strings.</desc>
+          <term>Optimizations.</term>
+          <desc>Only update visible menus.</desc>
+        </deflist>
+      </section>
+
+      <section>
+        <heading>0.25.0</heading>
+        <p>
+          New release. Bumped due to detected binary incompatibility between
+          0.24.0 and 0.24.1.
+        </p>
+        <deflist>
+          <term>GIF library update</term>
+          <desc>Fixes for new GIF library versions</desc>
+          <term>Theming improvements</term>
+          <desc>Theming of named images for specific applications by the use of
+          the CFBundleIdentifier in the theme. New icons and corresponding
+          constants for special folders, recycler and others.</desc>
+          <term>NSWorkspace</term>
+          <desc>Improvements in NSWorkspace icon lookup. Improvements in
+          removable media commands, imported and cleaned from GWorkspace.</desc>
+          <term>Other</term>
+          <desc>Numerous bug fixes and improvements in Cocoa compatibility.
+          Spanish locale.</desc>
+      </section>
+
+      <section>
+        <heading>0.24.1</heading>
+        <p>
+          From a look through ChangeLog, we can see a lot of bugfixes for this
+          release, with the main focus on avoiding display glitches and
+          improving OSX compatibility.
+        </p>
+        <deflist>
+          <term>NSColorListChangedNotification</term>
+          <desc>Removed.</desc>
+          <term>NSColorPanelColorChangedNotification</term>
+          <desc>Removed.</desc>
+          <term>NSImageInterpolation{Default,High,Low,None}</term>
+          <desc>Removed.</desc>
+          <term>NSPrintHorizonalPagination</term>
+          <desc>Removed.</desc>
+        </deflist>
+      </section>
 
      <section>
       	<heading>0.24.0</heading>
