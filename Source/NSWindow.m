@@ -3043,7 +3043,12 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 	}
 
       [pool drain];
-      RELEASE(self);
+      
+      // Release ONLY IF we retained above (see is_released_when_closed if above)...
+      if (!_f.is_released_when_closed)
+        {
+          RELEASE(self);
+        }
     }
 }
 
