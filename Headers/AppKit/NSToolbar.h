@@ -142,22 +142,31 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 /*
  * Methods Implemented by the Delegate
  */
-@interface NSObject (NSToolbarDelegate)
-// notification methods
-- (void) toolbarDidRemoveItem: (NSNotification*)aNotification;
-- (void) toolbarWillAddItem: (NSNotification*)aNotification;
+#if defined(__clang__) && OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+@protocol NSToolbarDelegate <NSObject>
+#else
+@interface NSObject (NSToolbarDelegate) // previously informal protocol...
+#endif
 
 // delegate methods
-// required method
+// optional methods
+#if defined(__clang__)
+@optional
+#endif
 - (NSToolbarItem*)toolbar: (NSToolbar*)toolbar
     itemForItemIdentifier: (NSString*)itemIdentifier
 willBeInsertedIntoToolbar: (BOOL)flag;
-// required method
 - (NSArray*) toolbarAllowedItemIdentifiers: (NSToolbar*)toolbar;
-// required method
 - (NSArray*) toolbarDefaultItemIdentifiers: (NSToolbar*)toolbar;
-// optional method
+// notification methods
+- (void) toolbarDidRemoveItem: (NSNotification*)aNotification;
+- (void) toolbarWillAddItem: (NSNotification*)aNotification;
 - (NSArray *) toolbarSelectableItemIdentifiers: (NSToolbar *)toolbar;
+
+// required methods
+#if defined(__clang__)
+@required
+#endif
 @end
 
 #endif /* _GNUstep_H_NSToolbar */
