@@ -3020,17 +3020,6 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
       CREATE_AUTORELEASE_POOL(pool);
       _f.has_closed = YES;
 
-      /* The NSWindowCloseNotification might result in us being
-         deallocated. To make sure self stays valid as long as is
-         necessary, we retain ourselves here and balance it with a
-         release later (unless we're supposed to release ourselves when
-         we close).
-      */
-      if (!_f.is_released_when_closed)
-        {
-          RETAIN(self);
-        }
-
       [nc postNotificationName: NSWindowWillCloseNotification object: self];
       _f.has_opened = NO;
       [NSApp removeWindowsItem: self];
@@ -3044,8 +3033,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 
       [pool drain];
       
-      // Release ONLY IF we retained above (see is_released_when_closed if above)...
-      if (!_f.is_released_when_closed)
+      // Release ONLY IF is_released_when_closed flag is set...
+      if (_f.is_released_when_closed)
         {
           RELEASE(self);
         }
