@@ -60,6 +60,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSUndoManager.h>
+#import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
