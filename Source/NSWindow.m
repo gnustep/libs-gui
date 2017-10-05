@@ -389,7 +389,9 @@ has blocked and waited for events.
 */
 - (NSScreen *) _screenForFrame: (NSRect)frame
 {
-  CGFloat    largest   = 0.0;
+  // FIXME: We always return the first screen, if there is no overlap.
+  // Other code relies on [window screen] not returning nil.
+  CGFloat    largest   = -1.0;
   NSArray   *screens   = [NSScreen screens];
   NSInteger  index     = 0;
   NSScreen  *theScreen = nil;

@@ -1545,7 +1545,7 @@ static BOOL menuBarVisible = YES;
   [_view sizeToFit];
   
   menuFrame = [_view frame];
- 
+  
   // Main
   oldWindowFrame = [_aWindow frame];
   newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
@@ -1855,7 +1855,15 @@ static BOOL menuBarVisible = YES;
   NSWindow *window;
 
   window = [self window];
-  return !NSContainsRect([[window screen] visibleFrame], [window frame]);
+  if ((nil != window) && (nil != [window screen]))
+    {
+      return !NSContainsRect([[window screen] visibleFrame], [window frame]);
+    }
+  else
+    {
+      NSLog(@"Menu has no window %@ or screen %@", window, [window screen]);
+      return YES;
+    }
 }
 
 - (void) _performMenuClose: (id)sender

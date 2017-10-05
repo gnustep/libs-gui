@@ -1,3 +1,10 @@
+2017-10-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-isPartlyOffScreen): Protect agains window or
+	screen being nil.
+	* Source/NSWindow.m (-_screenForFrame:): Try not to return nil, as
+	other code uses the result without checks.
+
 2017-10-01 Ivan Vucica <ivan@vucica.net>
 
 	* Documentation/ReleaseNotes.gsdoc:
