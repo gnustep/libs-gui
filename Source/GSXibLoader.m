@@ -1034,12 +1034,13 @@
   {
     if (data != nil)
       {
-        unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
+        // We now default to checking XIB 5 versions first...
+        unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
 
         // If that doesn't work try the XIB 5 loader...
         if (unarchiver == nil)
           {
-            unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+            unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
           }
 
         if (unarchiver != nil)

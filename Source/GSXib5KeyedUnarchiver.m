@@ -662,32 +662,59 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 #if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLParser *theParser  = nil;
   NSData      *theData    = data;
-
+  
+  // Check data...
   if (theData == nil)
-  {
-    return nil;
-  }
-  
-  // Initialize...
-  [self _initCommon];
-  
-  // Createe the parser and parse the data...
-  theParser = [[NSXMLParser alloc] initWithData: theData];
-  [theParser setDelegate: self];
-  
-  NS_DURING
-  {
-    // Parse the XML data
-    [theParser parse];
-  }
-  NS_HANDLER
-  {
-    NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
-    DESTROY(self);
-  }
-  NS_ENDHANDLER
-  
-  DESTROY(theParser);
+    {
+      return nil;
+    }
+  else
+    {
+      // Ensure we have a XIB 5 version...first see if we can parse the XML...
+      NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
+                                                            options:0
+                                                              error:NULL];
+      if (document == nil)
+        {
+          NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
+        }
+      else
+        {
+          // Test to see if this is an Xcode 5 XIB...
+          NSArray *documentNodes = [document nodesForXPath:@"/document" error:NULL];
+        
+          // Need at LEAST ONE document node...we should find something a bit more
+          // specific to check here...
+          if ([documentNodes count] == 0)
+            {
+              NSWarnMLog(@"XIB is NOT a version 5 level");
+              DESTROY(self);
+            }
+          else
+            {
+              // Initialize...
+              [self _initCommon];
+              
+              // Createe the parser and parse the data...
+              theParser = [[NSXMLParser alloc] initWithData: theData];
+              [theParser setDelegate: self];
+              
+              NS_DURING
+                {
+                  // Parse the XML data
+                  [theParser parse];
+                }
+              NS_HANDLER
+                {
+                  NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
+                  DESTROY(self);
+                }
+              NS_ENDHANDLER
+              
+              DESTROY(theParser);
+            }
+        }
+    }
 #endif
   
   return self;
