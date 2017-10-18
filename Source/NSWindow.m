@@ -4849,7 +4849,7 @@ current key view.<br />
 #if 0 // Not valid since screen frame x/y values can be negative...
   if (fRect.origin.x + fRect.size.width < 0)
   {
-    NSLog(@"Bad screen frame  - window is off screen");  
+    NSLog(@"Bad screen frame  - window is off screen");
     return;
   }
 #endif
@@ -4951,60 +4951,34 @@ current key view.<br />
       screen = [NSScreen mainScreen];
       NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
     }
+    
+
+  /*
+   * Using whatever screen has been selected at this point, resize the window to fit porportionally onto it.
+   * (If we are using the same screen as it was saved on, it should be the same value)
+   * Using the actual values saved in the frame string. Then, apply that to the visible rect of the selected screen.
+   */
+  float pX = (fRect.origin.x - sRect.origin.x) / sRect.size.width;
+  float pY = (fRect.origin.y - sRect.origin.y) / sRect.size.height;
+  float pW =  fRect.size.width / sRect.size.width;
+  float pH =  fRect.size.height / sRect.size.height;
+    
+  // Constrain to be fully visible
+  if (pX < 0)      pX = 0;
+  if (pY < 0)      pY = 0;
+  if (pW > 1)      pW = 1;
+  if (pH > 1)      pH = 1;
+  if (pX + pW > 1) pX = 1 - pW;
+  if (pY + pH > 1) pY = 1 - pH;
+    
   nRect = [screen visibleFrame];
-
-  /*
-   * If the new screen drawable area has moved relative to the one in
-   * which the window was saved, adjust the window position accordingly.
-   */
-  if (NSEqualPoints(nRect.origin, sRect.origin) == NO)
-    {
-      fRect.origin.x += nRect.origin.x - sRect.origin.x;
-      fRect.origin.y += nRect.origin.y - sRect.origin.y;
-    }
-
-  /*
-   * If the stored screen area is not the same as that currently
-   * available, we adjust the window frame (position) to try to
-   * make layout sensible.
-   */
-  if (nRect.size.width != sRect.size.width)
-    {
-      fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
-        * (nRect.size.width / sRect.size.width);
-      
-      // Testplant-MAL-2015-07-08: keeping testplant branch code...
-      /*
-       * If width of the window goes beyond the screen width, then adjust the window over.
-       */
-      if (NSMaxX(fRect) > nRect.size.width)
-      {
-        fRect.origin.x = (nRect.size.width - fRect.size.width);
-      }
-    }
-  if (nRect.size.height != sRect.size.height)
-    {
-      fRect.origin.y = nRect.origin.y + (fRect.origin.y - nRect.origin.y)
-        * (nRect.size.height / sRect.size.height);
-
-      /*
-       * If height of the window goes above the screen height, then adjust the window down.
-       */
-      if ((fRect.size.height + fRect.origin.y) > nRect.size.height)
-      {
-        fRect.origin.y = nRect.size.height - fRect.size.height; 
-      }
-    }
-
-  // Testplant-MAL-2015-07-08: keeping testplant branch code...
-  // Another sanity check...
-  // Check again whether new window frame shows up on ANY screen...
-  if ([self _screenForFrame: fRect] == nil)
-    {
-      // Just center in first screen...
-      fRect = [self _centerFrame: fRect onScreen: [[NSScreen screens] objectAtIndex:0]];
-    }
-  
+    
+  fRect = NSMakeRect (nRect.origin.x + pX * nRect.size.width,
+                      nRect.origin.y + pY * nRect.size.height,
+                      pW * nRect.size.width,
+                      pH * nRect.size.height );
+    
+    
   // FIXME: Is this check needed?
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure
      we don't change the size. */
