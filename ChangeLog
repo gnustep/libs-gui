@@ -1,3 +1,9 @@
+2017-10-28  Graham Lee  <graham@iamleeg.com>
+
+	* Source/NSImage.m (initWithCoder:): restore image name when
+	loading an archived image with a name that can't be resolved at
+	load time. Fixes Gorm bug #46317.
+
 2017-10-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-isPartlyOffScreen): Protect agains window or
