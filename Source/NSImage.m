@@ -484,8 +484,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    initByReferencingFile: path];
           if (image != nil)
             {
-	      [image setName: realName];
-	      image->_flags.archiveByName = YES;
+              [image setName: realName];
+              image->_flags.archiveByName = YES;
               AUTORELEASE(image);
             }
         }
