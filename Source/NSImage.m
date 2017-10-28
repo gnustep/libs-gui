@@ -1967,15 +1967,24 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 - (id) initWithCoder: (NSCoder*)coder
 {
   BOOL flag;
-
+  NSImage *replacementImage;
+  NSString *imageName;
+  
   _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSName"])
         {
           RELEASE(self);
-          return RETAIN([NSImage imageNamed:
-            [coder decodeObjectForKey: @"NSName"]]);
+	  imageName = [coder decodeObjectForKey: @"NSName"];
+          replacementImage = [NSImage imageNamed: imageName];
+	  if (replacementImage)
+	    {
+	      return RETAIN(replacementImage);
+	    }
+	  replacementImage = [[NSImage alloc] init];
+	  [replacementImage setName: imageName];
+	  replacementImage->_flags.archiveByName = YES;
         }
       if ([coder containsValueForKey: @"NSColor"])
         {
@@ -2055,7 +2064,17 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           NSString *theName = [coder decodeObject];
 
           RELEASE(self);
-          self = RETAIN([NSImage imageNamed: theName]);
+	  replacementImage = [NSImage imageNamed: theName];
+	  if (replacementImage)
+	    {
+	      self = RETAIN(replacementImage);
+	    }
+	  else
+	    {
+	      self = [[NSImage alloc] init];
+	      [self setName: theName];
+	      self->_flags.archiveByName = YES;
+	    }
         }
       else
         {
