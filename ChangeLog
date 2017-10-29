@@ -1,3 +1,8 @@
+2017-12-07 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSImage.m (-initWithCoder:): Clean up and reduce amount
+	of releases of self.
+
 2017-12-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSScreen.h
