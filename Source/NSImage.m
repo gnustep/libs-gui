@@ -1976,16 +1976,16 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       if ([coder containsValueForKey: @"NSName"])
         {
           RELEASE(self);
-	  imageName = [coder decodeObjectForKey: @"NSName"];
+          imageName = [coder decodeObjectForKey: @"NSName"];
           replacementImage = [NSImage imageNamed: imageName];
-	  if (replacementImage)
-	    {
-	      return RETAIN(replacementImage);
-	    }
-	  replacementImage = [[NSImage alloc] init];
-	  [replacementImage setName: imageName];
-	  replacementImage->_flags.archiveByName = YES;
-	  self = replacementImage;
+          if (replacementImage)
+            {
+              return RETAIN(replacementImage);
+            }
+          replacementImage = [[NSImage alloc] init];
+          [replacementImage setName: imageName];
+          replacementImage->_flags.archiveByName = YES;
+          self = replacementImage;
         }
       if ([coder containsValueForKey: @"NSColor"])
         {
@@ -2065,17 +2065,17 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           NSString *theName = [coder decodeObject];
 
           RELEASE(self);
-	  replacementImage = [NSImage imageNamed: theName];
-	  if (replacementImage)
-	    {
-	      self = RETAIN(replacementImage);
-	    }
-	  else
-	    {
-	      self = [[NSImage alloc] init];
-	      [self setName: theName];
-	      self->_flags.archiveByName = YES;
-	    }
+          replacementImage = [NSImage imageNamed: theName];
+          if (replacementImage)
+            {
+              self = RETAIN(replacementImage);
+            }
+          else
+            {
+              self = [[NSImage alloc] init];
+              [self setName: theName];
+              self->_flags.archiveByName = YES;
+            }
         }
       else
         {
