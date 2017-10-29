@@ -1985,6 +1985,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
 	  replacementImage = [[NSImage alloc] init];
 	  [replacementImage setName: imageName];
 	  replacementImage->_flags.archiveByName = YES;
+	  self = replacementImage;
         }
       if ([coder containsValueForKey: @"NSColor"])
         {
