@@ -3355,17 +3355,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (anException)
     NSLog (_(@"reported exception - %@"), anException);
-
-  // Dump the call stack.
-  NSArray * callStackSymbols = [anException callStackSymbols];
-  if (callStackSymbols)
-    {
-	  for(NSInteger i = 0; i < [callStackSymbols count]; i++)
-        {
-  	      NSString * symbol = [callStackSymbols objectAtIndex:i];
-	      NSLog(@"%@", symbol);
-	    }
-	}
 }
 
 - (BOOL) presentError: (NSError *)error
