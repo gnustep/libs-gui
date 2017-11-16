@@ -4116,12 +4116,16 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
       if (sendAction)
         {
           // Check for single click on already-selected editable cell to begin editing
-          if (clickCount == 1 &&  clickedRowSelectedBeforeClick && [self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
+          if (clickCount == 1 && clickedRowSelectedBeforeClick && [self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
             {
-              [self editColumn: _clickedColumn
-                           row: _clickedRow
-                     withEvent: theEvent
-                        select: YES];
+              // Confirm the row is still selected...
+              if ([self isRowSelected: _clickedRow])
+                {
+                  [self editColumn: _clickedColumn
+                               row: _clickedRow
+                         withEvent: theEvent
+                            select: YES];
+                }
             }
           else
             {
