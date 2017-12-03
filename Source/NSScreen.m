@@ -418,7 +418,7 @@ static NSMutableArray *screenArray = nil;
   [super dealloc];
 }
 
-- (float) userSpaceScaleFactor
+- (CGFloat) userSpaceScaleFactor
 {
   NSNumber *factor = [[NSUserDefaults standardUserDefaults]
 		       objectForKey: @"GSScaleFactor"];
@@ -441,6 +441,11 @@ static NSMutableArray *screenArray = nil;
         return 1.0;
       }
     }
+}
+
+- (CGFloat) backingScaleFactor
+{
+  return 1.0;
 }
 
 @end

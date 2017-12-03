@@ -1,3 +1,10 @@
+2017-12-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSScreen.h
+	* Source/NSScreen.m (-backingScaleFactor): Add new method. Change
+	return value of -userSpaceScaleFactor to CGFloat.
+	* Source/NSWindow.m (-backingScaleFactor): Return 1 instead of 0.
+
 2017-10-28  Graham Lee  <graham@iamleeg.com>
 
 	* Source/NSImage.m (initWithCoder:): restore image name when

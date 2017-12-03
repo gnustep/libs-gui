@@ -5662,7 +5662,7 @@ current key view.<br />
 
 - (CGFloat) backingScaleFactor
 {
-  return 0;
+  return 1.0;
 }
 
 + (NSInteger)windowNumberAtPoint:(NSPoint)point

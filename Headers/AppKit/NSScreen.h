@@ -74,7 +74,10 @@
 - (int) screenNumber;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (float) userSpaceScaleFactor;
+- (CGFloat) userSpaceScaleFactor;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (CGFloat) backingScaleFactor;
 #endif
 
 @end
