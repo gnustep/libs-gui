@@ -45,7 +45,7 @@ The gnustep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
 file has been placed at @url{ftp://@value{GNUSTEP-GUI-FTP-MACHINE}/@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
 @end ifset
 
-It is accompanied by gnustep-back-@value{GNUSTEP-BACK-VERSION}.tar.gz.sig, a PGP signature which you can validate by putting both files in the same directory and using:
+It is accompanied by gnustep-back-@value{GNUSTEP-GUI-VERSION}.tar.gz.sig, a PGP signature which you can validate by putting both files in the same directory and using:
 
 @example
 gpg --verify gnustep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz.sig
