@@ -25,11 +25,48 @@
         <p>
           Bumped due to binary incompatibilities between 0.25.0 and 0.25.1. Also
           including numerous compatibility improvements from the Summer of Code
-          project.
+          project, and a wide variety of other fixes. Fixes the use of
+          cupsGetPPD() in the printing system.
         </p>
         <deflist>
-          <term>TODO</term>
-          <desc>This list is yet to be written.</desc>
+          <term>printing</term>
+          <desc>Add an include to get deprecated function cupsGetPPD() on
+          newer CUPS systems.</desc>
+          <term>chore</term>
+          <desc>Bump required base version.</desc>
+          <term>tiff</term>
+          <desc>Support for writing resolution.</desc>
+          <term>jpeg</term>
+          <desc>Save resolution information if it is different from 72
+          dpi.</desc>
+          <term>save panel</term>
+          <desc>Fix return type of sorting function.</desc>
+          <term>events</term>
+          <desc>Add some newer Cocoa enums and one method with dummy
+          implementation.</desc>
+          <term>speech synthesis</term>
+          <desc>NSSpeechSynthesizerDelegate is now a @protocol on
+          runtimes that support it.</desc>
+          <term>pasteboard</term>
+          <desc>New type identifiers.</desc>
+          <term>translations</term>
+          <desc>Some work on Polish, Russian and German translations</desc>
+          <term>cell</term>
+          <desc>Improvements to mouse tracking logic on NSCell.</desc>
+          <term>image</term>
+          <desc>If an unknown named image is unarchived with a coder or
+          keyed coder, keep the name.</desc>
+          <term>screen</term>
+          <desc>Add backingScaleFactor and return 1.0.</desc>
+          <term>window</term>
+          <desc>Return 1.0 from -backingScaleFactor.</desc>
+
+          <term>compatibility</term>
+          <desc>Numerous stub implementations of constants, classes
+          and methods to improve source-level compatibility.</desc>
+          <term>other bugfixes</term>
+          <desc>Numerous other bugfixes.</desc>
+
         </deflist>
       </section>
 

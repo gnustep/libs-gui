@@ -1,5 +1,14 @@
 2017-12-07 Ivan Vucica <ivan@vucica.net>
 
+	* Documentation/announce.texi: Use GNUSTEP-GUI-VERSION even when
+	talking about -back.
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi: Update with notable changes for 0.26.0.
+	* ANNOUNCE: Regenerated the ANNOUNCE file from announce.texi and
+	news.texi.
+
+2017-12-07 Ivan Vucica <ivan@vucica.net>
+
 	* Source/NSImage.m (-initWithCoder:): Clean up and reduce amount
 	of releases of self.
 

@@ -11,8 +11,29 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 
 @section Noteworthy changes in version @samp{0.26.0}
 
+This version was bumped due to previous binary incompatibilities
+between 0.25.0 and 0.25.1. This version also includes numerous
+compatibility improvements from the Summer of Code
+project, and a wide variety of other fixes. Notably, it fixes the
+use of cupsGetPPD() in the printing system.
+
 @itemize @bullet
-@item This list is yet to be written.
+@item printing: Add an include to get deprecated function cupsGetPPD() on newer CUPS systems.
+@item chore: Bump required base version.
+@item tiff: Support for writing resolution.
+@item jpeg: Save resolution information if it is different from 72 dpi.
+@item save panel: Fix return type of sorting function.
+@item events: Add some newer Cocoa enums and one method with dummy implementation.
+@item speech synthesis: NSSpeechSynthesizerDelegate is now a @@protocol on runtimes that support it.
+@item pasteboard: New type identifiers.
+@item translations: Some work on Polish, Russian and German translations
+@item cell: Improvements to mouse tracking logic on NSCell.
+@item image: If an unknown named image is unarchived with a coder or keyed coder, keep the name.
+@item screen: Add -backingScaleFactor and return 1.0.
+@item window: Return 1.0 from -backingScaleFactor.
+
+@item compatibility: Numerous stub implementations of constants, classes and methods to improve source-level compatibility.
+@item other bugfixes
 @end itemize
 
 @ifclear ANNOUNCE-ONLY
