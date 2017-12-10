@@ -1,3 +1,7 @@
+2017-12-10 Ivan Vucica <ivan@vucica.net>
+
+	* NEWS: Regenerate NEWS file for the 0.26.0 release.
+
 2017-12-07 Ivan Vucica <ivan@vucica.net>
 
 	* Documentation/announce.texi: Use GNUSTEP-GUI-VERSION even when
