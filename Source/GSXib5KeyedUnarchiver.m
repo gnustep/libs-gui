@@ -1782,12 +1782,12 @@ didStartElement: (NSString*)elementName
           }
         else if (customSpace)
           {
-            NSWarnMLog(@"unknown custom color space: %@", customSpace);
+            NSLog(@"%s:unknown custom color space: %@", __PRETTY_FUNCTION__, customSpace);
           }
       }
       else
         {
-          NSWarnMLog(@"unknown color space: %@", colorSpace);
+          NSLog(@"%s:unknown color space: %@", __PRETTY_FUNCTION__, colorSpace);
         }
 
       return [NSNumber numberWithUnsignedInteger: value];
