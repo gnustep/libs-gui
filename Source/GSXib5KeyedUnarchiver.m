@@ -1738,6 +1738,8 @@ didStartElement: (NSString*)elementName
   // <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
   // <color key="backgroundColor" cyan="0.61524784482758621" magenta="0.17766702586206898" yellow="0.48752693965517241" black="0.60991379310344829"
   //  alpha="1" colorSpace="custom" customColorSpace="genericCMYKColorSpace"/>
+  // <color key=“textColor” red=“0.72941176470000002" green=“0.53333333329999999” blue=“0.1333333333" alpha=“1”
+  //  colorSpace=“custom” customColorSpace=“sRGB”/>
   NSDictionary *attributes = [element attributes];
   NSString     *colorSpace = [attributes objectForKey: @"colorSpace"];
   
@@ -1773,6 +1775,10 @@ didStartElement: (NSString*)elementName
         if ([@"genericCMYKColorSpace" isEqualToString: customSpace])
           {
             value = 5;
+          }
+        else if ([@"sRGB" isEqualToString: customSpace])
+          {
+            value = 2;
           }
         else if (customSpace)
           {
