@@ -2909,75 +2909,75 @@ Returns the ranges to which various kinds of user changes should apply.
 // Testplant-MAL-2015-07-08: keeping testplant branch code...
 - (NSRange) rangeForUserCompletion
 {
-  static NSCharacterSet *TheAplhaSet = nil; // ONLY ALPHA CHARACTERS
+  static NSCharacterSet *TheAlphaSet = nil; // ONLY ALPHA CHARACTERS
   static NSCharacterSet *TheOtherSet = nil; // EVERYTHING ELSE...
-  if (TheAplhaSet == nil)
-  {
-    NSMutableCharacterSet *tempSet = AUTORELEASE([[NSMutableCharacterSet alloc] init]);
-    [tempSet formUnionWithCharacterSet: [NSCharacterSet lowercaseLetterCharacterSet]];
-    [tempSet formUnionWithCharacterSet: [NSCharacterSet uppercaseLetterCharacterSet]];
-    TheOtherSet = RETAIN([tempSet invertedSet]);
-    TheAplhaSet = [tempSet copy];
-  }
-
+  if (TheAlphaSet == nil)
+    {
+      NSMutableCharacterSet *tempSet = AUTORELEASE([[NSMutableCharacterSet alloc] init]);
+      [tempSet formUnionWithCharacterSet: [NSCharacterSet lowercaseLetterCharacterSet]];
+      [tempSet formUnionWithCharacterSet: [NSCharacterSet uppercaseLetterCharacterSet]];
+      [tempSet addCharactersInString: @"_"];
+      TheOtherSet = RETAIN([tempSet invertedSet]);
+      TheAlphaSet = [tempSet copy];
+    }
+  
   
   NSUInteger length, location;
   NSRange space; // The range of the first space or non-alpha character.
   NSRange range = NSMakeRange(NSNotFound, 0);
   NSRange selRange = [self selectedRange];
   NSString *theString = [_textStorage string];
-
+  
   if (selRange.length != 0)
     {
       range = selRange;
     }
   else
-	{
+    {
+      // Get the current location.
+      location = selRange.location;
+      
+      if (location != NSNotFound && location > 0
+          && [TheAlphaSet characterIsMember: [theString characterAtIndex: location - 1]])
+        {
+          
+          // Find the first non-alpha starting from current location, backwards.
+          space = [[self string] rangeOfCharacterFromSet: TheOtherSet
+                                                 options: NSBackwardsSearch
+                                                   range: NSMakeRange(0, location)];
+          
+          if (space.location == NSNotFound)
+            {
+              // No non-alpha was found.
+              if (location > 0)
+                {
+                  // Return the range of the whole substring.
+                  range = NSMakeRange(0, location);
+                }
+              else
+                {
+                  // There isn't word.
+                  range = NSMakeRange(NSNotFound, 0);
+                }
+            }
+          else
+            {
+              length = location - space.location - 1;
+              
+              if (length > 0)
+                {
+                  // Return the range of the last word.
+                  range = NSMakeRange(space.location + 1, length);
+                }
+              else
+                {
+                  // There isn't word at the end.
+                  range = NSMakeRange(NSNotFound, 0);
+                }
+            }
+        }
+    }
   
-	  // Get the current location.
-	  location = selRange.location;
-
-	  if (location != NSNotFound && location > 0 
-		&& [TheAplhaSet characterIsMember: [theString characterAtIndex: location - 1]])
-		{
-
-		  // Find the first non-alpha starting from current location, backwards.
-		  space = [[self string] rangeOfCharacterFromSet:TheOtherSet
-							 options: NSBackwardsSearch
-							   range: NSMakeRange(0, location)];
-
-		  if (space.location == NSNotFound)
-			{
-			  // No non-alpha was found.
-			  if (location > 0)
-				{
-				  // Return the range of the whole substring.
-				  range = NSMakeRange(0, location);
-				}
-			  else
-				{
-				  // There isn't word.
-				  range = NSMakeRange(NSNotFound, 0);
-				}
-			}
-		  else
-			{
-			  length = location - space.location - 1;
-
-			  if (length > 0)
-			   {
-				  // Return the range of the last word.
-				  range = NSMakeRange(space.location + 1, length);
-			   }
-			  else
-			   {
-				  // There isn't word at the end.
-				  range = NSMakeRange(NSNotFound, 0);
-			   }
-			}
-		}
-	}
-	
   return range;
 }
 
