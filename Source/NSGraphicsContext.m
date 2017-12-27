@@ -28,7 +28,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#if     !defined(_NONFRAGILE_ABI)
 #define EXPOSE_NSThread_IVARS
+#endif
 
 #import <Foundation/NSGeometry.h> 
 #import <Foundation/NSString.h> 
@@ -97,7 +99,12 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
+# if     defined(_NONFRAGILE_ABI)
+  return (NSGraphicsContext*)object_getIvar(th,
+    class_getInstanceVariable(object_getClass(th), "_gcontext"));
+# else
   return (NSGraphicsContext*) th->_gcontext;
+# endif
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
@@ -166,7 +173,12 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
+# if     defined(_NONFRAGILE_ABI)
+  object_setIvar(th,
+    class_getInstanceVariable(object_getClass(th), "_gcontext"), context);
+# else
   ASSIGN(th->_gcontext, context);
+# endif
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 

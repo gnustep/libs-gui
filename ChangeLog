@@ -1,3 +1,15 @@
+2017-12-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSGraphicsContext.m:  When using clang and the gnustep
+	runtime (the nonfragile API), it seems the compiler calculates the
+	offset of the _gcontext instance variuable in the NSThread object
+	incorrectly, causing a crash.
+	Until we know why and can fix it, we need a workaround.  The simplest
+	one would be not to use the instance variable at all, but on the
+	assumption that the instance variable was added to address a real
+ 	performance issue it seems better to use the runtime to access the
+	instance variable.
+
 2017-12-10 Ivan Vucica <ivan@vucica.net>
 
 	* NEWS: Regenerate NEWS file for the 0.26.0 release.
