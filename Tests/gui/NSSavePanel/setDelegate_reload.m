@@ -9,6 +9,10 @@ delegate changes.
 
 #include <AppKit/AppKit.h>
 
+@interface NSSavePanel (TestDelegate)
+- (NSMatrix *)lastColumnMatrix;
+@end
+
 @implementation NSSavePanel (TestDelegate)
 
 - (NSMatrix *)lastColumnMatrix
@@ -23,8 +27,6 @@ delegate changes.
 
 @implementation Delegate
 
-static BOOL pressed;
-static NSSavePanel *sp;
 
 + (BOOL) panel: (NSSavePanel *)p
 shouldShowFilename: (NSString *)fname

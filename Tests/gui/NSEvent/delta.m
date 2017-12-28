@@ -1,6 +1,7 @@
 #include "Testing.h"
 
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSApplication.h>

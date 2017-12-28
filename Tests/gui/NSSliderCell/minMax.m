@@ -11,7 +11,6 @@ int main()
 {
   CREATE_AUTORELEASE_POOL(arp);
   NSSliderCell *cell;
-  NSNumber *num;
 
   START_SET("NSSliderCell GNUstep minMax")
 

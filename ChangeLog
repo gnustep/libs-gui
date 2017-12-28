@@ -1,5 +1,18 @@
 2017-12-28 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tests/gui/NSBezierPath/windingCountAtPoint.m
+	* Tests/gui/NSCell/basic.m
+	* Tests/gui/NSEvent/delta.m
+	* Tests/gui/NSPasteboard/lazy_copy.m
+	* Tests/gui/NSSavePanel/setDelegate_reload.m
+	* Tests/gui/NSSliderCell/minMax.m
+	Remove comipler warnings in test code.
+	* Tests/gui/TextSystem/deallocation.m
+	Move auto release pool inside of the test set to get the test
+	working again.
+
+2017-12-28 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Printing/GSCUPS/GSCUPSPrinter.m,
 	* Printing/GSCUPS/GSCUPSPrintInfo.m,
 	* Printing/GSCUPS/GSCUPSPrintOperation.m: Undefine __BLOCKS__

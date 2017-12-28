@@ -29,10 +29,9 @@ int main(int argc, char **argv)
 	CREATE_AUTORELEASE_POOL(arp);
 
 	NSPasteboard *pb=[NSPasteboard pasteboardWithName: @"lazy copy test"];
-	int i;
 	NSString *s;
 
-	i=[pb declareTypes: [NSArray arrayWithObject: NSStringPboardType]
+	[pb declareTypes: [NSArray arrayWithObject: NSStringPboardType]
 		owner: [Foo self]];
 	DESTROY(arp);
 

@@ -23,9 +23,9 @@ main(int argc, char **argv)
   NSTextStorage *ts;
   NSTextContainer *tc;
   NSTextView *tv;
-  CREATE_AUTORELEASE_POOL(arp);
 
   START_SET("TextSystem GNUstep deallocation")
+  CREATE_AUTORELEASE_POOL(arp);
 
   NS_DURING
   {
@@ -81,8 +81,8 @@ main(int argc, char **argv)
   pass([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
   pass([tv textStorage] == nil, "NSTextView -textStorage returns nil");
 
+  DESTROY(arp);
   END_SET("TextSystem GNUstep deallocation")
 
-  DESTROY(arp);
   return 0;
 }

@@ -53,18 +53,19 @@ int main()
     return YES;
   if (![anObject isKindOfClass: [NSCell class]])
     return NO;
-  if (![[anObject stringValue] isEqual: [self stringValue]])
+  if (![[(NSCell *)anObject stringValue] isEqual: [self stringValue]])
     return NO;
-  if (![[anObject title] isEqual: [self title]])
+  if (![[(NSCell *)anObject title] isEqual: [self title]])
     return NO;
-  if (!([anObject image] == [self image]) && ![[anObject image] isEqual: [self image]])
+  if (!([(NSCell *)anObject image] == [self image])
+      && ![[(NSCell *)anObject image] isEqual: [self image]])
     {
       NSLog(@"image differ %@ %@", [self image], [anObject image]);
       return NO;
     }
-  if ([anObject type] != [self type])
+  if ([(NSCell *)anObject type] != [self type])
     return NO;
-  if ([anObject tag] != [self tag])
+  if ([(NSCell *)anObject tag] != [self tag])
     return NO;
   return YES;
 }
