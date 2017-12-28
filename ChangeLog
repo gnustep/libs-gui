@@ -1,3 +1,13 @@
+2017-12-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Printing/GSCUPS/GSCUPSPrinter.m,
+	* Printing/GSCUPS/GSCUPSPrintInfo.m,
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Undefine __BLOCKS__
+	before the cups.h import as some versions of this header file
+	expect unconditional that libdispatch is present when that
+	variable is defined.
+	Remove duplicated -allocWithZone: methods.
+
 2017-12-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSGraphicsContext.m:  When using clang and the gnustep

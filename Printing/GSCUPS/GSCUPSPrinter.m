@@ -48,6 +48,7 @@
 #import "GNUstepGUI/GSPrinting.h"
 #import "GSCUPSPrinter.h"
 
+#undef __BLOCKS__
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
@@ -66,12 +67,6 @@ NSString *GSCUPSDummyPrinterName = @"GSCUPSDummyPrinter";
       // Initial version
       [self setVersion:1];
     }
-}
-
-
-+(id) allocWithZone: (NSZone*) zone
-{
-  return NSAllocateObject(self, 0, zone);
 }
 
 //

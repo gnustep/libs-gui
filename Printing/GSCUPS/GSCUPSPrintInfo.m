@@ -32,6 +32,10 @@
 #import "AppKit/NSPrinter.h"
 #import "GSCUPSPrintInfo.h"
 #import "GSCUPSPrinter.h"
+// There are broken versions of cups.h where __BLOCKS__ requires
+// libdispatch to be present. This has long been fixed in CUPS,
+// but the file is still in CentOS 7. 
+#undef __BLOCKS__
 #include <cups/cups.h>
 
 
@@ -45,18 +49,12 @@
   if (self == [GSCUPSPrintInfo class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
 
-+ (id) allocWithZone: (NSZone*)zone
-{
-  return NSAllocateObject(self, 0, zone);
-}
-
-
-+(NSPrinter*) defaultPrinter
++ (NSPrinter*) defaultPrinter
 {
   NSString *defaultName;
   int numDests;
