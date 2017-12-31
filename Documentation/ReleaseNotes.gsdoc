@@ -21,6 +21,39 @@
       </p>
 
       <section>
+        <heading>0.26.1</heading>
+        <p>
+	  This version is released to conincide with version 1.25.1 of
+	  gnustep-base, which contains changes required for this version of
+	  gnustep-gui and gnustep-back.
+	</p>
+	<p>
+	  It includes an important workaround for users of GNUstep
+	  Objective-C Runtime (libobjc2) and non-fragile ABI to avoid a bug
+	  in interaction between the clang compiler and the runtime
+	  when non-fragile ABI is in use. Specifically, Clang and the
+	  runtime may disagree on what is the offset of an ivar
+	  in a class's RAM. This manifested in a crash at application
+	  startup due to misalignment of _gcontext inside NSThread. See
+	  the
+	  <uref url="http://lists.gnu.org/archive/html/discuss-gnustep/2017-12/msg00129.html">mailing list discussion</uref>
+	  for more information.
+	</p>
+	<p>
+	  It also contains the following changes:
+        </p>
+	<deflist>
+	  <term>tests</term>
+	  <desc>Cleanup of warnings.</desc>
+	  <term>tests</term>
+	  <desc>Fix text system deallocation test.</desc>
+	  <term>printing</term>
+	  <desc>Undefine __BLOCKS__ before including cups.h, as some versions of the header expect that libdispatch is present and used if __BLOCKS__ is defined.</desc>
+	  <term>graphics context</term>
+	  <desc>Workaround for Clang+libobjc2+nonfragile ABI issue.</desc>
+	</deflist>
+      </section>
+      <section>
         <heading>0.26.0</heading>
         <p>
           Bumped due to binary incompatibilities between 0.25.0 and 0.25.1. Also
@@ -111,6 +144,7 @@
           <term>Other</term>
           <desc>Numerous bug fixes and improvements in Cocoa compatibility.
           Spanish locale.</desc>
+	</deflist>
       </section>
 
       <section>
