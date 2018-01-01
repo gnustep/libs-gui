@@ -27,7 +27,7 @@
 /* Define to 1 if you have the `GifQuantizeBuffer' function. */
 #undef HAVE_GIFQUANTIZEBUFFER
 
-/* Don't have ImageMagick */
+/* Have ImageMagick */
 #undef HAVE_IMAGEMAGICK
 
 /* Define to 1 if you have the <inttypes.h> header file. */

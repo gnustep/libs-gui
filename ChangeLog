@@ -1,3 +1,11 @@
+2018-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* config/pkg.m4: Update to serial 12.
+	* Headers/Additions/GNUstepGUI/config.h.in,
+	* configure: Regnerate
+	Fixes bug #52779.
+	Patch by Yavor Doganov <yavor@gnu.org>
+
 2017-12-31 Ivan Vucica <ivan@vucica.net>
 
 	* Documentation/announce.texi

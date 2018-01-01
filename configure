@@ -642,6 +642,8 @@ ICU_LIBS
 ICU_CONFIG
 IMAGEMAGICK_LIBS
 IMAGEMAGICK_CFLAGS
+PKG_CONFIG_LIBDIR
+PKG_CONFIG_PATH
 PKG_CONFIG
 HAVE_LIBPNG_CONFIG
 EGREP
@@ -737,7 +739,12 @@ LDFLAGS
 LIBS
 CPPFLAGS
 CPP
-XMKMF'
+XMKMF
+PKG_CONFIG
+PKG_CONFIG_PATH
+PKG_CONFIG_LIBDIR
+IMAGEMAGICK_CFLAGS
+IMAGEMAGICK_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1390,6 +1397,15 @@ Some influential environment variables:
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
   XMKMF       Path to xmkmf, Makefile generator for X Window System
+  PKG_CONFIG  path to pkg-config utility
+  PKG_CONFIG_PATH
+              directories to add to pkg-config's search path
+  PKG_CONFIG_LIBDIR
+              path overriding pkg-config's built-in search path
+  IMAGEMAGICK_CFLAGS
+              C compiler flags for IMAGEMAGICK, overriding pkg-config
+  IMAGEMAGICK_LIBS
+              linker flags for IMAGEMAGICK, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -4942,14 +4958,17 @@ if test "${enable_imagemagick+set}" = set; then :
   enableval=$enable_imagemagick;
 fi
 
-if test "x$enable_imagemagick" = "xyes"; then :
 
 
-  succeeded=no
 
-  if test -z "$PKG_CONFIG"; then
-    # Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
+
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_path_PKG_CONFIG+:} false; then :
@@ -4975,7 +4994,6 @@ done
   done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
   ;;
 esac
 fi
@@ -4989,55 +5007,152 @@ $as_echo "no" >&6; }
 fi
 
 
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
   fi
+done
+  done
+IFS=$as_save_IFS
 
-  if test "$PKG_CONFIG" = "no" ; then
-     echo "pkg-config script not be found"
-     ## We don't want the user to see this warning
-     ## echo "*** The pkg-config script could not be found. Make sure it is"
-     ## echo "*** in your path, or set the PKG_CONFIG environment variable"
-     ## echo "*** to the full path to pkg-config."
-     ## echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
   else
-     PKG_CONFIG_MIN_VERSION=0.9.0
-     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MagickCore" >&5
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
+
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0.9.0
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+fi
+if test "x$enable_imagemagick" = "xyes"; then :
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for MagickCore" >&5
 $as_echo_n "checking for MagickCore... " >&6; }
 
-        if $PKG_CONFIG --exists "MagickCore" ; then
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-            succeeded=yes
+if test -n "$IMAGEMAGICK_CFLAGS"; then
+    pkg_cv_IMAGEMAGICK_CFLAGS="$IMAGEMAGICK_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"MagickCore\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "MagickCore") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_IMAGEMAGICK_CFLAGS=`$PKG_CONFIG --cflags "MagickCore" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$IMAGEMAGICK_LIBS"; then
+    pkg_cv_IMAGEMAGICK_LIBS="$IMAGEMAGICK_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"MagickCore\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "MagickCore") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_IMAGEMAGICK_LIBS=`$PKG_CONFIG --libs "MagickCore" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
 
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking IMAGEMAGICK_CFLAGS" >&5
-$as_echo_n "checking IMAGEMAGICK_CFLAGS... " >&6; }
-            IMAGEMAGICK_CFLAGS=`$PKG_CONFIG --cflags "MagickCore"`
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: $IMAGEMAGICK_CFLAGS" >&5
-$as_echo "$IMAGEMAGICK_CFLAGS" >&6; }
 
-            { $as_echo "$as_me:${as_lineno-$LINENO}: checking IMAGEMAGICK_LIBS" >&5
-$as_echo_n "checking IMAGEMAGICK_LIBS... " >&6; }
-            IMAGEMAGICK_LIBS=`$PKG_CONFIG --libs "MagickCore"`
-            { $as_echo "$as_me:${as_lineno-$LINENO}: result: $IMAGEMAGICK_LIBS" >&5
-$as_echo "$IMAGEMAGICK_LIBS" >&6; }
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        IMAGEMAGICK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "MagickCore" 2>&1`
         else
-            IMAGEMAGICK_CFLAGS=""
-            IMAGEMAGICK_LIBS=""
-            ## If we have a custom action on failure, don't print errors, but
-            ## do set a variable so people can do so.
-            IMAGEMAGICK_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "MagickCore"`
-
+	        IMAGEMAGICK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "MagickCore" 2>&1`
         fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$IMAGEMAGICK_PKG_ERRORS" >&5
 
 
+$as_echo "#define HAVE_IMAGEMAGICK 0" >>confdefs.h
 
-     else
-        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
-        echo "*** See http://www.freedesktop.org/software/pkgconfig"
-     fi
-  fi
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
-  if test $succeeded = yes; then
+$as_echo "#define HAVE_IMAGEMAGICK 0" >>confdefs.h
+
+else
+	IMAGEMAGICK_CFLAGS=$pkg_cv_IMAGEMAGICK_CFLAGS
+	IMAGEMAGICK_LIBS=$pkg_cv_IMAGEMAGICK_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
 
 	GRAPHIC_CFLAGS="$IMAGEMAGICK_CFLAGS $GRAPHIC_CFLAGS"
         GRAPHIC_LFLAGS="$IMAGEMAGICK_LIBS $GRAPHIC_LFLAGS"
@@ -5045,12 +5160,7 @@ $as_echo "$IMAGEMAGICK_LIBS" >&6; }
 $as_echo "#define HAVE_IMAGEMAGICK 1" >>confdefs.h
 
 
-  else
-
-$as_echo "#define HAVE_IMAGEMAGICK 0" >>confdefs.h
-
-  fi
-
+fi
 
 fi
 
