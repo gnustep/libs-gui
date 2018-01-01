@@ -69,6 +69,12 @@ NSString *GSCUPSDummyPrinterName = @"GSCUPSDummyPrinter";
     }
 }
 
+// Required because the super class redefines the default
++ (id) allocWithZone: (NSZone*)z
+{
+  return NSAllocateObject (self, 0, z);
+}
+
 //
 // Finding an NSPrinter 
 //

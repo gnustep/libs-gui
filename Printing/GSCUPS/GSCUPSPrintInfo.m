@@ -53,6 +53,11 @@
     }
 }
 
+// Required because the super class redefines the default
++ (id) allocWithZone: (NSZone*)z
+{
+  return NSAllocateObject (self, 0, z);
+}
 
 + (NSPrinter*) defaultPrinter
 {

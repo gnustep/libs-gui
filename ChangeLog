@@ -1,3 +1,10 @@
+2018-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Printing/GSCUPS/GSCUPSPrinter.m,
+	* Printing/GSCUPS/GSCUPSPrintInfo.m:
+	Restore -allocWithZone: methods as this is needed to override
+	behaviour in superclass.
+
 2018-01-01  Yavor Doganov <yavor@gnu.org>
 
 	* Documentation/make_services.1: Typo fix.
