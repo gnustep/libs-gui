@@ -21,6 +21,18 @@
       </p>
 
       <section>
+        <heading>0.26.2</heading>
+        <p>
+	  This version is a small, but important bugfix release.
+	</p>
+	<deflist>
+	  <term>printing</term>
+	  <desc>Fix allocation of the CUPS printing classes.</desc>
+	  <term>installation</term>
+	  <desc>Fix the configure script.</desc>
+	</deflist>
+      </section>
+      <section>
         <heading>0.26.1</heading>
         <p>
 	  This version is released to conincide with version 1.25.1 of

@@ -9,6 +9,16 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.26.2}
+
+This version is a small, but important bugfix release.
+
+@itemize @bullet
+@item printing: Fix allocation of the CUPS printing classes.
+@item installation: Fix the configure script.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.26.1}
 
 This version is released to conincide with version 1.25.1 of
@@ -35,7 +45,6 @@ It also contains the following changes:
 @item graphics context: Workaround for Clang+libobjc2+nonfragile ABI issue.
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.26.0}
 
 This version was bumped due to previous binary incompatibilities

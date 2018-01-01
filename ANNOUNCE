@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.26.1 of the GNUstep GUI library ('gnustep-gui').
+This is version 0.26.2 of the GNUstep GUI library ('gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -32,44 +32,25 @@ Group's libjpeg library, and a back-end component from the GNUstep
 libraries.  For example, to build the Cairo backend in the GNUstep Back
 library, you will need to install Cairo.
 
-1.2 Noteworthy changes in version '0.26.1'
+1.2 Noteworthy changes in version '0.26.2'
 ==========================================
 
-This version is released to conincide with version 1.25.1 of
-gnustep-base, which contains changes required for this version of
-gnustep-gui and gnustep-back.
+This version is a small, but important bugfix release.
 
-   It includes an important workaround for users of GNUstep Objective-C
-Runtime (libobjc2) and non-fragile ABI to avoid a bug in interaction
-between the clang compiler and the runtime when non-fragile ABI is in
-use.  Specifically, Clang and the runtime may disagree on what is the
-offset of an ivar in a class's RAM. This manifested in a crash at
-application startup due to misalignment of _gcontext inside NSThread.
-See the mailing list discussion
-(http://lists.gnu.org/archive/html/discuss-gnustep/2017-12/msg00129.html)
-for more information.
-
-   It also contains the following changes:
-
-   * tests: Cleanup of warnings.
-   * tests: Fix text system deallocation test.
-   * printing: Undefine __BLOCKS__ before including cups.h, as some
-     versions of the header expect that libdispatch is present and used
-     if __BLOCKS__ is defined.
-   * graphics context: Workaround for Clang+libobjc2+nonfragile ABI
-     issue.
+   * printing: Fix allocation of the CUPS printing classes.
+   * installation: Fix the configure script.
 
 1.3 Where can you get it? How can you compile it?
 =================================================
 
-The gnustep-gui-0.26.1.tar.gz distribution file has been placed at
+The gnustep-gui-0.26.2.tar.gz distribution file has been placed at
 <ftp://ftp.gnustep.org/pub/gnustep/core>.
 
-   It is accompanied by gnustep-back-0.26.1.tar.gz.sig, a PGP signature
+   It is accompanied by gnustep-back-0.26.2.tar.gz.sig, a PGP signature
 which you can validate by putting both files in the same directory and
 using:
 
-     gpg --verify gnustep-gui-0.26.1.tar.gz.sig
+     gpg --verify gnustep-gui-0.26.2.tar.gz.sig
 
    Signature has been created using the key with the following
 fingerprint:
