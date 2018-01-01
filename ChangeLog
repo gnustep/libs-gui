@@ -1,3 +1,7 @@
+2018-01-01  Yavor Doganov <yavor@gnu.org>
+
+	* Documentation/make_services.1: Typo fix.
+
 2018-01-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* config/pkg.m4: Update to serial 12.
