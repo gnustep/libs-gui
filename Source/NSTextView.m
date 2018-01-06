@@ -2916,7 +2916,7 @@ Returns the ranges to which various kinds of user changes should apply.
       NSMutableCharacterSet *tempSet = AUTORELEASE([[NSMutableCharacterSet alloc] init]);
       [tempSet formUnionWithCharacterSet: [NSCharacterSet lowercaseLetterCharacterSet]];
       [tempSet formUnionWithCharacterSet: [NSCharacterSet uppercaseLetterCharacterSet]];
-      [tempSet addCharactersInString: @"_"];
+      [tempSet addCharactersInString: @"_"]; // should we add: '-#!@%&*' ???
       TheOtherSet = RETAIN([tempSet invertedSet]);
       TheAlphaSet = [tempSet copy];
     }
