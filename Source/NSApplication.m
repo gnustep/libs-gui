@@ -2265,9 +2265,16 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   /*
    * If target responds to the selector then have it perform it.
    */
-  if (theTarget && [theTarget respondsToSelector: theAction])
+  if (theTarget)
     {
-      return theTarget;
+      if ([theTarget respondsToSelector: theAction])
+        {
+          return theTarget;
+        }
+      else
+        {
+          return nil;
+        }
     }
   else if ([sender isKindOfClass: [NSToolbarItem class]])
     {
@@ -2304,6 +2311,11 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  */
 - (id) targetForAction: (SEL)aSelector
 {
+  if (!aSelector)
+    {
+      return nil;
+    }
+  
   /* During a modal session actions must not be sent to the main window of
    * the application, but rather to the dialog window of the modal session.
    * Note that the modal session window is not necessarily the key window,
