@@ -1,5 +1,11 @@
 2018-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (-_rebuildCoordinates): Use simple path only
+	when both window and superview are nil. Set the visibleRect in
+	this case to bounds.
+
+2018-01-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSApplication.m (-targetForAction:to:from:): Return nil
 	if the target is non-nil but does not respond to the action.
 

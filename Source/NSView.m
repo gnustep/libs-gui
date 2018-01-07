@@ -290,9 +290,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _coordinates_valid = YES;
       _rFlags.flipped_view = isFlipped;
 
-      if (!_window)
+      if (!_window && !_super_view)
         {
-          _visibleRect = NSZeroRect;
+          _visibleRect = _bounds;
           [_matrixToWindow makeIdentityMatrix];
           [_matrixFromWindow makeIdentityMatrix];
         }
