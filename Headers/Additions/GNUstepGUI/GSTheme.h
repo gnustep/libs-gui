@@ -372,6 +372,19 @@ GSThemeStringFromFillStyle(GSThemeFillStyle s);
 extern GSThemeFillStyle
 GSThemeFillStyleFromString(NSString *s);
 
+typedef enum {
+  GSTabSelectedLeft,
+  GSTabSelectedRight,
+  GSTabSelectedToUnSelectedJunction,
+  GSTabSelectedFill,
+  GSTabUnSelectedLeft,
+  GSTabUnSelectedRight,
+  GSTabUnSelectedToSelectedJunction,
+  GSTabUnSelectedJunction,
+  GSTabUnSelectedFill,
+  GSTabBackgroundFill
+} GSTabPart;
+
 /**
  * This enumeration provides constants for informing drawing methods
  * what state a control is in (and consequently how the display element
