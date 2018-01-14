@@ -1120,48 +1120,111 @@ static BOOL menuBarVisible = YES;
     }
 }
 
+- (void) _updateMenuWithDelegate
+{
+  if ([_delegate respondsToSelector: @selector(menuNeedsUpdate:)])
+    {
+      [_delegate menuNeedsUpdate: self];
+    }
+  else if ([_delegate respondsToSelector: @selector(numberOfItemsInMenu:)])
+    {
+      NSInteger num;
+
+      num = [_delegate numberOfItemsInMenu: self];
+      if (num > 0)
+        {
+          BOOL cont = YES;
+          NSInteger i = 0;
+          NSInteger curr = [self numberOfItems];
+
+          while (num < curr)
+            {
+              [self removeItemAtIndex: --curr];
+            }
+          while (num > curr)
+            {
+              [self insertItemWithTitle: @""
+                                 action: NULL
+                          keyEquivalent: @""
+                                atIndex: curr++];
+            }
+
+          // FIXME: Should only process the items we display
+          while (cont && i < num)
+            {
+              cont = [_delegate menu: self
+                          updateItem: (NSMenuItem*)[self itemAtIndex: i]
+                             atIndex: i
+                        shouldCancel: NO];
+              i++;
+            }
+        }
+    }
+}
+
+- (void) _autoenableItem: (NSMenuItem*)item
+{
+  SEL	      action = [item action];
+  id	      validator = nil;
+  BOOL	      wasEnabled = [item isEnabled];
+  BOOL	      shouldBeEnabled;
+
+  // If there is no action - there can be no validator for the item.
+  if (action)
+    {
+      validator = [NSApp targetForAction: action
+                                      to: [item target]
+                                    from: item];
+    }
+  else if (_popUpButtonCell != nil)
+    {
+      if (NULL != (action = [_popUpButtonCell action]))
+        {
+          validator = [NSApp targetForAction: action
+                                          to: [_popUpButtonCell target]
+                                        from: [_popUpButtonCell controlView]];
+        }
+    }
+
+  if (validator == nil)
+    {
+      if ((action == NULL) && (_popUpButtonCell != nil))
+        {
+          shouldBeEnabled = YES;
+        }
+      else
+        {
+          shouldBeEnabled = NO;
+        }
+    }
+  else if ([validator respondsToSelector: @selector(validateMenuItem:)])
+    {
+      shouldBeEnabled = [validator validateMenuItem: item];
+    }
+  else if ([validator respondsToSelector: @selector(validateUserInterfaceItem:)])
+    {
+      shouldBeEnabled = [validator validateUserInterfaceItem: item];
+    }
+  else if ([item hasSubmenu] && [[item submenu] numberOfItems] == 0)
+    {
+      shouldBeEnabled = NO;
+    }
+  else
+    {
+      shouldBeEnabled = YES;
+    }
+
+  if (shouldBeEnabled != wasEnabled)
+    {
+      [item setEnabled: shouldBeEnabled];
+    }
+}
+
 - (void) update
 {
   if (_delegate)
     {
-      if ([_delegate respondsToSelector: @selector(menuNeedsUpdate:)])
-        {
-          [_delegate menuNeedsUpdate: self];
-        }
-      else if ([_delegate respondsToSelector: @selector(numberOfItemsInMenu:)])
-        {
-          NSInteger num;
-
-          num = [_delegate numberOfItemsInMenu: self];
-          if (num > 0)
-            {
-              BOOL cont = YES;
-              NSInteger i = 0;
-              NSInteger curr = [self numberOfItems];
-
-              while (num < curr)
-                {
-                  [self removeItemAtIndex: --curr];
-                }
-              while (num > curr)
-                {
-                  [self insertItemWithTitle: @"" 
-                        action: NULL
-                        keyEquivalent: @"" 
-                        atIndex: curr++];
-                }
-
-              // FIXME: Should only process the items we display
-              while (cont && i < num)
-                {
-                  cont = [_delegate menu: self
-                                    updateItem: (NSMenuItem*)[self itemAtIndex: i]
-                                    atIndex: i
-                                    shouldCancel: NO];
-                  i++;
-                }
-            }
-        }
+      [self _updateMenuWithDelegate];
     }
 
   // We use this as a recursion check.
@@ -1181,67 +1244,13 @@ static BOOL menuBarVisible = YES;
 	  for (i = 0; i < count; i++)
 	    {
 	      NSMenuItem *item = [_items objectAtIndex: i];
-	      SEL	      action = [item action];
-	      id	      validator = nil;
-	      BOOL	      wasEnabled = [item isEnabled];
-	      BOOL	      shouldBeEnabled;
 
 	      if ([item hasSubmenu])
                 {
                   [[item submenu] _updateSubmenu];
                 }
 
-	      // If there is no action - there can be no validator for the item.
-	      if (action)
-	        {
-	          validator = [NSApp targetForAction: action 
-				     to: [item target]
-				     from: item];
-	        }
-	      else if (_popUpButtonCell != nil)
-	        {
-	          if (NULL != (action = [_popUpButtonCell action]))
-	            {
-		      validator = [NSApp targetForAction: action
-				         to: [_popUpButtonCell target]
-				         from: [_popUpButtonCell controlView]];
-		    }
-	        }
-
-	      if (validator == nil)
-	        {
-	          if ((action == NULL) && (_popUpButtonCell != nil))
-		    {
-		      shouldBeEnabled = YES;
-		    }
-	          else 
-		    {
-		      shouldBeEnabled = NO;
-		    }
-	        }
-	      else if ([validator
-		         respondsToSelector: @selector(validateMenuItem:)])
-	        {
-	          shouldBeEnabled = [validator validateMenuItem: item];
-	        }
-	      else if ([validator
-		         respondsToSelector: @selector(validateUserInterfaceItem:)])
-	        {
-	          shouldBeEnabled = [validator validateUserInterfaceItem: item];
-	        }
-              else if ([item hasSubmenu] && [[item submenu] numberOfItems] == 0)
-                {
-                  shouldBeEnabled = NO;
-                }
- 	      else
-	        {
-	          shouldBeEnabled = YES;
-	        }
-
-	      if (shouldBeEnabled != wasEnabled)
-	        {
-	          [item setEnabled: shouldBeEnabled];
-	        }
+              [self _autoenableItem: item];
 	    }
           }
 	NS_HANDLER
@@ -1250,7 +1259,8 @@ static BOOL menuBarVisible = YES;
 	  }
 	NS_ENDHANDLER
       // Reenable displaying of menus
-      [self setMenuChangedMessagesEnabled: YES]; // this will send pending _notifications
+      // this will send pending _notifications
+      [self setMenuChangedMessagesEnabled: YES];
     }
 
   if (_menu.mainMenuChanged)
@@ -1291,7 +1301,7 @@ static BOOL menuBarVisible = YES;
       || ([keyEquivalent length] > 0 && [[NSCharacterSet controlCharacterSet] characterIsMember:[keyEquivalent characterAtIndex:0]]))
     relevantModifiersMask |= NSShiftKeyMask;
 
-  if (![self _isVisible])
+  if (![self _isVisible] && _delegate)
     {
       // Need to enable items as the automatic mechanism is switched off for invisible menus 
       [self update];
@@ -1330,6 +1340,11 @@ static BOOL menuBarVisible = YES;
           if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
             && (modifiers & relevantModifiersMask) == (mask & relevantModifiersMask))
             {
+              if (![self _isVisible] && !_delegate)
+                {
+                  // Need to enable item as the automatic mechanism is switched off for invisible menus
+                  [self _autoenableItem: item];
+                }
               if ([item isEnabled])
                 {
                   [_view performActionWithHighlightingForItemAtIndex: i];

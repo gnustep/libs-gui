@@ -1,5 +1,12 @@
 2018-01-14 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m (-update): Restructure by splitting up into two
+	helper methods.
+	* Source/NSMenu.m (-performKeyEquivalent:): Use new helper method
+	to only autoenable menu item with matching key equivalent.
+
+2018-01-14 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSLayoutManager.m
 	(-glyphRangeForCharacterRange:actualCharacterRange:): Try to
 	handle attachments at the end of the file more graceful.
