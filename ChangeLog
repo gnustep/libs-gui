@@ -1,3 +1,9 @@
+2018-01-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m
+	(-glyphRangeForCharacterRange:actualCharacterRange:): Try to
+	handle attachments at the end of the file more graceful.
+
 2018-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-_rebuildCoordinates): Use simple path only
