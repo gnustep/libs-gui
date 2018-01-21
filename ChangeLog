@@ -1,3 +1,8 @@
+2018-01-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Tools/speech/GNUmakefile: Remove specific OBJC flags.
+	Fixes bug #46939.
+
 2018-01-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-update): Restructure by splitting up into two

@@ -28,6 +28,4 @@ GSSpeechServer_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR) \
 	-lflite_usenglish -lflite_cmulex -lflite
 endif
 
-GSSpeechServer_OBJCFLAGS = -std=c99 -g -Werror
-
 include $(GNUSTEP_MAKEFILES)/application.make
