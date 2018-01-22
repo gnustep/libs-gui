@@ -70,15 +70,27 @@
  */
 // TESTPLANT-MAL-02022016 - numbers tweaked to match Cocoa output...
 typedef enum {
-  ItemBackViewDefaultHeight = 52,
-  ItemBackViewRegularHeight = 52,
-  ItemBackViewSmallHeight = 46
+#if defined(__MINGW__)
+  ItemBackViewDefaultHeight = 50,
+  ItemBackViewRegularHeight = 50,
+  ItemBackViewSmallHeight = 44
+#else
+  ItemBackViewDefaultHeight = 46,
+  ItemBackViewRegularHeight = 46,
+  ItemBackViewSmallHeight = 40
+#endif
 } ItemBackViewHeight;
 
 typedef enum {
-  ItemBackViewDefaultWidth = 52,
-  ItemBackViewRegularWidth = 52,
-  ItemBackViewSmallWidth = 46
+#if defined(__MINGW__)
+  ItemBackViewDefaultWidth = 50,
+  ItemBackViewRegularWidth = 50,
+  ItemBackViewSmallWidth = 44
+#else
+  ItemBackViewDefaultHeight = 46,
+  ItemBackViewRegularHeight = 46,
+  ItemBackViewSmallHeight = 40
+#endif
 } ItemBackViewWidth;
 
 static const int ItemBackViewX = 0;
