@@ -25,7 +25,7 @@ static int clients;
 + (void)connectionDied: (NSNotification*)aNotification
 {
   NSEnumerator *e = [[[aNotification object] localObjects] objectEnumerator];
-  NSObject *o = nil
+  NSObject *o = nil;
   for (o = [e nextObject] ; nil != o ; o = [e nextObject])
     {
       if ([o isKindOfClass: self])
