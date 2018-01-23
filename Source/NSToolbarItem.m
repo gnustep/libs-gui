@@ -87,9 +87,9 @@ typedef enum {
   ItemBackViewRegularWidth = 50,
   ItemBackViewSmallWidth = 44
 #else
-  ItemBackViewDefaultHeight = 46,
-  ItemBackViewRegularHeight = 46,
-  ItemBackViewSmallHeight = 40
+  ItemBackViewDefaultWidth = 46,
+  ItemBackViewRegularWidth = 46,
+  ItemBackViewSmallWidth = 40
 #endif
 } ItemBackViewWidth;
 
