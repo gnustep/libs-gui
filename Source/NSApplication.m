@@ -2273,6 +2273,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
         }
       else
         {
+          NSLog(@"Target %@ does not respont to action %@", theTarget, NSStringFromSelector(theAction));
           return nil;
         }
     }

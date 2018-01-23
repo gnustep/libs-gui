@@ -233,6 +233,7 @@ setPath(NSBrowser *browser, NSString *path)
   [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_browser setTag: NSFileHandlingPanelBrowser];
   [_browser setAction: @selector(_selectText:)];
+  [_browser setDoubleAction: @selector(_doubleClick:)];
   [_browser setTarget: self];
   [_browser setMinColumnWidth: 140];
   [_topView addSubview: _browser];
@@ -345,9 +346,6 @@ setPath(NSBrowser *browser, NSString *path)
   [_okButton setNextKeyView: _browser];
   [self setDefaultButtonCell: [_okButton cell]];
   [_okButton release];
-
-  [_browser setDoubleAction: @selector(performClick:)];
-  [_browser setTarget: _okButton];
 
   r = NSMakeRect (8, 261, 48, 48);
   image = [[NSApplication sharedApplication] applicationIconImage];
@@ -506,6 +504,11 @@ setPath(NSBrowser *browser, NSString *path)
       else
 	[_okButton setEnabled: NO];
     }
+}
+
+- (void) _doubleClick: (id)sender
+{
+  [_okButton performClick: sender];
 }
 
 - (void) _selectText: (id)sender

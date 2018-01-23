@@ -1,3 +1,10 @@
+2018-01-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-targetForAction:to:from:): Warn about
+	the target not responding to the action.
+	* Source/NSSavePanel.m (_initWithoutGModel): Don't set the OK
+	button as the target of the browser. Use helper method instead.
+
 2018-01-22 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Tools/speech/GSSpeechSynthesizer.m: Correct compilation
