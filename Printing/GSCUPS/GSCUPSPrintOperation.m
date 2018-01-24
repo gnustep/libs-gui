@@ -48,6 +48,13 @@
 //A subclass of GSPrintOperation, NOT NSPrintOperation.
 @implementation GSCUPSPrintOperation
 
+
+// Required because the super class redefines the default
++ (id) allocWithZone: (NSZone*)z
+{
+  return NSAllocateObject (self, 0, z);
+}
+
 - (id)initWithView:(NSView *)aView
          printInfo:(NSPrintInfo *)aPrintInfo
 {
