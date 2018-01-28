@@ -1,7 +1,7 @@
 #import "GSSpeechEngine.h"
 #include <flite/flite.h>
 
-cst_voice *register_cmu_us_kal();
+cst_voice *register_cmu_us_kal16();
 
 /**
  * Implementation of a speech engine using flite.  This should be the default
@@ -30,7 +30,7 @@ cst_voice *register_cmu_us_kal();
 	if (nil == (self = [super init])) { return nil; }
 
 	// Only one voice supported by flite unless others are compiled in.
-	v = register_cmu_us_kal();
+	v = register_cmu_us_kal16();
 	if (NULL == v)
 	{
 		[self release];

@@ -1,3 +1,10 @@
+2018-01-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure.ac: Improve checks for flite.
+	* configure: Regnerate
+	* Tools/speech/GNUmakefile: Use variables for flite libraries.
+	* Tools/speech/FliteSpeechEngine.m: Switch to use register_cmu_us_kal16.
+
 2018-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Printing/GSCUPS/GSCUPSPrintOperation.m:

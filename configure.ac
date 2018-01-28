@@ -525,11 +525,20 @@ BUILD_SPEECH=
 
 # has flite, for speech synthesis.
 AC_CHECK_LIB(flite, new_utterance, have_speech=yes, have_speech=no)
-AC_CHECK_HEADERS(flite/flite.h)
-if test $have_speech = yes -a $enable_speech = yes; then
+AC_CHECK_HEADERS(flite/flite.h, have_flite=yes, have_flite=no)
+if test $have_flite = yes -a $have_speech = yes -a $enable_speech = yes; then
    BUILD_SPEECH="speech say"
+   FLITE_BASE_LIBS="-lflite_usenglish -lflite_cmulex -lflite"
+   AC_CHECK_LIB(flite_cmu_us_kal16, register_cmu_us_kal16, have_kal16=yes, have_kal16=no)
+   if test $have_kal16; then
+      FLITE_EXTRA_LIBS="-lflite_cmu_us_kal16"
+   else
+      BUILD_SPEECH=
+   fi
 fi
 AC_SUBST(BUILD_SPEECH)
+AC_SUBST(FLITE_BASE_LIBS)
+AC_SUBST(FLITE_EXTRA_LIBS)
 
 #--------------------------------------------------------------------
 # Find CUPS

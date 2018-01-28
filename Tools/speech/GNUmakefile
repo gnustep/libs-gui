@@ -24,8 +24,8 @@ GSSpeechServer_OBJC_FILES += FliteSpeechEngine.m
 GSSpeechServer_INCLUDE_DIRS += -I/usr/local/include/flite -I../../Headers \
 	-I../../Headers/Additions
 GSSpeechServer_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR) \
-	-L/usr/local/lib -lgnustep-gui -lflite_cmu_us_kal \
-	-lflite_usenglish -lflite_cmulex -lflite
+	-L/usr/local/lib -lgnustep-gui $(FLITE_EXTRA_LIBS) \
+	$(FLITE_BASE_LIBS)
 endif
 
 include $(GNUSTEP_MAKEFILES)/application.make
