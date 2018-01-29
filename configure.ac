@@ -529,8 +529,8 @@ AC_CHECK_HEADERS(flite/flite.h, have_flite=yes, have_flite=no)
 if test $have_flite = yes -a $have_speech = yes -a $enable_speech = yes; then
    BUILD_SPEECH="speech say"
    FLITE_BASE_LIBS="-lflite_usenglish -lflite_cmulex -lflite"
-   AC_CHECK_LIB(flite_cmu_us_kal16, register_cmu_us_kal16, have_kal16=yes, have_kal16=no)
-   if test $have_kal16; then
+   AC_CHECK_LIB(flite_cmu_us_kal16, register_cmu_us_kal16, have_kal16=yes, have_kal16=no, $FLITE_BASE_LIBS)
+   if test $have_kal16 = yes; then
       FLITE_EXTRA_LIBS="-lflite_cmu_us_kal16"
    else
       BUILD_SPEECH=
