@@ -19,7 +19,11 @@ GSSpeechServer_OBJC_FILES = \
 	GSSpeechSynthesizer.m \
 	main.m
 
+
 ifeq ($(GSSPEECHENGINE), Flite)
+FLITE_BASE_LIBS = -lflite_usenglish -lflite_cmulex -lflite
+FLITE_EXTRA_LIBS = -lflite_cmu_us_kal16
+
 GSSpeechServer_OBJC_FILES += FliteSpeechEngine.m
 GSSpeechServer_INCLUDE_DIRS += -I/usr/local/include/flite -I../../Headers \
 	-I../../Headers/Additions

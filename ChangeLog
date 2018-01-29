@@ -1,5 +1,11 @@
 2018-01-29 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tools/speech/GNUmakefile,
+	* configure.ac: Give up on dynamic library detecion.
+	* configure: Regnerate
+
+2018-01-29 Fred Kiefer <FredKiefer@gmx.de>
+
 	* configure.ac: Correct last commit.
 	* configure: Regnerate
 

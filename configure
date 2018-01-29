@@ -635,8 +635,6 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
-FLITE_EXTRA_LIBS
-FLITE_BASE_LIBS
 BUILD_SPEECH
 BUILD_SOUND
 HAVE_ICU
@@ -5630,14 +5628,10 @@ else
   have_kal16=no
 fi
 
-   if test $have_kal16 = yes; then
-      FLITE_EXTRA_LIBS="-lflite_cmu_us_kal16"
-   else
+   if test $have_kal16 = no; then
       BUILD_SPEECH=
    fi
 fi
-
-
 
 
 #--------------------------------------------------------------------

@@ -530,15 +530,11 @@ if test $have_flite = yes -a $have_speech = yes -a $enable_speech = yes; then
    BUILD_SPEECH="speech say"
    FLITE_BASE_LIBS="-lflite_usenglish -lflite_cmulex -lflite"
    AC_CHECK_LIB(flite_cmu_us_kal16, register_cmu_us_kal16, have_kal16=yes, have_kal16=no, $FLITE_BASE_LIBS)
-   if test $have_kal16 = yes; then
-      FLITE_EXTRA_LIBS="-lflite_cmu_us_kal16"
-   else
+   if test $have_kal16 = no; then
       BUILD_SPEECH=
    fi
 fi
 AC_SUBST(BUILD_SPEECH)
-AC_SUBST(FLITE_BASE_LIBS)
-AC_SUBST(FLITE_EXTRA_LIBS)
 
 #--------------------------------------------------------------------
 # Find CUPS
