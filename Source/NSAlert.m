@@ -1679,15 +1679,6 @@ void NSBeginAlertSheet(NSString *title,
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
 
-  [panel close];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
-    {
-      void (*didEnd)(id, SEL, id, NSInteger, void*);
-      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
-        methodForSelector: didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
-    }
-
   NSReleaseAlertPanel(panel);
 }
 

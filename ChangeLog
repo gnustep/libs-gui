@@ -1,3 +1,9 @@
+2018-02-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAlert.m (NSBeginAlertSheet): Move closing the sheet from
+	here...
+	* Source/NSApplication.m (-beginSheet:...:contextInfo:): ...to here.
+
 2018-01-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Tools/speech/GNUmakefile,

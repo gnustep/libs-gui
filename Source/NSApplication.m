@@ -2032,6 +2032,7 @@ See -runModalForWindow:
       didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
 
+  [sheet close];
   [docWindow setAttachedSheet: nil];
   [sheet setParentWindow: nil];
   [[NSNotificationCenter defaultCenter] 
