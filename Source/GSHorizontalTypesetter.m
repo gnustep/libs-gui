@@ -250,6 +250,7 @@ the last time or not, we wouldn't need to clear the cache every time */
 
       g->dont_show = NO;
       g->outside_line_frag = NO;
+      g->nominal = YES;
 
       // FIXME: This assumes the layout manager implements this GNUstep extension
       g->size = [curLayoutManager advancementForGlyphAtIndex: cache_base + cache_length];

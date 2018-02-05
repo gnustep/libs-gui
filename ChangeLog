@@ -1,3 +1,8 @@
+2018-02-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Make
+	sure nominal gets always set.
+
 2018-02-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAlert.m (NSBeginAlertSheet): Move closing the sheet from
