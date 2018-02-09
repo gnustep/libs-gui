@@ -33,7 +33,6 @@
 #import <Foundation/NSLock.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSSet.h>
-#import <Foundation/NSThread.h>
 #import <Foundation/NSGeometry.h>
 
 #import "AppKit/NSApplication.h"
@@ -64,6 +63,7 @@ static NSMapTable *windowmaps = NULL;
 static NSRecursiveLock  *serverLock = nil;
 
 static NSString *NSCurrentServerThreadKey;
+static GSDisplayServer *currentServer = nil;
 
 /** Returns the GSDisplayServer that created the interal
     representation for window. If the internal representation has not
@@ -93,9 +93,7 @@ GSServerForWindow(NSWindow *window)
 GSDisplayServer *
 GSCurrentServer(void)
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-
-  return (GSDisplayServer*) [dict objectForKey: NSCurrentServerThreadKey];
+  return currentServer;
 }
 
 /**
@@ -199,11 +197,7 @@ GSCurrentServer(void)
 */
 + (void) setCurrentServer: (GSDisplayServer *)server
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-  if (server)
-    [dict setObject: server forKey: NSCurrentServerThreadKey];
-  else
-    [dict removeObjectForKey: NSCurrentServerThreadKey];
+  ASSIGN(currentServer, server);
 }
 
 /** <init />

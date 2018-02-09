@@ -1,3 +1,9 @@
+2018-02-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDisplayServer.m: Store the current display server in a
+	static variable and not in a thread variable.
+	Idea by Yavor Doganov  <yavor@gnu.org>
+
 2018-02-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Make
