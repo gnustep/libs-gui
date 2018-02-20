@@ -80,6 +80,15 @@
 	* Source/NSApplication.m (-targetForAction:to:from:): Return nil
 	if the target is non-nil but does not respond to the action.
 
+2018-01-01 Ivan Vucica <ivan@vucica.net>
+
+	* ANNOUNCE
+	* Documentation/ReleaseNotes.gsdoc
+	* Documentation/news.texi
+	* NEWS
+	* Version:
+	Updating documentation for the 0.26.2 release.
+
 2018-01-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Printing/GSCUPS/GSCUPSPrinter.m,
