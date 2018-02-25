@@ -91,6 +91,8 @@
 // binding values
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+APPKIT_EXPORT BOOL NSIsControllerMarker(id object);
+
 // Keys in dictionary returned by infoForBinding
 APPKIT_EXPORT NSString *NSObservedObjectKey;
 APPKIT_EXPORT NSString *NSObservedKeyPathKey;

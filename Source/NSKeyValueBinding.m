@@ -541,6 +541,12 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
 @end
 
+BOOL NSIsControllerMarker(id object)
+{
+  return [NSMultipleValuesMarker isEqual: object]
+    || [NSNoSelectionMarker isEqual: object]
+    || [NSNotApplicableMarker isEqual: object];
+}
 
 //Helper functions
 BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
