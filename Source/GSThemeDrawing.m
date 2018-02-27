@@ -71,7 +71,7 @@
 - (CGFloat *)_columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index;
+		      row: (NSInteger)index;
 @end
 
 @interface NSCell (Private)
@@ -3103,12 +3103,12 @@ typedef enum {
     }
 }
 
-- (void) drawTableViewRow: (int)rowIndex 
+- (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
-  // int numberOfRows = [tableView numberOfRows];
+  // NSInteger numberOfRows = [tableView numberOfRows];
   NSInteger numberOfColumns = [tableView numberOfColumns];
   // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];

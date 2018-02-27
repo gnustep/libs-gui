@@ -1,3 +1,9 @@
+2018-02-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m: Correct int/NSInteger mismatch detected
+	by Josh Freeman <pikopixel@twilightedge.com>.
+
 2018-02-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,

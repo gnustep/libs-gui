@@ -1260,7 +1260,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 					inView: (NSView *)view
 			      selectingColumns: (BOOL)selectingColumns;
 
-- (void) drawTableViewRow: (int)rowIndex 
+- (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
 
