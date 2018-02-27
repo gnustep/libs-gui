@@ -1,5 +1,12 @@
 2018-02-27 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSSegmentedCell.m (-startTrackingAt:inView:,
+	-continueTracking:at:inView:): Add this methods to enable
+	tracking for this class.
+	Patch suggested by Josh Freeman <pikopixel@twilightedge.com>.
+
+2018-02-27 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
 	* Source/GSThemeDrawing.m: Correct int/NSInteger mismatch detected
 	by Josh Freeman <pikopixel@twilightedge.com>.
