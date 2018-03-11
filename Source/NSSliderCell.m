@@ -55,14 +55,14 @@
 #endif
 
 static inline
-float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
+double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
 				NSRect slotRect, BOOL isVertical, 
 				double minValue, double maxValue, 
 				NSSliderCell *theCell, BOOL flipped, 
 				BOOL isCircular)
 {
-  float floatValue = 0;
-  float position;
+  double doubleValue = 0;
+  double position;
 
   if (isCircular)
     {
@@ -73,13 +73,13 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 	{
 	  pointRelativeToKnobCenter.y *= -1.0;
 	}
-      floatValue = atan2f(pointRelativeToKnobCenter.x,
+      doubleValue = atan2f(pointRelativeToKnobCenter.x,
 			  pointRelativeToKnobCenter.y) / (2.0 * M_PI);
-      if (floatValue < 0)
+      if (doubleValue < 0)
 	{
-	  floatValue += 1.0;
+	  doubleValue += 1.0;
 	}
-      // floatValue is 0 for up, 0.25 for right, 0.5 for down, 0.75 for left, etc.
+      // doubleValue is 0 for up, 0.25 for right, 0.5 for down, 0.75 for left, etc.
     }
   else
     {
@@ -99,11 +99,11 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 	    }
 	  else
 	    position = point.y;
-	  // Compute the float value
-	  floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
+	  // Compute the double value
+	  doubleValue = (position - (slotRect.origin.y + knobRect.size.height/2))
 	    / (slotRect.size.height - knobRect.size.height);
 	  if (flipped)
-	    floatValue = 1 - floatValue;
+	    doubleValue = 1 - doubleValue;
 	}
       else
 	{
@@ -120,13 +120,13 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 	  else
 	    position = point.x;
 
-	  // Compute the float value given the knob size
-	  floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
+	  // Compute the double value given the knob size
+	  doubleValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
 	    / (slotRect.size.width - knobRect.size.width);
 	}
     }
 
-  return floatValue * (maxValue - minValue) + minValue;
+  return doubleValue * (maxValue - minValue) + minValue;
 }
 
 /**
@@ -169,9 +169,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
   _altIncrementValue = -1;
   _isVertical = -1;
+  [self setDoubleValue: 0];
   [self setMinValue: 0];
   [self setMaxValue: 1];
-  [self setDoubleValue: 0];
   _cell.is_bordered = YES;
   _cell.is_bezeled = NO;
   [self setContinuous: YES];
@@ -270,16 +270,15 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   NSImage *image = [_knobCell image];
   NSSize size;
   NSPoint origin;
-  float floatValue = [self floatValue];
-
+  double doubleValue = _value;
+  
   // FIXME: this method needs to be refactored out to GSTheme
-
   if (_isVertical && flipped)
     {
-      floatValue = _maxValue + _minValue - floatValue;
+      doubleValue = _maxValue + _minValue - doubleValue;
     }
 
-  floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
+  doubleValue = (doubleValue - _minValue) / (_maxValue - _minValue);
 
   if (image != nil)
     {
@@ -294,12 +293,12 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     {
       origin = _trackRect.origin;
       origin.x += (_trackRect.size.width - size.width) / 2.0; // center horizontally
-      origin.y += (_trackRect.size.height - size.height) * floatValue;
+      origin.y += (_trackRect.size.height - size.height) * doubleValue;
     }
   else
     {
       origin = _trackRect.origin;
-      origin.x += (_trackRect.size.width - size.width) * floatValue;
+      origin.x += (_trackRect.size.width - size.width) * doubleValue;
       origin.y += (_trackRect.size.height - size.height) / 2.0; // center vertically
     }
 
@@ -351,7 +350,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       NSPoint knobCenter;
       NSPoint point;
       NSRect knobRect;
-      float fraction, angle, radius;
+      double fraction, angle, radius;
       NSImage *image;
 
       if (cellFrame.size.width > cellFrame.size.height)
@@ -396,7 +395,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
       knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
 
-      fraction = ([self floatValue] - [self minValue]) /
+      fraction = ([self doubleValue] - [self minValue]) /
 	([self maxValue] - [self minValue]);
       angle = (fraction * (2.0 * M_PI)) - (M_PI / 2.0);
       radius = (knobRect.size.height / 2) - 6;
@@ -521,14 +520,36 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   _altIncrementValue = increment;
 }
 
+/** <p>Returns the minimum value that the slider represents.</p>
+    <p>See Also: -setMinValue:</p>
+*/
+- (double) minValue
+{
+  return _minValue;
+}
+
+/**<p>Returns the maximum value that the slider represents.</p>
+   <p>See Also: -setMaxValue:</p>
+*/
+- (double) maxValue
+{
+  return _maxValue;
+}
+
 /**<p> Sets the minimum value that the sliders represents to
    <var>maxValue</var>.</p><p>See Also: -minValue</p>
 */
 - (void) setMinValue: (double)aDouble
 {
   _minValue = aDouble;
-  if ([self doubleValue] < _minValue)
-    [self setDoubleValue: _minValue];
+  if (_minValue > _maxValue)
+    {
+      _value = _minValue;
+    }
+  else if (_value < _minValue)
+    {
+      _value = _minValue;
+    }
 }
 
 /** <p>Sets the maximum value that the sliders represents to 
@@ -537,8 +558,109 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (void) setMaxValue: (double)aDouble
 {
   _maxValue = aDouble;
-  if ([self doubleValue] > _maxValue)
-    [self setDoubleValue: _maxValue];
+  if (_minValue > _maxValue)
+    {
+      _value = _minValue;
+    }
+  else if (_value > _maxValue)
+    {
+      _value = _maxValue;
+    }
+}
+
+- (double) doubleValue
+{
+  return _value;
+}
+
+- (void) setDoubleValue: (double)aDouble
+{
+  if (_minValue > _maxValue)
+    {
+      return;
+    }
+  if (aDouble < _minValue)
+    {
+      _value = _minValue;
+    }
+  else if (aDouble > _maxValue)
+    {
+      _value = _maxValue;
+    }
+  else
+    {
+      _value = aDouble;
+    }
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
+}
+
+- (float) floatValue
+{
+  return _value;
+}
+
+- (void) setFloatValue: (float)aFloat
+{
+  if (_minValue > _maxValue)
+    {
+      return;
+    }
+  if (aFloat < _minValue)
+    {
+      _value = _minValue;
+    }
+  else if (aFloat > _maxValue)
+    {
+      _value = _maxValue;
+    }
+  else
+    {
+      _value = aFloat;
+    }
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
+}
+
+- (int) intValue
+{
+  return _value;
+}
+
+- (void) setIntValue: (int)anInt
+{
+  if (_minValue > _maxValue)
+    {
+      return;
+    }
+  if (anInt < _minValue)
+    {
+      _value = _minValue;
+    }
+  else if (anInt > _maxValue)
+    {
+      _value = _maxValue;
+    }
+  else
+    {
+      _value = anInt;
+    }
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
+}
+
+- (id) objectValue
+{
+  return [NSNumber numberWithDouble: _value];
 }
 
 - (void) setObjectValue: (id)anObject
@@ -548,16 +670,29 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   // (this arbitrary choice matches OS X)
   if ([anObject respondsToSelector: @selector(doubleValue)] == NO ||
       _minValue > _maxValue)
-    [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
-  else
+    {
+      _value = _minValue;
+    }
+   else
     {
       double aDouble = [anObject doubleValue];
       if (aDouble < _minValue)
-        [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+        {
+          _value = _minValue;
+        }
       else if (aDouble > _maxValue)
-        [super setObjectValue: [NSNumber numberWithDouble: _maxValue]];
+        {
+          _value = _maxValue;
+        }
       else
-        [super setObjectValue: anObject];
+        {
+          _value = aDouble;
+        }
+    }
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
     }
 }
 
@@ -685,22 +820,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (NSRect) trackRect
 {
   return _trackRect;
-}
-
-/** <p>Returns the minimum value that the slider represents.</p>
-    <p>See Also: -setMinValue:</p>
-*/
-- (double) minValue
-{
-  return _minValue;
-}
-
-/**<p>Returns the maximum value that the slider represents.</p>
-   <p>See Also: -setMaxValue:</p>
-*/
-- (double) maxValue
-{
-  return _maxValue;
 }
 
 // ticks
@@ -859,22 +978,22 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       if (![controlView mouse: startPoint inRect: knobRect])
         {
           // Mouse is not on the knob, move the knob to the mouse position
-          float floatValue;
+          double doubleValue;
           NSRect slotRect = [self trackRect];
           BOOL isVertical = [self isVertical];
           double minValue = [self minValue];
           double maxValue = [self maxValue];
           
-          floatValue = _floatValueForMousePoint(startPoint, knobRect, 
+          doubleValue = _doubleValueForMousePoint(startPoint, knobRect, 
                                                 slotRect, isVertical, 
                                                 minValue, maxValue,
                                                 self, isFlipped,
                                                 (_type == NSCircularSlider)); 
           if (_allowsTickMarkValuesOnly)
             {
-              floatValue = [self closestTickMarkValueToValue: floatValue]; 
+              doubleValue = [self closestTickMarkValueToValue: doubleValue]; 
             }
-          [self setFloatValue: floatValue];
+          [self setDoubleValue: doubleValue];
           if ([self isContinuous])
             {
               [(NSControl*)controlView sendAction: [self action] to: [self target]];
@@ -895,27 +1014,27 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 {
   if (currentPoint.x != lastPoint.x || currentPoint.y != lastPoint.y)
     {
-      float floatValue;
+      double doubleValue;
       BOOL isFlipped = [controlView isFlipped];
       NSRect knobRect = [self knobRectFlipped: isFlipped];
-      float oldFloatValue = [self floatValue];
+      double oldDoubleValue = [self doubleValue];
       NSRect slotRect = [self trackRect];
       BOOL isVertical = [self isVertical];
       double minValue = [self minValue];
       double maxValue = [self maxValue];
 
-      floatValue = _floatValueForMousePoint(currentPoint, knobRect,
-                                            slotRect, isVertical, 
-                                            minValue, maxValue, 
-                                            self, isFlipped,
-                                            (_type == NSCircularSlider)); 
+      doubleValue = _doubleValueForMousePoint(currentPoint, knobRect,
+                                              slotRect, isVertical, 
+                                              minValue, maxValue, 
+                                              self, isFlipped,
+                                              (_type == NSCircularSlider)); 
       if (_allowsTickMarkValuesOnly)
         {
-          floatValue = [self closestTickMarkValueToValue: floatValue]; 
+          doubleValue = [self closestTickMarkValueToValue: doubleValue]; 
         }
-      if (floatValue != oldFloatValue)
+      if (doubleValue != oldDoubleValue)
         {
-          [self setFloatValue: floatValue];
+          [self setDoubleValue: doubleValue];
           // The action gets triggered in trackMouse:...untilMouseUp:
         }
     }
@@ -933,10 +1052,10 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       _allowsTickMarkValuesOnly = [decoder decodeBoolForKey: @"NSAllowsTickMarkValuesOnly"];
       _numberOfTickMarks = [decoder decodeIntForKey: @"NSNumberOfTickMarks"];
       _tickMarkPosition = [decoder decodeIntForKey: @"NSTickMarkPosition"];
-      [self setMinValue: [decoder decodeFloatForKey: @"NSMinValue"]];
-      [self setMaxValue: [decoder decodeFloatForKey: @"NSMaxValue"]];
-      [self setFloatValue: [decoder decodeFloatForKey: @"NSValue"]];
-      _altIncrementValue = [decoder decodeFloatForKey: @"NSAltIncValue"];
+      [self setMinValue: [decoder decodeDoubleForKey: @"NSMinValue"]];
+      [self setMaxValue: [decoder decodeDoubleForKey: @"NSMaxValue"]];
+      [self setDoubleValue: [decoder decodeDoubleForKey: @"NSValue"]];
+      _altIncrementValue = [decoder decodeDoubleForKey: @"NSAltIncValue"];
       [self setSliderType: [decoder decodeIntForKey: @"NSSliderType"]];
 	  
       // do these here, since the Cocoa version of the class does not save these values...
@@ -975,10 +1094,10 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       [coder encodeBool: _allowsTickMarkValuesOnly forKey: @"NSAllowsTickMarkValuesOnly"];
       [coder encodeInt: _numberOfTickMarks forKey: @"NSNumberOfTickMarks"];
       [coder encodeInt: _tickMarkPosition forKey: @"NSTickMarkPosition"];
-      [coder encodeFloat: _minValue forKey: @"NSMinValue"];
-      [coder encodeFloat: _maxValue forKey: @"NSMaxValue"];
-      [coder encodeFloat: _altIncrementValue forKey: @"NSAltIncValue"];
-      [coder encodeFloat: _minValue forKey: @"NSValue"]; // encoded for compatibility
+      [coder encodeDouble: _minValue forKey: @"NSMinValue"];
+      [coder encodeDouble: _maxValue forKey: @"NSMaxValue"];
+      [coder encodeDouble: _value forKey: @"NSValue"];
+      [coder encodeDouble: _altIncrementValue forKey: @"NSAltIncValue"];
       [coder encodeInt: _type forKey: @"NSSliderType"];
     }
   else

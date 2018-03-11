@@ -1,3 +1,10 @@
+2018-03-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSliderCell.h,
+	* Source/NSSliderCell.m: Rewrite this class to store and access
+	the value directly. This brings the behaviour closer to Apple's
+	horrible implementation.
+
 2018-02-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSegmentedCell.m (-startTrackingAt:inView:,

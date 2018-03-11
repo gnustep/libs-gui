@@ -51,9 +51,10 @@ typedef enum _NSSliderType
 
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
-  float		_minValue;
-  float		_maxValue;
-  float		_altIncrementValue;
+  double	_value;
+  double	_minValue;
+  double	_maxValue;
+  double	_altIncrementValue;
   id		_titleCell;
   id		_knobCell;
   NSRect	_trackRect;
