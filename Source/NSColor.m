@@ -398,6 +398,20 @@ systemColorWithName(NSString *name)
   return AUTORELEASE(color);
 }
 
++ (NSColor *)colorWithRed:(CGFloat)red
+                    green:(CGFloat)green
+                     blue:(CGFloat)blue
+                    alpha:(CGFloat)alpha
+{
+  if ((red > 1.0) || (green > 1.0) || (blue > 1.0))
+  {
+    // FIXME: throw exception as we currently do not handle/create extended color spaces
+    [NSException raise: NSInvalidArgumentException
+                format: @"%s:FIXME: cannot handle extended range color value(s)", __PRETTY_FUNCTION__];
+  }
+  return [self colorWithCalibratedRed: red green: green blue: blue alpha: alpha];
+}
+
 /**
  * <p> TODO </p>
  */

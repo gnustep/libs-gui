@@ -101,6 +101,13 @@ typedef NSUInteger NSControlSize;
 + (NSColor *)colorWithDeviceWhite:(CGFloat)white
 			    alpha:(CGFloat)alpha;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
++ (NSColor *)colorWithRed:(CGFloat)red
+                    green:(CGFloat)green
+                     blue:(CGFloat)blue
+                    alpha:(CGFloat)alpha;
+#endif
+
 //
 // Creating an NSColor With Preset Components
 //
