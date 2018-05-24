@@ -70,13 +70,13 @@
 - (NSString*) stringByDeletingPrefix: (NSString*) prefix
 {
   if ([self length] > [prefix length])
-  {
-    if ([[self substringWithRange:NSMakeRange(0, [prefix length])] isEqualToString:prefix])
     {
-      NSString *key = [self substringWithRange:NSMakeRange([prefix length], [self length]-[prefix length])];
-      return key;
+      if ([[self substringWithRange:NSMakeRange(0, [prefix length])] isEqualToString:prefix])
+        {
+          NSString *key = [self substringWithRange:NSMakeRange([prefix length], [self length]-[prefix length])];
+          return key;
+        }
     }
-  }
   
   return nil;
 }
@@ -101,34 +101,34 @@ static NSString *ApplicationClass = nil;
   self = [super initWithCoder: coder];
   
   if (self)
-  {
-    _userLabel = [coder decodeObjectForKey:@"userLabel"];
-    
-    if (_className)
     {
-      // If we've not set the general application class yet...
-      if (([NSClassFromString(_className) isKindOfClass: [NSApplication class]]) &&
-          (ApplicationClass == nil))
-      {
-        @synchronized([self class])
+      _userLabel = [coder decodeObjectForKey:@"userLabel"];
+      
+      if (_className)
         {
-          ASSIGNCOPY(ApplicationClass, _className);
+          // If we've not set the general application class yet...
+          if (([NSClassFromString(_className) isKindOfClass: [NSApplication class]]) &&
+              (ApplicationClass == nil))
+            {
+              @synchronized([self class])
+                {
+                  ASSIGNCOPY(ApplicationClass, _className);
+                }
+            }
         }
-      }
+      
+      // Override thie one type...
+      if (_userLabel)
+        {
+          if ([@"Application" isEqualToString:_userLabel])
+            {
+              if (ApplicationClass == nil)
+                ASSIGN(_className, @"NSApplication");
+              else
+                ASSIGN(_className, ApplicationClass);
+            }
+        }
     }
-    
-    // Override thie one type...
-    if (_userLabel)
-    {
-      if ([@"Application" isEqualToString:_userLabel])
-      {
-        if (ApplicationClass == nil)
-          ASSIGN(_className, @"NSApplication");
-        else
-          ASSIGN(_className, ApplicationClass);
-      }
-    }
-  }
   
   return self;
 }
@@ -166,17 +166,17 @@ static NSString *ApplicationClass = nil;
 - (id) nibInstantiate
 {
   if (_realObject == nil)
-  {
-    // Instantiate the real object...
-    [super nibInstantiate];
-    
-    // >= XIB 5 - startup visible windows...
-    if (_visibleAtLaunch)
-      {
-        // bring visible windows to front...
-        [(NSWindow *)_realObject orderFront: self];
-      }
-  }
+    {
+      // Instantiate the real object...
+      [super nibInstantiate];
+      
+      // >= XIB 5 - startup visible windows...
+      if (_visibleAtLaunch)
+        {
+          // bring visible windows to front...
+          [(NSWindow *)_realObject orderFront: self];
+        }
+    }
   
   return _realObject;
 }
@@ -185,6 +185,9 @@ static NSString *ApplicationClass = nil;
 
 #pragma mark - Extended XIB 5 IBActionConnection...
 @interface IBActionConnection5 : IBActionConnection
+{
+  NSString *trigger;
+}
 @end
 
 @implementation IBActionConnection5
@@ -194,15 +197,22 @@ static NSString *ApplicationClass = nil;
   self = [super initWithCoder: coder];
   if (self)
   {
+    trigger = nil;
+    
     if ([coder allowsKeyedCoding])
-    {
-      // label and source string tags have changed for XIB5...
-      ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
-      ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-      // destination string tag is still the same (so far) and loaded
-      // by base class...
-      //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
-    }
+      {
+        // label and source string tags have changed for XIB5...
+        ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
+        ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+        // destination string tag is still the same (so far) and loaded
+        // by base class...
+        //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+        
+        // Looks like the 'trigger' attribute should be used to override the
+        // target/action setup method...
+        if ([coder containsValueForKey: @"trigger"])
+          ASSIGN(trigger, [coder decodeObjectForKey: @"trigger"]);
+      }
     else
     {
       [NSException raise: NSInvalidArgumentException
@@ -211,6 +221,49 @@ static NSString *ApplicationClass = nil;
     }
   }
   return self;
+}
+
+- (NSString*) trigger
+{
+  return trigger;
+}
+
+- (void) establishConnection
+{
+  if (trigger && [trigger length])
+    {
+      SEL       sel     = NSSelectorFromString(label);
+      NSString *selName = [NSString stringWithFormat: @"set%@%@:",
+                           [[trigger substringToIndex: 1] uppercaseString],
+                           [trigger substringFromIndex: 1]];
+      SEL       trigsel = NSSelectorFromString(selName);
+      
+      if (sel && trigsel && [destination respondsToSelector: trigsel])
+        {
+          NSWarnMLog(@"setting trigger %@ to selector %@", selName, label);
+          //[destination setTarget: source]; // Not needed???
+          [destination performSelector: trigsel withObject: sel];
+        }
+      else if (nil == sel)
+        {
+          NSWarnMLog(@"label %@ does not correspond to any selector", label);
+        }
+      else if (nil == trigsel)
+        {
+          NSWarnMLog(@"trigger %@ does not correspond to any selector", trigger);
+        }
+      else
+        {
+          NSWarnMLog(@"destination class (%@) does not respond to trigger selector %@",
+                     NSStringFromClass([destination class]), selName);
+        }
+      
+      // PREMATURE RETURN...
+      return;
+    }
+  
+  // Otherwise invoke the super class' method...
+  [super establishConnection];
 }
 
 @end
@@ -225,23 +278,23 @@ static NSString *ApplicationClass = nil;
 {
   self = [super initWithCoder: coder];
   if (self)
-  {
-    if ([coder allowsKeyedCoding])
     {
-      // label and source string tags have changed for XIB5...
-      ASSIGN(label, [coder decodeObjectForKey: @"property"]);
-      ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-      // destination string tag is still the same (so far) and loaded
-      // by base class...
-      //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+      if ([coder allowsKeyedCoding])
+        {
+          // label and source string tags have changed for XIB5...
+          ASSIGN(label, [coder decodeObjectForKey: @"property"]);
+          ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+          // destination string tag is still the same (so far) and loaded
+          // by base class...
+          //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+        }
+      else
+        {
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+           NSStringFromClass([coder class])];
+        }
     }
-    else
-    {
-      [NSException raise: NSInvalidArgumentException
-                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-       NSStringFromClass([coder class])];
-    }
-  }
   return self;
 }
 
