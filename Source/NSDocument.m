@@ -788,6 +788,14 @@ withContentsOfURL: (NSURL *)url
                         ofType: (NSString *)type
                          error: (NSError **)error
 {
+  if (OVERRIDDEN(revertToSavedFromURL:ofType:))
+    {
+      return [self revertToSavedFromURL: url ofType: type];
+    }
+  if (OVERRIDDEN(revertToSavedFromFile:ofType:) && [url isFileURL])
+    {
+      return [self revertToSavedFromFile:[url path] ofType: type];
+    }
   return [self readFromURL: url
                     ofType: type
                      error: error];
