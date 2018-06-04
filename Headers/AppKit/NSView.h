@@ -130,6 +130,7 @@ typedef enum _NSFocusRingType {
   id _boundsMatrix;
   id _matrixToWindow;
   id _matrixFromWindow;
+  id _coreAnimationData;
 
   NSView* _super_view;
 PACKAGE_SCOPE

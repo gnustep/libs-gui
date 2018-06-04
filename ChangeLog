@@ -1,3 +1,10 @@
+2018-06-04 Stjepan Brkić <stjepanbrkicc@gmail.com>
+
+	* Headers/AppKit/NSView.h: Add 'id _coreAnimationData' variable.
+	The variable will point to another class instance that will
+	contain data necessary data for future implementation of methods
+	regarding CA layers.
+
 2018-03-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocument.m (-revertToContentsOfURL:ofType:error:): Add
