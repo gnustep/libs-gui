@@ -10,6 +10,10 @@
 	* Source/NSDocument.m (-revertToContentsOfURL:ofType:error:): Add
 	override calls for deprecated methods.
 
+2018-03-29  Graham Lee  <graham@iamleeg.com>
+
+	* Source/NSWindowController.m: gsdoc
+
 2018-03-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSliderCell.h,

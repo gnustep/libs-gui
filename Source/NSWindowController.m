@@ -388,6 +388,8 @@
     }
 }
 
+/** Orders the receiver's window front, also making it the key window
+    if appropriate. */
 - (IBAction) showWindow: (id)sender
 {
   NSWindow *window = [self window];
@@ -434,15 +436,20 @@
     }
 }
 
+/** Returns YES if the receiver's window has loaded. */
 - (BOOL) isWindowLoaded
 {
   return _wcFlags.nib_is_loaded;
 }
 
+/** Subclasses can override this method to perform any customisation
+    needed after the receiver has loaded its window. */
 - (void) windowDidLoad
 {
 }
 
+/** Subclasses can override this method to perform any customisation
+    needed before the receiver loads its window. */
 - (void) windowWillLoad
 {
 }
@@ -470,6 +477,11 @@
   [self windowDidLoad];
 }
 
+/** Loads the receiver's window. You can override this method if the
+    way that the window is loaded is not appropriate. You should not
+    normally need to call this method directly; it will be called when
+    the window controller needs to access the window.
+ */
 - (void) loadWindow
 {
   NSDictionary *table;
