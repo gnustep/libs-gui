@@ -1,11 +1,18 @@
-2018-03-29  Graham Lee  <graham@iamleeg.com>
+2018-06-04 Stjepan Brkić <stjepanbrkicc@gmail.com>
 
-	* Source/NSWindowController.m: gsdoc
+	* Headers/AppKit/NSView.h: Add 'id _coreAnimationData' variable.
+	The variable will point to another class instance that will
+	contain data necessary data for future implementation of methods
+	regarding CA layers.
 
 2018-03-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocument.m (-revertToContentsOfURL:ofType:error:): Add
 	override calls for deprecated methods.
+
+2018-03-29  Graham Lee  <graham@iamleeg.com>
+
+	* Source/NSWindowController.m: gsdoc
 
 2018-03-11 Fred Kiefer <FredKiefer@gmx.de>
 
