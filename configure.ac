@@ -143,7 +143,7 @@ LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
 
 AC_CHECK_LIB(m, main)
-AC_CHECK_FUNCS(rint rintf atan2f)
+AC_CHECK_FUNCS(rint rintf atan2f floorf)
 
 
 #--------------------------------------------------------------------

@@ -58,6 +58,10 @@ typedef int jpeg_boolean;
 #include <setjmp.h>
 
 
+#ifndef HAVE_FLOORF
+#define floorf(x) floor(x)
+#endif
+
 /* -----------------------------------------------------------
    The following functions are for interacting with the
    jpeg library 

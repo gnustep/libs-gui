@@ -18,6 +18,9 @@
 /* Define to 1 if you have the <flite/flite.h> header file. */
 #undef HAVE_FLITE_FLITE_H
 
+/* Define to 1 if you have the `floorf' function. */
+#undef HAVE_FLOORF
+
 /* Define to 1 if you have the `getmntent' function. */
 #undef HAVE_GETMNTENT
 

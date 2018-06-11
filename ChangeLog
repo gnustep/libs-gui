@@ -1,3 +1,11 @@
+2018-06-11 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* configure
+	* configure.ac
+	* Source/NSBitmapImageRep+JPEG.m
+	Check for floorf() and provide simple replacement.
+
 2018-06-04 Stjepan Brkić <stjepanbrkicc@gmail.com>
 
 	* Headers/AppKit/NSView.h: Add 'id _coreAnimationData' variable.
