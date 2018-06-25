@@ -1801,6 +1801,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
           return;        /* This deferred window was never ordered in. */
         }
       _f.visible = NO;
+      _f.has_closed = YES;
       /*
        * Don't keep trying to update the window while it is ordered out
        */
