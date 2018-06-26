@@ -6185,6 +6185,7 @@ or add guards
 {
   NSUInteger index;
   CGFloat fraction;
+  unichar curChar;
 
   point.x -= _textContainerOrigin.x;
   point.y -= _textContainerOrigin.y;
@@ -6206,7 +6207,8 @@ or add guards
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
   if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
-      [[_textStorage string] characterAtIndex:index] != '\n')
+      (curChar = [[_textStorage string] characterAtIndex:index]) != '\n' &&
+      curChar != NSAttachmentCharacter)
     {
       index++;
     }
