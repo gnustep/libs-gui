@@ -500,14 +500,14 @@ static GSAutocompleteWindow *gsWindow = nil;
 }
 
 // Delegate
-- (int) numberOfRowsInTableView: (NSTableView *)aTableView
+- (NSInteger) numberOfRowsInTableView: (NSTableView *)aTableView
 {
   return [_words count];
 }
 
 - (id) tableView: (NSTableView *)aTableView
   objectValueForTableColumn: (NSTableColumn *)aTableColumn
-	     row: (int)rowIndex
+	     row: (NSInteger)rowIndex
 {
   return [[_words objectAtIndex: rowIndex] description];
 }
