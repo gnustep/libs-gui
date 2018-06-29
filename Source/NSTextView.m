@@ -6208,7 +6208,7 @@ or add guards
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
   if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
       (curChar = [[_textStorage string] characterAtIndex:index]) != '\n' &&
-      curChar != NSAttachmentCharacter)
+      (curChar != NSAttachmentCharacter || index + 1 == [_textStorage length]))
     {
       index++;
     }
