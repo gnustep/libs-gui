@@ -1,3 +1,9 @@
+2018-07-08 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSOpenGLView.m:
+	Fix docstring for -[NSOpenGLView initWithFrame:pixelFormat:].
+	There is no such thing as +[NSOpenGLContext defaultPixelFormat].
+
 2018-06-11 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/config.h.in

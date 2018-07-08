@@ -144,7 +144,7 @@ static NSOpenGLPixelFormatAttribute attrs[] =
   
 }
 
-/** default initializer.  Can be passed [NSOpenGLContext defaultPixelFormat] 
+/** default initializer.  Can be passed [NSOpenGLView defaultPixelFormat]
     as second argument
 */
 - (id) initWithFrame: (NSRect)frameRect 
