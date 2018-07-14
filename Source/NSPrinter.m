@@ -1140,9 +1140,6 @@ static NSMutableDictionary* printerCache;
       [ppdData scanUpToString: @"\""         /*"*/
                    intoString: &value];
                    
-      if (!value)
-        value = @"";
-        
       [ppdData scanString: @"\""             /*"*/
                intoString: NULL];
                
@@ -1160,6 +1157,12 @@ static NSMutableDictionary* printerCache;
       [ppdData scanUpToCharactersFromSet: valueEndSet 
                               intoString: &value];
     }
+
+  if (!value)
+    {
+      value = @"";
+    }
+
   // If there is a value translation, scan it
   if ([ppdData scanString: @"/" 
                intoString: NULL])
@@ -1169,11 +1172,8 @@ static NSMutableDictionary* printerCache;
     }
 
   // The translations also have to have any hex substrings interpreted
-  if (optionTranslation)
-    optionTranslation = [self interpretQuotedValue: optionTranslation];
-
-  if (valueTranslation)
-    valueTranslation = [self interpretQuotedValue: valueTranslation];
+  optionTranslation = [self interpretQuotedValue: optionTranslation];
+  valueTranslation = [self interpretQuotedValue: valueTranslation];
 
   // The keyword (or keyword/option pair, if there's a option), should only
   // only have one value, unless it's one of the optionless keywords which
@@ -1441,6 +1441,11 @@ static NSMutableDictionary* printerCache;
   int stringLength;
   int location;
   NSRange range;
+
+  if (!qString)
+    {
+      return nil;
+    }
 
   // Don't bother unless there's something to convert
   range = [qString rangeOfString: @"<"];

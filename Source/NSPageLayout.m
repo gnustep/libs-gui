@@ -986,10 +986,10 @@ enum {
               paperName = [standardPaperSizePopUp titleOfSelectedItem];
               paperSize = [printer pageSizeForPaper: paperName];
               imageRect = [printer imageRectForPaper: paperName];
-              topMargin    = paperSize.height - imageRect.size.height;
-              bottomMargin = imageRect.origin.x;
-              leftMargin   = imageRect.origin.y;
-              rightMargin  = paperSize.width - imageRect.size.width;
+              topMargin    = (paperSize.height - NSMaxY(imageRect)) * factorValue;
+              bottomMargin = imageRect.origin.x * factorValue;
+              leftMargin   = imageRect.origin.y * factorValue;
+              rightMargin  = (paperSize.width - NSMaxX(imageRect)) * factorValue;
             }
           else  //Custom Papers
             {

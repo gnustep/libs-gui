@@ -1,3 +1,12 @@
+2018-07-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrinter.m (-addPPDKeyword:withScanner:withPPDPath:):
+	Protect against value being nil.
+	* Source/NSPageLayout.m (-tableView:objectValueForTableColumn:row:):
+	With standard papers, calculate margins taking into account factorValue.
+	* Source/NSPrintInfo.m (-initWithDictionary): Fix border calculation.
+	Idea by Yavor Doganov <yavor@gnu.org>
+
 2018-07-08 Ivan Vucica <ivan@vucica.net>
 
 	* Source/NSOpenGLView.m:

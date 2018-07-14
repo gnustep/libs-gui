@@ -143,6 +143,8 @@ static NSPrintInfo *sharedPrintInfo = nil;
 {
   NSPrinter *printer;
   NSString *pageSize;
+  NSRect imageRect;
+  NSSize paperSize;
 
   if (!(self = [super init]))
     {
@@ -160,7 +162,6 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
   printer = [NSPrintInfo defaultPrinter];
   [self setPrinter: printer];
-      
 
   /* Set up other defaults from the printer object */
   pageSize = [printer stringForKey: @"DefaultPageSize" 
@@ -172,11 +173,13 @@ static NSPrintInfo *sharedPrintInfo = nil;
   
   [self setPaperName: pageSize];
   
-  /* Set default margins. FIXME: Probably should check ImageableArea */
-  [self setRightMargin: 36];
-  [self setLeftMargin: 36];
-  [self setTopMargin: 72];
-  [self setBottomMargin: 72];
+  /* Set default margins. */
+  paperSize = [printer pageSizeForPaper: pageSize];
+  imageRect = [printer imageRectForPaper: pageSize];
+  [self setRightMargin: (paperSize.width - NSMaxX(imageRect))];
+  [self setLeftMargin: imageRect.origin.y];
+  [self setTopMargin: (paperSize.height - NSMaxY(imageRect))];
+  [self setBottomMargin: imageRect.origin.x];
   [self setOrientation: NSPortraitOrientation];  
   
   if (aDict != nil)
