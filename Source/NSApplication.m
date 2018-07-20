@@ -369,6 +369,7 @@ struct _NSModalSession {
  
 @interface NSApplication (Private)
 - (void) _appIconInit;
+- (void) _loadAppIconImage;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -880,6 +881,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   /* Load user-defined bundles */
   gsapp_user_bundles();
 
+  /* load the application icon */
+  [self _loadAppIconImage];
+  
   /* Connect to our window server.  */
   srv = [GSDisplayServer serverWithAttributes: nil];
   RETAIN(srv);
@@ -3792,23 +3796,11 @@ struct _DelegateWrapper
 
 @implementation	NSApplication (Private)
 
-- (void) _appIconInit
+- (void) _loadAppIconImage
 {
   NSDictionary	*infoDict;
   NSString	*appIconFile;
   NSImage	*image = nil;
-  NSAppIconView	*iv;
-  NSUInteger	mask = NSIconWindowMask;
-  BOOL  	suppress;
-
-  suppress = [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"];
-#if	MINI_ICON
-  if (suppress)
-    {
-      mask = NSMiniaturizableWindowMask;
-    }
-#endif
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
   appIconFile = [infoDict objectForKey: @"NSIcon"];
@@ -3840,7 +3832,29 @@ struct _DelegateWrapper
       [image setName: @"NSApplicationIcon"];
     }
   [self setApplicationIconImage: image];
+}
 
+- (void) _appIconInit
+{
+  NSAppIconView	*iv;
+  NSUInteger	mask = NSIconWindowMask;
+  BOOL  	suppress;
+  NSImage       *image = nil;
+  
+  suppress = [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSSuppressAppIcon"];
+#if	MINI_ICON
+  if (suppress)
+    {
+      mask = NSMiniaturizableWindowMask;
+    }
+#endif
+
+  if([self applicationIconImage] == nil)
+    {
+      [self _loadAppIconImage];
+    }
+  
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
 				  backing: NSBackingStoreRetained
