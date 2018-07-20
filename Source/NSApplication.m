@@ -3850,10 +3850,11 @@ struct _DelegateWrapper
     }
 #endif
 
-  if([self applicationIconImage] == nil)
-    {
-      [self _loadAppIconImage];
-    }
+  // Should we also fetch the icon here?
+  //if([self applicationIconImage] == nil)
+  //  {
+  //    [self _loadAppIconImage];
+  //  }
   
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
