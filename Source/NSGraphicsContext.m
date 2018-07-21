@@ -241,6 +241,13 @@ NSGraphicsContext	*GSCurrentContext(void)
   new->_graphicsPort = port;
   new->_isFlipped = flag;
 
+  if ([new supportsDevicelessSurface])
+    {
+      // FIXME: How best to initialize backing surfaces in case a backend
+      // requires a backing device?
+      [new GSSetDevice: nil : 0 : 0];
+    }
+
   return new;
 }
 
@@ -249,6 +256,16 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
   return [NSGraphicsContext graphicsContextWithGraphicsPort: (void *)context
 						    flipped: flipped];
+}
+
+/** <override-dummy />
+Returns whether the backend supports surfaces without a device.
+
+By default, returns NO.<br />
+*/
+- (BOOL) supportsDevicelessSurface
+{
+  return NO;
 }
 
 + (void) restoreGraphicsState
