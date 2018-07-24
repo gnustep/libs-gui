@@ -1,3 +1,12 @@
+2018-07-24 Ivan Vucica <ivan@vucica.net>
+
+	* Source/NSGraphicsContext.m (+graphicsContextWithGraphicsPort:flipped:):
+	If the underlying graphics context supports it, pass nil to GSSetDevice.
+
+	In Opal backend, this is intended to trigger creation of backing surface
+	no matter that we don't have a window device. This should make the
+	CGContextRef passed into graphicsPort usable.
+
 2018-07-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrinter.m (-addPPDKeyword:withScanner:withPPDPath:):
