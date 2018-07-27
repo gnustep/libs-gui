@@ -1,3 +1,8 @@
+2018-07-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-beginPageInRect:atPlacement): Remove check for
+	empty rect. This will now use the placement translation all the time.
+
 2018-07-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrinter.m (-addPPDKeyword:withScanner:withPPDPath:):
