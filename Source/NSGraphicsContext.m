@@ -241,6 +241,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   new->_graphicsPort = port;
   new->_isFlipped = flag;
 
+  if ([new respondsToSelector: @selector(setupGraphicsPort)])
+    {
+      [new setupGraphicsPort];
+    }
+
   return new;
 }
 
