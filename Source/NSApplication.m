@@ -881,9 +881,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   /* Load user-defined bundles */
   gsapp_user_bundles();
 
-  /* load the application icon */
-  [self _loadAppIconImage];
-  
   /* Connect to our window server.  */
   srv = [GSDisplayServer serverWithAttributes: nil];
   RETAIN(srv);
@@ -2420,6 +2417,11 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (NSImage*) applicationIconImage
 {
+  if (!_app_icon)
+    {
+      /* load the application icon */
+      [self _loadAppIconImage];
+    }
   return _app_icon;
 }
 
@@ -3809,7 +3811,7 @@ struct _DelegateWrapper
       image = [NSImage imageNamed: appIconFile];
     }
 
-  // Try to look up the icns file.
+  // Try to look up the icon file.
   appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
   if (appIconFile && ![appIconFile isEqual: @""])
     {
@@ -3839,7 +3841,6 @@ struct _DelegateWrapper
   NSAppIconView	*iv;
   NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
-  NSImage       *image = nil;
   
   suppress = [[NSUserDefaults standardUserDefaults]
     boolForKey: @"GSSuppressAppIcon"];
@@ -3849,12 +3850,6 @@ struct _DelegateWrapper
       mask = NSMiniaturizableWindowMask;
     }
 #endif
-
-  // Should we also fetch the icon here?
-  //if([self applicationIconImage] == nil)
-  //  {
-  //    [self _loadAppIconImage];
-  //  }
   
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
@@ -3876,7 +3871,7 @@ struct _DelegateWrapper
     [_app_icon_window setFrame: iconFrame display: YES];
 
     iv = [[NSAppIconView alloc] initWithFrame: iconViewFrame]; 
-    [iv setImage: _app_icon];
+    [iv setImage: [self applicationIconImage]];
     [_app_icon_window setContentView: iv];
     RELEASE(iv);
   }

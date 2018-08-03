@@ -1,3 +1,8 @@
+2018-08-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-applicationIconImage): Lazy load the
+	app icon.
+
 2018-07-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-beginPageInRect:atPlacement): Remove check for
