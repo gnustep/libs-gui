@@ -2369,6 +2369,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   NSImage *old_app_icon = _app_icon;
   NSSize miniWindowSize;
   NSSize imageSize;
+  GSDisplayServer *server;
 
   // Ignore attempts to set nil as the icon image.
   if (nil == anImage)
@@ -2379,7 +2380,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
-  miniWindowSize = [GSCurrentServer() iconSize];
+  server = GSCurrentServer();
+  miniWindowSize = server != 0 ? [server iconSize] : NSZeroSize;
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
     {
       miniWindowSize = NSMakeSize(48, 48);
