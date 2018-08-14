@@ -2318,7 +2318,7 @@ Also returns the child index relative to this parent. */
 }
 
 // This is used to build the drag image.
-- (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(int)row
+- (NSString *) _objectStringForTableColumn:(NSTableColumn *)column row:(NSInteger)row
 {
   NSString *draggedItemString = nil;
   if ([[self dataSource] respondsToSelector:@selector(outlineView:objectValueForTableColumn:byItem:)])
