@@ -2,6 +2,14 @@
 #include <unistd.h>
 #include <getopt.h>
 
+/*
+Would be great to have some control over the voice of say, taken from the Amiga manual:
+
+Speaks any text you type in the Input Window and displays and speaks the Phoneme version in the 
+second window. Options include: -m | -f (male or female voice), -n | -r (natural or robot voice), -s to set 
+speed of speech (40-400) and the pitch (-p) from 65 to 320. 
+*/
+
 @interface SpeechDelegate : NSObject
 @end
 
