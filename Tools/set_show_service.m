@@ -28,6 +28,11 @@
 
 */ 
 
+/* FIXME/TODO
+   How would the user know what services he can enable/disable?
+   Maybe a list option would make sense?
+*/
+
 #include <stdlib.h>
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSArray.h>
