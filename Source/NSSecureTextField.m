@@ -183,7 +183,7 @@
 
 - (NSAttributedString*) _drawAttributedString
 {
-  if (_echosBullets)
+  if (_echosBullets && (0 < [[self stringValue] length]))
     {
       if (!_cell.is_disabled)
         {
@@ -207,11 +207,9 @@
                                  attributes: newAttribs]);
         }
     }
-  else
-    {
-      /* .. do nothing.  */
-      return nil;
-    }
+  
+  // Default to super return on null/empty string...
+  return [super _drawAttributedString];
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
