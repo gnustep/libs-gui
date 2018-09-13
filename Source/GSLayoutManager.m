@@ -3220,7 +3220,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
   unsigned int gpos, cpos;
   // TESTPLANT-MAL-07312017: Would be nice to optimize this...
   // UGLY - but we've been seeing stack overwrite crashes due to this...
-  NSSize *advances = malloc(sizeof(NSSize)*length);
+  NSSize *advances = NSZoneMalloc(NSDefaultMallocZone(), sizeof(NSSize)*length);
 
   run = [self run_for_character_index: index : &gpos : &cpos];
   if (!run)
@@ -3247,7 +3247,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
       characterIndex: index];
   
   // Cleanup...
-  free(advances);
+  NSZoneFree(NSDefaultMallocZone(), advances);
 }
 
 - (NSUInteger) layoutOptions
