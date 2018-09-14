@@ -248,6 +248,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 + (void) setDefaultContextClass: (Class)defaultContextClass;
 
 - (id) initWithContextInfo: (NSDictionary*)info;
+- (id) initWithGraphicsPort: (void *)port 
+                    flipped: (BOOL)flag;
 
 /*
  * Focus management methods - lock and unlock should only be used by NSView

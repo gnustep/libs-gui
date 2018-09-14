@@ -234,14 +234,12 @@ NSGraphicsContext	*GSCurrentContext(void)
 + (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
                                                 flipped: (BOOL)flag
 {
-  NSGraphicsContext *new;
+  NSGraphicsContext *ctxt;
 
-  // FIXME
-  new = [self graphicsContextWithAttributes: nil];
-  new->_graphicsPort = port;
-  new->_isFlipped = flag;
-
-  return new;
+  ctxt = [[self alloc] initWithGraphicsPort: port
+                                    flipped: flag];
+ 
+  return AUTORELEASE(ctxt);
 }
 
 + (NSGraphicsContext *)graphicsContextWithCGContext: (CGContextRef)context
@@ -355,6 +353,19 @@ NSGraphicsContext	*GSCurrentContext(void)
                             forKey: [self class]];
         }
       [contextLock unlock];
+    }
+  return self;
+}
+
+
+- (id) initWithGraphicsPort: (void *)port 
+                    flipped: (BOOL)flag;
+{
+  self = [self init];
+  if (self != nil)
+    {
+      _graphicsPort = port;
+      _isFlipped = flag;
     }
   return self;
 }

@@ -1,3 +1,8 @@
+2018-09-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGraphicsContext.m
+	(+graphicsContextWithGraphicsPort:flipped:): Rewrite using an init method.
+
 2018-08-05    <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-setApplicationIconImage:): Avoid
@@ -224,7 +229,7 @@
 
 	* Source/NSGraphicsContext.m:  When using clang and the gnustep
 	runtime (the nonfragile API), it seems the compiler calculates the
-	offset of the _gcontext instance variuable in the NSThread object
+	offset of the _gcontext instance variable in the NSThread object
 	incorrectly, causing a crash.
 	Until we know why and can fix it, we need a workaround.  The simplest
 	one would be not to use the instance variable at all, but on the
