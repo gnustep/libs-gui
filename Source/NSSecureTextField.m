@@ -98,7 +98,6 @@
 {
   if((self = [super initWithCoder: coder]) != nil)
     {
-      [self setEchosBullets: YES];
     }
   return self;
 }
@@ -231,7 +230,14 @@
 
   if ([decoder allowsKeyedCoding])
     {
-      _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"];
+      // Default to on...
+      [self setEchosBullets: YES];
+      
+      if ([decoder containsValueForKey: @"GSEchoBullets"])
+	      _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"];
+      // XIB5 decoding...
+      else if ([decoder containsValueForKey: @"NSEchosBullets"])
+        _echosBullets = [decoder decodeBoolForKey: @"NSEchosBullets"];
     }
   else
     {
