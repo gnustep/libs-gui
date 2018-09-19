@@ -232,13 +232,27 @@
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  NSSecureTextView *secureView;
+  if ([self echosBullets])
+    {
+      NSSecureTextView *secureView;
 
-  /* Replace the text object with a secure instance.  It's not shared.  */
-  secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
+      /* Replace the text object with a secure instance.  It's not shared.  */
+      secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
 
-  [secureView setEchosBullets: [self echosBullets]];
-  return [super setUpFieldEditorAttributes: secureView];
+      [secureView setEchosBullets: [self echosBullets]];
+      return [super setUpFieldEditorAttributes: secureView];
+    }
+  
+  // Otherwise...
+  textObject = [super setUpFieldEditorAttributes: textObject];
+  
+  if (_savedFont != nil)
+  {
+    [textObject setFont: _savedFont];
+  }
+  
+  // and...
+  return textObject;
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
