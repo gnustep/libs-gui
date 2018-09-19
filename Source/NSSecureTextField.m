@@ -145,24 +145,6 @@
   _echosBullets = flag;
 }
 
-/* Substitute a fixed-pitch font for correct bullet drawing */
-- (void) setFont: (NSFont *) f
-{
-  // Reset saved font...
-  _savedFont = nil;
-  
-  if (![f isFixedPitch])
-    {
-      // Save the incoming font for using with placeholder text...
-      _savedFont = f;
-      
-      // Get a fixed pitch font...
-      f = [NSFont userFixedPitchFontOfSize: [f pointSize]];
-    }
-
-  [super setFont: f];
-}
-
 - (NSAttributedString *)_replacementAttributedString
 {
   NSDictionary *attributes;
@@ -215,19 +197,7 @@
     }
   
   // Default to super return on null/empty string...i.e. placeholder...
-  NSAttributedString *string = [super _drawAttributedString];
-  
-  // If we have a saved font then change it on the returned attributed string...
-  if (_savedFont != nil)
-  {
-    NSMutableDictionary *attributes = AUTORELEASE([[string attributesAtIndex: 0 effectiveRange: NULL] mutableCopy]);
-    [attributes setObject: _savedFont forKey: NSFontAttributeName];
-    string = [[NSAttributedString alloc] initWithString: [string string]
-                                             attributes: attributes];
-  }
-  
-  // Done...
-  return string;
+  return [super _drawAttributedString];
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
@@ -235,24 +205,17 @@
   if ([self echosBullets])
     {
       NSSecureTextView *secureView;
-
+      
       /* Replace the text object with a secure instance.  It's not shared.  */
       secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
 
       [secureView setEchosBullets: [self echosBullets]];
+      
       return [super setUpFieldEditorAttributes: secureView];
     }
   
   // Otherwise...
-  textObject = [super setUpFieldEditorAttributes: textObject];
-  
-  if (_savedFont != nil)
-  {
-    [textObject setFont: _savedFont];
-  }
-  
-  // and...
-  return textObject;
+  return [super setUpFieldEditorAttributes: textObject];
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
@@ -300,7 +263,6 @@
                             glyphIndex: (NSUInteger*)glyph
                         characterIndex: (NSUInteger*)index
 {
-  NSGlyph glyphs[num];
   NSGlyph gl;
   NSAttributedString *attrstr = [storage attributedString];
   GSFontInfo *fi;
@@ -320,16 +282,22 @@
       return;
     }
 
-  gl = [fi glyphForCharacter: BULLET];
-  for (i = 0; i < num; i++)
-    {
-      glyphs[i] = gl;
-    }
+  {
+    NSGlyph *glyphs = NSZoneMalloc(NSDefaultMallocZone(), (sizeof(NSGlyph) * num));
+    gl = [fi glyphForCharacter: BULLET];
+    for (i = 0; i < num; i++)
+      {
+        glyphs[i] = gl;
+      }
 
-  [storage insertGlyphs: glyphs
-                 length: num
-           forStartingGlyphAtIndex: *glyph
-         characterIndex: *index];
+    [storage insertGlyphs: glyphs
+                   length: num
+             forStartingGlyphAtIndex: *glyph
+           characterIndex: *index];
+    
+    NSZoneFree(NSDefaultMallocZone(), glyphs);
+  }
+  
 }
 
 @end
@@ -387,6 +355,18 @@
   [self setFieldEditor: YES];
 
   return self;
+}
+
+/* Substitute a fixed-pitch font for correct bullet drawing */
+- (void)setFont:(NSFont *)font
+{
+  if (![font isFixedPitch])
+  {
+    // Get a fixed pitch font...
+    font = [NSFont userFixedPitchFontOfSize: [font pointSize]];
+  }
+  
+  [super setFont: font];
 }
 
 - (BOOL) echosBullets
