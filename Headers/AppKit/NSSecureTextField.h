@@ -39,9 +39,11 @@
 - (BOOL) echosBullets;
 @end
 
+//@class NSFont;
 @interface NSSecureTextFieldCell : NSTextFieldCell
 {
-  BOOL _echosBullets;
+  BOOL    _echosBullets;
+  NSFont *_savedFont;
 }
 - (void) setEchosBullets:(BOOL)flag;
 - (BOOL) echosBullets;

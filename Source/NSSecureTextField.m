@@ -148,8 +148,15 @@
 /* Substitute a fixed-pitch font for correct bullet drawing */
 - (void) setFont: (NSFont *) f
 {
+  // Reset saved font...
+  _savedFont = nil;
+  
   if (![f isFixedPitch])
     {
+      // Save the incoming font for using with placeholder text...
+      _savedFont = f;
+      
+      // Get a fixed pitch font...
       f = [NSFont userFixedPitchFontOfSize: [f pointSize]];
     }
 
@@ -207,8 +214,20 @@
         }
     }
   
-  // Default to super return on null/empty string...
-  return [super _drawAttributedString];
+  // Default to super return on null/empty string...i.e. placeholder...
+  NSAttributedString *string = [super _drawAttributedString];
+  
+  // If we have a saved font then change it on the returned attributed string...
+  if (_savedFont != nil)
+  {
+    NSMutableDictionary *attributes = AUTORELEASE([[string attributesAtIndex: 0 effectiveRange: NULL] mutableCopy]);
+    [attributes setObject: _savedFont forKey: NSFontAttributeName];
+    string = [[NSAttributedString alloc] initWithString: [string string]
+                                             attributes: attributes];
+  }
+  
+  // Done...
+  return string;
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
