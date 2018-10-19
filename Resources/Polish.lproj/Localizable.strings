@@ -57,7 +57,7 @@ add comments above this one
 /* File: ../Source/GSPrintOperation.m:157 */
 /* File: ../Source/NSSavePanel.m:1384 */
 /* File: ../Source/NSSavePanel.m:1395 */
-"Dismiss" = "Dismiss";
+"Dismiss" = "Odrzu\u0107";
 
 /* File: ../Source/GSPrintOperation.m:155 */
 /* File: ../Source/NSFontPanel.m:706 */
@@ -100,7 +100,7 @@ add comments above this one
 /* Comment: Error description */
 /* File: ../Source/NSDocument.m:646 */
 /* Comment: Error description */
-"Could not create data for type." = "Could not create data for type.";
+"Could not create data for type." = "Nie mo\u017cna utworzy\u0107 danych dla danego typu.";
 
 
 /*** Strings from ../Source/Functions.m ***/
@@ -111,9 +111,9 @@ add comments above this one
 
 /*** Strings from ../Source/GSCharacterPanel.m ***/
 /* File: ../Source/GSCharacterPanel.m:182 */
-"Code Point" = "Code Point";
+"Code Point" = "Punkt kodowy";
 /* File: ../Source/GSCharacterPanel.m:191 */
-"Unicode Block" = "Unicode Block";
+"Unicode Block" = "Blok Unikodu";
 
 
 /*** Strings from ../Source/GSInfoPanel.m ***/
@@ -123,7 +123,7 @@ add comments above this one
 "Authors: " = "Autorzy: ";
 /* File: ../Source/GSInfoPanel.m:396 */
 "Copyright Information Not Available"
-  = "Copyright Information Not Available";
+  = "Informacje o prawach autorskich niedost\u0119pne";
 /* File: ../Source/GSInfoPanel.m:187 */
 /* File: ../Source/GSInfoPanel.m:482 */
 "Current theme" = "Obecny motyw";
@@ -139,7 +139,7 @@ add comments above this one
 
 /*** Strings from ../Source/GSTextFinder.m ***/
 /* File: ../Source/GSTextFinder.m:408 */
-"%d replaced" = "%d replaced";
+"%d replaced" = "%d zast\u0105piono";
 /* File: ../Source/GSTextFinder.m:381 */
 /* File: ../Source/GSTextFinder.m:332 */
 "Not found" = "Nie znaleziono";
@@ -180,16 +180,16 @@ add comments above this one
 
 /*** Strings from ../Source/NSApplication.m ***/
 /* File: ../Source/NSApplication.m:138 */
-"Abort" = "Abort";
+"Abort" = "Przerwij";
 /* File: ../Source/NSApplication.m:323 */
 "Backend at path %@ doesn't contain the GSBackend class"
-  = "Backend at path %@ doesn't contain the GSBackend class";
+  = "Backend w \u015bcie\u017cce %@ nie zawiera klasy GSBackend";
 /* File: ../Source/NSApplication.m:311 */
 "Can't create NSBundle object for backend at path %@"
-  = "Can't create NSBundle object for backend at path %@";
+  = "Nie mo\u017cna utworzy\u0107 obiektu NSBundle dla backendu w \u015bcie\u017cce %@";
 /* File: ../Source/NSApplication.m:316 */
 "Can't load object file from backend at path %@"
-  = "Can't load object file from backend at path %@";
+  = "Nie mo\u017cna za\u0142adowa\u0107 pliku obiektu z backendu w \u015bcie\u017cce %@";
 /* File: ../Source/NSApplication.m:135 */
 "Critical Error in %@" = "B\u0142\u0105d krytyczny w %@";
 /* File: ../Source/NSApplication.m:141 */
@@ -198,11 +198,11 @@ add comments above this one
 "Hide" = "Ukryj";
 /* File: ../Source/NSApplication.m:1198 */
 "Problem during launch app notification: %@"
-  = "Problem podczas launch app notification: %@";
+  = "Problem podczas uruchamiania powiadomienia aplikacji: %@";
 /* File: ../Source/NSApplication.m:4210 */
 "Show" = "Poka\u017c";
 /* File: ../Source/NSApplication.m:304 */
-"Unable to find backend %@" = "Unable to find backend %@";
+"Unable to find backend %@" = "Nie mo\u017cna znale\u017a\u0107 backendu %@";
 /* File: ../Source/NSApplication.m:972 */
 "[NSApplication -init] called more than once"
   = "[NSApplication -init] wywo\u0142ano wi\u0119cej ni\u017c raz";
@@ -293,19 +293,19 @@ add comments above this one
 "Could not write backup file." = "Nie mo\u017cna zapisa\u0107 kopii zapasowej pliku.";
 /* File: ../Source/NSDocument.m:1029 */
 /* Comment: Error description */
-"Could not write file wrapper." = "Could not write file wrapper.";
+"Could not write file wrapper." = "Nie mo\u017cna zapisa\u0107 wrappera pliku.";
 /* File: ../Source/NSDocument.m:830 */
 "File Error" = "B\u0142\u0105d pliku";
 /* File: ../Source/NSDocument.m:751 */
 /* Comment: Error description */
-"File wrapper is no file." = "File wrapper is no file.";
+"File wrapper is no file." = "wrapper pliku nie jest plikiem.";
 /* File: ../Source/NSDocument.m:152 */
 /* File: ../Source/NSDocument.m:129 */
 "Load failed" = "\u0142adowanie nieudane";
 /* File: ../Source/NSDocument.m:935 */
 /* Comment: Error description */
 "Not a writable type or no URL given."
-  = "Not a writable type or no URL given.";
+  = "Typ nie zapisywalny albo nie podano adresu URL.";
 /* File: ../Source/NSDocument.m:1207 */
 "Save As" = "Zapisz jako";
 /* File: ../Source/NSDocument.m:1208 */
@@ -324,7 +324,7 @@ add comments above this one
 "Quit Anyway" = "Wyjd\u017a mimo to";
 /* File: ../Source/NSDocumentController.m:972 */
 /* File: ../Source/NSDocumentController.m:930 */
-"Review Unsaved" = "Review Unsaved";
+"Review Unsaved" = "Przejrzyj niezapisane";
 /* File: ../Source/NSDocumentController.m:979 */
 /* File: ../Source/NSDocumentController.m:929 */
 "You have unsaved documents" = "Masz niezapisane dokumenty";
@@ -344,11 +344,11 @@ add comments above this one
 /* File: ../Source/NSFontPanel.m:810 */
 "NoFamily" = "Brak rodziny";
 /* File: ../Source/NSFontPanel.m:719 */
-"Set" = "Set";
+"Set" = "Wybierz";
 /* File: ../Source/NSFontPanel.m:639 */
 "Size" = "Rozmiar";
 /* File: ../Source/NSFontPanel.m:1142 */
-"Typeface" = "Typeface";
+"Typeface" = "Kr\u00f3j pisma";
 
 
 /*** Strings from ../Source/NSMenu.m ***/
@@ -405,11 +405,11 @@ add comments above this one
 "8 up" = "8 up";
 /* File: ../Source/NSPrintPanel.m:407 */
 "Faxing of print file not implemented"
-  = "Faxing of print file not implemented";
+  = "Faksowanie pliku druku niezaimplementowane";
 /* File: ../Source/NSPrintPanel.m:781 */
 /* File: ../Source/NSPrintPanel.m:774 */
 /* File: ../Source/NSPrintPanel.m:643 */
-"Manual" = "Manual";
+"Manual" = "Instrukcja";
 /* File: ../Source/NSPrintPanel.m:145 */
 "Print Panel" = "Panel drukowana";
 /* File: ../Source/NSPrintPanel.m:407 */
@@ -437,7 +437,7 @@ add comments above this one
   = "Katalog '%@' nie m\u00f3g\u0142 zosta\u0107 utworzony.";
 /* File: ../Source/NSSavePanel.m:1370 */
 "The directory '%@' does not exist, do you want to create it?"
-  = "The directory '%@' does not exist, do you want to create it?";
+  = "Katalog '%@' nie istnieje, czy chcesz go utworzy\u0107?";
 /* File: ../Source/NSSavePanel.m:1405 */
 "The file '%@' in '%@' exists. Replace it?"
   = "Plik '%@' w '%@' istnieje. Zast\u0105pi\u0107 go?";
