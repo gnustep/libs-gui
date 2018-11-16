@@ -569,6 +569,10 @@
         {
           ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
         }
+      else // Otherwise assign an empty array...
+        {
+          ASSIGN(_items, [NSMutableArray array]);
+        }
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
 	  // N.B.: As a side effect, this discards the subview frame
