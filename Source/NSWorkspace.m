@@ -57,6 +57,20 @@
   #endif
 #endif
 
+/* FIXME Solaris uses /etc/mnttab instead of /etc/mtab, but defines
+ * MNTTAB to that path.
+ * FIXME We won't get here on Solaris at all because it defines the
+ * mntent struct in sys/mnttab.h instead of sys/mntent.h.
+ */
+# ifdef _PATH_MOUNTED
+#  define MOUNTED_PATH _PATH_MOUNTED
+# elif defined(MOUNTED)
+#  define MOUNTED_PATH MOUNTED
+# else
+#  define MNTTAB "/etc/mtab"
+#  warning "Mounted path file for you OS guessed to /etc/mtab";
+# endif
+
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
@@ -1221,15 +1235,59 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 			     type: (NSString **)fileSystemType
 {
   NSArray *removables;
+  NSString  *fsName;
 
   /* since we might not be able to get information about removable volumes
-     we use the information from the preferences which can be set in Systempreferences
+     we use the information from the preferences which can be set in SystemPreferences
    */
   removables = [[[NSUserDefaults standardUserDefaults] persistentDomainForName: NSGlobalDomain] objectForKey: @"GSRemovableMediaPaths"];
-  
+
   *removableFlag = NO;
   if ([removables containsObject: fullPath])
     *removableFlag = YES;
+
+  fsName = nil;
+#if defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+  // if this is called from mountedLocalVolumePaths, the getmntent is searched again for each item
+  FILE		*fptr = setmntent(MOUNTED_PATH, "r");
+  struct mntent	*me;
+
+  while ((me = getmntent(fptr)) != 0)
+  {
+    if (strcmp(me->MNT_MEMB, [fullPath fileSystemRepresentation]) == 0)
+      {
+	fsName = [NSString stringWithCString:me->MNT_FSNAME];
+      }
+  }
+  endmntent(fptr);
+#endif /* HAVE_GETMINTENT */
+  if (fsName && [fsName hasPrefix:@"/dev"])
+    {
+      NSString *devName;
+      NSString *devInfoPath;
+      BOOL r;
+      NSString *removableString;
+
+      r = NO;
+      devName = [fsName lastPathComponent];
+      // This is a very crude way of removing the partition number
+      if ([devName length] > 3)
+	devName = [devName substringToIndex: 3];
+
+      devInfoPath = [@"/sys/block" stringByAppendingPathComponent:devName];
+      devInfoPath = [devInfoPath stringByAppendingPathComponent:@"removable"];
+
+      removableString = [[NSString alloc] initWithContentsOfFile:devInfoPath];
+
+      if ([removableString hasPrefix:@"1"])
+	r = YES;
+      [removableString release];
+
+      // we go in OR against the informatoin derived from declared removables
+      // so we enrich, but don't mark removables as not
+      *removableFlag |= r;
+    }
+
   
 #if defined (HAVE_SYS_STATVFS_H) || defined (HAVE_SYS_VFS_H)
   /* We use statvfs() if available to get information but statfs()
@@ -2073,13 +2131,30 @@ launchIdentifiers: (NSArray **)identifiers
 	  [names addObject: name];
 	}
     }
-
+  NSDebugLog(@"mountedRemovableMedia returning names: %@", names);
   return names;
 }
 
 - (NSArray*) mountedLocalVolumePaths
 {
   NSMutableArray	*names;
+  NSArray	        *reservedMountNames;
+
+  // get reserved names....
+  reservedMountNames = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSReservedMountNames"];
+  if (reservedMountNames == nil)
+    {
+      reservedMountNames = [NSArray arrayWithObjects:
+				      @"proc",@"devpts",
+				    @"shm",@"usbdevfs",
+				    @"devtmpfs", @"devpts",@"sysfs",
+				    @"tmpfs",@"procbususb",
+				    @"udev", @"pstore",
+				    @"cgroup", nil];
+      [[NSUserDefaults standardUserDefaults] setObject: reservedMountNames 
+						forKey: @"GSReservedMountNames"];
+    }
+
 #if	defined(__MINGW32__)
   NSFileManager		*mgr = [NSFileManager defaultManager];
   unsigned		max = BUFSIZ;
@@ -2140,19 +2215,6 @@ launchIdentifiers: (NSArray **)identifiers
         }
     }
 #elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
-  /* FIXME Solaris uses /etc/mnttab instead of /etc/mtab, but defines
-   * MNTTAB to that path.
-   * FIXME We won't get here on Solaris at all because it defines the
-   * mntent struct in sys/mnttab.h instead of sys/mntent.h.
-   */
-# ifdef _PATH_MOUNTED
-#  define MOUNTED_PATH _PATH_MOUNTED
-# elif defined(MOUNTED)
-#  define MOUNTED_PATH MOUNTED
-# else
-#  define MNTTAB "/etc/mtab"
-#  warning "Mounted path file for you OS guessed to /etc/mtab";
-# endif
 
   NSFileManager	*mgr = [NSFileManager defaultManager];
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
@@ -2162,10 +2224,15 @@ launchIdentifiers: (NSArray **)identifiers
   while ((m = getmntent(fptr)) != 0)
     {
       NSString	*path;
+      NSString  *type;
 
       path = [mgr stringWithFileSystemRepresentation: m->MNT_MEMB
 					      length: strlen(m->MNT_MEMB)];
-      [names addObject: path];
+      type = [NSString stringWithCString:m->mnt_type];
+      if ([reservedMountNames containsObject: type] == NO)
+	{
+	  [names addObject: path];
+	}
     }
   endmntent(fptr);
 #else
@@ -2173,7 +2240,7 @@ launchIdentifiers: (NSArray **)identifiers
      defined in preferences GSReservedMountNames (SystemPreferences) */
   NSString	*mtabPath;
   NSString	*mtab;
-  NSArray	*mounts, *reservedMountNames;
+  NSArray	*mounts;
   unsigned int	i;
 
   // get mount table...
@@ -2181,20 +2248,6 @@ launchIdentifiers: (NSArray **)identifiers
   if (mtabPath == nil)
     {
       mtabPath = @"/etc/mtab";
-    }
-  
-  // get reserved names....
-  reservedMountNames = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSReservedMountNames"];
-  if (reservedMountNames == nil)
-    {
-      reservedMountNames = [NSArray arrayWithObjects: 
-				      @"proc",@"devpts",
-				    @"shm",@"usbdevfs",
-				    @"devpts",@"sysfs",
-				    @"tmpfs",@"procbususb",
-				    @"udev",nil];
-      [[NSUserDefaults standardUserDefaults] setObject: reservedMountNames 
-					     forKey: @"GSReservedMountNames"];
     }
 
   mtab = [NSString stringWithContentsOfFile: mtabPath];
@@ -2212,7 +2265,6 @@ launchIdentifiers: (NSArray **)identifiers
           if ([parts count] >= 2) 
             {          
               NSString	*type = [parts objectAtIndex: 2];
-              
               if ([reservedMountNames containsObject: type] == NO)
               {
 	         [names addObject: [parts objectAtIndex: 1]];
@@ -2221,7 +2273,7 @@ launchIdentifiers: (NSArray **)identifiers
         }
     }
 #endif
-
+  NSDebugLog(@"mountedLocalVolumePaths returning names: %@", names);
   return names;
 }
 

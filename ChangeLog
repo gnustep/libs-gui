@@ -1,3 +1,17 @@
+2018-11-19 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* configure
+	* configure.ac
+	New getmntent structure checks.
+
+	* Source/NSWorkspace.m (getFileSystemInfoForPath)
+	On linux, try to read /sys/block/xxx/removable information to get
+	information about removable volumes, while continue honoring
+	preferences. This can be a little inefficient if called for each volume.
+	Furthermore in mountedLocalVolumePaths, enhance skipping reserved mount
+	names by using filesystem type also if getmmntent is available.
+
 2018-09-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m
