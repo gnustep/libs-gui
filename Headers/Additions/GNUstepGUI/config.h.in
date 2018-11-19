@@ -141,6 +141,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* mnt_fsname structure member name */
+#undef MNT_FSNAME
+
 /* mntent structure member name */
 #undef MNT_MEMB
 

@@ -3961,6 +3961,22 @@ fi
 
 done
 
+ac_fn_c_check_member "$LINENO" "struct mntent" "mnt_fsname" "ac_cv_member_struct_mntent_mnt_fsname" "#include <mntent.h>
+"
+if test "x$ac_cv_member_struct_mntent_mnt_fsname" = xyes; then :
+
+$as_echo "#define MNT_FSNAME mnt_fsname" >>confdefs.h
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct mntent" "mnt_fsname" "ac_cv_member_struct_mntent_mnt_fsname" "#include <sys/mntent.h>
+"
+if test "x$ac_cv_member_struct_mntent_mnt_fsname" = xyes; then :
+
+$as_echo "#define MNT_FSNAME mnt_fsname" >>confdefs.h
+
+fi
+
 ac_fn_c_check_member "$LINENO" "struct mntent" "mnt_dir" "ac_cv_member_struct_mntent_mnt_dir" "#include <mntent.h>
 "
 if test "x$ac_cv_member_struct_mntent_mnt_dir" = xyes; then :

@@ -151,6 +151,8 @@ AC_CHECK_FUNCS(rint rintf atan2f floorf)
 #--------------------------------------------------------------------
 AC_CHECK_HEADERS(mntent.h)
 AC_CHECK_HEADERS(sys/mntent.h)
+AC_CHECK_MEMBER(struct mntent.mnt_fsname,[AC_DEFINE(MNT_FSNAME,mnt_fsname,mntent structure member name)],,[#include <mntent.h>])
+AC_CHECK_MEMBER(struct mntent.mnt_fsname,[AC_DEFINE(MNT_FSNAME,mnt_fsname,mntent structure member name)],,[#include <sys/mntent.h>])
 AC_CHECK_MEMBER(struct mntent.mnt_dir,[AC_DEFINE(MNT_MEMB,mnt_dir,mntent structure member name)],,[#include <mntent.h>])
 AC_CHECK_MEMBER(struct mntent.mnt_mountp,[AC_DEFINE(MNT_MEMB,mnt_mountp,mntent structure member name)],,[#include <sys/mntent.h>])
 AC_FUNC_GETMNTENT
