@@ -5429,7 +5429,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   if ([aCoder allowsKeyedCoding])
     {
-      unsigned long vFlags = 0; 
+      unsigned int vFlags = 0; 
       NSSize intercellSpacing = [self intercellSpacing];
       GSTableViewFlags tableViewFlags;
 
@@ -5485,7 +5485,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       tableViewFlags.columnResizing = [self allowsColumnResizing];
       tableViewFlags.columnOrdering = [self allowsColumnReordering];
       
-      memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned long));
+      memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned int));
 
       // encode..
       [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
@@ -5658,7 +5658,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-          unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+          unsigned int flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
           GSTableViewFlags tableViewFlags;
           memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
 

@@ -9,6 +9,25 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.27.0}
+
+@itemize @bullet
+@item Make targetForAction saver.
+@item Speed up menu updates.
+@item Clean up speech tool compilation and switch to newer interface.
+@item Fix bug in CUPS subclassing introduced in last release. 
+@item Minor improvments to typesetting.
+@item Add NSIsControllerMarker.
+@item Fix tracking on segmented cell.
+@item Bring slider cell closer to Cocoa implementation.
+@item Add ivar for CA in NSView.
+@item Improve border calculation on printing.
+@item Lazy load app icon.
+@item Better detection of removable volumnes.
+@item Lots of bug fixes.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.26.2}
 
 This version is a small, but important bugfix release.
@@ -18,7 +37,6 @@ This version is a small, but important bugfix release.
 @item installation: Fix the configure script.
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.26.1}
 
 This version is released to conincide with version 1.25.1 of

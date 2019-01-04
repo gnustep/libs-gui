@@ -1,3 +1,9 @@
+2019-01-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Documentation/news.texi: Fill in some details for pending release.
+	* Source/NSTableView.m (encodeWithCoder:,initWithCoder:): Use
+	unsigned int instead of unsigned long for flags.
+
 2018-11-19 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/config.h.in
