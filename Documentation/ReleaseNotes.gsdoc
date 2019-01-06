@@ -21,6 +21,47 @@
       </p>
 
       <section>
+        <heading>0.27.0</heading>
+        <p>
+          This version includes numerous bugfixes, compatibility
+          improvements and other changes accumulated over the last year.
+          It also enables work to be done on integrating NSViews with a Core
+          Animation renderer.
+        </p>
+        <deflist>
+          <term>NSApplication</term>
+          <desc>Make targetForAction safer.</desc>
+          <term>NSMenu</term>
+          <desc>Speed up menu updates.</desc>
+          <term>Tools/speech</term>
+          <desc>Clean up speech tool compilation and switch to newer interface.</desc>
+          <term>printing</term>
+          <desc>Fix bug in CUPS subclassing introduced in last release.</term>
+          <term>typesetting</term>
+          <desc>Minor improvments to typesetting.</desc>
+          <term>NSKeyValueBinding</term>
+          <desc>Add NSIsControllerMarker.</desc>
+          <term>NSSegmentedCell</term>
+          <desc>Fix tracking on segmented cell.</desc>
+          <term>NSSliderCell</term>
+          <desc>Bring slider cell closer to Cocoa implementation.</desc>
+          <term>NSView</term>
+          <desc>Add ivar for Core Animation in NSView.</desc>
+          <term>printing</term>
+          <desc>Improve border calculation on printing.</desc>
+          <term>NSApplication</term>
+          <desc>Lazy load app icon.</desc>
+          <term>NSWorkspace</term>
+          <desc>Better detection of removable volumes.</desc>
+          <term>translations</term>
+          <desc>Polish translations.</desc>
+          <term>translations</term>
+          <desc>Japanese translations.</desc>
+          <term>other</term>
+          <desc>Lots of bug fixes.</desc>
+        </deflist>
+      </section>
+      <section>
         <heading>0.26.2</heading>
         <p>
 	  This version is a small, but important bugfix release.

@@ -11,19 +11,26 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 
 @section Noteworthy changes in version @samp{0.27.0}
 
+This version includes numerous bugfixes, compatibility
+improvements and other changes accumulated over the last year.
+It also enables work to be done on integrating NSViews with a Core
+Animation renderer.
+
 @itemize @bullet
-@item Make targetForAction saver.
+@item Make targetForAction safer.
 @item Speed up menu updates.
 @item Clean up speech tool compilation and switch to newer interface.
-@item Fix bug in CUPS subclassing introduced in last release. 
-@item Minor improvments to typesetting.
+@item Fix bug in CUPS subclassing introduced in last release.
+@item Minor improvements to typesetting.
 @item Add NSIsControllerMarker.
 @item Fix tracking on segmented cell.
 @item Bring slider cell closer to Cocoa implementation.
-@item Add ivar for CA in NSView.
+@item Add ivar for Core Animation in NSView.
 @item Improve border calculation on printing.
 @item Lazy load app icon.
-@item Better detection of removable volumnes.
+@item Better detection of removable volumes.
+@item Polish translations.
+@item Japanese translations.
 @item Lots of bug fixes.
 @end itemize
 
