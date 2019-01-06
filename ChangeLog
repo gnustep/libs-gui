@@ -1,3 +1,7 @@
+2019-01-06 Ivan Vucica <ivan@vucica.net>
+
+	* configure: Regenerated with autoconf 2.69.
+
 2019-01-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Documentation/news.texi: Fill in some details for pending release.
