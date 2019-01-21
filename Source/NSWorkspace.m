@@ -34,18 +34,21 @@
 
 #include <unistd.h>
 #include <sys/types.h>
-#if	defined(HAVE_GETMNTINFO)
+
+#if defined(HAVE_GETMNTINFO)
 #include <sys/param.h>
 #include <sys/mount.h>
-#elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
-#if	defined(HAVE_MNTENT_H)
-#include <mntent.h>
-#elif defined(HAVE_SYS_MNTENT_H)
-#include <sys/mntent.h>
-#else
-#undef	HAVE_GETMNTENT
 #endif
-#endif
+
+#if defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+  #if defined(HAVE_MNTENT_H)
+  #include <mntent.h>
+  #elif defined(HAVE_SYS_MNTENT_H)
+  #include <sys/mntent.h>
+  #else
+  #undef HAVE_GETMNTENT
+  #endif
+#endif /* HAVE_GETMNTENT */
 
 #if defined (HAVE_SYS_STATVFS_H)
 #include <sys/statvfs.h>
