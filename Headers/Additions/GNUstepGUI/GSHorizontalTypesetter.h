@@ -64,6 +64,11 @@
   NSRange fontRange; /* glyphs */
 
   struct GSHorizontalTypesetter_glyph_cache_s *cache;
+  /*
+    cache_base: index of first glyph in cache within the text container
+    cache_size: capacity of cache
+    cache_length: how much of the cache is filled
+   */
   unsigned int cache_base, cache_size, cache_length;
   BOOL at_end;
 

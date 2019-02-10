@@ -127,11 +127,26 @@ the last time or not, we wouldn't need to clear the cache every time */
 -(void) _cacheClear
 {
   cache_length = 0;
+
+  curParagraphStyle = nil;
+  paragraphRange = NSMakeRange(0, 0);
+  curAttributes = nil;
+  attributeRange = NSMakeRange(0, 0);
+  curFont = nil;
+  fontRange = NSMakeRange(0, 0);
 }
 
--(void) _cacheAttributes
+-(void) _cacheAttributes: (unsigned int)char_index
 {
   NSNumber *n;
+
+  if (NSLocationInRange(char_index, attributeRange))
+    {
+      return;
+    }
+  
+  curAttributes = [curTextStorage attributesAtIndex: char_index
+                                     effectiveRange: &attributeRange];
 
   n = [curAttributes objectForKey: NSKernAttributeName];
   if (!n)
@@ -180,9 +195,7 @@ the last time or not, we wouldn't need to clear the cache every time */
 
       at_end = NO;
       i = [curLayoutManager characterIndexForGlyphAtIndex: glyph];
-      curAttributes = [curTextStorage attributesAtIndex: i
-				    effectiveRange: &attributeRange];
-      [self _cacheAttributes];
+      [self _cacheAttributes: i];
 
       paragraphRange = NSMakeRange(i, [curTextStorage length] - i);
       curParagraphStyle = [curTextStorage attribute: NSParagraphStyleAttributeName
@@ -198,7 +211,9 @@ the last time or not, we wouldn't need to clear the cache every time */
 				range: &fontRange];
     }
   else
-    at_end = YES;
+    {
+      at_end = YES;
+    }
 }
 
 -(void) _cacheGlyphs: (unsigned int)new_length
@@ -231,9 +246,7 @@ the last time or not, we wouldn't need to clear the cache every time */
       /* cache attributes */
       if (g->char_index >= attributeRange.location + attributeRange.length)
 	{
-	  curAttributes = [curTextStorage attributesAtIndex: g->char_index
-					effectiveRange: &attributeRange];
-	  [self _cacheAttributes];
+	  [self _cacheAttributes: g->char_index];
 	}
 
       g->attributes.explicit_kern = attributes.explicit_kern;
@@ -512,7 +525,8 @@ For bigger values the width gets ignored.
   /*
     We aren't actually interested in the glyph data, but we want the
     attributes for the final character so we can make the extra line
-    frag rect match it. This call makes sure that curFont is set.
+    frag rect match it. This call makes sure that curParagraphStyle
+    and curFont are set.
   */
   if (curGlyph)
     {
@@ -520,6 +534,8 @@ For bigger values the width gets ignored.
     }
   else
     {
+      // FIXME These should come from the typing attributes
+      curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
       curFont = [NSFont userFontOfSize: 0];
     }
   
@@ -1250,7 +1266,6 @@ NS_DURING
   curGlyph = glyphIndex;
 
   [self _cacheClear];
-
 
   real_ret = 4;
   curPoint = NSMakePoint(0, NSMaxY(previousLineFragRect));

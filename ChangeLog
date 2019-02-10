@@ -1,7 +1,17 @@
+2019-02-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSHorizontalTypesetter.h: Add
+	comment to describe cache variables.
+	* Source/GSHorizontalTypesetter.m: Restructure glyph attribute
+	cache filling and make _addExtraLineFragment saver by providing a
+	default for curParagraphStyle.
+
 2019-01-21 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSWorkspace.m
-	Do guard includes for getmntinfo and mntent separately, should help building on Debian/kFreeBSD and fix 55526, but could need more work.
+	Do guard includes for getmntinfo and mntent separately, should
+	help building on Debian/kFreeBSD and fix 55526, but could need
+	more work.
 
 2019-01-06 Ivan Vucica <ivan@vucica.net>
 
