@@ -615,6 +615,7 @@ typedef struct pixel_t
   icns_family_t  *iconFamily = NULL;
   unsigned long   dataOffset = 0;
   icns_byte_t    *data = NULL;
+  int best = 0;
 
   error = icns_import_family_data(size, bytes, &iconFamily);
   if (error != ICNS_STATUS_OK)
@@ -644,6 +645,7 @@ typedef struct pixel_t
                                                      typeStr,
                                                      &iconImage);
       //NSLog(@"Read image %c %c %c %c result %d size %d", typeStr.c[0], typeStr.c[1], typeStr.c[2], typeStr.c[3], error, element.elementSize);
+
       if (!error)
         {
           NSBitmapImageRep* imageRep;
@@ -651,7 +653,27 @@ typedef struct pixel_t
           imageRep = [[self alloc] _initBitmapFromICNSImage: &iconImage];
           if (imageRep)
             {
-              [array addObject: imageRep];
+              // If it exists, put the 48 icon as the first element in the array
+              if (icns_types_equal(typeStr, ICNS_48x48_32BIT_DATA))
+                {
+                  [array insertObject: imageRep atIndex: 0];
+                  best = 48;
+                }
+              else if (icns_types_equal(typeStr, ICNS_32x32_32BIT_DATA) && best != 48)
+                {
+                  [array insertObject: imageRep atIndex: 0];
+                  best = 32;
+                }
+              else if ((icns_types_equal(typeStr, ICNS_16x16_32BIT_DATA) ||
+                        icns_types_equal(typeStr, ICNS_128X128_32BIT_DATA)) &&
+                       best != 48 && best != 32)
+                {
+                  [array insertObject: imageRep atIndex: 0];
+                }
+              else
+                {
+                  [array addObject: imageRep];
+                }
               RELEASE(imageRep);
             }
           

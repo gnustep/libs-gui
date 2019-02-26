@@ -1,3 +1,8 @@
+2019-02-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+ICNS.m (_imageRepsWithICNSData:): Try to
+	put the best suited image first.
+
 2019-02-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSHorizontalTypesetter.h: Add
