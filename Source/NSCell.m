@@ -103,7 +103,7 @@ static NSColor *dtxtCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -2251,6 +2251,7 @@ static NSColor *dtxtCol;
 {
   BOOL needsClipView;
   BOOL wraps = [self wraps];
+  BOOL usesSingleLineMode = [self usesSingleLineMode];
   NSTextContainer *ct;
   NSSize maxSize;
   NSRect titleRect = [self titleRectForBounds: aRect];
@@ -2571,6 +2572,8 @@ static NSColor *dtxtCol;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       tmp_int = _cell.base_writing_direction;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.uses_single_line_mode;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
     }
 }
 
@@ -2854,6 +2857,13 @@ static NSColor *dtxtCol;
 	     wraps attribute. */
 	  [self setWraps: wraps];
 	}
+      
+      if (version  >= 3)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.uses_single_line_mode = tmp_int;
+	}
+
     }
   return self;
 }
@@ -2872,12 +2882,12 @@ static NSColor *dtxtCol;
 
 - (void) setUsesSingleLineMode: (BOOL)flag
 {
-  _cell._uses_single_line_mode = flag;
+  _cell.uses_single_line_mode = flag;
 }
 
 - (BOOL) usesSingleLineMode
 {
-  return _cell._uses_single_line_mode;
+  return _cell.uses_single_line_mode;
 }
 
 @end

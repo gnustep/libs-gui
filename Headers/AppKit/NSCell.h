@@ -203,7 +203,7 @@ enum {
     // Set while the cell is edited/selected
     unsigned in_editing: 1;
     // Set if cell uses single line mode.
-    unsigned _uses_single_line_mode:1;
+    unsigned uses_single_line_mode:1;
   } _cell;
   NSUInteger _mouse_down_flags;
   NSUInteger _action_mask;
