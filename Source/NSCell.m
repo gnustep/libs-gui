@@ -2869,6 +2869,17 @@ static NSColor *dtxtCol;
   // FIXME: implement this
   return;
 }
+
+- (void) setUsesSingleLineMode: (BOOL)flag
+{
+  _cell._uses_single_line_mode = flag;
+}
+
+- (BOOL) usesSingleLineMode
+{
+  return _cell._uses_single_line_mode;
+}
+
 @end
 
 @implementation NSCell (PrivateMethods)

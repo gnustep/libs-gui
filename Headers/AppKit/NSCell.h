@@ -202,6 +202,8 @@ enum {
     unsigned subclass_bool_four: 1;
     // Set while the cell is edited/selected
     unsigned in_editing: 1;
+    // Set if cell uses single line mode.
+    unsigned _uses_single_line_mode:1;
   } _cell;
   NSUInteger _mouse_down_flags;
   NSUInteger _action_mask;
@@ -329,6 +331,10 @@ enum {
 - (void)setBaseWritingDirection:(NSWritingDirection)direction;
 - (NSLineBreakMode)lineBreakMode;
 - (void)setLineBreakMode:(NSLineBreakMode)mode;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) setUsesSingleLineMode: (BOOL)flag;
+- (BOOL) usesSingleLineMode;
 #endif
 
 //
