@@ -106,14 +106,15 @@ Standard OPENSTEP-ish window decorations.
 
 @interface GSStandardWindowDecorationView : GSWindowDecorationView
 {
-  BOOL hasTitleBar, hasResizeBar, hasCloseButton, hasMiniaturizeButton;
-  BOOL isTitled; //, hasToolbar, hasMenu;
   NSRect titleBarRect;
   NSRect resizeBarRect;
   NSRect closeButtonRect;
   NSRect miniaturizeButtonRect;
 
   NSButton *closeButton, *miniaturizeButton;
+  
+  BOOL hasTitleBar, hasResizeBar, hasCloseButton, hasMiniaturizeButton;
+  BOOL isTitled; //, hasToolbar, hasMenu;
 }
 @end
 
