@@ -1,7 +1,7 @@
 2019-03-27  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Headers/AppKit/NSWindow.h:
-	Lovering down NSFloatingWindowLevel number by one to distinguish
+	Lowering down NSFloatingWindowLevel number by one to distinguish
 	floating panels from menus.
 
 2019-02-26 Fred Kiefer <FredKiefer@gmx.de>
