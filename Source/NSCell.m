@@ -2858,7 +2858,7 @@ static NSColor *dtxtCol;
 	  [self setWraps: wraps];
 	}
       
-      if (version  >= 3)
+      if (version >= 4)
 	{
 	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
 	  _cell.uses_single_line_mode = tmp_int;
