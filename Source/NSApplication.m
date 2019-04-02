@@ -1259,6 +1259,23 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString       *autolaunch = [defaults objectForKey: @"autolaunch"];
+
+  /* Application was executed with argument '-autolaunch YES'. Set argument 
+   * value to "NO" for future calls to `activateIgnoringOtherApps:`. */
+  if (autolaunch && [autolaunch isEqualToString: @"YES"])
+    {
+      NSMutableDictionary *args;
+      args = [[defaults volatileDomainForName: NSArgumentDomain] mutableCopy];
+      [defaults removeVolatileDomainForName: NSArgumentDomain];
+      [args setObject: @"NO" forKey: @"autolaunch"];
+      [defaults setVolatileDomain: [NSDictionary dictionaryWithDictionary: args]
+                          forName: NSArgumentDomain];
+      [args release];
+      return;
+    }
+  
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {

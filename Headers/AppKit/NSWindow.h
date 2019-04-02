@@ -76,7 +76,7 @@
 enum {
   NSDesktopWindowLevel = -1000,	/* GNUstep addition	*/ // 2
   NSNormalWindowLevel = 0, // 3
-  NSFloatingWindowLevel = 3, // 4
+  NSFloatingWindowLevel = 2, // 4
   NSSubmenuWindowLevel = 3, // 5
   NSTornOffMenuWindowLevel = 3, // 5
   NSMainMenuWindowLevel = 20, // 7
