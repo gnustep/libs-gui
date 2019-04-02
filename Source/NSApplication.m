@@ -1264,7 +1264,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   /* Application was executed with argument '-autolaunch YES'. Set argument 
    * value to "NO" for future calls to `activateIgnoringOtherApps:`. */
-  NSLog(@"autolaunch = %@", autolaunch);
   if (autolaunch && [autolaunch isEqualToString: @"YES"])
     {
       NSMutableDictionary *args;
