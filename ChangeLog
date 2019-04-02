@@ -1,3 +1,9 @@
+2019-04-02  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSApplication.m:
+	(activateIgnoringOtherApps:) Do not activate application on first run
+	if commandline argument `-autolaunch YES` was specified.
+
 2019-03-27  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Headers/AppKit/NSWindow.h:
