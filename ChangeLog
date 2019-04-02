@@ -1,3 +1,8 @@
+2019-04-03  Sergii Stoian  <stoyan255@ukr.net>
+
+	* Source/NSApplication.m (activateIgnoringOtherApps:):
+	Optimize `-autolaunch YES` checking code.
+
 2019-04-02  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSApplication.m:
