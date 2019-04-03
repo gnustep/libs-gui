@@ -753,6 +753,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 @implementation NSApplication
 
+static BOOL _isAutolaunchChecked = NO;
+
 /*
  * Class methods
  */
@@ -1259,6 +1261,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
+  if (_isAutolaunchChecked == NO)
+    {
+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      NSString       *autolaunch = [defaults objectForKey: @"autolaunch"];
+
+      _isAutolaunchChecked = YES;
+      
+      /* Application was executed with an argument '-autolaunch YES'.
+         Do not activate application on first call. */
+      if (autolaunch && [autolaunch isEqualToString: @"YES"])
+        {
+          return;
+        }
+    }
+  
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
