@@ -601,7 +601,8 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Hides all application windows */
+/** Ask the window manager to hide all the application windows for us. 
+    Return whether they have been hidden. */
 - (BOOL) hidewindow: (int) win
 {
   return NO;

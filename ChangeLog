@@ -1,6 +1,9 @@
 2019-04-06  Sergii Stoian  <stoyan255@ukr.net>
 
+	* Source/NSApplication.m (hide:): Change comment before call to `hidwindow`.
+
 	* Source/GSDisplayServer.m (hidewindow:): fixes to return value and type.
+	Change comment.
 
 2019-04-05  Sergii Stoian  <stoyan255@gmail.com>
 

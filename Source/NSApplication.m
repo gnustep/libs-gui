@@ -2496,9 +2496,8 @@ image.</p><p>See Also: -applicationIconImage</p>
 	      [_hidden_main resignMainWindow];
 	    }
 	  
-          // Sends -hidewindow: to the main menu. If window manager supports
-          // _GNUSTEP_WM_HIDE_APP atom - call succeeds - our windows will be
-          // hidden by window manager, next application should be activated.
+          /** Ask the window manager to hide all the application windows for us. 
+              Return whether they have been hidden. */
           win = [[self mainMenu] window];
           if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
             {
