@@ -602,9 +602,9 @@ GSCurrentServer(void)
 }
 
 /** Hides all application windows */
-- (void) hidewindow: (int) win
+- (BOOL) hidewindow: (int) win
 {
-  [self subclassResponsibility: _cmd];
+  return NO;
 }
 
 /** Returns YES if the application should create the miniwindow counterpart

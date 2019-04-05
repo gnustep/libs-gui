@@ -1,3 +1,7 @@
+2019-04-06  Sergii Stoian  <stoyan255@ukr.net>
+
+	* Source/GSDisplayServer.m (hidewindow:): fixes to return value and type.
+
 2019-04-05  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Headers/AppKit/NSEvent.h: new event subtype `GSAppKitAppHide` was added.
