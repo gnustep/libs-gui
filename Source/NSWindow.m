@@ -4224,6 +4224,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               [self performMiniaturize: NSApp];
               break;
 
+            case GSAppKitAppHide:
+              [NSApp hide: self];
+              break;
+
             case GSAppKitWindowFocusIn:
               if (_f.is_miniaturized)
 		{

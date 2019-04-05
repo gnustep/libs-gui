@@ -2496,30 +2496,37 @@ image.</p><p>See Also: -applicationIconImage</p>
 	      [_hidden_main resignMainWindow];
 	    }
 	  
-	  windows_list = GSOrderedWindows();
-	  iter = [windows_list reverseObjectEnumerator];
+          // Sends -hidewindow: to the main menu. If window manager supports
+          // _GNUSTEP_WM_HIDE_APP atom - call succeeds - our windows will be
+          // hidden by window manager, next application should be activated.
+          win = [[self mainMenu] window];
+          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
+            {
+              windows_list = GSOrderedWindows();
+              iter = [windows_list reverseObjectEnumerator];
 	  
-	  while ((win = [iter nextObject]))
-	    {
-	      if ([win isVisible] == NO && ![win isMiniaturized])
-		{
-		  continue;		/* Already invisible	*/
-		}
-	      if ([win canHide] == NO)
-		{
-		  continue;		/* Not hideable	*/
-		}
-	      if (win == _app_icon_window)
-		{
-		  continue;		/* can't hide the app icon.	*/
-		}
-	      if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
-		{
-		  continue;		/* Will be hidden by deactivation	*/
-		}
-	      [_hidden addObject: win];
-	      [win orderOut: self];
-	    }
+              while ((win = [iter nextObject]))
+                {
+                  if ([win isVisible] == NO && ![win isMiniaturized])
+                    {
+                      continue;		/* Already invisible	*/
+                    }
+                  if ([win canHide] == NO)
+                    {
+                      continue;		/* Not hideable	*/
+                    }
+                  if (win == _app_icon_window)
+                    {
+                      continue;		/* can't hide the app icon.	*/
+                    }
+                  if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+                    {
+                      continue;		/* Will be hidden by deactivation	*/
+                    }
+                  [_hidden addObject: win];
+                  [win orderOut: self];
+                }
+            }
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
