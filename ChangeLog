@@ -1,6 +1,12 @@
 2019-04-06  Sergii Stoian  <stoyan255@ukr.net>
 
-	* Source/NSApplication.m (hide:): Change comment before call to `hidwindow`.
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/NSApplication.m,
+	* Source/GSDisplayServer.m: `hidewindow` method  was renamed to
+	`hideApplication`
+
+	* Source/NSApplication.m (hide:): Change comment before call to
+	`hidewindow`.
 
 	* Source/GSDisplayServer.m (hidewindow:): fixes to return value and type.
 	Change comment.

@@ -2499,7 +2499,7 @@ image.</p><p>See Also: -applicationIconImage</p>
           /** Ask the window manager to hide all the application windows for us. 
               Return whether they have been hidden. */
           win = [[self mainMenu] window];
-          if ([GSServerForWindow(win) hidewindow: [win windowNumber]] == NO)
+          if ([GSServerForWindow(win) hideApplication: [win windowNumber]] == NO)
             {
               windows_list = GSOrderedWindows();
               iter = [windows_list reverseObjectEnumerator];

@@ -603,7 +603,7 @@ GSCurrentServer(void)
 
 /** Ask the window manager to hide all the application windows for us. 
     Return whether they have been hidden. */
-- (BOOL) hidewindow: (int) win
+- (BOOL) hideApplication: (int) win
 {
   return NO;
 }
