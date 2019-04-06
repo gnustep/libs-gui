@@ -136,6 +136,7 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 - (void) windowbacking: (NSBackingStoreType)type : (int)win;
 - (void) titlewindow: (NSString *)window_title : (int)win;
 - (void) miniwindow: (int)win;
+- (BOOL) hideApplication: (int)win;
 - (BOOL) appOwnsMiniwindow;
 - (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt;
 // Deprecated

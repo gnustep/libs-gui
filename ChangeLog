@@ -1,3 +1,28 @@
+2019-04-06  Sergii Stoian  <stoyan255@ukr.net>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/NSApplication.m,
+	* Source/GSDisplayServer.m: `hidewindow` method  was renamed to
+	`hideApplication`
+
+	* Source/NSApplication.m (hide:): Change comment before call to
+	`hidewindow`.
+
+	* Source/GSDisplayServer.m (hidewindow:): fixes to return value and type.
+	Change comment.
+
+2019-04-05  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Headers/AppKit/NSEvent.h: new event subtype `GSAppKitAppHide` was added.
+	* Source/NSWindow.m (sendEvent:): handle "GSAppKitAppHide" event subtype.
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/GSDisplayServer.m (hidewindow:): new methods was added.
+
+	* Source/NSApplication.m (hide:): Send -hidewindow: to to the main menu.
+	If window manager doesn't support _GNUSTEP_HIDE_APP atom - hide windows
+	by ourself.
+
 2019-04-03  Sergii Stoian  <stoyan255@ukr.net>
 
 	* Source/NSApplication.m (activateIgnoringOtherApps:):
