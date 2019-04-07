@@ -434,6 +434,11 @@ NSApplication	*NSApp = nil;
   return NO;
 }
 
+- (BOOL) becomesKeyOnlyIfNeeded
+{
+  return YES;
+}
+
 - (BOOL) worksWhenModal
 {
   return YES;
@@ -540,6 +545,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return YES;
+}
+
+- (BOOL) needsPanelToBecomeKey
+{
+  return NO;
 }
 
 - (void) concludeDragOperation: (id<NSDraggingInfo>)sender

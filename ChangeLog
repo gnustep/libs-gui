@@ -1,3 +1,10 @@
+2019-04-08  Sergii Stoian  <stoyan255@ukr.net>
+
+	* Source/NSApplication.m (becomesKeyOnlyIfNeeded)
+	(needsPanelToBecomeKey): override NSWindow and NSView methods
+	in appicon to reduce number of order front calls. The source
+	of the call is NSWindow's sendEvent:.
+
 2019-04-06  Sergii Stoian  <stoyan255@ukr.net>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
