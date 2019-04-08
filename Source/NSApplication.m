@@ -547,11 +547,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   return YES;
 }
 
-- (BOOL) needsPanelToBecomeKey
-{
-  return NO;
-}
-
 - (void) concludeDragOperation: (id<NSDraggingInfo>)sender
 {
 }
