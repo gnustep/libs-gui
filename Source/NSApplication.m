@@ -434,6 +434,11 @@ NSApplication	*NSApp = nil;
   return NO;
 }
 
+- (BOOL) becomesKeyOnlyIfNeeded
+{
+  return YES;
+}
+
 - (BOOL) worksWhenModal
 {
   return YES;
