@@ -1,3 +1,9 @@
+2019-04-10  Sergii Stoian  <stoyan255@ukr.net>
+
+	* Source/NSMenuItemCell.m (drawKeyEquivalentWithFrame:inView:):
+	check if item is disabled/enabled and set color attribute for attributed
+	key equivalent string.
+
 2019-04-09  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSMenuItemCell.m (_keyEquivalentString): if modifier key string

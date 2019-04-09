@@ -787,10 +787,21 @@ static NSString *commandKeyString = @"#";
       if (_keyEquivalentFont != nil)
         {
           NSDictionary       *attrs;
+          NSArray            *attrObjects, *attrKeys;
           NSAttributedString *aString;
-          
-          attrs = [NSDictionary dictionaryWithObject: _keyEquivalentFont
-                                              forKey: NSFontAttributeName];
+          NSColor            *aColor;
+
+          if (_cell.is_disabled)
+            aColor = [NSColor disabledControlTextColor];
+          else
+            aColor = [NSColor controlTextColor];
+
+          attrObjects = [NSArray arrayWithObjects: _keyEquivalentFont,
+                                 aColor, nil];
+          attrKeys = [NSArray arrayWithObjects: NSFontAttributeName,
+                              NSForegroundColorAttributeName, nil];
+          attrs = [NSDictionary dictionaryWithObjects: attrObjects
+                                              forKeys: attrKeys];
           aString = [[NSAttributedString alloc]
                       initWithString: [self _keyEquivalentString]
                           attributes: attrs];
