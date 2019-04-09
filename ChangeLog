@@ -1,3 +1,13 @@
+2019-04-09  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSMenuItemCell.m (_keyEquivalentString): if modifier key string
+	is not defined - set key equivalent font trait: Italic for Alternate modifier
+	Bold - for Control.
+	(_sizeKeyEquivalentText:): new method to calculate string size wrt font
+	set in `_keyEquivalentString:`.
+	(drawKeyEquivalentWithFrame:inView:): draw key equivalent as attributed
+	string.
+
 2019-04-08  Sergii Stoian  <stoyan255@ukr.net>
 
 	* Source/NSApplication.m (becomesKeyOnlyIfNeeded): override NSWindow

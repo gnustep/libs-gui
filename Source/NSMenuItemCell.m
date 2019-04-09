@@ -46,6 +46,7 @@
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSStringDrawing.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -255,17 +256,64 @@ static NSString *commandKeyString = @"#";
   if (m != 0)
     {
       BOOL shift;
-      // shift mask and not an upper case string?
-      shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
-      key = [NSString stringWithFormat:@"%@%@%@%@%@",
-                      (m & NSControlKeyMask) ? controlKeyString : @"",
-                      (m & NSAlternateKeyMask) ? alternateKeyString : @"",
-                      shift ? shiftKeyString : @"",
-                      (m & NSCommandKeyMask) ? commandKeyString : @"",
-                      key];
+      NSFontTraitMask traits = 0;
+      
+      if ((m & NSAlternateKeyMask) &&
+          (!alternateKeyString || [alternateKeyString isEqualToString: @""]))
+        {
+          traits |= NSItalicFontMask;
+        }
+      if ((m & NSControlKeyMask) &&
+          (!controlKeyString || [controlKeyString isEqualToString: @""]))
+        {
+          traits |= NSBoldFontMask;
+        }
+        
+      if (traits)
+        {
+          NSFont *font;
+          font = [[NSFontManager sharedFontManager]
+                   fontWithFamily:[[NSFont controlContentFontOfSize:0.0] familyName]
+                           traits:traits
+                           weight:(traits & NSBoldFontMask) ? 9 : 5
+                             size:[NSFont systemFontSize]];
+          if (font)
+            [self setKeyEquivalentFont:font];
+        }
+      else
+        {
+          // shift mask and not an upper case string?
+          shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
+          key = [NSString stringWithFormat:@"%@%@%@%@%@",
+                          (m & NSControlKeyMask) ? controlKeyString : @"",
+                          (m & NSAlternateKeyMask) ? alternateKeyString : @"",
+                          (shift != NO) ? shiftKeyString : @"",
+                          (m & NSCommandKeyMask) ? commandKeyString : @"",
+                          key];
+        }
     }
 
   return key;
+}
+
+- (NSSize) _sizeKeyEquivalentText: (NSString*)title
+{
+  NSSize size;
+  NSDictionary *attrs;
+  
+  if (title == nil) {
+    return NSMakeSize (0,0);
+  }
+  
+  if (_keyEquivalentFont) {
+    attrs = [NSDictionary dictionaryWithObject: _keyEquivalentFont
+                                        forKey: NSFontAttributeName];
+    size = [title sizeWithAttributes: attrs];
+  }
+  else {
+    size = [self _sizeText: title];
+  }
+  return size;
 }
 
 - (void) calcSize
@@ -339,7 +387,7 @@ static NSString *commandKeyString = @"#";
   _titleWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
-  componentSize = [self _sizeText: [self _keyEquivalentString]];
+  componentSize = [self _sizeKeyEquivalentText: [self _keyEquivalentString]];
   _keyEquivalentWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
@@ -736,7 +784,23 @@ static NSString *commandKeyString = @"#";
    */
   else if (![[_menuView menu] _ownedByPopUp] || (_imageToDisplay == nil))
     {    
-      [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
+      if (_keyEquivalentFont != nil)
+        {
+          NSDictionary       *attrs;
+          NSAttributedString *aString;
+          
+          attrs = [NSDictionary dictionaryWithObject: _keyEquivalentFont
+                                              forKey: NSFontAttributeName];
+          aString = [[NSAttributedString alloc]
+                      initWithString: [self _keyEquivalentString]
+                          attributes: attrs];
+          [self _drawAttributedText: aString inFrame: cellFrame];
+          [aString release];
+        }
+      else
+        {
+          [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
+        }
     }
 }
 
