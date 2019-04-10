@@ -532,6 +532,7 @@ typedef enum {
   GSAppKitDraggingFinished,
   GSAppKitRegionExposed,
   GSAppKitWindowDeminiaturize,
+  GSAppKitAppHide
 } GSAppKitSubtype;
 #endif
 

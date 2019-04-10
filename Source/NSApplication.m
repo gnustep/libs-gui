@@ -434,6 +434,11 @@ NSApplication	*NSApp = nil;
   return NO;
 }
 
+- (BOOL) becomesKeyOnlyIfNeeded
+{
+  return YES;
+}
+
 - (BOOL) worksWhenModal
 {
   return YES;
@@ -752,6 +757,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * events by overriding -sendEvent: .</p>
  */
 @implementation NSApplication
+
+static BOOL _isAutolaunchChecked = NO;
 
 /*
  * Class methods
@@ -1259,6 +1266,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
+  if (_isAutolaunchChecked == NO)
+    {
+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      NSString       *autolaunch = [defaults objectForKey: @"autolaunch"];
+
+      _isAutolaunchChecked = YES;
+      
+      /* Application was executed with an argument '-autolaunch YES'.
+         Do not activate application on first call. */
+      if (autolaunch && [autolaunch isEqualToString: @"YES"])
+        {
+          return;
+        }
+    }
+  
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
@@ -2479,30 +2501,36 @@ image.</p><p>See Also: -applicationIconImage</p>
 	      [_hidden_main resignMainWindow];
 	    }
 	  
-	  windows_list = GSOrderedWindows();
-	  iter = [windows_list reverseObjectEnumerator];
+          /** Ask the window manager to hide all the application windows for us. 
+              Return whether they have been hidden. */
+          win = [[self mainMenu] window];
+          if ([GSServerForWindow(win) hideApplication: [win windowNumber]] == NO)
+            {
+              windows_list = GSOrderedWindows();
+              iter = [windows_list reverseObjectEnumerator];
 	  
-	  while ((win = [iter nextObject]))
-	    {
-	      if ([win isVisible] == NO && ![win isMiniaturized])
-		{
-		  continue;		/* Already invisible	*/
-		}
-	      if ([win canHide] == NO)
-		{
-		  continue;		/* Not hideable	*/
-		}
-	      if (win == _app_icon_window)
-		{
-		  continue;		/* can't hide the app icon.	*/
-		}
-	      if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
-		{
-		  continue;		/* Will be hidden by deactivation	*/
-		}
-	      [_hidden addObject: win];
-	      [win orderOut: self];
-	    }
+              while ((win = [iter nextObject]))
+                {
+                  if ([win isVisible] == NO && ![win isMiniaturized])
+                    {
+                      continue;		/* Already invisible	*/
+                    }
+                  if ([win canHide] == NO)
+                    {
+                      continue;		/* Not hideable	*/
+                    }
+                  if (win == _app_icon_window)
+                    {
+                      continue;		/* can't hide the app icon.	*/
+                    }
+                  if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+                    {
+                      continue;		/* Will be hidden by deactivation	*/
+                    }
+                  [_hidden addObject: win];
+                  [win orderOut: self];
+                }
+            }
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]

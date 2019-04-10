@@ -601,6 +601,13 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+/** Ask the window manager to hide all the application windows for us. 
+    Return whether they have been hidden. */
+- (BOOL) hideApplication: (int) win
+{
+  return NO;
+}
+
 /** Returns YES if the application should create the miniwindow counterpart
     to the full size window and own it. Some display systems handle the
     miniwindow themselves. In this case the backend subclass should
