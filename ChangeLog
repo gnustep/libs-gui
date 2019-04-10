@@ -1,3 +1,8 @@
+2019-04-10  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSMenuItemCell.m (drawKeyEquivalentWithFrame:inView:):
+	use NCell's textColor instead of check if we're disabled/enabled.
+
 2019-04-10  Sergii Stoian  <stoyan255@ukr.net>
 
 	* Source/NSMenuItemCell.m (drawKeyEquivalentWithFrame:inView:):

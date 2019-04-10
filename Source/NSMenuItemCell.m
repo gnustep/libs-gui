@@ -789,15 +789,9 @@ static NSString *commandKeyString = @"#";
           NSDictionary       *attrs;
           NSArray            *attrObjects, *attrKeys;
           NSAttributedString *aString;
-          NSColor            *aColor;
-
-          if (_cell.is_disabled)
-            aColor = [NSColor disabledControlTextColor];
-          else
-            aColor = [NSColor controlTextColor];
 
           attrObjects = [NSArray arrayWithObjects: _keyEquivalentFont,
-                                 aColor, nil];
+                                 [self textColor], nil];
           attrKeys = [NSArray arrayWithObjects: NSFontAttributeName,
                               NSForegroundColorAttributeName, nil];
           attrs = [NSDictionary dictionaryWithObjects: attrObjects
