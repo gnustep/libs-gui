@@ -2634,6 +2634,7 @@ static NSColor *dtxtCol;
           int cFlags2;
       
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+	  [self setUsesSingleLineMode: (cFlags2 & 0x40)];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
 	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
