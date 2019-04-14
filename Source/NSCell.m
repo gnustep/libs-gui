@@ -344,7 +344,6 @@ static NSColor *dtxtCol;
   id newContents;
   
   ASSIGN (_object_value, object);
-  
   if (_formatter == nil) 
     {
       if (object == nil || [object isKindOfClass: [NSString class]] == YES)
@@ -352,13 +351,27 @@ static NSColor *dtxtCol;
           newContents = object;
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
+	  
+	  // If we are in single line mode, trim the new line characters
+	  if(_cell.uses_single_line_mode == YES)
+	    {
+	      newContents = [object stringByTrimmingCharactersInSet:
+				      [NSCharacterSet newlineCharacterSet]];
+	    }
         }
       else if ([object isKindOfClass: [NSAttributedString class]] == YES)
         {
           newContents = object;
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
-        }
+
+	  // If we are in single line mode, trim the new line characters
+	  if(_cell.uses_single_line_mode == YES)
+	    {
+	      newContents = [object stringByTrimmingCharactersInSet:
+				      [NSCharacterSet newlineCharacterSet]];
+	    }
+	}
       else if ([_object_value respondsToSelector: @selector(attributedStringValue)])
         {
           newContents = [_object_value attributedStringValue];
@@ -2251,7 +2264,6 @@ static NSColor *dtxtCol;
 {
   BOOL needsClipView;
   BOOL wraps = [self wraps];
-  BOOL usesSingleLineMode = [self usesSingleLineMode];
   NSTextContainer *ct;
   NSSize maxSize;
   NSRect titleRect = [self titleRectForBounds: aRect];
@@ -2467,6 +2479,7 @@ static NSColor *dtxtCol;
       [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
       
       // flags part 2
+      cFlags2 |= ([self usesSingleLineMode] ? 0x40 : 0);
       cFlags2 |= ([self controlTint] << 5);
       cFlags2 |= ([self lineBreakMode] << 9);
       cFlags2 |= ([self controlSize] << 17);
