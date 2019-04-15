@@ -103,7 +103,7 @@ static NSColor *dtxtCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -344,7 +344,6 @@ static NSColor *dtxtCol;
   id newContents;
   
   ASSIGN (_object_value, object);
-  
   if (_formatter == nil) 
     {
       if (object == nil || [object isKindOfClass: [NSString class]] == YES)
@@ -352,13 +351,27 @@ static NSColor *dtxtCol;
           newContents = object;
           _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
+	  
+	  // If we are in single line mode, trim the new line characters
+	  if(_cell.uses_single_line_mode == YES)
+	    {
+	      newContents = [object stringByTrimmingCharactersInSet:
+				      [NSCharacterSet newlineCharacterSet]];
+	    }
         }
       else if ([object isKindOfClass: [NSAttributedString class]] == YES)
         {
           newContents = object;
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
-        }
+
+	  // If we are in single line mode, trim the new line characters
+	  if(_cell.uses_single_line_mode == YES)
+	    {
+	      newContents = [object stringByTrimmingCharactersInSet:
+				      [NSCharacterSet newlineCharacterSet]];
+	    }
+	}
       else if ([_object_value respondsToSelector: @selector(attributedStringValue)])
         {
           newContents = [_object_value attributedStringValue];
@@ -2466,6 +2479,7 @@ static NSColor *dtxtCol;
       [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
       
       // flags part 2
+      cFlags2 |= ([self usesSingleLineMode] ? 0x40 : 0);
       cFlags2 |= ([self controlTint] << 5);
       cFlags2 |= ([self lineBreakMode] << 9);
       cFlags2 |= ([self controlSize] << 17);
@@ -2571,6 +2585,8 @@ static NSColor *dtxtCol;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       tmp_int = _cell.base_writing_direction;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.uses_single_line_mode;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
     }
 }
 
@@ -2631,6 +2647,7 @@ static NSColor *dtxtCol;
           int cFlags2;
       
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+	  [self setUsesSingleLineMode: (cFlags2 & 0x40)];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
 	  [self setLineBreakMode: ((cFlags2 & 0xE00) >> 9)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
@@ -2854,6 +2871,13 @@ static NSColor *dtxtCol;
 	     wraps attribute. */
 	  [self setWraps: wraps];
 	}
+      
+      if (version >= 4)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.uses_single_line_mode = tmp_int;
+	}
+
     }
   return self;
 }
@@ -2869,6 +2893,17 @@ static NSColor *dtxtCol;
   // FIXME: implement this
   return;
 }
+
+- (void) setUsesSingleLineMode: (BOOL)flag
+{
+  _cell.uses_single_line_mode = flag;
+}
+
+- (BOOL) usesSingleLineMode
+{
+  return _cell.uses_single_line_mode;
+}
+
 @end
 
 @implementation NSCell (PrivateMethods)
