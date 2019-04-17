@@ -1,3 +1,27 @@
+2019-04-17  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSDragView.m (_setCursor): Do not hold `cursors` array -
+	use NSCursor's methods. Do not recolor cursor and just use
+	[NSCursor greenArrowCursor].
+
+	* Headers/AppKit/NSCursor.h:
+	* Source/NSCursor.m (greenArrowCursor):
+	Use getStandardCursor() to get GSGreenArrowCursor. New cursor type
+	GSGreeanArrowCursor was added.
+
+	* Images/GSContextualMenuCursor.tiff,
+	* Images/GSDisappearingItemCursor.tiff,
+	* Images/GSDragCopyCursor.tiff,
+	* Images/GSDragLinkCursor.tiff,
+	* Images/GSGreenArrowCursor.tiff,
+	* Images/GSOperationNotAllowedCursor.tiff: New cursor images.
+
+	* Images/common_ClosedHandCursor.tiff,
+	* Images/common_OpenHandCursor.tiff,
+	* Images/common_copyCursor.tiff,
+	* Images/common_linkCursor.tiff,
+	* Images/common_noCursor.tiff: Remove unused images.
+
 2019-04-10  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSMenuItemCell.m (drawKeyEquivalentWithFrame:inView:):
