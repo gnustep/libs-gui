@@ -155,7 +155,8 @@ typedef enum {
   GSResizeDownCursor,
   GSResizeUpDownCursor,
   GSContextualMenuCursor,
-  GSDisappearingItemCursor
+  GSDisappearingItemCursor,
+  GSGreenArrowCursor
 } GSCursorTypes;
 
 #endif /* _GNUstep_H_NSCursor */
