@@ -22,6 +22,9 @@
 	* Images/common_linkCursor.tiff,
 	* Images/common_noCursor.tiff: Remove unused images.
 
+	* Images/GNUmakefile (Images_RESOURCE_FILES): Update resource
+	list according to cursor images addition/removal.
+
 2019-04-10  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSMenuItemCell.m (drawKeyEquivalentWithFrame:inView:):
