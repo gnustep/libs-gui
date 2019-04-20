@@ -405,7 +405,8 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSArray *)attributeRuns
 {
-  return nil;
+  // Return nothing for now
+  return [NSArray array];
 }
 
 /*
