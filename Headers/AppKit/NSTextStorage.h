@@ -43,6 +43,7 @@
 @class NSString;
 @class GSLayoutManager;
 @class NSFont;
+@class NSColor;
 
 /*
  * When edit:range:changeInLength: is called, it takes a mask saying
@@ -188,6 +189,31 @@ enum
 */
 - (NSFont*) font;
 - (void) setFont: (NSFont*)font;
+
+/*
+ * The text storage contents as an array of attribute runs.
+ */
+- (NSArray *)attributeRuns;
+
+/*
+ * The text storage contents as an array of paragraphs.
+ */
+- (NSArray *)paragraphs;
+
+/*
+ * The text storage contents as an array of words.
+ */
+- (NSArray *)words;
+
+/*
+ * The text storage contents as an array of characters.
+ */
+- (NSArray *)characters;
+
+/*
+ * The font color used when drawing text.
+ */
+- (NSColor *)foregroundColor;
 @end
 
 /**** Notifications ****/
