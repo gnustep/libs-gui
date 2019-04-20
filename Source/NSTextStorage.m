@@ -398,4 +398,45 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+
+/*
+ * The text storage contents as an array of attribute runs.
+ */
+- (NSArray *)attributeRuns
+{
+  return nil;
+}
+
+/*
+ * The text storage contents as an array of paragraphs.
+ */
+- (NSArray *)paragraphs
+{
+  return nil;
+}
+
+/*
+ * The text storage contents as an array of words.
+ */
+- (NSArray *)words
+{
+  return nil;
+}
+
+/*
+ * The text storage contents as an array of characters.
+ */
+- (NSArray *)characters
+{
+  return nil;
+}
+
+/*
+ * The font color used when drawing text.
+ */
+- (NSColor *)foregroundColor
+{
+  return nil;
+}
+
 @end
