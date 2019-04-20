@@ -41,6 +41,7 @@
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSScreen.h"
 
 #import "GNUstepGUI/GSTitleView.h"
 #import "GNUstepGUI/GSTheme.h"
@@ -230,64 +231,123 @@
  
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSPoint  lastLocation;
+  NSPoint  locationInWindow;
   NSPoint  location;
-  NSUInteger eventMask = NSLeftMouseUpMask | NSPeriodicMask;
+  NSUInteger eventMask = NSLeftMouseUpMask | NSPeriodicMask
+                        | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
   BOOL     done = NO;
   BOOL	   moved = NO;
-  NSDate   *theDistantFuture = [NSDate distantFuture];
+  NSDate   *theDistantPast = [NSDate distantPast];
   NSPoint  startWindowOrigin;
   NSPoint  endWindowOrigin;
-
+  NSSize   screenSize = [[_window screen] frame].size;
+  NSSize   windowSize = [_window frame].size;
+  unsigned int lipMask;
+#define LIP 16.0
+  
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
   // Remember start position of window
   startWindowOrigin = [_window frame].origin;
 
   // Remember start location of cursor in window
-  lastLocation = [theEvent locationInWindow];
+  location = locationInWindow = [theEvent locationInWindow];
 
   [_window _captureMouse: nil];
   
-  [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
+  // [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
+  lipMask = 0;
+   lipMask = 0;
+   while (!done)
+     {
+      while (theEvent)
+	{
+	  if ([theEvent type] == NSRightMouseUp
+	      || [theEvent type] == NSLeftMouseUp)
+	    break;
 
-  while (!done)
-    {
+	  location = [theEvent locationInWindow];
+
+	  theEvent = [NSApp nextEventMatchingMask: eventMask
+					untilDate: theDistantPast
+					   inMode: NSEventTrackingRunLoopMode
+					  dequeue: YES];
+	}
+
+      if ([theEvent type] == NSRightMouseUp
+	  || [theEvent type] == NSLeftMouseUp)
+	break;
+
+      if (NSEqualPoints(location, locationInWindow) == NO)
+	{
+	  NSPoint origin = [_window frame].origin;
+
+	  origin.x += (location.x - locationInWindow.x);
+	  origin.y += (location.y - locationInWindow.y);
+
+	  if (origin.x < 0 && origin.x >= -LIP && (lipMask & 1))
+	    {
+	      origin.x = 0;
+	    }
+	  else if (origin.x < 0)
+	    lipMask &= ~1;
+	  else
+	    lipMask |= 1;
+
+	  if (origin.x + windowSize.width > screenSize.width)
+	    {
+	      if (origin.x + windowSize.width <= screenSize.width + LIP
+		  && (lipMask & 2))
+ 		{
+		  origin.x = screenSize.width - windowSize.width;
+ 		}
+ 	      else
+		lipMask &= ~2;
+	    }
+	  else
+	    lipMask |= 2;
+
+
+	  if (origin.y < 0 && origin.y >= -LIP && (lipMask & 4))
+	    {
+	      origin.y = 0;
+	    }
+	  else if (origin.y < 0)
+	    lipMask &= ~4;
+	  else
+	    lipMask |= 4;
+
+	  if (origin.y + windowSize.height > screenSize.height)
+	    {
+	      if (origin.y + windowSize.height <= screenSize.height + LIP
+		  && (lipMask & 8))
+ 		{
+		  origin.y = screenSize.height - windowSize.height;
+ 		}
+	      else
+		lipMask &= ~8;
+	    }
+	  else
+	    lipMask |= 8;
+ 
+
+	  if (_ownedByMenu)
+	    {
+	      [_owner nestedSetFrameOrigin: origin];
+	    }
+	  else
+	    {
+	      [_owner setFrameOrigin: origin];
+	    }
+         }
+
       theEvent = [NSApp nextEventMatchingMask: eventMask
-                                    untilDate: theDistantFuture
-                                       inMode: NSEventTrackingRunLoopMode
-                                      dequeue: YES];
-      switch ([theEvent type])
-        {
-        case NSRightMouseUp:
-        case NSLeftMouseUp: 
-          done = YES; 
-          [_window _releaseMouse: nil];
-          break;
-        case NSPeriodic:
-          location = [_window mouseLocationOutsideOfEventStream];
-          if (NSEqualPoints(location, lastLocation) == NO)
-            {
-              NSPoint origin = [_window frame].origin;
-
-              moved = YES;
-              origin.x += (location.x - lastLocation.x);
-              origin.y += (location.y - lastLocation.y);
-              if (_ownedByMenu)
-                {
-                  [_owner nestedSetFrameOrigin: origin];
-                }
-              else
-                {
-                  [_owner setFrameOrigin: origin];
-                }
-            }
-          break;
-
-        default: 
-          break;
-        }
-    }
+				    untilDate: nil
+				       inMode: NSEventTrackingRunLoopMode
+				      dequeue: YES];
+     }
+ 
+  [_window _releaseMouse: nil];
 
   // Make menu torn off
   if (_ownedByMenu && ![_owner isTornOff] && [_owner supermenu])
@@ -300,7 +360,7 @@
         }
     }
 
-  [NSEvent stopPeriodicEvents];
+  // [NSEvent stopPeriodicEvents];
 
   if (moved == YES)
     {
