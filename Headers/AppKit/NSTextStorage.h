@@ -43,6 +43,7 @@
 @class NSString;
 @class GSLayoutManager;
 @class NSFont;
+@class NSColor;
 
 /*
  * When edit:range:changeInLength: is called, it takes a mask saying

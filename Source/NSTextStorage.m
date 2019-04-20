@@ -30,6 +30,7 @@
 #import <Foundation/NSPortCoder.h>
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSTextStorage.h"
+#import "AppKit/NSColor.h"
 #import "GNUstepGUI/GSLayoutManager.h"
 #import "GSTextStorage.h"
 
@@ -412,7 +413,19 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSArray *)paragraphs
 {
-  return nil;
+  NSArray *array = [[self string] componentsSeparatedByCharactersInSet:
+			   [NSCharacterSet newlineCharacterSet]];
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *en = [array objectEnumerator];
+  NSString *obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      NSTextStorage *s = AUTORELEASE([[NSTextStorage alloc] initWithString: obj]);
+      [result addObject: s];
+    }
+
+  return [NSArray arrayWithArray: result]; // make immutable
 }
 
 /*
@@ -420,7 +433,19 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSArray *)words
 {
-  return nil;
+  NSArray *array = [[self string] componentsSeparatedByCharactersInSet:
+			   [NSCharacterSet whitespaceCharacterSet]];
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *en = [array objectEnumerator];
+  NSString *obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      NSTextStorage *s = AUTORELEASE([[NSTextStorage alloc] initWithString: obj]);
+      [result addObject: s];
+    }
+
+  return [NSArray arrayWithArray: result]; // make immutable
 }
 
 /*
@@ -428,7 +453,19 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSArray *)characters
 {
-  return nil;
+  NSMutableArray *array = [NSMutableArray array];
+  NSUInteger len = [self length];
+  NSUInteger i = 0;
+
+  for(i = 0; i < len; i++)
+    {
+      NSRange r = NSMakeRange(i,1);
+      NSString *c = [[self string] substringWithRange: r];
+      NSTextStorage *s = AUTORELEASE([[NSTextStorage alloc] initWithString: c]);
+      [array addObject: s];
+    }
+
+  return [NSArray arrayWithArray: array]; // make immutable
 }
 
 /*
@@ -436,7 +473,10 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSColor *)foregroundColor
 {
-  return nil;
+  NSRange r = NSMakeRange(0, [self length]);
+  NSDictionary *d = [self fontAttributesInRange: r];
+  NSColor *c = (NSColor *)[d objectForKey: NSForegroundColorAttributeName];
+  return c;
 }
 
 @end
