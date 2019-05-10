@@ -69,6 +69,7 @@ Images_RESOURCE_FILES = \
  common_CloseBroken.tiff \
  common_CloseBrokenH.tiff \
  common_CloseH.tiff \
+ common_ClosedHandCursor.tiff \
  common_ColorSwatch.tiff \
  common_ComboBoxEllipsis.tiff \
  common_DecimalTabStop.tiff \
@@ -95,6 +96,7 @@ Images_RESOURCE_FILES = \
  common_MusicFolder.tiff \
  common_Mount.tiff \
  common_Nibble.tiff \
+ common_OpenHandCursor.tiff \
  common_Printer.tiff \
  common_RadioOff.tiff \
  common_RadioOn.tiff \
@@ -141,6 +143,9 @@ Images_RESOURCE_FILES = \
  common_Unmount.tiff \
  common_UpAndDownArrowSmall.tiff \
  common_VideoFolder.tiff \
+ common_copyCursor.tiff \
+ common_linkCursor.tiff \
+ common_noCursor.tiff \
  common_outlineCollapsed.tiff \
  common_outlineExpanded.tiff \
  common_outlineUnexpandable.tiff \
