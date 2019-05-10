@@ -36,12 +36,6 @@ NSMenuMixedState = GSMenuMixed;
 common_ComboBoxEllipsis = GSComboArrow;
 NSComboArrow = GSComboArrow;
 
-common_ClosedHandCursor = GSClosedHandCursor;
-common_OpenHandCursor = GSOpenHandCursor;
-common_copyCursor = GSDragCopyCursor;
-common_linkCursor = GSDragLinkCursor;
-common_noCursor = GSOperationNotAllowedCursor;
-
 /* Toolbar images */
 
 common_ToolbarCustomizeToolbarItem = NSToolbarCustomizeToolbarItemImage;
