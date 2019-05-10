@@ -977,9 +977,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overridden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (NSColor *) menuBackgroundColor;
+
 /**
  * <p>Returns the color used to draw a menu item background.</p>
  *
@@ -994,11 +997,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal: 
  * and [NSMenuItemCell-backgroundColor].</p>
  * 
- * <p>Can be overridden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (NSColor *) menuItemBackgroundColor;
 - (NSColor *) menuBarBackgroundColor;
 - (NSColor *) menuBarBorderColor;
+
 /**
  * <p>Returns the color used to draw a menu view border.</p>
  *
@@ -1008,9 +1014,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overridden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (NSColor *) menuBorderColor;
+
 /**
  * <p>Returns a color to draw each edge in a menu view border.</p>
  *
@@ -1020,7 +1029,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned edge color is used by 
  * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
  * 
- * <p>Can be overridden in subclasses to return a custom color per edge.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge 
                         isHorizontal: (BOOL)horizontal;
@@ -1037,7 +1048,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned value used by 
  * -drawBorderAndBackgroundForMenuItemCell:withFrame:inView:state:isHorizontal:</p>
  * 
- * <p>Can be overridden in subclasses.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (BOOL) drawsBorderForMenuItemCell: (NSMenuItemCell *)cell 
                               state: (GSThemeControlState)state
@@ -1078,9 +1091,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
  * 
- * <p>Can be overridden in subclasses to return a custom color.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (NSColor *) menuSeparatorColor;
+
 /**
  * <p>Returns the left and right inset used to draw a separator line in a
  * menu.</p>
@@ -1090,7 +1106,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>The returned color is used by 
  * -drawSeparatorItemForMenuItemCell:withFrame:inView:isHorizontal:</p>
  * 
- * <p>Can be overridden in subclasses to return a custom value.</p>
+ * <p>Can be overridden in subclasses to return a custom color, but generally
+ * should not.  Instead themes should provide default colors in the
+ * GSThemeDomain (in their Info.plist).</p>
  */
 - (CGFloat) menuSeparatorInset;
 
