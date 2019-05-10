@@ -299,22 +299,7 @@ NSCursor *getStandardCursor(NSString *name, int style)
 
 + (NSCursor*) greenArrowCursor
 {
-  NSString *name = @"GSGreenArrowCursor";
-  NSCursor *cursor = [cursorDict objectForKey: name];
-  if (cursor == nil)
-    {
-      void *c;
-    
-      cursor = [[NSCursor_class alloc] initWithImage: nil
-                                             hotSpot: NSZeroPoint];
-      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
-      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
-                                      : [NSColor blackColor] : c];
-      [cursor _setCid: c];
-      [cursorDict setObject: cursor forKey: name];
-      RELEASE(cursor);
-    }
-  return cursor;
+  return getStandardCursor(@"GSGreenArrowCursor", GSGreenArrowCursor);
 }
 
 /*

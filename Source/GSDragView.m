@@ -162,7 +162,6 @@ static	GSDragView *sharedDragView = nil;
 - (void) dealloc
 {
   [super dealloc];
-  RELEASE(cursors);
 }
 
 /* NSDraggingInfo protocol */
@@ -486,8 +485,6 @@ static	GSDragView *sharedDragView = nil;
 - (void) _setCursor
 {
   NSCursor *newCursor;
-  NSString *name;
-  NSString *iname;
   NSDragOperation mask;
 
   mask = dragMask & operationMask;
@@ -497,75 +494,36 @@ static	GSDragView *sharedDragView = nil;
 
   NSDebugLLog (@"NSDragging",
                @"drag, operation, target mask = (%x, %x, %x), dnd aware = %d\n",
-               (unsigned int)dragMask, (unsigned int)operationMask, (unsigned int)targetMask,
-               (targetWindowRef != 0));
+               (unsigned int)dragMask, (unsigned int)operationMask,
+               (unsigned int)targetMask, (targetWindowRef != 0));
   
-  if (cursors == nil)
-    cursors = RETAIN([NSMutableDictionary dictionary]);
-  
-  name = nil;
-  newCursor = nil;
-  iname = nil;
   switch (mask)
     {
     case NSDragOperationNone:
-      name = @"NoCursor";
-      iname = @"common_noCursor";
-      break;
-    case NSDragOperationCopy:
-      name = @"CopyCursor";
-      iname = @"common_copyCursor";
-      break;
-    case NSDragOperationLink:
-      name = @"LinkCursor";
-      iname = @"common_linkCursor";
+      newCursor = [NSCursor operationNotAllowedCursor];
       break;
     case NSDragOperationGeneric:
+    case NSDragOperationCopy:
+      newCursor = [NSCursor dragCopyCursor];
+      break;
+    case NSDragOperationLink:
+      newCursor = [NSCursor dragLinkCursor];
+      break;
+    case NSDragOperationDelete:
+      newCursor = [NSCursor disappearingItemCursor];
       break;
     default:
-      // FIXME: Should not happen, add warning?
+      // NSDragOperationEvery, NSDragOperationPrivate
+      if (targetWindowRef != 0)
+        {
+          newCursor = [NSCursor greenArrowCursor];
+        }
+      else
+        {
+          newCursor = [NSCursor arrowCursor];
+        }
+      
       break;
-    }
-
-  if (name != nil)
-    {
-      newCursor = [cursors objectForKey: name];
-      if (newCursor == nil)
-	{
-	  NSImage *image = [NSImage imageNamed: iname];
-	  newCursor = [[NSCursor alloc] initWithImage: image];
-	  [cursors setObject: newCursor forKey: name];
-	  RELEASE(newCursor);
-	}
-    }
-  if (newCursor == nil)
-    {
-      name = @"ArrowCursor";
-      newCursor = [cursors objectForKey: name];
-      if (newCursor == nil)
-	{
-	  /* Make our own arrow cursor, since we want to color it */
-	  void *c;
-	  
-	  newCursor = [[NSCursor alloc] initWithImage: nil];
-	  [GSCurrentServer() standardcursor: GSArrowCursor : &c];
-	  [newCursor _setCid: c];
-	  [cursors setObject: newCursor forKey: name];
-	  RELEASE(newCursor);
-	}
-    }
-  
-  if ((targetWindowRef != 0) && mask != NSDragOperationNone)
-    {
-      [GSCurrentServer() recolorcursor: [NSColor greenColor] 
-		      : [NSColor blackColor] 
-		      : [newCursor _cid]];
-    }
-  else
-    {
-      [GSCurrentServer() recolorcursor: [NSColor blackColor] 
-		      : [NSColor whiteColor] 
-		      : [newCursor _cid]];
     }
 
   [newCursor set];

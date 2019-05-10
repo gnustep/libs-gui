@@ -34,6 +34,12 @@ Images_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Images
 Images_RESOURCE_FILES = \
  GNUstep.tiff \
  GNUstepMenuImage.tiff \
+ GSContextualMenuCursor.tiff \
+ GSDisappearingItemCursor.tiff \
+ GSDragCopyCursor.tiff \
+ GSDragLinkCursor.tiff \
+ GSGreenArrowCursor.tiff \
+ GSOperationNotAllowedCursor.tiff \
  GSSearch.tiff \
  GSStop.tiff \
  LogoGNUstep.tiff \
