@@ -16,6 +16,12 @@
 	* Images/GSGreenArrowCursor.tiff,
 	* Images/GSOperationNotAllowedCursor.tiff: New cursor images.
 
+	* Images/common_ClosedHandCursor.tiff,
+	* Images/common_OpenHandCursor.tiff,
+	* Images/common_copyCursor.tiff,
+	* Images/common_linkCursor.tiff,
+	* Images/common_noCursor.tiff: Removed from nsmapping.strings.
+
 	* Images/GNUmakefile (Images_RESOURCE_FILES): Update resource
 	list according to cursor images addition/removal.
 
