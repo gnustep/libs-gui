@@ -236,8 +236,7 @@ static BOOL		restoreMouseMoved;
 					 backing: NSBackingStoreRetained
 					   defer: YES];
     
-  [window setBackgroundColor:
-    [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0]];
+  [window setBackgroundColor: [NSColor toolTipColor]];
   [window setReleasedWhenClosed: NO];
   [window setExcludedFromWindowsMenu: YES];
   [window setLevel: NSPopUpMenuWindowLevel];
@@ -638,6 +637,8 @@ static BOOL		restoreMouseMoved;
   attributes = [NSMutableDictionary dictionary];
   [attributes setObject: [NSFont toolTipsFontOfSize: size]
 		 forKey: NSFontAttributeName];
+  [attributes setObject: [NSColor toolTipTextColor]
+                  forKey: NSForegroundColorAttributeName];
   toolTipText =
     [[NSAttributedString alloc] initWithString: toolTipString
 				    attributes: attributes];

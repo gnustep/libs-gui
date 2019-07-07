@@ -1,3 +1,9 @@
+2019-07-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSColor.h,
+	* Source/NSColor.m: Add tool tip named colours.
+	* Source/GSToolTips.m (+initialize, -_timedOut:): Get colours from NSColor.
+
 2019-04-17  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/GSDragView.m (_setCursor): Do not hold `cursors` array -

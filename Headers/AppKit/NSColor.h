@@ -269,6 +269,10 @@ typedef NSUInteger NSControlSize;
 
 // Pattern colour
 - (NSImage*) patternImage;
+
+// Tooltip colours
++ (NSColor*) toolTipColor;
++ (NSColor*) toolTipTextColor;
 #endif
 
 @end
