@@ -1070,10 +1070,16 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
   else
     {
       float minValue, maxValue;
+      float altIncrementValue;
+      int isVertical;
+
       [decoder decodeValuesOfObjCTypes: "fffi",
-	       &minValue, &maxValue, &_altIncrementValue, &_isVertical];
+	       &minValue, &maxValue, &altIncrementValue, &isVertical];
+      [self setDoubleValue: 0];
       [self setMinValue: minValue];
       [self setMaxValue: maxValue];
+      [self setAltIncrementValue: altIncrementValue];
+      _isVertical = isVertical;
       [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
       [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
       if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
@@ -1102,8 +1108,13 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
     }
   else
     {
+      float minValue = _minValue;
+      float maxValue = _maxValue;
+      float altIncrementValue = _altIncrementValue;
+      int isVertical = _isVertical;
+
       [coder encodeValuesOfObjCTypes: "fffi",
-	     &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
+	     &minValue, &maxValue, &altIncrementValue, &isVertical];
       [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
       [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
       // New for version 2
