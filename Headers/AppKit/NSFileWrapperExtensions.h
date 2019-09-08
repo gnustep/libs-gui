@@ -27,9 +27,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _GNUstep_H_NSFileWrapper_GUI
-#define _GNUstep_H_NSFileWrapper_GUI
+#ifndef _GNUstep_H_NSFileWrapper_Extensions
+#define _GNUstep_H_NSFileWrapper_Extensions
 
 #import <Foundation/NSFileWrapper.h>
+
+@class NSImage;
+
+@interface NSFileWrapper (NSExtensions)
+- (void) setIcon: (NSImage*)icon;
+- (NSImage*) icon;
+@end
 
 #endif

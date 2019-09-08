@@ -91,7 +91,7 @@ NSDocumentController.m \
 NSDrawer.m \
 NSEPSImageRep.m \
 NSEvent.m \
-NSFileWrapper.m \
+NSFileWrapperExtensions.m \
 NSFont.m \
 NSFontDescriptor.m \
 NSFontManager.m \
@@ -327,6 +327,7 @@ NSDrawer.h \
 NSEPSImageRep.h \
 NSEvent.h \
 NSFileWrapper.h \
+NSFileWrapperExtensions.h \
 NSFont.h \
 NSFontDescriptor.h \
 NSFontManager.h \
