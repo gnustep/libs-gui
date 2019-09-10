@@ -141,6 +141,7 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapper.h>
+#import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSGestureRecognizer.h>
 #import <AppKit/NSGlyphGenerator.h>
