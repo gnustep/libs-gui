@@ -26,6 +26,7 @@
 
 
 #import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSFileWrapperExtensions.h"
 #import "AppKit/NSImage.h"
 #import "GNUstepGUI/GSHelpAttachment.h"
 
