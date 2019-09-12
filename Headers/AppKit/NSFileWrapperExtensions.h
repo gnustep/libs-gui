@@ -1,5 +1,5 @@
 /* 
-   NSFileWrapper.h
+   NSFileWrapperExtensions.h
 
    NSFileWrapper objects hold a file's contents in dynamic memory.
 
