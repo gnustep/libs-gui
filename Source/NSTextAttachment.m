@@ -38,6 +38,7 @@
 
 #import "AppKit/NSCell.h"
 #import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSFileWrapperExtensions.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSTextContainer.h"
