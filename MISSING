@@ -50,10 +50,6 @@ MISSING HEADERS
 > NSNibControlConnector.h
 > NSNibOutletConnector.h
 > NSOpenGLLayer.h
-> NSPDFImageRep.h
-> NSPDFInfo.h
-> NSPDFPanel.h
-> NSPICTImageRep.h
 > NSPageController.h
 > NSPanGestureRecognizer.h
 > NSPathCell.h
@@ -108,3 +104,11 @@ MISSING HEADERS
 > NSWindowScripting.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
+
+Completed
+
+> NSPDFImageRep.h
+> NSPDFInfo.h
+> NSPDFPanel.h
+> NSPICTImageRep.h
+
