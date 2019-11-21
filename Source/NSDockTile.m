@@ -1,7 +1,7 @@
 /* Implementation of class NSDockTile
    Copyright (C) 2019 Free Software Foundation, Inc.
    
-   By: heron
+   By: Gregory John Casamento <greg.casamento@gmail.com>
    Date: Sat Nov 16 21:11:06 EST 2019
 
    This file is part of the GNUstep Library.
@@ -23,8 +23,80 @@
 */
 
 #include <AppKit/NSDockTile.h>
+#include <AppKit/NSView.h>
 
 @implementation NSDockTile
+
+- (instancetype) init
+{
+  self = [super init];
+  if(self != nil)
+    {
+      NSRect rect = NSMakeRect(0,0,48,48);
+      _size = rect.size;
+      _contentView = [[NSView alloc] initWithFrame: rect];
+      _badgeLabel = nil;
+      _owner = nil;
+    }
+  return self;
+}
+
+- (oneway void) release
+{
+  RELEASE(_contentView);
+  RELEASE(_badgeLabel);
+  [super release];
+}
+
+- (NSView *) contentView
+{
+  return _contentView;
+}
+
+- (void) setContentView: (NSView *)contentView
+{
+  ASSIGN(_contentView, contentView);
+}
+  
+- (NSSize) size 
+{
+  return _size;
+}
+
+- (id) owner
+{
+  return _owner;
+}
+
+- (void) setOwner: (id)owner
+{
+  _owner = owner; // weak...
+}
+
+- (BOOL) showsApplicationBadge
+{
+  return _showsApplicationBadge;
+}
+
+- (void) setShowsApplicationBadge: (BOOL)flag
+{
+  _showsApplicationBadge = flag;
+}
+
+- (NSString *) badgeLabel
+{
+  return _badgeLabel;
+}
+
+- (void) setBadgeLabel: (NSString *)label
+{
+  ASSIGNCOPY(_badgeLabel, label);
+}
+
+- (void) display
+{
+  [_contentView setNeedsDisplay: YES];
+}
 
 @end
 

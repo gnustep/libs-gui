@@ -25,16 +25,42 @@
 #ifndef _NSDockTile_h_GNUSTEP_GUI_INCLUDE
 #define _NSDockTile_h_GNUSTEP_GUI_INCLUDE
 
-#include <AppKit/NSObject.h>
+#include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface NSDockTile : NSObject
+@class NSView, NSString;
 
+@interface NSDockTile : NSObject
+{
+  NSView   *_contentView;
+  NSSize    _size;
+  id        _owner;
+  BOOL      _showsApplicationBadge;
+  NSString *_badgeLabel;
+}
+
+- (NSView *) contentView;
+- (void) setContentView: (NSView *)contentView;
+  
+- (NSSize) size;
+
+- (id) owner;
+- (void) setOwner: (id)owner;
+
+- (BOOL) showsApplicationBadge;
+- (void) setShowsApplicationBadge: (BOOL)flag;
+
+- (NSString *) badgeLabel;
+- (void) setBadgeLabel: (NSString *)label;
+
+- (void) display;  
+  
 @end
 
 #if	defined(__cplusplus)

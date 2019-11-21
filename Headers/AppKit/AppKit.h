@@ -137,6 +137,7 @@
 #import <AppKit/NSComboBox.h>
 #import <AppKit/NSComboBoxCell.h>
 #import <AppKit/NSController.h>
+#import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>

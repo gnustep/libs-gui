@@ -27,6 +27,7 @@
 @implementation NSPDFImageRep
 + (instancetype) imageRepWithData: (NSData *)imageData
 {
+  return AUTORELEASE([[self alloc] initWithData: imageData]);
 }
 
 - (instancetype) initWithData: (NSData *)imageData

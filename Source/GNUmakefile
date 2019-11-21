@@ -86,6 +86,7 @@ NSCustomImageRep.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
 NSDrawer.m \
@@ -321,6 +322,7 @@ NSCustomImageRep.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
+NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
 NSDrawer.h \

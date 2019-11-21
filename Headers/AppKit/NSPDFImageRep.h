@@ -34,7 +34,13 @@ extern "C" {
 #endif
 
 @interface NSPDFImageRep : NSImageRep
-
+{
+  NSData *_data;
+  NSRect  _bounds;
+  NSInteger _pageCount;
+  NSData *_pdfRepresentation;
+}
+  
 + (instancetype) imageRepWithData: (NSData *)imageData;
 
 - (instancetype) initWithData: (NSData *)imageData;
