@@ -23,8 +23,77 @@
 */
 
 #include <AppKit/NSPDFInfo.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSDictionary.h>
 
 @implementation NSPDFInfo
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  return nil;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (void) dealloc
+{
+  RELEASE(_url);
+  RELEASE(_tagNames);
+  RELEASE(_attributes);
+  [super dealloc];
+}
+
+- (instancetype) copyWithZone: (NSZone *)zone
+{
+  return nil;
+}
+
+- (NSURL *) URL
+{
+  return _url;
+}
+
+- (BOOL) isFileExtensionHidden
+{
+  return _fileExtensionHidden;
+}
+
+- (void) setFileExtensionHidden: (BOOL)flag
+{
+  _fileExtensionHidden = flag;
+}
+  
+- (NSArray *) tagNames
+{
+  return _tagNames;
+}
+
+- (NSPaperOrientation) orientation
+{
+  return _orientation;
+}
+
+- (void) setOrientation: (NSPaperOrientation)or
+{
+  _orientation = or;
+}
+
+- (NSSize) paperSize;
+{
+  return _paperSize;
+}
+
+- (void) setPaperSize: (NSSize)size
+{
+  _paperSize = size;
+}
+
+- (NSMutableDictionary *) attributes
+{
+  return _attributes;
+}
 
 @end
 

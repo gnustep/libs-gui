@@ -26,15 +26,42 @@
 #define _NSPDFInfo_h_GNUSTEP_GUI_INCLUDE
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
+#include <AppKit/NSPrintInfo.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface NSPDFInfo : NSObject
+@class NSURL, NSArray, NSMutableDictionary;
+  
+  @interface NSPDFInfo : NSObject <NSCoding, NSCopying>
+{
+  NSURL *_url;
+  BOOL _fileExtensionHidden;
+  NSArray *_tagNames;
+  NSSize _paperSize;
+  NSMutableDictionary *_attributes;
+  NSPaperOrientation _orientation;
+}
+  
+- (NSURL *) URL;
 
+- (BOOL) isFileExtensionHidden;
+- (void) setFileExtensionHidden: (BOOL)flag;
+  
+- (NSArray *) tagNames;
+
+- (NSPaperOrientation) orientation;
+- (void) setOrientation: (NSPaperOrientation)or;
+
+- (NSSize) paperSize;
+- (void) setPaperSize: (NSSize)size;
+
+- (NSMutableDictionary *) attributes;
+  
 @end
 
 #if	defined(__cplusplus)

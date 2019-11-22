@@ -23,8 +23,50 @@
 */
 
 #include <AppKit/NSPDFPanel.h>
+#include <AppKit/NSPDFInfo.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSViewController.h>
+#include <Foundation/NSString.h>
 
 @implementation NSPDFPanel
+
++ (NSPDFPanel *) panel
+{
+  return nil;
+}
+
+- (NSViewController *) accessoryController
+{
+  return nil;
+}
+
+- (void) setAccessoryController: (NSViewController *)accessoryView
+{
+}
+
+- (NSPDFPanelOptions) options
+{
+  return 0;
+}
+
+- (void) setPDFPanelOptions: (NSPDFPanelOptions)opts
+{
+}
+
+- (NSString *) defaultFileName
+{
+  return nil;
+}
+
+- (void) setDefaultFileName: (NSString *)fileName
+{
+}
+
+- (void) begineSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
+                 modalForWindow: (NSWindow *)window
+              completionHandler: (GSPDFPanelCompletionHandler)handler
+{
+}
 
 @end
 

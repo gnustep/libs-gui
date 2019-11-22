@@ -27,13 +27,39 @@
 
 #include <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+@class NSString, NSPDFInfo, NSWindow, NSViewController;
+
+enum {
+  NSPDFPanelShowsPaperSize = 1 << 2,
+  NSPDFPanelShowsOrientation = 1 << 3,
+  NSPDFPanelRequestsParentDirectory = 1 << 24,
+};
+typedef NSUInteger NSPDFPanelOptions;
+
+DEFINE_BLOCK_TYPE(GSPDFPanelCompletionHandler, void, NSInteger);
+  
 @interface NSPDFPanel : NSObject
+
++ (NSPDFPanel *) panel;
+
+- (NSViewController *) accessoryController;
+- (void) setAccessoryController: (NSViewController *)accessoryView;
+
+- (NSPDFPanelOptions) options;
+- (void) setPDFPanelOptions: (NSPDFPanelOptions)opts;
+
+- (NSString *) defaultFileName;
+- (void) setDefaultFileName: (NSString *)fileName;
+
+- (void) begineSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
+                 modalForWindow: (NSWindow *)window
+              completionHandler: (GSPDFPanelCompletionHandler)handler;
 
 @end
 
