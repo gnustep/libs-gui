@@ -97,6 +97,10 @@
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSPasteboardItem.h>
+#import <AppKit/NSPDFInfo.h>
+#import <AppKit/NSPDFImageRep.h>
+#import <AppKit/NSPDFPanel.h>
+#import <AppKit/NSPICTImageRep.h>
 #import <AppKit/NSPopover.h>
 #import <AppKit/NSPopUpButton.h>
 #import <AppKit/NSPopUpButtonCell.h>

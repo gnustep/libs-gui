@@ -32,33 +32,42 @@
 
 - (instancetype) initWithData: (NSData *)imageData
 {
+  self = [super init];
+  if(self != nil)
+    {
+      ASSIGNCOPY(_imageData, imageData);
+    }
+  return self;
 }
 
 - (NSRect) bounds
 {
+  return _bounds;
 }
 
 - (void) setBounds: (NSRect)bounds
 {
+  _bounds = bounds;
 }
 
 - (NSInteger) currentPage
 {
-  return 0;
+  return _currentPage;
 }
 
 - (void) setCurrentPage: (NSInteger)currentPage
 {
+  _currentPage = currentPage;
 }
 
 - (NSInteger) pageCount
 {
-  return 0;
+  return _pageCount;
 }
 
 - (NSData *) PDFRepresentation
 {
-  return nil;
+  return _pdfRepresentation;
 }
 
 @end

@@ -138,6 +138,10 @@ NSPageLayout.m \
 NSPanel.m \
 NSParagraphStyle.m \
 NSPasteboardItem.m \
+NSPDFInfo.m \
+NSPDFImageRep.m \
+NSPDFPanel.m \
+NSPICTImageRep.m \
 NSPopover.m \
 NSPopUpButton.m \
 NSPopUpButtonCell.m \
@@ -370,6 +374,10 @@ NSPanel.h \
 NSParagraphStyle.h \
 NSPasteboard.h \
 NSPasteboardItem.h \
+NSPDFInfo.h \
+NSPDFImageRep.h \
+NSPDFPanel.h \
+NSPICTImageRep.h \
 NSPopover.h \
 NSPopUpButton.h \
 NSPopUpButtonCell.h \
