@@ -9,24 +9,18 @@ MISSING HEADERS
 > NSAlignmentFeedbackFilter.h
 > NSAppearance.h
 > NSAppleScriptExtensions.h
-> NSApplicationScripting.h
-> NSButtonTouchBarItem.h
-> NSCandidateListTouchBarItem.h
 > NSClickGestureRecognizer.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
 > NSCollectionViewLayout.h
 > NSCollectionViewTransitionLayout.h
-> NSColorPickerTouchBarItem.h
 > NSColorSampler.h
-> NSCustomTouchBarItem.h
 > NSDataAsset.h
 > NSDatePicker.h
 > NSDatePickerCell.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
-> NSDocumentScripting.h
 > NSDraggingItem.h
 > NSDraggingSession.h
 > NSErrors.h
@@ -36,8 +30,6 @@ MISSING HEADERS
 > NSFontCollection.h
 > NSGlyphInfo.h
 > NSGridView.h
-> NSGroupTouchBarItem.h
-> NSHapticFeedback.h
 > NSItemProvider.h
 > NSLayoutAnchor.h
 > NSLayoutConstraint.h
@@ -55,8 +47,6 @@ MISSING HEADERS
 > NSPathControl.h
 > NSPathControlItem.h
 > NSPersistentDocument.h
-> NSPickerTouchBarItem.h
-> NSPopoverTouchBarItem.h
 > NSPredicateEditor.h
 > NSPredicateEditorRowTemplate.h
 > NSPressGestureRecognizer.h
@@ -68,15 +58,12 @@ MISSING HEADERS
 > NSScrubberItemView.h
 > NSScrubberLayout.h
 > NSSharingServicePickerToolbarItem.h
-> NSSharingServicePickerTouchBarItem.h
 > NSSliderAccessory.h
-> NSSliderTouchBarItem.h
 > NSSpeechRecognizer.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
 > NSStackView.h
 > NSStatusBarButton.h
-> NSStepperTouchBarItem.h
 > NSStoryboard.h
 > NSStoryboardSegue.h
 > NSSwitch.h
@@ -89,19 +76,17 @@ MISSING HEADERS
 > NSTextFinder.h
 > NSTextInputClient.h
 > NSTextInputContext.h
-> NSTextStorageScripting.h
 > NSTitlebarAccessoryViewController.h
 > NSTouch.h
 > NSTouchBar.h
-> NSTouchBarItem.h
 > NSTypesetter.h
 > NSUserActivity.h
 > NSUserInterfaceCompression.h
 > NSUserInterfaceItemSearching.h
 > NSWindowRestoration.h
-> NSWindowScripting.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
+Total: 87
 
 Completed
 ---
@@ -111,7 +96,35 @@ Completed
 > NSPDFPanel.h
 > NSPICTImageRep.h
 > NSDockTile.h
+Total: 6
 
 Additional
 ---
 > GSSVGImageRep.h
+Total: 1
+
+Mac Specific
+---
+> NSButtonTouchBarItem.h
+> NSCandidateListTouchBarItem.h
+> NSColorPickerTouchBarItem.h
+> NSCustomTouchBarItem.h
+> NSGroupTouchBarItem.h
+> NSPickerTouchBarItem.h
+> NSPopoverTouchBarItem.h
+> NSSharingServicePickerTouchBarItem.h
+> NSSliderTouchBarItem.h
+> NSStepperTouchBarItem.h
+> NSTouchBarItem.h
+> NSClickGestureRecognizer.h
+> NSMagnificationGestureRecognizer.h
+> NSPanGestureRecognizer.h
+> NSPressGestureRecognizer.h
+> NSRotationGestureRecognizer.h
+> NSSpeechRecognizer.h
+> NSApplicationScripting.h
+> NSDocumentScripting.h
+> NSTextStorageScripting.h
+> NSWindowScripting.h
+> NSHapticFeedback.h
+Total: 22
