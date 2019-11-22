@@ -1,5 +1,5 @@
 MISSING HEADERS
-
+---
 > AppKitErrors.h
 > NSATSTypesetter.h
 > NSAccessibilityCustomAction.h
@@ -11,7 +11,6 @@ MISSING HEADERS
 > NSAppleScriptExtensions.h
 > NSApplicationScripting.h
 > NSButtonTouchBarItem.h
-> NSCIImageRep.h
 > NSCandidateListTouchBarItem.h
 > NSClickGestureRecognizer.h
 > NSCollectionViewCompositionalLayout.h
@@ -27,7 +26,6 @@ MISSING HEADERS
 > NSDatePickerCell.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
-> NSDockTile.h
 > NSDocumentScripting.h
 > NSDraggingItem.h
 > NSDraggingSession.h
@@ -106,9 +104,14 @@ MISSING HEADERS
 > NSWindowTabGroup.h
 
 Completed
-
+---
+> NSCIIImageRep.h
 > NSPDFImageRep.h
 > NSPDFInfo.h
 > NSPDFPanel.h
 > NSPICTImageRep.h
+> NSDockTile.h
 
+Additional
+---
+> GSSVGImageRep.h
