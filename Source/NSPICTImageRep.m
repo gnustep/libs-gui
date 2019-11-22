@@ -36,7 +36,15 @@
   self = [super init];
   if (self != nil)
     {
+      BOOL result = NO;
+      
       ASSIGNCOPY(_imageData, imageData);
+      result = [self _readPICTHeader];
+      if (result == NO)
+        {
+          RELEASE(self);
+          return nil;
+        }
     }
   return self;
 }
@@ -49,6 +57,22 @@
 - (NSData *) PICTRepresentation
 {
   return [_pictRepresentation copy];
+}
+
+- (BOOL) _readPICTHeader
+{
+  _position = 512;
+  return NO;
+}
+
+- (BOOL) _drawPICT
+{
+  return NO;
+}
+
+- (BOOL) draw
+{
+  return [self _drawPICT];
 }
 
 @end

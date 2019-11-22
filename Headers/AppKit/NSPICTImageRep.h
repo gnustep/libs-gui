@@ -41,6 +41,7 @@ extern "C" {
   NSData *_imageData;
   NSData *_pictRepresentation;
   NSRect  _boundingBox;
+  NSUInteger _position;
 }
 
 + (instancetype) imageRepWithData: (NSData *)imageData;
