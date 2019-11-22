@@ -26,5 +26,30 @@
 
 @implementation NSPICTImageRep
 
++ (instancetype) imageRepWithData: (NSData *)imageData
+{
+  return AUTORELEASE([[self alloc] initWithData: imageData]);
+}
+
+- (instancetype) initWithData: (NSData *)imageData
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGNCOPY(_imageData, imageData);
+    }
+  return self;
+}
+
+- (NSRect) boundingBox
+{
+  return _boundingBox;
+}
+
+- (NSData *) PICTRepresentation
+{
+  return [_pictRepresentation copy];
+}
+
 @end
 

@@ -26,6 +26,7 @@
 #define _NSPICTImageRep_h_GNUSTEP_GUI_INCLUDE
 
 #include <AppKit/NSImageRep.h>
+#include <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -33,8 +34,23 @@
 extern "C" {
 #endif
 
+@class NSData;
+  
 @interface NSPICTImageRep : NSImageRep
+{
+  NSData *_imageData;
+  NSData *_pictRepresentation;
+  NSRect  _boundingBox;
+}
 
++ (instancetype) imageRepWithData: (NSData *)imageData;
+
+- (instancetype) initWithData: (NSData *)imageData;
+
+- (NSRect) boundingBox;
+
+- (NSData *) PICTRepresentation;
+  
 @end
 
 #if	defined(__cplusplus)
