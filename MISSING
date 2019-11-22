@@ -8,8 +8,6 @@ MISSING HEADERS
 > NSAccessibilityProtocols.h
 > NSAlignmentFeedbackFilter.h
 > NSAppearance.h
-> NSAppleScriptExtensions.h
-> NSClickGestureRecognizer.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
@@ -34,14 +32,12 @@ MISSING HEADERS
 > NSLayoutAnchor.h
 > NSLayoutConstraint.h
 > NSLayoutGuide.h
-> NSMagnificationGestureRecognizer.h
 > NSMediaLibraryBrowserController.h
 > NSMenuToolbarItem.h
 > NSNibControlConnector.h
 > NSNibOutletConnector.h
 > NSOpenGLLayer.h
 > NSPageController.h
-> NSPanGestureRecognizer.h
 > NSPathCell.h
 > NSPathComponentCell.h
 > NSPathControl.h
@@ -49,10 +45,8 @@ MISSING HEADERS
 > NSPersistentDocument.h
 > NSPredicateEditor.h
 > NSPredicateEditorRowTemplate.h
-> NSPressGestureRecognizer.h
 > NSPressureConfiguration.h
 > NSQuickDrawView.h
-> NSRotationGestureRecognizer.h
 > NSRuleEditor.h
 > NSScrubber.h
 > NSScrubberItemView.h
@@ -86,7 +80,7 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 87
+Total: 86
 
 Completed
 ---
@@ -127,4 +121,5 @@ Mac Specific
 > NSTextStorageScripting.h
 > NSWindowScripting.h
 > NSHapticFeedback.h
-Total: 22
+> NSAppleScriptExtensions.h
+Total: 23
