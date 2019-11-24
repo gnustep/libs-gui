@@ -45,14 +45,19 @@ typedef NSUInteger NSPDFPanelOptions;
 DEFINE_BLOCK_TYPE(GSPDFPanelCompletionHandler, void, NSInteger);
   
 @interface NSPDFPanel : NSObject
+{
+  NSViewController *_accessoryController;
+  NSPDFPanelOptions _options;
+  NSString *_defaultFileName;
+}
 
 + (NSPDFPanel *) panel;
 
 - (NSViewController *) accessoryController;
-- (void) setAccessoryController: (NSViewController *)accessoryView;
+- (void) setAccessoryController: (NSViewController *)accessoryController;
 
 - (NSPDFPanelOptions) options;
-- (void) setPDFPanelOptions: (NSPDFPanelOptions)opts;
+- (void) setOptions: (NSPDFPanelOptions)opts;
 
 - (NSString *) defaultFileName;
 - (void) setDefaultFileName: (NSString *)fileName;

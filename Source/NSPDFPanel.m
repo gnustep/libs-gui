@@ -35,31 +35,45 @@
   return nil;
 }
 
-- (NSViewController *) accessoryController
+- init
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      _options =   NSPDFPanelShowsPaperSize;
+      _defaultFileName = @"";
+    }
+  return self;
 }
 
-- (void) setAccessoryController: (NSViewController *)accessoryView
+- (NSViewController *) accessoryController
 {
+  return _accessoryController;
+}
+
+- (void) setAccessoryController: (NSViewController *)accessoryController
+{
+  ASSIGN(_accessoryController, accessoryController);
 }
 
 - (NSPDFPanelOptions) options
 {
-  return 0;
+  return _options;
 }
 
-- (void) setPDFPanelOptions: (NSPDFPanelOptions)opts
+- (void) setOptions: (NSPDFPanelOptions)opts
 {
+  _options = opts;
 }
 
 - (NSString *) defaultFileName
 {
-  return nil;
+  return _defaultFileName;
 }
 
 - (void) setDefaultFileName: (NSString *)fileName
 {
+  ASSIGNCOPY(_defaultFileName, fileName);
 }
 
 - (void) begineSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
