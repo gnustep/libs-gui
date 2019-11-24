@@ -76,9 +76,9 @@
   ASSIGNCOPY(_defaultFileName, fileName);
 }
 
-- (void) begineSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
-                 modalForWindow: (NSWindow *)window
-              completionHandler: (GSPDFPanelCompletionHandler)handler
+- (void) beginSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
+                modalForWindow: (NSWindow *)window
+             completionHandler: (GSPDFPanelCompletionHandler)handler
 {
 }
 

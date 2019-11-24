@@ -62,9 +62,9 @@ DEFINE_BLOCK_TYPE(GSPDFPanelCompletionHandler, void, NSInteger);
 - (NSString *) defaultFileName;
 - (void) setDefaultFileName: (NSString *)fileName;
 
-- (void) begineSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
-                 modalForWindow: (NSWindow *)window
-              completionHandler: (GSPDFPanelCompletionHandler)handler;
+- (void) beginSheetWithPDFInfo: (NSPDFInfo *)pdfInfo
+                modalForWindow: (NSWindow *)window
+             completionHandler: (GSPDFPanelCompletionHandler)handler;
 
 @end
 
