@@ -24,11 +24,58 @@
 
 #include <AppKit/NSPICTImageRep.h>
 
+#define BYTE unsigned char
+#define DWORD unsigned int
+#define WORD unsigned short
+#define SHORT short
+
+struct PICT_Header
+{
+  // Initial header
+  SHORT file_size;
+  SHORT x_top_left;
+  SHORT y_top_left;
+  SHORT x_lower_right;
+  SHORT y_lower_right;
+
+  // Version 2
+  SHORT version_operator;
+  SHORT version_num;
+
+  // picSize
+  WORD pic_size;
+  WORD image_top;
+  WORD image_left;
+  WORD image_bottom;
+  WORD image_right;
+
+  // picFrame v2
+  WORD version;
+  WORD pic_version;
+  WORD reserved_header_opcode;
+  WORD header_opcode;
+  DWORD picture_size_bytes;
+  DWORD original_horizontal_resolution;
+  DWORD original_vertical_resolution;
+  WORD x_value_of_top_left_of_image;
+  WORD y_value_of_top_left_of_image;
+  WORD x_value_of_lower_right_of_image;
+  WORD y_value_of_lower_right_of_image;
+  DWORD reserved;
+};
+
 @implementation NSPICTImageRep
 
 + (instancetype) imageRepWithData: (NSData *)imageData
 {
   return AUTORELEASE([[self alloc] initWithData: imageData]);
+}
+
+- (BOOL) _readHeader
+{
+  NSUInteger pos = 0;
+  _position = pos;
+  return NO;
 }
 
 - (instancetype) initWithData: (NSData *)imageData
@@ -39,7 +86,7 @@
       BOOL result = NO;
       
       ASSIGNCOPY(_imageData, imageData);
-      result = [self _readPICTHeader];
+      result = [self _readHeader];
       if (result == NO)
         {
           RELEASE(self);
@@ -57,12 +104,6 @@
 - (NSData *) PICTRepresentation
 {
   return [_pictRepresentation copy];
-}
-
-- (BOOL) _readPICTHeader
-{
-  _position = 512;
-  return NO;
 }
 
 - (BOOL) _drawPICT

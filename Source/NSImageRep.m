@@ -42,6 +42,8 @@
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCachedImageRep.h"
 #import "AppKit/NSEPSImageRep.h"
+#import "AppKit/NSPDFImageRep.h"
+#import "AppKit/NSPICTImageRep.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSView.h"
