@@ -31,13 +31,6 @@
   return AUTORELEASE([[self alloc] initWithData: imageData]);
 }
 
-- (BOOL) _readHeader
-{
-  NSUInteger pos = 0;
-  _position = pos;
-  return NO;
-}
-
 - (instancetype) initWithData: (NSData *)imageData
 {
   self = [super initWithData: imageData];
