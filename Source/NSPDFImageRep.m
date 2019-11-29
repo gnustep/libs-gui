@@ -35,7 +35,9 @@
   self = [super init];
   if(self != nil)
     {
-      ASSIGNCOPY(_imageData, imageData);
+#if HAVE_IMAGEMAGICK
+  
+#endif
     }
   return self;
 }

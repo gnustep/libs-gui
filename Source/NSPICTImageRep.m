@@ -24,46 +24,6 @@
 
 #include <AppKit/NSPICTImageRep.h>
 
-#define BYTE unsigned char
-#define DWORD unsigned int
-#define WORD unsigned short
-#define SHORT short
-
-struct PICT_Header
-{
-  // Initial header
-  SHORT file_size;
-  SHORT x_top_left;
-  SHORT y_top_left;
-  SHORT x_lower_right;
-  SHORT y_lower_right;
-
-  // Version 2
-  SHORT version_operator;
-  SHORT version_num;
-
-  // picSize
-  WORD pic_size;
-  WORD image_top;
-  WORD image_left;
-  WORD image_bottom;
-  WORD image_right;
-
-  // picFrame v2
-  WORD version;
-  WORD pic_version;
-  WORD reserved_header_opcode;
-  WORD header_opcode;
-  DWORD picture_size_bytes;
-  DWORD original_horizontal_resolution;
-  DWORD original_vertical_resolution;
-  WORD x_value_of_top_left_of_image;
-  WORD y_value_of_top_left_of_image;
-  WORD x_value_of_lower_right_of_image;
-  WORD y_value_of_lower_right_of_image;
-  DWORD reserved;
-};
-
 @implementation NSPICTImageRep
 
 + (instancetype) imageRepWithData: (NSData *)imageData
@@ -80,18 +40,12 @@ struct PICT_Header
 
 - (instancetype) initWithData: (NSData *)imageData
 {
-  self = [super init];
+  self = [super initWithData: imageData];
   if (self != nil)
     {
-      BOOL result = NO;
-      
-      ASSIGNCOPY(_imageData, imageData);
-      result = [self _readHeader];
-      if (result == NO)
-        {
-          RELEASE(self);
-          return nil;
-        }
+#if HAVE_IMAGEMAGICK
+  
+#endif
     }
   return self;
 }
@@ -104,16 +58,6 @@ struct PICT_Header
 - (NSData *) PICTRepresentation
 {
   return [_pictRepresentation copy];
-}
-
-- (BOOL) _drawPICT
-{
-  return NO;
-}
-
-- (BOOL) draw
-{
-  return [self _drawPICT];
 }
 
 @end

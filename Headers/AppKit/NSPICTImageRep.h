@@ -27,6 +27,8 @@
 
 #include <AppKit/NSImageRep.h>
 #include <Foundation/NSGeometry.h>
+#import "GNUstepGUI/GSImageMagickImageRep.h"
+
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -36,9 +38,8 @@ extern "C" {
 
 @class NSData;
   
-@interface NSPICTImageRep : NSImageRep
+@interface NSPICTImageRep : GSImageMagickImageRep
 {
-  NSData *_imageData;
   NSData *_pictRepresentation;
   NSRect  _boundingBox;
   NSUInteger _position;
