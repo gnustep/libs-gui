@@ -1,7 +1,7 @@
 /* Implementation of class NSPDFImageRep
    Copyright (C) 2019 Free Software Foundation, Inc.
    
-   By: heron
+   By: Gregory Casamento <greg.casamento@gmail.com>
    Date: Fri Nov 15 04:24:27 EST 2019
 
    This file is part of the GNUstep Library.
@@ -23,8 +23,20 @@
 */
 
 #include <AppKit/NSPDFImageRep.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSData.h>
 
 @implementation NSPDFImageRep
+
++ (BOOL) canInitWithData: (NSData *)imageData
+{
+  NSData *header = [imageData subdataWithRange: NSMakeRange(0,4)];
+  NSString *str = [[NSString alloc] initWithData: header encoding: NSUTF8StringEncoding];
+  AUTORELEASE(str);
+  return [str isEqualToString: @"%PDF"] &&
+    [super canInitWithData: imageData];
+}
+
 + (instancetype) imageRepWithData: (NSData *)imageData
 {
   return AUTORELEASE([[self alloc] initWithData: imageData]);

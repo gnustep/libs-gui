@@ -497,6 +497,7 @@ GSPrintOperation.h \
 GSEPSPrintOperation.h \
 GSPDFPrintOperation.h \
 GSModelLoaderFactory.h \
+GSImageMagickImageRep.h \
 GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \
