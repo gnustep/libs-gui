@@ -91,6 +91,13 @@
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_pageReps);
+  RELEASE(_pdfRepresentation);
+  [super dealloc];
+}
+
 - (NSRect) bounds
 {
   NSSize size = [self size];

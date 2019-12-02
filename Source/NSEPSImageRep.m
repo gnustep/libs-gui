@@ -26,25 +26,28 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import "config.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSEPSImageRep.h"
+#import "GNUstepGUI/GSImageMagickImageRep.h"
+
+@interface NSBitmapImageRep (PrivateMethods)
+- (void) _premultiply;
+@end
 
 @implementation NSEPSImageRep 
 
 + (BOOL) canInitWithData: (NSData *)data
 {
-  char buffer[2];
-
-  [data getBytes: buffer length: 2];
-
-  // Simple check for Postscript
-  if (buffer[0] == '%' && buffer[1] == '!')
-    return YES;
-  else
-    return NO;
+  NSData *header = [data subdataWithRange: NSMakeRange(0,4)];
+  NSString *str = [[NSString alloc] initWithData: header encoding: NSUTF8StringEncoding];
+  BOOL result = [str isEqualToString: @"%!PS"];
+  AUTORELEASE(str);
+  return result;
 }
 
 + (NSArray *) imageUnfilteredFileTypes
@@ -79,18 +82,35 @@
 
 - (id) initWithData: (NSData *)epsData
 {
-  [self notImplemented: _cmd];
-
-  _epsData = epsData;
-  // Set bounds from parsed header
-  //_bounds = NSMakeRect();
+  self = [super init];
+  if(self != nil)
+    {
+#if HAVE_IMAGEMAGICK
+      ASSIGN(_pageReps, [GSImageMagickImageRep imageRepsWithData: epsData]);
+      _size = [[_pageReps objectAtIndex: 0] size];
+#else
+      ASSIGN(_pageReps, [NSArray array]);
+      _size = NSMakeSize(0,0);
+#endif
+      ASSIGNCOPY(_epsData, epsData);
+    }
+  
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_epsData);
+  RELEASE(_pageReps);
+  [super dealloc];
 }
 
 // Getting Image Data 
 - (NSRect) boundingBox
 {
-  return _bounds;
+  NSSize size = [self size];
+  NSRect rect = NSMakeRect(0, 0, size.width, size.height);
+  return rect;
 }
 
 - (NSData *) EPSRepresentation
@@ -103,13 +123,17 @@
   // This is for subclasses only
 }
 
-// Drawing the Image 
+// Override to draw the specified page...
 - (BOOL) draw
 {
-  [self notImplemented: _cmd];
+  NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSBitmapImageRep *rep = [_pageReps objectAtIndex: 0]; // can EPS have multiple pages?
 
   [self prepareGState];
-
+  
+  [rep _premultiply];
+  [ctxt GSDrawImage: irect : rep];
   return YES;
 }
 

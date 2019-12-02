@@ -70,6 +70,7 @@ static Class NSImageRep_class = NULL;
       [imageReps addObject: [NSBitmapImageRep class]];
 #if HAVE_IMAGEMAGICK
       [imageReps addObject: [NSPDFImageRep class]];
+      [imageReps addObject: [NSEPSImageRep class]];
       [imageReps addObject: [NSPICTImageRep class]];
       [imageReps addObject: [GSImageMagickImageRep class]];
 #endif

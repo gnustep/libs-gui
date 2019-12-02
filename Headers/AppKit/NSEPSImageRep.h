@@ -39,6 +39,7 @@
 @interface NSEPSImageRep : NSImageRep
 {
   // Attributes
+  NSArray *_pageReps;
   NSRect _bounds;
   NSData *_epsData;
 }
