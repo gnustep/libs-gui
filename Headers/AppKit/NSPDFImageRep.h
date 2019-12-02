@@ -26,7 +26,6 @@
 #define _NSPDFImageRep_h_GNUSTEP_GUI_INCLUDE
 
 #include <AppKit/NSImageRep.h>
-#include <GNUstepGUI/GSImageMagickImageRep.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -34,11 +33,11 @@
 extern "C" {
 #endif
 
-@interface NSPDFImageRep : GSImageMagickImageRep
+@interface NSPDFImageRep : NSImageRep //GSImageMagickImageRep
 {
-  NSRect  _bounds;
-  NSInteger _pageCount;
-  NSInteger _currentPage;
+  NSArray *_pageReps;
+  NSUInteger _pageCount;
+  NSUInteger _currentPage;
   NSData *_pdfRepresentation;
 }
   
@@ -47,7 +46,6 @@ extern "C" {
 - (instancetype) initWithData: (NSData *)imageData;
 
 - (NSRect) bounds;
-- (void) setBounds: (NSRect)bounds;
 
 - (NSInteger) currentPage;
 - (void) setCurrentPage: (NSInteger)currentPage;

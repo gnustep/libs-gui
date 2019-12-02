@@ -232,7 +232,7 @@
 
 + (id) imageRepWithData: (NSData *)data
 {
-  return [[[self alloc] initWithData: data] autorelease];
+  return AUTORELEASE([[self alloc] initWithData: data]);
 }
 
 - (id) initWithData: (NSData *)data

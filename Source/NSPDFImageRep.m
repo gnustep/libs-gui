@@ -22,9 +22,17 @@
    Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSPDFImageRep.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSData.h>
+#import "config.h"
+
+#import <Foundation/NSString.h>
+#import <Foundation/NSData.h>
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSPDFImageRep.h"
+#import <GNUstepGUI/GSImageMagickImageRep.h>
+
+@interface NSBitmapImageRep (PrivateMethods)
+- (void) _premultiply;
+@end
 
 @implementation NSPDFImageRep
 
@@ -32,14 +40,34 @@
 {
   NSData *header = [imageData subdataWithRange: NSMakeRange(0,4)];
   NSString *str = [[NSString alloc] initWithData: header encoding: NSUTF8StringEncoding];
+  BOOL result = [str isEqualToString: @"%PDF"];
   AUTORELEASE(str);
-  return [str isEqualToString: @"%PDF"] &&
-    [super canInitWithData: imageData];
+  return result;
+}
+
++ (NSArray *) imagePasteboardTypes
+{
+  return [NSArray arrayWithObjects: NSPDFPboardType];
+}
+
++ (NSArray *) imageUnfilteredPasteboardTYpes
+{
+  return [self imagePasteboardTypes];
+}
+
++ (NSArray *) imageFileTypes
+{
+  return [NSArray arrayWithObjects: @"pdf", @"PDF", nil];
+}
+
++ (NSArray *) imageUnfilteredFileTypes
+{
+  return [self imageFileTypes];
 }
 
 + (instancetype) imageRepWithData: (NSData *)imageData
 {
-  return AUTORELEASE([[self alloc] initWithData: imageData]);
+  return [[[self class] alloc] initWithData: imageData];
 }
 
 - (instancetype) initWithData: (NSData *)imageData
@@ -48,20 +76,26 @@
   if(self != nil)
     {
 #if HAVE_IMAGEMAGICK
-  
+      ASSIGN(_pageReps, [GSImageMagickImageRep imageRepsWithData: imageData]);
+      _size = [[_pageReps objectAtIndex: 0] size];
+      _pageCount = [_pageReps count];
+      _currentPage = 1;
+#else
+      ASSIGN(_pageReps, [NSArray array]);
+      _size = NSMakeSize(0,0);
+      _pageCount = 0;
+      _currentPage = 0;
 #endif
+      ASSIGNCOPY(_pdfRepresentation, imageData);
     }
   return self;
 }
 
 - (NSRect) bounds
 {
-  return _bounds;
-}
-
-- (void) setBounds: (NSRect)bounds
-{
-  _bounds = bounds;
+  NSSize size = [self size];
+  NSRect rect = NSMakeRect(0, 0, size.width, size.height);
+  return rect;
 }
 
 - (NSInteger) currentPage
@@ -84,5 +118,16 @@
   return _pdfRepresentation;
 }
 
+// Override to draw the specified page...
+- (BOOL) draw
+{
+  NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSBitmapImageRep *rep = [_pageReps objectAtIndex: _currentPage - 1];
+  
+  [rep _premultiply];
+  [ctxt GSDrawImage: irect : rep];
+  return YES;
+}
 @end
 
