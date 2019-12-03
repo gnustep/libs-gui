@@ -1,7 +1,7 @@
 /* Definition of class NSDockTile
    Copyright (C) 2019 Free Software Foundation, Inc.
    
-   By: heron
+   By: Gregory Casamento <greg.casamento@gmail.com>
    Date: Sat Nov 16 21:11:06 EST 2019
 
    This file is part of the GNUstep Library.

@@ -1,7 +1,7 @@
 /* Definition of class NSPICTImageRep
    Copyright (C) 2019 Free Software Foundation, Inc.
    
-   By: heron
+   By: Gregory Casamento <greg.casamento@gmail.com>
    Date: Fri Nov 15 04:24:51 EST 2019
 
    This file is part of the GNUstep Library.
