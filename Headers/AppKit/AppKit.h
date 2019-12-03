@@ -58,6 +58,7 @@
 #import <AppKit/NSButtonCell.h>
 #import <AppKit/NSCachedImageRep.h>
 #import <AppKit/NSCell.h>
+#import <AppKit/NSCIImageRep.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSCollectionView.h>
 #import <AppKit/NSCollectionViewItem.h>

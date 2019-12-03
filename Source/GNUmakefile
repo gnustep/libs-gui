@@ -68,6 +68,7 @@ NSButton.m \
 NSButtonCell.m \
 NSCachedImageRep.m \
 NSCell.m \
+NSCIImageRep.m \
 NSClipView.m \
 NSCollectionView.m \
 NSCollectionViewItem.m \
@@ -308,6 +309,7 @@ NSButton.h \
 NSButtonCell.h \
 NSCachedImageRep.h \
 NSCell.h \
+NSCIImageRep.h \
 NSClipView.h \
 NSCollectionView.h \
 NSCollectionViewItem.h \

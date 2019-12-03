@@ -22,9 +22,9 @@
    Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSPDFInfo.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDictionary.h>
+#import <AppKit/NSPDFInfo.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
 
 @implementation NSPDFInfo
 

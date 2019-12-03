@@ -40,7 +40,7 @@
   self = [super init];
   if (self != nil)
     {
-      _options =   NSPDFPanelShowsPaperSize;
+      _options = NSPDFPanelShowsPaperSize;
       _defaultFileName = @"";
     }
   return self;

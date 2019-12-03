@@ -30,7 +30,7 @@
 - (instancetype) init
 {
   self = [super init];
-  if(self != nil)
+  if (self != nil)
     {
       NSRect rect = NSMakeRect(0,0,48,48);
       _size = rect.size;
