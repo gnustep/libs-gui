@@ -86,10 +86,10 @@
   if(self != nil)
     {
 #if HAVE_IMAGEMAGICK
-      ASSIGN(_pageReps, [GSImageMagickImageRep imageRepsWithData: epsData]);
-      _size = [[_pageReps objectAtIndex: 0] size];
+      ASSIGN(_pageRep, [GSImageMagickImageRep imageRepWithData: epsData]);
+      _size = [_pageRep size];
 #else
-      ASSIGN(_pageReps, [NSArray array]);
+      _pageRep = nil;
       _size = NSMakeSize(0,0);
 #endif
       ASSIGNCOPY(_epsData, epsData);
@@ -101,7 +101,7 @@
 - (void) dealloc
 {
   RELEASE(_epsData);
-  RELEASE(_pageReps);
+  RELEASE(_pageRep);
   [super dealloc];
 }
 
@@ -128,12 +128,11 @@
 {
   NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSBitmapImageRep *rep = [_pageReps objectAtIndex: 0]; // can EPS have multiple pages?
 
   [self prepareGState];
   
-  [rep _premultiply];
-  [ctxt GSDrawImage: irect : rep];
+  [_pageRep _premultiply];
+  [ctxt GSDrawImage: irect : _pageRep];
   return YES;
 }
 
