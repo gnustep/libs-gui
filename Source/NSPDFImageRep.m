@@ -78,12 +78,10 @@
 #if HAVE_IMAGEMAGICK
       ASSIGN(_pageReps, [GSImageMagickImageRep imageRepsWithData: imageData]);
       _size = [[_pageReps objectAtIndex: 0] size];
-      _pageCount = [_pageReps count];
       _currentPage = 1;
 #else
       ASSIGN(_pageReps, [NSArray array]);
       _size = NSMakeSize(0,0);
-      _pageCount = 0;
       _currentPage = 0;
 #endif
       ASSIGNCOPY(_pdfRepresentation, imageData);
@@ -117,7 +115,7 @@
 
 - (NSInteger) pageCount
 {
-  return _pageCount;
+  return [_pageReps count];
 }
 
 - (NSData *) PDFRepresentation

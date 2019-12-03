@@ -33,10 +33,9 @@
 extern "C" {
 #endif
 
-@interface NSPDFImageRep : NSImageRep //GSImageMagickImageRep
+@interface NSPDFImageRep : NSImageRep
 {
   NSArray *_pageReps;
-  NSUInteger _pageCount;
   NSUInteger _currentPage;
   NSData *_pdfRepresentation;
 }

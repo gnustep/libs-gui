@@ -37,7 +37,7 @@ extern "C" {
 
 @class NSURL, NSArray, NSMutableDictionary;
   
-  @interface NSPDFInfo : NSObject <NSCoding, NSCopying>
+@interface NSPDFInfo : NSObject <NSCoding, NSCopying>
 {
   NSURL *_url;
   BOOL _fileExtensionHidden;
