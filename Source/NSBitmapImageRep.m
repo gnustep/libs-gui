@@ -2429,7 +2429,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                         }
                       fa = ia / _scale;
 
-                      if ((_format & NSAlphaNonpremultipliedBitmapFormat) !=
+                      if ((ia != 0 && fa < 1.0) &&
+                          (_format & NSAlphaNonpremultipliedBitmapFormat) !=
                           (bitmapFormat & NSAlphaNonpremultipliedBitmapFormat))
                         {
                           if (_format & NSAlphaNonpremultipliedBitmapFormat)
@@ -2568,7 +2569,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                       fv = iv / _scale;
                       fa = ia / _scale;
 
-                      if ((_format & NSAlphaNonpremultipliedBitmapFormat) !=
+                      if ((ia != 0 && fa < 1.0) &&
+                          (_format & NSAlphaNonpremultipliedBitmapFormat) !=
                           (bitmapFormat & NSAlphaNonpremultipliedBitmapFormat))
                         {
                           if (_format & NSAlphaNonpremultipliedBitmapFormat)
