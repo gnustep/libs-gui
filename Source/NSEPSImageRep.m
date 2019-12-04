@@ -35,10 +35,6 @@
 #import "AppKit/NSEPSImageRep.h"
 #import "GNUstepGUI/GSImageMagickImageRep.h"
 
-@interface NSBitmapImageRep (PrivateMethods)
-- (void) _premultiply;
-@end
-
 @implementation NSEPSImageRep 
 
 + (BOOL) canInitWithData: (NSData *)data
@@ -128,10 +124,7 @@
 {
   [self prepareGState];
   
-  [_pageRep _premultiply];
-  [_pageRep draw];
-
-  return YES;
+  return [_pageRep draw];
 }
 
 // NSCopying protocol

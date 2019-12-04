@@ -29,10 +29,6 @@
 #import <Foundation/NSArray.h>
 #import <GNUstepGUI/GSImageMagickImageRep.h>
 
-@interface NSBitmapImageRep (PrivateMethods)
-- (void) _premultiply;
-@end
-
 @implementation NSPICTImageRep
 
 + (NSArray *) imageUnfilteredFileTypes
@@ -96,9 +92,7 @@
 // Override to draw the specified page...
 - (BOOL) draw
 {
-  [_pageRep _premultiply];
-  [_pageRep draw];
-  return YES;
+  return [_pageRep draw];
 }
 @end
 

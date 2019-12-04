@@ -22,7 +22,7 @@
    Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSCIImageRep.h>
+#import <AppKit/NSCIImageRep.h>
 
 @implementation NSCIImageRep
 

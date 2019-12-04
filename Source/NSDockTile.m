@@ -22,8 +22,8 @@
    Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSDockTile.h>
-#include <AppKit/NSView.h>
+#import <AppKit/NSDockTile.h>
+#import <AppKit/NSView.h>
 
 @implementation NSDockTile
 

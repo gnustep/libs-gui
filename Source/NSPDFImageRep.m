@@ -30,10 +30,6 @@
 #import "AppKit/NSPDFImageRep.h"
 #import <GNUstepGUI/GSImageMagickImageRep.h>
 
-@interface NSBitmapImageRep (PrivateMethods)
-- (void) _premultiply;
-@end
-
 @implementation NSPDFImageRep
 
 + (BOOL) canInitWithData: (NSData *)imageData
@@ -127,11 +123,7 @@
 - (BOOL) draw
 {
   NSBitmapImageRep *rep = [_pageReps objectAtIndex: _currentPage - 1];
-  
-  [rep _premultiply];
-  [rep draw];
-
-  return YES;
+  return [rep draw];
 }
 @end
 

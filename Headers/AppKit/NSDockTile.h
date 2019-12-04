@@ -25,8 +25,8 @@
 #ifndef _NSDockTile_h_GNUSTEP_GUI_INCLUDE
 #define _NSDockTile_h_GNUSTEP_GUI_INCLUDE
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 

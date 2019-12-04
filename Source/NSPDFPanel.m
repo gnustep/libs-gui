@@ -22,17 +22,17 @@
    Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSPDFPanel.h>
-#include <AppKit/NSPDFInfo.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSViewController.h>
-#include <Foundation/NSString.h>
+#import <AppKit/NSPDFPanel.h>
+#import <AppKit/NSPDFInfo.h>
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSViewController.h>
+#import <Foundation/NSString.h>
 
 @implementation NSPDFPanel
 
 + (NSPDFPanel *) panel
 {
-  return nil;
+  return [[self class] alloc] ;
 }
 
 - init
