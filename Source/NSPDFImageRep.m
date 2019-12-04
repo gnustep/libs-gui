@@ -126,12 +126,11 @@
 // Override to draw the specified page...
 - (BOOL) draw
 {
-  NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSBitmapImageRep *rep = [_pageReps objectAtIndex: _currentPage - 1];
   
   [rep _premultiply];
-  [ctxt GSDrawImage: irect : rep];
+  [rep draw];
+
   return YES;
 }
 @end
