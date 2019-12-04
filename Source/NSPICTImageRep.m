@@ -21,13 +21,13 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02111 USA.
 */
-#include "config.h"
+#import "config.h"
 
-#include <AppKit/NSPICTImageRep.h>
-#include <AppKit/NSPasteboard.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSArray.h>
-#include <GNUstepGUI/GSImageMagickImageRep.h>
+#import <AppKit/NSPICTImageRep.h>
+#import <AppKit/NSPasteboard.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSArray.h>
+#import <GNUstepGUI/GSImageMagickImageRep.h>
 
 @interface NSBitmapImageRep (PrivateMethods)
 - (void) _premultiply;

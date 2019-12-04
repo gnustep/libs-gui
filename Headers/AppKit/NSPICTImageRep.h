@@ -25,8 +25,8 @@
 #ifndef _NSPICTImageRep_h_GNUSTEP_GUI_INCLUDE
 #define _NSPICTImageRep_h_GNUSTEP_GUI_INCLUDE
 
-#include <AppKit/NSImageRep.h>
-#include <Foundation/NSGeometry.h>
+#import <AppKit/NSImageRep.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 

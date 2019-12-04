@@ -25,7 +25,7 @@
 #ifndef _NSPDFPanel_h_GNUSTEP_GUI_INCLUDE
 #define _NSPDFPanel_h_GNUSTEP_GUI_INCLUDE
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
