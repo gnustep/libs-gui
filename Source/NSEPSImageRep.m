@@ -83,7 +83,7 @@
 - (id) initWithData: (NSData *)epsData
 {
   self = [super init];
-  if(self != nil)
+  if (self != nil)
     {
 #if HAVE_IMAGEMAGICK
       ASSIGN(_pageRep, [GSImageMagickImageRep imageRepWithData: epsData]);
