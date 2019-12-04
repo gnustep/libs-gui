@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author: Gregory John Casamento <borgheron@yahoo.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2001
 
    Author: Scott Christley <scottc@net-community.com>

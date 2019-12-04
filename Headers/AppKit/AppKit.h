@@ -58,6 +58,7 @@
 #import <AppKit/NSButtonCell.h>
 #import <AppKit/NSCachedImageRep.h>
 #import <AppKit/NSCell.h>
+#import <AppKit/NSCIImageRep.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSCollectionView.h>
 #import <AppKit/NSCollectionViewItem.h>
@@ -97,6 +98,10 @@
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSPasteboardItem.h>
+#import <AppKit/NSPDFInfo.h>
+#import <AppKit/NSPDFImageRep.h>
+#import <AppKit/NSPDFPanel.h>
+#import <AppKit/NSPICTImageRep.h>
 #import <AppKit/NSPopover.h>
 #import <AppKit/NSPopUpButton.h>
 #import <AppKit/NSPopUpButtonCell.h>
@@ -137,6 +142,7 @@
 #import <AppKit/NSComboBox.h>
 #import <AppKit/NSComboBoxCell.h>
 #import <AppKit/NSController.h>
+#import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>

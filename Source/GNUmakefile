@@ -68,6 +68,7 @@ NSButton.m \
 NSButtonCell.m \
 NSCachedImageRep.m \
 NSCell.m \
+NSCIImageRep.m \
 NSClipView.m \
 NSCollectionView.m \
 NSCollectionViewItem.m \
@@ -86,6 +87,7 @@ NSCustomImageRep.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
 NSDrawer.m \
@@ -137,6 +139,10 @@ NSPageLayout.m \
 NSPanel.m \
 NSParagraphStyle.m \
 NSPasteboardItem.m \
+NSPDFInfo.m \
+NSPDFImageRep.m \
+NSPDFPanel.m \
+NSPICTImageRep.m \
 NSPopover.m \
 NSPopUpButton.m \
 NSPopUpButtonCell.m \
@@ -303,6 +309,7 @@ NSButton.h \
 NSButtonCell.h \
 NSCachedImageRep.h \
 NSCell.h \
+NSCIImageRep.h \
 NSClipView.h \
 NSCollectionView.h \
 NSCollectionViewItem.h \
@@ -321,6 +328,7 @@ NSCustomImageRep.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
+NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
 NSDrawer.h \
@@ -368,6 +376,10 @@ NSPanel.h \
 NSParagraphStyle.h \
 NSPasteboard.h \
 NSPasteboardItem.h \
+NSPDFInfo.h \
+NSPDFImageRep.h \
+NSPDFPanel.h \
+NSPICTImageRep.h \
 NSPopover.h \
 NSPopUpButton.h \
 NSPopUpButtonCell.h \
@@ -487,6 +499,7 @@ GSPrintOperation.h \
 GSEPSPrintOperation.h \
 GSPDFPrintOperation.h \
 GSModelLoaderFactory.h \
+GSImageMagickImageRep.h \
 GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \

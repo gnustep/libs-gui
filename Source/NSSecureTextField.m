@@ -4,7 +4,7 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author: Gregory John Casamento <borgheron@yahoo.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2000
 
    Author: Nicola Pero <nicola@brainstorm.co.uk>

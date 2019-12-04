@@ -26,25 +26,24 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import "config.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSEPSImageRep.h"
+#import "GNUstepGUI/GSImageMagickImageRep.h"
 
 @implementation NSEPSImageRep 
 
 + (BOOL) canInitWithData: (NSData *)data
 {
-  char buffer[2];
-
-  [data getBytes: buffer length: 2];
-
-  // Simple check for Postscript
-  if (buffer[0] == '%' && buffer[1] == '!')
-    return YES;
-  else
-    return NO;
+  NSData *header = [data subdataWithRange: NSMakeRange(0,4)];
+  NSString *str = [[NSString alloc] initWithData: header encoding: NSUTF8StringEncoding];
+  BOOL result = [str isEqualToString: @"%!PS"];
+  AUTORELEASE(str);
+  return result;
 }
 
 + (NSArray *) imageUnfilteredFileTypes
@@ -79,18 +78,35 @@
 
 - (id) initWithData: (NSData *)epsData
 {
-  [self notImplemented: _cmd];
-
-  _epsData = epsData;
-  // Set bounds from parsed header
-  //_bounds = NSMakeRect();
+  self = [super init];
+  if (self != nil)
+    {
+#if HAVE_IMAGEMAGICK
+      ASSIGN(_pageRep, [GSImageMagickImageRep imageRepWithData: epsData]);
+      _size = [_pageRep size];
+#else
+      _pageRep = nil;
+      _size = NSMakeSize(0,0);
+#endif
+      ASSIGNCOPY(_epsData, epsData);
+    }
+  
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_epsData);
+  RELEASE(_pageRep);
+  [super dealloc];
 }
 
 // Getting Image Data 
 - (NSRect) boundingBox
 {
-  return _bounds;
+  NSSize size = [self size];
+  NSRect rect = NSMakeRect(0, 0, size.width, size.height);
+  return rect;
 }
 
 - (NSData *) EPSRepresentation
@@ -103,14 +119,12 @@
   // This is for subclasses only
 }
 
-// Drawing the Image 
+// Override to draw the specified page...
 - (BOOL) draw
 {
-  [self notImplemented: _cmd];
-
   [self prepareGState];
-
-  return YES;
+  
+  return [_pageRep draw];
 }
 
 // NSCopying protocol

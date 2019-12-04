@@ -42,6 +42,8 @@
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCachedImageRep.h"
 #import "AppKit/NSEPSImageRep.h"
+#import "AppKit/NSPDFImageRep.h"
+#import "AppKit/NSPICTImageRep.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSView.h"
@@ -67,6 +69,9 @@ static Class NSImageRep_class = NULL;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 4];
       [imageReps addObject: [NSBitmapImageRep class]];
 #if HAVE_IMAGEMAGICK
+      [imageReps addObject: [NSPDFImageRep class]];
+      [imageReps addObject: [NSEPSImageRep class]];
+      [imageReps addObject: [NSPICTImageRep class]];
       [imageReps addObject: [GSImageMagickImageRep class]];
 #endif
     }

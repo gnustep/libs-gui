@@ -9,7 +9,7 @@
    Date: 1996
 
    Fixes and updates made by
-   Author: Gregory John Casamento <borgheron@yahoo.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2000
    
    This file is part of the GNUstep GUI Library.
