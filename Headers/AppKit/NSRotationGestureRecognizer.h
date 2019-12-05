@@ -1,8 +1,8 @@
-/* Implementation of class NSGestureRecognizer
+/* Definition of class NSRotationGestureRecognizer
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: Thu Dec  5 12:54:49 EST 2019
+   Date: Thu Dec  5 12:54:21 EST 2019
 
    This file is part of the GNUstep Library.
    
@@ -22,9 +22,27 @@
    Boston, MA 02111 USA.
 */
 
+#ifndef _NSRotationGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
+#define _NSRotationGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
+
+#import <Foundation/NSObject.h>
 #import <AppKit/NSGestureRecognizer.h>
 
-@implementation NSGestureRecognizer
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+
+#if	defined(__cplusplus)
+extern "C" {
+#endif
+
+@interface NSRotationGestureRecognizer : NSGestureRecognizer
 
 @end
+
+#if	defined(__cplusplus)
+}
+#endif
+
+#endif	/* GS_API_MACOSX */
+
+#endif	/* _NSRotationGestureRecognizer_h_GNUSTEP_GUI_INCLUDE */
 

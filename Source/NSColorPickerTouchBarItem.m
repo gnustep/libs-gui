@@ -1,8 +1,8 @@
-/* Implementation of class NSGestureRecognizer
+/* Implementation of class NSColorPickerTouchBarItem
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: Thu Dec  5 12:54:49 EST 2019
+   Date: Thu Dec  5 12:44:26 EST 2019
 
    This file is part of the GNUstep Library.
    
@@ -22,9 +22,9 @@
    Boston, MA 02111 USA.
 */
 
-#import <AppKit/NSGestureRecognizer.h>
+#import <AppKit/NSColorPickerTouchBarItem.h>
 
-@implementation NSGestureRecognizer
+@implementation NSColorPickerTouchBarItem
 
 @end
 

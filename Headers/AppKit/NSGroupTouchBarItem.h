@@ -1,8 +1,8 @@
-/* Implementation of class NSGestureRecognizer
+/* Definition of class NSGroupTouchBarItem
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: Thu Dec  5 12:54:49 EST 2019
+   Date: Thu Dec  5 12:44:26 EST 2019
 
    This file is part of the GNUstep Library.
    
@@ -22,9 +22,27 @@
    Boston, MA 02111 USA.
 */
 
-#import <AppKit/NSGestureRecognizer.h>
+#ifndef _NSGroupTouchBarItem_h_GNUSTEP_GUI_INCLUDE
+#define _NSGroupTouchBarItem_h_GNUSTEP_GUI_INCLUDE
 
-@implementation NSGestureRecognizer
+#import <Foundation/NSObject.h>
+#import <AppKit/NSTouchBarItem.h>
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+
+#if	defined(__cplusplus)
+extern "C" {
+#endif
+
+@interface NSGroupTouchBarItem : NSTouchBarItem
 
 @end
+
+#if	defined(__cplusplus)
+}
+#endif
+
+#endif	/* GS_API_MACOSX */
+
+#endif	/* _NSGroupTouchBarItem_h_GNUSTEP_GUI_INCLUDE */
 
