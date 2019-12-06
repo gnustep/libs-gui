@@ -1,8 +1,8 @@
-/* Definition of class NSTouchBarItem
+/* Definition of class NSSpeechRecognizer
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: Thu Dec  5 12:45:10 EST 2019
+   Date: Fri Dec  6 04:55:59 EST 2019
 
    This file is part of the GNUstep Library.
    
@@ -22,8 +22,8 @@
    Boston, MA 02111 USA.
 */
 
-#ifndef _NSTouchBarItem_h_GNUSTEP_GUI_INCLUDE
-#define _NSTouchBarItem_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSSpeechRecognizer_h_GNUSTEP_GUI_INCLUDE
+#define _NSSpeechRecognizer_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
 
@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-@interface NSTouchBarItem : NSObject
+@interface NSSpeechRecognizer : NSObject
 
 @end
 
@@ -43,5 +43,5 @@ extern "C" {
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSTouchBarItem_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSSpeechRecognizer_h_GNUSTEP_GUI_INCLUDE */
 

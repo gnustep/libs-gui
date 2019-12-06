@@ -26,7 +26,6 @@
 #define _NSGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
-#import <AppKit/NSObject.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
