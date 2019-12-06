@@ -1,3 +1,8 @@
+2019-12-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* .travis.yml
+	* travis-deps.sh: Update to match changes in base by Niels Grewe.
+
 2019-12-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
