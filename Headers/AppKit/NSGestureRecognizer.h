@@ -1,10 +1,16 @@
-/* Definition of class NSGestureRecognizer
-   Copyright (C) 2019 Free Software Foundation, Inc.
-   
-   By: Gregory John Casamento
+/*
+   NSGestureRecognizer.h
+  
+   Abstract base class for monitoring user events
+
+   Copyright (C) 2017 Free Software Foundation, Inc.
+
+   Author: Daniel Ferreira <dtf@stanford.edu>
+   Date: 2017
+   Editor: Gregory John Casamento
    Date: Thu Dec  5 12:54:49 EST 2019
 
-   This file is part of the GNUstep Library.
+   This file is part of the GNUstep GUI Library.
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -14,18 +20,20 @@
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
    
    You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
-#ifndef _NSGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
-#define _NSGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
+#ifndef _GNUstep_H_NSGestureRecognizer
+#define _GNUstep_H_NSGestureRecognizer
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -33,8 +41,28 @@
 extern "C" {
 #endif
 
-@interface NSGestureRecognizer : NSObject
+@class NSView, NSEvent;
 
+@interface NSGestureRecognizer : NSObject
+- (NSPoint)locationInView:(NSView *)view;
+@end
+
+@protocol NSGestureRecognizerDelegate <NSObject>
+#if GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
+@interface NSObject (NSGestureRecognizerDelegate)
+#endif
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+shouldAttemptToRecognizeWithEvent:(NSEvent *)event;
+- (BOOL)gestureRecognizerShouldBegin:(NSGestureRecognizer *)gestureRecognizer;
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(NSGestureRecognizer *)otherGestureRecognizer;
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+shouldRequireFailureOfGestureRecognizer:(NSGestureRecognizer *)otherGestureRecognizer;
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+shouldBeRequiredToFailByGestureRecognizer:(NSGestureRecognizer *)otherGestureRecognizer;
 @end
 
 #if	defined(__cplusplus)
@@ -43,5 +71,5 @@ extern "C" {
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSGestureRecognizer_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _GNUstep_H_NSGestureRecognizer */
 

@@ -1,10 +1,14 @@
-/* Implementation of class NSGestureRecognizer
-   Copyright (C) 2019 Free Software Foundation, Inc.
-   
-   By: Gregory John Casamento
-   Date: Thu Dec  5 12:54:49 EST 2019
+/*
+   NSGestureRecognizer.m
+  
+   Abstract base class for monitoring user events
 
-   This file is part of the GNUstep Library.
+   Copyright (C) 2017 Free Software Foundation, Inc.
+
+   Author: Daniel Ferreira <dtf@stanford.edu>
+   Date: 2017
+
+   This file is part of the GNUstep GUI Library.
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -14,17 +18,31 @@
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
    
    You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #import <AppKit/NSGestureRecognizer.h>
 
 @implementation NSGestureRecognizer
+- (id)initWithCoder: (NSCoder *)coder
+{
+  return nil; 
+}
 
+- (void)encodeWithCoder: (NSCoder *)coder
+{
+  return;
+}
+
+- (NSPoint)locationInView:(NSView *)view
+{
+  return NSZeroPoint;
+}
 @end
 

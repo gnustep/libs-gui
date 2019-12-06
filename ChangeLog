@@ -1,5 +1,27 @@
 2019-12-06 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSGestureRecognizer.h
+	* Source/NSGestureRecognizer.m: Restore code by Daniel Ferreira
+	* Headers/AppKit/NSButtonTouchBarItem.h
+	* Headers/AppKit/NSCandidateListTouchBarItem.h
+	* Headers/AppKit/NSClickGestureRecognizer.h
+	* Headers/AppKit/NSColorPickerTouchBarItem.h
+	* Headers/AppKit/NSCustomTouchBarItem.h
+	* Headers/AppKit/NSGroupTouchBarItem.h
+	* Headers/AppKit/NSMagnificationGestureRecognizer.h
+	* Headers/AppKit/NSPanGestureRecognizer.h
+	* Headers/AppKit/NSPickerTouchBarItem.h
+	* Headers/AppKit/NSPopoverTouchBarItem.h
+	* Headers/AppKit/NSPressGestureRecognizer.h
+	* Headers/AppKit/NSRotationGestureRecognizer.h
+	* Headers/AppKit/NSSharingServicePickerTouchBarItem.h
+	* Headers/AppKit/NSSliderTouchBarItem.h
+	* Headers/AppKit/NSStepperTouchBarItem.h
+	* Headers/AppKit/NSTouchBarItem.h
+	Clean up after Greg's commit.
+
+2019-12-06 Fred Kiefer <FredKiefer@gmx.de>
+
 	* .travis.yml
 	* travis-deps.sh: Update to match changes in base by Niels Grewe.
 
