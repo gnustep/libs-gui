@@ -38,7 +38,7 @@
                andAttributes: (NSDictionary*)attribs
 {
   ASSIGN(type, typeName);
-  ASSIGN(attributes, attribs);
+  attributes = [attribs mutableCopy];
   elements = [[NSMutableDictionary alloc] init];
   values = [[NSMutableArray alloc] init];
 
@@ -93,6 +93,11 @@
 - (NSString*) attributeForKey: (NSString*)key
 {
   return [attributes objectForKey: key];
+}
+
+- (void) setAttribute: (NSString*)attribute forKey: (NSString*)key
+{
+  [attributes setObject: attribute forKey: key];
 }
 
 - (GSXibElement*) elementForKey: (NSString*)key

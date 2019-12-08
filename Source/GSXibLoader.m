@@ -49,6 +49,7 @@
 #import "GNUstepGUI/GSXibObjectContainer.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
+#import "GSXib5KeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
@@ -105,7 +106,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -150,7 +151,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -182,7 +183,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -218,7 +219,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -272,8 +273,17 @@
   [result setDestination: [self destination]];
   [result setSource: [self source]];
   [result setLabel: [self label]];
-  
+
   return result;
+}
+
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat: @" - label: %@: ", label];
+  [description appendFormat: @" source: %@: ", NSStringFromClass([source class])];
+  [description appendFormat: @" destination: %@: ", NSStringFromClass([destination class])];
+  return AUTORELEASE(description);
 }
 
 - (id) nibInstantiate
@@ -301,7 +311,7 @@
 - (void) establishConnection
 {
   SEL sel = NSSelectorFromString(label);
-	      
+
   [destination setTarget: source];
   [destination setAction: sel];
 }
@@ -317,33 +327,39 @@
       if (source != nil)
 	{
           NSString *selName;
-          SEL sel; 	 
-          
-          selName = [NSString stringWithFormat: @"set%@%@:", 	 
-                       [[label substringToIndex: 1] uppercaseString], 	 
-                      [label substringFromIndex: 1]]; 	 
-          sel = NSSelectorFromString(selName); 	 
-          
-          if (sel && [source respondsToSelector: sel]) 	 
-            { 	 
-              [source performSelector: sel withObject: destination]; 	 
-            } 	 
-          else 	 
-            { 	 
+          SEL sel;
+
+          selName = [NSString stringWithFormat: @"set%@%@:",
+                       [[label substringToIndex: 1] uppercaseString],
+                      [label substringFromIndex: 1]];
+          sel = NSSelectorFromString(selName);
+
+          if (sel && [source respondsToSelector: sel])
+            {
+              [source performSelector: sel withObject: destination];
+            }
+          else
+            {
               /*
                * We cannot use the KVC mechanism here, as this would always retain _dst
                * and it could also affect _setXXX methods and _XXX ivars that aren't
                * affected by the Cocoa code.
-               */ 	 
+               */
               const char *name = [label cString];
               Class class = object_getClass(source);
               Ivar ivar = class_getInstanceVariable(class, name);
-              
+
               if (ivar != 0)
                 {
                   object_setIvar(source, ivar, destination);
                 }
-            } 	 
+ #if defined(DEBUG)
+                    else
+                      {
+                        NSWarnMLog(@"class '%@' has no instance var named: %@", NSStringFromClass(class), label);
+                      }
+#endif
+           }
 	}
     }
   NS_HANDLER
@@ -411,7 +427,7 @@
           [NSException raise: NSInvalidArgumentException
                       format: @"%@", format];
         }
-      
+
       // Load the connection ID....
       if ([coder containsValueForKey: @"connectionID"])
         {
@@ -446,7 +462,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -503,7 +519,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -541,7 +557,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -583,7 +599,7 @@
           [NSException raise: NSInvalidArgumentException
                       format: @"%@", format];
         }
-      
+
       if ([coder containsValueForKey: @"object"])
         {
           ASSIGN(object, [coder decodeObjectForKey: @"object"]);
@@ -599,7 +615,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -652,7 +668,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -718,7 +734,7 @@
     }
   else
     {
-      [NSException raise: NSInvalidArgumentException 
+      [NSException raise: NSInvalidArgumentException
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
@@ -740,6 +756,17 @@
   DESTROY(localizations);
   DESTROY(sourceID);
   [super dealloc];
+}
+
+- (NSString*) description
+{
+  NSMutableString *description = [[super description] mutableCopy];
+  [description appendFormat: @" - sourceID: %@: ", sourceID];
+  [description appendFormat: @" maxID: %@: ", maxID];
+  [description appendFormat: @" objectRecords: %@: ", objectRecords];
+  [description appendFormat: @" flattenedProperties: %@: ", flattenedProperties];
+  [description appendFormat: @" connectionRecords: %@: ", connectionRecords];
+  return AUTORELEASE(description);
 }
 
 - (NSEnumerator*) connectionRecordEnumerator
@@ -833,7 +860,7 @@
         }
 
       properties = [self propertiesForObjectID: [obj objectID]];
-      NSDebugLLog(@"XIB", @"object %ld props %@", (long)[obj objectID], properties);
+      NSDebugLLog(@"XIB", @"object %@ props %@", [obj objectID], properties);
 
       //value = [properties objectForKey: @"windowTemplate.maxSize"];
       //value = [properties objectForKey: @"CustomClassName"];
@@ -857,7 +884,7 @@
       if (value != nil)
         {
           NSDictionary *infodict = (NSDictionary*)value;
-          
+
           // Process tooltips...
           IBToolTipAttribute *tooltip = [infodict objectForKey: @"ToolTip"];
 
@@ -865,7 +892,7 @@
             {
               [realObj setToolTip: [tooltip toolTip]];
             }
-          
+
           // Process XIB runtime attributes...
           if ([infodict objectForKey:@"IBUserDefinedRuntimeAttributesPlaceholderName"])
             {
@@ -874,7 +901,7 @@
               NSArray *attributes = [placeholder runtimeAttributes];
               NSEnumerator *objectIter = [attributes objectEnumerator];
               IBUserDefinedRuntimeAttribute *attribute;
-              
+
               while ((attribute = [objectIter nextObject]) != nil)
                 {
                   [realObj setValue: [attribute value] forKeyPath: [attribute keyPath]];
@@ -910,8 +937,7 @@
   return 4.0;
 }
 
-- (void) awake: (NSArray *)rootObjects 
-   inContainer: (id)objects 
+- (void) awake: (NSArray *)rootObjects
    withContext: (NSDictionary *)context
 {
   NSEnumerator *en;
@@ -922,6 +948,12 @@
   id app   = nil;
   NSCustomObject *object;
   NSString *className;
+
+  if ([rootObjects count] == 0)
+  {
+    NSWarnMLog(@"no root objects!!!");
+    return;
+  }
 
   // Get the file's owner and NSApplication object references...
   object = (NSCustomObject*)[rootObjects objectAtIndex: 1];
@@ -974,9 +1006,16 @@
           [NSApp _setMainMenu: obj];
         }
     }
+}
+
+- (void) awake: (NSArray *)rootObjects
+   inContainer: (id)objects
+   withContext: (NSDictionary *)context
+{
+  [self awake: rootObjects withContext: context];
 
   // Load connections and awaken objects
-  if ([objects respondsToSelector:@selector(nibInstantiate)])
+  if ([objects respondsToSelector: @selector(nibInstantiate)])
     {
       [objects nibInstantiate];
     }
@@ -993,7 +1032,15 @@
     {
       if (data != nil)
 	{
-          unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
+          // We now default to checking XIB 5 versions first...
+          unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+
+          // If that doesn't work try the XIB 5 loader...
+          if (unarchiver == nil)
+            {
+              unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
+            }
+
 	  if (unarchiver != nil)
 	    {
               NSArray *rootObjects;
@@ -1004,28 +1051,15 @@
               rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
               objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
               NSDebugLLog(@"XIB", @"rootObjects %@", rootObjects);
-              [self awake: rootObjects 
-		    inContainer: objects 
+              [self awake: rootObjects
+		    inContainer: objects
 		    withContext: context];
               loaded = YES;
               RELEASE(unarchiver);
 	    }
 	  else
 	    {
-	      GSXibParser *parser = [[GSXibParser alloc] initWithData: data]; 
-	      NSDictionary *result = [parser parse];
-	      if (result != nil)
-		{
-		  NSArray *rootObjects = [result objectForKey: @"IBDocument.RootObjects"];
-		  GSXibObjectContainer *objects = [result objectForKey: @"IBDocument.Objects"];
-		  [self awake: rootObjects
-			inContainer: objects
-			withContext: context];
-		}
-	      else
-		{
-		  NSLog(@"Could not instantiate Xib unarchiver/Unable to parse Xib.");
-		}
+              NSLog(@"Could not instantiate Xib unarchiver/Unable to parse Xib.");
 	    }
 	}
       else

@@ -56,55 +56,9 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GSGuiPrivate.h"
+#import "GSCodingFlags.h"
 
 #include <math.h>
-
-typedef struct _GSButtonCellFlags 
-{
-#if GS_WORDS_BIGENDIAN == 1
-  unsigned int isPushin:1;
-  unsigned int changeContents:1;
-  unsigned int changeBackground:1;
-  unsigned int changeGray:1;
-  unsigned int highlightByContents:1;
-  unsigned int highlightByBackground:1;
-  unsigned int highlightByGray:1;
-  unsigned int drawing:1;
-  unsigned int isBordered:1;
-  unsigned int imageDoesOverlap:1;
-  unsigned int isHorizontal:1;
-  unsigned int isBottomOrLeft:1;
-  unsigned int isImageAndText:1;
-  unsigned int isImageSizeDiff:1;
-  unsigned int hasKeyEquiv:1;
-  unsigned int lastState:1;
-  unsigned int isTransparent:1;
-  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
-  unsigned int useButtonImageSource:1;
-  unsigned int unused2:8; // alt mnemonic loc.
-#else
-  unsigned int unused2:8; // alt mnemonic loc.
-  unsigned int useButtonImageSource:1;
-  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
-  unsigned int isTransparent:1;
-  unsigned int lastState:1;
-  unsigned int hasKeyEquiv:1;
-  unsigned int isImageSizeDiff:1;
-  unsigned int isImageAndText:1;
-  unsigned int isBottomOrLeft:1;
-  unsigned int isHorizontal:1;
-  unsigned int imageDoesOverlap:1;
-  unsigned int isBordered:1;
-  unsigned int drawing:1;
-  unsigned int highlightByGray:1;
-  unsigned int highlightByBackground:1;
-  unsigned int highlightByContents:1;
-  unsigned int changeGray:1;
-  unsigned int changeBackground:1;
-  unsigned int changeContents:1;
-  unsigned int isPushin:1;
-#endif
-} GSButtonCellFlags;
 
 @interface NSCell (Private)
 - (NSSize) _scaleImageWithSize: (NSSize)imageSize
@@ -1674,7 +1628,9 @@ typedef struct _GSButtonCellFlags
       buttonCellFlags.changeGray = [self cellAttribute: NSChangeGrayCell];
 
       // set these to zero...
-      buttonCellFlags.unused1 = 0; // 32;
+      buttonCellFlags.inset = 0; // 32;
+      buttonCellFlags.doesNotDimImage = 0; // 32;
+      buttonCellFlags.gradient = 0; // 32;
       buttonCellFlags.unused2 = 0; // 255;
       buttonCellFlags.lastState = 0;
       buttonCellFlags.isImageSizeDiff = 0;

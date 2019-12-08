@@ -1577,6 +1577,16 @@ static NSColor *dtxtCol;
   ASSIGN (_represented_object, anObject);
 }
 
+- (NSBackgroundStyle)backgroundStyle
+{
+  return(_cell.background_style);
+}
+
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
+{
+  _cell.background_style = backgroundStyle;
+}
+
 /**<p>Returns the mouse flags. This flags are usally sets in 
    the -trackMouse:inRect:ofView:untilMouseUp: method</p>
  */
@@ -2480,6 +2490,7 @@ static NSColor *dtxtCol;
       
       // flags part 2
       cFlags2 |= ([self usesSingleLineMode] ? 0x40 : 0);
+      cFlags2 |= (([self allowsUndo] == NO) ? 0x1000 : 0);
       cFlags2 |= ([self controlTint] << 5);
       cFlags2 |= ([self lineBreakMode] << 9);
       cFlags2 |= ([self controlSize] << 17);

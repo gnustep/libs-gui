@@ -308,6 +308,7 @@ GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
 GSXibKeyedUnarchiver.m \
+GSXib5KeyedUnarchiver.m \
 GSXibObjectContainer.m \
 GSXibParser.m \
 GSHelpAttachment.m 
