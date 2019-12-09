@@ -101,7 +101,7 @@ static NSString *ApplicationClass = nil;
 
   if (self)
     {
-      _userLabel = [coder decodeObjectForKey:@"userLabel"];
+      _userLabel = [coder decodeObjectForKey: @"userLabel"];
 
       if (_className)
         {
@@ -317,7 +317,7 @@ static NSString *ApplicationClass = nil;
 
   if (self)
     {
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
         {
           [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
 
@@ -408,7 +408,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
             XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem", nil];
             RETAIN(XmlReferenceAttributes);
 
-            XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", nil];
+            XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
             RETAIN(XmlConnectionRecordTags);
 
             // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
@@ -463,6 +463,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
                                            @"maxNumberOfColumns", @"NSMaxNumberOfGridColumns",
                                            @"sortKey", @"NSKey",
+                                           @"name", @"NSBinding",
                                            nil];
             RETAIN(XmlKeyMapTable);
 
@@ -500,12 +501,12 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
             // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
             XmlTagToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                         @"decodeTableColumnResizingMaskForElement", @"tableColumnResizingMask:",
-                                                       @"decodeAutoresizingMaskForElement", @"autoresizingMask:",
-                                                       @"decodeWindowStyleMaskForElement", @"windowStyleMask:",
-                                                       @"decodeWindowPositionMaskForElement", @"windowPositionMask:",
-                                                       //@"decodeModifierMaskForElement", @"modifierMask:",
-                                                       @"decodeTableViewGridLinesForElement", @"tableViewGridLines:",
+                                                         @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
+                                                       @"decodeAutoresizingMaskForElement:", @"autoresizingMask",
+                                                       @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
+                                                       @"decodeWindowPositionMaskForElement:", @"windowPositionMask",
+                                                       //@"decodeModifierMaskForElement:", @"modifierMask",
+                                                       @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
                                                        nil];
             RETAIN(XmlTagToDecoderSelectorMap);
 
@@ -591,7 +592,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
 + (NSString*) classNameForXibTag: (NSString*)xibTag
 {
-  NSString *className = [XmltagToObjectClassCrossReference objectForKey:xibTag];
+  NSString *className = [XmltagToObjectClassCrossReference objectForKey: xibTag];
 
   if (nil == className)
   {
@@ -618,7 +619,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
 + (Class) classForXibTag: (NSString*)xibTag
 {
-  return NSClassFromString([self classNameForXibTag:xibTag]);
+  return NSClassFromString([self classNameForXibTag: xibTag]);
 }
 
 - (GSXibElement*) connectionRecordForElement: (GSXibElement*)element
@@ -735,6 +736,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   NSXMLParser *theParser  = nil;
   NSData      *theData    = data;
 
+  NSLog(@"Starting to load XIB 5 data");
   // Check data...
   if (theData == nil)
     {
@@ -872,23 +874,30 @@ didStartElement: (NSString*)elementName
       if (([@"window" isEqualToString: elementName] == NO) &&
           ([@"customView" isEqualToString: elementName] == NO) &&
           ([@"customObject" isEqualToString: elementName] == NO))
-        className = [attributes objectForKey: @"customClass"];
-      if (nil == className)
-        className = [[self class] classNameForXibTag:elementName];
+        {
+          className = [attributes objectForKey: @"customClass"];
+        }
 
+      if (nil == className)
+        {
+          className = [[self class] classNameForXibTag: elementName];
+        }
+      
       if (nil != className)
         {
-          if ([NSClassFromString(className) isSubclassOfClass:[NSArray class]])
+          if ([NSClassFromString(className) isSubclassOfClass: [NSArray class]])
             elementType = @"array";
           else if ([@"string" isEqualToString: elementName] == NO)
             elementType = @"object";
         }
-
+          
       // Add the necessary attribute(s)...
       if (className)
-        [attributes setObject: className forKey: @"class"];
+        {
+          [attributes setObject: className forKey: @"class"];
+        }
 
-      if ([attributes objectForKey:@"key"] == nil)
+      if ([attributes objectForKey: @"key"] == nil)
         {
           // Special cases to allow current initWithCoder methods to obtain objects..._IBObjectContainer
           if ([@"objects" isEqualToString: elementName])
@@ -2888,7 +2897,8 @@ didStartElement: (NSString*)elementName
       NSString *elementName = [element type];
 
       if (([@"outlet" isEqualToString: elementName]) ||
-          ([@"action" isEqualToString: elementName]))
+          ([@"action" isEqualToString: elementName]) ||
+          ([@"binding" isEqualToString: elementName]))
         {
           NSString      *classname        = nil;
           NSString      *targID           = [element attributeForKey: @"target"];
@@ -2903,8 +2913,10 @@ didStartElement: (NSString*)elementName
 
           if ([@"outlet" isEqualToString: elementName])
             classname = @"IBOutletConnection5";
-          else
+          else if ([@"action" isEqualToString: elementName])
             classname = @"IBActionConnection5";
+          else
+            classname = @"NSNibBindingConnector";
 
           // Decode the object...
           object = [self decodeObjectForXib: element forClassName: classname withID: [element attributeForKey: @"id"]];
@@ -3392,9 +3404,9 @@ didStartElement: (NSString*)elementName
   return range;
 }
 
-- (BOOL)containsValueForKey:(NSString *)key
+- (BOOL) containsValueForKey: (NSString *)key
 {
-  BOOL hasValue = [super containsValueForKey:key];
+  BOOL hasValue = [super containsValueForKey: key];
 
   // Check attributes (for XIB 5 and above) for additional values...
   if (hasValue == NO)
@@ -3433,12 +3445,12 @@ didStartElement: (NSString*)elementName
           // These are arbitrarily defined through hard-coding...
           hasValue = YES;
         }
-      else if ([key hasPrefix:@"NS"])
+      else if ([key hasPrefix: @"NS"])
         {
           // Try a key minus a (potential) NS prefix...
-          NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-          newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-          hasValue = [self containsValueForKey:newKey];
+          NSString *newKey = [key stringByDeletingPrefix: @"NS"];
+          newKey = [[[newKey substringToIndex: 1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+          hasValue = [self containsValueForKey: newKey];
         }
       else
         {

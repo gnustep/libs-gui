@@ -145,10 +145,15 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      if ([aDecoder decodeIntForKey: @"NSNibBindingConnectorVersion"] != 2)
+      if ([aDecoder containsValueForKey: @"NSNibBindingConnectorVersion"])
         {
-          RELEASE(self);
-          return nil;
+          int version = [aDecoder decodeIntForKey: @"NSNibBindingConnectorVersion"];
+          if (version != 2)
+            {
+              NSLog(@"Unexpected NSNibBindingConnectorVersion %d", version);
+              RELEASE(self);
+              return nil;
+            }
         }
       if ([aDecoder containsValueForKey: @"NSBinding"])
         {

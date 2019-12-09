@@ -45,7 +45,6 @@
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
-#import "GNUstepGUI/GSXibParser.h"
 #import "GNUstepGUI/GSXibObjectContainer.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
@@ -353,11 +352,11 @@
                 {
                   object_setIvar(source, ivar, destination);
                 }
- #if defined(DEBUG)
-                    else
-                      {
-                        NSWarnMLog(@"class '%@' has no instance var named: %@", NSStringFromClass(class), label);
-                      }
+#if defined(DEBUG)
+              else
+                {
+                  NSWarnMLog(@"class '%@' has no instance var named: %@", NSStringFromClass(class), label);
+                }
 #endif
            }
 	}

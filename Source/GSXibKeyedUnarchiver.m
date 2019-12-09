@@ -732,7 +732,7 @@ didStartElement: (NSString*)elementName
     }
   else
     {
-      NSLog(@"Unknown element type %@", elementName);
+      //NSLog(@"Unknown element type %@", elementName);
     }
 
   return nil;
@@ -970,7 +970,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  long long l = [o longLongValue];
 

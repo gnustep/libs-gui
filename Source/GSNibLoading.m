@@ -52,6 +52,7 @@
 
 #import "GNUstepGUI/GSNibLoading.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSFontManager.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenuView.h"
@@ -326,10 +327,12 @@ static BOOL _isInInterfaceBuilder = NO;
           _flags.isDeferred = deferred;
           _flags.isOneShot = oneShot;
           _flags.isVisible = visible;
+          _flags.isNotShadowed = ![window hasShadow];
           _flags.wantsToBeColor = wantsToBeColor;
           _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
           _flags.autoPositionMask = autoPositionMask;
           _flags.savePosition = YES; // not yet implemented.
+          _flags.autorecalculatesKeyViewLoop = [window autorecalculatesKeyViewLoop];
         }
     }
   return self;
@@ -343,13 +346,25 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
         }
+      else
+        {
+          ASSIGN(_viewClass, @"NSView");
+        }
       if ([coder containsValueForKey: @"NSWindowClass"])
         {
           ASSIGN(_windowClass, [coder decodeObjectForKey: @"NSWindowClass"]);
         }
+      else
+        {
+          ASSIGN(_windowClass, @"NSWindow");
+        }
       if ([coder containsValueForKey: @"NSWindowStyleMask"])
         {
           _windowStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
+        }
+      else
+        {
+          _windowStyle = 0;
         }
       if ([coder containsValueForKey: @"NSWindowBacking"])
         {
@@ -485,6 +500,8 @@ static BOOL _isInInterfaceBuilder = NO;
       // [_realObject setAutoPosition: _flags.autoPosition];
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
       // [_realObject setFrameAutosaveName: _autosaveName]; // done after setting the min/max sizes
+      [_realObject setHasShadow: !_flags.isNotShadowed];
+      [_realObject setAutorecalculatesKeyViewLoop: _flags.autorecalculatesKeyViewLoop];
 
       // reset attributes...
       [_realObject setContentView: _view];
@@ -1004,6 +1021,11 @@ static BOOL _isInInterfaceBuilder = NO;
 	{
 	  _object = RETAIN([aClass sharedApplication]);
 	}
+      else if ((GSObjCIsKindOf(aClass, [NSFontManager class])) ||
+               ([_className isEqual: @"NSFontManager"]))
+        {
+          _object = RETAIN([aClass sharedFontManager]);
+        }
       else
 	{
 	  _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
