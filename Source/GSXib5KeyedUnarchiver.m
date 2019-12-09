@@ -294,15 +294,6 @@ static NSString *ApplicationClass = nil;
   return self;
 }
 
-#if 0
-- (void) establishConnection
-{
-  [super establishConnection];
-  // For some reason I needed this originally - but not now...
-  RETAIN(destination);
-}
-#endif
-
 @end
 
 @interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
@@ -732,30 +723,29 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
 - (id) initForReadingWithData: (NSData*)data
 {
-#if     GNUSTEP_BASE_HAVE_LIBXML
-  NSXMLParser *theParser  = nil;
-  NSData      *theData    = data;
-
-  NSLog(@"Starting to load XIB 5 data");
   // Check data...
-  if (theData == nil)
+  if (data == nil)
     {
+      DESTROY(self);
       return nil;
     }
+#if     GNUSTEP_BASE_HAVE_LIBXML
   else
     {
       // Ensure we have a XIB 5 version...first see if we can parse the XML...
-      NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
-                                                            options:0
-                                                              error:NULL];
+      NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
+                                                            options: 0
+                                                              error: NULL];
       if (document == nil)
         {
           NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
+          DESTROY(self);
+          return nil;
         }
       else
         {
           // Test to see if this is an Xcode 5 XIB...
-          NSArray *documentNodes = [document nodesForXPath:@"/document" error:NULL];
+          NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
 
           // Need at LEAST ONE document node...we should find something a bit more
           // specific to check here...
@@ -766,11 +756,13 @@ static NSArray      *XmlConnectionRecordTags  = nil;
             }
           else
             {
+              NSXMLParser *theParser  = nil;
+
               // Initialize...
               [self _initCommon];
 
               // Createe the parser and parse the data...
-              theParser = [[NSXMLParser alloc] initWithData: theData];
+              theParser = [[NSXMLParser alloc] initWithData: data];
               [theParser setDelegate: self];
 
               NS_DURING
@@ -788,6 +780,11 @@ static NSArray      *XmlConnectionRecordTags  = nil;
               DESTROY(theParser);
             }
         }
+    }
+#else
+  else
+    {
+      DESTROY(self);
     }
 #endif
 
@@ -2962,6 +2959,23 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+- (void) addOrderedObject: (GSXibElement*)element
+{
+  // Create an ordered object for this element...
+  // This probably needs to be qualified but I have yet to determine
+  // what that should be right now...
+  // OK - I think we need at least this qualifier here to avoid excess and
+  // objects and memory leaks...
+  NSString *oid = [element attributeForKey: @"id"];
+  
+  if (oid && [_orderedObjectsDict objectForKey: oid] == nil)
+    {
+      id orderedObject = [self orderedObjectForElement: (GSXibElement*)element];
+      [_orderedObjectsDict setObject: orderedObject forKey: oid];
+      [_orderedObjects addElement: orderedObject];
+    }
+}
+
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
@@ -2969,17 +2983,7 @@ didStartElement: (NSString*)elementName
   // Try decoding the object using super first...
   id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
 
-  // Create an ordered object for this element...
-  // This probably needs to be qualified but I have yet to determine
-  // what that should be right now...
-  // OK - I think we need at least this qualifier here to avoid excess and
-  // objects and memory leaks...
-  if ([element attributeForKey: @"id"] && [_orderedObjectsDict objectForKey: [element attributeForKey: @"id"]] == nil)
-    {
-      id orderedObject = [self orderedObjectForElement: (GSXibElement*)element];
-      [_orderedObjectsDict setObject: orderedObject forKey: [element attributeForKey: @"id"]];
-      [_orderedObjects addElement: orderedObject];
-    }
+  [self addOrderedObject: element];
 
   // Process tooltips...
   if ([element attributeForKey: @"toolTip"])
@@ -3003,9 +3007,9 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeObjectForKey:(NSString *)key
+- (id) decodeObjectForKey: (NSString *)key
 {
-  id object = [super decodeObjectForKey:key];
+  id object = [super decodeObjectForKey: key];
 
   // If not object try some other cases before defaulting to remove 'NS' prefix if present...
   if (object == nil)
