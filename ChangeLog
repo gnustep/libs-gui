@@ -1,3 +1,9 @@
+2019-12-09  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSStringDrawing.m: fixed incorrect string drawing (shortened, misplaced)
+	in ART backend. It seems that third parameter to `cache_lookup` function
+	(BOOL useScreenFonts) is valuable for ART but not for Cairo backend.
+
 2019-12-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* .travis.yml
