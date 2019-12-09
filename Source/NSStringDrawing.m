@@ -510,7 +510,7 @@ static void draw_in_rect(cache_t *c, NSRect rect)
   NS_DURING
     {    
       prepare_attributed_string(self);
-      c = cache_lookup(hasSize, size, NO);
+      c = cache_lookup(hasSize, size, YES);
       result = c->usedRect;
     }
   NS_HANDLER
@@ -603,7 +603,7 @@ static void draw_in_rect(cache_t *c, NSRect rect)
   NS_DURING
     {
       prepare_string(self, attrs);
-      c = cache_lookup(hasSize, size, NO);
+      c = cache_lookup(hasSize, size, YES);
       result = c->usedRect;
     }
   NS_HANDLER
