@@ -40,6 +40,8 @@
 #import "AppKit/NSTextAttachment.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextStorage.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSTextView.h"
 #import "GNUstepGUI/GSLayoutManager.h"
 #import "GNUstepGUI/GSHorizontalTypesetter.h"
 
@@ -534,9 +536,20 @@ For bigger values the width gets ignored.
     }
   else
     {
-      // FIXME These should come from the typing attributes
-      curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
-      curFont = [NSFont userFontOfSize: 0];
+      NSLayoutManager *layoutManager = [[curTextContainer textView] layoutManager];
+
+      if (layoutManager)
+        {
+          NSDictionary *typingAttributes = layoutManager->_typingAttributes;
+          curParagraphStyle = [typingAttributes
+                                  objectForKey: NSParagraphStyleAttributeName];
+          curFont = [typingAttributes objectForKey: NSFontAttributeName];
+        }
+      else
+        {
+          curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+          curFont = [NSFont userFontOfSize: 0];
+        }
     }
   
   line_height = [curFont defaultLineHeightForFont];

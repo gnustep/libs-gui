@@ -1,3 +1,9 @@
+2019-12-10  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSHorizontalTypesetter.m: (_addExtraLineFragment) get paragraph style and
+	font from NSLayoutManager's typing attributes. Fixes insertion point height for empty
+	text objects (NSTextView, NSTexField etc.).
+
 2019-12-09  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSStringDrawing.m: fixed incorrect string drawing (shortened, misplaced)
