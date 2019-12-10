@@ -277,12 +277,10 @@ static NSString *ApplicationClass = nil;
     {
       if ([coder allowsKeyedCoding])
         {
-          // label and source string tags have changed for XIB5...
+          // label string tag has changed for XIB5...
           ASSIGN(label, [coder decodeObjectForKey: @"property"]);
-          ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-          // destination string tag is still the same (so far) and loaded
+          // destination  and source string tags are still the same (so far) and loaded
           // by base class...
-          //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
         }
       else
         {
@@ -943,7 +941,7 @@ didStartElement: (NSString*)elementName
               // The parent of connections array element IS the object ID we need...
               GSXibElement *parent = [stack objectAtIndex: [stack count]-1];
               NSString     *objKey = (([@"action" isEqualToString: elementName]) ?
-                                       @"destination" : @"target");
+                                       @"destination" : @"source");
 
               // Store the ID reference of the parent object...
               [element setAttribute: [parent attributeForKey: @"id"] forKey: objKey];
@@ -2898,14 +2896,21 @@ didStartElement: (NSString*)elementName
         {
           NSString      *classname        = nil;
           NSString      *targID           = [element attributeForKey: @"target"];
+          NSString      *sourID           = [element attributeForKey: @"source"];
           NSString      *destID           = [element attributeForKey: @"destination"];
           GSXibElement  *targElem         = [objects objectForKey: targID];
+          GSXibElement  *sourElem         = [objects objectForKey: sourID];
           GSXibElement  *destElem         = [objects objectForKey: destID];
           id             targObj          = [self objectForXib: targElem];
+          id             sourObj          = [self objectForXib: sourElem];
           id             destObj          = [self objectForXib: destElem];
 
-          [(GSXibElement*)element setAttribute: targObj forKey: @"target"];
-          [(GSXibElement*)element setAttribute: destObj forKey: @"destination"];
+          if (targObj)
+            [(GSXibElement*)element setAttribute: targObj forKey: @"target"];
+          if (sourObj)
+            [(GSXibElement*)element setAttribute: sourObj forKey: @"source"];
+          if (destObj)
+            [(GSXibElement*)element setAttribute: destObj forKey: @"destination"];
 
           if ([@"outlet" isEqualToString: elementName])
             classname = @"IBOutletConnection5";
