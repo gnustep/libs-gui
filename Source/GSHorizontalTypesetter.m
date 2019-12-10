@@ -536,20 +536,10 @@ For bigger values the width gets ignored.
     }
   else
     {
-      NSLayoutManager *layoutManager = [[curTextContainer textView] layoutManager];
-
-      if (layoutManager)
-        {
-          NSDictionary *typingAttributes = layoutManager->_typingAttributes;
-          curParagraphStyle = [typingAttributes
-                                  objectForKey: NSParagraphStyleAttributeName];
-          curFont = [typingAttributes objectForKey: NSFontAttributeName];
-        }
-      else
-        {
-          curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
-          curFont = [NSFont userFontOfSize: 0];
-        }
+      NSDictionary *typingAttributes = [curLayoutManager typingAttributes];
+      curParagraphStyle = [typingAttributes
+                            objectForKey: NSParagraphStyleAttributeName];
+      curFont = [typingAttributes objectForKey: NSFontAttributeName];
     }
   
   line_height = [curFont defaultLineHeightForFont];

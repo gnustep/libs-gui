@@ -168,6 +168,7 @@ If characters have been edited, lengthChange has the text length delta.
 forStartingGlyphAtIndex: (NSUInteger)glyph
        characterIndex: (NSUInteger)index;
 
+- (NSDictionary *) typingAttributes;
 
 @end
 

@@ -1,8 +1,18 @@
 2019-12-10  Sergii Stoian  <stoyan255@gmail.com>
 
-	* Source/GSHorizontalTypesetter.m: (_addExtraLineFragment) get paragraph style and
-	font from NSLayoutManager's typing attributes. Fixes insertion point height for empty
-	text objects (NSTextView, NSTexField etc.).
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h,
+	* Source/GSLayoutManager.m: new method -typingAttributes returns default
+	typing attributes of NSTextView.
+	* Source/NSLayoutManager.m: override GSLayoutManager's -typingAttributes
+	- primitive method - provides access to _typingAttributes ivar.
+	* Source/GSHorizontalTypesetter.m: use new GSLayoutManager's
+	-typingAttributes method to get paragraph style and font of new empty text
+	container. Normally `curLayoutManager` is a NSLayoutManager object so,
+	actually, we get NSLayoutManager's _typingAttributes.
+
+	* Source/GSHorizontalTypesetter.m: (_addExtraLineFragment) get paragraph
+	style and font from NSLayoutManager's typing attributes. Fixes insertion
+	point height for empty text objects (NSTextView, NSTexField etc.).
 
 2019-12-09  Sergii Stoian  <stoyan255@gmail.com>
 
