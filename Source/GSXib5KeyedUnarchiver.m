@@ -455,6 +455,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"maxNumberOfColumns", @"NSMaxNumberOfGridColumns",
                                            @"sortKey", @"NSKey",
                                            @"name", @"NSBinding",
+                                           @"items", @"NSMenuItems",
                                            nil];
             RETAIN(XmlKeyMapTable);
 
@@ -589,8 +590,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   {
     NSEnumerator *iter       = [ClassNamePrefixes objectEnumerator];
     NSString     *prefix     = nil;
-    NSString     *baseString = [[xibTag substringToIndex:1] capitalizedString];
-    baseString               = [baseString stringByAppendingString:[xibTag substringFromIndex:1]];
+    NSString     *baseString = [[xibTag substringToIndex: 1] capitalizedString];
+    baseString               = [baseString stringByAppendingString: [xibTag substringFromIndex: 1]];
 
     // Try to generate a default name from tag...
     while ((prefix = [iter nextObject]))
@@ -866,7 +867,7 @@ didStartElement: (NSString*)elementName
   NSString            *elementType = elementName;
 
   // Skip certain element names - for now...
-  if ([XmltagsToSkip containsObject:elementName] == NO)
+  if ([XmltagsToSkip containsObject: elementName] == NO)
     {
       if (([@"window" isEqualToString: elementName] == NO) &&
           ([@"customView" isEqualToString: elementName] == NO) &&
@@ -879,7 +880,7 @@ didStartElement: (NSString*)elementName
         {
           className = [[self class] classNameForXibTag: elementName];
         }
-      
+
       if (nil != className)
         {
           if ([NSClassFromString(className) isSubclassOfClass: [NSArray class]])
@@ -887,7 +888,7 @@ didStartElement: (NSString*)elementName
           else if ([@"string" isEqualToString: elementName] == NO)
             elementType = @"object";
         }
-          
+
       // Add the necessary attribute(s)...
       if (className)
         {
@@ -900,11 +901,6 @@ didStartElement: (NSString*)elementName
           if ([@"objects" isEqualToString: elementName])
             {
               [attributes setObject: @"IBDocument.RootObjects" forKey: @"key"];
-            }
-          else if (([@"items" isEqualToString: elementName]) &&
-                   ([[currentElement attributeForKey: @"class"] isEqualToString:@"NSMenu"]))
-            {
-              [attributes setObject: @"NSMenuItems" forKey: @"key"];
             }
           else
             {
@@ -920,7 +916,10 @@ didStartElement: (NSString*)elementName
       // If there is no ID assigned to this element we're going to arbritrarily
       // add one since we need to cross-reference objects...
       if ([attributes objectForKey: @"id"] == nil)
-        [attributes setObject: [[NSUUID UUID] UUIDString] forKey: @"id"];
+        {
+          // FIXME NSLog(@"Add unique key for object %@ with attrs %@", elementName, attributes);
+          //[attributes setObject: [[NSUUID UUID] UUIDString] forKey: @"id"];
+        }
 
       // FOR DEBUG...CAN BE REMOVED...
       [attributes setObject: elementName forKey: @"key5"];
@@ -943,7 +942,7 @@ didStartElement: (NSString*)elementName
               // The current object at this point is the 'connections' array element.
               // The parent of connections array element IS the object ID we need...
               GSXibElement *parent = [stack objectAtIndex: [stack count]-1];
-              NSString      *objKey = (([@"action" isEqualToString: elementName]) ?
+              NSString     *objKey = (([@"action" isEqualToString: elementName]) ?
                                        @"destination" : @"target");
 
               // Store the ID reference of the parent object...
@@ -2967,7 +2966,7 @@ didStartElement: (NSString*)elementName
   // OK - I think we need at least this qualifier here to avoid excess and
   // objects and memory leaks...
   NSString *oid = [element attributeForKey: @"id"];
-  
+
   if (oid && [_orderedObjectsDict objectForKey: oid] == nil)
     {
       id orderedObject = [self orderedObjectForElement: (GSXibElement*)element];
