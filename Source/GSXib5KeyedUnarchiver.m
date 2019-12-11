@@ -329,16 +329,14 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 {
   if (self == [GSXib5KeyedUnarchiver class])
     {
-      @synchronized(self)
-      {
-        // Only check one since we're going to load all once...
-        if (XmltagToObjectClassCrossReference == nil)
-          {
-            // These define XML tags (i.e. <objects ...) that should be allocated as the
-            // associated class...
-            XmltagToObjectClassCrossReference =
-              [NSDictionary dictionaryWithObjectsAndKeys:
-                              @"NSMutableArray", @"objects",
+      // Only check one since we're going to load all once...
+      if (XmltagToObjectClassCrossReference == nil)
+        {
+          // These define XML tags (i.e. <objects ...) that should be allocated as the
+          // associated class...
+          XmltagToObjectClassCrossReference =
+            [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"NSMutableArray", @"objects",
                             @"NSMutableArray", @"items",
                             @"NSMutableArray", @"tabViewItems",
                             @"NSMutableArray", @"connections",
@@ -360,36 +358,36 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
                             nil];
-            RETAIN(XmltagToObjectClassCrossReference);
+          RETAIN(XmltagToObjectClassCrossReference);
 
-            XmltagsNotStacked = [NSArray arrayWithObject: @"document"];
-            RETAIN(XmltagsNotStacked);
+          XmltagsNotStacked = [NSArray arrayWithObject: @"document"];
+          RETAIN(XmltagsNotStacked);
 
-            XmltagsToSkip = [NSArray arrayWithObject: @"dependencies"];
-            RETAIN(XmltagsToSkip);
+          XmltagsToSkip = [NSArray arrayWithObject: @"dependencies"];
+          RETAIN(XmltagsToSkip);
 
-            ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
-            RETAIN(ClassNamePrefixes);
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
+          RETAIN(ClassNamePrefixes);
 
-            XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem", nil];
-            RETAIN(XmlReferenceAttributes);
+          XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem", nil];
+          RETAIN(XmlReferenceAttributes);
 
-            XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
-            RETAIN(XmlConnectionRecordTags);
+          XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
+          RETAIN(XmlConnectionRecordTags);
 
-            // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
-            // or object returned verbatum.  IF an OLD XIB key does not exist and contains the 'NS' prefix
-            // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
-            // whether that key exists and use it's presence during 'containsValueForKey:' processing, and
-            // use it's value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
-            // that cannot be generated autoamatically by this processing.
-            // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
-            // Note, that unless the associated cross referenced key contains an aattribute that matches the
-            // original OLD key type you will need to potentially add a decoding method, and if so, the
-            // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to it's associated decoding
-            // method for cross referencing...
-            XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
-                                             @"isSeparatorItem", @"NSIsSeparator",
+          // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
+          // or object returned verbatum.  IF an OLD XIB key does not exist and contains the 'NS' prefix
+          // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
+          // whether that key exists and use it's presence during 'containsValueForKey:' processing, and
+          // use it's value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
+          // that cannot be generated autoamatically by this processing.
+          // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
+          // Note, that unless the associated cross referenced key contains an aattribute that matches the
+          // original OLD key type you will need to potentially add a decoding method, and if so, the
+          // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to it's associated decoding
+          // method for cross referencing...
+          XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
+                                           @"isSeparatorItem", @"NSIsSeparator",
                                            //@"systemMenu", @"NSName",
                                            @"customClass", @"NSClassName",
                                            @"catalog", @"NSCatalogName",
@@ -415,7 +413,6 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"contentView", @"NSWindowView",
                                            @"customClass", @"NSWindowClass",
                                            @"title", @"NSWindowTitle",
-                                           @"initialPositionMask", @"windowPositionMask",
                                            @"contentRect", @"NSWindowRect",
                                            @"insertionPointColor", @"NSInsertionColor",
                                            @"vertical", @"NSIsVertical",
@@ -432,55 +429,55 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"name", @"NSBinding",
                                            @"items", @"NSMenuItems",
                                            nil];
-            RETAIN(XmlKeyMapTable);
+          RETAIN(XmlKeyMapTable);
 
-            // These define keys that are always "CONTAINED" since they typically are a combination of key values
-            // stored as separate and/or multiple attributed values that may be combined as in the case of flags
-            // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
-            // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
-            // below that provides a cross referenced to an asociated decoding method...
-            // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
-            // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
-            // list (i.e. NSContents, NSAlternateContents, NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
-            XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
-                                      @"NSvFlags", @"NSBGColor",
-                                      @"NSSize", //@"IBIsSystemFont",
-                                      //@"NSHeaderClipView",
-                                      @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
-                                      @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
-                                      @"NSSupport", @"NSName",
-                                      @"NSMenuItem",
-                                      @"NSDocView",
-                                      @"NSSliderType",
-                                      @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
-                                      @"NSWhite", @"NSRGB", @"NSCYMK",
-                                      //@"NSContents", @"NSAlternateContents",
-                                      @"NSCellFlags", @"NSCellFlags2",
-                                      @"NSButtonFlags", @"NSButtonFlags2",
-                                      @"NSSelectedIndex", @"NSAltersState", @"NSUsesItemFromMenu",
-                                      @"NSNormalImage", @"NSAlternateImage",
-                                      @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
-                                      @"NSTitleCell", @"NSOffsets",
-                                      @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
-                                      @"NSSharedData", @"NSFlags", @"NSTVFlags", @"NSDefaultParagraphStyle",
-                                      @"NSpiFlags", nil];
-            RETAIN(XmlKeysDefined);
+          // These define keys that are always "CONTAINED" since they typically are a combination of key values
+          // stored as separate and/or multiple attributed values that may be combined as in the case of flags
+          // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
+          // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
+          // below that provides a cross referenced to an asociated decoding method...
+          // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
+          // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
+          // list (i.e. NSContents, NSAlternateContents, NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
+          XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
+                                    @"NSvFlags", @"NSBGColor",
+                                    @"NSSize", //@"IBIsSystemFont",
+                                    //@"NSHeaderClipView",
+                                    @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
+                                    @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
+                                    @"NSSupport", @"NSName",
+                                    @"NSMenuItem",
+                                    @"NSDocView",
+                                    @"NSSliderType",
+                                    @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
+                                    @"NSWhite", @"NSRGB", @"NSCYMK",
+                                    //@"NSContents", @"NSAlternateContents",
+                                    @"NSCellFlags", @"NSCellFlags2",
+                                    @"NSButtonFlags", @"NSButtonFlags2",
+                                    @"NSSelectedIndex", @"NSAltersState", @"NSUsesItemFromMenu",
+                                    @"NSNormalImage", @"NSAlternateImage",
+                                    @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
+                                    @"NSTitleCell", @"NSOffsets",
+                                    @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
+                                    @"NSSharedData", @"NSFlags", @"NSTVFlags", @"NSDefaultParagraphStyle",
+                                    @"NSpiFlags", nil];
+          RETAIN(XmlKeysDefined);
 
-            // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
-            XmlTagToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                         @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
-                                                       @"decodeAutoresizingMaskForElement:", @"autoresizingMask",
+          // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
+          XmlTagToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
+                                                       //@"decodeAutoresizingMaskForElement:", @"autoresizingMask",
                                                        @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
-                                                       @"decodeWindowPositionMaskForElement:", @"windowPositionMask",
+                                                       //@"decodeWindowPositionMaskForElement:", @"windowPositionMask",
                                                        //@"decodeModifierMaskForElement:", @"modifierMask",
                                                        @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
                                                        nil];
-            RETAIN(XmlTagToDecoderSelectorMap);
+          RETAIN(XmlTagToDecoderSelectorMap);
 
-            // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
-            // The associated decode method may process MULTIPLE keyed attributes as in such cases as
-            // decoding the integer flag masks...
-            XmlKeyToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
+          // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
+          // The associated decode method may process MULTIPLE keyed attributes as in such cases as
+          // decoding the integer flag masks...
+          XmlKeyToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
                                                        @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
                                                        @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
                                                        @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",
@@ -546,10 +543,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                        @"decodeBackgroundColorsForElement:", @"NSBackgroundColors",
                                                        @"decodeDividerStyleForElement:", @"NSDividerStyle",
                                                        nil];
-            RETAIN(XmlKeyToDecoderSelectorMap);
+          RETAIN(XmlKeyToDecoderSelectorMap);
         }
     }
-  }
 }
 
 + (NSInteger) coderVersion
@@ -565,13 +561,13 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   {
     NSEnumerator *iter       = [ClassNamePrefixes objectEnumerator];
     NSString     *prefix     = nil;
-    NSString     *baseString = [[xibTag substringToIndex: 1] capitalizedString];
-    baseString               = [baseString stringByAppendingString: [xibTag substringFromIndex: 1]];
+    NSString     *baseString = [[[xibTag substringToIndex: 1] capitalizedString]
+                                 stringByAppendingString: [xibTag substringFromIndex: 1]];
 
     // Try to generate a default name from tag...
     while ((prefix = [iter nextObject]))
     {
-      NSString *theClassName = [NSString stringWithFormat:@"%@%@",prefix,baseString];
+      NSString *theClassName = [NSString stringWithFormat: @"%@%@", prefix, baseString];
 
       if (NSClassFromString(theClassName))
       {
@@ -598,23 +594,46 @@ static NSArray      *XmlConnectionRecordTags  = nil;
            stringByAppendingString: [name substringFromIndex: 3]];
 }
 
-- (GSXibElement*) connectionRecordForElement: (GSXibElement*)element
+- (void) addConnection: (GSXibElement*)element
 {
-  // Mimic the old IBConnectionRecord instance...
-  if ([XmlConnectionRecordTags containsObject: [element type]])
-    {
-      NSDictionary  *attributes       = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                        @"IBConnectionRecord", @"class",
-                                                      [[NSUUID UUID] UUIDString], @"id",
-                                                      nil];
-      GSXibElement *connectionRecord = [[GSXibElement alloc] initWithType: @"object"
-                                                              andAttributes: attributes];
-      //[element setAttribute: @"connection" forKey: @"key"];
-      [connectionRecord setElement: element forKey: @"connection"];
-      return AUTORELEASE(connectionRecord);
-    }
+  NSString *elementName = [element type];
 
-  return nil;
+  if ([XmlConnectionRecordTags containsObject: elementName])
+    {
+      GSXibElement *connectionRecord;
+      // Get the parent of the parent object...
+      // The current object at this point is the 'connections' array element.
+      // The parent of connections array element is the object ID we need...
+      GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
+      NSString     *parentId = [parent attributeForKey: @"id"];
+      NSString     *objKey = (([@"action" isEqualToString: elementName]) ?
+                              @"destination" : @"source");
+
+      if (parentId == nil)
+        {
+          NSLog(@"Missing parent Id for connection on parent @%", parent);
+          // Fake an id for parent
+          parentId = [[NSUUID UUID] UUIDString];
+          [parent setAttribute: parentId forKey: @"id"];
+          [objects setObject: parent forKey: parentId];
+        }
+
+      // Store the ID reference of the parent object...
+      [element setAttribute: parentId forKey: objKey];
+
+      // Build a connection recort
+      connectionRecord = [[GSXibElement alloc] initWithType: @"object"
+                                              andAttributes:
+                                                 [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                 @"IBConnectionRecord", @"class",
+                                                               [[NSUUID UUID] UUIDString], @"id",
+                                                               nil]];
+       [connectionRecord setElement: element forKey: @"connection"];
+
+      // Add the connection record element that includes this element...
+      [_connectionRecords addElement: connectionRecord];
+      RELEASE(connectionRecord);
+    }
 }
 
 - (GSXibElement*) orderedObjectForElement: (GSXibElement*)element
@@ -654,7 +673,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
 - (void) addRuntimeAttributesForElement: (GSXibElement*)element forID: (NSString*)idString
 {
-  NSString      *refID        = [NSString stringWithFormat:@"%@.IBAttributePlaceholdersKey",idString];
+  NSString     *refID        = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", idString];
   GSXibElement *objectRecord = (GSXibElement*)[_flattenedProperties elementForKey: refID];
 
   // Mimic the old IBAttributePlaceholders instance...
@@ -822,10 +841,6 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
   // objectRecords...
   [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
-
-   // flattenedProperties...
-//  NSString *runtimeAttributesKey = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", [[NSUUID UUID] UUIDString]];
-//  [_flattenedProperties setElement: _runtimeAttributes forKey: runtimeAttributesKey];
 }
 
 - (void)dealloc
@@ -846,13 +861,13 @@ didStartElement: (NSString*)elementName
   qualifiedName: (NSString*)qualifiedName
      attributes: (NSDictionary*)attributeDict
 {
-  NSMutableDictionary *attributes  = AUTORELEASE([attributeDict mutableCopy]);
-  NSString            *className   = nil;
-  NSString            *elementType = elementName;
-
   // Skip certain element names - for now...
   if ([XmltagsToSkip containsObject: elementName] == NO)
     {
+      NSMutableDictionary *attributes  = AUTORELEASE([attributeDict mutableCopy]);
+      NSString            *className   = nil;
+      NSString            *elementType = elementName;
+
       if (([@"window" isEqualToString: elementName] == NO) &&
           ([@"customView" isEqualToString: elementName] == NO) &&
           ([@"customObject" isEqualToString: elementName] == NO))
@@ -892,26 +907,16 @@ didStartElement: (NSString*)elementName
             }
         }
 
-      if (([attributes objectForKey: @"customClass"] == nil) ||
-          ([NSClassFromString([attributes objectForKey: @"customClass"]) isSubclassOfClass: [NSApplication class]] == NO))
-        if ([[attributes objectForKey: @"userLabel"] isEqualToString: @"Application"])
-          [attributes setObject:@"NSApplication" forKey:@"customClass"];
-
-      // If there is no ID assigned to this element we're going to arbritrarily
-      // add one since we need to cross-reference objects...
-      if ([attributes objectForKey: @"id"] == nil)
-        {
-          // FIXME NSLog(@"Add unique key for object %@ with attrs %@", elementName, attributes);
-          //[attributes setObject: [[NSUUID UUID] UUIDString] forKey: @"id"];
-        }
-
-      // FOR DEBUG...CAN BE REMOVED...
-      [attributes setObject: elementName forKey: @"key5"];
+      if ([[attributes objectForKey: @"userLabel"] isEqualToString: @"Application"] &&
+          (([attributes objectForKey: @"customClass"] == nil) ||
+           ([NSClassFromString([attributes objectForKey: @"customClass"]) isSubclassOfClass: [NSApplication class]] == NO)))
+          {
+            [attributes setObject: @"NSApplication" forKey: @"customClass"];
+          }
 
       // Generate the XIB element object...
       GSXibElement *element = [[GSXibElement alloc] initWithType: elementType
                                                      andAttributes: attributes];
-      NSString      *key     = [attributes objectForKey: @"key"];
       NSString      *ref     = [attributes objectForKey: @"id"];
 
       if ([@"array" isEqualToString: [currentElement type]])
@@ -920,24 +925,12 @@ didStartElement: (NSString*)elementName
           [currentElement addElement: element];
 
           // Need to store element for making the connections...
-          if ([XmlConnectionRecordTags containsObject: elementName])
-            {
-              // Get the parent of the parent object...
-              // The current object at this point is the 'connections' array element.
-              // The parent of connections array element IS the object ID we need...
-              GSXibElement *parent = [stack objectAtIndex: [stack count]-1];
-              NSString     *objKey = (([@"action" isEqualToString: elementName]) ?
-                                       @"destination" : @"source");
-
-              // Store the ID reference of the parent object...
-              [element setAttribute: [parent attributeForKey: @"id"] forKey: objKey];
-
-              // Add a connection record element that includes this element...
-              [_connectionRecords addElement: [self connectionRecordForElement: element]];
-            }
+          [self addConnection: element];
         }
       else
         {
+          NSString *key = [attributes objectForKey: @"key"];
+
           // For elements...
           [currentElement setElement: element forKey: key];
 
@@ -1062,6 +1055,7 @@ didStartElement: (NSString*)elementName
   {
     NSUInteger mask = 0;
 
+    // FIXME
     return [NSNumber numberWithUnsignedInteger: mask];
   }
 
@@ -3001,7 +2995,7 @@ didStartElement: (NSString*)elementName
 {
   id object = [super decodeObjectForKey: key];
 
-  // If not object try some other cases before defaulting to remove 'NS' prefix if present...
+  // If no object is found, try some other cases before defaulting to remove 'NS' prefix if present...
   if (object == nil)
     {
       // Try to reinterpret the request...
@@ -3009,10 +3003,23 @@ didStartElement: (NSString*)elementName
         {
           object = [self decodeObjectForKey: [XmlKeyMapTable objectForKey: key]];
         }
+      else if ([currentElement attributeForKey: key])
+        {
+          // New xib stores values as attributes...
+          object = [currentElement attributeForKey: key];
+        }
       else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
         {
           SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
           object       = [self performSelector: selector withObject: currentElement];
+        }
+      else if ([XmlReferenceAttributes containsObject: key])
+        {
+          // Elements not stored INSIDE current element potentially need to be cross
+          // referenced via attribute references...
+          NSString      *idString = [currentElement attributeForKey: key];
+          GSXibElement  *element  = [objects objectForKey: idString];
+          object                  = [self objectForXib: element];
         }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
@@ -3108,24 +3115,11 @@ didStartElement: (NSString*)elementName
           // This would allow to do system dependent path separator decoding...
           object = @"/";
         }
-      else if ([key hasPrefix:@"NS"])
+      else if ([key hasPrefix: @"NS"])
         {
           // Try a key minus a (potential) NS prefix...
           NSString *newKey = [self alternateName: key];
           object           = [self decodeObjectForKey: newKey];
-        }
-      else if ([XmlReferenceAttributes containsObject: key])
-        {
-          // Elements not stored INSIDE current element potentially need to be cross
-          // referenced via attribute references...
-          NSString      *idString = [currentElement attributeForKey: key];
-          GSXibElement  *element  = [objects objectForKey:idString];
-          object                  = [self objectForXib: element];
-        }
-      else if ([currentElement attributeForKey: key])
-        {
-          // New xib stores values as attributes...
-          object = [currentElement attributeForKey: key];
         }
 #if 0 //defined(DEBUG)
       else // DEBUG ONLY...
@@ -3444,7 +3438,8 @@ didStartElement: (NSString*)elementName
               // Target is stored in the action XIB element - if present - which is
               // stored under the connections array element...
               NSArray     *connections = [self objectForXib: [currentElement elementForKey: @"connections"]];
-              NSPredicate *predicate   = [NSPredicate predicateWithFormat:@"className == 'IBActionConnection'"];
+              // FIXME: Shouldn't this be IBActionConnection5 ?
+              NSPredicate *predicate   = [NSPredicate predicateWithFormat: @"className == 'IBActionConnection'"];
               NSArray     *actions     = [connections filteredArrayUsingPredicate: predicate];
               hasValue = ([actions count] != 0);
             }
