@@ -100,6 +100,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
+NSFontCollection.m \
 NSFontDescriptor.m \
 NSFontManager.m \
 NSFontPanel.m \
@@ -382,6 +383,7 @@ NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
+NSFontCollection.h \
 NSFontDescriptor.h \
 NSFontManager.h \
 NSFontPanel.h \
