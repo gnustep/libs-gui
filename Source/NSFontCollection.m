@@ -57,7 +57,7 @@
   return NO;
 }
 
-+ (BOOL) renameFontCollectionWithName: (NSFontCollectionName)name
++ (BOOL) renameFontCollectionWithName: (NSFontCollectionName)aname
                            visibility: (NSFontCollectionVisibility)visibility
                                toName: (NSFontCollectionName)name
                                 error: (NSError **)error
@@ -111,6 +111,25 @@
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family options: (NSDictionary *)options
 {
   return nil;
+}
+
+- (instancetype) copyWithZone: (NSZone *)zone
+{
+  return nil;
+}
+
+- (instancetype) mutableCopyWithZone: (NSZone *)zone
+{
+  return nil;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  return nil;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
 }
   
 @end
