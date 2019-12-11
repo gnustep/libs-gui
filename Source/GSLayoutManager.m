@@ -34,6 +34,7 @@
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextView.h"
 
 /* just for NSAttachmentCharacter */
 #import "AppKit/NSTextAttachment.h"
@@ -3280,7 +3281,13 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
       else if (attributeTag == NSGlyphAttributeBidiLevel)
         g->bidilevel = anInt;
     }
- }
+}
+
+- (NSDictionary *) typingAttributes
+{
+  return [NSTextView defaultTypingAttributes];
+}
+
 
 /*
  * NSCoding protocol

@@ -3017,6 +3017,11 @@ no_soft_invalidation:
     }
 }
 
+- (NSDictionary *) typingAttributes
+{
+  return _typingAttributes;
+}
+
 @end
 
 
