@@ -14,6 +14,7 @@ Headers/Additions/GNUstepGUI/GSVersion.h
 Source/config.h
 Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
+Tools/speech/GSSpeechServer.app/*
 
 # Created by https://www.gitignore.io/api/xcode
 # Edit at https://www.gitignore.io/?templates=xcode
