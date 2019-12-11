@@ -24,7 +24,150 @@
 
 #import <AppKit/NSFontCollection.h>
 
-@implementation NSFontCollection
+@implementation NSFontCollection 
+
+// Initializers...
++ (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
+{
+  return nil;
+}
+
++ (NSFontCollection *) fontCollectionWithAllAvailableDescriptors
+{
+  return nil;
+}
+
++ (NSFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
+{
+  return nil;
+}
+
++ (BOOL) showFontCollection: (NSFontCollection *)collection
+                   withName: (NSFontCollectionName)name
+                 visibility: (NSFontCollectionVisibility)visibility
+                      error: (NSError **)error
+{
+  return NO;
+}
+
++ (BOOL) hideFontCollectionWithName: (NSFontCollectionName)name
+                         visibility: (NSFontCollectionVisibility)visibility
+                              error: (NSError **)error
+{
+  return NO;
+}
+
++ (BOOL) renameFontCollectionWithName: (NSFontCollectionName)name
+                           visibility: (NSFontCollectionVisibility)visibility
+                               toName: (NSFontCollectionName)name
+                                error: (NSError **)error
+{
+  return NO;
+}
+
++ (NSArray *) allFontCollectionNames
+{
+  return nil;
+}
+
++ (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
+{
+  return nil;
+}
+
++ (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
+                                   visibility: (NSFontCollectionVisibility)visibility
+{
+  return nil;
+}
+
+
+// Descriptors
+- (NSArray *) queryDescriptors  // copy
+{
+  return nil;
+}
+
+- (NSArray *) exclusionDescriptors
+{
+  return nil;
+}
+
+- (NSArray *) matchingDescriptors
+{
+  return nil;  
+}
+
+- (NSArray *) matchingDescriptorsWithOptions: (NSDictionary *)options
+{
+  return nil;
+}
+
+- (NSArray *) matchingDescriptorsForFamily: (NSString *)family
+{
+  return nil;
+}
+
+- (NSArray *) matchingDescriptorsForFamily: (NSString *)family options: (NSDictionary *)options
+{
+  return nil;
+}
+  
+@end
+ 
+
+@implementation NSMutableFontCollection 
+
++ (NSMutableFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
+{
+  return nil;
+}
+
++ (NSMutableFontCollection *) fontCollectionWithAllAvailableDescriptors
+{
+  return nil;
+}
+
++ (NSMutableFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
+{
+  return nil;
+}
+
++ (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
+{
+  return nil;
+}
+
++ (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
+                                          visibility: (NSFontCollectionVisibility)visibility
+{
+  return nil;
+}
+
+- (NSArray *) queryDescriptors
+{
+  return nil;
+}
+
+- (void) setQueryDescriptors: (NSArray *)queryDescriptors
+{
+}
+
+- (NSArray *) exclusionDescriptors
+{
+  return nil;
+}
+
+- (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors
+{
+}
+
+- (void)addQueryForDescriptors: (NSArray *)descriptors
+{
+}
+
+- (void)removeQueryForDescriptors: (NSArray *)descriptors
+{
+}
 
 @end
-
