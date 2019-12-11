@@ -1,3 +1,8 @@
+2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSHorizontalTypesetter.m: removed extra imports left from
+	last 2 commits.
+
 2019-12-10  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSLayoutManager.h,

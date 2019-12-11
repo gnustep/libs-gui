@@ -40,8 +40,6 @@
 #import "AppKit/NSTextAttachment.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextStorage.h"
-#import "AppKit/NSLayoutManager.h"
-#import "AppKit/NSTextView.h"
 #import "GNUstepGUI/GSLayoutManager.h"
 #import "GNUstepGUI/GSHorizontalTypesetter.h"
 
