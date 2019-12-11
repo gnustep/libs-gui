@@ -1,5 +1,16 @@
 2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
 
+	* Source/NSWindow.m
+	(initialize): use MiniWindowTile image for miniwindow tile.
+	(drawRect:): adjusted position of title cell to fit tile image.
+	(setTitle:): disable drawing of title cell background;
+	use NSMiniControlSize font size for miniwindow title cell.
+
+	* Source/NSFont.m (systemFontSizeForControlSize:): increased default font
+	size for NSMiniControlSize.
+
+2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
+
 	* Source/GSHorizontalTypesetter.m: removed extra imports left from
 	last 2 commits.
 

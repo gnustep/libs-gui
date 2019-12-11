@@ -684,7 +684,7 @@ static void setNSFont(NSString *key, NSFont *font)
   
           if (fontSize == 0)
             {
-              fontSize = 6;
+              fontSize = 8;
             }
           
           return fontSize;
