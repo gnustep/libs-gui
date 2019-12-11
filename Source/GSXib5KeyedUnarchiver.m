@@ -60,29 +60,6 @@
 
 //#define DEBUG_XIB5
 
-@interface NSString (GSXib5KeyedUnarchiver)
-
-- (NSString*) stringByDeletingPrefix: (NSString*) prefix;
-@end
-
-@implementation NSString (GSXib5KeyedUnarchiver)
-
-- (NSString*) stringByDeletingPrefix: (NSString*) prefix
-{
-  if ([self length] > [prefix length])
-    {
-      if ([[self substringWithRange:NSMakeRange(0, [prefix length])] isEqualToString:prefix])
-        {
-          NSString *key = [self substringWithRange:NSMakeRange([prefix length], [self length]-[prefix length])];
-          return key;
-        }
-    }
-
-  return nil;
-}
-
-@end
-
 @interface NSCustomObject5 : NSCustomObject
 {
   NSString *_userLabel;
@@ -610,6 +587,15 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 + (Class) classForXibTag: (NSString*)xibTag
 {
   return NSClassFromString([self classNameForXibTag: xibTag]);
+}
+
+/*
+  Remove the "NS" prefix, only called after a check for this prefix
+ */
+- (NSString*) alternateName: (NSString*)name
+{
+  return [[[name substringWithRange: NSMakeRange(2, 1)] lowercaseString]
+           stringByAppendingString: [name substringFromIndex: 3]];
 }
 
 - (GSXibElement*) connectionRecordForElement: (GSXibElement*)element
@@ -3125,9 +3111,8 @@ didStartElement: (NSString*)elementName
       else if ([key hasPrefix:@"NS"])
         {
           // Try a key minus a (potential) NS prefix...
-          NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-          newKey           = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-          object           = [self decodeObjectForKey:newKey];
+          NSString *newKey = [self alternateName: key];
+          object           = [self decodeObjectForKey: newKey];
         }
       else if ([XmlReferenceAttributes containsObject: key])
         {
@@ -3181,9 +3166,8 @@ didStartElement: (NSString*)elementName
     }
   else if ([key hasPrefix:@"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-      flag = [self decodeBoolForKey:newKey];
+      NSString *newKey = [self alternateName: key];
+      flag = [self decodeBoolForKey: newKey];
     }
 #if 0
   else
@@ -3218,9 +3202,8 @@ didStartElement: (NSString*)elementName
     }
   else if ([key hasPrefix:@"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-      value = [self decodeDoubleForKey:newKey];
+      NSString *newKey = [self alternateName: key];
+      value = [self decodeDoubleForKey: newKey];
     }
   else
     {
@@ -3256,11 +3239,10 @@ didStartElement: (NSString*)elementName
     {
       value = [[currentElement attributeForKey: key] integerValue];
     }
-  else if ([key hasPrefix:@"NS"])
+  else if ([key hasPrefix: @"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-      value = [self decodeIntegerForKey:newKey];
+      NSString *newKey = [self alternateName: key];
+      value = [self decodeIntegerForKey: newKey];
     }
   else
     {
@@ -3287,11 +3269,10 @@ didStartElement: (NSString*)elementName
     {
       value = [[currentElement attributeForKey: key] integerValue];
     }
-  else if ([key hasPrefix:@"NS"])
+  else if ([key hasPrefix: @"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix:@"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString:[newKey substringFromIndex:1]];
-      value = [self decodeIntegerForKey:newKey];
+      NSString *newKey = [self alternateName: key];
+      value = [self decodeIntegerForKey: newKey];
     }
   else
     {
@@ -3318,10 +3299,9 @@ didStartElement: (NSString*)elementName
     {
       point = [self decodePointForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefix:@"NS"])
+  else if ([key hasPrefix: @"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+      NSString *newKey = [self alternateName: key];
       point = [self decodePointForKey: newKey];
     }
   else
@@ -3350,11 +3330,9 @@ didStartElement: (NSString*)elementName
     {
       size = [self decodeSizeForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefix:@"NS"])
+  else if ([key hasPrefix: @"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-      NSString *prefix = [[newKey substringToIndex:1] lowercaseString];
-      newKey           = [prefix stringByAppendingString: [newKey substringFromIndex:1]];
+      NSString *newKey = [self alternateName: key];
       size             = [self decodeSizeForKey: newKey];
     }
   else
@@ -3379,10 +3357,9 @@ didStartElement: (NSString*)elementName
     {
       frame = [self decodeRectForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefix:@"NS"])
+  else if ([key hasPrefix: @"NS"])
     {
-      NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-      newKey = [[[newKey substringToIndex:1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+      NSString *newKey = [self alternateName: key];
       frame = [self decodeRectForKey: newKey];
     }
   else
@@ -3456,8 +3433,7 @@ didStartElement: (NSString*)elementName
       else if ([key hasPrefix: @"NS"])
         {
           // Try a key minus a (potential) NS prefix...
-          NSString *newKey = [key stringByDeletingPrefix: @"NS"];
-          newKey = [[[newKey substringToIndex: 1] lowercaseString] stringByAppendingString: [newKey substringFromIndex:1]];
+          NSString *newKey = [self alternateName: key];
           hasValue = [self containsValueForKey: newKey];
         }
       else
