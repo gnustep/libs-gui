@@ -547,13 +547,14 @@ didStartElement: (NSString*)elementName
     }
   else if ([@"string" isEqualToString: elementName])
     {
-      NSString *type = [element attributeForKey: @"type"];
       id new = [element value];
 
-      if ([type isEqualToString: @"base64-UTF8"])
+      // Handle newer format as well
+      if ([[element attributeForKey: @"type"] isEqualToString: @"base64-UTF8"] ||
+          [[element attributeForKey: @"base64-UTF8"] boolValue])
         {
           NSData *d = [[NSData alloc] initWithBase64EncodedString: new
-                                                          options: 0];
+                                                          options: NSDataBase64DecodingIgnoreUnknownCharacters];
           new = AUTORELEASE([[NSString alloc] initWithData: d 
                                                   encoding: NSUTF8StringEncoding]);
           RELEASE(d);

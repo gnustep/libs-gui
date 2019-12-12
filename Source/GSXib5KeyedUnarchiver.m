@@ -398,7 +398,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"prototype", @"NSProtoCell",
                                            @"metaFont", @"IBIsSystemFont",
                                            //@"headerView", @"NSHeaderClipView",
-                                           @"minColumnWidth", @"NSMinColumnWidth",
+                                           //@"minColumnWidth", @"NSMinColumnWidth",
                                            //@"maxVisibleColumns", @"NSNumberOfVisibleColumns",
                                            @"defaultColumnWidth", @"NSPreferedColumnWidth",
                                            //@"preferredColumnWidth", @"NSPreferedColumnWidth",
@@ -498,7 +498,6 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                        @"decodePreferredEdgeForElement:", @"NSPreferredEdge",
                                                        @"decodeArrowPositionForElement:", @"NSArrowPosition",
                                                        @"decodeCellPrototypeForElement:", @"NSCellPrototype",
-                                                       //@"decodeMinimumColumnWidthForElement:", @"NSMinColumnWidth",
                                                        @"decodeTitleCellForElement:", @"NSTitleCell",
                                                        @"decodeBorderTypeForElement:", @"NSBorderType",
                                                        @"decodeBoxTypeForElement:", @"NSBoxType",
@@ -802,29 +801,32 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   _orderedObjectsDict = RETAIN([NSMutableDictionary dictionary]);
 
   // Create our object(s)...
-  _connectionRecords    = [[GSXibElement alloc] initWithType: @"array"
-                                                andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                               @"connectionRecords", @"key",
-                                                                             nil]];
-  _objectRecords        = [[GSXibElement alloc] initWithType: @"object"
-                                                andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                               @"IBMutableOrderedSet", @"class",
-                                                                             @"objectRecords", @"key",
-                                                                             nil]];
-  _orderedObjects       = [[GSXibElement alloc] initWithType: @"array"
-                                                andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                               @"orderedObjects", @"key",
-                                                                             nil]];
-  _flattenedProperties  = [[GSXibElement alloc] initWithType: @"dictionary"
-                                                andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                               @"NSMutableDictionary", @"class",
-                                                                             @"flattenedProperties", @"key",
-                                                                             nil]];
-  _runtimeAttributes    = [[GSXibElement alloc] initWithType: @"dictionary"
-                                                andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                               @"NSMutableDictionary", @"class",
+  _orderedObjects      = [[GSXibElement alloc] initWithType: @"array"
+                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                             @"orderedObjects", @"key",
+                                                                           nil]];
+  _objectRecords       = [[GSXibElement alloc] initWithType: @"object"
+                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                             @"IBMutableOrderedSet", @"class",
+                                                                           @"objectRecords", @"key",
+                                                                           nil]];
+  _connectionRecords   = [[GSXibElement alloc] initWithType: @"array"
+                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                              @"connectionRecords", @"key",
-                                                                             nil]];
+                                                                           nil]];
+  _flattenedProperties = [[GSXibElement alloc] initWithType: @"dictionary"
+                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                             @"NSMutableDictionary", @"class",
+                                                                           @"flattenedProperties", @"key",
+                                                                           nil]];
+  _runtimeAttributes   = [[GSXibElement alloc] initWithType: @"dictionary"
+                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                             @"NSMutableDictionary", @"class",
+                                                                           @"connectionRecords", @"key",
+                                                                           nil]];
+
+  // objectRecords...
+  [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
 
   // We will imitate the old XIB loading using an IBObjectContainer
   // stored with key "IBDocument.Objects"...
@@ -838,13 +840,18 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
   [_IBObjectContainer setElement: _objectRecords forKey: @"objectRecords"];
   [_IBObjectContainer setElement: _flattenedProperties forKey: @"flattenedProperties"];
-
-  // objectRecords...
-  [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
 }
 
 - (void)dealloc
 {
+
+  // We will imitate the old XIB loading using an IBObjectContainer
+  // stored with key "IBDocument.Objects"...
+  _IBObjectContainer = [[GSXibElement alloc] initWithType: @"object"
+                                             andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                            @"IBObjectContainer", @"class",
+                                                                          @"IBDocument.Objects", @"key",
+                                                                          nil]];
   RELEASE(_IBObjectContainer);
   RELEASE(_connectionRecords);
   RELEASE(_objectRecords);
@@ -1158,7 +1165,7 @@ didStartElement: (NSString*)elementName
   return nil;
 }
 
-- (id)decodeMatrixFlagsForElement: (GSXibElement*)element
+- (id) decodeMatrixFlagsForElement: (GSXibElement*)element
 {
   NSString           *mode                 = [element attributeForKey: @"mode"];
   NSString           *allowsEmptySelection = [element attributeForKey: @"allowsEmptySelection"];
@@ -1215,7 +1222,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInt: mask.value];
 }
 
-- (id)decodeNumberOfColumnsInMatrixForElement: (GSXibElement*)element
+- (id) decodeNumberOfColumnsInMatrixForElement: (GSXibElement*)element
 {
   id    object  = nil;
   Class class   = NSClassFromString([element attributeForKey: @"class"]);
@@ -1229,7 +1236,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeNumberOfRowsInMatrixForElement: (GSXibElement*)element
+- (id) decodeNumberOfRowsInMatrixForElement: (GSXibElement*)element
 {
   id    object  = nil;
   Class class   = NSClassFromString([element attributeForKey: @"class"]);
@@ -1244,7 +1251,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeFormCellsForElement: (GSXibElement*)element
+- (id) decodeFormCellsForElement: (GSXibElement*)element
 {
   id         object  = [NSMutableArray array];
   NSArray   *columns = [self decodeObjectForKey: @"cells"];
@@ -1267,7 +1274,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeNameForElement: (GSXibElement*)element
+- (id) decodeNameForElement: (GSXibElement*)element
 {
   id    object = nil;
   Class class  = NSClassFromString([element attributeForKey: @"class"]);
@@ -1301,7 +1308,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeSliderCellTickMarkPositionForElement: (GSXibElement*)element
+- (id) decodeSliderCellTickMarkPositionForElement: (GSXibElement*)element
 {
   NSUInteger  value            = NSTickMarkBelow; // Default...
   NSString   *tickMarkPosition = [element attributeForKey: @"tickMarkPosition"];
@@ -1320,7 +1327,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeSliderCellTypeForElement: (GSXibElement*)element
+- (id) decodeSliderCellTypeForElement: (GSXibElement*)element
 {
   NSUInteger  value      = NSCircularSlider; // Default...
   NSString   *sliderType = [element attributeForKey: @"sliderType"];
@@ -1335,7 +1342,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeCellsForElement: (GSXibElement*)element
+- (id) decodeCellsForElement: (GSXibElement*)element
 {
   id    object = nil;
   Class class  = NSClassFromString([element attributeForKey: @"class"]);
@@ -1348,7 +1355,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodePullsDownForElement: (GSXibElement*)element
+- (id) decodePullsDownForElement: (GSXibElement*)element
 {
   NSString  *pullsDown = [element attributeForKey: @"pullsDown"];
   BOOL       value     = YES; // Default if not present...
@@ -1359,7 +1366,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithBool: value];
 }
 
-- (id)decodeAutoenablesItemsForElement: (GSXibElement*)element
+- (id) decodeAutoenablesItemsForElement: (GSXibElement*)element
 {
   NSString  *autoenablesItems = [element attributeForKey: @"autoenablesItems"];
   BOOL       value            = YES; // Default if not present...
@@ -1370,7 +1377,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithBool: value];
 }
 
-- (id)decodeAltersStateForElement: (GSXibElement*)element
+- (id) decodeAltersStateForElement: (GSXibElement*)element
 {
   NSString  *altersState = [element attributeForKey: @"altersStateOfSelectedItem"];
   BOOL       value       = YES; // Default if not present...
@@ -1381,39 +1388,38 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithBool: value];
 }
 
-- (id)decodeMenuItemForElement: (GSXibElement*)element
+- (id) decodeMenuItemForElement: (GSXibElement*)element
 {
   NSString      *itemID   = [element attributeForKey: @"selectedItem"];
   GSXibElement  *itemElem = [objects objectForKey: itemID];
-  id             object   = [self objectForXib: itemElem];
 
-  return object;
+  return [self objectForXib: itemElem];
 }
 
-- (id)decodeTitleCellForElement: (GSXibElement*)element
+- (id) decodeTitleCellForElement: (GSXibElement*)element
 {
-  id        object  = nil;
   NSString *title   = [element attributeForKey: @"title"];
 
   if (title)
     {
+      id   object  = [[NSCell alloc] initTextCell: title];
       NSFont *font = [self decodeObjectForKey: @"titleFont"];
 
       // IF no font...
       if (font == nil) // default to system-11...
         font = [NSFont systemFontOfSize: 11];
 
-      object = [[NSCell alloc] initTextCell: title];
       [object setAlignment: NSCenterTextAlignment];
       [object setBordered: NO];
       [object setEditable: NO];
       [object setFont: font];
+      return AUTORELEASE(object);
     }
 
-  return AUTORELEASE(object);
+  return nil;
 }
 
-- (id)decodeBorderTypeForElement: (GSXibElement*)element
+- (id) decodeBorderTypeForElement: (GSXibElement*)element
 {
   NSString      *borderType = [element attributeForKey: @"borderType"];
   NSBorderType   value      = NSGrooveBorder; // Cocoa default...
@@ -1499,7 +1505,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeBoxTypeForElement: (GSXibElement*)element
+- (id) decodeBoxTypeForElement: (GSXibElement*)element
 {
   NSString  *boxType = [element attributeForKey: @"boxType"];
   NSBoxType  value   = NSBoxPrimary; // Cocoa default...
@@ -1523,7 +1529,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeTitlePositionForElement: (GSXibElement*)element
+- (id) decodeTitlePositionForElement: (GSXibElement*)element
 {
   NSString        *titlePosition = [element attributeForKey: @"titlePosition"];
   NSTitlePosition  value         = NSAtTop; // Default if not present...
@@ -1551,7 +1557,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeFontSizeForElement: (GSXibElement*)element
+- (id) decodeFontSizeForElement: (GSXibElement*)element
 {
   NSDictionary *attributes = [element attributes];
   CGFloat       size       = [[attributes objectForKey: @"size"] floatValue];
@@ -1580,18 +1586,16 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithFloat: size];
 }
 
-- (id)decodeFontTypeForElement: (GSXibElement*)element
+- (id) decodeFontTypeForElement: (GSXibElement*)element
 {
-  static NSArray *MetaFontSystemNames = nil;
-  if (MetaFontSystemNames == nil)
-    {
-      MetaFontSystemNames = [NSArray arrayWithObjects: @"system", @"message", nil];
-      RETAIN(MetaFontSystemNames);
-    }
+  BOOL isSystem = NO;
+  NSString *metaFont = [[[element attributes] objectForKey: @"metaFont"] lowercaseString];
 
-  NSDictionary *attributes = [element attributes];
-  NSString     *metaFont   = [[attributes objectForKey: @"metaFont"] lowercaseString];
-  BOOL          isSystem   = [MetaFontSystemNames containsObject: metaFont];
+  if ([metaFont containsString: @"system"] || [metaFont containsString: @"message"] )
+    {
+      isSystem = YES;
+    }
+  
   return [NSNumber numberWithBool: isSystem];
 }
 
@@ -1606,10 +1610,8 @@ didStartElement: (NSString*)elementName
         style = NSSplitViewDividerStyleThin;
       else if ([@"paneSplitter" isEqualToString: dividerStyle])
         style = NSSplitViewDividerStylePaneSplitter;
-#if 0 // DEFAULT - see above...
       else if ([@"thick" isEqualToString: dividerStyle])
         style = NSSplitViewDividerStyleThick;
-#endif
       else
         NSWarnMLog(@"unknown divider style: %@", dividerStyle);
     }
@@ -1743,28 +1745,28 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInt: flags];
 }
 
-- (unsigned int) decodeLineBreakModeForAttributes: (NSDictionary*)attributes
+- (unsigned int) decodeLineBreakMode: (GSXibElement*)element
 {
-  unsigned int  value = 0;
-  NSString     *lineBreakMode = [attributes objectForKey: @"lineBreakMode"];
+  unsigned int  value = NSLineBreakByWordWrapping;
+  NSString     *lineBreakMode = [element attributeForKey: @"lineBreakMode"];
 
-  value = NSLineBreakByWordWrapping;
-  if ([@"clipping" isEqualToString: lineBreakMode])
-    value = NSLineBreakByClipping;
-  else if ([@"charWrapping" isEqualToString: lineBreakMode])
-    value = NSLineBreakByCharWrapping;
-  else if ([@"wordWrapping" isEqualToString: lineBreakMode])
-    value = NSLineBreakByWordWrapping;
-  else if ([@"truncatingHead" isEqualToString: lineBreakMode])
-    value = NSLineBreakByTruncatingHead;
-  else if ([@"truncatingMiddle" isEqualToString: lineBreakMode])
-    value = NSLineBreakByTruncatingMiddle;
-  else if ([@"truncatingTail" isEqualToString: lineBreakMode])
-    value = NSLineBreakByTruncatingTail;
-#if 0
-  else
-    NSWarnMLog(@"unknown line break mode: %@", lineBreakMode);
-#endif
+  if (lineBreakMode)
+    {
+      if ([@"clipping" isEqualToString: lineBreakMode])
+        value = NSLineBreakByClipping;
+      else if ([@"charWrapping" isEqualToString: lineBreakMode])
+        value = NSLineBreakByCharWrapping;
+      else if ([@"wordWrapping" isEqualToString: lineBreakMode])
+        value = NSLineBreakByWordWrapping;
+      else if ([@"truncatingHead" isEqualToString: lineBreakMode])
+        value = NSLineBreakByTruncatingHead;
+      else if ([@"truncatingMiddle" isEqualToString: lineBreakMode])
+        value = NSLineBreakByTruncatingMiddle;
+      else if ([@"truncatingTail" isEqualToString: lineBreakMode])
+        value = NSLineBreakByTruncatingTail;
+      else
+        NSWarnMLog(@"unknown line break mode: %@", lineBreakMode);
+    }
 
   return value;
 }
@@ -1785,7 +1787,7 @@ didStartElement: (NSString*)elementName
     NSWarnMLog(@"unknown base writing direction: %@", baseWritingDirection);
 
   // Line break mode...
-  [paragraphStyle setLineBreakMode: [self decodeLineBreakModeForAttributes: [element attributes]]];
+  [paragraphStyle setLineBreakMode: [self decodeLineBreakMode: element]];
 
   if (selectionGranularity == nil)
     ; // NSSelectByCharacter
@@ -2248,7 +2250,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInt: mask];
 }
 
-- (id)decodeCellPrototypeForElement: (GSXibElement*)element
+- (id) decodeCellPrototypeForElement: (GSXibElement*)element
 {
   id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
 
@@ -2260,12 +2262,7 @@ didStartElement: (NSString*)elementName
   return AUTORELEASE(object);
 }
 
-- (id)decodeMinimumColumnWidthForElement: (GSXibElement*)element
-{
-  return [NSNumber numberWithInteger: [[element attributeForKey: @"minColumnWidth"] integerValue]];
-}
-
-- (id)decodeColumnResizingTypeForElement: (GSXibElement*)element
+- (id) decodeColumnResizingTypeForElement: (GSXibElement*)element
 {
   NSUInteger  value              = NSBrowserNoColumnResizing; // Default...
   NSString   *columnResizingType = [element attributeForKey: @"columnResizingType"];
@@ -2280,7 +2277,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeNumberOfVisibleColumnsForElement: (GSXibElement*)element
+- (id) decodeNumberOfVisibleColumnsForElement: (GSXibElement*)element
 {
   NSInteger value = 0; // Cocoa default...
 
@@ -2401,8 +2398,6 @@ didStartElement: (NSString*)elementName
       GSCellFlagsUnion   mask          = { { 0 } };
       NSDictionary      *attributes    = [element attributes];
 #if 0
-      NSString          *title         = [attributes objectForKey: @"title"];
-      NSString          *lineBreakMode = [attributes objectForKey: @"lineBreakMode"];
       NSString          *bezelStyle    = [attributes objectForKey: @"bezelStyle"];
 #endif
       NSString          *imageName     = [attributes objectForKey: @"image"];
@@ -2421,7 +2416,7 @@ didStartElement: (NSString*)elementName
       mask.flags.bezeled                  = [[borderStyle lowercaseString] containsString: @"bezel"];
       mask.flags.selectable               = [[attributes objectForKey: @"selectable"] boolValue];
       mask.flags.scrollable               = [[attributes objectForKey: @"scrollable"] boolValue];
-      mask.flags.lineBreakMode            = [self decodeLineBreakModeForAttributes: attributes];
+      mask.flags.lineBreakMode            = [self decodeLineBreakMode: element];
       mask.flags.truncateLastLine         = [[attributes objectForKey: @"truncatesLastVisibleLine"] boolValue];
       mask.flags.singleLineMode           = [[attributes objectForKey: @"usesSingleLineMode"] boolValue];
       mask.flags.continuous               = [[attributes objectForKey: @"continuous"] boolValue];
@@ -2440,19 +2435,10 @@ didStartElement: (NSString*)elementName
       mask.flags.useUserKeyEquivalent     = NO;
       mask.flags.showsFirstResponder      = NO;
 
-#if 0
-      if ((title == nil) && (imageName == nil))
-        mask.flags.type = NSNullCellType;
-      else if (title == nil)
-        mask.flags.type = NSImageCellType;
-      else
-        mask.flags.type = NSTextCellType;
-#else
       if (imageName)
         mask.flags.type = NSImageCellType;
       else
         mask.flags.type = NSTextCellType;
-#endif
 
       mask.flags.focusRingType = NSFocusRingTypeDefault;
       if ([@"exterior" isEqualToString: focusRingType])
@@ -2484,7 +2470,7 @@ didStartElement: (NSString*)elementName
 
       mask.flags.allowsEditingTextAttributes  = [[attributes objectForKey: @"allowsEditingTextAttributes"] boolValue];
       mask.flags.importsGraphics              = 0;
-      mask.flags.lineBreakMode                = [self decodeLineBreakModeForAttributes: attributes];
+      mask.flags.lineBreakMode                = [self decodeLineBreakMode: element];
       mask.flags.refusesFirstResponder        = [[attributes objectForKey: @"refusesFirstResponder"] boolValue];
       mask.flags.allowsMixedState             = [[attributes objectForKey: @"allowsMixedState"] boolValue];
       mask.flags.sendsActionOnEndEditing      = [[attributes objectForKey: @"sendsActionOnEndEditing"] boolValue];
@@ -2799,7 +2785,7 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id)decodeSelectedIndexForElement: (GSXibElement*)element
+- (id) decodeSelectedIndexForElement: (GSXibElement*)element
 {
   // We need to get the index into the menuitems for menu...
   NSMenu      *menu     = [self decodeObjectForKey: @"menu"];
@@ -2810,7 +2796,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: index];
 }
 
-- (id)decodePreferredEdgeForElement: (GSXibElement*)element
+- (id) decodePreferredEdgeForElement: (GSXibElement*)element
 {
   NSUInteger  value         = NSMinXEdge;
   NSString   *preferredEdge = [element attributeForKey: @"preferredEdge"];
@@ -2832,7 +2818,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeArrowPositionForElement: (GSXibElement*)element
+- (id) decodeArrowPositionForElement: (GSXibElement*)element
 {
   NSUInteger  value         = NSPopUpArrowAtBottom; // If omitted Cocoa default...
   NSString   *arrowPosition = [element attributeForKey: @"arrowPosition"];
@@ -2850,7 +2836,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithUnsignedInteger: value];
 }
 
-- (id)decodeUsesItemFromMenuForElement: (GSXibElement*)element
+- (id) decodeUsesItemFromMenuForElement: (GSXibElement*)element
 {
   BOOL      value            = YES; // If omitted Cocoa default...
   NSString *usesItemFromMenu = [element attributeForKey: @"usesItemFromMenu"];
@@ -2917,26 +2903,6 @@ didStartElement: (NSString*)elementName
 
           if ([element attributeForKey: @"id"])
             [decoded setObject: object forKey: [element attributeForKey: @"id"]];
-        }
-    }
-  else // Check for required fixes for XIB 5 processing changes to old element types...
-    {
-      NSString *elementName = [element type];
-
-      if ([@"string" isEqualToString: elementName])
-        {
-          // <string> now has base64-UTF8 as a bool attribute...
-          if ([[element attributeForKey: @"base64-UTF8"] boolValue])
-            {
-              NSData *data = [[NSData alloc] initWithBase64EncodedString: object
-                                                                 options: NSDataBase64DecodingIgnoreUnknownCharacters];
-              object       = AUTORELEASE([[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding]);
-              RELEASE(data);
-
-              // Replace previous object...
-              if ([element attributeForKey: @"id"])
-                [decoded setObject: object forKey: [element attributeForKey: @"id"]];
-            }
         }
     }
 
