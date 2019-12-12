@@ -1,3 +1,9 @@
+2019-12-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSFont.m (smallSystemFontSize): return 10 as default value.
+	Update documention comment regarding default values for NSMiniFontSize
+	ans NSSmallFontSize.
+
 2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m
