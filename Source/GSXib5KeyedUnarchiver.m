@@ -428,6 +428,12 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"sortKey", @"NSKey",
                                            @"name", @"NSBinding",
                                            @"items", @"NSMenuItems",
+                                           @"implicitIdentifier", @"NSToolbarIdentifier",
+                                           @"allowedToolbarItems", @"NSToolbarIBAllowedItems",
+                                           @"displayMode", @"NSToolbarDisplayMode",
+                                           @"sizeMode", @"NSToolbarSizeMode",
+                                           @"autosavesConfiguration", @"NSToolbarAutosavesConfiguration",
+                                           @"allowsUserCustomization", @"NSToolbarAllowsUserCustomization",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -1077,7 +1083,7 @@ didStartElement: (NSString*)elementName
   {
     GSWindowTemplateFlagsUnion   mask = { { 0 } };
     GSXibElement                *winPosMaskEleme  = (GSXibElement*)[currentElement elementForKey: @"initialPositionMask"];
-    NSUInteger                   winPosMask       = [[self decodeWindowPositionMaskForElement:winPosMaskEleme] unsignedIntegerValue];
+    NSUInteger                   winPosMask       = [[self decodeWindowPositionMaskForElement: winPosMaskEleme] unsignedIntegerValue];
     NSString                    *autorecalculatesKeyViewLoop = [element attributeForKey: @"autorecalculatesKeyViewLoop"];
 
     mask.flags.isHiddenOnDeactivate =  [[attributes objectForKey: @"hidesOnDeactivate"] boolValue];
@@ -2969,15 +2975,15 @@ didStartElement: (NSString*)elementName
         {
           object = [self decodeObjectForKey: [XmlKeyMapTable objectForKey: key]];
         }
-      else if ([currentElement attributeForKey: key])
-        {
-          // New xib stores values as attributes...
-          object = [currentElement attributeForKey: key];
-        }
       else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
         {
           SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
           object       = [self performSelector: selector withObject: currentElement];
+        }
+      else if ([currentElement attributeForKey: key])
+        {
+          // New xib stores values as attributes...
+          object = [currentElement attributeForKey: key];
         }
       else if ([XmlReferenceAttributes containsObject: key])
         {
@@ -3067,7 +3073,8 @@ didStartElement: (NSString*)elementName
           else if ([self containsValueForKey: @"image"])
             object = [self decodeObjectForKey: @"image"];
         }
-      else if (([@"NSName" isEqualToString: key]) && ([@"font" isEqualToString: [currentElement attributeForKey: @"key"]]))
+      else if (([@"NSName" isEqualToString: key]) &&
+               ([@"font" isEqualToString: [currentElement attributeForKey: @"key"]]))
         {
           // We have to be careful with NSName as it is used by Cocoa in at least three places...
           object = [currentElement attributeForKey: @"name"];
@@ -3087,7 +3094,7 @@ didStartElement: (NSString*)elementName
           NSString *newKey = [self alternateName: key];
           object           = [self decodeObjectForKey: newKey];
         }
-#if 0 //defined(DEBUG)
+#if defined(DEBUG_XIB5)
       else // DEBUG ONLY...
         {
           NSWarnMLog(@"no element/attribute for key: %@", key);
@@ -3098,13 +3105,13 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (BOOL)decodeBoolForKey:(NSString *)key
+- (BOOL) decodeBoolForKey: (NSString *)key
 {
   BOOL flag = NO;
 
-  if ([super containsValueForKey:key])
+  if ([super containsValueForKey: key])
     {
-      flag = [super decodeBoolForKey:key];
+      flag = [super decodeBoolForKey: key];
     }
   else if ([@"NSIsBordered" isEqualToString: key])
     {
@@ -3252,8 +3259,8 @@ didStartElement: (NSString*)elementName
       GSXibElement  *element = (GSXibElement*)[currentElement elementForKey: key];
       NSDictionary  *object  = [element attributes];
 
-      point.x = [[object objectForKey:@"x"] doubleValue];
-      point.y = [[object objectForKey:@"y"] doubleValue];
+      point.x = [[object objectForKey: @"x"] doubleValue];
+      point.y = [[object objectForKey: @"y"] doubleValue];
     }
   else if ([XmlKeyMapTable objectForKey: key])
     {
@@ -3341,6 +3348,15 @@ didStartElement: (NSString*)elementName
       range.location  = [[element attributeForKey: @"location"] integerValue];
       range.length    = [[element attributeForKey: @"length"] integerValue];
     }
+  else if ([XmlKeyMapTable objectForKey: key])
+    {
+      range = [self decodeRangeForKey: [XmlKeyMapTable objectForKey: key]];
+    }
+  else if ([key hasPrefix: @"NS"])
+    {
+      NSString *newKey = [self alternateName: key];
+      range = [self decodeRangeForKey: newKey];
+    }
   else
     {
       NSWarnMLog(@"no RANGE for key: %@", key);
@@ -3379,7 +3395,8 @@ didStartElement: (NSString*)elementName
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {
-          hasValue = [currentElement attributeForKey: @"alternateTitle"] != nil;
+          hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
+          hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
         }
       else if ([@"NSHeaderClipView" isEqualToString: key])
         {
@@ -3416,47 +3433,3 @@ didStartElement: (NSString*)elementName
 }
 
 @end
-
-#if 0
-@implementation NSObject (NSKeyedUnarchiverDelegate)
-/** <override-dummy />
- */
-- (Class) unarchiver: (NSKeyedUnarchiver*)anUnarchiver
-cannotDecodeObjectOfClassName: (NSString*)aName
-     originalClasses: (NSArray*)classNames
-{
-  return nil;
-}
-/** <override-dummy />
- */
-- (id) unarchiver: (NSKeyedUnarchiver*)anUnarchiver
-  didDecodeObject: (id)anObject
-{
-  return anObject;
-}
-/** <override-dummy />
- */
-- (void) unarchiverDidFinish: (NSKeyedUnarchiver*)anUnarchiver
-{
-}
-/** <override-dummy />
- */
-- (void) unarchiverWillFinish: (NSKeyedUnarchiver*)anUnarchiver
-{
-}
-/** <override-dummy />
- */
-- (void) unarchiver: (NSKeyedUnarchiver*)anUnarchiver
-  willReplaceObject: (id)anObject
-         withObject: (id)newObject
-{
-}
-@end
-
-@implementation NSObject (NSKeyedUnarchiverObjectSubstitution)
-+ (Class) classForKeyedUnarchiver
-{
-  return self;
-}
-@end
-#endif
