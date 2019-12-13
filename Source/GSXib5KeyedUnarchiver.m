@@ -434,6 +434,11 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"sizeMode", @"NSToolbarSizeMode",
                                            @"autosavesConfiguration", @"NSToolbarAutosavesConfiguration",
                                            @"allowsUserCustomization", @"NSToolbarAllowsUserCustomization",
+                                           @"defaultToolbarItems", @"NSToolbarIBDefaultItems",
+                                           @"label", @"NSToolbarItemLabel",
+                                           @"paletteLabel", @"NSToolbarItemPaletteLabel",
+                                         //@"image", @"NSToolbarItemImage",
+                                           @"tag", @"NSToolbarItemTag",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
