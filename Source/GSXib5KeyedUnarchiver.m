@@ -55,6 +55,7 @@
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSTableView.h"
 #import "AppKit/NSTabView.h"
+#import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
 #import "GSCodingFlags.h"
 
@@ -361,6 +362,8 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                             @"NSMutableArray", @"segments",
                             @"NSMutableArray", @"objectValues",
                             @"NSMutableArray", @"prototypeCellViews",
+                            @"NSMutableArray", @"allowedToolbarItems",
+                            @"NSMutableArray", @"defaultToolbarItems",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -451,6 +454,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"paletteLabel", @"NSToolbarItemPaletteLabel",
                                          //@"image", @"NSToolbarItemImage",
                                            @"tag", @"NSToolbarItemTag",
+                                           @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -564,6 +568,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                        @"decodeSegmentItemImageForElement:", @"NSSegmentItemImage",
                                                        @"decodeBackgroundColorsForElement:", @"NSBackgroundColors",
                                                        @"decodeDividerStyleForElement:", @"NSDividerStyle",
+                                                       @"decodeToolsbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                                                        nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
         }
@@ -580,24 +585,24 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   NSString *className = [XmltagToObjectClassCrossReference objectForKey: xibTag];
 
   if (nil == className)
-  {
-    NSEnumerator *iter       = [ClassNamePrefixes objectEnumerator];
-    NSString     *prefix     = nil;
-    NSString     *baseString = [[[xibTag substringToIndex: 1] capitalizedString]
-                                 stringByAppendingString: [xibTag substringFromIndex: 1]];
-
-    // Try to generate a default name from tag...
-    while ((prefix = [iter nextObject]))
     {
-      NSString *theClassName = [NSString stringWithFormat: @"%@%@", prefix, baseString];
+      NSEnumerator *iter       = [ClassNamePrefixes objectEnumerator];
+      NSString     *prefix     = nil;
+      NSString     *baseString = [[[xibTag substringToIndex: 1] capitalizedString]
+                                   stringByAppendingString: [xibTag substringFromIndex: 1]];
 
-      if (NSClassFromString(theClassName))
-      {
-        className = theClassName;
-        break;
-      }
+      // Try to generate a default name from tag...
+      while ((prefix = [iter nextObject]))
+        {
+          NSString *theClassName = [NSString stringWithFormat: @"%@%@", prefix, baseString];
+
+          if (NSClassFromString(theClassName))
+            {
+              className = theClassName;
+              break;
+            }
+        }
     }
-  }
 
   return className;
 }
@@ -618,11 +623,12 @@ static NSArray      *XmlConnectionRecordTags  = nil;
 
 - (GSXibElement*) createReference: (NSString *)oid
 {
-  return [[GSXibElement alloc] initWithType: @"reference"
-                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             @"object", @"key",
-                                                             oid, @"ref",
-                                                             nil]];
+  GSXibElement *element = [[GSXibElement alloc] initWithType: @"reference"
+                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                              @"object", @"key",
+                                                                            oid, @"ref",
+                                                                            nil]];
+  return AUTORELEASE(element);
 }
 
 - (void) addConnection: (GSXibElement*)element
@@ -957,9 +963,18 @@ didStartElement: (NSString*)elementName
           }
 
       // Generate the XIB element object...
-      GSXibElement *element = [[GSXibElement alloc] initWithType: elementType
-                                                     andAttributes: attributes];
-      NSString      *ref     = [attributes objectForKey: @"id"];
+      GSXibElement *element;
+
+      if ([attributes objectForKey: @"reference"])
+        {
+          element = [self createReference: [attributes objectForKey: @"reference"]];
+        }
+      else
+        {
+          element = [[GSXibElement alloc] initWithType: elementType
+                                         andAttributes: attributes];
+        }
+
 
       if ([@"array" isEqualToString: [currentElement type]])
         {
@@ -987,6 +1002,8 @@ didStartElement: (NSString*)elementName
         }
 
       // Reference(s)...
+      NSString      *ref     = [attributes objectForKey: @"id"];
+
       if (ref != nil)
         {
           [objects setObject: element forKey: ref];
@@ -2883,6 +2900,21 @@ didStartElement: (NSString*)elementName
     value = [usesItemFromMenu boolValue];
 
   return [NSNumber numberWithBool: value];
+}
+
+- (id) decodeToolsbarIdentifiedItemsForElement: (GSXibElement*)element
+{
+  NSArray *allowedItems = [self decodeObjectForKey: @"allowedToolbarItems"];
+  NSMutableDictionary *map = [NSMutableDictionary dictionary];
+  NSEnumerator *iter       = [allowedItems objectEnumerator];
+  NSToolbarItem *obj;
+
+  while ((obj = [iter nextObject]))
+    {
+      [map setObject: obj forKey: [obj itemIdentifier]];
+    }
+
+  return map;
 }
 
 - (id) objectForXib: (GSXibElement*)element
