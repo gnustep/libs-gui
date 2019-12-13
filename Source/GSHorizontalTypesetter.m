@@ -534,9 +534,10 @@ For bigger values the width gets ignored.
     }
   else
     {
-      // FIXME These should come from the typing attributes
-      curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
-      curFont = [NSFont userFontOfSize: 0];
+      NSDictionary *typingAttributes = [curLayoutManager typingAttributes];
+      curParagraphStyle = [typingAttributes
+                            objectForKey: NSParagraphStyleAttributeName];
+      curFont = [typingAttributes objectForKey: NSFontAttributeName];
     }
   
   line_height = [curFont defaultLineHeightForFont];

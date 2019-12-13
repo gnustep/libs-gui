@@ -1,3 +1,41 @@
+2019-12-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSFont.m (smallSystemFontSize): return 10 as default value.
+	Update documention comment regarding default values for NSMiniFontSize
+	ans NSSmallFontSize.
+
+2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m
+	(initialize): use MiniWindowTile image for miniwindow tile.
+	(drawRect:): adjusted position of title cell to fit tile image.
+	(setTitle:): disable drawing of title cell background;
+	use NSMiniControlSize font size for miniwindow title cell.
+
+	* Source/NSFont.m (systemFontSizeForControlSize:): increased default font
+	size for NSMiniControlSize.
+
+2019-12-11  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSHorizontalTypesetter.m: removed extra imports left from
+	last 2 commits.
+
+2019-12-10  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h,
+	* Source/GSLayoutManager.m: new method -typingAttributes returns default
+	typing attributes of NSTextView.
+	* Source/NSLayoutManager.m: override GSLayoutManager's -typingAttributes
+	- primitive method - provides access to _typingAttributes ivar.
+	* Source/GSHorizontalTypesetter.m: use new GSLayoutManager's
+	-typingAttributes method to get paragraph style and font of new empty text
+	container. Normally `curLayoutManager` is a NSLayoutManager object so,
+	actually, we get NSLayoutManager's _typingAttributes.
+
+	* Source/GSHorizontalTypesetter.m: (_addExtraLineFragment) get paragraph
+	style and font from NSLayoutManager's typing attributes. Fixes insertion
+	point height for empty text objects (NSTextView, NSTexField etc.).
+
 2019-12-09  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSStringDrawing.m: fixed incorrect string drawing (shortened, misplaced)
