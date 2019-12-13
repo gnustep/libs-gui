@@ -109,7 +109,7 @@ static NSString *ApplicationClass = nil;
   return self;
 }
 
-- (NSString *)userLabel
+- (NSString *) userLabel
 {
   return _userLabel;
 }
@@ -119,6 +119,7 @@ static NSString *ApplicationClass = nil;
 @interface NSWindowTemplate5 : NSWindowTemplate
 {
   BOOL _visibleAtLaunch;
+  NSToolbar *_toolbar;
 }
 @end
 
@@ -133,6 +134,11 @@ static NSString *ApplicationClass = nil;
 
       if ([coder containsValueForKey: @"visibleAtLaunch"])
         _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
+
+      if ([coder containsValueForKey: @"NSToolbar"])
+        {
+          _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
+        }
     }
 
   return self;
@@ -144,6 +150,11 @@ static NSString *ApplicationClass = nil;
     {
       // Instantiate the real object...
       [super nibInstantiate];
+
+      if (_toolbar)
+        {
+          [(NSWindow *)_realObject setToolbar: _toolbar];
+        }
 
       // >= XIB 5 - startup visible windows...
       if (_visibleAtLaunch)
@@ -166,7 +177,7 @@ static NSString *ApplicationClass = nil;
 
 @implementation IBActionConnection5
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
   if (self)
@@ -247,7 +258,7 @@ static NSString *ApplicationClass = nil;
 
 @implementation IBOutletConnection5
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
   if (self)
@@ -353,8 +364,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
-                            //@"IBOutletConnection5", @"outlet",
-                            //@"IBActionConnection5", @"action",
+                            @"IBOutletConnection5", @"outlet",
+                            @"IBActionConnection5", @"action",
+                            @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
                             nil];
@@ -604,46 +616,66 @@ static NSArray      *XmlConnectionRecordTags  = nil;
            stringByAppendingString: [name substringFromIndex: 3]];
 }
 
+- (GSXibElement*) createReference: (NSString *)oid
+{
+  return [[GSXibElement alloc] initWithType: @"reference"
+                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                             @"object", @"key",
+                                                             oid, @"ref",
+                                                             nil]];
+}
+
 - (void) addConnection: (GSXibElement*)element
 {
-  NSString *elementName = [element type];
+  GSXibElement *connectionRecord;
+  // Get the parent of the parent object...
+  // The current object at this point is the 'connections' array element.
+  // The parent of connections array element is the object ID we need...
+  GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
+  NSString     *parentId = [parent attributeForKey: @"id"];
+  NSString     *objKey = [@"IBActionConnection5" isEqualToString: [element attributeForKey: @"class"]] ?
+                             @"destination" : @"source";
 
-  if ([XmlConnectionRecordTags containsObject: elementName])
+  if (parentId == nil)
     {
-      GSXibElement *connectionRecord;
-      // Get the parent of the parent object...
-      // The current object at this point is the 'connections' array element.
-      // The parent of connections array element is the object ID we need...
-      GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
-      NSString     *parentId = [parent attributeForKey: @"id"];
-      NSString     *objKey = (([@"action" isEqualToString: elementName]) ?
-                              @"destination" : @"source");
-
-      if (parentId == nil)
-        {
-          NSLog(@"Missing parent Id for connection on parent @%", parent);
-          // Fake an id for parent
-          parentId = [[NSUUID UUID] UUIDString];
-          [parent setAttribute: parentId forKey: @"id"];
-          [objects setObject: parent forKey: parentId];
-        }
-
-      // Store the ID reference of the parent object...
-      [element setAttribute: parentId forKey: objKey];
-
-      // Build a connection recort
-      connectionRecord = [[GSXibElement alloc] initWithType: @"object"
-                                              andAttributes:
-                                                 [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                 @"IBConnectionRecord", @"class",
-                                                               [[NSUUID UUID] UUIDString], @"id",
-                                                               nil]];
-       [connectionRecord setElement: element forKey: @"connection"];
-
-      // Add the connection record element that includes this element...
-      [_connectionRecords addElement: connectionRecord];
-      RELEASE(connectionRecord);
+      NSLog(@"Missing parent Id for connection on parent @%", parent);
+      // Fake an id for parent
+      parentId = [[NSUUID UUID] UUIDString];
+      [parent setAttribute: parentId forKey: @"id"];
+      [objects setObject: parent forKey: parentId];
     }
+
+  // Store the ID reference of the parent object...
+  [element setElement: [self createReference: parentId] forKey: objKey];
+
+  if ([element attributeForKey: @"target"])
+    {
+      [element setElement: [self createReference: [element attributeForKey: @"target"]]
+                   forKey: @"target"];
+    }
+  if ([element attributeForKey: @"source"])
+    {
+      [element setElement: [self createReference: [element attributeForKey: @"source"]]
+                   forKey: @"source"];
+    }
+  if ([element attributeForKey: @"destination"])
+    {
+      [element setElement: [self createReference: [element attributeForKey: @"destination"]]
+                   forKey: @"destination"];
+    }
+
+  // Build a connection recort
+  connectionRecord = [[GSXibElement alloc] initWithType: @"object"
+                                          andAttributes:
+                                             [NSDictionary dictionaryWithObjectsAndKeys:
+                                                             @"IBConnectionRecord", @"class",
+                                                           [[NSUUID UUID] UUIDString], @"id",
+                                                           nil]];
+  [connectionRecord setElement: element forKey: @"connection"];
+
+  // Add the connection record element that includes this element...
+  [_connectionRecords addElement: connectionRecord];
+  RELEASE(connectionRecord);
 }
 
 - (GSXibElement*) orderedObjectForElement: (GSXibElement*)element
@@ -663,11 +695,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                     andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                                    @"children", @"key",
                                                                                  nil]];
-  GSXibElement *reference    = [[GSXibElement alloc] initWithType: @"reference"
-                                                      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                     @"object", @"key",
-                                                                                     [element attributeForKey: @"id"], @"ref",
-                                                                                     nil]];
+  GSXibElement *reference    = [self createReference: [element attributeForKey: @"id"]];
 
   //[element setAttribute: @"connection" forKey: @"key"];
   [objectRecord setElement: element forKey: @"object"];
@@ -707,11 +735,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                             andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                                            @"name", @"key",
                                                                             nil]];
-      GSXibElement *referenceRec   = [[GSXibElement alloc] initWithType: @"reference"
-                                                            andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                           @"object", @"key",
-                                                                                             [element attributeForKey: @"id"], @"ref",
-                                                                                         nil]];
+      GSXibElement *referenceRec   = [self createReference: [element attributeForKey: @"id"]];
 
       // Setup placeholder record...
       [placeStringRec setValue: @"IBUserDefinedRuntimeAttributesPlaceholderName"];
@@ -942,8 +966,11 @@ didStartElement: (NSString*)elementName
           // For arrays...
           [currentElement addElement: element];
 
-          // Need to store element for making the connections...
-          [self addConnection: element];
+          if ([XmlConnectionRecordTags containsObject: elementName])
+            {
+              // Need to store element for making the connections...
+              [self addConnection: element];
+            }
         }
       else
         {
@@ -1606,7 +1633,7 @@ didStartElement: (NSString*)elementName
     {
       isSystem = YES;
     }
-  
+
   return [NSNumber numberWithBool: isSystem];
 }
 
@@ -2866,40 +2893,7 @@ didStartElement: (NSString*)elementName
   if (object == nil)
     {
       NSString *elementName = [element type];
-
-      if (([@"outlet" isEqualToString: elementName]) ||
-          ([@"action" isEqualToString: elementName]) ||
-          ([@"binding" isEqualToString: elementName]))
-        {
-          NSString      *classname        = nil;
-          NSString      *targID           = [element attributeForKey: @"target"];
-          NSString      *sourID           = [element attributeForKey: @"source"];
-          NSString      *destID           = [element attributeForKey: @"destination"];
-          GSXibElement  *targElem         = [objects objectForKey: targID];
-          GSXibElement  *sourElem         = [objects objectForKey: sourID];
-          GSXibElement  *destElem         = [objects objectForKey: destID];
-          id             targObj          = [self objectForXib: targElem];
-          id             sourObj          = [self objectForXib: sourElem];
-          id             destObj          = [self objectForXib: destElem];
-
-          if (targObj)
-            [(GSXibElement*)element setAttribute: targObj forKey: @"target"];
-          if (sourObj)
-            [(GSXibElement*)element setAttribute: sourObj forKey: @"source"];
-          if (destObj)
-            [(GSXibElement*)element setAttribute: destObj forKey: @"destination"];
-
-          if ([@"outlet" isEqualToString: elementName])
-            classname = @"IBOutletConnection5";
-          else if ([@"action" isEqualToString: elementName])
-            classname = @"IBActionConnection5";
-          else
-            classname = @"NSNibBindingConnector";
-
-          // Decode the object...
-          object = [self decodeObjectForXib: element forClassName: classname withID: [element attributeForKey: @"id"]];
-        }
-      else if ([@"range" isEqualToString: elementName])
+      if ([@"range" isEqualToString: elementName])
         {
           NSRange range = [self decodeRangeForKey: [element attributeForKey: @"key"]];
           object        = [NSValue valueWithRange: range];

@@ -279,9 +279,9 @@
 - (NSString*) description
 {
   NSMutableString *description = [[super description] mutableCopy];
-  [description appendFormat: @" - label: %@: ", label];
-  [description appendFormat: @" source: %@: ", NSStringFromClass([source class])];
-  [description appendFormat: @" destination: %@: ", NSStringFromClass([destination class])];
+  [description appendFormat: @" - label: %@, ", label];
+  [description appendFormat: @" source: %@, ", NSStringFromClass([source class])];
+  [description appendFormat: @" destination: %@, ", NSStringFromClass([destination class])];
   return AUTORELEASE(description);
 }
 
