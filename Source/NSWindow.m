@@ -481,7 +481,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   
   iconSize = GSGetIconSize();
   
-  tileImage = [[GSCurrentServer() iconTileImage] copy];
+  tileImage = [[NSImage imageNamed:@"common_MiniWindowTile"] copy];
   [tileImage setScalesWhenResized: YES];
   [tileImage setSize: iconSize];
   
@@ -514,8 +514,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
                                  iconSize.width - ((iconSize.width / 8) * 2),
                                  iconSize.height - ((iconSize.height / 8) * 2))
               inView: self];
-  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
-                                       iconSize.width - 2, 11)
+  [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
+                                       iconSize.width - 6, 10)
                     inView: self];
 }
 
@@ -600,15 +600,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   if (titleCell == nil)
     {
+      CGFloat fontSize;
+      
       titleCell = [[NSTextFieldCell alloc] initTextCell: aString];
       [titleCell setSelectable: NO];
       [titleCell setEditable: NO];
       [titleCell setBordered: NO];
       [titleCell setAlignment: NSCenterTextAlignment];
-      [titleCell setDrawsBackground: YES];
-      [titleCell setBackgroundColor: [NSColor blackColor]];
+      [titleCell setDrawsBackground: NO];
       [titleCell setTextColor: [NSColor whiteColor]];
-      [titleCell setFont: [NSFont systemFontOfSize: 8]];
+      fontSize = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
+      [titleCell setFont: [NSFont systemFontOfSize: fontSize]];
     }
   else
     {
