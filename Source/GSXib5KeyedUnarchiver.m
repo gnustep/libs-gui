@@ -893,14 +893,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
 - (void)dealloc
 {
-
-  // We will imitate the old XIB loading using an IBObjectContainer
-  // stored with key "IBDocument.Objects"...
-  _IBObjectContainer = [[GSXibElement alloc] initWithType: @"object"
-                                             andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                            @"IBObjectContainer", @"class",
-                                                                          @"IBDocument.Objects", @"key",
-                                                                          nil]];
   RELEASE(_IBObjectContainer);
   RELEASE(_connectionRecords);
   RELEASE(_objectRecords);
@@ -2968,7 +2960,8 @@ didStartElement: (NSString*)elementName
     }
 
   // Process IB runtime attributes for element...
-  if ([element elementForKey: @"userDefinedRuntimeAttributes"] && // Ensure we don't process the placeholders...
+  // Ensure we don't process the placeholders...
+  if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
       ([[element attributeForKey: @"class"] isEqualToString: @"IBUserDefinedRuntimeAttributesPlaceholder"] == NO))
     {
       // Create the flattened property data for the runtime attributes in the OLD XIB format...
