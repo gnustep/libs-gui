@@ -32,6 +32,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <math.h>
+
 #import "config.h"
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSDebug.h>
@@ -3015,23 +3017,26 @@ static NSColor *dtxtCol;
   NSMutableAttributedString *mutableString = AUTORELEASE([attrstring mutableCopy]);
   NSString *ellipsis = @"...";
   NSLineBreakMode mode = [self lineBreakMode];
+  // This code shortens the string one character at a time.
+  // To speed it up we start off propertional:
+  CGFloat width = [mutableString size].width;
+  int cut = MAX(floor([mutableString length] * (width - titleRect.size.width) / width), 4);
 
-  // FIXME: This code shortens the string one character at a time.
-  // Maybe we should start off propertional: string.length * (string.width - titleRect.width) / string.width
   do
     {
       NSRange replaceRange;
       if (mode == NSLineBreakByTruncatingHead)
-        replaceRange = NSMakeRange(0, 4);
+        replaceRange = NSMakeRange(0, cut);
       else if (mode == NSLineBreakByTruncatingTail)
-        replaceRange = NSMakeRange([mutableString length] - 4, 4);
+        replaceRange = NSMakeRange([mutableString length] - cut, cut);
       else
-        replaceRange = NSMakeRange(([mutableString length] / 2) - 2, 4);
+        replaceRange = NSMakeRange(([mutableString length] / 2) - (cut / 2), cut);
       [mutableString replaceCharactersInRange: replaceRange withString: ellipsis];
+      cut = 4;
     } while ([mutableString length] > 4 && [mutableString size].width > titleRect.size.width);
 
   // Return the modified attributed string...
-  return attrstring;
+  return mutableString;
 }
 
 /**
