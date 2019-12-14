@@ -373,6 +373,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
+                            @"NSImage", @"image",
                             nil];
           RETAIN(XmltagToObjectClassCrossReference);
 
@@ -453,7 +454,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"prefersToBeShown", @"NSToolbarPrefersToBeShown",
                                            @"label", @"NSToolbarItemLabel",
                                            @"paletteLabel", @"NSToolbarItemPaletteLabel",
-                                         //@"image", @"NSToolbarItemImage",
                                            @"tag", @"NSToolbarItemTag",
                                            @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
                                            @"bordered", @"NSIsBordered",
@@ -569,7 +569,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                        @"decodeSegmentItemImageForElement:", @"NSSegmentItemImage",
                                                        @"decodeBackgroundColorsForElement:", @"NSBackgroundColors",
                                                        @"decodeDividerStyleForElement:", @"NSDividerStyle",
-                                                       @"decodeToolsbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
+                                                       @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
+                                                       @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
                                                        nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -830,6 +831,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
               NS_ENDHANDLER
 
               DESTROY(theParser);
+
+              // Decode optional resources
+              _resources = RETAIN([self decodeObjectForKey: @"resources"]);
             }
         }
     }
@@ -900,6 +904,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   RELEASE(_runtimeAttributes);
   RELEASE(_orderedObjects);
   RELEASE(_orderedObjectsDict);
+  RELEASE(_resources);
   [super dealloc];
 }
 
@@ -1037,6 +1042,22 @@ didStartElement: (NSString*)elementName
           [stack removeLastObject];
         }
     }
+}
+
+- (id) findResourceWithName: (NSString*)name
+{
+  NSEnumerator *iter = [_resources objectEnumerator];
+  id resource = nil;
+
+  while ((resource = [iter nextObject]))
+    {
+      if ([[resource name] isEqual: name])
+        {
+          return resource;
+        }
+    }
+
+  return nil;
 }
 
 // All this code should eventually move into their respective initWithCoder class
@@ -2880,7 +2901,7 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithBool: value];
 }
 
-- (id) decodeToolsbarIdentifiedItemsForElement: (GSXibElement*)element
+- (id) decodeToolbarIdentifiedItemsForElement: (GSXibElement*)element
 {
   NSArray *allowedItems = [self decodeObjectForKey: @"allowedToolbarItems"];
   NSMutableDictionary *map = [NSMutableDictionary dictionary];
@@ -2893,6 +2914,13 @@ didStartElement: (NSString*)elementName
     }
 
   return map;
+}
+
+- (id) decodeToolbarImageForElement: (GSXibElement*)element
+{
+  NSString *name = [self decodeObjectForKey: @"image"];
+
+  return [self findResourceWithName: name];
 }
 
 - (id) objectForXib: (GSXibElement*)element
@@ -3204,6 +3232,11 @@ didStartElement: (NSString*)elementName
     {
       size = [self decodeSizeForKey: [XmlKeyMapTable objectForKey: key]];
     }
+  else if ([key isEqual: @"NSSize"])
+    {
+      size.width  = [[currentElement attributeForKey: @"width"] doubleValue];
+      size.height = [[currentElement attributeForKey: @"height"] doubleValue];
+    }
   else if ([key hasPrefix: @"NS"])
     {
       NSString *newKey = [self alternateName: key];
@@ -3306,6 +3339,10 @@ didStartElement: (NSString*)elementName
       else if ([@"NSNoAutoenable" isEqualToString: key])
         {
           hasValue = [currentElement attributeForKey: @"autoenablesItems"] != nil;
+        }
+      else if ([@"NSToolbarItemImage" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"image"] != nil;
         }
       else if ([XmlKeysDefined containsObject: key])
         {

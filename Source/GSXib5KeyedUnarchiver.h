@@ -40,6 +40,7 @@
   GSXibElement       *_flattenedProperties;
   GSXibElement       *_runtimeAttributes;
   NSMutableDictionary *_orderedObjectsDict;
+  NSArray            *_resources;
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
