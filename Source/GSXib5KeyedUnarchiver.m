@@ -336,6 +336,7 @@ static NSDictionary *XmlKeyToDecoderSelectorMap = nil;
 static NSArray      *XmlKeysDefined  = nil;
 static NSArray      *XmlReferenceAttributes  = nil;
 static NSArray      *XmlConnectionRecordTags  = nil;
+static NSArray      *XmlBoolDefaultYes  = nil;
 
 + (void) initialize
 {
@@ -408,7 +409,6 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"catalog", @"NSCatalogName",
                                            @"name" , @"NSColorName",
                                            @"selectedItem", @"NSSelectedIndex",
-                                           @"autoenablesItems", @"NSNoAutoenable",
                                            @"pullsDown", @"NSPullDown",
                                            @"prototype", @"NSProtoCell",
                                            @"metaFont", @"IBIsSystemFont",
@@ -450,11 +450,14 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                            @"autosavesConfiguration", @"NSToolbarAutosavesConfiguration",
                                            @"allowsUserCustomization", @"NSToolbarAllowsUserCustomization",
                                            @"defaultToolbarItems", @"NSToolbarIBDefaultItems",
+                                           @"prefersToBeShown", @"NSToolbarPrefersToBeShown",
                                            @"label", @"NSToolbarItemLabel",
                                            @"paletteLabel", @"NSToolbarItemPaletteLabel",
                                          //@"image", @"NSToolbarItemImage",
                                            @"tag", @"NSToolbarItemTag",
                                            @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
+                                           @"bordered", @"NSIsBordered",
+                                           @"altersStateOfSelectedItem", @"NSAltersState",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -481,7 +484,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                     //@"NSContents", @"NSAlternateContents",
                                     @"NSCellFlags", @"NSCellFlags2",
                                     @"NSButtonFlags", @"NSButtonFlags2",
-                                    @"NSSelectedIndex", @"NSAltersState", @"NSUsesItemFromMenu",
+                                    @"NSSelectedIndex", @"NSUsesItemFromMenu",
                                     @"NSNormalImage", @"NSAlternateImage",
                                     @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                     @"NSTitleCell", @"NSOffsets",
@@ -516,9 +519,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                        @"decodeCellsForElement:", @"NSCells",
                                                        @"decodeNumberOfColumnsInMatrixForElement:", @"NSNumCols",
                                                        @"decodeNumberOfRowsInMatrixForElement:", @"NSNumRows",
-                                                       @"decodePullsDownForElement:", @"pullsDown",
-                                                       @"decodeAutoenablesItemsForElement:", @"autoenablesItems",
-                                                       @"decodeAltersStateForElement:", @"NSAltersState",
+                                                       @"decodeNoAutoenablesItemsForElement:", @"NSNoAutoenable",
                                                        @"decodeMenuItemForElement:", @"NSMenuItem",
                                                        @"decodeUsesItemFromMenuForElement:", @"NSUsesItemFromMenu",
                                                        @"decodeSelectedIndexForElement:", @"selectedItem",
@@ -571,6 +572,13 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                        @"decodeToolsbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                                                        nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
+
+          // boolean fields that should be treated as YES when missing.
+          XmlBoolDefaultYes = [[NSArray alloc] initWithObjects: @"pullsDown",
+                                               @"altersStateOfSelectedItem",
+                                               @"bordered",
+                                               @"prefersToBeShown",
+                                               nil];
         }
     }
 }
@@ -1410,35 +1418,13 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
-- (id) decodePullsDownForElement: (GSXibElement*)element
-{
-  NSString  *pullsDown = [element attributeForKey: @"pullsDown"];
-  BOOL       value     = YES; // Default if not present...
-
-  if (pullsDown)
-    value = [pullsDown boolValue];
-
-  return [NSNumber numberWithBool: value];
-}
-
-- (id) decodeAutoenablesItemsForElement: (GSXibElement*)element
+- (id) decodeNoAutoenablesItemsForElement: (GSXibElement*)element
 {
   NSString  *autoenablesItems = [element attributeForKey: @"autoenablesItems"];
-  BOOL       value            = YES; // Default if not present...
+  BOOL       value            = NO; // Default if not present...
 
   if (autoenablesItems)
-    value = [autoenablesItems boolValue];
-
-  return [NSNumber numberWithBool: value];
-}
-
-- (id) decodeAltersStateForElement: (GSXibElement*)element
-{
-  NSString  *altersState = [element attributeForKey: @"altersStateOfSelectedItem"];
-  BOOL       value       = YES; // Default if not present...
-
-  if (altersState)
-    value = [altersState boolValue];
+    value = ![autoenablesItems boolValue];
 
   return [NSNumber numberWithBool: value];
 }
@@ -3144,10 +3130,14 @@ didStartElement: (NSString*)elementName
     {
       flag = [super decodeBoolForKey: key];
     }
-  else if ([@"NSIsBordered" isEqualToString: key])
+  else if ([currentElement attributeForKey: key])
     {
-      flag = ([currentElement attributeForKey: @"bordered"] ?
-              [[currentElement attributeForKey: @"bordered"] boolValue] : YES);
+      flag = [[currentElement attributeForKey: key] boolValue];
+    }
+  else if ([XmlBoolDefaultYes containsObject: key])
+    {
+      // Missing values mean YES
+      flag = YES;
     }
   else if ([XmlKeyMapTable objectForKey: key])
     {
@@ -3157,10 +3147,6 @@ didStartElement: (NSString*)elementName
     {
       SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
       flag         = [[self performSelector: selector withObject: currentElement] boolValue];
-    }
-  else if ([currentElement attributeForKey: key])
-    {
-      flag = [[currentElement attributeForKey: key] boolValue];
     }
   else if ([key hasPrefix:@"NS"])
     {
@@ -3175,109 +3161,6 @@ didStartElement: (NSString*)elementName
 #endif
 
   return flag;
-}
-
-- (double)decodeDoubleForKey:(NSString *)key
-{
-  double value = 0;
-
-  if ([self containsValueForKey:key])
-    {
-      value = [super decodeDoubleForKey:key];
-    }
-  else if ([XmlKeyMapTable objectForKey: key])
-    {
-      value = [self decodeDoubleForKey: [XmlKeyMapTable objectForKey: key]];
-    }
-  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-    {
-      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-      value        = [[self performSelector: selector withObject: currentElement] doubleValue];
-    }
-  else if ([currentElement attributeForKey: key])
-    {
-      value = [[currentElement attributeForKey: key] doubleValue];
-    }
-  else if ([key hasPrefix:@"NS"])
-    {
-      NSString *newKey = [self alternateName: key];
-      value = [self decodeDoubleForKey: newKey];
-    }
-  else
-    {
-      NSWarnMLog(@"no DOUBLE for key: %@", key);
-    }
-
-  return value;
-}
-
-- (float)decodeFloatForKey:(NSString *)key
-{
-  return (float)[self decodeDoubleForKey: key];
-}
-
-- (int)decodeIntForKey:(NSString *)key
-{
-  int value = 0;
-
-  if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-    {
-      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-      value        = [[self performSelector: selector withObject: currentElement] intValue];
-    }
-  else if ([self containsValueForKey:key])
-    {
-      value = [super decodeIntForKey:key];
-    }
-  else if ([XmlKeyMapTable objectForKey: key])
-    {
-      value = [self decodeIntForKey: [XmlKeyMapTable objectForKey: key]];
-    }
-  else if ([currentElement attributeForKey: key])
-    {
-      value = [[currentElement attributeForKey: key] integerValue];
-    }
-  else if ([key hasPrefix: @"NS"])
-    {
-      NSString *newKey = [self alternateName: key];
-      value = [self decodeIntegerForKey: newKey];
-    }
-  else
-    {
-      NSWarnMLog(@"no INT for key: %@", key);
-    }
-
-  return value;
-}
-
-- (NSInteger)decodeIntegerForKey:(NSString *)key
-{
-  NSInteger value = 0;
-
-  if ([super containsValueForKey:key])
-    {
-      value = [super decodeIntegerForKey:key];
-    }
-  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-    {
-      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-      value        = [[self performSelector: selector withObject: currentElement] integerValue];
-    }
-  else if ([currentElement attributeForKey: key])
-    {
-      value = [[currentElement attributeForKey: key] integerValue];
-    }
-  else if ([key hasPrefix: @"NS"])
-    {
-      NSString *newKey = [self alternateName: key];
-      value = [self decodeIntegerForKey: newKey];
-    }
-  else
-    {
-      NSWarnMLog(@"no INTEGER for key: %@", key);
-    }
-
-  return value;
 }
 
 - (NSPoint) decodePointForKey:(NSString *)key
@@ -3321,8 +3204,8 @@ didStartElement: (NSString*)elementName
       GSXibElement  *element = (GSXibElement*)[currentElement elementForKey: key];
       NSDictionary  *object  = [element attributes];
 
-      size.width  = [[object objectForKey:@"width"] doubleValue];
-      size.height = [[object objectForKey:@"height"] doubleValue];
+      size.width  = [[object objectForKey: @"width"] doubleValue];
+      size.height = [[object objectForKey: @"height"] doubleValue];
     }
   else if ([XmlKeyMapTable objectForKey: key])
     {
@@ -3400,12 +3283,6 @@ didStartElement: (NSString*)elementName
 {
   BOOL hasValue = [super containsValueForKey: key];
 
-  // Check attributes (for XIB 5 and above) for additional values...
-  if (hasValue == NO)
-    {
-      hasValue = [currentElement attributeForKey: key] != nil;
-    }
-
   // If that didn't work...
   if (hasValue == NO)
     {
@@ -3433,9 +3310,23 @@ didStartElement: (NSString*)elementName
         {
           hasValue = [currentElement elementForKey: @"headerView"] != nil;
         }
+      else if ([@"NSNoAutoenable" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"autoenablesItems"] != nil;
+        }
       else if ([XmlKeysDefined containsObject: key])
         {
           // These are arbitrarily defined through hard-coding...
+          hasValue = YES;
+        }
+      else if ([currentElement attributeForKey: key])
+        {
+          // Check attributes (for XIB 5 and above) for additional values...
+          hasValue = YES;
+        }
+      else if ([XmlBoolDefaultYes containsObject: key])
+        {
+          // Missing values mean YES
           hasValue = YES;
         }
       else if ([key hasPrefix: @"NS"])
