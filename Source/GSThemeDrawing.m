@@ -2597,6 +2597,7 @@ typedef enum {
   NSColor	*color;
   NSString	*name;
   NSBorderType   borderType = [scrollView borderType];
+  CGFloat        borderWidth = 0;
   NSRect         bounds = [view bounds];
   BOOL hasInnerBorder = ![[NSUserDefaults standardUserDefaults]
 			   boolForKey: @"GSScrollViewNoInnerBorder"];
@@ -2624,14 +2625,17 @@ typedef enum {
 	case NSLineBorder:
 	  [color set];
 	  NSFrameRect(bounds);
+          borderWidth = 1;
 	  break;
 	  
 	case NSBezelBorder:
 	  [theme drawGrayBezel: bounds withClip: rect];
+          borderWidth = 2;
 	  break;
 	  
 	case NSGrooveBorder:
 	  [theme drawGroove: bounds withClip: rect];
+          borderWidth = 2;
 	  break;
 	}
     }
@@ -2665,8 +2669,8 @@ typedef enum {
 	    {
               xpos = [vertScroller frame].origin.x + scrollerWidth;
 	    }
-          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
-                                1.0, scrollerHeight + 1.0));
+          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y, 
+                                1.0, scrollerHeight - (borderWidth * 2)));
 	}
 
       if ([scrollView hasHorizontalScroller])
@@ -2688,8 +2692,8 @@ typedef enum {
 	    {
 	      ypos = scrollerY + scrollerWidth + 1.0;
 	    }
-          NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
-                                scrollerLength + 1.0, 1.0));
+          NSRectFill(NSMakeRect([horizScroller frame].origin.x, ypos,
+                                scrollerLength - (borderWidth * 2), 1.0));
 	}
     }
 }
