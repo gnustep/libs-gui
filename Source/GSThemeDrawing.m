@@ -2646,6 +2646,7 @@ typedef enum {
       NSScroller *vertScroller = [scrollView verticalScroller];
       NSScroller *horizScroller = [scrollView horizontalScroller];
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
+      CGFloat borderWidth = [self sizeForBorderType: borderType].width;
 
       [color set];
 
@@ -2665,8 +2666,8 @@ typedef enum {
 	    {
               xpos = [vertScroller frame].origin.x + scrollerWidth;
 	    }
-          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
-                                1.0, scrollerHeight + 1.0));
+          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y, 
+                                1.0, scrollerHeight - (borderWidth * 2)));
 	}
 
       if ([scrollView hasHorizontalScroller])
@@ -2688,8 +2689,8 @@ typedef enum {
 	    {
 	      ypos = scrollerY + scrollerWidth + 1.0;
 	    }
-          NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
-                                scrollerLength + 1.0, 1.0));
+          NSRectFill(NSMakeRect([horizScroller frame].origin.x, ypos,
+                                scrollerLength - (borderWidth * 2), 1.0));
 	}
     }
 }
