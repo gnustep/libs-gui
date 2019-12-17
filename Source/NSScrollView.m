@@ -1213,10 +1213,15 @@ GSOppositeEdge(NSRectEdge edge)
 
       /** Vertically expand the scroller by 1pt on each end */
       if (overlapBorders)
-	{
+        {
 	  vertScrollerRect.origin.y -= 1;
 	  vertScrollerRect.size.height += 2;
 	}
+      else if (_hasHeaderView || _hasCornerView)
+        {
+	  vertScrollerRect.origin.y -= 1;
+	  vertScrollerRect.size.height += 1;
+        }
 
       [_vertScroller setFrame: vertScrollerRect];
 
