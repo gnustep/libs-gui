@@ -2644,47 +2644,47 @@ typedef enum {
       NSScroller *vertScroller = [scrollView verticalScroller];
       NSScroller *horizScroller = [scrollView horizontalScroller];
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
-      CGFloat scrollerHeight;
+      NSRect scrollerFrame;
 
       [color set];
 
       if ([scrollView hasVerticalScroller])
 	{
 	  NSInterfaceStyle style;
-	  CGFloat xpos = [vertScroller frame].origin.x;
-
-          scrollerHeight = [vertScroller frame].size.height;
-
+	  CGFloat xpos;
+          
+          scrollerFrame = [vertScroller frame];
+          
 	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 	  if (style == NSMacintoshInterfaceStyle
 	      || style == NSWindows95InterfaceStyle)
 	    {
-              xpos -= 1.0;
+              xpos = scrollerFrame.origin.x - 1.0;
 	    }
 	  else
 	    {
-              xpos += scrollerWidth;
+              xpos = scrollerFrame.origin.x + scrollerWidth;
 	    }
-          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y, 
-                                1.0, scrollerHeight));
+          NSRectFill(NSMakeRect(xpos, scrollerFrame.origin.y, 
+                                1.0, scrollerFrame.size.height));
 	}
 
       if ([scrollView hasHorizontalScroller])
 	{
-	  CGFloat ypos = [horizScroller frame].origin.y;
+	  CGFloat ypos;
 
-          scrollerHeight = [horizScroller frame].size.width;
+          scrollerFrame = [horizScroller frame];
  
 	  if ([scrollView isFlipped])
 	    {
-	      ypos -= 1.0;
+	      ypos = scrollerFrame.origin.y - 1.0;
 	    }
 	  else
 	    {
-	      ypos += scrollerWidth + 1.0;
+	      ypos = scrollerFrame.origin.y + scrollerWidth + 1.0;
 	    }
           NSRectFill(NSMakeRect([horizScroller frame].origin.x, ypos,
-                                scrollerHeight, 1.0));
+                                scrollerFrame.size.width, 1.0));
 	}
     }
 }
