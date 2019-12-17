@@ -2,6 +2,7 @@
 
 	* Source/GSThemeDrawing.m (drawScrollViewRect:inView:): fixed scroller
 	border positionning and length - do not overlap border if any.
+	Use [self sizeForBorderType: borderType] to determine border width.
 
 2019-12-12  Sergii Stoian  <stoyan255@gmail.com>
 
