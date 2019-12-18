@@ -1,3 +1,10 @@
+2019-12-18  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSBrowser.m (frameOfColumn:): shift up column only for browser
+	with separated sparated columns layout.
+	(tile): fix column height calculation; moved sanity check of column
+	height closer to calculation; removed code that duplicates code below.
+
 2019-12-17  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSScrollView.m (tile): tweak location and height of vertical
