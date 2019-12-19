@@ -1,3 +1,18 @@
+2019-12-19  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSMenuView.m (setHighlightedItemIndex:): do not highlight first
+	item for pulldown popup button's menu.
+	(sizeToFit): removed commented useless code; fixed formatting.
+	(rectOfItemAtIndex:): draw first item cell of pulldown popup menu.
+	(setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
+	remove useless (was used for old-style popup menu) positionning code for
+	popup menu. Check if owning popup is not pulldown before vertical
+	position correction.
+
+	* Source/NSPopUpButtonCell.m (attachPopUpWithFrame:inView:): make setting
+	selected item code more generic for pulldown and non-pulldown button.
+	Fixed formatting.
+
 2019-12-18  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSBrowser.m (frameOfColumn:): shift up column only for browser
