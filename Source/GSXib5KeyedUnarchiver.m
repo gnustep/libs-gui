@@ -314,7 +314,8 @@ static NSString *ApplicationClass = nil;
             [self setValue: [coder decodeObjectForKey: @"value"]];
           else if ([@"nil" isEqualToString: typeIdentifier])
             [self setValue: nil];
-          NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
+          else
+            NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
         }
     }
 
@@ -374,6 +375,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
                             @"NSImage", @"image",
+                            @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
           RETAIN(XmltagToObjectClassCrossReference);
 
@@ -720,7 +722,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   RELEASE(parent);
   RELEASE(children);
-  RELEASE(reference);
   return AUTORELEASE(objectRecord);
 }
 
@@ -769,7 +770,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
       RELEASE(stringRecord);
       RELEASE(placeholderRec);
       RELEASE(placeStringRec);
-      RELEASE(referenceRec);
       RELEASE(objectRecord);
     }
 }
@@ -972,7 +972,7 @@ didStartElement: (NSString*)elementName
 
       if ([attributes objectForKey: @"reference"])
         {
-          element = [self createReference: [attributes objectForKey: @"reference"]];
+          element = RETAIN([self createReference: [attributes objectForKey: @"reference"]]);
         }
       else
         {
@@ -1624,15 +1624,19 @@ didStartElement: (NSString*)elementName
       size = 13;
 
       if ([metaFont containsString: @"mini"])
-        size = 9;
+        size = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
       else if ([metaFont containsString: @"small"])
-        size = 11;
+        size = [NSFont smallSystemFontSize];
       else if ([metaFont containsString: @"medium"])
         size = 12;
       else if ([metaFont containsString: @"menu"])
         size = 13;
-      else if ([metaFont containsString: @"system"])
+      else if ([metaFont containsString: @"controlcontent"])
         size = 13;
+      else if ([metaFont containsString: @"label"])
+        size = [NSFont labelFontSize];
+      else if ([metaFont containsString: @"system"])
+        size = [NSFont systemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
