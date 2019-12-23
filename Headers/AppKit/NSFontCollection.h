@@ -51,8 +51,16 @@ APPKIT_EXPORT NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAu
 
 typedef NSString* NSFontCollectionName;
 
-@interface NSFontCollection : NSObject <NSCopying, NSMutableCopying, NSCoding>
+  @class NSMutableDictionary, NSMutableArray, GSFontEnumerator, NSArray, NSDictionary, NSError;
 
+@interface NSFontCollection : NSObject <NSCopying, NSMutableCopying, NSCoding>
+{
+  NSMutableDictionary *_collectionDictionary;
+  NSMutableArray *_queryDescriptors;
+  NSMutableArray *_exclusionDescriptors;
+  GSFontEnumerator *_fontEnumerator;
+}
+  
 // Initializers...
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors;
 + (NSFontCollection *) fontCollectionWithAllAvailableDescriptors;

@@ -23,10 +23,52 @@
 */
 
 #import <AppKit/NSFontCollection.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSError.h>
+#import <GNUstepGUI/GSFontInfo.h>
+
+// Values for NSFontCollectionAction
+NSFontCollectionActionTypeKey const NSFontCollectionWasShown = @"NSFontCollectionWasShown";
+NSFontCollectionActionTypeKey const NSFontCollectionWasHidden = @"NSFontCollectionWasHidden";
+NSFontCollectionActionTypeKey const NSFontCollectionWasRenamed = @"NSFontCollectionWasRenamed";
+
+// Standard named collections
+NSFontCollectionName const NSFontCollectionAllFonts = @"NSFontCollectionAllFonts";
+NSFontCollectionName const NSFontCollectionUser = @"NSFontCollectionUser";
+NSFontCollectionName const NSFontCollectionFavorites = @"NSFontCollectionFavorites";
+NSFontCollectionName const NSFontCollectionRecentlyUsed = @"NSFontCollectionRecentlyUsed";
+
+// Collections
+NSFontCollectionMatchingOptionKey const NSFontCollectionIncludeDisabledFontsOption = @"NSFontCollectionIncludeDisabledFontsOption";
+NSFontCollectionMatchingOptionKey const NSFontCollectionRemoveDuplicatesOption = @"NSFontCollectionRemoveDuplicatesOption";
+NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAutoActivationOption = @"NSFontCollectionDisallowAutoActivationOption";
 
 @implementation NSFontCollection 
 
 // Initializers...
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _fontEnumerator = [[GSFontEnumerator alloc] init];
+      _collectionDictionary = [[NSMutableDictionary alloc] init];
+      _queryDescriptors = [[NSMutableArray alloc] init];
+      _exclusionDescriptors = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_fontEnumerator);
+  RELEASE(_collectionDictionary);
+  RELEASE(_queryDescriptors);
+  RELEASE(_exclusionDescriptors);
+  [super dealloc];
+}
+
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
   return nil;
@@ -67,7 +109,11 @@
 
 + (NSArray *) allFontCollectionNames
 {
-  return nil;
+  NSArray *array = [NSArray arrayWithObjects: NSFontCollectionAllFonts,
+                            NSFontCollectionUser,
+                            NSFontCollectionFavorites,
+                            NSFontCollectionRecentlyUsed, nil];
+  return array;
 }
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
