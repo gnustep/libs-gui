@@ -1,3 +1,30 @@
+2019-12-18  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSBrowser.m (frameOfColumn:): shift up column only for browser
+	with separated columns layout.
+	(tile): fix column height calculation; moved sanity check of column
+	height closer to calculation; removed code that duplicates code below.
+
+2019-12-17  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSScrollView.m (tile): tweak location and height of vertical
+	scroller if header or corner view available.
+
+	* Source/GSThemeDrawing.m: (drawTableCornerView:withClip:): do not draw
+	black rectangle because -drawDarkButton:withClip: draws all necessary
+	elements.
+
+	* Source/GSThemeDrawing.m (drawScrollViewRect:inView:): further cleanup
+	of method implementation. Removed all tweaks of scroller length - all
+	required calculations must be done in NSScrollView's -tile method. Simplified
+	caluclations of X and Y positions of scroller.
+
+2019-12-17  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSThemeDrawing.m (drawScrollViewRect:inView:): fixed scroller
+	border positionning and length - do not overlap border if any.
+	Use [self sizeForBorderType: borderType] to determine border width.
+
 2019-12-12  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSFont.m (smallSystemFontSize): return 10 as default value.

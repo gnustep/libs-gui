@@ -1974,10 +1974,10 @@ static BOOL browserUseBezels;
 	  else
 	    rect.origin.y = scrollerWidth + bezelBorderSize.width;
 	}
-      else
-	{
-	  rect.origin.y += bezelBorderSize.width;
-	}
+      else if (!_separatesColumns)
+        {
+          rect.origin.y += bezelBorderSize.width;
+        }
     }
   else
     {
@@ -2105,11 +2105,16 @@ static BOOL browserUseBezels;
   else
     {
       _scrollerRect = NSZeroRect;
-      _columnSize.height -= 2 * bezelBorderSize.width;
+      if (!_separatesColumns)
+        _columnSize.height -= 2 * bezelBorderSize.width;
     }
 
+  if (_columnSize.height < 0)
+    _columnSize.height = 0;
+  
   num = _lastVisibleColumn - _firstVisibleColumn + 1;
 
+  // Column count
   if (_minColumnWidth > 0)
     {
       CGFloat colWidth = _minColumnWidth + scrollerWidth;
@@ -2130,6 +2135,7 @@ static BOOL browserUseBezels;
   if (_maxVisibleColumns > 0 && columnCount > _maxVisibleColumns)
     columnCount = _maxVisibleColumns;
 
+  // Create extra columns
   if (columnCount != num)
     {
       if (num > 0)
@@ -2149,7 +2155,7 @@ static BOOL browserUseBezels;
       _lastVisibleColumn = _firstVisibleColumn + columnCount - 1;
     }
 
-  // Columns
+  // Column width
   if (_separatesColumns)
     frameWidth = _frame.size.width - ((columnCount - 1) * browserColumnSeparation);
   else
@@ -2158,9 +2164,6 @@ static BOOL browserUseBezels;
 
   _columnSize.width = (int)(frameWidth / (CGFloat)columnCount);
 
-  if (_columnSize.height < 0)
-    _columnSize.height = 0;
-  
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
     {
       NSBrowserColumn *bc;
@@ -2177,11 +2180,6 @@ static BOOL browserUseBezels;
           NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
           return;
         }
-
-      {
-	NSBorderType bt = _separatesColumns ? NSBezelBorder : NSNoBorder;
-	[sc setBorderType: bt];
-      }
 
       [sc setBorderType: [self _resolvedBorderType]];
       [sc setFrame: [self frameOfColumn: i]];

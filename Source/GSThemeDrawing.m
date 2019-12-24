@@ -1446,8 +1446,6 @@ static NSImage *spinningImages[MaxCount];
 
   if (tiles == nil)
     { 
-      [[NSColor blackColor] set];
-      NSRectFill(divide);
       rect = [self drawDarkButton: rect withClip: aRect];
       [[NSColor controlShadowColor] set];
       NSRectFill(rect);
@@ -2646,6 +2644,7 @@ typedef enum {
       NSScroller *vertScroller = [scrollView verticalScroller];
       NSScroller *horizScroller = [scrollView horizontalScroller];
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
+      NSRect scrollerFrame;
 
       [color set];
 
@@ -2653,43 +2652,39 @@ typedef enum {
 	{
 	  NSInterfaceStyle style;
 	  CGFloat xpos;
-	  CGFloat scrollerHeight = bounds.size.height;
-
+          
+          scrollerFrame = [vertScroller frame];
+          
 	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 	  if (style == NSMacintoshInterfaceStyle
 	      || style == NSWindows95InterfaceStyle)
 	    {
-              xpos = [vertScroller frame].origin.x - 1.0;
+              xpos = scrollerFrame.origin.x - 1.0;
 	    }
 	  else
 	    {
-              xpos = [vertScroller frame].origin.x + scrollerWidth;
+              xpos = scrollerFrame.origin.x + scrollerWidth;
 	    }
-          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
-                                1.0, scrollerHeight + 1.0));
+          NSRectFill(NSMakeRect(xpos, scrollerFrame.origin.y, 
+                                1.0, scrollerFrame.size.height));
 	}
 
       if ([scrollView hasHorizontalScroller])
 	{
 	  CGFloat ypos;
-	  CGFloat scrollerY = [horizScroller frame].origin.y;
-	  CGFloat scrollerLength = bounds.size.width;
 
-	  if ([scrollView hasVerticalScroller])
-	    {
-	      scrollerLength -= [NSScroller scrollerWidth];
-	    }
+          scrollerFrame = [horizScroller frame];
  
 	  if ([scrollView isFlipped])
 	    {
-	      ypos = scrollerY - 1.0;
+	      ypos = scrollerFrame.origin.y - 1.0;
 	    }
 	  else
 	    {
-	      ypos = scrollerY + scrollerWidth + 1.0;
+	      ypos = scrollerFrame.origin.y + scrollerWidth + 1.0;
 	    }
-          NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
-                                scrollerLength + 1.0, 1.0));
+          NSRectFill(NSMakeRect([horizScroller frame].origin.x, ypos,
+                                scrollerFrame.size.width, 1.0));
 	}
     }
 }
