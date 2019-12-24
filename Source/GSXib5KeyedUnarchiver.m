@@ -577,7 +577,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(XmlKeyToDecoderSelectorMap);
 
           // boolean fields that should be treated as YES when missing.
-          XmlBoolDefaultYes = [[NSArray alloc] initWithObjects: @"pullsDown",
+          XmlBoolDefaultYes = [[NSArray alloc] initWithObjects:
                                                @"altersStateOfSelectedItem",
                                                @"bordered",
                                                @"prefersToBeShown",
