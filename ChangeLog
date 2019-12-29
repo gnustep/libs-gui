@@ -1,3 +1,8 @@
+2019-12-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBundleAdditions.m (-pathForNibResource:): Report type
+	not filename while iterating.
+
 2019-12-18  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSBrowser.m (frameOfColumn:): shift up column only for browser
