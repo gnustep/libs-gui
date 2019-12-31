@@ -100,7 +100,6 @@ enum {
   NSClosableWindowMask = 1 << 1,
   NSMiniaturizableWindowMask = 1 << 2,
   NSResizableWindowMask = 1 << 3,
- application
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
   NSTexturedBackgroundWindowMask = 1 << 8,
 #endif 
@@ -125,7 +124,7 @@ enum {
   NSWindowStyleMaskResizable = NSResizableWindowMask,
   NSWindowStyleMaskUtilityWindow = 1 << 4,
   NSWindowStyleMaskDocModalWindow = 1 << 6,
-  // Specifies that a panel that does not activate the owning
+  // Specifies that a panel that does not activate the owning application
   NSWindowStyleMaskNonactivatingPanel = 1 << 7,
   NSWindowStyleMaskTexturedBackground = NSTexturedBackgroundWindowMask,
   NSWindowStyleMaskUnifiedTitleAndToolbar = NSUnifiedTitleAndToolbarWindowMask,
