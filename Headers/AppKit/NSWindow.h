@@ -96,36 +96,40 @@ enum {
 
 enum {
   NSBorderlessWindowMask = 0,
-  NSWindowStyleMaskBorderless = NSBorderlessWindowMask,
   NSTitledWindowMask = 1,
-  NSWindowStyleMaskTitled = NSTitledWindowMask,
   NSClosableWindowMask = 1 << 1,
-  NSWindowStyleMaskClosable = NSClosableWindowMask,
   NSMiniaturizableWindowMask = 1 << 2,
-  NSWindowStyleMaskMiniaturizable = NSMiniaturizableWindowMask,
   NSResizableWindowMask = 1 << 3,
-  NSWindowStyleMaskResizable = NSResizableWindowMask,
-  NSWindowStyleMaskUtilityWindow = 1 << 4,
-  NSWindowStyleMaskDocModalWindow = 1 << 6,
-  NSWindowStyleMaskNonactivatingPanel = 1 << 7, // Specifies that a panel that does not activate the owning application
+ application
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
   NSTexturedBackgroundWindowMask = 1 << 8,
-  NSWindowStyleMaskTexturedBackground = NSTexturedBackgroundWindowMask,
 #endif 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
   NSUnscaledWindowMask = 1 << 11,
   NSUnifiedTitleAndToolbarWindowMask = 1 << 12,
-  NSWindowStyleMaskUnifiedTitleAndToolbar = NSUnifiedTitleAndToolbarWindowMask,
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
   NSWindowStyleMaskHUDWindow = 1 << 13,
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
   NSFullScreenWindowMask = 1 << 14,
-  NSWindowStyleMaskFullScreen = NSFullScreenWindowMask,
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
   NSFullSizeContentViewWindowMask = 1 << 15,
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSWindowStyleMaskBorderless = NSBorderlessWindowMask,
+  NSWindowStyleMaskTitled = NSTitledWindowMask,
+  NSWindowStyleMaskClosable = NSClosableWindowMask,
+  NSWindowStyleMaskMiniaturizable = NSMiniaturizableWindowMask,
+  NSWindowStyleMaskResizable = NSResizableWindowMask,
+  NSWindowStyleMaskUtilityWindow = 1 << 4,
+  NSWindowStyleMaskDocModalWindow = 1 << 6,
+  // Specifies that a panel that does not activate the owning
+  NSWindowStyleMaskNonactivatingPanel = 1 << 7,
+  NSWindowStyleMaskTexturedBackground = NSTexturedBackgroundWindowMask,
+  NSWindowStyleMaskUnifiedTitleAndToolbar = NSUnifiedTitleAndToolbarWindowMask,
+  NSWindowStyleMaskFullScreen = NSFullScreenWindowMask,
   NSWindowStyleMaskFullSizeContentView = NSFullSizeContentViewWindowMask,
 #endif
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
