@@ -1,12 +1,16 @@
 /*
    GSCodingFlags.h
 
-   Define flags used in keyed coding. Extracted from existing files.
+   Define flags used in Cocoa for keyed coding.
 
    Copyright (C) 2019 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: 12.2019
+   Original code by: Jonathan Gillaspie <jonathan.gillaspie@testplant.com>,
+                     Frank Le Grand <frank.legrand@testplant.com>
+                     Paul Landers <paul.landers@testplant.com> and
+                     Doug Simons <doug.simons@testplant.com>
 
    This file is part of the GNUstep GUI Library.
 
