@@ -489,10 +489,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
           XmlTagToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
                                                        @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
-                                                       //@"decodeAutoresizingMaskForElement:", @"autoresizingMask",
                                                        @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
-                                                       //@"decodeWindowPositionMaskForElement:", @"windowPositionMask",
-                                                       //@"decodeModifierMaskForElement:", @"modifierMask",
                                                        @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
                                                        nil];
           RETAIN(XmlTagToDecoderSelectorMap);
@@ -1511,35 +1508,35 @@ didStartElement: (NSString*)elementName
       // equates to no key modifiers applied...
       NSUInteger mask = 0;
 
-      if ([[attributes objectForKey:@"option"] boolValue])
+      if ([[attributes objectForKey: @"option"] boolValue])
         {
           mask |= NSAlternateKeyMask;
         }
-      if ([[attributes objectForKey:@"alternate"] boolValue])
+      if ([[attributes objectForKey: @"alternate"] boolValue])
         {
           mask |= NSAlternateKeyMask;
         }
-      if ([[attributes objectForKey:@"command"] boolValue])
+      if ([[attributes objectForKey: @"command"] boolValue])
         {
           mask |= NSCommandKeyMask;
         }
-      if ([[attributes objectForKey:@"control"] boolValue])
+      if ([[attributes objectForKey: @"control"] boolValue])
         {
           mask |= NSControlKeyMask;
         }
-      if ([[attributes objectForKey:@"shift"] boolValue])
+      if ([[attributes objectForKey: @"shift"] boolValue])
         {
           mask |= NSShiftKeyMask;
         }
-      if ([[attributes objectForKey:@"numeric"] boolValue])
+      if ([[attributes objectForKey: @"numeric"] boolValue])
         {
           mask |= NSNumericPadKeyMask;
         }
-      if ([[attributes objectForKey:@"help"] boolValue])
+      if ([[attributes objectForKey: @"help"] boolValue])
         {
           mask |= NSHelpKeyMask;
         }
-      if ([[attributes objectForKey:@"function"] boolValue])
+      if ([[attributes objectForKey: @"function"] boolValue])
         {
           mask |= NSFunctionKeyMask;
         }
