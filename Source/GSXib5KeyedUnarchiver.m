@@ -321,7 +321,7 @@ static NSString *ApplicationClass = nil;
 
 @implementation GSXib5KeyedUnarchiver
 
-static NSDictionary *XmlTagToObjectClassCrossReference = nil;
+static NSDictionary *XmlTagToObjectClassMap = nil;
 static NSArray      *XmlTagsNotStacked = nil;
 static NSArray      *XmlTagsToSkip = nil;
 static NSArray      *ClassNamePrefixes = nil;
@@ -338,11 +338,11 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   if (self == [GSXib5KeyedUnarchiver class])
     {
       // Only check one since we're going to load all once...
-      if (XmlTagToObjectClassCrossReference == nil)
+      if (XmlTagToObjectClassMap == nil)
         {
           // These define XML tags (i.e. <objects ...) that should be allocated as the
           // associated class...
-          XmlTagToObjectClassCrossReference =
+          XmlTagToObjectClassMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
                             @"NSMutableArray", @"objects",
                             @"NSMutableArray", @"items",
@@ -371,7 +371,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSImage", @"image",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
-          RETAIN(XmlTagToObjectClassCrossReference);
+          RETAIN(XmlTagToObjectClassMap);
 
           XmlTagsNotStacked = [NSArray arrayWithObject: @"document"];
           RETAIN(XmlTagsNotStacked);
@@ -581,7 +581,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
 + (NSString*) classNameForXibTag: (NSString*)xibTag
 {
-  NSString *className = [XmlTagToObjectClassCrossReference objectForKey: xibTag];
+  NSString *className = [XmlTagToObjectClassMap objectForKey: xibTag];
 
   if (nil == className)
     {
@@ -802,7 +802,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
               // Initialize...
               [self _initCommon];
 
-              // Createe the parser and parse the data...
+              // Create the parser and parse the data...
               theParser = [[NSXMLParser alloc] initWithData: data];
               [theParser setDelegate: self];
 
