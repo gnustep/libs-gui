@@ -401,7 +401,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // method for cross referencing...
           XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
                                            @"isSeparatorItem", @"NSIsSeparator",
-                                           //@"systemMenu", @"NSName",
                                            @"customClass", @"NSClassName",
                                            @"catalog", @"NSCatalogName",
                                            @"name" , @"NSColorName",
@@ -409,9 +408,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"pullsDown", @"NSPullDown",
                                            @"prototype", @"NSProtoCell",
                                            @"metaFont", @"IBIsSystemFont",
-                                           //@"minColumnWidth", @"NSMinColumnWidth",
                                            @"defaultColumnWidth", @"NSPreferedColumnWidth",
-                                           //@"preferredColumnWidth", @"NSPreferedColumnWidth",
                                            @"borderColor", @"NSBorderColor2",
                                            @"fillColor", @"NSFillColor2",
                                            @"horizontalScroller", @"NSHScroller",
@@ -462,10 +459,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // below that provides a cross referenced to an asociated decoding method...
           // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
           // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
-          // list (i.e. NSContents, NSAlternateContents, NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
+          // list (i.e. NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
           XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
                                     @"NSvFlags", @"NSBGColor",
-                                    @"NSSize", //@"IBIsSystemFont",
+                                    @"NSSize",
                                     @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
                                     @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
                                     @"NSSupport", @"NSName",
@@ -474,7 +471,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSSliderType",
                                     @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
                                     @"NSWhite", @"NSRGB", @"NSCYMK",
-                                    //@"NSContents", @"NSAlternateContents",
                                     @"NSCellFlags", @"NSCellFlags2",
                                     @"NSButtonFlags", @"NSButtonFlags2",
                                     @"NSSelectedIndex", @"NSUsesItemFromMenu",
@@ -487,11 +483,12 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(XmlKeysDefined);
 
           // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
-          XmlTagToDecoderSelectorMap = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                       @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
-                                                       @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
-                                                       @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
-                                                       nil];
+          XmlTagToDecoderSelectorMap =
+            [NSDictionary dictionaryWithObjectsAndKeys:
+                     @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
+                     @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
+                     @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
+                     nil];
           RETAIN(XmlTagToDecoderSelectorMap);
 
           // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
@@ -526,7 +523,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                        @"decodeMenuItemStateForElement:", @"NSState",
                                                        @"decodeCellForElement:", @"NSCell",
                                                        @"decodeFontSizeForElement:", @"NSSize",
-                                                       //@"decodeFontTypeForElement:", @"IBIsSystemFont",
                                                        @"decodeProgressIndicatorFlagsForElement:", @"NSpiFlags",
                                                        @"decodeTextViewSharedDataFlagsForElement:", @"NSFlags",
                                                        @"decodeSharedDataForElement:", @"NSSharedData",
@@ -2992,6 +2988,79 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+- (id) decodeSpecialButtonCellForKey: (NSString *)key
+{
+  // Search field encoding is real basic now...does not include these by default...
+  // So we're going to generate them here for now...again should be moved into
+  // class initWithCoder method eventually...
+  id object = AUTORELEASE([NSButtonCell new]);
+  
+  unsigned int      bFlags = 0x8444000;
+  GSButtonCellFlags buttonCellFlags;
+
+  memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
+  
+  if ([@"NSSearchButtonCell" isEqualToString: key])
+    [object setTitle: @"search"];
+  else
+    [object setTitle: @"clear"];
+  
+  [object setTransparent: buttonCellFlags.isTransparent];
+  [object setBordered: buttonCellFlags.isBordered];
+  
+  [object setCellAttribute: NSPushInCell to: buttonCellFlags.isPushin];
+  [object setCellAttribute: NSCellLightsByBackground to: buttonCellFlags.highlightByBackground];
+  [object setCellAttribute: NSCellLightsByContents to: buttonCellFlags.highlightByContents];
+  [object setCellAttribute: NSCellLightsByGray to: buttonCellFlags.highlightByGray];
+  [object setCellAttribute: NSChangeBackgroundCell to: buttonCellFlags.changeBackground];
+  [object setCellAttribute: NSCellChangesContents to: buttonCellFlags.changeContents];
+  [object setCellAttribute: NSChangeGrayCell to: buttonCellFlags.changeGray];
+  
+  if (buttonCellFlags.imageDoesOverlap)
+    {
+      if (buttonCellFlags.isImageAndText)
+        [object setImagePosition: NSImageOverlaps];
+      else
+        [object setImagePosition: NSImageOnly];
+    }
+  else if (buttonCellFlags.isImageAndText)
+    {
+      if (buttonCellFlags.isHorizontal)
+        {
+          if (buttonCellFlags.isBottomOrLeft)
+            [object setImagePosition: NSImageLeft];
+          else
+            [object setImagePosition: NSImageRight];
+        }
+      else
+        {
+          if (buttonCellFlags.isBottomOrLeft)
+            [object setImagePosition: NSImageBelow];
+          else
+            [object setImagePosition: NSImageAbove];
+        }
+    }
+  else
+    {
+      [object setImagePosition: NSNoImage];
+    }
+#if 0
+  [object setBordered: NO];
+  [object setCellAttribute: NSPushInCell to: NO];
+  [object setCellAttribute: NSChangeBackgroundCell to: NO];
+  [object setCellAttribute: NSCellChangesContents to: NO];
+  [object setCellAttribute: NSChangeGrayCell to: NO];
+  [object setCellAttribute: NSCellLightsByContents to: YES];
+  [object setCellAttribute: NSCellLightsByBackground to: NO];
+  [object setCellAttribute: NSCellLightsByGray to: NO];
+  [object setImagePosition: NSImageOnly];
+  [object setImageScaling: NSImageScaleNone];
+  [object setBezelStyle: NSRoundedBezelStyle];
+#endif
+
+  return object;
+}
+
 - (id) decodeObjectForKey: (NSString *)key
 {
   id object = [super decodeObjectForKey: key];
@@ -3025,73 +3094,8 @@ didStartElement: (NSString*)elementName
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
         {
-          // Search field encoding is real basic now...does not include these by default...
-          // So we're going to generate them here for now...again should be moved into
-          // class initWithCoder method eventually...
-          object = AUTORELEASE([NSButtonCell new]);
+          object = [self decodeSpecialButtonCellForKey: key];
 
-          unsigned int      bFlags = 0x8444000;
-          GSButtonCellFlags buttonCellFlags;
-
-          memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
-
-          if ([@"NSSearchButtonCell" isEqualToString: key])
-            [object setTitle: @"search"];
-          else
-            [object setTitle: @"clear"];
-
-          [object setTransparent: buttonCellFlags.isTransparent];
-          [object setBordered: buttonCellFlags.isBordered];
-
-          [object setCellAttribute: NSPushInCell to: buttonCellFlags.isPushin];
-          [object setCellAttribute: NSCellLightsByBackground to: buttonCellFlags.highlightByBackground];
-          [object setCellAttribute: NSCellLightsByContents to: buttonCellFlags.highlightByContents];
-          [object setCellAttribute: NSCellLightsByGray to: buttonCellFlags.highlightByGray];
-          [object setCellAttribute: NSChangeBackgroundCell to: buttonCellFlags.changeBackground];
-          [object setCellAttribute: NSCellChangesContents to: buttonCellFlags.changeContents];
-          [object setCellAttribute: NSChangeGrayCell to: buttonCellFlags.changeGray];
-
-          if (buttonCellFlags.imageDoesOverlap)
-            {
-              if (buttonCellFlags.isImageAndText)
-                [object setImagePosition: NSImageOverlaps];
-              else
-                [object setImagePosition: NSImageOnly];
-            }
-          else if (buttonCellFlags.isImageAndText)
-            {
-              if (buttonCellFlags.isHorizontal)
-                {
-                  if (buttonCellFlags.isBottomOrLeft)
-                    [object setImagePosition: NSImageLeft];
-                  else
-                    [object setImagePosition: NSImageRight];
-                }
-              else
-                {
-                  if (buttonCellFlags.isBottomOrLeft)
-                    [object setImagePosition: NSImageBelow];
-                  else
-                    [object setImagePosition: NSImageAbove];
-                }
-            }
-          else
-            {
-              [object setImagePosition: NSNoImage];
-            }
-#if 0
-          [object setBordered: NO];
-          [object setCellAttribute: NSPushInCell to: NO];
-          [object setCellAttribute: NSChangeBackgroundCell to: NO];
-          [object setCellAttribute: NSCellChangesContents to: NO];
-          [object setCellAttribute: NSChangeGrayCell to: NO];
-          [object setCellAttribute: NSCellLightsByContents to: YES];
-          [object setCellAttribute: NSCellLightsByBackground to: NO];
-          [object setCellAttribute: NSCellLightsByGray to: NO];
-          [object setImagePosition: NSImageOnly];
-          [object setImageScaling: NSImageScaleNone];
-          [object setBezelStyle: NSRoundedBezelStyle];
-#endif
         }
       else if ([@"NSSupport" isEqualToString: key])
         {
