@@ -1628,10 +1628,10 @@
       buttonCellFlags.changeGray = [self cellAttribute: NSChangeGrayCell];
 
       // set these to zero...
-      buttonCellFlags.inset = 0; // 32;
-      buttonCellFlags.doesNotDimImage = 0; // 32;
-      buttonCellFlags.gradient = 0; // 32;
-      buttonCellFlags.unused2 = 0; // 255;
+      buttonCellFlags.inset = 0;
+      buttonCellFlags.doesNotDimImage = 0;
+      buttonCellFlags.gradient = 0;
+      buttonCellFlags.unused2 = 0;
       buttonCellFlags.lastState = 0;
       buttonCellFlags.isImageSizeDiff = 0;
       buttonCellFlags.drawing = 0;
