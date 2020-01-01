@@ -950,7 +950,7 @@
 
   if ([rootObjects count] == 0)
   {
-    NSWarnMLog(@"no root objects!!!");
+    NSWarnMLog(@"No root objects in XIB!");
     return;
   }
 
