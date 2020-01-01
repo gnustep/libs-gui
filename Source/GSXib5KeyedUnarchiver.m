@@ -526,7 +526,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                        //@"decodeSearchButtonForElement:", @"NSSearchButtonCell",
                                                        //@"decodeSearchButtonForElement:", @"NSCancelButtonCell",
                                                        @"decodeModifierMaskForElement:", @"keyEquivalentModifierMask",
-                                                       @"decodeButtonStateForElement:", @"NSState",
+                                                       @"decodeMenuItemStateForElement:", @"NSState",
                                                        @"decodeCellForElement:", @"NSCell",
                                                        @"decodeFontSizeForElement:", @"NSSize",
                                                        //@"decodeFontTypeForElement:", @"IBIsSystemFont",
@@ -795,8 +795,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // specific to check here...
           if ([documentNodes count] == 0)
             {
-              NSWarnMLog(@"XIB is NOT a version 5 level");
               DESTROY(self);
+              return nil;
             }
           else
             {
@@ -2437,6 +2437,31 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+- (NSUInteger) decodeStateForElement: (GSXibElement*)element
+{
+  // default is off
+  NSUInteger state = NSOffState;
+  NSString *refstate = [element attributeForKey: @"state"];
+
+  if (refstate)
+    {
+      if ([@"on" isEqualToString: refstate])
+        {
+          state = NSOnState;
+        }
+      else if ([@"mixed" isEqualToString: refstate])
+        {
+          state = NSMixedState;
+        }
+      else
+        {
+          NSWarnMLog(@"unknown state: %@", refstate);
+        }
+    }
+
+  return state;
+}
+
 - (id) decodeCellFlags1ForElement: (GSXibElement*)element
 {
   NSNumber *value = nil;
@@ -2453,7 +2478,7 @@ didStartElement: (NSString*)elementName
       NSString          *focusRingType = [attributes objectForKey: @"focusRingType"];
       NSString          *borderStyle   = [attributes objectForKey: @"borderStyle"];
 
-      mask.flags.state                    = [[attributes objectForKey:@"state"] isEqualToString: @"on"];
+      mask.flags.state                    = [self decodeStateForElement: element];
       mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
       mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
                                              [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
@@ -2776,35 +2801,9 @@ didStartElement: (NSString*)elementName
   return value;
 }
 
-- (id) decodeButtonStateForElement: (GSXibElement*)element
+- (id) decodeMenuItemStateForElement: (GSXibElement*)element
 {
-  id          object = nil;
-  NSUInteger  state  = NSOffState;
-
-  // If the current cell definition has no custom class defined...
-  if ([element attributeForKey: @"state"])
-    {
-      // Check encompassing class for cellClass diversion...
-      NSString *refstate = [element attributeForKey: @"state"];
-
-      if ([@"on" isEqualToString: refstate])
-        {
-          state = NSOnState;
-        }
-      else if ([@"mized" isEqualToString: refstate])
-        {
-          state = NSMixedState;
-        }
-      else if (state)
-        {
-          NSWarnMLog(@"unknown cell state: %@", refstate);
-        }
-
-      // Generate the object normally...
-      object = [NSNumber numberWithUnsignedInteger: state];
-    }
-
-  return object;
+  return [NSNumber numberWithUnsignedInteger: [self decodeStateForElement: element]];
 }
 
 - (id) decodeCellForElement: (GSXibElement*)topElement
