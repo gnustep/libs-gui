@@ -321,9 +321,9 @@ static NSString *ApplicationClass = nil;
 
 @implementation GSXib5KeyedUnarchiver
 
-static NSDictionary *XmltagToObjectClassCrossReference = nil;
-static NSArray      *XmltagsNotStacked = nil;
-static NSArray      *XmltagsToSkip = nil;
+static NSDictionary *XmlTagToObjectClassCrossReference = nil;
+static NSArray      *XmlTagsNotStacked = nil;
+static NSArray      *XmlTagsToSkip = nil;
 static NSArray      *ClassNamePrefixes = nil;
 static NSDictionary *XmlKeyMapTable = nil;
 static NSDictionary *XmlTagToDecoderSelectorMap = nil;
@@ -338,11 +338,11 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   if (self == [GSXib5KeyedUnarchiver class])
     {
       // Only check one since we're going to load all once...
-      if (XmltagToObjectClassCrossReference == nil)
+      if (XmlTagToObjectClassCrossReference == nil)
         {
           // These define XML tags (i.e. <objects ...) that should be allocated as the
           // associated class...
-          XmltagToObjectClassCrossReference =
+          XmlTagToObjectClassCrossReference =
             [NSDictionary dictionaryWithObjectsAndKeys:
                             @"NSMutableArray", @"objects",
                             @"NSMutableArray", @"items",
@@ -371,13 +371,13 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSImage", @"image",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
-          RETAIN(XmltagToObjectClassCrossReference);
+          RETAIN(XmlTagToObjectClassCrossReference);
 
-          XmltagsNotStacked = [NSArray arrayWithObject: @"document"];
-          RETAIN(XmltagsNotStacked);
+          XmlTagsNotStacked = [NSArray arrayWithObject: @"document"];
+          RETAIN(XmlTagsNotStacked);
 
-          XmltagsToSkip = [NSArray arrayWithObject: @"dependencies"];
-          RETAIN(XmltagsToSkip);
+          XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
+          RETAIN(XmlTagsToSkip);
 
           ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
           RETAIN(ClassNamePrefixes);
@@ -388,16 +388,16 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
           RETAIN(XmlConnectionRecordTags);
 
-          // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
-          // or object returned verbatum.  IF an OLD XIB key does not exist and contains the 'NS' prefix
+          // These cross-reference from the OLD key to the NEW key that can be referenced and its value
+          // or object returned verbatim.  If an OLD XIB key does not exist and contains the 'NS' prefix
           // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
-          // whether that key exists and use it's presence during 'containsValueForKey:' processing, and
-          // use it's value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
+          // whether that key exists and use its presence during 'containsValueForKey:' processing, and
+          // use its value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
           // that cannot be generated autoamatically by this processing.
           // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
-          // Note, that unless the associated cross referenced key contains an aattribute that matches the
+          // Note, that unless the associated cross referenced key contains an attribute that matches the
           // original OLD key type you will need to potentially add a decoding method, and if so, the
-          // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to it's associated decoding
+          // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to its associated decoding
           // method for cross referencing...
           XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
                                            @"isSeparatorItem", @"NSIsSeparator",
@@ -409,9 +409,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"pullsDown", @"NSPullDown",
                                            @"prototype", @"NSProtoCell",
                                            @"metaFont", @"IBIsSystemFont",
-                                           //@"headerView", @"NSHeaderClipView",
                                            //@"minColumnWidth", @"NSMinColumnWidth",
-                                           //@"maxVisibleColumns", @"NSNumberOfVisibleColumns",
                                            @"defaultColumnWidth", @"NSPreferedColumnWidth",
                                            //@"preferredColumnWidth", @"NSPreferedColumnWidth",
                                            @"borderColor", @"NSBorderColor2",
@@ -468,7 +466,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
                                     @"NSvFlags", @"NSBGColor",
                                     @"NSSize", //@"IBIsSystemFont",
-                                    //@"NSHeaderClipView",
                                     @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
                                     @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
                                     @"NSSupport", @"NSName",
@@ -587,7 +584,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
 + (NSString*) classNameForXibTag: (NSString*)xibTag
 {
-  NSString *className = [XmltagToObjectClassCrossReference objectForKey: xibTag];
+  NSString *className = [XmlTagToObjectClassCrossReference objectForKey: xibTag];
 
   if (nil == className)
     {
@@ -909,7 +906,7 @@ didStartElement: (NSString*)elementName
      attributes: (NSDictionary*)attributeDict
 {
   // Skip certain element names - for now...
-  if ([XmltagsToSkip containsObject: elementName] == NO)
+  if ([XmlTagsToSkip containsObject: elementName] == NO)
     {
       NSMutableDictionary *attributes  = AUTORELEASE([attributeDict mutableCopy]);
       NSString            *className   = nil;
@@ -1008,7 +1005,7 @@ didStartElement: (NSString*)elementName
           [objects setObject: element forKey: ref];
         }
 
-      if ([XmltagsNotStacked containsObject: elementName] == NO)
+      if ([XmlTagsNotStacked containsObject: elementName] == NO)
         {
           // Push element onto stack...
           [stack addObject: currentElement];
@@ -1027,9 +1024,9 @@ didStartElement: (NSString*)elementName
   qualifiedName: (NSString*)qName
 {
   // Skip certain element names - for now...
-  if ([XmltagsToSkip containsObject: elementName] == NO)
+  if ([XmlTagsToSkip containsObject: elementName] == NO)
     {
-      if ([XmltagsNotStacked containsObject: elementName] == NO)
+      if ([XmlTagsNotStacked containsObject: elementName] == NO)
         {
           // Pop element...
           currentElement = [stack lastObject];
@@ -2388,7 +2385,7 @@ didStartElement: (NSString*)elementName
     }
   else
     {
-      // Try the title attribute first as it's the common encoding...
+      // Try the title attribute first as it is the more common encoding...
       if ([element attributeForKey: @"title"])
         {
           object = [element attributeForKey: @"title"];
