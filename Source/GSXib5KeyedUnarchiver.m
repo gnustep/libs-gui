@@ -59,7 +59,7 @@
 #import "AppKit/NSView.h"
 #import "GSCodingFlags.h"
 
-//#define DEBUG_XIB5
+#define DEBUG_XIB5 0
 
 @interface NSCustomObject5 : NSCustomObject
 {
@@ -3136,7 +3136,7 @@ didStartElement: (NSString*)elementName
           NSString *newKey = [self alternateName: key];
           object           = [self decodeObjectForKey: newKey];
         }
-#if defined(DEBUG_XIB5)
+#if DEBUG_XIB5
       else // DEBUG ONLY...
         {
           NSWarnMLog(@"no element/attribute for key: %@", key);
@@ -3178,7 +3178,7 @@ didStartElement: (NSString*)elementName
       NSString *newKey = [self alternateName: key];
       flag = [self decodeBoolForKey: newKey];
     }
-#if 0
+#if DEBUG_XIB5
   else
     {
       NSWarnMLog(@"no BOOL for key: %@", key);
