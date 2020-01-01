@@ -206,7 +206,8 @@ enum __NSControlSize {
     unsigned allows_undo: 1;
     unsigned line_break_mode: 3; // 6 values
 
-    // total 23 bits.  4 bits extension, 5 bits left.
+    // 23 bits for NSCell use, 4 bits for subclass use.
+    // 5 bits remain unused.
     int state: 2; // 3 values but one negative
     unsigned mnemonic_location: 8;
     unsigned control_tint: 3;
