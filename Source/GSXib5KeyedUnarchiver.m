@@ -79,25 +79,19 @@ static NSString *ApplicationClass = nil;
 
   if (self)
     {
-      _userLabel = [coder decodeObjectForKey: @"userLabel"];
-
-      if (_className)
+      // If we've not set the general application class yet...
+      if (_className && (ApplicationClass == nil) &&
+          ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
         {
-          // If we've not set the general application class yet...
-          if (([NSClassFromString(_className) isKindOfClass: [NSApplication class]]) &&
-              (ApplicationClass == nil))
-            {
-              @synchronized([self class])
-                {
-                  ASSIGNCOPY(ApplicationClass, _className);
-                }
-            }
+          ASSIGNCOPY(ApplicationClass, _className);
         }
 
-      // Override thie one type...
+      _userLabel = [coder decodeObjectForKey: @"userLabel"];
+
+      // Override this one type...
       if (_userLabel)
         {
-          if ([@"Application" isEqualToString:_userLabel])
+          if ([@"Application" isEqualToString: _userLabel])
             {
               if (ApplicationClass == nil)
                 ASSIGN(_className, @"NSApplication");
