@@ -949,10 +949,10 @@
   NSString *className;
 
   if ([rootObjects count] == 0)
-  {
-    NSWarnMLog(@"No root objects in XIB!");
-    return;
-  }
+    {
+      NSWarnMLog(@"No root objects in XIB!");
+      return;
+    }
 
   // Get the file's owner and NSApplication object references...
   object = (NSCustomObject*)[rootObjects objectAtIndex: 1];
