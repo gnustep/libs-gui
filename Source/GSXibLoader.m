@@ -278,11 +278,9 @@
 
 - (NSString*) description
 {
-  NSMutableString *description = [[super description] mutableCopy];
-  [description appendFormat: @" - label: %@, ", label];
-  [description appendFormat: @" source: %@, ", NSStringFromClass([source class])];
-  [description appendFormat: @" destination: %@, ", NSStringFromClass([destination class])];
-  return AUTORELEASE(description);
+  return [NSString stringWithFormat: @"%@ - label: %@, source: %@, destination: %@",
+                   [super description], label, NSStringFromClass([source class]),
+                   NSStringFromClass([destination class])];
 }
 
 - (id) nibInstantiate
@@ -329,7 +327,7 @@
           SEL sel;
 
           selName = [NSString stringWithFormat: @"set%@%@:",
-                       [[label substringToIndex: 1] uppercaseString],
+                      [[label substringToIndex: 1] uppercaseString],
                       [label substringFromIndex: 1]];
           sel = NSSelectorFromString(selName);
 
@@ -759,13 +757,10 @@
 
 - (NSString*) description
 {
-  NSMutableString *description = [[super description] mutableCopy];
-  [description appendFormat: @" - sourceID: %@: ", sourceID];
-  [description appendFormat: @" maxID: %@: ", maxID];
-  [description appendFormat: @" objectRecords: %@: ", objectRecords];
-  [description appendFormat: @" flattenedProperties: %@: ", flattenedProperties];
-  [description appendFormat: @" connectionRecords: %@: ", connectionRecords];
-  return AUTORELEASE(description);
+  return [NSString stringWithFormat:
+                    @"%@ - sourceID: %@: maxID: %@: objectRecords: %@: flattenedProperties: %@: connectionRecords: %@: ",
+                   [super description], sourceID, maxID, objectRecords,
+                   flattenedProperties, connectionRecords];
 }
 
 - (NSEnumerator*) connectionRecordEnumerator
