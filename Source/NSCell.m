@@ -1401,7 +1401,6 @@ static NSColor *dtxtCol;
     {
       NSUInteger location = r.location;
 
-
       [self setTitle: [[aString substringToIndex: location]
                         stringByAppendingString:
                           [aString substringFromIndex: NSMaxRange(r)]]];
@@ -3018,7 +3017,7 @@ static NSColor *dtxtCol;
   NSString *ellipsis = @"...";
   NSLineBreakMode mode = [self lineBreakMode];
   // This code shortens the string one character at a time.
-  // To speed it up we start off propertional:
+  // To speed it up we start off proportional:
   CGFloat width = [mutableString size].width;
   int cut = MAX(floor([mutableString length] * (width - titleRect.size.width) / width), 4);
 
