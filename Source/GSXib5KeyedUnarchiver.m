@@ -1603,19 +1603,22 @@ didStartElement: (NSString*)elementName
     {
       NSString *metaFont = [[attributes objectForKey: @"metaFont"] lowercaseString];
 
-      // Default the value per Cocoa...
-      size = 13;
+      // Default the value
+      size = 12;
 
+      // FIXME: We should try to get the corresponding user default value here
       if ([metaFont containsString: @"mini"])
         size = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
       else if ([metaFont containsString: @"small"])
         size = [NSFont smallSystemFontSize];
+      else if ([metaFont containsString: @"message"])
+        size = 10;
       else if ([metaFont containsString: @"medium"])
-        size = 12;
+        size = 11;
       else if ([metaFont containsString: @"menu"])
-        size = 13;
+        size = 12;
       else if ([metaFont containsString: @"controlcontent"])
-        size = 13;
+        size = 12;
       else if ([metaFont containsString: @"label"])
         size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
