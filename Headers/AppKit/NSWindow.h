@@ -301,6 +301,7 @@ PACKAGE_SCOPE
 @protected 
   NSToolbar     *_toolbar;
   void          *_reserved_1;
+  BOOL           _beingDealloc;
 }
 
 /*
