@@ -818,6 +818,18 @@ many times.
 
 - (void) dealloc
 {
+  /*
+  This fix is to avoid a scenario where we recursviely call into dealloc
+  twice, leading to a segfault crash. This seems to be caused by
+  _terminateBackendWindow DESTROY(_context) call.
+  */
+  if (_beingDealloc)
+  {
+    return;
+  }
+
+  _beingDealloc = YES;
+
   // Remove all key value bindings for this object.
   [GSKeyValueBinding unbindAllForObject: self];
 
