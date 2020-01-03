@@ -6,6 +6,8 @@
 
  Author:  Marcian Lytwyn <gnustep@advcsi.com>
  Date: 12/28/16
+ Modifications:  Fred Kiefer <fredkiefer@gmx.de>
+ Date: December 2019
 
  This file is part of the GNUstep GUI Library.
 
@@ -568,11 +570,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                nil];
         }
     }
-}
-
-+ (NSInteger) coderVersion
-{
-  return 5;
 }
 
 + (NSString*) classNameForXibTag: (NSString*)xibTag

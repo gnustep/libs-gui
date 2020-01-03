@@ -346,12 +346,10 @@
                 {
                   object_setIvar(source, ivar, destination);
                 }
-#if defined(DEBUG)
               else
                 {
                   NSWarnMLog(@"class '%@' has no instance var named: %@", NSStringFromClass(class), label);
                 }
-#endif
            }
 	}
     }
@@ -650,6 +648,7 @@
 @end
 
 @implementation IBMutableOrderedSet
+
 - (id) initWithCoder: (NSCoder*)coder
 {
   if ([coder allowsKeyedCoding])
@@ -674,7 +673,7 @@
   [super dealloc];
 }
 
-- (NSArray*)orderedObjects
+- (NSArray*) orderedObjects
 {
   return orderedObjects;
 }

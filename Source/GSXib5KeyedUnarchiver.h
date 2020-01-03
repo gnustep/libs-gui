@@ -1,4 +1,4 @@
-/** <title>GSXibParserDelegate.h</title>
+/** <title>GSXib5KeyedUnarchiver.h</title>
 
  <abstract>The XIB 5 keyed unarchiver</abstract>
 
