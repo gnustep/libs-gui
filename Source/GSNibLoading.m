@@ -1018,9 +1018,9 @@ static BOOL _isInInterfaceBuilder = NO;
 
       if (GSObjCIsKindOf(aClass, [NSApplication class]) || 
 	 [_className isEqual: @"NSApplication"])
-	{
+        {
 	  _object = RETAIN([aClass sharedApplication]);
-	}
+        }
       else if ((GSObjCIsKindOf(aClass, [NSFontManager class])) ||
                ([_className isEqual: @"NSFontManager"]))
         {

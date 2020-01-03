@@ -33,14 +33,14 @@
 
 @interface GSXib5KeyedUnarchiver : GSXibKeyedUnarchiver
 {
-  GSXibElement       *_IBObjectContainer;
-  GSXibElement       *_connectionRecords;
-  GSXibElement       *_objectRecords;
-  GSXibElement       *_orderedObjects;
-  GSXibElement       *_flattenedProperties;
-  GSXibElement       *_runtimeAttributes;
+  GSXibElement        *_IBObjectContainer;
+  GSXibElement        *_connectionRecords;
+  GSXibElement        *_objectRecords;
+  GSXibElement        *_orderedObjects;
+  GSXibElement        *_flattenedProperties;
+  GSXibElement        *_runtimeAttributes;
   NSMutableDictionary *_orderedObjectsDict;
-  NSArray            *_resources;
+  NSArray             *_resources;
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;

@@ -697,7 +697,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                                                  nil]];
   GSXibElement *reference    = [self createReference: [element attributeForKey: @"id"]];
 
-  //[element setAttribute: @"connection" forKey: @"key"];
   [objectRecord setElement: element forKey: @"object"];
   [objectRecord setElement: parent forKey: @"parent"];
   [objectRecord setElement: children forKey: @"children"];

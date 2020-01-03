@@ -134,6 +134,7 @@ enum {
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
+typedef NSUInteger NSWindowStyleMask;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 enum {
