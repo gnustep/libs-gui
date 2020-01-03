@@ -478,7 +478,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                     @"NSTitleCell", @"NSOffsets",
                                     @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
-                                    @"NSSharedData", @"NSFlags", @"NSTVFlags", @"NSDefaultParagraphStyle",
+                                    @"NSSharedData", @"NSFlags", @"NSTVFlags",
+                                    @"NSDefaultParagraphStyle",
                                     @"NSpiFlags", nil];
           RETAIN(XmlKeysDefined);
 

@@ -1,3 +1,27 @@
+2020-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m,
+	* Source/GSXibKeyedUnarchiver.m,
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h,
+	* Headers/Additions/GNUstepGUI/GSXibElement.h,
+	* Headers/AppKit/NSCell.h,
+	* Headers/AppKit/NSWindow.h,
+	* Source/GSCodingFlags.h,
+	* Source/GSNibLoading.m,
+	* Source/GSXib5KeyedUnarchiver.h,
+	* Source/GSXibElement.m,
+	* Source/GSXibLoader.m,
+	* Source/NSButtonCell.m,
+	* Source/NSCell.m,
+	* Source/NSMatrix.m,
+	* Source/NSNibBindingConnector.m,
+	* Source/NSToolbar.m:
+	Merge XIB document loading from the old Eggplant branch with lots
+	of cleanup.
+	* Headers/Additions/GNUstepGUI/GSXibParser.h,
+	* Source/GSXibParser.m,
+	* Source/GNUmakefile: Remove now obsolete class.
+
 2019-12-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBundleAdditions.m (-pathForNibResource:): Report type
