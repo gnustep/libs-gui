@@ -764,67 +764,34 @@ static NSArray      *XmlBoolDefaultYes  = nil;
       DESTROY(self);
       return nil;
     }
-#if     GNUSTEP_BASE_HAVE_LIBXML
   else
     {
-      // Ensure we have a XIB 5 version...first see if we can parse the XML...
-      NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
-                                                            options: 0
-                                                              error: NULL];
-      if (document == nil)
+      NSXMLParser *theParser  = nil;
+
+      // Initialize...
+      [self _initCommon];
+
+      // Create the parser and parse the data...
+      theParser = [[NSXMLParser alloc] initWithData: data];
+      [theParser setDelegate: self];
+
+      NS_DURING
         {
-          NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
+          // Parse the XML data
+          [theParser parse];
+
+          // Decode optional resources
+          _resources = RETAIN([self decodeObjectForKey: @"resources"]);
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
           DESTROY(self);
-          return nil;
         }
-      else
-        {
-          // Test to see if this is an Xcode 5 XIB...
-          NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
+      NS_ENDHANDLER
 
-          // Need at LEAST ONE document node...we should find something a bit more
-          // specific to check here...
-          if ([documentNodes count] == 0)
-            {
-              DESTROY(self);
-              return nil;
-            }
-          else
-            {
-              NSXMLParser *theParser  = nil;
-
-              // Initialize...
-              [self _initCommon];
-
-              // Create the parser and parse the data...
-              theParser = [[NSXMLParser alloc] initWithData: data];
-              [theParser setDelegate: self];
-
-              NS_DURING
-                {
-                  // Parse the XML data
-                  [theParser parse];
-                }
-              NS_HANDLER
-                {
-                  NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
-                  DESTROY(self);
-                }
-              NS_ENDHANDLER
-
-              DESTROY(theParser);
-
-              // Decode optional resources
-              _resources = RETAIN([self decodeObjectForKey: @"resources"]);
-            }
-        }
+      DESTROY(theParser);
     }
-#else
-  else
-    {
-      DESTROY(self);
-    }
-#endif
 
   return self;
 }
