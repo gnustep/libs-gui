@@ -371,6 +371,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
                             @"NSImage", @"image",
+                            @"NSObjectController", @"objectController",
+                            @"NSArrayController", @"arrayController",
+                            @"NSViewController", @"viewController",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
@@ -566,6 +569,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"altersStateOfSelectedItem",
                                                @"bordered",
                                                @"prefersToBeShown",
+                                               @"editable",
                                                nil];
         }
     }
