@@ -92,6 +92,8 @@ NSCustomTouchBarItem.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDatePicker.m \
+NSDatePickerCell.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
@@ -373,6 +375,8 @@ NSCustomTouchBarItem.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
+NSDatePicker.h \
+NSDatePickerCell.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \

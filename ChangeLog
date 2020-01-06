@@ -1,3 +1,11 @@
+2020-01-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDatePickerCell.h,
+	* Headers/AppKit/NSDatePicker.h,
+	* Source/NSDatePickerCell.m,
+	* Source/NSDatePicker.m: Add minimal version of date picker copied
+	over from mySTEP.
+
 2019-12-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBundleAdditions.m (-pathForNibResource:): Report type
