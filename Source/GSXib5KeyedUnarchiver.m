@@ -384,7 +384,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
           RETAIN(ClassNamePrefixes);
 
-          XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem", nil];
+          XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
+                                            @"selectedItem", nil];
           RETAIN(XmlReferenceAttributes);
 
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
@@ -406,7 +407,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"customClass", @"NSClassName",
                                            @"catalog", @"NSCatalogName",
                                            @"name" , @"NSColorName",
-                                           @"selectedItem", @"NSSelectedIndex",
                                            @"pullsDown", @"NSPullDown",
                                            @"prototype", @"NSProtoCell",
                                            @"metaFont", @"IBIsSystemFont",
@@ -475,7 +475,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSWhite", @"NSRGB", @"NSCYMK",
                                     @"NSCellFlags", @"NSCellFlags2",
                                     @"NSButtonFlags", @"NSButtonFlags2",
-                                    @"NSSelectedIndex", @"NSUsesItemFromMenu",
+                                    @"NSUsesItemFromMenu",
                                     @"NSNormalImage", @"NSAlternateImage",
                                     @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
                                     @"NSTitleCell", @"NSOffsets",
@@ -511,9 +511,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeNumberOfColumnsInMatrixForElement:", @"NSNumCols",
                @"decodeNumberOfRowsInMatrixForElement:", @"NSNumRows",
                @"decodeNoAutoenablesItemsForElement:", @"NSNoAutoenable",
-               @"decodeMenuItemForElement:", @"NSMenuItem",
                @"decodeUsesItemFromMenuForElement:", @"NSUsesItemFromMenu",
-               @"decodeSelectedIndexForElement:", @"selectedItem",
+               @"decodeSelectedIndexForElement:", @"NSSelectedIndex",
                @"decodePreferredEdgeForElement:", @"NSPreferredEdge",
                @"decodeArrowPositionForElement:", @"NSArrowPosition",
                @"decodeCellPrototypeForElement:", @"NSCellPrototype",
@@ -1389,14 +1388,6 @@ didStartElement: (NSString*)elementName
   return [NSNumber numberWithBool: value];
 }
 
-- (id) decodeMenuItemForElement: (GSXibElement*)element
-{
-  NSString      *itemID   = [element attributeForKey: @"selectedItem"];
-  GSXibElement  *itemElem = [objects objectForKey: itemID];
-
-  return [self objectForXib: itemElem];
-}
-
 - (id) decodeTitleCellForElement: (GSXibElement*)element
 {
   NSString *title   = [element attributeForKey: @"title"];
@@ -1580,6 +1571,8 @@ didStartElement: (NSString*)elementName
       else if ([metaFont containsString: @"medium"])
         size = 11;
       else if ([metaFont containsString: @"menu"])
+        size = 12;
+      else if ([metaFont containsString: @"celltitle"])
         size = 12;
       else if ([metaFont containsString: @"controlcontent"])
         size = 12;
@@ -2796,7 +2789,7 @@ didStartElement: (NSString*)elementName
 {
   // We need to get the index into the menuitems for menu...
   NSMenu      *menu     = [self decodeObjectForKey: @"menu"];
-  NSMenuItem  *item     = [self decodeMenuItemForElement: element];
+  NSMenuItem  *item     = [self decodeObjectForKey: @"selectedItem"];
   NSArray     *items    = [menu itemArray];
   NSUInteger   index    = [items indexOfObjectIdenticalTo: item];
 
@@ -3044,18 +3037,18 @@ didStartElement: (NSString*)elementName
           SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
           object       = [self performSelector: selector withObject: currentElement];
         }
-      else if ([currentElement attributeForKey: key])
-        {
-          // New xib stores values as attributes...
-          object = [currentElement attributeForKey: key];
-        }
       else if ([XmlReferenceAttributes containsObject: key])
         {
           // Elements not stored INSIDE current element potentially need to be cross
           // referenced via attribute references...
           NSString      *idString = [currentElement attributeForKey: key];
-          GSXibElement  *element  = [objects objectForKey: idString];
+          GSXibElement  *element  = [self createReference: idString];
           object                  = [self objectForXib: element];
+        }
+      else if ([currentElement attributeForKey: key])
+        {
+          // New xib stores values as attributes...
+          object = [currentElement attributeForKey: key];
         }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
@@ -3304,6 +3297,10 @@ didStartElement: (NSString*)elementName
       else if ([@"NSToolbarItemImage" isEqualToString: key])
         {
           hasValue = [currentElement attributeForKey: @"image"] != nil;
+        }
+      else if ([@"NSSelectedIndex" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"selectedItem"] != nil;
         }
       else if ([XmlKeysDefined containsObject: key])
         {
