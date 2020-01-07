@@ -30,10 +30,24 @@
 */
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSDateFormatter.h>
 #import <AppKit/NSDatePickerCell.h>
 #import <AppKit/NSColor.h>
 
 @implementation NSDatePickerCell
+
+- (id) initTextCell: (NSString*)aString
+{
+  if ((self = [super  initTextCell: aString]))
+    {
+      NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+
+      [self setFormatter: formatter];
+      RELEASE(formatter);
+    }
+
+  return self;
+}
 
 - (NSColor *) backgroundColor
 {
@@ -47,12 +61,12 @@
 
 - (NSCalendar *) calendar
 {
-  return _calendar;
+  return [[self formatter] calendar];
 }
 
 - (void) setCalendar: (NSCalendar *)calendar
 {
-  ASSIGN(_calendar, calendar);
+  [[self formatter] setCalendar: calendar];
 }
 
 - (NSDatePickerElementFlags) datePickerElements
@@ -117,12 +131,12 @@
 
 - (NSLocale *) locale
 {
-  return _locale;
+  return [[self formatter] locale];
 }
 
 - (void) setLocale: (NSLocale *)locale
 {
-  ASSIGN(_locale, locale);
+  [[self formatter] setLocale: locale];
 }
 
 - (NSDate *) maxDate
@@ -167,12 +181,12 @@
 
 - (NSTimeZone *) timeZone
 {
-  return _timeZone;
+  return [[self formatter] timeZone];
 }
 
 - (void) setTimeZone: (NSTimeZone *)zone
 {
-  ASSIGN(_timeZone, zone);
+  [[self formatter] setTimeZone: zone];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder

@@ -60,17 +60,15 @@ enum {
 };
 typedef NSUInteger NSDatePickerElementFlags;
 
+@class NSColor, NSDate, NSCalendar, NSLocale, NSTimeZone;
+
 @interface NSDatePickerCell : NSActionCell
 {
   NSColor *_backgroundColor;
-  NSCalendar *_calendar;
-  NSDate *_dateValue;
-  id _delegate;
-  NSLocale *_locale;
+  NSColor *_textColor;
   NSDate *_maxDate;
   NSDate *_minDate;
-  NSColor *_textColor;
-  NSTimeZone *_timeZone;
+  id _delegate;
   NSTimeInterval _timeInterval;
   // FIXME: pack into a bitfield?
   NSDatePickerElementFlags _datePickerElements;
