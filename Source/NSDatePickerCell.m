@@ -31,8 +31,8 @@
 
 #import <Foundation/NSString.h>
 #import <Foundation/NSDateFormatter.h>
-#import <AppKit/NSDatePickerCell.h>
-#import <AppKit/NSColor.h>
+#import "AppKit/NSDatePickerCell.h"
+#import "AppKit/NSColor.h"
 
 @implementation NSDatePickerCell
 
