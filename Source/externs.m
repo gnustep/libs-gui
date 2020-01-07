@@ -785,6 +785,17 @@ NSString *NSImageNameFontPanel = @"NSFontPanel";
 NSString *NSImageNameColorPanel = @"NSColorPanel";
 NSString *NSImageNameCaution = @"NSCaution";
 
+// NSRuleEditor
+NSString *const NSRuleEditorPredicateLeftExpression = @"NSRuleEditorPredicateLeftExpression";
+NSString *const NSRuleEditorPredicateRightExpression = @"NSRuleEditorPredicateRightExpression";
+NSString *const NSRuleEditorPredicateComparisonModifier = @"NSRuleEditorPredicateComparisonModifier";
+NSString *const NSRuleEditorPredicateOptions = @"NSRuleEditorPredicateOptions";
+NSString *const NSRuleEditorPredicateOperatorType = @"NSRuleEditorPredicateOperatorType";
+NSString *const NSRuleEditorPredicateCustomSelector = @"NSRuleEditorPredicateCustomSelector";
+NSString *const NSRuleEditorPredicateCompoundType = @"NSRuleEditorPredicateCompoundType";
+
+NSString *NSRuleEditorRowsDidChangeNotification = @"NSRuleEditorRowsDidChangeNotification";
+
 extern void __objc_gui_force_linking (void);
 
 void
@@ -793,5 +804,3 @@ __objc_gui_force_linking (void)
   extern void __objc_gui_linking (void);
   __objc_gui_linking ();
 }
-
-

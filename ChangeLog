@@ -22,6 +22,31 @@
 	* Source/GSXibParser.m,
 	* Source/GNUmakefile: Remove now obsolete class.
 
+2020-01-07 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Headers/AppKit/NSDatePicker.h,
+        * Headers/AppKit/NSDatePickerCell.h,
+        * Source/NSDatePicker.m,
+        * Source/NSDatePickerCell.m: Small cleanup.
+	* Headers/AppKit/AppKit.h
+        * Headers/AppKit/NSPredicateEditor.h
+        * Headers/AppKit/NSPredicateEditorRowTemplate.h
+        * Headers/AppKit/NSRuleEditor.h
+        * Source/GNUmakefile
+        * Source/NSPredicateEditor.m
+        * Source/NSPredicateEditorRowTemplate.m
+        * Source/NSRuleEditor.m
+        * Source/externs.m: Add minimal version of predicate editor copied
+	over from mySTEP.
+
+2020-01-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDatePickerCell.h,
+	* Headers/AppKit/NSDatePicker.h,
+	* Source/NSDatePickerCell.m,
+	* Source/NSDatePicker.m: Add minimal version of date picker copied
+	over from mySTEP.
+
 2019-12-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBundleAdditions.m (-pathForNibResource:): Report type

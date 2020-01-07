@@ -15,8 +15,6 @@ MISSING HEADERS
 > NSCollectionViewTransitionLayout.h
 > NSColorSampler.h
 > NSDataAsset.h
-> NSDatePicker.h
-> NSDatePickerCell.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
 > NSDraggingItem.h
@@ -80,7 +78,7 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 86
+Total: 84
 
 Completed
 ---

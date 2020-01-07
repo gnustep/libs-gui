@@ -147,6 +147,8 @@
 #import <AppKit/NSClickGestureRecognizer.h>
 #import <AppKit/NSColorPickerTouchBarItem.h>
 #import <AppKit/NSCustomTouchBarItem.h>
+#import <AppKit/NSDatePicker.h>
+#import <AppKit/NSDatePickerCell.h>
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
@@ -178,9 +180,12 @@
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
 #import <AppKit/NSPickerTouchBarItem.h>
+#import <AppKit/NSPredicateEditor.h>
+#import <AppKit/NSPredicateEditorRowTemplate.h>
 #import <AppKit/NSProgressIndicator.h>
 #import <AppKit/NSPopoverTouchBarItem.h>
 #import <AppKit/NSPressGestureRecognizer.h>
+#import <AppKit/NSRuleEditor.h>
 #import <AppKit/NSRulerMarker.h>
 #import <AppKit/NSRulerView.h>
 #import <AppKit/NSRotationGestureRecognizer.h>

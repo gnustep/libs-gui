@@ -92,6 +92,8 @@ NSCustomTouchBarItem.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDatePicker.m \
+NSDatePickerCell.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
@@ -170,7 +172,6 @@ NSPanel.m \
 NSPanGestureRecognizer.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
-NSPressGestureRecognizer.m \
 NSParagraphStyle.m \
 NSPasteboardItem.m \
 NSPDFInfo.m \
@@ -180,6 +181,9 @@ NSPICTImageRep.m \
 NSPopover.m \
 NSPopUpButton.m \
 NSPopUpButtonCell.m \
+NSPredicateEditor.m \
+NSPredicateEditorRowTemplate.m \
+NSPressGestureRecognizer.m \
 NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
@@ -187,6 +191,7 @@ NSPrintPanel.m \
 NSProgressIndicator.m \
 NSResponder.m \
 NSRotationGestureRecognizer.m \
+NSRuleEditor.m \
 NSRulerMarker.m \
 NSRulerView.m \
 NSRunningApplication.m \
@@ -373,6 +378,8 @@ NSCustomTouchBarItem.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
+NSDatePicker.h \
+NSDatePickerCell.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
@@ -433,6 +440,8 @@ NSPopoverTouchBarItem.h \
 NSPopover.h \
 NSPopUpButton.h \
 NSPopUpButtonCell.h \
+NSPredicateEditor.h \
+NSPredicateEditorRowTemplate.h \
 NSPressGestureRecognizer.h \
 NSPrintInfo.h \
 NSPrintOperation.h \
@@ -441,6 +450,7 @@ NSPrinter.h \
 NSProgressIndicator.h \
 NSResponder.h \
 NSRotationGestureRecognizer.h \
+NSRuleEditor.h \
 NSRulerMarker.h \
 NSRulerView.h \
 NSRunningApplication.h \
