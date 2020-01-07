@@ -370,10 +370,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate5", @"window",
                             @"NSView", @"tableCellView",
-                            @"NSImage", @"image",
-                            @"NSObjectController", @"objectController",
-                            @"NSArrayController", @"arrayController",
-                            @"NSViewController", @"viewController",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
