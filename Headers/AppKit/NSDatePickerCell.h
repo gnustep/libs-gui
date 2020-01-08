@@ -32,7 +32,7 @@
 #ifndef _GNUstep_H_NSDatePickerCell
 #define _GNUstep_H_NSDatePickerCell
 
-#import "AppKit/NSActionCell.h"
+#import <AppKit/NSActionCell.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 

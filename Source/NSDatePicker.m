@@ -31,9 +31,8 @@
 
 #import <Foundation/NSString.h>
 
-#import <AppKit/NSDatePickerCell.h>
-#import <AppKit/NSDatePicker.h>
-#import <AppKit/NSColor.h>
+#import "AppKit/NSDatePickerCell.h"
+#import "AppKit/NSDatePicker.h"
 
 static id usedCellClass = nil;
 
