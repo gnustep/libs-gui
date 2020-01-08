@@ -41,8 +41,6 @@ MISSING HEADERS
 > NSPathControl.h
 > NSPathControlItem.h
 > NSPersistentDocument.h
-> NSPredicateEditor.h
-> NSPredicateEditorRowTemplate.h
 > NSPressureConfiguration.h
 > NSQuickDrawView.h
 > NSRuleEditor.h
@@ -78,7 +76,7 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 84
+Total: 82
 
 Completed
 ---
