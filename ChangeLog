@@ -1,3 +1,11 @@
+2020-01-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h,
+        * Source/externs.m: Add some more bindings.
+	* Source/NSPopUpButton.m,
+	* Source/NSPopUpButtonCell.m,
+	* Source/NSTableView.m: Use the new bindings.
+
 2020-01-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXib5KeyedUnarchiver.m,

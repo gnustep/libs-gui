@@ -2000,6 +2000,7 @@ static void computeNewSelection
       // FIXME
       [self exposeBinding: NSContentBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
+      [self exposeBinding: NSSortDescriptorsBinding];
     }
 }
 
