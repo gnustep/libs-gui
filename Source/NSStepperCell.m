@@ -346,6 +346,24 @@
   return mouseWentUp;
 }
 
+- (NSSize) cellSize
+{
+  NSRect upRect = [[GSTheme theme]
+                    stepperUpButtonRectWithFrame: [_control_view bounds]];
+  NSRect downRect = [[GSTheme theme]
+                      stepperDownButtonRectWithFrame: [_control_view bounds]];
+  NSSize size;
+
+  if (upRect.size.width > downRect.size.width)
+    size.width = upRect.size.width;
+  else
+    size.width = downRect.size.width;
+
+  size.height = upRect.size.height + downRect.size.height;
+
+  return size;
+}
+
 //
 // NSCoding protocol
 //
