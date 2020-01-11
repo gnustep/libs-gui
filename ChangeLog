@@ -1,3 +1,10 @@
+2020-01-11 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Headers/AppKit/NSRuleEditor.h
+        * Source/NSRuleEditor.m: Add action and target.
+        * Source/NSPredicateEditor.m: Add encoding and decoding.
+	* Source/GSXib5KeyedUnarchiver.m: Decode row templates.
+
 2020-01-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,

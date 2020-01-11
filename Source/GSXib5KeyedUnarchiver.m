@@ -362,6 +362,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"prototypeCellViews",
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
+                            @"NSMutableArray", @"rowTemplates",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
