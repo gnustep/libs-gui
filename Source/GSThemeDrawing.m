@@ -722,22 +722,20 @@
 - (NSRect) stepperUpButtonRectWithFrame: (NSRect)frame
 {
   NSSize size = [[NSImage imageNamed: @"common_StepperUp"] size];
-  NSRect upRect;
+  NSRect upRect = {{NSMinX(frame), NSMinY(frame)}, {size.width, size.height}};
 
-  upRect.size = size;
-  upRect.origin.x = NSMaxX(frame) - size.width;
-  upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
+  upRect.origin.x += ((int)frame.size.width / 2) - ((int)size.width / 2);
+  upRect.origin.y += ((int)frame.size.height / 2);
   return upRect;
 }
 
 - (NSRect) stepperDownButtonRectWithFrame: (NSRect)frame
 {
   NSSize size = [[NSImage imageNamed: @"common_StepperDown"] size];
-  NSRect downRect;
+  NSRect downRect = {{NSMinX(frame), NSMinY(frame)}, {size.width, size.height}};
 
-  downRect.size = size;
-  downRect.origin.x = NSMaxX(frame) - size.width;
-  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - size.height + 1;
+  downRect.origin.x += ((int)frame.size.width / 2) - ((int)size.width / 2);
+  downRect.origin.y += ((int)frame.size.height / 2) - size.height;
   return downRect;
 }
 

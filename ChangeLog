@@ -37,6 +37,25 @@
 	* Source/GSXibParser.m,
 	* Source/GNUmakefile: Remove now obsolete class.
 
+2020-01-10  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Images/common_StepperDown.tiff,
+	* Images/common_StepperDownHighlighted.tiff,
+	* Images/common_StepperUp.tiff,
+	* Images/common_StepperUpHighlighted.tiff: new images with arrows
+	similar to scroll view buttons'.
+
+	* Source/GSThemeDrawing.m (stepperUpButtonRectWithFrame:),
+	(stepperDownButtonRectWithFrame:): center buttons horizontally; simplify
+	and cleanup.
+
+	* Source/NSStepper.m (acceptsFirstResponder): return NO. Returning
+	YES makes sense only if `keyDown:` is implemented.
+	(acceptsFirstMouse:): return YES.
+
+	* Source/NSStepperCell.m (cellSize): initial implementation. Returns
+	minimum size based on up and button sizes.
+
 2020-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
         * Headers/AppKit/NSDatePicker.h,
