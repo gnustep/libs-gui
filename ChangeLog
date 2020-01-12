@@ -1,6 +1,8 @@
 2020-01-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarItem.m (-initWithCoder:): Use decodeSizeForKey:.
+	* Source/GSBindingHelpers.h,
+	* Source/NSArrayController.m: Add observable array and use it for arrangeObjects.
 
 2020-01-11 Fred Kiefer <FredKiefer@gmx.de>
 

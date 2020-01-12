@@ -78,4 +78,10 @@
 @interface GSKeyValueAndBinding : GSKeyValueBinding 
 @end
 
+@interface GSObservableArray : NSArray
+{
+  NSArray *_array;
+}
+@end
+
 #endif //_GS_BINDING_HELPER_H

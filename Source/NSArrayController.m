@@ -41,6 +41,101 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 
+@implementation GSObservableArray
+
+- (id) initWithArray: (NSArray *)array
+{
+  self = [super init];
+  if (self)
+    {
+      ASSIGN(_array, array);
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_array);
+  [super dealloc];
+}
+
+- (NSUInteger) count
+{
+  return [_array count];
+}
+
+- (NSUInteger) indexOfObject: (id)anObject
+{
+  return [_array indexOfObject: anObject];
+}
+
+- (id) objectAtIndex: (NSUInteger)index
+{
+  return [_array objectAtIndex: index];
+}
+
+- (NSArray *) objectsAtIndexes: (NSIndexSet *)indexes
+{
+  NSArray * result = [_array objectsAtIndexes: indexes];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (id) valueForKey: (NSString*)key
+{
+  id result = [_array valueForKey: key];
+
+  if ([result isKindOfClass: [NSArray class]])
+    {
+      return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+    }
+
+  return result;
+}
+
+- (NSArray*) arrayByAddingObject: (id)anObject
+{
+  NSArray * result = [_array arrayByAddingObject: anObject];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (NSArray*) arrayByAddingObjectsFromArray: (NSArray*)anotherArray
+{
+  NSArray * result = [_array arrayByAddingObjectsFromArray: anotherArray];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (void) addObserver: (NSObject*)anObserver
+	  forKeyPath: (NSString*)aPath
+	     options: (NSKeyValueObservingOptions)options
+	     context: (void*)aContext
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self addObserver: anObserver
+ toObjectsAtIndexes: indexes
+         forKeyPath: aPath
+            options: options
+            context: aContext];
+}
+
+- (void) removeObserver: (NSObject*)anObserver forKeyPath: (NSString*)aPath
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self removeObserver: anObserver
+  fromObjectsAtIndexes: indexes
+            forKeyPath: aPath];
+}
+
+@end
+
 @implementation NSArrayController
 
 + (void) initialize
@@ -378,7 +473,8 @@
 - (void) rearrangeObjects
 {
   [self willChangeValueForKey: @"arrangedObjects"];
-  ASSIGN(_arranged_objects, [self arrangeObjects: _content]);
+  _arranged_objects = [[GSObservableArray alloc]
+                                initWithArray: [self arrangeObjects: _content]];
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 
