@@ -418,18 +418,14 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"keyEquivalent", @"NSKeyEquiv",
                                            @"keyEquivalentModifierMask", @"NSKeyEquivModMask",
                                            @"contentViewMargins", @"NSOffsets",
-                                           @"styleMask", @"NSWindowStyleMask",
                                            @"contentView", @"NSWindowView",
                                            @"customClass", @"NSWindowClass",
-                                           @"title", @"NSWindowTitle",
                                            @"contentRect", @"NSWindowRect",
                                            @"insertionPointColor", @"NSInsertionColor",
                                            @"vertical", @"NSIsVertical",
                                            @"initialItem", @"NSSelectedTabViewItem",
                                            @"allowsExpansionToolTips", @"NSControlAllowsExpansionToolTips",
                                            @"segments", @"NSSegmentImages",
-                                           @"label", @"NSSegmentItemLabel",
-                                           @"image", @"NSSegmentItemImage",
                                            @"editable", @"NSIsEditable",
                                            @"objectValues", @"NSPopUpListData",
                                            @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
@@ -439,15 +435,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"items", @"NSMenuItems",
                                            @"implicitIdentifier", @"NSToolbarIdentifier",
                                            @"allowedToolbarItems", @"NSToolbarIBAllowedItems",
-                                           @"displayMode", @"NSToolbarDisplayMode",
-                                           @"sizeMode", @"NSToolbarSizeMode",
-                                           @"autosavesConfiguration", @"NSToolbarAutosavesConfiguration",
-                                           @"allowsUserCustomization", @"NSToolbarAllowsUserCustomization",
                                            @"defaultToolbarItems", @"NSToolbarIBDefaultItems",
-                                           @"prefersToBeShown", @"NSToolbarPrefersToBeShown",
-                                           @"label", @"NSToolbarItemLabel",
-                                           @"paletteLabel", @"NSToolbarItemPaletteLabel",
-                                           @"tag", @"NSToolbarItemTag",
                                            @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
                                            @"bordered", @"NSIsBordered",
                                            @"altersStateOfSelectedItem", @"NSAltersState",
@@ -604,13 +592,29 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   return NSClassFromString([self classNameForXibTag: xibTag]);
 }
 
+- (NSString*) alternateName: (NSString*)name
+                 startIndex: (NSInteger)start
+{
+  return [[[name substringWithRange: NSMakeRange(start, 1)] lowercaseString]
+                      stringByAppendingString: [name substringFromIndex: start + 1]];
+}
+
 /*
-  Remove the "NS" prefix, only called after a check for this prefix
+  Remove the "NS" prefix, only called after a check for this prefix.
+  If the remaining name starts with the current element name, remove this as well.
+  NSToolbarDisplayMode -> displayMode
  */
 - (NSString*) alternateName: (NSString*)name
 {
-  return [[[name substringWithRange: NSMakeRange(2, 1)] lowercaseString]
-           stringByAppendingString: [name substringFromIndex: 3]];
+  NSString *postfix = [self alternateName: name startIndex: 2];
+  NSString *typeName = [currentElement attributeForKey: @"key"];
+
+  if ((typeName != nil) && [postfix hasPrefix: typeName])
+    {
+      return [self alternateName: name startIndex: [typeName length] + 2];
+    }
+
+  return postfix;
 }
 
 - (GSXibElement*) createReference: (NSString *)oid
@@ -2028,6 +2032,15 @@ didStartElement: (NSString*)elementName
   [object setNextKeyView: (NSView*)headerView];
   [object setDocumentView: (NSView*)headerView];
 
+  // The header clip view is not retained by the scroll view as it is normally also a sub view.
+  // So we have to make this object a subview of the current object
+  {
+    NSString *parentId = [element attributeForKey: @"id"];
+    NSView *parent = [decoded objectForKey: parentId];
+
+    [parent addSubview: object];
+  }
+
   return AUTORELEASE(object);
 }
 
@@ -2954,20 +2967,20 @@ didStartElement: (NSString*)elementName
   // So we're going to generate them here for now...again should be moved into
   // class initWithCoder method eventually...
   id object = AUTORELEASE([NSButtonCell new]);
-  
+
   unsigned int      bFlags = 0x8444000;
   GSButtonCellFlags buttonCellFlags;
 
   memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
-  
+
   if ([@"NSSearchButtonCell" isEqualToString: key])
     [object setTitle: @"search"];
   else
     [object setTitle: @"clear"];
-  
+
   [object setTransparent: buttonCellFlags.isTransparent];
   [object setBordered: buttonCellFlags.isBordered];
-  
+
   [object setCellAttribute: NSPushInCell to: buttonCellFlags.isPushin];
   [object setCellAttribute: NSCellLightsByBackground to: buttonCellFlags.highlightByBackground];
   [object setCellAttribute: NSCellLightsByContents to: buttonCellFlags.highlightByContents];
@@ -2975,7 +2988,7 @@ didStartElement: (NSString*)elementName
   [object setCellAttribute: NSChangeBackgroundCell to: buttonCellFlags.changeBackground];
   [object setCellAttribute: NSCellChangesContents to: buttonCellFlags.changeContents];
   [object setCellAttribute: NSChangeGrayCell to: buttonCellFlags.changeGray];
-  
+
   if (buttonCellFlags.imageDoesOverlap)
     {
       if (buttonCellFlags.isImageAndText)
