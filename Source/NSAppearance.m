@@ -23,6 +23,7 @@
 */
 
 #import <AppKit/NSAppearance.h>
+#import <Foundation/NSArchiver.h>
 
 NSAppearance *__currentAppearance = nil;
 
@@ -47,11 +48,27 @@ NSAppearance *__currentAppearance = nil;
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
+  if([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      _name = [coder decodeObject];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
+    }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+    if([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [coder encodeObject: _name];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
+    }
 }
 
 - (instancetype) copyWithZone: (NSZone *)zone
