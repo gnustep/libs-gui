@@ -56,7 +56,9 @@ NSAppearance *__currentAppearance = nil;
 
 - (instancetype) copyWithZone: (NSZone *)zone
 {
-  return nil;
+  NSAppearance *copy = [[NSAppearance allocWithZone: zone] initWithAppearanceNamed: [self name]
+                                                                            bundle: nil];
+  return copy;
 }
 
 // Getting the appearance name
