@@ -71,6 +71,7 @@
 #import <AppKit/NSControl.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSCustomImageRep.h>
+#import <AppKit/NSDataAsset.h>
 #import <AppKit/NSDataLink.h>
 #import <AppKit/NSDataLinkManager.h>
 #import <AppKit/NSDataLinkPanel.h>
