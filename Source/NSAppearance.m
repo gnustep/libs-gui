@@ -53,7 +53,7 @@ NSAppearance *__currentAppearance = nil;
     }
   else
     {
-      _name = [coder decodeObject];
+      ASSIGN(_name, [coder decodeObject]);
       [coder decodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
     }
   return self;
