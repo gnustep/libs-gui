@@ -27,6 +27,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSBundle.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
@@ -36,7 +37,7 @@ extern "C" {
 
 typedef NSString* NSAppearanceName;
 
-@interface NSAppearance : NSObject <NSCopying, NSCoding>
+@interface NSAppearance : NSObject <NSCoding>
 {
   NSString *_name;
   BOOL _allowsVibrancy;
@@ -62,15 +63,15 @@ typedef NSString* NSAppearanceName;
   
 @end
 
-const NSAppearanceName NSAppearanceNameAqua;
-const NSAppearanceName NSAppearanceNameDarkAqua;
-const NSAppearanceName NSAppearanceNameVibrantLight;
-const NSAppearanceName NSAppearanceNameVibrantDark;
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastAqua;
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastDarkAqua;
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantLight;
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantDark;
-const NSAppearanceName NSAppearanceNameLightContent;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameAqua;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameDarkAqua;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameVibrantLight;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameVibrantDark;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameAccessibilityHighContrastAqua;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameAccessibilityHighContrastDarkAqua;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantLight;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantDark;
+APPKIT_EXPORT NSAppearanceName const NSAppearanceNameLightContent;
 
 
 #if	defined(__cplusplus)

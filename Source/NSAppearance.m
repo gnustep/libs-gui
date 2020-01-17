@@ -102,12 +102,3 @@ NSAppearance *__currentAppearance = nil;
 
 @end
 
-const NSAppearanceName NSAppearanceNameAqua = @"NSAppearanceNameAqua";
-const NSAppearanceName NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
-const NSAppearanceName NSAppearanceNameVibrantLight = @"NSAppearanceNameVibrantLight";
-const NSAppearanceName NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastAqua = @"NSAppearanceNameAccessibilityHighContrastAqua";
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastDarkAqua = @"NSAppearanceNameAccessibilityHighContrastDarkAqua";
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantLight = @"NSAppearanceNameAccessibilityHighContrastVibrantLight";
-const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantDark = @"NSAppearanceNameAccessibilityHighContrastVibrantDark";
-const NSAppearanceName NSAppearanceNameLightContent = @"NSAppearanceNameLightContent";
