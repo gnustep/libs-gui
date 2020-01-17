@@ -1,5 +1,5 @@
 /* Implementation of class NSAppearance
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
    Date: Wed Jan 15 07:03:39 EST 2020
@@ -38,7 +38,7 @@ NSAppearance *__currentAppearance = nil;
 - (instancetype) initWithAppearanceNamed: (NSString *)name bundle: (NSBundle *)bundle
 {
   self = [super init];
-  if(self)
+  if (self)
     {
       ASSIGNCOPY(_name, name);
       _allowsVibrancy = NO;
@@ -48,7 +48,7 @@ NSAppearance *__currentAppearance = nil;
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
     }
   else
@@ -61,7 +61,7 @@ NSAppearance *__currentAppearance = nil;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-    if([coder allowsKeyedCoding])
+    if ([coder allowsKeyedCoding])
     {
     }
   else
@@ -69,13 +69,6 @@ NSAppearance *__currentAppearance = nil;
       [coder encodeObject: _name];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
     }
-}
-
-- (instancetype) copyWithZone: (NSZone *)zone
-{
-  NSAppearance *copy = [[NSAppearance allocWithZone: zone] initWithAppearanceNamed: [self name]
-                                                                            bundle: nil];
-  return copy;
 }
 
 // Getting the appearance name
