@@ -2867,7 +2867,7 @@ byExtendingSelection: (BOOL)flag
       if ([indexes lastIndex] >= _numberOfRows)
         {
 	  [NSException raise: NSInvalidArgumentException
-		       format: @"Row index out of table in selectRow"];
+                      format: @"Row index out of table in selectRow"];
 	}
 
       /* This check is not fully correct, as both sets may contain just 
@@ -6671,7 +6671,7 @@ For a more detailed explanation, -setSortDescriptors:. */
                                    forObject: tb];
   if (theBinding != nil)
     {
-      return [(NSArray *)[theBinding sourceValueFor: NSValueBinding]
+      return [(NSArray *)[theBinding destinationValue]
                  objectAtIndex: index];
     }
   else if ([_dataSource respondsToSelector:
@@ -6713,7 +6713,7 @@ For a more detailed explanation, -setSortDescriptors:. */
                                    forObject: self];
   if (theBinding != nil)
     {
-      return [(NSArray *)[theBinding sourceValueFor: NSContentBinding] count];
+      return [(NSArray *)[theBinding destinationValue] count];
     }
   else if ([_dataSource respondsToSelector:
 		    @selector(numberOfRowsInTableView:)])
@@ -6932,7 +6932,7 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       // Reload data
       [self reloadData];
-      NSLog(@"Setting TV content to %@", anObject);
+      NSDebugLLog(@"NSBinding", @"Setting table view content to %@", anObject);
     }
   else if ([aKey isEqual: NSSelectionIndexesBinding])
     {

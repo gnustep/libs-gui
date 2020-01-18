@@ -76,7 +76,7 @@
 
 - (NSArray *) objectsAtIndexes: (NSIndexSet *)indexes
 {
-  NSArray * result = [_array objectsAtIndexes: indexes];
+  NSArray *result = [_array objectsAtIndexes: indexes];
 
   return AUTORELEASE([[GSObservableArray alloc]
                                 initWithArray: result]);
@@ -460,8 +460,13 @@
 
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
-  NSArray *temp = [obj filteredArrayUsingPredicate: _filter_predicate];
-  
+  NSArray *temp = obj;
+
+  if (_filter_predicate != nil)
+    {
+      temp = [obj filteredArrayUsingPredicate: _filter_predicate];
+    }
+
   return [temp sortedArrayUsingDescriptors: _sort_descriptors];
 }
 

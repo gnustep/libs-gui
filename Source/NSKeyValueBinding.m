@@ -29,6 +29,7 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -345,7 +346,10 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
 - (void) setValueFor: (NSString *)binding 
 {
-  [src setValue: [self destinationValue] forKey: binding];
+  id value = [self destinationValue];
+
+  NSDebugLLog(@"NSBinding", @"setValueFor: binding %@, source %@ value %@", binding, src, value);
+  [src setValue: value forKey: binding];
 }
 
 - (void) reverseSetValue: (id)value
@@ -355,6 +359,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
   keyPath = [info objectForKey: NSObservedKeyPathKey];
   dest = [info objectForKey: NSObservedObjectKey];
+  NSDebugLLog(@"NSBinding", @"reverseSetValue: keyPath %@, dest %@ value %@", keyPath, dest, value);
   [dest setValue: value forKeyPath: keyPath];
 }
 
@@ -377,6 +382,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
       options = [info objectForKey: NSOptionsKey];
       newValue = [change objectForKey: NSKeyValueChangeNewKey];
       newValue = [self transformValue: newValue withOptions: options];
+      NSDebugLLog(@"NSBinding", @"observeValueForKeyPath: binding %@, keyPath %@, source %@ value %@", binding, keyPath, src, newValue);
       [src setValue: newValue forKey: binding];
     }
 }
@@ -475,6 +481,12 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     }
 
   return value;
+}
+
+- (NSString*) description
+{
+  return [NSString stringWithFormat: 
+                     @"GSKeyValueBinding src (%@) info %@", src, info];
 }
 
 @end

@@ -1,3 +1,13 @@
+2020-01-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSArrayController.m: Only filter if there is a filter predicate.
+	* Source/NSTableView.m: Use destionationValue instead of
+	sourceValueFor: to get the row numbers and the display values.
+	* Source/GSThemeDrawing.m: Don't use the datasource of the table
+	directly to get the values to display.
+	* Source/NSTabView.m: Mark for redisplay when removing tab item.
+	* Source/NSKeyValueBinding.m: Add some debugging logs.
+
 2020-01-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarItem.m (-initWithCoder:): Use decodeSizeForKey:.
