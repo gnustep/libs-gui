@@ -1,7 +1,7 @@
-/* 
+/*
    <title>NSNibConnector</title>
 
-   <abstract>Implementation of NSNibConnector and subclasses</abstract>
+   <abstract>Implementation of NSNibConnector</abstract>
 
    Copyright (C) 1999, 2015 Free Software Foundation, Inc.
 
@@ -9,7 +9,7 @@
    Date: 1999
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: August 2015
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -24,16 +24,13 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
-#import "config.h"
 #import <Foundation/NSCoder.h>
-#import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
-#import "AppKit/NSControl.h"
 #import "AppKit/NSNibConnector.h"
 
 @implementation	NSNibConnector
@@ -93,7 +90,7 @@
 	  ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
 	}
       if ([aDecoder containsValueForKey: @"NSLabel"])
-	{      
+	{
 	  ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
 	}
     }
@@ -172,11 +169,11 @@
 
 - (NSString *)description
 {
-  NSString *desc = [NSString stringWithFormat: @"<%@ src=%@ dst=%@ label=%@>",
-			     [super description],
-			     [self source],
-			     [self destination],
-			     [self label]];
-  return desc;
+  return [NSString stringWithFormat: @"<%@ src=%@ dst=%@ label=%@>",
+                   [super description],
+                   [self source],
+                   [self destination],
+                   [self label]];
 }
+
 @end
