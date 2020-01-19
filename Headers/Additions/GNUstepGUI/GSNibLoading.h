@@ -220,6 +220,7 @@ typedef struct _GSWindowTemplateFlags
 - (void) setExtension: (NSString *)ext;
 - (NSString *)extension;
 - (void) setRealObject: (id)obj;
+- (id) realObject;
 @end
 
 @interface NSCustomView : NSView <GSNibLoading>

@@ -1,5 +1,12 @@
 2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXibKeyedUnarchiver.m: Remove references of XIB 5.
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Add one method definition.
+	* Source/GSXibLoader.m,
+	* Source/GSXibLoading.m: Move helper classes to the correct file.
+
+2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSXib5KeyedUnarchiver.m: Handle dictionary elements correctly.
 	* Source/NSKeyValueBinding.m: Transform each element of an array.
 
