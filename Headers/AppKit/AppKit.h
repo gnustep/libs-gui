@@ -173,6 +173,8 @@
 #import <AppKit/NSMovieView.h>
 #import <AppKit/NSPanGestureRecognizer.h>
 #import <AppKit/NSNib.h>
+#import <AppKit/NSNibControlConnector.h>
+#import <AppKit/NSNibOutletConnector.h>
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSObjectController.h>
 #import <AppKit/NSOpenGL.h>
