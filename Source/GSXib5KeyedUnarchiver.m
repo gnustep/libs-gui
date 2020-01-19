@@ -888,7 +888,8 @@ didStartElement: (NSString*)elementName
         {
           if ([NSClassFromString(className) isSubclassOfClass: [NSArray class]])
             elementType = @"array";
-          else if ([@"string" isEqualToString: elementName] == NO)
+          else if (([@"string" isEqualToString: elementName] == NO) &&
+                   ([@"dictionary" isEqualToString: elementName] == NO))
             elementType = @"object";
         }
 

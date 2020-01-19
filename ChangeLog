@@ -1,3 +1,8 @@
+2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Handle dictionary elements correctly.
+	* Source/NSKeyValueBinding.m: Transform each element of an array.
+
 2020-01-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSArrayController.m: Only filter if there is a filter predicate.

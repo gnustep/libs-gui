@@ -44,6 +44,7 @@
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 
 @implementation NSObject (NSKeyValueBindingCreation)
 
@@ -450,7 +451,21 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
   if (valueTransformer != nil)
     {
-      value = [valueTransformer transformedValue: value];
+      if ([value isKindOfClass: [NSArray class]])
+        {
+          NSArray *oldValue = (NSArray *)value;
+          NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity: [oldValue count]];
+          id<NSFastEnumeration> enumerator = oldValue;
+
+          FOR_IN (id, obj, enumerator)
+            [newValue addObject: [valueTransformer transformedValue: obj]];
+          END_FOR_IN(enumerator)
+          value = AUTORELEASE(newValue);
+        }
+      else
+        {
+          value = [valueTransformer transformedValue: value];
+        }
     }
 
   return value;
