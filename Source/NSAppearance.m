@@ -71,6 +71,12 @@ NSAppearance *__currentAppearance = nil;
     }
 }
 
+- (void) dealloc
+{
+  RELEASE(_name);
+  [super dealloc];
+}
+
 // Getting the appearance name
 - (NSString *) name
 {
