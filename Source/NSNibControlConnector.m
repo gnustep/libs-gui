@@ -1,11 +1,15 @@
-/* 
-   NSNibConnector.h
+/*
+   <title>NSNibControlConnector</title>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   <abstract>Implementation of NSNibControlConnector</abstract>
+
+   Copyright (C) 1999, 2015 Free Software Foundation, Inc.
 
    Author:  Richard Frith-Macdonald <richard@branstorm.co.uk>
    Date: 1999
-   
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: August 2015
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -20,38 +24,22 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
-#ifndef _GNUstep_H_NSNibConnector
-#define _GNUstep_H_NSNibConnector
-#import <GNUstepBase/GSVersionMacros.h>
+#import "AppKit/NSControl.h"
+#import "AppKit/NSNibControlConnector.h"
 
-#import <Foundation/NSObject.h>
+@implementation	NSNibControlConnector
 
-@class NSString;
-
-@interface NSNibConnector : NSObject <NSCoding>
+- (void) establishConnection
 {
-  id		_src;
-  id		_dst;
-  NSString	*_tag;
+  SEL sel = NSSelectorFromString(_tag);
+
+  [_src setTarget: _dst];
+  [_src setAction: sel];
 }
 
-- (id) destination;
-- (void) establishConnection;
-- (NSString*) label;
-- (void) replaceObject: (id)anObject withObject: (id)anotherObject;
-- (id) source;
-- (void) setDestination: (id)anObject;
-- (void) setLabel: (NSString*)label;
-- (void) setSource: (id)anObject;
 @end
-
-#import <AppKit/NSNibControlConnector.h>
-#import <AppKit/NSNibOutletConnector.h>
-
-#endif
-
