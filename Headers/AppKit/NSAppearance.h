@@ -1,5 +1,5 @@
 /* Definition of class NSAppearance
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
    Date: Wed Jan 15 07:03:39 EST 2020
