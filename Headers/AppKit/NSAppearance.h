@@ -55,8 +55,8 @@ typedef NSString* NSAppearanceName;
 - (NSAppearanceName) bestMatchFromAppearancesWithNames: (NSArray *)appearances;
 
 // Getting and setting the appearance
-+ (void) setCurrentAppearance: (NSAppearanceName)name;
-+ (NSAppearanceName) currentAppearance;
++ (void) setCurrentAppearance: (NSAppearance *)appearance;
++ (NSAppearance *) currentAppearance;
 
 // Managing vibrancy
 - (BOOL) allowsVibrancy;
