@@ -120,6 +120,8 @@ NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
+NSTouch.m \
+NSTouchBar.m \
 NSTouchBarItem.m \
 NSGestureRecognizer.m \
 NSGradient.m \
@@ -149,7 +151,6 @@ NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
-NSTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
@@ -248,7 +249,6 @@ NSTextView_actions.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSToolbarItemGroup.m \
-NSTouchBarItem.m \
 NSTokenField.m \
 NSTokenFieldCell.m \
 NSTrackingArea.m \
@@ -507,6 +507,8 @@ NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
 NSToolbarItemGroup.h \
+NSTouch.h \
+NSTouchBar.h \
 NSTouchBarItem.h \
 NSTokenField.h \
 NSTokenFieldCell.h \
