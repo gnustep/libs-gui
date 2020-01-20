@@ -26,6 +26,7 @@
 #define _NSStoryboard_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSBundle.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -33,7 +34,29 @@
 extern "C" {
 #endif
 
+typedef NSString* NSStoryboardName;
+typedef NSString* NSStoryboardSceneIdentifier;
+
+DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, id, NSCoder*);
+  
 @interface NSStoryboard : NSObject
+
+// Creating a storyboard object from a storyboard file...
++ (instancetype) storyboardWithName: (NSStoryboardName)name
+                             bundle: (NSBundle *)storyboard;
+
++ (NSStoryboard *) mainStoryboard;
+
+// Instantiating a controller from a storyboard
+- (id) instantiateInitialController;
+  
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier;
+
+// Instance methods
+- (id) instantiateControllerWithIdentifier:(NSStoryboardSceneIdentifier)identifier 
+                                   creator:(NSStoryboardControllerCreator)block;
+
+- (id) instantiateInitialControllerWithCreator:(NSStoryboardControllerCreator)block;
 
 @end
 
