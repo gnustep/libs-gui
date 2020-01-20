@@ -22,20 +22,20 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSDataAsset.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSData.h>
+#import <AppKit/NSDataAsset.h>
 
 @implementation NSDataAsset
 
 // Initializing the Data Asset
-- (instancetype) initWithName: (NSString *)name
+- (instancetype) initWithName: (NSDataAssetName)name
 {
   return [self initWithName: name bundle: nil];
 }
 
-- (instancetype) initWithName: (NSString *)name bundle: (NSBundle *)bundle
+- (instancetype) initWithName: (NSDataAssetName)name bundle: (NSBundle *)bundle
 {
   self = [super init];
   if (self != nil)
@@ -72,7 +72,7 @@
 }
 
 // Getting data asset information
-- (NSString *) name
+- (NSDataAssetName) name
 {
   return _name;
 }

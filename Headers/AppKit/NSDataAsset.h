@@ -39,21 +39,21 @@ typedef NSString* NSDataAssetName;
   
 @interface NSDataAsset : NSObject <NSCopying>
 {
-  NSString *_name;
+  NSDataAssetName _name;
   NSBundle *_bundle;
   NSData *_data;
   NSString *_typeIdentifier;
 }
   
 // Initializing the Data Asset
-- (instancetype) initWithName: (NSString *)name;
-- (instancetype) initWithName: (NSString *)name bundle: (NSBundle *)bundle;
+- (instancetype) initWithName: (NSDataAssetName)name;
+- (instancetype) initWithName: (NSDataAssetName)name bundle: (NSBundle *)bundle;
 
 // Accessing data...
 - (NSData *) data;
 
 // Getting data asset information
-- (NSString *) name;
+- (NSDataAssetName) name;
 - (NSString *) typeIdentifier;
 
 @end
