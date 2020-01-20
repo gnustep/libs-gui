@@ -50,6 +50,7 @@ NSAffineTransform.m \
 NSAlert.m \
 NSAnimation.m \
 NSAnimationContext.m \
+NSAppearance.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -345,6 +346,7 @@ NSAffineTransform.h \
 NSAlert.h \
 NSAnimation.h \
 NSAnimationContext.h \
+NSAppearance.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \

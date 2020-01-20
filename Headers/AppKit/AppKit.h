@@ -48,6 +48,7 @@
 #import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
+#import <AppKit/NSAppearance.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSBitmapImageRep.h>
