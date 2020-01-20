@@ -220,6 +220,8 @@
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextTable.h>
 #import <AppKit/NSTextView.h>
+#import <AppKit/NSTouch.h>
+#import <AppKit/NSTouchBar.h>
 #import <AppKit/NSTouchBarItem.h>
 #import <AppKit/NSTokenField.h>
 #import <AppKit/NSTokenFieldCell.h>
