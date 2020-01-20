@@ -74,7 +74,6 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 74
 
 Completed
 ---
@@ -85,7 +84,9 @@ Completed
 > NSPICTImageRep.h
 > NSDockTile.h
 > NSAppearance.h
-Total: 7
+> NSDataAsset.h
+> NSTouch.h
+> NSTouchBar.h
 
 Mac Specific
 ---
@@ -112,4 +113,3 @@ Mac Specific
 > NSWindowScripting.h
 > NSHapticFeedback.h
 > NSAppleScriptExtensions.h
-Total: 23
