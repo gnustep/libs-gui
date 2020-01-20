@@ -159,6 +159,8 @@ NSMovie.m \
 NSMovieView.m \
 NSNib.m \
 NSNibConnector.m \
+NSNibControlConnector.m \
+NSNibOutletConnector.m \
 NSNibBindingConnector.m \
 NSNibAXAttributeConnector.m \
 NSNibAXRelationshipConnector.m \
@@ -522,6 +524,8 @@ NSColorPicking.h \
 NSDragging.h \
 NSGraphics.h \
 NSNibConnector.h \
+NSNibControlConnector.h \
+NSNibOutletConnector.h \
 NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
