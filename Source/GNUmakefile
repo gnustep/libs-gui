@@ -90,6 +90,7 @@ NSController.m \
 NSCursor.m \
 NSCustomImageRep.m \
 NSCustomTouchBarItem.m \
+NSDataAsset.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
@@ -379,6 +380,7 @@ NSController.h \
 NSCursor.h \
 NSCustomImageRep.h \
 NSCustomTouchBarItem.h \
+NSDataAsset.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
