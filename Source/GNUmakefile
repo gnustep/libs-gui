@@ -50,6 +50,7 @@ NSAffineTransform.m \
 NSAlert.m \
 NSAnimation.m \
 NSAnimationContext.m \
+NSAppearance.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -89,6 +90,7 @@ NSController.m \
 NSCursor.m \
 NSCustomImageRep.m \
 NSCustomTouchBarItem.m \
+NSDataAsset.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
@@ -345,6 +347,7 @@ NSAffineTransform.h \
 NSAlert.h \
 NSAnimation.h \
 NSAnimationContext.h \
+NSAppearance.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \
@@ -377,6 +380,7 @@ NSController.h \
 NSCursor.h \
 NSCustomImageRep.h \
 NSCustomTouchBarItem.h \
+NSDataAsset.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \

@@ -7,14 +7,12 @@ MISSING HEADERS
 > NSAccessibilityElement.h
 > NSAccessibilityProtocols.h
 > NSAlignmentFeedbackFilter.h
-> NSAppearance.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
 > NSCollectionViewLayout.h
 > NSCollectionViewTransitionLayout.h
 > NSColorSampler.h
-> NSDataAsset.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
 > NSDraggingItem.h
@@ -76,7 +74,7 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 82
+Total: 74
 
 Completed
 ---
@@ -86,7 +84,8 @@ Completed
 > NSPDFPanel.h
 > NSPICTImageRep.h
 > NSDockTile.h
-Total: 6
+> NSAppearance.h
+Total: 7
 
 Mac Specific
 ---
