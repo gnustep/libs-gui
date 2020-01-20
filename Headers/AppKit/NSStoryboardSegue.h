@@ -33,7 +33,29 @@
 extern "C" {
 #endif
 
+typedef NSString* NSStoryboardSegueIdentifier;
+DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardPerformHandler, void);
+  
 @interface NSStoryboardSegue : NSObject
+
+// Inspecting a Storyboard Segue
+- (id) sourceController;
+
+- (id) destinationController;
+
+- (NSStoryboardSegueIdentifier) identifier;
+
+// Customizing Storyboard Segue Initialization and Invocation
++ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                              source: (id)sourceController 
+                         destination: (id)destinationController 
+                      performHandler: (GSStoryboardPerformHandler)performHandler;
+
+- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                             source: (id)sourceController 
+                        destination: (id)destinationController;
+
+- (void) perform;
 
 @end
 

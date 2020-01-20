@@ -26,5 +26,42 @@
 
 @implementation NSStoryboardSegue
 
+// Inspecting a Storyboard Segue
+- (id) sourceController
+{
+  return nil;
+}
+
+- (id) destinationController
+{
+  return nil;
+}
+
+
+- (NSStoryboardSegueIdentifier) identifier
+{
+  return nil;
+}
+
+// Customizing Storyboard Segue Initialization and Invocation
++ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                              source: (id)sourceController 
+                         destination: (id)destinationController 
+                      performHandler: (GSStoryboardPerformHandler)performHandler
+{
+  return nil;
+}
+
+- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                             source: (id)sourceController 
+                        destination: (id)destinationController
+{
+  return nil;
+}
+
+- (void) perform
+{
+}
+
 @end
 
