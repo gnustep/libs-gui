@@ -47,4 +47,38 @@
   ASSIGN(_rowTemplates, templates);
 }
 
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _rowTemplates forKey: @"NSRowTemplates"];
+    }
+  else
+    {
+    }
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  if (nil == self)
+    {
+      return nil;
+    }
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSArray *rowTemplates = [aDecoder decodeObjectForKey: @"NSRowTemplates"];
+
+      [self setRowTemplates: rowTemplates];
+    }
+  else
+    {
+    }
+
+  return self;
+}
+
 @end

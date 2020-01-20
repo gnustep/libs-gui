@@ -72,6 +72,8 @@
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index;
+- (id)_objectValueForTableColumn: (NSTableColumn *)tb
+			     row: (NSInteger)index;
 @end
 
 @interface NSCell (Private)
@@ -3105,7 +3107,6 @@ typedef enum {
   NSInteger numberOfColumns = [tableView numberOfColumns];
   // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];
-  id dataSource = [tableView dataSource];
   CGFloat *columnOrigins = [tableView _columnOrigins];
   NSInteger editedRow = [tableView editedRow];
   NSInteger editedColumn = [tableView editedColumn];
@@ -3121,11 +3122,6 @@ typedef enum {
   NSColor *tempColor = nil;
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
 					  state: GSThemeNormalState];
-
-  if (dataSource == nil)
-    {
-      return;
-    }
 
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -3170,9 +3166,8 @@ typedef enum {
         }
       else
         {
-          [cell setObjectValue: [dataSource tableView: tableView
-                                            objectValueForTableColumn: tb
-                                                  row: rowIndex]];
+          [cell setObjectValue: [tableView _objectValueForTableColumn: tb
+                                                                  row: rowIndex]];
         }
       drawingRect = [tableView frameOfCellAtColumn: i
 			       row: rowIndex];

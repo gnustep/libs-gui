@@ -67,6 +67,7 @@ Class _nspopupbuttonCellClass = 0;
       [self exposeBinding: NSSelectedIndexBinding];
       [self exposeBinding: NSSelectedObjectBinding];
       [self exposeBinding: NSSelectedTagBinding];
+      [self exposeBinding: NSSelectedValueBinding];
       [self exposeBinding: NSContentValuesBinding];
    } 
 }
@@ -571,7 +572,12 @@ this to return nil to indicate that we have no context menu.
     }
   else if ([aKey isEqual: NSSelectedObjectBinding])
     {
+      // FIXME: This looks wrong to me
       [self selectItemWithTag: [anObject intValue]];
+    }
+  else if ([aKey isEqual: NSSelectedValueBinding])
+    {
+      [self selectItemWithTitle: anObject];
     }
   else if ([aKey isEqual: NSContentValuesBinding])
     {
@@ -596,7 +602,12 @@ this to return nil to indicate that we have no context menu.
     }
   else if ([aKey isEqual: NSSelectedObjectBinding])
     {
+      // FIXME
       return [NSNumber numberWithInt: [self selectedTag]];
+    }
+  else if ([aKey isEqual: NSSelectedValueBinding])
+    {
+      return [self titleOfSelectedItem];
     }
   else if ([aKey isEqual: NSContentValuesBinding])
     {

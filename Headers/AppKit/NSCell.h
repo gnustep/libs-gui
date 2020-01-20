@@ -156,6 +156,24 @@ enum {
 };
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+enum {
+  NSBackgroundStyleLight = 0,
+  NSBackgroundStyleDark = 1,
+  NSBackgroundStyleRaised = 2,
+  NSBackgroundStyleLowered = 3
+};
+typedef NSInteger NSBackgroundStyle;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+enum __NSControlSize {
+  NSControlSizeRegular,
+  NSControlSizeSmall,
+  NSControlSizeMini
+};
+#endif
+
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
@@ -188,7 +206,8 @@ enum {
     unsigned allows_undo: 1;
     unsigned line_break_mode: 3; // 6 values
 
-    // total 20 bits.  4 bits extension, 8 bits left.
+    // 23 bits for NSCell use, 4 bits for subclass use.
+    // 5 bits remain unused.
     int state: 2; // 3 values but one negative
     unsigned mnemonic_location: 8;
     unsigned control_tint: 3;
@@ -204,6 +223,7 @@ enum {
     unsigned in_editing: 1;
     // Set if cell uses single line mode.
     unsigned uses_single_line_mode:1;
+    unsigned background_style: 2; // 3 values
   } _cell;
   NSUInteger _mouse_down_flags;
   NSUInteger _action_mask;
@@ -455,6 +475,8 @@ enum {
 	    ofView:(NSView *)controlView
 	    untilMouseUp:(BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSBackgroundStyle)backgroundStyle;
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle;
 - (NSUInteger)hitTestForEvent:(NSEvent *)event
                        inRect:(NSRect)cellFrame
                        ofView:(NSView *)controlView;
