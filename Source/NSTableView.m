@@ -2784,7 +2784,7 @@ byExtendingSelection: (BOOL)flag
       if ([indexes lastIndex] >= _numberOfColumns)
         {
 	  [NSException raise: NSInvalidArgumentException
-		       format: @"Column index out of table in selectColumn"];
+                      format: @"Column index out of table in selectColumn"];
 	}
 
       /* This check is not fully correct, as both sets may contain just 
@@ -2793,7 +2793,7 @@ byExtendingSelection: (BOOL)flag
 	  [_selectedColumns count] + [indexes count] > 1)
         {
 	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Can not set multiple selection in table view when multiple selection is disabled"];  
+                      format: @"Can not set multiple selection in table view when multiple selection is disabled"];  
 	}
 
       col = [indexes firstIndex];

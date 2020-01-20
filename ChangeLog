@@ -31,15 +31,15 @@
 
 2020-01-11 Fred Kiefer <FredKiefer@gmx.de>
 
-        * Headers/AppKit/NSRuleEditor.h
-        * Source/NSRuleEditor.m: Add action and target.
-        * Source/NSPredicateEditor.m: Add encoding and decoding.
+	* Headers/AppKit/NSRuleEditor.h
+	* Source/NSRuleEditor.m: Add action and target.
+	* Source/NSPredicateEditor.m: Add encoding and decoding.
 	* Source/GSXib5KeyedUnarchiver.m: Decode row templates.
 
 2020-01-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,
-        * Source/externs.m: Add some more bindings.
+	* Source/externs.m: Add some more bindings.
 	* Source/NSPopUpButton.m,
 	* Source/NSPopUpButtonCell.m,
 	* Source/NSTableView.m: Use the new bindings.
@@ -70,8 +70,8 @@
 
 2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
-        * Headers/AppKit/NSNibOutletConnector.h,
-        * Headers/AppKit/NSNibControlConnector.h,
+	* Headers/AppKit/NSNibOutletConnector.h,
+	* Headers/AppKit/NSNibControlConnector.h,
 	* Source/NSNibOutletConnector.m,
 	* Source/NSNibControlConnector.m,
 	* Source/NSNibConnector.m: Add files missing in last commit from Gregory.
@@ -97,19 +97,19 @@
 
 2020-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
-        * Headers/AppKit/NSDatePicker.h,
-        * Headers/AppKit/NSDatePickerCell.h,
-        * Source/NSDatePicker.m,
-        * Source/NSDatePickerCell.m: Small cleanup.
+	* Headers/AppKit/NSDatePicker.h,
+	* Headers/AppKit/NSDatePickerCell.h,
+	* Source/NSDatePicker.m,
+	* Source/NSDatePickerCell.m: Small cleanup.
 	* Headers/AppKit/AppKit.h
-        * Headers/AppKit/NSPredicateEditor.h
-        * Headers/AppKit/NSPredicateEditorRowTemplate.h
-        * Headers/AppKit/NSRuleEditor.h
-        * Source/GNUmakefile
-        * Source/NSPredicateEditor.m
-        * Source/NSPredicateEditorRowTemplate.m
-        * Source/NSRuleEditor.m
-        * Source/externs.m: Add minimal version of predicate editor copied
+	* Headers/AppKit/NSPredicateEditor.h
+	* Headers/AppKit/NSPredicateEditorRowTemplate.h
+	* Headers/AppKit/NSRuleEditor.h
+	* Source/GNUmakefile
+	* Source/NSPredicateEditor.m
+	* Source/NSPredicateEditorRowTemplate.m
+	* Source/NSRuleEditor.m
+	* Source/externs.m: Add minimal version of predicate editor copied
 	over from mySTEP.
 
 2020-01-06 Fred Kiefer <FredKiefer@gmx.de>
