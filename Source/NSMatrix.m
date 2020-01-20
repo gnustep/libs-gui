@@ -76,6 +76,7 @@
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSWindow.h"
+#import "GSCodingFlags.h"
 
 #include <math.h>
 
@@ -128,40 +129,6 @@ typedef struct {
   NSInteger width;
   NSInteger height;
 } MRect;
-
-typedef struct _GSMatrixFlags {
-#if GS_WORDS_BIGENDIAN == 1
-  unsigned int isHighlight:1;
-  unsigned int isRadio:1;
-  unsigned int isList:1;
-  unsigned int allowsEmptySelection:1;
-  unsigned int autoScroll:1;
-  unsigned int selectionByRect:1;
-  unsigned int drawCellBackground:1;
-  unsigned int drawBackground:1;
-  unsigned int autosizesCells:1;
-  unsigned int drawingAncestor:1;
-  unsigned int tabKeyTraversesCells:1;
-  unsigned int tabKeyTraversesCellsExplicitly:1;
-  unsigned int canSearchIncrementally:1;
-  unsigned int unused:19;
-#else
-  unsigned int unused:19;
-  unsigned int canSearchIncrementally:1;
-  unsigned int tabKeyTraversesCellsExplicitly:1;
-  unsigned int tabKeyTraversesCells:1;
-  unsigned int drawingAncestor:1;
-  unsigned int autosizesCells:1;
-  unsigned int drawBackground:1;
-  unsigned int drawCellBackground:1;
-  unsigned int selectionByRect:1;
-  unsigned int autoScroll:1;
-  unsigned int allowsEmptySelection:1;
-  unsigned int isList:1;
-  unsigned int isRadio:1;
-  unsigned int isHighlight:1;  
-#endif
-} GSMatrixFlags;
 
 static inline MPoint MakePoint (NSInteger x, NSInteger y)
 {

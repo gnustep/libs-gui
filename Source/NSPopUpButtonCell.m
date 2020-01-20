@@ -1385,22 +1385,20 @@ static NSImage *_pbc_image[5];
 
   if (_control_view)
     {
-      GSKeyValueBinding *theBinding;
+      NSString *bindings[] = {NSSelectedIndexBinding, NSSelectedTagBinding,
+                              NSSelectedObjectBinding, NSSelectedValueBinding};
+      int i;
 
-      theBinding = [GSKeyValueBinding getBinding: NSSelectedIndexBinding 
-                                       forObject: _control_view];
-      if (theBinding != nil)
-        [theBinding reverseSetValueFor: NSSelectedIndexBinding];
+      for (i = 0; i < 4; i++)
+        {
+          NSString *binding = bindings[i];
+          GSKeyValueBinding *theBinding;
 
-      theBinding = [GSKeyValueBinding getBinding: NSSelectedTagBinding 
-                                       forObject: _control_view];
-      if (theBinding != nil)
-        [theBinding reverseSetValueFor: NSSelectedTagBinding];
-
-      theBinding = [GSKeyValueBinding getBinding: NSSelectedObjectBinding 
-                                       forObject: _control_view];
-      if (theBinding != nil)
-        [theBinding reverseSetValueFor: NSSelectedObjectBinding];
+          theBinding = [GSKeyValueBinding getBinding: binding 
+                                           forObject: _control_view];
+          if (theBinding != nil)
+            [theBinding reverseSetValueFor: binding];
+        }
     }
 
   [NSApp sendAction: [self action] to: [self target] from: _control_view];

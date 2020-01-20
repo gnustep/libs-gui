@@ -1,7 +1,77 @@
 2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
-        * Headers/AppKit/NSNibOutletConnector.h,
-        * Headers/AppKit/NSNibControlConnector.h,
+	* Source/GSXibKeyedUnarchiver.m: Remove references of XIB 5.
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Add one method definition.
+	* Source/GSXibLoader.m,
+	* Source/GSXibLoading.m: Move helper classes to the correct file.
+
+2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Handle dictionary elements correctly.
+	* Source/NSKeyValueBinding.m: Transform each element of an array.
+
+2020-01-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSArrayController.m: Only filter if there is a filter predicate.
+	* Source/NSTableView.m: Use destionationValue instead of
+	sourceValueFor: to get the row numbers and the display values.
+	* Source/GSThemeDrawing.m: Don't use the datasource of the table
+	directly to get the values to display.
+	* Source/NSTabView.m: Mark for redisplay when removing tab item.
+	* Source/NSKeyValueBinding.m: Add some debugging logs.
+
+2020-01-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarItem.m (-initWithCoder:): Use decodeSizeForKey:.
+	* Source/GSBindingHelpers.h,
+	* Source/NSArrayController.m: Add observable array and use it for arrangeObjects.
+	* Source/GSXib5KeyedUnarchiver.m: Add generic mechanism to decode
+	keys that include the class name.
+	Also add header clip view to subviews of scroller.
+
+2020-01-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSRuleEditor.h
+	* Source/NSRuleEditor.m: Add action and target.
+	* Source/NSPredicateEditor.m: Add encoding and decoding.
+	* Source/GSXib5KeyedUnarchiver.m: Decode row templates.
+
+2020-01-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h,
+	* Source/externs.m: Add some more bindings.
+	* Source/NSPopUpButton.m,
+	* Source/NSPopUpButtonCell.m,
+	* Source/NSTableView.m: Use the new bindings.
+
+2020-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m,
+	* Source/GSXibKeyedUnarchiver.m,
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h,
+	* Headers/Additions/GNUstepGUI/GSXibElement.h,
+	* Headers/AppKit/NSCell.h,
+	* Headers/AppKit/NSWindow.h,
+	* Source/GSCodingFlags.h,
+	* Source/GSNibLoading.m,
+	* Source/GSXib5KeyedUnarchiver.h,
+	* Source/GSXibElement.m,
+	* Source/GSXibLoader.m,
+	* Source/NSButtonCell.m,
+	* Source/NSCell.m,
+	* Source/NSMatrix.m,
+	* Source/NSNibBindingConnector.m,
+	* Source/NSToolbar.m:
+	Merge XIB document loading from the old Eggplant branch with lots
+	of cleanup.
+	* Headers/Additions/GNUstepGUI/GSXibParser.h,
+	* Source/GSXibParser.m,
+	* Source/GNUmakefile: Remove now obsolete class.
+
+2020-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSNibOutletConnector.h,
+	* Headers/AppKit/NSNibControlConnector.h,
 	* Source/NSNibOutletConnector.m,
 	* Source/NSNibControlConnector.m,
 	* Source/NSNibConnector.m: Add files missing in last commit from Gregory.
@@ -22,24 +92,24 @@
 	YES makes sense only if `keyDown:` is implemented.
 	(acceptsFirstMouse:): return YES.
 
-	* Source/NSStepperCell.m (cellSize): initial implementation. Retruns
+	* Source/NSStepperCell.m (cellSize): initial implementation. Returns
 	minimum size based on up and button sizes.
 
 2020-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
-        * Headers/AppKit/NSDatePicker.h,
-        * Headers/AppKit/NSDatePickerCell.h,
-        * Source/NSDatePicker.m,
-        * Source/NSDatePickerCell.m: Small cleanup.
+	* Headers/AppKit/NSDatePicker.h,
+	* Headers/AppKit/NSDatePickerCell.h,
+	* Source/NSDatePicker.m,
+	* Source/NSDatePickerCell.m: Small cleanup.
 	* Headers/AppKit/AppKit.h
-        * Headers/AppKit/NSPredicateEditor.h
-        * Headers/AppKit/NSPredicateEditorRowTemplate.h
-        * Headers/AppKit/NSRuleEditor.h
-        * Source/GNUmakefile
-        * Source/NSPredicateEditor.m
-        * Source/NSPredicateEditorRowTemplate.m
-        * Source/NSRuleEditor.m
-        * Source/externs.m: Add minimal version of predicate editor copied
+	* Headers/AppKit/NSPredicateEditor.h
+	* Headers/AppKit/NSPredicateEditorRowTemplate.h
+	* Headers/AppKit/NSRuleEditor.h
+	* Source/GNUmakefile
+	* Source/NSPredicateEditor.m
+	* Source/NSPredicateEditorRowTemplate.m
+	* Source/NSRuleEditor.m
+	* Source/externs.m: Add minimal version of predicate editor copied
 	over from mySTEP.
 
 2020-01-06 Fred Kiefer <FredKiefer@gmx.de>

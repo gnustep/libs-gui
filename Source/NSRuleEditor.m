@@ -230,4 +230,24 @@
 {
 }
 
+- (void) setAction: (SEL)action
+{
+  _action = action;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+- (void) setTarget: (id)target
+{
+  _target = target;
+}
+
+- (id) target
+{
+  return _target;
+}
+
 @end

@@ -58,7 +58,8 @@ extern NSString * const NSRuleEditorPredicateCompoundType;
 extern NSString *NSRuleEditorRowsDidChangeNotification;
 
 @interface NSRuleEditor : NSControl {
-
+  id _target;
+  SEL _action;
 }
 
 - (void) addRow: (id)sender;
