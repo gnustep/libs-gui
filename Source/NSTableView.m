@@ -3844,6 +3844,11 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
       if (modifiers & NSShiftKeyMask)
         {
           selectionMode |= SHIFT_DOWN;
+          if (_allowsMultipleSelection == YES && _selectedRow != -1)
+            {
+              originalRow = _selectedRow;
+              selectionMode |= ADDING_ROW;
+            }
         }
       
       if (![_selectedRows containsIndex: _clickedRow])
@@ -3854,12 +3859,7 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
       if (modifiers & NSControlKeyMask)
         {
           selectionMode |= CONTROL_DOWN;
-          if (_allowsMultipleSelection == YES && _selectedRow != -1)
-            {
-              originalRow = _selectedRow;
-              selectionMode |= SHIFT_DOWN;
-              selectionMode |= ADDING_ROW;
-            }
+          selectionMode |= SHIFT_DOWN;
         }
       
       // is the delegate ok for a new selection ?
