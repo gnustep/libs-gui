@@ -1,3 +1,8 @@
+2020-01-21  Doug Simons <doug.simons@eggplant.io>
+
+	* TextConverters/RTF/RTFConsumer.m: Fix to recognize RTF files
+	with Windows CP1252 String Encoding.
+
 2016-01-27  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSWindow.m: Fix -invalidateCursorRectsForView: to

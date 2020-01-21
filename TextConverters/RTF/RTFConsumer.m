@@ -571,7 +571,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
   StringContext stringCtxt;
-  char buffer[5];
+  char buffer[15];
 
   // We read in the first few characters to find out which
   // encoding we have
@@ -580,7 +580,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
       // Too short to be an RTF
       return nil;
     }
-  [rtfData getBytes: buffer range: NSMakeRange(7, 3)];
+  [rtfData getBytes: buffer range: NSMakeRange(7, 4)];
   if (strncmp(buffer, "mac", 3) == 0)
     {
       encoding = NSMacOSRomanStringEncoding;
@@ -594,6 +594,14 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
     {
       // FIXME: Code page 850 kCFStringEncodingDOSLatin1
       encoding = NSISOLatin1StringEncoding;
+    }
+  else if (strncmp(buffer, "ansi", 4) == 0)
+    {
+      [rtfData getBytes: buffer range: NSMakeRange(12, 11)];
+	  if (strncmp(buffer, "ansicpg1252", 11) == 0)
+	    encoding = NSWindowsCP1252StringEncoding;
+	  else
+        encoding = NSISOLatin1StringEncoding; // this is probably wrong
     }
   else
     {
