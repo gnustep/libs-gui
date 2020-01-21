@@ -22,25 +22,27 @@
    Boston, MA 02110 USA.
 */
 
+#import <GNUstepBase/GSBlocks.h>
 #import <AppKit/NSStoryboardSegue.h>
+#import <AppKit/NSSeguePerforming.h>
 
 @implementation NSStoryboardSegue
 
 // Inspecting a Storyboard Segue
 - (id) sourceController
 {
-  return nil;
+  return _sourceController;
 }
 
 - (id) destinationController
 {
-  return nil;
+  return _destinationController;
 }
 
 
 - (NSStoryboardSegueIdentifier) identifier
 {
-  return nil;
+  return _identifier;
 }
 
 // Customizing Storyboard Segue Initialization and Invocation
@@ -49,18 +51,54 @@
                          destination: (id)destinationController 
                       performHandler: (GSStoryboardPerformHandler)performHandler
 {
-  return nil;
+  NSStoryboardSegue *s = [[self alloc] initWithIdentifier: identifier
+                                                   source: sourceController
+                                              destination: destinationController];
+  ASSIGN(s->_performHandler, performHandler);
+  AUTORELEASE(s);
+  return s;
 }
 
 - (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                              source: (id)sourceController 
                         destination: (id)destinationController
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGNCOPY(_identifier, identifier);
+      ASSIGN(_sourceController, sourceController);
+      ASSIGN(_destinationController, destinationController);
+      _performHandler = nil;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_identifier);
+  RELEASE(_sourceController);
+  RELEASE(_destinationController);
+  RELEASE(_performHandler);
+  [super dealloc];
 }
 
 - (void) perform
 {
+  BOOL should = [_sourceController
+                  shouldPerformSegueWithIdentifier: _identifier
+                                            sender: _sourceController];
+  if (should == YES)
+    {
+      [_sourceController prepareForSegue: self
+                                  sender: _sourceController];
+      [_sourceController performSegueWithIdentifier: _identifier
+                                             sender: _sourceController];
+      if (_performHandler != nil)
+        {
+          CALL_BLOCK_NO_ARGS(_performHandler);
+        }
+    }
 }
 
 @end

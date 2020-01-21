@@ -37,7 +37,13 @@ typedef NSString* NSStoryboardSegueIdentifier;
 DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardPerformHandler, void);
   
 @interface NSStoryboardSegue : NSObject
-
+{
+  id _sourceController;
+  id _destinationController;
+  NSStoryboardSegueIdentifier _identifier;
+  GSStoryboardPerformHandler _performHandler;
+}
+  
 // Inspecting a Storyboard Segue
 - (id) sourceController;
 

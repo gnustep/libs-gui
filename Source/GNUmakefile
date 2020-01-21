@@ -480,6 +480,9 @@ NSStatusItem.h \
 NSStepperCell.h \
 NSStepper.h \
 NSStepperTouchBarItem.h \
+NSStoryboard.h \
+NSStoryboardSeque.h \
+NSStoryboardPerforming.h \
 NSStringDrawing.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \
