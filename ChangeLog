@@ -1,3 +1,12 @@
+2020-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfScanner.m: Add RTFansicpg.
+	* TextConverters/RTF/rtfGrammar.y: Handle encoding and code pages.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+	* TextConverters/RTF/RTFConsumerFunctions.h,
+	* TextConverters/RTF/RTFConsumer.m: Add code to handle encoding.
+
 2020-01-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSAppearance.h,
