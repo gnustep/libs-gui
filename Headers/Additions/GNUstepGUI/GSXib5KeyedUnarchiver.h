@@ -28,6 +28,9 @@
 
 #import <Foundation/Foundation.h>
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
+#import "GNUstepGUI/GSNibLoading.h"
+#import "GNUstepGUI/GSXibLoading.h"
+#import "GNUstepGUI/GSXibElement.h"
 
 @class GSXibElement;
 
@@ -44,4 +47,32 @@
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
+@end
+
+
+@interface NSWindowTemplate5 : NSWindowTemplate
+{
+  BOOL _visibleAtLaunch;
+  NSToolbar *_toolbar;
+}
+@end
+
+@interface NSCustomObject5 : NSCustomObject
+{
+  NSString *_userLabel;
+}
+
+- (NSString*) userLabel;
+@end
+
+@interface IBActionConnection5 : IBActionConnection
+{
+  NSString *trigger;
+}
+@end
+
+@interface IBOutletConnection5 : IBOutletConnection
+@end
+
+@interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
 @end

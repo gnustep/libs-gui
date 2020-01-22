@@ -28,10 +28,7 @@
  Boston, MA 02110-1301, USA.
  */
 
-#import "GSXib5KeyedUnarchiver.h"
-#import "GNUstepGUI/GSNibLoading.h"
-#import "GNUstepGUI/GSXibLoading.h"
-#import "GNUstepGUI/GSXibElement.h"
+#import "GNUstepGUI/GSXib5KeyedUnarchiver.h"
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
@@ -62,14 +59,6 @@
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
-
-@interface NSCustomObject5 : NSCustomObject
-{
-  NSString *_userLabel;
-}
-
-- (NSString*) userLabel;
-@end
 
 @implementation NSCustomObject5
 
@@ -111,12 +100,9 @@ static NSString *ApplicationClass = nil;
   return _userLabel;
 }
 
-@end
-
-@interface NSWindowTemplate5 : NSWindowTemplate
+- (NSString *) description
 {
-  BOOL _visibleAtLaunch;
-  NSToolbar *_toolbar;
+  return [[super description] stringByAppendingFormat: @"%@ - %@", _userLabel, _className];
 }
 @end
 
@@ -164,12 +150,6 @@ static NSString *ApplicationClass = nil;
   return _realObject;
 }
 
-@end
-
-@interface IBActionConnection5 : IBActionConnection
-{
-  NSString *trigger;
-}
 @end
 
 @implementation IBActionConnection5
@@ -250,9 +230,6 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-@interface IBOutletConnection5 : IBOutletConnection
-@end
-
 @implementation IBOutletConnection5
 
 - (instancetype) initWithCoder: (NSCoder *)coder
@@ -278,10 +255,6 @@ static NSString *ApplicationClass = nil;
 }
 
 @end
-
-@interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
-@end
-
 
 @implementation IBUserDefinedRuntimeAttribute5
 
@@ -640,7 +613,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   if (parentId == nil)
     {
-      NSLog(@"Missing parent Id for connection on parent @%", parent);
+      NSLog(@"Missing parent Id for connection on parent %@", parent);
       // Fake an id for parent
       parentId = [[NSUUID UUID] UUIDString];
       [parent setAttribute: parentId forKey: @"id"];

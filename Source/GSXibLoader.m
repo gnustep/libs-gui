@@ -44,7 +44,7 @@
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
-#import "GSXib5KeyedUnarchiver.h"
+#import "GNUstepGUI/GSXib5KeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;

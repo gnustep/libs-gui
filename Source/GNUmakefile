@@ -584,6 +584,7 @@ GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
+GSXib5KeyedUnarchiver.h \
 GSXibObjectContainer.h \
 GSHelpAttachment.h
 
