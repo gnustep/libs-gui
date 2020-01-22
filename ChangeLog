@@ -1,5 +1,12 @@
 2020-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXib5KeyedUnarchiver.m,
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h,
+	* Source/GSXibLoading.m: Move toolbar ivar from NSWindowTemplate5
+	to NSWindowTemplate.
+
+2020-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* TextConverters/RTF/rtfScanner.m: Add RTFansicpg.
 	* TextConverters/RTF/rtfGrammar.y: Handle encoding and code pages.
 	* TextConverters/RTF/rtfGrammar.tab.h,

@@ -116,7 +116,6 @@ static NSString *ApplicationClass = nil;
 @interface NSWindowTemplate5 : NSWindowTemplate
 {
   BOOL _visibleAtLaunch;
-  NSToolbar *_toolbar;
 }
 @end
 
@@ -130,11 +129,8 @@ static NSString *ApplicationClass = nil;
       _visibleAtLaunch = YES;
 
       if ([coder containsValueForKey: @"visibleAtLaunch"])
-        _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
-
-      if ([coder containsValueForKey: @"NSToolbar"])
         {
-          _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
+          _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
         }
     }
 
@@ -147,11 +143,6 @@ static NSString *ApplicationClass = nil;
     {
       // Instantiate the real object...
       [super nibInstantiate];
-
-      if (_toolbar)
-        {
-          [(NSWindow *)_realObject setToolbar: _toolbar];
-        }
 
       // >= XIB 5 - startup visible windows...
       if (_visibleAtLaunch)
@@ -635,7 +626,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   // The parent of connections array element is the object ID we need...
   GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
   NSString     *parentId = [parent attributeForKey: @"id"];
-  NSString     *objKey = [@"IBActionConnection5" isEqualToString: [element attributeForKey: @"class"]] ?
+  NSString     *objKey = [@"action" isEqualToString: [element attributeForKey: @"key"]] ?
                              @"destination" : @"source";
 
   if (parentId == nil)

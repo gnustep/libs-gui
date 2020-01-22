@@ -143,6 +143,7 @@ typedef struct _GSWindowTemplateFlags
   GSWindowTemplateFlags _flags;
   NSString            *_autosaveName;
   Class               _baseWindowClass;
+  NSToolbar           *_toolbar;
 }
 - (id) initWithWindow: (NSWindow *)window
 	    className: (NSString *)windowClass
