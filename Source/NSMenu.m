@@ -254,6 +254,26 @@ static BOOL menuBarVisible = YES;
     forModes:  [NSArray arrayWithObject: NSDefaultRunLoopMode]];
 }
 
+/** 
+    Screen (monitor) properties was changed. We need to update our poistion
+    in (possibly) new dimensions.
+ */
+- (void) _screenChanged: (id) notification
+{
+  NSRect windowFrame, screenFrame;
+  fprintf(stderr, "[NSMenu] NSScreen was changed.\n");
+  if ([self _isVisible] != NO) {
+    windowFrame = [[self window] frame];
+    screenFrame = [[self window] convertRectToScreen:NSMakeRect(0,0,1,1)];
+    fprintf(stderr, " Will update origin. Window: %.0f,%.0f Screen: %.0f,%.0f",
+            windowFrame.origin.x, windowFrame.origin.y,
+            screenFrame.origin.x, screenFrame.origin.y);
+    // [self nestedSetFrameOrigin: [[self window] frame].origin];
+    // [self _updateUserDefaults: notification];
+  }
+  fprintf(stderr, "\n");
+}
+
 - (void) _organizeMenu
 {
   NSString *infoString = _(@"Info");
@@ -711,6 +731,11 @@ static BOOL menuBarVisible = YES;
       selector: @selector (_updateUserDefaults:)
       name: NSEnqueuedMenuMoveName
       object: self];
+  
+  [nc addObserver: self
+      selector: @selector (_screenChanged:)
+      name: NSApplicationDidChangeScreenParametersNotification
+      object: NSApp];
   
   return self;
 }

@@ -197,6 +197,14 @@ static NSMutableArray *screenArray = nil;
 /**
  * Get all of the infomation for a given screen.
  */
+- (void) _updateScreenInfo
+{
+  GSDisplayServer *srv = GSCurrentServer();
+  _frame = [srv boundsForScreen: _screenNumber];
+  _depth = [srv windowDepthForScreen: _screenNumber];
+  NSLog(@"NSScreen: screen info was updated.");
+}
+
 - (id) _initWithScreenNumber: (int)screen
 {
   GSDisplayServer *srv;
@@ -227,6 +235,12 @@ static NSMutableArray *screenArray = nil;
   _frame = [srv boundsForScreen: _screenNumber];
   _depth = [srv windowDepthForScreen: _screenNumber];
   _supportedWindowDepths = NULL;
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(_updateScreenInfo)
+           name: NSApplicationDidChangeScreenParametersNotification
+         object: NSApp];
 
   return self;
 }
@@ -404,6 +418,7 @@ static NSMutableArray *screenArray = nil;
 // Release the memory for the depths array.
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
   // _supportedWindowDepths can be NULL since it may or may not
   // be necessary to get this info.  The most common use of NSScreen
   // is to get the depth and frame attributes.
