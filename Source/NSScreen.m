@@ -252,7 +252,7 @@ static NSMutableArray *screenArray = nil;
  */
 - (NSRect) frame
 {
-  return [GSCurrentServer() boundsForScreen: _screenNumber];;
+  return [GSCurrentServer() boundsForScreen: _screenNumber];
 }
 
 - (NSString*) description
