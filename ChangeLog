@@ -1,3 +1,9 @@
+2020-01-23  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSMenu.m (_screenChanged): removed.
+	(initWithTitle:): remove observer for
+	NSApplicationDidChangeScreenNotification.
+
 2020-01-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSAppearance.h,
