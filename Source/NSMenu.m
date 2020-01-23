@@ -255,7 +255,7 @@ static BOOL menuBarVisible = YES;
 }
 
 /** 
-    Screen (monitor) properties was changed. We need to update our poistion
+    Screen (monitor) properties was changed. We need to update our position
     in (possibly) new dimensions.
  */
 - (void) _screenChanged: (id) notification
