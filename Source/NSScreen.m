@@ -194,17 +194,6 @@ static NSMutableArray *screenArray = nil;
   return nil;
 }
 
-/**
- * Get all of the infomation for a given screen.
- */
-- (void) _updateScreenInfo
-{
-  GSDisplayServer *srv = GSCurrentServer();
-  _frame = [srv boundsForScreen: _screenNumber];
-  _depth = [srv windowDepthForScreen: _screenNumber];
-  NSLog(@"NSScreen: screen info was updated.");
-}
-
 - (id) _initWithScreenNumber: (int)screen
 {
   GSDisplayServer *srv;
@@ -236,12 +225,6 @@ static NSMutableArray *screenArray = nil;
   _depth = [srv windowDepthForScreen: _screenNumber];
   _supportedWindowDepths = NULL;
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(_updateScreenInfo)
-           name: NSApplicationDidChangeScreenParametersNotification
-         object: NSApp];
-
   return self;
 }
 
@@ -269,7 +252,7 @@ static NSMutableArray *screenArray = nil;
  */
 - (NSRect) frame
 {
-  return _frame;
+  return [GSCurrentServer() boundsForScreen: _screenNumber];;
 }
 
 - (NSString*) description
@@ -331,6 +314,10 @@ static NSMutableArray *screenArray = nil;
       [devDesc setObject: colorSpaceName
 		  forKey: NSDeviceColorSpaceName];
 		    
+      // Add size. For screen it's resolution (e.g. 1600x1200).
+      [devDesc setObject: [NSValue valueWithSize: [self frame].size]
+		  forKey: NSDeviceSize];
+
       _reserved = (void*)[devDesc copy];
       RELEASE(devDesc);
     }
