@@ -194,6 +194,9 @@ static NSMutableArray *screenArray = nil;
   return nil;
 }
 
+/**
+ * Get all of the infomation for a given screen.
+ */
 - (id) _initWithScreenNumber: (int)screen
 {
   GSDisplayServer *srv;
