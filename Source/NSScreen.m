@@ -408,7 +408,6 @@ static NSMutableArray *screenArray = nil;
 // Release the memory for the depths array.
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
   // _supportedWindowDepths can be NULL since it may or may not
   // be necessary to get this info.  The most common use of NSScreen
   // is to get the depth and frame attributes.
