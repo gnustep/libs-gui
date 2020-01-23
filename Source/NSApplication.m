@@ -1100,6 +1100,12 @@ static BOOL _isAutolaunchChecked = NO;
   [nc addObserver: self selector: @selector(_windowDidResignMain:)
       name: NSWindowDidResignMainNotification object: nil];
 
+  /* Register self as observer to window events. */
+  [nc addObserver: self
+         selector: @selector(applicationDidChangeScreenParameters:)
+             name: NSApplicationDidChangeScreenParametersNotification
+           object: nil];
+
   /* register as observer for hide/unhide notifications */
   [[[NSWorkspace sharedWorkspace] notificationCenter]
     addObserver: self selector: @selector(_workspaceNotification:)
