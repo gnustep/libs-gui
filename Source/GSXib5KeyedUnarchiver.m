@@ -631,7 +631,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   if (parentId == nil)
     {
-      NSLog(@"Missing parent Id for connection on parent @%", parent);
+      NSLog(@"Missing parent Id for connection on parent %@", parent);
       // Fake an id for parent
       parentId = [[NSUUID UUID] UUIDString];
       [parent setAttribute: parentId forKey: @"id"];
