@@ -111,7 +111,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
-                            @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
+                            @"IBUserDefinedRuntimeAttribute", @"userDefinedRuntimeAttribute",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
