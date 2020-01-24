@@ -105,8 +105,13 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"rowTemplates",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
+                            @"IBOutletConnection", @"outlet",
+                            @"IBActionConnection", @"action",
                             @"NSNibBindingConnector", @"binding",
+                            @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
+                            @"IBUserDefinedRuntimeAttribute", @"userDefinedRuntimeAttribute",
+
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
