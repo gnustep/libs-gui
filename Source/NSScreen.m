@@ -228,6 +228,14 @@ static NSMutableArray *screenArray = nil;
   _depth = [srv windowDepthForScreen: _screenNumber];
   _supportedWindowDepths = NULL;
 
+  /* Register self as observer to screen events. */
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(applicationDidChangeScreenParameters:)
+           name: NSApplicationDidChangeScreenParametersNotification
+         object: nil];
+
+
   return self;
 }
 
@@ -255,7 +263,7 @@ static NSMutableArray *screenArray = nil;
  */
 - (NSRect) frame
 {
-  return [GSCurrentServer() boundsForScreen: _screenNumber];
+  return _frame;
 }
 
 - (NSString*) description
@@ -408,6 +416,7 @@ static NSMutableArray *screenArray = nil;
 // Release the memory for the depths array.
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
   // _supportedWindowDepths can be NULL since it may or may not
   // be necessary to get this info.  The most common use of NSScreen
   // is to get the depth and frame attributes.
@@ -450,6 +459,16 @@ static NSMutableArray *screenArray = nil;
 - (CGFloat) backingScaleFactor
 {
   return 1.0;
+}
+
+// This notification callback shouldn't be called. But some objects (NSWindow)
+// may retain NSScren instance and not handle screen parameters changes.
+// Update our ivars for them.
+- (void) applicationDidChangeScreenParameters: (NSNotification*)aNotification
+{
+  GSDisplayServer *srv = GSCurrentServer();
+  _frame = [srv boundsForScreen: _screenNumber];
+  _depth = [srv windowDepthForScreen: _screenNumber];
 }
 
 @end

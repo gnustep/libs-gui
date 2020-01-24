@@ -1,3 +1,13 @@
+2020-01-24  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSScreen.m (_initWithScreenNumber:): add self as observer to
+	NSApplicationDidChangeScreenParametersNotification.
+	(frame): use `_frame` ivar since libs-back recreates screens list.
+	(dealloc): remove observer.
+	(applicationDidChangeScreenParameters:): update _frame and _depth
+	ivars for bad behaving objects which retain NSScreen and not observing
+	screen parameters changes.
+
 2020-01-23  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSApplication (finishLaunching): observer for
