@@ -217,6 +217,7 @@ typedef struct _GSWindowTemplateFlags
   NSString *_className;
   NSString *_extension;
   id _object;
+  NSString *_userLabel;
 }
 - (void) setClassName: (NSString *)name;
 - (NSString *)className;
@@ -224,6 +225,7 @@ typedef struct _GSWindowTemplateFlags
 - (NSString *)extension;
 - (void) setRealObject: (id)obj;
 - (id) realObject;
+- (NSString *) userLabel;
 @end
 
 @interface NSCustomView : NSView <GSNibLoading>

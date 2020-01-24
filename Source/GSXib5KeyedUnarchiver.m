@@ -60,52 +60,6 @@
 
 #define DEBUG_XIB5 0
 
-@implementation NSCustomObject5
-
-static NSString *ApplicationClass = nil;
-
-- (id) initWithCoder: (NSCoder *)coder
-{
-  self = [super initWithCoder: coder];
-
-  if (self)
-    {
-      // If we've not set the general application class yet...
-      if (_className && (ApplicationClass == nil) &&
-          ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
-        {
-          ASSIGNCOPY(ApplicationClass, _className);
-        }
-
-      _userLabel = [coder decodeObjectForKey: @"userLabel"];
-
-      // Override this one type...
-      if (_userLabel)
-        {
-          if ([@"Application" isEqualToString: _userLabel])
-            {
-              if (ApplicationClass == nil)
-                ASSIGN(_className, @"NSApplication");
-              else
-                ASSIGN(_className, ApplicationClass);
-            }
-        }
-    }
-
-  return self;
-}
-
-- (NSString *) userLabel
-{
-  return _userLabel;
-}
-
-- (NSString *) description
-{
-  return [[super description] stringByAppendingFormat: @"%@ - %@", _userLabel, _className];
-}
-@end
-
 @implementation IBActionConnection5
 
 - (instancetype) initWithCoder: (NSCoder *)coder
@@ -292,7 +246,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"rowTemplates",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
-                            @"NSCustomObject5", @"customObject",
+                            @"NSCustomObject", @"customObject",
                             @"IBOutletConnection5", @"outlet",
                             @"IBActionConnection5", @"action",
                             @"NSNibBindingConnector", @"binding",

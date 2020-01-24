@@ -49,14 +49,6 @@
 - (NSRange) decodeRangeForKey: (NSString*)key;
 @end
 
-@interface NSCustomObject5 : NSCustomObject
-{
-  NSString *_userLabel;
-}
-
-- (NSString*) userLabel;
-@end
-
 @interface IBActionConnection5 : IBActionConnection
 {
   NSString *trigger;

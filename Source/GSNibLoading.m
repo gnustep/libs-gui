@@ -8,7 +8,7 @@
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
    Author: Gregory John Casamento
-   Date: 2003, 2005
+   Date: 2003, 2005, 2020
    Author: Fred Kiefer
    Date: 2003, 2010
 
@@ -958,6 +958,9 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSCustomObject
+
+static NSString *ApplicationClass = nil;
+
 - (void) setClassName: (NSString *)name
 {
   ASSIGNCOPY(_className, name);
@@ -995,6 +998,27 @@ static BOOL _isInInterfaceBuilder = NO;
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
       ASSIGN(_object, [coder decodeObjectForKey: @"NSObject"]);
+
+      // If we've not set the general application class yet...
+      if (_className && (ApplicationClass == nil) &&
+          ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
+        {
+          ASSIGNCOPY(ApplicationClass, _className);
+        }
+
+      _userLabel = [coder decodeObjectForKey: @"userLabel"];
+
+      // Override this one type...
+      if (_userLabel)
+        {
+          if ([@"Application" isEqualToString: _userLabel])
+            {
+              if (ApplicationClass == nil)
+                ASSIGN(_className, @"NSApplication");
+              else
+                ASSIGN(_className, ApplicationClass);
+            }
+        }
     }
   else
     {
@@ -1020,6 +1044,11 @@ static BOOL _isInInterfaceBuilder = NO;
                    NSStringFromClass([self class])];
     }
   
+}
+
+- (NSString *) userLabel
+{
+  return _userLabel;
 }
 
 - (id) nibInstantiate
