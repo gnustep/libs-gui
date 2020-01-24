@@ -1,3 +1,13 @@
+2020-01-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Remove NSWindowTemplate5.
+	* Source/GSXibLoader.m: Clean up code.
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h,
+	* Source/GSXibKeyedUnarchiver.m: Provide method to load both sorts
+	of XIB files.
+	* Source/NSArrayController.m: Add horrible hack to get KVB on
+	array controller to work.
+
 2020-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXib5KeyedUnarchiver.m,
