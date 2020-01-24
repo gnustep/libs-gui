@@ -2,7 +2,7 @@
 
    <abstract>Controller class for arrays</abstract>
 
-   Copyright <copy>(C) 2006 Free Software Foundation, Inc.</copy>
+   Copyright <copy>(C) 2006, 2020 Free Software Foundation, Inc.</copy>
 
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: June 2006
@@ -88,7 +88,11 @@
 
   if ([result isKindOfClass: [NSArray class]])
     {
-      return AUTORELEASE([[GSObservableArray alloc]
+      // FIXME: Using the correct memory management here
+      // Leads to an issue inside of KVO. For now we leak the
+      // object until this gets fixed.
+      //return AUTORELEASE([[GSObservableArray alloc]
+      return ([[GSObservableArray alloc]
                                 initWithArray: result]);
     }
 
@@ -152,7 +156,6 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
-      [self rearrangeObjects];
       [self setSelectsInsertedObjects: YES];
     }
 
@@ -187,8 +190,7 @@
     }
   else 
     {
-      // FIXME: Should check whether _arranged_objects is mutable
-      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObject: obj]);
+      DESTROY(_arranged_objects);
     }
   if ([self selectsInsertedObjects])
     {
@@ -207,8 +209,7 @@
     }
   else 
     {
-      // FIXME: Should check whether _arranged_objects is mutable
-      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObjectsFromArray: obj]);
+      DESTROY(_arranged_objects);
     }
   if ([self selectsInsertedObjects])
     {
@@ -228,8 +229,7 @@
     }
   else 
     {
-      // FIXME
-      //[_arranged_objects removeObject: obj];
+      DESTROY(_arranged_objects);
     }
   [self didChangeValueForKey: NSContentBinding];
 }
@@ -245,8 +245,7 @@
     }
   else 
     {
-      // FIXME
-      //[_arranged_objects removeObjectsInArray: obj];
+      DESTROY(_arranged_objects);
     }
   [self didChangeValueForKey: NSContentBinding];
 }
@@ -385,7 +384,7 @@
 - (NSArray*) selectedObjects
 {
   // We make the selection work on the arranged objects
-  return [_arranged_objects objectsAtIndexes: _selection_indexes];
+  return [[self arrangedObjects] objectsAtIndexes: _selection_indexes];
 }
 
 - (NSUInteger) selectionIndex
@@ -472,14 +471,19 @@
 
 - (id) arrangedObjects
 {
+  if (_arranged_objects == nil)
+    {
+      [self rearrangeObjects];
+    }
   return _arranged_objects;
 }
 
 - (void) rearrangeObjects
 {
   [self willChangeValueForKey: @"arrangedObjects"];
+  DESTROY(_arranged_objects);
   _arranged_objects = [[GSObservableArray alloc]
-                                initWithArray: [self arrangeObjects: _content]];
+                          initWithArray: [self arrangeObjects: _content]];
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 
