@@ -424,9 +424,12 @@ static BOOL _isInInterfaceBuilder = NO;
           _windowStyle |= NSTitledWindowMask;
         }
 
+      // XIB reading specific keys...
+      _visibleAtLaunch = YES;
       if ([coder containsValueForKey: @"visibleAtLaunch"])
         {
           _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
+          _flags.isVisible = _visibleAtLaunch; // set the flag so it appears properly in Gorm.
         }
 
       if ([coder containsValueForKey: @"NSToolbar"])
@@ -542,7 +545,8 @@ static BOOL _isInInterfaceBuilder = NO;
                                        styleMask: [self windowStyle]]
                    display: NO];
       [_realObject setFrameAutosaveName: _autosaveName];
-      
+
+      // For XIB loading...
       if (_toolbar)
         {
           [(NSWindow *)_realObject setToolbar: _toolbar];
@@ -552,7 +556,12 @@ static BOOL _isInInterfaceBuilder = NO;
       if (_visibleAtLaunch) 
         {
           // bring visible windows to front...
+          NSLog(@"Order front...");
           [(NSWindow *)_realObject orderFront: self];
+        }
+      else
+        {
+          NSLog(@"Not visible");
         }
     } 
   return _realObject;
