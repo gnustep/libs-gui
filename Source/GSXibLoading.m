@@ -33,9 +33,11 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSObject.h>
 #import <Foundation/NSKeyedArchiver.h>
+// #import <Foundation/NSNumber.h>
 #import "AppKit/NSControl.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSImage.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
 
@@ -62,12 +64,40 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  self = [super init];
+  if (self)
     {
-      [self setTypeIdentifier: [coder decodeObjectForKey: @"typeIdentifier"]];
-      [self setKeyPath: [coder decodeObjectForKey: @"keyPath"]];
-      [self setValue: [coder decodeObjectForKey: @"value"]];
+      if ([coder allowsKeyedCoding])
+        {
+          [self setTypeIdentifier: [coder decodeObjectForKey: @"typeIdentifier"]];
+          [self setKeyPath: [coder decodeObjectForKey: @"keyPath"]];
+          [self setValue: [coder decodeObjectForKey: @"value"]];
+
+          if ([coder containsValueForKey: @"type"])
+            {
+              [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
+              
+              // Decode value properly...
+              if ([@"boolean" isEqualToString: typeIdentifier])
+                [self setValue: [NSNumber numberWithBool: ([@"YES" isEqualToString: value] ? YES : NO)]];
+              else if ([@"image" isEqualToString: typeIdentifier])
+                [self setValue: [NSImage imageNamed: value]];
+              else if ([@"number" isEqualToString: typeIdentifier])
+                [self setValue: [coder decodeObjectForKey: @"value"]];
+              else if ([@"point" isEqualToString: typeIdentifier])
+                [self setValue: [coder decodeObjectForKey: @"value"]];
+              else if ([@"size" isEqualToString: typeIdentifier])
+                [self setValue: [coder decodeObjectForKey: @"size"]];
+              else if ([@"rect" isEqualToString: typeIdentifier])
+                [self setValue: [coder decodeObjectForKey: @"value"]];
+              else if ([@"nil" isEqualToString: typeIdentifier])
+                [self setValue: nil];
+              else
+                NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
+            }
+        }
     }
+
   return self;
 }
 
@@ -420,18 +450,117 @@
 @end
 
 @implementation IBActionConnection
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+  {
+    trigger = nil;
+
+    if ([coder allowsKeyedCoding])
+      {
+        // label and source string tags have changed for XIB5...
+        if ([coder containsValueForKey: @"selector"])
+          {
+            ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
+          }
+        
+        if ([coder containsValueForKey: @"target"])
+          {
+            ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+          }
+        // destination string tag is still the same (so far) and loaded
+        // by base class...
+        //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+
+        // Looks like the 'trigger' attribute should be used to override the
+        // target/action setup method...
+        if ([coder containsValueForKey: @"trigger"])
+          {
+            ASSIGN(trigger, [coder decodeObjectForKey: @"trigger"]);
+          }
+      }
+    else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+  }
+  return self;
+}
+
+- (NSString*) trigger
+{
+  return trigger;
+}
 
 - (void) establishConnection
 {
   SEL sel = NSSelectorFromString(label);
+  if (trigger && [trigger length])
+    {
+      NSString *selName = [NSString stringWithFormat: @"set%@%@:",
+                           [[trigger substringToIndex: 1] uppercaseString],
+                           [trigger substringFromIndex: 1]];
+      SEL       trigsel = NSSelectorFromString(selName);
 
+      if (sel && trigsel && [destination respondsToSelector: trigsel])
+        {
+          NSWarnMLog(@"setting trigger %@ to selector %@", selName, label);
+          //[destination setTarget: source]; // Not needed???
+          [destination performSelector: trigsel withObject: (id)sel];
+        }
+      else if (!sel)
+        {
+          NSWarnMLog(@"label %@ does not correspond to any selector", label);
+        }
+      else if (!trigsel)
+        {
+          NSWarnMLog(@"trigger %@ does not correspond to any selector", trigger);
+        }
+      else
+        {
+          NSWarnMLog(@"destination class (%@) does not respond to trigger selector %@",
+                     NSStringFromClass([destination class]), selName);
+        }
+
+      // PREMATURE RETURN...
+      return;
+    }
+  
+  // Otherwise do the following....
   [destination setTarget: source];
   [destination setAction: sel];
 }
-
 @end
 
 @implementation IBOutletConnection
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          // label string tag has changed for XIB5...
+          if ([coder containsValueForKey: @"property"])
+            {
+              ASSIGN(label, [coder decodeObjectForKey: @"property"]);
+              // destination  and source string tags are still the same (so far) and loaded
+              // by base class...
+            }
+        }
+      else
+        {
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+           NSStringFromClass([coder class])];
+        }
+    }
+  return self;
+}
 
 - (void) establishConnection
 {

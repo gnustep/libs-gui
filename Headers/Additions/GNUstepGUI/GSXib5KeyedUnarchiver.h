@@ -49,14 +49,3 @@
 - (NSRange) decodeRangeForKey: (NSString*)key;
 @end
 
-@interface IBActionConnection5 : IBActionConnection
-{
-  NSString *trigger;
-}
-@end
-
-@interface IBOutletConnection5 : IBOutletConnection
-@end
-
-@interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
-@end
