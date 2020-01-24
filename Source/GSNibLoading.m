@@ -424,6 +424,16 @@ static BOOL _isInInterfaceBuilder = NO;
           _windowStyle |= NSTitledWindowMask;
         }
 
+      if ([coder containsValueForKey: @"visibleAtLaunch"])
+        {
+          _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
+        }
+
+      if ([coder containsValueForKey: @"NSToolbar"])
+        {
+          _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
+        }
+
       _baseWindowClass = [NSWindow class];
     }
   else
@@ -455,6 +465,11 @@ static BOOL _isInInterfaceBuilder = NO;
       [aCoder encodeRect: rect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
+      [aCoder encodeBool: _visibleAtLaunch forKey: @"visibleAtLaunch"];
+      if (_toolbar != nil)
+        {
+          [aCoder encodeObject: _toolbar forKey: @"NSToolbar"];
+        }
     }
 }
 
@@ -527,6 +542,18 @@ static BOOL _isInInterfaceBuilder = NO;
                                        styleMask: [self windowStyle]]
                    display: NO];
       [_realObject setFrameAutosaveName: _autosaveName];
+      
+      if (_toolbar)
+        {
+          [(NSWindow *)_realObject setToolbar: _toolbar];
+        }
+      
+      // >= XIB 5 - startup visible windows...
+      if (_visibleAtLaunch) 
+        {
+          // bring visible windows to front...
+          [(NSWindow *)_realObject orderFront: self];
+        }
     } 
   return _realObject;
 }

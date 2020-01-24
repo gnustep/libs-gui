@@ -49,14 +49,6 @@
 - (NSRange) decodeRangeForKey: (NSString*)key;
 @end
 
-
-@interface NSWindowTemplate5 : NSWindowTemplate
-{
-  BOOL _visibleAtLaunch;
-  NSToolbar *_toolbar;
-}
-@end
-
 @interface NSCustomObject5 : NSCustomObject
 {
   NSString *_userLabel;

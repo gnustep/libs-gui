@@ -106,52 +106,6 @@ static NSString *ApplicationClass = nil;
 }
 @end
 
-@implementation NSWindowTemplate5
-
-- (id) initWithCoder: (NSCoder *)coder
-{
-  self = [super initWithCoder: coder];
-  if (self)
-    {
-      _visibleAtLaunch = YES;
-
-      if ([coder containsValueForKey: @"visibleAtLaunch"])
-        _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
-
-      if ([coder containsValueForKey: @"NSToolbar"])
-        {
-          _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
-        }
-    }
-
-  return self;
-}
-
-- (id) nibInstantiate
-{
-  if (_realObject == nil)
-    {
-      // Instantiate the real object...
-      [super nibInstantiate];
-
-      if (_toolbar)
-        {
-          [(NSWindow *)_realObject setToolbar: _toolbar];
-        }
-
-      // >= XIB 5 - startup visible windows...
-      if (_visibleAtLaunch)
-        {
-          // bring visible windows to front...
-          [(NSWindow *)_realObject orderFront: self];
-        }
-    }
-
-  return _realObject;
-}
-
-@end
-
 @implementation IBActionConnection5
 
 - (instancetype) initWithCoder: (NSCoder *)coder
@@ -342,7 +296,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBOutletConnection5", @"outlet",
                             @"IBActionConnection5", @"action",
                             @"NSNibBindingConnector", @"binding",
-                            @"NSWindowTemplate5", @"window",
+                            @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];

@@ -142,8 +142,11 @@ typedef struct _GSWindowTemplateFlags
   id                   _view;
   GSWindowTemplateFlags _flags;
   NSString            *_autosaveName;
-  Class               _baseWindowClass;
+  Class                _baseWindowClass;
+  BOOL                 _visibleAtLaunch;
+  NSToolbar           *_toolbar;
 }
+
 - (id) initWithWindow: (NSWindow *)window
 	    className: (NSString *)windowClass
            isDeferred: (BOOL) deferred
