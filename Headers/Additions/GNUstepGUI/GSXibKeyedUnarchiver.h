@@ -43,6 +43,9 @@
   NSMutableDictionary *decoded;
 }
 
++ (BOOL) checkXib5: (NSData *)data;
++ (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data;
+
 - (void) _initCommon;
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname

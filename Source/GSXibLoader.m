@@ -35,7 +35,6 @@
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
-#import <Foundation/NSXMLDocument.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSMenu.h"
@@ -44,7 +43,6 @@
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
-#import "GSXib5KeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
@@ -100,7 +98,10 @@
       return;
     }
 
-  // Get the file's owner and NSApplication object references...
+  // Use the owner as first root object
+  [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
+
+  // Get the first responder (nil) and NSApplication object references...
   object = (NSCustomObject*)[rootObjects objectAtIndex: 1];
   if ([[object className] isEqualToString: @"FirstResponder"])
     {
@@ -122,9 +123,6 @@
     {
       NSLog(@"%s:NSApplication missing '%@'\n", __PRETTY_FUNCTION__, className);
     }
-
-  // Use the owner as first root object
-  [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
 
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -166,51 +164,17 @@
     }
 }
 
-- (BOOL) checkXib5: (NSData *)data
-{
-#if GNUSTEP_BASE_HAVE_LIBXML
-  // Ensure we have a XIB 5 version...first see if we can parse the XML...
-  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
-                                                        options: 0
-                                                          error: NULL];
-  if (document == nil)
-    {
-      return NO;
-    }
-  else
-    {
-      // Test to see if this is an Xcode 5 XIB...
-      NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
-
-      // Need at LEAST ONE document node...we should find something a bit more
-      // specific to check here...
-      return [documentNodes count] != 0;
-    }
-#else
-  // We now default to checking XIB 5 versions
-  return YES;
-#endif
-}
-
 - (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 {
   BOOL loaded = NO;
-  NSKeyedUnarchiver *unarchiver = nil;
 
   NS_DURING
     {
       if (data != nil)
 	{
-          if ([self checkXib5: data])
-            {
-              unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
-            }
-          else
-            {
-              unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
-            }
+          NSKeyedUnarchiver *unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData: data];
 
 	  if (unarchiver != nil)
 	    {
@@ -226,7 +190,6 @@
 		    inContainer: objects
 		    withContext: context];
               loaded = YES;
-              RELEASE(unarchiver);
 	    }
 	  else
 	    {
@@ -241,7 +204,6 @@
   NS_HANDLER
     {
       NSLog(@"Exception occurred while loading model: %@",[localException reason]);
-      // TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER
 
