@@ -516,7 +516,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   // The parent of connections array element is the object ID we need...
   GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
   NSString     *parentId = [parent attributeForKey: @"id"];
-  NSString     *objKey = [@"IBActionConnection5" isEqualToString: [element attributeForKey: @"class"]] ?
+  NSString     *objKey = [@"action" isEqualToString: [element attributeForKey: @"key"]] ?
                              @"destination" : @"source";
 
   if (parentId == nil)

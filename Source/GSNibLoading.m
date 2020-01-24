@@ -469,10 +469,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
       [aCoder encodeBool: _visibleAtLaunch forKey: @"visibleAtLaunch"];
-      if (_toolbar != nil)
-        {
-          [aCoder encodeObject: _toolbar forKey: @"NSToolbar"];
-        }
+      [aCoder encodeObject: _toolbar forKey: @"NSToolbar"];
     }
 }
 
@@ -532,6 +529,10 @@ static BOOL _isInInterfaceBuilder = NO;
           // FIXME: No idea what is going on here
 	  [_realObject setToolbar: (NSToolbar*)_viewClass];
 	}
+      if (_toolbar)
+        {
+          [_realObject setToolbar: _toolbar];
+        }
 
       [_realObject setContentMinSize: _minSize];
       [_realObject setContentMaxSize: _maxSize];
