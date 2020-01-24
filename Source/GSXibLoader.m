@@ -83,14 +83,11 @@
 - (void) awake: (NSArray *)rootObjects
    withContext: (NSDictionary *)context
 {
-  NSEnumerator *en;
-  id obj;
   NSMutableArray *topLevelObjects = [context objectForKey: NSNibTopLevelObjects];
   id owner = [context objectForKey: NSNibOwner];
-  id first = nil;
-  id app   = nil;
-  NSCustomObject *object;
-  NSString *className;
+  NSEnumerator *en;
+  id obj;
+  NSUInteger index = 0;
 
   if ([rootObjects count] == 0)
     {
@@ -101,39 +98,18 @@
   // Use the owner as first root object
   [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
 
-  // Get the first responder (nil) and NSApplication object references...
-  object = (NSCustomObject*)[rootObjects objectAtIndex: 1];
-  if ([[object className] isEqualToString: @"FirstResponder"])
-    {
-      first = [object realObject];
-    }
-  else
-    {
-      NSLog(@"%s:first responder missing\n", __PRETTY_FUNCTION__);
-    }
-
-  object = (NSCustomObject*)[rootObjects objectAtIndex: 2];
-  className = [object className];
-  if ([className isEqualToString: @"NSApplication"] ||
-      [NSClassFromString(className) isSubclassOfClass:[NSApplication class]])
-    {
-      app = [object realObject];
-    }
-  else
-    {
-      NSLog(@"%s:NSApplication missing '%@'\n", __PRETTY_FUNCTION__, className);
-    }
-
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
+      index++;
+
       if ([obj respondsToSelector: @selector(nibInstantiate)])
         {
           obj = [obj nibInstantiate];
         }
 
       // IGNORE file's owner, first responder and NSApplication instances...
-      if ((obj != nil) && (obj != owner) && (obj != first) && (obj != app))
+      if ((obj != nil) && (index > 3))
         {
           [topLevelObjects addObject: obj];
           // All top level objects must be released by the caller to avoid
