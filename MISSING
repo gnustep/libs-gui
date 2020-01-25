@@ -30,8 +30,6 @@ MISSING HEADERS
 > NSLayoutGuide.h
 > NSMediaLibraryBrowserController.h
 > NSMenuToolbarItem.h
-> NSNibControlConnector.h
-> NSNibOutletConnector.h
 > NSOpenGLLayer.h
 > NSPageController.h
 > NSPathCell.h
@@ -40,11 +38,6 @@ MISSING HEADERS
 > NSPathControlItem.h
 > NSPersistentDocument.h
 > NSPressureConfiguration.h
-> NSQuickDrawView.h
-> NSRuleEditor.h
-> NSScrubber.h
-> NSScrubberItemView.h
-> NSScrubberLayout.h
 > NSSharingServicePickerToolbarItem.h
 > NSSliderAccessory.h
 > NSSpeechRecognizer.h
@@ -52,8 +45,6 @@ MISSING HEADERS
 > NSSplitViewItem.h
 > NSStackView.h
 > NSStatusBarButton.h
-> NSStoryboard.h
-> NSStoryboardSegue.h
 > NSSwitch.h
 > NSTabViewController.h
 > NSTableCellView.h
@@ -65,8 +56,6 @@ MISSING HEADERS
 > NSTextInputClient.h
 > NSTextInputContext.h
 > NSTitlebarAccessoryViewController.h
-> NSTouch.h
-> NSTouchBar.h
 > NSTypesetter.h
 > NSUserActivity.h
 > NSUserInterfaceCompression.h
@@ -88,6 +77,10 @@ Completed
 > NSTouch.h
 > NSTouchBar.h
 
+Obsolete
+---
+NSQuickDrawView.h
+
 Mac Specific
 ---
 > NSButtonTouchBarItem.h
@@ -106,10 +99,12 @@ Mac Specific
 > NSPanGestureRecognizer.h
 > NSPressGestureRecognizer.h
 > NSRotationGestureRecognizer.h
-> NSSpeechRecognizer.h
 > NSApplicationScripting.h
 > NSDocumentScripting.h
 > NSTextStorageScripting.h
 > NSWindowScripting.h
 > NSHapticFeedback.h
 > NSAppleScriptExtensions.h
+> NSScrubber.h
+> NSScrubberItemView.h
+> NSScrubberLayout.h
