@@ -125,7 +125,6 @@ typedef NSUInteger NSRequestUserAttentionType;
 #define NSAppKitVersionNumber10_5_3    949.33
 #define NSAppKitVersionNumber10_6      1038
 #define NSAppKitVersionNumber10_7      1138
-#define NSAppKitVersionNumber10_7_2    1138.23
 #define NSAppKitVersionNumber10_7_2    1138.23;
 #define NSAppKitVersionNumber10_7_3    1138.32;
 #define NSAppKitVersionNumber10_7_4    1138.47;
@@ -155,7 +154,7 @@ typedef NSUInteger NSRequestUserAttentionType;
 #define NSAppKitVersionNumber10_14_4   1671.4;
 #define NSAppKitVersionNumber10_14_5   1671.5;
 
-  APPKIT_EXPORT const double NSAppKitVersionNumber;
+APPKIT_EXPORT const double NSAppKitVersionNumber;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
