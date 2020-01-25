@@ -7,16 +7,12 @@ MISSING HEADERS
 > NSAccessibilityElement.h
 > NSAccessibilityProtocols.h
 > NSAlignmentFeedbackFilter.h
-> NSAppearance.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
 > NSCollectionViewLayout.h
 > NSCollectionViewTransitionLayout.h
 > NSColorSampler.h
-> NSDataAsset.h
-> NSDatePicker.h
-> NSDatePickerCell.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
 > NSDraggingItem.h
@@ -43,8 +39,6 @@ MISSING HEADERS
 > NSPathControl.h
 > NSPathControlItem.h
 > NSPersistentDocument.h
-> NSPredicateEditor.h
-> NSPredicateEditorRowTemplate.h
 > NSPressureConfiguration.h
 > NSQuickDrawView.h
 > NSRuleEditor.h
@@ -80,7 +74,6 @@ MISSING HEADERS
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-Total: 86
 
 Completed
 ---
@@ -90,7 +83,10 @@ Completed
 > NSPDFPanel.h
 > NSPICTImageRep.h
 > NSDockTile.h
-Total: 6
+> NSAppearance.h
+> NSDataAsset.h
+> NSTouch.h
+> NSTouchBar.h
 
 Mac Specific
 ---
@@ -117,4 +113,3 @@ Mac Specific
 > NSWindowScripting.h
 > NSHapticFeedback.h
 > NSAppleScriptExtensions.h
-Total: 23

@@ -163,6 +163,7 @@ LexKeyword RTFcommands[] =
     {"NeXTHelpLink",token(RTFNeXTHelpLink)},
     {"NeXTHelpMarker",token(RTFNeXTHelpMarker)},
     {"ansi",      token(RTFansi)},
+    {"ansicpg",   token(RTFansicpg)},
     {"b",         token(RTFbold)},
     {"blue",      token(RTFblue)},
     {"bullet",    token(RTFbullet)},

@@ -50,6 +50,7 @@ NSAffineTransform.m \
 NSAlert.m \
 NSAnimation.m \
 NSAnimationContext.m \
+NSAppearance.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -89,9 +90,12 @@ NSController.m \
 NSCursor.m \
 NSCustomImageRep.m \
 NSCustomTouchBarItem.m \
+NSDataAsset.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDatePicker.m \
+NSDatePickerCell.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
@@ -117,6 +121,8 @@ NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
+NSTouch.m \
+NSTouchBar.m \
 NSTouchBarItem.m \
 NSGestureRecognizer.m \
 NSGradient.m \
@@ -146,7 +152,6 @@ NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
-NSTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
@@ -157,6 +162,8 @@ NSMovie.m \
 NSMovieView.m \
 NSNib.m \
 NSNibConnector.m \
+NSNibControlConnector.m \
+NSNibOutletConnector.m \
 NSNibBindingConnector.m \
 NSNibAXAttributeConnector.m \
 NSNibAXRelationshipConnector.m \
@@ -171,7 +178,6 @@ NSPanel.m \
 NSPanGestureRecognizer.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
-NSPressGestureRecognizer.m \
 NSParagraphStyle.m \
 NSPasteboardItem.m \
 NSPDFInfo.m \
@@ -181,6 +187,9 @@ NSPICTImageRep.m \
 NSPopover.m \
 NSPopUpButton.m \
 NSPopUpButtonCell.m \
+NSPredicateEditor.m \
+NSPredicateEditorRowTemplate.m \
+NSPressGestureRecognizer.m \
 NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
@@ -188,6 +197,7 @@ NSPrintPanel.m \
 NSProgressIndicator.m \
 NSResponder.m \
 NSRotationGestureRecognizer.m \
+NSRuleEditor.m \
 NSRulerMarker.m \
 NSRulerView.m \
 NSRunningApplication.m \
@@ -240,7 +250,6 @@ NSTextView_actions.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSToolbarItemGroup.m \
-NSTouchBarItem.m \
 NSTokenField.m \
 NSTokenFieldCell.m \
 NSTrackingArea.m \
@@ -309,8 +318,8 @@ GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
 GSXibKeyedUnarchiver.m \
+GSXib5KeyedUnarchiver.m \
 GSXibObjectContainer.m \
-GSXibParser.m \
 GSHelpAttachment.m 
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
@@ -339,6 +348,7 @@ NSAffineTransform.h \
 NSAlert.h \
 NSAnimation.h \
 NSAnimationContext.h \
+NSAppearance.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \
@@ -371,9 +381,12 @@ NSController.h \
 NSCursor.h \
 NSCustomImageRep.h \
 NSCustomTouchBarItem.h \
+NSDataAsset.h \
 NSDataLink.h \
 NSDataLinkManager.h \
 NSDataLinkPanel.h \
+NSDatePicker.h \
+NSDatePickerCell.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
@@ -435,6 +448,8 @@ NSPopoverTouchBarItem.h \
 NSPopover.h \
 NSPopUpButton.h \
 NSPopUpButtonCell.h \
+NSPredicateEditor.h \
+NSPredicateEditorRowTemplate.h \
 NSPressGestureRecognizer.h \
 NSPrintInfo.h \
 NSPrintOperation.h \
@@ -443,6 +458,7 @@ NSPrinter.h \
 NSProgressIndicator.h \
 NSResponder.h \
 NSRotationGestureRecognizer.h \
+NSRuleEditor.h \
 NSRulerMarker.h \
 NSRulerView.h \
 NSRunningApplication.h \
@@ -493,6 +509,8 @@ NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
 NSToolbarItemGroup.h \
+NSTouch.h \
+NSTouchBar.h \
 NSTouchBarItem.h \
 NSTokenField.h \
 NSTokenFieldCell.h \
@@ -512,6 +530,8 @@ NSColorPicking.h \
 NSDragging.h \
 NSGraphics.h \
 NSNibConnector.h \
+NSNibControlConnector.h \
+NSNibOutletConnector.h \
 NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
@@ -567,7 +587,6 @@ GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSXibObjectContainer.h \
-GSXibParser.h \
 GSHelpAttachment.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}

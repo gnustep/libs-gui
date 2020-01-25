@@ -1308,7 +1308,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
      non-standard f_basetype field, which provides the name of the
      underlying file system type.
   */
-  uid_t uid;
   BOOL isRootFS;
   BOOL hasOwnership;
 
@@ -1323,7 +1322,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   if (statfs([fullPath fileSystemRepresentation], &m))
     return NO;  
 #endif
-  uid = geteuid();
 
   *writableFlag = 1;
 #if  defined(HAVE_STRUCT_STATVFS_F_FLAG)
@@ -1342,9 +1340,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   hasOwnership = NO;
 #if (defined(USING_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER)) || (defined(USING_STATVFS) &&  defined(HAVE_STRUCT_STATVFS_F_OWNER))
+  uid_t uid = geteuid();
   if (uid == 0 || uid == m.f_owner)
     hasOwnership = YES;
 #elif (defined(USING_STATVFS) && !defined(USING_STATFS) && defined (HAVE_STATFS) && defined(HAVE_STRUCT_STATFS_F_OWNER))
+  uid_t uid = geteuid();
   // FreeBSD only?
   struct statfs m2;
   statfs([fullPath fileSystemRepresentation], &m2);

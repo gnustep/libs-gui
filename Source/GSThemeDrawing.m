@@ -72,6 +72,8 @@
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index;
+- (id)_objectValueForTableColumn: (NSTableColumn *)tb
+			     row: (NSInteger)index;
 @end
 
 @interface NSCell (Private)
@@ -722,22 +724,20 @@
 - (NSRect) stepperUpButtonRectWithFrame: (NSRect)frame
 {
   NSSize size = [[NSImage imageNamed: @"common_StepperUp"] size];
-  NSRect upRect;
+  NSRect upRect = {{NSMinX(frame), NSMinY(frame)}, {size.width, size.height}};
 
-  upRect.size = size;
-  upRect.origin.x = NSMaxX(frame) - size.width;
-  upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
+  upRect.origin.x += ((int)frame.size.width / 2) - ((int)size.width / 2);
+  upRect.origin.y += ((int)frame.size.height / 2);
   return upRect;
 }
 
 - (NSRect) stepperDownButtonRectWithFrame: (NSRect)frame
 {
   NSSize size = [[NSImage imageNamed: @"common_StepperDown"] size];
-  NSRect downRect;
+  NSRect downRect = {{NSMinX(frame), NSMinY(frame)}, {size.width, size.height}};
 
-  downRect.size = size;
-  downRect.origin.x = NSMaxX(frame) - size.width;
-  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - size.height + 1;
+  downRect.origin.x += ((int)frame.size.width / 2) - ((int)size.width / 2);
+  downRect.origin.y += ((int)frame.size.height / 2) - size.height;
   return downRect;
 }
 
@@ -1446,8 +1446,6 @@ static NSImage *spinningImages[MaxCount];
 
   if (tiles == nil)
     { 
-      [[NSColor blackColor] set];
-      NSRectFill(divide);
       rect = [self drawDarkButton: rect withClip: aRect];
       [[NSColor controlShadowColor] set];
       NSRectFill(rect);
@@ -2646,6 +2644,7 @@ typedef enum {
       NSScroller *vertScroller = [scrollView verticalScroller];
       NSScroller *horizScroller = [scrollView horizontalScroller];
       CGFloat scrollerWidth = [NSScroller scrollerWidth];
+      NSRect scrollerFrame;
 
       [color set];
 
@@ -2653,43 +2652,39 @@ typedef enum {
 	{
 	  NSInterfaceStyle style;
 	  CGFloat xpos;
-	  CGFloat scrollerHeight = bounds.size.height;
-
+          
+          scrollerFrame = [vertScroller frame];
+          
 	  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
 	  if (style == NSMacintoshInterfaceStyle
 	      || style == NSWindows95InterfaceStyle)
 	    {
-              xpos = [vertScroller frame].origin.x - 1.0;
+              xpos = scrollerFrame.origin.x - 1.0;
 	    }
 	  else
 	    {
-              xpos = [vertScroller frame].origin.x + scrollerWidth;
+              xpos = scrollerFrame.origin.x + scrollerWidth;
 	    }
-          NSRectFill(NSMakeRect(xpos, [vertScroller frame].origin.y - 1.0, 
-                                1.0, scrollerHeight + 1.0));
+          NSRectFill(NSMakeRect(xpos, scrollerFrame.origin.y, 
+                                1.0, scrollerFrame.size.height));
 	}
 
       if ([scrollView hasHorizontalScroller])
 	{
 	  CGFloat ypos;
-	  CGFloat scrollerY = [horizScroller frame].origin.y;
-	  CGFloat scrollerLength = bounds.size.width;
 
-	  if ([scrollView hasVerticalScroller])
-	    {
-	      scrollerLength -= [NSScroller scrollerWidth];
-	    }
+          scrollerFrame = [horizScroller frame];
  
 	  if ([scrollView isFlipped])
 	    {
-	      ypos = scrollerY - 1.0;
+	      ypos = scrollerFrame.origin.y - 1.0;
 	    }
 	  else
 	    {
-	      ypos = scrollerY + scrollerWidth + 1.0;
+	      ypos = scrollerFrame.origin.y + scrollerWidth + 1.0;
 	    }
-          NSRectFill(NSMakeRect([horizScroller frame].origin.x - 1.0, ypos,
-                                scrollerLength + 1.0, 1.0));
+          NSRectFill(NSMakeRect([horizScroller frame].origin.x, ypos,
+                                scrollerFrame.size.width, 1.0));
 	}
     }
 }
@@ -3112,7 +3107,6 @@ typedef enum {
   NSInteger numberOfColumns = [tableView numberOfColumns];
   // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   // NSColor *backgroundColor = [tableView backgroundColor];
-  id dataSource = [tableView dataSource];
   CGFloat *columnOrigins = [tableView _columnOrigins];
   NSInteger editedRow = [tableView editedRow];
   NSInteger editedColumn = [tableView editedColumn];
@@ -3128,11 +3122,6 @@ typedef enum {
   NSColor *tempColor = nil;
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
 					  state: GSThemeNormalState];
-
-  if (dataSource == nil)
-    {
-      return;
-    }
 
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -3177,9 +3166,8 @@ typedef enum {
         }
       else
         {
-          [cell setObjectValue: [dataSource tableView: tableView
-                                            objectValueForTableColumn: tb
-                                                  row: rowIndex]];
+          [cell setObjectValue: [tableView _objectValueForTableColumn: tb
+                                                                  row: rowIndex]];
         }
       drawingRect = [tableView frameOfCellAtColumn: i
 			       row: rowIndex];

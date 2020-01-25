@@ -31,6 +31,7 @@
 #import <Foundation/NSString.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSAppearance.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
@@ -760,7 +761,9 @@ NSString *NSHiddenBinding = @"hidden";
 NSString *NSSelectedIndexBinding = @"selectedIndex";
 NSString *NSSelectedObjectBinding = @"selectedObject";
 NSString *NSSelectedTagBinding = @"selectedTag";
+NSString *NSSelectedValueBinding = @"selectedValue";
 NSString *NSSelectionIndexesBinding = @"selectionIndexes";
+NSString *NSSortDescriptorsBinding = @"sortDescriptors";
 NSString *NSTextColorBinding = @"textColor";
 NSString *NSTitleBinding = @"title";
 NSString *NSToolTipBinding = @"toolTip";
@@ -785,6 +788,30 @@ NSString *NSImageNameFontPanel = @"NSFontPanel";
 NSString *NSImageNameColorPanel = @"NSColorPanel";
 NSString *NSImageNameCaution = @"NSCaution";
 
+// NSRuleEditor
+NSString *const NSRuleEditorPredicateLeftExpression = @"NSRuleEditorPredicateLeftExpression";
+NSString *const NSRuleEditorPredicateRightExpression = @"NSRuleEditorPredicateRightExpression";
+NSString *const NSRuleEditorPredicateComparisonModifier = @"NSRuleEditorPredicateComparisonModifier";
+NSString *const NSRuleEditorPredicateOptions = @"NSRuleEditorPredicateOptions";
+NSString *const NSRuleEditorPredicateOperatorType = @"NSRuleEditorPredicateOperatorType";
+NSString *const NSRuleEditorPredicateCustomSelector = @"NSRuleEditorPredicateCustomSelector";
+NSString *const NSRuleEditorPredicateCompoundType = @"NSRuleEditorPredicateCompoundType";
+
+NSString *NSRuleEditorRowsDidChangeNotification = @"NSRuleEditorRowsDidChangeNotification";
+
+// NSAppearance
+const NSAppearanceName NSAppearanceNameAqua = @"NSAppearanceNameAqua";
+const NSAppearanceName NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
+const NSAppearanceName NSAppearanceNameVibrantLight = @"NSAppearanceNameVibrantLight";
+const NSAppearanceName NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
+const NSAppearanceName NSAppearanceNameAccessibilityHighContrastAqua = @"NSAppearanceNameAccessibilityHighContrastAqua";
+const NSAppearanceName NSAppearanceNameAccessibilityHighContrastDarkAqua = @"NSAppearanceNameAccessibilityHighContrastDarkAqua";
+const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantLight =
+  @"NSAppearanceNameAccessibilityHighContrastVibrantLight";
+const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantDark =
+  @"NSAppearanceNameAccessibilityHighContrastVibrantDark";
+const NSAppearanceName NSAppearanceNameLightContent = @"NSAppearanceNameLightContent";
+
 extern void __objc_gui_force_linking (void);
 
 void
@@ -793,5 +820,3 @@ __objc_gui_force_linking (void)
   extern void __objc_gui_linking (void);
   __objc_gui_linking ();
 }
-
-

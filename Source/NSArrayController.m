@@ -2,7 +2,7 @@
 
    <abstract>Controller class for arrays</abstract>
 
-   Copyright <copy>(C) 2006 Free Software Foundation, Inc.</copy>
+   Copyright <copy>(C) 2006, 2020 Free Software Foundation, Inc.</copy>
 
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: June 2006
@@ -41,6 +41,105 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 
+@implementation GSObservableArray
+
+- (id) initWithArray: (NSArray *)array
+{
+  self = [super init];
+  if (self)
+    {
+      ASSIGN(_array, array);
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_array);
+  [super dealloc];
+}
+
+- (NSUInteger) count
+{
+  return [_array count];
+}
+
+- (NSUInteger) indexOfObject: (id)anObject
+{
+  return [_array indexOfObject: anObject];
+}
+
+- (id) objectAtIndex: (NSUInteger)index
+{
+  return [_array objectAtIndex: index];
+}
+
+- (NSArray *) objectsAtIndexes: (NSIndexSet *)indexes
+{
+  NSArray *result = [_array objectsAtIndexes: indexes];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (id) valueForKey: (NSString*)key
+{
+  id result = [_array valueForKey: key];
+
+  if ([result isKindOfClass: [NSArray class]])
+    {
+      // FIXME: Using the correct memory management here
+      // Leads to an issue inside of KVO. For now we leak the
+      // object until this gets fixed.
+      //return AUTORELEASE([[GSObservableArray alloc]
+      return ([[GSObservableArray alloc]
+                                initWithArray: result]);
+    }
+
+  return result;
+}
+
+- (NSArray*) arrayByAddingObject: (id)anObject
+{
+  NSArray * result = [_array arrayByAddingObject: anObject];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (NSArray*) arrayByAddingObjectsFromArray: (NSArray*)anotherArray
+{
+  NSArray * result = [_array arrayByAddingObjectsFromArray: anotherArray];
+
+  return AUTORELEASE([[GSObservableArray alloc]
+                                initWithArray: result]);
+}
+
+- (void) addObserver: (NSObject*)anObserver
+	  forKeyPath: (NSString*)aPath
+	     options: (NSKeyValueObservingOptions)options
+	     context: (void*)aContext
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self addObserver: anObserver
+ toObjectsAtIndexes: indexes
+         forKeyPath: aPath
+            options: options
+            context: aContext];
+}
+
+- (void) removeObserver: (NSObject*)anObserver forKeyPath: (NSString*)aPath
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self removeObserver: anObserver
+  fromObjectsAtIndexes: indexes
+            forKeyPath: aPath];
+}
+
+@end
+
 @implementation NSArrayController
 
 + (void) initialize
@@ -57,7 +156,6 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
-      [self rearrangeObjects];
       [self setSelectsInsertedObjects: YES];
     }
 
@@ -92,8 +190,7 @@
     }
   else 
     {
-      // FIXME: Should check whether _arranged_objects is mutable
-      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObject: obj]);
+      DESTROY(_arranged_objects);
     }
   if ([self selectsInsertedObjects])
     {
@@ -112,8 +209,7 @@
     }
   else 
     {
-      // FIXME: Should check whether _arranged_objects is mutable
-      ASSIGN(_arranged_objects, [_arranged_objects arrayByAddingObjectsFromArray: obj]);
+      DESTROY(_arranged_objects);
     }
   if ([self selectsInsertedObjects])
     {
@@ -133,8 +229,7 @@
     }
   else 
     {
-      // FIXME
-      //[_arranged_objects removeObject: obj];
+      DESTROY(_arranged_objects);
     }
   [self didChangeValueForKey: NSContentBinding];
 }
@@ -150,8 +245,7 @@
     }
   else 
     {
-      // FIXME
-      //[_arranged_objects removeObjectsInArray: obj];
+      DESTROY(_arranged_objects);
     }
   [self didChangeValueForKey: NSContentBinding];
 }
@@ -290,7 +384,7 @@
 - (NSArray*) selectedObjects
 {
   // We make the selection work on the arranged objects
-  return [_arranged_objects objectsAtIndexes: _selection_indexes];
+  return [[self arrangedObjects] objectsAtIndexes: _selection_indexes];
 }
 
 - (NSUInteger) selectionIndex
@@ -365,20 +459,31 @@
 
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
-  NSArray *temp = [obj filteredArrayUsingPredicate: _filter_predicate];
-  
+  NSArray *temp = obj;
+
+  if (_filter_predicate != nil)
+    {
+      temp = [obj filteredArrayUsingPredicate: _filter_predicate];
+    }
+
   return [temp sortedArrayUsingDescriptors: _sort_descriptors];
 }
 
 - (id) arrangedObjects
 {
+  if (_arranged_objects == nil)
+    {
+      [self rearrangeObjects];
+    }
   return _arranged_objects;
 }
 
 - (void) rearrangeObjects
 {
   [self willChangeValueForKey: @"arrangedObjects"];
-  ASSIGN(_arranged_objects, [self arrangeObjects: _content]);
+  DESTROY(_arranged_objects);
+  _arranged_objects = [[GSObservableArray alloc]
+                          initWithArray: [self arrangeObjects: _content]];
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 

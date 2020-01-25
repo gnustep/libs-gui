@@ -152,5 +152,8 @@ void GSRTFNeXTHelpMarker(void *ctxt, int num, const char *markername);
 
 void GSRTFaddField (void *ctxt, int start, const char *inst);
 
+/* set encoding */
+void GSRTFencoding(void *ctxt, int encoding);
+
 #endif
 

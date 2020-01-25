@@ -50,13 +50,8 @@
 - (void) setSource: (id)anObject;
 @end
 
-@interface NSNibControlConnector : NSNibConnector
-- (void) establishConnection;
-@end
-
-@interface NSNibOutletConnector : NSNibConnector
-- (void) establishConnection;
-@end
+#import <AppKit/NSNibControlConnector.h>
+#import <AppKit/NSNibOutletConnector.h>
 
 #endif
 

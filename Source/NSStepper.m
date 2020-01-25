@@ -85,6 +85,17 @@ id _nsstepperCellClass = nil;
   return YES;
 }
 
+- (BOOL)acceptsFirstResponder
+{
+  // FIXME: change to `YES` after `keyDown:` implementation.
+  return NO;
+}
+
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (void) keyDown: (NSEvent*)theEvent
 {
   // FIXME

@@ -1690,9 +1690,9 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   if ([aCoder containsValueForKey: @"NSToolbarItemLabel"])
     [self setLabel: [aCoder decodeObjectForKey:@"NSToolbarItemLabel"]];
   if ([aCoder containsValueForKey: @"NSToolbarItemMinSize"])
-    [self setMinSize: NSSizeFromString([aCoder decodeObjectForKey:@"NSToolbarItemMinSize"])];
+    [self setMinSize: [aCoder decodeSizeForKey:@"NSToolbarItemMinSize"]];
   if ([aCoder containsValueForKey: @"NSToolbarItemMaxSize"])
-    [self setMaxSize: NSSizeFromString([aCoder decodeObjectForKey:@"NSToolbarItemMaxSize"])];
+    [self setMaxSize: [aCoder decodeSizeForKey:@"NSToolbarItemMaxSize"]];
   if ([aCoder containsValueForKey: @"NSToolbarItemAutovalidates"])
     [self setAutovalidates: [aCoder decodeBoolForKey:@"NSToolbarItemAutovalidates"]];
   if ([aCoder containsValueForKey: @"NSToolbarItemVisibilityPriority"])

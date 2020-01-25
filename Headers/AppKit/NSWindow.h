@@ -97,25 +97,44 @@ enum {
 enum {
   NSBorderlessWindowMask = 0,
   NSTitledWindowMask = 1,
-  NSClosableWindowMask = 2,
-  NSMiniaturizableWindowMask = 4,
-  NSResizableWindowMask = 8,
+  NSClosableWindowMask = 1 << 1,
+  NSMiniaturizableWindowMask = 1 << 2,
+  NSResizableWindowMask = 1 << 3,
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
-  NSTexturedBackgroundWindowMask = 256,
+  NSTexturedBackgroundWindowMask = 1 << 8,
 #endif 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-  NSUnscaledWindowMask = 2048,
-  NSUnifiedTitleAndToolbarWindowMask = 4096,
+  NSUnscaledWindowMask = 1 << 11,
+  NSUnifiedTitleAndToolbarWindowMask = 1 << 12,
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+  NSWindowStyleMaskHUDWindow = 1 << 13,
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
-  NSFullScreenWindowMask = 16384,
+  NSFullScreenWindowMask = 1 << 14,
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
   NSFullSizeContentViewWindowMask = 1 << 15,
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSWindowStyleMaskBorderless = NSBorderlessWindowMask,
+  NSWindowStyleMaskTitled = NSTitledWindowMask,
+  NSWindowStyleMaskClosable = NSClosableWindowMask,
+  NSWindowStyleMaskMiniaturizable = NSMiniaturizableWindowMask,
+  NSWindowStyleMaskResizable = NSResizableWindowMask,
+  NSWindowStyleMaskUtilityWindow = 1 << 4,
+  NSWindowStyleMaskDocModalWindow = 1 << 6,
+  // Specifies that a panel that does not activate the owning application
+  NSWindowStyleMaskNonactivatingPanel = 1 << 7,
+  NSWindowStyleMaskTexturedBackground = NSTexturedBackgroundWindowMask,
+  NSWindowStyleMaskUnifiedTitleAndToolbar = NSUnifiedTitleAndToolbarWindowMask,
+  NSWindowStyleMaskFullScreen = NSFullScreenWindowMask,
+  NSWindowStyleMaskFullSizeContentView = NSFullSizeContentViewWindowMask,
+#endif
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
+typedef NSUInteger NSWindowStyleMask;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 enum {

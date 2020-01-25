@@ -110,7 +110,7 @@
       enumerator = [types objectEnumerator];
       while ((type = [enumerator nextObject]))
         {
-          NSDebugLLog(@"NIB", @"Checking type %@", fileName);
+          NSDebugLLog(@"NIB", @"Checking type %@", type);
           NSString *path = [self pathForResource: fileName
                                           ofType: type];
           if (path != nil)

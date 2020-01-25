@@ -1,29 +1,32 @@
 /** <title>GSXibKeyedUnarchiver.m</title>
- 
+
  <abstract>
- These are templates for use with OSX XIB 5 files.  These classes are the
- templates and other things which are needed for reading XIB 5 files.
+ These are templates for use with OSX XIB files.  These classes are the
+ templates and other things which are needed for reading XIB files.
  </abstract>
- 
- Copyright (C) 2005, 2017 Free Software Foundation, Inc.
- 
+
+ Copyright (C) 2010, 2012, 2017 Free Software Foundation, Inc.
+
  File created by Marcian Lytwyn on 12/30/16 from original code by:
- 
+
+ Author: Fred Kiefer <FredKiefer@gmx.de>
+ Date: March 2010
+
  Author: Gregory John Casamento
- Date: 2003, 2005
- 
+ Date: 2012
+
  This file is part of the GNUstep GUI Library.
- 
+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2 of the License, or (at your option) any later version.
- 
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; see the file COPYING.LIB.
  If not, see <http://www.gnu.org/licenses/> or write to the
@@ -31,175 +34,211 @@
  Boston, MA 02110-1301, USA.
  */
 
+#import <Foundation/NSXMLDocument.h>
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSNibLoading.h"
+#import "GSXib5KeyedUnarchiver.h"
 
 @implementation GSXibKeyedUnarchiver
 
++ (BOOL) checkXib5: (NSData *)data
+{
+#if GNUSTEP_BASE_HAVE_LIBXML
+  // Ensure we have a XIB 5 version...first see if we can parse the XML...
+  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
+                                                        options: 0
+                                                          error: NULL];
+  if (document == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      // Test to see if this is an Xcode 5 XIB...
+      NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
+
+      // Need at LEAST ONE document node...we should find something a bit more
+      // specific to check here...
+      return [documentNodes count] != 0;
+    }
+#else
+  // We now default to checking XIB 5 versions
+  return YES;
+#endif
+}
+
++ (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data
+{
+  NSKeyedUnarchiver *unarchiver = nil;
+
+  if ([self checkXib5: data])
+    {
+      unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+    }
+  else
+    {
+      unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
+    }
+  return AUTORELEASE(unarchiver);
+}
+
 - (NSData *) _preProcessXib: (NSData *)data
 {
-  NSData *result = nil;
+  NSData *result = data;
 
 #if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
 							options:0
 							  error:NULL];
-  result = data;
+
   if (document == nil)
     {
       NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
     }
   else
     {
-      // Test to see if this is an Xcode 5 XIB...
-      NSArray *documentNodes = [document nodesForXPath:@"/document"
-						 error:NULL];
-      if ([documentNodes count] > 0)
-	{
-	  NSLog(@"Unsupported... This is an XCode 5 XIB file.");
-	  return nil;
-	}
+      NSArray *customClassNodes = [document nodesForXPath:@"//dictionary[@key=\"flattenedProperties\"]/"
+                                            @"string[contains(@key,\"CustomClassName\")]"
+                                                    error:NULL];
+      NSMutableDictionary *customClassDict = [NSMutableDictionary dictionary];
+      if (customClassNodes)
+        {
+          NSDebugLLog(@"PREXIB", @"%s:customClassNodes: %@\n", __PRETTY_FUNCTION__, customClassNodes);
+
+          // Replace the NSXMLNodes with a dictionary...
+          NSInteger index = 0;
+          for (index = 0; index < [customClassNodes count]; ++index)
+            {
+              id node = [customClassNodes objectAtIndex:index];
+              if ([node isMemberOfClass:[NSXMLElement class]])
+                {
+                  NSString     *key  = [[node attributeForName:@"key"] stringValue];
+                  if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
+                    {
+                      [customClassDict setObject:[node stringValue] forKey:key];
+                    }
+                }
+            }
+        }
       else
-	{
-	  NSArray *customClassNodes = [document nodesForXPath:@"//dictionary[@key=\"flattenedProperties\"]/"
-						@"string[contains(@key,\"CustomClassName\")]"
-							error:NULL];
-	  NSMutableDictionary *customClassDict = [NSMutableDictionary dictionary];
-	  if (customClassNodes)
-	    {
-	      NSDebugLLog(@"PREXIB", @"%s:customClassNodes: %@\n", __PRETTY_FUNCTION__, customClassNodes);
-	      
-	      // Replace the NSXMLNodes with a dictionary...
-	      NSInteger index = 0;
-	      for (index = 0; index < [customClassNodes count]; ++index)
-		{
-		  id node = [customClassNodes objectAtIndex:index];
-		  if ([node isMemberOfClass:[NSXMLElement class]])
-		    {
-		      NSString     *key  = [[node attributeForName:@"key"] stringValue];
-		      if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
-			{
-			  [customClassDict setObject:[node stringValue] forKey:key];
-			}
-		    }
-		}
-	    }
-	  else
-	    {
-	      NSArray *flatProps = [document nodesForXPath:@"//object[@key=\"flattenedProperties\"]" error:NULL];
-	      if ([flatProps count] == 1)
-		{
-		  NSInteger index = 0;
-		  NSArray *xmlKeys = [[flatProps objectAtIndex:0] nodesForXPath:@"//object[@key=\"flattenedProperties\"]/object[@key=\"dict.sortedKeys\"]/*" error:NULL];
-		  NSArray *xmlObjs = [[flatProps objectAtIndex:0] nodesForXPath:@"//object[@key=\"flattenedProperties\"]/object[@key=\"dict.values\"]/*" error:NULL];
-		  if ([xmlKeys count] != [xmlObjs count])
-		    {
-		      NSLog(@"%s:keys to objs count mismatch - keys: %d objs: %d\n", __PRETTY_FUNCTION__,
-			    (int)[xmlKeys count], (int)[xmlObjs count]);
-		    }
-		  else
-		    {
-		      for (index = 0; index < [xmlKeys count]; ++index)
-			{
-			  id key = [[xmlKeys objectAtIndex:index] stringValue];
-			  if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
-			    {
-			      // NSString *obj = [[xmlObjs objectAtIndex:index] stringValue];
-			      [customClassDict setObject:[[xmlObjs objectAtIndex:index] stringValue] forKey:key];
-			    }
-			}
-		    }
-		}
-	    }
-	  
-	  NSDebugLLog(@"PREXIB", @"%s:customClassDict: %@\n", __PRETTY_FUNCTION__, customClassDict);
-	  
-	  if ([customClassDict count] > 0)
-	    {
-	      NSArray *objectRecords = nil;
-	      NSEnumerator *en = [[customClassDict allKeys] objectEnumerator];
-	      NSString *key = nil;
-	      
-	      while ((key = [en nextObject]) != nil)
-		{
-		  NSString *keyValue = [key stringByReplacingOccurrencesOfString:@".CustomClassName" withString:@""];
-		  NSString *className = [customClassDict objectForKey: key];
-		  NSString *objectRecordXpath = nil;
-		  
-		  objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
-						@"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
-						keyValue];
-		  
-		  objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
-		  
-		  if (objectRecords == nil)
-		    {
-		      // If that didn't work then it could be a 4.6+ XIB...
-		      objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
-						    @"string[@key=\"id\"][text()=\"%@\"]/../reference",
-						    keyValue];
-		      objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
-		    }
-		  
-		  NSString *refId = nil;
-		  if ([objectRecords count] > 0)
-		    {
-		      id record = nil;
-		      NSEnumerator *oen = [objectRecords objectEnumerator];
-		      while ((record = [oen nextObject]) != nil)
-			{
-			  if ([record isMemberOfClass:[NSXMLElement class]])
-			    {
-			      if([[[record attributeForName:@"key"] stringValue] isEqualToString:@"object"])
-				{
-				  NSArray *classNodes = nil;
-				  id classNode = nil;
-				  NSString *refXpath = nil;
-				  
-				  refId = [[record attributeForName:@"ref"] stringValue];
-				  refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
-				  classNodes = [document nodesForXPath:refXpath
-								 error:NULL];
-				  if([classNodes count] > 0)
-				    {
-				      id classAttr = nil;
-				      Class cls = NSClassFromString(className);
-				      
-				      classNode = [classNodes objectAtIndex:0];
-				      classAttr = [classNode attributeForName:@"class"];
-				      [classAttr setStringValue:className];
-				      
-				      if (cls != nil)
-					{
-					  if ([cls respondsToSelector:@selector(cellClass)])
-					    {
-					      NSArray *cellNodes = nil;
-					      id cellNode = nil;
-					      id cellClass = [cls cellClass];
-					      NSString *cellXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
-					      cellNodes = [document nodesForXPath:cellXpath
-									    error:NULL];
-					      if ([cellNodes count] > 0) 
-						{
-						  NSString *cellClassString = NSStringFromClass(cellClass);
-						  id cellAttr = nil;					      
-						  cellNode = [cellNodes objectAtIndex:0];
-						  cellAttr = [cellNode attributeForName:@"class"];
-						  [cellAttr setStringValue:cellClassString];
-						}
-					    }
-					}
-				    }
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	  result = [document XMLData];
-	  RELEASE(document);
-	}
+        {
+          NSArray *flatProps = [document nodesForXPath:@"//object[@key=\"flattenedProperties\"]" error:NULL];
+          if ([flatProps count] == 1)
+            {
+              NSInteger index = 0;
+              NSArray *xmlKeys = [[flatProps objectAtIndex:0] nodesForXPath:
+                @"//object[@key=\"flattenedProperties\"]/object[@key=\"dict.sortedKeys\"]/*" error:NULL];
+              NSArray *xmlObjs = [[flatProps objectAtIndex:0] nodesForXPath:
+                @"//object[@key=\"flattenedProperties\"]/object[@key=\"dict.values\"]/*" error:NULL];
+              if ([xmlKeys count] != [xmlObjs count])
+                {
+                  NSLog(@"%s:keys to objs count mismatch - keys: %d objs: %d\n", __PRETTY_FUNCTION__,
+                        (int)[xmlKeys count], (int)[xmlObjs count]);
+                }
+              else
+                {
+                  for (index = 0; index < [xmlKeys count]; ++index)
+                    {
+                      id key = [[xmlKeys objectAtIndex:index] stringValue];
+                      if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
+                        {
+                          // NSString *obj = [[xmlObjs objectAtIndex:index] stringValue];
+                          [customClassDict setObject:[[xmlObjs objectAtIndex:index] stringValue] forKey:key];
+                        }
+                    }
+                }
+            }
+        }
+
+      NSDebugLLog(@"PREXIB", @"%s:customClassDict: %@\n", __PRETTY_FUNCTION__, customClassDict);
+
+      if ([customClassDict count] > 0)
+        {
+          NSArray *objectRecords = nil;
+          NSEnumerator *en = [[customClassDict allKeys] objectEnumerator];
+          NSString *key = nil;
+
+          while ((key = [en nextObject]) != nil)
+            {
+              NSString *keyValue = [key stringByReplacingOccurrencesOfString:@".CustomClassName" withString:@""];
+              NSString *className = [customClassDict objectForKey: key];
+              NSString *objectRecordXpath = nil;
+
+              objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
+                                            @"int[@key=\"objectID\"][text()=\"%@\"]/../reference",
+                                            keyValue];
+
+              objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
+
+              if (objectRecords == nil)
+                {
+                  // If that didn't work then it could be a 4.6+ XIB...
+                  objectRecordXpath = [NSString stringWithFormat: @"//object[@class=\"IBObjectRecord\"]/"
+                                                @"string[@key=\"id\"][text()=\"%@\"]/../reference",
+                                                keyValue];
+                  objectRecords = [document nodesForXPath: objectRecordXpath error: NULL];
+                }
+
+              NSString *refId = nil;
+              if ([objectRecords count] > 0)
+                {
+                  id record = nil;
+                  NSEnumerator *oen = [objectRecords objectEnumerator];
+                  while ((record = [oen nextObject]) != nil)
+                    {
+                      if ([record isMemberOfClass:[NSXMLElement class]])
+                        {
+                          if([[[record attributeForName:@"key"] stringValue] isEqualToString:@"object"])
+                            {
+                              NSArray *classNodes = nil;
+                              id classNode = nil;
+                              NSString *refXpath = nil;
+
+                              refId = [[record attributeForName:@"ref"] stringValue];
+                              refXpath = [NSString stringWithFormat:@"//object[@id=\"%@\"]",refId];
+                              classNodes = [document nodesForXPath:refXpath
+                                                             error:NULL];
+                              if([classNodes count] > 0)
+                                {
+                                  id classAttr = nil;
+                                  Class cls = NSClassFromString(className);
+
+                                  classNode = [classNodes objectAtIndex:0];
+                                  classAttr = [classNode attributeForName:@"class"];
+                                  [classAttr setStringValue:className];
+
+                                  if (cls != nil)
+                                    {
+                                      if ([cls respondsToSelector:@selector(cellClass)])
+                                        {
+                                          NSArray *cellNodes = nil;
+                                          id cellNode = nil;
+                                          id cellClass = [cls cellClass];
+                                          NSString *cellXpath = [NSString stringWithFormat:
+                                            @"//object[@id=\"%@\"]/object[@key=\"NSCell\"]",refId];
+                                          cellNodes = [document nodesForXPath:cellXpath
+                                                                        error:NULL];
+                                          if ([cellNodes count] > 0)
+                                            {
+                                              NSString *cellClassString = NSStringFromClass(cellClass);
+                                              id cellAttr = nil;
+                                              cellNode = [cellNodes objectAtIndex:0];
+                                              cellAttr = [cellNode attributeForName:@"class"];
+                                              [cellAttr setStringValue:cellClassString];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+      result = [document XMLData];
+      RELEASE(document);
     }
 #endif
   return result;
@@ -235,7 +274,7 @@
 
   theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];
-      
+
   NS_DURING
     {
       // Parse the XML data
@@ -249,7 +288,7 @@
   NS_ENDHANDLER
 
   DESTROY(theParser);
-#endif    
+#endif
   return self;
 }
 
@@ -405,7 +444,7 @@ didStartElement: (NSString*)elementName
 
   // pop
   currentElement = last;
-  
+
   if (r != o)
     {
       [delegate unarchiver: self
@@ -443,7 +482,7 @@ didStartElement: (NSString*)elementName
 
   // Balance the retain above
   RELEASE(o);
-  
+
   if (objID != nil)
     {
       NSDebugLLog(@"XIB", @"decoded object %@ for id %@", o, objID);
@@ -454,7 +493,7 @@ didStartElement: (NSString*)elementName
 
 /*
   This method is a copy of decodeObjectForXib:forClassName:withKey:
-  The only difference being in the way we decode the object and the 
+  The only difference being in the way we decode the object and the
   missing context switch.
  */
 - (id) decodeDictionaryForXib: (GSXibElement*)element
@@ -508,7 +547,7 @@ didStartElement: (NSString*)elementName
     }
   // Balance the retain above
   RELEASE(o);
-  
+
   if (objID != nil)
     {
       NSDebugLLog(@"XIB", @"decoded object %@ for id %@", o, objID);
@@ -547,14 +586,15 @@ didStartElement: (NSString*)elementName
     }
   else if ([@"string" isEqualToString: elementName])
     {
-      NSString *type = [element attributeForKey: @"type"];
       id new = [element value];
 
-      if ([type isEqualToString: @"base64-UTF8"])
+      // Handle newer format as well
+      if ([[element attributeForKey: @"type"] isEqualToString: @"base64-UTF8"] ||
+          [[element attributeForKey: @"base64-UTF8"] boolValue])
         {
           NSData *d = [[NSData alloc] initWithBase64EncodedString: new
-                                                          options: 0];
-          new = AUTORELEASE([[NSString alloc] initWithData: d 
+                                                          options: NSDataBase64DecodingIgnoreUnknownCharacters];
+          new = AUTORELEASE([[NSString alloc] initWithData: d
                                                   encoding: NSUTF8StringEncoding]);
           RELEASE(d);
         }
@@ -565,7 +605,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"int" isEqualToString: elementName])
@@ -574,7 +614,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"double" isEqualToString: elementName])
@@ -583,7 +623,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"bool" isEqualToString: elementName])
@@ -592,7 +632,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"integer" isEqualToString: elementName])
@@ -602,7 +642,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"real" isEqualToString: elementName])
@@ -612,7 +652,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"boolean" isEqualToString: elementName])
@@ -622,37 +662,37 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"point" isEqualToString: elementName])
     {
       NSPoint point = [self decodePointForKey: [element attributeForKey: @"key"]];
       id      new   = [NSValue valueWithPoint: point];
-      
+
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"size" isEqualToString: elementName])
     {
       NSSize size = [self decodeSizeForKey: [element attributeForKey: @"key"]];
       id     new  = [NSValue valueWithSize: size];
-      
+
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"rect" isEqualToString: elementName])
     {
       NSRect rect = [self decodeRectForKey: [element attributeForKey: @"key"]];
       id     new  = [NSValue valueWithRect: rect];
-      
+
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"reference" isEqualToString: elementName])
@@ -692,7 +732,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"bytes" isEqualToString: elementName])
@@ -702,7 +742,7 @@ didStartElement: (NSString*)elementName
 
       if (objID != nil)
         [decoded setObject: new forKey: objID];
-      
+
       return new;
     }
   else if ([@"array" isEqualToString: elementName])
@@ -732,7 +772,7 @@ didStartElement: (NSString*)elementName
     }
   else
     {
-      NSLog(@"Unknown element type %@", elementName);
+      //NSLog(@"Unknown element type %@", elementName);
     }
 
   return nil;
@@ -970,7 +1010,8 @@ didStartElement: (NSString*)elementName
 
   if (o != nil)
     {
-      if ([o isKindOfClass: [NSNumber class]] == YES)
+      if (([o isKindOfClass: [NSNumber class]] == YES) ||
+          ([o isKindOfClass: [NSString class]] == YES))
 	{
 	  long long l = [o longLongValue];
 

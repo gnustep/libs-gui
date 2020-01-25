@@ -48,6 +48,7 @@
 #import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
+#import <AppKit/NSAppearance.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSBitmapImageRep.h>
@@ -71,6 +72,7 @@
 #import <AppKit/NSControl.h>
 #import <AppKit/NSCursor.h>
 #import <AppKit/NSCustomImageRep.h>
+#import <AppKit/NSDataAsset.h>
 #import <AppKit/NSDataLink.h>
 #import <AppKit/NSDataLinkManager.h>
 #import <AppKit/NSDataLinkPanel.h>
@@ -147,6 +149,8 @@
 #import <AppKit/NSClickGestureRecognizer.h>
 #import <AppKit/NSColorPickerTouchBarItem.h>
 #import <AppKit/NSCustomTouchBarItem.h>
+#import <AppKit/NSDatePicker.h>
+#import <AppKit/NSDatePickerCell.h>
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
@@ -172,6 +176,8 @@
 #import <AppKit/NSMovieView.h>
 #import <AppKit/NSPanGestureRecognizer.h>
 #import <AppKit/NSNib.h>
+#import <AppKit/NSNibControlConnector.h>
+#import <AppKit/NSNibOutletConnector.h>
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSObjectController.h>
 #import <AppKit/NSOpenGL.h>
@@ -179,9 +185,12 @@
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
 #import <AppKit/NSPickerTouchBarItem.h>
+#import <AppKit/NSPredicateEditor.h>
+#import <AppKit/NSPredicateEditorRowTemplate.h>
 #import <AppKit/NSProgressIndicator.h>
 #import <AppKit/NSPopoverTouchBarItem.h>
 #import <AppKit/NSPressGestureRecognizer.h>
+#import <AppKit/NSRuleEditor.h>
 #import <AppKit/NSRulerMarker.h>
 #import <AppKit/NSRulerView.h>
 #import <AppKit/NSRotationGestureRecognizer.h>
@@ -212,6 +221,8 @@
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextTable.h>
 #import <AppKit/NSTextView.h>
+#import <AppKit/NSTouch.h>
+#import <AppKit/NSTouchBar.h>
 #import <AppKit/NSTouchBarItem.h>
 #import <AppKit/NSTokenField.h>
 #import <AppKit/NSTokenFieldCell.h>
