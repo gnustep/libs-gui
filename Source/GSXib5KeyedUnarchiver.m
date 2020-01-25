@@ -113,50 +113,6 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-@interface NSWindowTemplate5 : NSWindowTemplate
-{
-  BOOL _visibleAtLaunch;
-}
-@end
-
-@implementation NSWindowTemplate5
-
-- (id) initWithCoder: (NSCoder *)coder
-{
-  self = [super initWithCoder: coder];
-  if (self)
-    {
-      _visibleAtLaunch = YES;
-
-      if ([coder containsValueForKey: @"visibleAtLaunch"])
-        {
-          _visibleAtLaunch = [coder decodeBoolForKey: @"visibleAtLaunch"];
-        }
-    }
-
-  return self;
-}
-
-- (id) nibInstantiate
-{
-  if (_realObject == nil)
-    {
-      // Instantiate the real object...
-      [super nibInstantiate];
-
-      // >= XIB 5 - startup visible windows...
-      if (_visibleAtLaunch)
-        {
-          // bring visible windows to front...
-          [(NSWindow *)_realObject orderFront: self];
-        }
-    }
-
-  return _realObject;
-}
-
-@end
-
 @interface IBActionConnection5 : IBActionConnection
 {
   NSString *trigger;
@@ -360,7 +316,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBOutletConnection5", @"outlet",
                             @"IBActionConnection5", @"action",
                             @"NSNibBindingConnector", @"binding",
-                            @"NSWindowTemplate5", @"window",
+                            @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             nil];
@@ -631,7 +587,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   if (parentId == nil)
     {
-      NSLog(@"Missing parent Id for connection on parent @%", parent);
+      NSLog(@"Missing parent Id for connection on parent %@", parent);
       // Fake an id for parent
       parentId = [[NSUUID UUID] UUIDString];
       [parent setAttribute: parentId forKey: @"id"];
@@ -700,9 +656,14 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   return AUTORELEASE(objectRecord);
 }
 
-- (void) addRuntimeAttributesForElement: (GSXibElement*)element forID: (NSString*)idString
+- (NSString*) getRefIDFor: (GSXibElement*)element postFix: (NSString*)postfix
 {
-  NSString     *refID        = [NSString stringWithFormat: @"%@.IBAttributePlaceholdersKey", idString];
+  id orderedObject = [_orderedObjectsDict objectForKey: [element attributeForKey: @"id"]];
+  return [NSString stringWithFormat: @"%@.%@", [orderedObject attributeForKey: @"id"], postfix];
+}
+
+- (void) addRuntimeAttributesForElement: (GSXibElement*)element forID: (NSString*)refID
+{
   GSXibElement *objectRecord = (GSXibElement*)[_flattenedProperties elementForKey: refID];
 
   // Mimic the old IBAttributePlaceholders instance...
@@ -2946,8 +2907,24 @@ didStartElement: (NSString*)elementName
     {
       // Create the flattened property data for the runtime attributes in the OLD XIB format...
       id runtimeAttributes = [element elementForKey: @"userDefinedRuntimeAttributes"];
-      id orderedObject     = [_orderedObjectsDict objectForKey: [element attributeForKey: @"id"]];
-      [self addRuntimeAttributesForElement: runtimeAttributes forID: [orderedObject attributeForKey: @"id"]];
+      NSString *refID      = [self getRefIDFor: element postFix: @"%IBAttributePlaceholdersKey"];
+
+      [self addRuntimeAttributesForElement: runtimeAttributes forID: refID];
+    }
+  else if ([[element attributeForKey: @"key"] isEqualToString: @"window"])
+    {
+      NSString *refID = [self getRefIDFor: element postFix: @"NSWindowTemplate.visibleAtLaunch"];
+      id runtimeAttribute = [[GSXibElement alloc] initWithType: @"string"
+                                                  andAttributes: nil];
+      id visibleAtLaunch = [element attributeForKey: @"visibleAtLaunch"];
+
+      if (visibleAtLaunch == nil)
+        {
+          visibleAtLaunch = @"YES";
+        }
+      [runtimeAttribute setValue: visibleAtLaunch];
+
+      [_flattenedProperties setElement: runtimeAttribute forKey: refID];
     }
 
   return object;
