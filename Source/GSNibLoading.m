@@ -424,6 +424,11 @@ static BOOL _isInInterfaceBuilder = NO;
           _windowStyle |= NSTitledWindowMask;
         }
 
+      if ([coder containsValueForKey: @"NSToolbar"])
+        {
+          _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
+        }
+
       _baseWindowClass = [NSWindow class];
     }
   else
@@ -455,6 +460,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [aCoder encodeRect: rect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
+      [aCoder encodeObject: _toolbar forKey: @"NSToolbar"];
     }
 }
 
@@ -514,6 +520,10 @@ static BOOL _isInInterfaceBuilder = NO;
           // FIXME: No idea what is going on here
 	  [_realObject setToolbar: (NSToolbar*)_viewClass];
 	}
+      if (_toolbar)
+        {
+          [_realObject setToolbar: _toolbar];
+        }
 
       [_realObject setContentMinSize: _minSize];
       [_realObject setContentMaxSize: _maxSize];

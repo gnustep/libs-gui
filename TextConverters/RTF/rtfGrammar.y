@@ -31,7 +31,7 @@
 */
 
 /*	we request for a reentrant parser	*/
-%pure_parser
+%define api.pure
 
 %{
 
@@ -60,10 +60,6 @@
 
 /*	this context is passed to the interface functions	*/
 typedef void	*GSRTFctxt;
-// Two parameters are not supported by some bison versions. The declaration of 
-// yyparse in the .c file must be corrected to be able to compile it.
-/*#define YYPARSE_PARAM	ctxt, void *lctxt*/
-#define YYLEX_PARAM		lctxt
 /*#undef YYLSP_NEEDED*/
 #define CTXT            ctxt
 
@@ -81,6 +77,7 @@ int fieldStart = 0;
 
 %parse-param {void *ctxt}
 %parse-param {void *lctxt}
+%lex-param {void *lctxt}
 
 %union {
 	int		number;
@@ -184,6 +181,7 @@ int fieldStart = 0;
 %token <cmd> RTFfcharset
 %token <cmd> RTFfprq
 %token <cmd> RTFcpg
+%token <cmd> RTFansicpg
 %token <cmd> RTFOtherStatement
 %token RTFfontListStart
 
@@ -209,11 +207,11 @@ int fieldStart = 0;
 rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfIngredients { GSRTFstop(CTXT); } '}'
 		;
 
-/* FIXME: This should change the used encoding */
-rtfCharset: RTFansi { $$ = 1; }
-		|	RTFmac { $$ = 2; }
-		|	RTFpc  { $$ = 3; }
-		|	RTFpca { $$ = 4; }
+rtfCharset: RTFansi { GSRTFencoding(CTXT, 1); }
+		|	RTFmac { GSRTFencoding(CTXT, 2); }
+		|	RTFpc  { GSRTFencoding(CTXT, $$ = 3); }
+		|	RTFpca { GSRTFencoding(CTXT, 4); }
+		|	rtfCharset RTFansicpg { GSRTFencoding(CTXT, $2.parameter); }
 		;
 
 rtfIngredients:	/*	empty	*/
