@@ -2707,14 +2707,15 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (void) applicationDidChangeScreenParameters: (NSNotification *)aNotif
 {
-  NSSize oldScreenSize = [_screen frame].size;
+  NSRect oldScreenFrame = [_screen frame];
   int    screenNumber = [_screen screenNumber];
-  NSSize newScreenSize;
+  NSRect newScreenFrame;
   NSRect newFrame;
 
   // NSLog(@"[NSWindow - %@] Old/New Screen RC: %lu/%lu",
   //       [self className], [_screen retainCount],
   //       [[[NSScreen screens] objectAtIndex: 0] retainCount]);
+  
   // We need to get new screen from renewed screen list because
   // [NSScreen mainScreen] returns NSScreen object of key window and that object
   // will never be released.
@@ -2728,14 +2729,19 @@ titleWithRepresentedFilename(NSString *representedFilename)
   if ([self isKindOfClass: [NSMiniWindow class]] || self == [NSApp iconWindow])
     return;
 
-  newScreenSize = [_screen frame].size;
+  newScreenFrame = [_screen frame];
 
   // NSLog(@"[NSWindow - %@] Old/New Screen (%lu): %.0f/%.0f",
   //       [self className], [_screen retainCount],
-  //       oldScreenSize.width, newScreenSize.width);
+  //       oldScreenFrame.size.width, newScreenFrame.size.width);
 
   newFrame = _frame;
-  newFrame.origin.y += newScreenSize.height - oldScreenSize.height;
+  // Screen Y origin change.
+  newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
+  // Screen height change.
+  newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
+  // Screen X origin change. Screen width change shouldn't affect our frame.
+  newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
   [self setFrame: newFrame display: NO];
   if (_autosaveName != nil)
     {

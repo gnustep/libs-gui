@@ -1,3 +1,10 @@
+2020-01-27  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (applicationDidChangeScreenParameters): take into
+	account screen origin change during window position recalculation.
+
+	* Source/NSScreen.m (dealloc): debug output was removed.
+
 2020-01-26  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (initWithContentRect:styleMask:backing:defer:):
