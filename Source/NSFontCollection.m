@@ -36,17 +36,17 @@
   self = [super init];
   if (self != nil)
     {
-      _fontEnumerator = [[GSFontEnumerator alloc] init];
-      _collectionDictionary = [[NSMutableDictionary alloc] init];
-      _queryDescriptors = [[NSMutableArray alloc] init];
-      _exclusionDescriptors = [[NSMutableArray alloc] init];
+      _fonts = [[NSMutableArray alloc] initWithCapacity: 50];
+      _collectionDictionary = [[NSMutableDictionary alloc] initWithCapacity: 10];
+      _queryDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
+      _exclusionDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
     }
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(_fontEnumerator);
+  RELEASE(_fonts);
   RELEASE(_collectionDictionary);
   RELEASE(_queryDescriptors);
   RELEASE(_exclusionDescriptors);
@@ -55,12 +55,31 @@
 
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
-  return nil;
+  NSFontCollection *fc = [[NSFontCollection alloc] init];
+  NSEnumerator *en = [queryDescriptors objectEnumerator];
+  GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
+  id d = nil;
+
+  while ((d = [en nextObject]) != nil)
+    {
+      NSArray *names = [fen availableFontNamesMatchingFontDescriptor: d];
+      id name = nil;
+
+      en = [names objectEnumerator];
+      while ((name = [en nextObject]) != nil)
+        {
+          NSFont *font = [NSFont fontWithName: name size: 0.0]; // get default size
+          [fc->_fonts addObject: font];
+        }
+    }
+  
+   return fc;
 }
 
 + (NSFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
-  return nil;
+  return [self fontCollectionWithDescriptors:
+                 [[GSFontEnumerator sharedEnumerator] availableFontDescriptors]];
 }
 
 + (NSFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
@@ -110,7 +129,6 @@
 {
   return nil;
 }
-
 
 // Descriptors
 - (NSArray *) queryDescriptors  // copy
