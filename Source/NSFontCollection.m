@@ -28,7 +28,22 @@
 #import <Foundation/NSError.h>
 #import <GNUstepGUI/GSFontInfo.h>
 
+// NOTE: Some of this cannot be implemented currently since the backend does not support physically
+// moving fonts on the filesystem...  this is here for compatilibility for now.
+
 @implementation NSFontCollection 
+
+static NSMutableDictionary *__sharedFontCollections;
+static NSMutableDictionary *__sharedFontCollectionsVisibility;
+
++ (void) initialize
+{
+  if (self == [NSFontCollection class])
+    {
+      __sharedFontCollections = [[NSMutableDictionary alloc] initWithCapacity: 100];
+      __sharedFontCollectionsVisibility = [[NSMutableDictionary alloc] initWithCapacity: 100];
+    }
+}
 
 // Initializers...
 - (instancetype) init
@@ -60,6 +75,7 @@
   GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
   id d = nil;
 
+  ASSIGNCOPY(fc->_queryDescriptors, queryDescriptors);
   while ((d = [en nextObject]) != nil)
     {
       NSArray *names = [fen availableFontNamesMatchingFontDescriptor: d];
@@ -92,6 +108,19 @@
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
+  /*
+  if ([__sharedFontCollection objectForKey: name] == nil)
+    {
+      NSNumber *v = [NSNumber numberWithInt: visibility];
+      [__sharedFontCollection setObject: collection forKey: name];
+      [__sharedFontCollectionVisibility setObject: visibility forKey: name];
+      return YES;
+    }
+  else
+    {
+      error = [NSError errorWithDomain: NSCocoaErrorDomain code: 0 userInfo: nil];
+    }
+  */
   return NO;
 }
 
@@ -213,28 +242,32 @@
 
 - (NSArray *) queryDescriptors
 {
-  return nil;
+  return _queryDescriptors;
 }
 
 - (void) setQueryDescriptors: (NSArray *)queryDescriptors
 {
+  ASSIGN(_queryDescriptors, queryDescriptor);
 }
 
 - (NSArray *) exclusionDescriptors
 {
-  return nil;
+  return _exclusionDescriptors;
 }
 
 - (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors
 {
+  ASSIGN(_exclusionDescriptors, exclusionDescriptor);
 }
 
 - (void)addQueryForDescriptors: (NSArray *)descriptors
 {
+  [_queryDescriptors addObjectsFromArray: descriptors];
 }
 
 - (void)removeQueryForDescriptors: (NSArray *)descriptors
 {
+  [_queryDescriptors removeObjectsInArray: descriptors];
 }
 
 @end
