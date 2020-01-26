@@ -461,6 +461,7 @@ NSSearchField.h \
 NSSecureTextField.h \
 NSSegmentedCell.h \
 NSSegmentedControl.h \
+NSSeguePerforming.h \
 NSSelection.h \
 NSShadow.h \
 NSSharingService.h \
