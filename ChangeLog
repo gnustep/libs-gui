@@ -1,3 +1,21 @@
+2020-01-26  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (initWithContentRect:styleMask:backing:defer:):
+	added observer of NSApplicationDidChangeScreenParametersNotification.
+	(applicationDidChangeScreenParameters:): callback for added notification -
+	updates window position, set new screen object and saves frame if
+	autosave name exists.
+
+	* Source/NSScreen.m (initialize): remove observer of
+	NSApplicationDidChangeScreenParametersNotification - NSScreen shouldn't
+	do it. Backend explicitely calls -resetScreens before posting notification.
+	(_initWithScreenNumber:): ditto.
+	(_resetScreens): removed.
+	(deviceDescription): removed duplicated addition of NSDeviceSize object.
+
+	* Source/NSApplication.m (finishLaunching): remove observer of
+	NSApplicationDidChangeScreenParametersNotification.
+
 2020-01-24  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSScreen.m (_initWithScreenNumber:): add self as observer to

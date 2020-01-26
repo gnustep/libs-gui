@@ -1106,6 +1106,10 @@ many times.
          selector: @selector(colorListChanged:)
              name: NSColorListDidChangeNotification
            object: nil];
+  [nc addObserver: self
+         selector: @selector(applicationDidChangeScreenParameters:)
+             name: NSApplicationDidChangeScreenParametersNotification
+           object: NSApp];
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
   return self;
@@ -2699,6 +2703,44 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
   ASSIGN(_screen, [self _screenForFrame: _frame]);
   return _screen;
+}
+
+- (void) applicationDidChangeScreenParameters: (NSNotification *)aNotif
+{
+  NSSize oldScreenSize = [_screen frame].size;
+  int    screenNumber = [_screen screenNumber];
+  NSSize newScreenSize;
+  NSRect newFrame;
+
+  // NSLog(@"[NSWindow - %@] Old/New Screen RC: %lu/%lu",
+  //       [self className], [_screen retainCount],
+  //       [[[NSScreen screens] objectAtIndex: 0] retainCount]);
+  // We need to get new screen from renewed screen list because
+  // [NSScreen mainScreen] returns NSScreen object of key window and that object
+  // will never be released.
+  for (NSScreen *scr in [NSScreen screens])
+    {
+      if ([scr screenNumber] == screenNumber)
+        ASSIGN(_screen, scr);
+    }
+  
+  // Do not adjust frame for mini and appicon windows - it's a WM's job. 
+  if ([self isKindOfClass: [NSMiniWindow class]] || self == [NSApp iconWindow])
+    return;
+
+  newScreenSize = [_screen frame].size;
+
+  // NSLog(@"[NSWindow - %@] Old/New Screen (%lu): %.0f/%.0f",
+  //       [self className], [_screen retainCount],
+  //       oldScreenSize.width, newScreenSize.width);
+
+  newFrame = _frame;
+  newFrame.origin.y += newScreenSize.height - oldScreenSize.height;
+  [self setFrame: newFrame display: NO];
+  if (_autosaveName != nil)
+    {
+      [self saveFrameUsingName: _autosaveName];
+    }
 }
 
 - (void) setDepthLimit: (NSWindowDepth)limit
