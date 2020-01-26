@@ -162,42 +162,58 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 // Descriptors
 - (NSArray *) queryDescriptors  // copy
 {
-  return nil;
+  return _queryDescriptors;
 }
 
 - (NSArray *) exclusionDescriptors
 {
-  return nil;
+  return _exclusionDescriptors;
 }
 
 - (NSArray *) matchingDescriptors
 {
-  return nil;  
+  return [self matchingDescriptorsWithOptions: nil];
 }
 
 - (NSArray *) matchingDescriptorsWithOptions: (NSDictionary *)options
 {
-  return nil;
+  GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
+  return [fen matchingFontDescriptorsFor: options];
 }
 
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family
 {
-  return nil;
+  return [self matchingDescriptorsForFamily: family options: nil];
 }
 
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family options: (NSDictionary *)options
 {
-  return nil;
+  NSMutableArray *r = [NSMutableArray arrayWithCapacity: 50];
+  NSArray *a = [self matchingDescriptorsWithOptions: options];
+  NSEnumerator *en = [a objectEnumerator];
+  id o = nil;
+
+  while((o = [en nextObject]) != nil)
+    {
+      if ([[o familyName] isEqualToString: family])
+        {
+          [r addObject: o];
+        }    
+    }
+  
+  return [a copy];
 }
 
 - (instancetype) copyWithZone: (NSZone *)zone
 {
-  return nil;
+  NSFontCollection *fc = [[NSFontCollection allocWithZone: zone] init];
+  return fc;
 }
 
 - (instancetype) mutableCopyWithZone: (NSZone *)zone
 {
-  return nil;
+  NSMutableFontCollection *fc = [[NSMutableFontCollection allocWithZone: zone] init];
+  return fc;
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
@@ -247,7 +263,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 - (void) setQueryDescriptors: (NSArray *)queryDescriptors
 {
-  ASSIGN(_queryDescriptors, queryDescriptor);
+  ASSIGN(_queryDescriptors, [queryDescriptors mutableCopy]);
 }
 
 - (NSArray *) exclusionDescriptors
@@ -257,7 +273,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 - (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors
 {
-  ASSIGN(_exclusionDescriptors, exclusionDescriptor);
+  ASSIGN(_exclusionDescriptors, [exclusionDescriptors mutableCopy]);
 }
 
 - (void)addQueryForDescriptors: (NSArray *)descriptors
