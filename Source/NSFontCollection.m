@@ -45,6 +45,12 @@
 
 @end
 
+@interface NSCTFontCollection : NSObject
+@end
+
+@implementation NSCTFontCollection
+@end
+
 @implementation NSFontCollection 
 
 static NSMutableDictionary *__sharedFontCollections;
