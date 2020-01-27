@@ -30,6 +30,20 @@
 
 // NOTE: Some of this cannot be implemented currently since the backend does not support physically
 // moving fonts on the filesystem...  this is here for compatilibility for now.
+@interface NSMutableFontCollection (Private)
+
+- (void) _setFonts: (NSArray *)fonts;
+
+@end
+
+@implementation NSMutableFontCollection (Private)
+
+- (void) _setFonts: (NSArray *)fonts
+{
+  [_fonts addObjectsFromArray: fonts];
+}
+
+@end
 
 @implementation NSFontCollection 
 
@@ -52,7 +66,6 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
   if (self != nil)
     {
       _fonts = [[NSMutableArray alloc] initWithCapacity: 50];
-      _collectionDictionary = [[NSMutableDictionary alloc] initWithCapacity: 10];
       _queryDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
       _exclusionDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
     }
@@ -62,7 +75,6 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 - (void) dealloc
 {
   RELEASE(_fonts);
-  RELEASE(_collectionDictionary);
   RELEASE(_queryDescriptors);
   RELEASE(_exclusionDescriptors);
   [super dealloc];
@@ -207,12 +219,22 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 - (instancetype) copyWithZone: (NSZone *)zone
 {
   NSFontCollection *fc = [[NSFontCollection allocWithZone: zone] init];
+
+  ASSIGNCOPY(fc->_fonts, _fonts);
+  ASSIGNCOPY(fc->_queryDescriptors, _queryDescriptors);
+  ASSIGNCOPY(fc->_fonts, _exclusionDescriptors);
+
   return fc;
 }
 
 - (instancetype) mutableCopyWithZone: (NSZone *)zone
 {
   NSMutableFontCollection *fc = [[NSMutableFontCollection allocWithZone: zone] init];
+
+  [fc _setFonts: _fonts];
+  [fc setQueryDescriptors: _queryDescriptors];
+  [fc setExclusionDescriptors: _exclusionDescriptors];
+
   return fc;
 }
 

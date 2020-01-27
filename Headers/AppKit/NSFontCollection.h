@@ -56,7 +56,6 @@ typedef NSString* NSFontCollectionName;
 @interface NSFontCollection : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
   NSMutableArray *_fonts;
-  NSMutableDictionary *_collectionDictionary;
   NSMutableArray *_queryDescriptors;
   NSMutableArray *_exclusionDescriptors;
 }
