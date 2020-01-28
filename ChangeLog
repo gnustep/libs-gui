@@ -3,8 +3,6 @@
 	* Source/NSWindow.m (applicationDidChangeScreenParameters): take into
 	account screen origin change during window position recalculation.
 
-	* Source/NSScreen.m (dealloc): debug output was removed.
-
 2020-01-26  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (initWithContentRect:styleMask:backing:defer:):
@@ -12,35 +10,6 @@
 	(applicationDidChangeScreenParameters:): callback for added notification -
 	updates window position, set new screen object and saves frame if
 	autosave name exists.
-
-	* Source/NSScreen.m (initialize): remove observer of
-	NSApplicationDidChangeScreenParametersNotification - NSScreen shouldn't
-	do it. Backend explicitely calls -resetScreens before posting notification.
-	(_initWithScreenNumber:): ditto.
-	(_resetScreens): removed.
-	(deviceDescription): removed duplicated addition of NSDeviceSize object.
-
-	* Source/NSApplication.m (finishLaunching): remove observer of
-	NSApplicationDidChangeScreenParametersNotification.
-
-2020-01-24  Sergii Stoian  <stoyan255@gmail.com>
-
-	* Source/NSScreen.m (_initWithScreenNumber:): add self as observer to
-	NSApplicationDidChangeScreenParametersNotification.
-	(frame): use `_frame` ivar since libs-back recreates screens list.
-	(dealloc): remove observer.
-	(applicationDidChangeScreenParameters:): update _frame and _depth
-	ivars for bad behaving objects which retain NSScreen and not observing
-	screen parameters changes.
-
-2020-01-23  Sergii Stoian  <stoyan255@gmail.com>
-
-	* Source/NSApplication (finishLaunching): observer for
-	NSApplicationDidChangeScreenNotification was added.
-	* Source/NSScreen.m (frame): get dimensions from display server - don't
-	use _frame ivar since real domensions may be changed.
-	(deviceDescription): add screen frame size into dictionary with
-	NSDeviceSize key.
 
 2020-01-20 Fred Kiefer <FredKiefer@gmx.de>
 
