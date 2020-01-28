@@ -34,11 +34,54 @@
  Boston, MA 02110-1301, USA.
  */
 
+#import <Foundation/NSXMLDocument.h>
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSNibLoading.h"
+#import "GSXib5KeyedUnarchiver.h"
 
 @implementation GSXibKeyedUnarchiver
+
++ (BOOL) checkXib5: (NSData *)data
+{
+#if GNUSTEP_BASE_HAVE_LIBXML
+  // Ensure we have a XIB 5 version...first see if we can parse the XML...
+  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
+                                                        options: 0
+                                                          error: NULL];
+  if (document == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      // Test to see if this is an Xcode 5 XIB...
+      NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
+
+      // Need at LEAST ONE document node...we should find something a bit more
+      // specific to check here...
+      return [documentNodes count] != 0;
+    }
+#else
+  // We now default to checking XIB 5 versions
+  return YES;
+#endif
+}
+
++ (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data
+{
+  NSKeyedUnarchiver *unarchiver = nil;
+
+  if ([self checkXib5: data])
+    {
+      unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+    }
+  else
+    {
+      unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
+    }
+  return AUTORELEASE(unarchiver);
+}
 
 - (NSData *) _preProcessXib: (NSData *)data
 {
