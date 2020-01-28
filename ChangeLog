@@ -1,3 +1,16 @@
+2020-01-27  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (applicationDidChangeScreenParameters): take into
+	account screen origin change during window position recalculation.
+
+2020-01-26  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (initWithContentRect:styleMask:backing:defer:):
+	added observer of NSApplicationDidChangeScreenParametersNotification.
+	(applicationDidChangeScreenParameters:): callback for added notification -
+	updates window position, set new screen object and saves frame if
+	autosave name exists.
+
 2020-01-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXib5KeyedUnarchiver.m: Remove NSWindowTemplate5.
