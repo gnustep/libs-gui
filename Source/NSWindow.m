@@ -2707,19 +2707,18 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (void) applicationDidChangeScreenParameters: (NSNotification *)aNotif
 {
-  NSRect oldScreenFrame = [_screen frame];
-  int    screenNumber = [_screen screenNumber];
-  NSRect newScreenFrame;
-  NSRect newFrame;
+  NSRect       oldScreenFrame = [_screen frame];
+  int          screenNumber = [_screen screenNumber];
+  NSRect       newScreenFrame;
+  NSRect       newFrame;
+  NSEnumerator *e;
+  NSScreen     *scr;
 
-  // NSLog(@"[NSWindow - %@] Old/New Screen RC: %lu/%lu",
-  //       [self className], [_screen retainCount],
-  //       [[[NSScreen screens] objectAtIndex: 0] retainCount]);
-  
   // We need to get new screen from renewed screen list because
   // [NSScreen mainScreen] returns NSScreen object of key window and that object
   // will never be released.
-  for (NSScreen *scr in [NSScreen screens])
+  e = [[NSScreen screens] objectEnumerator];
+  while ((scr = [e nextObject]))
     {
       if ([scr screenNumber] == screenNumber)
         ASSIGN(_screen, scr);
@@ -2730,10 +2729,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
     return;
 
   newScreenFrame = [_screen frame];
-
-  // NSLog(@"[NSWindow - %@] Old/New Screen (%lu): %.0f/%.0f",
-  //       [self className], [_screen retainCount],
-  //       oldScreenFrame.size.width, newScreenFrame.size.width);
 
   newFrame = _frame;
   // Screen Y origin change.
