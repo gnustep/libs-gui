@@ -58,6 +58,7 @@ typedef NSString* NSFontCollectionName;
   NSMutableArray *_fonts;
   NSMutableArray *_queryDescriptors;
   NSMutableArray *_exclusionDescriptors;
+  NSMutableArray *_queryAttributes;
 }
   
 // Initializers...

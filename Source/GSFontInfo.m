@@ -798,4 +798,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return fontDescriptor;
 }
 
+// Font collection methods....
+
 @end

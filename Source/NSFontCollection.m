@@ -33,6 +33,7 @@
 @interface NSMutableFontCollection (Private)
 
 - (void) _setFonts: (NSArray *)fonts;
+- (void) _setQueryAttributes: (NSArray *)queryAttributes;
 
 @end
 
@@ -41,6 +42,11 @@
 - (void) _setFonts: (NSArray *)fonts
 {
   [_fonts addObjectsFromArray: fonts];
+}
+
+- (void) _setQueryAttributes: (NSArray *)queryAttributes
+{
+  ASSIGN(_queryAttributes, [queryAttributes mutableCopy]);
 }
 
 @end
@@ -74,6 +80,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
       _fonts = [[NSMutableArray alloc] initWithCapacity: 50];
       _queryDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
       _exclusionDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
+      _queryAttributes = [[NSMutableArray alloc] initWithCapacity: 10];
     }
   return self;
 }
@@ -83,17 +90,17 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
   RELEASE(_fonts);
   RELEASE(_queryDescriptors);
   RELEASE(_exclusionDescriptors);
+  RELEASE(_queryAttributes);
   [super dealloc];
 }
 
-+ (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
+- (void) _runQueryWithDescriptors: (NSArray *)queryDescriptors
 {
-  NSFontCollection *fc = [[NSFontCollection alloc] init];
   NSEnumerator *en = [queryDescriptors objectEnumerator];
   GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
   id d = nil;
 
-  ASSIGNCOPY(fc->_queryDescriptors, queryDescriptors);
+  ASSIGNCOPY(_queryDescriptors, queryDescriptors);
   while ((d = [en nextObject]) != nil)
     {
       NSArray *names = [fen availableFontNamesMatchingFontDescriptor: d];
@@ -103,11 +110,18 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
       while ((name = [en nextObject]) != nil)
         {
           NSFont *font = [NSFont fontWithName: name size: 0.0]; // get default size
-          [fc->_fonts addObject: font];
+          [_fonts addObject: font];
         }
     }
   
-   return fc;
+
+}
+
++ (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
+{
+  NSFontCollection *fc = [[NSFontCollection alloc] init];
+  ASSIGNCOPY(fc->_queryDescriptors, queryDescriptors);
+  return fc;
 }
 
 + (NSFontCollection *) fontCollectionWithAllAvailableDescriptors
@@ -118,7 +132,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 + (NSFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
-  return nil;
+  return [self fontCollectionWithAllAvailableDescriptors];
 }
 
 + (BOOL) showFontCollection: (NSFontCollection *)collection
@@ -126,19 +140,6 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
-  /*
-  if ([__sharedFontCollection objectForKey: name] == nil)
-    {
-      NSNumber *v = [NSNumber numberWithInt: visibility];
-      [__sharedFontCollection setObject: collection forKey: name];
-      [__sharedFontCollectionVisibility setObject: visibility forKey: name];
-      return YES;
-    }
-  else
-    {
-      error = [NSError errorWithDomain: NSCocoaErrorDomain code: 0 userInfo: nil];
-    }
-  */
   return NO;
 }
 
@@ -159,11 +160,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 + (NSArray *) allFontCollectionNames
 {
-  NSArray *array = [NSArray arrayWithObjects: NSFontCollectionAllFonts,
-                            NSFontCollectionUser,
-                            NSFontCollectionFavorites,
-                            NSFontCollectionRecentlyUsed, nil];
-  return array;
+  return [__sharedFontCollections allKeys];
 }
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
@@ -228,7 +225,8 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
   ASSIGNCOPY(fc->_fonts, _fonts);
   ASSIGNCOPY(fc->_queryDescriptors, _queryDescriptors);
-  ASSIGNCOPY(fc->_fonts, _exclusionDescriptors);
+  ASSIGNCOPY(fc->_exclusionDescriptors, _exclusionDescriptors);
+  ASSIGNCOPY(fc->_queryAttributes, _queryAttributes);
 
   return fc;
 }
@@ -240,13 +238,21 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
   [fc _setFonts: _fonts];
   [fc setQueryDescriptors: _queryDescriptors];
   [fc setExclusionDescriptors: _exclusionDescriptors];
+  [fc _setQueryAttributes: _queryAttributes];
 
   return fc;
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+        }
+    }
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
