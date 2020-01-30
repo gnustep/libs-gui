@@ -22,10 +22,11 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSFontCollection.h>
-#import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSError.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSDictionary.h>
+#import <AppKit/NSFontCollection.h>
 #import <GNUstepGUI/GSFontInfo.h>
 
 // NOTE: Some of this cannot be implemented currently since the backend does not support physically
@@ -61,6 +62,7 @@
 
 static NSMutableDictionary *__sharedFontCollections;
 static NSMutableDictionary *__sharedFontCollectionsVisibility;
+static NSMutableSet *__sharedFontCollectionsHidden;
 
 + (void) initialize
 {
@@ -68,6 +70,10 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
     {
       __sharedFontCollections = [[NSMutableDictionary alloc] initWithCapacity: 100];
       __sharedFontCollectionsVisibility = [[NSMutableDictionary alloc] initWithCapacity: 100];
+      __sharedFontCollectionsHidden = [[NSMutableSet alloc] initWithCapacity: 100];
+
+      [__sharedFontCollections setObject: [NSFontCollection fontCollectionWithAllAvailableDescriptors]
+                                  forKey: NSFontCollectionAllFonts];
     }
 }
 
@@ -94,7 +100,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
   [super dealloc];
 }
 
-// This method will get the actual list of fonts 
+// This method will get the actual list of fonts
 - (void) _runQueryWithDescriptors: (NSArray *)queryDescriptors
 {
   NSEnumerator *en = [queryDescriptors objectEnumerator];
@@ -139,14 +145,21 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
-  return NO;
+  NSNumber *v = [NSNumber numberWithInt: visibility];
+  [__sharedFontCollections setObject: collection
+                             forKey: name];
+  [__sharedFontCollectionsVisibility setObject: v
+                                        forKey: name];
+  return YES;
 }
 
 + (BOOL) hideFontCollectionWithName: (NSFontCollectionName)name
                          visibility: (NSFontCollectionVisibility)visibility
                               error: (NSError **)error
 {
-  return NO;
+  
+  [__sharedFontCollectionsHidden addObject: name];
+  return YES;
 }
 
 + (BOOL) renameFontCollectionWithName: (NSFontCollectionName)aname
@@ -172,7 +185,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                    visibility: (NSFontCollectionVisibility)visibility
 {
-  return nil;
+  return [__sharedFontCollections objectForKey: name];
 }
 
 // Descriptors
@@ -267,28 +280,31 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 + (NSMutableFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
-  return nil;
+  NSMutableFontCollection *fc = [[NSMutableFontCollection alloc] init];
+  ASSIGNCOPY(fc->_queryDescriptors, queryDescriptors);
+  return fc;
 }
 
 + (NSMutableFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
-  return nil;
+  return [self fontCollectionWithDescriptors:
+                 [[GSFontEnumerator sharedEnumerator] availableFontDescriptors]];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
-  return nil;
+  return [self fontCollectionWithAllAvailableDescriptors];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
 {
-  return nil;
+  return [__sharedFontCollections objectForKey: name];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                           visibility: (NSFontCollectionVisibility)visibility
 {
-  return nil;
+  return [__sharedFontCollections objectForKey: name];
 }
 
 - (NSArray *) queryDescriptors
