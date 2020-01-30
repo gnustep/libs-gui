@@ -866,10 +866,10 @@
 
 - (NSString*) description
 {
-  return [NSString stringWithFormat:
-                    @"%@ - sourceID: %@: maxID: %@: objectRecords: %@: flattenedProperties: %@: connectionRecords: %@: ",
-                   [super description], sourceID, maxID, objectRecords,
-                   flattenedProperties, connectionRecords];
+  return [NSString stringWithFormat: @"%@ - sourceID: %@: maxID: %d:"
+    @" objectRecords: %@: flattenedProperties: %@: connectionRecords: %@: ",
+   [super description], sourceID, maxID,
+   objectRecords, flattenedProperties, connectionRecords];
 }
 
 - (NSEnumerator*) connectionRecordEnumerator
