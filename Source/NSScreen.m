@@ -60,12 +60,7 @@
   if (self == [NSScreen class])
     {
       [self setVersion: 1];
-      [[NSNotificationCenter defaultCenter]
-          addObserver: self
-          selector: @selector(_resetScreens:)
-          name: NSApplicationDidChangeScreenParametersNotification
-          object: nil];
-     }
+    }
 }
 
 static NSMutableArray *screenArray = nil;
@@ -73,11 +68,6 @@ static NSMutableArray *screenArray = nil;
 /**
  * Resets the cached list of screens.
  */
-+ (void) _resetScreens: (NSNotification*)notification
-{
-  [self resetScreens];
-}
-
 + (void) resetScreens
 {
   DESTROY(screenArray);
