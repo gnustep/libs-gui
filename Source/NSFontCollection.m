@@ -30,7 +30,8 @@
 #import <GNUstepGUI/GSFontInfo.h>
 
 // NOTE: Some of this cannot be implemented currently since the backend does not support physically
-// moving fonts on the filesystem...  this is here for compatilibility for now.
+//       moving fonts on the filesystem...  this is here for compatilibility for now.
+
 @interface NSMutableFontCollection (Private)
 
 - (void) _setFonts: (NSArray *)fonts;
