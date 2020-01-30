@@ -94,6 +94,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
   [super dealloc];
 }
 
+// This method will get the actual list of fonts 
 - (void) _runQueryWithDescriptors: (NSArray *)queryDescriptors
 {
   NSEnumerator *en = [queryDescriptors objectEnumerator];
@@ -113,8 +114,6 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
           [_fonts addObject: font];
         }
     }
-  
-
 }
 
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
@@ -155,7 +154,9 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
                                toName: (NSFontCollectionName)name
                                 error: (NSError **)error
 {
-  return NO;
+  NSFontCollection *fc = [__sharedFontCollections objectForKey: aname];
+  [__sharedFontCollections setObject: fc forKey: name];
+  return YES;
 }
 
 + (NSArray *) allFontCollectionNames
@@ -165,7 +166,7 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
 {
-  return nil;
+  return [__sharedFontCollections objectForKey: name];
 }
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
@@ -177,12 +178,12 @@ static NSMutableDictionary *__sharedFontCollectionsVisibility;
 // Descriptors
 - (NSArray *) queryDescriptors  // copy
 {
-  return _queryDescriptors;
+  return [_queryDescriptors copy];
 }
 
 - (NSArray *) exclusionDescriptors
 {
-  return _exclusionDescriptors;
+  return [_exclusionDescriptors copy];
 }
 
 - (NSArray *) matchingDescriptors
