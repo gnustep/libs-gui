@@ -539,6 +539,24 @@ fi
 AC_SUBST(BUILD_SPEECH)
 
 #--------------------------------------------------------------------
+# NSSpeechRecognizer
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(speech-recognizer, 
+  [  --disable-speech-recognizer          Disable speech recognition server],,
+  enable_speech_recognizer=yes)
+BUILD_SPEECH_RECOGNIZER=
+
+# has pocketsphinx, for speech recognition.
+AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech_recognizer=no)
+AC_CHECK_HEADERS(pocketsphinx/pocketsphinx.h, have_pocketsphinx=yes, have_pocketsphinx=no)
+if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
+#if test $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
+   BUILD_SPEECH_RECOGNIZER="speech_recognizer"
+   POCKETSPHINX_BASE_LIBS="-lpocketsphinx"
+fi
+AC_SUBST(BUILD_SPEECH_RECOGNIZER)
+
+#--------------------------------------------------------------------
 # Find CUPS
 #--------------------------------------------------------------------
 GSCUPS_CFLAGS=
