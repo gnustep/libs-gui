@@ -18,8 +18,8 @@
 /* Define to 1 if you have the <flite/flite.h> header file. */
 #undef HAVE_FLITE_FLITE_H
 
-/* Define to 1 if you have the <pocketsphinx/pocketsphinx.h> header file */
-#undef HAVE_LIBPOCKETSPHINX
+/* Define to 1 if you have the pocketsphinx.h header file */
+#undef HAVE_POCKETSPHINX_POCKETSPHINX_EXPORT_H
 
 /* Define to 1 if you have the `floorf' function. */
 #undef HAVE_FLOORF
