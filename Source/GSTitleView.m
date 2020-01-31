@@ -2,7 +2,7 @@
 
    Copyright (C) 2003 Free Software Foundation, Inc.
 
-   Author: Serg Stoyan <stoyan@on.com.ua>
+   Author: Sergii Stoian <stoyan255@gmail.com>
    Date:   Mar 2003
    
    This file is part of the GNUstep GUI Library.
@@ -41,6 +41,7 @@
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSScreen.h"
 
 #import "GNUstepGUI/GSTitleView.h"
 #import "GNUstepGUI/GSTheme.h"
@@ -238,8 +239,23 @@
   NSDate   *theDistantFuture = [NSDate distantFuture];
   NSPoint  startWindowOrigin;
   NSPoint  endWindowOrigin;
+  CGFloat  leftLimit;
+  CGFloat  topLimit;
+  CGFloat  rightLimit;
+  CGFloat  bottomLimit;
 
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
+
+  // Define move constrains for menu
+  if (_ownedByMenu)
+    {
+      NSRect screenFrame = [[NSScreen mainScreen] frame];
+      leftLimit = screenFrame.origin.x;
+      topLimit = NSMaxY(screenFrame) - [_window frame].size.height;
+      rightLimit = NSMaxX(screenFrame) - [_window frame].size.width;
+      bottomLimit = screenFrame.origin.y -
+        ([_window frame].size.height - [self frame].size.height);
+    }
 
   // Remember start position of window
   startWindowOrigin = [_window frame].origin;
@@ -275,6 +291,16 @@
               origin.y += (location.y - lastLocation.y);
               if (_ownedByMenu)
                 {
+                  if (origin.x <= leftLimit)
+                    origin.x = leftLimit;
+                  else if (origin.x >= rightLimit)
+                    origin.x = rightLimit;
+
+                  if (origin.y >= topLimit)
+                    origin.y = topLimit;
+                  else if (origin.y <= bottomLimit)
+                    origin.y = bottomLimit;
+                 
                   [_owner nestedSetFrameOrigin: origin];
                 }
               else
