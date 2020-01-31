@@ -635,6 +635,7 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
+BUILD_SPEECH_RECOGNIZER
 BUILD_SPEECH
 BUILD_SOUND
 HAVE_ICU
@@ -729,6 +730,7 @@ with_icu_library
 enable_aspell
 enable_sound
 enable_speech
+enable_speech_recognizer
 enable_cups
 '
       ac_precious_vars='build_alias
@@ -1384,6 +1386,7 @@ Optional Features:
   --disable-aspell        Disable aspell for spellchecker
   --disable-sound          Disable sound
   --disable-speech          Disable speech server
+  --disable-speech-recognizer          Disable speech recognition server
   --disable-cups          Disable cups printing support
 
 Optional Packages:
@@ -5663,8 +5666,6 @@ fi
 
 
 #--------------------------------------------------------------------
-<<<<<<< Updated upstream
-=======
 # NSSpeechRecognizer
 #--------------------------------------------------------------------
 # Check whether --enable-speech-recognizer was given.
@@ -5719,12 +5720,12 @@ else
   have_speech_recognizer=no
 fi
 
-for ac_header in pocketsphinx/pocketsphinx.h
+for ac_header in pocketsphinx/pocketsphinx_export.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "pocketsphinx/pocketsphinx.h" "ac_cv_header_pocketsphinx_pocketsphinx_h" "$ac_includes_default"
-if test "x$ac_cv_header_pocketsphinx_pocketsphinx_h" = xyes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "pocketsphinx/pocketsphinx_export.h" "ac_cv_header_pocketsphinx_pocketsphinx_export_h" "$ac_includes_default"
+if test "x$ac_cv_header_pocketsphinx_pocketsphinx_export_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_POCKETSPHINX_POCKETSPHINX_H 1
+#define HAVE_POCKETSPHINX_POCKETSPHINX_EXPORT_H 1
 _ACEOF
  have_pocketsphinx=yes
 else
@@ -5741,7 +5742,6 @@ fi
 
 
 #--------------------------------------------------------------------
->>>>>>> Stashed changes
 # Find CUPS
 #--------------------------------------------------------------------
 GSCUPS_CFLAGS=
