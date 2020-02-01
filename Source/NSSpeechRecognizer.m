@@ -26,5 +26,81 @@
 
 @implementation NSSpeechRecognizer
 
++ (void) initialize
+{
+}
+
+// Initialize
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+    }
+  return self;
+}
+
+- (id<NSSpeechRecognizerDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSSpeechRecognizerDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
+// Configuring...
+- (NSArray *) commands
+{
+  return _commands;
+}
+
+- (void) setCommands: (NSArray *)commands
+{
+  ASSIGNCOPY(_commands, commands);
+}
+
+- (NSString *) displayCommandsTitle
+{
+  return _displayCommandsTitle;
+}
+
+- (void) setDisplayCommandsTitle: (NSString *)displayCommandsTitle
+{
+  ASSIGNCOPY(_displayCommandsTitle, displayCommandsTitle);
+}
+
+- (BOOL) listensInForegroundOnly
+{
+  return _listensInForegroundOnly;
+}
+
+- (void) setListensInForegroundOnly: (BOOL)listensInForegroundOnly
+{
+  _listensInForegroundOnly = listensInForegroundOnly;
+}
+
+- (BOOL) blocksOtherRecognizers
+{
+  return _blocksOtherRecognizers;
+}
+
+- (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers
+{
+  _blocksOtherRecognizers = blocksOtherRecognizers;
+}
+
+// Listening
+- (void) startListening
+{
+  // Do nothing...
+}
+
+- (void) stopListening
+{
+  // Do nothing...
+}
+
 @end
 

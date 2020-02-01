@@ -36,12 +36,20 @@ extern "C" {
 @protocol NSSpeechRecognizerDelegate;
   
 @interface NSSpeechRecognizer : NSObject
+{
+  id<NSSpeechRecognizerDelegate> _delegate;
+  NSArray *_commands;
+  NSString *_displayCommandsTitle;
+  BOOL _blocksOtherRecognizers;
+  BOOL _listensInForegroundOnly;
+}
 
 // Initialize
 - (instancetype) init;
 
 - (id<NSSpeechRecognizerDelegate>) delegate;
-
+- (void) setDelegate: (id<NSSpeechRecognizerDelegate>) delegate;
+  
 // Configuring...
 - (NSArray *) commands;
 - (void) setCommands: (NSArray *)commands;
@@ -50,7 +58,7 @@ extern "C" {
 - (void) setDisplayCommandsTitle: (NSString *)displayCommandsTitle;
 
 - (BOOL) listensInForegroundOnly;
-- (void) setListensInForgroundOnly: (BOOL)listensInForgroundOnly;
+- (void) setListensInForegroundOnly: (BOOL)listensInForegroundOnly;
 
 - (BOOL) blocksOtherRecognizers;
 - (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers;
