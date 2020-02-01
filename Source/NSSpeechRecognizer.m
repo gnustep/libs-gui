@@ -23,11 +23,37 @@
 */
 
 #import <AppKit/NSSpeechRecognizer.h>
+#import <Foundation/NSDistantObject.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSConnection.h>
+#import "AppKit/NSWorkspace.h"
+
+id _speechRecognitionServer = nil;
+Class _speechRecognitionClass = nil;
+BOOL _serverLaunchTested = NO;
+
+@interface NSObject (GSSpeechRecognitionServer)
+- (NSSpeechRecognizer *)newRecognizer;
+@end
 
 @implementation NSSpeechRecognizer
 
 + (void) initialize
 {
+  _speechRecognitionClass = [NSSpeechRecognizer class];
+  _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechRecognitionServer"
+                                                                                host: nil] retain];
+  if (nil == _speechRecognitionServer)
+    {
+      NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+      [ws launchApplication: @"GSSpeechRecognitionServer"
+                   showIcon: NO
+                 autolaunch: NO];
+    }
 }
 
 // Initialize
@@ -40,6 +66,36 @@
   return self;
 }
 
++ (id) allocWithZone: (NSZone *)aZone
+{
+  if (self == _speechRecognitionClass)
+    {
+      if (nil == _speechRecognitionServer && !_serverLaunchTested)
+        {
+          unsigned int i=0;
+          // Wait for up to five seconds  for the server to launch, then give up.
+          for (i=0 ; i<50 ; i++)
+            {
+              _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechRecognitionServer"
+                                                                                            host: nil] retain];
+              if (nil != _speechRecognitionServer)
+                {
+                  break;
+                }
+              [NSThread sleepForTimeInterval: 0.1];
+            }
+          
+          // Set a flag so we don't bother waiting for the speech recognition server to
+          // launch the next time if it didn't work this time.
+          _serverLaunchTested = YES;
+        }
+      // If there is no server, this will return nil
+      return [_speechRecognitionServer newRecognizer];
+    }
+  return [super allocWithZone: aZone];
+}
+
+// Delegate
 - (id<NSSpeechRecognizerDelegate>) delegate
 {
   return _delegate;
