@@ -36,6 +36,8 @@ id _speechRecognitionServer = nil;
 Class _speechRecognitionClass = nil;
 BOOL _serverLaunchTested = NO;
 
+#define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
+
 @interface NSObject (GSSpeechRecognitionServer)
 - (NSSpeechRecognizer *)newRecognizer;
 @end
@@ -45,12 +47,12 @@ BOOL _serverLaunchTested = NO;
 + (void) initialize
 {
   _speechRecognitionClass = [NSSpeechRecognizer class];
-  _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechRecognitionServer"
+  _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
                                                                                 host: nil] retain];
   if (nil == _speechRecognitionServer)
     {
       NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-      [ws launchApplication: @"GSSpeechRecognitionServer"
+      [ws launchApplication: SPEECH_RECOGNITION_SERVER
                    showIcon: NO
                  autolaunch: NO];
     }
@@ -76,7 +78,7 @@ BOOL _serverLaunchTested = NO;
           // Wait for up to five seconds  for the server to launch, then give up.
           for (i=0 ; i<50 ; i++)
             {
-              _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechRecognitionServer"
+              _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
                                                                                             host: nil] retain];
               if (nil != _speechRecognitionServer)
                 {
