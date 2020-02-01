@@ -33,8 +33,38 @@
 extern "C" {
 #endif
 
+@protocol NSSpeechRecognizerDelegate;
+  
 @interface NSSpeechRecognizer : NSObject
 
+// Initialize
+- (instancetype) init;
+
+- (id<NSSpeechRecognizerDelegate>) delegate;
+
+// Configuring...
+- (NSArray *) commands;
+- (void) setCommands: (NSArray *)commands;
+
+- (NSString *) displayCommandsTitle;
+- (void) setDisplayCommandsTitle: (NSString *)displayCommandsTitle;
+
+- (BOOL) listensInForegroundOnly;
+- (void) setListensInForgroundOnly: (BOOL)listensInForgroundOnly;
+
+- (BOOL) blocksOtherRecognizers;
+- (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers;
+
+// Listening
+- (void) startListening;
+- (void) stopListening;
+  
+@end
+
+// Protocol
+@protocol NSSpeechRecognizerDelegate
+- (void) speechRecognizer: (NSSpeechRecognizer *)sender
+      didRecognizeCommand: (NSString *)command;
 @end
 
 #if	defined(__cplusplus)

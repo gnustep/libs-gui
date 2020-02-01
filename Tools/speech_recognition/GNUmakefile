@@ -14,7 +14,7 @@ GSSpeechRecognitionServer_LANGUAGES = English
 GSSpeechRecognitionServer_OBJC_FILES = \
 	GSSpeechRecognitionEngine.m \
 	GSSpeechRecognitionServer.m \
-	GSSpeechRecognitionSynthesizer.m \
+	GSSpeechRecognizer.m \
 	main.m
 
 
