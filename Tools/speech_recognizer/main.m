@@ -6,7 +6,7 @@
 
 int main(void)
 {
-	[NSAutoreleasePool new];
-	[GSSpeechRecognitonServer start];
-	return 0;
+  [NSAutoreleasePool new];
+  [GSSpeechRecognitionServer start];
+  return 0;
 }
