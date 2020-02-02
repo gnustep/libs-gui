@@ -249,7 +249,7 @@
   // Define move constrains for menu
   if (_ownedByMenu)
     {
-      NSRect screenFrame = [[NSScreen mainScreen] frame];
+      NSRect screenFrame = [[_window screen] frame];
       leftLimit = screenFrame.origin.x;
       topLimit = NSMaxY(screenFrame) - [_window frame].size.height;
       rightLimit = NSMaxX(screenFrame) - [_window frame].size.width;
