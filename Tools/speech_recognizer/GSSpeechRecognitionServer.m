@@ -31,8 +31,8 @@ static GSSpeechRecognitionServer *sharedInstance;
 - (id)init
 {
   if (nil == (self = [super init])) { return nil; }
-  engine = [GSSpeechRecognitionEngine defaultSpeechRecognitionEngine];
-  if (nil == engine)
+  _engine = [GSSpeechRecognitionEngine defaultSpeechRecognitionEngine];
+  if (nil == _engine)
     {
       [self release];
       return nil;
@@ -47,10 +47,23 @@ static GSSpeechRecognitionServer *sharedInstance;
 
 - (void) startListening
 {
+  // abstract nothing to do...
 }
 
 - (void) stopListening
 {
+  // abstract nothing to do...
 }
+
+- (void) setDelegate: (id<NSSpeechRecognizerDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
+- (id<NSSpeechRecognizerDelegate>) delegate
+{
+  return _delegate;
+}
+
 
 @end

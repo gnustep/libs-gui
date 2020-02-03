@@ -50,6 +50,9 @@ static int clients;
 - (id)init
 {
   self = [super init];
+  if (self != nil)
+    {
+    }
   return self;
 }
 
@@ -65,15 +68,6 @@ static int clients;
                                       repeats: NO];
     }
   [super dealloc];
-}
-
-- (void) setDelegate: (id)delegate
-{
-}
-
-- (id) delegate
-{
-  return nil;
 }
 
 @end

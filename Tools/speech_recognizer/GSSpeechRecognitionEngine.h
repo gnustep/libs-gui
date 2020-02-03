@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <AppKit/NSSpeechRecognizer.h>
 
 /**
  * GSSpeechRecognitionEngine is an abstract speech server.  One concrete subclass should
