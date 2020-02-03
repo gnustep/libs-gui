@@ -5736,7 +5736,7 @@ done
 
 if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
-   POCKETSPHINX_BASE_LIBS="-lpocketsphinx"
+   POCKETSPHINX_BASE_LIBS="-lpocketsphinx -lsphinxbase -lsphinxad"
 fi
 
 

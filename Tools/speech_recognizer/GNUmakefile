@@ -19,7 +19,7 @@ GSSpeechRecognitionServer_OBJC_FILES = \
 
 
 ifeq ($(GSSPEECHRECOGNITIONENGINE), Pocketsphinx)
-POCKETSPHINX_BASE_LIBS = -lpocketsphinx
+POCKETSPHINX_BASE_LIBS = -lpocketsphinx -lsphinxbase -lsphinxad
 
 # Add includes and link dirs.... need to replace triplet.
 GSSpeechRecognitionServer_OBJC_FILES += PocketsphinxSpeechRecognitionEngine.m
