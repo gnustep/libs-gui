@@ -2,7 +2,7 @@
 
    Copyright (C) 2003 Free Software Foundation, Inc.
 
-   Author: Serg Stoyan <stoyan@on.com.ua>
+   Author: Sergii Stoian <stoyan255@gmail.com>
    Date:   Mar 2003
    
    This file is part of the GNUstep GUI Library.
@@ -41,6 +41,7 @@
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSScreen.h"
 
 #import "GNUstepGUI/GSTitleView.h"
 #import "GNUstepGUI/GSTheme.h"
@@ -238,8 +239,31 @@
   NSDate   *theDistantFuture = [NSDate distantFuture];
   NSPoint  startWindowOrigin;
   NSPoint  endWindowOrigin;
+  NSRect   screenFrame = NSZeroRect;
+  CGFloat  leftLimit = -1.0;
+  CGFloat  topLimit = -1.0 ;
+  CGFloat  rightLimit = -1.0;
+  CGFloat  bottomLimit = 0.0;
 
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
+
+  // Define move constrains for menu
+  if (_ownedByMenu)
+    {
+      NSRect   windowFrame;
+      NSScreen *screen;
+
+      if (_window && (screen = [_window screen]))
+        {
+          windowFrame = [_window frame];
+          screenFrame = [screen frame];
+          leftLimit = screenFrame.origin.x;
+          topLimit = NSMaxY(screenFrame) - windowFrame.size.height;
+          rightLimit = NSMaxX(screenFrame) - windowFrame.size.width;
+          bottomLimit = screenFrame.origin.y -
+            (windowFrame.size.height - [self frame].size.height);
+        }
+    }
 
   // Remember start position of window
   startWindowOrigin = [_window frame].origin;
@@ -275,6 +299,19 @@
               origin.y += (location.y - lastLocation.y);
               if (_ownedByMenu)
                 {
+                  if (screenFrame.size.width > 0 && screenFrame.size.height > 0)
+                    {
+                      if (origin.x <= leftLimit)
+                        origin.x = leftLimit;
+                      else if (origin.x >= rightLimit)
+                        origin.x = rightLimit;
+
+                      if (origin.y >= topLimit)
+                        origin.y = topLimit;
+                      else if (origin.y <= bottomLimit)
+                        origin.y = bottomLimit;
+                    }
+                 
                   [_owner nestedSetFrameOrigin: origin];
                 }
               else
