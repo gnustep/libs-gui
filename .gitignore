@@ -15,6 +15,7 @@ Source/config.h
 Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app
+Tools/speech/GSSpeechRecognitionServer.app
 *~
 
 # Created by https://www.gitignore.io/api/xcode
