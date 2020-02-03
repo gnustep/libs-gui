@@ -7,6 +7,10 @@
  * in future if pluggable speech engines are considered beneficial.
  */
 @interface GSSpeechRecognitionEngine : NSObject
+
+- (void) startListening;
+- (void) stopListening;
+
 @end
 
 @interface NSObject (GSSpeechRecognitionEngineDelegate)

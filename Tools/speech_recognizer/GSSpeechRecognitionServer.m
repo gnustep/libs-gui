@@ -44,4 +44,13 @@ static GSSpeechRecognitionServer *sharedInstance;
 {
   return [[GSSpeechRecognizer new] autorelease];
 }
+
+- (void) startListening
+{
+}
+
+- (void) stopListening
+{
+}
+
 @end

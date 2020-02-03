@@ -1,5 +1,5 @@
 #import "GSSpeechRecognitionEngine.h"
-// #include <pocketsphinx/pocketsphinx.h>
+#include <pocketsphinx/pocketsphinx.h>
 
 /**
  * Implementation of a speech engine using pocketsphinx.  This should be the default
@@ -20,6 +20,15 @@
   if (nil == (self = [super init])) { return nil; }
   return self;
 }
+
+- (void) startListening
+{
+}
+
+- (void) stopListening
+{
+}
+
 @end
 
 @implementation GSSpeechRecognitionEngine (Pocketsphinx)
