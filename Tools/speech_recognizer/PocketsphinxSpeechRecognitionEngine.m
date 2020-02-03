@@ -8,21 +8,15 @@
 
 #define MODELDIR "/share/pocketsphinx/model"
 
-/* 
-    ps_decoder_t *ps = NULL;
-    cmd_ln_t *config = NULL;
-
-    config = cmd_ln_init(NULL, ps_args(), TRUE,
-		         "-hmm", MODELDIR "/en-us/en-us",
-	                 "-lm", MODELDIR "/en-us/en-us.lm.bin",
-	                 "-dict", MODELDIR "/en-us/cmudict-en-us.dict",
-	                 NULL);
-
- */
 @interface PocketsphinxSpeechRecognitionEngine : GSSpeechRecognitionEngine
 {
   ps_decoder_t *ps;
   cmd_ln_t *config;
+  FILE *fh;
+  char const *hyp, *uttid;
+  int16 buf[512];
+  int rv;
+  int32 score;
 }
 @end
 
@@ -48,10 +42,12 @@
 
 - (void) startListening
 {
+  rv = ps_start_utt(ps);
 }
 
 - (void) stopListening
 {
+  rv = ps_end_utt(ps);
 }
 
 @end
