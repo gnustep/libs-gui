@@ -21,8 +21,12 @@ GSSpeechRecognitionServer_OBJC_FILES = \
 ifeq ($(GSSPEECHRECOGNITIONENGINE), Pocketsphinx)
 POCKETSPHINX_BASE_LIBS = -lpocketsphinx
 
+# Add includes and link dirs.... need to replace triplet.
 GSSpeechRecognitionServer_OBJC_FILES += PocketsphinxSpeechRecognitionEngine.m
-GSSpeechRecognitionServer_INCLUDE_DIRS += -I/usr/local/include/pocketsphinx -I../../Headers \
+GSSpeechRecognitionServer_INCLUDE_DIRS += -I/usr/local/include/pocketsphinx \
+	-I/usr/include/pocketsphinx \
+	-I/usr/include/x86_64-linux-gnu/sphinxbase \
+	-I../../Headers \
 	-I../../Headers/Additions
 GSSpeechRecognitionServer_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR) \
 	-L/usr/local/lib -lgnustep-gui \
