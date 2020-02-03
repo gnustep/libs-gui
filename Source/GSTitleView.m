@@ -239,22 +239,30 @@
   NSDate   *theDistantFuture = [NSDate distantFuture];
   NSPoint  startWindowOrigin;
   NSPoint  endWindowOrigin;
-  CGFloat  leftLimit;
-  CGFloat  topLimit;
-  CGFloat  rightLimit;
-  CGFloat  bottomLimit;
+  NSRect   screenFrame = NSZeroRect;
+  CGFloat  leftLimit = -1.0;
+  CGFloat  topLimit = -1.0 ;
+  CGFloat  rightLimit = -1.0;
+  CGFloat  bottomLimit = 0.0;
 
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
   // Define move constrains for menu
   if (_ownedByMenu)
     {
-      NSRect screenFrame = [[_window screen] frame];
-      leftLimit = screenFrame.origin.x;
-      topLimit = NSMaxY(screenFrame) - [_window frame].size.height;
-      rightLimit = NSMaxX(screenFrame) - [_window frame].size.width;
-      bottomLimit = screenFrame.origin.y -
-        ([_window frame].size.height - [self frame].size.height);
+      NSRect   windowFrame;
+      NSScreen *screen;
+
+      if (_window && (screen = [_window screen]))
+        {
+          windowFrame = [_window frame];
+          screenFrame = [screen frame];
+          leftLimit = screenFrame.origin.x;
+          topLimit = NSMaxY(screenFrame) - windowFrame.size.height;
+          rightLimit = NSMaxX(screenFrame) - windowFrame.size.width;
+          bottomLimit = screenFrame.origin.y -
+            (windowFrame.size.height - [self frame].size.height);
+        }
     }
 
   // Remember start position of window
@@ -291,15 +299,18 @@
               origin.y += (location.y - lastLocation.y);
               if (_ownedByMenu)
                 {
-                  if (origin.x <= leftLimit)
-                    origin.x = leftLimit;
-                  else if (origin.x >= rightLimit)
-                    origin.x = rightLimit;
+                  if (screenFrame.size.width > 0 && screenFrame.size.height > 0)
+                    {
+                      if (origin.x <= leftLimit)
+                        origin.x = leftLimit;
+                      else if (origin.x >= rightLimit)
+                        origin.x = rightLimit;
 
-                  if (origin.y >= topLimit)
-                    origin.y = topLimit;
-                  else if (origin.y <= bottomLimit)
-                    origin.y = bottomLimit;
+                      if (origin.y >= topLimit)
+                        origin.y = topLimit;
+                      else if (origin.y <= bottomLimit)
+                        origin.y = bottomLimit;
+                    }
                  
                   [_owner nestedSetFrameOrigin: origin];
                 }
