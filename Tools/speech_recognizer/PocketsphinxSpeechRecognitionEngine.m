@@ -174,13 +174,17 @@ static const arg_t cont_args_def[] = {
 
 - (void) startListening
 {
-  [NSThread detachNewThreadSelector: @selector(recognize)
-                           toTarget: self
-                         withObject: nil];
+  _listeningThread = [[NSThread alloc] initWithTarget: self
+                                             selector: @selector(recognize)
+                                               object: nil];
+  [_listeningThread start];
 }
 
 - (void) stopListening
 {
+  [_listeningThread cancel];
+  RELEASE(_listeningThread);
+  _listeningThread = nil;
 }
 
 @end
