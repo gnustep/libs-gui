@@ -1,3 +1,9 @@
+2020-01-31  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/GSTitleView.m (mouseDown:): limit menu movement to screen
+	frame for top/left/right edges. Menu can be moved to the bottom until
+	title is completely visible.
+
 2020-01-27  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (applicationDidChangeScreenParameters): take into
