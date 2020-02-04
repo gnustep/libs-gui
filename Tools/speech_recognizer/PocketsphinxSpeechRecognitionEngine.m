@@ -1,4 +1,5 @@
 #import "GSSpeechRecognitionEngine.h"
+#import <Foundation/NSDistributedNotificationCenter.h>
 
 #include <sphinxbase/err.h>
 #include <sphinxbase/ad.h>
@@ -10,6 +11,32 @@
  */
 
 #define MODELDIR "/share/pocketsphinx/model"
+
+static const arg_t cont_args_def[] = {
+    POCKETSPHINX_OPTIONS,
+    /* Argument file. */
+    {"-argfile",
+     ARG_STRING,
+     NULL,
+     "Argument file giving extra arguments."},
+    {"-adcdev",
+     ARG_STRING,
+     NULL,
+     "Name of audio device to use for input."},
+    {"-infile",
+     ARG_STRING,
+     NULL,
+     "Audio file to transcribe."},
+    {"-inmic",
+     ARG_BOOLEAN,
+     "no",
+     "Transcribe audio from microphone."},
+    {"-time",
+     ARG_BOOLEAN,
+     "no",
+     "Print word times in file transcription."},
+    CMDLN_EMPTY_OPTION
+};
 
 @interface PocketsphinxSpeechRecognitionEngine : GSSpeechRecognitionEngine
 {
@@ -35,12 +62,20 @@
 {
   if ((self = [super init]) != nil)
     {
-      config = cmd_ln_init(NULL, ps_args(), TRUE,
-                           "-hmm", MODELDIR "/en-us/en-us",
-                           "-lm", MODELDIR "/en-us/en-us.lm.bin",
-                           "-dict", MODELDIR "/en-us/cmudict-en-us.dict",
-                           NULL);
+      char *arg[3];
+      arg[0] = "";
+      arg[1] = "-inmic";
+      arg[2] = "yes";
+
+      config = cmd_ln_parse_r(NULL, cont_args_def, 3, arg, TRUE);
+      ps_default_search_args(config);
       ps = ps_init(config);
+      if (ps == NULL)
+        {
+          cmd_ln_free_r(config);
+          NSLog(@"Could not start server");
+          return nil;
+        }
       _listeningThread = nil;
     }
   return self;
@@ -48,7 +83,10 @@
 
 - (void) _recognizedWord: (NSString *)word
 {
-  
+  [[NSDistributedNotificationCenter defaultCenter]
+    postNotificationName: GSSpeechRecognizerDidRecognizeWordNotification
+                  object: word
+                userInfo: nil];
 }
 
 /*
@@ -110,10 +148,6 @@
     [NSThread sleepForTimeInterval: 0.01];
   }
   ad_close(ad);
-}
-
-- (void) _startProcessing
-{
 }
 
 - (void) startListening

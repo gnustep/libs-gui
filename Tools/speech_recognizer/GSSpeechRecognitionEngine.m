@@ -5,10 +5,10 @@
  */
 @implementation GSSpeechRecognitionEngine
 
-+ (GSSpeechRecognitionEngine*)defaultSpeechEngine
++ (GSSpeechRecognitionEngine*) defaultSpeechEngine
 {
-  return [[self new] autorelease];
-}
+  return AUTORELEASE([[self alloc] init]);
+} 
 
 - (void) startListening
 {

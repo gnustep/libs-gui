@@ -30,6 +30,8 @@
 #import <Foundation/NSThread.h>
 #import <Foundation/NSError.h>
 #import <Foundation/NSConnection.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+
 #import "AppKit/NSWorkspace.h"
 
 id _speechRecognitionServer = nil;
@@ -58,12 +60,32 @@ BOOL _serverLaunchTested = NO;
     }
 }
 
+- (void) processNotification: (NSNotification *)note
+{
+  NSString *word = (NSString *)[note object];
+  NSEnumerator *en = [_commands objectEnumerator];
+  id obj = nil;
+  while((obj = [en nextObject]) != nil)
+    {
+      if ([[obj lowercaseString] isEqualToString: [word lowercaseString]])
+        {
+          [_delegate speechRecognizer: self
+                  didRecognizeCommand: word];
+        }
+    }
+}
+
 // Initialize
 - (instancetype) init
 {
   self = [super init];
   if (self != nil)
     {
+      [[NSDistributedNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processNotification:)
+               name: GSSpeechRecognizerDidRecognizeWordNotification
+             object: nil];
     }
   return self;
 }
@@ -152,12 +174,12 @@ BOOL _serverLaunchTested = NO;
 // Listening
 - (void) startListening
 {
-  // Do nothing...
+  [_speechRecognitionServer startListening];
 }
 
 - (void) stopListening
 {
-  // Do nothing...
+  [_speechRecognitionServer stopListening];
 }
 
 @end

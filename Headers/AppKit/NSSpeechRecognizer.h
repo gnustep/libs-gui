@@ -26,6 +26,7 @@
 #define _NSSpeechRecognizer_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -34,7 +35,7 @@ extern "C" {
 #endif
 
 @protocol NSSpeechRecognizerDelegate;
-  
+
 @interface NSSpeechRecognizer : NSObject
 {
   id<NSSpeechRecognizerDelegate> _delegate;
@@ -74,6 +75,8 @@ extern "C" {
 - (void) speechRecognizer: (NSSpeechRecognizer *)sender
       didRecognizeCommand: (NSString *)command;
 @end
+
+APPKIT_EXPORT NSString *GSSpeechRecognizerDidRecognizeWordNotification; 
 
 #if	defined(__cplusplus)
 }
