@@ -47,7 +47,6 @@ MISSING HEADERS
 > NSScrubberLayout.h
 > NSSharingServicePickerToolbarItem.h
 > NSSliderAccessory.h
-> NSSpeechRecognizer.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
 > NSStackView.h

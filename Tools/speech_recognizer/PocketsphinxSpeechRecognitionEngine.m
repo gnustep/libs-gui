@@ -90,6 +90,8 @@ static const arg_t cont_args_def[] = {
 }
 
 /*
+ * NOTE: This code is derived from continuous.c under pocketsphinx 
+ *       which is MIT licensed
  * Main utterance processing loop:
  *     for (;;) {
  *        start utterance and wait for speech to process
@@ -108,23 +110,31 @@ static const arg_t cont_args_def[] = {
   if ((ad = ad_open_dev(cmd_ln_str_r(config, "-adcdev"),
                         (int) cmd_ln_float32_r(config,
                                                "-samprate"))) == NULL)
-    E_FATAL("Failed to open audio device\n");
+    {
+      NSLog(@"Failed to open audio device\n");
+    }
+  
   if (ad_start_rec(ad) < 0)
-    E_FATAL("Failed to start recording\n");
+    {
+      NSLog(@"Failed to start recording\n");
+    }
   
   if (ps_start_utt(ps) < 0)
-    E_FATAL("Failed to start utterance\n");
+    {
+      NSLog(@"Failed to start utterance\n");
+    }
+  
   utt_started = FALSE;
-  E_INFO("Ready....\n");
+  NSLog(@"Ready....\n");
   
   for (;;) {
     if ((k = ad_read(ad, adbuf, 2048)) < 0)
-      E_FATAL("Failed to read audio\n");
+      NSLog(@"Failed to read audio\n");
     ps_process_raw(ps, adbuf, k, FALSE, FALSE);
     in_speech = ps_get_in_speech(ps);
     if (in_speech && !utt_started) {
       utt_started = TRUE;
-      E_INFO("Listening...\n");
+      NSLog(@"Listening...\n");
     }
     if (!in_speech && utt_started) {
       /* speech -> silence transition, time to start new utterance  */
@@ -141,9 +151,9 @@ static const arg_t cont_args_def[] = {
       }
       
       if (ps_start_utt(ps) < 0)
-        E_FATAL("Failed to start utterance\n");
+        NSLog(@"Failed to start utterance\n");
       utt_started = FALSE;
-      E_INFO("Ready....\n");
+      NSLog(@"Ready....\n");
     }
     [NSThread sleepForTimeInterval: 0.01];
   }
