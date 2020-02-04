@@ -103,7 +103,7 @@ static const arg_t cont_args_def[] = {
 {
   ad_rec_t *ad;
   int16 adbuf[2048];
-  uint8 utt_started, in_speech;
+  BOOL utt_started, in_speech;
   int32 k;
   char const *hyp;
   
@@ -111,52 +111,64 @@ static const arg_t cont_args_def[] = {
                         (int) cmd_ln_float32_r(config,
                                                "-samprate"))) == NULL)
     {
-      NSLog(@"Failed to open audio device\n");
+      NSLog(@"Failed to open audio device");
     }
   
   if (ad_start_rec(ad) < 0)
     {
-      NSLog(@"Failed to start recording\n");
+      NSLog(@"Failed to start recording");
     }
   
   if (ps_start_utt(ps) < 0)
     {
-      NSLog(@"Failed to start utterance\n");
+      NSLog(@"Failed to start utterance");
     }
   
-  utt_started = FALSE;
-  NSLog(@"Ready....\n");
+  utt_started = NO;
+  NSLog(@"Ready....");
   
-  for (;;) {
-    if ((k = ad_read(ad, adbuf, 2048)) < 0)
-      NSLog(@"Failed to read audio\n");
-    ps_process_raw(ps, adbuf, k, FALSE, FALSE);
-    in_speech = ps_get_in_speech(ps);
-    if (in_speech && !utt_started) {
-      utt_started = TRUE;
-      NSLog(@"Listening...\n");
-    }
-    if (!in_speech && utt_started) {
-      /* speech -> silence transition, time to start new utterance  */
-      ps_end_utt(ps);
-      hyp = ps_get_hyp(ps, NULL );
-      if (hyp != NULL) {
-        NSString *recognizedString = [NSString stringWithCString: hyp
-                                                        encoding: NSUTF8StringEncoding];
-        [self performSelectorOnMainThread: @selector(_recognizedWord:)
-                               withObject: recognizedString
-                            waitUntilDone: NO];
-        printf("%s\n", hyp);
-        fflush(stdout);
-      }
+  while(YES)
+    {
+      if ((k = ad_read(ad, adbuf, 2048)) < 0)
+        {
+          NSLog(@"Failed to read audio");
+        }
       
-      if (ps_start_utt(ps) < 0)
-        NSLog(@"Failed to start utterance\n");
-      utt_started = FALSE;
-      NSLog(@"Ready....\n");
+      ps_process_raw(ps, adbuf, k, FALSE, FALSE);
+      in_speech = ps_get_in_speech(ps);
+
+      if (in_speech && !utt_started)
+        {
+          utt_started = YES;
+          NSLog(@"Listening...");
+        }
+      
+      if (!in_speech && utt_started)
+        {
+          /* speech -> silence transition, time to start new utterance  */
+          ps_end_utt(ps);
+          hyp = ps_get_hyp(ps, NULL);
+          if (hyp != NULL)
+            {
+              NSString *recognizedString = [NSString stringWithCString: hyp
+                                                              encoding: NSUTF8StringEncoding];
+              [self performSelectorOnMainThread: @selector(_recognizedWord:)
+                                     withObject: recognizedString
+                                  waitUntilDone: NO];
+              NSDebugLog(@"RECOGNIZED WORD: %s", hyp);
+              fflush(stdout);
+            }
+          
+          if (ps_start_utt(ps) < 0)
+            {
+              NSLog(@"Failed to start utterance");
+            }
+          
+          utt_started = NO;
+          NSLog(@"Ready....");
+        }
+      [NSThread sleepForTimeInterval: 0.01];
     }
-    [NSThread sleepForTimeInterval: 0.01];
-  }
   ad_close(ad);
 }
 
