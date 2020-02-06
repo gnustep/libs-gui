@@ -54,10 +54,6 @@ static const arg_t cont_args_def[] = {
 
 @implementation PocketsphinxSpeechRecognitionEngine
 
-+ (void)initialize
-{
-}
-
 - (id)init
 {
   if ((self = [super init]) != nil)
@@ -93,7 +89,7 @@ static const arg_t cont_args_def[] = {
  * NOTE: This code is derived from continuous.c under pocketsphinx 
  *       which is MIT licensed
  * Main utterance processing loop:
- *     for (;;) {
+ *     while (YES) {
  *        start utterance and wait for speech to process
  *        decoding till end-of-utterance silence will be detected
  *        print utterance result;
@@ -157,7 +153,6 @@ static const arg_t cont_args_def[] = {
                                      withObject: recognizedString
                                   waitUntilDone: NO];
               NSDebugLog(@"RECOGNIZED WORD: %s", hyp);
-              fflush(stdout);
             }
           
           if (ps_start_utt(ps) < 0)
@@ -175,12 +170,11 @@ static const arg_t cont_args_def[] = {
 
 - (void) startListening
 {
-  /*
-  _listeningThread = [[NSThread alloc] initWithTarget: self
-                                             selector: @selector(recognize)
-                                               object: nil];
-                                               [_listeningThread start];*/
-  [self recognize];
+  _listeningThread =
+    [[NSThread alloc] initWithTarget: self
+                            selector: @selector(recognize)
+                              object: nil];
+  [_listeningThread start];
 }
 
 - (void) stopListening
