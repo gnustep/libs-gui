@@ -10,8 +10,9 @@ static int clients;
 @implementation GSSpeechRecognizer
 + (void)initialize
 {
-  server = [[GSSpeechRecognitionServer sharedServer] retain];
+  server = [GSSpeechRecognitionServer sharedServer];
 
+  RETAIN(server);
   if (server != nil)
     {
       clients++;
@@ -58,12 +59,15 @@ static int clients;
   self = [super init];
   if (self != nil)
     {
+      NSLog(@"self = %@",self);
+      RETAIN(server);
     }
   return self;
 }
 
 - (void)dealloc
 {
+  NSLog(@"Deallocating recognizer....");
   clients--;
   if (clients == 0)
     {
@@ -78,6 +82,7 @@ static int clients;
 
 - (void) startListening
 {
+  NSLog(@"Start Listening");
   if (server != nil)
     {
       [server startListening];
@@ -86,6 +91,7 @@ static int clients;
 
 - (void) stopListening
 {
+  NSLog(@"Stop Listening");
   if (server != nil)
     {
       [server stopListening];

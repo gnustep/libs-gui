@@ -18,4 +18,8 @@
 {
 }
 
+- (void) recognize
+{
+}
+
 @end

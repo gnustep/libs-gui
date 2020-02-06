@@ -37,35 +37,28 @@ static GSSpeechRecognitionServer *sharedInstance;
       [self release];
       return nil;
     }
+  else
+    {
+      NSLog(@"Got engine %@", _engine);
+    }
   return self;
 }
 
 - (id)newRecognizer
 {
-  return [[GSSpeechRecognizer new] autorelease];
+  GSSpeechRecognizer *r = [[GSSpeechRecognizer alloc] init];
+  RETAIN(r);
+  return r;
 }
 
 - (void) startListening
 {
-  // abstract nothing to do...
   [_engine startListening];
 }
 
 - (void) stopListening
 {
-  // abstract nothing to do...
   [_engine stopListening];
 }
-
-- (void) setDelegate: (id<NSSpeechRecognizerDelegate>)delegate
-{
-  _delegate = delegate;
-}
-
-- (id<NSSpeechRecognizerDelegate>) delegate
-{
-  return _delegate;
-}
-
 
 @end

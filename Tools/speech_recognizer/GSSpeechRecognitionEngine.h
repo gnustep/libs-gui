@@ -11,6 +11,7 @@
 
 - (void) startListening;
 - (void) stopListening;
+- (void) recognize;
 
 @end
 

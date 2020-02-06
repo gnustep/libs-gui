@@ -174,6 +174,7 @@ static const arg_t cont_args_def[] = {
     [[NSThread alloc] initWithTarget: self
                             selector: @selector(recognize)
                               object: nil];
+  NSLog(@"Thread info for speech reconigtion server %@", _listeningThread);
   [_listeningThread start];
 }
 

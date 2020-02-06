@@ -11,7 +11,6 @@
 @interface GSSpeechRecognitionServer : NSObject
 {
   GSSpeechRecognitionEngine *_engine;
-  id<NSSpeechRecognizerDelegate> _delegate;
 }
 
 /**
@@ -19,7 +18,7 @@
  */
 + (id)sharedServer;
 
-- (void) setDelegate: (id<NSSpeechRecognizerDelegate>) delegate;
+- (void) startListening;
+- (void) stopListening;
 
-- (id<NSSpeechRecognizerDelegate>) delegate;
 @end
