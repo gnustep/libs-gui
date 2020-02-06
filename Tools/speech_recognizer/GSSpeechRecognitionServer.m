@@ -48,11 +48,13 @@ static GSSpeechRecognitionServer *sharedInstance;
 - (void) startListening
 {
   // abstract nothing to do...
+  [_engine startListening];
 }
 
 - (void) stopListening
 {
   // abstract nothing to do...
+  [_engine stopListening];
 }
 
 - (void) setDelegate: (id<NSSpeechRecognizerDelegate>)delegate

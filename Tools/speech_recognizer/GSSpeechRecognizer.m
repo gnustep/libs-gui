@@ -11,6 +11,12 @@ static int clients;
 + (void)initialize
 {
   server = [[GSSpeechRecognitionServer sharedServer] retain];
+
+  if (server != nil)
+    {
+      clients++;
+    }
+  
   [[NSNotificationCenter defaultCenter]
 		addObserver: self
 		   selector: @selector(connectionDied:)
@@ -68,6 +74,22 @@ static int clients;
                                       repeats: NO];
     }
   [super dealloc];
+}
+
+- (void) startListening
+{
+  if (server != nil)
+    {
+      [server startListening];
+    }
+}
+
+- (void) stopListening
+{
+  if (server != nil)
+    {
+      [server stopListening];
+    }
 }
 
 @end

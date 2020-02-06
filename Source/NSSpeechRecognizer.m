@@ -186,17 +186,11 @@ BOOL _serverLaunchTested = NO;
 // Listening
 - (void) startListening
 {
-  if (_speechRecognitionServer != nil)
-    {
-      [_speechRecognitionServer startListening];
-    }
+  [self subclassResponsibility: _cmd];
 }
 
 - (void) stopListening
 {
-  if (_speechRecognitionServer != nil)
-    {
-      [_speechRecognitionServer stopListening];
-    }
+  [self subclassResponsibility: _cmd];
 }
 @end
