@@ -34,8 +34,7 @@
 
 #import "AppKit/NSWorkspace.h"
 
-id _speechRecognitionServer = nil;
-Class _speechRecognitionClass = nil;
+id   _speechRecognitionServer = nil;
 BOOL _serverLaunchTested = NO;
 
 #define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
@@ -48,7 +47,6 @@ BOOL _serverLaunchTested = NO;
 
 + (void) initialize
 {
-  _speechRecognitionClass = [NSSpeechRecognizer class];
   _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
                                                                                 host: nil] retain];
   if (nil == _speechRecognitionServer)
@@ -65,7 +63,7 @@ BOOL _serverLaunchTested = NO;
   NSString *word = (NSString *)[note object];
   NSEnumerator *en = [_commands objectEnumerator];
   id obj = nil;
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       if ([[obj lowercaseString] isEqualToString: [word lowercaseString]])
         {
@@ -92,18 +90,19 @@ BOOL _serverLaunchTested = NO;
 
 + (id) allocWithZone: (NSZone *)aZone
 {
-  if (self == _speechRecognitionClass)
+  if (self == [NSSpeechRecognizer class])
     {
       if (nil == _speechRecognitionServer && !_serverLaunchTested)
         {
-          unsigned int i=0;
+          unsigned int i = 0;
           // Wait for up to five seconds  for the server to launch, then give up.
-          for (i=0 ; i<50 ; i++)
+          for (i=0 ; i < 50 ; i++)
             {
               _speechRecognitionServer = [[NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
                                                                                             host: nil] retain];
               if (nil != _speechRecognitionServer)
                 {
+                  NSLog(@"No server!!!");
                   break;
                 }
               [NSThread sleepForTimeInterval: 0.1];

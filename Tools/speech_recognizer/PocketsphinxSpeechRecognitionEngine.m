@@ -106,7 +106,8 @@ static const arg_t cont_args_def[] = {
   BOOL utt_started, in_speech;
   int32 k;
   char const *hyp;
-  
+
+  NSLog(@"************************* In recognize");
   if ((ad = ad_open_dev(cmd_ln_str_r(config, "-adcdev"),
                         (int) cmd_ln_float32_r(config,
                                                "-samprate"))) == NULL)
@@ -174,10 +175,12 @@ static const arg_t cont_args_def[] = {
 
 - (void) startListening
 {
+  /*
   _listeningThread = [[NSThread alloc] initWithTarget: self
                                              selector: @selector(recognize)
                                                object: nil];
-  [_listeningThread start];
+                                               [_listeningThread start];*/
+  [self recognize];
 }
 
 - (void) stopListening

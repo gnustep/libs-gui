@@ -135,9 +135,9 @@ static Class NSSpeechSynthesizerClass;
     {
       if (nil == server && !serverLaunchTested)
         {
-          unsigned int i=0;
+          unsigned int i = 0;
           // Wait for up to five seconds  for the server to launch, then give up.
-          for (i=0 ; i<50 ; i++)
+          for (i=0 ; i < 50 ; i++)
             {
               server = [NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechServer"
                                                                          host: nil];
