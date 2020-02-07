@@ -53,7 +53,7 @@ static const arg_t cont_args_def[] = {
      "Audio file to transcribe."},
     {"-inmic",
      ARG_BOOLEAN,
-     "no",
+     "yes",
      "Transcribe audio from microphone."},
     {"-time",
      ARG_BOOLEAN,
@@ -133,16 +133,19 @@ static const arg_t cont_args_def[] = {
                                                "-samprate"))) == NULL)
     {
       NSLog(@"Failed to open audio device");
+      return;
     }
   
   if (ad_start_rec(ad) < 0)
     {
       NSLog(@"Failed to start recording");
+      return;
     }
   
   if (ps_start_utt(ps) < 0)
     {
       NSLog(@"Failed to start utterance");
+      return;
     }
   
   utt_started = NO;
@@ -153,6 +156,7 @@ static const arg_t cont_args_def[] = {
       if ((k = ad_read(ad, adbuf, 2048)) < 0)
         {
           NSLog(@"Failed to read audio");
+          break;
         }
       
       ps_process_raw(ps, adbuf, k, FALSE, FALSE);

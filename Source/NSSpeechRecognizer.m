@@ -47,20 +47,23 @@ BOOL _serverLaunchTested = NO;
 
 + (void) initialize
 {
-  _speechRecognitionServer = [NSConnection
-                               rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
-                                                                   host: nil];
-  RETAIN(_speechRecognitionServer);
-  if (nil == _speechRecognitionServer)
+  if (self == [NSSpeechRecognizer class])
     {
-      NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-      [ws launchApplication: SPEECH_RECOGNITION_SERVER
-                   showIcon: NO
-                 autolaunch: NO];
-    }
-  else
-    {
-      NSLog(@"Server found in +initialize");
+      _speechRecognitionServer = [NSConnection
+                                   rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
+                                                                       host: nil];
+      RETAIN(_speechRecognitionServer);
+      if (nil == _speechRecognitionServer)
+        {
+          NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+          [ws launchApplication: SPEECH_RECOGNITION_SERVER
+                       showIcon: NO
+                     autolaunch: NO];
+        }
+      else
+        {
+          NSLog(@"Server found in +initialize");
+        }
     }
 }
 

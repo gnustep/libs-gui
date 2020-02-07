@@ -34,13 +34,16 @@ static int clients;
 @implementation GSSpeechRecognizer
 + (void)initialize
 {
-  server = [GSSpeechRecognitionServer sharedServer];
-  RETAIN(server);
-  [[NSNotificationCenter defaultCenter]
+  if (self == [GSSpeechRecognizer class])
+    {
+      server = [GSSpeechRecognitionServer sharedServer];
+      RETAIN(server);
+      [[NSNotificationCenter defaultCenter]
 		addObserver: self
 		   selector: @selector(connectionDied:)
                        name: NSConnectionDidDieNotification
                      object: nil];
+    }
 }
 
 /**
