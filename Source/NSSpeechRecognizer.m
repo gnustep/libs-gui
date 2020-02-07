@@ -31,7 +31,7 @@
 #import <Foundation/NSError.h>
 #import <Foundation/NSConnection.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
-
+#import "GSFastEnumeration.h"
 #import "AppKit/NSWorkspace.h"
 
 id   _speechRecognitionServer = nil;
@@ -67,11 +67,9 @@ BOOL _serverLaunchTested = NO;
 - (void) processNotification: (NSNotification *)note
 {
   NSString *word = (NSString *)[note object];
-  NSEnumerator *en = [_commands objectEnumerator];
-  id obj = nil;
 
   word = [word lowercaseString];
-  while ((obj = [en nextObject]) != nil)
+  FOR_IN(NSString*, obj, _commands)
     {
       if ([[obj lowercaseString] isEqualToString: word])
         {
@@ -79,6 +77,7 @@ BOOL _serverLaunchTested = NO;
                   didRecognizeCommand: word];
         }
     }
+  END_FOR_IN(_commands);
 }
 
 // Initialize

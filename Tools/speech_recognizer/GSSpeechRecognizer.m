@@ -11,13 +11,7 @@ static int clients;
 + (void)initialize
 {
   server = [GSSpeechRecognitionServer sharedServer];
-
   RETAIN(server);
-  if (server != nil)
-    {
-      clients++;
-    }
-  
   [[NSNotificationCenter defaultCenter]
 		addObserver: self
 		   selector: @selector(connectionDied:)
@@ -33,6 +27,7 @@ static int clients;
 {
   NSEnumerator *e = [[[aNotification object] localObjects] objectEnumerator];
   NSObject *o = nil;
+  
   for (o = [e nextObject] ; nil != o ; o = [e nextObject])
     {
       if ([o isKindOfClass: self])
@@ -59,8 +54,8 @@ static int clients;
   self = [super init];
   if (self != nil)
     {
+      clients++;
       NSLog(@"self = %@",self);
-      RETAIN(server);
     }
   return self;
 }

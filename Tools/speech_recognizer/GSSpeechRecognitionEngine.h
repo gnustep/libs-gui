@@ -3,8 +3,8 @@
 
 /**
  * GSSpeechRecognitionEngine is an abstract speech server.  One concrete subclass should
- * be implemented for each speech engine.  Currently, only one may be compiled
- * in to the speech server at any given time.  This limitation may be removed
+ * be implemented for each speech recognition engine.  Currently, only one may be compiled
+ * into the speech recognition server at any given time.  This limitation may be removed
  * in future if pluggable speech engines are considered beneficial.
  */
 @interface GSSpeechRecognitionEngine : NSObject

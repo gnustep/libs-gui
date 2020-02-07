@@ -30,8 +30,13 @@ static GSSpeechRecognitionServer *sharedInstance;
 
 - (id)init
 {
-  if (nil == (self = [super init])) { return nil; }
+  if (nil == (self = [super init]))
+    {
+      return nil;
+    }
+  
   _engine = [GSSpeechRecognitionEngine defaultSpeechRecognitionEngine];
+
   if (nil == _engine)
     {
       [self release];
@@ -41,6 +46,7 @@ static GSSpeechRecognitionServer *sharedInstance;
     {
       NSLog(@"Got engine %@", _engine);
     }
+  
   return self;
 }
 
