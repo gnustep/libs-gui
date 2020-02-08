@@ -88,6 +88,9 @@ static const arg_t cont_args_def[] = {
       arg[2] = "yes";
 
       config = cmd_ln_parse_r(NULL, cont_args_def, 3, arg, TRUE);
+      // turn off pocketsphinx output
+      err_set_logfp(NULL);
+      err_set_debug_level(0);
       ps_default_search_args(config);
       ps = ps_init(config);
       if (ps == NULL)
