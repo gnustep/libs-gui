@@ -31,6 +31,7 @@
 #import <Foundation/NSError.h>
 #import <Foundation/NSConnection.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
+#import <Foundation/NSDebug.h>
 #import "GSFastEnumeration.h"
 #import "AppKit/NSWorkspace.h"
 
@@ -97,7 +98,7 @@ BOOL _serverLaunchTested = NO;
               RETAIN(_speechRecognitionServer);
               if (nil != _speechRecognitionServer)
                 {
-                  NSLog(@"Server found!!!");
+                  NSDebugLog(@"Server found!!!");
                   break;
                 }
               [NSThread sleepForTimeInterval: 0.1];

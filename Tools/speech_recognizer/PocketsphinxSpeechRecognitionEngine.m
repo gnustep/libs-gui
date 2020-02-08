@@ -130,7 +130,7 @@ static const arg_t cont_args_def[] = {
   int32 k;
   char const *hyp;
 
-  NSLog(@"************************* In recognize");
+  NSDebugLog(@"** Starting speech recognition loop");
   if ((ad = ad_open_dev(cmd_ln_str_r(config, "-adcdev"),
                         (int) cmd_ln_float32_r(config,
                                                "-samprate"))) == NULL)
@@ -152,7 +152,7 @@ static const arg_t cont_args_def[] = {
     }
   
   utt_started = NO;
-  NSLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
+  NSDebugLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
   
   while([_listeningThread isCancelled] == NO && _listeningThread != nil)
     {
@@ -168,7 +168,7 @@ static const arg_t cont_args_def[] = {
       if (in_speech && !utt_started)
         {
           utt_started = YES;
-          NSLog(@"Listening...");
+          NSDebugLog(@"Listening...");
         }
       
       if (!in_speech && utt_started)
@@ -192,7 +192,7 @@ static const arg_t cont_args_def[] = {
             }
           
           utt_started = NO;
-          NSLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
+          NSDebugLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
         }
       [NSThread sleepForTimeInterval: 0.01];
     }
@@ -209,13 +209,13 @@ static const arg_t cont_args_def[] = {
                             selector: @selector(recognize)
                               object: nil];
   [_listeningThread setName: @"Speech Recognition Loop"];
-  NSLog(@"Thread info for speech reconigtion server %@", _listeningThread);
+  NSDebugLog(@"Thread info for speech recognition server %@", _listeningThread);
   [_listeningThread start];
 }
 
 - (void) stopListening
 {
-  NSLog(@"Stop listening thread %@", _listeningThread);
+  NSDebugLog(@"Stop listening thread %@", _listeningThread);
   [_listeningThread cancel];
   RELEASE(_listeningThread);
   _listeningThread = nil;
