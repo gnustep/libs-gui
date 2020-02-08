@@ -27,29 +27,29 @@
 #import "GSSpeechRecognizer.h"
 #import <Foundation/Foundation.h>
 
-static GSSpeechRecognitionServer *sharedInstance;
+static GSSpeechRecognitionServer *_sharedInstance;
 
 @implementation GSSpeechRecognitionServer
 
 + (void)initialize
 {
-  sharedInstance = [self new];
+  _sharedInstance = [[self alloc] init];
 }
 
 + (void)start
 {
   NSConnection *connection = [NSConnection defaultConnection];
-  [connection setRootObject: sharedInstance];
+  [connection setRootObject: _sharedInstance];
   if (NO == [connection registerName: @"GSSpeechRecognitionServer"])
     {
       return;
     }
-  [[NSRunLoop currentRunLoop] run];
+  // [[NSRunLoop currentRunLoop] run];
 }
 
 + (id)sharedServer
 {
-  return sharedInstance;
+  return _sharedInstance;
 }
 
 - (id)init
@@ -72,13 +72,6 @@ static GSSpeechRecognitionServer *sharedInstance;
     }
   
   return self;
-}
-
-- (id)newRecognizer
-{
-  GSSpeechRecognizer *r = [[GSSpeechRecognizer alloc] init];
-  RETAIN(r);
-  return r;
 }
 
 - (void) startListening

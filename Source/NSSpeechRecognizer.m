@@ -36,23 +36,34 @@
 
 id   _speechRecognitionServer = nil;
 BOOL _serverLaunchTested = NO;
+static int clients;
 
 #define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
 
-@interface NSObject (GSSpeechRecognitionServer)
-- (NSSpeechRecognizer *) newRecognizer;
-@end
-
 @implementation NSSpeechRecognizer
+
+/**
+ * If the remote end exits before freeing the GSSpeechRecognizer then we need
+ * to send it a -release message to make sure it dies.
+ */
++ (void)connectionDied: (NSNotification*)aNotification
+{
+  NSEnumerator *e = [[[aNotification object] localObjects] objectEnumerator];
+  NSObject *o = nil;
+  
+  for (o = [e nextObject] ; nil != o ; o = [e nextObject])
+    {
+      if ([o isKindOfClass: self])
+        {
+          [o release];
+        }
+    }
+}
 
 + (void) initialize
 {
   if (self == [NSSpeechRecognizer class])
     {
-      _speechRecognitionServer = [NSConnection
-                                   rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
-                                                                       host: nil];
-      RETAIN(_speechRecognitionServer);
       if (nil == _speechRecognitionServer)
         {
           NSWorkspace *ws = [NSWorkspace sharedWorkspace];
@@ -60,10 +71,12 @@ BOOL _serverLaunchTested = NO;
                        showIcon: NO
                      autolaunch: NO];
         }
-      else
-        {
-          NSLog(@"Server found in +initialize");
-        }
+
+      [[NSNotificationCenter defaultCenter]
+		addObserver: self
+		   selector: @selector(connectionDied:)
+                       name: NSConnectionDidDieNotification
+                     object: nil];
     }
 }
 
@@ -94,18 +107,12 @@ BOOL _serverLaunchTested = NO;
            selector: @selector(processNotification:)
                name: GSSpeechRecognizerDidRecognizeWordNotification
              object: nil];
-    }
-  return self;
-}
 
-+ (id) allocWithZone: (NSZone *)aZone
-{
-  if (self == [NSSpeechRecognizer class])
-    {
+
       if (nil == _speechRecognitionServer && !_serverLaunchTested)
         {
           unsigned int i = 0;
-
+          
           // Wait for up to five seconds  for the server to launch, then give up.
           for (i=0 ; i < 50 ; i++)
             {
@@ -116,6 +123,7 @@ BOOL _serverLaunchTested = NO;
               if (nil != _speechRecognitionServer)
                 {
                   NSLog(@"Server found!!!");
+                  clients++;
                   break;
                 }
               [NSThread sleepForTimeInterval: 0.1];
@@ -125,12 +133,8 @@ BOOL _serverLaunchTested = NO;
           // launch the next time if it didn't work this time.
           _serverLaunchTested = YES;
         }
-      
-      // If there is no server, this will return nil
-      return [_speechRecognitionServer newRecognizer];
     }
-  
-  return [super allocWithZone: aZone];
+  return self;
 }
 
 // Delegate
@@ -188,11 +192,11 @@ BOOL _serverLaunchTested = NO;
 // Listening
 - (void) startListening
 {
-  [self subclassResponsibility: _cmd];
+  [_speechRecognitionServer startListening];
 }
 
 - (void) stopListening
 {
-  [self subclassResponsibility: _cmd];
+  [_speechRecognitionServer stopListening];
 }
 @end
