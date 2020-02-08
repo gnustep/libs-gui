@@ -189,7 +189,7 @@ static const arg_t cont_args_def[] = {
             }
           
           utt_started = NO;
-          NSLog(@"Ready....");
+          NSLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
         }
       [NSThread sleepForTimeInterval: 0.01];
     }
@@ -212,7 +212,7 @@ static const arg_t cont_args_def[] = {
 
 - (void) stopListening
 {
-  NSLog(@"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STOP SERVER");
+  NSLog(@"Stop listening thread %@", _listeningThread);
   [_listeningThread cancel];
   RELEASE(_listeningThread);
   _listeningThread = nil;
