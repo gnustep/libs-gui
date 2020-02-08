@@ -23,6 +23,7 @@
 */
 
 #import <AppKit/NSSpeechRecognizer.h>
+#import <AppKit/NSApplication.h>
 #import <Foundation/NSDistantObject.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
@@ -32,6 +33,7 @@
 #import <Foundation/NSConnection.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSUUID.h>
 #import "GSFastEnumeration.h"
 #import "AppKit/NSWorkspace.h"
 
@@ -39,6 +41,12 @@ id   _speechRecognitionServer = nil;
 BOOL _serverLaunchTested = NO;
 
 #define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
+
+@interface NSObject (SpeechRecognitionServerPrivate)
+- (void) addToBlockingRecognizers: (NSString *)s;
+- (void) removeFromBlockingRecognizers: (NSString *)s;
+- (BOOL) isBlocking: (NSString *)s;
+@end
 
 @implementation NSSpeechRecognizer
 
@@ -60,6 +68,23 @@ BOOL _serverLaunchTested = NO;
 {
   NSString *word = (NSString *)[note object];
 
+  if (_listensInForegroundOnly)
+    {
+      if (_appInForeground == NO)
+        {
+          return;
+        }
+    }
+
+  if (_blocksOtherRecognizers)
+    {
+      if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
+        {
+          // If we are not a blocking recognizer, then we are blocked...
+          return;
+        }
+    }
+  
   word = [word lowercaseString];
   FOR_IN(NSString*, obj, _commands)
     {
@@ -70,6 +95,20 @@ BOOL _serverLaunchTested = NO;
         }
     }
   END_FOR_IN(_commands);
+}
+
+- (void) processAppStatusNotification: (NSNotification *)note
+{
+  NSString *name = [note name];
+  
+  if ([name isEqualToString: NSApplicationDidBecomeActiveNotification])
+    {
+      _appInForeground = YES;
+    }
+  else
+    {
+      _appInForeground = NO;
+    }
 }
 
 // Initialize
@@ -84,7 +123,23 @@ BOOL _serverLaunchTested = NO;
                name: GSSpeechRecognizerDidRecognizeWordNotification
              object: nil];
 
+      [[NSNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processAppStatusNotification:)
+               name: NSApplicationDidBecomeActiveNotification
+             object: nil];
 
+      [[NSNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processAppStatusNotification:)
+               name: NSApplicationDidResignActiveNotification
+             object: nil];
+
+      _delegate = nil;
+      _blocksOtherRecognizers = NO;
+      _listensInForegroundOnly = YES;
+      _uuid = [NSUUID UUID];
+      
       if (nil == _speechRecognitionServer && !_serverLaunchTested)
         {
           unsigned int i = 0;
@@ -110,6 +165,14 @@ BOOL _serverLaunchTested = NO;
         }
     }
   return self;
+}
+
+- (void) dealloc
+{
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver: self];
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  _delegate = nil;
+  [super dealloc];
 }
 
 // Delegate
@@ -161,6 +224,14 @@ BOOL _serverLaunchTested = NO;
 
 - (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers
 {
+  if (blocksOtherRecognizers == YES)
+    {
+      [_speechRecognitionServer addToBlockingRecognizers: [_uuid UUIDString]];
+    }
+  else
+    {
+      [_speechRecognitionServer removeFromBlockingRecognizers: [_uuid UUIDString]];
+    }
   _blocksOtherRecognizers = blocksOtherRecognizers;
 }
 

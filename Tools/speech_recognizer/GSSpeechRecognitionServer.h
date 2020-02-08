@@ -35,6 +35,7 @@
 @interface GSSpeechRecognitionServer : NSObject
 {
   GSSpeechRecognitionEngine *_engine;
+  NSMutableArray *_blocking;
 }
 
 /**
@@ -42,7 +43,13 @@
  */
 + (id)sharedServer;
 
+// Start and stop processing....
 - (void) startListening;
 - (void) stopListening;
+
+// Add or remove from blocking list...
+- (void) addToBlockingRecognizers: (NSString *)s;
+- (void) removeFromBlockingRecognizers: (NSString *)s;
+- (BOOL) isBlocking: (NSString *)s;
 
 @end

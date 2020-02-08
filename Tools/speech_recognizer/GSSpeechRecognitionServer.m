@@ -100,7 +100,6 @@ static int _clients = 0;
     }
   
   _engine = [GSSpeechRecognitionEngine defaultSpeechRecognitionEngine];
-
   if (nil == _engine)
     {
       [self release];
@@ -110,8 +109,17 @@ static int _clients = 0;
     {
       NSLog(@"Got engine %@", _engine);
     }
-  
+
+  _blocking = [[NSMutableArray alloc] initWithCapacity: 10];  // 10 seems reasonable...
+
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_engine);
+  RELEASE(_blocking);
+  [super dealloc];
 }
 
 - (void) startListening
@@ -122,6 +130,21 @@ static int _clients = 0;
 - (void) stopListening
 {
   [_engine stopListening];
+}
+
+- (void) addToBlockingRecognizers: (NSString *)s
+{
+  [_blocking addObject: s];
+}
+
+- (void) removeFromBlockingRecognizers: (NSString *)s
+{
+  [_blocking removeObject: s];
+}
+
+- (BOOL) isBlocking: (NSString *)s
+{
+  return [_blocking containsObject: s];
 }
 
 @end

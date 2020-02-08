@@ -36,13 +36,17 @@ extern "C" {
 
 @protocol NSSpeechRecognizerDelegate;
 
+@class NSArray, NSString, NSUUID;
+  
 @interface NSSpeechRecognizer : NSObject
 {
   id<NSSpeechRecognizerDelegate> _delegate;
   NSArray *_commands;
   NSString *_displayCommandsTitle;
+  NSUUID *_uuid;
   BOOL _blocksOtherRecognizers;
   BOOL _listensInForegroundOnly;
+  BOOL _appInForeground; // private
 }
 
 // Initialize
