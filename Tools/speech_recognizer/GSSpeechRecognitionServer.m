@@ -24,7 +24,6 @@
 
 #import "GSSpeechRecognitionServer.h"
 #import "GSSpeechRecognitionEngine.h"
-#import "GSSpeechRecognizer.h"
 #import <Foundation/Foundation.h>
 
 static GSSpeechRecognitionServer *_sharedInstance;
@@ -40,11 +39,12 @@ static GSSpeechRecognitionServer *_sharedInstance;
 {
   NSConnection *connection = [NSConnection defaultConnection];
   [connection setRootObject: _sharedInstance];
+  RETAIN(connection);
   if (NO == [connection registerName: @"GSSpeechRecognitionServer"])
     {
       return;
     }
-  // [[NSRunLoop currentRunLoop] run];
+  [[NSRunLoop currentRunLoop] run];
 }
 
 + (id)sharedServer
