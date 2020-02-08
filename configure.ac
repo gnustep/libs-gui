@@ -553,10 +553,12 @@ if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_spe
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
    RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
    RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
+   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
 AC_SUBST(BUILD_SPEECH_RECOGNIZER)
 AC_SUBST(RECOGNIZER_BASE_LIBS)
 AC_SUBST(RECOGNIZER_BASE_CFLAGS)
+AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 
 #--------------------------------------------------------------------
 # Find CUPS
