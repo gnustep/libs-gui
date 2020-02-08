@@ -89,7 +89,7 @@ BOOL _serverLaunchTested = NO;
           unsigned int i = 0;
           
           // Wait for up to five seconds  for the server to launch, then give up.
-          for (i=0 ; i < 50 ; i++)
+          for (i = 0 ; i < 50 ; i++)
             {
               _speechRecognitionServer = [NSConnection
                                            rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER

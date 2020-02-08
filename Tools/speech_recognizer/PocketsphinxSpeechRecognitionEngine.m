@@ -149,9 +149,9 @@ static const arg_t cont_args_def[] = {
     }
   
   utt_started = NO;
-  NSLog(@"Ready....");
+  NSLog(@"Ready.... <%@, %d>", _listeningThread, [_listeningThread isCancelled]);
   
-  while([_listeningThread isCancelled] == NO)
+  while([_listeningThread isCancelled] == NO && _listeningThread != nil)
     {
       if ((k = ad_read(ad, adbuf, 2048)) < 0)
         {
@@ -193,6 +193,9 @@ static const arg_t cont_args_def[] = {
         }
       [NSThread sleepForTimeInterval: 0.01];
     }
+
+  // Close everything...
+  ps_end_utt(ps);
   ad_close(ad);
 }
 
@@ -202,6 +205,7 @@ static const arg_t cont_args_def[] = {
     [[NSThread alloc] initWithTarget: self
                             selector: @selector(recognize)
                               object: nil];
+  [_listeningThread setName: @"Speech Recognition Loop"];
   NSLog(@"Thread info for speech reconigtion server %@", _listeningThread);
   [_listeningThread start];
 }
