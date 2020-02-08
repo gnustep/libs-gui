@@ -551,9 +551,12 @@ AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech
 AC_CHECK_HEADERS(pocketsphinx/pocketsphinx_export.h, have_pocketsphinx=yes, have_pocketsphinx=no)
 if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
-   POCKETSPHINX_BASE_LIBS="-lpocketsphinx -lsphinxbase -lsphinxad"
+   RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
 fi
 AC_SUBST(BUILD_SPEECH_RECOGNIZER)
+AC_SUBST(RECOGNIZER_BASE_LIBS)
+AC_SUBST(RECOGNIZER_BASE_CFLAGS)
 
 #--------------------------------------------------------------------
 # Find CUPS
