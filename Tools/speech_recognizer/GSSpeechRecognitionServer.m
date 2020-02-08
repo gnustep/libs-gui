@@ -27,12 +27,49 @@
 #import <Foundation/Foundation.h>
 
 static GSSpeechRecognitionServer *_sharedInstance;
+static int _clients = 0;
 
 @implementation GSSpeechRecognitionServer
+
+/**
+ * Monitor connection...
+ */
++ (void)connectionDied: (NSNotification*)aNotification
+{
+  NSArray *objs = [[aNotification object] localObjects];
+  NSEnumerator *en = [objs objectEnumerator];
+  id o = nil;
+
+  if(_clients > 0)
+    {
+      _clients--;
+    }
+  
+  if(_clients <= 0)
+    {
+      NSLog(@"Client count is zero, exiting");
+      exit(0);
+    }
+  
+  NSLog(@"NSSpeechRecognizer server connection count = %d after disconnection", _clients);
+  while((o = [en nextObject]) != nil)
+    {
+      if ([o isKindOfClass: self])
+        {
+          RELEASE(o);
+        }
+    }
+}
 
 + (void)initialize
 {
   _sharedInstance = [[self alloc] init];
+  _clients = 0;
+  [[NSNotificationCenter defaultCenter]
+		addObserver: self
+		   selector: @selector(connectionDied:)
+                       name: NSConnectionDidDieNotification
+                     object: nil];
 }
 
 + (void)start
@@ -42,6 +79,7 @@ static GSSpeechRecognitionServer *_sharedInstance;
   RETAIN(connection);
   if (NO == [connection registerName: @"GSSpeechRecognitionServer"])
     {
+      NSLog(@"Could not register name, make sure another server is not running.");
       return;
     }
   [[NSRunLoop currentRunLoop] run];
@@ -49,6 +87,8 @@ static GSSpeechRecognitionServer *_sharedInstance;
 
 + (id)sharedServer
 {
+  _clients++;
+  NSLog(@"NSSpeechRecognizer server connection count = %d after connection", _clients);
   return _sharedInstance;
 }
 

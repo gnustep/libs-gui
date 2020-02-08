@@ -151,7 +151,7 @@ static const arg_t cont_args_def[] = {
   utt_started = NO;
   NSLog(@"Ready....");
   
-  while(YES)
+  while([_listeningThread isCancelled] == NO)
     {
       if ((k = ad_read(ad, adbuf, 2048)) < 0)
         {
@@ -208,6 +208,7 @@ static const arg_t cont_args_def[] = {
 
 - (void) stopListening
 {
+  NSLog(@"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STOP SERVER");
   [_listeningThread cancel];
   RELEASE(_listeningThread);
   _listeningThread = nil;

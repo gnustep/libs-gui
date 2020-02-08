@@ -36,29 +36,10 @@
 
 id   _speechRecognitionServer = nil;
 BOOL _serverLaunchTested = NO;
-static int clients;
 
 #define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
 
 @implementation NSSpeechRecognizer
-
-/**
- * If the remote end exits before freeing the GSSpeechRecognizer then we need
- * to send it a -release message to make sure it dies.
- */
-+ (void)connectionDied: (NSNotification*)aNotification
-{
-  NSEnumerator *e = [[[aNotification object] localObjects] objectEnumerator];
-  NSObject *o = nil;
-  
-  for (o = [e nextObject] ; nil != o ; o = [e nextObject])
-    {
-      if ([o isKindOfClass: self])
-        {
-          [o release];
-        }
-    }
-}
 
 + (void) initialize
 {
@@ -71,12 +52,6 @@ static int clients;
                        showIcon: NO
                      autolaunch: NO];
         }
-
-      [[NSNotificationCenter defaultCenter]
-		addObserver: self
-		   selector: @selector(connectionDied:)
-                       name: NSConnectionDidDieNotification
-                     object: nil];
     }
 }
 
@@ -123,7 +98,6 @@ static int clients;
               if (nil != _speechRecognitionServer)
                 {
                   NSLog(@"Server found!!!");
-                  clients++;
                   break;
                 }
               [NSThread sleepForTimeInterval: 0.1];
