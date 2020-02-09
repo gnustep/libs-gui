@@ -45,7 +45,7 @@ static int _clients = 0;
       _clients--;
     }
   
-  if(_clients <= 0)
+  if(_clients == 0)
     {
       NSLog(@"Client count is zero, exiting");
       exit(0);
@@ -87,9 +87,13 @@ static int _clients = 0;
 
 + (id)sharedServer
 {
-  _clients++;
   NSLog(@"NSSpeechRecognizer server connection count = %d after connection", _clients);
   return _sharedInstance;
+}
+
+- (void) addClient
+{
+  _clients++;
 }
 
 - (id)init
@@ -107,7 +111,8 @@ static int _clients = 0;
     }
   else
     {
-      NSLog(@"Got engine %@", _engine);
+      NSLog(@"Got engine starting... %@", _engine);
+      [_engine start];
     }
 
   _blocking = [[NSMutableArray alloc] initWithCapacity: 10];  // 10 seems reasonable...
@@ -117,19 +122,10 @@ static int _clients = 0;
 
 - (void) dealloc
 {
+  [_engine stop];
   RELEASE(_engine);
   RELEASE(_blocking);
   [super dealloc];
-}
-
-- (void) startListening
-{
-  [_engine startListening];
-}
-
-- (void) stopListening
-{
-  [_engine stopListening];
 }
 
 - (void) addToBlockingRecognizers: (NSString *)s

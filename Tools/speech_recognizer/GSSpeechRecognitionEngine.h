@@ -33,8 +33,8 @@
  */
 @interface GSSpeechRecognitionEngine : NSObject
 
-- (void) startListening;
-- (void) stopListening;
+- (void) start;
+- (void) stop;
 
 @end
 

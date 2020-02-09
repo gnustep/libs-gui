@@ -47,6 +47,7 @@ extern "C" {
   BOOL _blocksOtherRecognizers;
   BOOL _listensInForegroundOnly;
   BOOL _appInForeground; // private
+  BOOL _isListening;
 }
 
 // Initialize

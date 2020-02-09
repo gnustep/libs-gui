@@ -168,7 +168,7 @@ static const arg_t cont_args_def[] = {
       if (in_speech && !utt_started)
         {
           utt_started = YES;
-          NSDebugLog(@"Listening...");
+          NSLog(@"Listening...");
         }
       
       if (!in_speech && utt_started)
@@ -183,7 +183,7 @@ static const arg_t cont_args_def[] = {
               [self performSelectorOnMainThread: @selector(_recognizedWord:)
                                      withObject: recognizedString
                                   waitUntilDone: NO];
-              NSDebugLog(@"RECOGNIZED WORD: %s", hyp);
+              NSLog(@"Word: %s", hyp);
             }
           
           if (ps_start_utt(ps) < 0)
@@ -202,20 +202,20 @@ static const arg_t cont_args_def[] = {
   ad_close(ad);
 }
 
-- (void) startListening
+- (void) start
 {
   _listeningThread =
     [[NSThread alloc] initWithTarget: self
                             selector: @selector(recognize)
                               object: nil];
   [_listeningThread setName: @"Speech Recognition Loop"];
-  NSDebugLog(@"Thread info for speech recognition server %@", _listeningThread);
+  NSLog(@"Starting - Thread info for speech recognition server %@", _listeningThread);
   [_listeningThread start];
 }
 
-- (void) stopListening
+- (void) stop
 {
-  NSDebugLog(@"Stop listening thread %@", _listeningThread);
+  NSLog(@"Stop listening thread %@", _listeningThread);
   [_listeningThread cancel];
   RELEASE(_listeningThread);
   _listeningThread = nil;

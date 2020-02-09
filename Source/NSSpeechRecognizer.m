@@ -46,6 +46,7 @@ BOOL _serverLaunchTested = NO;
 - (void) addToBlockingRecognizers: (NSString *)s;
 - (void) removeFromBlockingRecognizers: (NSString *)s;
 - (BOOL) isBlocking: (NSString *)s;
+- (void) addClient;
 @end
 
 @implementation NSSpeechRecognizer
@@ -54,6 +55,12 @@ BOOL _serverLaunchTested = NO;
 {
   if (self == [NSSpeechRecognizer class])
     {
+      // Test for an existant server...
+      _speechRecognitionServer =
+        [NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
+                                                          host: nil];
+
+      // if none exists, start one.  We will connect with it in init.
       if (nil == _speechRecognitionServer)
         {
           NSWorkspace *ws = [NSWorkspace sharedWorkspace];
@@ -68,6 +75,11 @@ BOOL _serverLaunchTested = NO;
 {
   NSString *word = (NSString *)[note object];
 
+  if (_isListening == NO)
+    {
+      return;
+    }
+  
   if (_listensInForegroundOnly)
     {
       if (_appInForeground == NO)
@@ -164,6 +176,9 @@ BOOL _serverLaunchTested = NO;
           _serverLaunchTested = YES;
         }
     }
+
+  [_speechRecognitionServer addClient];  // do this to update the client count;
+  
   return self;
 }
 
@@ -238,11 +253,11 @@ BOOL _serverLaunchTested = NO;
 // Listening
 - (void) startListening
 {
-  [_speechRecognitionServer startListening];
+  _isListening = YES; // [_speechRecognitionServer startListening];
 }
 
 - (void) stopListening
 {
-  [_speechRecognitionServer stopListening];
+  _isListening = NO;  // [_speechRecognitionServer stopListening];
 }
 @end

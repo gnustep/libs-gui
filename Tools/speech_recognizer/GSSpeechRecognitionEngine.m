@@ -34,15 +34,15 @@
   return AUTORELEASE([[self alloc] init]);
 } 
 
-- (void) startListening
-{
-}
-
-- (void) stopListening
-{
-}
-
 - (void) recognize
+{
+}
+
+- (void) start
+{
+}
+
+- (void) stop
 {
 }
 

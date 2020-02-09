@@ -43,13 +43,11 @@
  */
 + (id)sharedServer;
 
-// Start and stop processing....
-- (void) startListening;
-- (void) stopListening;
-
 // Add or remove from blocking list...
 - (void) addToBlockingRecognizers: (NSString *)s;
 - (void) removeFromBlockingRecognizers: (NSString *)s;
 - (BOOL) isBlocking: (NSString *)s;
 
+// Connection...
+- (void) addClient;
 @end
