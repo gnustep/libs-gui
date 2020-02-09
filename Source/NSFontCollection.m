@@ -35,16 +35,17 @@
 #import <AppKit/NSFontCollection.h>
 #import <GNUstepGUI/GSFontInfo.h>
 
-static NSMutableArray *_availableFontCollections = nil;
+static NSMutableDictionary *_availableFontCollections = nil;
 static NSLock *_fontCollectionLock = nil;
 
 @interface NSFontCollection (Private)
 
 + (void) _loadAvailableFontCollections;
-- (BOOL) _writeToFile: (NSString *)path;
-- (void) _removeFile;
+- (BOOL) _writeToFile; 
+- (BOOL) _removeFile;
 - (void) _setFonts: (NSArray *)fonts;
 - (void) _setQueryAttributes: (NSArray *)queryAttributes;
+- (void) _setFullFileName: (NSString *)fn;
 
 @end
 
@@ -73,7 +74,7 @@ static NSLock *_fontCollectionLock = nil;
       if (_availableFontCollections == nil)
 	{
 	  // Create the global array of font collections...
-	  _availableFontCollections = [[NSMutableArray alloc] init];
+	  _availableFontCollections = [[NSMutableDictionary alloc] init];
 	}
       else
 	{
@@ -106,9 +107,10 @@ static NSLock *_fontCollectionLock = nil;
 		  NSString	*name;
 		  name = [file stringByDeletingPathExtension];
 		  newCollection = [NSKeyedUnarchiver unarchiveObjectWithFile: [dir stringByAppendingPathComponent: file]];
-                  if (newCollection != nil)
+                  if (newCollection != nil && name != nil)
                     {
-                      [_availableFontCollections addObject: newCollection];
+                      [newCollection _setFullFileName: file];
+                      [_availableFontCollections setObject: newCollection forKey: name];
                       RELEASE(newCollection);
                     }
                 }
@@ -127,14 +129,15 @@ static NSLock *_fontCollectionLock = nil;
 /*
  * Writing and Removing Files
  */
-- (BOOL) _writeToFile: (NSString *)path
+- (BOOL) _writeToFile
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString      *tmpPath;
   BOOL          isDir;
   BOOL          success;
   BOOL          path_is_standard = YES;
-
+  NSString     *path = nil;
+  
   /*
    * We need to initialize before saving, to avoid the new file being 
    * counted as a different collection thus making it appear twice
@@ -222,8 +225,11 @@ static NSLock *_fontCollectionLock = nil;
   if (success && path_is_standard)
     {
       [_fontCollectionLock lock];
-      if ([_availableFontCollections containsObject: self] == NO)
-	[_availableFontCollections addObject: self];
+      if ([[_availableFontCollections allValues] containsObject: self] == NO)
+        {
+          NSString *name = [[_fullFileName lastPathComponent] stringByDeletingPathExtension];
+          [_availableFontCollections setObject: self forKey: name];
+        }
       [_fontCollectionLock unlock];      
       return YES;
     }
@@ -231,8 +237,9 @@ static NSLock *_fontCollectionLock = nil;
   return success;
 }
 
-- (void) _removeFile
+- (BOOL) _removeFile
 {
+  BOOL result = NO;
   if (_fullFileName) //  && _is_editable)
     {
       // Remove the file
@@ -241,12 +248,14 @@ static NSLock *_fontCollectionLock = nil;
       
       // Remove the color list from the global list of colors
       [_fontCollectionLock lock];
-      [_availableFontCollections removeObject: self];
+      NSString *name = [[_fullFileName lastPathComponent] stringByDeletingPathExtension];
+      [_availableFontCollections removeObjectForKey: name];
       [_fontCollectionLock unlock];
 
       // Reset file name
       _fullFileName = nil;
     }
+  return result;
 }
 
 - (void) _setFonts: (NSArray *)fonts
@@ -257,6 +266,21 @@ static NSLock *_fontCollectionLock = nil;
 - (void) _setQueryAttributes: (NSArray *)queryAttributes
 {
   ASSIGN(_queryAttributes, [queryAttributes mutableCopy]);
+}
+
+- (void) _setName: (NSString *)n
+{
+  ASSIGNCOPY(_name, n);
+}
+
+- (NSString *) _name
+{
+  return _name;
+}
+
+- (void) _setFullFileName: (NSString *)fn
+{
+  ASSIGNCOPY(_fullFileName, fn);
 }
 
 @end
@@ -301,29 +325,6 @@ static NSLock *_fontCollectionLock = nil;
   [super dealloc];
 }
 
-// This method will get the actual list of fonts
-/*
-- (void) _runQueryWithDescriptors: (NSArray *)queryDescriptors
-{
-  NSEnumerator *en = [queryDescriptors objectEnumerator];
-  GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
-  id d = nil;
-
-  ASSIGNCOPY(_queryDescriptors, queryDescriptors);
-  while ((d = [en nextObject]) != nil)
-    {
-      NSArray *names = [fen availableFontNamesMatchingFontDescriptor: d];
-      id name = nil;
-
-      en = [names objectEnumerator];
-      while ((name = [en nextObject]) != nil)
-        {
-          NSFont *font = [NSFont fontWithName: name size: 0.0]; // get default size
-          [_fonts addObject: font];
-        }
-    }
-}*/
-
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
   NSFontCollection *fc = [[NSFontCollection alloc] init];
@@ -347,14 +348,21 @@ static NSLock *_fontCollectionLock = nil;
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
-  return YES;
+  BOOL rv = [collection _writeToFile];
+  [NSFontCollection _loadAvailableFontCollections];
+  return rv;
 }
 
 + (BOOL) hideFontCollectionWithName: (NSFontCollectionName)name
                          visibility: (NSFontCollectionVisibility)visibility
                               error: (NSError **)error
 {
-  return YES;
+  NSFontCollection *collection = [_availableFontCollections objectForKey: name];
+  BOOL rv = [collection _removeFile];
+  
+  [NSFontCollection _loadAvailableFontCollections];
+
+  return rv;
 }
 
 + (BOOL) renameFontCollectionWithName: (NSFontCollectionName)aname
@@ -362,12 +370,22 @@ static NSLock *_fontCollectionLock = nil;
                                toName: (NSFontCollectionName)name
                                 error: (NSError **)error
 {
-  return YES;
+  NSFontCollection *collection = [_availableFontCollections objectForKey: aname];
+  BOOL rv = [collection _removeFile];
+
+  if (rv == YES)
+    {
+      [collection _setName: name];
+      [collection _writeToFile];
+    }
+  [NSFontCollection _loadAvailableFontCollections];
+
+  return rv;
 }
 
 + (NSArray *) allFontCollectionNames
 {
-  return nil;
+  return [_availableFontCollections allKeys];
 }
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
