@@ -75,9 +75,30 @@ BOOL _serverLaunchTested = NO;
 
 - (void) _restartServer
 {
-  _speechRecognitionServer =
-    [NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
-                                                      host: nil];
+  if (nil == _speechRecognitionServer && !_serverLaunchTested)
+    {
+      unsigned int i = 0;
+      
+      // Wait for up to five seconds  for the server to launch, then give up.
+      for (i = 0 ; i < 50 ; i++)
+        {
+          _speechRecognitionServer = [NSConnection
+                                           rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
+                                                                               host: nil];
+          RETAIN(_speechRecognitionServer);
+          if (nil != _speechRecognitionServer)
+            {
+              NSDebugLog(@"Server found!!!");
+              break;
+            }
+          [NSThread sleepForTimeInterval: 0.1];
+        }
+      
+      // Set a flag so we don't bother waiting for the speech recognition server to
+      // launch the next time if it didn't work this time.
+      _serverLaunchTested = YES;
+    }
+  
   if (_speechRecognitionServer == nil)
     {
       NSLog(@"Cannot restart speech recognition server.");
@@ -163,29 +184,7 @@ BOOL _serverLaunchTested = NO;
       _listensInForegroundOnly = YES;
       _uuid = [NSUUID UUID];
       
-      if (nil == _speechRecognitionServer && !_serverLaunchTested)
-        {
-          unsigned int i = 0;
-          
-          // Wait for up to five seconds  for the server to launch, then give up.
-          for (i = 0 ; i < 50 ; i++)
-            {
-              _speechRecognitionServer = [NSConnection
-                                           rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
-                                                                               host: nil];
-              RETAIN(_speechRecognitionServer);
-              if (nil != _speechRecognitionServer)
-                {
-                  NSDebugLog(@"Server found!!!");
-                  break;
-                }
-              [NSThread sleepForTimeInterval: 0.1];
-            }
-          
-          // Set a flag so we don't bother waiting for the speech recognition server to
-          // launch the next time if it didn't work this time.
-          _serverLaunchTested = YES;
-        }
+      [self _restartServer];
     }
 
   NS_DURING
