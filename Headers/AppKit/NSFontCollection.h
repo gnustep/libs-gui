@@ -90,7 +90,7 @@ typedef NSString* NSFontCollectionName;
 
 
 // Descriptors
-- (NSArray *) queryDescriptors;  // copy
+- (NSArray *) queryDescriptors; 
 
 - (NSArray *) exclusionDescriptors;
 
@@ -113,8 +113,8 @@ typedef NSString* NSFontCollectionName;
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                           visibility: (NSFontCollectionVisibility)visibility;
 
-- (NSArray *) queryDescriptors;  // copy
-- (void) setQueryDescriptors: (NSArray *)queryDescriptors;  // copy
+- (NSArray *) queryDescriptors; 
+- (void) setQueryDescriptors: (NSArray *)queryDescriptors; 
 
 - (NSArray *) exclusionDescriptors;
 - (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors;

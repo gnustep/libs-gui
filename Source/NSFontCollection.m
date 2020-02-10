@@ -70,7 +70,7 @@ static NSLock *_fontCollectionLock = nil;
       NSFileManager		*fm = [NSFileManager defaultManager];
       NSDirectoryEnumerator	*de;
       NSFontCollection		*newCollection;
-
+      
       if (_availableFontCollections == nil)
 	{
 	  // Create the global array of font collections...
@@ -86,19 +86,19 @@ static NSLock *_fontCollectionLock = nil;
        * FIXME: Check exactly where in the directory tree we should scan.
        */
       e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-	NSAllDomainsMask, YES) objectEnumerator];
-
+                                               NSAllDomainsMask, YES) objectEnumerator];
+      
       while ((dir = (NSString *)[e nextObject])) 
 	{
 	  BOOL flag;
-
+          
 	  dir = [dir stringByAppendingPathComponent: @"FontCollections"];
 	  if (![fm fileExistsAtPath: dir isDirectory: &flag] || !flag)
 	    {
 	      // Only process existing directories
 	      continue;
 	    }
-
+          
 	  de = [fm enumeratorAtPath: dir];
 	  while ((file = [de nextObject])) 
 	    {
@@ -117,9 +117,9 @@ static NSLock *_fontCollectionLock = nil;
 	    }
 	}  
       /*
-      if (defaultSystemFontCollection != nil)
+        if (defaultSystemFontCollection != nil)
         {
-	  [_availableFontCollections addObject: defaultSystemFontCollection];
+        [_availableFontCollections addObject: defaultSystemFontCollection];
 	}
       */
       [_fontCollectionLock unlock];
@@ -143,32 +143,32 @@ static NSLock *_fontCollectionLock = nil;
    * counted as a different collection thus making it appear twice
    */
   [NSFontCollection _loadAvailableFontCollections];
-
+  
   if (path == nil)
     {
       NSArray	*paths;
-
+      
       // FIXME the standard path for saving font collections
       paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-	NSUserDomainMask, YES);
+                                                  NSUserDomainMask, YES);
       if ([paths count] == 0)
 	{
 	  NSLog (@"Failed to find Library directory for user");
 	  return NO;	// No directory to save to.
 	}
       path = [[paths objectAtIndex: 0]
-	stringByAppendingPathComponent: @"FontCollections"]; 
+               stringByAppendingPathComponent: @"FontCollections"]; 
       isDir = YES;
     }
   else
     {
       [fm fileExistsAtPath: path isDirectory: &isDir];
     }
-
+  
   if (isDir)
     {
       ASSIGN (_fullFileName, [[path stringByAppendingPathComponent: _name] 
-        stringByAppendingPathExtension: @"collection"]);
+                               stringByAppendingPathExtension: @"collection"]);
     }
   else // it is a file
     {
@@ -179,11 +179,11 @@ static NSLock *_fontCollectionLock = nil;
       else
 	{
 	  ASSIGN (_fullFileName, [[path stringByDeletingPathExtension]
-	    stringByAppendingPathExtension: @"collection"]);
+                                   stringByAppendingPathExtension: @"collection"]);
 	}
       path = [path stringByDeletingLastPathComponent];
     }
-
+  
   // Check if the path is a standard path
   if ([[path lastPathComponent] isEqualToString: @"FontCollections"] == NO)
     {
@@ -193,12 +193,12 @@ static NSLock *_fontCollectionLock = nil;
     {
       tmpPath = [path stringByDeletingLastPathComponent];
       if (![NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-	NSAllDomainsMask, YES) containsObject: tmpPath])
+                                                NSAllDomainsMask, YES) containsObject: tmpPath])
 	{
 	  path_is_standard = NO;
 	}
     }
-
+  
   /*
    * If path is standard and it does not exist, try to create it.
    * System standard paths should always be assumed to exist; 
@@ -207,7 +207,7 @@ static NSLock *_fontCollectionLock = nil;
   if (path_is_standard && ([fm fileExistsAtPath: path] == NO))
     {
       if ([fm createDirectoryAtPath: path 
-        withIntermediateDirectories: YES
+              withIntermediateDirectories: YES
 			 attributes: nil
                               error: NULL])
 	{
@@ -218,10 +218,10 @@ static NSLock *_fontCollectionLock = nil;
 	  NSLog (@"Failed attempt to create directory %@", path);
 	}
     }
-
+  
   success = [NSKeyedArchiver archiveRootObject: self 
                                         toFile: _fullFileName];
-
+  
   if (success && path_is_standard)
     {
       [_fontCollectionLock lock];
@@ -400,7 +400,7 @@ static NSLock *_fontCollectionLock = nil;
 }
 
 // Descriptors
-- (NSArray *) queryDescriptors  // copy
+- (NSArray *) queryDescriptors 
 {
   return [_queryDescriptors copy];
 }
