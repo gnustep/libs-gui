@@ -1,4 +1,4 @@
-/* Implementation of class NSFontCollection
+man/* Implementation of class NSFontCollection
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
