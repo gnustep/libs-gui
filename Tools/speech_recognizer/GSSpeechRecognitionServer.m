@@ -140,7 +140,7 @@ static int _clients = 0;
 
 - (BOOL) isBlocking: (NSString *)s
 {
-  return [_blocking containsObject: s];
+  return [[_blocking firstObject] isEqualToString: s];
 }
 
 @end

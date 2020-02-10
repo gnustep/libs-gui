@@ -43,10 +43,12 @@ BOOL _serverLaunchTested = NO;
 #define SPEECH_RECOGNITION_SERVER @"GSSpeechRecognitionServer"
 
 @interface NSObject (SpeechRecognitionServerPrivate)
+
 - (void) addToBlockingRecognizers: (NSString *)s;
 - (void) removeFromBlockingRecognizers: (NSString *)s;
 - (BOOL) isBlocking: (NSString *)s;
 - (void) addClient;
+
 @end
 
 @implementation NSSpeechRecognizer
@@ -71,15 +73,21 @@ BOOL _serverLaunchTested = NO;
     }
 }
 
+- (void) _restartServer
+{
+  _speechRecognitionServer =
+    [NSConnection rootProxyForConnectionWithRegisteredName: SPEECH_RECOGNITION_SERVER
+                                                      host: nil];
+  if (_speechRecognitionServer == nil)
+    {
+      NSLog(@"Cannot restart speech recognition server.");
+    }
+}
+
 - (void) processNotification: (NSNotification *)note
 {
   NSString *word = (NSString *)[note object];
 
-  if (_isListening == NO)
-    {
-      return;
-    }
-  
   if (_listensInForegroundOnly)
     {
       if (_appInForeground == NO)
@@ -87,14 +95,23 @@ BOOL _serverLaunchTested = NO;
           return;
         }
     }
-
+  
   if (_blocksOtherRecognizers)
     {
-      if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
+      NS_DURING
         {
-          // If we are not a blocking recognizer, then we are blocked...
-          return;
+          if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
+            {
+              // If we are not a blocking recognizer, then we are blocked...
+              return;
+            }
         }
+      NS_HANDLER
+        {
+          NSLog(@"%@", localException);
+          [self _restartServer];
+        }
+      NS_ENDHANDLER;
     }
   
   word = [word lowercaseString];
@@ -129,12 +146,6 @@ BOOL _serverLaunchTested = NO;
   self = [super init];
   if (self != nil)
     {
-      [[NSDistributedNotificationCenter defaultCenter]
-        addObserver: self
-           selector: @selector(processNotification:)
-               name: GSSpeechRecognizerDidRecognizeWordNotification
-             object: nil];
-
       [[NSNotificationCenter defaultCenter]
         addObserver: self
            selector: @selector(processAppStatusNotification:)
@@ -177,7 +188,16 @@ BOOL _serverLaunchTested = NO;
         }
     }
 
-  [_speechRecognitionServer addClient];  // do this to update the client count;
+  NS_DURING
+    {
+      [_speechRecognitionServer addClient];  // do this to update the client count;
+    }
+  NS_HANDLER
+    {
+      NSLog(@"%@", localException);
+      [self _restartServer];
+    }
+  NS_ENDHANDLER;
   
   return self;
 }
@@ -239,25 +259,44 @@ BOOL _serverLaunchTested = NO;
 
 - (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers
 {
-  if (blocksOtherRecognizers == YES)
+  NS_DURING
     {
-      [_speechRecognitionServer addToBlockingRecognizers: [_uuid UUIDString]];
+      if (blocksOtherRecognizers == YES)
+        {
+          [_speechRecognitionServer addToBlockingRecognizers: [_uuid UUIDString]];
+        }
+      else
+        {
+          [_speechRecognitionServer removeFromBlockingRecognizers: [_uuid UUIDString]];
+        }
+      _blocksOtherRecognizers = blocksOtherRecognizers;
     }
-  else
+  NS_HANDLER
     {
-      [_speechRecognitionServer removeFromBlockingRecognizers: [_uuid UUIDString]];
+      NSLog(@"%@", localException);
+      [self _restartServer];
     }
-  _blocksOtherRecognizers = blocksOtherRecognizers;
+  NS_ENDHANDLER;
 }
 
 // Listening
 - (void) startListening
 {
-  _isListening = YES; // [_speechRecognitionServer startListening];
+  // Start listening to the notification being sent by the server....
+  [[NSDistributedNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processNotification:)
+               name: GSSpeechRecognizerDidRecognizeWordNotification
+             object: nil];
+  
 }
 
 - (void) stopListening
 {
-  _isListening = NO;  // [_speechRecognitionServer stopListening];
+  // Remove the observer for the notification....
+  [[NSDistributedNotificationCenter defaultCenter]
+        removeObserver: self
+                  name: GSSpeechRecognizerDidRecognizeWordNotification
+                object: nil];
 }
 @end
