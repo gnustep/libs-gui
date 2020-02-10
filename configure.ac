@@ -550,10 +550,11 @@ BUILD_SPEECH_RECOGNIZER=
 AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech_recognizer=no)
 AC_CHECK_HEADERS(pocketsphinx/pocketsphinx_export.h, have_pocketsphinx=yes, have_pocketsphinx=no)
 if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
-   BUILD_SPEECH_RECOGNIZER="speech_recognizer"
+   BUILD_SPEECH_RECOGNIZER="recognizer"
+   BUILD_RECOGNIZER_PLUGIN="pocketsphinx"
    RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
    RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
-   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
+   # RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
 AC_SUBST(BUILD_SPEECH_RECOGNIZER)
 AC_SUBST(RECOGNIZER_BASE_LIBS)

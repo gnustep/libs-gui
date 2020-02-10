@@ -108,7 +108,7 @@ BOOL _serverLaunchTested = NO;
 - (void) processNotification: (NSNotification *)note
 {
   NSString *word = (NSString *)[note object];
-
+  NSLog(@"Got notification");
   if (_listensInForegroundOnly)
     {
       if (_appInForeground == NO)

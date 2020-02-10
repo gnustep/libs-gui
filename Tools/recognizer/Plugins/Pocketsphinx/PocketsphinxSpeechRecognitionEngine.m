@@ -223,6 +223,7 @@ static const arg_t cont_args_def[] = {
 
 @end
 
+/*
 @implementation GSSpeechRecognitionEngine (Pocketsphinx)
 
 + (GSSpeechRecognitionEngine*)defaultSpeechRecognitionEngine
@@ -231,3 +232,4 @@ static const arg_t cont_args_def[] = {
 }
 
 @end
+*/

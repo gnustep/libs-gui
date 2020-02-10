@@ -35,7 +35,9 @@
 @interface GSSpeechRecognitionServer : NSObject
 {
   GSSpeechRecognitionEngine *_engine;
-  NSMutableArray *_blocking;
+  NSMutableArray            *_blocking;
+  NSMutableArray	    *bundles;
+  NSMutableArray            *pluginNames;
 }
 
 /**
@@ -47,6 +49,7 @@
 - (void) addToBlockingRecognizers: (NSString *)s;
 - (void) removeFromBlockingRecognizers: (NSString *)s;
 - (BOOL) isBlocking: (NSString *)s;
+- (GSSpeechRecognitionEngine *) defaultEngine;
 
 // Connection...
 - (void) addClient;

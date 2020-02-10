@@ -5738,10 +5738,10 @@ fi
 done
 
 if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
-   BUILD_SPEECH_RECOGNIZER="speech_recognizer"
+   BUILD_SPEECH_RECOGNIZER="recognizer"
    RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
    RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
-   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
+#   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
 
 

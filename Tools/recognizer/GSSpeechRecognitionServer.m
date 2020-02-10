@@ -96,14 +96,119 @@ static int _clients = 0;
   _clients++;
 }
 
+- (BOOL) bundlePathIsLoaded: (NSString *)path
+{
+  int		i = 0;  
+  NSBundle	*bundle;
+  for (i = 0; i < [bundles count]; i++)
+    {
+      bundle = [bundles objectAtIndex: i];
+      if ([path isEqualToString: [bundle bundlePath]] == YES)
+	{
+	  return YES;
+	}
+    }
+  return NO;
+}
+
+- (BOOL) loadPlugin: (NSString*)path
+{
+  NSBundle	*bundle;
+  NSString	*className;
+  // NSObject	*plugin;
+  // Class		pluginClass;
+
+  if([self bundlePathIsLoaded: path])
+    {
+      NSLog(@"bundle has already been loaded");
+      return NO;
+    }
+  
+  bundle = [NSBundle bundleWithPath: path]; 
+  if (bundle == nil)
+    {
+      NSLog(@"Could not load bundle"); 
+      return NO;
+    }
+
+  className = [[bundle infoDictionary] objectForKey: @"NSPrincipalClass"];
+  if (className == nil)
+    {
+      NSLog(@"No plugin class in plist");
+      return NO;
+    }
+
+  /*
+  pluginClass = [bundle classNamed: className];
+  if (pluginClass == 0)
+    {
+      NSLog(@"Could not load bundle princpal class: %@", className);		       
+      return NO;
+    }
+
+  plugin = [[pluginClass alloc] init];
+  if ([plugin isKindOfClass: [GSSpeechRecognitionEngine class]] == NO)
+    {
+      NSLog(@"bundle contains wrong type of class");
+      RELEASE(plugin);
+      return NO;
+    }
+  */
+  
+  // add to the bundles list...
+  [bundles addObject: bundle];	
+  
+  // manage plugin data.
+  [pluginNames addObject: className];
+
+  // RELEASE(plugin);
+
+  return YES;
+}
+
+- (GSSpeechRecognitionEngine *) defaultEngine
+{
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *className = [defaults stringForKey: @"GSDefaultSpeechRecognitionEngine"];
+  if ([pluginNames containsObject: className])
+    {
+      _engineClass = NSClassFromString(className);
+    }
+  else
+    {
+      _engineClass = NSClassFromString(@"PocketsphinxSpeechRecognitionEngine");
+    }
+  
+  return [[engineClass alloc] init];
+}
+
 - (id)init
 {
+  NSArray *array = nil;
+  
   if (nil == (self = [super init]))
     {
       return nil;
     }
   
-  _engine = [GSSpeechRecognitionEngine defaultSpeechRecognitionEngine];
+  // pluginsDict = [[NSMutableDictionary alloc] init];
+  // plugins = [[NSMutableArray alloc] init];
+  bundles = [[NSMutableArray alloc] init];
+  pluginNames = [[NSMutableArray alloc] init];
+  array = [[NSBundle mainBundle] pathsForResourcesOfType: @"recognizer"
+                                 inDirectory: nil];
+  if ([array count] > 0)
+    {
+      unsigned	index;    
+      array = [array sortedArrayUsingSelector: @selector(compare:)];
+      
+      for (index = 0; index < [array count]; index++)
+	{
+	  [self loadPlugin: [array objectAtIndex: index]];
+	}
+    }
+  
+  _engine = [self defaultEngine];
   if (nil == _engine)
     {
       [self release];
