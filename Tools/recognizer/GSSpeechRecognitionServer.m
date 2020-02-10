@@ -168,15 +168,16 @@ static int _clients = 0;
 
 - (GSSpeechRecognitionEngine *) defaultEngine
 {
+  Class engineClass = nil;
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSString *className = [defaults stringForKey: @"GSDefaultSpeechRecognitionEngine"];
   if ([pluginNames containsObject: className])
     {
-      _engineClass = NSClassFromString(className);
+      engineClass = NSClassFromString(className);
     }
   else
     {
-      _engineClass = NSClassFromString(@"PocketsphinxSpeechRecognitionEngine");
+      engineClass = NSClassFromString([pluginNames lastObject]);
     }
   
   return [[engineClass alloc] init];
