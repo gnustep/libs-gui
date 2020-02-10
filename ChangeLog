@@ -1,3 +1,7 @@
+2020-02-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFontDescriptor.m: Correct key for encoding and decoding.
+
 2020-01-31  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/GSTitleView.m (mouseDown:): limit menu movement to screen
