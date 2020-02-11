@@ -221,7 +221,7 @@ static int _clients = 0;
       [_engine start];
     }
 
-  _blocking = [[NSMutableArray alloc] initWithCapacity: 10];  // 10 seems reasonable...
+  _blocking = [[NSMutableArray alloc] initWithCapacity: 10]; 
 
   return self;
 }
@@ -246,7 +246,7 @@ static int _clients = 0;
 
 - (BOOL) isBlocking: (NSString *)s
 {
-  return [[_blocking firstObject] isEqualToString: s];
+  return [[_blocking lastObject] isEqualToString: s];
 }
 
 @end

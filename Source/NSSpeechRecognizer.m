@@ -36,6 +36,7 @@
 #import <Foundation/NSUUID.h>
 #import "GSFastEnumeration.h"
 #import "AppKit/NSWorkspace.h"
+#import "AppKit/NSWindow.h"
 
 id   _speechRecognitionServer = nil;
 BOOL _serverLaunchTested = NO;
@@ -108,11 +109,12 @@ BOOL _serverLaunchTested = NO;
 - (void) processNotification: (NSNotification *)note
 {
   NSString *word = (NSString *)[note object];
-  NSLog(@"Got notification");
+  NSLog(@"Notified");
   if (_listensInForegroundOnly)
     {
       if (_appInForeground == NO)
         {
+          NSLog(@"Only in foreground..");
           return;
         }
     }
@@ -124,6 +126,7 @@ BOOL _serverLaunchTested = NO;
           if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
             {
               // If we are not a blocking recognizer, then we are blocked...
+              NSLog(@"Blocked...");
               return;
             }
         }
@@ -151,12 +154,16 @@ BOOL _serverLaunchTested = NO;
 {
   NSString *name = [note name];
   
-  if ([name isEqualToString: NSApplicationDidBecomeActiveNotification])
+  if ([name isEqualToString: NSApplicationDidBecomeActiveNotification] ||
+      [name isEqualToString: NSApplicationDidFinishLaunchingNotification] ||
+      [name isEqualToString: NSWindowDidBecomeKeyNotification])
     {
+      NSLog(@"Foreground");
       _appInForeground = YES;
     }
   else
     {
+      NSLog(@"Background");
       _appInForeground = NO;
     }
 }
@@ -167,6 +174,18 @@ BOOL _serverLaunchTested = NO;
   self = [super init];
   if (self != nil)
     {
+      [[NSNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processAppStatusNotification:)
+               name: NSApplicationDidFinishLaunchingNotification
+             object: nil];
+
+      [[NSNotificationCenter defaultCenter]
+        addObserver: self
+           selector: @selector(processAppStatusNotification:)
+               name: NSWindowDidBecomeKeyNotification
+             object: nil];
+
       [[NSNotificationCenter defaultCenter]
         addObserver: self
            selector: @selector(processAppStatusNotification:)
@@ -182,6 +201,7 @@ BOOL _serverLaunchTested = NO;
       _delegate = nil;
       _blocksOtherRecognizers = NO;
       _listensInForegroundOnly = YES;
+      _appInForeground = YES;
       _uuid = [NSUUID UUID];
       
       [self _restartServer];
@@ -282,6 +302,7 @@ BOOL _serverLaunchTested = NO;
 - (void) startListening
 {
   // Start listening to the notification being sent by the server....
+  NSLog(@"Add notification");
   [[NSDistributedNotificationCenter defaultCenter]
         addObserver: self
            selector: @selector(processNotification:)
@@ -293,6 +314,7 @@ BOOL _serverLaunchTested = NO;
 - (void) stopListening
 {
   // Remove the observer for the notification....
+  NSLog(@"Remove notification");
   [[NSDistributedNotificationCenter defaultCenter]
         removeObserver: self
                   name: GSSpeechRecognizerDidRecognizeWordNotification
