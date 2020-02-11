@@ -712,6 +712,15 @@ static BOOL menuBarVisible = YES;
       name: NSEnqueuedMenuMoveName
       object: self];
   
+  [nc addObserver: self
+         selector: @selector(windowDidChangeScreen:)
+             name: NSWindowDidBecomeKeyNotification
+           object: nil];
+  [nc addObserver: self
+         selector: @selector(windowDidChangeScreen:)
+             name: NSWindowDidChangeScreenNotification
+           object: nil];
+  
   return self;
 }
 
@@ -1858,6 +1867,36 @@ static BOOL menuBarVisible = YES;
     // we must make sure that any attached submenu is visible too.
     [[self attachedMenu] display];
   }
+}
+
+- (void) windowDidChangeScreen: (NSNotification*)notification
+{
+  NSWindow *window = [notification object];
+  NSRect   frame;
+  NSRect   oldScreenFrame;
+  NSRect   newScreenFrame;
+  NSPoint  offset;
+
+  if (window == _aWindow
+      || [window isKeyWindow] == NO
+      || [_aWindow screen] == [window screen]
+      || [_aWindow isVisible] == NO)
+    return;
+
+  oldScreenFrame = [[_aWindow screen] frame];
+  newScreenFrame = [[window screen] frame];
+  frame = [_aWindow frame];
+  
+  // Keep left offset fixed
+  offset.x = frame.origin.x - oldScreenFrame.origin.x;
+  frame.origin.x = newScreenFrame.origin.x + offset.x;
+
+  // Keep top offset fixed
+  offset.y = NSMaxY(oldScreenFrame) - NSMaxY(frame);
+  frame.origin.y = NSMaxY(newScreenFrame) - offset.y - frame.size.height;
+  
+  // setFrame: changes _screen value.
+  [_aWindow setFrame: frame display: NO];
 }
 
 - (BOOL) isTransient

@@ -122,6 +122,11 @@ static NSMutableArray *screenArray = nil;
   NSWindow *keyWindow;
 
   keyWindow = [NSApp keyWindow];
+  if (keyWindow == nil)
+    {
+      keyWindow = [[NSApp mainMenu] window];
+    }
+  
   if (keyWindow != nil)
     {
       return [keyWindow screen];

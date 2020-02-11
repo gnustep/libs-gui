@@ -1,3 +1,19 @@
+2020-02-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (sendEvent:): set current screen to ivar and
+	send WindowDidChangeScreen notification if window was moved to other
+	screen.
+
+	* Source/NSScreen.m (mainScreen): returns screen of main menu if no
+	key window exists. With this implementation default screen (screen at
+	index 0 in screens array) should never be returned.
+
+	* Source/NSMenu.m (initWithTitle:): observe WindowDidBecomeKey and
+	WindowDidChangeScreen notifications.
+	(windowDidChangeScreen:): new method to handle observed notification
+	added above. Moves menu to screen of key window for both cases: when
+	key window moved to or activated on different screen.
+
 2020-02-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFontDescriptor.m: Correct key for encoding and decoding.
