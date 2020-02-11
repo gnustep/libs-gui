@@ -92,6 +92,20 @@ BOOL _serverLaunchTested = NO;
               NSDebugLog(@"Server found!!!");
               break;
             }
+          else
+            {
+              NS_DURING
+                {
+                  NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+                  [ws launchApplication: SPEECH_RECOGNITION_SERVER
+                               showIcon: NO
+                             autolaunch: NO];
+                }
+              NS_HANDLER
+                {
+                }
+              NS_ENDHANDLER;
+            }
           [NSThread sleepForTimeInterval: 0.1];
         }
       
