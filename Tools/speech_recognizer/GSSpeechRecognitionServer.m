@@ -47,11 +47,11 @@ static int _clients = 0;
   
   if(_clients == 0)
     {
-      NSLog(@"Client count is zero, exiting");
+      NSDebugLog(@"Client count is zero, exiting");
       exit(0);
     }
   
-  NSLog(@"NSSpeechRecognizer server connection count = %d after disconnection", _clients);
+  NSDebugLog(@"NSSpeechRecognizer server connection count = %d after disconnection", _clients);
   while((o = [en nextObject]) != nil)
     {
       if ([o isKindOfClass: self])
@@ -87,7 +87,7 @@ static int _clients = 0;
 
 + (id)sharedServer
 {
-  NSLog(@"NSSpeechRecognizer server connection count = %d after connection", _clients);
+  NSDebugLog(@"NSSpeechRecognizer server connection count = %d after connection", _clients);
   return _sharedInstance;
 }
 
@@ -111,7 +111,7 @@ static int _clients = 0;
     }
   else
     {
-      NSLog(@"Got engine starting... %@", _engine);
+      NSDebugLog(@"Got engine starting... %@", _engine);
       [_engine start];
     }
 

@@ -168,7 +168,7 @@ static const arg_t cont_args_def[] = {
       if (in_speech && !utt_started)
         {
           utt_started = YES;
-          NSLog(@"Listening...");
+          NSDebugLog(@"Listening...");
         }
       
       if (!in_speech && utt_started)
@@ -183,7 +183,7 @@ static const arg_t cont_args_def[] = {
               [self performSelectorOnMainThread: @selector(_recognizedWord:)
                                      withObject: recognizedString
                                   waitUntilDone: NO];
-              NSLog(@"Word: %s", hyp);
+              NSDebugLog(@"Word: %s", hyp);
             }
           
           if (ps_start_utt(ps) < 0)

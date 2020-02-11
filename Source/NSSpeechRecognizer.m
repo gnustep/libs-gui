@@ -123,12 +123,12 @@ BOOL _serverLaunchTested = NO;
 - (void) processNotification: (NSNotification *)note
 {
   NSString *word = (NSString *)[note object];
-  NSLog(@"Notified");
+  NSDebugLog(@"Notified");
   if (_listensInForegroundOnly)
     {
       if (_appInForeground == NO)
         {
-          NSLog(@"Only in foreground..");
+          NSDebugLog(@"Only in foreground..");
           return;
         }
     }
@@ -140,7 +140,7 @@ BOOL _serverLaunchTested = NO;
           if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
             {
               // If we are not a blocking recognizer, then we are blocked...
-              NSLog(@"Blocked...");
+              NSDebugLog(@"Blocked...");
               return;
             }
         }
@@ -172,12 +172,10 @@ BOOL _serverLaunchTested = NO;
       [name isEqualToString: NSApplicationDidFinishLaunchingNotification] ||
       [name isEqualToString: NSWindowDidBecomeKeyNotification])
     {
-      NSLog(@"Foreground");
       _appInForeground = YES;
     }
   else
     {
-      NSLog(@"Background");
       _appInForeground = NO;
     }
 }
@@ -316,7 +314,6 @@ BOOL _serverLaunchTested = NO;
 - (void) startListening
 {
   // Start listening to the notification being sent by the server....
-  NSLog(@"Add notification");
   [[NSDistributedNotificationCenter defaultCenter]
         addObserver: self
            selector: @selector(processNotification:)
@@ -328,7 +325,6 @@ BOOL _serverLaunchTested = NO;
 - (void) stopListening
 {
   // Remove the observer for the notification....
-  NSLog(@"Remove notification");
   [[NSDistributedNotificationCenter defaultCenter]
         removeObserver: self
                   name: GSSpeechRecognizerDidRecognizeWordNotification
