@@ -1881,7 +1881,9 @@ static BOOL menuBarVisible = YES;
       || [window isKeyWindow] == NO
       || [_aWindow screen] == [window screen]
       || [_aWindow isVisible] == NO)
-    return;
+    {
+      return;
+    }
 
   oldScreenFrame = [[_aWindow screen] frame];
   newScreenFrame = [[window screen] frame];
