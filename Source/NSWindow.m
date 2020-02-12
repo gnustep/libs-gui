@@ -2702,8 +2702,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
         }
     }
   ASSIGN(_screen, [self _screenForFrame: _frame]);
-  [nc postNotificationName: NSWindowDidChangeScreenNotification
-                    object: self];
   return _screen;
 }
 
@@ -4172,16 +4170,27 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           switch (sub)
             {
             case GSAppKitWindowMoved:
-              _frame.origin.x = (CGFloat)[theEvent data1];
-              _frame.origin.y = (CGFloat)[theEvent data2];
-              NSDebugLLog(@"Moving", @"Move event: %d %@",
-                          (int)_windowNum, NSStringFromPoint(_frame.origin));
-              if (_autosaveName != nil)
-                {
-                  [self saveFrameUsingName: _autosaveName];
-                }
-              [nc postNotificationName: NSWindowDidMoveNotification
-                                object: self];
+              {
+                NSScreen *oldScreen;
+                NSScreen *newScreen;
+                oldScreen = [self screen];
+                _frame.origin.x = (CGFloat)[theEvent data1];
+                _frame.origin.y = (CGFloat)[theEvent data2];
+                newScreen = [self screen];
+                NSDebugLLog(@"Moving", @"Move event: %d %@",
+                            (int)_windowNum, NSStringFromPoint(_frame.origin));
+                if (_autosaveName != nil)
+                  {
+                    [self saveFrameUsingName: _autosaveName];
+                  }
+                [nc postNotificationName: NSWindowDidMoveNotification
+                                  object: self];
+                if (newScreen != oldScreen)
+                  {
+                    [nc postNotificationName: NSWindowDidChangeScreenNotification
+                                      object: self];
+                  }
+              }
               break;
               
             case GSAppKitWindowResized:
