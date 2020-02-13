@@ -2249,12 +2249,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       frameRect.size.height = _minimumSize.height;
     }
-      
+
   /* Windows need to be constrained when displayed or resized - but only
      titled windows are constrained */
   if (_styleMask & NSTitledWindowMask)
     {
-      frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
+      frameRect = [self constrainFrameRect: frameRect
+                                  toScreen: [self _screenForFrame: frameRect]];
     }
         
   // If nothing changes, don't send it to the backend and don't redisplay 
@@ -4972,16 +4973,6 @@ current key view.<br />
    * the window could be placed (ie a rectangle excluding the dock).
    */
   screen = [self _screenForFrame: fRect];
-
-  // Check whether a portion is showing somewhere...
-  if (screen == nil)
-    {
-      // If the window doesn't show up on any screen then we need
-      // to move it so it can be seen and assign it to the main
-      // screen...
-      screen = [NSScreen mainScreen];
-      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
-    }
   nRect = [screen visibleFrame];
 
   /*
@@ -5032,9 +5023,6 @@ current key view.<br />
                                   toSize: fRect.size];
         }
     }
-
-  // Make sure we are using the new screen we are applying to...
-  ASSIGN(_screen, screen);
 
   /*
    * Set frame.

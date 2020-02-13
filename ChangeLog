@@ -1,3 +1,11 @@
+2020-02-13  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (setFrame:display:): use _screeForFrame: here
+	to prevent `_screen` reassign -  it will be reassigned in
+	sendEvent: (GSAppKitWindowMoved event) after call to [self screen].
+	(setFrameFromString:): removed unused code because _screenForFrame:
+	never returns `nil`. Do not reassign `_screen` here.
+
 2020-02-12  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (sendEvent:): set current screen to ivar and
