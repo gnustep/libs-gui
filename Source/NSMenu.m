@@ -712,15 +712,6 @@ static BOOL menuBarVisible = YES;
       name: NSEnqueuedMenuMoveName
       object: self];
   
-  [nc addObserver: self
-         selector: @selector(windowDidChangeScreen:)
-             name: NSWindowDidBecomeKeyNotification
-           object: nil];
-  [nc addObserver: self
-         selector: @selector(windowDidChangeScreen:)
-             name: NSWindowDidChangeScreenNotification
-           object: nil];
-  
   return self;
 }
 
@@ -1810,6 +1801,23 @@ static BOOL menuBarVisible = YES;
           [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
           supermenu->_attachedMenu = nil;
         }
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidBecomeKeyNotification
+               object: nil];
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidChangeScreenNotification
+               object: nil];
+    }
+  else
+    {
+      [nc removeObserver: self
+                    name: NSWindowDidBecomeKeyNotification
+                  object: nil];
+      [nc removeObserver: self
+                    name: NSWindowDidChangeScreenNotification
+                  object: nil];
     }
   [_view update];
 }
@@ -1857,6 +1865,18 @@ static BOOL menuBarVisible = YES;
       [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
     }
   [self _showTornOffMenuIfAny: notification];
+
+  if ([NSApp mainMenu] == self)
+    {
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidBecomeKeyNotification
+               object: nil];
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidChangeScreenNotification
+               object: nil];
+    }
 }
 
 - (void) _showOnActivateApp: (NSNotification*)notification
@@ -1876,6 +1896,10 @@ static BOOL menuBarVisible = YES;
   NSRect   oldScreenFrame;
   NSRect   newScreenFrame;
   CGFloat  yOffset;
+
+  if ([window isKindOfClass: [NSMenuPanel class]]
+      || [window isKindOfClass: [NSPanel class]])
+    return;
 
   if (window == _aWindow
       || [window isKeyWindow] == NO
@@ -1897,7 +1921,7 @@ static BOOL menuBarVisible = YES;
   frame.origin.y = NSMaxY(newScreenFrame) - yOffset - frame.size.height;
   
   // setFrame: changes _screen value.
-  [_aWindow setFrame: frame display: NO];
+  [self nestedSetFrameOrigin: frame.origin];
 }
 
 - (BOOL) isTransient
