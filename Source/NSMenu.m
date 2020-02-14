@@ -1875,7 +1875,7 @@ static BOOL menuBarVisible = YES;
   NSRect   frame;
   NSRect   oldScreenFrame;
   NSRect   newScreenFrame;
-  NSPoint  offset;
+  CGFloat  yOffset;
 
   if (window == _aWindow
       || [window isKeyWindow] == NO
@@ -1890,12 +1890,11 @@ static BOOL menuBarVisible = YES;
   frame = [_aWindow frame];
   
   // Keep left offset fixed
-  offset.x = frame.origin.x - oldScreenFrame.origin.x;
-  frame.origin.x = newScreenFrame.origin.x + offset.x;
+  frame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
 
   // Keep top offset fixed
-  offset.y = NSMaxY(oldScreenFrame) - NSMaxY(frame);
-  frame.origin.y = NSMaxY(newScreenFrame) - offset.y - frame.size.height;
+  yOffset = NSMaxY(oldScreenFrame) - NSMaxY(frame);
+  frame.origin.y = NSMaxY(newScreenFrame) - yOffset - frame.size.height;
   
   // setFrame: changes _screen value.
   [_aWindow setFrame: frame display: NO];
