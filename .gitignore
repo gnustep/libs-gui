@@ -3,6 +3,7 @@ obj
 *.sum
 *.bundle
 *.service
+autom4te.cache
 config.log
 config.status
 config.cache
@@ -15,6 +16,7 @@ Source/config.h
 Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app
+Tools/speech_recognizer/GSSpeechRecognitionServer.app
 *~
 
 # Created by https://www.gitignore.io/api/xcode

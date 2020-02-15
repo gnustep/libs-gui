@@ -36,7 +36,7 @@ typedef enum
     NSSpeechImmediateBoundary = 0,
     NSSpeechWordBoundary,
     NSSpeechSentenceBoundary
-  } 
+  }
 NSSpeechBoundary;
 
 // forward declarations...
@@ -184,3 +184,4 @@ extern NSString *NSSpeechDictionaryEntryPhonemes;
 @end
 
 #endif // _GNUstep_H_NSSpeechSynthesizer
+
