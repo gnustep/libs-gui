@@ -137,12 +137,14 @@ BOOL _serverLaunchTested = NO;
     {
       NS_DURING
         {
+          /*
           if ([_speechRecognitionServer isBlocking: [_uuid UUIDString]] == NO)
             {
               // If we are not a blocking recognizer, then we are blocked...
               NSDebugLog(@"Blocked...");
               return;
             }
+          */
         }
       NS_HANDLER
         {
