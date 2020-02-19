@@ -3896,6 +3896,7 @@ struct _DelegateWrapper
 
     iconContentRect = GSGetIconFrame(_app_icon_window);
     iconFrame = [_app_icon_window frameRectForContentRect: iconContentRect];
+    iconFrame.origin = [[NSScreen mainScreen] frame].origin;
     iconViewFrame = NSMakeRect(0, 0,
       iconContentRect.size.width, iconContentRect.size.height);
     [_app_icon_window setFrame: iconFrame display: YES];
