@@ -1,5 +1,8 @@
 2020-02-20  Sergii Stoian  <stoyan255@gmail.com>
 
+	* Source/NSMenu.m (_setGeometry): take into account main screen
+	origin when calculating horizontal menu postion.
+
 	* Source/NSApplication.m (_appIconInit): take into account main screen
 	origin when placing application icon.
 
