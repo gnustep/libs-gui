@@ -1,3 +1,7 @@
+2020-02-23  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSMenu.m (windowDidChangeScreen:): join two if statements.
+
 2020-02-13  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (setFrame:display:): use _screeForFrame: here

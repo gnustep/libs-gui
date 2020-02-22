@@ -1897,11 +1897,8 @@ static BOOL menuBarVisible = YES;
   NSRect   newScreenFrame;
   CGFloat  yOffset;
 
-  if ([window isKindOfClass: [NSMenuPanel class]]
-      || [window isKindOfClass: [NSPanel class]])
-    return;
-
-  if (window == _aWindow
+  if ([window isKindOfClass: [NSPanel class]]
+      || window == _aWindow
       || [window isKeyWindow] == NO
       || [_aWindow screen] == [window screen]
       || [_aWindow isVisible] == NO)
