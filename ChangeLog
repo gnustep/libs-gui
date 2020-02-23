@@ -1,3 +1,8 @@
+2020-02-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* .travis.yml
+	* travis-deps.sh: Try to keep up with Niels' changes in base.
+
 2020-02-20  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSMenu.m (_setGeometry): take into account main screen
