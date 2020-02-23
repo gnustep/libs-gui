@@ -1,5 +1,13 @@
 2020-02-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
+	* Source/GSXib5KeyedUnarchiver.m,
+	* Source/GSXibLoading.m: Move more behaviour from the
+	IBActionConnection5 and IBOutletConnection5 classes
+	to the original ones.
+
+2020-02-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* .travis.yml
 	* travis-deps.sh: Try to keep up with Niels' changes in base.
 
