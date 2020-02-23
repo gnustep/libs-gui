@@ -2722,7 +2722,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
   while ((scr = [e nextObject]))
     {
       if ([scr screenNumber] == screenNumber)
-        ASSIGN(_screen, scr);
+        {
+          ASSIGN(_screen, scr);
+          break;
+        }
     }
   
   // Do not adjust frame for mini and appicon windows - it's a WM's job. 
@@ -4174,7 +4177,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               {
                 NSScreen *oldScreen;
                 NSScreen *newScreen;
-                oldScreen = [self screen];
+                oldScreen = _screen;
                 _frame.origin.x = (CGFloat)[theEvent data1];
                 _frame.origin.y = (CGFloat)[theEvent data2];
                 newScreen = [self screen];
