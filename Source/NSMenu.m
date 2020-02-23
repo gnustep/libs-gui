@@ -1803,6 +1803,23 @@ static BOOL menuBarVisible = YES;
           [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
           supermenu->_attachedMenu = nil;
         }
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidBecomeKeyNotification
+               object: nil];
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidChangeScreenNotification
+               object: nil];
+    }
+  else
+    {
+      [nc removeObserver: self
+                    name: NSWindowDidBecomeKeyNotification
+                  object: nil];
+      [nc removeObserver: self
+                    name: NSWindowDidChangeScreenNotification
+                  object: nil];
     }
   [_view update];
 }
@@ -1850,6 +1867,18 @@ static BOOL menuBarVisible = YES;
       [[GSTheme theme] updateAllWindowsWithMenu: [NSApp mainMenu]];
     }
   [self _showTornOffMenuIfAny: notification];
+
+  if ([NSApp mainMenu] == self)
+    {
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidBecomeKeyNotification
+               object: nil];
+      [nc addObserver: self
+             selector: @selector(windowDidChangeScreen:)
+                 name: NSWindowDidChangeScreenNotification
+               object: nil];
+    }
 }
 
 - (void) _showOnActivateApp: (NSNotification*)notification
@@ -1860,6 +1889,38 @@ static BOOL menuBarVisible = YES;
     // we must make sure that any attached submenu is visible too.
     [[self attachedMenu] display];
   }
+}
+
+- (void) windowDidChangeScreen: (NSNotification*)notification
+{
+  NSWindow *window = [notification object];
+  NSRect   frame;
+  NSRect   oldScreenFrame;
+  NSRect   newScreenFrame;
+  CGFloat  yOffset;
+
+  if ([window isKindOfClass: [NSPanel class]]
+      || window == _aWindow
+      || [window isKeyWindow] == NO
+      || [_aWindow screen] == [window screen]
+      || [_aWindow isVisible] == NO)
+    {
+      return;
+    }
+
+  oldScreenFrame = [[_aWindow screen] frame];
+  newScreenFrame = [[window screen] frame];
+  frame = [_aWindow frame];
+  
+  // Keep left offset fixed
+  frame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+
+  // Keep top offset fixed
+  yOffset = NSMaxY(oldScreenFrame) - NSMaxY(frame);
+  frame.origin.y = NSMaxY(newScreenFrame) - yOffset - frame.size.height;
+  
+  // setFrame: changes _screen value.
+  [self nestedSetFrameOrigin: frame.origin];
 }
 
 - (BOOL) isTransient
