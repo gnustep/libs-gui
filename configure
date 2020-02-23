@@ -635,6 +635,9 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
+RECOGNIZER_ENGINE_CLASS
+RECOGNIZER_BASE_CFLAGS
+RECOGNIZER_BASE_LIBS
 BUILD_SPEECH_RECOGNIZER
 BUILD_SPEECH
 BUILD_SOUND
@@ -5677,7 +5680,7 @@ fi
 
 BUILD_SPEECH_RECOGNIZER=
 
-# has flite, for speech synthesis.
+# has pocketsphinx, for speech recognition.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ps_start_utt in -lpocketsphinx" >&5
 $as_echo_n "checking for ps_start_utt in -lpocketsphinx... " >&6; }
 if ${ac_cv_lib_pocketsphinx_ps_start_utt+:} false; then :
@@ -5720,12 +5723,12 @@ else
   have_speech_recognizer=no
 fi
 
-for ac_header in pocketsphinx/pocketsphinx.h
+for ac_header in pocketsphinx/pocketsphinx_export.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "pocketsphinx/pocketsphinx.h" "ac_cv_header_pocketsphinx_pocketsphinx_h" "$ac_includes_default"
-if test "x$ac_cv_header_pocketsphinx_pocketsphinx_h" = xyes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "pocketsphinx/pocketsphinx_export.h" "ac_cv_header_pocketsphinx_pocketsphinx_export_h" "$ac_includes_default"
+if test "x$ac_cv_header_pocketsphinx_pocketsphinx_export_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_POCKETSPHINX_POCKETSPHINX_H 1
+#define HAVE_POCKETSPHINX_POCKETSPHINX_EXPORT_H 1
 _ACEOF
  have_pocketsphinx=yes
 else
@@ -5736,8 +5739,13 @@ done
 
 if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
-   POCKETSPHINX_BASE_LIBS="-lpocketsphinx"
+   RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
+   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
+
+
+
 
 
 #--------------------------------------------------------------------

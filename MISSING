@@ -30,8 +30,6 @@ MISSING HEADERS
 > NSLayoutGuide.h
 > NSMediaLibraryBrowserController.h
 > NSMenuToolbarItem.h
-> NSNibControlConnector.h
-> NSNibOutletConnector.h
 > NSOpenGLLayer.h
 > NSPageController.h
 > NSPathCell.h
@@ -47,7 +45,6 @@ MISSING HEADERS
 > NSScrubberLayout.h
 > NSSharingServicePickerToolbarItem.h
 > NSSliderAccessory.h
-> NSSpeechRecognizer.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
 > NSStackView.h
@@ -87,6 +84,7 @@ Completed
 > NSDataAsset.h
 > NSTouch.h
 > NSTouchBar.h
+> NSSpeechRecognizer.h
 
 Mac Specific
 ---
@@ -106,7 +104,6 @@ Mac Specific
 > NSPanGestureRecognizer.h
 > NSPressGestureRecognizer.h
 > NSRotationGestureRecognizer.h
-> NSSpeechRecognizer.h
 > NSApplicationScripting.h
 > NSDocumentScripting.h
 > NSTextStorageScripting.h

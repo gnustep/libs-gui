@@ -26,6 +26,7 @@
 #define _NSSpeechRecognizer_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -33,9 +34,54 @@
 extern "C" {
 #endif
 
-@interface NSSpeechRecognizer : NSObject
+@protocol NSSpeechRecognizerDelegate;
 
+@class NSArray, NSString, NSUUID;
+  
+@interface NSSpeechRecognizer : NSObject
+{
+  id<NSSpeechRecognizerDelegate> _delegate;
+  NSArray *_commands;
+  NSString *_displayCommandsTitle;
+  NSUUID *_uuid;
+  BOOL _blocksOtherRecognizers;
+  BOOL _listensInForegroundOnly;
+  BOOL _appInForeground; // private
+  BOOL _isListening;
+}
+
+// Initialize
+- (instancetype) init;
+
+- (id<NSSpeechRecognizerDelegate>) delegate;
+- (void) setDelegate: (id<NSSpeechRecognizerDelegate>) delegate;
+  
+// Configuring...
+- (NSArray *) commands;
+- (void) setCommands: (NSArray *)commands;
+
+- (NSString *) displayCommandsTitle;
+- (void) setDisplayCommandsTitle: (NSString *)displayCommandsTitle;
+
+- (BOOL) listensInForegroundOnly;
+- (void) setListensInForegroundOnly: (BOOL)listensInForegroundOnly;
+
+- (BOOL) blocksOtherRecognizers;
+- (void) setBlocksOtherRecognizers: (BOOL)blocksOtherRecognizers;
+
+// Listening
+- (void) startListening;
+- (void) stopListening;
+  
 @end
+
+// Protocol
+@protocol NSSpeechRecognizerDelegate
+- (void) speechRecognizer: (NSSpeechRecognizer *)sender
+      didRecognizeCommand: (NSString *)command;
+@end
+
+APPKIT_EXPORT NSString *GSSpeechRecognizerDidRecognizeWordNotification; 
 
 #if	defined(__cplusplus)
 }
