@@ -43,7 +43,6 @@ static NSLock *_fontCollectionLock = nil;
 + (void) _loadAvailableFontCollections;
 - (BOOL) _writeToFile; 
 - (BOOL) _removeFile;
-- (void) _setFonts: (NSArray *)fonts;
 - (void) _setQueryAttributes: (NSArray *)queryAttributes;
 - (void) _setFullFileName: (NSString *)fn;
 
@@ -236,10 +235,7 @@ static NSLock *_fontCollectionLock = nil;
 - (BOOL) _removeFile
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *tmpPath;
   BOOL          isDir;
-  BOOL          success;
-  BOOL          path_is_standard = YES;
   NSString     *path = nil;
   BOOL result = NO;
  
@@ -329,12 +325,6 @@ static NSLock *_fontCollectionLock = nil;
 
 @end
 
-@interface NSCTFontCollection : NSObject
-@end
-
-@implementation NSCTFontCollection
-@end
-
 @implementation NSFontCollection 
 
 
@@ -352,7 +342,6 @@ static NSLock *_fontCollectionLock = nil;
   self = [super init];
   if (self != nil)
     {
-      //      _fonts = [[NSMutableArray alloc] initWithCapacity: 50];
       _queryDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
       _exclusionDescriptors = [[NSMutableArray alloc] initWithCapacity: 10];
       _queryAttributes = [[NSMutableArray alloc] initWithCapacity: 10];
@@ -434,13 +423,13 @@ static NSLock *_fontCollectionLock = nil;
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
 {
-  return nil;
+  return [_availableFontCollections objectForKey: name];
 }
 
 + (NSFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                    visibility: (NSFontCollectionVisibility)visibility
 {
-  return nil;
+  return [_availableFontCollections objectForKey: name];
 }
 
 // Descriptors
@@ -504,7 +493,6 @@ static NSLock *_fontCollectionLock = nil;
 {
   NSMutableFontCollection *fc = [[NSMutableFontCollection allocWithZone: zone] init];
 
-  // [fc _setFonts: _fonts];
   [fc setQueryDescriptors: _queryDescriptors];
   [fc setExclusionDescriptors: _exclusionDescriptors];
   [fc _setQueryAttributes: _queryAttributes];
@@ -520,12 +508,21 @@ static NSLock *_fontCollectionLock = nil;
       if ([coder allowsKeyedCoding])
         {
         }
+      else
+        {
+        }
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+    }
 }
   
 @end
