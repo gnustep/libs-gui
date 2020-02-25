@@ -8,65 +8,80 @@ static GSSpeechServer *sharedInstance;
 @implementation GSSpeechServer
 + (void)initialize
 {
-	sharedInstance = [self new];
+  sharedInstance = [self new];
 }
+
 + (void)start
 {
-	NSConnection *connection = [NSConnection defaultConnection];
-	[connection setRootObject: sharedInstance];
-	if (NO == [connection registerName: @"GSSpeechServer"])
-	{
-		return;
-	}
-	[[NSRunLoop currentRunLoop] run];
+  NSConnection *connection = [NSConnection defaultConnection];
+  [connection setRootObject: sharedInstance];
+  if (NO == [connection registerName: @"GSSpeechServer"])
+    {
+      return;
+    }
+  [[NSRunLoop currentRunLoop] run];
 }
+
 + (id)sharedServer
 {
-	return sharedInstance;
+  return sharedInstance;
 }
+
 - (id)init
 {
-	if (nil == (self = [super init])) { return nil; }
-	engine = [GSSpeechEngine defaultSpeechEngine];
-	if (nil == engine)
-	{
-		[self release];
-		return nil;
-	}
-	return self;
+  if (nil == (self = [super init]))
+    {
+      return nil;
+    }
+  
+  engine = [GSSpeechEngine defaultSpeechEngine];
+  if (nil == engine)
+    {
+      [self release];
+      return nil;
+    }
+  return self;
 }
+
 - (id)newSynthesizer
 {
-	return [[GSSpeechSynthesizer new] autorelease];
+  return [[GSSpeechSynthesizer new] autorelease];
 }
+
 - (BOOL)startSpeakingString: (NSString*)aString notifyWhenDone: (id)client
 {
-	[engine stopSpeaking];
-	[engine startSpeaking: aString notifyWhenDone: client];
-	return YES;
+  [engine stopSpeaking];
+  [engine startSpeaking: aString notifyWhenDone: client];
+  return YES;
 }
+
 - (void)stopSpeaking
 {
-	[engine stopSpeaking];
+  [engine stopSpeaking];
 }
+
 - (BOOL)isSpeaking
 {
-	return [engine isSpeaking];
+  return [engine isSpeaking];
 }
+
 - (NSArray*)voices
 {
-	return [engine voices];
+  return [engine voices];
 }
+
 - (oneway void)setVoice: (NSString*)aVoice
 {
-	[engine setVoice: aVoice];
+  [engine setVoice: aVoice];
 }
+
 - (NSString*)voice
 {
-	return [engine voice];
+  return [engine voice];
 }
+
 - (NSString*)defaultVoice
 {
-	return [engine defaultVoice];
+  return [engine defaultVoice];
 }
 @end

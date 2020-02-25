@@ -1,4 +1,4 @@
-man/* Implementation of class NSFontCollection
+/* Implementation of class NSFontCollection
    Copyright (C) 2019 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
@@ -57,6 +57,7 @@ static NSLock *_fontCollectionLock = nil;
 + (void) _loadAvailableFontCollections
 {
   [_fontCollectionLock lock];
+  
   if (_availableFontCollections != nil)
     {
       // Nothing to do ... already loaded
@@ -82,7 +83,7 @@ static NSLock *_fontCollectionLock = nil;
 	}
       
       /*
-       * Load color lists found in standard paths into the array
+       * Load font lists found in standard paths into the array
        * FIXME: Check exactly where in the directory tree we should scan.
        */
       e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
@@ -116,12 +117,7 @@ static NSLock *_fontCollectionLock = nil;
                 }
 	    }
 	}  
-      /*
-        if (defaultSystemFontCollection != nil)
-        {
-        [_availableFontCollections addObject: defaultSystemFontCollection];
-	}
-      */
+
       [_fontCollectionLock unlock];
     }
 }

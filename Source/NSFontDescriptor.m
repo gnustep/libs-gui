@@ -155,7 +155,7 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: _attributes forKey: @"NSAttributes"];
+      [aCoder encodeObject: _attributes forKey: @"NSFontDescriptorAttributes"];
     }
   else
     {
@@ -167,7 +167,7 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      _attributes = RETAIN([aDecoder decodeObjectForKey: @"NSAttributes"]);
+      _attributes = RETAIN([aDecoder decodeObjectForKey: @"NSFontDescriptorAttributes"]);
     }
   else
     {

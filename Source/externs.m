@@ -829,6 +829,9 @@ NSFontCollectionMatchingOptionKey const NSFontCollectionIncludeDisabledFontsOpti
 NSFontCollectionMatchingOptionKey const NSFontCollectionRemoveDuplicatesOption = @"NSFontCollectionRemoveDuplicatesOption";
 NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAutoActivationOption = @"NSFontCollectionDisallowAutoActivationOption";
 
+// Speech recognition...
+const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
+
 extern void __objc_gui_force_linking (void);
 
 void

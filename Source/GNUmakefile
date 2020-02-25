@@ -119,7 +119,6 @@ NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
-NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
 NSTouch.m \
 NSTouchBar.m \
@@ -150,7 +149,6 @@ NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
-NSSpeechRecognizer.m \
 NSStepperTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \

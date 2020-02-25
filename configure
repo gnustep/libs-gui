@@ -635,6 +635,10 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
+RECOGNIZER_ENGINE_CLASS
+RECOGNIZER_BASE_CFLAGS
+RECOGNIZER_BASE_LIBS
+BUILD_SPEECH_RECOGNIZER
 BUILD_SPEECH
 BUILD_SOUND
 HAVE_ICU
@@ -729,6 +733,7 @@ with_icu_library
 enable_aspell
 enable_sound
 enable_speech
+enable_speech_recognizer
 enable_cups
 '
       ac_precious_vars='build_alias
@@ -1384,6 +1389,7 @@ Optional Features:
   --disable-aspell        Disable aspell for spellchecker
   --disable-sound          Disable sound
   --disable-speech          Disable speech server
+  --disable-speech-recognizer          Disable speech recognition server
   --disable-cups          Disable cups printing support
 
 Optional Packages:
@@ -5660,6 +5666,86 @@ fi
       BUILD_SPEECH=
    fi
 fi
+
+
+#--------------------------------------------------------------------
+# NSSpeechRecognizer
+#--------------------------------------------------------------------
+# Check whether --enable-speech-recognizer was given.
+if test "${enable_speech_recognizer+set}" = set; then :
+  enableval=$enable_speech_recognizer;
+else
+  enable_speech_recognizer=yes
+fi
+
+BUILD_SPEECH_RECOGNIZER=
+
+# has pocketsphinx, for speech recognition.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ps_start_utt in -lpocketsphinx" >&5
+$as_echo_n "checking for ps_start_utt in -lpocketsphinx... " >&6; }
+if ${ac_cv_lib_pocketsphinx_ps_start_utt+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpocketsphinx  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ps_start_utt ();
+int
+main ()
+{
+return ps_start_utt ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pocketsphinx_ps_start_utt=yes
+else
+  ac_cv_lib_pocketsphinx_ps_start_utt=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pocketsphinx_ps_start_utt" >&5
+$as_echo "$ac_cv_lib_pocketsphinx_ps_start_utt" >&6; }
+if test "x$ac_cv_lib_pocketsphinx_ps_start_utt" = xyes; then :
+  have_speech_recognizer=yes
+else
+  have_speech_recognizer=no
+fi
+
+for ac_header in pocketsphinx/pocketsphinx_export.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "pocketsphinx/pocketsphinx_export.h" "ac_cv_header_pocketsphinx_pocketsphinx_export_h" "$ac_includes_default"
+if test "x$ac_cv_header_pocketsphinx_pocketsphinx_export_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_POCKETSPHINX_POCKETSPHINX_EXPORT_H 1
+_ACEOF
+ have_pocketsphinx=yes
+else
+  have_pocketsphinx=no
+fi
+
+done
+
+if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
+   BUILD_SPEECH_RECOGNIZER="speech_recognizer"
+   RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
+   RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
+fi
+
+
+
 
 
 #--------------------------------------------------------------------
