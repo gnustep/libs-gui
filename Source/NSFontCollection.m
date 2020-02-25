@@ -235,8 +235,60 @@ static NSLock *_fontCollectionLock = nil;
 
 - (BOOL) _removeFile
 {
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *tmpPath;
+  BOOL          isDir;
+  BOOL          success;
+  BOOL          path_is_standard = YES;
+  NSString     *path = nil;
   BOOL result = NO;
-  if (_fullFileName) //  && _is_editable)
+ 
+  /*
+   * We need to initialize before saving, to avoid the new file being 
+   * counted as a different collection thus making it appear twice
+   */
+  [NSFontCollection _loadAvailableFontCollections];
+  
+  if (path == nil)
+    {
+      NSArray	*paths;
+      
+      // FIXME the standard path for saving font collections
+      paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                  NSUserDomainMask, YES);
+      if ([paths count] == 0)
+	{
+	  NSLog (@"Failed to find Library directory for user");
+	  return NO;	// No directory to save to.
+	}
+      path = [[paths objectAtIndex: 0]
+               stringByAppendingPathComponent: @"FontCollections"]; 
+      isDir = YES;
+    }
+  else
+    {
+      [fm fileExistsAtPath: path isDirectory: &isDir];
+    }
+    if (isDir)
+    {
+      ASSIGN (_fullFileName, [[path stringByAppendingPathComponent: _name] 
+                               stringByAppendingPathExtension: @"collection"]);
+    }
+  else // it is a file
+    {
+      if ([[path pathExtension] isEqual: @"collection"] == YES)
+	{
+	  ASSIGN (_fullFileName, path);
+	}
+      else
+	{
+	  ASSIGN (_fullFileName, [[path stringByDeletingPathExtension]
+                                   stringByAppendingPathExtension: @"collection"]);
+	}
+      path = [path stringByDeletingLastPathComponent];
+    }
+    
+  if (_fullFileName) 
     {
       // Remove the file
       [[NSFileManager defaultManager] removeFileAtPath: _fullFileName
@@ -251,12 +303,8 @@ static NSLock *_fontCollectionLock = nil;
       // Reset file name
       _fullFileName = nil;
     }
+  
   return result;
-}
-
-- (void) _setFonts: (NSArray *)fonts
-{
-  // [_fonts addObjectsFromArray: fonts];
 }
 
 - (void) _setQueryAttributes: (NSArray *)queryAttributes
