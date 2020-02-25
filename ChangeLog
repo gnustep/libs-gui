@@ -1,3 +1,25 @@
+2020-02-23  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m
+	(applicationDidChangeScreenParameters:): quit while loop after
+	screen was found.
+	(sendEvent:): use `_screen` ivar to get screen befor frame change.
+
+	* Source/NSMenu.m (windowDidChangeScreen:): join two if statements.
+
+2020-02-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h,
+	* Source/GSXib5KeyedUnarchiver.m,
+	* Source/GSXibLoading.m: Move more behaviour from the
+	IBActionConnection5 and IBOutletConnection5 classes
+	to the original ones.
+
+2020-02-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* .travis.yml
+	* travis-deps.sh: Try to keep up with Niels' changes in base.
+
 2020-02-20  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSMenu.m (_setGeometry): take into account main screen
@@ -5,6 +27,30 @@
 
 	* Source/NSApplication.m (_appIconInit): take into account main screen
 	origin when placing application icon.
+
+2020-02-13  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (setFrame:display:): use _screeForFrame: here
+	to prevent `_screen` reassign -  it will be reassigned in
+	sendEvent: (GSAppKitWindowMoved event) after call to [self screen].
+	(setFrameFromString:): removed unused code because _screenForFrame:
+	never returns `nil`. Do not reassign `_screen` here.
+
+2020-02-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (sendEvent:): set current screen to ivar and
+	send WindowDidChangeScreen notification if window was moved to other
+	screen.
+
+	* Source/NSScreen.m (mainScreen): returns screen of main menu if no
+	key window exists. With this implementation default screen (screen at
+	index 0 in screens array) should never be returned.
+
+	* Source/NSMenu.m (initWithTitle:): observe WindowDidBecomeKey and
+	WindowDidChangeScreen notifications.
+	(windowDidChangeScreen:): new method to handle observed notification
+	added above. Moves menu to screen of key window for both cases: when
+	key window moved to or activated on different screen.
 
 2020-02-09 Fred Kiefer <FredKiefer@gmx.de>
 

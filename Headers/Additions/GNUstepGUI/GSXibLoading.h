@@ -86,6 +86,7 @@
 
 @interface IBActionConnection: IBConnection
 {
+  NSString *trigger;
 }
 @end
 

@@ -2249,12 +2249,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       frameRect.size.height = _minimumSize.height;
     }
-      
+
   /* Windows need to be constrained when displayed or resized - but only
      titled windows are constrained */
   if (_styleMask & NSTitledWindowMask)
     {
-      frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
+      frameRect = [self constrainFrameRect: frameRect
+                                  toScreen: [self _screenForFrame: frameRect]];
     }
         
   // If nothing changes, don't send it to the backend and don't redisplay 
@@ -2721,7 +2722,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
   while ((scr = [e nextObject]))
     {
       if ([scr screenNumber] == screenNumber)
-        ASSIGN(_screen, scr);
+        {
+          ASSIGN(_screen, scr);
+          break;
+        }
     }
   
   // Do not adjust frame for mini and appicon windows - it's a WM's job. 
@@ -4170,16 +4174,27 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           switch (sub)
             {
             case GSAppKitWindowMoved:
-              _frame.origin.x = (CGFloat)[theEvent data1];
-              _frame.origin.y = (CGFloat)[theEvent data2];
-              NSDebugLLog(@"Moving", @"Move event: %d %@",
-                          (int)_windowNum, NSStringFromPoint(_frame.origin));
-              if (_autosaveName != nil)
-                {
-                  [self saveFrameUsingName: _autosaveName];
-                }
-              [nc postNotificationName: NSWindowDidMoveNotification
-                  object: self];
+              {
+                NSScreen *oldScreen;
+                NSScreen *newScreen;
+                oldScreen = _screen;
+                _frame.origin.x = (CGFloat)[theEvent data1];
+                _frame.origin.y = (CGFloat)[theEvent data2];
+                newScreen = [self screen];
+                NSDebugLLog(@"Moving", @"Move event: %d %@",
+                            (int)_windowNum, NSStringFromPoint(_frame.origin));
+                if (_autosaveName != nil)
+                  {
+                    [self saveFrameUsingName: _autosaveName];
+                  }
+                [nc postNotificationName: NSWindowDidMoveNotification
+                                  object: self];
+                if (newScreen != oldScreen)
+                  {
+                    [nc postNotificationName: NSWindowDidChangeScreenNotification
+                                      object: self];
+                  }
+              }
               break;
               
             case GSAppKitWindowResized:
@@ -4961,16 +4976,6 @@ current key view.<br />
    * the window could be placed (ie a rectangle excluding the dock).
    */
   screen = [self _screenForFrame: fRect];
-
-  // Check whether a portion is showing somewhere...
-  if (screen == nil)
-    {
-      // If the window doesn't show up on any screen then we need
-      // to move it so it can be seen and assign it to the main
-      // screen...
-      screen = [NSScreen mainScreen];
-      NSDebugLLog(@"NSWindow", @"%s: re-assigning to main screen\n", __PRETTY_FUNCTION__);
-    }
   nRect = [screen visibleFrame];
 
   /*
@@ -5021,9 +5026,6 @@ current key view.<br />
                                   toSize: fRect.size];
         }
     }
-
-  // Make sure we are using the new screen we are applying to...
-  ASSIGN(_screen, screen);
 
   /*
    * Set frame.
