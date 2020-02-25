@@ -73,6 +73,31 @@ static NSMutableArray *screenArray = nil;
   DESTROY(screenArray);
 }
 
+/* 
+   Display server's `screenList` method (back) returns `screens` array that
+   contains monitor list. If XRandR is supported, item at index 0 contains 
+   monitor marked as "primary" (XRandR). Primary monitor can be set 
+   programmatically or with `xrandr` utility.
+
+   Apple documentation says that this method should return array of 
+   NSScreen objects with "main screen" (screen where main menu resides) object 
+   at index 0. In our implementation main menu follows key window. 
+   Thus "main screen" (Apple) is not always "primary" (XRandR).
+
+   It may have some advantages: in +screen mathod we know actually configured
+   "main screen" - XRandR's "primary" and we can determine Apples "main screen"
+   by asking main menu window for its screen. In this way we have (at least for x11
+   with XRandR support) flexibility to decide at AppKit level wich is the true main 
+   screen (main menu's or XRandR primary).
+
+   Note that when key window crosses screens several events take place:
+   - screenArray resets ([NSScreen resetScreens] call from back);
+   - NSWindowDidChangeScreenNotification is sent (back);
+   - every NSWindow recalculates its coordiantes and screen is reassigned - retain
+   count to screen is decremented, finally old screenArray is deallocated;
+   - first call to [NSScreen screens] constructs new screenArray - "main menu" is 
+   placed at index 0;
+*/
 /**
  * Returns an NSArray containing NSScreen instances representing all of the
  * screen devices attached to the computer.
