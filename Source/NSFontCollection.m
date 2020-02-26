@@ -507,6 +507,14 @@ static NSLock *_fontCollectionLock = nil;
     {
       if ([coder allowsKeyedCoding])
         {
+          [coder encodeObject: _queryDescriptors
+                       forKey: @"NSFontCollectionFontDescriptors"];
+          [coder encodeObject: _queryAttributes
+                       forKey: @"NSFontCollectionAttributes"];
+          [coder encodeObject: _name
+                       forKey: @"NSFontCollectionName"];
+          [coder encodeObject: _fileName
+                       forKey: @"NSFontCollectionFileName"];
         }
       else
         {
@@ -519,6 +527,14 @@ static NSLock *_fontCollectionLock = nil;
 {
   if ([coder allowsKeyedCoding])
     {
+      _queryDescriptors = [coder decodeObjectForKey: @"NSFontCollectionFontDescriptors"];
+      RETAIN(_queryDescriptors);
+      _queryAttributes = [coder decodeObjectForKey: @"NSFontCollectionAttributes"];
+      RETAIN(_queryAttributes);
+      _name = [coder decodeObjectForKey: @"NSFontCollectionName"];
+      RETAIN(_name);
+      _fileName = [coder decodeObjectForKey: @"NSFontCollectionFileName"];
+      RETAIN(_fileName);
     }
   else
     {

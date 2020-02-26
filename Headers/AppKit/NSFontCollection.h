@@ -34,7 +34,7 @@
 extern "C" {
 #endif
   
-@class NSFontDescriptor, NSLocale, NSError, NSArray, NSDictionary;
+@class NSFontDescriptor, NSLocale, NSError, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary;
 
 enum {
     NSFontCollectionVisibilityProcess = (1UL << 0),
@@ -51,8 +51,6 @@ APPKIT_EXPORT NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAu
 
 typedef NSString* NSFontCollectionName;
 
-@class NSMutableDictionary, NSMutableArray, NSArray, NSDictionary, NSError;
-
 @interface NSFontCollection : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
   NSMutableArray *_queryDescriptors;
@@ -60,6 +58,7 @@ typedef NSString* NSFontCollectionName;
   NSMutableArray *_queryAttributes;
   NSString *_fullFileName;
   NSString *_name;
+  NSString *_fileName;
 }
   
 // Initializers...
