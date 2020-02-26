@@ -1,3 +1,8 @@
+2020-02-26  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (sendEvent:): removed usage of extra local variables
+	in GSAppKitWindowMoved code block.
+
 2020-02-23  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m

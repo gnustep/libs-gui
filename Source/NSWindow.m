@@ -4175,12 +4175,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
             {
             case GSAppKitWindowMoved:
               {
-                NSScreen *oldScreen;
-                NSScreen *newScreen;
-                oldScreen = _screen;
+                NSScreen *oldScreen = _screen;
+                
                 _frame.origin.x = (CGFloat)[theEvent data1];
                 _frame.origin.y = (CGFloat)[theEvent data2];
-                newScreen = [self screen];
                 NSDebugLLog(@"Moving", @"Move event: %d %@",
                             (int)_windowNum, NSStringFromPoint(_frame.origin));
                 if (_autosaveName != nil)
@@ -4189,7 +4187,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                   }
                 [nc postNotificationName: NSWindowDidMoveNotification
                                   object: self];
-                if (newScreen != oldScreen)
+                if ([self screen] != oldScreen)
                   {
                     [nc postNotificationName: NSWindowDidChangeScreenNotification
                                       object: self];
