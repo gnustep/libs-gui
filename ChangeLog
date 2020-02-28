@@ -1,3 +1,8 @@
+2020-02-28  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (center): always center window on main screen -
+	monitor where user expects to see window.
+
 2020-02-23  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m
