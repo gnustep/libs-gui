@@ -2227,6 +2227,20 @@ titleWithRepresentedFilename(NSString *representedFilename)
   [self setFrame: r display: YES];
 }
 
+- (void) _applyFrame: (NSRect )frameRect
+{
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) placewindow: frameRect : _windowNum];
+    }
+  else
+    {
+      _frame = frameRect;
+      frameRect.origin = NSZeroPoint;
+      [_wv setFrame: frameRect];
+    }
+}
+
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
@@ -2265,14 +2279,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
-  if (_windowNum)
-    [GSServerForWindow(self) placewindow: frameRect : _windowNum];
-  else
-    {
-      _frame = frameRect;
-      frameRect.origin = NSZeroPoint;
-      [_wv setFrame: frameRect];
-    }
+  [self _applyFrame: frameRect];
 
   if (flag)
     [self display];
@@ -2495,7 +2502,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 }
 
 - (void) update
-{									
+{
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
@@ -2738,23 +2745,15 @@ titleWithRepresentedFilename(NSString *representedFilename)
   // Screen X origin change. Screen width change shouldn't affect our frame.
   newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
 
-  if (_windowNum)
+  /* Call backend's `placewindow::` directly because our origin in OpenStep 
+     coordinates might be unchanged and `setFrame:display:` has check 
+     for it. */
+  [self _applyFrame: newFrame];
+  [self display];
+  
+  if (_autosaveName != nil)
     {
-      /* Call backend's `placewindow::` directly because our origin in OpenStep 
-         coordinates might left unchanged and `setFrame:display:` has check 
-         for it. */
-      [GSServerForWindow(self) placewindow: newFrame : _windowNum];
-      if (_autosaveName != nil)
-        {
-          [self saveFrameUsingName: _autosaveName];
-        }
-      [self display];
-    }
-  else
-    {
-      _frame = newFrame;
-      newFrame.origin = NSZeroPoint;
-      [_wv setFrame: newFrame];
+      [self saveFrameUsingName: _autosaveName];
     }
 }
 
