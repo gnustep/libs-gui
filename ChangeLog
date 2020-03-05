@@ -1,3 +1,10 @@
+2020-03-05  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (applicationDidChangeScreenParameters:):
+	Call backend's `placewindow::` directly because our origin in OpenStep
+        coordinates might left unchanged and `setFrame:display:` has check
+        for it.
+
 2020-02-28  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (center): always center window on main screen -

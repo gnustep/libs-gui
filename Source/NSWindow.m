@@ -2737,10 +2737,24 @@ titleWithRepresentedFilename(NSString *representedFilename)
   newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
   // Screen X origin change. Screen width change shouldn't affect our frame.
   newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
-  [self setFrame: newFrame display: NO];
-  if (_autosaveName != nil)
+
+  if (_windowNum)
     {
-      [self saveFrameUsingName: _autosaveName];
+      /* Call backend's `placewindow::` directly because our origin in OpenStep 
+         coordinates might left unchanged and `setFrame:display:` has check 
+         for it. */
+      [GSServerForWindow(self) placewindow: newFrame : _windowNum];
+      if (_autosaveName != nil)
+        {
+          [self saveFrameUsingName: _autosaveName];
+        }
+      [self display];
+    }
+  else
+    {
+      _frame = newFrame;
+      newFrame.origin = NSZeroPoint;
+      [_wv setFrame: newFrame];
     }
 }
 
