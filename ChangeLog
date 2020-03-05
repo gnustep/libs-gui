@@ -1,7 +1,21 @@
+2020-03-05  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (_applyFrame:): new helper method to do actual
+	resizing.
+	(setFrame:display:): use _applyFrame method.
+	(applicationDidChangeScreenParameters:): Use _applyFrame: because our
+	origin in OpenStep coordinates might be unchanged and `setFrame:display:`
+	has check for it.
+
 2020-02-28  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (center): always center window on main screen -
 	monitor where user expects to see window.
+
+2020-02-26  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Source/NSWindow.m (sendEvent:): removed usage of extra local variables
+	in GSAppKitWindowMoved code block.
 
 2020-02-23  Sergii Stoian  <stoyan255@gmail.com>
 
