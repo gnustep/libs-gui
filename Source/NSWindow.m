@@ -2227,6 +2227,20 @@ titleWithRepresentedFilename(NSString *representedFilename)
   [self setFrame: r display: YES];
 }
 
+- (void) _applyFrame: (NSRect )frameRect
+{
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) placewindow: frameRect : _windowNum];
+    }
+  else
+    {
+      _frame = frameRect;
+      frameRect.origin = NSZeroPoint;
+      [_wv setFrame: frameRect];
+    }
+}
+
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
@@ -2265,14 +2279,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
-  if (_windowNum)
-    [GSServerForWindow(self) placewindow: frameRect : _windowNum];
-  else
-    {
-      _frame = frameRect;
-      frameRect.origin = NSZeroPoint;
-      [_wv setFrame: frameRect];
-    }
+  [self _applyFrame: frameRect];
 
   if (flag)
     [self display];
@@ -2495,7 +2502,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 }
 
 - (void) update
-{									
+{
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
@@ -2737,7 +2744,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
   newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
   // Screen X origin change. Screen width change shouldn't affect our frame.
   newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
-  [self setFrame: newFrame display: NO];
+
+  /* Call backend's `placewindow::` directly because our origin in OpenStep 
+     coordinates might be unchanged and `setFrame:display:` has check 
+     for it. */
+  [self _applyFrame: newFrame];
+  [self display];
+  
   if (_autosaveName != nil)
     {
       [self saveFrameUsingName: _autosaveName];
@@ -4171,12 +4184,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
             {
             case GSAppKitWindowMoved:
               {
-                NSScreen *oldScreen;
-                NSScreen *newScreen;
-                oldScreen = _screen;
+                NSScreen *oldScreen = _screen;
+                
                 _frame.origin.x = (CGFloat)[theEvent data1];
                 _frame.origin.y = (CGFloat)[theEvent data2];
-                newScreen = [self screen];
                 NSDebugLLog(@"Moving", @"Move event: %d %@",
                             (int)_windowNum, NSStringFromPoint(_frame.origin));
                 if (_autosaveName != nil)
@@ -4185,7 +4196,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                   }
                 [nc postNotificationName: NSWindowDidMoveNotification
                                   object: self];
-                if (newScreen != oldScreen)
+                if ([self screen] != oldScreen)
                   {
                     [nc postNotificationName: NSWindowDidChangeScreenNotification
                                       object: self];
