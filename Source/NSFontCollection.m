@@ -32,6 +32,8 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSData.h>
+
 #import <AppKit/NSFontCollection.h>
 #import <GNUstepGUI/GSFontInfo.h>
 
@@ -43,6 +45,7 @@ static NSLock *_fontCollectionLock = nil;
 + (void) _loadAvailableFontCollections;
 - (BOOL) _writeToFile; 
 - (BOOL) _removeFile;
+- (NSMutableDictionary *) _fontCollectionDictionary;
 - (void) _setFontCollectionDictionary: (NSMutableDictionary *)dict;
 - (void) _setQueryAttributes: (NSArray *)queryAttributes;
 - (void) _setFullFileName: (NSString *)fn;
@@ -105,13 +108,13 @@ static NSLock *_fontCollectionLock = nil;
 	    {
 	      if ([[file pathExtension] isEqualToString: @"collection"])
 		{
-		  NSString	*name;
-		  name = [file stringByDeletingPathExtension];
-		  newCollection = [NSKeyedUnarchiver unarchiveObjectWithFile: [dir stringByAppendingPathComponent: file]];
+		  NSString *name = [file stringByDeletingPathExtension];
+		  newCollection = [self _readFileAtPath: [dir stringByAppendingPathComponent: file]]; 
                   if (newCollection != nil && name != nil)
                     {
                       [newCollection _setFullFileName: file];
-                      [_availableFontCollections setObject: newCollection forKey: name];
+                      [_availableFontCollections setObject: newCollection
+                                                     forKey: name];
                       RELEASE(newCollection);
                     }
                 }
@@ -120,6 +123,15 @@ static NSLock *_fontCollectionLock = nil;
 
       [_fontCollectionLock unlock];
     }
+}
+
++ (NSFontCollection *) _readFileAtPath: (NSString *)path
+{
+  NSFontCollection *fc = [[NSFontCollection alloc] init];
+  NSData *d = [NSData dataWithContentsOfFile: path];
+  NSKeyedUnarchiver *u = [[NSKeyedUnarchiver alloc] initForReadingWithData: d];
+  [fc _setFontCollectionDictionary: [u decodeObjectForKey: @"NSFontCollectionDictionary"]];
+  return fc;
 }
 
 /*
@@ -214,10 +226,14 @@ static NSLock *_fontCollectionLock = nil;
 	  NSLog (@"Failed attempt to create directory %@", path);
 	}
     }
-  
-  success = [NSKeyedArchiver archiveRootObject: self 
-                                        toFile: [self _fullFileName]];
-  
+
+  // Write out the file in the proper format...
+  NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 10240];
+  NSKeyedArchiver *a = [[NSKeyedArchiver alloc] initForWritingWithMutableData: m];
+  [a encodeObject: [self _fontCollectionDictionary]
+           forKey: @"NSFontCollectionDictionary"];
+  [a finishEncoding];
+  success = [m writeToFile: [self _fullFileName] atomically: YES];
   if (success && path_is_standard)
     {
       [_fontCollectionLock lock];
@@ -302,6 +318,11 @@ static NSLock *_fontCollectionLock = nil;
     }
   
   return result;
+}
+
+- (NSMutableDictionary *) _fontCollectionDictionary
+{
+  return _fontCollectionDictionary;
 }
 
 - (void) _setFontCollectionDictionary: (NSMutableDictionary *)dict

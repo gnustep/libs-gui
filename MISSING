@@ -6,7 +6,6 @@ MISSING HEADERS
 > NSAccessibilityCustomRotor.h
 > NSAccessibilityElement.h
 > NSAccessibilityProtocols.h
-> NSAlignmentFeedbackFilter.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
@@ -36,8 +35,6 @@ MISSING HEADERS
 > NSPathControl.h
 > NSPathControlItem.h
 > NSPersistentDocument.h
-> NSPressureConfiguration.h
-> NSQuickDrawView.h
 > NSRuleEditor.h
 > NSScrubber.h
 > NSScrubberItemView.h
@@ -61,8 +58,6 @@ MISSING HEADERS
 > NSTextInputClient.h
 > NSTextInputContext.h
 > NSTitlebarAccessoryViewController.h
-> NSTouch.h
-> NSTouchBar.h
 > NSTypesetter.h
 > NSUserActivity.h
 > NSUserInterfaceCompression.h
@@ -109,3 +104,8 @@ Mac Specific
 > NSWindowScripting.h
 > NSHapticFeedback.h
 > NSAppleScriptExtensions.h
+> NSAlignmentFeedbackFilter.h
+> NSTouch.h
+> NSTouchBar.h
+> NSQuickDrawView.h
+> NSPressureConfiguration.h
