@@ -905,7 +905,7 @@ static NSImage *_pbc_image[5];
   NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
-  NSInteger                   selectedItem;
+  NSInteger             selectedItem;
 
   [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
                     object: self];
@@ -918,14 +918,17 @@ static NSImage *_pbc_image[5];
   cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin];
 
   if (_pbcFlags.pullsDown)
-    selectedItem = -1;
+    {
+      selectedItem = -1;
+    }
   else
     {
       selectedItem = [self indexOfSelectedItem];
-      if (selectedItem == -1)
-	{
-	  selectedItem = 0;
-	}
+    }
+
+  if (selectedItem == -1)
+    {
+      selectedItem = 0;
     }
 
   if (selectedItem > 0)
@@ -953,9 +956,9 @@ static NSImage *_pbc_image[5];
 		       selectedItem: selectedItem];
 
   [nc addObserver: self
-      selector: @selector(_handleNotification:)
-      name: NSMenuDidSendActionNotification
-      object: _menu];
+         selector: @selector(_handleNotification:)
+             name: NSMenuDidSendActionNotification
+           object: _menu];
 }
 
 /**
