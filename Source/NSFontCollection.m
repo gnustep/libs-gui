@@ -541,6 +541,15 @@ static NSLock *_fontCollectionLock = nil;
   return fc;
 }
 
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _fontCollectionDictionary
+                   forKey: @"NSFontCollectionDictionary"];
+    }
+}
+
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
@@ -548,20 +557,11 @@ static NSLock *_fontCollectionLock = nil;
     {
       if ([coder allowsKeyedCoding])
         {
-          [coder encodeObject: _fontCollectionDictionary
-                       forKey: @"NSFontCollectionDictionary"];
+          ASSIGN(_fontCollectionDictionary,
+                 [coder decodeObjectForKey: @"NSFontCollectionDictionary"]);
         }
     }
   return self;
-}
-
-- (void) encodeWithCoder: (NSCoder *)coder
-{
-  if ([coder allowsKeyedCoding])
-    {
-      ASSIGN(_fontCollectionDictionary,
-             [coder decodeObjectForKey: @"NSFontCollectionDictionary"]);
-    }
 }
   
 @end
