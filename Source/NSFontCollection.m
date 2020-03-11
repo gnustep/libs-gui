@@ -130,7 +130,11 @@ static NSLock *_fontCollectionLock = nil;
   NSFontCollection *fc = [[NSFontCollection alloc] init];
   NSData *d = [NSData dataWithContentsOfFile: path];
   NSKeyedUnarchiver *u = [[NSKeyedUnarchiver alloc] initForReadingWithData: d];
+
   [fc _setFontCollectionDictionary: [u decodeObjectForKey: @"NSFontCollectionDictionary"]];
+  RELEASE(u);
+  RELEASE(d);
+  
   return fc;
 }
 
@@ -227,12 +231,15 @@ static NSLock *_fontCollectionLock = nil;
 	}
     }
 
-  // Write out the file in the proper format...
+  // Create the archive...
   NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 10240];
   NSKeyedArchiver *a = [[NSKeyedArchiver alloc] initForWritingWithMutableData: m];
   [a encodeObject: [self _fontCollectionDictionary]
            forKey: @"NSFontCollectionDictionary"];
   [a finishEncoding];
+  RELEASE(a);
+
+  // Write the file....
   success = [m writeToFile: [self _fullFileName] atomically: YES];
   if (success && path_is_standard)
     {
@@ -245,6 +252,7 @@ static NSLock *_fontCollectionLock = nil;
       [_fontCollectionLock unlock];      
       return YES;
     }
+  RELEASE(m);
   
   return success;
 }
