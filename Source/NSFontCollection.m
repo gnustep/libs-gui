@@ -118,7 +118,6 @@ static NSLock *_fontCollectionLock = nil;
                       [newCollection _setFullFileName: file];
                       [_availableFontCollections setObject: newCollection
                                                      forKey: name];
-                      RELEASE(newCollection);
                     }
                 }
 	    }
@@ -137,6 +136,7 @@ static NSLock *_fontCollectionLock = nil;
   [fc _setFontCollectionDictionary: [u decodeObjectForKey: @"NSFontCollectionDictionary"]];
   RELEASE(u);
   RELEASE(d);
+  AUTORELEASE(fc);
   
   return fc;
 }
