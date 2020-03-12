@@ -272,7 +272,7 @@ static NSLock *_fontCollectionLock = nil;
       [[NSFileManager defaultManager] removeFileAtPath: [self _fullFileName]
 					       handler: nil];
       
-      // Remove the color list from the global list of colors
+      // Remove the collection from the global list of font collections
       [_fontCollectionLock lock];
       NSString *name = [[[self _fullFileName] lastPathComponent] stringByDeletingPathExtension];
       [_availableFontCollections removeObjectForKey: name];
