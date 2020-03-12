@@ -40,6 +40,9 @@
 static NSMutableDictionary *_availableFontCollections = nil;
 static NSLock *_fontCollectionLock = nil;
 
+/*
+ * Private functions...
+ */
 @interface NSFontCollection (Private)
 
 + (void) _loadAvailableFontCollections;
@@ -52,6 +55,9 @@ static NSLock *_fontCollectionLock = nil;
 
 @end
 
+/*
+ * Private functions...
+ */
 @implementation NSFontCollection (Private)
 
 /**
@@ -322,6 +328,9 @@ static NSLock *_fontCollectionLock = nil;
 
 @end
 
+/*
+ * NSFontCollection
+ */ 
 @implementation NSFontCollection 
 
 + (void) initialize
