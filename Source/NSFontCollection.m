@@ -144,11 +144,9 @@ static NSLock *_fontCollectionLock = nil;
 - (BOOL) _writeToFile
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *tmpPath;
-  BOOL          isDir;
-  BOOL          success;
-  BOOL          path_is_standard = YES;
-  NSString     *path = nil;
+  BOOL           success = NO;
+  NSString      *path = nil;
+  NSArray	*paths;
   
   /*
    * We need to initialize before saving, to avoid the new file being 
@@ -156,69 +154,19 @@ static NSLock *_fontCollectionLock = nil;
    */
   [NSFontCollection _loadAvailableFontCollections];
   
-  if (path == nil)
+  // Find library....
+  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                              NSUserDomainMask, YES);
+  if ([paths count] == 0)
     {
-      NSArray	*paths;
-      
-      // FIXME the standard path for saving font collections
-      paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                  NSUserDomainMask, YES);
-      if ([paths count] == 0)
-	{
-	  NSLog (@"Failed to find Library directory for user");
-	  return NO;	// No directory to save to.
-	}
-      path = [[paths objectAtIndex: 0]
-               stringByAppendingPathComponent: @"FontCollections"]; 
-      isDir = YES;
-    }
-  else
-    {
-      [fm fileExistsAtPath: path isDirectory: &isDir];
+      NSLog (@"Failed to find Library directory for user");
+      return NO;	// No directory to save to.
     }
   
-  if (isDir)
+  path = [[paths objectAtIndex: 0] stringByAppendingPathComponent: @"FontCollections"];
+  if ([fm fileExistsAtPath: path] == NO)
     {
-      [self _setFullFileName: [[path stringByAppendingPathComponent: _name] 
-                                stringByAppendingPathExtension: @"collection"]];
-    }
-  else // it is a file
-    {
-      if ([[path pathExtension] isEqual: @"collection"] == YES)
-	{
-          [self _setFullFileName: path];
-	}
-      else
-	{
-          [self _setFullFileName: [[path stringByDeletingPathExtension]
-                                    stringByAppendingPathExtension: @"collection"]];
-	}
-      path = [path stringByDeletingLastPathComponent];
-    }
-  
-  // Check if the path is a standard path
-  if ([[path lastPathComponent] isEqualToString: @"FontCollections"] == NO)
-    {
-      path_is_standard = NO;
-    }
-  else 
-    {
-      tmpPath = [path stringByDeletingLastPathComponent];
-      if (![NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                NSAllDomainsMask, YES) containsObject: tmpPath])
-	{
-	  path_is_standard = NO;
-	}
-    }
-  
-  /*
-   * If path is standard and it does not exist, try to create it.
-   * System standard paths should always be assumed to exist; 
-   * this will normally then only try to create user paths.
-   */
-  if (path_is_standard && ([fm fileExistsAtPath: path] == NO))
-    {
-      if ([fm createDirectoryAtPath: path 
+      if ([fm createDirectoryAtPath: path
               withIntermediateDirectories: YES
 			 attributes: nil
                               error: NULL])
@@ -231,7 +179,12 @@ static NSLock *_fontCollectionLock = nil;
 	}
     }
 
+  NSLog(@"Name = %@", [self _name]);
+  
   // Create the archive...
+  [self _setFullFileName:
+          [path stringByAppendingPathComponent:
+                  [[self _name] stringByAppendingPathExtension: @"collection"]]];
   NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 10240];
   NSKeyedArchiver *a = [[NSKeyedArchiver alloc] initForWritingWithMutableData: m];
   [a encodeObject: [self _fontCollectionDictionary]
@@ -240,8 +193,9 @@ static NSLock *_fontCollectionLock = nil;
   RELEASE(a);
 
   // Write the file....
+  NSLog(@"Writing to %@", [self _fullFileName]);
   success = [m writeToFile: [self _fullFileName] atomically: YES];
-  if (success && path_is_standard)
+  if (success)
     {
       [_fontCollectionLock lock];
       if ([[_availableFontCollections allValues] containsObject: self] == NO)
@@ -292,7 +246,7 @@ static NSLock *_fontCollectionLock = nil;
     }
     if (isDir)
     {
-      [self _setFullFileName: [[path stringByAppendingPathComponent: _name] 
+      [self _setFullFileName: [[path stringByAppendingPathComponent: [self _name]] 
                                 stringByAppendingPathExtension: @"collection"]];
     }
   else // it is a file
@@ -469,7 +423,15 @@ static NSLock *_fontCollectionLock = nil;
   NSFontCollection *fc = [_availableFontCollections objectForKey: name];
   if (fc == nil)
     {
-      // Getting named collections should not create new collections on disk.
+      BOOL rv = NO; 
+
+      fc = [[NSFontCollection alloc] init];
+      [fc _setName: name];
+      rv = [fc _writeToFile];
+      if (rv == YES)
+        {
+          [NSFontCollection _loadAvailableFontCollections];
+        }
     }
   return fc;
 }
