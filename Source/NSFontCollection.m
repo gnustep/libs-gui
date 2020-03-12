@@ -85,15 +85,8 @@ static NSLock *_fontCollectionLock = nil;
       NSDirectoryEnumerator *de = nil;
       NSFontCollection      *newCollection = nil;
       
-      if (_availableFontCollections == nil)
-	{
-	  // Create the global array of font collections...
-	  _availableFontCollections = [[NSMutableDictionary alloc] init];
-	}
-      else
-	{
-	  [_availableFontCollections removeAllObjects];
-	}
+      // Create the global array of font collections...
+      _availableFontCollections = [[NSMutableDictionary alloc] init];
       
       /*
        * Load font lists found in standard paths into the array
