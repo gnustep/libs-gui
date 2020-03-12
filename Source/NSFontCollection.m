@@ -23,18 +23,20 @@
 */
 
 #import <Foundation/NSArray.h>
-#import <Foundation/NSError.h>
-#import <Foundation/NSValue.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
-#import <Foundation/NSLock.h>
-#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSError.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSLocale.h>
+#import <Foundation/NSLock.h>
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSString.h>
-#import <Foundation/NSData.h>
+#import <Foundation/NSValue.h>
 
 #import <AppKit/NSFontCollection.h>
+#import <AppKit/NSFontDescriptor.h>
 #import <GNUstepGUI/GSFontInfo.h>
 
 static NSMutableDictionary *_availableFontCollections = nil;
@@ -45,14 +47,16 @@ static NSLock *_fontCollectionLock = nil;
  */
 @interface NSFontCollection (Private)
 
++ (NSFontCollection *) _readFileAtPath: (NSString *)path;
 + (void) _loadAvailableFontCollections;
 - (BOOL) _writeToFile; 
 - (BOOL) _removeFile;
 - (NSMutableDictionary *) _fontCollectionDictionary;
 - (void) _setFontCollectionDictionary: (NSMutableDictionary *)dict;
-- (void) _setQueryAttributes: (NSArray *)queryAttributes;
+- (void) _setQueryDescriptors: (NSArray *)queryDescriptors;
 - (void) _setFullFileName: (NSString *)fn;
-
+- (NSString *) _fullFileName;
+- (NSString *) _name;
 @end
 
 /*
@@ -298,32 +302,46 @@ static NSLock *_fontCollectionLock = nil;
   ASSIGNCOPY(_fontCollectionDictionary, dict);
 }
 
-- (void) _setQueryAttributes: (NSArray *)queryAttributes
+- (void) _setQueryDescriptors: (NSArray *)queryDescriptors
 {
-  return [_fontCollectionDictionary setObject: queryAttributes
-                                       forKey: @"NSFontDescriptorAttributes"];
+  return [_fontCollectionDictionary setObject: queryDescriptors
+                                       forKey: @"NSFontCollectionFontDescriptors"];
+}
+
+- (NSMutableDictionary *) _fontCollectionAttributes
+{
+  NSMutableDictionary *attrs = [_fontCollectionDictionary objectForKey:
+                                                            @"NSFontCollectionAttributes"];
+
+  if (attrs == nil)
+    {
+      attrs = [NSMutableDictionary dictionary];
+      [_fontCollectionDictionary setObject: attrs
+                                    forKey: @"NSFontCollectionAttributes"];
+    }
+  return attrs;
 }
 
 - (void) _setName: (NSString *)n
 {
-  [_fontCollectionDictionary setObject: n
-                                forKey: @"NSFontCollectionName"];
+  [[self _fontCollectionAttributes] setObject: n
+                                       forKey: @"NSFontCollectionName"];
 }
 
 - (NSString *) _name
 {
-  return [_fontCollectionDictionary objectForKey: @"NSFontCollectionName"];
+  return [[self _fontCollectionAttributes] objectForKey: @"NSFontCollectionName"];
 }
 
 - (void) _setFullFileName: (NSString *)fn
 {
-  [_fontCollectionDictionary setObject: fn
+  [[self _fontCollectionAttributes] setObject: fn
                                 forKey: @"NSFontCollectionFileName"];
 }
 
 - (NSString *) _fullFileName
 {
-  return [_fontCollectionDictionary objectForKey: @"NSFontCollectionFileName"];
+  return [[self _fontCollectionAttributes] objectForKey: @"NSFontCollectionFileName"];
 }
 
 @end
@@ -361,27 +379,34 @@ static NSLock *_fontCollectionLock = nil;
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
   NSFontCollection *fc = [[NSFontCollection alloc] init];
-  [fc _setQueryAttributes: queryDescriptors];
+  [fc _setQueryDescriptors: queryDescriptors];
   return fc;
 }
 
 + (NSFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
-  NSFontCollection *fc =  [self fontCollectionWithDescriptors:
-                                  [[GSFontEnumerator sharedEnumerator] availableFontDescriptors]];
-  if (fc != nil)
+  NSFontCollection *fc = [_availableFontCollections objectForKey: NSFontCollectionAllFonts];
+  if (fc == nil)
     {
-      [fc _setName: NSFontCollectionAllFonts];
-      [fc _writeToFile];
-      [NSFontCollection _loadAvailableFontCollections];
+      NSDictionary *fa = [NSDictionary dictionary];
+      NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fa];
+      fc =  [self fontCollectionWithDescriptors: [NSArray arrayWithObject: fd]];
+      if (fc != nil)
+        {
+          [fc _setName: NSFontCollectionAllFonts];
+          [fc _writeToFile];
+          [NSFontCollection _loadAvailableFontCollections];
+        }
     }
-  
   return fc;
 }
 
 + (NSFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
-  return [self fontCollectionWithAllAvailableDescriptors];
+  NSDictionary *fa = [NSDictionary dictionaryWithObject: [locale languageCode]
+                                                 forKey: @"NSCTFontDesignLanguagesAttribute"];
+  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes: fa];
+  return [self fontCollectionWithDescriptors: [NSArray arrayWithObject: fd]];
 }
 
 + (BOOL) showFontCollection: (NSFontCollection *)collection
@@ -454,7 +479,7 @@ static NSLock *_fontCollectionLock = nil;
 // Descriptors
 - (NSArray *) queryDescriptors 
 {
-  return [_fontCollectionDictionary objectForKey: @"NSFontDescriptorAttributes"];
+  return [_fontCollectionDictionary objectForKey: @"NSFontCollectionFontDescriptors"];
 }
 
 - (NSArray *) exclusionDescriptors
@@ -507,7 +532,7 @@ static NSLock *_fontCollectionLock = nil;
 {
   NSMutableFontCollection *fc = [[NSMutableFontCollection allocWithZone: zone] init];
 
-  [fc _setFontCollectionDictionary: _fontCollectionDictionary];
+  [fc _setFontCollectionDictionary: [_fontCollectionDictionary mutableCopyWithZone: zone]];
 
   return fc;
 }
@@ -540,52 +565,40 @@ static NSLock *_fontCollectionLock = nil;
 
 @implementation NSMutableFontCollection
 
-+ (void) initialize
-{
-  if (self == [NSMutableFontCollection class])
-    {
-      [self _loadAvailableFontCollections];
-    }
-}
-
 + (NSMutableFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
-  NSMutableFontCollection *fc = [[NSMutableFontCollection alloc] init];
-  [fc _setQueryAttributes: queryDescriptors];
-  return fc;
+  return [[NSFontCollection fontCollectionWithDescriptors: queryDescriptors] mutableCopy];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
-  return [self fontCollectionWithDescriptors:
-                 [[GSFontEnumerator sharedEnumerator] availableFontDescriptors]];
+  return [[NSFontCollection fontCollectionWithAllAvailableDescriptors] mutableCopy];
 } 
 
 + (NSMutableFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
-  return [self fontCollectionWithAllAvailableDescriptors];
+  return [[NSFontCollection fontCollectionWithLocale: locale] mutableCopy];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
 {
-  return [[_availableFontCollections objectForKey: name] mutableCopy]; 
+  return [[NSFontCollection fontCollectionWithName: name] mutableCopy];
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                           visibility: (NSFontCollectionVisibility)visibility
 {
-  return [[_availableFontCollections objectForKey: name] mutableCopy]; 
+  return [[NSFontCollection fontCollectionWithName: name visibility: visibility] mutableCopy];
 }
 
 - (NSArray *) queryDescriptors
 {
-  return [_fontCollectionDictionary objectForKey: @"NSFontDescriptorAttributes"];
+  return [super queryDescriptors];
 }
 
 - (void) setQueryDescriptors: (NSArray *)queryDescriptors
 {
-  [_fontCollectionDictionary setObject: queryDescriptors
-                                forKey: @"NSFontDescriptorAttributes"];
+  [super _setQueryDescriptors: [queryDescriptors mutableCopy]];
 }
 
 - (NSArray *) exclusionDescriptors
@@ -599,14 +612,14 @@ static NSLock *_fontCollectionLock = nil;
                                 forKey: @"NSFontExclusionDescriptorAttributes"];
 }
 
-- (void)addQueryForDescriptors: (NSArray *)descriptors
+- (void) addQueryForDescriptors: (NSArray *)descriptors
 {
   NSMutableArray *arr = [[self queryDescriptors] mutableCopy];
   [arr addObjectsFromArray: descriptors];
   [self setQueryDescriptors: arr];
 }
 
-- (void)removeQueryForDescriptors: (NSArray *)descriptors
+- (void) removeQueryForDescriptors: (NSArray *)descriptors
 {
   NSMutableArray *arr = [[self queryDescriptors] mutableCopy];
   [arr removeObjectsInArray: descriptors];
