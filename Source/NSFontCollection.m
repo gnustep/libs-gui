@@ -78,12 +78,12 @@ static NSLock *_fontCollectionLock = nil;
     }
   else
     {
-      NSString			*dir;
-      NSString			*file;
-      NSEnumerator		*e;
-      NSFileManager		*fm = [NSFileManager defaultManager];
-      NSDirectoryEnumerator	*de;
-      NSFontCollection		*newCollection;
+      NSString 	            *dir = nil;
+      NSString	            *file = nil;
+      NSEnumerator          *e = nil;
+      NSFileManager         *fm = [NSFileManager defaultManager];
+      NSDirectoryEnumerator *de = nil;
+      NSFontCollection      *newCollection = nil;
       
       if (_availableFontCollections == nil)
 	{
