@@ -135,7 +135,6 @@ static NSLock *_fontCollectionLock = nil;
 
   [fc _setFontCollectionDictionary: [u decodeObjectForKey: @"NSFontCollectionDictionary"]];
   RELEASE(u);
-  RELEASE(d);
   AUTORELEASE(fc);
   
   return fc;
@@ -207,7 +206,6 @@ static NSLock *_fontCollectionLock = nil;
           [_availableFontCollections setObject: self forKey: name];
         }
       [_fontCollectionLock unlock];      
-      return YES;
     }
   RELEASE(m);
   
@@ -353,14 +351,20 @@ static NSLock *_fontCollectionLock = nil;
 }
 
 // Initializers...
-- (instancetype) init
+- (instancetype) initWithDescriptors: (NSArray *)queryDescriptors
 {
   self = [super init];
   if (self != nil)
     {
       _fontCollectionDictionary = [[NSMutableDictionary alloc] initWithCapacity: 10];
+      [self _setQueryDescriptors: queryDescriptors];
     }
   return self;
+}
+
+- (instancetype) init
+{
+  return [self initWithDescriptors: [NSArray array]];
 }
 
 - (void) dealloc
@@ -371,9 +375,8 @@ static NSLock *_fontCollectionLock = nil;
 
 + (NSFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
-  NSFontCollection *fc = [[NSFontCollection alloc] init];
-  [fc _setQueryDescriptors: queryDescriptors];
-  return fc;
+  NSFontCollection *fc = [[NSFontCollection alloc] initWithDescriptors: queryDescriptors];
+  return AUTORELEASE(fc);
 }
 
 + (NSFontCollection *) fontCollectionWithAllAvailableDescriptors
@@ -406,8 +409,7 @@ static NSLock *_fontCollectionLock = nil;
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
-  BOOL rv = [collection _writeToFile];
-   return rv;
+  return [collection _writeToFile];
 }
 
 + (BOOL) hideFontCollectionWithName: (NSFontCollectionName)name
@@ -415,8 +417,8 @@ static NSLock *_fontCollectionLock = nil;
                               error: (NSError **)error
 {
   NSFontCollection *collection = [_availableFontCollections objectForKey: name];
-  BOOL rv = [collection _removeFile];
-  return rv;
+
+  return [collection _removeFile];
 }
 
 + (BOOL) renameFontCollectionWithName: (NSFontCollectionName)aname
@@ -446,11 +448,10 @@ static NSLock *_fontCollectionLock = nil;
   NSFontCollection *fc = [_availableFontCollections objectForKey: name];
   if (fc == nil)
     {
-      BOOL rv = NO; 
-
       fc = [[NSFontCollection alloc] init];
       [fc _setName: name];
-      rv = [fc _writeToFile];
+      [fc _writeToFile];
+      AUTORELEASE(fc);
     }
   return fc;
 }
@@ -479,6 +480,7 @@ static NSLock *_fontCollectionLock = nil;
 
 - (NSArray *) matchingDescriptorsWithOptions: (NSDictionary *)options
 {
+  // FIXME: Wrong logic
   GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
   return [fen matchingFontDescriptorsFor: options];
 }
@@ -495,7 +497,7 @@ static NSLock *_fontCollectionLock = nil;
   NSEnumerator *en = [a objectEnumerator];
   id o = nil;
 
-  while((o = [en nextObject]) != nil)
+  while ((o = [en nextObject]) != nil)
     {
       if ([[o familyName] isEqualToString: family])
         {
@@ -503,13 +505,13 @@ static NSLock *_fontCollectionLock = nil;
         }    
     }
   
-  return [a copy];
+  return [r copy];
 }
 
 - (instancetype) copyWithZone: (NSZone *)zone
 {
   NSFontCollection *fc = [[NSFontCollection allocWithZone: zone] init];
-  ASSIGNCOPY(fc->_fontCollectionDictionary, _fontCollectionDictionary);
+  [fc _setFontCollectionDictionary: _fontCollectionDictionary];
   return fc;
 }
 
@@ -529,6 +531,10 @@ static NSLock *_fontCollectionLock = nil;
       [coder encodeObject: _fontCollectionDictionary
                    forKey: @"NSFontCollectionDictionary"];
     }
+  else
+    {
+      [coder encodeObject: _fontCollectionDictionary];
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
@@ -541,6 +547,10 @@ static NSLock *_fontCollectionLock = nil;
           ASSIGN(_fontCollectionDictionary,
                  [coder decodeObjectForKey: @"NSFontCollectionDictionary"]);
         }
+    }
+  else
+    {
+      [coder decodeValueOfObjCType: @encode(id) at: &_fontCollectionDictionary];
     }
   return self;
 }
