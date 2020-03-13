@@ -388,7 +388,6 @@ static NSLock *_fontCollectionLock = nil;
         {
           [fc _setName: NSFontCollectionAllFonts];
           [fc _writeToFile];
-          [NSFontCollection _loadAvailableFontCollections];
         }
     }
   return fc;
@@ -408,8 +407,7 @@ static NSLock *_fontCollectionLock = nil;
                       error: (NSError **)error
 {
   BOOL rv = [collection _writeToFile];
-  [NSFontCollection _loadAvailableFontCollections];
-  return rv;
+   return rv;
 }
 
 + (BOOL) hideFontCollectionWithName: (NSFontCollectionName)name
@@ -418,7 +416,6 @@ static NSLock *_fontCollectionLock = nil;
 {
   NSFontCollection *collection = [_availableFontCollections objectForKey: name];
   BOOL rv = [collection _removeFile];
-  [NSFontCollection _loadAvailableFontCollections];
   return rv;
 }
 
@@ -435,8 +432,7 @@ static NSLock *_fontCollectionLock = nil;
       [collection _setName: name];
       [collection _writeToFile];
     }
-  [NSFontCollection _loadAvailableFontCollections];
-
+  
   return rv;
 }
 
@@ -455,10 +451,6 @@ static NSLock *_fontCollectionLock = nil;
       fc = [[NSFontCollection alloc] init];
       [fc _setName: name];
       rv = [fc _writeToFile];
-      if (rv == YES)
-        {
-          [NSFontCollection _loadAvailableFontCollections];
-        }
     }
   return fc;
 }
