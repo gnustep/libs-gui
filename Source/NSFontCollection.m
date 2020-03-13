@@ -601,22 +601,35 @@ static NSLock *_fontCollectionLock = nil;
 
 - (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors
 {
+  NSMutableArray *qd = [[self queryDescriptors] mutableCopy];
+
+  [qd removeObjectsInArray: [self exclusionDescriptors]];
+  [self setQueryDescriptors: [NSArray arrayWithArray: qd]];
   [_fontCollectionDictionary setObject: [exclusionDescriptors mutableCopy]
                                 forKey: @"NSFontExclusionDescriptorAttributes"];
+  
 }
 
 - (void) addQueryForDescriptors: (NSArray *)descriptors
 {
   NSMutableArray *arr = [[self queryDescriptors] mutableCopy];
+  NSMutableArray *ed = [[self exclusionDescriptors] mutableCopy];
+
+  [ed removeObjectsInArray: arr];
   [arr addObjectsFromArray: descriptors];
   [self setQueryDescriptors: arr];
+  [self setExclusionDescriptors: [NSArray arrayWithArray: ed]];
 }
 
 - (void) removeQueryForDescriptors: (NSArray *)descriptors
 {
   NSMutableArray *arr = [[self queryDescriptors] mutableCopy];
+  NSMutableArray *ed = [[self exclusionDescriptors] mutableCopy];
+
+  [ed addObjectsFromArray: descriptors];
   [arr removeObjectsInArray: descriptors];
   [self setQueryDescriptors: arr];
+  [self setExclusionDescriptors: [NSArray arrayWithArray: ed]];
 }
 
 @end
