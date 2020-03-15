@@ -104,7 +104,7 @@
   NS_ENDHANDLER;
 
   CALL_BLOCK(selectionHandler, color);
-  [color release];
+  RELEASE(color);
   [NSCursor pop];
   [w _releaseMouse: self];
   [w close];
