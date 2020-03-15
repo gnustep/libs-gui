@@ -84,6 +84,7 @@ Completed
 > NSTouch.h
 > NSTouchBar.h
 > NSSpeechRecognizer.h
+> NSColorSampler.h
 
 Mac Specific
 ---
