@@ -12,7 +12,6 @@ MISSING HEADERS
 > NSCollectionViewGridLayout.h
 > NSCollectionViewLayout.h
 > NSCollectionViewTransitionLayout.h
-> NSColorSampler.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
 > NSDraggingItem.h
