@@ -54,7 +54,8 @@
                                             styleMask: 0
                                               backing: NSBackingStoreBuffered
                                                 defer: NO];
-
+  NSColor *color = nil;
+  
   [w _captureMouse: self];
 
   /**
@@ -73,7 +74,8 @@
 	NSPoint mouseLoc;
 	NSImage *img;
         CREATE_AUTORELEASE_POOL(pool);
- 	
+
+        RELEASE(color);
 	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
 					  untilDate: [NSDate distantFuture]
 					     inMode: NSEventTrackingRunLoopMode
@@ -87,9 +89,9 @@
 	if (img != nil)
 	  {
 	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
-	    NSColor *color = [rep colorAtX: 0 y: 0];
-            CALL_BLOCK(selectionHandler, color);
-	  }
+	    color = [rep colorAtX: 0 y: 0];
+            RETAIN(color);
+          }
        [pool drain];
      } while ([currentEvent type] != NSLeftMouseUp && 
 	       [currentEvent type] != NSLeftMouseDown);
@@ -99,8 +101,10 @@
       NSLog(@"Exception occurred in -[NSColorSampler showSamplerWithSelectionHandler:] : %@",
 	    localException);
     }
-  NS_ENDHANDLER
-    
+  NS_ENDHANDLER;
+
+  CALL_BLOCK(selectionHandler, color);
+  [color release];
   [NSCursor pop];
   [w _releaseMouse: self];
   [w close];
