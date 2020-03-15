@@ -22,13 +22,88 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSDate.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSAutoreleasePool.h>
+
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSBitmapImageRep.h>
 #import <AppKit/NSColorSampler.h>
+#import <AppKit/NSCursor.h>
+#import <AppKit/NSColor.h>
+#import <AppKit/NSEvent.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSScreen.h>
+
+#import <GNUstepGUI/GSDisplayServer.h>
+
+@interface NSWindow (private)
+- (void) _captureMouse: sender;
+- (void) _releaseMouse: sender;
+@end
 
 @implementation NSColorSampler
 
 - (void) showSamplerWithSelectionHandler: (GSColorSampleHandler)selectionHandler
 {
-  // Dummy implementation...
+  NSEvent *currentEvent;
+  NSCursor *cursor;
+  NSWindow *w = [[NSWindow alloc] initWithContentRect: NSMakeRect(-1000,-1000,0,0)
+                                            styleMask: 0
+                                              backing: NSBackingStoreBuffered
+                                                defer: NO];
+
+  [w _captureMouse: self];
+
+  /**
+   * There was code here to dynamically generate a magnifying glass
+   * cursor with a magnified portion of the screenshot in it,
+   * but changing the cursor rapidly on X seems to cause flicker,
+   * so we just use a plain magnifying glass. (dynamic code is in r33543)
+   */
+  cursor = [[[NSCursor alloc] initWithImage: [NSImage imageNamed: @"MagnifyGlass"]
+					      hotSpot: NSMakePoint(12, 13)] autorelease];
+  [cursor push];
+
+  NS_DURING
+    {
+      do {
+	NSPoint mouseLoc;
+	NSImage *img;
+        CREATE_AUTORELEASE_POOL(pool);
+ 	
+	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
+					  untilDate: [NSDate distantFuture]
+					     inMode: NSEventTrackingRunLoopMode
+					    dequeue: YES];
+	
+	mouseLoc = [w convertBaseToScreen: [w mouseLocationOutsideOfEventStream]];
+	
+	img = [GSCurrentServer() contentsOfScreen: [[w screen] screenNumber]
+					   inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
+	
+	if (img != nil)
+	  {
+	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
+	    NSColor *color = [rep colorAtX: 0 y: 0];
+            CALL_BLOCK(selectionHandler, color);
+	  }
+       [pool drain];
+     } while ([currentEvent type] != NSLeftMouseUp && 
+	       [currentEvent type] != NSLeftMouseDown);
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Exception occurred in -[NSColorSampler showSamplerWithSelectionHandler:] : %@",
+	    localException);
+    }
+  NS_ENDHANDLER
+    
+  [NSCursor pop];
+  [w _releaseMouse: self];
+  [w close];
 }
 
 @end
