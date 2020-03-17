@@ -34,8 +34,8 @@
 #import <AppKit/NSColor.h>
 #import <AppKit/NSEvent.h>
 #import <AppKit/NSImage.h>
-#import <AppKit/NSWindow.h>
 #import <AppKit/NSScreen.h>
+#import <AppKit/NSPanel.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -50,12 +50,17 @@
 {
   NSEvent *currentEvent;
   NSCursor *cursor;
-  NSWindow *w = [[NSWindow alloc] initWithContentRect: NSMakeRect(-1000,-1000,0,0)
-                                            styleMask: 0
-                                              backing: NSBackingStoreBuffered
-                                                defer: NO];
+  NSRect contentRect = NSMakeRect(-1024,-1024,0,0);
+  unsigned int style = NSTitledWindowMask | NSClosableWindowMask
+    | NSResizableWindowMask | NSUtilityWindowMask;
+  NSPanel *w = [[NSPanel alloc] initWithContentRect: contentRect
+                                           styleMask: style
+                                             backing: NSBackingStoreRetained
+                                               defer: NO
+                                              screen: nil];      
   NSColor *color = nil;
   
+  [w orderFront: nil];
   [w _captureMouse: self];
 
   /**
@@ -70,31 +75,32 @@
 
   NS_DURING
     {
-      do {
-	NSPoint mouseLoc;
-	NSImage *img;
-        CREATE_AUTORELEASE_POOL(pool);
-
-        RELEASE(color);
-	currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
-					  untilDate: [NSDate distantFuture]
-					     inMode: NSEventTrackingRunLoopMode
-					    dequeue: YES];
-	
-	mouseLoc = [w convertBaseToScreen: [w mouseLocationOutsideOfEventStream]];
-	
-	img = [GSCurrentServer() contentsOfScreen: [[w screen] screenNumber]
-					   inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
-	
-	if (img != nil)
-	  {
-	    NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
-	    color = [rep colorAtX: 0 y: 0];
-            RETAIN(color);
-          }
-       [pool drain];
-     } while ([currentEvent type] != NSLeftMouseUp && 
-	       [currentEvent type] != NSLeftMouseDown);
+      do
+        {
+          NSPoint mouseLoc;
+          NSImage *img;
+          CREATE_AUTORELEASE_POOL(pool);
+          
+          RELEASE(color);
+          currentEvent = [NSApp nextEventMatchingMask: NSLeftMouseDownMask | NSLeftMouseUpMask | NSMouseMovedMask
+                                            untilDate: [NSDate distantFuture]
+                                               inMode: NSEventTrackingRunLoopMode
+                                              dequeue: YES];
+          
+          mouseLoc = [w convertBaseToScreen: [w mouseLocationOutsideOfEventStream]];
+          
+          img = [GSCurrentServer() contentsOfScreen: [[w screen] screenNumber]
+                                             inRect: NSMakeRect(mouseLoc.x, mouseLoc.y, 1, 1)];
+          
+          if (nil != img)
+            {
+              NSBitmapImageRep *rep = (NSBitmapImageRep *)[img bestRepresentationForDevice: nil];
+              color = [rep colorAtX: 0 y: 0];
+              RETAIN(color);
+            }
+          [pool drain];
+        } while ([currentEvent type] != NSLeftMouseUp && 
+                 [currentEvent type] != NSLeftMouseDown);
     }
   NS_HANDLER
     {
@@ -102,7 +108,7 @@
 	    localException);
     }
   NS_ENDHANDLER;
-
+  
   CALL_BLOCK(selectionHandler, color);
   RELEASE(color);
   [NSCursor pop];
