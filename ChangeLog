@@ -1,3 +1,9 @@
+2020-03-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Model/GNUmakefile: do not overwrite ADDITIONAL_INCLUDE_DIRS
+	value to help RPM build. In spec file ADDITIONAL_INCLUDE_DIRS can be sat
+	to subdirectories which are create by RPM build tool.
+
 2020-03-05  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (_applyFrame:): new helper method to do actual
