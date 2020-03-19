@@ -23,7 +23,6 @@ MISSING HEADERS
 > NSFontAssetRequest.h
 > NSFontCollection.h
 > NSGlyphInfo.h
-> NSGridView.h
 > NSItemProvider.h
 > NSLayoutAnchor.h
 > NSLayoutConstraint.h
