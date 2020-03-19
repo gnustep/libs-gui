@@ -126,6 +126,7 @@ NSGestureRecognizer.m \
 NSGradient.m \
 NSGlyphGenerator.m \
 NSGraphicsContext.m \
+NSGridView.m \
 NSGroupTouchBarItem.m \
 NSHelpPanel.m \
 NSHelpManager.m \
@@ -400,6 +401,7 @@ NSForm.h \
 NSFormCell.h \
 NSGestureRecognizer.h \
 NSGradient.h \
+NSGridView.h \
 NSGroupTouchBarItem.h \
 NSGlyphGenerator.h \
 NSGraphicsContext.h \
