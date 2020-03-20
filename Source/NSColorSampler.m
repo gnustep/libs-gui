@@ -89,10 +89,10 @@ static NSColorSampler *_gs_gui_color_sampler = nil;
   [_gs_gui_color_sampler_lock lock];
 
   w =  [[NSPanel alloc] initWithContentRect: contentRect
-                                           styleMask: style
-                                             backing: NSBackingStoreRetained
-                                               defer: NO
-                                              screen: nil]; 
+                                  styleMask: style
+                                    backing: NSBackingStoreRetained
+                                      defer: NO
+                                     screen: nil]; 
   
   [w setBecomesKeyOnlyIfNeeded: YES];
   [w makeKeyAndOrderFront: self];
