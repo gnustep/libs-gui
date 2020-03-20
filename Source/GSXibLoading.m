@@ -421,17 +421,116 @@
 
 @implementation IBActionConnection
 
+- (void) dealloc
+{
+  DESTROY(trigger);
+  [super dealloc];
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+  {
+    if ([coder allowsKeyedCoding])
+      {
+        // label and source string tags have changed for XIB5...
+        if ([coder containsValueForKey: @"selector"])
+          {
+            ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
+          }
+        if ([coder containsValueForKey: @"target"])
+          {
+            ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+          }
+
+        // Looks like the 'trigger' attribute should be used to override the
+        // action setup method...
+        if ([coder containsValueForKey: @"trigger"])
+          {
+            ASSIGN(trigger, [coder decodeObjectForKey: @"trigger"]);
+          }
+      }
+    else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.", NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+  }
+  return self;
+}
+
+- (NSString*) trigger
+{
+  return trigger;
+}
+
 - (void) establishConnection
 {
   SEL sel = NSSelectorFromString(label);
 
   [destination setTarget: source];
-  [destination setAction: sel];
+
+  if (trigger && [trigger length])
+    {
+      NSString *selName = [NSString stringWithFormat: @"set%@%@:",
+                           [[trigger substringToIndex: 1] uppercaseString],
+                           [trigger substringFromIndex: 1]];
+      SEL       trigsel = NSSelectorFromString(selName);
+
+      if (sel && trigsel && [destination respondsToSelector: trigsel])
+        {
+          NSWarnMLog(@"setting trigger %@ to selector %@", selName, label);
+          [destination performSelector: trigsel withObject: (id)sel];
+        }
+      else if (!sel)
+        {
+          NSWarnMLog(@"label %@ does not correspond to any selector", label);
+        }
+      else if (!trigsel)
+        {
+          NSWarnMLog(@"trigger %@ does not correspond to any selector", trigger);
+        }
+      else
+        {
+          NSWarnMLog(@"destination class (%@) does not respond to trigger selector %@",
+                     NSStringFromClass([destination class]), selName);
+        }
+    }
+  else
+    {
+      // Otherwise invoke the normal method...
+      [destination setAction: sel];
+    }
 }
 
 @end
 
 @implementation IBOutletConnection
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          // label string tag has changed for XIB5...
+          if ([coder containsValueForKey: @"property"])
+            {
+              ASSIGN(label, [coder decodeObjectForKey: @"property"]);
+            }
+        }
+      else
+        {
+          [NSException raise: NSInvalidArgumentException
+                      format: @"Can't decode %@ with %@.", NSStringFromClass([self class]),
+           NSStringFromClass([coder class])];
+        }
+    }
+  return self;
+}
 
 - (void) establishConnection
 {
@@ -866,10 +965,10 @@
 
 - (NSString*) description
 {
-  return [NSString stringWithFormat:
-                    @"%@ - sourceID: %@: maxID: %@: objectRecords: %@: flattenedProperties: %@: connectionRecords: %@: ",
-                   [super description], sourceID, maxID, objectRecords,
-                   flattenedProperties, connectionRecords];
+  return [NSString stringWithFormat: @"%@ - sourceID: %@: maxID: %d:"
+    @" objectRecords: %@: flattenedProperties: %@: connectionRecords: %@: ",
+   [super description], sourceID, maxID,
+   objectRecords, flattenedProperties, connectionRecords];
 }
 
 - (NSEnumerator*) connectionRecordEnumerator

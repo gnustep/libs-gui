@@ -12,7 +12,6 @@ MISSING HEADERS
 > NSCollectionViewGridLayout.h
 > NSCollectionViewLayout.h
 > NSCollectionViewTransitionLayout.h
-> NSColorSampler.h
 > NSDictionaryController.h
 > NSDiffableDataSource.h
 > NSDraggingItem.h
@@ -40,7 +39,6 @@ MISSING HEADERS
 > NSPressureConfiguration.h
 > NSSharingServicePickerToolbarItem.h
 > NSSliderAccessory.h
-> NSSpeechRecognizer.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
 > NSStackView.h
@@ -76,6 +74,8 @@ Completed
 > NSDataAsset.h
 > NSTouch.h
 > NSTouchBar.h
+> NSSpeechRecognizer.h
+> NSColorSampler.h
 
 Obsolete
 ---

@@ -812,6 +812,10 @@ const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantDark =
   @"NSAppearanceNameAccessibilityHighContrastVibrantDark";
 const NSAppearanceName NSAppearanceNameLightContent = @"NSAppearanceNameLightContent";
 
+// Speech recognition...
+const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
+
+
 extern void __objc_gui_force_linking (void);
 
 void

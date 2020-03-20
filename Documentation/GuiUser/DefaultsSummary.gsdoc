@@ -178,6 +178,15 @@
           is meant to make things friendlier for slow computers.
           </p>
 	  </desc>
+	  <term>GSScaleFactor</term>
+	  <desc>
+          <p>
+          A floating point number, <code>1.0</code> by default. Scales
+          GUI elements by the given factor for high-DPI monitors. DPI
+          auto-detection on some platforms (only Windows, for now) will
+          cause the default to appear to change.
+          </p>
+	  </desc>
 	  <term>GSUnknownFileTool</term>
 	  <desc>
           <p>

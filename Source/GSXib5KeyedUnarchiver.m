@@ -113,118 +113,6 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-@interface IBActionConnection5 : IBActionConnection
-{
-  NSString *trigger;
-}
-@end
-
-@implementation IBActionConnection5
-
-- (instancetype) initWithCoder: (NSCoder *)coder
-{
-  self = [super initWithCoder: coder];
-  if (self)
-  {
-    trigger = nil;
-
-    if ([coder allowsKeyedCoding])
-      {
-        // label and source string tags have changed for XIB5...
-        ASSIGN(label, [coder decodeObjectForKey: @"selector"]);
-        ASSIGN(source, [coder decodeObjectForKey: @"target"]);
-        // destination string tag is still the same (so far) and loaded
-        // by base class...
-        //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
-
-        // Looks like the 'trigger' attribute should be used to override the
-        // target/action setup method...
-        if ([coder containsValueForKey: @"trigger"])
-          ASSIGN(trigger, [coder decodeObjectForKey: @"trigger"]);
-      }
-    else
-    {
-      [NSException raise: NSInvalidArgumentException
-                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-       NSStringFromClass([coder class])];
-    }
-  }
-  return self;
-}
-
-- (NSString*) trigger
-{
-  return trigger;
-}
-
-- (void) establishConnection
-{
-  if (trigger && [trigger length])
-    {
-      SEL       sel     = NSSelectorFromString(label);
-      NSString *selName = [NSString stringWithFormat: @"set%@%@:",
-                           [[trigger substringToIndex: 1] uppercaseString],
-                           [trigger substringFromIndex: 1]];
-      SEL       trigsel = NSSelectorFromString(selName);
-
-      if (sel && trigsel && [destination respondsToSelector: trigsel])
-        {
-          NSWarnMLog(@"setting trigger %@ to selector %@", selName, label);
-          //[destination setTarget: source]; // Not needed???
-          [destination performSelector: trigsel withObject: (id)sel];
-        }
-      else if (!sel)
-        {
-          NSWarnMLog(@"label %@ does not correspond to any selector", label);
-        }
-      else if (!trigsel)
-        {
-          NSWarnMLog(@"trigger %@ does not correspond to any selector", trigger);
-        }
-      else
-        {
-          NSWarnMLog(@"destination class (%@) does not respond to trigger selector %@",
-                     NSStringFromClass([destination class]), selName);
-        }
-
-      // PREMATURE RETURN...
-      return;
-    }
-
-  // Otherwise invoke the super class' method...
-  [super establishConnection];
-}
-
-@end
-
-@interface IBOutletConnection5 : IBOutletConnection
-@end
-
-@implementation IBOutletConnection5
-
-- (instancetype) initWithCoder: (NSCoder *)coder
-{
-  self = [super initWithCoder: coder];
-  if (self)
-    {
-      if ([coder allowsKeyedCoding])
-        {
-          // label string tag has changed for XIB5...
-          ASSIGN(label, [coder decodeObjectForKey: @"property"]);
-          // destination  and source string tags are still the same (so far) and loaded
-          // by base class...
-        }
-      else
-        {
-          [NSException raise: NSInvalidArgumentException
-                      format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-           NSStringFromClass([coder class])];
-        }
-    }
-  return self;
-}
-
-@end
 
 @interface IBUserDefinedRuntimeAttribute5 : IBUserDefinedRuntimeAttribute
 @end
@@ -313,8 +201,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
-                            @"IBOutletConnection5", @"outlet",
-                            @"IBActionConnection5", @"action",
+                            @"IBOutletConnection", @"outlet",
+                            @"IBActionConnection", @"action",
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
@@ -2401,7 +2289,8 @@ didStartElement: (NSString*)elementName
       mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
       mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
                                              [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
-      mask.flags.editable                 = [[attributes objectForKey: @"editable"] boolValue];
+      mask.flags.editable                 = ([attributes objectForKey: @"editable"] ?
+                                             [[attributes objectForKey: @"editable"] boolValue] : YES);
       mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
@@ -3121,7 +3010,7 @@ didStartElement: (NSString*)elementName
   return flag;
 }
 
-- (NSPoint) decodePointForKey:(NSString *)key
+- (NSPoint) decodePointForKey: (NSString *)key
 {
   NSPoint point = NSZeroPoint;
 
