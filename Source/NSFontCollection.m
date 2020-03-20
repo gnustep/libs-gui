@@ -1,21 +1,21 @@
 /* Implementation of class NSFontCollection
    Copyright (C) 2019 Free Software Foundation, Inc.
-   
+
    By: Gregory John Casamento
    Date: Tue Dec 10 11:51:33 EST 2019
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -49,13 +49,15 @@ static NSLock *_fontCollectionLock = nil;
 
 + (NSFontCollection *) _readFileAtPath: (NSString *)path;
 + (void) _loadAvailableFontCollections;
-- (BOOL) _writeToFile; 
+- (BOOL) _writeToFileAtPath: (NSString *)path;
+- (BOOL) _writeToFile;
 - (BOOL) _removeFile;
 - (NSMutableDictionary *) _fontCollectionDictionary;
 - (void) _setFontCollectionDictionary: (NSMutableDictionary *)dict;
 - (void) _setQueryDescriptors: (NSArray *)queryDescriptors;
 - (void) _setFullFileName: (NSString *)fn;
 - (NSString *) _fullFileName;
+- (void) _setName: (NSString *)n;
 - (NSString *) _name;
 @end
 
@@ -70,7 +72,7 @@ static NSLock *_fontCollectionLock = nil;
 + (void) _loadAvailableFontCollections
 {
   [_fontCollectionLock lock];
-  
+
   if (_availableFontCollections != nil)
     {
       // Nothing to do ... already loaded
@@ -78,50 +80,52 @@ static NSLock *_fontCollectionLock = nil;
     }
   else
     {
-      NSString 	            *dir = nil;
-      NSString	            *file = nil;
-      NSEnumerator          *e = nil;
-      NSFileManager         *fm = [NSFileManager defaultManager];
-      NSDirectoryEnumerator *de = nil;
-      NSFontCollection      *newCollection = nil;
-      
+      NSString      *dir = nil;
+      NSEnumerator  *e = nil;
+      NSFileManager *fm = [NSFileManager defaultManager];
+
       // Create the global array of font collections...
       _availableFontCollections = [[NSMutableDictionary alloc] init];
-      
+
       /*
        * Load font lists found in standard paths into the array
        * FIXME: Check exactly where in the directory tree we should scan.
        */
       e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                NSAllDomainsMask, YES) objectEnumerator];
-      
-      while ((dir = (NSString *)[e nextObject])) 
+
+      while ((dir = (NSString *)[e nextObject]))
 	{
 	  BOOL flag;
-          
+          NSDirectoryEnumerator *de = nil;
+          NSString *file = nil;
+
 	  dir = [dir stringByAppendingPathComponent: @"FontCollections"];
 	  if (![fm fileExistsAtPath: dir isDirectory: &flag] || !flag)
 	    {
 	      // Only process existing directories
 	      continue;
 	    }
-          
+
 	  de = [fm enumeratorAtPath: dir];
-	  while ((file = [de nextObject])) 
+	  while ((file = [de nextObject]))
 	    {
 	      if ([[file pathExtension] isEqualToString: @"collection"])
 		{
 		  NSString *name = [file stringByDeletingPathExtension];
-		  newCollection = [self _readFileAtPath: [dir stringByAppendingPathComponent: file]]; 
+                  NSString *path = [dir stringByAppendingPathComponent: file];
+                  NSFontCollection *newCollection = [self _readFileAtPath: path];
+
                   if (newCollection != nil && name != nil)
                     {
-                      [newCollection _setFullFileName: file];
+                      [newCollection _setFullFileName: path];
+                      [newCollection _setName: name];
                       [_availableFontCollections setObject: newCollection
                                                      forKey: name];
                     }
                 }
 	    }
-	}  
+	}
 
       [_fontCollectionLock unlock];
     }
@@ -129,157 +133,148 @@ static NSLock *_fontCollectionLock = nil;
 
 + (NSFontCollection *) _readFileAtPath: (NSString *)path
 {
-  NSFontCollection *fc = [[NSFontCollection alloc] init];
   NSData *d = [NSData dataWithContentsOfFile: path];
   NSKeyedUnarchiver *u = [[NSKeyedUnarchiver alloc] initForReadingWithData: d];
+  NSFontCollection *fc = [[NSFontCollection alloc] initWithCoder: u];
 
-  [fc _setFontCollectionDictionary: [u decodeObjectForKey: @"NSFontCollectionDictionary"]];
   RELEASE(u);
-  AUTORELEASE(fc);
-  
-  return fc;
+
+  return AUTORELEASE(fc);
 }
 
 /*
  * Writing and Removing Files
  */
-- (BOOL) _writeToFile
+- (BOOL) _writeToFileAtPath: (NSString *)path
 {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL           success = NO;
-  NSString      *path = nil;
-  NSArray	*paths;
-  
-  /*
-   * We need to initialize before saving, to avoid the new file being 
-   * counted as a different collection thus making it appear twice
-   */
-  [NSFontCollection _loadAvailableFontCollections];
-  
-  // Find library....
-  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                              NSUserDomainMask, YES);
-  if ([paths count] == 0)
-    {
-      NSLog (@"Failed to find Library directory for user");
-      return NO;	// No directory to save to.
-    }
-  
-  path = [[paths objectAtIndex: 0] stringByAppendingPathComponent: @"FontCollections"];
-  if ([fm fileExistsAtPath: path] == NO)
-    {
-      if ([fm createDirectoryAtPath: path
-              withIntermediateDirectories: YES
-			 attributes: nil
-                              error: NULL])
-	{
-	  NSLog (@"Created standard directory %@", path);
-	}
-      else
-	{
-	  NSLog (@"Failed attempt to create directory %@", path);
-	}
-    }
-
-  NSLog(@"Name = %@", [self _name]);
-  
-  // Create the archive...
-  [self _setFullFileName:
-          [path stringByAppendingPathComponent:
-                  [[self _name] stringByAppendingPathExtension: @"collection"]]];
+  BOOL success = NO;
   NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 10240];
   NSKeyedArchiver *a = [[NSKeyedArchiver alloc] initForWritingWithMutableData: m];
-  [a encodeObject: [self _fontCollectionDictionary]
-           forKey: @"NSFontCollectionDictionary"];
+
+  [self encodeWithCoder: a];
   [a finishEncoding];
   RELEASE(a);
 
   // Write the file....
-  NSLog(@"Writing to %@", [self _fullFileName]);
-  success = [m writeToFile: [self _fullFileName] atomically: YES];
+  NSLog(@"Writing to %@", path);
+  success = [m writeToFile: path atomically: YES];
+  RELEASE(m);
+  return success;
+}
+
+- (BOOL) _writeToFile
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL           success = NO;
+  NSString      *path = [self _fullFileName];
+
+  /*
+   * We need to initialize before saving, to avoid the new file being
+   * counted as a different collection thus making it appear twice
+   */
+  [NSFontCollection _loadAvailableFontCollections];
+
+  if (path == nil)
+    {
+      // Find library....
+      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                           NSUserDomainMask, YES);
+
+      if ([paths count] == 0)
+        {
+          NSLog (@"Failed to find Library directory for user");
+          return NO;	// No directory to save to.
+        }
+
+      path = [[paths objectAtIndex: 0]
+               stringByAppendingPathComponent: @"FontCollections"];
+      if ([fm fileExistsAtPath: path] == NO)
+        {
+          if ([fm createDirectoryAtPath: path
+                  withIntermediateDirectories: YES
+                             attributes: nil
+                                  error: NULL])
+            {
+              NSLog (@"Created standard directory %@", path);
+            }
+          else
+            {
+              NSLog (@"Failed attempt to create directory %@", path);
+              return NO;
+            }
+        }
+
+      NSLog(@"Name = %@", [self _name]);
+      path = [path stringByAppendingPathComponent:
+                     [[self _name] stringByAppendingPathExtension: @"collection"]];
+
+      [self _setFullFileName: path];
+    }
+
+  // Create the archive...
+  success = [self _writeToFileAtPath: path];
   if (success)
     {
       [_fontCollectionLock lock];
       if ([[_availableFontCollections allValues] containsObject: self] == NO)
         {
-          NSString *name = [[[self _fullFileName] lastPathComponent] stringByDeletingPathExtension];
-          [_availableFontCollections setObject: self forKey: name];
+          [_availableFontCollections setObject: self forKey: [self _name]];
         }
-      [_fontCollectionLock unlock];      
+      [_fontCollectionLock unlock];
     }
-  RELEASE(m);
-  
+
   return success;
 }
 
 - (BOOL) _removeFile
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          isDir;
-  NSString     *path = nil;
-  BOOL result = NO;
- 
+  BOOL           isDir;
+  NSString      *path = [self _fullFileName];
+  BOOL           result = NO;
+
   /*
-   * We need to initialize before saving, to avoid the new file being 
+   * We need to initialize before saving, to avoid the new file being
    * counted as a different collection thus making it appear twice
    */
   [NSFontCollection _loadAvailableFontCollections];
-  
+
   if (path == nil)
     {
-      NSArray	*paths;
-      
-      // FIXME the standard path for saving font collections
-      paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                  NSUserDomainMask, YES);
+      // the standard path for saving font collections
+      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                           NSUserDomainMask, YES);
       if ([paths count] == 0)
 	{
 	  NSLog (@"Failed to find Library directory for user");
 	  return NO;	// No directory to save to.
 	}
-      path = [[paths objectAtIndex: 0]
-               stringByAppendingPathComponent: @"FontCollections"]; 
-      isDir = YES;
+      path = [[[[paths objectAtIndex: 0]
+                 stringByAppendingPathComponent: @"FontCollections"]
+                stringByAppendingPathComponent: [self _name]]
+               stringByAppendingPathExtension: @"collection"];
+    }
+
+  if (![fm fileExistsAtPath: path isDirectory: &isDir] || isDir)
+    {
+      NSLog (@"Failed to find font collection file to delete");
+      return NO;
     }
   else
     {
-      [fm fileExistsAtPath: path isDirectory: &isDir];
-    }
-    if (isDir)
-    {
-      [self _setFullFileName: [[path stringByAppendingPathComponent: [self _name]] 
-                                stringByAppendingPathExtension: @"collection"]];
-    }
-  else // it is a file
-    {
-      if ([[path pathExtension] isEqual: @"collection"] == YES)
-	{
-          [self _setFullFileName: path];
-	}
-      else
-	{
-          [self _setFullFileName: [[path stringByDeletingPathExtension]
-                                    stringByAppendingPathExtension: @"collection"]];
-	}
-      path = [path stringByDeletingLastPathComponent];
-    }
-    
-  if ([self _fullFileName]) 
-    {
       // Remove the file
-      [[NSFileManager defaultManager] removeFileAtPath: [self _fullFileName]
-					       handler: nil];
-      
+      result = [[NSFileManager defaultManager] removeFileAtPath: path
+                                                        handler: nil];
+
       // Remove the collection from the global list of font collections
       [_fontCollectionLock lock];
-      NSString *name = [[[self _fullFileName] lastPathComponent] stringByDeletingPathExtension];
-      [_availableFontCollections removeObjectForKey: name];
+      [_availableFontCollections removeObjectForKey: [self _name]];
       [_fontCollectionLock unlock];
 
       // Reset file name
       [self _setFullFileName: nil];
     }
-  
+
   return result;
 }
 
@@ -339,8 +334,8 @@ static NSLock *_fontCollectionLock = nil;
 
 /*
  * NSFontCollection
- */ 
-@implementation NSFontCollection 
+ */
+@implementation NSFontCollection
 
 + (void) initialize
 {
@@ -409,6 +404,7 @@ static NSLock *_fontCollectionLock = nil;
                  visibility: (NSFontCollectionVisibility)visibility
                       error: (NSError **)error
 {
+  [collection _setName: name];
   return [collection _writeToFile];
 }
 
@@ -434,7 +430,7 @@ static NSLock *_fontCollectionLock = nil;
       [collection _setName: name];
       [collection _writeToFile];
     }
-  
+
   return rv;
 }
 
@@ -450,7 +446,6 @@ static NSLock *_fontCollectionLock = nil;
     {
       fc = [[NSFontCollection alloc] init];
       [fc _setName: name];
-      [fc _writeToFile];
       AUTORELEASE(fc);
     }
   return fc;
@@ -463,7 +458,7 @@ static NSLock *_fontCollectionLock = nil;
 }
 
 // Descriptors
-- (NSArray *) queryDescriptors 
+- (NSArray *) queryDescriptors
 {
   return [_fontCollectionDictionary objectForKey: @"NSFontCollectionFontDescriptors"];
 }
@@ -502,9 +497,9 @@ static NSLock *_fontCollectionLock = nil;
       if ([[o familyName] isEqualToString: family])
         {
           [r addObject: o];
-        }    
+        }
     }
-  
+
   return [r copy];
 }
 
@@ -554,9 +549,9 @@ static NSLock *_fontCollectionLock = nil;
     }
   return self;
 }
-  
+
 @end
- 
+
 
 @implementation NSMutableFontCollection
 
@@ -568,7 +563,7 @@ static NSLock *_fontCollectionLock = nil;
 + (NSMutableFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
   return [[NSFontCollection fontCollectionWithAllAvailableDescriptors] mutableCopy];
-} 
+}
 
 + (NSMutableFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
@@ -605,7 +600,7 @@ static NSLock *_fontCollectionLock = nil;
 {
   [_fontCollectionDictionary setObject: [exclusionDescriptors mutableCopy]
                                 forKey: @"NSFontExclusionDescriptorAttributes"];
-  
+
 }
 
 - (void) addQueryForDescriptors: (NSArray *)descriptors
@@ -613,10 +608,12 @@ static NSLock *_fontCollectionLock = nil;
   NSMutableArray *arr = [[self queryDescriptors] mutableCopy];
   NSMutableArray *ed = [[self exclusionDescriptors] mutableCopy];
 
-  [ed removeObjectsInArray: arr];
+  [ed removeObjectsInArray: descriptors];
   [arr addObjectsFromArray: descriptors];
   [self setQueryDescriptors: arr];
-  [self setExclusionDescriptors: [NSArray arrayWithArray: ed]];
+  [self setExclusionDescriptors: ed];
+  RELEASE(arr);
+  RELEASE(ed);
 }
 
 - (void) removeQueryForDescriptors: (NSArray *)descriptors
@@ -627,7 +624,9 @@ static NSLock *_fontCollectionLock = nil;
   [ed addObjectsFromArray: descriptors];
   [arr removeObjectsInArray: descriptors];
   [self setQueryDescriptors: arr];
-  [self setExclusionDescriptors: [NSArray arrayWithArray: ed]];
+  [self setExclusionDescriptors: ed];
+  RELEASE(arr);
+  RELEASE(ed);
 }
 
 @end
