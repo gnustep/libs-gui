@@ -104,8 +104,9 @@ static NSColorSampler *_gs_gui_color_sampler = nil;
    * but changing the cursor rapidly on X seems to cause flicker,
    * so we just use a plain magnifying glass. (dynamic code is in r33543)
    */
-  cursor = [[[NSCursor alloc] initWithImage: [NSImage imageNamed: @"MagnifyGlass"]
-					      hotSpot: NSMakePoint(12, 13)] autorelease];
+  cursor = [[NSCursor alloc] initWithImage: [NSImage imageNamed: @"MagnifyGlass"]
+                                   hotSpot: NSMakePoint(12, 13)];
+  AUTORELEASE(cursor);
   [cursor push];
 
   NS_DURING
