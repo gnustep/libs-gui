@@ -26,6 +26,7 @@
 #import <Foundation/NSDate.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSLock.h>
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSBitmapImageRep.h>
@@ -39,12 +40,40 @@
 
 #import <GNUstepGUI/GSDisplayServer.h>
 
+static NSLock *_gs_gui_color_sampler_lock = nil;
+static NSColorSampler *_gs_gui_color_sampler = nil;
+
 @interface NSWindow (private)
 - (void) _captureMouse: sender;
 - (void) _releaseMouse: sender;
 @end
 
 @implementation NSColorSampler
+
++ (void) initialize
+{
+  if (self == [NSColorSampler class])
+    {
+      // Initial version
+      [self setVersion: 1];
+      _gs_gui_color_sampler_lock = [NSLock new];
+    }
+}
+
+- (instancetype) init
+{
+  if (_gs_gui_color_sampler == nil)
+    {
+      _gs_gui_color_sampler = self;
+    }
+  else if (self != _gs_gui_color_sampler)
+    {
+      RELEASE(self);
+      return _gs_gui_color_sampler;
+    }
+
+  return self;
+}
 
 - (void) showSamplerWithSelectionHandler: (GSColorSampleHandler)selectionHandler
 {
@@ -59,7 +88,9 @@
                                                defer: NO
                                               screen: nil];      
   NSColor *color = nil;
-  
+
+  [_gs_gui_color_sampler_lock lock];
+
   [w orderFront: nil];
   [w _captureMouse: self];
 
@@ -114,6 +145,8 @@
   [NSCursor pop];
   [w _releaseMouse: self];
   [w close];
+
+  [_gs_gui_color_sampler_lock unlock];
 }
 
 @end
