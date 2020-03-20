@@ -66,7 +66,8 @@ static NSColorSampler *_gs_gui_color_sampler = nil;
     {
       _gs_gui_color_sampler = self;
     }
-  else if (self != _gs_gui_color_sampler)
+
+  if (self != _gs_gui_color_sampler)
     {
       RELEASE(self);
       return _gs_gui_color_sampler;
@@ -90,8 +91,9 @@ static NSColorSampler *_gs_gui_color_sampler = nil;
   NSColor *color = nil;
 
   [_gs_gui_color_sampler_lock lock];
-
-  [w orderFront: nil];
+  
+  [w setBecomesKeyOnlyIfNeeded: YES];
+  [w makeKeyAndOrderFront: self];
   [w _captureMouse: self];
 
   /**
