@@ -162,6 +162,7 @@
 #import <AppKit/NSGlyphGenerator.h>
 #import <AppKit/NSGradient.h>
 #import <AppKit/NSGraphicsContext.h>
+#import <AppKit/NSGridView.h>
 #import <AppKit/NSGroupTouchBarItem.h>
 #import <AppKit/NSHelpManager.h>
 #import <AppKit/NSInputManager.h>
