@@ -83,14 +83,16 @@ static NSColorSampler *_gs_gui_color_sampler = nil;
   NSRect contentRect = NSMakeRect(-1024,-1024,0,0);
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
     | NSResizableWindowMask | NSUtilityWindowMask;
-  NSPanel *w = [[NSPanel alloc] initWithContentRect: contentRect
-                                           styleMask: style
-                                             backing: NSBackingStoreRetained
-                                               defer: NO
-                                              screen: nil];      
+  NSPanel *w = nil;     
   NSColor *color = nil;
 
   [_gs_gui_color_sampler_lock lock];
+
+  w =  [[NSPanel alloc] initWithContentRect: contentRect
+                                           styleMask: style
+                                             backing: NSBackingStoreRetained
+                                               defer: NO
+                                              screen: nil]; 
   
   [w setBecomesKeyOnlyIfNeeded: YES];
   [w makeKeyAndOrderFront: self];
