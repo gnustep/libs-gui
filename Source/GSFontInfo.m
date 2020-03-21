@@ -3,10 +3,13 @@
 
    Private class for handling font info
 
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2020 Free Software Foundation, Inc.
 
    Author: Adam Fedor <fedor@gnu.org>
    Date: Mar 2000
+
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date:   March 2020
 
    This file is part of the GNUstep.
 

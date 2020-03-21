@@ -1,8 +1,11 @@
 /* Implementation of class NSFontCollection
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2019, 2020 Free Software Foundation, Inc.
 
    By: Gregory John Casamento
    Date: Tue Dec 10 11:51:33 EST 2019
+
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date:   March 2020
 
    This file is part of the GNUstep Library.
 
@@ -24,6 +27,7 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSError.h>
 #import <Foundation/NSException.h>
