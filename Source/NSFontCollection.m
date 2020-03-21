@@ -485,20 +485,11 @@ static NSLock *_fontCollectionLock = nil;
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family options: (NSDictionary *)options
 {
   GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
-  NSArray *a = [fen matchingFontDescriptorsFor: options];
-  NSMutableArray *r = [NSMutableArray arrayWithCapacity: 50];
-  NSEnumerator *en = [a objectEnumerator];
-  id o = nil;
 
-  while ((o = [en nextObject]) != nil)
-    {
-      if ([[o familyName] isEqualToString: family])
-        {
-          [r addObject: o];
-        }
-    }
-
-  return [r copy];
+  return [fen matchingDescriptorsForFamily: family
+                                   options: options
+                                 inclusion: [self queryDescriptors]
+                                 exculsion: [self exclusionDescriptors]];
 }
 
 - (instancetype) copyWithZone: (NSZone *)zone
