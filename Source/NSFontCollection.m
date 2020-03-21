@@ -89,7 +89,6 @@ static NSLock *_fontCollectionLock = nil;
 
       /*
        * Load font lists found in standard paths into the array
-       * FIXME: Check exactly where in the directory tree we should scan.
        */
       e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                NSAllDomainsMask, YES) objectEnumerator];
@@ -121,7 +120,7 @@ static NSLock *_fontCollectionLock = nil;
                       [newCollection _setFullFileName: path];
                       [newCollection _setName: name];
                       [_availableFontCollections setObject: newCollection
-                                                     forKey: name];
+                                                    forKey: name];
                     }
                 }
 	    }
@@ -156,7 +155,7 @@ static NSLock *_fontCollectionLock = nil;
   RELEASE(a);
 
   // Write the file....
-  NSLog(@"Writing to %@", path);
+  NSDebugLLog(@"NSFontCollection", @"Writing to %@", path);
   success = [m writeToFile: path atomically: YES];
   RELEASE(m);
   return success;
@@ -182,8 +181,8 @@ static NSLock *_fontCollectionLock = nil;
 
       if ([paths count] == 0)
         {
-          NSLog (@"Failed to find Library directory for user");
-          return NO;	// No directory to save to.
+          NSLog(@"Failed to find Library directory for user");
+          return NO;
         }
 
       path = [[paths objectAtIndex: 0]
@@ -195,16 +194,16 @@ static NSLock *_fontCollectionLock = nil;
                              attributes: nil
                                   error: NULL])
             {
-              NSLog (@"Created standard directory %@", path);
+              NSDebugLLog(@"NSFontCollection", @"Created standard directory %@", path);
             }
           else
             {
-              NSLog (@"Failed attempt to create directory %@", path);
+              NSLog(@"Failed attempt to create directory %@", path);
               return NO;
             }
         }
 
-      NSLog(@"Name = %@", [self _name]);
+      NSDebugLLog(@"NSFontCollection", @"Font collection name = %@", [self _name]);
       path = [path stringByAppendingPathComponent:
                      [[self _name] stringByAppendingPathExtension: @"collection"]];
 
@@ -246,8 +245,8 @@ static NSLock *_fontCollectionLock = nil;
                                                            NSUserDomainMask, YES);
       if ([paths count] == 0)
 	{
-	  NSLog (@"Failed to find Library directory for user");
-	  return NO;	// No directory to save to.
+	  NSLog(@"Failed to find Library directory for user");
+	  return NO;
 	}
       path = [[[[paths objectAtIndex: 0]
                  stringByAppendingPathComponent: @"FontCollections"]
@@ -257,7 +256,7 @@ static NSLock *_fontCollectionLock = nil;
 
   if (![fm fileExistsAtPath: path isDirectory: &isDir] || isDir)
     {
-      NSLog (@"Failed to find font collection file to delete");
+      NSLog(@"Failed to find font collection file to delete");
       return NO;
     }
   else
