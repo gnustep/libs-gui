@@ -148,7 +148,7 @@ static NSLock *_fontCollectionLock = nil;
 - (BOOL) _writeToFileAtPath: (NSString *)path
 {
   BOOL success = NO;
-  NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 10240];
+  NSMutableData *m = [[NSMutableData alloc] initWithCapacity: 1024];
   NSKeyedArchiver *a = [[NSKeyedArchiver alloc] initForWritingWithMutableData: m];
 
   [self encodeWithCoder: a];
@@ -475,9 +475,7 @@ static NSLock *_fontCollectionLock = nil;
 
 - (NSArray *) matchingDescriptorsWithOptions: (NSDictionary *)options
 {
-  // FIXME: Wrong logic
-  GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
-  return [fen matchingFontDescriptorsFor: options];
+  return [self matchingDescriptorsForFamily: nil options: options];
 }
 
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family
@@ -487,8 +485,9 @@ static NSLock *_fontCollectionLock = nil;
 
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family options: (NSDictionary *)options
 {
+  GSFontEnumerator *fen = [GSFontEnumerator sharedEnumerator];
+  NSArray *a = [fen matchingFontDescriptorsFor: options];
   NSMutableArray *r = [NSMutableArray arrayWithCapacity: 50];
-  NSArray *a = [self matchingDescriptorsWithOptions: options];
   NSEnumerator *en = [a objectEnumerator];
   id o = nil;
 
