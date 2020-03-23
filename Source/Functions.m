@@ -85,6 +85,21 @@ NSApplicationMain(int argc, const char **argv)
 	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
 	}
     }
+  else
+    {
+      mainModelFile = [infoDict objectForKey: @"NSMainStoryboardFile"];
+      if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
+        {
+          if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO)
+            {
+              NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
+            }
+        }
+      else
+        {
+          NSLog(_(@"Could not find model to load %@"), mainModelFile);
+        }
+    }
 
   RECREATE_AUTORELEASE_POOL(pool);
 
