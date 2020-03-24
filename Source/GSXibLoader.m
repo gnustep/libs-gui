@@ -53,14 +53,12 @@
 @end
 
 @implementation NSMenu (XibCompatibility)
-
 - (BOOL) _isMainMenu
 {
   if (_name)
     return [_name isEqualToString:@"_NSMainMenu"];
   return NO;
 }
-
 @end
 
 @interface GSXibLoader: GSModelLoader

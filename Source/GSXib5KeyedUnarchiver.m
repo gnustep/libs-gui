@@ -155,6 +155,14 @@ static NSString *ApplicationClass = nil;
 
 @end
 
+@interface GSScene : NSObject
+{
+  NSMutableArray *scenes;
+}
+@end
+
+@implementation GSScene
+@end
 
 @implementation GSXib5KeyedUnarchiver
 
@@ -181,6 +189,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // associated class...
           XmlTagToObjectClassMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"NSMutableArray", @"scenes",
                             @"NSMutableArray", @"objects",
                             @"NSMutableArray", @"items",
                             @"NSMutableArray", @"tabViewItems",
@@ -207,6 +216,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
+                            @"GSScene", @"scene",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 

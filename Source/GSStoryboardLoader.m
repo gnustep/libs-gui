@@ -63,6 +63,19 @@
 
 @end
 
+
+@interface GSXibKeyedUnarchiver (DebugMethods)
+- (NSDictionary *) objects;
+@end
+
+@implementation GSXibKeyedUnarchiver (DebugMethods)
+- (NSDictionary *) objects
+{
+  return objects;
+}
+@end
+
+
 @interface GSStoryboardLoader: GSModelLoader
 {
 }
