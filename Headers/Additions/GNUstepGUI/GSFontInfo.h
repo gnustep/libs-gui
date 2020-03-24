@@ -54,6 +54,10 @@
 - (NSArray*) availableFontDescriptors;
 - (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor;
 - (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;
+- (NSArray *) matchingDescriptorsForFamily: (NSString *)family
+                                   options: (NSDictionary *)options
+                                 inclusion: (NSArray *)queryDescriptors
+                                 exculsion: (NSArray *)exclusionDescriptors;
 
 /* Note that these are only called once. NSFont will remember the returned
 values. Backends may override these. */
