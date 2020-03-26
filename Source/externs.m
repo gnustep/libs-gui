@@ -34,6 +34,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSAppearance.h"
+#import "AppKit/NSFontCollection.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
@@ -813,6 +814,22 @@ const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantLight =
 const NSAppearanceName NSAppearanceNameAccessibilityHighContrastVibrantDark =
   @"NSAppearanceNameAccessibilityHighContrastVibrantDark";
 const NSAppearanceName NSAppearanceNameLightContent = @"NSAppearanceNameLightContent";
+
+// Values for NSFontCollectionAction
+NSFontCollectionActionTypeKey const NSFontCollectionWasShown = @"NSFontCollectionWasShown";
+NSFontCollectionActionTypeKey const NSFontCollectionWasHidden = @"NSFontCollectionWasHidden";
+NSFontCollectionActionTypeKey const NSFontCollectionWasRenamed = @"NSFontCollectionWasRenamed";
+
+// Standard named collections
+NSFontCollectionName const NSFontCollectionAllFonts = @"NSFontCollectionAllFonts";
+NSFontCollectionName const NSFontCollectionUser = @"NSFontCollectionUser";
+NSFontCollectionName const NSFontCollectionFavorites = @"NSFontCollectionFavorites";
+NSFontCollectionName const NSFontCollectionRecentlyUsed = @"NSFontCollectionRecentlyUsed";
+
+// Collections
+NSFontCollectionMatchingOptionKey const NSFontCollectionIncludeDisabledFontsOption = @"NSFontCollectionIncludeDisabledFontsOption";
+NSFontCollectionMatchingOptionKey const NSFontCollectionRemoveDuplicatesOption = @"NSFontCollectionRemoveDuplicatesOption";
+NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAutoActivationOption = @"NSFontCollectionDisallowAutoActivationOption";
 
 // Speech recognition...
 const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
