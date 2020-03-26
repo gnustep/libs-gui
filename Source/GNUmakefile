@@ -391,6 +391,7 @@ NSDocument.h \
 NSDocumentController.h \
 NSDrawer.h \
 NSEPSImageRep.h \
+NSErrors.h \
 NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \

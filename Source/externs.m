@@ -29,6 +29,8 @@
 
 #import "config.h"
 #import <Foundation/NSString.h>
+#import <Foundation/NSObjCRuntime.h>
+
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSAppearance.h"
@@ -42,43 +44,43 @@ const double NSAppKitVersionNumber = NSAppKitVersionNumber10_4;
 //
 // Global Exception Strings
 //
-NSString *NSAbortModalException = @"NSAbortModalException";
-NSString *NSAbortPrintingException = @"NSAbortPrintingException";
-NSString *NSAppKitIgnoredException = @"NSAppKitIgnoredException";
-NSString *NSAppKitVirtualMemoryException = @"NSAppKitVirtualMemoryException";
-NSString *NSBadBitmapParametersException = @"NSBadBitmapParametersException";
-NSString *NSBadComparisonException = @"NSBadComparisonException";
-NSString *NSBadRTFColorTableException = @"NSBadRTFColorTableException";
-NSString *NSBadRTFDirectiveException = @"NSBadRTFDirectiveException";
-NSString *NSBadRTFFontTableException = @"NSBadRTFFontTableException";
-NSString *NSBadRTFStyleSheetException = @"NSBadRTFStyleSheetException";
-NSString *NSBrowserIllegalDelegateException = @"NSBrowserIllegalDelegateException";
-NSString *NSColorListIOException = @"NSColorListIOException";
-NSString *NSColorListNotEditableException = @"NSColorListNotEditableException";
-NSString *NSDraggingException = @"NSDraggingException";
-NSString *NSFontUnavailableException = @"NSFontUnavailableException";
-NSString *NSIllegalSelectorException = @"NSIllegalSelectorException";
-NSString *NSImageCacheException = @"NSImageCacheException";
-NSString *NSNibLoadingException = @"NSNibLoadingException";
-NSString *NSPPDIncludeNotFoundException = @"NSPPDIncludeNotFoundException";
-NSString *NSPPDIncludeStackOverflowException = @"NSPPDIncludeStackOverflowException";
-NSString *NSPPDIncludeStackUnderflowException = @"NSPPDIncludeStackUnderflowException";
-NSString *NSPPDParseException = @"NSPPDParseException";
-NSString *NSPrintOperationExistsException = @"NSPrintOperationExistsException";
-NSString *NSPrintPackageException = @"NSPrintPackageException";
-NSString *NSPrintingCommunicationException = @"NSPrintingCommunicationException";
-NSString *NSRTFPropertyStackOverflowException = @"NSRTFPropertyStackOverflowException";
-NSString *NSTIFFException = @"NSTIFFException";
-NSString *NSTextLineTooLongException = @"NSTextLineTooLongException";
-NSString *NSTextNoSelectionException = @"NSTextNoSelectionException";
-NSString *NSTextReadException = @"NSTextReadException";
-NSString *NSTextWriteException = @"NSTextWriteException";
-NSString *NSTypedStreamVersionException = @"NSTypedStreamVersionException";
-NSString *NSWindowServerCommunicationException = @"NSWindowServerCommunicationException";
-NSString *NSWordTablesReadException = @"NSWordTablesReadException";
-NSString *NSWordTablesWriteException = @"NSWordTablesWriteException";
+NSExceptionName NSAbortModalException = @"NSAbortModalException";
+NSExceptionName NSAbortPrintingException = @"NSAbortPrintingException";
+NSExceptionName NSAppKitIgnoredException = @"NSAppKitIgnoredException";
+NSExceptionName NSAppKitVirtualMemoryException = @"NSAppKitVirtualMemoryException";
+NSExceptionName NSBadBitmapParametersException = @"NSBadBitmapParametersException";
+NSExceptionName NSBadComparisonException = @"NSBadComparisonException";
+NSExceptionName NSBadRTFColorTableException = @"NSBadRTFColorTableException";
+NSExceptionName NSBadRTFDirectiveException = @"NSBadRTFDirectiveException";
+NSExceptionName NSBadRTFFontTableException = @"NSBadRTFFontTableException";
+NSExceptionName NSBadRTFStyleSheetException = @"NSBadRTFStyleSheetException";
+NSExceptionName NSBrowserIllegalDelegateException = @"NSBrowserIllegalDelegateException";
+NSExceptionName NSColorListIOException = @"NSColorListIOException";
+NSExceptionName NSColorListNotEditableException = @"NSColorListNotEditableException";
+NSExceptionName NSDraggingException = @"NSDraggingException";
+NSExceptionName NSFontUnavailableException = @"NSFontUnavailableException";
+NSExceptionName NSIllegalSelectorException = @"NSIllegalSelectorException";
+NSExceptionName NSImageCacheException = @"NSImageCacheException";
+NSExceptionName NSNibLoadingException = @"NSNibLoadingException";
+NSExceptionName NSPPDIncludeNotFoundException = @"NSPPDIncludeNotFoundException";
+NSExceptionName NSPPDIncludeStackOverflowException = @"NSPPDIncludeStackOverflowException";
+NSExceptionName NSPPDIncludeStackUnderflowException = @"NSPPDIncludeStackUnderflowException";
+NSExceptionName NSPPDParseException = @"NSPPDParseException";
+NSExceptionName NSPrintOperationExistsException = @"NSPrintOperationExistsException";
+NSExceptionName NSPrintPackageException = @"NSPrintPackageException";
+NSExceptionName NSPrintingCommunicationException = @"NSPrintingCommunicationException";
+NSExceptionName NSRTFPropertyStackOverflowException = @"NSRTFPropertyStackOverflowException";
+NSExceptionName NSTIFFException = @"NSTIFFException";
+NSExceptionName NSTextLineTooLongException = @"NSTextLineTooLongException";
+NSExceptionName NSTextNoSelectionException = @"NSTextNoSelectionException";
+NSExceptionName NSTextReadException = @"NSTextReadException";
+NSExceptionName NSTextWriteException = @"NSTextWriteException";
+NSExceptionName NSTypedStreamVersionException = @"NSTypedStreamVersionException";
+NSExceptionName NSWindowServerCommunicationException = @"NSWindowServerCommunicationException";
+NSExceptionName NSWordTablesReadException = @"NSWordTablesReadException";
+NSExceptionName NSWordTablesWriteException = @"NSWordTablesWriteException";
 
-NSString *GSWindowServerInternalException = @"WindowServerInternal";
+NSExceptionName GSWindowServerInternalException = @"WindowServerInternal";
 
 // NSAnimation
 NSString* NSAnimationProgressMarkNotification
@@ -814,7 +816,6 @@ const NSAppearanceName NSAppearanceNameLightContent = @"NSAppearanceNameLightCon
 
 // Speech recognition...
 const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
-
 
 extern void __objc_gui_force_linking (void);
 
