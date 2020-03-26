@@ -15,7 +15,6 @@ MISSING HEADERS
 > NSDiffableDataSource.h
 > NSDraggingItem.h
 > NSDraggingSession.h
-> NSErrors.h
 > NSFilePromiseProvider.h
 > NSFilePromiseReceiver.h
 > NSFontAssetRequest.h
