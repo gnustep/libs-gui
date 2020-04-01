@@ -1,3 +1,8 @@
+2020-04-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAlert.m (NSBeginAlertSheet): Restore call to delegate
+	method which was lost a while ago.
+
 2020-03-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Documentation/news.texi: Started to fill in some details for
