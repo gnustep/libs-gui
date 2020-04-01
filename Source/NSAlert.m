@@ -1651,8 +1651,8 @@ void NSBeginAlertSheet(NSString *title,
 		       NSString *otherButton, 
 		       NSWindow *docWindow, 
 		       id modalDelegate, 
-		       SEL willEndSelector, 
 		       SEL didEndSelector, 
+		       SEL didDismissSelector, 
 		       void *contextInfo, 
 		       NSString *msg, ...)
 {
@@ -1676,14 +1676,15 @@ void NSBeginAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: willEndSelector
+	 didEndSelector: didEndSelector
 	 contextInfo: contextInfo];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+  if (modalDelegate && [modalDelegate respondsToSelector: didDismissSelector])
     {
-      void (*didEnd)(id, SEL, id, NSInteger, void*);
-      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
-        methodForSelector: didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+      void (*didDismiss)(id, SEL, id, NSInteger, void*);
+      didDismiss = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
+        methodForSelector: didDismissSelector];
+      didDismiss(modalDelegate, didDismissSelector, panel, [panel result],
+        contextInfo);
     }
 
   NSReleaseAlertPanel(panel);
@@ -1695,8 +1696,8 @@ void NSBeginCriticalAlertSheet(NSString *title,
 			       NSString *otherButton, 
 			       NSWindow *docWindow, 
 			       id modalDelegate, 
-			       SEL willEndSelector, 
 			       SEL didEndSelector, 
+			       SEL didDismissSelector, 
 			       void *contextInfo, 
 			       NSString *msg, ...)
 {
@@ -1714,14 +1715,15 @@ void NSBeginCriticalAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: willEndSelector
+	 didEndSelector: didEndSelector
 	 contextInfo: contextInfo];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+  if (modalDelegate && [modalDelegate respondsToSelector: didDismissSelector])
     {
-      void (*didEnd)(id, SEL, id, NSInteger, void*);
-      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
-        methodForSelector: didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+      void (*didDismiss)(id, SEL, id, NSInteger, void*);
+      didDismiss = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
+        methodForSelector: didDismissSelector];
+      didDismiss(modalDelegate, didDismissSelector, panel, [panel result],
+        contextInfo);
     }
 
   NSReleaseAlertPanel(panel);
@@ -1733,8 +1735,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
 				    NSString *otherButton,
 				    NSWindow *docWindow, 
 				    id modalDelegate, 
-				    SEL willEndSelector, 
 				    SEL didEndSelector, 
+				    SEL didDismissSelector, 
 				    void *contextInfo, 
 				    NSString *msg, ...)
 {
@@ -1754,14 +1756,15 @@ void NSBeginInformationalAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: willEndSelector
+	 didEndSelector: didEndSelector
 	 contextInfo: contextInfo];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+  if (modalDelegate && [modalDelegate respondsToSelector: didDismissSelector])
     {
-      void (*didEnd)(id, SEL, id, NSInteger, void*);
-      didEnd = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
-        methodForSelector: didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+      void (*didDismiss)(id, SEL, id, NSInteger, void*);
+      didDismiss = (void (*)(id, SEL, id, NSInteger, void*))[modalDelegate
+        methodForSelector: didDismissSelector];
+      didDismiss(modalDelegate, didDismissSelector, panel, [panel result],
+        contextInfo);
     }
 
   NSReleaseAlertPanel(panel);
