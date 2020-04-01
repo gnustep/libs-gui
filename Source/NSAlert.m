@@ -1716,7 +1716,6 @@ void NSBeginCriticalAlertSheet(NSString *title,
 	 modalDelegate: modalDelegate
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
-  [panel close];
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
       void (*didEnd)(id, SEL, id, NSInteger, void*);
@@ -1757,7 +1756,6 @@ void NSBeginInformationalAlertSheet(NSString *title,
 	 modalDelegate: modalDelegate
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
-  [panel close];
   if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
       void (*didEnd)(id, SEL, id, NSInteger, void*);

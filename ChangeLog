@@ -2,6 +2,9 @@
 
 	* Source/NSAlert.m (NSBeginAlertSheet): Restore call to delegate
 	method which was lost a while ago.
+	* Source/NSAlert.m (NSBeginCriticalAlertSheet,
+	NSBeginInformationalAlertSheet): Remove redundant calls to close
+	method.
 
 2020-03-26 Fred Kiefer <FredKiefer@gmx.de>
 
