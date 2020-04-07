@@ -42,6 +42,7 @@
 //
 // GNUstep GUI Library functions
 //
+#import <AppKit/AppKitErrors.h>
 #import <AppKit/NSGraphics.h>
 
 #import <AppKit/NSAccessibility.h>

@@ -342,6 +342,7 @@ Cocoa.h
 APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
+AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
