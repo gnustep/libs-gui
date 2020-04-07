@@ -531,6 +531,7 @@ NSViewController.h \
 NSVisualEffectView.h \
 NSWindow.h \
 NSWindowController.h \
+NSWindowRestoration.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \

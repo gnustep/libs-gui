@@ -55,7 +55,6 @@ MISSING HEADERS
 > NSTitlebarAccessoryViewController.h
 > NSTypesetter.h
 > NSUserActivity.h
-> NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
 
