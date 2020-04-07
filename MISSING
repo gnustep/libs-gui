@@ -1,6 +1,5 @@
 MISSING HEADERS
 ---
-> AppKitErrors.h
 > NSATSTypesetter.h
 > NSAccessibilityCustomAction.h
 > NSAccessibilityCustomRotor.h
