@@ -105,6 +105,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
+NSFontAssetRequest.m \
 NSFontCollection.m \
 NSFontDescriptor.m \
 NSFontManager.m \
@@ -143,11 +144,13 @@ NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
 NSMagnificationGestureRecognizer.m \
+NSMediaLibraryBrowserController.m \
 NSPanGestureRecognizer.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
+NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
@@ -397,6 +400,7 @@ NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
+NSFontAssetRequest.h \
 NSFontCollection.h \
 NSFontDescriptor.h \
 NSFontManager.h \
@@ -423,6 +427,7 @@ NSLevelIndicator.h \
 NSLevelIndicatorCell.h \
 NSMagnificationGestureRecognizer.h \
 NSMatrix.h \
+NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
@@ -475,6 +480,7 @@ NSSegmentedControl.h \
 NSSelection.h \
 NSShadow.h \
 NSSharingService.h \
+NSSharingServicePickerToolbarItem.h \
 NSSharingServicePickerTouchBarItem.h \
 NSSlider.h \
 NSSliderCell.h \
@@ -537,6 +543,8 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
 NSSpellProtocol.h \
+NSUserInterfaceCompression.h \
+NSUserInterfaceItemSearching.h \
 NSUserInterfaceItemIdentification.h \
 NSUserInterfaceValidation.h \
 DPSOperators.h \

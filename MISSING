@@ -17,14 +17,12 @@ MISSING HEADERS
 > NSDraggingSession.h
 > NSFilePromiseProvider.h
 > NSFilePromiseReceiver.h
-> NSFontAssetRequest.h
 > NSGlyphInfo.h
 > NSGridView.h
 > NSItemProvider.h
 > NSLayoutAnchor.h
 > NSLayoutConstraint.h
 > NSLayoutGuide.h
-> NSMediaLibraryBrowserController.h
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
 > NSPageController.h
@@ -37,7 +35,6 @@ MISSING HEADERS
 > NSScrubber.h
 > NSScrubberItemView.h
 > NSScrubberLayout.h
-> NSSharingServicePickerToolbarItem.h
 > NSSliderAccessory.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
@@ -58,8 +55,6 @@ MISSING HEADERS
 > NSTitlebarAccessoryViewController.h
 > NSTypesetter.h
 > NSUserActivity.h
-> NSUserInterfaceCompression.h
-> NSUserInterfaceItemSearching.h
 > NSWindowRestoration.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
