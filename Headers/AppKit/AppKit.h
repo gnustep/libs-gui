@@ -118,6 +118,9 @@
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSScrollView.h>
+#import <AppKit/NSScrubber.h>
+#import <AppKit/NSScrubberItemView.h>
+#import <AppKit/NSScrubberLayout.h>
 #import <AppKit/NSSelection.h>
 #import <AppKit/NSSharingService.h>
 #import <AppKit/NSSlider.h>

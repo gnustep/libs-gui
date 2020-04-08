@@ -211,6 +211,9 @@ NSSegmentedControl.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
+NSScrubber.m \
+NSScrubberItemView.m \
+NSScrubberLayout.m \
 NSSecureTextField.m \
 NSSelection.m \
 NSShadow.m \
@@ -473,6 +476,9 @@ NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
 NSScroller.h \
+NSScrubber.h \
+NSScrubberItemView.h \
+NSScrubberLayout.h \
 NSSearchField.h \
 NSSearchFieldCell.h \
 NSSecureTextField.h \

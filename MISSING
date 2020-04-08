@@ -31,9 +31,6 @@ MISSING HEADERS
 > NSPathControlItem.h
 > NSPersistentDocument.h
 > NSRuleEditor.h
-> NSScrubber.h
-> NSScrubberItemView.h
-> NSScrubberLayout.h
 > NSSliderAccessory.h
 > NSSplitViewController.h
 > NSSplitViewItem.h
