@@ -21,6 +21,54 @@
       </p>
 
       <section>
+        <heading>0.28.0</heading>
+        <p>
+          This version adds support for modern XIB files and many new
+          classes. Plus the usual bunch of bug fixes.
+        </p>
+        <deflist>
+          <term>XIB</term>
+          <desc>Support loading XIB5 files.</desc>
+          <term>key-value binding</term>
+          <desc>Improve Key Value Binding for NSArrayController and add more
+          bindings.</desc>
+          <term>multi-monitor support</term>
+          <desc>Better support for multi monitor usage and other improvement in
+          the backend integration.</desc>
+          <term>new classes</term>
+          <desc>NSFontCollection, NSColorSampler, NSSpeechRecognizer,
+          NSAppearance, NSPDFInfo, NSPICTImageRep, NSCIImageRep, NSPDFImageRep,
+          NSPDFPanel, NSDataAsset,
+          NSDatePicker, NSDatePickerCell, NSPredicateEditor,
+          NSPredicateEditorRowTemplate, NSRuleEditor, NSGestureRecognizer,
+          NSButtonTouchBarItem, NSCandidateListTouchBarItem,
+          NSClickGestureRecognizer, NSColorPickerTouchBarItem,
+          NSCustomTouchBarItem, NSGroupTouchBarItem,
+          NSMagnificationGestureRecognizer, NSPanGestureRecognizer,
+          NSPickerTouchBarItem, NSPopoverTouchBarItem, NSPressGestureRecognizer,
+          NSRotationGestureRecognizer, NSSharingServicePickerTouchBarItem,
+          NSSliderTouchBarItem, NSStepperTouchBarItem, NSTouchBarItem,
+          NSTouchBar, NSTouch, NSDockTile
+          </desc>
+          <term>formats</term>
+          <desc>Implement NSEPSImageRep. Marked GSImageMagickImageRep public.
+          PICT. Better encoding handling in RTF files.</desc>
+          <term>theming and drawing</term>
+          <desc>Increase small font size to 10. New cursor and stepper images.
+          Various improvements.Lowered NSFloatingWindowLevel by one to
+          distinguish floating panels from menus.</desc>
+          <term>NSFileWrapper move</term>
+          <desc>Move NSFileWrapper to Foundation.</desc>
+          <term>platform compatibility</term>
+          <desc>Fixed build on Debian GNU/kFreeBSD. Improvements to WindowMaker
+          compatibility (e.g. WMFHideApplication support).</desc>
+          <term>command line arguments</term>
+          <desc>With command line argument -autolaunch YES, do not activate the
+          application when -activateIgnoringOtherApps: is invoked.</desc>
+        </deflist>
+      </section>
+
+      <section>
         <heading>0.27.0</heading>
         <p>
           This version includes numerous bugfixes, compatibility
@@ -36,7 +84,7 @@
           <term>Tools/speech</term>
           <desc>Clean up speech tool compilation and switch to newer interface.</desc>
           <term>printing</term>
-          <desc>Fix bug in CUPS subclassing introduced in last release.</term>
+          <desc>Fix bug in CUPS subclassing introduced in last release.</desc>
           <term>typesetting</term>
           <desc>Minor improvments to typesetting.</desc>
           <term>NSKeyValueBinding</term>

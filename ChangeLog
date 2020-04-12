@@ -1,3 +1,36 @@
+2020-04-05  Ivan Vucica  <ivan@vucica.net>
+
+	* ANNOUNCE:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi:
+	* NEWS:
+	Updating documentation for the 0.28.0 release.
+
+2020-04-01  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAlert.m (NSBeginAlertSheet): Restore call to delegate
+	method which was lost a while ago.
+
+	* Source/NSAlert.m (NSBeginCriticalAlertSheet,
+	NSBeginInformationalAlertSheet): Remove redundant calls to close
+	method.
+
+	* Source/NSAlert.m (NSBeginAlertSheet, NSBeginCriticalAlertSheet,
+	NSBeginInformationalAlertSheet): Change arguments names to reduce
+	confusion about the intended use of the corresponding selectors.
+
+2020-03-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Documentation/news.texi: Started to fill in some details for
+	pending release.
+	* .travis.yml: Try to keep up with Niels' changes in base.
+
+2020-03-12  Sergii Stoian  <stoyan255@gmail.com>
+
+	* Model/GNUmakefile: do not overwrite ADDITIONAL_INCLUDE_DIRS
+	value to help RPM build. In spec file ADDITIONAL_INCLUDE_DIRS can be sat
+	to subdirectories which are create by RPM build tool.
+
 2020-03-05  Sergii Stoian  <stoyan255@gmail.com>
 
 	* Source/NSWindow.m (_applyFrame:): new helper method to do actual
@@ -502,7 +535,7 @@
 	* Documentation/news.texi
 	* NEWS
 	* Version:
-	Updating documentation for the 0.26.2 release.
+	Updating documentation for the 0.27.0 release.
 
 2019-01-06 Ivan Vucica <ivan@vucica.net>
 

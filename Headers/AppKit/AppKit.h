@@ -141,6 +141,7 @@
 #import <AppKit/NSArrayController.h>
 #import <AppKit/NSBezierPath.h>
 #import <AppKit/NSButtonTouchBarItem.h>
+#import <AppKit/NSColorSampler.h>
 #import <AppKit/NSColorSpace.h>
 #import <AppKit/NSComboBox.h>
 #import <AppKit/NSComboBoxCell.h>
@@ -156,6 +157,7 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
+#import <AppKit/NSFontCollection.h>
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSGestureRecognizer.h>
 #import <AppKit/NSGlyphGenerator.h>

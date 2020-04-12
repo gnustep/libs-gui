@@ -81,6 +81,7 @@ NSColorList.m \
 NSColorPanel.m \
 NSColorPicker.m \
 NSColorPickerTouchBarItem.m \
+NSColorSampler.m \
 NSColorSpace.m \
 NSColorWell.m \
 NSComboBox.m \
@@ -104,6 +105,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
+NSFontCollection.m \
 NSFontDescriptor.m \
 NSFontManager.m \
 NSFontPanel.m \
@@ -369,6 +371,7 @@ NSColorList.h \
 NSColorPanel.h \
 NSColorPicker.h \
 NSColorPickerTouchBarItem.h \
+NSColorSampler.h \
 NSColorSpace.h \
 NSColorWell.h \
 NSComboBox.h \
@@ -389,10 +392,12 @@ NSDocument.h \
 NSDocumentController.h \
 NSDrawer.h \
 NSEPSImageRep.h \
+NSErrors.h \
 NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
+NSFontCollection.h \
 NSFontDescriptor.h \
 NSFontManager.h \
 NSFontPanel.h \

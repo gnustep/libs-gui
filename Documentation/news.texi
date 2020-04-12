@@ -9,6 +9,45 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.28.0}
+
+This version adds support for modern XIB files and many new
+classes. Plus the usual bunch of bug fixes.
+
+@itemize @bullet
+@item Support loading of document XIB files.
+@item Improve Key Value Binding for NSArrayController and add more bindings.
+@item Better support for multi monitor usage and other improvement in
+the backend integration.
+@item Add classes NSFontCollection, NSColorSampler, NSSpeechRecognizer,
+NSAppearance, NSPDFInfo, NSPICTImageRep, NSCIImageRep, NSPDFImageRep,
+NSPDFPanel, NSDataAsset, 
+NSDatePicker, NSDatePickerCell, NSPredicateEditor, 
+NSPredicateEditorRowTemplate, NSRuleEditor, NSGestureRecognizer,
+NSButtonTouchBarItem, NSCandidateListTouchBarItem,
+NSClickGestureRecognizer, NSColorPickerTouchBarItem,
+NSCustomTouchBarItem, NSGroupTouchBarItem,
+NSMagnificationGestureRecognizer, NSPanGestureRecognizer,
+NSPickerTouchBarItem, NSPopoverTouchBarItem, NSPressGestureRecognizer,
+NSRotationGestureRecognizer, NSSharingServicePickerTouchBarItem,
+NSSliderTouchBarItem, NSStepperTouchBarItem, NSTouchBarItem, NSTouchBar,
+NSTouch, NSDockTile.
+@item Implement NSEPSImageRep.
+@item Better encoding handling in RTF files.
+@item Theming and drawing improvements.
+@item Increase small font size to 10.
+@item New cursor and stepper images.
+@item Move NSFileWrapper to Foundation.
+@item Fixed build on Debian GNU/kFreeBSD.
+@item With command line argument -autolaunch YES, do not activate the
+application when -activateIgnoringOtherApps: is invoked.
+@item Improvements to WindowMaker compatibility (e.g. WMFHideApplication
+support).
+@item Lowered NSFloatingWindowLevel by one to distinguish floating panels from
+menus.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.27.0}
 
 This version includes numerous bugfixes, compatibility
@@ -34,7 +73,6 @@ Animation renderer.
 @item Lots of bug fixes.
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.26.2}
 
 This version is a small, but important bugfix release.
