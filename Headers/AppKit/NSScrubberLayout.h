@@ -25,7 +25,7 @@
 #ifndef _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
 #define _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
 
-#import <Foundation/NSObject.h>
+#import "Foundation/NSObject.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
