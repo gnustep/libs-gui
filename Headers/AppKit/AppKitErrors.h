@@ -9,7 +9,7 @@
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   version 2.1 of the License, or (at your option) any later version.
    
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,25 +35,25 @@ extern "C" {
 #endif
 
 // All of the AppKit errors in the NSCocoaErrorDomain.
-  
+
 enum
   {
-    NSFontAssetDownloadError                 = 66304, 
+    NSFontAssetDownloadError                 = 66304,
     NSFontErrorMinimum                       = 66304,
     NSFontErrorMaximum                       = 66335,
-    NSServiceApplicationNotFoundError        = 66560,              
-    NSServiceApplicationLaunchFailedError    = 66561,          
-    NSServiceRequestTimedOutError            = 66562,                  
-    NSServiceInvalidPasteboardDataError      = 66563,            
-    NSServiceMalformedServiceDictionaryError = 66564,       
-    NSServiceMiscellaneousError              = 66800,                    
+    NSServiceApplicationNotFoundError        = 66560,   
+    NSServiceApplicationLaunchFailedError    = 66561,
+    NSServiceRequestTimedOutError            = 66562,
+    NSServiceInvalidPasteboardDataError      = 66563,
+    NSServiceMalformedServiceDictionaryError = 66564,
+    NSServiceMiscellaneousError              = 66800,
     NSServiceErrorMinimum                    = 66560,
     NSServiceErrorMaximum                    = 66817,
-    NSSharingServiceNotConfiguredError       = 67072, 
+    NSSharingServiceNotConfiguredError       = 67072,
     NSSharingServiceErrorMinimum             = 67072,
     NSSharingServiceErrorMaximum             = 67327,
     NSTextReadInapplicableDocumentTypeError  = 65806,
-    NSTextWriteInapplicableDocumentTypeError = 66062,   
+    NSTextWriteInapplicableDocumentTypeError = 66062,
     NSTextReadWriteErrorMinimum              = 65792,
     NSTextReadWriteErrorMaximum              = 66303,
     NSWorkspaceAuthorizationInvalidError     = 67328,
