@@ -32,14 +32,18 @@
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
+
+DEFINE_BLOCK_TYPE(GSSearchItemsMatchedItemHandler, void, NSArray*);
+
 @protocol NSUserInterfaceItemSearching <NSObject>
 
 // @required
 
-- (void)searchForItemsWithSearchString:(NSString *)searchString resultLimit:(NSInteger)resultLimit matchedItemHandler:(void (^)(NSArray *items))handleMatchedItems;
+- (void) searchForItemsWithSearchString: (NSString *)searchString
+                            resultLimit: (NSInteger)resultLimit
+                     matchedItemHandler: (GSSearchItemsMatchedItemHandler)handleMatchedItems;
 
-- (NSArray<NSString *> *)localizedTitlesForItem:(id)item;
+- (NSArray *)localizedTitlesForItem:(id)item;
 
 // @optional
 
