@@ -26,5 +26,28 @@
 
 @implementation NSMediaLibraryBrowserController
 
++ (NSMediaLibraryBrowserController *) sharedMediaLibraryBrowserController
+{
+  return nil;
+}
+
+- (NSRect) frame
+{
+  return NSZeroRect;
+}
+
+- (IBAction) togglePanel: (id)sender
+{
+}
+
+- (BOOL) isVisible
+{
+  return NO;
+}
+
+- (void) setVisible: (BOOL)flag
+{
+}
+  
 @end
 

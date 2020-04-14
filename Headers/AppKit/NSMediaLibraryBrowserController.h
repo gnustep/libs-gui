@@ -26,6 +26,8 @@
 #define _NSMediaLibraryBrowserController_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import "AppKit/NSNibDeclarations.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
@@ -33,8 +35,25 @@
 extern "C" {
 #endif
 
+enum {
+  NSMediaLibraryAudio,
+  NSMediaLibraryImage,
+  NSMediaLibraryVideo,
+};
+typedef NSUInteger NSMediaLibrary;  
+
 @interface NSMediaLibraryBrowserController : NSObject
 
++ (NSMediaLibraryBrowserController *) sharedMediaLibraryBrowserController;
+
+- (NSRect) frame;
+
+- (IBAction) togglePanel: (id)sender;
+
+- (BOOL) isVisible;
+
+- (void) setVisible: (BOOL)flag;
+  
 @end
 
 #if	defined(__cplusplus)
