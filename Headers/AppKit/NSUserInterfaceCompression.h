@@ -27,15 +27,50 @@
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@protocol NSUserInterfaceCompression
+@interface NSUserInterfaceCompressionOptions : NSObject <NSCopying, NSCoding>
+
+- (instancetype) initWithIdentifier: (NSString *)identifier;
+
+- (instancetype) initWithCompressionOptions: (NSSet *)opts; 
+
+- (BOOL) containsOptions: (NSUserInterfaceCompressionOptions *)opts;
+
+- (BOOL) intersectsOptions: (NSUserInterfaceCompressionOptions *)opts;
+
+- (BOOL) isEmpty; 
+
+- (NSUserInterfaceCompressionOptions *) optionsByAddingOptions: (NSUserInterfaceCompressionOptions *)opts;
+
+- (NSUserInterfaceCompressionOptions *) optionsByRemovingOptions: (NSUserInterfaceCompressionOptions *)opts;
+
++ (NSUserInterfaceCompressionOptions *) hideImagesOption;
+
++ (NSUserInterfaceCompressionOptions *) hideTextOption;
+
++ (NSUserInterfaceCompressionOptions *) reduceMetricsOption;
+
++ (NSUserInterfaceCompressionOptions *) breakEqualWidthsOption;
+
++ (NSUserInterfaceCompressionOptions *) standardOptions;
 
 @end
+
+@protocol NSUserInterfaceCompression
+
+- (void) compressWithPrioritizedCompressionOptions: (NSArray *)prioritizedOptions;
+
+- (NSSize) minimumSizeWithPrioritizedCompressionOptions: (NSArray *)prioritizedOptions;
+
+- (NSUserInterfaceCompressionOptions *) activeCompressionOptions;
+  
+@end
+
 
 #if	defined(__cplusplus)
 }

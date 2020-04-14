@@ -25,15 +25,31 @@
 #ifndef _NSSharingServicePickerToolbarItem_h_GNUSTEP_GUI_INCLUDE
 #define _NSSharingServicePickerToolbarItem_h_GNUSTEP_GUI_INCLUDE
 
-#import <Foundation/NSObject.h>
+#import "AppKit/NSToolbarItem.h"
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface NSSharingServicePickerToolbarItem : NSObject
+@protocol NSSharingServicePickerToolbarItemDelegate;
+  
+@interface NSSharingServicePickerToolbarItem : NSToolbarItem
+
+- (id) activityItemsConfiguration;
+
+- (void) setActivityItemsConfiguration: (id)items;
+
+- (id<NSSharingServicePickerToolbarItemDelegate>) delegate;
+
+- (void) setDelegate: (id<NSSharingServicePickerToolbarItemDelegate>) delegate;
+  
+@end
+
+@protocol NSSharingServicePickerToolbarItemDelegate
+
+- (NSArray *) itemsForSharingServicePickerToolbarItem: (NSSharingServicePickerToolbarItem *)items;
 
 @end
 

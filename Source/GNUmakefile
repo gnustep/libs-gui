@@ -261,6 +261,7 @@ NSTrackingArea.m \
 NSTreeController.m \
 NSTreeNode.m \
 NSUserDefaultsController.m \
+NSUserInterfaceCompression.m \
 NSView.m \
 NSViewController.m \
 NSVisualEffectView.m \

@@ -26,5 +26,23 @@
 
 @implementation NSSharingServicePickerToolbarItem
 
+- (id) activityItemsConfiguration
+{
+  return nil;
+}
+
+- (void) setActivityItemsConfiguration: (id)items
+{
+}
+
+- (id<NSSharingServicePickerToolbarItemDelegate>) delegate
+{
+  return nil;
+}
+
+- (void) setDelegate: (id<NSSharingServicePickerToolbarItemDelegate>) delegate
+{
+}
+
 @end
 
