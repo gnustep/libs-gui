@@ -24,7 +24,112 @@
 
 #import "AppKit/NSScrubberLayout.h"
 
+@implementation NSScrubberLayoutAttributes 
+
++ (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index
+{
+  return nil;
+}
+
+- (CGFloat) alpha
+{
+  return 0.0;
+}
+
+- (NSRect) frame
+{
+  return NSZeroRect;
+}
+
+- (NSInteger) itemIndex
+{
+  return 0;
+}
+
+- (instancetype) copyWithZone: (NSZone *)z
+{
+  return nil;
+}
+
+@end
+
 @implementation NSScrubberLayout
+// Configuring
+- (Class) layoutAttributesClass
+{
+  return nil;
+}
+
+- (NSScrubber *) scrubber
+{
+  return nil;
+}
+
+- (NSRect) visibleRect
+{
+  return NSZeroRect;
+}
+
+- (void) invalidateLayout
+{
+}
+
+// Subclassing layout
+- (void) prepareLayout
+{
+}
+
+- (NSSize) scrubberContentSize
+{
+  return NSZeroSize;
+}
+
+- (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index
+{
+  return nil;
+}
+
+- (NSScrubberLayoutAttributes *) layoutAttributesForItemsInRect: (NSRect)rect
+{
+  return nil;
+}
+
+- (BOOL) shouldInvalidateLayoutForHighlightChange
+{
+  return NO;
+}
+
+- (BOOL) shouldInvalidateLayoutForSelectionChange
+{
+  return NO;
+}
+
+- (BOOL) shouldInvalidateLayoutForChangeFromVisibleRect: (NSRect)fromRect
+                                          toVisibleRect: (NSRect)toRect
+{
+  return NO;
+}
+
+- (BOOL) automaticallyMirrorsInRightToLeftLayout
+{
+  return NO;
+}
+
+- (instancetype) init
+{
+  self = [super init];
+  return self;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
 
 @end
 

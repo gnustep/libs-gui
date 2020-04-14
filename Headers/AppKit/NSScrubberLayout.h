@@ -25,7 +25,9 @@
 #ifndef _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
 #define _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
 
-#import "Foundation/NSObject.h"
+#import <Foundation/NSObject.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -33,10 +35,54 @@
 extern "C" {
 #endif
 
-@interface NSScrubberLayout : NSObject
+@class NSScrubber; 
+  
+@interface NSScrubberLayoutAttributes : NSObject <NSCopying>
+
++ (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index;
+
+- (CGFloat) alpha;
+
+- (NSRect) frame;
+
+- (NSInteger) itemIndex;
 
 @end
+  
+@interface NSScrubberLayout : NSObject <NSCoding>
 
+// Configuring
+- (Class) layoutAttributesClass;
+
+- (NSScrubber *) scrubber;
+
+- (NSRect) visibleRect;
+
+- (void) invalidateLayout;
+
+// Subclassing layout
+- (void) prepareLayout;
+
+- (NSSize) scrubberContentSize;
+
+- (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index;
+
+- (NSScrubberLayoutAttributes *) layoutAttributesForItemsInRect: (NSRect)rect;
+
+- (BOOL) shouldInvalidateLayoutForHighlightChange;
+
+- (BOOL) shouldInvalidateLayoutForSelectionChange;
+
+- (BOOL) shouldInvalidateLayoutForChangeFromVisibleRect: (NSRect)fromRect
+                                          toVisibleRect: (NSRect)toRect;
+
+- (BOOL) automaticallyMirrorsInRightToLeftLayout;
+  
+@end
+
+
+
+  
 #if	defined(__cplusplus)
 }
 #endif
