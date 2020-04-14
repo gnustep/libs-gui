@@ -27,13 +27,19 @@
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+DEFINE_BLOCK_TYPE(GSWindowRestorationHandler, void, NSWindow*, NSError*);
+  
 @protocol NSWindowRestoration
+
++ (void)restoreWindowWithIdentifier: (NSUserInterfaceItemIdentifier)identifier 
+                              state: (NSCoder *)state 
+                  completionHandler: (GSWindowRestorationHandler)handler;
 
 @end
 
