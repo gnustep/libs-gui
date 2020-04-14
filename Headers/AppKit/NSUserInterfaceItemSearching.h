@@ -27,13 +27,39 @@
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
+  
+@protocol NSUserInterfaceItemSearching <NSObject>
 
-@protocol NSUserInterfaceItemSearching
+// @required
+
+- (void)searchForItemsWithSearchString:(NSString *)searchString resultLimit:(NSInteger)resultLimit matchedItemHandler:(void (^)(NSArray *items))handleMatchedItems;
+
+- (NSArray<NSString *> *)localizedTitlesForItem:(id)item;
+
+// @optional
+
+- (void)performActionForItem:(id)item;
+
+- (void)showAllHelpTopicsForSearchString:(NSString *)searchString;
+
+@end
+
+
+@interface NSApplication (NSUserInterfaceItemSearching)
+
+- (void) registerUserInterfaceItemSearchHandler: (id<NSUserInterfaceItemSearching>)handler;
+
+- (void) unregisterUserInterfaceItemSearchHandler: (id<NSUserInterfaceItemSearching>)handler;
+
+- (BOOL) searchString:(NSString *)searchString
+         inUserInterfaceItemString:(NSString *)stringToSearch
+         searchRange:(NSRange)searchRange
+         foundRange:(NSRange *)foundRange;
 
 @end
 

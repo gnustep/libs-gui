@@ -262,6 +262,7 @@ NSTreeController.m \
 NSTreeNode.m \
 NSUserDefaultsController.m \
 NSUserInterfaceCompression.m \
+NSUserInterfaceItemSearching.m \
 NSView.m \
 NSViewController.m \
 NSVisualEffectView.m \
