@@ -26,5 +26,27 @@
 
 @implementation NSFontAssetRequest
 
+- (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
+                                 options: (NSFontAssetRequestOptions)options
+{
+  return [super init];
+}
+
+- (NSArray *) downloadedFontDescriptors
+{
+  return nil;
+}
+
+- (NSProgress *) progress
+{
+  return [NSProgress progressWithTotalUnitCount: 0.0];
+}
+
+- (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler
+{
+  NSError *error = nil;
+  CALL_BLOCK(completionHandler, error);
+}
+
 @end
 

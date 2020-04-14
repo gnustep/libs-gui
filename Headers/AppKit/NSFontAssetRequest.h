@@ -26,6 +26,8 @@
 #define _NSFontAssetRequest_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSProgress.h>
+#import <Foundation/NSError.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
@@ -33,7 +35,23 @@
 extern "C" {
 #endif
 
-@interface NSFontAssetRequest : NSObject
+enum {
+  NSFontAssetRequestOptionUsesStandardUI = 1 << 0, // Use standard system UI for downloading.
+};
+typedef NSUInteger NSFontAssetRequestOptions;
+
+DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
+
+@interface NSFontAssetRequest : NSObject <NSProgressReporting>
+
+- (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
+                                 options: (NSFontAssetRequestOptions)options;
+
+- (NSArray *) downloadedFontDescriptors;
+
+- (NSProgress *) progress;
+
+- (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
 
 @end
 
