@@ -1,3 +1,10 @@
+2020-04-13  Ivan Vucica <ivan@vucica.net>
+
+	* Documentation/announce.texi:
+	* ANNOUNCE:
+	Normalize the accompanying text for the release announcement across
+	core packages: standardize chapter name and GPG information.
+
 2020-04-05  Ivan Vucica  <ivan@vucica.net>
 
 	* ANNOUNCE:
