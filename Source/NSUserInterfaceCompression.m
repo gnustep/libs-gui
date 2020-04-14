@@ -24,6 +24,8 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
 
 #import "AppKit/NSUserInterfaceCompression.h"
 

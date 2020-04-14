@@ -33,6 +33,8 @@
 extern "C" {
 #endif
 
+@class NSSet, NSString;
+
 @interface NSUserInterfaceCompressionOptions : NSObject <NSCopying, NSCoding>
 
 - (instancetype) initWithIdentifier: (NSString *)identifier;
