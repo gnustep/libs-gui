@@ -1,5 +1,5 @@
 /* Implementation of class NSScrubberItemView
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
    Date: Wed Apr  8 09:17:27 EDT 2020
