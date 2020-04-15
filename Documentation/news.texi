@@ -38,6 +38,13 @@ NSTouch, NSDockTile.
 @item Increase small font size to 10.
 @item New cursor and stepper images.
 @item Move NSFileWrapper to Foundation.
+@item Fixed build on Debian GNU/kFreeBSD.
+@item With command line argument -autolaunch YES, do not activate the
+application when -activateIgnoringOtherApps: is invoked.
+@item Improvements to WindowMaker compatibility (e.g. WMFHideApplication
+support).
+@item Lowered NSFloatingWindowLevel by one to distinguish floating panels from
+menus.
 @end itemize
 
 @ifclear ANNOUNCE-ONLY
