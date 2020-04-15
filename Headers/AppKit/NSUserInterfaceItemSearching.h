@@ -26,6 +26,7 @@
 #define _NSUserInterfaceItemSearching_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 
@@ -33,6 +34,8 @@
 extern "C" {
 #endif
 
+@class NSArray, NSString;
+  
 DEFINE_BLOCK_TYPE(GSSearchItemsMatchedItemHandler, void, NSArray*);
 
 @protocol NSUserInterfaceItemSearching <NSObject>

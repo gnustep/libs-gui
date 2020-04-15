@@ -1,23 +1,23 @@
 2020-04-13 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/AppKitErrors.h
-	* Headers/AppKit/AppKit.h
-	* Headers/AppKit/NSFontAssetRequest.h
-	* Headers/AppKit/NSMediaLibraryBrowserController.h
-	* Headers/AppKit/NSScrubber.h
-	* Headers/AppKit/NSScrubberItemView.h
-	* Headers/AppKit/NSScrubberLayout.h
-	* Headers/AppKit/NSSharingServicePickerToolbarItem.h
-	* Headers/AppKit/NSUserInterfaceCompression.h
-	* Headers/AppKit/NSUserInterfaceItemSearching.h
-	* Headers/AppKit/NSWindowRestoration.h
+	* Headers/AppKit/AppKitErrors.h:
+	* Headers/AppKit/AppKit.h:
+	* Headers/AppKit/NSFontAssetRequest.h:
+	* Headers/AppKit/NSMediaLibraryBrowserController.h:
+	* Headers/AppKit/NSScrubber.h:
+	* Headers/AppKit/NSScrubberItemView.h:
+	* Headers/AppKit/NSScrubberLayout.h:
+	* Headers/AppKit/NSSharingServicePickerToolbarItem.h:
+	* Headers/AppKit/NSUserInterfaceCompression.h:
+	* Headers/AppKit/NSUserInterfaceItemSearching.h:
+	* Headers/AppKit/NSWindowRestoration.h:
 	* MISSING: Remove mention of these classes.
 	* Source/GNUmakefile
-	* Source/NSFontAssetRequest.m
-	* Source/NSMediaLibraryBrowserController.m
-	* Source/NSScrubberItemView.m
-	* Source/NSScrubberLayout.m
-	* Source/NSScrubber.m
+	* Source/NSFontAssetRequest.m:
+	* Source/NSMediaLibraryBrowserController.m:
+	* Source/NSScrubberItemView.m:
+	* Source/NSScrubberLayout.m:
+	* Source/NSScrubber.m:
 	* Source/NSSharingServicePickerToolbarItem.m: Add code to allow
         compilation using these classes.  These are Mac specific so they
         can't be implemented on any other platform due to HW or
