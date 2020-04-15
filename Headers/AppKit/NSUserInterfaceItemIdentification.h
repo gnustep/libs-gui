@@ -1,7 +1,10 @@
 /* Definition of class NSUserInterfaceItemIdentification
    Copyright (C) 2020 Free Software Foundation, Inc.
-   
-   By: Gregory John Casamento
+      
+   Author: Daniel Ferreira <dtf@stanford.edu>
+   Date: 2017
+
+   Author: Gregory John Casamento
    Date: Tue Apr 14 13:46:36 EDT 2020
 
    This file is part of the GNUstep Library.
@@ -14,7 +17,7 @@
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
    
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
@@ -32,7 +35,9 @@
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-
+  
+@class NSString;
+  
 typedef NSString *NSUserInterfaceItemIdentifier;
   
 @protocol NSUserInterfaceItemIdentification
