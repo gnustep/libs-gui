@@ -1,5 +1,5 @@
 /* Implementation of class NSSwitch
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
    Date: Wed Apr  8 22:01:02 EDT 2020
@@ -9,7 +9,7 @@
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   version 2.1 of the License, or (at your option) any later version.
    
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,14 +25,6 @@
 #import <AppKit/NSSwitch.h>
 #import <AppKit/NSActionCell.h>
 
-static id switchCellClass = nil;
-
-@interface GSSwitchCell : NSActionCell
-@end
-
-@implementation GSSwitchCell
-@end
-
 @implementation NSSwitch
 
 + (void) initialize
@@ -40,20 +32,23 @@ static id switchCellClass = nil;
   if (self == [NSSwitch class])
     {
       [self setVersion: 1];
-      [self setCellClass: [GSSwitchCell class]];
     }
 }
 
-+ (Class) cellClass
+- (void) setState: (NSControlStateValue)s
 {
-  return switchCellClass;
+  _state = s;
+  [self setNeedsDisplay];
 }
 
-+ (void) setCellClass: (Class)clz
+- (NSControlStateValue) state
 {
-  switchCellClass = clz;
+  return _state;
 }
 
+- (void) drawRect: (NSRect)rect
+{
+}
 
 @end
 

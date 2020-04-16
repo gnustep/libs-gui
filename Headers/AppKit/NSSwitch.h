@@ -26,15 +26,22 @@
 #define _NSSwitch_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSControl.h>
+#import <AppKit/NSCell.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
 @interface NSSwitch : NSControl
+{
+  NSControlStateValue _state;
+}
 
+- (void) setState: (NSControlStateValue)s;
+- (NSControlStateValue) state;
+  
 @end
 
 #if	defined(__cplusplus)

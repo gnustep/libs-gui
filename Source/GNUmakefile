@@ -122,6 +122,7 @@ NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
+NSSwitch.m \
 NSTouch.m \
 NSTouchBar.m \
 NSTouchBarItem.m \
@@ -506,6 +507,7 @@ NSStepperTouchBarItem.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \
+NSSwitch.h \
 NSTabView.h \
 NSTabViewItem.h \
 NSTableColumn.h \
