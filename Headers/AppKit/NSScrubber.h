@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSScrubber
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Wed Apr  8 09:16:14 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,29 +22,18 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSScrubber_h_GNUSTEP_GUI_INCLUDE
+#define _NSScrubber_h_GNUSTEP_GUI_INCLUDE
 
-#import <Foundation/NSObject.h>
+#import "AppKit/NSView.h"
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier (NSUserInterfaceItemIdentifier)identifier;
-#endif
+@interface NSScrubber : NSView
 
 @end
 
@@ -57,5 +43,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSScrubber_h_GNUSTEP_GUI_INCLUDE */
 

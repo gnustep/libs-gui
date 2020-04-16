@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSMediaLibraryBrowserController
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Tue Apr  7 08:07:21 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,30 +22,38 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSMediaLibraryBrowserController_h_GNUSTEP_GUI_INCLUDE
+#define _NSMediaLibraryBrowserController_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import "AppKit/NSNibDeclarations.h"
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier (NSUserInterfaceItemIdentifier)identifier;
-#endif
+enum {
+  NSMediaLibraryAudio,
+  NSMediaLibraryImage,
+  NSMediaLibraryVideo,
+};
+typedef NSUInteger NSMediaLibrary;  
 
+@interface NSMediaLibraryBrowserController : NSObject
+
++ (NSMediaLibraryBrowserController *) sharedMediaLibraryBrowserController;
+
+- (NSRect) frame;
+
+- (IBAction) togglePanel: (id)sender;
+
+- (BOOL) isVisible;
+
+- (void) setVisible: (BOOL)flag;
+  
 @end
 
 #if	defined(__cplusplus)
@@ -57,5 +62,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSMediaLibraryBrowserController_h_GNUSTEP_GUI_INCLUDE */
 
