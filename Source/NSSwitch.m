@@ -22,8 +22,10 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSSwitch.h>
-#import <AppKit/NSActionCell.h>
+#import "AppKit/NSSwitch.h"
+#import "AppKit/NSActionCell.h"
+
+#import "GNUstepGUI/GSTheme.h"
 
 @implementation NSSwitch
 
@@ -48,6 +50,9 @@
 
 - (void) drawRect: (NSRect)rect
 {
+  [[GSTheme theme] drawSwitchInRect: rect
+                           forState: _state
+                            enabled: [self isEnabled]];
 }
 
 @end

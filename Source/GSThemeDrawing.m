@@ -816,6 +816,14 @@
     [self drawStepperDownButton: downRect];
 }
 
+// NSSwitch drawing methods
+
+- (void) drawSwitchInRect: (NSRect)rect
+                 forState: (NSControlStateValue)state
+                  enabled: (BOOL)enabled
+{
+}
+
 // NSSegmentedControl drawing methods
 
 - (void) drawSegmentedControlSegment: (NSCell *)cell
