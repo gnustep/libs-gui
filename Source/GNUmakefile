@@ -105,6 +105,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
+NSFontAssetRequest.m \
 NSFontCollection.m \
 NSFontDescriptor.m \
 NSFontManager.m \
@@ -143,11 +144,13 @@ NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
 NSMagnificationGestureRecognizer.m \
+NSMediaLibraryBrowserController.m \
 NSPanGestureRecognizer.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
+NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
@@ -208,6 +211,9 @@ NSSegmentedControl.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
+NSScrubber.m \
+NSScrubberItemView.m \
+NSScrubberLayout.m \
 NSSecureTextField.m \
 NSSelection.m \
 NSShadow.m \
@@ -255,6 +261,8 @@ NSTrackingArea.m \
 NSTreeController.m \
 NSTreeNode.m \
 NSUserDefaultsController.m \
+NSUserInterfaceCompression.m \
+NSUserInterfaceItemSearching.m \
 NSView.m \
 NSViewController.m \
 NSVisualEffectView.m \
@@ -339,6 +347,7 @@ Cocoa.h
 APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
+AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
@@ -397,6 +406,7 @@ NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
+NSFontAssetRequest.h \
 NSFontCollection.h \
 NSFontDescriptor.h \
 NSFontManager.h \
@@ -423,6 +433,7 @@ NSLevelIndicator.h \
 NSLevelIndicatorCell.h \
 NSMagnificationGestureRecognizer.h \
 NSMatrix.h \
+NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
@@ -467,6 +478,9 @@ NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
 NSScroller.h \
+NSScrubber.h \
+NSScrubberItemView.h \
+NSScrubberLayout.h \
 NSSearchField.h \
 NSSearchFieldCell.h \
 NSSecureTextField.h \
@@ -475,6 +489,7 @@ NSSegmentedControl.h \
 NSSelection.h \
 NSShadow.h \
 NSSharingService.h \
+NSSharingServicePickerToolbarItem.h \
 NSSharingServicePickerTouchBarItem.h \
 NSSlider.h \
 NSSliderCell.h \
@@ -525,6 +540,7 @@ NSViewController.h \
 NSVisualEffectView.h \
 NSWindow.h \
 NSWindowController.h \
+NSWindowRestoration.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \
@@ -537,6 +553,8 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
 NSSpellProtocol.h \
+NSUserInterfaceCompression.h \
+NSUserInterfaceItemSearching.h \
 NSUserInterfaceItemIdentification.h \
 NSUserInterfaceValidation.h \
 DPSOperators.h \

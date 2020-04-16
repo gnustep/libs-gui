@@ -42,6 +42,7 @@
 //
 // GNUstep GUI Library functions
 //
+#import <AppKit/AppKitErrors.h>
 #import <AppKit/NSGraphics.h>
 
 #import <AppKit/NSAccessibility.h>
@@ -117,6 +118,9 @@
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSScrollView.h>
+#import <AppKit/NSScrubber.h>
+#import <AppKit/NSScrubberItemView.h>
+#import <AppKit/NSScrubberLayout.h>
 #import <AppKit/NSSelection.h>
 #import <AppKit/NSSharingService.h>
 #import <AppKit/NSSlider.h>
@@ -157,6 +161,7 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
+#import <AppKit/NSFontAssetRequest.h>
 #import <AppKit/NSFontCollection.h>
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSGestureRecognizer.h>
@@ -173,6 +178,7 @@
 #import <AppKit/NSLevelIndicator.h>
 #import <AppKit/NSLevelIndicatorCell.h>
 #import <AppKit/NSMagnificationGestureRecognizer.h>
+#import <AppKit/NSMediaLibraryBrowserController.h>
 #import <AppKit/NSMovie.h>
 #import <AppKit/NSMovieView.h>
 #import <AppKit/NSPanGestureRecognizer.h>
@@ -201,6 +207,7 @@
 #import <AppKit/NSSegmentedCell.h>
 #import <AppKit/NSSegmentedControl.h>
 #import <AppKit/NSShadow.h>
+#import <AppKit/NSSharingServicePickerToolbarItem.h>
 #import <AppKit/NSSharingServicePickerTouchBarItem.h>
 #import <AppKit/NSSliderTouchBarItem.h>
 #import <AppKit/NSSound.h>
@@ -235,6 +242,8 @@
 #import <AppKit/NSTreeNode.h>
 #import <AppKit/NSUserDefaultsController.h>
 #import <AppKit/NSUserInterfaceItemIdentification.h>
+#import <AppKit/NSUserInterfaceCompression.h>
+#import <AppKit/NSUserInterfaceItemSearching.h>
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>
