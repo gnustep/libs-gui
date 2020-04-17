@@ -886,16 +886,17 @@
   // make smaller so that it does not touch frame
   NSBezierPath *oval;
   NSRect rect = NSZeroRect;
+  CGFloat w = frame.size.width / 2;
 
   [backgroundColor set];
   if(value == NSControlStateValueOff)
     {
-      CGFloat w = frame.size.width / 2;
-      rect = NSMakeRect(frame.origin.x, frame.origin.y, frame.size.height, w);
+      rect = NSMakeRect(frame.origin.x + 4, frame.origin.y + 2, w, frame.size.height - 4);
     }
   else
     {
-      rect = NSMakeRect(0,0,frame.size.height,frame.size.height);
+      rect = NSMakeRect(frame.origin.x + frame.size.width/2, frame.origin.y + 2,
+                        w, frame.size.height - 4);
     }
   
   
