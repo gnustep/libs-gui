@@ -57,5 +57,17 @@
                           knobColor: [NSColor redColor]];
 }
 
+- (void) mouseDown: (NSEvent *)event
+{
+  if (_state == NSControlStateValueOn)
+    {
+      [self setState: NSControlStateValueOff];
+    }
+  else
+    {
+      [self setState: NSControlStateValueOn];
+    }
+}
+
 @end
 
