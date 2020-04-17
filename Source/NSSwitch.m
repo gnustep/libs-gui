@@ -73,8 +73,9 @@
   [[GSTheme theme] drawSwitchInRect: rect
                            forState: _state
                             enabled: [self isEnabled]
-                         bezelColor: [NSColor blackColor]
-                          knobColor: [NSColor redColor]];
+                       bezelOnColor: [NSColor lightGrayColor]
+                      bezelOffColor: [NSColor blackColor]
+                          knobColor: [NSColor darkGrayColor]];
 }
 
 - (void) mouseDown: (NSEvent *)event
