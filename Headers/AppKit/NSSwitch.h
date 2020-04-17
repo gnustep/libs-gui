@@ -37,6 +37,8 @@ extern "C" {
 @interface NSSwitch : NSControl
 {
   NSControlStateValue _state;
+  id _target;
+  SEL _action;
 }
 
 - (void) setState: (NSControlStateValue)s;
