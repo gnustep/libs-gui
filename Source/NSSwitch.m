@@ -52,7 +52,9 @@
 {
   [[GSTheme theme] drawSwitchInRect: rect
                            forState: _state
-                            enabled: [self isEnabled]];
+                            enabled: [self isEnabled]
+                         bezelColor: [NSColor blackColor]
+                          knobColor: [NSColor redColor]];
 }
 
 @end

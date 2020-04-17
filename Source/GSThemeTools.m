@@ -481,7 +481,6 @@
   [[NSColor shadowColor] set];
   [oval stroke];
 }
-
 @end
 
 

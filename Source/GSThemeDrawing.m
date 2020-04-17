@@ -818,10 +818,114 @@
 
 // NSSwitch drawing methods
 
+- (void) drawSwitchBezel: (NSRect)frame
+               withColor: (NSColor*)backgroundColor
+                forState: (NSControlStateValue)v
+{
+  NSBezierPath *p;
+  NSPoint point;
+  CGFloat radius;
+
+  // make smaller than enclosing frame
+  frame = NSInsetRect(frame, 4, 4);
+  radius = frame.size.height / 2.0;
+  point = frame.origin;
+  point.x += radius;
+  point.y += radius - 0.5;
+
+  // Draw initial path to enclose the button...
+  // left half-circle
+  p = [NSBezierPath bezierPath];
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 90.0
+			      endAngle: 270.0];
+
+  // line to first point and right halfcircle
+  point.x += frame.size.width - frame.size.height;
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 270.0
+			      endAngle: 90.0];
+  [p closePath];
+
+  // fill with background color
+  [backgroundColor set];
+  [p fill];
+
+  // and stroke rounded button
+  [[NSColor shadowColor] set];
+  [p stroke];
+
+  // Add highlights...
+  point = frame.origin;
+  point.x += radius - 0.5;
+  point.y += radius - 0.5;
+  p = [NSBezierPath bezierPath];
+  [p setLineWidth: 1.0];
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 135.0
+			      endAngle: 270.0];
+
+  // line to first point and right halfcircle
+  point.x += frame.size.width - frame.size.height;
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 270.0
+			      endAngle: 315.0];
+  [[NSColor controlLightHighlightColor] set];
+  [p stroke];
+}
+
+- (void) drawSwitchKnob: (NSRect)frame
+              withColor: (NSColor*)backgroundColor
+               forState: (NSControlStateValue)value
+{
+  
+  // make smaller so that it does not touch frame
+  NSBezierPath *oval;
+  NSRect rect = NSZeroRect;
+
+  [backgroundColor set];
+  if(value == NSControlStateValueOff)
+    {
+      CGFloat w = frame.size.width / 2;
+      rect = NSMakeRect(frame.origin.x, frame.origin.y, frame.size.height, w);
+    }
+  else
+    {
+      rect = NSMakeRect(0,0,frame.size.height,frame.size.height);
+    }
+  
+  
+  oval = [NSBezierPath bezierPathWithOvalInRect: NSInsetRect(rect, 1, 1)];
+  
+  // fill oval with background color
+  [backgroundColor set];
+  [oval fill];
+  
+  // and stroke rounded button
+  [[NSColor shadowColor] set];
+  [oval stroke];
+  
+  // NSRectFill(frame);
+}
+
+
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
                   enabled: (BOOL)enabled
+               bezelColor: (NSColor *)bColor
+                knobColor: (NSColor *)kColor
 {
+  [self drawSwitchBezel: rect
+             withColor: bColor
+              forState: state];
+
+  [self drawSwitchKnob: rect
+             withColor: kColor
+             forState: state];
 }
 
 // NSSegmentedControl drawing methods
