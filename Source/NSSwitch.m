@@ -59,6 +59,7 @@
 
 - (void) mouseDown: (NSEvent *)event
 {
+  [super mouseDown: event];
   if (_state == NSControlStateValueOn)
     {
       [self setState: NSControlStateValueOff];
