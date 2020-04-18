@@ -902,7 +902,7 @@
     }
   else
     {
-      rect = NSMakeRect(frame.origin.x + frame.size.width/2, frame.origin.y + 2,
+      rect = NSMakeRect(frame.origin.x + ((frame.size.width - w) - 4), frame.origin.y + 2,
                         w, frame.size.height - 4);
     }
   

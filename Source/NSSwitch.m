@@ -50,6 +50,8 @@
 
 - (void) setAction: (SEL)action
 {
+  NSString *s = NSStringFromSelector(action);
+  NSLog(@"Action %@",s);
   _action = action;
 }
 
@@ -60,6 +62,7 @@
 
 - (void) setTarget: (id)target
 {
+  NSLog(@"Target %@", target);
   _target = target;
 }
 
@@ -89,6 +92,40 @@
     {
       [self setState: NSControlStateValueOn];
     }
+
+  if (_action)
+    {
+      [self sendAction: _action
+                    to: _target];
+    }
+}
+
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  if ((self = [super initWithCoder: aDecoder]) != nil)
+    {
+      if ([aDecoder allowsKeyedCoding])
+        {
+          if ([aDecoder containsValueForKey: @"NSAction"])
+            {
+              NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+              if (action != nil)
+                {
+                  [self setAction: NSSelectorFromString(action)];
+                }
+            }
+          if ([aDecoder containsValueForKey: @"NSTarget"])
+            {
+              id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+              [self setTarget: target];
+            }
+        }
+      else
+        {
+        }
+    }
+  
+    return self;
 }
 
 @end
