@@ -898,12 +898,12 @@
   [backgroundColor set];
   if(value == NSControlStateValueOff)
     {
-      rect = NSMakeRect(frame.origin.x + 4, frame.origin.y + 2, w, frame.size.height - 4);
+      rect = NSMakeRect(frame.origin.x + 4, frame.origin.y + 2, w - 2, frame.size.height - 6);
     }
   else
     {
-      rect = NSMakeRect(frame.origin.x + ((frame.size.width - w) - 4), frame.origin.y + 2,
-                        w, frame.size.height - 4);
+      rect = NSMakeRect(frame.origin.x + ((frame.size.width - w) - 2), frame.origin.y + 2,
+                        w - 2, frame.size.height - 6);
     }
   
   
