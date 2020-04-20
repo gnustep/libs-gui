@@ -352,6 +352,7 @@ AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
+NSAccessibilityProtocols.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \

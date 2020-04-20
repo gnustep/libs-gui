@@ -1,8 +1,8 @@
-/* Definition of class NSSwitch
+/* Definition of class NSAccessibilityProtocols
    Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: Wed Apr  8 22:01:02 EDT 2020
+   Date: Sun Apr 19 09:56:39 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -22,29 +22,35 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSSwitch_h_GNUSTEP_GUI_INCLUDE
-#define _NSSwitch_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE
+#define _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE
 
-#import <AppKit/NSControl.h>
-#import <AppKit/NSCell.h>
-#import <AppKit/NSAccessibilityProtocols.h>
+#import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface NSSwitch : NSControl
-{
-  NSControlStateValue _state;
-  id _target;
-  SEL _action;
-}
 
-- (void) setState: (NSControlStateValue)s;
-- (NSControlStateValue) state;
-  
+
+@protocol NSAccessibilityElement <NSObject>
+- (NSRect)accessibilityFrame;
+- (NSString *)accessibilityIdentifier;
+- (id)accessibilityParent;
+- (BOOL)isAccessibilityFocused;
+@end
+
+@protocol NSAccessibilityButton <NSAccessibilityElement>
+- (NSString *)accessibilityLabel;
+- (BOOL)accessibilityPerformPress;
+@end
+
+@protocol NSAccessibilitySwitch <NSAccessibilityButton>
+- (BOOL) accessibilityPerformDecrement;
+- (BOOL) accessibilityPerformIncrement;
+- (NSString *) accessibilityValue;
 @end
 
 #if	defined(__cplusplus)
@@ -53,5 +59,5 @@ extern "C" {
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSSwitch_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE */
 
