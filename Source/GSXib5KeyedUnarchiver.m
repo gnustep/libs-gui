@@ -2789,6 +2789,16 @@ didStartElement: (NSString*)elementName
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
 
+  // Handle state for NSSwitch
+  if ([element attributeForKey: @"state"])
+    {
+      if ([object respondsToSelector: @selector(setState:)])
+        {  
+          [object setState: [[element attributeForKey: @"state"] isEqualToString: @"on"] ?
+                  NSControlStateValueOn : NSControlStateValueOff];
+        }
+    }
+  
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
