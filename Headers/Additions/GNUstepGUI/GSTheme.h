@@ -959,14 +959,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) drawStepperHighlightDownButton: (NSRect)aRect;
 
 // NSSwitch drawing methods
-
 - (void) drawSwitchKnob: (NSRect)frame
-              withColor: (NSColor*)backgroundColor
                forState: (NSControlStateValue)value;
 
 - (void) drawSwitchBezel: (NSRect)frame
-             withOnColor: (NSColor*)onColor
-            withOffColor: (NSColor*)offColor
                 forState: (NSControlStateValue)v;
 
 - (void) drawSwitchInRect: (NSRect)rect

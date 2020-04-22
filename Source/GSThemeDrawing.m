@@ -819,18 +819,16 @@
 // NSSwitch drawing methods
 
 - (void) drawSwitchBezel: (NSRect)frame
-             withOnColor: (NSColor*)onColor
-            withOffColor: (NSColor*)offColor
                 forState: (NSControlStateValue)v
 {
   NSBezierPath *p;
   NSPoint point;
   CGFloat radius;
-  NSColor *backgroundColor = offColor;
+  NSColor *backgroundColor = [NSColor windowBackgroundColor]; // offColor;
 
   if (NSControlStateValueOn == v)
     {
-      backgroundColor = onColor;
+      backgroundColor = [NSColor selectedControlColor]; // onColor;
     }
   
   // make smaller than enclosing frame
@@ -886,11 +884,11 @@
 }
 
 - (void) drawSwitchKnob: (NSRect)frame
-              withColor: (NSColor*)backgroundColor
                forState: (NSControlStateValue)value
 {
   
   // make smaller so that it does not touch frame
+  NSColor *backgroundColor = [NSColor windowBackgroundColor];
   NSBezierPath *oval;
   NSRect rect = NSZeroRect;
   CGFloat w = (frame.size.width / 2) - 2;
@@ -934,13 +932,10 @@
 {
   // Draw the well bezel
   [self drawSwitchBezel: rect
-            withOnColor: [NSColor selectedControlColor]
-           withOffColor: [NSColor windowBackgroundColor]
                forState: state];
 
   // Draw the knob
   [self drawSwitchKnob: rect
-             withColor: [NSColor windowBackgroundColor]
               forState: state];
 }
 
