@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-@interface NSSwitch : NSControl
+@interface NSSwitch : NSControl <NSAccessibilitySwitch>
 {
   NSControlStateValue _state;
   id _target;

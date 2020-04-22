@@ -127,10 +127,7 @@
 {
   [[GSTheme theme] drawSwitchInRect: rect
                            forState: _state
-                            enabled: [self isEnabled]
-                       bezelOnColor: [NSColor selectedControlColor]
-                      bezelOffColor: [NSColor windowBackgroundColor]
-                          knobColor: [NSColor windowBackgroundColor]];
+                            enabled: [self isEnabled]];
 }
 
 - (void) mouseDown: (NSEvent *)event
@@ -157,6 +154,53 @@
     }
 }
 
+// Accessibility
+- (NSRect)accessibilityFrame
+{
+  return [self frame];
+}
+
+- (NSString *)accessibilityIdentifier
+{
+  return nil;
+}
+
+- (id)accessibilityParent
+{
+  return nil;
+}
+
+- (BOOL)isAccessibilityFocused
+{
+  return NO;
+}
+
+- (NSString *)accessibilityLabel
+{
+  return nil;
+}
+
+- (BOOL)accessibilityPerformPress
+{
+  return NO;
+}
+
+- (BOOL) accessibilityPerformDecrement
+{
+  return NO;
+}
+
+- (BOOL) accessibilityPerformIncrement
+{
+  return NO;
+}
+
+- (NSString *) accessibilityValue
+{
+  return nil;
+}
+
+// NSCoding
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ((self = [super initWithCoder: coder]) != nil)

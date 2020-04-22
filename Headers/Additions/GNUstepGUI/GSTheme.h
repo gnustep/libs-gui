@@ -971,10 +971,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
-                  enabled: (BOOL)enabled
-             bezelOnColor: (NSColor *)bOnColor
-            bezelOffColor: (NSColor *)bOffColor
-                knobColor: (NSColor *)kColor;
+                  enabled: (BOOL)enabled;
 
 // NSSegmentedControl drawing methods
 

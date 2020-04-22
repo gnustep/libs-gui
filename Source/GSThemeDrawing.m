@@ -899,16 +899,16 @@
   if(value == NSControlStateValueOff)
     {
       rect = NSMakeRect(frame.origin.x + 4,
-                        frame.origin.y + 3,
+                        frame.origin.y + 2,
                         w - 2,
-                        frame.size.height - 6);
+                        frame.size.height - 5);
     }
   else
     {
       rect = NSMakeRect(frame.origin.x + ((frame.size.width - w) - 2),
-                        frame.origin.y + 3,
+                        frame.origin.y + 2,
                         w - 2,
-                        frame.size.height - 6);
+                        frame.size.height - 5);
     }
   
   
@@ -929,20 +929,17 @@
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
                   enabled: (BOOL)enabled
-             bezelOnColor: (NSColor *)bOnColor
-            bezelOffColor: (NSColor *)bOffColor
-                knobColor: (NSColor *)kColor
 {
   // Draw the well bezel
   [self drawSwitchBezel: rect
-            withOnColor: bOnColor
-           withOffColor: bOffColor
+            withOnColor: [NSColor selectedControlColor]
+           withOffColor: [NSColor windowBackgroundColor]
                forState: state];
 
   // Draw the knob
   [self drawSwitchKnob: rect
-             withColor: kColor
-             forState: state];
+             withColor: [NSColor windowBackgroundColor]
+              forState: state];
 }
 
 // NSSegmentedControl drawing methods

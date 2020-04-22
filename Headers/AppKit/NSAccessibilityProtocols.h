@@ -33,8 +33,6 @@
 extern "C" {
 #endif
 
-
-
 @protocol NSAccessibilityElement <NSObject>
 - (NSRect)accessibilityFrame;
 - (NSString *)accessibilityIdentifier;
