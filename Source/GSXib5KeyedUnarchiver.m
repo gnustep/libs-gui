@@ -53,6 +53,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSSliderCell.h"
 #import "AppKit/NSSplitView.h"
+#import "AppKit/NSSwitch.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSTableView.h"
@@ -2792,10 +2793,10 @@ didStartElement: (NSString*)elementName
   // Handle state for NSSwitch
   if ([element attributeForKey: @"state"])
     {
-      if ([object respondsToSelector: @selector(setState:)])
+      if ([object respondsToSelector: @selector(setState:)] && [object isKindOfClass: [NSSwitch class]])
         {  
-          [object setState: [[element attributeForKey: @"state"] isEqualToString: @"on"] ?
-                  NSControlStateValueOn : NSControlStateValueOff];
+          [(NSSwitch *)object setState: [[element attributeForKey: @"state"] isEqualToString: @"on"] ?
+                NSControlStateValueOn : NSControlStateValueOff];
         }
     }
   
