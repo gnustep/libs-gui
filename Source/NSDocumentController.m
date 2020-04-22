@@ -223,12 +223,13 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 			}
 		      else if (c == 0)
 			{
-			  NSLog(@"NSDocumentClass %@ not found", name);
+			  // TESTPLANT-MAL-04152020: Commented out due to being overruled...
+			  //NSLog(@"NSDocumentClass %@ not found", name);
 			}
 		      else
 			{
-			  NSLog(@"NSDocumentClass %@ not NSDocument subclass",
-			    name);
+			  // TESTPLANT-MAL-04152020: Commented out due to being overruled...
+			  //NSLog(@"NSDocumentClass %@ not NSDocument subclass", name);
 			}
 		    }
 		}
@@ -955,7 +956,6 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
 - (IBAction) openDocument: (id)sender
 {
-  NSError *err = nil;
   NSEnumerator *urlEnum;
   NSURL *url;
 
@@ -975,6 +975,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 #else
       // FIXME: Should be calling openDocumentWithContentsOfURL:display:completionHandler:
       // but this requires Block support
+      NSError *err = nil;
       [self openDocumentWithContentsOfURL: url display: YES error: &err];
       if (err && ![self presentError: err])
         {
