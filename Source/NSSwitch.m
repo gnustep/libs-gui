@@ -152,42 +152,63 @@
 
   if (_action)
     {
-      NSLog(@"Sending action");
       [self sendAction: _action
                     to: _target];
     }
 }
 
-- (id) initWithCoder: (NSCoder *)aDecoder
+- (id) initWithCoder: (NSCoder *)coder
 {
-  if ((self = [super initWithCoder: aDecoder]) != nil)
+  if ((self = [super initWithCoder: coder]) != nil)
     {
-      if ([aDecoder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
         {
-          if ([aDecoder containsValueForKey: @"NSAction"])
+          if ([coder containsValueForKey: @"NSControlContents"])
             {
-              NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
-              if (action != nil)
-                {
-                  [self setAction: NSSelectorFromString(action)];
-                }
+              [self setState: [coder decodeIntegerForKey: @"NSControlContents"]];
             }
-          if ([aDecoder containsValueForKey: @"NSTarget"])
+          if ([coder containsValueForKey: @"NSControlAction"])
             {
-              id target = [aDecoder decodeObjectForKey: @"NSTarget"];
-              [self setTarget: target];
+              NSString *s = [coder decodeObjectForKey: @"NSControlAction"];
+              [self setAction: NSSelectorFromString(s)];
+            }
+          if ([coder containsValueForKey: @"NSControlTarget"])
+            {
+              id t = [coder decodeObjectForKey: @"NSControlTarget"];
+              [self setTarget: t];
             }
         }
       else
         {
+          [coder decodeValueOfObjCType: @encode(NSInteger)
+                                    at: &_state];
+          [self setAction: NSSelectorFromString((NSString *)[coder decodeObject])];
+          [self setTarget: [coder decodeObject]];
         }
     }
   
     return self;
 }
 
-- (void) encodeWithCoder: (NSCoder *)acoder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeInteger: _state
+                    forKey: @"NSControlContents"];
+      [coder encodeObject: NSStringFromSelector(_action)
+                   forKey: @"NSControlAction"];
+      [coder encodeObject: _target
+                   forKey: @"NSControlTarget"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_state];
+      [coder encodeObject: NSStringFromSelector([self action])];
+      [coder encodeObject: [self target]];
+    }
 }
 
 @end
