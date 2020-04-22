@@ -23,8 +23,6 @@
 */
 
 #import "AppKit/NSSwitch.h"
-#import "AppKit/NSActionCell.h"
-
 #import "GNUstepGUI/GSTheme.h"
 
 @implementation NSSwitch
@@ -50,8 +48,6 @@
 
 - (void) setAction: (SEL)action
 {
-  NSString *s = NSStringFromSelector(action);
-  NSLog(@"Action %@",s);
   _action = action;
 }
 
@@ -62,13 +58,69 @@
 
 - (void) setTarget: (id)target
 {
-  NSLog(@"Target %@", target);
   _target = target;
 }
 
 - (id) target
 {
   return _target;
+}
+
+- (void) setDoubleValue: (double)val
+{
+  if (val < 1.0)
+    {
+      [self setState: NSControlStateValueOff];
+    }
+  else
+    {
+      [self setState: NSControlStateValueOn];
+    }
+}
+
+- (double) doubleValue
+{
+  return (double)(([self state] == NSControlStateValueOn) ? 1.0 : 0.0);
+}
+
+- (void) setFloatValue: (float)val
+{
+  [self setDoubleValue: (double)val];
+}
+
+- (float) floatValue
+{
+  return (float)[self doubleValue];
+}
+
+- (void) setIntValue: (int)val
+{
+  [self setDoubleValue: (double)val];
+}
+
+- (int) intValue
+{
+  return (int)[self doubleValue];
+}
+
+- (void) setIntegerValue: (NSInteger)val
+{
+  [self setDoubleValue: (double)val];
+}
+
+- (NSInteger) integerValue
+{
+  return (NSInteger)[self doubleValue];
+}
+
+- (void) setStringValue: (NSString *)val
+{
+  [self setDoubleValue: [val doubleValue]];
+}
+
+- (NSString *) stringValue
+{
+  return [NSString stringWithFormat: @"%ld", [self integerValue]];
 }
 
 - (void) drawRect: (NSRect)rect
@@ -80,8 +132,6 @@
                       bezelOffColor: [NSColor windowBackgroundColor]
                           knobColor: [NSColor windowBackgroundColor]];
 }
-
-
 
 - (void) mouseDown: (NSEvent *)event
 {
@@ -129,6 +179,10 @@
     }
   
     return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)acoder
+{
 }
 
 @end
