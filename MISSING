@@ -25,10 +25,6 @@ MISSING HEADERS
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
 > NSPageController.h
-> NSPathCell.h
-> NSPathComponentCell.h
-> NSPathControl.h
-> NSPathControlItem.h
 > NSPersistentDocument.h
 > NSRuleEditor.h
 > NSSliderAccessory.h
