@@ -441,8 +441,9 @@
               (int)width,(int) height, (int)bps, (int)spp, alpha, isPlanar, colorSpaceName);
   if (!bps || !spp || !width || !height) 
     {
-      [NSException raise: NSInvalidArgumentException
-        format: @"Required arguments not specified creating NSBitmapImageRep"];
+      NSLog(@"%s:invalid parameters: bps: %d spp: %d width: %d height: %d", __PRETTY_FUNCTION__,
+            bps, spp, width, height);
+      return nil;
     }
 
   _pixelsWide = width;
