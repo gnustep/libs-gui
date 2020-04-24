@@ -2799,6 +2799,22 @@ didStartElement: (NSString*)elementName
                 NSControlStateValueOn : NSControlStateValueOff];
         }
     }
+
+  if ([element attributeForKey: @"enabled"])
+    {
+      if ([object respondsToSelector: @selector(setEnabled:)] && [object isKindOfClass: [NSSwitch class]])
+        {  
+          [(NSSwitch *)object setEnabled: [[element attributeForKey: @"enabled"] isEqualToString: @"YES"] ?
+                                    YES : NO];
+        }
+    }
+  else
+    {
+      if ([object respondsToSelector: @selector(setEnabled:)] && [object isKindOfClass: [NSSwitch class]])
+        {
+          [(NSSwitch *)object setEnabled: YES];
+        }
+    }
   
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
