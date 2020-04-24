@@ -825,16 +825,19 @@
   NSBezierPath *p;
   NSPoint point;
   CGFloat radius;
-  NSColor *backgroundColor = [NSColor selectedControlColor]; // onColor;
-
-  if (NSControlStateValueOn != v)
-    {
-      backgroundColor = [NSColor windowBackgroundColor]; // offColor;
-    }
-
+  NSColor *backgroundColor;
+  
   if (enabled == NO)
     {
       backgroundColor = [NSColor disabledControlTextColor];
+    }
+  else if (NSControlStateValueOn != v)
+    {
+      backgroundColor = [NSColor windowBackgroundColor]; // offColor
+    }
+  else
+    {
+      backgroundColor = [NSColor selectedControlColor]; // onColor
     }
   
   // make smaller than enclosing frame
