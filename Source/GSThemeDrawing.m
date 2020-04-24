@@ -893,8 +893,6 @@
                forState: (NSControlStateValue)value
                 enabled: (BOOL)enabled
 {
-  
-  // make smaller so that it does not touch frame
   NSColor *backgroundColor = enabled ? [NSColor windowBackgroundColor] : [NSColor disabledControlTextColor];
   NSBezierPath *oval;
   NSRect rect = NSZeroRect;
