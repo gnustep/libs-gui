@@ -69,6 +69,7 @@
 - (void) setEnabled: (BOOL)flag
 {
   _enabled = flag;
+  [self setNeedsDisplay];
 }
 
 - (BOOL) isEnabled
