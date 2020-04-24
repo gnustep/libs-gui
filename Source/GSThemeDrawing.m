@@ -926,8 +926,6 @@
   // and stroke rounded button
   [[NSColor shadowColor] set];
   [oval stroke];
-  
-  // NSRectFill(frame);
 }
 
 
