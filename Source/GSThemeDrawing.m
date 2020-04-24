@@ -902,6 +902,7 @@
   CGFloat w = (frame.size.width / 2) - 2;
   CGFloat h = frame.size.height - 5;
   CGFloat y = frame.origin.y + 2;
+  CGFloat radius = frame.size.height / 2.0;
 
   [backgroundColor set];
   if(value == NSControlStateValueOff)
@@ -913,7 +914,7 @@
     }
   else
     {
-      rect = NSMakeRect(frame.origin.x + ((frame.size.width - w) - 2),
+      rect = NSMakeRect(frame.origin.x + ((frame.size.width - 2 * radius) + 2), // ((frame.size.width - w) - 2)
                         y,
                         w,
                         h);
