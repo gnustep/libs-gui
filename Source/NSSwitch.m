@@ -273,6 +273,8 @@
                    forKey: @"NSControlAction"];
       [coder encodeObject: _target
                    forKey: @"NSControlTarget"];
+      [coder encodeBool: _enabled
+                 forKey: @"NSEnabled"];
     }
   else
     {
@@ -280,6 +282,7 @@
                                 at: &_state];
       [coder encodeObject: NSStringFromSelector([self action])];
       [coder encodeObject: [self target]];
+      [coder encodeBool: [self isEnabled]];
     }
 }
 
