@@ -905,7 +905,7 @@
   CGFloat radius = frame.size.height / 2.0;
 
   [backgroundColor set];
-  if(value == NSControlStateValueOff)
+  if (value == NSControlStateValueOff)
     {
       rect = NSMakeRect(frame.origin.x + 4,
                         y,
