@@ -133,6 +133,19 @@
   return [NSString stringWithFormat: @"%ld", [self integerValue]];
 }
 
+- (void) setObjectValue: (id)obj
+{
+  if ([obj respondsToSelector: @selector(stringValue)])
+    {
+      [self setStringValue: [obj stringValue]];
+    }
+}
+
+- (id) objectValue
+{
+  return [self stringValue];
+}
+
 - (void) drawRect: (NSRect)rect
 {
   [[GSTheme theme] drawSwitchInRect: rect
