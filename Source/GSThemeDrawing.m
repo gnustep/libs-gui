@@ -820,15 +820,21 @@
 
 - (void) drawSwitchBezel: (NSRect)frame
                 forState: (NSControlStateValue)v
+                 enabled: (BOOL)enabled
 {
   NSBezierPath *p;
   NSPoint point;
   CGFloat radius;
-  NSColor *backgroundColor = [NSColor windowBackgroundColor]; // offColor;
+  NSColor *backgroundColor = [NSColor selectedControlColor]; // onColor;
 
-  if (NSControlStateValueOn == v)
+  if (NSControlStateValueOn != v)
     {
-      backgroundColor = [NSColor selectedControlColor]; // onColor;
+      backgroundColor = [NSColor windowBackgroundColor]; // offColor;
+    }
+
+  if (enabled == NO)
+    {
+      backgroundColor = [NSColor disabledControlTextColor];
     }
   
   // make smaller than enclosing frame
@@ -885,10 +891,11 @@
 
 - (void) drawSwitchKnob: (NSRect)frame
                forState: (NSControlStateValue)value
+                enabled: (BOOL)enabled
 {
   
   // make smaller so that it does not touch frame
-  NSColor *backgroundColor = [NSColor windowBackgroundColor];
+  NSColor *backgroundColor = enabled ? [NSColor windowBackgroundColor] : [NSColor disabledControlTextColor];
   NSBezierPath *oval;
   NSRect rect = NSZeroRect;
   CGFloat w = (frame.size.width / 2) - 2;
@@ -932,11 +939,14 @@
 {
   // Draw the well bezel
   [self drawSwitchBezel: rect
-               forState: state];
+               forState: state
+                enabled: enabled];
 
   // Draw the knob
   [self drawSwitchKnob: rect
-              forState: state];
+              forState: state
+               enabled: enabled];
+        
 }
 
 // NSSegmentedControl drawing methods

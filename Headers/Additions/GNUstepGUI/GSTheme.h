@@ -960,10 +960,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 // NSSwitch drawing methods
 - (void) drawSwitchKnob: (NSRect)frame
-               forState: (NSControlStateValue)value;
+               forState: (NSControlStateValue)value
+                enabled: (BOOL)enabled;
+
 
 - (void) drawSwitchBezel: (NSRect)frame
-                forState: (NSControlStateValue)v;
+                forState: (NSControlStateValue)v
+                 enabled: (BOOL)enabled;
 
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state

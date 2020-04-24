@@ -40,6 +40,7 @@ extern "C" {
   NSControlStateValue _state;
   id _target;
   SEL _action;
+  BOOL _enabled;
 }
 
 - (void) setState: (NSControlStateValue)s;

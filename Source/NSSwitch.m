@@ -66,6 +66,16 @@
   return _target;
 }
 
+- (void) setEnabled: (BOOL)flag
+{
+  _enabled = flag;
+}
+
+- (BOOL) isEnabled
+{
+  return _enabled;
+}
+
 - (void) setDoubleValue: (double)val
 {
   if (val < 1.0)
@@ -220,6 +230,11 @@
             {
               id t = [coder decodeObjectForKey: @"NSControlTarget"];
               [self setTarget: t];
+            }
+         if ([coder containsValueForKey: @"NSEnabled"])
+            {
+              BOOL f = [coder decodeBoolForKey: @"NSEnabled"];
+              [self setEnabled: f];
             }
         }
       else
