@@ -466,9 +466,6 @@
   return trigger;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcast-of-sel-type"
-
 - (void) establishConnection
 {
   SEL sel = NSSelectorFromString(label);
@@ -507,8 +504,6 @@
       [destination setAction: sel];
     }
 }
-
-#pragma clang diagnostic pop
 
 @end
 
