@@ -25,15 +25,15 @@
 #ifndef _NSPathCell_h_GNUSTEP_GUI_INCLUDE
 #define _NSPathCell_h_GNUSTEP_GUI_INCLUDE
 
-#import <AppKit/NSCell.h>
+#import <AppKit/NSActionCell.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface NSPathCell : NSCell
+@interface NSPathCell : NSActionCell
 
 @end
 

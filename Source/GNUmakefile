@@ -115,6 +115,10 @@ NSFormCell.m \
 NSGroupTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSPanGestureRecognizer.m \
+NSPathCell.m \
+NSPathComponentCell.m \
+NSPathControl.m \
+NSPathControlItem.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
@@ -450,6 +454,10 @@ NSOutlineView.h \
 NSPageLayout.h \
 NSPanel.h \
 NSPanGestureRecognizer.h \
+NSPathCell.h \
+NSPathComponentCell.h \
+NSPathControl.h \
+NSPathControlItem.h \
 NSParagraphStyle.h \
 NSPasteboard.h \
 NSPasteboardItem.h \
