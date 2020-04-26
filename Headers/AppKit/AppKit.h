@@ -47,6 +47,7 @@
 
 #import <AppKit/NSAccessibility.h>
 #import <AppKit/NSAccessibilityConstants.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSAppearance.h>

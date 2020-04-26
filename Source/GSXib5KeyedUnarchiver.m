@@ -2804,7 +2804,6 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
-  
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
@@ -2983,29 +2982,6 @@ didStartElement: (NSString*)elementName
     }
 
   return object;
-}
-
-- (NSInteger) decodeIntegerForKey: (NSString *)key
-{
-  NSInteger i = 0;
-
-  if ([self containsValueForKey: key])
-    {
-      i  = [super decodeIntegerForKey: key];
-    }
-  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-    {
-      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-      i = [[self performSelector: selector withObject: currentElement] integerValue];
-    }
-#if DEBUG_XIB5
-  else
-    {
-      NSWarnMLog(@"no integer for key: %@", key);
-    }
-#endif
-
-  return i;
 }
 
 - (BOOL) decodeBoolForKey: (NSString *)key

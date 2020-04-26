@@ -900,7 +900,7 @@
   NSBezierPath *oval;
   NSRect rect = NSZeroRect;
   CGFloat w = (frame.size.width / 2) - 2;
-  CGFloat h = frame.size.height - 5;
+  CGFloat h = frame.size.height - 6;
   CGFloat y = frame.origin.y + 2;
   CGFloat radius = frame.size.height / 2.0;
 
