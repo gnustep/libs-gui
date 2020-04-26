@@ -899,7 +899,7 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"toolTipTextColor");
 }
 
-+ (NSColor *)windowBackgroundColor
++ (NSColor *) windowBackgroundColor
 {
   return systemColorWithName(@"windowBackgroundColor");
 }

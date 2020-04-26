@@ -1,3 +1,23 @@
+2020-04-26 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
+        for new drawing methods.
+	* Headers/AppKit/AppKit.h: Add new headers
+	* Headers/AppKit/NSAccessibilityProtocols.h
+	* Headers/AppKit/NSCell.h: Add NSControlStateValue enum
+	* Headers/AppKit/NSSwitch.h: Header for NSSwitch
+	* MISSING: Remove NSSwitch
+	* Source/GNUmakefile: Add .h and .m files
+	* Source/GSThemeDrawing.m: Add drawing code for knob and
+        switch basin.
+	* Source/GSXib5KeyedUnarchiver.m: Add decoding for
+        NSControlContents.  Make sure enabled is YES when not
+        present.
+	* Source/NSColor.m: Minor changes
+	* Source/NSMatrix.m: Remove uneeded code
+	* Source/NSSwitch.m: Implementation of NSSwitch
+	* Source/NSToolbarItem.m: Remove uneeded code
+
 2020-04-13 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKitErrors.h:

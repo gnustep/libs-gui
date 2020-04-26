@@ -122,6 +122,7 @@ NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
+NSSwitch.m \
 NSTouch.m \
 NSTouchBar.m \
 NSTouchBarItem.m \
@@ -351,6 +352,7 @@ AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
+NSAccessibilityProtocols.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
@@ -506,6 +508,7 @@ NSStepperTouchBarItem.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \
+NSSwitch.h \
 NSTabView.h \
 NSTabViewItem.h \
 NSTableColumn.h \
