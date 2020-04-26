@@ -382,7 +382,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeDividerStyleForElement:", @"NSDividerStyle",
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               nil];
+               @"decodeControlContentsForElement:",@"NSControlContents",
+                 nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
           // boolean fields that should be treated as YES when missing.
@@ -391,6 +392,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"bordered",
                                                @"prefersToBeShown",
                                                @"editable",
+                                               @"enabled",
                                                nil];
         }
     }
@@ -2726,6 +2728,19 @@ didStartElement: (NSString*)elementName
   return [self findResourceWithName: name];
 }
 
+- (id) decodeControlContentsForElement: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"state"];
+
+  if ([obj isEqualToString: @"on"])
+    {
+      num = [NSNumber numberWithInteger: 1];
+    }
+
+  return num;
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -2788,32 +2803,6 @@ didStartElement: (NSString*)elementName
         [object setToolTip: [element attributeForKey: @"toolTip"]];
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
-    }
-
-  // Handle state for NSSwitch
-  if ([element attributeForKey: @"state"])
-    {
-      if ([object respondsToSelector: @selector(setState:)] && [object isKindOfClass: [NSSwitch class]])
-        {  
-          [(NSSwitch *)object setState: [[element attributeForKey: @"state"] isEqualToString: @"on"] ?
-                NSControlStateValueOn : NSControlStateValueOff];
-        }
-    }
-
-  if ([element attributeForKey: @"enabled"])
-    {
-      if ([object respondsToSelector: @selector(setEnabled:)] && [object isKindOfClass: [NSSwitch class]])
-        {  
-          [(NSSwitch *)object setEnabled: [[element attributeForKey: @"enabled"] isEqualToString: @"YES"] ?
-                                    YES : NO];
-        }
-    }
-  else
-    {
-      if ([object respondsToSelector: @selector(setEnabled:)] && [object isKindOfClass: [NSSwitch class]])
-        {
-          [(NSSwitch *)object setEnabled: YES];
-        }
     }
   
   // Process IB runtime attributes for element...
@@ -2994,6 +2983,29 @@ didStartElement: (NSString*)elementName
     }
 
   return object;
+}
+
+- (NSInteger) decodeIntegerForKey: (NSString *)key
+{
+  NSInteger i = 0;
+
+  if ([self containsValueForKey: key])
+    {
+      i  = [super decodeIntegerForKey: key];
+    }
+  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
+    {
+      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+      i = [[self performSelector: selector withObject: currentElement] integerValue];
+    }
+#if DEBUG_XIB5
+  else
+    {
+      NSWarnMLog(@"no integer for key: %@", key);
+    }
+#endif
+
+  return i;
 }
 
 - (BOOL) decodeBoolForKey: (NSString *)key
@@ -3179,6 +3191,10 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+        }
+      else if ([@"NSControlContents" isEqualToString: key])
+        {
+          hasValue  = [currentElement attributeForKey: @"state"] != nil;
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {

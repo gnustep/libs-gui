@@ -245,10 +245,13 @@
               id t = [coder decodeObjectForKey: @"NSControlTarget"];
               [self setTarget: t];
             }
-         if ([coder containsValueForKey: @"NSEnabled"])
+          if ([coder containsValueForKey: @"NSEnabled"])
             {
-              BOOL f = [coder decodeBoolForKey: @"NSEnabled"];
-              [self setEnabled: f];
+              BOOL e = [coder decodeBoolForKey: @"NSEnabled"];
+
+              // NSControl decodes this, but does not use the value which
+              // is decoded.  See comment in NSControl.m initWithCoder:.
+              [self setEnabled: e];
             }
         }
       else
