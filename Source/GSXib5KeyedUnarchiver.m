@@ -382,7 +382,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeDividerStyleForElement:", @"NSDividerStyle",
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               @"decodeControlContentsForElement:",@"NSControlContents",
+               @"decodeControlContentsForElement:", @"NSControlContents",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
