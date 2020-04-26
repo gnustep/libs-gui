@@ -53,7 +53,6 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSSliderCell.h"
 #import "AppKit/NSSplitView.h"
-#import "AppKit/NSSwitch.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSTableView.h"
