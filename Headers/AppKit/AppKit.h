@@ -47,6 +47,7 @@
 
 #import <AppKit/NSAccessibility.h>
 #import <AppKit/NSAccessibilityConstants.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSAppearance.h>
@@ -216,6 +217,7 @@
 #import <AppKit/NSStepperTouchBarItem.h>
 #import <AppKit/NSStepper.h>
 #import <AppKit/NSStepperCell.h>
+#import <AppKit/NSSwitch.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>
 #import <AppKit/NSTableHeaderView.h>

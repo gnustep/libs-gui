@@ -123,6 +123,18 @@ enum {
 };
 typedef NSUInteger NSCellStateValue;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+/*
+ * Control state values as of 10.13
+ */ 
+enum { 
+  NSControlStateValueMixed = -1,
+  NSControlStateValueOff   =  0,
+  NSControlStateValueOn    =  1
+};
+typedef NSUInteger NSControlStateValue;
+#endif
+
 /**
  *  <p>Enumeration of the ways that you can display an image in an
  *  NSImageCell.  The available ones are:</p>

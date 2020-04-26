@@ -381,7 +381,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeDividerStyleForElement:", @"NSDividerStyle",
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               nil];
+               @"decodeControlContentsForElement:", @"NSControlContents",
+                 nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
           // boolean fields that should be treated as YES when missing.
@@ -390,6 +391,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"bordered",
                                                @"prefersToBeShown",
                                                @"editable",
+                                               @"enabled",
                                                nil];
         }
     }
@@ -2725,6 +2727,19 @@ didStartElement: (NSString*)elementName
   return [self findResourceWithName: name];
 }
 
+- (id) decodeControlContentsForElement: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"state"];
+
+  if ([obj isEqualToString: @"on"])
+    {
+      num = [NSNumber numberWithInteger: 1];
+    }
+
+  return num;
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -2788,7 +2803,6 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
-
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
@@ -3152,6 +3166,10 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+        }
+      else if ([@"NSControlContents" isEqualToString: key])
+        {
+          hasValue  = [currentElement attributeForKey: @"state"] != nil;
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {

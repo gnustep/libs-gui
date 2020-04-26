@@ -130,12 +130,6 @@ typedef struct {
   NSInteger height;
 } MRect;
 
-static inline MPoint MakePoint (NSInteger x, NSInteger y)
-{
-  MPoint point = { x, y };
-  return point;
-}
-
 @interface NSMatrix (PrivateMethods)
 - (void) _renewRows: (NSInteger)row
 	    columns: (NSInteger)col

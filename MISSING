@@ -4,7 +4,6 @@ MISSING HEADERS
 > NSAccessibilityCustomAction.h
 > NSAccessibilityCustomRotor.h
 > NSAccessibilityElement.h
-> NSAccessibilityProtocols.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
@@ -34,7 +33,6 @@ MISSING HEADERS
 > NSStatusBarButton.h
 > NSStoryboard.h
 > NSStoryboardSegue.h
-> NSSwitch.h
 > NSTabViewController.h
 > NSTableCellView.h
 > NSTableRowView.h
