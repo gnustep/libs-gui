@@ -24,6 +24,7 @@
 
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathCell.h"
+#import "AppKit/NSGraphics.h"
 
 @implementation NSPathControl
 
@@ -39,6 +40,7 @@
 - (void) setPathStyle: (NSPathStyle)style
 {
   [_cell setPathStyle: style];
+  [self setNeedsDisplay];
 }
 
 - (NSPathStyle) pathStyle
@@ -59,6 +61,7 @@
 - (void) setPathComponentCells: (NSArray *)cells
 {
   [_cell setPathComponentCells: cells];
+  [self setNeedsDisplay];
 }
 
 - (SEL) doubleAction;
@@ -79,6 +82,7 @@
 - (void) setURL: (NSURL *)url
 {
   [_cell setURL: url];
+  [self setNeedsDisplay];
 }
 
 - (id<NSPathControlDelegate>) delegate
@@ -139,6 +143,7 @@
 - (void) setPlaceholderAttributedString: (NSAttributedString *)string
 {
   [_cell setPlaceholderAttributedString: string];
+  [self setNeedsDisplay];
 }
 
 - (NSString *) placeholderString
@@ -149,6 +154,55 @@
 - (void) setPlaceholderString: (NSString *)string
 {
   [_cell setPlaceholderString: string];
+  [self setNeedsDisplay];
+}
+
+- (NSColor *) backgroundColor
+{
+  return _backgroundColor;
+}
+
+- (void) setBackgroundColor: (NSColor *)color
+{
+  ASSIGN(_backgroundColor, color);
+  [self setNeedsDisplay];
+}
+
+- (void) drawRect: (NSRect)frame
+{
+  [super drawRect: frame];
+  [_backgroundColor set];
+  NSRectFill(frame);
+}
+
+- (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          _backgroundColor = [NSColor windowBackgroundColor];
+          if ([coder containsValueForKey: @"NSPathComponentCells"])
+            {
+              [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
+            }
+
+          if ([coder containsValueForKey: @"NSPathStyle"])
+            {
+              [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
+            }
+
+          if ([coder containsValueForKey: @"NSBackgroundColor"])
+            {
+              [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
+            }
+        }
+      else
+        {
+        }
+    }
+  return self;
 }
 @end
 
