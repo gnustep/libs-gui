@@ -23,8 +23,18 @@
 */
 
 #import "AppKit/NSPathControl.h"
+#import "AppKit/NSPathCell.h"
 
 @implementation NSPathControl
+
++ (void) initialize
+{
+  if (self == [NSPathControl class])
+    {
+      [self setVersion: 1.0];
+      [self setCellClass: [NSPathCell class]];
+    }
+}
 
 - (void) setPathStyle: (NSPathStyle)style
 {
@@ -43,11 +53,12 @@
 
 - (NSArray *) pathComponentCells
 {
-  return nil;
+  return _pathComponentCells;
 }
 
 - (void) setPathComponentCells: (NSArray *)cells
 {
+  ASSIGN(_pathComponentCells, cells);
 }
 
 - (SEL) doubleAction;

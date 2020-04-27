@@ -57,6 +57,7 @@ typedef NSUInteger NSPathStyle;
   id<NSPathControlDelegate> _delegate;
   NSURL *_url;
   SEL _doubleAction;
+  NSArray *_pathComponentCells;
 }
 
 - (void) setPathStyle: (NSPathStyle)style;
