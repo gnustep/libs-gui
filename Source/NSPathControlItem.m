@@ -22,9 +22,53 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
+#import <Foundation/NSURL.h>
 #import "AppKit/NSPathControlItem.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSAttributedString.h"
 
 @implementation NSPathControlItem
+  
+- (NSAttributedString *) attributedTitle
+{
+  return _attributedTitle;
+}
+
+- (void) setAttributedTitle: (NSAttributedString *)attributedTitle
+{
+  ASSIGNCOPY(_attributedTitle, attributedTitle);
+}
+
+- (NSImage *) image
+{
+  return _image;
+}
+
+- (void) setImage: (NSImage *)image
+{
+  ASSIGNCOPY(_image, image);
+}
+
+- (NSURL *) URL
+{
+  return _url;
+}
+
+- (void) setURL: (NSURL *)url
+{
+  ASSIGNCOPY(_url, url);
+}
+
+- (NSString *) title
+{
+  return _title;
+}
+
+- (void) setTitle: (NSString *)title
+{
+  ASSIGNCOPY(_title, title);
+}
 
 @end
 

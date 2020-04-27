@@ -33,9 +33,27 @@
 extern "C" {
 #endif
 
+  @class NSURL, NSAttributedString, NSImage, NSString;
 
 @interface NSPathControlItem : NSObject
+{
+  NSURL *_url;
+  NSAttributedString *_attributedTitle;
+  NSImage *_image;
+  NSString *_title;
+}
+  
+- (NSURL *) URL;
+- (void) setURL: (NSURL *)url;
 
+- (NSAttributedString *) attributedTitle;
+- (void) setAttributedTitle: (NSAttributedString *)attributedTitle;
+
+- (NSImage *) image;
+- (void) setImage: (NSImage *)image;
+
+- (NSString *) title;
+- (void) setTitle: (NSString *)title;
 
 @end
 

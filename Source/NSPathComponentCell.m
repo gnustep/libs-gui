@@ -23,6 +23,7 @@
 */
 
 #import <Foundation/NSURL.h>
+
 #import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSImage.h"
 
