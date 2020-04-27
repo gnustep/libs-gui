@@ -26,5 +26,146 @@
 
 @implementation NSPathCell
 
+- (void)mouseEntered:(NSEvent *)event 
+           withFrame:(NSRect)frame 
+              inView:(NSView *)view
+{
+}
+
+- (void)mouseExited:(NSEvent *)event 
+          withFrame:(NSRect)frame 
+             inView:(NSView *)view
+{
+}
+
+- (void) setAllowedTypes: (NSArray *)types
+{
+  ASSIGNCOPY(_allowedTypes, types);
+}
+
+- (NSArray *) allowedTypes
+{
+  return _allowedTypes;
+}
+
+- (NSPathStyle) pathStyle
+{
+  return _pathStyle;
+}
+
+- (void) setPathStyle: (NSPathStyle)pathStyle
+{
+  _pathStyle = pathStyle;
+}
+
+- (void) setControlSize: (NSControlSize)size
+{
+  _controlSize = size;
+}
+
+- (void) setObjectValue: (id)obj
+{
+  ASSIGN(_objectValue, obj);
+}
+
+- (NSAttributedString *) placeholderAttributedString
+{
+  return _placeholderAttributedString; 
+}
+
+- (void) setPlaceholderAttributedString: (NSAttributedString *)string
+{
+  ASSIGNCOPY(_placeholderAttributedString, string);
+}
+
+- (NSString *) placeholderString
+{
+  return _placeholderString;
+}
+
+- (void) setPlaceholderString: (NSString *)string
+{
+  ASSIGNCOPY(_placeholderString, string);
+}
+
+- (NSColor *) backgroundColor
+{
+  return _backgroundColor;
+}
+
+- (void) setBackgroundColor: (NSColor *)color
+{
+  ASSIGNCOPY(_backgroundColor, color);
+}
+
++ (Class) pathComponentCellClass
+{
+  return pathComponentCellClass;
+}
+
++ (void) setPathComponentCellClass: (Class)clz
+{
+  pathComponentCellClass = clz;
+}
+
+- (NSRect)rectOfPathComponentCell:(NSPathComponentCell *)cell 
+                        withFrame:(NSRect)frame 
+                           inView:(NSView *)view
+{
+  return NSZeroRect;
+}
+
+- (NSPathComponentCell *)pathComponentCellAtPoint:(NSPoint)point 
+                                        withFrame:(NSRect)frame 
+                                           inView:(NSView *)view
+{
+  return nil;
+}
+
+- (NSPathComponentCell *) clickedPathComponentCell
+{
+  return nil;
+}
+
+- (NSArray *) pathComponentCells
+{
+  return _pathComponentCells;
+}
+
+- (void) setPathComponentCells: (NSArray *)cells
+{
+  ASSIGNCOPY(_pathComponentCells, cells);
+}
+
+- (SEL) doubleAction
+{
+  return _doubleAction;
+}
+
+- (void) setDoubleAction: (SEL)action
+{
+  _doubleAction = action;
+}
+
+- (NSURL *) URL
+{
+  return _url;
+}
+
+- (void) setURL: (NSURL *)url
+{
+  ASSIGNCOPY(_url, url);
+}
+
+- (id<NSPathCellDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSPathCellDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
 @end
 

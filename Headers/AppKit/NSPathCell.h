@@ -33,7 +33,96 @@
 extern "C" {
 #endif
 
+Class pathComponentCellClass;
+  
+enum {
+  NSPathStyleStandard,
+  NSPathStyleNavigationBar,  // deprecated
+  NSPathStylePopUp
+};
+typedef NSUInteger NSPathStyle;
+
+@protocol NSPathCellDelegate;
+
+@class NSEvent, NSView, NSArray, NSString, NSAttributeString, NSColor, NSPathComponentCell, NSOpenPanel, NSURL;    
+  
 @interface NSPathCell : NSActionCell
+{
+  NSPathStyle _pathStyle;
+  NSColor *_backgroundColor;
+  NSArray *_pathItems;
+  NSString *_placeholderString;
+  NSAttributedString *_placeholderAttributedString;
+  NSArray *_allowedTypes;
+  id<NSPathCellDelegate> _delegate;
+  NSURL *_url;
+  SEL _doubleAction;
+  NSArray *_pathComponentCells;
+  NSPathComponentCell *_clickedPathComponentCell;
+  id _objectValue;
+  NSControlSize _controlSize;
+}
+  
+- (void)mouseEntered:(NSEvent *)event 
+           withFrame:(NSRect)frame 
+              inView:(NSView *)view;
+
+- (void)mouseExited:(NSEvent *)event 
+          withFrame:(NSRect)frame 
+             inView:(NSView *)view;
+
+- (void) setAllowedTypes: (NSArray *)types;
+- (NSArray *) allowedTypes;
+
+- (NSPathStyle) pathStyle;
+- (void) setPathStyle: (NSPathStyle)pathStyle;
+
+- (void) setControlSize: (NSControlSize)size;
+- (void) setObjectValue: (id)obj;
+
+- (NSAttributedString *) placeholderAttributedString;
+- (void) setPlaceholderAttributedString: (NSAttributedString *)string;
+
+- (NSString *) placeholderString;
+- (void) setPlaceholderString: (NSString *)string;
+
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)color;
+
++ (Class) pathComponentCellClass;
++ (void) setPathComponentCellClass: (Class)clz;
+
+- (NSRect)rectOfPathComponentCell:(NSPathComponentCell *)cell 
+                        withFrame:(NSRect)frame 
+                           inView:(NSView *)view;
+
+- (NSPathComponentCell *)pathComponentCellAtPoint:(NSPoint)point 
+                                        withFrame:(NSRect)frame 
+                                           inView:(NSView *)view;
+
+- (NSPathComponentCell *) clickedPathComponentCell;
+
+- (NSArray *) pathComponentCells;
+- (void) setPathComponentCells: (NSArray *)cells;
+
+- (SEL) doubleAction;
+- (void) setDoubleAction: (SEL)action;
+
+- (NSURL *) URL;
+- (void) setURL: (NSURL *)url;
+
+- (id<NSPathCellDelegate>) delegate;
+- (void) setDelegate: (id<NSPathCellDelegate>)delegate;
+
+@end
+
+@protocol NSPathCellDelegate
+
+- (void)pathCell:(NSPathCell *)pathCell 
+        willDisplayOpenPanel:(NSOpenPanel *)openPanel;
+
+- (void)pathCell:(NSPathCell *)pathCell 
+   willPopUpMenu:(NSMenu *)menu;
 
 @end
 

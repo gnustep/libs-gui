@@ -27,19 +27,13 @@
 
 #import <AppKit/NSControl.h>
 #import <AppKit/NSDragging.h>
+#import <AppKit/NSPathCell.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-
-enum {
-  NSPathStyleStandard,
-  NSPathStyleNavigationBar,  // deprecated
-  NSPathStylePopUp
-};
-typedef NSUInteger NSPathStyle;
 
 @protocol NSPathControlDelegate;
 
