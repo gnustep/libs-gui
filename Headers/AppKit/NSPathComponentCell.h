@@ -33,7 +33,19 @@
 extern "C" {
 #endif
 
+@class NSImage, NSURL;
+  
 @interface NSPathComponentCell : NSTextFieldCell
+{
+  NSImage *_image;
+  NSURL *_url;
+}
+
+- (NSImage *) image;
+- (void) setImage: (NSImage *)image;
+
+- (NSURL *) URL;
+- (void) setURL: (NSURL *)url;
 
 @end
 

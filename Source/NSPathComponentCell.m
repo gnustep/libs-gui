@@ -22,9 +22,31 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSURL.h>
 #import "AppKit/NSPathComponentCell.h"
+#import "AppKit/NSImage.h"
 
 @implementation NSPathComponentCell
+
+- (NSImage *) image
+{
+  return _image;
+}
+
+- (void) setImage: (NSImage *)image
+{
+  ASSIGNCOPY(_image, image);
+}
+
+- (NSURL *) URL
+{
+  return _url;
+}
+
+- (void) setURL: (NSURL *)url
+{
+  ASSIGNCOPY(_url, url);
+}
 
 @end
 
