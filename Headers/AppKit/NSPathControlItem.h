@@ -33,12 +33,14 @@
 extern "C" {
 #endif
 
+
 @interface NSPathControlItem : NSObject
+
 
 @end
 
 #if	defined(__cplusplus)
-}
+
 #endif
 
 #endif	/* GS_API_MACOSX */

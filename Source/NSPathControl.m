@@ -26,5 +26,118 @@
 
 @implementation NSPathControl
 
+- (void) setPathStyle: (NSPathStyle)style
+{
+  _pathStyle = style;
+}
+
+- (NSPathStyle) pathStyle
+{
+  return _pathStyle;
+}
+
+- (NSPathComponentCell *) clickedPathComponentCell
+{
+  return nil;
+}
+
+- (NSArray *) pathComponentCells
+{
+  return nil;
+}
+
+- (void) setPathComponentCells: (NSArray *)cells
+{
+}
+
+- (SEL) doubleAction;
+{
+  return _doubleAction;
+}
+
+- (void) setDoubleAction: (SEL)doubleAction
+{
+  _doubleAction = doubleAction;
+}
+
+- (NSURL *) URL
+{
+  return _url;
+}
+
+- (void) setURL: (NSURL *)url
+{
+  ASSIGNCOPY(_url, url);
+}
+
+- (id<NSPathControlDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSPathControlDelegate>) delegate
+{
+  _delegate = delegate;
+}
+
+- (void) setDraggingSourceOperationMask: (NSDragOperation)mask 
+                               forLocal: (BOOL)local
+{
+}
+
+- (NSMenu *) menu
+{
+  return [super menu];
+}
+
+- (void) setMenu: (NSMenu *)menu
+{
+  [super setMenu: menu];
+}
+
+- (NSArray *) allowedTypes;
+{
+  return _allowedTypes;
+}
+
+- (void) setAllowedTypes: (NSArray *)allowedTypes
+{
+  ASSIGNCOPY(_allowedTypes, allowedTypes);
+}
+
+- (NSPathControlItem *) clickedPathItem
+{
+  return nil;
+}
+
+- (NSArray *) pathItems
+{
+  return _pathItems;
+}
+
+- (void) setPathItems: (NSArray *)items
+{
+  ASSIGNCOPY(_pathItems, items);
+}
+
+- (NSAttributedString *) placeholderAttributedString
+{
+  return _placeholderAttributedString;
+}
+
+- (void) setPlaceholderAttributedString: (NSAttributedString *)string
+{
+  ASSIGNCOPY(_placeholderAttributedString, string);
+}
+
+- (NSString *) placeholderString
+{
+  return _placeholderString;
+}
+
+- (void) setPlaceholderString: (NSString *)string
+{
+  ASSIGNCOPY(_placeholderString, string);
+}
 @end
 
