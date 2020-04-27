@@ -38,47 +38,47 @@
 
 - (void) setPathStyle: (NSPathStyle)style
 {
-  _pathStyle = style;
+  [_cell setPathStyle: style];
 }
 
 - (NSPathStyle) pathStyle
 {
-  return _pathStyle;
+  return [_cell pathStyle];
 }
 
 - (NSPathComponentCell *) clickedPathComponentCell
 {
-  return nil;
+  return [_cell clickedPathComponentCell];
 }
 
 - (NSArray *) pathComponentCells
 {
-  return _pathComponentCells;
+  return [_cell pathComponentCells];
 }
 
 - (void) setPathComponentCells: (NSArray *)cells
 {
-  ASSIGN(_pathComponentCells, cells);
+  [_cell setPathComponentCells: cells];
 }
 
 - (SEL) doubleAction;
 {
-  return _doubleAction;
+  return [_cell doubleAction];
 }
 
 - (void) setDoubleAction: (SEL)doubleAction
 {
-  _doubleAction = doubleAction;
+  [_cell setDoubleAction: doubleAction];
 }
 
 - (NSURL *) URL
 {
-  return _url;
+  return [_cell URL];
 }
 
 - (void) setURL: (NSURL *)url
 {
-  ASSIGNCOPY(_url, url);
+  [_cell setURL: url];
 }
 
 - (id<NSPathControlDelegate>) delegate
@@ -108,12 +108,12 @@
 
 - (NSArray *) allowedTypes;
 {
-  return _allowedTypes;
+  return [_cell allowedTypes];
 }
 
 - (void) setAllowedTypes: (NSArray *)allowedTypes
 {
-  ASSIGNCOPY(_allowedTypes, allowedTypes);
+  [_cell setAllowedTypes: allowedTypes];
 }
 
 - (NSPathControlItem *) clickedPathItem
@@ -133,22 +133,22 @@
 
 - (NSAttributedString *) placeholderAttributedString
 {
-  return _placeholderAttributedString;
+  return [_cell placeholderAttributedString];
 }
 
 - (void) setPlaceholderAttributedString: (NSAttributedString *)string
 {
-  ASSIGNCOPY(_placeholderAttributedString, string);
+  [_cell setPlaceholderAttributedString: string];
 }
 
 - (NSString *) placeholderString
 {
-  return _placeholderString;
+  return [_cell placeholderString];
 }
 
 - (void) setPlaceholderString: (NSString *)string
 {
-  ASSIGNCOPY(_placeholderString, string);
+  [_cell setPlaceholderString: string];
 }
 @end
 

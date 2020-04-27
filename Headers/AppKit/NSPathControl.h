@@ -42,16 +42,9 @@ extern "C" {
   
 @interface NSPathControl : NSControl
 {
-  NSPathStyle _pathStyle;
   NSColor *_backgroundColor;
   NSArray *_pathItems;
-  NSString *_placeholderString;
-  NSAttributedString *_placeholderAttributedString;
-  NSArray *_allowedTypes;
   id<NSPathControlDelegate> _delegate;
-  NSURL *_url;
-  SEL _doubleAction;
-  NSArray *_pathComponentCells;
 }
 
 - (void) setPathStyle: (NSPathStyle)style;
