@@ -182,6 +182,7 @@
     {
       if ([coder allowsKeyedCoding])
         {
+          // Defaults for some values which aren't encoded unless they are non-default.
           [self setBackgroundColor: [NSColor windowBackgroundColor]];
           [self setPathStyle: NSPathStyleStandard];
           
