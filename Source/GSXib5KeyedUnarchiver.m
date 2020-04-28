@@ -47,6 +47,7 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPathCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -382,6 +383,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
                @"decodeControlContentsForElement:", @"NSControlContents",
+               @"decodePathComponentCells:", @"NSPathComponentCells",
+               @"decodePathStyle:", @"NSPathStyle",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2740,6 +2743,32 @@ didStartElement: (NSString*)elementName
   return num;
 }
 
+- (id) decodePathComponentCells: (GSXibElement *)element
+{
+  return nil;
+}
+
+- (id) decodePathStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"pathStyle"];
+
+  if ([obj isEqualToString: @"standard"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+  else if ([obj isEqualToString: @"popUp"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStylePopUp];
+    }
+  else if ([obj isEqualToString: @"navigationBar"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleNavigationBar];
+    }
+
+  return num;  
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -3175,6 +3204,14 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
           hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
+        }
+      else if ([@"NSPathStyle" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"pathStyle"] != nil;
+        }
+      else if ([@"NSPathComponentCells" isEqualToString: key])
+        {
+          hasValue = [currentElement elementForKey: @"pathCell"] != nil;
         }
       else if ([@"NSHeaderClipView" isEqualToString: key])
         {

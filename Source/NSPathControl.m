@@ -182,7 +182,9 @@
     {
       if ([coder allowsKeyedCoding])
         {
-          _backgroundColor = [NSColor windowBackgroundColor];
+          [self setBackgroundColor: [NSColor windowBackgroundColor]];
+          [self setPathStyle: NSPathStyleStandard];
+          
           if ([coder containsValueForKey: @"NSPathComponentCells"])
             {
               [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
