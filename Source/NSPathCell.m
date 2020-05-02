@@ -176,6 +176,13 @@
 {
   if ([coder allowsKeyedCoding])
     {
+      [self setPathStyle: NSPathStyleStandard];
+      
+      if ([coder containsValueForKey: @"NSPathStyle"])
+        {
+          [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
+        }
+      
       if ([coder containsValueForKey: @"NSPathComponentCells"])
         {
           [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];

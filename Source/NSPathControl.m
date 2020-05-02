@@ -184,13 +184,6 @@
         {
           // Defaults for some values which aren't encoded unless they are non-default.
           [self setBackgroundColor: [NSColor windowBackgroundColor]];
-          [self setPathStyle: NSPathStyleStandard];
-
-          if ([coder containsValueForKey: @"NSPathStyle"])
-            {
-              [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
-            }
-
           if ([coder containsValueForKey: @"NSBackgroundColor"])
             {
               [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
