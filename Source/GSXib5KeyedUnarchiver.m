@@ -48,6 +48,7 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPathCell.h"
+#import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -60,6 +61,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSWorkspace.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -2768,13 +2770,65 @@ didStartElement: (NSString*)elementName
 
 - (id) decodePathComponentCells: (GSXibElement *)element
 {
-  id    object = nil;
-  NSArray *array = nil;
+  GSXibElement *e = nil;
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
+  NSString *string = nil;
+  NSURL *url = nil;
   
-  object = [self decodeObjectForKey: @"cell"];
-  array = [NSArray arrayWithObject: object];
+  /*
+   * NOTE: This method uses the url to generate the path components.
+   * The .nib file which is generated contains NSPathComponents
+   * and, by default, lists Macintosh SSD (my HD's name) and
+   * Applications.  These are apparently generated using the URL
+   * stored in the xib and, thus, output in the .nib file.  We must
+   * handle their decoding in this way since the .nib file will
+   * expect them.  I am documenting this here as it is a somewhat
+   * unusual case. Gregory Casamento (GC)
+   */ 
 
-  return array;
+  // Extract the URL
+  e = [element elementForKey: @"url"];
+  string = [e attributeForKey: @"string"];
+  url = [NSURL URLWithString: string
+               relativeToURL: nil];
+
+  // Create cells
+  if (url != nil)
+    {
+      BOOL isDir = NO;
+      NSFileManager *fm = [NSFileManager defaultManager];
+            
+      // Decompose string...
+      do
+        {
+          NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
+          NSImage *image = nil;
+          
+          AUTORELEASE(cell);
+          [cell setURL: url];
+          [fm fileExistsAtPath: [url path]
+               isDirectory: &isDir];
+
+          if (isDir)
+            {
+              image = [NSImage imageNamed: @"NSFolder"];
+            }
+          else
+            {
+              image = [[NSWorkspace sharedWorkspace] iconForFile: [[url path] lastPathComponent]];
+            }
+
+          [cell setImage: image];
+          string = [string stringByDeletingLastPathComponent];
+          [array insertObject: cell
+                      atIndex: 0];
+          url = [NSURL URLWithString: string
+                       relativeToURL: nil];
+        }
+      while ([string isEqualToString: @""] == NO);
+    }
+
+  return [array copy];
 }
 
 - (id) objectForXib: (GSXibElement*)element
@@ -3219,7 +3273,7 @@ didStartElement: (NSString*)elementName
         }
       else if ([@"NSPathComponentCells" isEqualToString: key])
         {
-          hasValue = [currentElement elementForKey: @"cell"] != nil;
+          hasValue = [currentElement elementForKey: @"url"] != nil;
         }
       else if ([@"NSHeaderClipView" isEqualToString: key])
         {
