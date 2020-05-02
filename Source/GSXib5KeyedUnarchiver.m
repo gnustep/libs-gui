@@ -1431,6 +1431,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
         size = [NSFont systemFontSize];
+      else if ([metaFont containsString: @"toolTip"])
+        size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }

@@ -167,5 +167,25 @@
   _delegate = delegate;
 }
 
-@end
+- (void) drawInteriorWithFrame: (NSRect)frame inView: (NSView *)controlView
+{
+  NSLog(@"Drawing");
+}
 
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSPathComponentCells"])
+        {
+          [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
+        }
+    }
+  else
+    {
+    }
+
+  return self;
+}
+
+@end

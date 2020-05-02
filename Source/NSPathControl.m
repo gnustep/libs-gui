@@ -186,10 +186,6 @@
           [self setBackgroundColor: [NSColor windowBackgroundColor]];
           [self setPathStyle: NSPathStyleStandard];
 
-          if ([coder containsValueForKey: @"NSPathComponentCells"])
-            {
-              [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
-            }
           if ([coder containsValueForKey: @"NSPathStyle"])
             {
               [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
