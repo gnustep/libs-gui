@@ -2743,11 +2743,6 @@ didStartElement: (NSString*)elementName
   return num;
 }
 
-- (id) decodePathComponentCells: (GSXibElement *)element
-{
-  return nil;
-}
-
 - (id) decodePathStyle: (GSXibElement *)element
 {
   NSNumber *num = [NSNumber numberWithInteger: 0];
@@ -2767,6 +2762,17 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) decodePathComponentCells: (GSXibElement *)element
+{
+  id    object = nil;
+  NSArray *array = nil;
+  
+  object = [self decodeObjectForKey: @"cell"];
+  array = [NSArray arrayWithObject: object];
+
+  return array;
 }
 
 - (id) objectForXib: (GSXibElement*)element
@@ -3211,7 +3217,7 @@ didStartElement: (NSString*)elementName
         }
       else if ([@"NSPathComponentCells" isEqualToString: key])
         {
-          hasValue = [currentElement elementForKey: @"pathCell"] != nil;
+          hasValue = [currentElement elementForKey: @"cell"] != nil;
         }
       else if ([@"NSHeaderClipView" isEqualToString: key])
         {
