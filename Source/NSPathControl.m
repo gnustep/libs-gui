@@ -168,12 +168,12 @@
   [self setNeedsDisplay];
 }
 
+/*
 - (void) drawRect: (NSRect)frame
 {
   [super drawRect: frame];
-  [_backgroundColor set];
-  NSRectFill(frame);
 }
+*/
 
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
 {

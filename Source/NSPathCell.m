@@ -23,6 +23,13 @@
 */
 
 #import "AppKit/NSPathCell.h"
+#import "AppKit/NSWorkspace.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSPathComponentCell.h"
+
+@interface NSPathCell (Private)
++ (NSArray *) _generateCellsForURL: (NSURL *)url;
+@end
 
 @implementation NSPathCell
 
@@ -155,6 +162,7 @@
 - (void) setURL: (NSURL *)url
 {
   ASSIGNCOPY(_url, url);
+  [self setPathComponentCells: [NSPathCell _generateCellsForURL: url]];
 }
 
 - (id<NSPathCellDelegate>) delegate
@@ -169,7 +177,25 @@
 
 - (void) drawInteriorWithFrame: (NSRect)frame inView: (NSView *)controlView
 {
-  NSLog(@"Drawing");
+  NSUInteger count = [_pathComponentCells count];
+
+  [super drawInteriorWithFrame: frame
+                        inView: controlView];
+  if (count > 0)
+    {
+      NSEnumerator *en = [_pathComponentCells objectEnumerator];
+      NSPathComponentCell *cell = nil;
+      CGFloat cell_width = (frame.size.width / (CGFloat)[_pathComponentCells count]);
+      CGFloat current_x = 0.0;
+      
+      while((cell = (NSPathComponentCell *)[en nextObject]) != nil)
+        {
+          NSRect f = NSMakeRect(current_x, 0.0, cell_width, frame.size.height);
+          [cell drawInteriorWithFrame: f
+                               inView: controlView];
+          current_x += cell_width;
+        }
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -193,6 +219,68 @@
     }
 
   return self;
+}
+
+@end
+
+@implementation NSPathCell (Private)
+
+// Private...
++ (NSArray *) _generateCellsForURL: (NSURL *)url
+{
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
+    
+  // Create cells
+  if (url != nil)
+    {
+      NSString *string = nil;
+      BOOL isDir = NO;
+      BOOL at_root = NO;
+      NSFileManager *fm = [NSFileManager defaultManager];
+            
+      // Decompose string...
+      do
+        {
+          NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
+          NSImage *image = nil;
+
+          if ([[url path] isEqualToString: @"/"])
+            {
+              at_root = YES;
+            }
+
+          AUTORELEASE(cell);
+          [cell setURL: url];
+          [fm fileExistsAtPath: [url path]
+               isDirectory: &isDir];
+
+          if (isDir && at_root == NO)
+            {
+              image = [NSImage imageNamed: @"NSFolder"];
+            }
+          else
+            {
+              image = [[NSWorkspace sharedWorkspace] iconForFile: [[url path] lastPathComponent]];
+            }
+
+          [cell setImage: image];
+          string = [string stringByDeletingLastPathComponent];
+          [array insertObject: cell
+                      atIndex: 0];
+          url = [NSURL URLWithString: string
+                       relativeToURL: nil];
+          if (url == nil && at_root == NO)
+            {
+              // Because when we remove the last path component
+              // all that is left is a blank... so we add the "/" so that
+              // it is shown.
+              url = [NSURL URLWithString: @"/"];
+            }
+        }
+      while (at_root == NO);
+    }
+  
+  return [array copy];
 }
 
 @end

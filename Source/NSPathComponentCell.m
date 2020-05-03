@@ -23,9 +23,11 @@
 */
 
 #import <Foundation/NSURL.h>
+#import <Foundation/NSGeometry.h>
 
 #import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSStringDrawing.h"
 
 @implementation NSPathComponentCell
 
@@ -49,5 +51,28 @@
   ASSIGNCOPY(_url, url);
 }
 
-@end
+- (void) drawInteriorWithFrame: (NSRect)f
+                        inView: (NSView *)v
+{
+  NSString *string = [[_url path] lastPathComponent];
+  NSRect textFrame = f;
+  NSRect imgFrame = f; // NSMakeRect(0.0, 0.0, 20.0, 20.0);
 
+  // Modify positions...
+  textFrame.origin.x += 23.0; // the width of the image plus a few pixels.
+  textFrame.origin.y += 3; // center with the image...
+  imgFrame.size.width = 20.0;
+  imgFrame.size.height = 20.0;
+  
+  // string = (string != nil) ? string : @"/";
+  [super drawInteriorWithFrame: f inView: v];
+  // Draw the image...
+  [_image drawInRect: imgFrame];
+
+  // Draw the text...
+  [[NSColor whiteColor] set]; 
+  [string drawAtPoint: textFrame.origin
+       withAttributes: nil];
+}
+
+@end

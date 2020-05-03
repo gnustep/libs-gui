@@ -61,7 +61,6 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
-#import "AppKit/NSWorkspace.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -158,6 +157,9 @@ static NSString *ApplicationClass = nil;
 
 @end
 
+@interface NSPathCell (Private)
++ (NSArray *) _generateCellsForURL: (NSURL *)url;
+@end
 
 @implementation GSXib5KeyedUnarchiver
 
@@ -2764,6 +2766,10 @@ didStartElement: (NSString*)elementName
     {
       num = [NSNumber numberWithInteger: NSPathStyleNavigationBar];
     }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
 
   return num;  
 }
@@ -2771,7 +2777,6 @@ didStartElement: (NSString*)elementName
 - (id) decodePathComponentCells: (GSXibElement *)element
 {
   GSXibElement *e = nil;
-  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
   NSString *string = nil;
   NSURL *url = nil;
   
@@ -2792,43 +2797,7 @@ didStartElement: (NSString*)elementName
   url = [NSURL URLWithString: string
                relativeToURL: nil];
 
-  // Create cells
-  if (url != nil)
-    {
-      BOOL isDir = NO;
-      NSFileManager *fm = [NSFileManager defaultManager];
-            
-      // Decompose string...
-      do
-        {
-          NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
-          NSImage *image = nil;
-          
-          AUTORELEASE(cell);
-          [cell setURL: url];
-          [fm fileExistsAtPath: [url path]
-               isDirectory: &isDir];
-
-          if (isDir)
-            {
-              image = [NSImage imageNamed: @"NSFolder"];
-            }
-          else
-            {
-              image = [[NSWorkspace sharedWorkspace] iconForFile: [[url path] lastPathComponent]];
-            }
-
-          [cell setImage: image];
-          string = [string stringByDeletingLastPathComponent];
-          [array insertObject: cell
-                      atIndex: 0];
-          url = [NSURL URLWithString: string
-                       relativeToURL: nil];
-        }
-      while ([string isEqualToString: @""] == NO);
-    }
-
-  return [array copy];
+  return [NSPathCell _generateCellsForURL: url];
 }
 
 - (id) objectForXib: (GSXibElement*)element
