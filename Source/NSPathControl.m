@@ -133,6 +133,7 @@
 - (void) setPathItems: (NSArray *)items
 {
   ASSIGNCOPY(_pathItems, items);
+  [self setNeedsDisplay];
 }
 
 - (NSAttributedString *) placeholderAttributedString
@@ -168,13 +169,6 @@
   [self setNeedsDisplay];
 }
 
-/*
-- (void) drawRect: (NSRect)frame
-{
-  [super drawRect: frame];
-}
-*/
-
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
 {
   self = [super initWithCoder: coder];
@@ -187,6 +181,11 @@
           if ([coder containsValueForKey: @"NSBackgroundColor"])
             {
               [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
+            }
+
+          if ([coder containsValueForKey: @"NSDragTypes"])
+            {
+              [self setAllowedTypes: [coder decodeObjectForKey: @"NSDragTypes"]];
             }
         }
       else

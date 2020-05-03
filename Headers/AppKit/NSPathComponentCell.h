@@ -39,6 +39,7 @@ extern "C" {
 {
   NSImage *_image;
   NSURL *_url;
+  BOOL _lastComponent;
 }
 
 - (NSImage *) image;

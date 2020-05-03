@@ -56,23 +56,35 @@
 {
   NSString *string = [[_url path] lastPathComponent];
   NSRect textFrame = f;
-  NSRect imgFrame = f; // NSMakeRect(0.0, 0.0, 20.0, 20.0);
+  NSRect imgFrame = f;
+  NSRect arrowFrame = f;
+  NSImage *arrowImage = [NSImage imageNamed: @"NSMenuArrow"];
 
+  [super drawInteriorWithFrame: f inView: v];
+  
   // Modify positions...
-  textFrame.origin.x += 23.0; // the width of the image plus a few pixels.
-  textFrame.origin.y += 3; // center with the image...
+  textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
+  textFrame.origin.y += 3.0; // center with the image...
   imgFrame.size.width = 20.0;
   imgFrame.size.height = 20.0;
+  arrowFrame.origin.x += f.size.width - 20.0; 
+  arrowFrame.size.width = 8.0;
+  arrowFrame.size.height = 8.0;
+  arrowFrame.origin.y += 5.0;
   
-  // string = (string != nil) ? string : @"/";
-  [super drawInteriorWithFrame: f inView: v];
   // Draw the image...
   [_image drawInRect: imgFrame];
 
   // Draw the text...
-  [[NSColor whiteColor] set]; 
+  [[NSColor textColor] set]; 
   [string drawAtPoint: textFrame.origin
        withAttributes: nil];
+
+  // Draw the arrow...
+  if (_lastComponent == NO)
+    {
+      [arrowImage drawInRect: arrowFrame];
+    }
 }
 
 @end

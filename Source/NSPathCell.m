@@ -31,6 +31,10 @@
 + (NSArray *) _generateCellsForURL: (NSURL *)url;
 @end
 
+@interface NSPathComponentCell (Private)
+- (void) _setLastComponent: (BOOL)f;
+@end
+
 @implementation NSPathCell
 
 - (void)mouseEntered:(NSEvent *)event 
@@ -204,7 +208,7 @@
     {
       [self setPathStyle: NSPathStyleStandard];
       
-      if ([coder containsValueForKey: @"NSPathStyle"])
+      // if ([coder containsValueForKey: @"NSPathStyle"])
         {
           [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
         }
@@ -244,15 +248,15 @@
           NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
           NSImage *image = nil;
 
-          if ([[url path] isEqualToString: @"/"])
-            {
-              at_root = YES;
-            }
-
           AUTORELEASE(cell);
           [cell setURL: url];
           [fm fileExistsAtPath: [url path]
                isDirectory: &isDir];
+
+          if ([[url path] isEqualToString: @"/"])
+            {
+              at_root = YES;
+            }
 
           if (isDir && at_root == NO)
             {
@@ -265,6 +269,16 @@
 
           [cell setImage: image];
           string = [string stringByDeletingLastPathComponent];
+
+          if ([array count] == 0) // the element we are adding is the last component that will show
+            {
+              [cell _setLastComponent: YES];
+            }
+          else
+            {
+              [cell _setLastComponent: NO];
+            }
+          
           [array insertObject: cell
                       atIndex: 0];
           url = [NSURL URLWithString: string
@@ -281,6 +295,15 @@
     }
   
   return [array copy];
+}
+
+@end
+
+@implementation NSPathComponentCell (Private)
+
+- (void) _setLastComponent: (BOOL)f
+{
+  _lastComponent = f;
 }
 
 @end
