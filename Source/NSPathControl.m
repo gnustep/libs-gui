@@ -25,6 +25,8 @@
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSPasteboard.h"
 
 @implementation NSPathControl
 
@@ -35,6 +37,20 @@
       [self setVersion: 1.0];
       [self setCellClass: [NSPathCell class]];
     }
+}
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      [self setPathStyle: NSPathStyleStandard];
+      [self setPathComponentCells: nil];
+      [self setURL: nil];
+      [self setDelegate: nil];
+      [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+    }
+  return self;
 }
 
 - (void) setPathStyle: (NSPathStyle)style
@@ -95,9 +111,27 @@
   _delegate = delegate;
 }
 
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)flag
+{
+  if (flag)
+    {
+      return _localMask;
+    }
+
+  return _remoteMask;
+}
+
 - (void) setDraggingSourceOperationMask: (NSDragOperation)mask 
                                forLocal: (BOOL)local
 {
+  if (local)
+    {
+      _localMask = mask;
+    }
+  else
+    {
+      _remoteMask = mask;
+    }
 }
 
 - (NSMenu *) menu
@@ -118,6 +152,7 @@
 - (void) setAllowedTypes: (NSArray *)allowedTypes
 {
   [_cell setAllowedTypes: allowedTypes];
+  [self registerForDraggedTypes: allowedTypes];
 }
 
 - (NSPathControlItem *) clickedPathItem
@@ -169,6 +204,71 @@
   [self setNeedsDisplay];
 }
 
+- (void) setAction: (SEL)action
+{
+  _action = action;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+- (void) setTarget: (id)target
+{
+  _target = target;
+}
+
+- (id) target
+{
+  return _target;
+}
+
+- (void) mouseDown: (NSEvent *)event
+{
+  if (![self isEnabled])
+    {
+      [super mouseDown: event];
+      return;
+    }
+
+  if (_action)
+    {
+      [self sendAction: _action
+                    to: _target];
+    }
+}
+
+- (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
+{
+  // if (_delegate != nil)
+    {
+      NSDragOperation d = [_delegate pathControl: self
+                                    validateDrop: sender];
+      if (d == NSDragOperationCopy)
+        {
+          NSPasteboard *pb = [sender draggingPasteboard];
+          if ([[pb types] containsObject: NSFilenamesPboardType])
+            {
+              NSArray *files = [pb propertyListForType: NSFilenamesPboardType];
+              if ([files count] > 0)
+                {
+                  NSString *file = [files objectAtIndex: 0];
+                  NSURL *u = [NSURL URLWithString: file];
+                  BOOL accept = [_delegate pathControl: self
+                                            acceptDrop: sender];
+                  if (accept)
+                    {
+                      [self setURL: u];
+                    }
+                }
+            }
+        }
+    }
+
+  return NSDragOperationNone;
+}
+
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
 {
   self = [super initWithCoder: coder];
@@ -178,6 +278,8 @@
         {
           // Defaults for some values which aren't encoded unless they are non-default.
           [self setBackgroundColor: [NSColor windowBackgroundColor]];
+          [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+
           if ([coder containsValueForKey: @"NSBackgroundColor"])
             {
               [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
@@ -186,6 +288,17 @@
           if ([coder containsValueForKey: @"NSDragTypes"])
             {
               [self setAllowedTypes: [coder decodeObjectForKey: @"NSDragTypes"]];
+            }
+
+          if ([coder containsValueForKey: @"NSControlAction"])
+            {
+              NSString *s = [coder decodeObjectForKey: @"NSControlAction"];
+              [self setAction: NSSelectorFromString(s)];
+            }
+          if ([coder containsValueForKey: @"NSControlTarget"])
+            {
+              id t = [coder decodeObjectForKey: @"NSControlTarget"];
+              [self setTarget: t];
             }
         }
       else

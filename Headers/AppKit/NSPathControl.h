@@ -45,6 +45,10 @@ extern "C" {
   NSColor *_backgroundColor;
   NSArray *_pathItems;
   id<NSPathControlDelegate> _delegate;
+  id _target;
+  SEL _action;
+  NSDragOperation _localMask;
+  NSDragOperation _remoteMask;
 }
 
 - (void) setPathStyle: (NSPathStyle)style;
@@ -87,25 +91,25 @@ extern "C" {
 
 @protocol NSPathControlDelegate
 
-- (BOOL)pathControl:(NSPathControl *)pathControl 
-  shouldDragPathComponentCell:(NSPathComponentCell *)pathComponentCell 
-               withPasteboard:(NSPasteboard *)pasteboard;
+- (BOOL)pathControl: (NSPathControl *)pathControl 
+  shouldDragPathComponentCell: (NSPathComponentCell *)pathComponentCell 
+               withPasteboard: (NSPasteboard *)pasteboard;
 
-- (NSDragOperation)pathControl:(NSPathControl *)pathControl 
-                  validateDrop:(id<NSDraggingInfo>)info;
+- (NSDragOperation) pathControl: (NSPathControl *)pathControl 
+                   validateDrop: (id<NSDraggingInfo>)info;
 
-- (BOOL)pathControl:(NSPathControl *)pathControl 
-         acceptDrop:(id<NSDraggingInfo>)info;
+- (BOOL) pathControl: (NSPathControl *)pathControl 
+          acceptDrop: (id<NSDraggingInfo>)info;
 
-- (void)pathControl:(NSPathControl *)pathControl 
-  willDisplayOpenPanel:(NSOpenPanel *)openPanel;
+- (void)    pathControl: (NSPathControl *)pathControl 
+   willDisplayOpenPanel: (NSOpenPanel *)openPanel;
 
-- (void)pathControl:(NSPathControl *)pathControl 
-      willPopUpMenu:(NSMenu *)menu;
+- (void) pathControl: (NSPathControl *)pathControl 
+       willPopUpMenu: (NSMenu *)menu;
 
-- (BOOL)pathControl:(NSPathControl *)pathControl 
-     shouldDragItem:(NSPathControlItem *)pathItem 
-     withPasteboard:(NSPasteboard *)pasteboard;
+- (BOOL) pathControl: (NSPathControl *)pathControl 
+      shouldDragItem: (NSPathControlItem *)pathItem 
+      withPasteboard: (NSPasteboard *)pasteboard;
 
 @end
 

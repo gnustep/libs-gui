@@ -1013,7 +1013,7 @@
           newFrame.origin.x = 0.0;
           newFrame.origin.y = 0.0;
           [[NSColor controlShadowColor] set];
-          NSFrameRectWithWidth(newFrame, 1);
+          NSFrameRectWithWidth(newFrame, .5);
           
           // Use control frame...
           textFrame = newFrame;
