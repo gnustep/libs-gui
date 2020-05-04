@@ -1626,6 +1626,18 @@ static BOOL menuBarVisible = YES;
   [menu _rightMouseDisplay: event];
 }
 
+- (void) popUpMenuPositionItem: (NSMenuItem *)item
+                    atLocation: (NSPoint) point
+                        inView: (NSView *) view
+{
+  NSRect cellFrame = [view frame]; // NSMakeRect(point.x, point.y, 10.0, 10.0);
+  [[GSTheme theme] displayPopUpMenu: [self menuRepresentation]
+                      withCellFrame: cellFrame
+                  controlViewWindow: [NSApp mainWindow]
+                      preferredEdge: NSMinYEdge
+                       selectedItem: 0];
+}
+
 /*
  * NSObject Protocol
  */

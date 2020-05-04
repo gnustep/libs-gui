@@ -27,6 +27,8 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSPasteboard.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSOpenPanel.h"
 
 @implementation NSPathControl
 
@@ -224,6 +226,39 @@
   return _target;
 }
 
+- (void) _doMenuAction: (id)sender
+{
+  if (_action)
+    {
+      [self sendAction: _action
+                    to: _target];
+    }
+
+  [[sender menu] close];
+}
+
+- (void) _doChooseMenuAction: (id)sender
+{
+  NSOpenPanel *op = [NSOpenPanel openPanel];
+  NSArray *urls = [op URLs];
+  NSURL *url = [urls objectAtIndex: 0];
+  int result = 0;
+  
+  [op setAllowsMultipleSelection: NO];
+  [op setCanChooseFiles: YES];
+  [op setCanChooseDirectories: YES];
+  
+  result = [op runModalForDirectory: nil
+                               file: nil
+                              types: nil];
+  if (result == NSOKButton)
+    {
+      [self setURL: url];
+    }
+
+  [[sender menu] close];
+}
+
 - (void) mouseDown: (NSEvent *)event
 {
   if (![self isEnabled])
@@ -232,10 +267,60 @@
       return;
     }
 
-  if (_action)
+  if ([self pathStyle] == NSPathStylePopUp)
     {
-      [self sendAction: _action
-                    to: _target];
+      NSPathCell *acell = (NSPathCell *)[self cell];
+      NSArray *array = [acell pathComponentCells];
+      NSMenu *menu = [[NSMenu alloc] initWithTitle: @"Select File"];
+      NSPathComponentCell *c = nil;
+      NSEnumerator *en = [array objectEnumerator];
+      
+      while((c = [en nextObject]) != nil)
+        {
+          NSURL *u = [c URL];
+          NSString *s = [[u path] lastPathComponent];
+          NSMenuItem *i = [[NSMenuItem alloc] init];
+
+          [i setTitle: s];
+          [i setTarget: self];
+          [i setAction: @selector(_doMenuAction:)];
+          
+          [menu insertItem: i
+                   atIndex: 0]; 
+        }
+
+      // Add separator
+      [menu insertItem: [NSMenuItem separatorItem]
+               atIndex: 0];
+
+      // Add choose menu option
+      NSMenuItem *i = [[NSMenuItem alloc] init];
+      [i setTitle: @"Choose..."];
+      [i setTarget: self];
+      [i setAction: @selector(_doChooseMenuAction:)];
+      [menu insertItem: i
+               atIndex: 0];
+      
+      if (_delegate)
+        {
+          if ([(id)_delegate respondsToSelector: @selector(pathControl:willPopUpMenu:)])
+            {
+              [_delegate pathControl: self
+                       willPopUpMenu: menu];
+            }
+        }
+
+      [menu popUpMenuPositionItem: [menu itemAtIndex: 0]
+                       atLocation: NSMakePoint(0.0, 0.0)
+                           inView: self];
+    }
+  else
+    {
+      if (_action)
+        {
+          [self sendAction: _action
+                        to: _target];
+        }
     }
 }
 
