@@ -29,6 +29,8 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSStringDrawing.h"
 
+#import "GNUstepGUI/GSTheme.h"
+
 @implementation NSPathComponentCell
 
 - (NSImage *) image
@@ -54,37 +56,13 @@
 - (void) drawInteriorWithFrame: (NSRect)f
                         inView: (NSView *)v
 {
-  NSString *string = [[_url path] lastPathComponent];
-  NSRect textFrame = f;
-  NSRect imgFrame = f;
-  NSRect arrowFrame = f;
-  NSImage *arrowImage = [NSImage imageNamed: @"NSMenuArrow"];
-
   [super drawInteriorWithFrame: f inView: v];
-  
-  // Modify positions...
-  textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
-  textFrame.origin.y += 3.0; // center with the image...
-  imgFrame.size.width = 20.0;
-  imgFrame.size.height = 20.0;
-  arrowFrame.origin.x += f.size.width - 20.0; 
-  arrowFrame.size.width = 8.0;
-  arrowFrame.size.height = 8.0;
-  arrowFrame.origin.y += 5.0;
-  
-  // Draw the image...
-  [_image drawInRect: imgFrame];
+  [[GSTheme theme] drawPathComponentCellWithFrame: f
+                                           inView: v
+                                          withURL: _url
+                                            image: _image
+                                  isLastComponent: _lastComponent];
 
-  // Draw the text...
-  [[NSColor textColor] set]; 
-  [string drawAtPoint: textFrame.origin
-       withAttributes: nil];
-
-  // Draw the arrow...
-  if (_lastComponent == NO)
-    {
-      [arrowImage drawInRect: arrowFrame];
-    }
 }
 
 @end

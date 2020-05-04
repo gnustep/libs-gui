@@ -59,7 +59,9 @@
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/PSOperators.h"
 #import "AppKit/NSSliderCell.h"
-
+#import "AppKit/NSPathCell.h"
+#import "AppKit/NSPathControl.h"
+#import "AppKit/NSPathComponentCell.h"
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
@@ -947,6 +949,53 @@
               forState: state
                enabled: enabled];
         
+}
+
+// NSPathComponentCell
+
+- (void) drawPathComponentCellWithFrame: (NSRect)f
+                                 inView: (NSView *)v
+                                withURL: (NSURL *)u
+                                  image: (NSImage *)i
+                        isLastComponent: (BOOL)lc
+{
+  NSString *string = [[u path] lastPathComponent];
+  NSRect textFrame = f;
+  NSRect imgFrame = f;
+  NSRect arrowFrame = f;
+  NSImage *arrowImage = [NSImage imageNamed: @"NSMenuArrow"];
+  NSPathControl *pc = (NSPathControl *)v;
+  NSPathStyle s = [pc pathStyle];
+
+  if (s == NSPathStyleStandard || s == NSPathStyleNavigationBar)
+    {
+      // Modify positions...
+      textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
+      textFrame.origin.y += 3.0; // center with the image...
+      imgFrame.size.width = 20.0;
+      imgFrame.size.height = 20.0;
+      arrowFrame.origin.x += f.size.width - 20.0; 
+      arrowFrame.size.width = 8.0;
+      arrowFrame.size.height = 8.0;
+      arrowFrame.origin.y += 5.0;
+      
+      // Draw the image...
+      [i drawInRect: imgFrame];
+      
+      // Draw the text...
+      [[NSColor textColor] set]; 
+      [string drawAtPoint: textFrame.origin
+           withAttributes: nil];
+      
+      // Draw the arrow...
+      if (lc == NO)
+        {
+          [arrowImage drawInRect: arrowFrame];
+        }
+    }
+  else
+    {
+    }
 }
 
 // NSSegmentedControl drawing methods

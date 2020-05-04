@@ -972,6 +972,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                  forState: (NSControlStateValue)state
                   enabled: (BOOL)enabled;
 
+// NSPathComponentCell
+
+- (void) drawPathComponentCellWithFrame: (NSRect)f
+                                 inView: (NSView *)v
+                                withURL: (NSURL *)u
+                                  image: (NSImage *)i
+                        isLastComponent: (BOOL)last;
+
 // NSSegmentedControl drawing methods
 
 - (void) drawSegmentedControlSegment: (NSCell *)cell
