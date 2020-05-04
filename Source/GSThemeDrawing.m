@@ -969,6 +969,14 @@
 
   if (s == NSPathStyleStandard || s == NSPathStyleNavigationBar)
     {
+      if (s == NSPathStyleNavigationBar)
+        {
+          [[NSColor lightGrayColor] set];
+          NSRectFill(f);
+          [[NSColor controlShadowColor] set];
+          NSFrameRectWithWidth(f, 1);
+        }
+      
       // Modify positions...
       textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
       textFrame.origin.y += 3.0; // center with the image...
@@ -993,8 +1001,46 @@
           [arrowImage drawInRect: arrowFrame];
         }
     }
-  else
+  else // can only be PopUp...
     {
+      if (lc == YES)
+        {
+          NSRect newFrame = [v frame];
+          
+          arrowImage = [NSImage imageNamed: @"common_ArrowDown"];
+                    
+          // Reset coodinates.
+          newFrame.origin.x = 0.0;
+          newFrame.origin.y = 0.0;
+          [[NSColor controlShadowColor] set];
+          NSFrameRectWithWidth(newFrame, 1);
+          
+          // Use control frame...
+          textFrame = newFrame;
+          imgFrame = newFrame;
+          arrowFrame = newFrame;
+          
+          // Modify positions...
+          textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
+          textFrame.origin.y += 3.0; // center with the image...
+          imgFrame.size.width = 20.0;
+          imgFrame.size.height = 20.0;
+          arrowFrame.origin.x += newFrame.size.width - 20.0; 
+          arrowFrame.size.width = 8.0;
+          arrowFrame.size.height = 8.0;
+          arrowFrame.origin.y += 5.0;
+
+          // Draw the image...
+          [i drawInRect: imgFrame];
+          
+          // Draw the text...
+          [[NSColor textColor] set]; 
+          [string drawAtPoint: textFrame.origin
+               withAttributes: nil];
+          
+          // Draw the arrow...
+          [arrowImage drawInRect: arrowFrame];
+        }
     }
 }
 
