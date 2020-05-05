@@ -54,7 +54,11 @@ extern "C" {
 - (void) setPathStyle: (NSPathStyle)style;
 - (NSPathStyle) pathStyle;
 
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)backgroundColor;
+
 - (NSPathComponentCell *) clickedPathComponentCell;
+
 - (NSArray *) pathComponentCells;
 - (void) setPathComponentCells: (NSArray *)cells;
 

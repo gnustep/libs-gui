@@ -22,6 +22,8 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSNotification.h>
+
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSGraphics.h"
@@ -29,6 +31,13 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSOpenPanel.h"
+#import "AppKit/NSPathComponentCell.h"
+
+static NSNotificationCenter *nc = nil;
+
+@interface NSPathCell (Private)
+- (void) _setClickedPathComponentCell: (NSPathComponentCell *)c;
+@end
 
 @implementation NSPathControl
 
@@ -38,6 +47,7 @@
     {
       [self setVersion: 1.0];
       [self setCellClass: [NSPathCell class]];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -53,6 +63,12 @@
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
     }
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_backgroundColor);
+  [super dealloc];
 }
 
 - (void) setPathStyle: (NSPathStyle)style
@@ -228,12 +244,20 @@
 
 - (void) _doMenuAction: (id)sender
 {
+  NSArray *cells = [self pathComponentCells];
+  NSUInteger c = [cells count];
+  NSUInteger i = [[sender menu] indexOfItem: sender];
+  NSUInteger ci = (c - i) + 1;
+  NSPathComponentCell *cc = [cells objectAtIndex: ci];
+
+  [_cell _setClickedPathComponentCell: cc];
   if (_action)
     {
       [self sendAction: _action
                     to: _target];
     }
-
+  
+  [self setURL: [cc URL]];
   [[sender menu] close];
 }
 
@@ -245,6 +269,18 @@
   [op setAllowsMultipleSelection: NO];
   [op setCanChooseFiles: YES];
   [op setCanChooseDirectories: YES];
+  
+  if ([(id)_delegate respondsToSelector: @selector(pathCell:willPopUpMenu:)])
+    {
+      [_delegate pathControl: self
+        willDisplayOpenPanel: op];
+    }
+
+  if ([(id)[_cell delegate] respondsToSelector: @selector(pathCell:willPopUpMenu:)])
+    {
+      [[_cell delegate] pathCell: _cell
+            willDisplayOpenPanel: op];
+    }
   
   result = [op runModalForDirectory: nil
                                file: nil
@@ -309,7 +345,17 @@
                        willPopUpMenu: menu];
             }
         }
+      
+      if ([_cell delegate])
+        {
+          if ([(id)[_cell delegate] respondsToSelector: @selector(pathCell:willPopUpMenu:)])
+            {
+              [[_cell delegate] pathCell: _cell
+                           willPopUpMenu: menu];
+            }
+        }
 
+      
       [menu popUpMenuPositionItem: [menu itemAtIndex: 0]
                        atLocation: NSMakePoint(0.0, 0.0)
                            inView: self];
@@ -394,3 +440,11 @@
 }
 @end
 
+@implementation NSPathCell (Private)
+
+- (void) _setClickedPathComponentCell: (NSPathComponentCell *)c
+{
+  _clickedPathComponentCell = c;
+}
+
+@end

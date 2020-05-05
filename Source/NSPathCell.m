@@ -135,7 +135,7 @@
 
 - (NSPathComponentCell *) clickedPathComponentCell
 {
-  return nil;
+  return _clickedPathComponentCell;
 }
 
 - (NSArray *) pathComponentCells
