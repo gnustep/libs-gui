@@ -35,7 +35,7 @@
 
 static NSNotificationCenter *nc = nil;
 
-@interface NSPathCell (Private)
+@interface NSPathCell (PathControlPrivate)
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c;
 @end
 
@@ -440,7 +440,7 @@ static NSNotificationCenter *nc = nil;
 }
 @end
 
-@implementation NSPathCell (Private)
+@implementation NSPathCell (PathControlPrivate)
 
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c
 {
