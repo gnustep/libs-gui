@@ -221,8 +221,8 @@
     }
   else
     {
-      [coder decodeValueObjCType: @encode(NSUInteger)
-                              at: &_pathStyle];
+      [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_pathStyle];
       [self setPathComponentCells: [coder decodeObject]];
     }
 
@@ -236,12 +236,12 @@
       [coder encodeInteger: [self pathStyle]
                     forKey: @"NSPathStyle"];
       [coder encodeObject: [self pathComponentCells]
-                   forKey: @"NSPathComponentCells"]
+                   forKey: @"NSPathComponentCells"];
     }
   else
     {
-      [coder encodeValueObjCType: @encode(NSUInteger)
-                              at: &_pathStyle];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_pathStyle];
       [coder encodeObject: [self pathComponentCells]];
     }
 }
@@ -254,27 +254,28 @@
 + (NSArray *) _generateCellsForURL: (NSURL *)url
 {
   NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
-    
+  
   // Create cells
   if (url != nil)
     {
-      NSString *string = nil;
       BOOL isDir = NO;
       BOOL at_root = NO;
       NSFileManager *fm = [NSFileManager defaultManager];
-            
+      NSURL *u = [url copy];
+      
       // Decompose string...
       do
         {
           NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
           NSImage *image = nil;
-
+          NSString *string = [u path];
+          
           AUTORELEASE(cell);
-          [cell setURL: url];
+          [cell setURL: u];
           [fm fileExistsAtPath: [url path]
                isDirectory: &isDir];
 
-          if ([[url path] isEqualToString: @"/"])
+          if ([[u path] isEqualToString: @"/"])
             {
               at_root = YES;
             }
@@ -302,14 +303,14 @@
           
           [array insertObject: cell
                       atIndex: 0];
-          url = [NSURL URLWithString: string
-                       relativeToURL: nil];
-          if (url == nil && at_root == NO)
+          u = [NSURL URLWithString: string
+                     relativeToURL: nil];
+          if (u == nil && at_root == NO)
             {
               // Because when we remove the last path component
               // all that is left is a blank... so we add the "/" so that
               // it is shown.
-              url = [NSURL URLWithString: @"/"];
+              u = [NSURL URLWithString: @"/"];
             }
         }
       while (at_root == NO);
