@@ -1630,12 +1630,16 @@ static BOOL menuBarVisible = YES;
                     atLocation: (NSPoint) point
                         inView: (NSView *) view
 {
-  NSRect cellFrame = [view frame]; // NSMakeRect(point.x, point.y, 10.0, 10.0);
-  [[GSTheme theme] displayPopUpMenu: [self menuRepresentation]
+  NSRect cellFrame = [[view window] convertRectToScreen: [view frame]];
+  NSWindow *w = [view window];
+  NSMenuView *mr = [self menuRepresentation];
+  NSUInteger selectedItem = [self indexOfItem: item];
+
+  [[GSTheme theme] displayPopUpMenu: mr
                       withCellFrame: cellFrame
-                  controlViewWindow: [NSApp mainWindow]
+                  controlViewWindow: w
                       preferredEdge: NSMinYEdge
-                       selectedItem: 0];
+                       selectedItem: selectedItem];
 }
 
 /*

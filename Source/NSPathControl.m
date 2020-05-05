@@ -240,8 +240,6 @@
 - (void) _doChooseMenuAction: (id)sender
 {
   NSOpenPanel *op = [NSOpenPanel openPanel];
-  NSArray *urls = [op URLs];
-  NSURL *url = [urls objectAtIndex: 0];
   int result = 0;
   
   [op setAllowsMultipleSelection: NO];
@@ -253,6 +251,8 @@
                               types: nil];
   if (result == NSOKButton)
     {
+      NSArray *urls = [op URLs];
+      NSURL *url = [urls objectAtIndex: 0];
       [self setURL: url];
     }
 
