@@ -208,7 +208,8 @@
     {
       [self setPathStyle: NSPathStyleStandard];
       
-      // if ([coder containsValueForKey: @"NSPathStyle"])
+      // if ([coder containsValueForKey: @"NSPathStyle"]) // can't seem to find it in the contains method,
+      // but it does when I decode it... not sure why.
         {
           [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
         }
@@ -220,9 +221,29 @@
     }
   else
     {
+      [coder decodeValueObjCType: @encode(NSUInteger)
+                              at: &_pathStyle];
+      [self setPathComponentCells: [coder decodeObject]];
     }
 
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeInteger: [self pathStyle]
+                    forKey: @"NSPathStyle"];
+      [coder encodeObject: [self pathComponentCells]
+                   forKey: @"NSPathComponentCells"]
+    }
+  else
+    {
+      [coder encodeValueObjCType: @encode(NSUInteger)
+                              at: &_pathStyle];
+      [coder encodeObject: [self pathComponentCells]];
+    }
 }
 
 @end

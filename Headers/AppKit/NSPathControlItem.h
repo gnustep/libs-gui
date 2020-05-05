@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-  @class NSURL, NSAttributedString, NSImage, NSString;
+@class NSURL, NSAttributedString, NSImage, NSString;
 
 @interface NSPathControlItem : NSObject
 {
@@ -64,4 +64,3 @@ extern "C" {
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE */
-
