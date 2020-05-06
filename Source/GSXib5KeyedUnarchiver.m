@@ -387,7 +387,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
                @"decodeControlContentsForElement:", @"NSControlContents",
-               @"decodePathComponentCells:", @"NSPathComponentCells",
                @"decodePathStyle:", @"NSPathStyle",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
@@ -2779,32 +2778,6 @@ didStartElement: (NSString*)elementName
   return num;  
 }
 
-- (id) decodePathComponentCells: (GSXibElement *)element
-{
-  GSXibElement *e = nil;
-  NSString *string = nil;
-  NSURL *url = nil;
-  
-  /*
-   * NOTE: This method uses the url to generate the path components.
-   * The .nib file which is generated contains NSPathComponents
-   * and, by default, lists Macintosh SSD (my HD's name) and
-   * Applications.  These are apparently generated using the URL
-   * stored in the xib and, thus, output in the .nib file.  We must
-   * handle their decoding in this way since the .nib file will
-   * expect them.  I am documenting this here as it is a somewhat
-   * unusual case. Gregory Casamento (GC)
-   */ 
-
-  // Extract the URL
-  e = [element elementForKey: @"url"];
-  string = [e attributeForKey: @"string"];
-  url = [NSURL URLWithString: string
-               relativeToURL: nil];
-
-  return [NSPathCell _generateCellsForURL: url];
-}
-
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -3241,10 +3214,6 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
           hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
-        }
-      else if ([@"NSPathComponentCells" isEqualToString: key])
-        {
-          hasValue = [currentElement elementForKey: @"url"] != nil;
         }
       else if ([@"NSHeaderClipView" isEqualToString: key])
         {
