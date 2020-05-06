@@ -49,7 +49,6 @@ typedef NSUInteger NSPathStyle;
   NSPathStyle _pathStyle;
   NSColor *_backgroundColor;
   NSArray *_pathItems;
-  NSString *_placeholderString;
   NSAttributedString *_placeholderAttributedString;
   NSArray *_allowedTypes;
   id<NSPathCellDelegate> _delegate;
@@ -57,8 +56,6 @@ typedef NSUInteger NSPathStyle;
   SEL _doubleAction;
   NSArray *_pathComponentCells;
   NSPathComponentCell *_clickedPathComponentCell;
-  // id _objectValue;
-  // NSControlSize _controlSize;
 }
   
 - (void)mouseEntered:(NSEvent *)event 
