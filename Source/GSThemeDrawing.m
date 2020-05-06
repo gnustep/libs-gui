@@ -969,6 +969,7 @@
   
   if (s == NSPathStyleStandard || s == NSPathStyleNavigationBar)
     {
+      /*
       if (s == NSPathStyleNavigationBar)
         {
           [[NSColor lightGrayColor] set];
@@ -976,7 +977,7 @@
           [[NSColor controlShadowColor] set];
           NSFrameRectWithWidth(f, 1);
         }
-      
+      */
       // Modify positions...
       textFrame.origin.x += 25.0; // the width of the image plus a few pixels.
       textFrame.origin.y += 3.0; // center with the image...

@@ -3236,10 +3236,6 @@ didStartElement: (NSString*)elementName
           hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
           hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
         }
-      else if ([@"NSPathStyle" isEqualToString: key])
-        {
-          hasValue = [currentElement attributeForKey: @"pathStyle"] != nil;
-        }
       else if ([@"NSPathComponentCells" isEqualToString: key])
         {
           hasValue = [currentElement elementForKey: @"url"] != nil;

@@ -272,11 +272,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) _doMenuAction: (id)sender
 {
-  NSArray *cells = [self pathComponentCells];
-  NSUInteger c = [cells count];
-  NSUInteger i = [[sender menu] indexOfItem: sender];
-  NSUInteger ci = (c - i) + 1;
-  NSPathComponentCell *cc = [cells objectAtIndex: ci];
+  NSPathComponentCell *cc = (NSPathComponentCell *)[sender representedObject];
 
   [_cell _setClickedPathComponentCell: cc];
   if ([[self cell] action])
@@ -351,6 +347,7 @@ static NSNotificationCenter *nc = nil;
           [i setTitle: s];
           [i setTarget: self];
           [i setAction: @selector(_doMenuAction:)];
+          [i setRepresentedObject: c];
           
           [menu insertItem: i
                    atIndex: 0]; 
@@ -369,6 +366,9 @@ static NSNotificationCenter *nc = nil;
       [menu insertItem: i
                atIndex: 0];
       RELEASE(i);
+
+      [self setMenu: menu];
+      RELEASE(menu);
       
       if (_delegate)
         {
@@ -497,6 +497,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: [self backgroundColor]

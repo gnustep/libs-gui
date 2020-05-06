@@ -118,13 +118,6 @@ Class pathComponentCellClass;
   ASSIGNCOPY(_backgroundColor, color);
 }
 
-- (void) setObjectValue: (id)obj
-{
-  NSLog(@"Called");
-  [super setObjectValue: obj];
-  [self setURL: obj];
-}
-
 + (Class) pathComponentCellClass
 {
   return pathComponentCellClass;
@@ -185,12 +178,12 @@ Class pathComponentCellClass;
 
 - (NSURL *) URL
 {
-  return _url;
+  return [self objectValue];
 }
 
 - (void) setURL: (NSURL *)url
 {
-  ASSIGNCOPY(_url, url);
+  [self setObjectValue: url];
   [self setPathComponentCells: [NSPathCell _generateCellsForURL: url]];
 }
 
@@ -228,12 +221,12 @@ Class pathComponentCellClass;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
+  self = [super initWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       [self setPathStyle: NSPathStyleStandard];
       
-      // if ([coder containsValueForKey: @"NSPathStyle"]) // can't seem to find it in the contains method,
-      // but it does when I decode it... not sure why.
+      if ([coder containsValueForKey: @"NSPathStyle"]) 
         {
           [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
         }
@@ -242,6 +235,14 @@ Class pathComponentCellClass;
         {
           [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
         }
+
+      if ([coder containsValueForKey: @"NSContents"])
+        {
+          [self setObjectValue: [coder decodeObjectForKey: @"NSContents"]];
+        }
+      
+      NSLog(@"OBJECTVALUE = %@", [self objectValue]);
+
     }
   else
     {
@@ -255,6 +256,7 @@ Class pathComponentCellClass;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       [coder encodeInteger: [self pathStyle]
