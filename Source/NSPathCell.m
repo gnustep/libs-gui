@@ -176,6 +176,18 @@ static Class pathComponentCellClass;
   _doubleAction = action;
 }
 
+- (id) objectValue
+{
+  return _objectValue;
+}
+
+- (void) setObjectValue: (id)obj
+{
+  ASSIGN(_objectValue, obj);
+  [self setPathComponentCells:
+          [NSPathCell _generateCellsForURL: (NSURL *)_objectValue]];
+}
+
 - (NSURL *) URL
 {
   return [self objectValue];
@@ -184,7 +196,6 @@ static Class pathComponentCellClass;
 - (void) setURL: (NSURL *)url
 {
   [self setObjectValue: url];
-  [self setPathComponentCells: [NSPathCell _generateCellsForURL: url]];
 }
 
 - (id<NSPathCellDelegate>) delegate
@@ -230,15 +241,20 @@ static Class pathComponentCellClass;
         {
           [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
         }
-      
+
+      /*
       if ([coder containsValueForKey: @"NSPathComponentCells"])
         {
           [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
         }
+      */
 
-      // [self setURL: [self objectValue]];
-      NSLog(@"OBJECTVALUE = %@", [self objectValue]);
-
+      /*
+      if ([coder containsValueForKey: @"NSContents"])
+        {
+          [self setURL: [coder decodeObjectForKey: @"NSContents"]];
+        }
+      */
     }
   else
     {
@@ -304,6 +320,10 @@ static Class pathComponentCellClass;
           if (isDir && at_root == NO)
             {
               image = [NSImage imageNamed: @"NSFolder"];
+            }
+          else if (isDir == YES && at_root == YES)
+            {
+              image = [NSImage imageNamed: @"NSComputer"];
             }
           else
             {

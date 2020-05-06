@@ -33,6 +33,25 @@
 
 @implementation NSPathComponentCell
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _image = nil;
+      _url = nil;
+      _lastComponent = NO;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_image);
+  RELEASE(_url);
+  [super dealloc];
+}
+
 - (NSImage *) image
 {
   return _image;

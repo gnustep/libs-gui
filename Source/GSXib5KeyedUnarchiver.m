@@ -2201,6 +2201,11 @@ didStartElement: (NSString*)elementName
     {
       object = [element attributeForKey: @"stringValue"];
     }
+  else if ([class isSubclassOfClass: [NSPathCell class]])
+    {
+      GSXibElement *el = [element elementForKey: @"url"];
+      object = [NSURL URLWithString: [el attributeForKey: @"string"]];
+    }
   else
     {
       // Try the title attribute first as it is the more common encoding...
@@ -3226,6 +3231,7 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+          hasValue |= [currentElement attributeForKey: @"string"] != nil;
         }
       else if ([@"NSControlContents" isEqualToString: key])
         {

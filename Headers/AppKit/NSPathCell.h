@@ -55,6 +55,7 @@ typedef NSUInteger NSPathStyle;
   SEL _doubleAction;
   NSArray *_pathComponentCells;
   NSPathComponentCell *_clickedPathComponentCell;
+  id _objectValue;
 }
   
 - (void)mouseEntered:(NSEvent *)event 
