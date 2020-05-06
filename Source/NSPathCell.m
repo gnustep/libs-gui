@@ -241,20 +241,6 @@ static Class pathComponentCellClass;
         {
           [self setPathStyle: [coder decodeIntegerForKey: @"NSPathStyle"]];
         }
-
-      /*
-      if ([coder containsValueForKey: @"NSPathComponentCells"])
-        {
-          [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
-        }
-      */
-
-      /*
-      if ([coder containsValueForKey: @"NSContents"])
-        {
-          [self setURL: [coder decodeObjectForKey: @"NSContents"]];
-        }
-      */
     }
   else
     {
