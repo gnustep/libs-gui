@@ -37,6 +37,7 @@
 #import "AppKit/NSTrackingArea.h"
 
 static NSNotificationCenter *nc = nil;
+Class pathCellClass;
 
 @interface NSPathCell (PathControlPrivate)
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c;
@@ -56,6 +57,17 @@ static NSNotificationCenter *nc = nil;
       [self setCellClass: [NSPathCell class]];
       nc = [NSNotificationCenter defaultCenter];
     }
+}
+
+
++ (Class) cellClass
+{
+  return pathCellClass;
+}
+
++ (void) setCellClass: (Class)classId
+{
+  pathCellClass = classId;
 }
 
 - (void) _resetTrackingRect
