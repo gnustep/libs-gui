@@ -85,7 +85,6 @@ Class pathCellClass;
   if (self != nil)
     {
       [self setPathStyle: NSPathStyleStandard];
-      [self setPathComponentCells: nil];
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
@@ -212,16 +211,6 @@ Class pathCellClass;
     }
 }
 
-- (NSMenu *) menu
-{
-  return [super menu];
-}
-
-- (void) setMenu: (NSMenu *)menu
-{
-  [super setMenu: menu];
-}
-
 - (NSArray *) allowedTypes;
 {
   return [_cell allowedTypes];
@@ -303,6 +292,23 @@ Class pathCellClass;
 {
   NSOpenPanel *op = [NSOpenPanel openPanel];
   int result = 0;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL isDir = NO;
+  NSString *path = nil;
+  NSString *file = nil;
+  
+  [fm fileExistsAtPath: [[self URL] path]
+           isDirectory: &isDir];
+
+  if (isDir)
+    {
+      path = [[self URL] path];
+    }
+  else
+    {
+      path = [[[self URL] path] stringByDeletingLastPathComponent];
+      file = [[[self URL] path] lastPathComponent];
+    }
   
   [op setAllowsMultipleSelection: NO];
   [op setCanChooseFiles: YES];
@@ -320,8 +326,8 @@ Class pathCellClass;
             willDisplayOpenPanel: op];
     }
   
-  result = [op runModalForDirectory: nil
-                               file: nil
+  result = [op runModalForDirectory: path
+                               file: file
                               types: nil];
   if (result == NSOKButton)
     {

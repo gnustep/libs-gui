@@ -72,9 +72,6 @@ extern "C" {
 - (void) setDraggingSourceOperationMask: (NSDragOperation)mask 
                                forLocal: (BOOL)local;
 
-- (NSMenu *) menu;
-- (void) setMenu: (NSMenu *)menu;
-
 - (NSArray *) allowedTypes;
 - (void) setAllowedTypes: (NSArray *)allowedTypes;
 
