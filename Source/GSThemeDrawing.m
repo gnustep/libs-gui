@@ -954,19 +954,19 @@
 // NSPathComponentCell
 
 - (void) drawPathComponentCellWithFrame: (NSRect)f
-                                 inView: (NSView *)v
-                                withURL: (NSURL *)u
-                                  image: (NSImage *)i
+                                 inView: (NSPathControl *)pc
+                               withCell: (NSPathComponentCell *)cell
                         isLastComponent: (BOOL)lc
 {
+  NSImage *i = [cell image];
+  NSURL *u = [cell URL];
   NSString *string = [[u path] lastPathComponent];
   NSRect textFrame = f;
   NSRect imgFrame = f;
   NSRect arrowFrame = f;
   NSImage *arrowImage = [NSImage imageNamed: @"NSMenuArrow"];
-  NSPathControl *pc = (NSPathControl *)v;
   NSPathStyle s = [pc pathStyle];
-
+  
   if (s == NSPathStyleStandard || s == NSPathStyleNavigationBar)
     {
       if (s == NSPathStyleNavigationBar)
@@ -1005,7 +1005,7 @@
     {
       if (lc == YES)
         {
-          NSRect newFrame = [v frame];
+          NSRect newFrame = [pc frame];
           
           arrowImage = [NSImage imageNamed: @"common_ArrowDown"];
                     

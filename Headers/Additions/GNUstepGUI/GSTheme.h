@@ -252,6 +252,8 @@
 @class NSProgressIndicator;
 @class NSTableHeaderCell;
 @class NSTabViewItem;
+@class NSPathControl;
+@class NSPathComponentCell;
 @class GSDrawTiles;
 @class GSTitleView;
 
@@ -975,9 +977,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 // NSPathComponentCell
 
 - (void) drawPathComponentCellWithFrame: (NSRect)f
-                                 inView: (NSView *)v
-                                withURL: (NSURL *)u
-                                  image: (NSImage *)i
+                                 inView: (NSPathControl *)pc
+                               withCell: (NSPathComponentCell *)cell
                         isLastComponent: (BOOL)last;
 
 // NSSegmentedControl drawing methods

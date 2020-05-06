@@ -58,9 +58,8 @@
 {
   [super drawInteriorWithFrame: f inView: v];
   [[GSTheme theme] drawPathComponentCellWithFrame: f
-                                           inView: v
-                                          withURL: _url
-                                            image: _image
+                                           inView: (NSPathControl *)v
+                                         withCell: self
                                   isLastComponent: _lastComponent];
 
 }
