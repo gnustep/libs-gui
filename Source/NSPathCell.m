@@ -98,12 +98,14 @@ Class pathComponentCellClass;
 
 - (NSString *) placeholderString
 {
-  return _placeholderString;
+  return [_placeholderAttributedString string];
 }
 
 - (void) setPlaceholderString: (NSString *)string
 {
-  ASSIGNCOPY(_placeholderString, string);
+  NSAttributedString *as = [[NSAttributedString alloc] initWithString: string];
+  [self setPlaceholderAttributedString: as];
+  RELEASE(as);
 }
 
 - (NSColor *) backgroundColor
@@ -292,7 +294,6 @@ Class pathComponentCellClass;
           NSImage *image = nil;
           NSString *string = [u path];
           
-          AUTORELEASE(cell);
           [cell setURL: u];
           [fm fileExistsAtPath: [url path]
                isDirectory: &isDir];
@@ -325,6 +326,7 @@ Class pathComponentCellClass;
           
           [array insertObject: cell
                       atIndex: 0];
+          RELEASE(cell);
           u = [NSURL URLWithString: string
                      relativeToURL: nil];
           if (u == nil && at_root == NO)

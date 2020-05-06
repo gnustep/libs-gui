@@ -228,12 +228,12 @@ static NSNotificationCenter *nc = nil;
 
 - (NSArray *) pathItems
 {
-  return _pathItems;
+  return [_cell pathItems];
 }
 
 - (void) setPathItems: (NSArray *)items
 {
-  ASSIGNCOPY(_pathItems, items);
+  [_cell setPathItems: items];
   [self setNeedsDisplay];
 }
 
@@ -288,7 +288,7 @@ static NSNotificationCenter *nc = nil;
   // Tested on OSX it doesn't do this...  it apparently only chooses
   // the cell, and sends the action.  It doesn't reset the URL.
   [[sender menu] close];
-  AUTORELEASE([sender menu]);
+  // AUTORELEASE([sender menu]);
 }
 
 - (void) _doChooseMenuAction: (id)sender
@@ -323,7 +323,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   [[sender menu] close];
-  AUTORELEASE([sender menu]);
+  // AUTORELEASE([sender menu]);
 }
 
 - (void) mouseDown: (NSEvent *)event
@@ -354,7 +354,7 @@ static NSNotificationCenter *nc = nil;
           
           [menu insertItem: i
                    atIndex: 0]; 
-          AUTORELEASE(i);
+          RELEASE(i);
         }
 
       // Add separator
@@ -368,7 +368,7 @@ static NSNotificationCenter *nc = nil;
       [i setAction: @selector(_doChooseMenuAction:)];
       [menu insertItem: i
                atIndex: 0];
-      AUTORELEASE(i);
+      RELEASE(i);
       
       if (_delegate)
         {
