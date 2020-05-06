@@ -49,6 +49,7 @@ extern "C" {
   SEL _action;
   NSDragOperation _localMask;
   NSDragOperation _remoteMask;
+  NSTrackingRectTag _trackingTag;
 }
 
 - (void) setPathStyle: (NSPathStyle)style;

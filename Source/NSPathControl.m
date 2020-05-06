@@ -34,6 +34,7 @@
 #import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSPathControlItem.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSTrackingArea.h"
 
 static NSNotificationCenter *nc = nil;
 
@@ -67,12 +68,20 @@ static NSNotificationCenter *nc = nil;
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+
+      [self removeTrackingRect: _trackingTag];
+      _trackingTag = [self addTrackingRect: [self frame]
+                                     owner: self
+                                  userData: nil
+                              assumeInside: YES];
+
     }
   return self;
 }
 
 - (void) dealloc
 {
+  [self removeTrackingRect: _trackingTag];
   RELEASE(_backgroundColor);
   [super dealloc];
 }
@@ -442,6 +451,16 @@ static NSNotificationCenter *nc = nil;
   return NSDragOperationNone;
 }
 
+- (void) setFrame: (NSRect)frame
+{
+  [super setFrame: frame];
+  [self removeTrackingRect: _trackingTag];
+  _trackingTag = [self addTrackingRect: [self frame]
+                                 owner: self
+                              userData: nil
+                          assumeInside: YES];
+}
+
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
 {
   self = [super initWithCoder: coder];
@@ -473,6 +492,13 @@ static NSNotificationCenter *nc = nil;
               id t = [coder decodeObjectForKey: @"NSControlTarget"];
               [self setTarget: t];
             }
+
+          [self removeTrackingRect: _trackingTag];
+          _trackingTag = [self addTrackingRect: [self frame]
+                                         owner: self
+                                      userData: nil
+                                  assumeInside: YES];
+
         }
       else
         {
