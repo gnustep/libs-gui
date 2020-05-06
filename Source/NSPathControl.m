@@ -37,7 +37,7 @@
 #import "AppKit/NSTrackingArea.h"
 
 static NSNotificationCenter *nc = nil;
-Class pathCellClass;
+static Class pathCellClass;
 
 @interface NSPathCell (PathControlPrivate)
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c;

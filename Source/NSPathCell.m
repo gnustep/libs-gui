@@ -27,7 +27,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSPathComponentCell.h"
 
-Class pathComponentCellClass;
+static Class pathComponentCellClass;
 
 @interface NSPathCell (Private)
 + (NSArray *) _generateCellsForURL: (NSURL *)url;
@@ -236,11 +236,7 @@ Class pathComponentCellClass;
           [self setPathComponentCells: [coder decodeObjectForKey: @"NSPathComponentCells"]];
         }
 
-      if ([coder containsValueForKey: @"NSContents"])
-        {
-          [self setObjectValue: [coder decodeObjectForKey: @"NSContents"]];
-        }
-      
+      // [self setURL: [self objectValue]];
       NSLog(@"OBJECTVALUE = %@", [self objectValue]);
 
     }
