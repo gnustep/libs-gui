@@ -41,12 +41,14 @@
            withFrame:(NSRect)frame 
               inView:(NSView *)view
 {
+  NSLog(@"Entered...");
 }
 
 - (void)mouseExited:(NSEvent *)event 
           withFrame:(NSRect)frame 
              inView:(NSView *)view
 {
+  NSLog(@"Exited...");
 }
 
 - (void) setAllowedTypes: (NSArray *)types
@@ -123,14 +125,25 @@
                         withFrame:(NSRect)frame 
                            inView:(NSView *)view
 {
-  return NSZeroRect;
+  NSUInteger index = [_pathComponentCells indexOfObject: cell];
+  NSRect rect = frame;
+  CGFloat cellwidth = rect.size.width / [_pathComponentCells count];
+  NSRect result = NSMakeRect(rect.origin.x,
+                             rect.origin.y + (cellwidth * index),
+                             cellwidth,
+                             rect.size.height);
+  return result;  
 }
 
 - (NSPathComponentCell *)pathComponentCellAtPoint:(NSPoint)point 
                                         withFrame:(NSRect)frame 
                                            inView:(NSView *)view
 {
-  return nil;
+  NSUInteger c = [_pathComponentCells count];
+  NSUInteger woc = frame.size.width / c;
+  NSUInteger item = (NSUInteger)point.x / woc;
+
+  return [_pathComponentCells objectAtIndex: item];
 }
 
 - (NSPathComponentCell *) clickedPathComponentCell

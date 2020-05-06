@@ -77,6 +77,16 @@ static NSNotificationCenter *nc = nil;
   [super dealloc];
 }
 
+- (void) mouseEntered: (NSEvent *)event
+{
+  NSLog(@"Entered");
+}
+
+- (void) mouseExited: (NSEvent *)event
+{
+  NSLog(@"Exited");
+}
+
 - (void) setPathStyle: (NSPathStyle)style
 {
   [_cell setPathStyle: style];
@@ -390,13 +400,10 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
-      NSArray *cells = [self pathComponentCells];
-      NSUInteger c = [cells count];
-      NSPoint loc = [event locationInWindow];
-      NSUInteger woc = (NSUInteger)[self frame].size.width / c;
-      NSUInteger itemClicked = (NSUInteger)loc.x / woc;
-      
-      [_cell _setClickedPathComponentCell: [cells objectAtIndex: itemClicked]];
+      NSPathComponentCell *pcc = [_cell pathComponentCellAtPoint: [event locationInWindow]
+                                                       withFrame: [self frame]
+                                                          inView: self];
+      [_cell _setClickedPathComponentCell: pcc];
       if (_action)
         {
           [self sendAction: _action
