@@ -469,10 +469,37 @@ static NSNotificationCenter *nc = nil;
         }
       else
         {
+          [self setBackgroundColor: [coder decodeObject]];
+          [self setAllowedTypes: [coder decodeObject]];
+          [self setAction: NSSelectorFromString([coder decodeObject])];
+          [self setTarget: [coder decodeObject]];
         }
     }
   return self;
 }
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: [self backgroundColor]
+                   forKey: @"NSBackgroundColor"];
+      [coder encodeObject: [self allowedTypes]
+                   forKey: @"NSDragTypes"];
+      [coder encodeObject: NSStringFromSelector([self action])
+                   forKey: @"NSControlAction"];
+      [coder encodeObject: [self target]
+                   forKey: @"NSControlTarget"];
+    }
+  else
+    {
+      [coder encodeObject: [self backgroundColor]];
+      [coder encodeObject: [self allowedTypes]];
+      [coder encodeObject: NSStringFromSelector([self action])];
+      [coder encodeObject: [self target]];
+    }  
+}
+
 @end
 
 @implementation NSPathCell (PathControlPrivate)
