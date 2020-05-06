@@ -70,7 +70,7 @@ static Class pathCellClass;
   pathCellClass = classId;
 }
 
-- (void) _resetTrackingRect
+- (void) resetCursorRects
 {
   [[self superview] removeTrackingRect: _trackingTag];
   _trackingTag = [[self superview] addTrackingRect: [self frame]
@@ -88,7 +88,7 @@ static Class pathCellClass;
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
-      [self _resetTrackingRect];
+      [self resetCursorRects];
     }
   return self;
 }
@@ -465,7 +465,7 @@ static Class pathCellClass;
 - (void) setFrame: (NSRect)frame
 {
   [super setFrame: frame];
-  [self _resetTrackingRect];
+  [self resetCursorRects];
 }
 
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
@@ -500,7 +500,7 @@ static Class pathCellClass;
               [self setTarget: t];
             }
           
-          [self _resetTrackingRect];
+          [self resetCursorRects];
         }
       else
         {
