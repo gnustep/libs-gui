@@ -40,7 +40,6 @@ extern "C" {
   NSURL *_url;
   NSAttributedString *_attributedTitle;
   NSImage *_image;
-  NSString *_title;
 }
   
 - (NSURL *) URL;

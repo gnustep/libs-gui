@@ -32,11 +32,17 @@
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSOpenPanel.h"
 #import "AppKit/NSPathComponentCell.h"
+#import "AppKit/NSPathControlItem.h"
+#import "AppKit/NSEvent.h"
 
 static NSNotificationCenter *nc = nil;
 
 @interface NSPathCell (PathControlPrivate)
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c;
+@end
+
+@interface NSPathComponentCell (PathControlPrivate)
+- (NSPathControlItem *) _pathControlItem;
 @end
 
 @implementation NSPathControl
@@ -108,6 +114,22 @@ static NSNotificationCenter *nc = nil;
   [_cell setDoubleAction: doubleAction];
 }
 
+- (void) _createPathItems
+{
+  NSArray *a = [_cell pathComponentCells];
+  NSEnumerator *en = [a objectEnumerator];
+  NSPathComponentCell *c = nil;
+  NSMutableArray *items = [NSMutableArray arrayWithCapacity: [a count]];
+  
+  while((c = [en nextObject]) != nil)
+    {
+      NSPathControlItem *pi = [c _pathControlItem];
+      [items addObject: pi];
+    }
+
+  [self setPathItems: [items copy]];
+}
+
 - (NSURL *) URL
 {
   return [_cell URL];
@@ -116,6 +138,7 @@ static NSNotificationCenter *nc = nil;
 - (void) setURL: (NSURL *)url
 {
   [_cell setURL: url];
+  [self _createPathItems];
   [self setNeedsDisplay];
 }
 
@@ -175,7 +198,7 @@ static NSNotificationCenter *nc = nil;
 
 - (NSPathControlItem *) clickedPathItem
 {
-  return nil;
+  return [[self clickedPathComponentCell] _pathControlItem];
 }
 
 - (NSArray *) pathItems
@@ -257,8 +280,10 @@ static NSNotificationCenter *nc = nil;
                     to: _target];
     }
   
-  [self setURL: [cc URL]];
+  // Tested on OSX it doesn't do this...  it apparently only chooses
+  // the cell, and sends the action.  It doesn't reset the URL.
   [[sender menu] close];
+  AUTORELEASE([sender menu]);
 }
 
 - (void) _doChooseMenuAction: (id)sender
@@ -293,6 +318,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   [[sender menu] close];
+  AUTORELEASE([sender menu]);
 }
 
 - (void) mouseDown: (NSEvent *)event
@@ -307,7 +333,7 @@ static NSNotificationCenter *nc = nil;
     {
       NSPathCell *acell = (NSPathCell *)[self cell];
       NSArray *array = [acell pathComponentCells];
-      NSMenu *menu = [[NSMenu alloc] initWithTitle: @"Select File"];
+      NSMenu *menu = [[NSMenu alloc] initWithTitle: nil];
       NSPathComponentCell *c = nil;
       NSEnumerator *en = [array objectEnumerator];
       
@@ -323,6 +349,7 @@ static NSNotificationCenter *nc = nil;
           
           [menu insertItem: i
                    atIndex: 0]; 
+          AUTORELEASE(i);
         }
 
       // Add separator
@@ -336,6 +363,7 @@ static NSNotificationCenter *nc = nil;
       [i setAction: @selector(_doChooseMenuAction:)];
       [menu insertItem: i
                atIndex: 0];
+      AUTORELEASE(i);
       
       if (_delegate)
         {
@@ -362,6 +390,13 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
+      NSArray *cells = [self pathComponentCells];
+      NSUInteger c = [cells count];
+      NSPoint loc = [event locationInWindow];
+      NSUInteger woc = (NSUInteger)[self frame].size.width / c;
+      NSUInteger itemClicked = (NSUInteger)loc.x / woc;
+      
+      [_cell _setClickedPathComponentCell: [cells objectAtIndex: itemClicked]];
       if (_action)
         {
           [self sendAction: _action
@@ -372,7 +407,7 @@ static NSNotificationCenter *nc = nil;
 
 - (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
 {
-  // if (_delegate != nil)
+  if (_delegate != nil)
     {
       NSDragOperation d = [_delegate pathControl: self
                                     validateDrop: sender];
@@ -445,6 +480,23 @@ static NSNotificationCenter *nc = nil;
 - (void) _setClickedPathComponentCell: (NSPathComponentCell *)c
 {
   _clickedPathComponentCell = c;
+}
+
+@end
+
+@implementation NSPathComponentCell (PathControlPrivate)
+
+- (NSPathControlItem *) _pathControlItem
+{
+  NSPathControlItem *pi = [[NSPathControlItem alloc] init];
+  NSURL *u = [self URL];
+  NSString *path = [u path];
+  
+  [pi setImage: [self image]];
+  [pi setURL: u];
+  [pi setTitle: [path lastPathComponent]];
+
+  return pi;
 }
 
 @end

@@ -62,12 +62,14 @@
 
 - (NSString *) title
 {
-  return _title;
+  return [_attributedTitle string];
 }
 
 - (void) setTitle: (NSString *)title
 {
-  ASSIGNCOPY(_title, title);
+  NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString: title];
+  AUTORELEASE(attrTitle);
+  [self setAttributedTitle: attrTitle];
 }
 
 @end
