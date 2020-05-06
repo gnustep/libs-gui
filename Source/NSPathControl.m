@@ -411,30 +411,37 @@ static NSNotificationCenter *nc = nil;
 {
   if (_delegate != nil)
     {
-      NSDragOperation d = [_delegate pathControl: self
-                                    validateDrop: sender];
-      if (d == NSDragOperationCopy)
+      NSDragOperation dop = [_delegate pathControl: self
+                                      validateDrop: sender];
+      return dop;
+    }
+  
+  return NSDragOperationNone;
+}
+
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+{
+  NSPasteboard *pb = [sender draggingPasteboard];
+  if ([[pb types] containsObject: NSFilenamesPboardType])
+    {
+      NSArray *files = [pb propertyListForType: NSFilenamesPboardType];
+      if ([files count] > 0)
         {
-          NSPasteboard *pb = [sender draggingPasteboard];
-          if ([[pb types] containsObject: NSFilenamesPboardType])
+          NSString *file = [files objectAtIndex: 0];
+          NSURL *u = [NSURL URLWithString: file];
+          BOOL accept = [_delegate pathControl: self
+                                    acceptDrop: sender];
+          if (accept)
             {
-              NSArray *files = [pb propertyListForType: NSFilenamesPboardType];
-              if ([files count] > 0)
-                {
-                  NSString *file = [files objectAtIndex: 0];
-                  NSURL *u = [NSURL URLWithString: file];
-                  BOOL accept = [_delegate pathControl: self
-                                            acceptDrop: sender];
-                  if (accept)
-                    {
-                      [self setURL: u];
-                    }
-                }
+              [self setURL: u];
+            }
+          else
+            {
+              return NO;
             }
         }
     }
-
-  return NSDragOperationNone;
+  return YES;
 }
 
 - (void) setFrame: (NSRect)frame
