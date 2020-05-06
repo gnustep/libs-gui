@@ -229,12 +229,12 @@ Class pathCellClass;
 
 - (NSArray *) pathItems
 {
-  return [_cell pathItems];
+  return _pathItems;
 }
 
 - (void) setPathItems: (NSArray *)items
 {
-  [_cell setPathItems: items];
+  ASSIGNCOPY(_pathItems, items);
   [self setNeedsDisplay];
 }
 
@@ -352,7 +352,7 @@ Class pathCellClass;
     {
       NSPathCell *acell = (NSPathCell *)[self cell];
       NSArray *array = [acell pathComponentCells];
-      NSMenu *menu = [[NSMenu alloc] initWithTitle: nil];
+      NSMenu *menu = AUTORELEASE([[NSMenu alloc] initWithTitle: nil]);
       NSPathComponentCell *c = nil;
       NSEnumerator *en = [array objectEnumerator];
       
@@ -386,7 +386,7 @@ Class pathCellClass;
       RELEASE(i);
 
       [self setMenu: menu];
-      RELEASE(menu);
+      // RELEASE(menu);
       
       if (_delegate)
         {

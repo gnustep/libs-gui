@@ -68,8 +68,8 @@
 - (void) setTitle: (NSString *)title
 {
   NSAttributedString *attrTitle = [[NSAttributedString alloc] initWithString: title];
-  AUTORELEASE(attrTitle);
   [self setAttributedTitle: attrTitle];
+  RELEASE(attrTitle);
 }
 
 @end

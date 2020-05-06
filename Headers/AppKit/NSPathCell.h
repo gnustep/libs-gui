@@ -48,7 +48,6 @@ typedef NSUInteger NSPathStyle;
 {
   NSPathStyle _pathStyle;
   NSColor *_backgroundColor;
-  NSArray *_pathItems;
   NSAttributedString *_placeholderAttributedString;
   NSArray *_allowedTypes;
   id<NSPathCellDelegate> _delegate;
