@@ -33,8 +33,6 @@
 extern "C" {
 #endif
 
-Class pathComponentCellClass;
-  
 enum {
   NSPathStyleStandard,
   NSPathStyleNavigationBar,  // deprecated
@@ -59,8 +57,8 @@ typedef NSUInteger NSPathStyle;
   SEL _doubleAction;
   NSArray *_pathComponentCells;
   NSPathComponentCell *_clickedPathComponentCell;
-  id _objectValue;
-  NSControlSize _controlSize;
+  // id _objectValue;
+  // NSControlSize _controlSize;
 }
   
 - (void)mouseEntered:(NSEvent *)event 
@@ -77,8 +75,8 @@ typedef NSUInteger NSPathStyle;
 - (NSPathStyle) pathStyle;
 - (void) setPathStyle: (NSPathStyle)pathStyle;
 
-- (void) setControlSize: (NSControlSize)size;
-- (void) setObjectValue: (id)obj;
+// - (void) setControlSize: (NSControlSize)size;
+// - (void) setObjectValue: (id)obj;
 
 - (NSAttributedString *) placeholderAttributedString;
 - (void) setPlaceholderAttributedString: (NSAttributedString *)string;

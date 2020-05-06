@@ -58,6 +58,15 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+- (void) _resetTrackingRect
+{
+  [[self superview] removeTrackingRect: _trackingTag];
+  _trackingTag = [[self superview] addTrackingRect: [self frame]
+                                             owner: self
+                                          userData: nil
+                                      assumeInside: YES];
+}
+
 - (instancetype) init
 {
   self = [super init];
@@ -68,32 +77,29 @@ static NSNotificationCenter *nc = nil;
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
-
-      [self removeTrackingRect: _trackingTag];
-      _trackingTag = [self addTrackingRect: [self frame]
-                                     owner: self
-                                  userData: nil
-                              assumeInside: YES];
-
+      [self _resetTrackingRect];
     }
   return self;
 }
 
 - (void) dealloc
 {
-  [self removeTrackingRect: _trackingTag];
-  RELEASE(_backgroundColor);
+  [[self superview] removeTrackingRect: _trackingTag];
   [super dealloc];
 }
 
 - (void) mouseEntered: (NSEvent *)event
 {
-  NSLog(@"Entered");
+  [_cell mouseEntered: event
+            withFrame: [self frame]
+               inView: self];
 }
 
 - (void) mouseExited: (NSEvent *)event
 {
-  NSLog(@"Exited");
+  [_cell mouseExited: event
+           withFrame: [self frame]
+              inView: self];
 }
 
 - (void) setPathStyle: (NSPathStyle)style
@@ -255,33 +261,13 @@ static NSNotificationCenter *nc = nil;
 
 - (NSColor *) backgroundColor
 {
-  return _backgroundColor;
+  return [_cell backgroundColor];
 }
 
 - (void) setBackgroundColor: (NSColor *)color
 {
-  ASSIGN(_backgroundColor, color);
+  [_cell setBackgroundColor: color];
   [self setNeedsDisplay];
-}
-
-- (void) setAction: (SEL)action
-{
-  _action = action;
-}
-
-- (SEL) action
-{
-  return _action;
-}
-
-- (void) setTarget: (id)target
-{
-  _target = target;
-}
-
-- (id) target
-{
-  return _target;
 }
 
 - (void) _doMenuAction: (id)sender
@@ -293,10 +279,10 @@ static NSNotificationCenter *nc = nil;
   NSPathComponentCell *cc = [cells objectAtIndex: ci];
 
   [_cell _setClickedPathComponentCell: cc];
-  if (_action)
+  if ([[self cell] action])
     {
-      [self sendAction: _action
-                    to: _target];
+      [self sendAction: [[self cell] action]
+                    to: [[self cell] target]];
     }
   
   // Tested on OSX it doesn't do this...  it apparently only chooses
@@ -413,10 +399,10 @@ static NSNotificationCenter *nc = nil;
                                                        withFrame: [self frame]
                                                           inView: self];
       [_cell _setClickedPathComponentCell: pcc];
-      if (_action)
+      if ([[self cell] action])
         {
-          [self sendAction: _action
-                        to: _target];
+          [self sendAction: [[self cell] action]
+                        to: [[self cell] target]];
         }
     }
 }
@@ -454,11 +440,7 @@ static NSNotificationCenter *nc = nil;
 - (void) setFrame: (NSRect)frame
 {
   [super setFrame: frame];
-  [self removeTrackingRect: _trackingTag];
-  _trackingTag = [self addTrackingRect: [self frame]
-                                 owner: self
-                              userData: nil
-                          assumeInside: YES];
+  [self _resetTrackingRect];
 }
 
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
@@ -492,13 +474,8 @@ static NSNotificationCenter *nc = nil;
               id t = [coder decodeObjectForKey: @"NSControlTarget"];
               [self setTarget: t];
             }
-
-          [self removeTrackingRect: _trackingTag];
-          _trackingTag = [self addTrackingRect: [self frame]
-                                         owner: self
-                                      userData: nil
-                                  assumeInside: YES];
-
+          
+          [self _resetTrackingRect];
         }
       else
         {

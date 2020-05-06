@@ -42,11 +42,8 @@ extern "C" {
   
 @interface NSPathControl : NSControl
 {
-  NSColor *_backgroundColor;
   NSArray *_pathItems;
   id<NSPathControlDelegate> _delegate;
-  id _target;
-  SEL _action;
   NSDragOperation _localMask;
   NSDragOperation _remoteMask;
   NSTrackingRectTag _trackingTag;

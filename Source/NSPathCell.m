@@ -27,6 +27,8 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSPathComponentCell.h"
 
+Class pathComponentCellClass;
+
 @interface NSPathCell (Private)
 + (NSArray *) _generateCellsForURL: (NSURL *)url;
 @end
@@ -37,18 +39,31 @@
 
 @implementation NSPathCell
 
++ (void) initialize
+{
+  if (self == [NSPathCell class])
+    {
+      [self setVersion: 1.0];
+      [self setPathComponentCellClass: [NSPathComponentCell class]];
+    }
+}
+
 - (void)mouseEntered:(NSEvent *)event 
            withFrame:(NSRect)frame 
               inView:(NSView *)view
 {
-  NSLog(@"Entered...");
+  // This is the method where the expansion of the cell happens
+  // if the path component cells are shortened.
+  // This is currently not implemented.
 }
 
 - (void)mouseExited:(NSEvent *)event 
           withFrame:(NSRect)frame 
              inView:(NSView *)view
 {
-  NSLog(@"Exited...");
+  // This is the method where the contraction of the cell happens
+  // if the path component cells are shortened.
+  // This is currently not implemented.
 }
 
 - (void) setAllowedTypes: (NSArray *)types
@@ -69,16 +84,6 @@
 - (void) setPathStyle: (NSPathStyle)pathStyle
 {
   _pathStyle = pathStyle;
-}
-
-- (void) setControlSize: (NSControlSize)size
-{
-  _controlSize = size;
-}
-
-- (void) setObjectValue: (id)obj
-{
-  ASSIGN(_objectValue, obj);
 }
 
 - (NSAttributedString *) placeholderAttributedString
@@ -111,6 +116,13 @@
   ASSIGNCOPY(_backgroundColor, color);
 }
 
+- (void) setObjectValue: (id)obj
+{
+  NSLog(@"Called");
+  [super setObjectValue: obj];
+  [self setURL: obj];
+}
+
 + (Class) pathComponentCellClass
 {
   return pathComponentCellClass;
@@ -126,13 +138,11 @@
                            inView:(NSView *)view
 {
   NSUInteger index = [_pathComponentCells indexOfObject: cell];
-  NSRect rect = frame;
-  CGFloat cellwidth = rect.size.width / [_pathComponentCells count];
-  NSRect result = NSMakeRect(rect.origin.x,
-                             rect.origin.y + (cellwidth * index),
-                             cellwidth,
-                             rect.size.height);
-  return result;  
+  CGFloat cellWidth = (frame.size.width / (CGFloat)[_pathComponentCells count]);
+  return NSMakeRect(frame.origin.x + (cellWidth * (CGFloat)index),
+                    frame.origin.y,
+                    cellWidth,
+                    frame.size.height);
 }
 
 - (NSPathComponentCell *)pathComponentCellAtPoint:(NSPoint)point 
@@ -202,15 +212,14 @@
     {
       NSEnumerator *en = [_pathComponentCells objectEnumerator];
       NSPathComponentCell *cell = nil;
-      CGFloat cell_width = (frame.size.width / (CGFloat)[_pathComponentCells count]);
-      CGFloat current_x = 0.0;
       
       while((cell = (NSPathComponentCell *)[en nextObject]) != nil)
         {
-          NSRect f = NSMakeRect(current_x, 0.0, cell_width, frame.size.height);
+          NSRect f = [self rectOfPathComponentCell: cell
+                                         withFrame: frame
+                                            inView: controlView]; 
           [cell drawInteriorWithFrame: f
                                inView: controlView];
-          current_x += cell_width;
         }
     }
 }
