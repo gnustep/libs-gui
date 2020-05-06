@@ -1619,7 +1619,7 @@ static BOOL menuBarVisible = YES;
 }
 
 + (void) popUpContextMenu: (NSMenu *)menu 
-                withEvent: (NSEvent *)event 
+                withEvent: (NSEvent *)event
                   forView: (NSView *)view 
                  withFont: (NSFont *)font
 {
@@ -1635,6 +1635,9 @@ static BOOL menuBarVisible = YES;
   NSMenuView *mr = [self menuRepresentation];
   NSUInteger selectedItem = [self indexOfItem: item];
 
+  cellFrame.origin.x += point.x;
+  cellFrame.origin.y += point.y;
+  
   [[GSTheme theme] displayPopUpMenu: mr
                       withCellFrame: cellFrame
                   controlViewWindow: w
