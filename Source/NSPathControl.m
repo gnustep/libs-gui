@@ -281,10 +281,7 @@ static Class pathCellClass;
                     to: [[self cell] target]];
     }
   
-  // Tested on OSX it doesn't do this...  it apparently only chooses
-  // the cell, and sends the action.  It doesn't reset the URL.
   [[sender menu] close];
-  // AUTORELEASE([sender menu]);
 }
 
 - (void) _doChooseMenuAction: (id)sender
