@@ -224,19 +224,16 @@ static Class pathComponentCellClass;
 
   [super drawInteriorWithFrame: frame
                         inView: controlView];
-  if (count > 0)
+  NSEnumerator *en = [_pathComponentCells objectEnumerator];
+  NSPathComponentCell *cell = nil;
+  
+  while ((cell = (NSPathComponentCell *)[en nextObject]) != nil)
     {
-      NSEnumerator *en = [_pathComponentCells objectEnumerator];
-      NSPathComponentCell *cell = nil;
-      
-      while ((cell = (NSPathComponentCell *)[en nextObject]) != nil)
-        {
-          NSRect f = [self rectOfPathComponentCell: cell
-                                         withFrame: frame
-                                            inView: controlView]; 
-          [cell drawInteriorWithFrame: f
-                               inView: controlView];
-        }
+      NSRect f = [self rectOfPathComponentCell: cell
+                                     withFrame: frame
+                                        inView: controlView]; 
+      [cell drawInteriorWithFrame: f
+                           inView: controlView];
     }
 }
 
@@ -295,7 +292,7 @@ static Class pathComponentCellClass;
       BOOL isDir = NO;
       BOOL at_root = NO;
       NSFileManager *fm = [NSFileManager defaultManager];
-      NSURL *u = [url copy];
+      NSURL *u = url;
       
       // Decompose string...
       while (at_root == NO)
