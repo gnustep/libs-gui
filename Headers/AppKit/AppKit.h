@@ -192,6 +192,7 @@
 #import <AppKit/NSOpenGLView.h>
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSPersistentDocument.h>
 #import <AppKit/NSPickerTouchBarItem.h>
 #import <AppKit/NSPredicateEditor.h>
 #import <AppKit/NSPredicateEditorRowTemplate.h>

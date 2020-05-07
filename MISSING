@@ -28,7 +28,6 @@ MISSING HEADERS
 > NSPathComponentCell.h
 > NSPathControl.h
 > NSPathControlItem.h
-> NSPersistentDocument.h
 > NSRuleEditor.h
 > NSSliderAccessory.h
 > NSSplitViewController.h
