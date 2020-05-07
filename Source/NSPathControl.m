@@ -336,7 +336,6 @@ static Class pathCellClass;
     }
 
   [[sender menu] close];
-  // AUTORELEASE([sender menu]);
 }
 
 - (void) mouseDown: (NSEvent *)event
@@ -355,7 +354,7 @@ static Class pathCellClass;
       NSPathComponentCell *c = nil;
       NSEnumerator *en = [array objectEnumerator];
       
-      while((c = [en nextObject]) != nil)
+      while ((c = [en nextObject]) != nil)
         {
           NSURL *u = [c URL];
           NSString *s = [[u path] lastPathComponent];

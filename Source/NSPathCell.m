@@ -317,7 +317,6 @@ static Class pathComponentCellClass;
             }
 
           [cell setImage: image];
-          string = [string stringByDeletingLastPathComponent];
 
           if ([array count] == 0) // the element we are adding is the last component that will show
             {
@@ -331,6 +330,7 @@ static Class pathComponentCellClass;
           [array insertObject: cell
                       atIndex: 0];
           RELEASE(cell);
+          string = [string stringByDeletingLastPathComponent];
           u = [NSURL URLWithString: string
                      relativeToURL: nil];
           if (u == nil && at_root == NO)
