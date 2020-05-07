@@ -48,6 +48,16 @@ static Class pathComponentCellClass;
     }
 }
 
+- (void) dealloc
+{
+  RELEASE(_backgroundColor);
+  RELEASE(_placeholderAttributedString);
+  RELEASE(_allowedTypes);
+  RELEASE(_url);
+  RELEASE(_pathComponentCells);
+  [super dealloc];
+}
+
 - (void)mouseEntered:(NSEvent *)event 
            withFrame:(NSRect)frame 
               inView:(NSView *)view

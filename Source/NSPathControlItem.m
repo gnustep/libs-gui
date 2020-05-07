@@ -72,5 +72,13 @@
   RELEASE(attrTitle);
 }
 
+- (void) dealloc
+{
+  RELEASE(_attributedTitle);
+  RELEASE(_image);
+  RELEASE(_url);
+  [super dealloc];
+}
+
 @end
 
