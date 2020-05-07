@@ -298,7 +298,7 @@ static Class pathComponentCellClass;
       NSURL *u = [url copy];
       
       // Decompose string...
-      do
+      while (at_root == NO)
         {
           NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];
           NSImage *image = nil;
@@ -351,7 +351,6 @@ static Class pathComponentCellClass;
               u = [NSURL URLWithString: @"/"];
             }
         }
-      while (at_root == NO);
     }
   
   return [array copy];
