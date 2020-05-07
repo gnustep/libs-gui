@@ -219,7 +219,7 @@ static Class pathComponentCellClass;
       NSEnumerator *en = [_pathComponentCells objectEnumerator];
       NSPathComponentCell *cell = nil;
       
-      while((cell = (NSPathComponentCell *)[en nextObject]) != nil)
+      while ((cell = (NSPathComponentCell *)[en nextObject]) != nil)
         {
           NSRect f = [self rectOfPathComponentCell: cell
                                          withFrame: frame
