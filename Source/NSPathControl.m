@@ -460,8 +460,6 @@ static Class pathCellClass;
     {
       if ([coder allowsKeyedCoding])
         {
-
-
           if ([coder containsValueForKey: @"NSBackgroundColor"])
             {
               [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
