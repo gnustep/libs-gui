@@ -985,6 +985,8 @@
   // Modify positions...
   imgFrame.size.width = 17.0;
   imgFrame.size.height = 17.0;
+  imgFrame.origin.x += 2.0;
+  imgFrame.origin.y += 2.0;
   textFrame.origin.x += imgFrame.size.width + 5.0; // the width of the image plus a few pixels.
   textFrame.origin.y += 5.0; // center with the image...
   arrowFrame.origin.x += newFrame.size.width - 17.0; 
