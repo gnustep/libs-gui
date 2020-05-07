@@ -24,9 +24,9 @@
 
 #import <Foundation/NSString.h>
 #import <Foundation/NSURL.h>
+#import <Foundation/NSAttributedString.h>
 #import "AppKit/NSPathControlItem.h"
 #import "AppKit/NSImage.h"
-#import "AppKit/NSAttributedString.h"
 
 @implementation NSPathControlItem
   
