@@ -381,7 +381,6 @@ static Class pathCellClass;
       RELEASE(i);
 
       [self setMenu: menu];
-      // RELEASE(menu);
       
       if (_delegate)
         {
