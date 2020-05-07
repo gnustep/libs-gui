@@ -373,7 +373,7 @@ static Class pathCellClass;
 
       // Add choose menu option
       NSMenuItem *i = [[NSMenuItem alloc] init];
-      [i setTitle: @"Choose..."];
+      [i setTitle: _(@"Choose...")];
       [i setTarget: self];
       [i setAction: @selector(_doChooseMenuAction:)];
       [menu insertItem: i
