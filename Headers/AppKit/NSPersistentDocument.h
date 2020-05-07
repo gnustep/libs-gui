@@ -27,13 +27,28 @@
 
 #import <AppKit/NSDocument.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+@class NSManagedObjectContext;
+@class NSManagedObjectModel;
+  
 @interface NSPersistentDocument : NSDocument
+
+- (NSManagedObjectContext *) managedObjectContext;
+- (NSManagedObjectModel *) managedObjectModel;  
+
+- (BOOL) configurePersistentStoreCoordinatorForURL: (NSURL *)url 
+                                            ofType: (NSString *)fileType 
+                                modelConfiguration: (NSString *)config 
+                                      storeOptions: (NSDictionary *)options 
+                                             error: (NSError *)err;
+
+- (NSString *) persistentStoreTypeForFileType: (NSString *)fileType;
+
 
 @end
 
