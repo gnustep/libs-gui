@@ -27,7 +27,6 @@
 
 #import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSImage.h"
-#import "AppKit/NSStringDrawing.h"
 
 #import "GNUstepGUI/GSTheme.h"
 
