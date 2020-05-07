@@ -460,20 +460,26 @@ static Class pathCellClass;
     {
       if ([coder allowsKeyedCoding])
         {
-          // Defaults for some values which aren't encoded unless they are non-default.
-          [self setBackgroundColor: [NSColor windowBackgroundColor]];
-          [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+
 
           if ([coder containsValueForKey: @"NSBackgroundColor"])
             {
               [self setBackgroundColor: [coder decodeObjectForKey: @"NSBackgroundColor"]];
+            }
+          else
+            {
+              [self setBackgroundColor: [NSColor windowBackgroundColor]];
             }
 
           if ([coder containsValueForKey: @"NSDragTypes"])
             {
               [self setAllowedTypes: [coder decodeObjectForKey: @"NSDragTypes"]];
             }
-
+          else
+            {
+              [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+            }
+          
           if ([coder containsValueForKey: @"NSControlAction"])
             {
               NSString *s = [coder decodeObjectForKey: @"NSControlAction"];
