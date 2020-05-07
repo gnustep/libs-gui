@@ -72,9 +72,6 @@ typedef NSUInteger NSPathStyle;
 - (NSPathStyle) pathStyle;
 - (void) setPathStyle: (NSPathStyle)pathStyle;
 
-// - (void) setControlSize: (NSControlSize)size;
-// - (void) setObjectValue: (id)obj;
-
 - (NSAttributedString *) placeholderAttributedString;
 - (void) setPlaceholderAttributedString: (NSAttributedString *)string;
 
