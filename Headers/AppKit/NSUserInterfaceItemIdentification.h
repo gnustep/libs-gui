@@ -46,7 +46,7 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 @property (copy) NSUserInterfaceItemIdentifier identifier;
 #else
 - (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier (NSUserInterfaceItemIdentifier)identifier;
+- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
 #endif
 
 @end
