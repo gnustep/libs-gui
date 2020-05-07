@@ -441,8 +441,18 @@ static Class pathCellClass;
         {
           NSString *file = [files objectAtIndex: 0];
           NSURL *u = [NSURL URLWithString: file];
-          BOOL accept = [_delegate pathControl: self
-                                    acceptDrop: sender];
+          BOOL accept = NO;
+
+          if ([self delegate])
+            {
+              accept = [_delegate pathControl: self
+                                   acceptDrop: sender];
+            }
+          else
+            {
+              accept = YES;
+            }
+          
           if (accept)
             {
               [self setURL: u];
