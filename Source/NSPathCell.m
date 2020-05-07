@@ -295,10 +295,10 @@ static Class pathComponentCellClass;
           NSString *string = [u path];
           
           [cell setURL: u];
-          [fm fileExistsAtPath: [url path]
+          [fm fileExistsAtPath: string
                isDirectory: &isDir];
 
-          if ([[u path] isEqualToString: @"/"])
+          if ([string isEqualToString: @"/"])
             {
               at_root = YES;
             }
