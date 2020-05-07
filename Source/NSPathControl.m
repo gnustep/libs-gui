@@ -453,10 +453,6 @@ static Class pathCellClass;
             {
               [self setURL: u];
             }
-          else
-            {
-              return NO;
-            }
         }
     }
   return YES;
@@ -558,7 +554,8 @@ static Class pathCellClass;
   [pi setImage: [self image]];
   [pi setURL: u];
   [pi setTitle: [path lastPathComponent]];
-
+  AUTORELEASE(pi);
+  
   return pi;
 }
 
