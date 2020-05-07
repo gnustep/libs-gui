@@ -26,5 +26,86 @@
 
 @implementation NSPersistentDocument
 
+- (NSManagedObjectContext *) managedObjectContext
+{
+  return nil;
+}
+
+- (NSManagedObjectModel *) managedObjectModel
+{
+  return nil;
+}
+
+- (BOOL) configurePersistentStoreCoordinatorForURL: (NSURL *)url 
+                                            ofType: (NSString *)fileType 
+                                modelConfiguration: (NSString *)config 
+                                      storeOptions: (NSDictionary *)options 
+                                             error: (NSError **)err
+{
+  return NO;
+}
+
+- (NSString *) persistentStoreTypeForFileType: (NSString *)fileType
+{
+  return nil;
+}
+
+- (BOOL)hasUndoManager
+{
+  return YES; // overridden since uses stores undo manager
+}
+
+- (void) setHasUndoManager: (BOOL)flag
+{
+  // Implemented as NO-OP per documentation
+}
+
+- (void) setUndoManager: (NSUndoManager *)manager
+{
+  // implemented as NO-OP per documentation.
+}
+
+- (BOOL) isDocumentEdited
+{
+  return NO;
+}
+
+- (BOOL)readFromURL: (NSURL *)absoluteURL 
+             ofType: (NSString *)typeName 
+              error: (NSError **)err
+{
+  return NO;
+}
+
+- (BOOL)revertToContentsOfURL: (NSURL *)url
+                       ofType: (NSString *)type
+                        error: (NSError **)outErr
+{
+  return NO;
+}
+  
+- (BOOL)  writeToURL: (NSURL *)url
+              ofType: (NSString *)type 
+    forSaveOperation: (NSSaveOperationType)saveOp 
+ originalContentsURL: (NSURL *)originalContents
+               error: (NSError **)err
+{
+  return NO;
+}
+  
+- (BOOL)canAsynchronouslyWriteToURL: (NSURL *)url
+                             ofType: (NSString *)type
+                   forSaveOperation: (NSSaveOperationType)saveOp
+{
+  return NO;
+}
+
+- (BOOL)configurePersistentStoreCoordinatorForURL: (NSURL *)url 
+                                           ofType: (NSString *)fileType 
+                                            error: (NSError **)err
+{
+  return NO;
+}
+
 @end
 

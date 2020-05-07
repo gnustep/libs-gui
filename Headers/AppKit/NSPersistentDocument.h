@@ -35,7 +35,12 @@ extern "C" {
 
 @class NSManagedObjectContext;
 @class NSManagedObjectModel;
-  
+@class NSError;
+@class NSURL;
+@class NSString;
+@class NSDictionary;
+@class NSUndoManager;
+
 @interface NSPersistentDocument : NSDocument
 
 - (NSManagedObjectContext *) managedObjectContext;
@@ -45,11 +50,39 @@ extern "C" {
                                             ofType: (NSString *)fileType 
                                 modelConfiguration: (NSString *)config 
                                       storeOptions: (NSDictionary *)options 
-                                             error: (NSError *)err;
+                                             error: (NSError **)err;
 
 - (NSString *) persistentStoreTypeForFileType: (NSString *)fileType;
 
+- (BOOL)hasUndoManager;
+- (void) setHasUndoManager: (BOOL)flag;
 
+- (void) setUndoManager: (NSUndoManager *)manager;
+
+- (BOOL) isDocumentEdited;
+
+- (BOOL)readFromURL: (NSURL *)absoluteURL 
+             ofType: (NSString *)typeName 
+              error: (NSError **)err;
+
+- (BOOL)revertToContentsOfURL: (NSURL *)url
+                       ofType: (NSString *)type
+                        error: (NSError **)outErr;
+  
+- (BOOL)  writeToURL: (NSURL *)url
+              ofType: (NSString *)type 
+    forSaveOperation: (NSSaveOperationType)saveOp 
+ originalContentsURL: (NSURL *)originalContents
+               error: (NSError **)err;
+  
+- (BOOL)canAsynchronouslyWriteToURL: (NSURL *)url
+                             ofType: (NSString *)type
+                   forSaveOperation: (NSSaveOperationType)saveOp;
+
+  
+- (BOOL)configurePersistentStoreCoordinatorForURL: (NSURL *)url 
+                                           ofType: (NSString *)fileType 
+                                            error: (NSError **)err;
 @end
 
 #if	defined(__cplusplus)
