@@ -88,7 +88,6 @@ static Class pathCellClass;
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
-      [self resetCursorRects];
     }
   return self;
 }
@@ -458,12 +457,6 @@ static Class pathCellClass;
   return YES;
 }
 
-- (void) setFrame: (NSRect)frame
-{
-  [super setFrame: frame];
-  [self resetCursorRects];
-}
-
 - (instancetype) initWithCoder: (NSKeyedUnarchiver *)coder
 {
   self = [super initWithCoder: coder];
@@ -495,8 +488,6 @@ static Class pathCellClass;
               id t = [coder decodeObjectForKey: @"NSControlTarget"];
               [self setTarget: t];
             }
-          
-          [self resetCursorRects];
         }
       else
         {
