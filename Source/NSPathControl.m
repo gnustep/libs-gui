@@ -434,7 +434,7 @@ static Class pathCellClass;
       return dop;
     }
   
-  return NSDragOperationNone;
+  return NSDragOperationCopy;
 }
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
