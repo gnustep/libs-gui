@@ -22,6 +22,11 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSURL.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSUndoManager.h>
 #import "AppKit/NSPersistentDocument.h"
 
 @implementation NSPersistentDocument
