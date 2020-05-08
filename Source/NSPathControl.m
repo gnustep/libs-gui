@@ -233,6 +233,19 @@ static Class pathCellClass;
 
 - (void) setPathItems: (NSArray *)items
 {
+  NSEnumerator *en = [items objectEnumerator];
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity: [items count]];
+  NSPathControlItem *item = nil;
+  
+  while ((item = [en nextObject]) != nil)
+    {
+      NSPathComponentCell *cell = [[NSPathComponentCell alloc] init];  
+      [cell setImage: [item image]];
+      [cell setURL: [item URL]];
+      [array addObject: cell];
+    }
+
+  [self setPathComponentCells: array];
   ASSIGNCOPY(_pathItems, items);
   [self setNeedsDisplay];
 }
