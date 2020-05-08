@@ -1064,6 +1064,7 @@ many times.
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
                             _frame.size.height - contentRect.size.height + 1);
   _maximumSize = NSMakeSize (10e4, 10e4);
+  [self setFrame: _frame display: NO];
 
   [self setNextResponder: NSApp];
 

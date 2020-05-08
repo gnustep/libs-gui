@@ -1,3 +1,9 @@
+2020-05-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-initWithContentRect:...defer:): Call
+	setFrame:display: to ensure the minium and maximum size gets enforced.
+	* Source/NSFont.m (-description): Add this method.
+
 2020-05-06 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
