@@ -1,3 +1,26 @@
+2020-05-06 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
+        for new drawing methods.
+	* Headers/AppKit/AppKit.h: Add headers to main header
+	* Headers/AppKit/NSMenu.h: Add method to draw the popup in
+        the appropriate positin
+	* Headers/AppKit/NSPathCell.h: Implementation of path cell header
+	* Headers/AppKit/NSPathComponentCell.h: Component cell
+	* Headers/AppKit/NSPathControl.h: Control
+	* Headers/AppKit/NSPathControlItem.h: Control item
+	* MISSING: Remove NSPath* classes since they have been implemented
+	* Source/GNUmakefile: Add files to compile and copy
+	* Source/GSThemeDrawing.m: Add new drawing methods.
+	* Source/GSXib5KeyedUnarchiver.m: Add new decoding methods
+	* Source/NSMenu.m: Implement method to position popup
+	* Source/NSPathCell.m: Implementation path cell.
+	* Source/NSPathComponentCell.m: Cell representation of each
+        component
+	* Source/NSPathControlItem.m: Path items
+	* Source/NSPathControl.m: Path control to contain path cell and
+        components.
+
 2020-04-26 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations

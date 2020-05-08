@@ -24,10 +24,6 @@ MISSING HEADERS
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
 > NSPageController.h
-> NSPathCell.h
-> NSPathComponentCell.h
-> NSPathControl.h
-> NSPathControlItem.h
 > NSPersistentDocument.h
 > NSRuleEditor.h
 > NSSliderAccessory.h
@@ -51,21 +47,6 @@ MISSING HEADERS
 > NSUserActivity.h
 > NSWindowTab.h
 > NSWindowTabGroup.h
-
-Completed
----
-> NSCIIImageRep.h
-> NSPDFImageRep.h
-> NSPDFInfo.h
-> NSPDFPanel.h
-> NSPICTImageRep.h
-> NSDockTile.h
-> NSAppearance.h
-> NSDataAsset.h
-> NSTouch.h
-> NSTouchBar.h
-> NSSpeechRecognizer.h
-> NSColorSampler.h
 
 Mac Specific
 ---
