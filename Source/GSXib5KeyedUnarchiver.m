@@ -47,6 +47,8 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPathCell.h"
+#import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -155,6 +157,9 @@ static NSString *ApplicationClass = nil;
 
 @end
 
+@interface NSPathCell (Private)
++ (NSArray *) _generateCellsForURL: (NSURL *)url;
+@end
 
 @implementation GSXib5KeyedUnarchiver
 
@@ -382,6 +387,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
                @"decodeControlContentsForElement:", @"NSControlContents",
+               @"decodePathStyle:", @"NSPathStyle",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -1428,6 +1434,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
         size = [NSFont systemFontSize];
+      else if ([metaFont containsString: @"toolTip"])
+        size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
@@ -2192,6 +2200,11 @@ didStartElement: (NSString*)elementName
     {
       object = [element attributeForKey: @"stringValue"];
     }
+  else if ([class isSubclassOfClass: [NSPathCell class]])
+    {
+      GSXibElement *el = [element elementForKey: @"url"];
+      object = [NSURL URLWithString: [el attributeForKey: @"string"]];
+    }
   else
     {
       // Try the title attribute first as it is the more common encoding...
@@ -2740,6 +2753,31 @@ didStartElement: (NSString*)elementName
   return num;
 }
 
+- (id) decodePathStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"pathStyle"];
+
+  if ([obj isEqualToString: @"standard"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+  else if ([obj isEqualToString: @"popUp"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStylePopUp];
+    }
+  else if ([obj isEqualToString: @"navigationBar"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleNavigationBar];
+    }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+
+  return num;  
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -3166,6 +3204,7 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+          hasValue |= [currentElement attributeForKey: @"string"] != nil;
         }
       else if ([@"NSControlContents" isEqualToString: key])
         {

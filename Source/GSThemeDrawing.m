@@ -59,7 +59,9 @@
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/PSOperators.h"
 #import "AppKit/NSSliderCell.h"
-
+#import "AppKit/NSPathCell.h"
+#import "AppKit/NSPathControl.h"
+#import "AppKit/NSPathComponentCell.h"
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
@@ -947,6 +949,89 @@
               forState: state
                enabled: enabled];
         
+}
+
+// NSPathComponentCell
+
+- (void) drawPathComponentCellWithFrame: (NSRect)frame
+                                 inView: (NSPathControl *)pc
+                               withCell: (NSPathComponentCell *)cell
+                        isLastComponent: (BOOL)last
+{
+  NSImage *img = [cell image];
+  NSURL *url = [cell URL];
+  NSString *string = [[url path] lastPathComponent];
+  NSRect textFrame = frame;
+  NSRect imgFrame = frame;
+  NSRect arrowFrame = frame;
+  NSImage *arrowImage = [NSImage imageNamed: @"NSMenuArrow"];
+  NSPathStyle style= [pc pathStyle];
+  NSRect newFrame = frame;
+
+  if (style == NSPathStylePopUp)
+    {
+      newFrame = [pc frame];
+      
+      // Reset coodinates.
+      newFrame.origin.x = 0.0;
+      newFrame.origin.y = 0.0;
+      
+      // Use control frame...
+      textFrame = newFrame;
+      imgFrame = newFrame;
+      arrowFrame = newFrame;    
+    }
+  
+  // Modify positions...
+  imgFrame.size.width = 17.0;
+  imgFrame.size.height = 17.0;
+  imgFrame.origin.x += 2.0;
+  imgFrame.origin.y += 2.0;
+  textFrame.origin.x += imgFrame.size.width + 5.0; // the width of the image plus a few pixels.
+  textFrame.origin.y += 5.0; // center with the image...
+  arrowFrame.origin.x += newFrame.size.width - 17.0; 
+  arrowFrame.size.width = 8.0;
+  arrowFrame.size.height = 8.0;
+  arrowFrame.origin.y += 5.0;
+      
+  if (style== NSPathStyleStandard || style== NSPathStyleNavigationBar)
+    {
+      // Draw the image...
+      [img drawInRect: imgFrame];
+      
+      // Draw the text...
+      [[NSColor textColor] set]; 
+      [string drawAtPoint: textFrame.origin
+           withAttributes: nil];
+      
+      // Draw the arrow...
+      if (last == NO)
+        {
+          [arrowImage drawInRect: arrowFrame];
+        }
+    }
+  else if (style == NSPathStylePopUp)
+    {
+      if (last == YES)
+        {
+          arrowImage = [NSImage imageNamed: @"common_ArrowDown"];
+
+          // Draw border...
+          [[NSColor controlShadowColor] set];
+          NSFrameRectWithWidth(newFrame, 1.0);
+          
+          // Draw the image...
+          [img drawInRect: imgFrame];
+          
+          // Draw the text...
+          [[NSColor textColor] set]; 
+          [string drawAtPoint: textFrame.origin
+               withAttributes: nil];
+          
+          // Draw the arrow...
+          [arrowImage drawInRect: arrowFrame];
+        }
+    }
 }
 
 // NSSegmentedControl drawing methods
