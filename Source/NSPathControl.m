@@ -156,7 +156,7 @@ static Class pathCellClass;
   NSPathComponentCell *c = nil;
   NSMutableArray *items = [NSMutableArray arrayWithCapacity: [a count]];
   
-  while((c = [en nextObject]) != nil)
+  while ((c = [en nextObject]) != nil)
     {
       NSPathControlItem *pi = [c _pathControlItem];
       [items addObject: pi];
