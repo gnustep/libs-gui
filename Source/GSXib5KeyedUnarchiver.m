@@ -47,6 +47,8 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPathCell.h"
+#import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -162,6 +164,10 @@ static NSString *ApplicationClass = nil;
 @end
 
 @implementation GSScene
+@end
+
+@interface NSPathCell (Private)
++ (NSArray *) _generateCellsForURL: (NSURL *)url;
 @end
 
 @implementation GSXib5KeyedUnarchiver
@@ -391,7 +397,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeDividerStyleForElement:", @"NSDividerStyle",
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               nil];
+               @"decodeControlContentsForElement:", @"NSControlContents",
+               @"decodePathStyle:", @"NSPathStyle",
+                 nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
           // boolean fields that should be treated as YES when missing.
@@ -400,6 +408,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"bordered",
                                                @"prefersToBeShown",
                                                @"editable",
+                                               @"enabled",
                                                nil];
         }
     }
@@ -1436,6 +1445,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
         size = [NSFont systemFontSize];
+      else if ([metaFont containsString: @"toolTip"])
+        size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
@@ -2200,6 +2211,11 @@ didStartElement: (NSString*)elementName
     {
       object = [element attributeForKey: @"stringValue"];
     }
+  else if ([class isSubclassOfClass: [NSPathCell class]])
+    {
+      GSXibElement *el = [element elementForKey: @"url"];
+      object = [NSURL URLWithString: [el attributeForKey: @"string"]];
+    }
   else
     {
       // Try the title attribute first as it is the more common encoding...
@@ -2735,6 +2751,44 @@ didStartElement: (NSString*)elementName
   return [self findResourceWithName: name];
 }
 
+- (id) decodeControlContentsForElement: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"state"];
+
+  if ([obj isEqualToString: @"on"])
+    {
+      num = [NSNumber numberWithInteger: 1];
+    }
+
+  return num;
+}
+
+- (id) decodePathStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"pathStyle"];
+
+  if ([obj isEqualToString: @"standard"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+  else if ([obj isEqualToString: @"popUp"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStylePopUp];
+    }
+  else if ([obj isEqualToString: @"navigationBar"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleNavigationBar];
+    }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+
+  return num;  
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -2798,7 +2852,6 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
-
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
@@ -3162,6 +3215,11 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+          hasValue |= [currentElement attributeForKey: @"string"] != nil;
+        }
+      else if ([@"NSControlContents" isEqualToString: key])
+        {
+          hasValue  = [currentElement attributeForKey: @"state"] != nil;
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {

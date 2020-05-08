@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Interface of class NSPathControlItem
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Wed Apr 22 18:20:16 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,37 +22,44 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE
+#define _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
-#endif
+@class NSURL, NSAttributedString, NSImage, NSString;
+
+@interface NSPathControlItem : NSObject
+{
+  NSURL *_url;
+  NSAttributedString *_attributedTitle;
+  NSImage *_image;
+}
+  
+- (NSURL *) URL;
+- (void) setURL: (NSURL *)url;
+
+- (NSAttributedString *) attributedTitle;
+- (void) setAttributedTitle: (NSAttributedString *)attributedTitle;
+
+- (NSImage *) image;
+- (void) setImage: (NSImage *)image;
+
+- (NSString *) title;
+- (void) setTitle: (NSString *)title;
 
 @end
 
 #if	defined(__cplusplus)
-}
+
 #endif
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
-
+#endif	/* _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE */

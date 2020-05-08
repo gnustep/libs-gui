@@ -84,7 +84,7 @@ typedef enum {
 static const int ItemBackViewX = 0;
 static const int ItemBackViewY = 0;
 static const int InsetItemViewX = 10;
-static const int InsetItemViewY = 26;
+// static const int InsetItemViewY = 26;
 static const int InsetItemTextX = 3;
 static const int InsetItemTextY = 4;
  

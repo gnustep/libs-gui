@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSPathComponentCell
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Wed Apr 22 18:19:21 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,29 +22,31 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSPathComponentCell_h_GNUSTEP_GUI_INCLUDE
+#define _NSPathComponentCell_h_GNUSTEP_GUI_INCLUDE
 
-#import <Foundation/NSObject.h>
+#import <AppKit/NSTextFieldCell.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
-#endif
+@class NSImage, NSURL;
+  
+@interface NSPathComponentCell : NSTextFieldCell
+{
+  NSImage *_image;
+  NSURL *_url;
+  BOOL _lastComponent;
+}
+
+- (NSImage *) image;
+- (void) setImage: (NSImage *)image;
+
+- (NSURL *) URL;
+- (void) setURL: (NSURL *)url;
 
 @end
 
@@ -57,5 +56,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSPathComponentCell_h_GNUSTEP_GUI_INCLUDE */
 

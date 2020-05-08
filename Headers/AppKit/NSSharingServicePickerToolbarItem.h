@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSSharingServicePickerToolbarItem
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Tue Apr  7 08:11:46 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,29 +22,34 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSSharingServicePickerToolbarItem_h_GNUSTEP_GUI_INCLUDE
+#define _NSSharingServicePickerToolbarItem_h_GNUSTEP_GUI_INCLUDE
 
-#import <Foundation/NSObject.h>
+#import "AppKit/NSToolbarItem.h"
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
-#endif
+@protocol NSSharingServicePickerToolbarItemDelegate;
+  
+@interface NSSharingServicePickerToolbarItem : NSToolbarItem
+
+- (id) activityItemsConfiguration;
+
+- (void) setActivityItemsConfiguration: (id)items;
+
+- (id<NSSharingServicePickerToolbarItemDelegate>) delegate;
+
+- (void) setDelegate: (id<NSSharingServicePickerToolbarItemDelegate>) delegate;
+  
+@end
+
+@protocol NSSharingServicePickerToolbarItemDelegate
+
+- (NSArray *) itemsForSharingServicePickerToolbarItem: (NSSharingServicePickerToolbarItem *)items;
 
 @end
 
@@ -57,5 +59,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSSharingServicePickerToolbarItem_h_GNUSTEP_GUI_INCLUDE */
 

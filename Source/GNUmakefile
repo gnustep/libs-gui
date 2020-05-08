@@ -105,6 +105,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
+NSFontAssetRequest.m \
 NSFontCollection.m \
 NSFontDescriptor.m \
 NSFontManager.m \
@@ -114,6 +115,10 @@ NSFormCell.m \
 NSGroupTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSPanGestureRecognizer.m \
+NSPathCell.m \
+NSPathComponentCell.m \
+NSPathControl.m \
+NSPathControlItem.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
@@ -121,6 +126,7 @@ NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
+NSSwitch.m \
 NSTouch.m \
 NSTouchBar.m \
 NSTouchBarItem.m \
@@ -143,11 +149,13 @@ NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
 NSMagnificationGestureRecognizer.m \
+NSMediaLibraryBrowserController.m \
 NSPanGestureRecognizer.m \
 NSPickerTouchBarItem.m \
 NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
+NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
@@ -208,6 +216,9 @@ NSSegmentedControl.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
+NSScrubber.m \
+NSScrubberItemView.m \
+NSScrubberLayout.m \
 NSSecureTextField.m \
 NSSelection.m \
 NSShadow.m \
@@ -255,6 +266,8 @@ NSTrackingArea.m \
 NSTreeController.m \
 NSTreeNode.m \
 NSUserDefaultsController.m \
+NSUserInterfaceCompression.m \
+NSUserInterfaceItemSearching.m \
 NSView.m \
 NSViewController.m \
 NSVisualEffectView.m \
@@ -340,9 +353,11 @@ Cocoa.h
 APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
+AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
+NSAccessibilityProtocols.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
@@ -393,10 +408,12 @@ NSDocument.h \
 NSDocumentController.h \
 NSDrawer.h \
 NSEPSImageRep.h \
+NSErrors.h \
 NSEvent.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
+NSFontAssetRequest.h \
 NSFontCollection.h \
 NSFontDescriptor.h \
 NSFontManager.h \
@@ -423,6 +440,7 @@ NSLevelIndicator.h \
 NSLevelIndicatorCell.h \
 NSMagnificationGestureRecognizer.h \
 NSMatrix.h \
+NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
@@ -437,6 +455,10 @@ NSOutlineView.h \
 NSPageLayout.h \
 NSPanel.h \
 NSPanGestureRecognizer.h \
+NSPathCell.h \
+NSPathComponentCell.h \
+NSPathControl.h \
+NSPathControlItem.h \
 NSParagraphStyle.h \
 NSPasteboard.h \
 NSPasteboardItem.h \
@@ -467,6 +489,9 @@ NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
 NSScroller.h \
+NSScrubber.h \
+NSScrubberItemView.h \
+NSScrubberLayout.h \
 NSSearchField.h \
 NSSearchFieldCell.h \
 NSSecureTextField.h \
@@ -475,6 +500,7 @@ NSSegmentedControl.h \
 NSSelection.h \
 NSShadow.h \
 NSSharingService.h \
+NSSharingServicePickerToolbarItem.h \
 NSSharingServicePickerTouchBarItem.h \
 NSSlider.h \
 NSSliderCell.h \
@@ -491,6 +517,7 @@ NSStepperTouchBarItem.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \
+NSSwitch.h \
 NSTabView.h \
 NSTabViewItem.h \
 NSTableColumn.h \
@@ -525,6 +552,7 @@ NSViewController.h \
 NSVisualEffectView.h \
 NSWindow.h \
 NSWindowController.h \
+NSWindowRestoration.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \
@@ -537,6 +565,8 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSNib.h \
 NSSpellProtocol.h \
+NSUserInterfaceCompression.h \
+NSUserInterfaceItemSearching.h \
 NSUserInterfaceItemIdentification.h \
 NSUserInterfaceValidation.h \
 DPSOperators.h \

@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSAccessibilityProtocols
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Sun Apr 19 09:56:39 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,30 +22,33 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE
+#define _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
-  
-@class NSString;
-  
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
-#endif
+@protocol NSAccessibilityElement <NSObject>
+- (NSRect)accessibilityFrame;
+- (NSString *)accessibilityIdentifier;
+- (id)accessibilityParent;
+- (BOOL)isAccessibilityFocused;
+@end
 
+@protocol NSAccessibilityButton <NSAccessibilityElement>
+- (NSString *)accessibilityLabel;
+- (BOOL)accessibilityPerformPress;
+@end
+
+@protocol NSAccessibilitySwitch <NSAccessibilityButton>
+- (BOOL) accessibilityPerformDecrement;
+- (BOOL) accessibilityPerformIncrement;
+- (NSString *) accessibilityValue;
 @end
 
 #if	defined(__cplusplus)
@@ -57,5 +57,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSAccessibilityProtocols_h_GNUSTEP_GUI_INCLUDE */
 

@@ -1,11 +1,8 @@
-/* Definition of class NSUserInterfaceItemIdentification
+/* Definition of class NSWindowRestoration
    Copyright (C) 2020 Free Software Foundation, Inc.
-      
-   Author: Daniel Ferreira <dtf@stanford.edu>
-   Date: 2017
-
-   Author: Gregory John Casamento
-   Date: Tue Apr 14 13:46:36 EDT 2020
+   
+   By: Gregory John Casamento
+   Date: Tue Apr  7 14:35:13 EDT 2020
 
    This file is part of the GNUstep Library.
    
@@ -25,10 +22,12 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
-#define _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSWindowRestoration_h_GNUSTEP_GUI_INCLUDE
+#define _NSWindowRestoration_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSUserInterfaceItemIdentification.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
@@ -36,18 +35,13 @@
 extern "C" {
 #endif
   
-@class NSString;
+DEFINE_BLOCK_TYPE(GSWindowRestorationHandler, void, NSWindow*, NSError*);
   
-typedef NSString *NSUserInterfaceItemIdentifier;
-  
-@protocol NSUserInterfaceItemIdentification
+@protocol NSWindowRestoration
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (copy) NSUserInterfaceItemIdentifier identifier;
-#else
-- (NSUserInterfaceItemIdentifier) identifier;
-- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
-#endif
++ (void)restoreWindowWithIdentifier: (NSUserInterfaceItemIdentifier)identifier 
+                              state: (NSCoder *)state 
+                  completionHandler: (GSWindowRestorationHandler)handler;
 
 @end
 
@@ -57,5 +51,5 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSUserInterfaceItemIdentification_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSWindowRestoration_h_GNUSTEP_GUI_INCLUDE */
 
