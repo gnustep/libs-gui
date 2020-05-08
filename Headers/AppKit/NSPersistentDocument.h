@@ -42,7 +42,11 @@ extern "C" {
 @class NSUndoManager;
 
 @interface NSPersistentDocument : NSDocument
-
+{
+  NSManagedObjectContext *_managedObjectContext;
+  NSManagedObjectModel *_managedObjectModel;
+}
+  
 - (NSManagedObjectContext *) managedObjectContext;
 - (NSManagedObjectModel *) managedObjectModel;  
 
