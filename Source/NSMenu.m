@@ -1630,11 +1630,12 @@ static BOOL menuBarVisible = YES;
                     atLocation: (NSPoint) point
                         inView: (NSView *) view
 {
-  NSRect cellFrame = [[view window] convertRectToScreen: [view frame]];
+  NSRect cellFrame = [view convertRect: [view bounds] toView: nil];
   NSWindow *w = [view window];
   NSMenuView *mr = [self menuRepresentation];
   NSUInteger selectedItem = [self indexOfItem: item];
 
+  cellFrame = [[view window] convertRectToScreen: cellFrame];
   cellFrame.origin.x += point.x;
   cellFrame.origin.y += point.y;
   
