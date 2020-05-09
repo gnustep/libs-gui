@@ -1,3 +1,9 @@
+2020-04-30  Yavor Doganov  <yavor@gnu.org>
+
+	* Documentation/GSSpeechRecognitionServer.1: Add simplistic
+	manpage for GSSpeechRecognitionServer.
+	* Documentation/GNUmakefile: Install it conditionally.
+
 2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSHorizontalTypesetter.m (_addExtraLineFragment): Make
