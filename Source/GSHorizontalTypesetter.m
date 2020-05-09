@@ -537,10 +537,22 @@ For bigger values the width gets ignored.
       NSDictionary *typingAttributes = [curLayoutManager typingAttributes];
       curParagraphStyle = [typingAttributes
                             objectForKey: NSParagraphStyleAttributeName];
+      if (curParagraphStyle == nil)
+        {
+          curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+        }
       curFont = [typingAttributes objectForKey: NSFontAttributeName];
     }
-  
-  line_height = [curFont defaultLineHeightForFont];
+
+  if (curFont)
+    {
+      line_height = [curFont defaultLineHeightForFont];
+    }
+  else
+    {
+      line_height = 15.0;
+    }
+
   r = [self _getProposedRectFor: YES
                  withLineHeight: line_height];
   r = [curTextContainer lineFragmentRectForProposedRect: r
