@@ -190,6 +190,7 @@ NSPasteboardItem.m \
 NSPDFInfo.m \
 NSPDFImageRep.m \
 NSPDFPanel.m \
+NSPersistentDocument.m \
 NSPICTImageRep.m \
 NSPopover.m \
 NSPopUpButton.m \
@@ -464,6 +465,7 @@ NSPasteboardItem.h \
 NSPDFInfo.h \
 NSPDFImageRep.h \
 NSPDFPanel.h \
+NSPersistentDocument.h \
 NSPICTImageRep.h \
 NSPickerTouchBarItem.h \
 NSPopoverTouchBarItem.h \

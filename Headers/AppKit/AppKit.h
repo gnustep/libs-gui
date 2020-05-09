@@ -192,6 +192,7 @@
 #import <AppKit/NSOpenGLView.h>
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSPersistentDocument.h>
 #import <AppKit/NSPathControl.h>
 #import <AppKit/NSPathCell.h>
 #import <AppKit/NSPathComponentCell.h>
