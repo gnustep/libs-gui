@@ -26,19 +26,47 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSError.h>
+#import <Foundation/NSException.h>
 #import <Foundation/NSUndoManager.h>
 #import "AppKit/NSPersistentDocument.h"
 
+static Class persistentDocumentClass = nil;
+
 @implementation NSPersistentDocument
+
++ (void) initialize
+{
+  if (self == [NSPersistentDocument class])
+    {
+      [self setVersion: 1];
+      [self setPersistentDocumentClass: [NSPersistentDocument class]];
+    }
+}
+
++ (void) setPersistentDocumentClass: (Class)clz
+{
+  persistentDocumentClass = clz;
+}
+
++ (id) allocWithZone: (NSZone *)z
+{
+  if (persistentDocumentClass == self)
+    {
+      NSAssert(persistentDocumentClass != self,
+               @"NSPersistentDocument error: Concrete class not set");
+    }
+
+  return NSAllocateObject(persistentDocumentClass, 0, z);
+}
 
 - (NSManagedObjectContext *) managedObjectContext
 {
-  return nil;
+  return _managedObjectContext;
 }
 
 - (NSManagedObjectModel *) managedObjectModel
 {
-  return nil;
+  return _managedObjectModel;
 }
 
 - (BOOL) configurePersistentStoreCoordinatorForURL: (NSURL *)url 
