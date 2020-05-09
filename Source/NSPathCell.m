@@ -220,12 +220,11 @@ static Class pathComponentCellClass;
 
 - (void) drawInteriorWithFrame: (NSRect)frame inView: (NSView *)controlView
 {
-  NSUInteger count = [_pathComponentCells count];
+  NSEnumerator *en = [_pathComponentCells objectEnumerator];
+  NSPathComponentCell *cell = nil;
 
   [super drawInteriorWithFrame: frame
                         inView: controlView];
-  NSEnumerator *en = [_pathComponentCells objectEnumerator];
-  NSPathComponentCell *cell = nil;
   
   while ((cell = (NSPathComponentCell *)[en nextObject]) != nil)
     {
