@@ -1,8 +1,7 @@
-2020-04-30  Yavor Doganov  <yavor@gnu.org>
+2020-05-09 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Documentation/GSSpeechRecognitionServer.1: Add simplistic
-	manpage for GSSpeechRecognitionServer.
-	* Documentation/GNUmakefile: Install it conditionally.
+	* Source/NSPersistentDocument.[hm]: Add implementation of abstract
+	class for NSPersistentDocument.
 
 2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
 
@@ -37,6 +36,12 @@
 	* Source/NSPathControlItem.m: Path items
 	* Source/NSPathControl.m: Path control to contain path cell and
         components.
+
+2020-04-30  Yavor Doganov  <yavor@gnu.org>
+
+	* Documentation/GSSpeechRecognitionServer.1: Add simplistic
+	manpage for GSSpeechRecognitionServer.
+	* Documentation/GNUmakefile: Install it conditionally.
 
 2020-04-26 Gregory John Casamento <greg.casamento@gmail.com>
 
