@@ -200,6 +200,14 @@ static NSMutableArray *activeConstraints;
         }
       else
         {
+          [coder decodeValueOfObjCType: @encode(float)
+                                    at: &_constant];
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_firstAttribute];
+          _firstItem = [coder decodeObject];
+          [coder decodeValueOfObjCType: @encode(float)
+                                    at: &_secondAttribute];
+          _secondItem = [coder decodeObject];
         }
     }
   return self;
@@ -210,9 +218,27 @@ static NSMutableArray *activeConstraints;
 {
   if ([coder allowsKeyedCoding])
     {
+      [coder encodeFloat: _constant
+                  forKey: @"NSConstant"];
+      [coder encodeInteger: _firstAttribute
+                    forKey: @"NSFirstAttribute"];
+      [coder encodeObject: _firstItem
+                   forKey: @"NSFirstItem"];
+      [coder encodeInteger: _secondAttribute
+                    forKey: @"NSSecondAttribute"];
+      [coder encodeObject: _secondItem
+                   forKey: @"NSSecondItem"];
     }
   else
     {
+      [coder encodeValueOfObjCType: @encode(float)
+                                at: &_constant];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_firstAttribute];
+      [coder encodeObject: _firstItem];
+      [coder encodeValueOfObjCType: @encode(float)
+                                at: &_secondAttribute];
+      [coder encodeObject: _secondItem];       
     }
 }
 
