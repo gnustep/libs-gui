@@ -31,32 +31,32 @@
 
 @implementation NSLayoutAnchor
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
 {
   return nil;
 }
@@ -80,52 +80,67 @@
 {
   return nil;
 }
-  
+
+- (id) initWithCoder: (NSCoder *)c
+{
+  self = [super init];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)c
+{
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  return nil;
+}
+
 @end
 
 @implementation NSLayoutDimension
 
-- (NSLayoutConstraint *)constraintEqualToConstant:(CGFloat)c
+- (NSLayoutConstraint *) constraintEqualToConstant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToConstant:(CGFloat)c
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToConstant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintLessThanOrEqualToConstant:(CGFloat)c
+- (NSLayoutConstraint *) constraintLessThanOrEqualToConstant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return nil;
 }
 
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return nil;
 }
@@ -134,7 +149,7 @@
 
 @implementation NSLayoutXAxisAnchor
 
-- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutXAxisAnchor *)anchor
+- (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutXAxisAnchor *)anchor
 {
   return nil;
 }
@@ -143,7 +158,7 @@
 
 @implementation NSLayoutYAxisAnchor
 
-- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutYAxisAnchor *)anchor
+- (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutYAxisAnchor *)anchor
 {
   return nil;
 }

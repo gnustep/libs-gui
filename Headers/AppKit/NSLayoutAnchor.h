@@ -37,13 +37,13 @@ extern "C" {
   
 @interface NSLayoutAnchor : NSObject <NSCoding, NSCopying>
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor;
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor;
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor;
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor;
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor;
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c;
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
 
 - (NSString *) name;
 
@@ -57,29 +57,29 @@ extern "C" {
 
 @interface NSLayoutDimension : NSLayoutAnchor
 
-- (NSLayoutConstraint *)constraintEqualToConstant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToConstant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintLessThanOrEqualToConstant:(CGFloat)c;
+- (NSLayoutConstraint *) constraintEqualToConstant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToConstant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToConstant: (CGFloat)c;
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m; 
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m;
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m;
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m; 
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m;
 
-- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c;
-- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c;
+- (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c;
   
 @end
 
 @interface NSLayoutXAxisAnchor : NSLayoutAnchor
 
-- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutXAxisAnchor *)anchor;
+- (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutXAxisAnchor *)anchor;
   
 @end
 
 @interface NSLayoutYAxisAnchor : NSLayoutAnchor
 
-- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutYAxisAnchor *)anchor;
+- (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutYAxisAnchor *)anchor;
   
 @end
 
