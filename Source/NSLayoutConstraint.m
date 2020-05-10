@@ -22,9 +22,116 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+
+#import "AppKit/NSControl.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 
+// @class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
+
+static NSMutableArray *activeConstraints;
+
 @implementation NSLayoutConstraint
++ (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
+                                 options: (NSLayoutFormatOptions)opt 
+                                 metrics: (NSDictionary *)metrics 
+                                   views: (NSDictionary *)views
+{
+  return nil;
+}
+
++ (instancetype) constraintWithItem: (id)view1 
+                          attribute: (NSLayoutAttribute)attr1 
+                          relatedBy: (NSLayoutRelation)relation 
+                             toItem: (id)view2 
+                          attribute: (NSLayoutAttribute)attr2 
+                         multiplier: (CGFloat)mult 
+                           constant: (CGFloat)c
+{
+  return nil;
+}
+
+// Active  
+- (BOOL) isActive
+{
+  return [activeConstraints containsObject: self];
+}
+
+- (void) setActive: (BOOL)flag
+{
+  if (flag)
+    {
+      [activeConstraints addObject: self];
+    }
+  else
+    {
+      [activeConstraints removeObject: self];
+    }
+}
+
++ (void) activateConstraints: (NSArray *)constraints
+{
+  [activeConstraints addObjectsFromArray: constraints];
+}
+
++ (void) deactivateConstraints: (NSArray *)constraints
+{
+  [activeConstraints removeObjectsInArray: constraints];
+}
+
+// Items
+- (id) firstItem
+{
+  return _firstItem;
+}
+
+- (NSLayoutAttribute) firstAttribute
+{
+  return _firstAttribute;
+}
+
+- (NSLayoutRelation) relation
+{
+  return _relation;
+}
+
+- (id) secondItem
+{
+  return _secondItem;
+}
+
+- (NSLayoutAttribute) secondAttribute
+{
+  return _secondAttribute;
+}
+
+- (CGFloat) multiplier
+{
+  return _multiplier;
+}
+
+- (CGFloat) constant
+{
+  return _constant;
+}
+
+- (NSLayoutAnchor *) firstAnchor
+{
+  return _firstAnchor;
+}
+
+- (NSLayoutAnchor *) secondAnchor
+{
+  return _secondAnchor;
+}
+
+- (NSLayoutPriority) priority
+{
+  return _priority;
+}
 
 @end
 

@@ -29,7 +29,7 @@
 #import <Foundation/NSGeometry.h>
 #import <AppKit/NSLayoutAnchor.h>
 
-@class NSControl, NSView, NSAnimation, NSArray, NSDictionary;
+@class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -53,7 +53,6 @@ enum {
   NSLayoutConstraintOrientationVertical = 1
 };
 typedef NSInteger NSLayoutConstraintOrientation;
-
 
 // Attributes
 enum {
@@ -96,15 +95,27 @@ enum {
   NSLayoutFormatAlignAllFirstBaseline = (1 << NSLayoutAttributeFirstBaseline),
   NSLayoutFormatAlignAllBaseline = NSLayoutFormatAlignAllLastBaseline,
   NSLayoutFormatAlignmentMask = 0xFFFF,
-  NSLayoutFormatDirectionLeadingToTrailing = 0 << 16, // default
+  NSLayoutFormatDirectionLeadingToTrailing = 0 << 16, 
   NSLayoutFormatDirectionLeftToRight = 1 << 16,
   NSLayoutFormatDirectionRightToLeft = 2 << 16,    
   NSLayoutFormatDirectionMask = 0x3 << 16,
 };
 typedef NSUInteger NSLayoutFormatOptions;
-  
-@interface NSLayoutConstraint : NSObject
 
+@interface NSLayoutConstraint : NSObject
+{
+  NSLayoutAnchor *_firstAnchor;
+  NSLayoutAnchor *_secondAnchor;
+  id _firstItem;
+  id _secondItem;
+  NSLayoutAttribute _firstAttribute;
+  NSLayoutAttribute _secondAttribute;
+  NSLayoutRelation _relation;
+  CGFloat _multiplier;
+  CGFloat _constant;
+  NSLayoutPriority _priority;
+}
+  
 + (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
                                  options: (NSLayoutFormatOptions)opt 
                                  metrics: (NSDictionary *)metrics 
@@ -118,6 +129,33 @@ typedef NSUInteger NSLayoutFormatOptions;
                          multiplier: (CGFloat)mult 
                            constant: (CGFloat)c;
 
+// Active  
+- (BOOL) isActive;
+- (void) setActive: (BOOL)flag;
+
++ (void) activateConstraints: (NSArray *)constraints;
++ (void) deactivateConstraints: (NSArray *)constraints;
+
+// Items
+- (id) firstItem;
+
+- (NSLayoutAttribute) firstAttribute;
+
+- (NSLayoutRelation) relation;
+
+- (id) secondItem;
+
+- (NSLayoutAttribute) secondAttribute;
+
+- (CGFloat) multiplier;
+
+- (CGFloat) constant;
+
+- (NSLayoutAnchor *) firstAnchor;
+
+- (NSLayoutAnchor *) secondAnchor;
+
+- (NSLayoutPriority) priority;  
 
 @end
 
