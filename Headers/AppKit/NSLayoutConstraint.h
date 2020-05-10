@@ -49,57 +49,57 @@ static const NSLayoutPriority NSLayoutPriorityFittingSizeCompression = 50;
 
 // Orientation
 enum {
-    NSLayoutConstraintOrientationHorizontal = 0,
-    NSLayoutConstraintOrientationVertical = 1
+  NSLayoutConstraintOrientationHorizontal = 0,
+  NSLayoutConstraintOrientationVertical = 1
 };
 typedef NSInteger NSLayoutConstraintOrientation;
 
 
 // Attributes
 enum {
-    NSLayoutAttributeLeft = 1,
-    NSLayoutAttributeRight,
-    NSLayoutAttributeTop,
-    NSLayoutAttributeBottom,
-    NSLayoutAttributeLeading,
-    NSLayoutAttributeTrailing,
-    NSLayoutAttributeWidth,
-    NSLayoutAttributeHeight,
-    NSLayoutAttributeCenterX,
-    NSLayoutAttributeCenterY,
-    NSLayoutAttributeLastBaseline,
-    NSLayoutAttributeBaseline = NSLayoutAttributeLastBaseline,
-    NSLayoutAttributeFirstBaseline, 
-    NSLayoutAttributeNotAnAttribute = 0
+  NSLayoutAttributeLeft = 1,
+  NSLayoutAttributeRight,
+  NSLayoutAttributeTop,
+  NSLayoutAttributeBottom,
+  NSLayoutAttributeLeading,
+  NSLayoutAttributeTrailing,
+  NSLayoutAttributeWidth,
+  NSLayoutAttributeHeight,
+  NSLayoutAttributeCenterX,
+  NSLayoutAttributeCenterY,
+  NSLayoutAttributeLastBaseline,
+  NSLayoutAttributeBaseline = NSLayoutAttributeLastBaseline,
+  NSLayoutAttributeFirstBaseline, 
+  NSLayoutAttributeNotAnAttribute = 0
 };
 typedef NSInteger NSLayoutAttribute;
-
+  
 // Relation
 enum {
-    NSLayoutRelationLessThanOrEqual = -1,
-    NSLayoutRelationEqual = 0,
-    NSLayoutRelationGreaterThanOrEqual = 1,
+  NSLayoutRelationLessThanOrEqual = -1,
+  NSLayoutRelationEqual = 0,
+  NSLayoutRelationGreaterThanOrEqual = 1,
 };
 typedef NSInteger NSLayoutRelation;
   
 // Options
 enum {
-    NSLayoutFormatAlignAllLeft = (1 << NSLayoutAttributeLeft),
-    NSLayoutFormatAlignAllRight = (1 << NSLayoutAttributeRight),
-    NSLayoutFormatAlignAllTop = (1 << NSLayoutAttributeTop),
-    NSLayoutFormatAlignAllBottom = (1 << NSLayoutAttributeBottom),
-    NSLayoutFormatAlignAllLeading = (1 << NSLayoutAttributeLeading),
-    NSLayoutFormatAlignAllTrailing = (1 << NSLayoutAttributeTrailing),
-    NSLayoutFormatAlignAllCenterX = (1 << NSLayoutAttributeCenterX),
-    NSLayoutFormatAlignAllCenterY = (1 << NSLayoutAttributeCenterY),
-    NSLayoutFormatAlignAllLastBaseline = (1 << NSLayoutAttributeLastBaseline),
-    NSLayoutFormatAlignAllFirstBaseline = (1 << NSLayoutAttributeFirstBaseline),
-    NSLayoutFormatAlignAllBaseline = NSLayoutFormatAlignAllLastBaseline,
-    NSLayoutFormatAlignmentMask = 0xFFFF,
-    NSLayoutFormatDirectionLeadingToTrailing = 0 << 16, // default
-    NSLayoutFormatDirectionLeftToRight = 1 << 16,
-    NSLayoutFormatDirectionRightToLeft = 2 << 16,    
-    NSLayoutFormatDirectionMask = 0x3 << 16,
+  NSLayoutFormatAlignAllLeft = (1 << NSLayoutAttributeLeft),
+  NSLayoutFormatAlignAllRight = (1 << NSLayoutAttributeRight),
+  NSLayoutFormatAlignAllTop = (1 << NSLayoutAttributeTop),
+  NSLayoutFormatAlignAllBottom = (1 << NSLayoutAttributeBottom),
+  NSLayoutFormatAlignAllLeading = (1 << NSLayoutAttributeLeading),
+  NSLayoutFormatAlignAllTrailing = (1 << NSLayoutAttributeTrailing),
+  NSLayoutFormatAlignAllCenterX = (1 << NSLayoutAttributeCenterX),
+  NSLayoutFormatAlignAllCenterY = (1 << NSLayoutAttributeCenterY),
+  NSLayoutFormatAlignAllLastBaseline = (1 << NSLayoutAttributeLastBaseline),
+  NSLayoutFormatAlignAllFirstBaseline = (1 << NSLayoutAttributeFirstBaseline),
+  NSLayoutFormatAlignAllBaseline = NSLayoutFormatAlignAllLastBaseline,
+  NSLayoutFormatAlignmentMask = 0xFFFF,
+  NSLayoutFormatDirectionLeadingToTrailing = 0 << 16, // default
+  NSLayoutFormatDirectionLeftToRight = 1 << 16,
+  NSLayoutFormatDirectionRightToLeft = 2 << 16,    
+  NSLayoutFormatDirectionMask = 0x3 << 16,
 };
 typedef NSUInteger NSLayoutFormatOptions;
   
