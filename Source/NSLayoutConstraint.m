@@ -24,6 +24,7 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSKeyedArchiver.h>
 
 #import "AppKit/NSControl.h"
 #import "AppKit/NSView.h"
@@ -42,24 +43,24 @@ static NSMutableArray *activeConstraints;
   return nil;
 }
 
-- (instancetype) initWithItem: (id)view1 
-                    attribute: (NSLayoutAttribute)attr1 
+- (instancetype) initWithItem: (id)firstItem 
+                    attribute: (NSLayoutAttribute)firstAttribute 
                     relatedBy: (NSLayoutRelation)relation 
-                       toItem: (id)view2 
-                    attribute: (NSLayoutAttribute)attr2 
-                   multiplier: (CGFloat)mult 
-                     constant: (CGFloat)c;
+                       toItem: (id)secondItem
+                    attribute: (NSLayoutAttribute)secondAttribute 
+                   multiplier: (CGFloat)multiplier
+                     constant: (CGFloat)constant;
 {
   self = [super init];
   if (self != nil)
     { 
-      _firstItem = view1;
-      _secondItem = view2;
-      _firstAttribute = attr1;
-      _secondAttribute = attr2;
+      _firstItem = firstItem;
+      _secondItem = secondItem;
+      _firstAttribute = firstAttribute;
+      _secondAttribute = secondAttribute;
       _relation = relation;
-      _multiplier = mult;
-      _constant = c;
+      _multiplier = multiplier;
+      _constant = constant;
     }
   return self;
 }
@@ -162,6 +163,70 @@ static NSMutableArray *activeConstraints;
 - (NSLayoutPriority) priority
 {
   return _priority;
+}
+
+// Coding...
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init]; 
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          if ([coder containsValueForKey: @"NSConstant"])
+            {
+              _constant = [coder decodeFloatForKey: @"NSConstant"];
+            }
+
+          if ([coder containsValueForKey: @"NSFirstAttribute"])
+            {
+              _firstAttribute = [coder decodeIntegerForKey: @"NSFirstAttribute"];
+            }
+
+          if ([coder containsValueForKey: @"NSFirstItem"])
+            {
+              _firstItem = [coder decodeObjectForKey: @"NSFirstItem"];
+            }
+
+          if ([coder containsValueForKey: @"NSSecondAttribute"])
+            {
+              _secondAttribute = [coder decodeIntegerForKey: @"NSSecondAttribute"];
+            }
+
+          if ([coder containsValueForKey: @"NSSecondItem"])
+            {
+              _secondItem = [coder decodeObjectForKey: @"NSSecondItem"];
+            }
+        }
+      else
+        {
+        }
+    }
+  return self;
+}
+
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+    }
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  NSLayoutConstraint *constraint = [[NSLayoutConstraint allocWithZone: z]
+                                     initWithItem: _firstItem
+                                        attribute: _firstAttribute
+                                        relatedBy: _relation
+                                           toItem: _secondItem
+                                        attribute: _secondAttribute
+                                       multiplier: _multiplier
+                                         constant: _constant];
+  return constraint;
 }
 
 @end

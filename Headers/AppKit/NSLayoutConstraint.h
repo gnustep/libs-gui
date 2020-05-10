@@ -27,6 +27,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSLayoutAnchor.h>
 
 @class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
@@ -102,7 +103,7 @@ enum {
 };
 typedef NSUInteger NSLayoutFormatOptions;
 
-@interface NSLayoutConstraint : NSObject
+@interface NSLayoutConstraint : NSObject <NSCoding, NSCopying>
 {
   NSLayoutAnchor *_firstAnchor;
   NSLayoutAnchor *_secondAnchor;
