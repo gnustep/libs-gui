@@ -22,9 +22,131 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+
 #import "AppKit/NSLayoutAnchor.h"
+#import "AppKit/NSLayoutConstraint.h"
 
 @implementation NSLayoutAnchor
 
+- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutAnchor *)anchor constant:(CGFloat)c;
+{
+  return nil;
+}
+
+- (NSString *) name
+{
+  return nil;
+}
+
+- (id) item
+{
+  return nil;
+}
+
+- (BOOL) hasAmbiguousLayout
+{
+  return NO;
+}
+
+- (NSArray *) constraintsAffectingLayout
+{
+  return nil;
+}
+  
+@end
+
+@implementation NSLayoutDimension
+
+- (NSLayoutConstraint *)constraintEqualToConstant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintGreaterThanOrEqualToConstant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintLessThanOrEqualToConstant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintGreaterThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+{
+  return nil;
+}
+
+- (NSLayoutConstraint *)constraintLessThanOrEqualToAnchor:(NSLayoutDimension *)anchor multiplier:(CGFloat)m constant:(CGFloat)c
+{
+  return nil;
+}
+
+@end
+
+@implementation NSLayoutXAxisAnchor
+
+- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutXAxisAnchor *)anchor
+{
+  return nil;
+}
+
+@end
+
+@implementation NSLayoutYAxisAnchor
+
+- (NSLayoutDimension *)anchorWithOffsetToAnchor:(NSLayoutYAxisAnchor *)anchor
+{
+  return nil;
+}
+  
 @end
 
