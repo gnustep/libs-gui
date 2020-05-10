@@ -18,9 +18,6 @@ MISSING HEADERS
 > NSGlyphInfo.h
 > NSGridView.h
 > NSItemProvider.h
-> NSLayoutAnchor.h
-> NSLayoutConstraint.h
-> NSLayoutGuide.h
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
 > NSPageController.h

@@ -145,6 +145,9 @@ NSInputManager.m \
 NSInputServer.m \
 NSInterfaceStyle.m \
 NSKeyValueBinding.m \
+NSLayoutAnchor.m \
+NSLayoutConstraint.m \
+NSLayoutGuide.m \
 NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
@@ -435,6 +438,9 @@ NSInputManager.h \
 NSInputServer.h \
 NSInterfaceStyle.h \
 NSKeyValueBinding.h \
+NSLayoutAnchor.h \
+NSLayoutConstraint.h \
+NSLayoutGuide.h \
 NSLayoutManager.h \
 NSLevelIndicator.h \
 NSLevelIndicatorCell.h \
