@@ -1,3 +1,7 @@
+2020-05-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Clean up NSPathCell decoding.
+
 2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSStringDrawing.m: Initialize all the cache entries as
