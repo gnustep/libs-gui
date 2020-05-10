@@ -35,14 +35,37 @@
 static NSMutableArray *activeConstraints;
 
 @implementation NSLayoutConstraint
-+ (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
-                                 options: (NSLayoutFormatOptions)opt 
-                                 metrics: (NSDictionary *)metrics 
-                                   views: (NSDictionary *)views
++ (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
+                                  options: (NSLayoutFormatOptions)opt 
+                                  metrics: (NSDictionary *)metrics 
+                                    views: (NSDictionary *)views
 {
   return nil;
 }
 
+- (instancetype) initWithItem: (id)view1 
+                    attribute: (NSLayoutAttribute)attr1 
+                    relatedBy: (NSLayoutRelation)relation 
+                       toItem: (id)view2 
+                    attribute: (NSLayoutAttribute)attr2 
+                   multiplier: (CGFloat)mult 
+                     constant: (CGFloat)c;
+{
+  self = [super init];
+  if (self != nil)
+    { 
+      _firstItem = view1;
+      _secondItem = view2;
+      _firstAttribute = attr1;
+      _secondAttribute = attr2;
+      _relation = relation;
+      _multiplier = mult;
+      _constant = c;
+    }
+  return self;
+}
+
+// Designated initializer...
 + (instancetype) constraintWithItem: (id)view1 
                           attribute: (NSLayoutAttribute)attr1 
                           relatedBy: (NSLayoutRelation)relation 
@@ -51,7 +74,16 @@ static NSMutableArray *activeConstraints;
                          multiplier: (CGFloat)mult 
                            constant: (CGFloat)c
 {
-  return nil;
+  NSLayoutConstraint *constraint =
+    [[NSLayoutConstraint alloc] initWithItem: view1
+                                   attribute: attr1
+                                   relatedBy: relation
+                                      toItem: view2
+                                   attribute: attr2
+                                  multiplier: mult
+                                    constant: c];
+  AUTORELEASE(constraint);
+  return constraint;
 }
 
 // Active  
