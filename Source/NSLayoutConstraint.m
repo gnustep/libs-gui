@@ -30,8 +30,6 @@
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 
-// @class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
-
 static NSMutableArray *activeConstraints;
 
 @implementation NSLayoutConstraint
