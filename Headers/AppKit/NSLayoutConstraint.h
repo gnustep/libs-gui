@@ -26,6 +26,10 @@
 #define _NSLayoutConstraint_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSLayoutAnchor.h>
+
+@class NSControl, NSView, NSAnimation, NSArray, NSDictionary;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -33,7 +37,87 @@
 extern "C" {
 #endif
 
+// Priority
+typedef float NSLayoutPriority;
+static const NSLayoutPriority NSLayoutPriorityRequired = 1000;
+static const NSLayoutPriority NSLayoutPriorityDefaultHigh = 750;
+static const NSLayoutPriority NSLayoutPriorityDragThatCanResizeWindow = 510;
+static const NSLayoutPriority NSLayoutPriorityWindowSizeStayPut = 500; 
+static const NSLayoutPriority NSLayoutPriorityDragThatCannotResizeWindow = 490;
+static const NSLayoutPriority NSLayoutPriorityDefaultLow = 250; 
+static const NSLayoutPriority NSLayoutPriorityFittingSizeCompression = 50; 
+
+// Orientation
+enum {
+    NSLayoutConstraintOrientationHorizontal = 0,
+    NSLayoutConstraintOrientationVertical = 1
+};
+typedef NSInteger NSLayoutConstraintOrientation;
+
+
+// Attributes
+enum {
+    NSLayoutAttributeLeft = 1,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeTop,
+    NSLayoutAttributeBottom,
+    NSLayoutAttributeLeading,
+    NSLayoutAttributeTrailing,
+    NSLayoutAttributeWidth,
+    NSLayoutAttributeHeight,
+    NSLayoutAttributeCenterX,
+    NSLayoutAttributeCenterY,
+    NSLayoutAttributeLastBaseline,
+    NSLayoutAttributeBaseline = NSLayoutAttributeLastBaseline,
+    NSLayoutAttributeFirstBaseline, 
+    NSLayoutAttributeNotAnAttribute = 0
+};
+typedef NSInteger NSLayoutAttribute;
+
+// Relation
+enum {
+    NSLayoutRelationLessThanOrEqual = -1,
+    NSLayoutRelationEqual = 0,
+    NSLayoutRelationGreaterThanOrEqual = 1,
+};
+typedef NSInteger NSLayoutRelation;
+  
+// Options
+enum {
+    NSLayoutFormatAlignAllLeft = (1 << NSLayoutAttributeLeft),
+    NSLayoutFormatAlignAllRight = (1 << NSLayoutAttributeRight),
+    NSLayoutFormatAlignAllTop = (1 << NSLayoutAttributeTop),
+    NSLayoutFormatAlignAllBottom = (1 << NSLayoutAttributeBottom),
+    NSLayoutFormatAlignAllLeading = (1 << NSLayoutAttributeLeading),
+    NSLayoutFormatAlignAllTrailing = (1 << NSLayoutAttributeTrailing),
+    NSLayoutFormatAlignAllCenterX = (1 << NSLayoutAttributeCenterX),
+    NSLayoutFormatAlignAllCenterY = (1 << NSLayoutAttributeCenterY),
+    NSLayoutFormatAlignAllLastBaseline = (1 << NSLayoutAttributeLastBaseline),
+    NSLayoutFormatAlignAllFirstBaseline = (1 << NSLayoutAttributeFirstBaseline),
+    NSLayoutFormatAlignAllBaseline = NSLayoutFormatAlignAllLastBaseline,
+    NSLayoutFormatAlignmentMask = 0xFFFF,
+    NSLayoutFormatDirectionLeadingToTrailing = 0 << 16, // default
+    NSLayoutFormatDirectionLeftToRight = 1 << 16,
+    NSLayoutFormatDirectionRightToLeft = 2 << 16,    
+    NSLayoutFormatDirectionMask = 0x3 << 16,
+};
+typedef NSUInteger NSLayoutFormatOptions;
+  
 @interface NSLayoutConstraint : NSObject
+
++ (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
+                                 options: (NSLayoutFormatOptions)opt 
+                                 metrics: (NSDictionary *)metrics 
+                                   views: (NSDictionary *)views;
+
++ (instancetype) constraintWithItem: (id)view1 
+                          attribute: (NSLayoutAttribute)attr1 
+                          relatedBy: (NSLayoutRelation)relation 
+                             toItem: (id)view2 
+                          attribute: (NSLayoutAttribute)attr2 
+                         multiplier: (CGFloat)mult 
+                           constant: (CGFloat)c;
+
 
 @end
 
