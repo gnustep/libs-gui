@@ -1,7 +1,7 @@
 /* Implementation of class NSLayoutAnchor
    Copyright (C) 2020 Free Software Foundation, Inc.
    
-   By: 10_11
+   By: Gregory Casamento <greg.casamento@gmail.com>
    Date: Sat May  9 16:30:52 EDT 2020
 
    This file is part of the GNUstep Library.

@@ -1,7 +1,7 @@
 /* Interface of class NSLayoutGuide
    Copyright (C) 2020 Free Software Foundation, Inc.
    
-   By: 10_11
+   By: Gregory Casamento <greg.casamento@gmail.com>
    Date: Sat May  9 16:30:36 EDT 2020
 
    This file is part of the GNUstep Library.
@@ -27,7 +27,7 @@
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
