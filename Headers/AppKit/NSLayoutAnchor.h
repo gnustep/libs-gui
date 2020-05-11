@@ -36,6 +36,8 @@ extern "C" {
 @class NSLayoutConstraint, NSString, NSArray;
   
 @interface NSLayoutAnchor : NSObject <NSCoding, NSCopying>
+{
+}
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor;
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor;
@@ -56,6 +58,8 @@ extern "C" {
 @end
 
 @interface NSLayoutDimension : NSLayoutAnchor
+{
+}
 
 - (NSLayoutConstraint *) constraintEqualToConstant: (CGFloat)c;
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToConstant: (CGFloat)c;

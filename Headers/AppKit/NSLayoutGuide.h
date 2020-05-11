@@ -26,6 +26,8 @@
 #define _NSLayoutGuide_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import "AppKit/NSUserInterfaceItemIdentification.h"
+#import "AppKit/NSLayoutConstraint.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -33,7 +35,41 @@
 extern "C" {
 #endif
 
-@interface NSLayoutGuide : NSObject
+@class NSView, NSLayoutXAxisAnchor, NSLayoutYAxisAnchor, NSLayoutDimension;
+  
+@interface NSLayoutGuide : NSObject <NSCoding, NSUserInterfaceItemIdentification>
+
+- (NSRect) frame;
+
+- (NSView *) owningView;
+- (void) setOwningView: (NSView *)owningView;
+
+- (NSUserInterfaceItemIdentifier) identifier;
+- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier;
+
+- (NSLayoutXAxisAnchor *) leadingAnchor;
+- (NSLayoutXAxisAnchor *) trailingAnchor;
+- (NSLayoutXAxisAnchor *) leftAnchor;
+- (NSLayoutXAxisAnchor *) rightAnchor;
+- (NSLayoutYAxisAnchor *) topAnchor;
+- (NSLayoutYAxisAnchor *) bottomAnchor;
+- (NSLayoutDimension *) widthAnchor;
+- (NSLayoutDimension *) heightAnchor;
+- (NSLayoutXAxisAnchor *) centerXAnchor;
+- (NSLayoutYAxisAnchor *) centerYAnchor;
+
+- (BOOL) hasAmbiguousLayout;
+  
+- (NSArray *) constraintsAffectingLayoutForOrientation: (NSLayoutConstraintOrientation)orientation;
+  
+@end
+
+@interface NSView (NSLayoutGuideSupport)
+
+- (void) addLayoutGuide: (NSLayoutGuide *)guide;
+- (void) removeLayoutGuide: (NSLayoutGuide *)guide;
+
+- (NSArray *) layoutGuides;
 
 @end
 
