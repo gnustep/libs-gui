@@ -28,81 +28,83 @@
 
 - (NSRect) frame
 {
-  return NSZeroRect;
+  return _frame;
 }
 
 - (NSView *) owningView
 {
-  return nil;
+  return _owningView;
 }
 
 - (void) setOwningView: (NSView *)owningView
 {
+  _owningView = owningView; // weak
 }
 
 - (NSUserInterfaceItemIdentifier) identifier
 {
-  return 0;
+  return _identifier;
 }
 
 - (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
+  _identifier = identifier;
 }
 
 
 - (NSLayoutXAxisAnchor *) leadingAnchor
 {
-  return nil;
+  return _leadingAnchor;
 }
 
 - (NSLayoutXAxisAnchor *) trailingAnchor
 {
-  return nil;
+  return _trailingAnchor;
 }
 
 - (NSLayoutXAxisAnchor *) leftAnchor
 {
-  return nil;
+  return _leftAnchor;
 }
 
 - (NSLayoutXAxisAnchor *) rightAnchor
 {
-  return nil;
+  return _rightAnchor;
 }
 
 - (NSLayoutYAxisAnchor *) topAnchor
 {
-  return nil;
+  return _topAnchor;
 }
 
 - (NSLayoutYAxisAnchor *) bottomAnchor
 {
-  return nil;
+  return _bottomAnchor;
 }
 
 - (NSLayoutDimension *) widthAnchor
 {
-  return nil;
+  return _widthAnchor;
 }
 
 - (NSLayoutDimension *) heightAnchor
 {
-  return nil;
+  return _heightAnchor;
 }
 
 - (NSLayoutXAxisAnchor *) centerXAnchor
 {
-  return nil;
+  return _centerXAnchor;
 }
 
 - (NSLayoutYAxisAnchor *) centerYAnchor
 {
-  return nil;
+  return _centerYAnchor;
 }
 
 - (BOOL) hasAmbiguousLayout
 {
-  return NO;
+  return _hasAmbiguousLayout;
 }
   
 - (NSArray *) constraintsAffectingLayoutForOrientation: (NSLayoutConstraintOrientation)orientation

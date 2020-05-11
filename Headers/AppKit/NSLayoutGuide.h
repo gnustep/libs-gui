@@ -39,6 +39,23 @@ extern "C" {
 @class NSView, NSLayoutXAxisAnchor, NSLayoutYAxisAnchor, NSLayoutDimension;
   
 @interface NSLayoutGuide : NSObject <NSCoding, NSUserInterfaceItemIdentification>
+{
+  NSRect _frame;
+  NSView *_owningView;
+  NSUserInterfaceItemIdentifier _identifier;
+  NSLayoutXAxisAnchor *_leadingAnchor;
+  NSLayoutXAxisAnchor *_trailingAnchor;
+  NSLayoutXAxisAnchor *_leftAnchor;
+  NSLayoutXAxisAnchor *_rightAnchor;
+  NSLayoutYAxisAnchor *_topAnchor;
+  NSLayoutYAxisAnchor *_bottomAnchor;
+  NSLayoutDimension *_widthAnchor;
+  NSLayoutDimension *_heightAnchor;
+  NSLayoutXAxisAnchor *_centerXAnchor;
+  NSLayoutYAxisAnchor *_centerYAnchor;
+
+  BOOL _hasAmbiguousLayout;
+}
 
 - (NSRect) frame;
 
