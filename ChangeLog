@@ -1,3 +1,15 @@
+2020-05-11 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add to .h file
+	* Headers/AppKit/NSLayoutAnchor.h: Header
+	* Headers/AppKit/NSLayoutConstraint.h: Header
+	* Headers/AppKit/NSLayoutGuide.h: Header
+	* MISSING: Remove headers from list
+	* Source/GNUmakefile: Add .h and .m files for building.
+	* Source/NSLayoutAnchor.m: Anchors X/Y/Dimension
+	* Source/NSLayoutConstraint.m: Layout constraint.
+	* Source/NSLayoutGuide.m: Constraints guide implementation.
+
 2020-05-09 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSPersistentDocument.[hm]: Add implementation of abstract
