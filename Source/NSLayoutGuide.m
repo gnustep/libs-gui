@@ -26,5 +26,99 @@
 
 @implementation NSLayoutGuide
 
+- (NSRect) frame
+{
+  return NSZeroRect;
+}
+
+- (NSView *) owningView
+{
+  return nil;
+}
+
+- (void) setOwningView: (NSView *)owningView
+{
+}
+
+- (NSUserInterfaceItemIdentifier) identifier
+{
+  return 0;
+}
+
+- (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+}
+
+
+- (NSLayoutXAxisAnchor *) leadingAnchor
+{
+  return nil;
+}
+
+- (NSLayoutXAxisAnchor *) trailingAnchor
+{
+  return nil;
+}
+
+- (NSLayoutXAxisAnchor *) leftAnchor
+{
+  return nil;
+}
+
+- (NSLayoutXAxisAnchor *) rightAnchor
+{
+  return nil;
+}
+
+- (NSLayoutYAxisAnchor *) topAnchor
+{
+  return nil;
+}
+
+- (NSLayoutYAxisAnchor *) bottomAnchor
+{
+  return nil;
+}
+
+- (NSLayoutDimension *) widthAnchor
+{
+  return nil;
+}
+
+- (NSLayoutDimension *) heightAnchor
+{
+  return nil;
+}
+
+- (NSLayoutXAxisAnchor *) centerXAnchor
+{
+  return nil;
+}
+
+- (NSLayoutYAxisAnchor *) centerYAnchor
+{
+  return nil;
+}
+
+- (BOOL) hasAmbiguousLayout
+{
+  return NO;
+}
+  
+- (NSArray *) constraintsAffectingLayoutForOrientation: (NSLayoutConstraintOrientation)orientation
+{
+  return [NSArray array];
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
 @end
 

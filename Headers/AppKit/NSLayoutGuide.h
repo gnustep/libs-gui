@@ -26,8 +26,9 @@
 #define _NSLayoutGuide_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
-#import "AppKit/NSUserInterfaceItemIdentification.h"
-#import "AppKit/NSLayoutConstraint.h"
+#import <AppKit/NSUserInterfaceItemIdentification.h>
+#import <AppKit/NSLayoutConstraint.h>
+#import <AppKit/NSView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
