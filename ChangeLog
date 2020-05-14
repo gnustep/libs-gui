@@ -1,3 +1,9 @@
+2020-05-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeFirstResponder, -sendEvent:): Correct
+	handling of new first responder not becoming first responder.
+	Patch suggested by Josh Freeman <pikopixel@twilightedge.com>.
+
 2020-05-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXib5KeyedUnarchiver.m: Clean up NSPathCell decoding.
