@@ -3519,12 +3519,16 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 - (BOOL) makeFirstResponder: (NSResponder*)aResponder
 {
   if (_firstResponder == aResponder)
-    return YES;
+    {
+      return YES;
+    }
 
   if (aResponder != nil)
     {
       if (![aResponder isKindOfClass: responderClass])
-        return NO;
+        {
+          return NO;
+        }
 
       if (![aResponder acceptsFirstResponder])
         {
@@ -3549,9 +3553,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
   _firstResponder = aResponder;
   if ((aResponder == nil) || ![_firstResponder becomeFirstResponder])
     {
-     _firstResponder = self;
+      _firstResponder = self;
       [_firstResponder becomeFirstResponder];
-      return (aResponder == nil);
     }
 
   return YES;
@@ -3956,21 +3959,21 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                 {
                   DESTROY(_lastLeftMouseDownView);
                 }
-              // Don't make buttons first responder otherwise they cannot 
-              // send actions to the current first responder.
-              // TODO: First responder status update would more cleanly 
-              // handled by -mouseDown in each control subclass (Mac OS X 
-              // seems to do that).
-              if (_firstResponder != v && ![v isKindOfClass: [NSButton class]])
-                {
-                  // Only try to set first responder, when the view wants it.
-                  if ([v acceptsFirstResponder] && ![self makeFirstResponder: v])
-                    {
-                      return;
-                    }
-                }
               if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
                 {
+                  // Don't make buttons first responder otherwise they cannot 
+                  // send actions to the current first responder.
+                  // TODO: First responder status update would more cleanly 
+                  // handled by -mouseDown in each control subclass (Mac OS X 
+                  // seems to do that).
+                  if (_firstResponder != v && ![v isKindOfClass: [NSButton class]])
+                    {
+                      // Only try to set first responder, when the view wants it.
+                      if ([v acceptsFirstResponder] && ![self makeFirstResponder: v])
+                        {
+                          return;
+                        }
+                    }
                   if ([NSHelpManager isContextHelpModeActive])
                     {
                       [v helpRequested: theEvent];
