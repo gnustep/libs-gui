@@ -60,6 +60,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -198,6 +199,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
+                            @"NSMutableArray", @"constraints", 
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -208,6 +210,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
+                            @"NSLayoutConstraint", @"constraint",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
