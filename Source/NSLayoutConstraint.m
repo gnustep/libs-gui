@@ -255,5 +255,19 @@ static NSMutableArray *activeConstraints;
   return constraint;
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ <firstItem = %@, firstAttribute = %ld, relation = %ld, secondItem = %@, "
+                   "secondAttribute = %ld, multiplier = %f, constant = %f>",
+                   [super description],
+                   _firstItem,
+                   _firstAttribute,
+                   _relation,
+                   _secondItem,
+                   _secondAttribute,
+                   _multiplier,
+                   _constant];
+}
+
 @end
 
