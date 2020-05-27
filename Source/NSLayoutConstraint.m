@@ -35,6 +35,83 @@ static NSMutableArray *activeConstraints;
 
 @implementation NSLayoutConstraint
 
++ (NSString *) _attributeToString: (NSLayoutAttribute)attr
+{
+  NSString *name = nil;
+
+  switch (attr)
+    {
+    case NSLayoutAttributeLeft:
+      name = @"Left";
+      break;
+    case NSLayoutAttributeRight:
+      name = @"Right";
+      break;
+    case NSLayoutAttributeTop:
+      name = @"Top";
+      break;
+    case NSLayoutAttributeBottom:
+      name = @"Bottom";
+      break;
+    case NSLayoutAttributeLeading:
+      name = @"Leading";
+      break;
+    case NSLayoutAttributeTrailing:
+      name = @"Trailing";
+      break;
+    case NSLayoutAttributeWidth:
+      name = @"Width";
+      break;
+    case NSLayoutAttributeHeight:
+      name = @"Height";
+      break;
+    case NSLayoutAttributeCenterX:
+      name = @"CenterX";
+      break;
+    case NSLayoutAttributeCenterY:
+      name = @"CenterY";
+      break;
+    //case NSLayoutAttributeLastBaseline:
+      //name = @"LastBaseline";
+      //break;
+    case NSLayoutAttributeBaseline:
+      name = @"Baseline";
+      break;
+    case NSLayoutAttributeFirstBaseline:
+      name = @"FirstBaseline";
+      break;
+    case NSLayoutAttributeNotAnAttribute:
+      name = @"NotAnAttribute";
+      break;
+    default:
+      break;
+    }
+  
+  return name;
+}
+
++ (NSString *) _relationToString: (NSLayoutRelation)rel
+{
+  NSString *relation = nil;
+
+  switch (rel)
+    {
+    case NSLayoutRelationLessThanOrEqual:
+      relation = @"<=";
+      break;
+    case NSLayoutRelationEqual:
+      relation = @"=";
+      break;
+    case NSLayoutRelationGreaterThanOrEqual:
+      relation = @">=";
+      break;
+    default:
+      break;
+    }
+
+  return relation;
+}
+
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
                                   options: (NSLayoutFormatOptions)opt 
                                   metrics: (NSDictionary *)metrics 
