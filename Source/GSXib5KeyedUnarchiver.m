@@ -224,7 +224,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
-                                            @"selectedItem", nil];
+                                            @"selectedItem", @"firstItem", @"secondItem", nil];
           RETAIN(XmlReferenceAttributes);
 
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
@@ -2775,6 +2775,12 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) decodeConstraintItem: (GSXibElement *)element
+{
+  NSLog(@"%@", element);
+  return nil;
 }
 
 - (id) objectForXib: (GSXibElement*)element
