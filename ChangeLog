@@ -1,3 +1,10 @@
+2020-05-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfGrammar.y: Correct encoding handling.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+	* TextConverters/RTF/RTFConsumer.m: Add code to handle code page 10000.
+
 2020-05-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSColor.h,
