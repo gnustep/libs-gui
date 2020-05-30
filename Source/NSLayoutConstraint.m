@@ -90,6 +90,66 @@ static NSMutableArray *activeConstraints;
   return name;
 }
 
++ (NSLayoutAttribute) _stringToAttribute: (NSString *)str
+{
+  NSLayoutAttribute a = 0;
+
+  if ([@"Left" isEqualToString: str])
+    {
+      a = NSLayoutAttributeLeft;
+    }
+  else if ([@"Right" isEqualToString: str])
+    {
+      a = NSLayoutAttributeRight;  
+    }
+  else if ([@"Top" isEqualToString: str])
+    {
+      a = NSLayoutAttributeTop;
+    }  
+  else if ([@"Bottom" isEqualToString: str])
+    {
+      a = NSLayoutAttributeBottom;
+    }
+  else if ([@"Leading" isEqualToString: str])
+    {
+      a = NSLayoutAttributeLeading;
+    }  
+  else if ([@"Trailing" isEqualToString: str])
+    {
+      a = NSLayoutAttributeTrailing;
+    }
+  else if ([@"Width" isEqualToString: str])
+    {
+      a = NSLayoutAttributeWidth;
+    }  
+  else if ([@"Height" isEqualToString: str])
+    {
+      a = NSLayoutAttributeHeight;
+    }
+  else if ([@"CenterX" isEqualToString: str])
+    {
+      a = NSLayoutAttributeCenterX;
+    }  
+  else if ([@"CenterY" isEqualToString: str])
+    {
+      a = NSLayoutAttributeCenterY;
+    }
+  else if ([@"Baseline" isEqualToString: str])
+    {
+      a = NSLayoutAttributeBaseline;
+    }  
+  else if ([@"FirstBaseline" isEqualToString: str])
+    {
+      a = NSLayoutAttributeFirstBaseline;
+    }
+  else if ([@"NotAnAttribute" isEqualToString: str])
+    {
+      a = NSLayoutAttributeNotAnAttribute;
+    }
+
+  return a;
+}
+
 + (NSString *) _relationToString: (NSLayoutRelation)rel
 {
   NSString *relation = nil;
@@ -110,6 +170,26 @@ static NSMutableArray *activeConstraints;
     }
 
   return relation;
+}
+
++ (NSLayoutRelation) _stringToRelation: (NSString *)str
+{
+  NSLayoutRelation r = 0;
+
+  if ([@"<=" isEqualToString: str])
+    {
+      r = NSLayoutRelationLessThanOrEqual;
+    }
+  else if ([@"=" isEqualToString: str])
+    {
+      r = NSLayoutRelationEqual;
+    }
+  else if ([@">=" isEqualToString: str])
+    {
+      r = NSLayoutRelationGreaterThanOrEqual;
+    }
+  
+  return r;
 }
 
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
