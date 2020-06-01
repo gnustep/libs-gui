@@ -35,6 +35,15 @@ static NSMutableArray *activeConstraints;
 
 @implementation NSLayoutConstraint
 
++ (void) initialize
+{
+  if (self == [NSLayoutConstraint class])
+    {
+      [self setVersion: 1];
+      activeConstraints = [NSMutableArray arrayWithCapacity: 10];
+    }
+}
+
 + (NSString *) _attributeToString: (NSLayoutAttribute)attr
 {
   NSString *name = nil;
@@ -197,7 +206,8 @@ static NSMutableArray *activeConstraints;
                                   metrics: (NSDictionary *)metrics 
                                     views: (NSDictionary *)views
 {
-  return nil;
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
+  return array;
 }
 
 - (instancetype) initWithItem: (id)firstItem 
@@ -367,6 +377,9 @@ static NSMutableArray *activeConstraints;
           _secondItem = [coder decodeObject];
         }
     }
+
+  [activeConstraints addObject: self];
+  
   return self;
 }
 
@@ -410,6 +423,12 @@ static NSMutableArray *activeConstraints;
                                        multiplier: _multiplier
                                          constant: _constant];
   return constraint;
+}
+
+- (void) dealloc
+{
+  [activeConstraints removeObject: self];
+  [super dealloc];
 }
 
 - (NSString *) description
