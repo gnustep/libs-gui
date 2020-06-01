@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.5.  */
+/* A Bison parser, made by GNU Bison 3.6.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2019 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,10 @@
 /* C LALR(1) parser skeleton written by Richard Stallman, by
    simplifying the original so-called "semantic" parser.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
    variables, as they might otherwise be expanded by user macros.
@@ -41,14 +45,11 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
-
 /* Identify Bison output.  */
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.5"
+#define YYBISON_VERSION "3.6.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -113,7 +114,7 @@ int GSRTFlex(void *lvalp, void *lctxt);
 int fieldStart = 0;
 
 
-#line 117 "rtfGrammar.tab.m"
+#line 118 "rtfGrammar.tab.m"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -136,14 +137,6 @@ int fieldStart = 0;
 #  endif
 # endif
 
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
 #ifndef YY_GSRTF_RTFGRAMMAR_TAB_H_INCLUDED
@@ -156,118 +149,123 @@ int fieldStart = 0;
 extern int GSRTFdebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    RTFtext = 258,
-    RTFstart = 259,
-    RTFansi = 260,
-    RTFmac = 261,
-    RTFpc = 262,
-    RTFpca = 263,
-    RTFignore = 264,
-    RTFinfo = 265,
-    RTFstylesheet = 266,
-    RTFfootnote = 267,
-    RTFheader = 268,
-    RTFfooter = 269,
-    RTFpict = 270,
-    RTFplain = 271,
-    RTFparagraph = 272,
-    RTFdefaultParagraph = 273,
-    RTFrow = 274,
-    RTFcell = 275,
-    RTFtabulator = 276,
-    RTFemdash = 277,
-    RTFendash = 278,
-    RTFemspace = 279,
-    RTFenspace = 280,
-    RTFbullet = 281,
-    RTFfield = 282,
-    RTFfldinst = 283,
-    RTFfldalt = 284,
-    RTFfldrslt = 285,
-    RTFflddirty = 286,
-    RTFfldedit = 287,
-    RTFfldlock = 288,
-    RTFfldpriv = 289,
-    RTFfttruetype = 290,
-    RTFlquote = 291,
-    RTFrquote = 292,
-    RTFldblquote = 293,
-    RTFrdblquote = 294,
-    RTFred = 295,
-    RTFgreen = 296,
-    RTFblue = 297,
-    RTFcolorbg = 298,
-    RTFcolorfg = 299,
-    RTFunderlinecolor = 300,
-    RTFcolortable = 301,
-    RTFfont = 302,
-    RTFfontSize = 303,
-    RTFNeXTGraphic = 304,
-    RTFNeXTGraphicWidth = 305,
-    RTFNeXTGraphicHeight = 306,
-    RTFNeXTHelpLink = 307,
-    RTFNeXTHelpMarker = 308,
-    RTFNeXTfilename = 309,
-    RTFNeXTmarkername = 310,
-    RTFNeXTlinkFilename = 311,
-    RTFNeXTlinkMarkername = 312,
-    RTFpaperWidth = 313,
-    RTFpaperHeight = 314,
-    RTFmarginLeft = 315,
-    RTFmarginRight = 316,
-    RTFmarginTop = 317,
-    RTFmarginButtom = 318,
-    RTFfirstLineIndent = 319,
-    RTFleftIndent = 320,
-    RTFrightIndent = 321,
-    RTFalignCenter = 322,
-    RTFalignJustified = 323,
-    RTFalignLeft = 324,
-    RTFalignRight = 325,
-    RTFlineSpace = 326,
-    RTFspaceAbove = 327,
-    RTFstyle = 328,
-    RTFbold = 329,
-    RTFitalic = 330,
-    RTFunderline = 331,
-    RTFunderlineDot = 332,
-    RTFunderlineDash = 333,
-    RTFunderlineDashDot = 334,
-    RTFunderlineDashDotDot = 335,
-    RTFunderlineDouble = 336,
-    RTFunderlineStop = 337,
-    RTFunderlineThick = 338,
-    RTFunderlineThickDot = 339,
-    RTFunderlineThickDash = 340,
-    RTFunderlineThickDashDot = 341,
-    RTFunderlineThickDashDotDot = 342,
-    RTFunderlineWord = 343,
-    RTFstrikethrough = 344,
-    RTFstrikethroughDouble = 345,
-    RTFunichar = 346,
-    RTFsubscript = 347,
-    RTFsuperscript = 348,
-    RTFtabstop = 349,
-    RTFfcharset = 350,
-    RTFfprq = 351,
-    RTFcpg = 352,
-    RTFansicpg = 353,
-    RTFOtherStatement = 354,
-    RTFfontListStart = 355,
-    RTFfamilyNil = 356,
-    RTFfamilyRoman = 357,
-    RTFfamilySwiss = 358,
-    RTFfamilyModern = 359,
-    RTFfamilyScript = 360,
-    RTFfamilyDecor = 361,
-    RTFfamilyTech = 362,
-    RTFfamilyBiDi = 363
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    RTFtext = 258,                 /* RTFtext  */
+    RTFstart = 259,                /* RTFstart  */
+    RTFansi = 260,                 /* RTFansi  */
+    RTFmac = 261,                  /* RTFmac  */
+    RTFpc = 262,                   /* RTFpc  */
+    RTFpca = 263,                  /* RTFpca  */
+    RTFignore = 264,               /* RTFignore  */
+    RTFinfo = 265,                 /* RTFinfo  */
+    RTFstylesheet = 266,           /* RTFstylesheet  */
+    RTFfootnote = 267,             /* RTFfootnote  */
+    RTFheader = 268,               /* RTFheader  */
+    RTFfooter = 269,               /* RTFfooter  */
+    RTFpict = 270,                 /* RTFpict  */
+    RTFplain = 271,                /* RTFplain  */
+    RTFparagraph = 272,            /* RTFparagraph  */
+    RTFdefaultParagraph = 273,     /* RTFdefaultParagraph  */
+    RTFrow = 274,                  /* RTFrow  */
+    RTFcell = 275,                 /* RTFcell  */
+    RTFtabulator = 276,            /* RTFtabulator  */
+    RTFemdash = 277,               /* RTFemdash  */
+    RTFendash = 278,               /* RTFendash  */
+    RTFemspace = 279,              /* RTFemspace  */
+    RTFenspace = 280,              /* RTFenspace  */
+    RTFbullet = 281,               /* RTFbullet  */
+    RTFfield = 282,                /* RTFfield  */
+    RTFfldinst = 283,              /* RTFfldinst  */
+    RTFfldalt = 284,               /* RTFfldalt  */
+    RTFfldrslt = 285,              /* RTFfldrslt  */
+    RTFflddirty = 286,             /* RTFflddirty  */
+    RTFfldedit = 287,              /* RTFfldedit  */
+    RTFfldlock = 288,              /* RTFfldlock  */
+    RTFfldpriv = 289,              /* RTFfldpriv  */
+    RTFfttruetype = 290,           /* RTFfttruetype  */
+    RTFlquote = 291,               /* RTFlquote  */
+    RTFrquote = 292,               /* RTFrquote  */
+    RTFldblquote = 293,            /* RTFldblquote  */
+    RTFrdblquote = 294,            /* RTFrdblquote  */
+    RTFred = 295,                  /* RTFred  */
+    RTFgreen = 296,                /* RTFgreen  */
+    RTFblue = 297,                 /* RTFblue  */
+    RTFcolorbg = 298,              /* RTFcolorbg  */
+    RTFcolorfg = 299,              /* RTFcolorfg  */
+    RTFunderlinecolor = 300,       /* RTFunderlinecolor  */
+    RTFcolortable = 301,           /* RTFcolortable  */
+    RTFfont = 302,                 /* RTFfont  */
+    RTFfontSize = 303,             /* RTFfontSize  */
+    RTFNeXTGraphic = 304,          /* RTFNeXTGraphic  */
+    RTFNeXTGraphicWidth = 305,     /* RTFNeXTGraphicWidth  */
+    RTFNeXTGraphicHeight = 306,    /* RTFNeXTGraphicHeight  */
+    RTFNeXTHelpLink = 307,         /* RTFNeXTHelpLink  */
+    RTFNeXTHelpMarker = 308,       /* RTFNeXTHelpMarker  */
+    RTFNeXTfilename = 309,         /* RTFNeXTfilename  */
+    RTFNeXTmarkername = 310,       /* RTFNeXTmarkername  */
+    RTFNeXTlinkFilename = 311,     /* RTFNeXTlinkFilename  */
+    RTFNeXTlinkMarkername = 312,   /* RTFNeXTlinkMarkername  */
+    RTFpaperWidth = 313,           /* RTFpaperWidth  */
+    RTFpaperHeight = 314,          /* RTFpaperHeight  */
+    RTFmarginLeft = 315,           /* RTFmarginLeft  */
+    RTFmarginRight = 316,          /* RTFmarginRight  */
+    RTFmarginTop = 317,            /* RTFmarginTop  */
+    RTFmarginButtom = 318,         /* RTFmarginButtom  */
+    RTFfirstLineIndent = 319,      /* RTFfirstLineIndent  */
+    RTFleftIndent = 320,           /* RTFleftIndent  */
+    RTFrightIndent = 321,          /* RTFrightIndent  */
+    RTFalignCenter = 322,          /* RTFalignCenter  */
+    RTFalignJustified = 323,       /* RTFalignJustified  */
+    RTFalignLeft = 324,            /* RTFalignLeft  */
+    RTFalignRight = 325,           /* RTFalignRight  */
+    RTFlineSpace = 326,            /* RTFlineSpace  */
+    RTFspaceAbove = 327,           /* RTFspaceAbove  */
+    RTFstyle = 328,                /* RTFstyle  */
+    RTFbold = 329,                 /* RTFbold  */
+    RTFitalic = 330,               /* RTFitalic  */
+    RTFunderline = 331,            /* RTFunderline  */
+    RTFunderlineDot = 332,         /* RTFunderlineDot  */
+    RTFunderlineDash = 333,        /* RTFunderlineDash  */
+    RTFunderlineDashDot = 334,     /* RTFunderlineDashDot  */
+    RTFunderlineDashDotDot = 335,  /* RTFunderlineDashDotDot  */
+    RTFunderlineDouble = 336,      /* RTFunderlineDouble  */
+    RTFunderlineStop = 337,        /* RTFunderlineStop  */
+    RTFunderlineThick = 338,       /* RTFunderlineThick  */
+    RTFunderlineThickDot = 339,    /* RTFunderlineThickDot  */
+    RTFunderlineThickDash = 340,   /* RTFunderlineThickDash  */
+    RTFunderlineThickDashDot = 341, /* RTFunderlineThickDashDot  */
+    RTFunderlineThickDashDotDot = 342, /* RTFunderlineThickDashDotDot  */
+    RTFunderlineWord = 343,        /* RTFunderlineWord  */
+    RTFstrikethrough = 344,        /* RTFstrikethrough  */
+    RTFstrikethroughDouble = 345,  /* RTFstrikethroughDouble  */
+    RTFunichar = 346,              /* RTFunichar  */
+    RTFsubscript = 347,            /* RTFsubscript  */
+    RTFsuperscript = 348,          /* RTFsuperscript  */
+    RTFtabstop = 349,              /* RTFtabstop  */
+    RTFfcharset = 350,             /* RTFfcharset  */
+    RTFfprq = 351,                 /* RTFfprq  */
+    RTFcpg = 352,                  /* RTFcpg  */
+    RTFansicpg = 353,              /* RTFansicpg  */
+    RTFOtherStatement = 354,       /* RTFOtherStatement  */
+    RTFfontListStart = 355,        /* RTFfontListStart  */
+    RTFfamilyNil = 356,            /* RTFfamilyNil  */
+    RTFfamilyRoman = 357,          /* RTFfamilyRoman  */
+    RTFfamilySwiss = 358,          /* RTFfamilySwiss  */
+    RTFfamilyModern = 359,         /* RTFfamilyModern  */
+    RTFfamilyScript = 360,         /* RTFfamilyScript  */
+    RTFfamilyDecor = 361,          /* RTFfamilyDecor  */
+    RTFfamilyTech = 362,           /* RTFfamilyTech  */
+    RTFfamilyBiDi = 363            /* RTFfamilyBiDi  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
@@ -280,7 +278,7 @@ union YYSTYPE
 	const char	*text;
 	RTFcmd		cmd;
 
-#line 284 "rtfGrammar.tab.m"
+#line 282 "rtfGrammar.tab.m"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -293,6 +291,169 @@ typedef union YYSTYPE YYSTYPE;
 int GSRTFparse (void *ctxt, void *lctxt);
 
 #endif /* !YY_GSRTF_RTFGRAMMAR_TAB_H_INCLUDED  */
+/* Symbol kind.  */
+enum yysymbol_kind_t
+{
+  YYSYMBOL_YYEMPTY = -2,
+  YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
+  YYSYMBOL_YYerror = 1,                    /* error  */
+  YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
+  YYSYMBOL_RTFtext = 3,                    /* RTFtext  */
+  YYSYMBOL_RTFstart = 4,                   /* RTFstart  */
+  YYSYMBOL_RTFansi = 5,                    /* RTFansi  */
+  YYSYMBOL_RTFmac = 6,                     /* RTFmac  */
+  YYSYMBOL_RTFpc = 7,                      /* RTFpc  */
+  YYSYMBOL_RTFpca = 8,                     /* RTFpca  */
+  YYSYMBOL_RTFignore = 9,                  /* RTFignore  */
+  YYSYMBOL_RTFinfo = 10,                   /* RTFinfo  */
+  YYSYMBOL_RTFstylesheet = 11,             /* RTFstylesheet  */
+  YYSYMBOL_RTFfootnote = 12,               /* RTFfootnote  */
+  YYSYMBOL_RTFheader = 13,                 /* RTFheader  */
+  YYSYMBOL_RTFfooter = 14,                 /* RTFfooter  */
+  YYSYMBOL_RTFpict = 15,                   /* RTFpict  */
+  YYSYMBOL_RTFplain = 16,                  /* RTFplain  */
+  YYSYMBOL_RTFparagraph = 17,              /* RTFparagraph  */
+  YYSYMBOL_RTFdefaultParagraph = 18,       /* RTFdefaultParagraph  */
+  YYSYMBOL_RTFrow = 19,                    /* RTFrow  */
+  YYSYMBOL_RTFcell = 20,                   /* RTFcell  */
+  YYSYMBOL_RTFtabulator = 21,              /* RTFtabulator  */
+  YYSYMBOL_RTFemdash = 22,                 /* RTFemdash  */
+  YYSYMBOL_RTFendash = 23,                 /* RTFendash  */
+  YYSYMBOL_RTFemspace = 24,                /* RTFemspace  */
+  YYSYMBOL_RTFenspace = 25,                /* RTFenspace  */
+  YYSYMBOL_RTFbullet = 26,                 /* RTFbullet  */
+  YYSYMBOL_RTFfield = 27,                  /* RTFfield  */
+  YYSYMBOL_RTFfldinst = 28,                /* RTFfldinst  */
+  YYSYMBOL_RTFfldalt = 29,                 /* RTFfldalt  */
+  YYSYMBOL_RTFfldrslt = 30,                /* RTFfldrslt  */
+  YYSYMBOL_RTFflddirty = 31,               /* RTFflddirty  */
+  YYSYMBOL_RTFfldedit = 32,                /* RTFfldedit  */
+  YYSYMBOL_RTFfldlock = 33,                /* RTFfldlock  */
+  YYSYMBOL_RTFfldpriv = 34,                /* RTFfldpriv  */
+  YYSYMBOL_RTFfttruetype = 35,             /* RTFfttruetype  */
+  YYSYMBOL_RTFlquote = 36,                 /* RTFlquote  */
+  YYSYMBOL_RTFrquote = 37,                 /* RTFrquote  */
+  YYSYMBOL_RTFldblquote = 38,              /* RTFldblquote  */
+  YYSYMBOL_RTFrdblquote = 39,              /* RTFrdblquote  */
+  YYSYMBOL_RTFred = 40,                    /* RTFred  */
+  YYSYMBOL_RTFgreen = 41,                  /* RTFgreen  */
+  YYSYMBOL_RTFblue = 42,                   /* RTFblue  */
+  YYSYMBOL_RTFcolorbg = 43,                /* RTFcolorbg  */
+  YYSYMBOL_RTFcolorfg = 44,                /* RTFcolorfg  */
+  YYSYMBOL_RTFunderlinecolor = 45,         /* RTFunderlinecolor  */
+  YYSYMBOL_RTFcolortable = 46,             /* RTFcolortable  */
+  YYSYMBOL_RTFfont = 47,                   /* RTFfont  */
+  YYSYMBOL_RTFfontSize = 48,               /* RTFfontSize  */
+  YYSYMBOL_RTFNeXTGraphic = 49,            /* RTFNeXTGraphic  */
+  YYSYMBOL_RTFNeXTGraphicWidth = 50,       /* RTFNeXTGraphicWidth  */
+  YYSYMBOL_RTFNeXTGraphicHeight = 51,      /* RTFNeXTGraphicHeight  */
+  YYSYMBOL_RTFNeXTHelpLink = 52,           /* RTFNeXTHelpLink  */
+  YYSYMBOL_RTFNeXTHelpMarker = 53,         /* RTFNeXTHelpMarker  */
+  YYSYMBOL_RTFNeXTfilename = 54,           /* RTFNeXTfilename  */
+  YYSYMBOL_RTFNeXTmarkername = 55,         /* RTFNeXTmarkername  */
+  YYSYMBOL_RTFNeXTlinkFilename = 56,       /* RTFNeXTlinkFilename  */
+  YYSYMBOL_RTFNeXTlinkMarkername = 57,     /* RTFNeXTlinkMarkername  */
+  YYSYMBOL_RTFpaperWidth = 58,             /* RTFpaperWidth  */
+  YYSYMBOL_RTFpaperHeight = 59,            /* RTFpaperHeight  */
+  YYSYMBOL_RTFmarginLeft = 60,             /* RTFmarginLeft  */
+  YYSYMBOL_RTFmarginRight = 61,            /* RTFmarginRight  */
+  YYSYMBOL_RTFmarginTop = 62,              /* RTFmarginTop  */
+  YYSYMBOL_RTFmarginButtom = 63,           /* RTFmarginButtom  */
+  YYSYMBOL_RTFfirstLineIndent = 64,        /* RTFfirstLineIndent  */
+  YYSYMBOL_RTFleftIndent = 65,             /* RTFleftIndent  */
+  YYSYMBOL_RTFrightIndent = 66,            /* RTFrightIndent  */
+  YYSYMBOL_RTFalignCenter = 67,            /* RTFalignCenter  */
+  YYSYMBOL_RTFalignJustified = 68,         /* RTFalignJustified  */
+  YYSYMBOL_RTFalignLeft = 69,              /* RTFalignLeft  */
+  YYSYMBOL_RTFalignRight = 70,             /* RTFalignRight  */
+  YYSYMBOL_RTFlineSpace = 71,              /* RTFlineSpace  */
+  YYSYMBOL_RTFspaceAbove = 72,             /* RTFspaceAbove  */
+  YYSYMBOL_RTFstyle = 73,                  /* RTFstyle  */
+  YYSYMBOL_RTFbold = 74,                   /* RTFbold  */
+  YYSYMBOL_RTFitalic = 75,                 /* RTFitalic  */
+  YYSYMBOL_RTFunderline = 76,              /* RTFunderline  */
+  YYSYMBOL_RTFunderlineDot = 77,           /* RTFunderlineDot  */
+  YYSYMBOL_RTFunderlineDash = 78,          /* RTFunderlineDash  */
+  YYSYMBOL_RTFunderlineDashDot = 79,       /* RTFunderlineDashDot  */
+  YYSYMBOL_RTFunderlineDashDotDot = 80,    /* RTFunderlineDashDotDot  */
+  YYSYMBOL_RTFunderlineDouble = 81,        /* RTFunderlineDouble  */
+  YYSYMBOL_RTFunderlineStop = 82,          /* RTFunderlineStop  */
+  YYSYMBOL_RTFunderlineThick = 83,         /* RTFunderlineThick  */
+  YYSYMBOL_RTFunderlineThickDot = 84,      /* RTFunderlineThickDot  */
+  YYSYMBOL_RTFunderlineThickDash = 85,     /* RTFunderlineThickDash  */
+  YYSYMBOL_RTFunderlineThickDashDot = 86,  /* RTFunderlineThickDashDot  */
+  YYSYMBOL_RTFunderlineThickDashDotDot = 87, /* RTFunderlineThickDashDotDot  */
+  YYSYMBOL_RTFunderlineWord = 88,          /* RTFunderlineWord  */
+  YYSYMBOL_RTFstrikethrough = 89,          /* RTFstrikethrough  */
+  YYSYMBOL_RTFstrikethroughDouble = 90,    /* RTFstrikethroughDouble  */
+  YYSYMBOL_RTFunichar = 91,                /* RTFunichar  */
+  YYSYMBOL_RTFsubscript = 92,              /* RTFsubscript  */
+  YYSYMBOL_RTFsuperscript = 93,            /* RTFsuperscript  */
+  YYSYMBOL_RTFtabstop = 94,                /* RTFtabstop  */
+  YYSYMBOL_RTFfcharset = 95,               /* RTFfcharset  */
+  YYSYMBOL_RTFfprq = 96,                   /* RTFfprq  */
+  YYSYMBOL_RTFcpg = 97,                    /* RTFcpg  */
+  YYSYMBOL_RTFansicpg = 98,                /* RTFansicpg  */
+  YYSYMBOL_RTFOtherStatement = 99,         /* RTFOtherStatement  */
+  YYSYMBOL_RTFfontListStart = 100,         /* RTFfontListStart  */
+  YYSYMBOL_RTFfamilyNil = 101,             /* RTFfamilyNil  */
+  YYSYMBOL_RTFfamilyRoman = 102,           /* RTFfamilyRoman  */
+  YYSYMBOL_RTFfamilySwiss = 103,           /* RTFfamilySwiss  */
+  YYSYMBOL_RTFfamilyModern = 104,          /* RTFfamilyModern  */
+  YYSYMBOL_RTFfamilyScript = 105,          /* RTFfamilyScript  */
+  YYSYMBOL_RTFfamilyDecor = 106,           /* RTFfamilyDecor  */
+  YYSYMBOL_RTFfamilyTech = 107,            /* RTFfamilyTech  */
+  YYSYMBOL_RTFfamilyBiDi = 108,            /* RTFfamilyBiDi  */
+  YYSYMBOL_109_ = 109,                     /* '{'  */
+  YYSYMBOL_110_ = 110,                     /* '}'  */
+  YYSYMBOL_YYACCEPT = 111,                 /* $accept  */
+  YYSYMBOL_rtfFile = 112,                  /* rtfFile  */
+  YYSYMBOL_113_1 = 113,                    /* $@1  */
+  YYSYMBOL_114_2 = 114,                    /* $@2  */
+  YYSYMBOL_rtfCharset = 115,               /* rtfCharset  */
+  YYSYMBOL_rtfIngredients = 116,           /* rtfIngredients  */
+  YYSYMBOL_rtfBlock = 117,                 /* rtfBlock  */
+  YYSYMBOL_118_3 = 118,                    /* $@3  */
+  YYSYMBOL_119_4 = 119,                    /* $@4  */
+  YYSYMBOL_120_5 = 120,                    /* $@5  */
+  YYSYMBOL_121_6 = 121,                    /* $@6  */
+  YYSYMBOL_122_7 = 122,                    /* $@7  */
+  YYSYMBOL_123_8 = 123,                    /* $@8  */
+  YYSYMBOL_124_9 = 124,                    /* $@9  */
+  YYSYMBOL_125_10 = 125,                   /* $@10  */
+  YYSYMBOL_126_11 = 126,                   /* $@11  */
+  YYSYMBOL_rtfField = 127,                 /* rtfField  */
+  YYSYMBOL_128_12 = 128,                   /* $@12  */
+  YYSYMBOL_rtfFieldMod = 129,              /* rtfFieldMod  */
+  YYSYMBOL_rtfIgnore = 130,                /* rtfIgnore  */
+  YYSYMBOL_rtfFieldinst = 131,             /* rtfFieldinst  */
+  YYSYMBOL_132_13 = 132,                   /* $@13  */
+  YYSYMBOL_133_14 = 133,                   /* $@14  */
+  YYSYMBOL_rtfFieldalt = 134,              /* rtfFieldalt  */
+  YYSYMBOL_rtfFieldrslt = 135,             /* rtfFieldrslt  */
+  YYSYMBOL_rtfStatementList = 136,         /* rtfStatementList  */
+  YYSYMBOL_rtfStatement = 137,             /* rtfStatement  */
+  YYSYMBOL_rtfNeXTstuff = 138,             /* rtfNeXTstuff  */
+  YYSYMBOL_rtfNeXTGraphic = 139,           /* rtfNeXTGraphic  */
+  YYSYMBOL_140_15 = 140,                   /* $@15  */
+  YYSYMBOL_141_16 = 141,                   /* $@16  */
+  YYSYMBOL_rtfNeXTHelpLink = 142,          /* rtfNeXTHelpLink  */
+  YYSYMBOL_143_17 = 143,                   /* $@17  */
+  YYSYMBOL_144_18 = 144,                   /* $@18  */
+  YYSYMBOL_rtfNeXTHelpMarker = 145,        /* rtfNeXTHelpMarker  */
+  YYSYMBOL_146_19 = 146,                   /* $@19  */
+  YYSYMBOL_147_20 = 147,                   /* $@20  */
+  YYSYMBOL_rtfFontList = 148,              /* rtfFontList  */
+  YYSYMBOL_rtfFonts = 149,                 /* rtfFonts  */
+  YYSYMBOL_rtfFontStatement = 150,         /* rtfFontStatement  */
+  YYSYMBOL_rtfFontAttrs = 151,             /* rtfFontAttrs  */
+  YYSYMBOL_rtfFontFamily = 152,            /* rtfFontFamily  */
+  YYSYMBOL_rtfColorDef = 153,              /* rtfColorDef  */
+  YYSYMBOL_rtfColors = 154,                /* rtfColors  */
+  YYSYMBOL_rtfColorStatement = 155         /* rtfColorStatement  */
+};
+typedef enum yysymbol_kind_t yysymbol_kind_t;
+
 
 
 
@@ -392,6 +553,7 @@ typedef int yytype_uint16;
 
 #define YYSIZEOF(X) YY_CAST (YYPTRDIFF_T, sizeof (X))
 
+
 /* Stored state numbers (used for stacks). */
 typedef yytype_uint8 yy_state_t;
 
@@ -409,6 +571,7 @@ typedef int yy_state_fast_t;
 #  define YY_(Msgid) Msgid
 # endif
 #endif
+
 
 #ifndef YY_ATTRIBUTE_PURE
 # if defined __GNUC__ && 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
@@ -467,7 +630,7 @@ typedef int yy_state_fast_t;
 
 #define YY_ASSERT(E) ((void) (0 && (E)))
 
-#if ! defined yyoverflow || YYERROR_VERBOSE
+#if !defined yyoverflow
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -532,8 +695,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
-
+#endif /* !defined yyoverflow */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
@@ -609,14 +771,15 @@ union yyalloc
 /* YYNSTATES -- Number of states.  */
 #define YYNSTATES  219
 
-#define YYUNDEFTOK  2
 #define YYMAXUTOK   363
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex, with out-of-bounds checking.  */
-#define YYTRANSLATE(YYX)                                                \
-  (0 <= (YYX) && (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+#define YYTRANSLATE(YYX)                                \
+  (0 <= (YYX) && (YYX) <= YYMAXUTOK                     \
+   ? YY_CAST (yysymbol_kind_t, yytranslate[YYX])        \
+   : YYSYMBOL_YYUNDEF)
 
 /* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex.  */
@@ -662,7 +825,7 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+  /* YYRLINEYYN -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,   207,   207,   207,   207,   210,   211,   212,   213,   214,
@@ -683,15 +846,22 @@ static const yytype_int16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+/** Accessing symbol of state STATE.  */
+#define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
+
+#if YYDEBUG || 0
+/* The user-facing name of the symbol whose (internal) number is
+   YYSYMBOL.  No bounds checking.  */
+static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
+
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "RTFtext", "RTFstart", "RTFansi",
-  "RTFmac", "RTFpc", "RTFpca", "RTFignore", "RTFinfo", "RTFstylesheet",
-  "RTFfootnote", "RTFheader", "RTFfooter", "RTFpict", "RTFplain",
-  "RTFparagraph", "RTFdefaultParagraph", "RTFrow", "RTFcell",
+  "\"end of file\"", "error", "\"invalid token\"", "RTFtext", "RTFstart",
+  "RTFansi", "RTFmac", "RTFpc", "RTFpca", "RTFignore", "RTFinfo",
+  "RTFstylesheet", "RTFfootnote", "RTFheader", "RTFfooter", "RTFpict",
+  "RTFplain", "RTFparagraph", "RTFdefaultParagraph", "RTFrow", "RTFcell",
   "RTFtabulator", "RTFemdash", "RTFendash", "RTFemspace", "RTFenspace",
   "RTFbullet", "RTFfield", "RTFfldinst", "RTFfldalt", "RTFfldrslt",
   "RTFflddirty", "RTFfldedit", "RTFfldlock", "RTFfldpriv", "RTFfttruetype",
@@ -724,9 +894,15 @@ static const char *const yytname[] =
   "rtfFontList", "rtfFonts", "rtfFontStatement", "rtfFontAttrs",
   "rtfFontFamily", "rtfColorDef", "rtfColors", "rtfColorStatement", YY_NULLPTR
 };
+
+static const char *
+yysymbol_name (yysymbol_kind_t yysymbol)
+{
+  return yytname[yysymbol];
+}
 #endif
 
-# ifdef YYPRINT
+#ifdef YYPRINT
 /* YYTOKNUM[NUM] -- (External) token number corresponding to the
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_int16 yytoknum[] =
@@ -744,7 +920,7 @@ static const yytype_int16 yytoknum[] =
      355,   356,   357,   358,   359,   360,   361,   362,   363,   123,
      125
 };
-# endif
+#endif
 
 #define YYPACT_NINF (-123)
 
@@ -756,7 +932,7 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+  /* YYPACTSTATE-NUM -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
@@ -784,7 +960,7 @@ static const yytype_int16 yypact[] =
     -123,  -123,  -123,   126,  1483,  -123,  -123,   129,  -123
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+  /* YYDEFACTSTATE-NUM -- Default reduction number in state STATE-NUM.
      Performed when YYTABLE does not specify something else to do.  Zero
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
@@ -813,7 +989,7 @@ static const yytype_uint8 yydefact[] =
       58,    57,    10,     0,     0,    49,   115,     0,    50
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+  /* YYPGOTONTERM-NUM.  */
 static const yytype_int16 yypgoto[] =
 {
     -123,  -123,  -123,  -123,  -123,   -70,  1545,  -123,  -123,  -123,
@@ -823,7 +999,7 @@ static const yytype_int16 yypgoto[] =
      -89,  -122,  -123,  -123,  -123
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+  /* YYDEFGOTONTERM-NUM.  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,     2,     3,    61,    62,     6,    63,    70,    71,    72,
@@ -833,7 +1009,7 @@ static const yytype_int16 yydefgoto[] =
      144,   126,    66,    82,    96
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+  /* YYTABLEYYPACT[STATE-NUM] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
@@ -1196,7 +1372,7 @@ static const yytype_int16 yycheck[] =
      205
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+  /* YYSTOSSTATE-NUM -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
@@ -1224,7 +1400,7 @@ static const yytype_uint8 yystos[] =
      117,   137,   143,   134,   116,   110,   144,   133,   110
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+  /* YYR1YYN -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
        0,   111,   113,   114,   112,   115,   115,   115,   115,   115,
@@ -1244,7 +1420,7 @@ static const yytype_uint8 yyr1[] =
      153,   154,   154,   155,   155
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+  /* YYR2YYN -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     0,     6,     1,     1,     1,     1,     2,
@@ -1265,10 +1441,10 @@ static const yytype_int8 yyr2[] =
 };
 
 
+enum { YYENOMEM = -2 };
+
 #define yyerrok         (yyerrstatus = 0)
 #define yyclearin       (yychar = YYEMPTY)
-#define YYEMPTY         (-2)
-#define YYEOF           0
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -1294,10 +1470,9 @@ static const yytype_int8 yyr2[] =
       }                                                           \
   while (0)
 
-/* Error token number */
-#define YYTERROR        1
-#define YYERRCODE       256
-
+/* Backward compatibility with an undocumented macro.
+   Use YYerror or YYUNDEF. */
+#define YYERRCODE YYUNDEF
 
 
 /* Enable debugging if requested.  */
@@ -1315,18 +1490,18 @@ do {                                            \
 } while (0)
 
 /* This macro is provided for backward compatibility. */
-#ifndef YY_LOCATION_PRINT
-# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-#endif
+# ifndef YY_LOCATION_PRINT
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)                    \
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
 do {                                                                      \
   if (yydebug)                                                            \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value, ctxt, lctxt); \
+                  Kind, Value, ctxt, lctxt); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -1337,7 +1512,8 @@ do {                                                                      \
 `-----------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, void *ctxt, void *lctxt)
+yy_symbol_value_print (FILE *yyo,
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, void *ctxt, void *lctxt)
 {
   FILE *yyoutput = yyo;
   YYUSE (yyoutput);
@@ -1346,11 +1522,11 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, vo
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yytype], *yyvaluep);
+  if (yykind < YYNTOKENS)
+    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
 # endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  YYUSE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -1360,12 +1536,13 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, vo
 `---------------------------*/
 
 static void
-yy_symbol_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, void *ctxt, void *lctxt)
+yy_symbol_print (FILE *yyo,
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, void *ctxt, void *lctxt)
 {
   YYFPRINTF (yyo, "%s %s (",
-             yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
+             yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyo, yytype, yyvaluep, ctxt, lctxt);
+  yy_symbol_value_print (yyo, yykind, yyvaluep, ctxt, lctxt);
   YYFPRINTF (yyo, ")");
 }
 
@@ -1398,7 +1575,8 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, int yyrule, void *ctxt, void *lctxt)
+yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
+                 int yyrule, void *ctxt, void *lctxt)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -1410,9 +1588,8 @@ yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, int yyrule, void *ctxt, void
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
-                       yystos[yyssp[yyi + 1 - yynrhs]],
-                       &yyvsp[(yyi + 1) - (yynrhs)]
-                                              , ctxt, lctxt);
+                       YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
+                       &yyvsp[(yyi + 1) - (yynrhs)], ctxt, lctxt);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -1427,8 +1604,8 @@ do {                                    \
    multiple parsers can coexist.  */
 int yydebug;
 #else /* !YYDEBUG */
-# define YYDPRINTF(Args)
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
+# define YYDPRINTF(Args) ((void) 0)
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -1451,256 +1628,31 @@ int yydebug;
 #endif
 
 
-#if YYERROR_VERBOSE
 
-# ifndef yystrlen
-#  if defined __GLIBC__ && defined _STRING_H
-#   define yystrlen(S) (YY_CAST (YYPTRDIFF_T, strlen (S)))
-#  else
-/* Return the length of YYSTR.  */
-static YYPTRDIFF_T
-yystrlen (const char *yystr)
-{
-  YYPTRDIFF_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
-    continue;
-  return yylen;
-}
-#  endif
-# endif
 
-# ifndef yystpcpy
-#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
-#   define yystpcpy stpcpy
-#  else
-/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
-   YYDEST.  */
-static char *
-yystpcpy (char *yydest, const char *yysrc)
-{
-  char *yyd = yydest;
-  const char *yys = yysrc;
 
-  while ((*yyd++ = *yys++) != '\0')
-    continue;
-
-  return yyd - 1;
-}
-#  endif
-# endif
-
-# ifndef yytnamerr
-/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
-   heuristic is that double-quoting is unnecessary unless the string
-   contains an apostrophe, a comma, or backslash (other than
-   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
-   null, do not copy; instead, return the length of what the result
-   would have been.  */
-static YYPTRDIFF_T
-yytnamerr (char *yyres, const char *yystr)
-{
-  if (*yystr == '"')
-    {
-      YYPTRDIFF_T yyn = 0;
-      char const *yyp = yystr;
-
-      for (;;)
-        switch (*++yyp)
-          {
-          case '\'':
-          case ',':
-            goto do_not_strip_quotes;
-
-          case '\\':
-            if (*++yyp != '\\')
-              goto do_not_strip_quotes;
-            else
-              goto append;
-
-          append:
-          default:
-            if (yyres)
-              yyres[yyn] = *yyp;
-            yyn++;
-            break;
-
-          case '"':
-            if (yyres)
-              yyres[yyn] = '\0';
-            return yyn;
-          }
-    do_not_strip_quotes: ;
-    }
-
-  if (yyres)
-    return yystpcpy (yyres, yystr) - yyres;
-  else
-    return yystrlen (yystr);
-}
-# endif
-
-/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
-   about the unexpected token YYTOKEN for the state stack whose top is
-   YYSSP.
-
-   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
-   not large enough to hold the message.  In that case, also set
-   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
-   required number of bytes is too large to store.  */
-static int
-yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
-                yy_state_t *yyssp, int yytoken)
-{
-  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-  /* Internationalized format string. */
-  const char *yyformat = YY_NULLPTR;
-  /* Arguments of yyformat: reported tokens (one for the "unexpected",
-     one per "expected"). */
-  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-  /* Actual size of YYARG. */
-  int yycount = 0;
-  /* Cumulated lengths of YYARG.  */
-  YYPTRDIFF_T yysize = 0;
-
-  /* There are many possibilities here to consider:
-     - If this state is a consistent state with a default action, then
-       the only way this function was invoked is if the default action
-       is an error action.  In that case, don't check for expected
-       tokens because there are none.
-     - The only way there can be no lookahead present (in yychar) is if
-       this state is a consistent state with a default action.  Thus,
-       detecting the absence of a lookahead is sufficient to determine
-       that there is no unexpected or expected token to report.  In that
-       case, just report a simple "syntax error".
-     - Don't assume there isn't a lookahead just because this state is a
-       consistent state with a default action.  There might have been a
-       previous inconsistent state, consistent state with a non-default
-       action, or user semantic action that manipulated yychar.
-     - Of course, the expected token list depends on states to have
-       correct lookahead information, and it depends on the parser not
-       to perform extra reductions after fetching a lookahead from the
-       scanner and before detecting a syntax error.  Thus, state merging
-       (from LALR or IELR) and default reductions corrupt the expected
-       token list.  However, the list is correct for canonical LR with
-       one exception: it will still contain any token that will not be
-       accepted due to an error action in a later state.
-  */
-  if (yytoken != YYEMPTY)
-    {
-      int yyn = yypact[*yyssp];
-      YYPTRDIFF_T yysize0 = yytnamerr (YY_NULLPTR, yytname[yytoken]);
-      yysize = yysize0;
-      yyarg[yycount++] = yytname[yytoken];
-      if (!yypact_value_is_default (yyn))
-        {
-          /* Start YYX at -YYN if negative to avoid negative indexes in
-             YYCHECK.  In other words, skip the first -YYN actions for
-             this state because they are default actions.  */
-          int yyxbegin = yyn < 0 ? -yyn : 0;
-          /* Stay within bounds of both yycheck and yytname.  */
-          int yychecklim = YYLAST - yyn + 1;
-          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-          int yyx;
-
-          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
-                && !yytable_value_is_error (yytable[yyx + yyn]))
-              {
-                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-                  {
-                    yycount = 1;
-                    yysize = yysize0;
-                    break;
-                  }
-                yyarg[yycount++] = yytname[yyx];
-                {
-                  YYPTRDIFF_T yysize1
-                    = yysize + yytnamerr (YY_NULLPTR, yytname[yyx]);
-                  if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
-                    yysize = yysize1;
-                  else
-                    return 2;
-                }
-              }
-        }
-    }
-
-  switch (yycount)
-    {
-# define YYCASE_(N, S)                      \
-      case N:                               \
-        yyformat = S;                       \
-      break
-    default: /* Avoid compiler warnings. */
-      YYCASE_(0, YY_("syntax error"));
-      YYCASE_(1, YY_("syntax error, unexpected %s"));
-      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
-      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
-# undef YYCASE_
-    }
-
-  {
-    /* Don't count the "%s"s in the final size, but reserve room for
-       the terminator.  */
-    YYPTRDIFF_T yysize1 = yysize + (yystrlen (yyformat) - 2 * yycount) + 1;
-    if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
-      yysize = yysize1;
-    else
-      return 2;
-  }
-
-  if (*yymsg_alloc < yysize)
-    {
-      *yymsg_alloc = 2 * yysize;
-      if (! (yysize <= *yymsg_alloc
-             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
-        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
-      return 1;
-    }
-
-  /* Avoid sprintf, as that infringes on the user's name space.
-     Don't have undefined behavior even if the translation
-     produced a string with the wrong number of "%s"s.  */
-  {
-    char *yyp = *yymsg;
-    int yyi = 0;
-    while ((*yyp = *yyformat) != '\0')
-      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
-        {
-          yyp += yytnamerr (yyp, yyarg[yyi++]);
-          yyformat += 2;
-        }
-      else
-        {
-          ++yyp;
-          ++yyformat;
-        }
-  }
-  return 0;
-}
-#endif /* YYERROR_VERBOSE */
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, void *ctxt, void *lctxt)
+yydestruct (const char *yymsg,
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, void *ctxt, void *lctxt)
 {
   YYUSE (yyvaluep);
   YYUSE (ctxt);
   YYUSE (lctxt);
   if (!yymsg)
     yymsg = "Deleting";
-  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
+  YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  YYUSE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
+
+
 
 
 
@@ -1736,6 +1688,9 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
        Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
 
+    /* Their size.  */
+    YYPTRDIFF_T yystacksize;
+
     /* The state stack.  */
     yy_state_t yyssa[YYINITDEPTH];
     yy_state_t *yyss;
@@ -1746,22 +1701,16 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
     YYSTYPE *yyvs;
     YYSTYPE *yyvsp;
 
-    YYPTRDIFF_T yystacksize;
-
   int yyn;
+  /* The return value of yyparse.  */
   int yyresult;
   /* Lookahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  yysymbol_kind_t yytoken = YYSYMBOL_YYEMPTY;
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
 
-#if YYERROR_VERBOSE
-  /* Buffer for error messages, and its allocated size.  */
-  char yymsgbuf[128];
-  char *yymsg = yymsgbuf;
-  YYPTRDIFF_T yymsg_alloc = sizeof yymsgbuf;
-#endif
+
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
@@ -1769,15 +1718,17 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
 
+  yynerrs = 0;
+  yystate = 0;
+  yyerrstatus = 0;
+
+  yystacksize = YYINITDEPTH;
   yyssp = yyss = yyssa;
   yyvsp = yyvs = yyvsa;
-  yystacksize = YYINITDEPTH;
+
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yystate = 0;
-  yyerrstatus = 0;
-  yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
   goto yysetstate;
 
@@ -1800,6 +1751,7 @@ yysetstate:
   YY_IGNORE_USELESS_CAST_BEGIN
   *yyssp = YY_CAST (yy_state_t, yystate);
   YY_IGNORE_USELESS_CAST_END
+  YY_STACK_PRINT (yyss, yyssp);
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
@@ -1845,7 +1797,7 @@ yysetstate:
           goto yyexhaustedlab;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
-# undef YYSTACK_RELOCATE
+#  undef YYSTACK_RELOCATE
         if (yyss1 != yyssa)
           YYSTACK_FREE (yyss1);
       }
@@ -1884,17 +1836,28 @@ yybackup:
 
   /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
   if (yychar == YYEMPTY)
     {
-      YYDPRINTF ((stderr, "Reading a token: "));
+      YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex (&yylval, lctxt);
     }
 
   if (yychar <= YYEOF)
     {
-      yychar = yytoken = YYEOF;
+      yychar = YYEOF;
+      yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
+    }
+  else if (yychar == YYerror)
+    {
+      /* The scanner already issued an error message, process directly
+         to error recovery.  But do not keep the error token as
+         lookahead, it is too special and may lead us to an endless
+         loop in error recovery. */
+      yychar = YYUNDEF;
+      yytoken = YYSYMBOL_YYerror;
+      goto yyerrlab1;
     }
   else
     {
@@ -1967,199 +1930,199 @@ yyreduce:
   case 2:
 #line 207 "rtfGrammar.y"
                     { GSRTFstart(CTXT); }
-#line 1971 "rtfGrammar.tab.m"
+#line 1934 "rtfGrammar.tab.m"
     break;
 
   case 3:
 #line 207 "rtfGrammar.y"
                                                                   { GSRTFstop(CTXT); }
-#line 1977 "rtfGrammar.tab.m"
+#line 1940 "rtfGrammar.tab.m"
     break;
 
   case 5:
 #line 210 "rtfGrammar.y"
                     { GSRTFencoding(CTXT, 1); }
-#line 1983 "rtfGrammar.tab.m"
+#line 1946 "rtfGrammar.tab.m"
     break;
 
   case 6:
 #line 211 "rtfGrammar.y"
                                { GSRTFencoding(CTXT, 2); }
-#line 1989 "rtfGrammar.tab.m"
+#line 1952 "rtfGrammar.tab.m"
     break;
 
   case 7:
 #line 212 "rtfGrammar.y"
-                               { GSRTFencoding(CTXT, (yyval.number) = 3); }
-#line 1995 "rtfGrammar.tab.m"
+                               { GSRTFencoding(CTXT, 3); }
+#line 1958 "rtfGrammar.tab.m"
     break;
 
   case 8:
 #line 213 "rtfGrammar.y"
                                { GSRTFencoding(CTXT, 4); }
-#line 2001 "rtfGrammar.tab.m"
+#line 1964 "rtfGrammar.tab.m"
     break;
 
   case 9:
 #line 214 "rtfGrammar.y"
                                               { GSRTFencoding(CTXT, (yyvsp[0].cmd).parameter); }
-#line 2007 "rtfGrammar.tab.m"
+#line 1970 "rtfGrammar.tab.m"
     break;
 
   case 15:
 #line 222 "rtfGrammar.y"
                                                         { GSRTFmangleText(CTXT, (yyvsp[0].text)); free((void *)(yyvsp[0].text)); }
-#line 2013 "rtfGrammar.tab.m"
+#line 1976 "rtfGrammar.tab.m"
     break;
 
   case 18:
 #line 227 "rtfGrammar.y"
                     { GSRTFopenBlock(CTXT, NO); }
-#line 2019 "rtfGrammar.tab.m"
+#line 1982 "rtfGrammar.tab.m"
     break;
 
   case 19:
 #line 227 "rtfGrammar.y"
                                                                                   { GSRTFcloseBlock(CTXT, NO); }
-#line 2025 "rtfGrammar.tab.m"
+#line 1988 "rtfGrammar.tab.m"
     break;
 
   case 20:
 #line 228 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2031 "rtfGrammar.tab.m"
+#line 1994 "rtfGrammar.tab.m"
     break;
 
   case 21:
 #line 228 "rtfGrammar.y"
                                                                                         { GSRTFcloseBlock(CTXT, YES); }
-#line 2037 "rtfGrammar.tab.m"
+#line 2000 "rtfGrammar.tab.m"
     break;
 
   case 22:
 #line 229 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2043 "rtfGrammar.tab.m"
+#line 2006 "rtfGrammar.tab.m"
     break;
 
   case 23:
 #line 229 "rtfGrammar.y"
                                                                                       { GSRTFcloseBlock(CTXT, YES); }
-#line 2049 "rtfGrammar.tab.m"
+#line 2012 "rtfGrammar.tab.m"
     break;
 
   case 24:
 #line 230 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2055 "rtfGrammar.tab.m"
+#line 2018 "rtfGrammar.tab.m"
     break;
 
   case 25:
 #line 230 "rtfGrammar.y"
                                                                                             { GSRTFcloseBlock(CTXT, YES); }
-#line 2061 "rtfGrammar.tab.m"
+#line 2024 "rtfGrammar.tab.m"
     break;
 
   case 26:
 #line 231 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2067 "rtfGrammar.tab.m"
+#line 2030 "rtfGrammar.tab.m"
     break;
 
   case 27:
 #line 231 "rtfGrammar.y"
                                                                                           { GSRTFcloseBlock(CTXT, YES); }
-#line 2073 "rtfGrammar.tab.m"
+#line 2036 "rtfGrammar.tab.m"
     break;
 
   case 28:
 #line 232 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2079 "rtfGrammar.tab.m"
+#line 2042 "rtfGrammar.tab.m"
     break;
 
   case 29:
 #line 232 "rtfGrammar.y"
                                                                                         { GSRTFcloseBlock(CTXT, YES); }
-#line 2085 "rtfGrammar.tab.m"
+#line 2048 "rtfGrammar.tab.m"
     break;
 
   case 30:
 #line 233 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2091 "rtfGrammar.tab.m"
+#line 2054 "rtfGrammar.tab.m"
     break;
 
   case 31:
 #line 233 "rtfGrammar.y"
                                                                                         { GSRTFcloseBlock(CTXT, YES); }
-#line 2097 "rtfGrammar.tab.m"
+#line 2060 "rtfGrammar.tab.m"
     break;
 
   case 32:
 #line 234 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, YES); }
-#line 2103 "rtfGrammar.tab.m"
+#line 2066 "rtfGrammar.tab.m"
     break;
 
   case 33:
 #line 234 "rtfGrammar.y"
                                                                                       { GSRTFcloseBlock(CTXT, YES); }
-#line 2109 "rtfGrammar.tab.m"
+#line 2072 "rtfGrammar.tab.m"
     break;
 
   case 34:
 #line 235 "rtfGrammar.y"
                             { GSRTFopenBlock(CTXT, NO); }
-#line 2115 "rtfGrammar.tab.m"
+#line 2078 "rtfGrammar.tab.m"
     break;
 
   case 35:
 #line 235 "rtfGrammar.y"
                                                                                 { GSRTFcloseBlock(CTXT, NO); }
-#line 2121 "rtfGrammar.tab.m"
+#line 2084 "rtfGrammar.tab.m"
     break;
 
   case 37:
 #line 240 "rtfGrammar.y"
           { fieldStart = GSRTFgetPosition(CTXT);}
-#line 2127 "rtfGrammar.tab.m"
+#line 2090 "rtfGrammar.tab.m"
     break;
 
   case 38:
 #line 240 "rtfGrammar.y"
                                                                                         { GSRTFaddField(CTXT, fieldStart, (yyvsp[-1].text)); free((void *)(yyvsp[-1].text)); }
-#line 2133 "rtfGrammar.tab.m"
+#line 2096 "rtfGrammar.tab.m"
     break;
 
   case 47:
 #line 255 "rtfGrammar.y"
                                                                { (yyval.text) = (yyvsp[-2].text);}
-#line 2139 "rtfGrammar.tab.m"
+#line 2102 "rtfGrammar.tab.m"
     break;
 
   case 48:
 #line 256 "rtfGrammar.y"
                                                { GSRTFopenBlock(CTXT, YES); }
-#line 2145 "rtfGrammar.tab.m"
+#line 2108 "rtfGrammar.tab.m"
     break;
 
   case 49:
 #line 256 "rtfGrammar.y"
                                                                                                                        { GSRTFcloseBlock(CTXT, YES); }
-#line 2151 "rtfGrammar.tab.m"
+#line 2114 "rtfGrammar.tab.m"
     break;
 
   case 50:
 #line 256 "rtfGrammar.y"
                                                                                                                                                            { (yyval.text) = (yyvsp[-4].text);}
-#line 2157 "rtfGrammar.tab.m"
+#line 2120 "rtfGrammar.tab.m"
     break;
 
   case 51:
 #line 257 "rtfGrammar.y"
                                 { (yyval.text) = NULL;}
-#line 2163 "rtfGrammar.tab.m"
+#line 2126 "rtfGrammar.tab.m"
     break;
 
   case 59:
@@ -2171,7 +2134,7 @@ yyreduce:
 						  else
 						      font = (yyvsp[0].cmd).parameter;
 						  GSRTFfontNumber(CTXT, font); }
-#line 2175 "rtfGrammar.tab.m"
+#line 2138 "rtfGrammar.tab.m"
     break;
 
   case 60:
@@ -2183,7 +2146,7 @@ yyreduce:
 						  else
 						      size = (yyvsp[0].cmd).parameter;
 						  GSRTFfontSize(CTXT, size); }
-#line 2187 "rtfGrammar.tab.m"
+#line 2150 "rtfGrammar.tab.m"
     break;
 
   case 61:
@@ -2195,7 +2158,7 @@ yyreduce:
 						  else
 						      width = (yyvsp[0].cmd).parameter;
 						  GSRTFpaperWidth(CTXT, width);}
-#line 2199 "rtfGrammar.tab.m"
+#line 2162 "rtfGrammar.tab.m"
     break;
 
   case 62:
@@ -2207,7 +2170,7 @@ yyreduce:
 						  else
 						      height = (yyvsp[0].cmd).parameter;
 						  GSRTFpaperHeight(CTXT, height);}
-#line 2211 "rtfGrammar.tab.m"
+#line 2174 "rtfGrammar.tab.m"
     break;
 
   case 63:
@@ -2219,7 +2182,7 @@ yyreduce:
 						  else
 						      margin = (yyvsp[0].cmd).parameter;
 						  GSRTFmarginLeft(CTXT, margin);}
-#line 2223 "rtfGrammar.tab.m"
+#line 2186 "rtfGrammar.tab.m"
     break;
 
   case 64:
@@ -2231,7 +2194,7 @@ yyreduce:
 						  else
 						      margin = (yyvsp[0].cmd).parameter;
 						  GSRTFmarginRight(CTXT, margin); }
-#line 2235 "rtfGrammar.tab.m"
+#line 2198 "rtfGrammar.tab.m"
     break;
 
   case 65:
@@ -2243,7 +2206,7 @@ yyreduce:
 						  else
 						      margin = (yyvsp[0].cmd).parameter;
 						  GSRTFmarginTop(CTXT, margin); }
-#line 2247 "rtfGrammar.tab.m"
+#line 2210 "rtfGrammar.tab.m"
     break;
 
   case 66:
@@ -2255,7 +2218,7 @@ yyreduce:
 						  else
 						      margin = (yyvsp[0].cmd).parameter;
 						  GSRTFmarginButtom(CTXT, margin); }
-#line 2259 "rtfGrammar.tab.m"
+#line 2222 "rtfGrammar.tab.m"
     break;
 
   case 67:
@@ -2267,7 +2230,7 @@ yyreduce:
 						  else
 						      indent = (yyvsp[0].cmd).parameter;
 						  GSRTFfirstLineIndent(CTXT, indent); }
-#line 2271 "rtfGrammar.tab.m"
+#line 2234 "rtfGrammar.tab.m"
     break;
 
   case 68:
@@ -2279,7 +2242,7 @@ yyreduce:
 						  else
 						      indent = (yyvsp[0].cmd).parameter;
 						  GSRTFleftIndent(CTXT, indent);}
-#line 2283 "rtfGrammar.tab.m"
+#line 2246 "rtfGrammar.tab.m"
     break;
 
   case 69:
@@ -2291,7 +2254,7 @@ yyreduce:
 						  else
 						      indent = (yyvsp[0].cmd).parameter;
 						  GSRTFrightIndent(CTXT, indent);}
-#line 2295 "rtfGrammar.tab.m"
+#line 2258 "rtfGrammar.tab.m"
     break;
 
   case 70:
@@ -2303,31 +2266,31 @@ yyreduce:
 						  else
 						      location = (yyvsp[0].cmd).parameter;
 						  GSRTFtabstop(CTXT, location);}
-#line 2307 "rtfGrammar.tab.m"
+#line 2270 "rtfGrammar.tab.m"
     break;
 
   case 71:
 #line 361 "rtfGrammar.y"
                                                 { GSRTFalignCenter(CTXT); }
-#line 2313 "rtfGrammar.tab.m"
+#line 2276 "rtfGrammar.tab.m"
     break;
 
   case 72:
 #line 362 "rtfGrammar.y"
                                                 { GSRTFalignJustified(CTXT); }
-#line 2319 "rtfGrammar.tab.m"
+#line 2282 "rtfGrammar.tab.m"
     break;
 
   case 73:
 #line 363 "rtfGrammar.y"
                                                 { GSRTFalignLeft(CTXT); }
-#line 2325 "rtfGrammar.tab.m"
+#line 2288 "rtfGrammar.tab.m"
     break;
 
   case 74:
 #line 364 "rtfGrammar.y"
                                                 { GSRTFalignRight(CTXT); }
-#line 2331 "rtfGrammar.tab.m"
+#line 2294 "rtfGrammar.tab.m"
     break;
 
   case 75:
@@ -2339,25 +2302,25 @@ yyreduce:
 						  else
 						      space = (yyvsp[0].cmd).parameter;
 						  GSRTFspaceAbove(CTXT, space); }
-#line 2343 "rtfGrammar.tab.m"
+#line 2306 "rtfGrammar.tab.m"
     break;
 
   case 76:
 #line 372 "rtfGrammar.y"
                                                 { GSRTFlineSpace(CTXT, (yyvsp[0].cmd).parameter); }
-#line 2349 "rtfGrammar.tab.m"
+#line 2312 "rtfGrammar.tab.m"
     break;
 
   case 77:
 #line 373 "rtfGrammar.y"
                                                 { GSRTFdefaultParagraph(CTXT); }
-#line 2355 "rtfGrammar.tab.m"
+#line 2318 "rtfGrammar.tab.m"
     break;
 
   case 78:
 #line 374 "rtfGrammar.y"
                                                 { GSRTFstyle(CTXT, (yyvsp[0].cmd).parameter); }
-#line 2361 "rtfGrammar.tab.m"
+#line 2324 "rtfGrammar.tab.m"
     break;
 
   case 79:
@@ -2369,7 +2332,7 @@ yyreduce:
 						  else
 						      color = (yyvsp[0].cmd).parameter;
 						  GSRTFcolorbg(CTXT, color); }
-#line 2373 "rtfGrammar.tab.m"
+#line 2336 "rtfGrammar.tab.m"
     break;
 
   case 80:
@@ -2381,7 +2344,7 @@ yyreduce:
 						  else
 						      color = (yyvsp[0].cmd).parameter;
 						  GSRTFcolorfg(CTXT, color); }
-#line 2385 "rtfGrammar.tab.m"
+#line 2348 "rtfGrammar.tab.m"
     break;
 
   case 81:
@@ -2393,7 +2356,7 @@ yyreduce:
 						  else
 						      color = (yyvsp[0].cmd).parameter;
 						  GSRTFunderlinecolor(CTXT, color); }
-#line 2397 "rtfGrammar.tab.m"
+#line 2360 "rtfGrammar.tab.m"
     break;
 
   case 82:
@@ -2405,7 +2368,7 @@ yyreduce:
 						  else
 						      script = (yyvsp[0].cmd).parameter;
 						  GSRTFsubscript(CTXT, script); }
-#line 2409 "rtfGrammar.tab.m"
+#line 2372 "rtfGrammar.tab.m"
     break;
 
   case 83:
@@ -2417,7 +2380,7 @@ yyreduce:
 						  else
 						      script = (yyvsp[0].cmd).parameter;
 						  GSRTFsuperscript(CTXT, script); }
-#line 2421 "rtfGrammar.tab.m"
+#line 2384 "rtfGrammar.tab.m"
     break;
 
   case 84:
@@ -2429,7 +2392,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFbold(CTXT, on); }
-#line 2433 "rtfGrammar.tab.m"
+#line 2396 "rtfGrammar.tab.m"
     break;
 
   case 85:
@@ -2441,7 +2404,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFitalic(CTXT, on); }
-#line 2445 "rtfGrammar.tab.m"
+#line 2408 "rtfGrammar.tab.m"
     break;
 
   case 86:
@@ -2453,7 +2416,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternSolid); }
-#line 2457 "rtfGrammar.tab.m"
+#line 2420 "rtfGrammar.tab.m"
     break;
 
   case 87:
@@ -2465,7 +2428,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDot); }
-#line 2469 "rtfGrammar.tab.m"
+#line 2432 "rtfGrammar.tab.m"
     break;
 
   case 88:
@@ -2477,7 +2440,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDash); }
-#line 2481 "rtfGrammar.tab.m"
+#line 2444 "rtfGrammar.tab.m"
     break;
 
   case 89:
@@ -2489,7 +2452,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDashDot); }
-#line 2493 "rtfGrammar.tab.m"
+#line 2456 "rtfGrammar.tab.m"
     break;
 
   case 90:
@@ -2501,7 +2464,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternDashDotDot); }
-#line 2505 "rtfGrammar.tab.m"
+#line 2468 "rtfGrammar.tab.m"
     break;
 
   case 91:
@@ -2513,13 +2476,13 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleDouble | NSUnderlinePatternSolid); }
-#line 2517 "rtfGrammar.tab.m"
+#line 2480 "rtfGrammar.tab.m"
     break;
 
   case 92:
 #line 466 "rtfGrammar.y"
                                 { GSRTFunderline(CTXT, NO, NSUnderlineStyleNone); }
-#line 2523 "rtfGrammar.tab.m"
+#line 2486 "rtfGrammar.tab.m"
     break;
 
   case 93:
@@ -2531,7 +2494,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternSolid); }
-#line 2535 "rtfGrammar.tab.m"
+#line 2498 "rtfGrammar.tab.m"
     break;
 
   case 94:
@@ -2543,7 +2506,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDot); }
-#line 2547 "rtfGrammar.tab.m"
+#line 2510 "rtfGrammar.tab.m"
     break;
 
   case 95:
@@ -2555,7 +2518,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDash); }
-#line 2559 "rtfGrammar.tab.m"
+#line 2522 "rtfGrammar.tab.m"
     break;
 
   case 96:
@@ -2567,7 +2530,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDashDot); }
-#line 2571 "rtfGrammar.tab.m"
+#line 2534 "rtfGrammar.tab.m"
     break;
 
   case 97:
@@ -2579,7 +2542,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleThick | NSUnderlinePatternDashDotDot); }
-#line 2583 "rtfGrammar.tab.m"
+#line 2546 "rtfGrammar.tab.m"
     break;
 
   case 98:
@@ -2591,7 +2554,7 @@ yyreduce:
 						  else
 						      on = NO;
 						  GSRTFunderline(CTXT, on, NSUnderlineStyleSingle | NSUnderlinePatternSolid | NSUnderlineByWordMask); }
-#line 2595 "rtfGrammar.tab.m"
+#line 2558 "rtfGrammar.tab.m"
     break;
 
   case 99:
@@ -2602,56 +2565,56 @@ yyreduce:
    else
      style = NSUnderlineStyleNone;
    GSRTFstrikethrough(CTXT, style); }
-#line 2606 "rtfGrammar.tab.m"
+#line 2569 "rtfGrammar.tab.m"
     break;
 
   case 100:
 #line 515 "rtfGrammar.y"
                                 { GSRTFstrikethrough(CTXT, NSUnderlineStyleDouble | NSUnderlinePatternSolid); }
-#line 2612 "rtfGrammar.tab.m"
+#line 2575 "rtfGrammar.tab.m"
     break;
 
   case 101:
 #line 516 "rtfGrammar.y"
                                                 { GSRTFunicode(CTXT, (yyvsp[0].cmd).parameter); }
-#line 2618 "rtfGrammar.tab.m"
+#line 2581 "rtfGrammar.tab.m"
     break;
 
   case 102:
 #line 517 "rtfGrammar.y"
                                                 { GSRTFdefaultCharacterStyle(CTXT); }
-#line 2624 "rtfGrammar.tab.m"
+#line 2587 "rtfGrammar.tab.m"
     break;
 
   case 103:
 #line 518 "rtfGrammar.y"
                                                 { GSRTFparagraph(CTXT); }
-#line 2630 "rtfGrammar.tab.m"
+#line 2593 "rtfGrammar.tab.m"
     break;
 
   case 104:
 #line 519 "rtfGrammar.y"
                                                 { GSRTFparagraph(CTXT); }
-#line 2636 "rtfGrammar.tab.m"
+#line 2599 "rtfGrammar.tab.m"
     break;
 
   case 105:
 #line 520 "rtfGrammar.y"
                                                 { GSRTFgenericRTFcommand(CTXT, (yyvsp[0].cmd)); 
 		                                  free((void*)(yyvsp[0].cmd).name); }
-#line 2643 "rtfGrammar.tab.m"
+#line 2606 "rtfGrammar.tab.m"
     break;
 
   case 110:
 #line 539 "rtfGrammar.y"
                                                                                         { GSRTFopenBlock(CTXT, YES); }
-#line 2649 "rtfGrammar.tab.m"
+#line 2612 "rtfGrammar.tab.m"
     break;
 
   case 111:
 #line 539 "rtfGrammar.y"
                                                                                                                                       { GSRTFcloseBlock(CTXT, YES); }
-#line 2655 "rtfGrammar.tab.m"
+#line 2618 "rtfGrammar.tab.m"
     break;
 
   case 112:
@@ -2659,19 +2622,19 @@ yyreduce:
                 {
 			GSRTFNeXTGraphic (CTXT, (yyvsp[-6].text), (yyvsp[-5].cmd).parameter, (yyvsp[-4].cmd).parameter);
 		}
-#line 2663 "rtfGrammar.tab.m"
+#line 2626 "rtfGrammar.tab.m"
     break;
 
   case 113:
 #line 554 "rtfGrammar.y"
                                                                                                                              { GSRTFopenBlock(CTXT, YES); }
-#line 2669 "rtfGrammar.tab.m"
+#line 2632 "rtfGrammar.tab.m"
     break;
 
   case 114:
 #line 554 "rtfGrammar.y"
                                                                                                                                                                            { GSRTFcloseBlock(CTXT, YES); }
-#line 2675 "rtfGrammar.tab.m"
+#line 2638 "rtfGrammar.tab.m"
     break;
 
   case 115:
@@ -2679,19 +2642,19 @@ yyreduce:
                 {
 			GSRTFNeXTHelpLink (CTXT, (yyvsp[-10].cmd).parameter, (yyvsp[-8].text), (yyvsp[-6].text), (yyvsp[-4].text));
 		}
-#line 2683 "rtfGrammar.tab.m"
+#line 2646 "rtfGrammar.tab.m"
     break;
 
   case 116:
 #line 568 "rtfGrammar.y"
                                                                        { GSRTFopenBlock(CTXT, YES); }
-#line 2689 "rtfGrammar.tab.m"
+#line 2652 "rtfGrammar.tab.m"
     break;
 
   case 117:
 #line 568 "rtfGrammar.y"
                                                                                                                      { GSRTFcloseBlock(CTXT, YES); }
-#line 2695 "rtfGrammar.tab.m"
+#line 2658 "rtfGrammar.tab.m"
     break;
 
   case 118:
@@ -2699,76 +2662,76 @@ yyreduce:
                 {
 			GSRTFNeXTHelpMarker (CTXT, (yyvsp[-6].cmd).parameter, (yyvsp[-4].text));
 		}
-#line 2703 "rtfGrammar.tab.m"
+#line 2666 "rtfGrammar.tab.m"
     break;
 
   case 123:
 #line 584 "rtfGrammar.y"
                     { free((void *)(yyvsp[-1].text));}
-#line 2709 "rtfGrammar.tab.m"
+#line 2672 "rtfGrammar.tab.m"
     break;
 
   case 124:
 #line 589 "rtfGrammar.y"
                                                                         { GSRTFregisterFont(CTXT, (yyvsp[0].text), (yyvsp[-2].number), (yyvsp[-3].cmd).parameter);
                                                           free((void *)(yyvsp[0].text)); }
-#line 2716 "rtfGrammar.tab.m"
+#line 2679 "rtfGrammar.tab.m"
     break;
 
   case 125:
 #line 592 "rtfGrammar.y"
                                                                                         { GSRTFregisterFont(CTXT, (yyvsp[0].text), (yyvsp[-2].number), (yyvsp[-4].cmd).parameter);
                                                           free((void *)(yyvsp[0].text)); }
-#line 2723 "rtfGrammar.tab.m"
+#line 2686 "rtfGrammar.tab.m"
     break;
 
   case 126:
 #line 595 "rtfGrammar.y"
                                                                                                         { GSRTFregisterFont(CTXT, (yyvsp[0].text), (yyvsp[-2].number), (yyvsp[-4].cmd).parameter);
                                                           free((void *)(yyvsp[0].text)); }
-#line 2730 "rtfGrammar.tab.m"
+#line 2693 "rtfGrammar.tab.m"
     break;
 
   case 133:
 #line 609 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyNil - RTFfamilyNil; }
-#line 2736 "rtfGrammar.tab.m"
+#line 2699 "rtfGrammar.tab.m"
     break;
 
   case 134:
 #line 610 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyRoman - RTFfamilyNil; }
-#line 2742 "rtfGrammar.tab.m"
+#line 2705 "rtfGrammar.tab.m"
     break;
 
   case 135:
 #line 611 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilySwiss - RTFfamilyNil; }
-#line 2748 "rtfGrammar.tab.m"
+#line 2711 "rtfGrammar.tab.m"
     break;
 
   case 136:
 #line 612 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyModern - RTFfamilyNil; }
-#line 2754 "rtfGrammar.tab.m"
+#line 2717 "rtfGrammar.tab.m"
     break;
 
   case 137:
 #line 613 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyScript - RTFfamilyNil; }
-#line 2760 "rtfGrammar.tab.m"
+#line 2723 "rtfGrammar.tab.m"
     break;
 
   case 138:
 #line 614 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyDecor - RTFfamilyNil; }
-#line 2766 "rtfGrammar.tab.m"
+#line 2729 "rtfGrammar.tab.m"
     break;
 
   case 139:
 #line 615 "rtfGrammar.y"
                                         { (yyval.number) = RTFfamilyTech - RTFfamilyNil; }
-#line 2772 "rtfGrammar.tab.m"
+#line 2735 "rtfGrammar.tab.m"
     break;
 
   case 143:
@@ -2777,7 +2740,7 @@ yyreduce:
 		       GSRTFaddColor(CTXT, (yyvsp[-3].cmd).parameter, (yyvsp[-2].cmd).parameter, (yyvsp[-1].cmd).parameter);
 		       free((void *)(yyvsp[0].text));
 		     }
-#line 2781 "rtfGrammar.tab.m"
+#line 2744 "rtfGrammar.tab.m"
     break;
 
   case 144:
@@ -2786,11 +2749,11 @@ yyreduce:
 		       GSRTFaddDefaultColor(CTXT);
 		       free((void *)(yyvsp[0].text));
 		     }
-#line 2790 "rtfGrammar.tab.m"
+#line 2753 "rtfGrammar.tab.m"
     break;
 
 
-#line 2794 "rtfGrammar.tab.m"
+#line 2757 "rtfGrammar.tab.m"
 
       default: break;
     }
@@ -2805,11 +2768,10 @@ yyreduce:
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
      to an incorrect destructor call or verbose syntax error message
      before the lookahead is translated.  */
-  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
+  YY_SYMBOL_PRINT ("-> $$ =", YY_CAST (yysymbol_kind_t, yyr1[yyn]), &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
   yylen = 0;
-  YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
 
@@ -2833,49 +2795,13 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
-
+  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if ! YYERROR_VERBOSE
       yyerror (ctxt, lctxt, YY_("syntax error"));
-#else
-# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
-                                        yyssp, yytoken)
-      {
-        char const *yymsgp = YY_("syntax error");
-        int yysyntax_error_status;
-        yysyntax_error_status = YYSYNTAX_ERROR;
-        if (yysyntax_error_status == 0)
-          yymsgp = yymsg;
-        else if (yysyntax_error_status == 1)
-          {
-            if (yymsg != yymsgbuf)
-              YYSTACK_FREE (yymsg);
-            yymsg = YY_CAST (char *, YYSTACK_ALLOC (YY_CAST (YYSIZE_T, yymsg_alloc)));
-            if (!yymsg)
-              {
-                yymsg = yymsgbuf;
-                yymsg_alloc = sizeof yymsgbuf;
-                yysyntax_error_status = 2;
-              }
-            else
-              {
-                yysyntax_error_status = YYSYNTAX_ERROR;
-                yymsgp = yymsg;
-              }
-          }
-        yyerror (ctxt, lctxt, yymsgp);
-        if (yysyntax_error_status == 2)
-          goto yyexhaustedlab;
-      }
-# undef YYSYNTAX_ERROR
-#endif
     }
-
-
 
   if (yyerrstatus == 3)
     {
@@ -2925,13 +2851,14 @@ yyerrorlab:
 yyerrlab1:
   yyerrstatus = 3;      /* Each real token shifted decrements this.  */
 
+  /* Pop stack until we find a state that shifts the error token.  */
   for (;;)
     {
       yyn = yypact[yystate];
       if (!yypact_value_is_default (yyn))
         {
-          yyn += YYTERROR;
-          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
+          yyn += YYSYMBOL_YYerror;
+          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYSYMBOL_YYerror)
             {
               yyn = yytable[yyn];
               if (0 < yyn)
@@ -2945,7 +2872,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-                  yystos[yystate], yyvsp, ctxt, lctxt);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp, ctxt, lctxt);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2957,7 +2884,7 @@ yyerrlab1:
 
 
   /* Shift the error token.  */
-  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
+  YY_SYMBOL_PRINT ("Shifting", YY_ACCESSING_SYMBOL (yyn), yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -2979,7 +2906,7 @@ yyabortlab:
   goto yyreturn;
 
 
-#if !defined yyoverflow || YYERROR_VERBOSE
+#if !defined yyoverflow
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -3009,19 +2936,17 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  yystos[*yyssp], yyvsp, ctxt, lctxt);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, ctxt, lctxt);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-#if YYERROR_VERBOSE
-  if (yymsg != yymsgbuf)
-    YYSTACK_FREE (yymsg);
-#endif
+
   return yyresult;
 }
+
 #line 649 "rtfGrammar.y"
 
 

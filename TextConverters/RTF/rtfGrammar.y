@@ -209,7 +209,7 @@ rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfIngredients { GSRTFstop(CTXT); } 
 
 rtfCharset: RTFansi { GSRTFencoding(CTXT, 1); }
 		|	RTFmac { GSRTFencoding(CTXT, 2); }
-		|	RTFpc  { GSRTFencoding(CTXT, $$ = 3); }
+		|	RTFpc  { GSRTFencoding(CTXT, 3); }
 		|	RTFpca { GSRTFencoding(CTXT, 4); }
 		|	rtfCharset RTFansicpg { GSRTFencoding(CTXT, $2.parameter); }
 		;

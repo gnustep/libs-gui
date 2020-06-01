@@ -1393,16 +1393,20 @@ void GSRTFencoding(void *ctxt, int encoding)
 {
   switch (encoding)
     {
+    // ansi
     case 1:
       [(RTFDConsumer *)ctxt setEncoding: NSISOLatin1StringEncoding];
       break;
+    // mac
     case 2:
       [(RTFDConsumer *)ctxt setEncoding: NSMacOSRomanStringEncoding];
       break;
+    // pc
     case 3:
       // FIXME: Code page 437 kCFStringEncodingDOSLatinUS
       [(RTFDConsumer *)ctxt setEncoding: NSISOLatin1StringEncoding];
       break;
+    // pca
     case 4:
       // FIXME: Code page 850 kCFStringEncodingDOSLatin1
       [(RTFDConsumer *)ctxt setEncoding: NSISOLatin1StringEncoding];
@@ -1421,6 +1425,9 @@ void GSRTFencoding(void *ctxt, int encoding)
       break;
     case 1254:
       [(RTFDConsumer *)ctxt setEncoding: NSWindowsCP1254StringEncoding];
+      break;
+    case 10000:
+      [(RTFDConsumer *)ctxt setEncoding: NSMacOSRomanStringEncoding];
       break;
     default:
       NSLog(@"Setting unknown encoding %d", encoding);
