@@ -228,6 +228,8 @@ static NSMutableArray *activeConstraints;
       _relation = relation;
       _multiplier = multiplier;
       _constant = constant;
+
+      [activeConstraints addObject: self];
     }
   return self;
 }
@@ -249,6 +251,7 @@ static NSMutableArray *activeConstraints;
                                    attribute: attr2
                                   multiplier: mult
                                     constant: c];
+
   AUTORELEASE(constraint);
   return constraint;
 }
