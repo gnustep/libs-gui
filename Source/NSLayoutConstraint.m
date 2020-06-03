@@ -30,6 +30,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSWindow.h"
 
 static NSMutableArray *activeConstraints;
 
@@ -229,6 +230,11 @@ static NSMutableArray *activeConstraints;
       _multiplier = multiplier;
       _constant = constant;
 
+      [[NSNotificationCenter defaultCenter] addObserver: self
+                                               selector: @selector(_handleWindowResize:)
+                                                   name: NSWindowDidResizeNotification
+                                                 object: [_firstItem window]];
+      
       [activeConstraints addObject: self];
     }
   return self;
@@ -380,7 +386,11 @@ static NSMutableArray *activeConstraints;
           _secondItem = [coder decodeObject];
         }
     }
-
+  
+  [[NSNotificationCenter defaultCenter] addObserver: self
+                                           selector: @selector(_handleWindowResize:)
+                                               name: NSWindowDidResizeNotification
+                                             object: [_firstItem window]];
   [activeConstraints addObject: self];
   
   return self;
@@ -446,6 +456,11 @@ static NSMutableArray *activeConstraints;
                    _secondAttribute,
                    _multiplier,
                    _constant];
+}
+
+- (void) _handleWindowResize: (NSNotification *)notification
+{
+  NSLog(@"Resized");
 }
 
 @end
