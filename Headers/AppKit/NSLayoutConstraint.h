@@ -40,13 +40,13 @@ extern "C" {
 
 // Priority
 typedef float NSLayoutPriority;
-static const NSLayoutPriority NSLayoutPriorityRequired = 1000;
-static const NSLayoutPriority NSLayoutPriorityDefaultHigh = 750;
-static const NSLayoutPriority NSLayoutPriorityDragThatCanResizeWindow = 510;
-static const NSLayoutPriority NSLayoutPriorityWindowSizeStayPut = 500; 
-static const NSLayoutPriority NSLayoutPriorityDragThatCannotResizeWindow = 490;
-static const NSLayoutPriority NSLayoutPriorityDefaultLow = 250; 
-static const NSLayoutPriority NSLayoutPriorityFittingSizeCompression = 50; 
+static const NSLayoutPriority NSLayoutPriorityRequired = 1000.0;
+static const NSLayoutPriority NSLayoutPriorityDefaultHigh = 750.0;
+static const NSLayoutPriority NSLayoutPriorityDragThatCanResizeWindow = 510.0;
+static const NSLayoutPriority NSLayoutPriorityWindowSizeStayPut = 500.0; 
+static const NSLayoutPriority NSLayoutPriorityDragThatCannotResizeWindow = 490.0;
+static const NSLayoutPriority NSLayoutPriorityDefaultLow = 250.0; 
+static const NSLayoutPriority NSLayoutPriorityFittingSizeCompression = 50.0; 
 
 // Orientation
 enum {
