@@ -373,6 +373,15 @@ static NSMutableArray *activeConstraints;
             {
               _secondItem = [coder decodeObjectForKey: @"NSSecondItem"];
             }
+
+          if ([coder containsValueForKey: @"NSPriority"])
+            {
+              _priority = [coder decodeIntegerForKey: @"NSPriority"];
+            }
+          else
+            {
+              _priority = 1000; // if it is not present, this defaults to 1000... per testing with Cocoa.
+            }
         }
       else
         {
@@ -384,6 +393,8 @@ static NSMutableArray *activeConstraints;
           [coder decodeValueOfObjCType: @encode(float)
                                     at: &_secondAttribute];
           _secondItem = [coder decodeObject];
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_priority];
         }
     }
   
@@ -411,6 +422,8 @@ static NSMutableArray *activeConstraints;
                     forKey: @"NSSecondAttribute"];
       [coder encodeObject: _secondItem
                    forKey: @"NSSecondItem"];
+      [coder encodeInteger: _priority
+                    forKey: @"NSPriority"];
     }
   else
     {
@@ -422,6 +435,8 @@ static NSMutableArray *activeConstraints;
       [coder encodeValueOfObjCType: @encode(float)
                                 at: &_secondAttribute];
       [coder encodeObject: _secondItem];       
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_priority];
     }
 }
 

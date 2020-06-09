@@ -3235,6 +3235,10 @@ didStartElement: (NSString*)elementName
         {
           hasValue = [currentElement attributeForKey: @"selectedItem"] != nil;
         }
+      else if ([@"NSPriority" isEqualToString: key])
+        {
+          hasValue = [currentElement attributeForKey: @"priority"] != nil;
+        }
       else if ([XmlKeysDefined containsObject: key])
         {
           // These are arbitrarily defined through hard-coding...
