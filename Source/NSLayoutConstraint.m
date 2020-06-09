@@ -341,6 +341,11 @@ static NSMutableArray *activeConstraints;
   return _priority;
 }
 
+- (void) setPriority: (NSLayoutPriority)priority
+{
+  _priority = priority;
+}
+
 // Coding...
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
@@ -376,11 +381,11 @@ static NSMutableArray *activeConstraints;
 
           if ([coder containsValueForKey: @"NSPriority"])
             {
-              _priority = [coder decodeIntegerForKey: @"NSPriority"];
+              _priority = [coder decodeFloatForKey: @"NSPriority"];
             }
           else
             {
-              _priority = 1000; // if it is not present, this defaults to 1000... per testing with Cocoa.
+              _priority = NSLayoutPriorityRequired; // if it is not present, this defaults to 1000... per testing with Cocoa.
             }
         }
       else
@@ -390,10 +395,10 @@ static NSMutableArray *activeConstraints;
           [coder decodeValueOfObjCType: @encode(NSUInteger)
                                     at: &_firstAttribute];
           _firstItem = [coder decodeObject];
-          [coder decodeValueOfObjCType: @encode(float)
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
                                     at: &_secondAttribute];
           _secondItem = [coder decodeObject];
-          [coder decodeValueOfObjCType: @encode(NSUInteger)
+          [coder decodeValueOfObjCType: @encode(float)
                                     at: &_priority];
         }
     }
@@ -422,7 +427,7 @@ static NSMutableArray *activeConstraints;
                     forKey: @"NSSecondAttribute"];
       [coder encodeObject: _secondItem
                    forKey: @"NSSecondItem"];
-      [coder encodeInteger: _priority
+      [coder encodeFloat: _priority
                     forKey: @"NSPriority"];
     }
   else
@@ -432,10 +437,10 @@ static NSMutableArray *activeConstraints;
       [coder encodeValueOfObjCType: @encode(NSUInteger)
                                 at: &_firstAttribute];
       [coder encodeObject: _firstItem];
-      [coder encodeValueOfObjCType: @encode(float)
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
                                 at: &_secondAttribute];
       [coder encodeObject: _secondItem];       
-      [coder encodeValueOfObjCType: @encode(NSUInteger)
+      [coder encodeValueOfObjCType: @encode(float)
                                 at: &_priority];
     }
 }
@@ -450,6 +455,7 @@ static NSMutableArray *activeConstraints;
                                         attribute: _secondAttribute
                                        multiplier: _multiplier
                                          constant: _constant];
+  [constraint setPriority: [self priority]];
   return constraint;
 }
 
