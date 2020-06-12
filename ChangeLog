@@ -1,3 +1,8 @@
+2020-06-12  Yavor Doganov  <yavor@gnu.org>
+
+	* Headers/AppKit/NSApplication.h: Remove semicolons from the
+	NSAppKitVersionNumber* definitions.
+
 2020-05-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/rtfGrammar.y: Correct encoding handling.
