@@ -567,7 +567,7 @@ static NSNotificationCenter *nc = nil;
 // item1.attribute1 = multiplier × item2.attribute2 + constant
 - (void) _applyConstraint
 {
-  NSLog(@"self = %@", self);
+  // Currently not implemented.
 }
 
 + (void) _handleWindowResize: (NSNotification *)notification
