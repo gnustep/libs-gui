@@ -482,11 +482,15 @@ static NSNotificationCenter *nc = nil;
                                     at: &_constant];
           [coder decodeValueOfObjCType: @encode(NSUInteger)
                                     at: &_firstAttribute];
-          _firstItem = [coder decodeObject];
+          _firstItem = RETAIN([coder decodeObject]);
           [coder decodeValueOfObjCType: @encode(NSUInteger)
                                     at: &_secondAttribute];
-          _secondItem = [coder decodeObject];
-          [coder decodeValueOfObjCType: @encode(float)
+          _secondItem = RETAIN([coder decodeObject]);
+         [coder decodeValueOfObjCType: @encode(float)
+                                    at: &_multiplier];
+         [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_relation];
+         [coder decodeValueOfObjCType: @encode(float)
                                     at: &_priority];
         }
     }
@@ -511,6 +515,10 @@ static NSNotificationCenter *nc = nil;
                     forKey: @"NSSecondAttribute"];
       [coder encodeObject: _secondItem
                    forKey: @"NSSecondItem"];
+      [coder encodeFloat: _multiplier
+                    forKey: @"NSMultiplier"];
+      [coder encodeInteger: _relation
+                    forKey: @"NSRelation"];
       [coder encodeFloat: _priority
                     forKey: @"NSPriority"];
     }
@@ -524,6 +532,10 @@ static NSNotificationCenter *nc = nil;
       [coder encodeValueOfObjCType: @encode(NSUInteger)
                                 at: &_secondAttribute];
       [coder encodeObject: _secondItem];       
+      [coder encodeValueOfObjCType: @encode(float)
+                                at: &_multiplier];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_relation];
       [coder encodeValueOfObjCType: @encode(float)
                                 at: &_priority];
     }
