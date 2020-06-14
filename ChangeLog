@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-2020-05-31 Gregory John Casamento <greg.casamento@gmail.com>
-
-	* Headers/AppKit/AppKit.h: Add to .h file
-	* Headers/AppKit/NSLayoutAnchor.h: Header
-	* Headers/AppKit/NSLayoutConstraint.h: Header
-	* Headers/AppKit/NSLayoutGuide.h: Header
-	* MISSING: Remove headers from list
-	* Source/GNUmakefile: Add .h and .m files for building.
-	* Source/NSLayoutAnchor.m: Anchors X/Y/Dimension
-	* Source/NSLayoutConstraint.m: Layout constraint.
-	* Source/NSLayoutGuide.m: Constraints guide implementation.
-  
-=======
 2020-06-12  Yavor Doganov  <yavor@gnu.org>
 
 	* Headers/AppKit/NSApplication.h: Remove semicolons from the
 	NSAppKitVersionNumber* definitions.
 
->>>>>>> 488f7096fb586422be13c41a474339161802dd1f
 2020-05-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/rtfGrammar.y: Correct encoding handling.
