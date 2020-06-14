@@ -227,7 +227,6 @@ static NSNotificationCenter *nc = nil;
 + (void) _removeConstraint: (NSLayoutConstraint *)constraint
 {
   [activeConstraints removeObject: constraint];
-  [nc removeObserver: constraint];
 }
 
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
@@ -568,4 +567,3 @@ static NSNotificationCenter *nc = nil;
 }
 
 @end
-
