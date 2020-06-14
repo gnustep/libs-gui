@@ -55,16 +55,10 @@ static NSNotificationCenter *nc = nil;
 
 + (void) _setupNotifications: (NSNotification *)n
 {
-  NSEnumerator *en = [[NSApp windows] objectEnumerator];
-  NSWindow *w = nil;
-  
-  while ((w = [en nextObject]) != nil)
-    {
-      [nc addObserver: self
-             selector: @selector(_handleWindowResize:)
-                 name: NSWindowDidResizeNotification
-               object: w];      
-    }
+  [nc addObserver: self
+         selector: @selector(_handleWindowResize:)
+             name: NSWindowDidResizeNotification
+           object: nil];      
 }
 
 + (NSString *) _attributeToString: (NSLayoutAttribute)attr
@@ -349,6 +343,7 @@ static NSNotificationCenter *nc = nil;
 - (BOOL) isEqual: (NSLayoutConstraint *)constraint
 {
   BOOL result = [super isEqual: constraint];
+
   if (result == NO)
     {
       result =  (_firstItem == [constraint firstItem] &&
@@ -553,8 +548,7 @@ static NSNotificationCenter *nc = nil;
 // item1.attribute1 = multiplier × item2.attribute2 + constant
 - (void) _applyConstraint
 {
-  NSLog(@"count = %lu", [activeConstraints count]);
-  NSLog(@"priority = %f", _priority);
+  NSLog(@"self = %@", self);
 }
 
 + (void) _handleWindowResize: (NSNotification *)notification
@@ -562,10 +556,14 @@ static NSNotificationCenter *nc = nil;
   NSLayoutConstraint *c = nil;
   NSEnumerator *en = [activeConstraints objectEnumerator];
 
-  NSLog(@"Notified");
+  // Only apply to the window in the notification...
   while ((c = [en nextObject]) != nil)
     {
-      [c _applyConstraint];
+      NSWindow *w = [[c firstItem] window];
+      if (w == [notification object])
+        {
+          [c _applyConstraint];
+        }
     }
 }
 
