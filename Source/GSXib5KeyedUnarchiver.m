@@ -670,10 +670,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                              @"connectionRecords", @"key",
                                                                            nil]];
-  _constraints   = [[GSXibElement alloc] initWithType: @"array"
-                                        andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                       @"constraints", @"key",
-                                                                     nil]];
   _flattenedProperties = [[GSXibElement alloc] initWithType: @"dictionary"
                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                              @"NSMutableDictionary", @"class",
@@ -699,7 +695,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   // Create the linked set of XIB elements...
   [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
   [_IBObjectContainer setElement: _objectRecords forKey: @"objectRecords"];
-  [_IBObjectContainer setElement: _constraints forKey: @"constraints"];
   [_IBObjectContainer setElement: _flattenedProperties forKey: @"flattenedProperties"];
 }
 
@@ -707,7 +702,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 {
   RELEASE(_IBObjectContainer);
   RELEASE(_connectionRecords);
-  RELEASE(_constraints);
   RELEASE(_objectRecords);
   RELEASE(_flattenedProperties);
   RELEASE(_runtimeAttributes);

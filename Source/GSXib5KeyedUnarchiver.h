@@ -35,7 +35,6 @@
 {
   GSXibElement        *_IBObjectContainer;
   GSXibElement        *_connectionRecords;
-  GSXibElement        *_constraints;
   GSXibElement        *_objectRecords;
   GSXibElement        *_orderedObjects;
   GSXibElement        *_flattenedProperties;

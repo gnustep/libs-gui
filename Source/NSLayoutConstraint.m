@@ -210,9 +210,12 @@ static NSMutableArray *activeConstraints = nil;
   NSUInteger idx = 0;
   NSEnumerator *en = [activeConstraints objectEnumerator];
   NSLayoutConstraint *c = nil;
-  NSLog(@"Adding %@", constraint);
+
   while ((c = [en nextObject]) != nil)
     {
+      if ([activeConstraints containsObject: c])
+        break; // if it contains the current constraint, skip...
+      
       if ([c priority] < [constraint priority])
         {
           idx++;
@@ -234,6 +237,38 @@ static NSMutableArray *activeConstraints = nil;
 {
   NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
   return array;
+}
+
+// Designated initializer...
++ (instancetype) constraintWithItem: (id)view1 
+                          attribute: (NSLayoutAttribute)attr1 
+                          relatedBy: (NSLayoutRelation)relation 
+                             toItem: (id)view2 
+                          attribute: (NSLayoutAttribute)attr2 
+                         multiplier: (CGFloat)mult 
+                           constant: (CGFloat)c
+{
+  NSLayoutConstraint *constraint =
+    [[NSLayoutConstraint alloc] initWithItem: view1
+                                   attribute: attr1
+                                   relatedBy: relation
+                                      toItem: view2
+                                   attribute: attr2
+                                  multiplier: mult
+                                    constant: c];
+
+  AUTORELEASE(constraint);
+  return constraint;
+}
+
++ (void) activateConstraints: (NSArray *)constraints
+{
+  [activeConstraints addObjectsFromArray: [constraints sortedArrayUsingSelector: @selector(compare:)]];
+}
+
++ (void) deactivateConstraints: (NSArray *)constraints
+{
+  [activeConstraints removeObjectsInArray: constraints];
 }
 
 - (instancetype) initWithItem: (id)firstItem 
@@ -266,28 +301,6 @@ static NSMutableArray *activeConstraints = nil;
   return self;
 }
 
-// Designated initializer...
-+ (instancetype) constraintWithItem: (id)view1 
-                          attribute: (NSLayoutAttribute)attr1 
-                          relatedBy: (NSLayoutRelation)relation 
-                             toItem: (id)view2 
-                          attribute: (NSLayoutAttribute)attr2 
-                         multiplier: (CGFloat)mult 
-                           constant: (CGFloat)c
-{
-  NSLayoutConstraint *constraint =
-    [[NSLayoutConstraint alloc] initWithItem: view1
-                                   attribute: attr1
-                                   relatedBy: relation
-                                      toItem: view2
-                                   attribute: attr2
-                                  multiplier: mult
-                                    constant: c];
-
-  AUTORELEASE(constraint);
-  return constraint;
-}
-
 // Active  
 - (BOOL) isActive
 {
@@ -306,17 +319,8 @@ static NSMutableArray *activeConstraints = nil;
     }
 }
 
-+ (void) activateConstraints: (NSArray *)constraints
-{
-  [activeConstraints addObjectsFromArray: [constraints sortedArrayUsingSelector: @selector(_compare:)]];
-}
-
-+ (void) deactivateConstraints: (NSArray *)constraints
-{
-  [activeConstraints removeObjectsInArray: constraints];
-}
-
-- (NSComparisonResult) _compare: (NSLayoutConstraint *)constraint
+// compare and isEqual...
+- (NSComparisonResult) compare: (NSLayoutConstraint *)constraint
 {
   if ([self priority] < [constraint priority])
     {
@@ -328,6 +332,29 @@ static NSMutableArray *activeConstraints = nil;
     }
   
   return NSOrderedSame;
+}
+
+- (BOOL) isEqual: (NSLayoutConstraint *)constraint
+{
+  BOOL result = NO;
+
+  if (YES == [super isEqual: constraint])
+    {
+      result = YES;
+    }
+  else
+    {
+      result =  (_firstItem == [constraint firstItem] &&
+                 _secondItem == [constraint secondItem] &&
+                 _firstAttribute == [constraint firstAttribute] &&
+                 _secondAttribute == [constraint secondAttribute] &&
+                 _relation == [constraint relation] &&
+                 _multiplier == [constraint multiplier] &&
+                 _constant == [constraint constant] &&
+                 _priority == [constraint priority]);
+    }
+
+  return result;
 }
 
 // Items
