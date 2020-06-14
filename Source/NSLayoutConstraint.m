@@ -474,7 +474,6 @@ static NSMutableArray *activeConstraints = nil;
                                            selector: @selector(_handleWindowResize:)
                                                name: NSWindowDidResizeNotification
                                              object: [_firstItem window]];
-  NSLog(@"Decoding");
   [NSLayoutConstraint _addActiveConstraint: self];
   
   return self;
