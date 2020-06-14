@@ -348,13 +348,8 @@ static NSNotificationCenter *nc = nil;
 
 - (BOOL) isEqual: (NSLayoutConstraint *)constraint
 {
-  BOOL result = NO;
-
-  if (YES == [super isEqual: constraint])
-    {
-      result = YES;
-    }
-  else
+  BOOL result = [super isEqual: constraint];
+  if (result == NO)
     {
       result =  (_firstItem == [constraint firstItem] &&
                  _secondItem == [constraint secondItem] &&
