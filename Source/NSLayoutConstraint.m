@@ -280,7 +280,7 @@ static NSNotificationCenter *nc = nil;
                                    attribute: attr2
                                   multiplier: mult
                                     constant: c
-                                    priority: 1000.0];
+                                    priority: NSLayoutPriorityRequired];
 
   AUTORELEASE(constraint);
   return constraint;
