@@ -394,6 +394,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodePathStyle:", @"NSPathStyle",
                @"decodeFirstAttribute:", @"NSFirstAttribute",
                @"decodeSecondAttribute:", @"NSSecondAttribute",
+               @"decodeRelation:", @"NSRelation",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2861,6 +2862,27 @@ didStartElement: (NSString*)elementName
 {
   id obj = [element attributeForKey: @"secondAttribute"];
   return [self decodeConstraintAttribute: obj];
+}
+
+- (id) decodeRelation: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"relation"];
+
+  if ([obj isEqualToString: @"lessThanOrEqual"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationLessThanOrEqual];
+    }
+  else if ([obj isEqualToString: @"equal"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationEqual];
+    }
+  else if ([obj isEqualToString: @"greaterThanOrEqual"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationGreaterThanOrEqual];
+    }
+  
+  return num;
 }
 
 - (id) objectForXib: (GSXibElement*)element
