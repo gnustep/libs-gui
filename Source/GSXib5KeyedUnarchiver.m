@@ -60,7 +60,6 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
-#import "AppKit/NSLayoutConstraint.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0

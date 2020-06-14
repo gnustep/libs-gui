@@ -122,16 +122,6 @@ typedef NSUInteger NSLayoutFormatOptions;
                                  metrics: (NSDictionary *)metrics 
                                    views: (NSDictionary *)views;
 
-// GNUstep extension...
-- (instancetype) initWithItem: (id)view1 
-                    attribute: (NSLayoutAttribute)attr1 
-                    relatedBy: (NSLayoutRelation)relation 
-                       toItem: (id)view2 
-                    attribute: (NSLayoutAttribute)attr2 
-                   multiplier: (CGFloat)mult 
-                     constant: (CGFloat)c;  
-
-// Designated initializer...
 + (instancetype) constraintWithItem: (id)view1 
                           attribute: (NSLayoutAttribute)attr1 
                           relatedBy: (NSLayoutRelation)relation 

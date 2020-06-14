@@ -238,7 +238,32 @@ static NSNotificationCenter *nc = nil;
   return array;
 }
 
-// Designated initializer...
+- (instancetype) initWithItem: (id)firstItem 
+                    attribute: (NSLayoutAttribute)firstAttribute 
+                    relatedBy: (NSLayoutRelation)relation 
+                       toItem: (id)secondItem
+                    attribute: (NSLayoutAttribute)secondAttribute 
+                   multiplier: (CGFloat)multiplier
+                     constant: (CGFloat)constant
+                     priority: (CGFloat)priority;
+{
+  self = [super init];
+  if (self != nil)
+    { 
+      _firstItem = firstItem;
+      _secondItem = secondItem;
+      _firstAttribute = firstAttribute;
+      _secondAttribute = secondAttribute;
+      _relation = relation;
+      _multiplier = multiplier;
+      _constant = constant;
+      _priority = priority;
+      
+      [NSLayoutConstraint _activateConstraint: self];
+    }
+  return self;
+}
+
 + (instancetype) constraintWithItem: (id)view1 
                           attribute: (NSLayoutAttribute)attr1 
                           relatedBy: (NSLayoutRelation)relation 
@@ -254,7 +279,8 @@ static NSNotificationCenter *nc = nil;
                                       toItem: view2
                                    attribute: attr2
                                   multiplier: mult
-                                    constant: c];
+                                    constant: c
+                                    priority: 1000.0];
 
   AUTORELEASE(constraint);
   return constraint;
@@ -280,30 +306,6 @@ static NSNotificationCenter *nc = nil;
     {
       [NSLayoutConstraint _removeConstraint: c];
     }
-}
-
-- (instancetype) initWithItem: (id)firstItem 
-                    attribute: (NSLayoutAttribute)firstAttribute 
-                    relatedBy: (NSLayoutRelation)relation 
-                       toItem: (id)secondItem
-                    attribute: (NSLayoutAttribute)secondAttribute 
-                   multiplier: (CGFloat)multiplier
-                     constant: (CGFloat)constant;
-{
-  self = [super init];
-  if (self != nil)
-    { 
-      _firstItem = firstItem;
-      _secondItem = secondItem;
-      _firstAttribute = firstAttribute;
-      _secondAttribute = secondAttribute;
-      _relation = relation;
-      _multiplier = multiplier;
-      _constant = constant;
-
-      [NSLayoutConstraint _activateConstraint: self];
-    }
-  return self;
 }
 
 // Active  
@@ -447,6 +449,24 @@ static NSNotificationCenter *nc = nil;
               _secondItem = [coder decodeObjectForKey: @"NSSecondItem"];
             }
 
+          if ([coder containsValueForKey: @"NSMultiplier"])
+            {
+              _multiplier = [coder decodeFloatForKey: @"NSMultiplier"];
+            }
+          else
+            {
+              _multiplier = 1.0; // identity multiplier if not present
+            }
+
+          if ([coder containsValueForKey: @"NSRelation"])
+            {
+              _relation = [coder decodeIntegerForKey: @"NSRelation"];
+            }
+          else
+            {
+              _relation = NSLayoutRelationEqual;
+            }
+
           if ([coder containsValueForKey: @"NSPriority"])
             {
               _priority = [coder decodeFloatForKey: @"NSPriority"];
@@ -518,8 +538,8 @@ static NSNotificationCenter *nc = nil;
                                            toItem: _secondItem
                                         attribute: _secondAttribute
                                        multiplier: _multiplier
-                                         constant: _constant];
-  [constraint setPriority: [self priority]];
+                                         constant: _constant
+                                         priority: _priority];
   return constraint;
 }
 
