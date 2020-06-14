@@ -31,6 +31,7 @@
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
 
 static NSMutableArray *activeConstraints = nil;
 static NSNotificationCenter *nc = nil;
@@ -44,6 +45,25 @@ static NSNotificationCenter *nc = nil;
       [self setVersion: 1];
       activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
       nc = [NSNotificationCenter defaultCenter];
+
+      [nc addObserver: self
+             selector: @selector(_setupNotifications:)
+                 name: NSApplicationDidFinishLaunchingNotification
+               object: nil];
+    }
+}
+
++ (void) _setupNotifications: (NSNotification *)n
+{
+  NSEnumerator *en = [[NSApp windows] objectEnumerator];
+  NSWindow *w = nil;
+  
+  while ((w = [en nextObject]) != nil)
+    {
+      [nc addObserver: self
+             selector: @selector(_handleWindowResize:)
+                 name: NSWindowDidResizeNotification
+               object: w];      
     }
 }
 
@@ -204,34 +224,10 @@ static NSNotificationCenter *nc = nil;
   return r;
 }
 
-+ (void) _addActiveConstraint: (NSLayoutConstraint *)constraint
++ (void) _activateConstraint: (NSLayoutConstraint *)constraint
 {
-  NSUInteger idx = 0;
-  NSEnumerator *en = [activeConstraints objectEnumerator];
-  NSLayoutConstraint *c = nil;
-
-  while ((c = [en nextObject]) != nil)
-    {
-      if ([activeConstraints containsObject: c])
-        break; // if it contains the current constraint, skip...
-      
-      if ([c priority] < [constraint priority])
-        {
-          idx++;
-        }
-      else
-        {
-          break;
-        }
-    }
-  
-  [nc addObserver: constraint
-         selector: @selector(_handleWindowResize:)
-             name: NSWindowDidResizeNotification
-           object: [[c firstItem] window]]; 
-  
-  [activeConstraints insertObject: constraint
-                          atIndex: idx];
+  [activeConstraints addObject: constraint];
+  activeConstraints = [[activeConstraints sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
 }
 
 + (void) _removeConstraint: (NSLayoutConstraint *)constraint
@@ -278,7 +274,7 @@ static NSNotificationCenter *nc = nil;
 
   while ((c = [en nextObject]) != nil)
     {
-      [NSLayoutConstraint _addActiveConstraint: c];
+      [NSLayoutConstraint _activateConstraint: c];
     }
 }
 
@@ -312,7 +308,7 @@ static NSNotificationCenter *nc = nil;
       _multiplier = multiplier;
       _constant = constant;
 
-      [NSLayoutConstraint _addActiveConstraint: self];
+      [NSLayoutConstraint _activateConstraint: self];
     }
   return self;
 }
@@ -327,7 +323,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (flag)
     {
-      [NSLayoutConstraint _addActiveConstraint: self];
+      [NSLayoutConstraint _activateConstraint: self];
     }
   else
     {
@@ -486,7 +482,7 @@ static NSNotificationCenter *nc = nil;
         }
     }
   
-  [NSLayoutConstraint _addActiveConstraint: self];
+  [NSLayoutConstraint _activateConstraint: self];
   
   return self;
 }
@@ -559,16 +555,19 @@ static NSNotificationCenter *nc = nil;
                    _priority];
 }
 
+// item1.attribute1 = multiplier × item2.attribute2 + constant
 - (void) _applyConstraint
 {
-  NSLog(@"activeConstraints = %@", activeConstraints);
+  NSLog(@"count = %lu", [activeConstraints count]);
+  NSLog(@"priority = %f", _priority);
 }
 
-- (void) _handleWindowResize: (NSNotification *)notification
++ (void) _handleWindowResize: (NSNotification *)notification
 {
   NSLayoutConstraint *c = nil;
   NSEnumerator *en = [activeConstraints objectEnumerator];
 
+  NSLog(@"Notified");
   while ((c = [en nextObject]) != nil)
     {
       [c _applyConstraint];
