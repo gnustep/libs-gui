@@ -33,6 +33,7 @@
 #import "AppKit/NSWindow.h"
 
 static NSMutableArray *activeConstraints = nil;
+static NSNotificationCenter *nc = nil;
 
 @implementation NSLayoutConstraint
 
@@ -41,10 +42,8 @@ static NSMutableArray *activeConstraints = nil;
   if (self == [NSLayoutConstraint class])
     {
       [self setVersion: 1];
-      if (nil == activeConstraints)
-        {
-          activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
-        }
+      activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -226,8 +225,19 @@ static NSMutableArray *activeConstraints = nil;
         }
     }
   
+  [nc addObserver: constraint
+         selector: @selector(_handleWindowResize:)
+             name: NSWindowDidResizeNotification
+           object: [[c firstItem] window]]; 
+  
   [activeConstraints insertObject: constraint
                           atIndex: idx];
+}
+
++ (void) _removeConstraint: (NSLayoutConstraint *)constraint
+{
+  [activeConstraints removeObject: constraint];
+  [nc removeObserver: constraint];
 }
 
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
@@ -263,12 +273,24 @@ static NSMutableArray *activeConstraints = nil;
 
 + (void) activateConstraints: (NSArray *)constraints
 {
-  [activeConstraints addObjectsFromArray: [constraints sortedArrayUsingSelector: @selector(compare:)]];
+  NSEnumerator *en = [constraints objectEnumerator];
+  NSLayoutConstraint *c = nil;
+
+  while ((c = [en nextObject]) != nil)
+    {
+      [NSLayoutConstraint _addActiveConstraint: c];
+    }
 }
 
 + (void) deactivateConstraints: (NSArray *)constraints
 {
-  [activeConstraints removeObjectsInArray: constraints];
+  NSEnumerator *en = [constraints objectEnumerator];
+  NSLayoutConstraint *c = nil;
+
+  while ((c = [en nextObject]) != nil)
+    {
+      [NSLayoutConstraint _removeConstraint: c];
+    }
 }
 
 - (instancetype) initWithItem: (id)firstItem 
@@ -290,12 +312,6 @@ static NSMutableArray *activeConstraints = nil;
       _multiplier = multiplier;
       _constant = constant;
 
-      [[NSNotificationCenter defaultCenter] addObserver: self
-                                               selector: @selector(_handleWindowResize:)
-                                                   name: NSWindowDidResizeNotification
-                                                 object: [_firstItem window]];
-
-      NSLog(@"init");
       [NSLayoutConstraint _addActiveConstraint: self];
     }
   return self;
@@ -315,7 +331,7 @@ static NSMutableArray *activeConstraints = nil;
     }
   else
     {
-      [activeConstraints removeObject: self];
+      [NSLayoutConstraint _removeConstraint: self];
     }
 }
 
@@ -470,10 +486,6 @@ static NSMutableArray *activeConstraints = nil;
         }
     }
   
-  [[NSNotificationCenter defaultCenter] addObserver: self
-                                           selector: @selector(_handleWindowResize:)
-                                               name: NSWindowDidResizeNotification
-                                             object: [_firstItem window]];
   [NSLayoutConstraint _addActiveConstraint: self];
   
   return self;
@@ -528,7 +540,7 @@ static NSMutableArray *activeConstraints = nil;
 
 - (void) dealloc
 {
-  [activeConstraints removeObject: self];
+  [NSLayoutConstraint _removeConstraint: self];
   [super dealloc];
 }
 
