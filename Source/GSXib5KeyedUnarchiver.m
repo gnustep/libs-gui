@@ -60,6 +60,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -391,6 +392,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
                @"decodeControlContentsForElement:", @"NSControlContents",
                @"decodePathStyle:", @"NSPathStyle",
+               @"decodeFirstAttribute:", @"NSFirstAttribute",
+               @"decodeSecondAttribute:", @"NSSecondAttribute",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2782,6 +2785,82 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) decodeConstraintAttribute: (id)obj
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+
+  if ([obj isEqualToString: @"left"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLeft];
+    }
+  else if ([obj isEqualToString: @"right"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeRight];
+    }
+  else if ([obj isEqualToString: @"top"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeTop];
+    }
+  else if ([obj isEqualToString: @"bottom"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeBottom];
+    }
+  else if ([obj isEqualToString: @"leading"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLeading];
+    }
+  else if ([obj isEqualToString: @"trailing"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeTrailing];
+    }
+  else if ([obj isEqualToString: @"width"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeWidth];
+    }
+  else if ([obj isEqualToString: @"height"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeHeight];
+    }
+  else if ([obj isEqualToString: @"centerX"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeCenterX];
+    }
+  else if ([obj isEqualToString: @"centerY"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeCenterY];
+    }
+  else if ([obj isEqualToString: @"lastBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLastBaseline];
+    }
+  else if ([obj isEqualToString: @"baseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeBaseline];
+    }
+  else if ([obj isEqualToString: @"firstBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeFirstBaseline];
+    }
+  else if ([obj isEqualToString: @"notAnAttribute"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeNotAnAttribute];
+    }
+
+  return num;
+}
+
+- (id) decodeFirstAttribute: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"firstAttribute"];
+  return [self decodeConstraintAttribute: obj];
+}
+
+- (id) decodeSecondAttribute: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"secondAttribute"];
+  return [self decodeConstraintAttribute: obj];
 }
 
 - (id) objectForXib: (GSXibElement*)element
