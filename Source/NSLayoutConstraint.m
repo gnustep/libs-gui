@@ -32,7 +32,7 @@
 #import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSWindow.h"
 
-static NSMutableArray *activeConstraints;
+static NSMutableArray *activeConstraints = nil;
 
 @implementation NSLayoutConstraint
 
@@ -41,7 +41,10 @@ static NSMutableArray *activeConstraints;
   if (self == [NSLayoutConstraint class])
     {
       [self setVersion: 1];
-      activeConstraints = [NSMutableArray arrayWithCapacity: 10];
+      if (nil == activeConstraints)
+        {
+          activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
+        }
     }
 }
 
@@ -202,6 +205,28 @@ static NSMutableArray *activeConstraints;
   return r;
 }
 
++ (void) _addActiveConstraint: (NSLayoutConstraint *)constraint
+{
+  NSUInteger idx = 0;
+  NSEnumerator *en = [activeConstraints objectEnumerator];
+  NSLayoutConstraint *c = nil;
+  NSLog(@"Adding %@", constraint);
+  while ((c = [en nextObject]) != nil)
+    {
+      if ([c priority] < [constraint priority])
+        {
+          idx++;
+        }
+      else
+        {
+          break;
+        }
+    }
+  
+  [activeConstraints insertObject: constraint
+                          atIndex: idx];
+}
+
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
                                   options: (NSLayoutFormatOptions)opt 
                                   metrics: (NSDictionary *)metrics 
@@ -234,8 +259,9 @@ static NSMutableArray *activeConstraints;
                                                selector: @selector(_handleWindowResize:)
                                                    name: NSWindowDidResizeNotification
                                                  object: [_firstItem window]];
-      
-      [activeConstraints addObject: self];
+
+      NSLog(@"init");
+      [NSLayoutConstraint _addActiveConstraint: self];
     }
   return self;
 }
@@ -272,7 +298,7 @@ static NSMutableArray *activeConstraints;
 {
   if (flag)
     {
-      [activeConstraints addObject: self];
+      [NSLayoutConstraint _addActiveConstraint: self];
     }
   else
     {
@@ -282,12 +308,26 @@ static NSMutableArray *activeConstraints;
 
 + (void) activateConstraints: (NSArray *)constraints
 {
-  [activeConstraints addObjectsFromArray: constraints];
+  [activeConstraints addObjectsFromArray: [constraints sortedArrayUsingSelector: @selector(_compare:)]];
 }
 
 + (void) deactivateConstraints: (NSArray *)constraints
 {
   [activeConstraints removeObjectsInArray: constraints];
+}
+
+- (NSComparisonResult) _compare: (NSLayoutConstraint *)constraint
+{
+  if ([self priority] < [constraint priority])
+    {
+      return NSOrderedAscending;
+    }
+  else if ([self priority] > [constraint priority])
+    {
+      return NSOrderedDescending;
+    }
+  
+  return NSOrderedSame;
 }
 
 // Items
@@ -407,7 +447,8 @@ static NSMutableArray *activeConstraints;
                                            selector: @selector(_handleWindowResize:)
                                                name: NSWindowDidResizeNotification
                                              object: [_firstItem window]];
-  [activeConstraints addObject: self];
+  NSLog(@"Decoding");
+  [NSLayoutConstraint _addActiveConstraint: self];
   
   return self;
 }
@@ -468,7 +509,7 @@ static NSMutableArray *activeConstraints;
 - (NSString *) description
 {
   return [NSString stringWithFormat: @"%@ <firstItem = %@, firstAttribute = %ld, relation = %ld, secondItem = %@, "
-                   "secondAttribute = %ld, multiplier = %f, constant = %f>",
+                   "secondAttribute = %ld, multiplier = %f, constant = %f, priority = %f>",
                    [super description],
                    _firstItem,
                    _firstAttribute,
@@ -476,12 +517,24 @@ static NSMutableArray *activeConstraints;
                    _secondItem,
                    _secondAttribute,
                    _multiplier,
-                   _constant];
+                   _constant,
+                   _priority];
+}
+
+- (void) _applyConstraint
+{
+  NSLog(@"activeConstraints = %@", activeConstraints);
 }
 
 - (void) _handleWindowResize: (NSNotification *)notification
 {
-  NSLog(@"Resized");
+  NSLayoutConstraint *c = nil;
+  NSEnumerator *en = [activeConstraints objectEnumerator];
+
+  while ((c = [en nextObject]) != nil)
+    {
+      [c _applyConstraint];
+    }
 }
 
 @end

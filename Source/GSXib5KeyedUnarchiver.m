@@ -169,6 +169,7 @@ static NSDictionary *XmlKeyToDecoderSelectorMap = nil;
 static NSArray      *XmlKeysDefined  = nil;
 static NSArray      *XmlReferenceAttributes  = nil;
 static NSArray      *XmlConnectionRecordTags  = nil;
+static NSArray      *XmlConstraintRecordTags  = nil;
 static NSArray      *XmlBoolDefaultYes  = nil;
 
 + (void) initialize
@@ -230,6 +231,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
           RETAIN(XmlConnectionRecordTags);
 
+          XmlConstraintRecordTags = [NSArray arrayWithObject: @"constraint"];
+          RETAIN(XmlConstraintRecordTags);
+          
           // These cross-reference from the OLD key to the NEW key that can be referenced and its value
           // or object returned verbatim.  If an OLD XIB key does not exist and contains the 'NS' prefix
           // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
@@ -509,7 +513,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                    forKey: @"destination"];
     }
 
-  // Build a connection recort
+  // Build a connection record
   connectionRecord = [[GSXibElement alloc] initWithType: @"object"
                                           andAttributes:
                                              [NSDictionary dictionaryWithObjectsAndKeys:
@@ -666,6 +670,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                              @"connectionRecords", @"key",
                                                                            nil]];
+  _constraints   = [[GSXibElement alloc] initWithType: @"array"
+                                        andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                       @"constraints", @"key",
+                                                                     nil]];
   _flattenedProperties = [[GSXibElement alloc] initWithType: @"dictionary"
                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
                                                                              @"NSMutableDictionary", @"class",
@@ -691,6 +699,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   // Create the linked set of XIB elements...
   [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
   [_IBObjectContainer setElement: _objectRecords forKey: @"objectRecords"];
+  [_IBObjectContainer setElement: _constraints forKey: @"constraints"];
   [_IBObjectContainer setElement: _flattenedProperties forKey: @"flattenedProperties"];
 }
 
@@ -698,6 +707,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 {
   RELEASE(_IBObjectContainer);
   RELEASE(_connectionRecords);
+  RELEASE(_constraints);
   RELEASE(_objectRecords);
   RELEASE(_flattenedProperties);
   RELEASE(_runtimeAttributes);
@@ -790,6 +800,10 @@ didStartElement: (NSString*)elementName
             {
               // Need to store element for making the connections...
               [self addConnection: element];
+            }
+          else if ([XmlConstraintRecordTags containsObject: elementName])
+            {
+              [self objectForXib: element]; // decode the constraint...
             }
         }
       else
@@ -2775,12 +2789,6 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
-}
-
-- (id) decodeConstraintItem: (GSXibElement *)element
-{
-  NSLog(@"%@", element);
-  return nil;
 }
 
 - (id) objectForXib: (GSXibElement*)element
