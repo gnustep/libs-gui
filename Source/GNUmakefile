@@ -45,6 +45,9 @@ libgnustep-gui_C_FILES =
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
 NSAccessibility.m \
+NSAccessibilityCustomAction.m \
+NSAccessibilityCustomRotor.m \
+NSAccessibilityElement.m \
 NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
@@ -360,6 +363,9 @@ AppKitErrors.h \
 AppKitExceptions.h \
 NSAccessibility.h \
 NSAccessibilityConstants.h \
+NSAccessibilityCustomAction.h \
+NSAccessibilityCustomRotor.h \
+NSAccessibilityElement.h \
 NSAccessibilityProtocols.h \
 NSActionCell.h \
 NSAffineTransform.h \
