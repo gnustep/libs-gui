@@ -48,7 +48,6 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPathCell.h"
-#import "AppKit/NSPathComponentCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -157,6 +156,7 @@ static NSString *ApplicationClass = nil;
 
 @end
 
+<<<<<<< HEAD
 @interface GSScene : NSObject
 {
   NSMutableArray *scenes;
@@ -170,6 +170,8 @@ static NSString *ApplicationClass = nil;
 + (NSArray *) _generateCellsForURL: (NSURL *)url;
 @end
 
+=======
+>>>>>>> master
 @implementation GSXib5KeyedUnarchiver
 
 static NSDictionary *XmlTagToObjectClassMap = nil;
@@ -222,7 +224,11 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
+<<<<<<< HEAD
                             @"GSScene", @"scene",
+=======
+                            @"NSURL", @"url",
+>>>>>>> master
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -290,6 +296,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
                                            @"bordered", @"NSIsBordered",
                                            @"altersStateOfSelectedItem", @"NSAltersState",
+                                           @"string", @"NS.relative",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -2213,8 +2220,7 @@ didStartElement: (NSString*)elementName
     }
   else if ([class isSubclassOfClass: [NSPathCell class]])
     {
-      GSXibElement *el = [element elementForKey: @"url"];
-      object = [NSURL URLWithString: [el attributeForKey: @"string"]];
+      object = [self decodeObjectForKey: @"url"];
     }
   else
     {
@@ -3215,7 +3221,6 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
-          hasValue |= [currentElement attributeForKey: @"string"] != nil;
         }
       else if ([@"NSControlContents" isEqualToString: key])
         {

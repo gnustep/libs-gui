@@ -47,6 +47,9 @@
 
 #import <AppKit/NSAccessibility.h>
 #import <AppKit/NSAccessibilityConstants.h>
+#import <AppKit/NSAccessibilityCustomAction.h>
+#import <AppKit/NSAccessibilityCustomRotor.h>
+#import <AppKit/NSAccessibilityElement.h>
 #import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
@@ -192,6 +195,7 @@
 #import <AppKit/NSOpenGLView.h>
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSPersistentDocument.h>
 #import <AppKit/NSPathControl.h>
 #import <AppKit/NSPathCell.h>
 #import <AppKit/NSPathComponentCell.h>

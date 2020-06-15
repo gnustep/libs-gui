@@ -51,6 +51,65 @@ extern "C" {
 - (NSString *) accessibilityValue;
 @end
 
+@protocol NSAccessibilityLoadingToken
+@end
+
+@protocol NSAccessibilityGroup <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilityRadioButton <NSAccessibilityButton>
+@end
+
+@protocol NSAccessibilityCheckBox <NSAccessibilityButton>
+@end
+
+@protocol NSAccessibilityStaticText <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilityNavigableStaticText <NSAccessibilityStaticText>
+@end
+
+@protocol NSAccessibilityProgressIndicator <NSAccessibilityGroup>
+@end
+
+@protocol NSAccessibilityStepper <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilitySlider <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilityImage <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilityContainsTransientUI <NSAccessibilityElement>
+@end
+
+@protocol NSAccessibilityRow;
+
+@protocol NSAccessibilityTable <NSAccessibilityGroup>
+@end
+
+@protocol NSAccessibilityOutline <NSAccessibilityTable>
+@end
+
+@protocol NSAccessibilityList <NSAccessibilityTable>
+@end
+
+@protocol NSAccessibilityRow <NSAccessibilityGroup>
+@end
+
+@protocol NSAccessibilityLayoutArea <NSAccessibilityGroup>
+@end
+
+@protocol NSAccessibilityLayoutItem <NSAccessibilityGroup>
+@end
+
+@protocol NSAccessibilityElementLoading <NSObject>
+@end
+
+@protocol NSAccessibility <NSObject>
+@end
+
 #if	defined(__cplusplus)
 }
 #endif

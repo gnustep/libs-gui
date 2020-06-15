@@ -43,10 +43,10 @@
 
 + (NSArray *) imagePasteboardTypes
 {
-  return [NSArray arrayWithObjects: NSPDFPboardType];
+  return [NSArray arrayWithObject: NSPDFPboardType];
 }
 
-+ (NSArray *) imageUnfilteredPasteboardTYpes
++ (NSArray *) imageUnfilteredPasteboardTypes
 {
   return [self imagePasteboardTypes];
 }

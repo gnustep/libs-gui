@@ -1,3 +1,65 @@
+2020-06-15 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSAccessibilityCustomAction.h
+	* Headers/AppKit/NSAccessibilityCustomRotor.h
+	* Headers/AppKit/NSAccessibilityElement.h
+	* Headers/AppKit/NSAccessibilityProtocols.h
+	* Source/GNUmakefile
+	* Source/NSAccessibilityCustomAction.m
+	* Source/NSAccessibilityCustomRotor.m
+	* Source/NSAccessibilityElement.m: Add skeletons for
+        these classes. Future support of accessibility features
+        will fill these in.
+
+2020-06-12  Yavor Doganov  <yavor@gnu.org>
+
+	* Headers/AppKit/NSApplication.h: Remove semicolons from the
+	NSAppKitVersionNumber* definitions.
+
+2020-05-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfGrammar.y: Correct encoding handling.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+	* TextConverters/RTF/RTFConsumer.m: Add code to handle code page 10000.
+
+2020-05-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSColor.h,
+	* Source/NSColor.m: Add newer Cocoa methods.
+
+2020-05-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeFirstResponder, -sendEvent:): Correct
+	handling of new first responder not becoming first responder.
+	Patch suggested by Josh Freeman <pikopixel@twilightedge.com>.
+
+2020-05-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Clean up NSPathCell decoding.
+
+2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStringDrawing.m: Initialize all the cache entries as
+	not used.
+
+2020-05-09 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPersistentDocument.[hm]: Add implementation of abstract
+	class for NSPersistentDocument.
+
+2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m (_addExtraLineFragment): Make
+	sure curParagraphStyle and line_height always have useful values.
+
+2020-05-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-initWithContentRect:...defer:): Call
+	setFrame:display: to ensure the minium and maximum size gets enforced.
+	* Source/NSFont.m (-description): Add this method.
+
 2020-05-06 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
@@ -20,6 +82,12 @@
 	* Source/NSPathControlItem.m: Path items
 	* Source/NSPathControl.m: Path control to contain path cell and
         components.
+
+2020-04-30  Yavor Doganov  <yavor@gnu.org>
+
+	* Documentation/GSSpeechRecognitionServer.1: Add simplistic
+	manpage for GSSpeechRecognitionServer.
+	* Documentation/GNUmakefile: Install it conditionally.
 
 2020-04-26 Gregory John Casamento <greg.casamento@gmail.com>
 

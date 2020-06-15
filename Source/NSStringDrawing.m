@@ -126,7 +126,8 @@ static void init_string_drawing(void)
       [textContainer setLineFragmentPadding: 0];
       [layoutManager addTextContainer: textContainer];
       [textContainer release];
-      
+
+      cache[i].used = 0;
       cache[i].textStorage = textStorage;
       cache[i].layoutManager = layoutManager;
       cache[i].textContainer = textContainer;
