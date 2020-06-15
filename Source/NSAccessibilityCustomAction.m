@@ -27,7 +27,7 @@
 @implementation NSAccessibilityCustomAction
 
 - (instancetype)initWithName: (NSString *)name
-                     handler: (GSCustomActionHandler)handler
+                     handler: (GSAccessibilityCustomActionHandler)handler
 {
   return nil;
 }
@@ -48,12 +48,12 @@
 {
 }
   
-- (GSCustomActionHandler) handler
+- (GSAccessibilityCustomActionHandler) handler
 {
   return nil;
 }
 
-- (void) setHandler: (GSCustomActionHandler)handler
+- (void) setHandler: (GSAccessibilityCustomActionHandler)handler
 {
 }
 
