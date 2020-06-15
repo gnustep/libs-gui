@@ -1,9 +1,6 @@
 MISSING HEADERS
 ---
 > NSATSTypesetter.h
-> NSAccessibilityCustomAction.h
-> NSAccessibilityCustomRotor.h
-> NSAccessibilityElement.h
 > NSCollectionViewCompositionalLayout.h
 > NSCollectionViewFlowLayout.h
 > NSCollectionViewGridLayout.h
