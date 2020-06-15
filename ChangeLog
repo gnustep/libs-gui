@@ -1,3 +1,17 @@
+2020-06-15 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSAccessibilityCustomAction.h
+	* Headers/AppKit/NSAccessibilityCustomRotor.h
+	* Headers/AppKit/NSAccessibilityElement.h
+	* Headers/AppKit/NSAccessibilityProtocols.h
+	* Source/GNUmakefile
+	* Source/NSAccessibilityCustomAction.m
+	* Source/NSAccessibilityCustomRotor.m
+	* Source/NSAccessibilityElement.m: Add skeletons for
+        these classes. Future support of accessibility features
+        will fill these in.
+
 2020-06-12  Yavor Doganov  <yavor@gnu.org>
 
 	* Headers/AppKit/NSApplication.h: Remove semicolons from the
