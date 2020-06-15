@@ -25,6 +25,90 @@
 #import "AppKit/NSAccessibilityCustomRotor.h"
 
 @implementation NSAccessibilityCustomRotor
+  
+- (instancetype) initWithLabel: (NSString *)label
+            itemSearchDelegate: (id<NSAccessibilityCustomRotorItemSearchDelegate>)delegate
+{
+  return nil;
+}
+
+- (instancetype) initWithRotorType: (NSAccessibilityCustomRotorType)rotorType
+                itemSearchDelegate: (id<NSAccessibilityCustomRotorItemSearchDelegate>)delegate
+{
+  return nil;
+}
+
+- (NSAccessibilityCustomRotorType) type
+{
+  return 0;
+}
+
+- (void) setType: (NSAccessibilityCustomRotorType)type
+{
+}
+
+- (NSString *) label
+{
+  return nil;
+}
+
+- (void) setLabel: (NSString *)label
+{
+}
+
+- (id<NSAccessibilityCustomRotorItemSearchDelegate>) itemSearchDelegate
+{
+  return nil;
+}
+
+- (void) setItemSearchDelegate: (id<NSAccessibilityCustomRotorItemSearchDelegate>) delegate
+{
+}
+
+- (id<NSAccessibilityElementLoading>) itemLoadingDelegate
+{
+  return nil;
+}
+
+- (void) setItemLoadingDelegate: (id<NSAccessibilityElementLoading>) delegate
+{
+}
+  
+@end
+
+// Results...
+@implementation NSAccessibilityCustomRotorItemResult : NSObject
+
+- (instancetype)initWithTargetElement:(id<NSAccessibilityElement>)targetElement
+{
+  return nil;
+}
+
+- (instancetype)initWithItemLoadingToken: (id<NSAccessibilityLoadingToken>)token
+                             customLabel: (NSString *)customLabel
+{
+  return nil;
+}
+
+- (id<NSAccessibilityElement>) targetElement;
+{
+  return nil;
+}
+
+- (id<NSAccessibilityLoadingToken>) itemLoadingToken
+{
+  return nil;
+}
+
+- (NSRange) targetRange
+{
+  return NSMakeRange(0,NSNotFound);
+}
+
+- (NSString *) customLabel
+{
+  return nil;
+}
 
 @end
 

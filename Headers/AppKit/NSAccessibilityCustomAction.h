@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-  DEFINE_BLOCK_TYPE(GSCustomActionHandler, BOOL, void);
+DEFINE_BLOCK_TYPE(GSCustomActionHandler, BOOL, void);
   
 @interface NSAccessibilityCustomAction : NSObject
 

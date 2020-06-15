@@ -26,5 +26,54 @@
 
 @implementation NSAccessibilityCustomAction
 
+- (instancetype)initWithName: (NSString *)name
+                     handler: (GSCustomActionHandler)handler
+{
+  return nil;
+}
+
+- (instancetype)initWithName: (NSString *)name
+                      target: (id)target
+                    selector: (SEL)selector
+{
+  return nil;
+}
+
+- (NSString *) name
+{
+  return nil;
+}
+
+- (void) setName: (NSString *)name
+{
+}
+  
+- (GSCustomActionHandler) handler
+{
+  return nil;
+}
+
+- (void) setHandler: (GSCustomActionHandler)handler
+{
+}
+
+- (id) target
+{
+  return nil;
+}
+
+- (void) setTarget: (id)target
+{
+}
+
+- (SEL) selector
+{
+  return NULL;
+}
+
+- (void) setSelector: (SEL)selector
+{
+}
+
 @end
 
