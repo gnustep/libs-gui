@@ -156,22 +156,10 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-<<<<<<< HEAD
-@interface GSScene : NSObject
-{
-  NSMutableArray *scenes;
-}
-@end
-
-@implementation GSScene
-@end
-
 @interface NSPathCell (Private)
 + (NSArray *) _generateCellsForURL: (NSURL *)url;
 @end
 
-=======
->>>>>>> master
 @implementation GSXib5KeyedUnarchiver
 
 static NSDictionary *XmlTagToObjectClassMap = nil;
@@ -224,11 +212,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
-<<<<<<< HEAD
-                            @"GSScene", @"scene",
-=======
                             @"NSURL", @"url",
->>>>>>> master
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -238,7 +222,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
           RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"GS", @"IB", nil];
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
