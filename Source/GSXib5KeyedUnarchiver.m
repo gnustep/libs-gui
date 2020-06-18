@@ -2977,9 +2977,13 @@ didStartElement: (NSString*)elementName
           id             destObj          = [self objectForXib: destElem];
           
           [(GSXib5Element*)element setAttribute: targObj forKey: @"target"];
-          [(GSXib5Element*)element setAttribute: targObj forKey: @"source"];
           [(GSXib5Element*)element setAttribute: destObj forKey: @"destination"];
+          
+          // For XIB 5 bindings - this is to fool the existing initWithCoder in NSNibBindingConnector...
           [(GSXib5Element*)element setAttribute: @"2" forKey: @"nibBindingConnectorVersion"];
+          // Also for XB 5 bindings - but we're on;y setting this if it doesn't exist...
+          if (nil == [element attributeForKey: @"source"])
+            [(GSXib5Element*)element setAttribute: targObj forKey: @"source"];
 
           if ([@"outlet" isEqualToString: elementName])
             classname = @"IBOutletConnection5";
