@@ -244,11 +244,11 @@ static NSString *ApplicationClass = nil;
           //[destination setTarget: source]; // Not needed???
           [destination performSelector: trigsel withObject: sel];
         }
-      else if (nil == sel)
+      else if ((SEL)nil == sel)
         {
           NSWarnMLog(@"label %@ does not correspond to any selector", label);
         }
-      else if (nil == trigsel)
+      else if ((SEL)nil == trigsel)
         {
           NSWarnMLog(@"trigger %@ does not correspond to any selector", trigger);
         }
@@ -264,6 +264,71 @@ static NSString *ApplicationClass = nil;
   
   // Otherwise invoke the super class' method...
   [super establishConnection];
+}
+
+@end
+
+#pragma mark - Extended XIB 5 IBBindingConnection...
+@interface NSNibBindingConnector5 : NSNibBindingConnector
+@end
+
+@implementation NSNibBindingConnector5
+
+- (id) initWithCoder: (NSCoder*)coder
+{
+  if (self = [super initWithCoder: coder]) // Avoid super class init...
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          // label and source string tags have changed for XIB5...
+          ASSIGN(_binding, [coder decodeObjectForKey: @"name"]);
+          ASSIGN(_keyPath, [coder decodeObjectForKey: @"keyPath"]);
+          // No options in XIB 5
+          //ASSIGN(_options, [aDecoder decodeObjectForKey: @"NSOptions"]);
+        }
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+
+  return self;
+}
+
+@end
+
+#pragma mark - Extended XIB 5 IBBindingConnection...
+@interface IBBindingConnection5 : IBBindingConnection
+@end
+
+@implementation IBBindingConnection5
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+  {
+    if ([coder allowsKeyedCoding])
+    {
+      connector = [[NSNibBindingConnector5 alloc] initWithCoder: coder];
+      
+      // label and source string tags have changed for XIB5...
+      ASSIGN(label, [coder decodeObjectForKey: @"name"]);
+      //ASSIGN(source, [coder decodeObjectForKey: @"target"]);
+      // destination string tag is still the same (so far) and loaded
+      // by base class...
+      //ASSIGN(destination, [coder decodeObjectForKey: @"destination"]);
+    }
+    else
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+       NSStringFromClass([coder class])];
+    }
+  }
+  return self;
 }
 
 @end
@@ -395,8 +460,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
                                                    @"customCell"                    : @"NSCell", // May have to add a NSCustomCell class
                                                    @"customObject"                  : @"NSCustomObject5",
                                                    @"userDefinedRuntimeAttribute"   : @"IBUserDefinedRuntimeAttribute5",
-                                                   //@"outlet"                        : @"IBOutletConnection5",
                                                    //@"action"                        : @"IBActionConnection5",
+                                                   //@"binding"                       : @"IBABindingConnection5",
+                                                   //@"outlet"                        : @"IBOutletConnection5",
                                                    @"window"                        : @"NSWindowTemplate5",
                                                    @"tableCellView"                 : @"NSView" };
             RETAIN(XmltagToObjectClassCrossReference);
@@ -413,7 +479,7 @@ static NSArray      *XmlConnectionRecordTags  = nil;
             XmlReferenceAttributes = @[ @"headerView", @"initialItem" ];
             RETAIN(XmlReferenceAttributes);
             
-            XmlConnectionRecordTags = @[ @"action", @"outlet" ];
+            XmlConnectionRecordTags = @[ @"action", @"binding", @"outlet" ];
             RETAIN(XmlConnectionRecordTags);
 
             // These cross-reference from the OLD key to the NEW key that can be referenced and it's value
@@ -2898,8 +2964,9 @@ didStartElement: (NSString*)elementName
     {
       NSString *elementName = [element type];
 
-      if (([@"outlet" isEqualToString: elementName]) ||
-          ([@"action" isEqualToString: elementName]))
+      if (([@"action" isEqualToString: elementName]) ||
+          ([@"binding" isEqualToString: elementName]) ||
+          ([@"outlet" isEqualToString: elementName]))
         {
           NSString      *classname        = nil;
           NSString      *targID           = [element attributeForKey: @"target"];
@@ -2910,10 +2977,14 @@ didStartElement: (NSString*)elementName
           id             destObj          = [self objectForXib: destElem];
           
           [(GSXib5Element*)element setAttribute: targObj forKey: @"target"];
+          [(GSXib5Element*)element setAttribute: targObj forKey: @"source"];
           [(GSXib5Element*)element setAttribute: destObj forKey: @"destination"];
-          
+          [(GSXib5Element*)element setAttribute: @"2" forKey: @"nibBindingConnectorVersion"];
+
           if ([@"outlet" isEqualToString: elementName])
             classname = @"IBOutletConnection5";
+          else if ([@"binding" isEqualToString: elementName])
+            classname = @"IBBindingConnection5";
           else
             classname = @"IBActionConnection5";
           
