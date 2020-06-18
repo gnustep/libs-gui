@@ -44,15 +44,15 @@
 #import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
-@interface NSApplication (NibCompatibility)
+@interface NSApplication (StoryboardCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
 @end
 
-@interface NSMenu (XibCompatibility)
+@interface NSMenu (StoryboardCompatibility)
 - (BOOL) _isMainMenu;
 @end
 
-@implementation NSMenu (XibCompatibility)
+@implementation NSMenu (StoryboardCompatibility)
 
 - (BOOL) _isMainMenu
 {
@@ -62,19 +62,6 @@
 }
 
 @end
-
-
-@interface GSXibKeyedUnarchiver (DebugMethods)
-- (NSDictionary *) objects;
-@end
-
-@implementation GSXibKeyedUnarchiver (DebugMethods)
-- (NSDictionary *) objects
-{
-  return objects;
-}
-@end
-
 
 @interface GSStoryboardLoader: GSModelLoader
 {
@@ -90,7 +77,7 @@
 
 + (float) priority
 {
-  return 5.0;
+  return 6.0;
 }
 
 - (void) awake: (NSArray *)rootObjects
@@ -104,7 +91,7 @@
 
   if ([rootObjects count] == 0)
     {
-      NSWarnMLog(@"No root objects in XIB!");
+      NSWarnMLog(@"No root objects in storyboard!");
       return;
     }
 
