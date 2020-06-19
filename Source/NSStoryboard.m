@@ -47,6 +47,11 @@ static NSStoryboard *mainStoryboard = nil;
 }
 
 // Class methods...
++ (void) setMainStoryboard: (NSStoryboard *)storyboard
+{
+  mainStoryboard = storyboard;
+}
+
 + (NSStoryboard *) mainStoryboard // 10.13
 {
   return mainStoryboard;

@@ -48,6 +48,13 @@
 
 char **NSArgv = NULL;
 
+@interface NSStoryboard (Private)
+
++ (void) setMainStoryboard: (NSStoryboard *)storyboard;
+
+@end
+
+
 /*
  * Main initialization routine for the GNUstep GUI Library Apps
  */
@@ -91,10 +98,15 @@ NSApplicationMain(int argc, const char **argv)
       mainModelFile = [infoDict objectForKey: @"NSMainStoryboardFile"];
       if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
         {
-          if ([NSStoryboard storyboardWithName: mainModelFile
-                                        bundle: [NSBundle mainBundle]] == nil)
+          NSStoryboard *storyboard = [NSStoryboard storyboardWithName: mainModelFile
+                                        bundle: [NSBundle mainBundle]];
+          if (storyboard == nil)
             {
               NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
+            }
+          else
+            {
+              [NSStoryboard setMainStoryboard: storyboard];
             }
         }
       else
