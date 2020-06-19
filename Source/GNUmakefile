@@ -162,6 +162,8 @@ NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
+NSStoryboard.m \
+NSStoryboardSegue.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
@@ -525,6 +527,8 @@ NSSplitView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
+NSStoryboard.h \
+NSStoryboardSegue.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \

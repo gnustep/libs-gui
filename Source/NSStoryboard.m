@@ -24,7 +24,40 @@
 
 #import <AppKit/NSStoryboard.h>
 
+static NSStoryboard *mainStoryboard = nil;
+
 @implementation NSStoryboard
 
++ (NSStoryboard *) mainStoryboard // 10.13
+{
+  return mainStoryboard;
+}
+
++ (instancetype) storyboardWithName: (NSStoryboardName)name
+                             bundle: (NSBundle *)bundle
+{
+  return nil;
+}
+
+- (id) instantiateInitialController
+{
+  return nil;
+}
+
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block // 10.15
+{
+  return nil;
+}
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
+{
+  return nil;
+}
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
+                                   creator: (NSStoryboardControllerCreator)block  // 10.15
+{
+  return nil;
+}
 @end
 

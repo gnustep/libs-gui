@@ -44,6 +44,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/DPSOperators.h"
+#import "AppKit/NSStoryboard.h"
 
 char **NSArgv = NULL;
 

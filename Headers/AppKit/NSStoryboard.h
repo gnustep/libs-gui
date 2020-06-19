@@ -33,8 +33,28 @@
 extern "C" {
 #endif
 
+@class NSString, NSBundle;
+  
+typedef NSString *NSStoryboardName;
+typedef NSString *NSStoryboardSceneIdentifier;
+
+DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
+
 @interface NSStoryboard : NSObject
 
++ (NSStoryboard *) mainStoryboard; // 10.13
+  
++ (instancetype) storyboardWithName: (NSStoryboardName)name
+                             bundle: (NSBundle *)bundle;
+
+- (id) instantiateInitialController;
+
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block; // 10.15
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier;
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
+                                   creator: (NSStoryboardControllerCreator)block;  // 10.15
 @end
 
 #if	defined(__cplusplus)
