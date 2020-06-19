@@ -91,7 +91,8 @@ NSApplicationMain(int argc, const char **argv)
       mainModelFile = [infoDict objectForKey: @"NSMainStoryboardFile"];
       if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
         {
-          if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO)
+          if ([NSStoryboard storyboardWithName: mainModelFile
+                                        bundle: [NSBundle mainBundle]] == nil)
             {
               NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
             }

@@ -22,12 +22,31 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSStoryboard.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSData.h>
+
+#import "AppKit/NSStoryboard.h"
 
 static NSStoryboard *mainStoryboard = nil;
 
 @implementation NSStoryboard
 
+// Private instance methods...
+- (id) initWithName: (NSStoryboardName)name
+             bundle: (NSBundle *)bundle
+{
+  self = [super init];
+  if (self != nil)
+    {
+      NSString *path = [bundle pathForResource: name
+                                        ofType: @"storyboard"];
+      _storyboardData = [[NSData alloc] initWithContentsOfFile: path];
+    }
+  return self;
+}
+
+// Class methods...
 + (NSStoryboard *) mainStoryboard // 10.13
 {
   return mainStoryboard;
@@ -36,7 +55,15 @@ static NSStoryboard *mainStoryboard = nil;
 + (instancetype) storyboardWithName: (NSStoryboardName)name
                              bundle: (NSBundle *)bundle
 {
-  return nil;
+  return AUTORELEASE([[NSStoryboard alloc] initWithName: name
+                                                 bundle: bundle]);
+}
+
+// Instance methods...
+- (void) dealloc
+{
+  RELEASE(_storyboardData);
+  [super dealloc];
 }
 
 - (id) instantiateInitialController

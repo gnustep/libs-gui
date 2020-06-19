@@ -41,7 +41,10 @@ typedef NSString *NSStoryboardSceneIdentifier;
 DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 
 @interface NSStoryboard : NSObject
-
+{
+  NSData *_storyboardData;
+}
+  
 + (NSStoryboard *) mainStoryboard; // 10.13
   
 + (instancetype) storyboardWithName: (NSStoryboardName)name
