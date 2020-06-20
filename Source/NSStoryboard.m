@@ -25,12 +25,19 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSXMLDocument.h>
 
 #import "AppKit/NSStoryboard.h"
 
 static NSStoryboard *mainStoryboard = nil;
 
 @implementation NSStoryboard
+
+- (void) _processStoryboard
+{
+  NSArray *array = [_storyboardData nodesForXPath: @"//scene" error: NULL];
+  NSLog(@"%@",array);
+}
 
 // Private instance methods...
 - (id) initWithName: (NSStoryboardName)name
@@ -41,7 +48,13 @@ static NSStoryboard *mainStoryboard = nil;
     {
       NSString *path = [bundle pathForResource: name
                                         ofType: @"storyboard"];
-      _storyboardData = [[NSData alloc] initWithContentsOfFile: path];
+      NSData *data = [NSData dataWithContentsOfFile: path];
+      
+      _storyboardData = [[NSXMLDocument alloc] initWithData:data
+                                                    options:0
+                                                      error:NULL];
+
+      [self _processStoryboard];
     }
   return self;
 }
