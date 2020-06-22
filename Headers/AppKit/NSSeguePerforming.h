@@ -1,4 +1,4 @@
-/* Definition of class NSSequePerforming
+/* Definition of class NSSeguePerforming
    Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory Casamento
