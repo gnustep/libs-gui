@@ -22,10 +22,11 @@
    Boston, MA 02110 USA.
 */
 
-#ifndef _NSSequePerforming_h_GNUSTEP_GUI_INCLUDE
-#define _NSSequePerforming_h_GNUSTEP_GUI_INCLUDE
+#ifndef _NSSeguePerforming_h_GNUSTEP_GUI_INCLUDE
+#define _NSSeguePerforming_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/NSStoryboardSegue.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -34,7 +35,14 @@ extern "C" {
 #endif
 
 @protocol NSSequePerforming
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender;
 
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender;
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender;
 @end
 
 #if	defined(__cplusplus)
@@ -43,5 +51,5 @@ extern "C" {
 
 #endif	/* GS_API_MACOSX */
 
-#endif	/* _NSSequePerforming_h_GNUSTEP_GUI_INCLUDE */
+#endif	/* _NSSeguePerforming_h_GNUSTEP_GUI_INCLUDE */
 

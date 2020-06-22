@@ -22,9 +22,56 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSStoryboardSegue.h>
+#import "AppKit/NSStoryboardSegue.h"
 
 @implementation NSStoryboardSegue
+
+- (id) sourceController
+{
+  return _sourceController;
+}
+
+- (id) destinationController
+{
+  return _destinationController;
+}
+
+- (NSStoryboardSegueIdentifier)identifier
+{
+  return _identifier;
+}
+
++ (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                             source: (id)sourceController 
+                        destination: (id)destinationController 
+                     performHandler: (GSStoryboardSeguePerformHandler)performHandler
+{
+  NSStoryboardSegue *segue = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
+                                                                    source: sourceController
+                                                               destination: destinationController];
+  AUTORELEASE(segue);
+  CALL_BLOCK_NO_ARGS(performHandler);
+  return segue;
+}
+
+- (instancetype)initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            source: (id)sourceController 
+                       destination: (id)destinationController
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_sourceController, sourceController);
+      ASSIGN(_destinationController, destinationController);
+      ASSIGN(_identifier, identifier);
+    }
+  return self;
+}
+
+- (void)perform
+{
+  // TBD...
+}
 
 @end
 

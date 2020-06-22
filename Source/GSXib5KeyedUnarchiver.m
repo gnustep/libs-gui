@@ -169,13 +169,13 @@ static NSArray      *XmlReferenceAttributes  = nil;
 static NSArray      *XmlConnectionRecordTags  = nil;
 static NSArray      *XmlBoolDefaultYes  = nil;
 
-@interface NSString (XibExtension)
+@interface NSString (___XibExtension___)
 
 - (BOOL) hasPrefixedClassName;
 
 @end
 
-@implementation NSString (XibExtension)
+@implementation NSString (___XibExtension___)
 
 - (BOOL) hasPrefixedClassName
 {
@@ -198,7 +198,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // associated class...
           XmlTagToObjectClassMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"NSMutableArray", @"scenes",
                             @"NSMutableArray", @"objects",
                             @"NSMutableArray", @"items",
                             @"NSMutableArray", @"tabViewItems",
@@ -225,8 +224,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
-                            @"GSStoryboardScene", @"scene",
-                            @"GSStoryboardDocument", @"document",
                             @"NSURL", @"url",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
@@ -237,7 +234,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
           RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", @"GS", nil];
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",

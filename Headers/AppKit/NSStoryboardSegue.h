@@ -32,9 +32,33 @@
 #if	defined(__cplusplus)
 extern "C" {
 #endif
+  
+typedef NSString *NSStoryboardSegueIdentifier;
 
+DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardSeguePerformHandler, void);
+  
 @interface NSStoryboardSegue : NSObject
+{
+  id _sourceController;
+  id _destinationController;
+  NSStoryboardSegueIdentifier _identifier;
+}
 
+- (id) sourceController;
+- (id) destinationController;
+- (NSStoryboardSegueIdentifier)identifier;
+
++ (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                             source: (id)sourceController 
+                        destination: (id)destinationController 
+                     performHandler: (GSStoryboardSeguePerformHandler)performHandler;
+
+- (instancetype)initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            source: (id)sourceController 
+                       destination: (id)destinationController;
+
+- (void)perform;
+  
 @end
 
 #if	defined(__cplusplus)
