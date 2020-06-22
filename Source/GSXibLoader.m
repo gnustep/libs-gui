@@ -140,7 +140,7 @@
 
 - (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone;
+              withZone: (NSZone *)zone
 {
   BOOL loaded = NO;
 

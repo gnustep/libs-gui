@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-@class NSString, NSBundle, NSXMLDocument;
+  @class NSString, NSBundle, NSXMLDocument, NSArray, NSMutableDictionary;
   
 typedef NSString *NSStoryboardName;
 typedef NSString *NSStoryboardSceneIdentifier;
@@ -42,7 +42,9 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 
 @interface NSStoryboard : NSObject
 {
-  NSXMLDocument *_storyboardData;
+  NSMutableDictionary *_scenesMap;
+  NSString *_initialViewControllerId;
+  NSString *_applicationSceneId;
 }
   
 + (NSStoryboard *) mainStoryboard; // 10.13

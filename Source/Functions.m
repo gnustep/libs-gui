@@ -107,6 +107,7 @@ NSApplicationMain(int argc, const char **argv)
           else
             {
               [NSStoryboard setMainStoryboard: storyboard];
+              [storyboard instantiateInitialController];
             }
         }
       else

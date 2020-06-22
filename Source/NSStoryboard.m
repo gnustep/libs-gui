@@ -26,17 +26,117 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSXMLDocument.h>
+#import <Foundation/NSXMLElement.h>
+#import <Foundation/NSXMLNode.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArray.h>
 
 #import "AppKit/NSStoryboard.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
 
 static NSStoryboard *mainStoryboard = nil;
 
 @implementation NSStoryboard
 
-- (void) _processStoryboard
+- (void) _processStoryboard: (NSXMLDocument *)storyboardXml
 {
-  NSArray *array = [_storyboardData nodesForXPath: @"//scene" error: NULL];
-  NSLog(@"%@",array);
+  NSArray *docNodes = [storyboardXml nodesForXPath: @"document" error: NULL];
+
+  if ([docNodes count] > 0)
+    {
+      NSXMLElement *docNode = [docNodes objectAtIndex: 0];
+      NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
+      NSEnumerator *en = [array objectEnumerator];
+      NSXMLElement *e = nil;  
+      
+      // Set initial view controller...
+      ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);             
+      _scenesMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
+
+      while ((e = [en nextObject]) != nil)
+        {
+          NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
+          NSArray *children = [e children];
+          NSEnumerator *ce = [children objectEnumerator];
+          NSXMLElement *child = nil;
+          NSXMLDocument *document = nil;
+          NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
+          
+          // Copy children...
+          while ((child = [ce nextObject]) != nil)
+            {
+              if ([[child name] isEqualToString: @"point"] == YES)
+                continue; // go on if it's point, we don't use that in the app...
+              
+              NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
+              NSXMLNode *appNode = [subnodes objectAtIndex: 0];
+              if ([[appNode name] isEqualToString: @"application"] == YES)
+                {
+                  NSXMLElement *objects = (NSXMLElement *)[appNode parent];// [[appNode children] objectAtIndex: 0];
+                  NSArray *appChildren = [appNode children];
+                  NSEnumerator *ace = [appChildren objectEnumerator];
+                  NSXMLElement *ae = nil;
+                  
+                  // Move all application children to objects...
+                  while ((ae = [ace nextObject]) != nil)
+                    {
+                      [ae detach];
+                      [objects addChild: ae];
+                    }
+                  
+                  // Remove the appNode
+                  [appNode detach];
+                  
+                  /*
+                    <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+                      <connections>
+                        <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+                      </connections>
+                    </customObject>
+                  */
+                  
+                  // create a customObject entry for NSApplication reference...
+                  NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
+                  NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
+                                                          stringValue: @"-2"];
+                  NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
+                                                          stringValue: @"File's Owner"];
+                  NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
+                                                          stringValue: @"NSApplication"];
+                  [customObject addAttribute: idValue];
+                  [customObject addAttribute: usrLabel];
+                  [customObject addAttribute: customCls];
+                  
+                  // Add it to the document
+                  [objects addChild: customObject];
+                  [objects detach];
+                  [doc addChild: objects];
+                  RELEASE(customObject);
+                  
+                  // Assign application scene...
+                  ASSIGN(_applicationSceneId, sceneId);
+                }
+              else
+                {
+                  [child detach];
+                  [doc addChild: child];
+                }
+              
+              // Create document...
+              document = [[NSXMLDocument alloc] initWithRootElement: doc];
+              [_scenesMap setObject: document
+                             forKey: sceneId];
+              RELEASE(document);
+            }
+        }
+    }
+  else
+    {
+      NSLog(@"No document element in storyboard file");
+    }
+
+  NSLog(@"map = %@", _scenesMap);
+  NSLog(@"initial = %@", _initialViewControllerId);
 }
 
 // Private instance methods...
@@ -50,17 +150,18 @@ static NSStoryboard *mainStoryboard = nil;
                                         ofType: @"storyboard"];
       NSData *data = [NSData dataWithContentsOfFile: path];
       
-      _storyboardData = [[NSXMLDocument alloc] initWithData:data
-                                                    options:0
-                                                      error:NULL];
+      NSXMLDocument *storyboardXml = [[NSXMLDocument alloc] initWithData: data
+                                                                 options: 0
+                                                                   error: NULL];
+      AUTORELEASE(storyboardXml);
 
-      [self _processStoryboard];
+      [self _processStoryboard: storyboardXml];
     }
   return self;
 }
 
 // Class methods...
-+ (void) setMainStoryboard: (NSStoryboard *)storyboard
++ (void) setMainStoryboard: (NSStoryboard *)storyboard  // private, only called from NSApplicationMain()
 {
   mainStoryboard = storyboard;
 }
@@ -80,12 +181,40 @@ static NSStoryboard *mainStoryboard = nil;
 // Instance methods...
 - (void) dealloc
 {
-  RELEASE(_storyboardData);
+  RELEASE(_initialViewControllerId);
+  RELEASE(_applicationSceneId);
+  RELEASE(_scenesMap);
   [super dealloc];
 }
 
 - (id) instantiateInitialController
 {
+  NSXMLDocument *xml = [_scenesMap objectForKey: _applicationSceneId];
+  NSData *xmlData = [xml XMLData];
+  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
+  BOOL success = [loader loadModelData: xmlData
+                     externalNameTable: nil
+                              withZone: [self zone]];
+
+  if (success)
+    {
+      xml = [_scenesMap objectForKey: _applicationSceneId];
+      xmlData = [xml XMLData];
+      loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
+      success = [loader loadModelData: xmlData
+                    externalNameTable: nil
+                             withZone: [self zone]];
+      
+      if (success == NO)
+        {
+          NSLog(@"Couldn't load initial view controller");
+        }
+    }
+  else
+    {
+      NSLog(@"Couldn't load application scene.");
+    }
+  
   return nil;
 }
 
