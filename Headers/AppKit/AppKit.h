@@ -227,6 +227,7 @@
 #import <AppKit/NSStepperCell.h>
 #import <AppKit/NSStoryboard.h>
 #import <AppKit/NSStoryboardSegue.h>
+#import <AppKit/NSSeguePerforming.h>
 #import <AppKit/NSSwitch.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>

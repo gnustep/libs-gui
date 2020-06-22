@@ -286,9 +286,6 @@ GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
-GSStoryboardDocument.m \
-GSStoryboardScene.m \
-GSStoryboardSegue.m \
 GSSlideView.m \
 GSTextStorage.m \
 GSTrackingRect.m \
@@ -528,6 +525,7 @@ NSStepperCell.h \
 NSStepperTouchBarItem.h \
 NSStoryboard.h \
 NSStoryboardSegue.h \
+NSSeguePerforming.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \
