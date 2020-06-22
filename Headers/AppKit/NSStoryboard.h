@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-  @class NSString, NSBundle, NSXMLDocument, NSArray, NSMutableDictionary;
+@class NSString, NSBundle, NSMutableDictionary;
   
 typedef NSString *NSStoryboardName;
 typedef NSString *NSStoryboardSceneIdentifier;

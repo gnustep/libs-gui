@@ -31,7 +31,10 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
 
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSStoryboard.h"
+
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
 static NSStoryboard *mainStoryboard = nil;
@@ -73,6 +76,13 @@ static NSStoryboard *mainStoryboard = nil;
               if ([[appNode name] isEqualToString: @"application"] == YES)
                 {
                   NSXMLElement *objects = (NSXMLElement *)[appNode parent];// [[appNode children] objectAtIndex: 0];
+                  NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
+                  NSXMLNode *appCons = [appConsArr objectAtIndex: 0];
+                  if (appCons != nil)
+                    {
+                      [appCons detach];
+                    }
+                  
                   NSArray *appChildren = [appNode children];
                   NSEnumerator *ace = [appChildren objectEnumerator];
                   NSXMLElement *ae = nil;
@@ -98,7 +108,7 @@ static NSStoryboard *mainStoryboard = nil;
                   // create a customObject entry for NSApplication reference...
                   NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
                   NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
-                                                          stringValue: @"-2"];
+                                                          stringValue: @"-3"];
                   NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
                                                           stringValue: @"File's Owner"];
                   NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
@@ -106,7 +116,12 @@ static NSStoryboard *mainStoryboard = nil;
                   [customObject addAttribute: idValue];
                   [customObject addAttribute: usrLabel];
                   [customObject addAttribute: customCls];
-                  
+
+                  if (appCons != nil)
+                    {
+                      [customObject addChild: appCons];
+                    }
+
                   // Add it to the document
                   [objects addChild: customObject];
                   [objects detach];
@@ -121,9 +136,56 @@ static NSStoryboard *mainStoryboard = nil;
                   [child detach];
                   [doc addChild: child];
                 }
+
+              // fix other custom objects
+              document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
+              NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
+              NSEnumerator *coen = [customObjects objectEnumerator];
+              NSXMLElement *coel = nil;
+              while ((coel = [coen nextObject]) != nil)
+                {
+                  NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
+                  if ([[attr stringValue] isEqualToString: @"firstResponder"])
+                    {
+                      NSXMLNode *customClassAttr = [coel attributeForName: @"customClass"];
+                      NSXMLNode *idAttr = [coel attributeForName: @"id"];
+                      NSString *originalId = [idAttr stringValue];
+
+                      [idAttr setStringValue: @"-1"]; // set to first responder id
+                      [customClassAttr setStringValue: @"FirstResponder"];
+
+                      // Actions
+                      NSArray *cons = [document nodesForXPath: @"//action" error: NULL];
+                      NSEnumerator *consen = [cons objectEnumerator];
+                      NSXMLElement *celem = nil;
+
+                      while ((celem = [consen nextObject]) != nil)
+                        {
+                          NSXMLNode *targetAttr = [celem attributeForName: @"target"];
+                          NSString *val = [targetAttr stringValue];
+                          if ([val isEqualToString: originalId])
+                            {
+                              [targetAttr setStringValue: @"-1"];
+                            }
+                        }
+
+                      // Outlets
+                      cons = [document nodesForXPath: @"//outlet" error: NULL];
+                      consen = [cons objectEnumerator];
+                      celem = nil;
+                      while ((celem = [consen nextObject]) != nil)
+                        {
+                          NSXMLNode *attr = [celem attributeForName: @"destination"];
+                          NSString *val = [attr stringValue];
+                          if ([val isEqualToString: originalId])
+                            {
+                              [attr setStringValue: @"-1"];
+                            }
+                        }
+                    }
+                }                            
               
               // Create document...
-              document = [[NSXMLDocument alloc] initWithRootElement: doc];
               [_scenesMap setObject: document
                              forKey: sceneId];
               RELEASE(document);
@@ -134,9 +196,6 @@ static NSStoryboard *mainStoryboard = nil;
     {
       NSLog(@"No document element in storyboard file");
     }
-
-  NSLog(@"map = %@", _scenesMap);
-  NSLog(@"initial = %@", _initialViewControllerId);
 }
 
 // Private instance methods...
@@ -153,9 +212,8 @@ static NSStoryboard *mainStoryboard = nil;
       NSXMLDocument *storyboardXml = [[NSXMLDocument alloc] initWithData: data
                                                                  options: 0
                                                                    error: NULL];
-      AUTORELEASE(storyboardXml);
-
       [self _processStoryboard: storyboardXml];
+      RELEASE(storyboardXml);
     }
   return self;
 }
@@ -189,15 +247,21 @@ static NSStoryboard *mainStoryboard = nil;
 
 - (id) instantiateInitialController
 {
+  NSDictionary	*table;
+
+  table = [NSDictionary dictionaryWithObject: NSApp
+                                      forKey: NSNibOwner];
+
   NSXMLDocument *xml = [_scenesMap objectForKey: _applicationSceneId];
   NSData *xmlData = [xml XMLData];
   GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
   BOOL success = [loader loadModelData: xmlData
-                     externalNameTable: nil
+                     externalNameTable: table
                               withZone: [self zone]];
 
   if (success)
     {
+      /*
       xml = [_scenesMap objectForKey: _applicationSceneId];
       xmlData = [xml XMLData];
       loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
@@ -208,7 +272,7 @@ static NSStoryboard *mainStoryboard = nil;
       if (success == NO)
         {
           NSLog(@"Couldn't load initial view controller");
-        }
+          }*/
     }
   else
     {
