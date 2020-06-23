@@ -43,6 +43,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 @interface NSStoryboard : NSObject
 {
   NSMutableDictionary *_scenesMap;
+  NSMutableDictionary *_controllerMap;
   NSString *_initialViewControllerId;
   NSString *_applicationSceneId;
 }
@@ -54,12 +55,17 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 
 - (id) instantiateInitialController;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block; // 10.15
-
+#endif
+  
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
                                    creator: (NSStoryboardControllerCreator)block;  // 10.15
+#endif
+
 @end
 
 #if	defined(__cplusplus)

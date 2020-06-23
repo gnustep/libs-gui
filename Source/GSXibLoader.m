@@ -39,10 +39,11 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
+
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
-#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
+#import "GSXib5KeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
@@ -59,6 +60,10 @@
     return [_name isEqualToString:@"_NSMainMenu"];
   return NO;
 }
+@end
+
+@interface NSCustomObject5 (Private)
+- (NSString *) userLabel;
 @end
 
 @interface GSXibLoader: GSModelLoader
@@ -93,9 +98,7 @@
       return;
     }
 
-  // Use the owner as first root object
-  [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
-
+  // Iterate over root objects
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
@@ -106,14 +109,28 @@
           obj = [obj nibInstantiate];
         }
 
-      // IGNORE file's owner, first responder and NSApplication instances...
-      if ((obj != nil) && (index > 3))
+      // IGNORE file's owner, first responder and NSApplication instances
+      // these are represented by NSCustomObject or it's subclasses...
+      if (obj != nil)
         {
-          [topLevelObjects addObject: obj];
-          // All top level objects must be released by the caller to avoid
-          // leaking, unless they are going to be released by other nib
-          // objects on behalf of the owner.
-          RETAIN(obj);
+          if ([obj isKindOfClass: [NSCustomObject class]])
+            {
+              NSCustomObject5 *co = (NSCustomObject5 *)obj;
+              NSString *userLabel = [co userLabel];
+              if ([userLabel isEqualToString: @"File's Owner"])
+                {
+                  [co setRealObject: owner];
+                }
+            }
+          else
+            {
+              [topLevelObjects addObject: obj];
+              
+              // All top level objects must be released by the caller to avoid
+              // leaking, unless they are going to be released by other nib
+              // objects on behalf of the owner.
+              RETAIN(obj);
+            }
         }
 
       if (([obj isKindOfClass: [NSMenu class]]) &&

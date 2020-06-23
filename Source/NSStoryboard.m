@@ -34,6 +34,8 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSStoryboard.h"
+#import "AppKit/NSWindowController.h"
+#import "AppKit/NSViewController.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
@@ -51,10 +53,12 @@ static NSStoryboard *mainStoryboard = nil;
       NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
       NSEnumerator *en = [array objectEnumerator];
       NSXMLElement *e = nil;  
+      NSString *customClassString = nil;
       
       // Set initial view controller...
       ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);             
       _scenesMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
+      _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
 
       while ((e = [en nextObject]) != nil)
         {
@@ -64,6 +68,7 @@ static NSStoryboard *mainStoryboard = nil;
           NSXMLElement *child = nil;
           NSXMLDocument *document = nil;
           NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
+          NSString *controllerId = nil;
           
           // Copy children...
           while ((child = [ce nextObject]) != nil)
@@ -75,7 +80,7 @@ static NSStoryboard *mainStoryboard = nil;
               NSXMLNode *appNode = [subnodes objectAtIndex: 0];
               if ([[appNode name] isEqualToString: @"application"] == YES)
                 {
-                  NSXMLElement *objects = (NSXMLElement *)[appNode parent];// [[appNode children] objectAtIndex: 0];
+                  NSXMLElement *objects = (NSXMLElement *)[appNode parent];
                   NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
                   NSXMLNode *appCons = [appConsArr objectAtIndex: 0];
                   if (appCons != nil)
@@ -97,22 +102,17 @@ static NSStoryboard *mainStoryboard = nil;
                   // Remove the appNode
                   [appNode detach];
                   
-                  /*
-                    <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
-                      <connections>
-                        <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
-                      </connections>
-                    </customObject>
-                  */
-                  
                   // create a customObject entry for NSApplication reference...
+                  NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode attributeForName: @"customClass"];
+                  customClassString = ([appCustomClass stringValue] == nil) ?
+                    @"NSApplication" :  [appCustomClass stringValue];
                   NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
                   NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
                                                           stringValue: @"-3"];
                   NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
                                                           stringValue: @"File's Owner"];
                   NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
-                                                          stringValue: @"NSApplication"];
+                                                          stringValue: customClassString];
                   [customObject addAttribute: idValue];
                   [customObject addAttribute: usrLabel];
                   [customObject addAttribute: customCls];
@@ -133,12 +133,41 @@ static NSStoryboard *mainStoryboard = nil;
                 }
               else
                 {
+                  NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
+                  NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
+                                                          stringValue: @"-3"];
+                  NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
+                                                          stringValue: @"File's Owner"];
+                  NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
+                                                          stringValue: customClassString];
+                  [customObject addAttribute: idValue];
+                  [customObject addAttribute: usrLabel];
+                  [customObject addAttribute: customCls];
+
                   [child detach];
+                  [child addChild: customObject];
                   [doc addChild: child];
                 }
 
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
+              NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
+              NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
+          
+              if ([windowControllers count] > 0)
+                {
+                  NSXMLElement *ce = [windowControllers objectAtIndex: 0];
+                  NSXMLNode *attr = [ce attributeForName: @"id"];
+                  controllerId = [attr stringValue];
+                }
+              
+              if ([viewControllers count] > 0)
+                {
+                  NSXMLElement *ce = [viewControllers objectAtIndex: 0];
+                  NSXMLNode *attr = [ce attributeForName: @"id"];
+                  controllerId = [attr stringValue];
+                }
+
               NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
               NSEnumerator *coen = [customObjects objectEnumerator];
               NSXMLElement *coel = nil;
@@ -188,6 +217,14 @@ static NSStoryboard *mainStoryboard = nil;
               // Create document...
               [_scenesMap setObject: document
                              forKey: sceneId];
+
+              // Map controllerId's to scenes...
+              if (controllerId != nil)
+                {
+                  [_controllerMap setObject: sceneId
+                                     forKey: controllerId];
+                }
+              
               RELEASE(document);
             }
         }
@@ -242,11 +279,13 @@ static NSStoryboard *mainStoryboard = nil;
   RELEASE(_initialViewControllerId);
   RELEASE(_applicationSceneId);
   RELEASE(_scenesMap);
+  RELEASE(_controllerMap);
   [super dealloc];
 }
 
 - (id) instantiateInitialController
 {
+  id controller = nil;
   NSDictionary	*table;
 
   table = [NSDictionary dictionaryWithObject: NSApp
@@ -261,25 +300,49 @@ static NSStoryboard *mainStoryboard = nil;
 
   if (success)
     {
-      /*
-      xml = [_scenesMap objectForKey: _applicationSceneId];
+      NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
+      NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
+                                          NSNibTopLevelObjects,
+                                          NSApp,
+                                          NSNibOwner,
+                                          nil];
+      NSString *initialSceneId = [_controllerMap objectForKey: _initialViewControllerId];
+      xml = [_scenesMap objectForKey: initialSceneId];
       xmlData = [xml XMLData];
       loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
       success = [loader loadModelData: xmlData
-                    externalNameTable: nil
+                    externalNameTable: table
                              withZone: [self zone]];
+      NSLog(@"table = %@", table);
       
-      if (success == NO)
+      if (success)
         {
-          NSLog(@"Couldn't load initial view controller");
-          }*/
+          NSEnumerator *en = [topLevelObjects objectEnumerator];
+          id o = nil;
+          while ((o = [en nextObject]) != nil)
+            {
+              if ([o isKindOfClass: [NSWindowController class]])
+                {
+                  NSWindowController *wc = (NSWindowController *)o;
+                  controller = o;
+                  [wc showWindow: self];
+                }
+              else if ([o isKindOfClass: [NSViewController class]])
+                {
+                }
+            }
+        }
+      else
+        {
+          NSLog(@"Couldn't load initial controller scene");
+        }
     }
   else
     {
       NSLog(@"Couldn't load application scene.");
     }
   
-  return nil;
+  return controller;
 }
 
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block // 10.15

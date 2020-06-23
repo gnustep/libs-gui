@@ -28,6 +28,8 @@
 
 #import <Foundation/Foundation.h>
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
+#import "GNUstepGUI/GSNibLoading.h"
+#import "GNUstepGUI/GSXibLoading.h"
 
 @class GSXibElement;
 
@@ -44,4 +46,12 @@
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
+@end
+
+@interface NSCustomObject5 : NSCustomObject
+{
+  NSString *_userLabel;
+}
+
+- (NSString*) userLabel;
 @end

@@ -29,8 +29,6 @@
  */
 
 #import "GSXib5KeyedUnarchiver.h"
-#import "GNUstepGUI/GSNibLoading.h"
-#import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibElement.h"
 
 #import "AppKit/NSApplication.h"
@@ -63,14 +61,6 @@
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
-
-@interface NSCustomObject5 : NSCustomObject
-{
-  NSString *_userLabel;
-}
-
-- (NSString*) userLabel;
-@end
 
 @implementation NSCustomObject5
 
