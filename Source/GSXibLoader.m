@@ -123,12 +123,13 @@
                   [co setRealObject: owner];
                 }
             }
-          else if ([obj class] == [NSCustomObject class] && ownerSetForOldXib == NO)
+          else if ([obj isKindOfClass: [NSCustomObject class]] &&
+                   ownerSetForOldXib == NO)
             {
               [obj setRealObject: owner]; // set on first object in list...
               ownerSetForOldXib = YES;
             }
-          else
+          else if ([obj isKindOfClass: [NSApplication class]] == NO)
             {
               [topLevelObjects addObject: obj];
               
