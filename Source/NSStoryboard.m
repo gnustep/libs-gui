@@ -36,6 +36,7 @@
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
+#import "AppKit/NSWindow.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
@@ -159,6 +160,21 @@ static NSStoryboard *mainStoryboard = nil;
                   NSXMLElement *ce = [windowControllers objectAtIndex: 0];
                   NSXMLNode *attr = [ce attributeForName: @"id"];
                   controllerId = [attr stringValue];
+
+                  NSEnumerator *windowControllerEnum = [windowControllers objectEnumerator];
+                  NSXMLElement *o = nil;
+                  while ((o = [windowControllerEnum nextObject]) != nil)
+                    {
+                      NSXMLElement *objects = (NSXMLElement *)[o parent];
+                      NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
+                      NSEnumerator *windowEn = [windows objectEnumerator];
+                      NSXMLNode *w = nil;
+                      while ((w = [windowEn nextObject]) != nil)
+                        {
+                          [w detach];
+                          [objects addChild: w];
+                        }
+                    }
                 }
               
               if ([viewControllers count] > 0)
@@ -323,10 +339,14 @@ static NSStoryboard *mainStoryboard = nil;
             {
               if ([o isKindOfClass: [NSWindowController class]])
                 {
-                  NSWindowController *wc = (NSWindowController *)o;
                   controller = o;
-                  [wc showWindow: self];
                 }
+              if ([o isKindOfClass: [NSWindow class]] &&
+                  [controller isKindOfClass: [NSWindowController class]])
+                {
+                  [controller setWindow: o];
+                  [controller showWindow: self];
+                }              
               else if ([o isKindOfClass: [NSViewController class]])
                 {
                 }

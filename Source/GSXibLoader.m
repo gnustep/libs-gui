@@ -91,7 +91,8 @@
   NSEnumerator *en;
   id obj;
   NSUInteger index = 0;
-
+  BOOL ownerSetForOldXib = NO;
+  
   if ([rootObjects count] == 0)
     {
       NSWarnMLog(@"No root objects in XIB!");
@@ -113,7 +114,7 @@
       // these are represented by NSCustomObject or it's subclasses...
       if (obj != nil)
         {
-          if ([obj isKindOfClass: [NSCustomObject class]])
+          if ([obj isKindOfClass: [NSCustomObject5 class]])
             {
               NSCustomObject5 *co = (NSCustomObject5 *)obj;
               NSString *userLabel = [co userLabel];
@@ -121,6 +122,11 @@
                 {
                   [co setRealObject: owner];
                 }
+            }
+          else if ([obj class] == [NSCustomObject class] && ownerSetForOldXib == NO)
+            {
+              [obj setRealObject: owner]; // set on first object in list...
+              ownerSetForOldXib = YES;
             }
           else
             {

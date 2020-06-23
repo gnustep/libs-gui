@@ -319,7 +319,7 @@
   return _window;
 }
 
-/** Sets the window that this controller managers to aWindow. The old
+/** Sets the window that this controller manages to aWindow. The old
    window is released. */
 - (void) setWindow: (NSWindow *)aWindow
 {
