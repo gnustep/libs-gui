@@ -528,6 +528,7 @@ PACKAGE_SCOPE
 - (void) orderWindow: (NSWindowOrderingMode)place
 	  relativeTo: (NSInteger)otherWin;
 - (BOOL) isVisible;
+- (void) setIsVisible: (BOOL)flag;
 - (NSInteger) level;
 - (void) setLevel: (NSInteger)newLevel;
 
