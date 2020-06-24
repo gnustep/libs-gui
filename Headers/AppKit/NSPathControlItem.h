@@ -57,7 +57,7 @@ extern "C" {
 @end
 
 #if	defined(__cplusplus)
-
+}
 #endif
 
 #endif	/* GS_API_MACOSX */
