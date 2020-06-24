@@ -121,6 +121,12 @@
               if ([userLabel isEqualToString: @"File's Owner"])
                 {
                   [co setRealObject: owner];
+                  continue;
+                }
+              else if ([userLabel isEqualToString: @"First Responder"] ||
+                       [userLabel isEqualToString: @"Application"])
+                {
+                  continue;
                 }
             }
           else if ([obj isKindOfClass: [NSCustomObject class]] &&
@@ -129,7 +135,10 @@
               [obj setRealObject: owner]; // set on first object in list...
               ownerSetForOldXib = YES;
             }
-          else if ([obj isKindOfClass: [NSApplication class]] == NO)
+          
+          // Some custom objects should be stored in topLevelObjects, the ones which
+          // shouldn't are skipped above.
+          if ([obj isKindOfClass: [NSApplication class]] == NO)
             {
               [topLevelObjects addObject: obj];
               
