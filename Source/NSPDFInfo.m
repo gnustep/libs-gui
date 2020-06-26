@@ -76,9 +76,9 @@
   return _orientation;
 }
 
-- (void) setOrientation: (NSPaperOrientation)or
+- (void) setOrientation: (NSPaperOrientation)orientation
 {
-  _orientation = or;
+  _orientation = orientation;
 }
 
 - (NSSize) paperSize;

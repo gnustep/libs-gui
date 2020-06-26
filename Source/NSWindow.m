@@ -1720,6 +1720,19 @@ titleWithRepresentedFilename(NSString *representedFilename)
   return _windowLevel;
 }
 
+- (void) setIsVisible: (BOOL)flag
+{
+  _f.visible = flag;
+  if (flag)
+    {
+      [self orderFrontRegardless];
+    }
+  else
+    {
+      [self orderOut: nil];
+    }
+}
+
 - (void) makeKeyAndOrderFront: (id)sender
 {
   [self deminiaturize: self];
