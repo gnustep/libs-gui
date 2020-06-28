@@ -39,11 +39,10 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
-
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
-#import "GSXib5KeyedUnarchiver.h"
+#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
 @interface NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu;
@@ -54,16 +53,14 @@
 @end
 
 @implementation NSMenu (XibCompatibility)
+
 - (BOOL) _isMainMenu
 {
   if (_name)
     return [_name isEqualToString:@"_NSMainMenu"];
   return NO;
 }
-@end
 
-@interface NSCustomObject5 (Private)
-- (NSString *) userLabel;
 @end
 
 @interface GSXibLoader: GSModelLoader
@@ -91,15 +88,16 @@
   NSEnumerator *en;
   id obj;
   NSUInteger index = 0;
-  BOOL ownerSetForOldXib = NO;
-  
+
   if ([rootObjects count] == 0)
     {
       NSWarnMLog(@"No root objects in XIB!");
       return;
     }
 
-  // Iterate over root objects
+  // Use the owner as first root object
+  [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
+
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
@@ -110,43 +108,14 @@
           obj = [obj nibInstantiate];
         }
 
-      // IGNORE file's owner, first responder and NSApplication instances
-      // these are represented by NSCustomObject or it's subclasses...
-      if (obj != nil)
+      // IGNORE file's owner, first responder and NSApplication instances...
+      if ((obj != nil) && (index > 3))
         {
-          if ([obj isKindOfClass: [NSCustomObject5 class]])
-            {
-              NSCustomObject5 *co = (NSCustomObject5 *)obj;
-              NSString *userLabel = [co userLabel];
-              if ([userLabel isEqualToString: @"File's Owner"])
-                {
-                  [co setRealObject: owner];
-                  continue;
-                }
-              else if ([userLabel isEqualToString: @"First Responder"] ||
-                       [userLabel isEqualToString: @"Application"])
-                {
-                  continue;
-                }
-            }
-          else if ([obj isKindOfClass: [NSCustomObject class]] &&
-                   ownerSetForOldXib == NO)
-            {
-              [obj setRealObject: owner]; // set on first object in list...
-              ownerSetForOldXib = YES;
-            }
-          
-          // Some custom objects should be stored in topLevelObjects, the ones which
-          // shouldn't are skipped above.
-          if ([obj isKindOfClass: [NSApplication class]] == NO)
-            {
-              [topLevelObjects addObject: obj];
-              
-              // All top level objects must be released by the caller to avoid
-              // leaking, unless they are going to be released by other nib
-              // objects on behalf of the owner.
-              RETAIN(obj);
-            }
+          [topLevelObjects addObject: obj];
+          // All top level objects must be released by the caller to avoid
+          // leaking, unless they are going to be released by other nib
+          // objects on behalf of the owner.
+          RETAIN(obj);
         }
 
       if (([obj isKindOfClass: [NSMenu class]]) &&
@@ -173,7 +142,7 @@
 
 - (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone
+              withZone: (NSZone *)zone;
 {
   BOOL loaded = NO;
 

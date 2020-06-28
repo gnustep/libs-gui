@@ -44,6 +44,31 @@ static NSStoryboard *mainStoryboard = nil;
 
 @implementation NSStoryboard
 
+- (NSXMLElement *) _createCustomObjectWithId: (NSString *)ident
+                                   userLabel: (NSString *)userLabel
+                                 customClass: (NSString *)className
+{
+  NSXMLElement *customObject =
+    [[NSXMLElement alloc] initWithName: @"customObject"];
+  NSXMLNode *idValue =
+    [NSXMLNode attributeWithName: @"id"
+                     stringValue: ident];
+  NSXMLNode *usrLabel =
+    [NSXMLNode attributeWithName: @"userLabel"
+                     stringValue: userLabel];
+  NSXMLNode *customCls =
+    [NSXMLNode attributeWithName: @"customClass"
+                     stringValue: className];
+  
+  [customObject addAttribute: idValue];
+  [customObject addAttribute: usrLabel];
+  [customObject addAttribute: customCls];
+
+  AUTORELEASE(customObject);
+  
+  return customObject;
+}
+
 - (void) _processStoryboard: (NSXMLDocument *)storyboardXml
 {
   NSArray *docNodes = [storyboardXml nodesForXPath: @"document" error: NULL];
@@ -104,52 +129,72 @@ static NSStoryboard *mainStoryboard = nil;
                   [appNode detach];
                   
                   // create a customObject entry for NSApplication reference...
-                  NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode attributeForName: @"customClass"];
+                  NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode
+                                                               attributeForName: @"customClass"];
                   customClassString = ([appCustomClass stringValue] == nil) ?
-                    @"NSApplication" :  [appCustomClass stringValue];
-                  NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
-                  NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
-                                                          stringValue: @"-3"];
-                  NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
-                                                          stringValue: @"File's Owner"];
-                  NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
-                                                          stringValue: customClassString];
-                  [customObject addAttribute: idValue];
-                  [customObject addAttribute: usrLabel];
-                  [customObject addAttribute: customCls];
-
+                    @"NSApplication" : [appCustomClass stringValue];
+                  NSXMLElement *customObject = nil;
+                  
+                  customObject = 
+                    [self _createCustomObjectWithId: @"-3"
+                                          userLabel: @"Application"
+                                        customClass: @"NSObject"];
+                  [child insertChild: customObject
+                             atIndex: 0];
+                  customObject = 
+                    [self _createCustomObjectWithId: @"-1"
+                                          userLabel: @"First Responder"
+                                        customClass: @"FirstResponder"];
+                  [child insertChild: customObject
+                             atIndex: 0];
+                  customObject =
+                    [self _createCustomObjectWithId: @"-2"
+                                          userLabel: @"File's Owner"
+                                        customClass: customClassString];
                   if (appCons != nil)
                     {
                       [customObject addChild: appCons];
                     }
+                  [child insertChild: customObject
+                             atIndex: 0];
+                  
 
                   // Add it to the document
-                  [objects addChild: customObject];
                   [objects detach];
                   [doc addChild: objects];
-                  RELEASE(customObject);
                   
                   // Assign application scene...
                   ASSIGN(_applicationSceneId, sceneId);
                 }
               else
                 {
-                  NSXMLElement *customObject = [[NSXMLElement alloc] initWithName: @"customObject"];
-                  NSXMLNode *idValue   = [NSXMLNode attributeWithName: @"id"
-                                                          stringValue: @"-3"];
-                  NSXMLNode *usrLabel  = [NSXMLNode attributeWithName: @"userLabel"
-                                                          stringValue: @"File's Owner"];
-                  NSXMLNode *customCls = [NSXMLNode attributeWithName: @"customClass"
-                                                          stringValue: customClassString];
-                  [customObject addAttribute: idValue];
-                  [customObject addAttribute: usrLabel];
-                  [customObject addAttribute: customCls];
+                  NSXMLElement *customObject = nil;
+
+                  customObject = 
+                    [self _createCustomObjectWithId: @"-3"
+                                          userLabel: @"Application"
+                                        customClass: @"NSObject"];
+                  [child insertChild: customObject
+                             atIndex: 0];
+                  customObject = 
+                    [self _createCustomObjectWithId: @"-1"
+                                          userLabel: @"First Responder"
+                                        customClass: @"FirstResponder"];
+                  [child insertChild: customObject
+                             atIndex: 0];
+                  customObject = 
+                    [self _createCustomObjectWithId: @"-2"
+                                          userLabel: @"File's Owner"
+                                        customClass: customClassString];
+                  [child insertChild: customObject
+                             atIndex: 0];
 
                   [child detach];
-                  [child addChild: customObject];
                   [doc addChild: child];
                 }
 
+              // Add other custom objects...
+              
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
               NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
