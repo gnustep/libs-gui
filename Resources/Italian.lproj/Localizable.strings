@@ -280,52 +280,40 @@ add comments above this one
 "No" = "No";
 
 /* File: ../Source/NSSavePanel.m:1797 */
-/* Flag: untranslated */
-"Reading Directory " = "Reading Directory ";
+"Reading Directory " = "Lettura Cartella ";
 
 /* File: ../Source/NSSpellChecker.m:731 */
-/* Flag: untranslated */
-"Guess" = "Guess";
+"Guess" = "Indovina";
 
 /* File: ../Source/NSTextView.m:651 */
-/* Flag: untranslated */
-"Cut" = "Cut";
+"Cut" = "Taglia";
 
 /* File: ../Source/NSTextView.m:652 */
-/* Flag: untranslated */
-"Copy" = "Copy";
+"Copy" = "Copia";
 
 /* File: ../Source/NSTextView.m:653 */
-/* Flag: untranslated */
-"Paste" = "Paste";
+"Paste" = "Incolla";
 
 /* File: ../Source/NSTextView.m:5904 */
-/* Flag: untranslated */
-"No Suggestions" = "No Suggestions";
+"No Suggestions" = "Nessun Suggerimento";
 
 /* File: ../Source/NSToolbarItem.m:949 */
-/* Flag: untranslated */
-"Separator" = "Separator";
+"Separator" = "Separatore";
 
 /* File: ../Source/NSToolbarItem.m:991 */
-/* Flag: untranslated */
-"Space" = "Space";
+"Space" = "Spazio";
 
 /* File: ../Source/NSToolbarItem.m:1021 */
-/* Flag: untranslated */
-"Flexible Space" = "Flexible Space";
+"Flexible Space" = "Spazio Flessibile";
 
 /* File: ../Source/NSToolbarItem.m:1099 */
-/* Flag: untranslated */
-"Fonts" = "Fonts";
+"Fonts" = "Caratteri";
 
 /* File: ../Source/NSToolbarItem.m:1122 */
-/* Flag: untranslated */
-"Customize" = "Customize";
+"Customize" = "Personalizza";
 
 /* File: ../Source/NSToolbarItem.m:1145 */
-/* Flag: untranslated */
-"Print..." = "Print...";
+"Print..." = "Stampa...";
 
 /* File: ../Source/NSWindow.m:5322 */
 /* Flag: untranslated */
@@ -514,7 +502,7 @@ add comments above this one
 "Quit Anyway" = "Esci comunque";
 /* File: ../Source/NSDocumentController.m:972 */
 /* File: ../Source/NSDocumentController.m:930 */
-"Review Unsaved" = "Rivisita documenti non salvati";
+"Review Unsaved" = "Rivedi documenti non salvati";
 /* File: ../Source/NSDocumentController.m:979 */
 /* File: ../Source/NSDocumentController.m:929 */
 "You have unsaved documents" = "Ci sono documenti non salvati";
@@ -582,10 +570,10 @@ add comments above this one
   = "La directory '%@' non esiste, la vuoi creare?";
 /* File: ../Source/NSSavePanel.m:1405 */
 "The file '%@' in '%@' exists. Replace it?"
-  = "Il file '%@' in '%@' esiste. Vuoi sostituirlo?";
+  = "Il file '%@' in '%@' esiste già. Sostituirlo?";
 /* File: ../Source/NSSavePanel.m:1394 */
 "The path '%@' is not a directory."
-  = "Il percorso non '%@' non è una directory.";
+  = "Il percorso non '%@' non è una cartella.";
 /* File: ../Source/NSSavePanel.m:309 */
 "Unmount" = "Smonta";
 /* File: ../Source/NSSavePanel.m:1371 */
