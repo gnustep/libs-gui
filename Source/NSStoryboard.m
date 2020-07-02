@@ -58,6 +58,8 @@ static NSStoryboard *mainStoryboard = nil;
 @interface NSStoryboardSegue (__StoryboardPrivate__)
 - (void) _setKind: (NSString *)k;
 - (void) _setRelationship: (NSString *)r;
+- (NSString *) _kind;
+- (NSString *) _relationship;
 @end
 
 // this needs to be set on segues
@@ -70,6 +72,16 @@ static NSStoryboard *mainStoryboard = nil;
 - (void) _setRelationship: (NSString *)r
 {
   ASSIGN(_relationship, r);
+}
+
+- (NSString *) _kind
+{
+  return _kind;
+}
+
+- (NSString *) _relationship
+{
+  return _relationship;
 }
 @end
 
@@ -110,6 +122,7 @@ static NSStoryboard *mainStoryboard = nil;
   SEL       _action;
   id        _sender;
   NSString *_identifier;
+  NSString *_kind;
 }
 
 - (id) target;
@@ -126,6 +139,9 @@ static NSStoryboard *mainStoryboard = nil;
 
 - (NSString *) identifier;
 - (void) setIdentifier: (NSString *)identifier;
+
+- (NSString *) kind;
+- (void) setKind: (NSString *)kind;
 @end
 
 @implementation NSStoryboardSeguePerformAction
@@ -179,10 +195,31 @@ static NSStoryboard *mainStoryboard = nil;
   ASSIGN(_identifier, identifier);
 }
 
+- (NSString *) kind
+{
+  return _kind;
+}
+
+- (void) setKind: (NSString *)kind
+{
+  ASSIGN(_kind, kind);
+}
+
+- (id) nibInstantiate
+{
+  NSLog(@"Instantiation...");
+  return self;
+}
+
+- (void) establishConnection
+{
+  NSLog(@"Establish connection...");
+}
+
 - (IBAction) doAction: (id)sender
 {
-  [_target performSegueWithIdentifier: _identifier
-                               sender: _sender];
+  [sender performSegueWithIdentifier: _identifier
+                              sender: _sender];
 }
 
 - (id) copyWithZone: (NSZone *)z
@@ -215,6 +252,10 @@ static NSStoryboard *mainStoryboard = nil;
       if ([coder containsValueForKey: @"NSIdentifier"])
         {
           [self setIdentifier: [coder decodeObjectForKey: @"NSIdentifier"]];
+        }
+      if ([coder containsValueForKey: @"NSKind"])
+        {
+          [self setKind: [coder decodeObjectForKey: @"NSKind"]];
         }
     }
   return self;
@@ -546,16 +587,24 @@ static NSStoryboard *mainStoryboard = nil;
                 = [NSXMLNode attributeWithName: @"target"
                                    stringValue: dst];
               NSXMLNode *pident
+                = [NSXMLNode attributeWithName: @"id"
+                                   stringValue: uid];
+              NSXMLNode *psegueIdent
                 = [NSXMLNode attributeWithName: @"identifier"
                                    stringValue: identifier];
               NSXMLNode *psender
                 = [NSXMLNode attributeWithName: @"sender"
                                    stringValue: dst];
+              NSXMLNode *pkind
+                = [NSXMLNode attributeWithName: @"kind"
+                                   stringValue: kind];
               
               [sbproxy addAttribute: pselector];
               [sbproxy addAttribute: ptarget];
               [sbproxy addAttribute: pident];
+              [sbproxy addAttribute: psegueIdent];
               [sbproxy addAttribute: psender];
+              [sbproxy addAttribute: pkind];
               NSUInteger count = [[objects children] count];
               [objects insertChild: sbproxy
                            atIndex: count - 1];
@@ -693,29 +742,50 @@ static NSStoryboard *mainStoryboard = nil;
   
   if (success)
     {
+      NSMutableArray *seguesToPerform = [NSMutableArray array];
       NSEnumerator *en = [topLevelObjects objectEnumerator];
       id o = nil;
       while ((o = [en nextObject]) != nil)
         {
-          if ([o isKindOfClass: [NSWindowController class]])
+          if ([o isKindOfClass: [NSWindowController class]] ||
+              [o isKindOfClass: [NSViewController class]])
             {
               controller = o;
               [controller _setSegueMap: segueMap];
+              [controller _setTopLevelObjects: topLevelObjects];
             }
-          
+
           if ([o isKindOfClass: [NSWindow class]] &&
               [controller isKindOfClass: [NSWindowController class]])
             {
               [controller _setOwner: NSApp];
-              [controller _setTopLevelObjects: topLevelObjects];
               [controller setWindow: o];
               [controller showWindow: self];
             }              
-          else if ([o isKindOfClass: [NSViewController class]])
+          else if ([o isKindOfClass: [NSViewController class]] && controller == nil)
             {
               NSWindow *w = [NSWindow windowWithContentViewController: o];
+              controller = o;
               [w orderFrontRegardless];
             }
+          
+          if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
+            {
+              NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+              if ([[ssa kind] isEqualToString: @"relationship"])
+                {
+                  [seguesToPerform addObject: ssa];
+                }
+            }
+        }
+
+      // perform segues after all is initialized.
+      en = [seguesToPerform objectEnumerator];
+      o = nil;
+      while ((o = [en nextObject]) != nil)
+        {
+          NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+          [ssa doAction: controller];
         }
     }
   else

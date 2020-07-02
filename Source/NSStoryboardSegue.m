@@ -23,7 +23,11 @@
 */
 
 #import <Foundation/NSString.h>
+
 #import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSWindowController.h"
+#import "AppKit/NSViewController.h"
+#import "AppKit/NSWindow.h"
 
 @implementation NSStoryboardSegue
 
@@ -88,18 +92,26 @@
 
 - (void)perform
 {
+  // Perform segue based on it's kind...
   if ([_kind isEqualToString: @"relationship"])
     {
+      NSWindow *w = [_sourceController window];
+      NSView *v = [_destinationController view];
+      [w setContentView: v];
     }
   else if ([_kind isEqualToString: @"modal"])
     {
+      NSLog(@"modal");
     }
   else if ([_kind isEqualToString: @"show"])
     {
+      NSLog(@"show");
     }
-  
-  // Perform segue based on it's kind...
-  CALL_BLOCK_NO_ARGS(_handler);
+
+  if (_handler != nil)
+    {
+      CALL_BLOCK_NO_ARGS(_handler);
+    }
 }
 
 @end

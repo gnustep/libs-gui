@@ -46,12 +46,18 @@
 
 @interface NSStoryboardSegue (__WindowControllerPrivate__)
 - (void) _setDestinationController: (id)controller;
+- (void) _setSourceController: (id)controller;
 @end
 
 @implementation NSStoryboardSegue (__WindowControllerPrivate__)
 - (void) _setDestinationController: (id)controller
 {
   _destinationController = controller;
+}
+
+- (void) _setSourceController: (id)controller
+{
+  _sourceController = controller;
 }
 @end
 
@@ -581,7 +587,8 @@
       NSStoryboard *ms = [NSStoryboard mainStoryboard];
       NSString *destId = [segue destinationController];
       id destCon = [ms instantiateControllerWithIdentifier: destId]; 
-      
+
+      [segue _setSourceController: self];
       [segue _setDestinationController: destCon];  // replace with actual controller...
       [self prepareForSegue: segue
                      sender: sender];
@@ -599,16 +606,6 @@
                                   sender: (id)sender
 {
   return YES;
-}
-
-- (IBAction) _invokeSegue: (id)object
-{
-  NSMapTable *table = (NSMapTable *)object;
-  id sender = [table objectForKey: @"sender"];
-  NSString *identifier = (NSString *)[table objectForKey: @"identifier"];
-  
-  [self performSegueWithIdentifier: identifier
-                            sender: sender];
 }
 
 @end
