@@ -33,12 +33,28 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSMapTable.h>
 
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSWindowController.h"
+#import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSStoryboard.h"
+
 #import "NSDocumentFrameworkPrivate.h"
+
+@interface NSStoryboardSegue (__WindowControllerPrivate__)
+- (void) _setDestinationController: (id)controller;
+@end
+
+@implementation NSStoryboardSegue (__WindowControllerPrivate__)
+- (void) _setDestinationController: (id)controller
+{
+  _destinationController = controller;
+}
+@end
+
 
 @implementation NSWindowController
 
@@ -137,6 +153,7 @@
   RELEASE(_window_nib_path);
   RELEASE(_window_frame_autosave_name);
   RELEASE(_top_level_objects);
+  RELEASE(_segueMap);
   [super dealloc];
 }
 
@@ -527,6 +544,7 @@
       if (!self)
         return nil;
 
+      _segueMap = nil;
       ASSIGN(_window_frame_autosave_name, @"");
       _wcFlags.should_cascade = YES;
       //_wcFlags.should_close_document = NO;
@@ -548,6 +566,49 @@
   // unarchival.  ?
 
   [super encodeWithCoder: coder];
+}
+
+// NSSeguePerforming methods...
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender
+{
+  BOOL should = [self shouldPerformSegueWithIdentifier: identifier
+                                                sender: sender];
+
+  if (should)
+    {
+      NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+      NSStoryboard *ms = [NSStoryboard mainStoryboard];
+      NSString *destId = [segue destinationController];
+      id destCon = [ms instantiateControllerWithIdentifier: destId]; 
+      
+      [segue _setDestinationController: destCon];  // replace with actual controller...
+      [self prepareForSegue: segue
+                     sender: sender];
+      [segue perform];
+    }
+}
+
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender
+{
+  // do nothing in base class method...
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender
+{
+  return YES;
+}
+
+- (IBAction) _invokeSegue: (id)object
+{
+  NSMapTable *table = (NSMapTable *)object;
+  id sender = [table objectForKey: @"sender"];
+  NSString *identifier = (NSString *)[table objectForKey: @"identifier"];
+  
+  [self performSegueWithIdentifier: identifier
+                            sender: sender];
 }
 
 @end

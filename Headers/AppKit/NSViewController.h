@@ -28,12 +28,13 @@ Boston, MA 02110-1301, USA.
 
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSSeguePerforming.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
-@class NSArray, NSBundle, NSPointerArray, NSView;
+@class NSArray, NSBundle, NSPointerArray, NSView, NSMapTable;
 
-@interface NSViewController : NSResponder
+@interface NSViewController : NSResponder <NSSeguePerforming>
 {
 @private
   NSString            *_nibName;
@@ -45,6 +46,7 @@ Boston, MA 02110-1301, USA.
   NSPointerArray      *_editors;
   id                   _autounbinder;
   NSString            *_designNibBundleIdentifier;
+  NSMapTable          *_segueMap;
   struct ___vcFlags 
     {
       unsigned int nib_is_loaded:1;

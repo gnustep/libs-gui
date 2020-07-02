@@ -30,6 +30,7 @@
 #import <Foundation/NSXMLNode.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSUUID.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
@@ -41,6 +42,189 @@
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
 static NSStoryboard *mainStoryboard = nil;
+
+// The storyboard needs to set this information on controllers...
+@interface NSWindowController (__StoryboardPrivate__)
+- (void) _setOwner: (id)owner;
+- (void) _setTopLevelObjects: (NSArray *)array;
+- (void) _setSegueMap: (NSMapTable *)map;
+@end
+
+@interface NSViewController (__StoryboardPrivate__)
+- (void) _setTopLevelObjects: (NSArray *)array;
+- (void) _setSegueMap: (NSMapTable *)map;
+@end
+
+@interface NSStoryboardSegue (__StoryboardPrivate__)
+- (void) _setKind: (NSString *)k;
+- (void) _setRelationship: (NSString *)r;
+@end
+
+// this needs to be set on segues
+@implementation NSStoryboardSegue (__StoryboardPrivate__)
+- (void) _setKind: (NSString *)k
+{
+  ASSIGN(_kind, k);
+}
+
+- (void) _setRelationship: (NSString *)r
+{
+  ASSIGN(_relationship, r);
+}
+@end
+
+@implementation NSWindowController (__StoryboardPrivate__)
+- (void) _setOwner: (id)owner
+{
+  _owner = owner; // weak
+}
+
+- (void) _setTopLevelObjects: (NSArray *)array
+{
+  _top_level_objects = array;
+}
+
+- (void) _setSegueMap: (NSMapTable *)map
+{
+  ASSIGN(_segueMap, map);
+}
+
+@end
+
+@implementation NSViewController (__StoryboardPrivate__)
+- (void) _setTopLevelObjects: (NSArray *)array
+{
+  _topLevelObjects = array;
+}
+
+- (void) _setSegueMap: (NSMapTable *)map
+{
+  ASSIGN(_segueMap, map);
+}
+@end
+// end private methods...
+
+@interface NSStoryboardSeguePerformAction : NSObject <NSCoding, NSCopying>
+{
+  id        _target;
+  SEL       _action;
+  id        _sender;
+  NSString *_identifier;
+}
+
+- (id) target;
+- (void) setTarget: (id)target;
+
+- (NSString *) selector;
+- (void) setSelector: (NSString *)s;
+
+- (SEL) action;
+- (void) setAction: (SEL)action;
+
+- (id) sender;
+- (void) setSender: (id)sender;
+
+- (NSString *) identifier;
+- (void) setIdentifier: (NSString *)identifier;
+@end
+
+@implementation NSStoryboardSeguePerformAction
+- (id) target
+{
+  return _target;
+}
+
+- (void) setTarget: (id)target
+{
+  ASSIGN(_target, target);
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+- (void) setAction: (SEL)action
+{
+  _action = action;
+}
+
+- (NSString *) selector
+{
+  return NSStringFromSelector(_action);
+}
+
+- (void) setSelector: (NSString *)s
+{
+  _action = NSSelectorFromString(s);
+}
+
+- (id) sender
+{
+  return _sender;
+}
+
+- (void) setSender: (id)sender
+{
+  ASSIGN(_sender, sender);
+}
+
+- (NSString *) identifier
+{
+  return _identifier;
+}
+
+- (void) setIdentifier: (NSString *)identifier
+{
+  ASSIGN(_identifier, identifier);
+}
+
+- (IBAction) doAction: (id)sender
+{
+  [_target performSegueWithIdentifier: _identifier
+                               sender: _sender];
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  NSStoryboardSeguePerformAction *pa = [[NSStoryboardSeguePerformAction allocWithZone: z] init];
+  [pa setTarget: _target];
+  [pa setSelector: [self selector]];
+  [pa setSender: _sender];
+  [pa setIdentifier: _identifier];
+  return pa;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSTarget"])
+        {
+          [self setTarget: [coder decodeObjectForKey: @"NSTarget"]];
+        }
+      if ([coder containsValueForKey: @"NSSelector"])
+        {
+          [self setSelector: [coder decodeObjectForKey: @"NSSelector"]];
+        }
+      if ([coder containsValueForKey: @"NSSender"])
+        {
+          [self setSender: [coder decodeObjectForKey: @"NSSender"]];
+        }
+      if ([coder containsValueForKey: @"NSIdentifier"])
+        {
+          [self setIdentifier: [coder decodeObjectForKey: @"NSIdentifier"]];
+        }
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // this is never encoded directly...
+}
+@end
 
 @implementation NSStoryboard
 
@@ -296,6 +480,120 @@ static NSStoryboard *mainStoryboard = nil;
     }
 }
 
+- (NSMapTable *) _processSegues: (NSXMLDocument *)xmlIn
+{
+  NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
+  NSArray *connectionsArray = [xmlIn nodesForXPath: @"//connections"
+                                             error: NULL];
+  NSArray *array = [xmlIn nodesForXPath: @"//objects"
+                                  error: NULL];
+  NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
+  NSArray *controllers = [objects nodesForXPath: @"windowController"
+                                          error: NULL];
+  NSString *src = nil;
+  if ([controllers count] > 0)
+    {
+      NSXMLElement *controller = (NSXMLElement *)[controllers objectAtIndex: 0];
+      NSXMLNode *idAttr = [controller attributeForName: @"id"];
+      src = [idAttr stringValue];
+    }
+  else
+    {
+      controllers = [objects nodesForXPath: @"viewController"
+                                     error: NULL];
+      if ([controllers count] > 0)
+        {
+          NSXMLElement *controller = (NSXMLElement *)[controllers objectAtIndex: 0];
+          NSXMLNode *idAttr = [controller attributeForName: @"id"];
+          src = [idAttr stringValue];
+        }
+    }
+  
+  if ([connectionsArray count] > 0)
+    {
+      NSXMLElement *connections = (NSXMLElement *)[connectionsArray objectAtIndex: 0];
+      NSArray *children = [connections children]; // there should be only one per set.
+      NSEnumerator *en = [children objectEnumerator];
+      id obj = nil;
+
+      while ((obj = [en nextObject]) != nil)
+        {
+          if ([[obj name] isEqualToString: @"segue"])
+            {
+              // get the information from the segue.
+              NSXMLNode *attr = [obj attributeForName: @"destination"];
+              NSString *dst = [attr stringValue];
+              attr = [obj attributeForName: @"kind"];
+              NSString *kind =  [attr stringValue];
+              attr = [obj attributeForName: @"relationship"];
+              NSString *rel = [attr stringValue];
+              [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
+              attr = [obj attributeForName: @"id"];
+              NSString *uid = [attr stringValue];
+              attr = [obj attributeForName: @"identifier"];
+              NSString *identifier = [attr stringValue];
+              if (identifier == nil)
+                {
+                  identifier = [[NSUUID UUID] UUIDString];
+                }
+              
+              // Create proxy object to invoke methods on the window controller
+              NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
+              NSXMLNode *pselector
+                = [NSXMLNode attributeWithName: @"selector"
+                                   stringValue: @"doAction:"];
+              NSXMLNode *ptarget
+                = [NSXMLNode attributeWithName: @"target"
+                                   stringValue: dst];
+              NSXMLNode *pident
+                = [NSXMLNode attributeWithName: @"identifier"
+                                   stringValue: identifier];
+              NSXMLNode *psender
+                = [NSXMLNode attributeWithName: @"sender"
+                                   stringValue: dst];
+              
+              [sbproxy addAttribute: pselector];
+              [sbproxy addAttribute: ptarget];
+              [sbproxy addAttribute: pident];
+              [sbproxy addAttribute: psender];
+              NSUInteger count = [[objects children] count];
+              [objects insertChild: sbproxy
+                           atIndex: count - 1];
+              
+              // Create action...
+              NSXMLElement *conns = [NSXMLElement elementWithName: @"connections"];
+              NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
+              NSXMLNode *selector
+                = [NSXMLNode attributeWithName: @"selector"
+                                   stringValue: @"doAction:"];
+              NSXMLNode *target
+                = [NSXMLNode attributeWithName: @"target"
+                                   stringValue: dst];
+              NSXMLNode *ident
+                = [NSXMLNode attributeWithName: @"id"
+                                   stringValue: uid]; 
+              [action addAttribute: selector];
+              [action addAttribute: target];
+              [action addAttribute: ident];
+              [conns addChild: action]; // add to parent..
+              [sbproxy addChild: conns];
+
+              // Create the segue...
+              NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
+                                                                             source: src
+                                                                        destination: dst];
+              [ss _setKind: kind];
+              [ss _setRelationship: rel];
+              
+              // Add to maptable...
+              [mapTable setObject: ss
+                           forKey: identifier];
+            }
+        }
+    }
+  return mapTable;
+}
+
 // Private instance methods...
 - (id) initWithName: (NSStoryboardName)name
              bundle: (NSBundle *)bundle
@@ -344,9 +642,8 @@ static NSStoryboard *mainStoryboard = nil;
   [super dealloc];
 }
 
-- (id) instantiateInitialController
+- (void) _instantiateApplicationScene
 {
-  id controller = nil;
   NSDictionary	*table;
 
   table = [NSDictionary dictionaryWithObject: NSApp
@@ -358,72 +655,83 @@ static NSStoryboard *mainStoryboard = nil;
   BOOL success = [loader loadModelData: xmlData
                      externalNameTable: table
                               withZone: [self zone]];
+  if (!success)
+    {
+      NSLog(@"Unabled to load Application scene");
+    }
+}
 
+- (id) instantiateInitialController
+{
+  return [self instantiateControllerWithIdentifier: _initialViewControllerId];
+}
+
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block // 10.15
+{
+  id controller = [self instantiateInitialController];
+  CALL_BLOCK(block, self);
+  return controller;
+}
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
+{
+  id controller = nil;
+  NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
+  NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
+                                      NSNibTopLevelObjects,
+                                      NSApp,
+                                      NSNibOwner,
+                                      nil];
+  NSString *sceneId = [_controllerMap objectForKey: identifier];
+  NSXMLDocument *xml = [_scenesMap objectForKey: sceneId];
+  NSMapTable *segueMap = [self _processSegues: xml];
+  NSData *xmlData = [xml XMLData];
+  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
+  BOOL  success = [loader loadModelData: xmlData
+                      externalNameTable: table
+                               withZone: [self zone]];
+  
   if (success)
     {
-      NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
-      NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
-                                          NSNibTopLevelObjects,
-                                          NSApp,
-                                          NSNibOwner,
-                                          nil];
-      NSString *initialSceneId = [_controllerMap objectForKey: _initialViewControllerId];
-      xml = [_scenesMap objectForKey: initialSceneId];
-      xmlData = [xml XMLData];
-      loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
-      success = [loader loadModelData: xmlData
-                    externalNameTable: table
-                             withZone: [self zone]];
-      NSLog(@"table = %@", table);
-      
-      if (success)
+      NSEnumerator *en = [topLevelObjects objectEnumerator];
+      id o = nil;
+      while ((o = [en nextObject]) != nil)
         {
-          NSEnumerator *en = [topLevelObjects objectEnumerator];
-          id o = nil;
-          while ((o = [en nextObject]) != nil)
+          if ([o isKindOfClass: [NSWindowController class]])
             {
-              if ([o isKindOfClass: [NSWindowController class]])
-                {
-                  controller = o;
-                }
-              if ([o isKindOfClass: [NSWindow class]] &&
-                  [controller isKindOfClass: [NSWindowController class]])
-                {
-                  [controller setWindow: o];
-                  [controller showWindow: self];
-                }              
-              else if ([o isKindOfClass: [NSViewController class]])
-                {
-                }
+              controller = o;
+              [controller _setSegueMap: segueMap];
             }
-        }
-      else
-        {
-          NSLog(@"Couldn't load initial controller scene");
+          
+          if ([o isKindOfClass: [NSWindow class]] &&
+              [controller isKindOfClass: [NSWindowController class]])
+            {
+              [controller _setOwner: NSApp];
+              [controller _setTopLevelObjects: topLevelObjects];
+              [controller setWindow: o];
+              [controller showWindow: self];
+            }              
+          else if ([o isKindOfClass: [NSViewController class]])
+            {
+              NSWindow *w = [NSWindow windowWithContentViewController: o];
+              [w orderFrontRegardless];
+            }
         }
     }
   else
     {
-      NSLog(@"Couldn't load application scene.");
+      NSLog(@"Couldn't load initial controller scene");
     }
   
   return controller;
 }
 
-- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block // 10.15
-{
-  return nil;
-}
-
-- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
-{
-  return nil;
-}
-
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
                                    creator: (NSStoryboardControllerCreator)block  // 10.15
 {
-  return nil;
+  id controller = [self instantiateControllerWithIdentifier: identifier];
+  CALL_BLOCK(block, self);
+  return controller;
 }
 @end
 

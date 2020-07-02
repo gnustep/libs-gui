@@ -22,6 +22,7 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
 #import "AppKit/NSStoryboardSegue.h"
 
 @implementation NSStoryboardSegue
@@ -41,6 +42,11 @@
   return _identifier;
 }
 
+- (void) _setHandler: (GSStoryboardSeguePerformHandler)handler
+{
+  ASSIGN(_handler, handler);
+}
+
 + (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                              source: (id)sourceController 
                         destination: (id)destinationController 
@@ -50,7 +56,8 @@
                                                                     source: sourceController
                                                                destination: destinationController];
   AUTORELEASE(segue);
-  CALL_BLOCK_NO_ARGS(performHandler);
+  [segue _setHandler: performHandler];
+
   return segue;
 }
 
@@ -68,9 +75,31 @@
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_sourceController);
+  RELEASE(_destinationController);
+  RELEASE(_identifier);
+  RELEASE(_kind);
+  RELEASE(_relationship);
+  RELEASE(_handler);
+  [super dealloc];
+}
+
 - (void)perform
 {
-  // TBD...
+  if ([_kind isEqualToString: @"relationship"])
+    {
+    }
+  else if ([_kind isEqualToString: @"modal"])
+    {
+    }
+  else if ([_kind isEqualToString: @"show"])
+    {
+    }
+  
+  // Perform segue based on it's kind...
+  CALL_BLOCK_NO_ARGS(_handler);
 }
 
 @end

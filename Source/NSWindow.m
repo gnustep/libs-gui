@@ -76,6 +76,7 @@
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/PSOperators.h"
@@ -721,6 +722,24 @@ static NSNotificationCenter *nc = nil;
 
       [self exposeBinding: NSTitleBinding];
     }
+}
+
++ (instancetype) windowWithContentViewController: (NSViewController *)viewController
+{
+  NSView *view = [viewController view];
+  NSRect frame = [view frame];
+  NSString *title = [viewController title];
+  NSUInteger style = NSTitledWindowMask |
+    NSClosableWindowMask |
+    NSMiniaturizableWindowMask |
+    NSResizableWindowMask;
+  NSWindow *window =  [[self alloc] initWithContentRect: frame
+                                              styleMask: style
+                                                backing: NSBackingStoreBuffered
+                                                  defer: NO];
+  [window setTitle: title];
+  [window setContentView: view];
+  return window;
 }
 
 + (void) removeFrameUsingName: (NSString*)name

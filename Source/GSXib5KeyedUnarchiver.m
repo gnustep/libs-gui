@@ -225,7 +225,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
           RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", @"GS", nil];
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",

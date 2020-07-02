@@ -29,13 +29,15 @@
 
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSSeguePerforming.h>
 
 @class NSString;
 @class NSArray;
 @class NSWindow;
 @class NSDocument;
+@class NSMapTable;
 
-@interface NSWindowController : NSResponder <NSCoding>
+@interface NSWindowController : NSResponder <NSCoding, NSSeguePerforming>
 {
   @private
     NSWindow            *_window;
@@ -45,6 +47,7 @@
     NSDocument          *_document;
     NSArray             *_top_level_objects;
     id                  _owner;
+    NSMapTable          *_segueMap;
     struct ___wcFlags 
     {
       unsigned int should_close_document:1;

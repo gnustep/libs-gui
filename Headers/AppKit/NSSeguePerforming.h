@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-@protocol NSSequePerforming
+@protocol NSSeguePerforming
 - (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                             sender: (id)sender;
 

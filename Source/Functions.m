@@ -51,6 +51,7 @@ char **NSArgv = NULL;
 @interface NSStoryboard (Private)
 
 + (void) setMainStoryboard: (NSStoryboard *)storyboard;
+- (void) _instantiateApplicationScene;
 
 @end
 
@@ -107,6 +108,7 @@ NSApplicationMain(int argc, const char **argv)
           else
             {
               [NSStoryboard setMainStoryboard: storyboard];
+              [storyboard _instantiateApplicationScene];
               [storyboard instantiateInitialController];
             }
         }

@@ -42,6 +42,9 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardSeguePerformHandler, void);
   id _sourceController;
   id _destinationController;
   NSStoryboardSegueIdentifier _identifier;
+  NSString *_kind;
+  NSString *_relationship;
+  GSStoryboardSeguePerformHandler _handler;
 }
 
 - (id) sourceController;
