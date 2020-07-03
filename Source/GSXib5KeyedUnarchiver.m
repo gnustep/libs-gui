@@ -29,6 +29,8 @@
  */
 
 #import "GSXib5KeyedUnarchiver.h"
+#import "GNUstepGUI/GSNibLoading.h"
+#import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibElement.h"
 
 #import "AppKit/NSApplication.h"
@@ -61,6 +63,14 @@
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
+
+@interface NSCustomObject5 : NSCustomObject
+{
+  NSString *_userLabel;
+}
+
+- (NSString*) userLabel;
+@end
 
 @implementation NSCustomObject5
 
@@ -146,7 +156,8 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-// Declare all static vars...
+@implementation GSXib5KeyedUnarchiver
+
 static NSDictionary *XmlTagToObjectClassMap = nil;
 static NSArray      *XmlTagsNotStacked = nil;
 static NSArray      *XmlTagsToSkip = nil;
@@ -158,24 +169,6 @@ static NSArray      *XmlKeysDefined  = nil;
 static NSArray      *XmlReferenceAttributes  = nil;
 static NSArray      *XmlConnectionRecordTags  = nil;
 static NSArray      *XmlBoolDefaultYes  = nil;
-
-@interface NSString (___XibExtension___)
-
-- (BOOL) hasPrefixedClassName;
-
-@end
-
-@implementation NSString (___XibExtension___)
-
-- (BOOL) hasPrefixedClassName
-{
-  NSString *prefix = [self substringWithRange: NSMakeRange(0,2)];
-  return [ClassNamePrefixes containsObject: prefix];
-}
-
-@end
-
-@implementation GSXib5KeyedUnarchiver
 
 + (void) initialize
 {
@@ -214,8 +207,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
-                            @"NSURL", @"url",
                             @"NSStoryboardSegue", @"segue",
+                            @"NSURL", @"url",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -225,7 +218,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
           RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", @"GS", nil];
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
@@ -457,7 +450,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   NSString *postfix = [self alternateName: name startIndex: 2];
   NSString *typeName = [currentElement attributeForKey: @"key"];
 
-  if ((typeName != nil) && [postfix hasPrefix: typeName])
+  if ((typeName != nil) && [postfix hasPrefix: typeName] &&
+      ([XmlTagToObjectClassMap objectForKey: postfix] == nil))
     {
       return [self alternateName: name startIndex: [typeName length] + 2];
     }
@@ -488,8 +482,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   if (parentId == nil)
     {
-      // NSLog(@"Missing parent Id for connection on parent %@", parent);
-      NSLog(@"Missing parent id for connection %@", element);
+      NSLog(@"Missing parent Id for connection on parent %@", parent);
       // Fake an id for parent
       parentId = [[NSUUID UUID] UUIDString];
       [parent setAttribute: parentId forKey: @"id"];
@@ -3009,7 +3002,7 @@ didStartElement: (NSString*)elementName
           // This would allow to do system dependent path separator decoding...
           object = @"/";
         }
-      else if ([key hasPrefixedClassName])
+      else if ([key hasPrefix: @"NS"])
         {
           // Try a key minus a (potential) NS prefix...
           NSString *newKey = [self alternateName: key];
@@ -3052,7 +3045,7 @@ didStartElement: (NSString*)elementName
       SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
       flag         = [[self performSelector: selector withObject: currentElement] boolValue];
     }
-  else if ([key hasPrefixedClassName])
+  else if ([key hasPrefix:@"NS"])
     {
       NSString *newKey = [self alternateName: key];
       flag = [self decodeBoolForKey: newKey];
@@ -3084,7 +3077,7 @@ didStartElement: (NSString*)elementName
     {
       point = [self decodePointForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefixedClassName])
+  else if ([key hasPrefix: @"NS"])
     {
       NSString *newKey = [self alternateName: key];
       point = [self decodePointForKey: newKey];
@@ -3120,7 +3113,7 @@ didStartElement: (NSString*)elementName
       size.width  = [[currentElement attributeForKey: @"width"] doubleValue];
       size.height = [[currentElement attributeForKey: @"height"] doubleValue];
     }
-  else if ([key hasPrefixedClassName])
+  else if ([key hasPrefix: @"NS"])
     {
       NSString *newKey = [self alternateName: key];
       size             = [self decodeSizeForKey: newKey];
@@ -3147,7 +3140,7 @@ didStartElement: (NSString*)elementName
     {
       frame = [self decodeRectForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefixedClassName])
+  else if ([key hasPrefix: @"NS"])
     {
       NSString *newKey = [self alternateName: key];
       frame = [self decodeRectForKey: newKey];
@@ -3175,7 +3168,7 @@ didStartElement: (NSString*)elementName
     {
       range = [self decodeRangeForKey: [XmlKeyMapTable objectForKey: key]];
     }
-  else if ([key hasPrefixedClassName])
+  else if ([key hasPrefix: @"NS"])
     {
       NSString *newKey = [self alternateName: key];
       range = [self decodeRangeForKey: newKey];
@@ -3250,7 +3243,7 @@ didStartElement: (NSString*)elementName
           // Missing values mean YES
           hasValue = YES;
         }
-      else if ([key hasPrefixedClassName])
+      else if ([key hasPrefix: @"NS"])
         {
           // Try a key minus a (potential) NS prefix...
           NSString *newKey = [self alternateName: key];

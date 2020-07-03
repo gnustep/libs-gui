@@ -47,11 +47,3 @@
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
 @end
-
-@interface NSCustomObject5 : NSCustomObject
-{
-  NSString *_userLabel;
-}
-
-- (NSString*) userLabel;
-@end
