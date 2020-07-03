@@ -1,5 +1,10 @@
 2020-07-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXib5KeyedUnarchiver.m (alternateName:): Be more careful
+	when chopping of part of the name.
+
+2020-07-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSNib.h,
 	* Source/NSNib.m: Add missing MacOSX methods.
 	* Source/GSXibLoader.m: Remove semicolon. Add debug logs.
