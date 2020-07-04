@@ -44,6 +44,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 {
   NSMutableDictionary *_scenesMap;
   NSMutableDictionary *_controllerMap;
+  NSMutableDictionary *_documentsMap;
   NSString *_initialViewControllerId;
   NSString *_applicationSceneId;
 }

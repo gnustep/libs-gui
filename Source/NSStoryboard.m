@@ -208,13 +208,7 @@ static NSStoryboard *currentStoryboard = nil;
 
 - (id) nibInstantiate
 {
-  NSLog(@"Instantiation...");
   return self;
-}
-
-- (void) establishConnection
-{
-  NSLog(@"Establish connection...");
 }
 
 - (IBAction) doAction: (id)sender
@@ -311,7 +305,8 @@ static NSStoryboard *currentStoryboard = nil;
       ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);             
       _scenesMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
       _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
-
+      _documentsMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
+      
       while ((e = [en nextObject]) != nil)
         {
           NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
@@ -532,6 +527,28 @@ static NSStoryboard *currentStoryboard = nil;
   NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
   NSArray *controllers = [objects nodesForXPath: @"windowController"
                                           error: NULL];
+
+  NSString *uuidString = nil;
+  NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
+  if ([docArray count] > 0)
+    {
+      NSXMLElement *docElem = (NSXMLElement *)[docArray objectAtIndex: 0];
+      NSXMLNode *a = [docElem attributeForName: @"uuid"];
+      NSString *value = [a stringValue];
+      if (value != nil)
+        {
+          NSLog(@"already processed");
+          return [_documentsMap objectForKey: value];
+        }
+      else
+        {
+          uuidString = [[NSUUID UUID] UUIDString];
+          NSXMLNode *new_uuid_attr = [NSXMLNode attributeWithName: @"uuid"
+                                                      stringValue: uuidString];
+          [docElem addAttribute: new_uuid_attr];
+        }
+    }
+  
   NSString *src = nil;
   if ([controllers count] > 0)
     {
@@ -553,101 +570,112 @@ static NSStoryboard *currentStoryboard = nil;
   
   if ([connectionsArray count] > 0)
     {
-      NSXMLElement *connections = (NSXMLElement *)[connectionsArray objectAtIndex: 0];
-      NSArray *children = [connections children]; // there should be only one per set.
-      NSEnumerator *en = [children objectEnumerator];
-      id obj = nil;
-
-      while ((obj = [en nextObject]) != nil)
+      NSEnumerator *connectionsEnum = [connectionsArray objectEnumerator];
+      id connObj = nil;
+      while ((connObj = [connectionsEnum nextObject]) != nil)
         {
-          if ([[obj name] isEqualToString: @"segue"])
+          NSXMLElement *connections = (NSXMLElement *)connObj;
+          NSArray *children = [connections children]; // there should be only one per set.
+          NSEnumerator *en = [children objectEnumerator];
+          id obj = nil;
+          
+          while ((obj = [en nextObject]) != nil)
             {
-              // get the information from the segue.
-              id segue_parent_parent = [[obj parent] parent];
-              id segue_parent = [obj parent];
-              NSString *segue_parent_parent_name = [segue_parent_parent name];
-              NSXMLNode *attr = [obj attributeForName: @"destination"];
-              NSString *dst = [attr stringValue];
-              attr = [obj attributeForName: @"kind"];
-              NSString *kind =  [attr stringValue];
-              attr = [obj attributeForName: @"relationship"];
-              NSString *rel = [attr stringValue];
-              [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
-              attr = [obj attributeForName: @"id"];
-              NSString *uid = [attr stringValue];
-              attr = [obj attributeForName: @"identifier"];
-              NSString *identifier = [attr stringValue];
-              if (identifier == nil)
+              if ([[obj name] isEqualToString: @"segue"])
                 {
-                  identifier = [[NSUUID UUID] UUIDString];
-                }
-              
-              // Create proxy object to invoke methods on the window controller
-              NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
-              NSXMLNode *pselector
-                = [NSXMLNode attributeWithName: @"selector"
-                                   stringValue: @"doAction:"];
-              NSXMLNode *ptarget
-                = [NSXMLNode attributeWithName: @"target"
-                                   stringValue: dst];
-              NSString *pident_value = [[NSUUID UUID] UUIDString];
-              NSXMLNode *pident
-                = [NSXMLNode attributeWithName: @"id"
-                                   stringValue: pident_value];
-              NSXMLNode *psegueIdent
-                = [NSXMLNode attributeWithName: @"identifier"
-                                   stringValue: identifier];
-              NSXMLNode *psender
-                = [NSXMLNode attributeWithName: @"sender"
-                                   stringValue: src];
-              NSXMLNode *pkind
-                = [NSXMLNode attributeWithName: @"kind"
-                                   stringValue: kind];
-              
-              [sbproxy addAttribute: pselector];
-              [sbproxy addAttribute: ptarget];
-              [sbproxy addAttribute: pident];
-              [sbproxy addAttribute: psegueIdent];
-              [sbproxy addAttribute: psender];
-              [sbproxy addAttribute: pkind];
-              NSUInteger count = [[objects children] count];
-              [objects insertChild: sbproxy
-                           atIndex: count - 1];
-
-              // add action to parent ONLY if it is NOT a controller..
-              if (![segue_parent_parent_name isEqualToString: @"windowController"] &&
-                  ![segue_parent_parent_name isEqualToString: @"viewController"])
-                {              
-                  // Create action...
-                  NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
-                  NSXMLNode *selector
+                  // get the information from the segue.
+                  id segue_parent_parent = [[obj parent] parent];
+                  id segue_parent = [obj parent];
+                  NSString *segue_parent_parent_name = [segue_parent_parent name];
+                  NSXMLNode *attr = [obj attributeForName: @"destination"];
+                  NSString *dst = [attr stringValue];
+                  attr = [obj attributeForName: @"kind"];
+                  NSString *kind =  [attr stringValue];
+                  attr = [obj attributeForName: @"relationship"];
+                  NSString *rel = [attr stringValue];
+                  [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
+                  attr = [obj attributeForName: @"id"];
+                  NSString *uid = [attr stringValue];
+                  attr = [obj attributeForName: @"identifier"];
+                  NSString *identifier = [attr stringValue];
+                  if (identifier == nil)
+                    {
+                      identifier = [[NSUUID UUID] UUIDString];
+                    }
+                  
+                  // Create proxy object to invoke methods on the window controller
+                  NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
+                  NSXMLNode *pselector
                     = [NSXMLNode attributeWithName: @"selector"
                                        stringValue: @"doAction:"];
-                  NSXMLNode *target
+                  NSXMLNode *ptarget
                     = [NSXMLNode attributeWithName: @"target"
-                                       stringValue: pident_value];
-                  NSXMLNode *ident
+                                       stringValue: dst];
+                  NSString *pident_value = [[NSUUID UUID] UUIDString];
+                  NSXMLNode *pident
                     = [NSXMLNode attributeWithName: @"id"
-                                       stringValue: uid]; 
-                  [action addAttribute: selector];
-                  [action addAttribute: target];
-                  [action addAttribute: ident];
-                  [segue_parent addChild: action];
-                }
-              
-              // Create the segue...
-              NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
-                                                                             source: src
-                                                                        destination: dst];
-              [ss _setKind: kind];
-              [ss _setRelationship: rel];
-              
-              // Add to maptable...
-              [mapTable setObject: ss
-                           forKey: identifier];
-            }
-        }
-    }
+                                       stringValue: pident_value];
+                  NSXMLNode *psegueIdent
+                    = [NSXMLNode attributeWithName: @"identifier"
+                                       stringValue: identifier];
+                  NSXMLNode *psender
+                    = [NSXMLNode attributeWithName: @"sender"
+                                       stringValue: src];
+                  NSXMLNode *pkind
+                    = [NSXMLNode attributeWithName: @"kind"
+                                       stringValue: kind];
+                  
+                  [sbproxy addAttribute: pselector];
+                  [sbproxy addAttribute: ptarget];
+                  [sbproxy addAttribute: pident];
+                  [sbproxy addAttribute: psegueIdent];
+                  [sbproxy addAttribute: psender];
+                  [sbproxy addAttribute: pkind];
+                  NSUInteger count = [[objects children] count];
+                  [objects insertChild: sbproxy
+                               atIndex: count - 1];
+                  
+                  // add action to parent ONLY if it is NOT a controller..
+                  if (![segue_parent_parent_name isEqualToString: @"windowController"] &&
+                      ![segue_parent_parent_name isEqualToString: @"viewController"])
+                    {              
+                      // Create action...
+                      NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
+                      NSXMLNode *selector
+                        = [NSXMLNode attributeWithName: @"selector"
+                                           stringValue: @"doAction:"];
+                      NSXMLNode *target
+                        = [NSXMLNode attributeWithName: @"target"
+                                           stringValue: pident_value];
+                      NSXMLNode *ident
+                        = [NSXMLNode attributeWithName: @"id"
+                                           stringValue: uid]; 
+                      [action addAttribute: selector];
+                      [action addAttribute: target];
+                      [action addAttribute: ident];
+                      [segue_parent addChild: action];
+                    }
+                  
+                  // Create the segue...
+                  NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
+                                                                                 source: src
+                                                                            destination: dst];
+                  [ss _setKind: kind];
+                  [ss _setRelationship: rel];
+                  
+                  // Add to maptable...
+                  [mapTable setObject: ss
+                               forKey: identifier];
+                  
+                } // only process segue objects...
+            } // iterate over objects in each set of connections
+        } // iterate over connection objs
+
+      // Add to cache...
+      [_documentsMap setObject: mapTable
+                        forKey: uuidString];
+      
+    }  // if connections > 0
   return mapTable;
 }
 
@@ -696,6 +724,7 @@ static NSStoryboard *currentStoryboard = nil;
   RELEASE(_applicationSceneId);
   RELEASE(_scenesMap);
   RELEASE(_controllerMap);
+  RELEASE(_documentsMap);
   [super dealloc];
 }
 
@@ -740,7 +769,7 @@ static NSStoryboard *currentStoryboard = nil;
                                       NSNibOwner,
                                       nil];
   NSString *sceneId = [_controllerMap objectForKey: identifier];
-  NSXMLDocument *xml = [_scenesMap objectForKey: sceneId];
+  NSXMLDocument *xml = [[_scenesMap objectForKey: sceneId] copy];
   NSMapTable *segueMap = [self _processSegues: xml];
   NSData *xmlData = [xml XMLData];
   GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];

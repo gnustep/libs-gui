@@ -41,6 +41,7 @@
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSStoryboard.h"
+#import "AppKit/NSViewController.h"
 
 #import "NSDocumentFrameworkPrivate.h"
 
@@ -572,9 +573,17 @@
     {
       NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
       NSStoryboard *ms = [NSStoryboard mainStoryboard];
-      NSString *destId = [segue destinationController];
-      id destCon = [ms instantiateControllerWithIdentifier: destId]; 
-
+      id destCon = nil;
+      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
+          [[segue destinationController] isKindOfClass: [NSWindowController class]])
+        {
+          destCon = [segue destinationController];
+        }
+      else
+        {
+          NSString *destId = [segue destinationController];
+          destCon = [ms instantiateControllerWithIdentifier: destId]; 
+        }
       [segue _setSourceController: self];
       [segue _setDestinationController: destCon];  // replace with actual controller...
       [self prepareForSegue: segue
