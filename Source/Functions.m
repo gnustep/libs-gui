@@ -50,7 +50,7 @@ char **NSArgv = NULL;
 
 @interface NSStoryboard (Private)
 
-+ (void) setMainStoryboard: (NSStoryboard *)storyboard;
++ (void) _setMainStoryboard: (NSStoryboard *)storyboard;
 - (void) _instantiateApplicationScene;
 
 @end
@@ -100,14 +100,14 @@ NSApplicationMain(int argc, const char **argv)
       if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
         {
           NSStoryboard *storyboard = [NSStoryboard storyboardWithName: mainModelFile
-                                        bundle: [NSBundle mainBundle]];
+                                                               bundle: [NSBundle mainBundle]];
           if (storyboard == nil)
             {
               NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
             }
           else
             {
-              [NSStoryboard setMainStoryboard: storyboard];
+              [NSStoryboard _setMainStoryboard: storyboard];
               [storyboard _instantiateApplicationScene];
               [storyboard instantiateInitialController];
             }

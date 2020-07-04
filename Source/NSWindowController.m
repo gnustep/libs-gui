@@ -572,7 +572,6 @@
   if (should)
     {
       NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-      NSStoryboard *ms = [NSStoryboard mainStoryboard];
       id destCon = nil;
       if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
           [[segue destinationController] isKindOfClass: [NSWindowController class]])
@@ -582,7 +581,7 @@
       else
         {
           NSString *destId = [segue destinationController];
-          destCon = [ms instantiateControllerWithIdentifier: destId]; 
+          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
         }
       [segue _setSourceController: self];
       [segue _setDestinationController: destCon];  // replace with actual controller...

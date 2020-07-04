@@ -41,19 +41,20 @@
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
-static NSStoryboard *mainStoryboard = nil;
-static NSStoryboard *currentStoryboard = nil;
+static NSStoryboard *__mainStoryboard = nil;
 
 // The storyboard needs to set this information on controllers...
 @interface NSWindowController (__StoryboardPrivate__)
 - (void) _setOwner: (id)owner;
 - (void) _setTopLevelObjects: (NSArray *)array;
 - (void) _setSegueMap: (NSMapTable *)map;
+- (void) _setStoryboard: (NSStoryboard *)storyboard;
 @end
 
 @interface NSViewController (__StoryboardPrivate__)
 - (void) _setTopLevelObjects: (NSArray *)array;
 - (void) _setSegueMap: (NSMapTable *)map;
+- (void) _setStoryboard: (NSStoryboard *)storyboard;
 @end
 
 @interface NSStoryboardSegue (__StoryboardPrivate__)
@@ -102,6 +103,10 @@ static NSStoryboard *currentStoryboard = nil;
   ASSIGN(_segueMap, map);
 }
 
+- (void) _setStoryboard: (NSStoryboard *)storyboard
+{
+  _storyboard = storyboard;
+}
 @end
 
 @implementation NSViewController (__StoryboardPrivate__)
@@ -113,6 +118,11 @@ static NSStoryboard *currentStoryboard = nil;
 - (void) _setSegueMap: (NSMapTable *)map
 {
   ASSIGN(_segueMap, map);
+}
+
+- (void) _setStoryboard: (NSStoryboard *)storyboard
+{
+  _storyboard = storyboard;
 }
 @end
 // end private methods...
@@ -213,6 +223,7 @@ static NSStoryboard *currentStoryboard = nil;
 
 - (IBAction) doAction: (id)sender
 {
+  NSLog(@"_sender = %@", sender);
   [_sender performSegueWithIdentifier: _identifier
                                sender: _sender];
 }
@@ -260,6 +271,111 @@ static NSStoryboard *currentStoryboard = nil;
 {
   // this is never encoded directly...
 }
+@end
+
+
+@interface NSControllerPlaceholder : NSObject <NSCoding, NSCopying> // , NSSeguePerforming>
+{
+  NSString *_storyboardName;
+  NSStoryboard *_storyboard;
+}
+
+- (NSString *) storyboardName;
+- (void) setStoryboardName: (NSString *)name;
+
+@end
+
+@implementation NSControllerPlaceholder
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _storyboardName = nil;
+    }
+  return self;
+}
+
+- (NSString *) storyboardName
+{
+  return _storyboardName;
+}
+
+- (void) setStoryboardName: (NSString *)name
+{
+  ASSIGNCOPY(_storyboardName, name);
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  NSControllerPlaceholder *c = [[NSControllerPlaceholder allocWithZone: z] init];
+  [c setStoryboardName: _storyboardName];
+  return c;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  NSLog(@"self = %@", self);
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSStoryboardName"])
+        {
+          [self setStoryboardName: [coder decodeObjectForKey: @"NSStoryboardName"]];
+        }
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // this is never encoded directly...
+}
+
+// NSSeguePerforming methods...
+/*
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender
+{
+  BOOL should = [self shouldPerformSegueWithIdentifier: identifier
+                                                sender: sender];
+
+  if (should)
+    {
+      NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+      id destCon = nil;
+      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
+          [[segue destinationController] isKindOfClass: [NSWindowController class]])
+        {
+          destCon = [segue destinationController];
+        }
+      else
+        {
+          NSString *destId = [segue destinationController];
+          _storyboard = [NSStoryboard storyboardWithName: _storyboardName
+                                                  bundle: [NSBundle mainBundle]];
+          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
+        }
+      [segue _setSourceController: self];
+      [segue _setDestinationController: destCon];  // replace with actual controller...
+      [self prepareForSegue: segue
+                     sender: sender];
+      [segue perform];
+    }
+}
+
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender
+{
+  // do nothing in base class method...
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender
+{
+  return YES;
+  }*/
 @end
 
 @implementation NSStoryboard
@@ -700,14 +816,17 @@ static NSStoryboard *currentStoryboard = nil;
 }
 
 // Class methods...
-+ (void) setMainStoryboard: (NSStoryboard *)storyboard  // private, only called from NSApplicationMain()
++ (void) _setMainStoryboard: (NSStoryboard *)storyboard  // private, only called from NSApplicationMain()
 {
-  ASSIGN(mainStoryboard, storyboard);
+  if (__mainStoryboard == nil)
+    {
+      ASSIGN(__mainStoryboard, storyboard);
+    }
 }
 
 + (NSStoryboard *) mainStoryboard // 10.13
 {
-  return mainStoryboard;
+  return __mainStoryboard;
 }
 
 + (instancetype) storyboardWithName: (NSStoryboardName)name
@@ -780,6 +899,7 @@ static NSStoryboard *currentStoryboard = nil;
   if (success)
     {
       NSMutableArray *seguesToPerform = [NSMutableArray array];
+      NSMutableArray *placeholders = [NSMutableArray array];
       NSEnumerator *en = [topLevelObjects objectEnumerator];
       id o = nil;
       while ((o = [en nextObject]) != nil)
@@ -790,6 +910,7 @@ static NSStoryboard *currentStoryboard = nil;
               controller = o;
               [controller _setSegueMap: segueMap];
               [controller _setTopLevelObjects: topLevelObjects];
+              [controller _setStoryboard: self];
             }
 
           if ([o isKindOfClass: [NSWindow class]] &&
@@ -815,6 +936,12 @@ static NSStoryboard *currentStoryboard = nil;
                   [seguesToPerform addObject: ssa];
                 }
             }
+
+          if ([o isKindOfClass: [NSControllerPlaceholder class]])
+            {
+              [placeholders addObject: o];
+            }
+             
         }
 
       // perform segues after all is initialized.

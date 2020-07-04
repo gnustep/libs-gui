@@ -287,6 +287,7 @@ GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
 GSSlideView.m \
+GSStoryboardTransform.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \

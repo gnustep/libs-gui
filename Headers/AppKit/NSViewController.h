@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
-@class NSArray, NSBundle, NSPointerArray, NSView, NSMapTable;
+@class NSArray, NSBundle, NSPointerArray, NSView, NSMapTable, NSStoryboard;
 
 @interface NSViewController : NSResponder <NSSeguePerforming>
 {
@@ -47,6 +47,7 @@ Boston, MA 02110-1301, USA.
   id                   _autounbinder;
   NSString            *_designNibBundleIdentifier;
   NSMapTable          *_segueMap;
+  NSStoryboard        *_storyboard; // a weak reference to the origin storyboard.
   struct ___vcFlags 
     {
       unsigned int nib_is_loaded:1;
