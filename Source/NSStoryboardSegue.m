@@ -28,6 +28,7 @@
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
 
 @implementation NSStoryboardSegue
 
@@ -49,6 +50,16 @@
 - (void) _setHandler: (GSStoryboardSeguePerformHandler)handler
 {
   ASSIGN(_handler, handler);
+}
+
+- (void) _setDestinationController: (id)controller
+{
+  _destinationController = controller;
+}
+
+- (void) _setSourceController: (id)controller
+{
+  _sourceController = controller;
 }
 
 + (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
@@ -101,11 +112,35 @@
     }
   else if ([_kind isEqualToString: @"modal"])
     {
-      NSLog(@"modal");
+      NSInteger code = NSRunContinuesResponse;
+      NSWindow *w = nil;
+      if ([_destinationController isKindOfClass: [NSWindowController class]])
+        {
+          w = [_destinationController window];
+        }
+      else
+        {
+          w = [NSWindow windowWithContentViewController: _destinationController];
+        }
+      RETAIN(w);
+      code = [NSApp runModalForWindow: w];
+      if (code != NSRunContinuesResponse)
+        {
+          NSLog(@"Modal returned error response.");
+        }
+      RELEASE(w);
     }
   else if ([_kind isEqualToString: @"show"])
     {
-      NSLog(@"show");
+      if ([_destinationController isKindOfClass: [NSWindowController class]])
+        {
+          [_destinationController showWindow: _sourceController];
+        }
+      else
+        {
+          NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
+          [w orderFrontRegardless];
+        }
     }
 
   if (_handler != nil)

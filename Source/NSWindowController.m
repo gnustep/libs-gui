@@ -49,19 +49,6 @@
 - (void) _setSourceController: (id)controller;
 @end
 
-@implementation NSStoryboardSegue (__WindowControllerPrivate__)
-- (void) _setDestinationController: (id)controller
-{
-  _destinationController = controller;
-}
-
-- (void) _setSourceController: (id)controller
-{
-  _sourceController = controller;
-}
-@end
-
-
 @implementation NSWindowController
 
 + (void) initialize

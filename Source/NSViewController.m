@@ -36,6 +36,12 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSStoryboard.h"
+
+@interface NSStoryboardSegue (__ViewControllerPrivate__)
+- (void) _setDestinationController: (id)controller;
+- (void) _setSourceController: (id)controller;
+@end
 
 @implementation NSViewController
 
@@ -184,6 +190,7 @@
     }
 }
 
+
 // NSSeguePerforming methods...
 - (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                             sender: (id)sender
@@ -194,6 +201,12 @@
   if (should)
     {
       NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+      NSStoryboard *ms = [NSStoryboard mainStoryboard];
+      NSString *destId = [segue destinationController];
+      id destCon = [ms instantiateControllerWithIdentifier: destId]; 
+
+      [segue _setSourceController: self];
+      [segue _setDestinationController: destCon];  // replace with actual controller...
       [self prepareForSegue: segue
                      sender: sender];
       [segue perform];

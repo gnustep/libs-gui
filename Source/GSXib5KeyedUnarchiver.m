@@ -207,7 +207,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
-                            @"NSStoryboardSegue", @"segue",
                             @"NSURL", @"url",
                             nil];
           RETAIN(XmlTagToObjectClassMap);

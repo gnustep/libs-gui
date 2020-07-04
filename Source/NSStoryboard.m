@@ -42,6 +42,7 @@
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
 static NSStoryboard *mainStoryboard = nil;
+static NSStoryboard *currentStoryboard = nil;
 
 // The storyboard needs to set this information on controllers...
 @interface NSWindowController (__StoryboardPrivate__)
@@ -218,8 +219,8 @@ static NSStoryboard *mainStoryboard = nil;
 
 - (IBAction) doAction: (id)sender
 {
-  [sender performSegueWithIdentifier: _identifier
-                              sender: _sender];
+  [_sender performSegueWithIdentifier: _identifier
+                               sender: _sender];
 }
 
 - (id) copyWithZone: (NSZone *)z
@@ -562,6 +563,9 @@ static NSStoryboard *mainStoryboard = nil;
           if ([[obj name] isEqualToString: @"segue"])
             {
               // get the information from the segue.
+              id segue_parent_parent = [[obj parent] parent];
+              id segue_parent = [obj parent];
+              NSString *segue_parent_parent_name = [segue_parent_parent name];
               NSXMLNode *attr = [obj attributeForName: @"destination"];
               NSString *dst = [attr stringValue];
               attr = [obj attributeForName: @"kind"];
@@ -586,15 +590,16 @@ static NSStoryboard *mainStoryboard = nil;
               NSXMLNode *ptarget
                 = [NSXMLNode attributeWithName: @"target"
                                    stringValue: dst];
+              NSString *pident_value = [[NSUUID UUID] UUIDString];
               NSXMLNode *pident
                 = [NSXMLNode attributeWithName: @"id"
-                                   stringValue: uid];
+                                   stringValue: pident_value];
               NSXMLNode *psegueIdent
                 = [NSXMLNode attributeWithName: @"identifier"
                                    stringValue: identifier];
               NSXMLNode *psender
                 = [NSXMLNode attributeWithName: @"sender"
-                                   stringValue: dst];
+                                   stringValue: src];
               NSXMLNode *pkind
                 = [NSXMLNode attributeWithName: @"kind"
                                    stringValue: kind];
@@ -608,25 +613,28 @@ static NSStoryboard *mainStoryboard = nil;
               NSUInteger count = [[objects children] count];
               [objects insertChild: sbproxy
                            atIndex: count - 1];
-              
-              // Create action...
-              NSXMLElement *conns = [NSXMLElement elementWithName: @"connections"];
-              NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
-              NSXMLNode *selector
-                = [NSXMLNode attributeWithName: @"selector"
-                                   stringValue: @"doAction:"];
-              NSXMLNode *target
-                = [NSXMLNode attributeWithName: @"target"
-                                   stringValue: dst];
-              NSXMLNode *ident
-                = [NSXMLNode attributeWithName: @"id"
-                                   stringValue: uid]; 
-              [action addAttribute: selector];
-              [action addAttribute: target];
-              [action addAttribute: ident];
-              [conns addChild: action]; // add to parent..
-              [sbproxy addChild: conns];
 
+              // add action to parent ONLY if it is NOT a controller..
+              if (![segue_parent_parent_name isEqualToString: @"windowController"] &&
+                  ![segue_parent_parent_name isEqualToString: @"viewController"])
+                {              
+                  // Create action...
+                  NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
+                  NSXMLNode *selector
+                    = [NSXMLNode attributeWithName: @"selector"
+                                       stringValue: @"doAction:"];
+                  NSXMLNode *target
+                    = [NSXMLNode attributeWithName: @"target"
+                                       stringValue: pident_value];
+                  NSXMLNode *ident
+                    = [NSXMLNode attributeWithName: @"id"
+                                       stringValue: uid]; 
+                  [action addAttribute: selector];
+                  [action addAttribute: target];
+                  [action addAttribute: ident];
+                  [segue_parent addChild: action];
+                }
+              
               // Create the segue...
               NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
                                                                              source: src
@@ -666,7 +674,7 @@ static NSStoryboard *mainStoryboard = nil;
 // Class methods...
 + (void) setMainStoryboard: (NSStoryboard *)storyboard  // private, only called from NSApplicationMain()
 {
-  mainStoryboard = storyboard;
+  ASSIGN(mainStoryboard, storyboard);
 }
 
 + (NSStoryboard *) mainStoryboard // 10.13
@@ -772,7 +780,8 @@ static NSStoryboard *mainStoryboard = nil;
           if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
             {
               NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-              if ([[ssa kind] isEqualToString: @"relationship"])
+              [ssa setSender: controller]; // resolve controller here...
+              if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
                 {
                   [seguesToPerform addObject: ssa];
                 }
@@ -790,7 +799,7 @@ static NSStoryboard *mainStoryboard = nil;
     }
   else
     {
-      NSLog(@"Couldn't load initial controller scene");
+      NSLog(@"Couldn't load controller scene id = %@", sceneId);
     }
   
   return controller;
