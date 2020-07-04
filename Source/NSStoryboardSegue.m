@@ -112,7 +112,6 @@
     }
   else if ([_kind isEqualToString: @"modal"])
     {
-      NSInteger code = NSRunContinuesResponse;
       NSWindow *w = nil;
       if ([_destinationController isKindOfClass: [NSWindowController class]])
         {
@@ -123,11 +122,8 @@
           w = [NSWindow windowWithContentViewController: _destinationController];
         }
       RETAIN(w);
-      code = [NSApp runModalForWindow: w];
-      if (code != NSRunContinuesResponse)
-        {
-          NSLog(@"Modal returned error response.");
-        }
+      [w center];
+      [NSApp runModalForWindow: w];
       RELEASE(w);
     }
   else if ([_kind isEqualToString: @"show"])
