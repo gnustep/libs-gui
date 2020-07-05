@@ -861,7 +861,7 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
-  id controller = nil;
+  id result = nil;
   NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
   NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
                                       NSNibTopLevelObjects,
@@ -881,58 +881,70 @@ static NSStoryboard *__mainStoryboard = nil;
     {
       NSMutableArray *seguesToPerform = [NSMutableArray array];
       NSMutableArray *placeholders = [NSMutableArray array];
+      NSWindowController *wc = nil;
+      NSViewController *vc = nil;
+      NSWindow *w = nil;
       NSEnumerator *en = [topLevelObjects objectEnumerator];
       id o = nil;
-
+      
       while ((o = [en nextObject]) != nil)
         {
-          if ([o isKindOfClass: [NSWindowController class]] ||
-              [o isKindOfClass: [NSViewController class]])
+          if ([o isKindOfClass: [NSWindowController class]])
             {
-              controller = o;
-              [o _setSegueMap: segueMap];
-              [o _setTopLevelObjects: topLevelObjects];
-              [o _setStoryboard: self];
+              wc = (NSWindowController *)o;
+              [wc _setSegueMap: segueMap];
+              [wc _setTopLevelObjects: topLevelObjects];
+              [wc _setStoryboard: self];
+              [wc _setOwner: NSApp];
+              result = o;
             }
-
-          if ([o isKindOfClass: [NSWindow class]] &&
-              [controller isKindOfClass: [NSWindowController class]])
+          else if ([o isKindOfClass: [NSViewController class]])
             {
-              [controller _setOwner: NSApp];
-              [controller setWindow: o];
-              [controller showWindow: self];
+              vc = (NSViewController *)o;
+              [vc _setSegueMap: segueMap];
+              [vc _setTopLevelObjects: topLevelObjects];
+              [vc _setStoryboard: self];
+              result = o;
             }
-          else if ([o isKindOfClass: [NSViewController class]] && controller == nil &&
-                   [seguesToPerform count] == 0)          
+          else if ([o isKindOfClass: [NSWindow class]])
             {
-              NSWindow *w = [NSWindow windowWithContentViewController: o];
-              controller = o;
-              [w orderFrontRegardless];
+              w = (NSWindow *)o;
             }
-          
-          if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
-            {
-              NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-              [ssa setSender: controller]; // resolve controller here...
-              if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
-                {
-                  [seguesToPerform addObject: ssa];
-                }
-            }
-
-          if ([o isKindOfClass: [NSControllerPlaceholder class]])
+          else if ([o isKindOfClass: [NSControllerPlaceholder class]])
             {
               [placeholders addObject: o];
             }             
         }
 
+      // Process action proxies after so we know we have the windowController...
+      en = [topLevelObjects objectEnumerator];
+      o = nil;
+      while ((o = [en nextObject]) != nil)
+        {
+          if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
+            {
+              NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+              [ssa setSender: result]; // resolve controller here...
+              if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
+                {
+                  [seguesToPerform addObject: ssa];
+                }
+            }
+        }
+
+      // Depending on which kind of controller we have, do the correct thing....
+      if (w != nil && wc != nil)
+        {
+          [wc setWindow: w];
+        }
+          
       // perform segues after all is initialized.
       en = [seguesToPerform objectEnumerator];
       o = nil;
       while ((o = [en nextObject]) != nil)
         {
           NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-          [ssa doAction: controller];
+          [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
         }
 
       en = [placeholders objectEnumerator];
@@ -948,7 +960,7 @@ static NSStoryboard *__mainStoryboard = nil;
       NSLog(@"Couldn't load controller scene id = %@", sceneId);
     }
   
-  return controller;
+  return result;
 }
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier

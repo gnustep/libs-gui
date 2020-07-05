@@ -109,6 +109,7 @@
       NSWindow *w = [_sourceController window];
       NSView *v = [_destinationController view];
       [w setContentView: v];
+      [_sourceController showWindow: self];
     }
   else if ([_kind isEqualToString: @"modal"])
     {
