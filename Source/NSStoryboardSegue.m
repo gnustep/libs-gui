@@ -109,6 +109,7 @@
       NSWindow *w = [_sourceController window];
       NSView *v = [_destinationController view];
       [w setContentView: v];
+      [w setTitle: [_destinationController title]];
       [_sourceController showWindow: self];
     }
   else if ([_kind isEqualToString: @"modal"])
@@ -136,6 +137,7 @@
       else
         {
           NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
+          [w setTitle: [_destinationController title]];
           [w orderFrontRegardless];
         }
     }

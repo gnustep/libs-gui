@@ -281,6 +281,7 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (NSString *) storyboardName;
 - (void) setStoryboardName: (NSString *)name;
+- (id) instantiate;
 
 @end
 
@@ -331,12 +332,11 @@ static NSStoryboard *__mainStoryboard = nil;
   // this is never encoded directly...
 }
 
-- (void) instantiate
+- (id) instantiate
 {
-  NSLog(@".... instantiate placeholder ....");
   _storyboard = [NSStoryboard storyboardWithName: _storyboardName
                                           bundle: [NSBundle mainBundle]];
-  [_storyboard instantiateInitialController];
+  return [_storyboard instantiateInitialController];
 }
 
 @end
@@ -952,7 +952,7 @@ static NSStoryboard *__mainStoryboard = nil;
       while ((o = [en nextObject]) != nil)
         {
           NSControllerPlaceholder *ph = (NSControllerPlaceholder *)o;
-          [ph instantiate];
+          result = [ph instantiate];
         }
     }
   else
