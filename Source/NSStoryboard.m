@@ -500,6 +500,7 @@ static NSStoryboard *__mainStoryboard = nil;
               NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
               NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
               NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder" error: NULL];
+              RELEASE(doc);
               
               if ([windowControllers count] > 0)
                 {
@@ -597,7 +598,7 @@ static NSStoryboard *__mainStoryboard = nil;
               // Create document...
               [_scenesMap setObject: document
                              forKey: sceneId];
-
+              
               // Map controllerId's to scenes...
               if (controllerId != nil)
                 {
