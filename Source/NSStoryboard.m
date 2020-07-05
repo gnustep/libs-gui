@@ -223,7 +223,6 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (IBAction) doAction: (id)sender
 {
-  NSLog(@"_sender = %@", sender);
   [_sender performSegueWithIdentifier: _identifier
                                sender: _sender];
 }
@@ -317,7 +316,6 @@ static NSStoryboard *__mainStoryboard = nil;
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
-  NSLog(@"self = %@", self);
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSStoryboardName"])
@@ -333,49 +331,14 @@ static NSStoryboard *__mainStoryboard = nil;
   // this is never encoded directly...
 }
 
-// NSSeguePerforming methods...
-/*
-- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                            sender: (id)sender
+- (void) instantiate
 {
-  BOOL should = [self shouldPerformSegueWithIdentifier: identifier
-                                                sender: sender];
-
-  if (should)
-    {
-      NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-      id destCon = nil;
-      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
-          [[segue destinationController] isKindOfClass: [NSWindowController class]])
-        {
-          destCon = [segue destinationController];
-        }
-      else
-        {
-          NSString *destId = [segue destinationController];
-          _storyboard = [NSStoryboard storyboardWithName: _storyboardName
-                                                  bundle: [NSBundle mainBundle]];
-          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
-        }
-      [segue _setSourceController: self];
-      [segue _setDestinationController: destCon];  // replace with actual controller...
-      [self prepareForSegue: segue
-                     sender: sender];
-      [segue perform];
-    }
+  NSLog(@".... instantiate placeholder ....");
+  _storyboard = [NSStoryboard storyboardWithName: _storyboardName
+                                          bundle: [NSBundle mainBundle]];
+  [_storyboard instantiateInitialController];
 }
 
-- (void)prepareForSegue: (NSStoryboardSegue *)segue 
-                 sender: (id)sender
-{
-  // do nothing in base class method...
-}
-
-- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                                  sender: (id)sender
-{
-  return YES;
-  }*/
 @end
 
 @implementation NSStoryboard
@@ -432,7 +395,7 @@ static NSStoryboard *__mainStoryboard = nil;
           NSXMLDocument *document = nil;
           NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
           NSString *controllerId = nil;
-          
+
           // Copy children...
           while ((child = [ce nextObject]) != nil)
             {
@@ -536,7 +499,8 @@ static NSStoryboard *__mainStoryboard = nil;
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
               NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
               NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
-          
+              NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder" error: NULL];
+              
               if ([windowControllers count] > 0)
                 {
                   NSXMLElement *ce = [windowControllers objectAtIndex: 0];
@@ -562,6 +526,13 @@ static NSStoryboard *__mainStoryboard = nil;
               if ([viewControllers count] > 0)
                 {
                   NSXMLElement *ce = [viewControllers objectAtIndex: 0];
+                  NSXMLNode *attr = [ce attributeForName: @"id"];
+                  controllerId = [attr stringValue];
+                }
+
+              if ([controllerPlaceholders count] > 0)
+                {
+                  NSXMLElement *ce = [controllerPlaceholders objectAtIndex: 0];
                   NSXMLNode *attr = [ce attributeForName: @"id"];
                   controllerId = [attr stringValue];
                 }
@@ -610,7 +581,18 @@ static NSStoryboard *__mainStoryboard = nil;
                             }
                         }
                     }
-                }                            
+                }
+
+              // Delete extra firstResponder...
+              /*
+              NSArray *ar = [document nodesForXPath: @"//customObject[@sceneMemberID=\"firstResponder\"]"
+                                              error: NULL];
+              if ([ar count] > 0)
+                {
+                  id node = [ar objectAtIndex: 0];
+                  [node detach];
+                }
+              */
               
               // Create document...
               [_scenesMap setObject: document
@@ -653,7 +635,6 @@ static NSStoryboard *__mainStoryboard = nil;
       NSString *value = [a stringValue];
       if (value != nil)
         {
-          NSLog(@"already processed");
           return [_documentsMap objectForKey: value];
         }
       else
@@ -895,22 +876,23 @@ static NSStoryboard *__mainStoryboard = nil;
   BOOL  success = [loader loadModelData: xmlData
                       externalNameTable: table
                                withZone: [self zone]];
-  
+    
   if (success)
     {
       NSMutableArray *seguesToPerform = [NSMutableArray array];
       NSMutableArray *placeholders = [NSMutableArray array];
       NSEnumerator *en = [topLevelObjects objectEnumerator];
       id o = nil;
+
       while ((o = [en nextObject]) != nil)
         {
           if ([o isKindOfClass: [NSWindowController class]] ||
               [o isKindOfClass: [NSViewController class]])
             {
               controller = o;
-              [controller _setSegueMap: segueMap];
-              [controller _setTopLevelObjects: topLevelObjects];
-              [controller _setStoryboard: self];
+              [o _setSegueMap: segueMap];
+              [o _setTopLevelObjects: topLevelObjects];
+              [o _setStoryboard: self];
             }
 
           if ([o isKindOfClass: [NSWindow class]] &&
@@ -919,8 +901,9 @@ static NSStoryboard *__mainStoryboard = nil;
               [controller _setOwner: NSApp];
               [controller setWindow: o];
               [controller showWindow: self];
-            }              
-          else if ([o isKindOfClass: [NSViewController class]] && controller == nil)
+            }
+          else if ([o isKindOfClass: [NSViewController class]] && controller == nil &&
+                   [seguesToPerform count] == 0)          
             {
               NSWindow *w = [NSWindow windowWithContentViewController: o];
               controller = o;
@@ -940,8 +923,7 @@ static NSStoryboard *__mainStoryboard = nil;
           if ([o isKindOfClass: [NSControllerPlaceholder class]])
             {
               [placeholders addObject: o];
-            }
-             
+            }             
         }
 
       // perform segues after all is initialized.
@@ -951,6 +933,14 @@ static NSStoryboard *__mainStoryboard = nil;
         {
           NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
           [ssa doAction: controller];
+        }
+
+      en = [placeholders objectEnumerator];
+      o = nil;
+      while ((o = [en nextObject]) != nil)
+        {
+          NSControllerPlaceholder *ph = (NSControllerPlaceholder *)o;
+          [ph instantiate];
         }
     }
   else
