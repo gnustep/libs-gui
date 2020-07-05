@@ -138,6 +138,7 @@
         {
           NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
           [w setTitle: [_destinationController title]];
+          [w center];
           [w orderFrontRegardless];
         }
     }
