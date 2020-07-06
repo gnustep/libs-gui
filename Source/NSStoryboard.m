@@ -38,6 +38,7 @@
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSNibDeclarations.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GSStoryboardTransform.h"
