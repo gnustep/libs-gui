@@ -40,6 +40,7 @@
 #import "AppKit/NSWindow.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GSFastEnumeration.h"
 
 static NSStoryboard *__mainStoryboard = nil;
 
@@ -375,8 +376,6 @@ static NSStoryboard *__mainStoryboard = nil;
     {
       NSXMLElement *docNode = [docNodes objectAtIndex: 0];
       NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
-      NSEnumerator *en = [array objectEnumerator];
-      NSXMLElement *e = nil;  
       NSString *customClassString = nil;
       
       // Set initial view controller...
@@ -543,7 +542,7 @@ static NSStoryboard *__mainStoryboard = nil;
               NSXMLElement *coel = nil;
               while ((coel = [coen nextObject]) != nil)
                 {
-                  NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
+                   NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
                   if ([[attr stringValue] isEqualToString: @"firstResponder"])
                     {
                       NSXMLNode *customClassAttr = [coel attributeForName: @"customClass"];
