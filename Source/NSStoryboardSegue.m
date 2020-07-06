@@ -122,6 +122,7 @@
       else
         {
           w = [NSWindow windowWithContentViewController: _destinationController];
+          [w setTitle: [_destinationController title]];
         }
       RETAIN(w);
       [w center];
