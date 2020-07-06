@@ -387,7 +387,7 @@ static NSStoryboard *__mainStoryboard = nil;
           FOR_IN(NSXMLElement*, child, children)
             {
               if ([[child name] isEqualToString: @"point"] == YES)
-                continue; // go on if it's point, we don't use that in the app...
+                continue; // go on if it's a point element, we don't use that in the app...
               
               NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
               NSXMLNode *appNode = [subnodes objectAtIndex: 0];
