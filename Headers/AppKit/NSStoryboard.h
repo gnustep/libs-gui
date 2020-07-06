@@ -42,11 +42,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 
 @interface NSStoryboard : NSObject
 {
-  NSMutableDictionary *_scenesMap;
-  NSMutableDictionary *_controllerMap;
-  NSMutableDictionary *_documentsMap;
-  NSString *_initialViewControllerId;
-  NSString *_applicationSceneId;
+  id _transform;
 }
   
 + (NSStoryboard *) mainStoryboard;
