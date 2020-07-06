@@ -36,6 +36,7 @@
 #import "AppKit/NSSeguePerforming.h"
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSNibDeclarations.h"
 
 #import "GSStoryboardTransform.h"
 #import "GSFastEnumeration.h"
