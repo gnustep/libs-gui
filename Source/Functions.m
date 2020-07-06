@@ -114,7 +114,7 @@ NSApplicationMain(int argc, const char **argv)
         }
       else
         {
-          NSLog(_(@"Storyboard is blank or nil, unable to load."));
+          NSLog(@"Storyboard is blank or nil, unable to load.");
         }
     }
 

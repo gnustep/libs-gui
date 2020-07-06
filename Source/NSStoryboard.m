@@ -389,14 +389,12 @@ static NSStoryboard *__mainStoryboard = nil;
         {
           NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
           NSArray *children = [e children];
-          NSEnumerator *ce = [children objectEnumerator];
-          NSXMLElement *child = nil;
           NSXMLDocument *document = nil;
           NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
           NSString *controllerId = nil;
 
           // Copy children...
-          while ((child = [ce nextObject]) != nil)
+          FOR_IN(NSXMLElement*, child, children)
             {
               if ([[child name] isEqualToString: @"point"] == YES)
                 continue; // go on if it's point, we don't use that in the app...
@@ -583,17 +581,6 @@ static NSStoryboard *__mainStoryboard = nil;
                     }
                 }
 
-              // Delete extra firstResponder...
-              /*
-              NSArray *ar = [document nodesForXPath: @"//customObject[@sceneMemberID=\"firstResponder\"]"
-                                              error: NULL];
-              if ([ar count] > 0)
-                {
-                  id node = [ar objectAtIndex: 0];
-                  [node detach];
-                }
-              */
-              
               // Create document...
               [_scenesMap setObject: document
                              forKey: sceneId];
@@ -607,6 +594,7 @@ static NSStoryboard *__mainStoryboard = nil;
               
               RELEASE(document);
             }
+          END_FOR_IN(children);
         }
       END_FOR_IN(array);
     }
