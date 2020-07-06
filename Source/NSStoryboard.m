@@ -1,5 +1,5 @@
 /* Implementation of class NSStoryboard
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory Casamento
    Date: Mon Jan 20 15:57:37 EST 2020
@@ -276,11 +276,11 @@ static NSStoryboard *__mainStoryboard = nil;
 @interface NSControllerPlaceholder : NSObject <NSCoding, NSCopying> // , NSSeguePerforming>
 {
   NSString *_storyboardName;
-  NSStoryboard *_storyboard;
 }
 
 - (NSString *) storyboardName;
 - (void) setStoryboardName: (NSString *)name;
+
 - (id) instantiate;
 
 @end
@@ -292,7 +292,6 @@ static NSStoryboard *__mainStoryboard = nil;
   self = [super init];
   if (self != nil)
     {
-      _storyboardName = nil;
     }
   return self;
 }
@@ -334,9 +333,9 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiate
 {
-  _storyboard = [NSStoryboard storyboardWithName: _storyboardName
-                                          bundle: [NSBundle mainBundle]];
-  return [_storyboard instantiateInitialController];
+  NSStoryboard *sb = [NSStoryboard storyboardWithName: _storyboardName
+                                               bundle: [NSBundle mainBundle]];
+  return [sb instantiateInitialController];
 }
 
 @end
@@ -386,7 +385,8 @@ static NSStoryboard *__mainStoryboard = nil;
       _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
       _documentsMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
       
-      while ((e = [en nextObject]) != nil)
+      //while ((e = [en nextObject]) != nil)
+      FOR_IN(NSXMLElement*, e, array) 
         {
           NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
           NSArray *children = [e children];
@@ -404,7 +404,7 @@ static NSStoryboard *__mainStoryboard = nil;
               
               NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
               NSXMLNode *appNode = [subnodes objectAtIndex: 0];
-              if ([[appNode name] isEqualToString: @"application"] == YES)
+              if (appNode != nil)
                 {
                   NSXMLElement *objects = (NSXMLElement *)[appNode parent];
                   NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
@@ -609,6 +609,7 @@ static NSStoryboard *__mainStoryboard = nil;
               RELEASE(document);
             }
         }
+      END_FOR_IN(array);
     }
   else
     {

@@ -28,8 +28,6 @@
 
 #import <Foundation/Foundation.h>
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
-#import "GNUstepGUI/GSNibLoading.h"
-#import "GNUstepGUI/GSXibLoading.h"
 
 @class GSXibElement;
 
