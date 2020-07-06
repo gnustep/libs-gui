@@ -62,10 +62,10 @@
   _sourceController = controller;
 }
 
-+ (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                             source: (id)sourceController 
-                        destination: (id)destinationController 
-                     performHandler: (GSStoryboardSeguePerformHandler)performHandler
++ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                              source: (id)sourceController 
+                         destination: (id)destinationController 
+                      performHandler: (GSStoryboardSeguePerformHandler)performHandler
 {
   NSStoryboardSegue *segue = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
                                                                     source: sourceController
@@ -76,9 +76,9 @@
   return segue;
 }
 
-- (instancetype)initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                            source: (id)sourceController 
-                       destination: (id)destinationController
+- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                             source: (id)sourceController 
+                        destination: (id)destinationController
 {
   self = [super init];
   if (self != nil)
@@ -101,7 +101,7 @@
   [super dealloc];
 }
 
-- (void)perform
+- (void) perform
 {
   // Perform segue based on it's kind...
   if ([_kind isEqualToString: @"relationship"])

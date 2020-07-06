@@ -795,7 +795,7 @@ static NSStoryboard *__mainStoryboard = nil;
     }
 }
 
-+ (NSStoryboard *) mainStoryboard // 10.13
++ (NSStoryboard *) mainStoryboard
 {
   return __mainStoryboard;
 }
@@ -842,7 +842,7 @@ static NSStoryboard *__mainStoryboard = nil;
   return [self instantiateControllerWithIdentifier: _initialViewControllerId];
 }
 
-- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block // 10.15
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block
 {
   id controller = [self instantiateInitialController];
   CALL_BLOCK(block, self);
@@ -954,7 +954,7 @@ static NSStoryboard *__mainStoryboard = nil;
 }
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
-                                   creator: (NSStoryboardControllerCreator)block  // 10.15
+                                   creator: (NSStoryboardControllerCreator)block
 {
   id controller = [self instantiateControllerWithIdentifier: identifier];
   CALL_BLOCK(block, self);

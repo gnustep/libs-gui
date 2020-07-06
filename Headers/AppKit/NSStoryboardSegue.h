@@ -49,18 +49,18 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardSeguePerformHandler, void);
 
 - (id) sourceController;
 - (id) destinationController;
-- (NSStoryboardSegueIdentifier)identifier;
+- (NSStoryboardSegueIdentifier) identifier;
 
-+ (instancetype)segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
++ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                              source: (id)sourceController 
+                         destination: (id)destinationController 
+                      performHandler: (GSStoryboardSeguePerformHandler)performHandler;
+
+- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                              source: (id)sourceController 
-                        destination: (id)destinationController 
-                     performHandler: (GSStoryboardSeguePerformHandler)performHandler;
+                        destination: (id)destinationController;
 
-- (instancetype)initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                            source: (id)sourceController 
-                       destination: (id)destinationController;
-
-- (void)perform;
+- (void) perform;
   
 @end
 
