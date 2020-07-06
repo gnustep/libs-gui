@@ -49,7 +49,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
   NSString *_applicationSceneId;
 }
   
-+ (NSStoryboard *) mainStoryboard; // 10.13
++ (NSStoryboard *) mainStoryboard;
   
 + (instancetype) storyboardWithName: (NSStoryboardName)name
                              bundle: (NSBundle *)bundle;
@@ -57,14 +57,14 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 - (id) instantiateInitialController;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
-- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block; // 10.15
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block;
 #endif
   
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
-                                   creator: (NSStoryboardControllerCreator)block;  // 10.15
+                                   creator: (NSStoryboardControllerCreator)block;
 #endif
 
 @end

@@ -127,7 +127,6 @@
       RETAIN(w);
       [w center];
       [NSApp runModalForWindow: w];
-      RELEASE(w);
     }
   else if ([_kind isEqualToString: @"show"])
     {
@@ -141,6 +140,7 @@
           [w setTitle: [_destinationController title]];
           [w center];
           [w orderFrontRegardless];
+          RETAIN(w);
         }
     }
 

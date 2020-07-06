@@ -288,15 +288,6 @@ static NSStoryboard *__mainStoryboard = nil;
 
 @implementation NSControllerPlaceholder
 
-- (instancetype) init
-{
-  self = [super init];
-  if (self != nil)
-    {
-    }
-  return self;
-}
-
 - (NSString *) storyboardName
 {
   return _storyboardName;
@@ -384,7 +375,6 @@ static NSStoryboard *__mainStoryboard = nil;
       _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
       _documentsMap = [[NSMutableDictionary alloc] initWithCapacity: [array count]];
       
-      //while ((e = [en nextObject]) != nil)
       FOR_IN(NSXMLElement*, e, array) 
         {
           NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
@@ -393,7 +383,7 @@ static NSStoryboard *__mainStoryboard = nil;
           NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
           NSString *controllerId = nil;
 
-          // Copy children...
+          // Move children...
           FOR_IN(NSXMLElement*, child, children)
             {
               if ([[child name] isEqualToString: @"point"] == YES)
@@ -414,7 +404,10 @@ static NSStoryboard *__mainStoryboard = nil;
                   NSArray *appChildren = [appNode children];
                   NSEnumerator *ace = [appChildren objectEnumerator];
                   NSXMLElement *ae = nil;
-                  
+
+                  // Assign application scene...
+                  ASSIGN(_applicationSceneId, sceneId);
+
                   // Move all application children to objects...
                   while ((ae = [ace nextObject]) != nil)
                     {
@@ -424,6 +417,10 @@ static NSStoryboard *__mainStoryboard = nil;
                   
                   // Remove the appNode
                   [appNode detach];
+                  
+                  // Add it to the document
+                  [objects detach];
+                  [doc addChild: objects];
                   
                   // create a customObject entry for NSApplication reference...
                   NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode
@@ -453,15 +450,7 @@ static NSStoryboard *__mainStoryboard = nil;
                       [customObject addChild: appCons];
                     }
                   [child insertChild: customObject
-                             atIndex: 0];
-                  
-
-                  // Add it to the document
-                  [objects detach];
-                  [doc addChild: objects];
-                  
-                  // Assign application scene...
-                  ASSIGN(_applicationSceneId, sceneId);
+                             atIndex: 0]; 
                 }
               else
                 {
