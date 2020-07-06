@@ -612,11 +612,9 @@ static NSStoryboard *__mainStoryboard = nil;
   NSArray *array = [xmlIn nodesForXPath: @"//objects[1]"
                                   error: NULL];
   NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
-  NSArray *controllers = [objects nodesForXPath: @"windowController"
-                                          error: NULL];
-
   NSString *uuidString = nil;
   NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
+
   if ([docArray count] > 0)
     {
       NSXMLElement *docElem = (NSXMLElement *)[docArray objectAtIndex: 0];
@@ -634,8 +632,11 @@ static NSStoryboard *__mainStoryboard = nil;
           [docElem addAttribute: new_uuid_attr];
         }
     }
-  
+
+  // Get the controller...
   NSString *src = nil;
+  NSArray *controllers = [objects nodesForXPath: @"windowController"
+                                          error: NULL];
   if ([controllers count] > 0)
     {
       NSXMLElement *controller = (NSXMLElement *)[controllers objectAtIndex: 0];
