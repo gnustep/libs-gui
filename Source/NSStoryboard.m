@@ -839,19 +839,25 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiateInitialController
 {
-  return [self instantiateControllerWithIdentifier: _initialViewControllerId];
+  return [self instantiateInitialControllerWithCreator: nil];
 }
 
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block
 {
-  id controller = [self instantiateInitialController];
-  CALL_BLOCK(block, self);
-  return controller;
+  return [self instantiateControllerWithIdentifier: _initialViewControllerId
+                                           creator: block];
 }
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
-  id result = nil;
+  return [self instantiateControllerWithIdentifier: identifier
+                                           creator: nil];
+}
+
+- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
+                                   creator: (NSStoryboardControllerCreator)block
+{
+    id result = nil;
   NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
   NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
                                       NSNibTopLevelObjects,
@@ -949,16 +955,13 @@ static NSStoryboard *__mainStoryboard = nil;
     {
       NSLog(@"Couldn't load controller scene id = %@", sceneId);
     }
-  
-  return result;
-}
 
-- (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
-                                   creator: (NSStoryboardControllerCreator)block
-{
-  id controller = [self instantiateControllerWithIdentifier: identifier];
-  CALL_BLOCK(block, self);
-  return controller;
+  // Execute the block if it's set...
+  if (block != nil)
+    {
+      CALL_BLOCK(block, self);
+    }
+  return result;
 }
 @end
 
