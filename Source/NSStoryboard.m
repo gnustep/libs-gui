@@ -609,7 +609,7 @@ static NSStoryboard *__mainStoryboard = nil;
   NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
   NSArray *connectionsArray = [xmlIn nodesForXPath: @"//connections"
                                              error: NULL];
-  NSArray *array = [xmlIn nodesForXPath: @"//objects"
+  NSArray *array = [xmlIn nodesForXPath: @"//objects[1]"
                                   error: NULL];
   NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
   NSArray *controllers = [objects nodesForXPath: @"windowController"
