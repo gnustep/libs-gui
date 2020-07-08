@@ -459,7 +459,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   NSString *postfix = [self alternateName: name startIndex: 2];
   NSString *typeName = [currentElement attributeForKey: @"key"];
 
-  if ((typeName != nil) && [postfix hasPrefix: typeName])
+  if ((typeName != nil) && [postfix hasPrefix: typeName] &&
+      ([XmlTagToObjectClassMap objectForKey: postfix] == nil))
     {
       return [self alternateName: name startIndex: [typeName length] + 2];
     }

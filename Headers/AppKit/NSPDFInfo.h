@@ -55,7 +55,7 @@ extern "C" {
 - (NSArray *) tagNames;
 
 - (NSPaperOrientation) orientation;
-- (void) setOrientation: (NSPaperOrientation)or;
+- (void) setOrientation: (NSPaperOrientation)orientation;
 
 - (NSSize) paperSize;
 - (void) setPaperSize: (NSSize)size;
