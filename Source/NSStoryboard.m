@@ -147,19 +147,7 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (void) _instantiateApplicationScene
 {
-  NSDictionary	*table;
-
-  table = [NSDictionary dictionaryWithObject: NSApp
-                                      forKey: NSNibOwner];
-
-  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
-  BOOL success = [loader loadModelData: [_transform dataForApplicationScene]
-                     externalNameTable: table
-                              withZone: [self zone]];
-  if (!success)
-    {
-      NSLog(@"Unabled to load Application scene");
-    }
+  [self instantiateControllerWithIdentifier: @"application"];
 }
 
 - (id) instantiateInitialController
@@ -240,6 +228,8 @@ static NSStoryboard *__mainStoryboard = nil;
             {
               NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
               [ssa setSender: result]; // resolve controller here...
+              [ssa setIdentifierToSegueMap: [_transform identifierToSegueMap]];
+              [ssa setStoryboard: self];
               if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
                 {
                   [seguesToPerform addObject: ssa];

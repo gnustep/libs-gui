@@ -37,11 +37,19 @@
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSNibDeclarations.h"
+#import "AppKit/NSViewController.h"
+#import "AppKit/NSWindowController.h"
 
 #import "GSStoryboardTransform.h"
 #import "GSFastEnumeration.h"
 
+@interface NSStoryboardSegue (__private__)
+- (void) _setDestinationController: (id)controller; 
+- (void) _setSourceController: (id)controller;
+@end
+
 @interface NSStoryboardSegue (__StoryboardPrivate__)
+// Private to this class...
 - (void) _setKind: (NSString *)k;
 - (void) _setRelationship: (NSString *)r;
 - (NSString *) _kind;
@@ -132,15 +140,67 @@
   ASSIGN(_kind, kind);
 }
 
+- (NSDictionary *) identifierToSegueMap
+{
+  return _identifierToSegueMap;
+}
+
+- (void) setIdentifierToSegueMap: (NSDictionary *)table
+{
+  ASSIGN(_identifierToSegueMap, table);
+}
+
+- (NSStoryboard *) storyboard
+{
+  return _storyboard;
+}
+
+- (void) setStoryboard: (NSStoryboard *)storyboard
+{
+  ASSIGN(_storyboard, storyboard);
+}
+
 - (id) nibInstantiate
 {
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_storyboard);
+  RELEASE(_identifierToSegueMap);
+  RELEASE(_kind);
+  RELEASE(_identifier);
+  RELEASE(_sender);
+  [super dealloc];
+}
+
 - (IBAction) doAction: (id)sender
 {
-  [_sender performSegueWithIdentifier: _identifier
-                               sender: _sender];
+  if (_sender != nil)
+    {
+      [_sender performSegueWithIdentifier: _identifier
+                                   sender: _sender];
+    }
+  else // This is a special case where there is no source controller and we don't ask "should"
+    {
+      NSMapTable *mapTable = [_identifierToSegueMap objectForKey: @"application"];
+      NSStoryboardSegue *segue = [mapTable objectForKey: _identifier]; 
+      id destCon = nil;
+      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
+          [[segue destinationController] isKindOfClass: [NSWindowController class]])
+        {
+          destCon = [segue destinationController];
+        }
+      else
+        {
+          NSString *destId = [segue destinationController];
+          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
+        }
+      [segue _setSourceController: nil]; 
+      [segue _setDestinationController: destCon];  // replace with actual controller...
+      [segue perform];
+    }
 }
 
 - (id) copyWithZone: (NSZone *)z
@@ -150,6 +210,8 @@
   [pa setSelector: [self selector]];
   [pa setSender: _sender];
   [pa setIdentifier: _identifier];
+  [pa setIdentifierToSegueMap: _identifierToSegueMap];
+  [pa setStoryboard: _storyboard];
   return pa;
 }
 
@@ -292,14 +354,14 @@
   return _documentsMap;
 }
 
-- (NSDictionary *) identifierToSegueMap
-{
-  return _identifierToSegueMap;
-}
-
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier
 {
   return [_identifierToSegueMap objectForKey: identifier];
+}
+
+- (NSDictionary *) identifierToSegueMap
+{
+  return _identifierToSegueMap;
 }
 
 - (NSXMLElement *) createCustomObjectWithId: (NSString *)ident
@@ -336,16 +398,9 @@
   return [xml XMLData];
 }
 
-- (NSData *) dataForSceneId: (NSString *)sceneId
-{
-  NSXMLDocument *xml = [_scenesMap objectForKey: _applicationSceneId];
-  NSData *xmlData = [xml XMLData];
-  return xmlData;
-}
-
 - (NSData *) dataForApplicationScene
 {
-  return [self dataForSceneId: _applicationSceneId];
+  return [self dataForIdentifier: @"application"];
 }
 
 - (void) processStoryboard: (NSXMLDocument *)storyboardXml
@@ -392,7 +447,9 @@
 
                   // Assign application scene...
                   ASSIGN(_applicationSceneId, sceneId);
-
+                  [_controllerMap setObject: _applicationSceneId
+                                     forKey: @"application"];
+                  
                   // Move all application children to objects...
                   while ((ae = [ace nextObject]) != nil)
                     {
@@ -464,8 +521,6 @@
                   [doc addChild: child];
                 }
 
-              // Add other custom objects...
-              
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
               NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
@@ -659,10 +714,10 @@
                   attr = [obj attributeForName: @"id"];
                   NSString *uid = [attr stringValue];
                   attr = [obj attributeForName: @"identifier"];
-                  NSString *identifier = [attr stringValue];
-                  if (identifier == nil)
+                  NSString *ident = [attr stringValue];
+                  if (ident == nil)
                     {
-                      identifier = [[NSUUID UUID] UUIDString];
+                      ident = [[NSUUID UUID] UUIDString];
                     }
                   
                   // Create proxy object to invoke methods on the window controller
@@ -679,7 +734,7 @@
                                        stringValue: pident_value];
                   NSXMLNode *psegueIdent
                     = [NSXMLNode attributeWithName: @"identifier"
-                                       stringValue: identifier];
+                                       stringValue: ident];
                   NSXMLNode *psender
                     = [NSXMLNode attributeWithName: @"sender"
                                        stringValue: src];
@@ -709,17 +764,17 @@
                       NSXMLNode *target
                         = [NSXMLNode attributeWithName: @"target"
                                            stringValue: pident_value];
-                      NSXMLNode *ident
+                      NSXMLNode *controller_ident
                         = [NSXMLNode attributeWithName: @"id"
                                            stringValue: uid]; 
                       [action addAttribute: selector];
                       [action addAttribute: target];
-                      [action addAttribute: ident];
+                      [action addAttribute: controller_ident];
                       [segue_parent addChild: action];
                     }
                   
                   // Create the segue...
-                  NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
+                  NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: ident
                                                                                  source: src
                                                                             destination: dst];
                   [ss _setKind: kind];
@@ -727,7 +782,7 @@
                   
                   // Add to maptable...
                   [mapTable setObject: ss
-                               forKey: identifier];
+                               forKey: ident];
 
                 } // only process segue objects...
             } // iterate over objects in each set of connections

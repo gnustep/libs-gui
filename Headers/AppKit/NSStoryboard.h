@@ -44,9 +44,11 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 {
   id _transform;
 }
-  
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 + (NSStoryboard *) mainStoryboard;
-  
+#endif
+
 + (instancetype) storyboardWithName: (NSStoryboardName)name
                              bundle: (NSBundle *)bundle;
 
