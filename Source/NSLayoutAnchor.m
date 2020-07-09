@@ -159,47 +159,101 @@
 
 - (NSLayoutConstraint *) constraintEqualToConstant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToConstant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationGreaterThanOrEqual
+                                         toItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintLessThanOrEqualToConstant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                         toItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationGreaterThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationGreaterThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: m
+                                       constant: c];
 }
 
 - (id) initWithCoder: (NSCoder *)coder

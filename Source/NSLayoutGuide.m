@@ -51,7 +51,6 @@
   _identifier = identifier;
 }
 
-
 - (NSLayoutXAxisAnchor *) leadingAnchor
 {
   return _leadingAnchor;
@@ -110,6 +109,16 @@
 - (NSArray *) constraintsAffectingLayoutForOrientation: (NSLayoutConstraintOrientation)orientation
 {
   return [NSArray array];
+}
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _frame = NSZeroRect;
+    }
+  return self;
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
