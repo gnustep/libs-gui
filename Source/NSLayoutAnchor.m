@@ -57,7 +57,7 @@
 {
   return [NSLayoutConstraint constraintWithItem: _item
                                       attribute: NSLayoutAttributeLeft
-                                      relatedBy: NSLayoutRelationEqual
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
                                          toItem: [anchor item]
                                       attribute: NSLayoutAttributeLeft
                                      multiplier: 1.0
@@ -68,7 +68,7 @@
 {
   return [NSLayoutConstraint constraintWithItem: _item
                                       attribute: NSLayoutAttributeLeft
-                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                      relatedBy: NSLayoutRelationEqual
                                          toItem: [anchor item]
                                       attribute: NSLayoutAttributeLeft
                                      multiplier: 1.0
