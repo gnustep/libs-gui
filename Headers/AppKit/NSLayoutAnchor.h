@@ -37,6 +37,10 @@ extern "C" {
   
 @interface NSLayoutAnchor : NSObject <NSCoding, NSCopying>
 {
+  NSString *_name;
+  id _item;
+  BOOL _hasAmbiguousLayout;
+  NSArray *_constraintsAffectingLayout;
 }
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor;

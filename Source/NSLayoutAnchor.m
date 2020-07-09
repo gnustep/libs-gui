@@ -33,52 +33,109 @@
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationGreaterThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: 0.0];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationGreaterThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
 {
-  return nil;
+  return [NSLayoutConstraint constraintWithItem: _item
+                                      attribute: NSLayoutAttributeLeft
+                                      relatedBy: NSLayoutRelationLessThanOrEqual
+                                         toItem: [anchor item]
+                                      attribute: NSLayoutAttributeLeft
+                                     multiplier: 1.0
+                                       constant: c];
+}
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _name = nil;
+      _item = nil;
+      _hasAmbiguousLayout = NO;
+      _constraintsAffectingLayout = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_name);
+  RELEASE(_item);
+  RELEASE(_constraintsAffectingLayout);
+  [super dealloc];
 }
 
 - (NSString *) name
 {
-  return nil;
+  return _name;
 }
 
 - (id) item
 {
-  return nil;
+  return _item;
 }
 
 - (BOOL) hasAmbiguousLayout
 {
-  return NO;
+  return _hasAmbiguousLayout;
 }
 
 - (NSArray *) constraintsAffectingLayout
 {
-  return nil;
+  return _constraintsAffectingLayout;
 }
 
 - (id) initWithCoder: (NSCoder *)c
