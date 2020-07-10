@@ -500,6 +500,52 @@
     }
 }
 
+- (NSString *) controllerIdWithDocument: (NSXMLDocument *)document
+{
+  NSString *controllerId = nil;
+  NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
+  NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
+  NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder" error: NULL];
+  
+  if ([windowControllers count] > 0)
+    {
+      NSXMLElement *ce = [windowControllers objectAtIndex: 0];
+      NSXMLNode *attr = [ce attributeForName: @"id"];
+      controllerId = [attr stringValue];
+      
+      NSEnumerator *windowControllerEnum = [windowControllers objectEnumerator];
+      NSXMLElement *o = nil;
+      while ((o = [windowControllerEnum nextObject]) != nil)
+        {
+          NSXMLElement *objects = (NSXMLElement *)[o parent];
+          NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
+          NSEnumerator *windowEn = [windows objectEnumerator];
+          NSXMLNode *w = nil;
+          while ((w = [windowEn nextObject]) != nil)
+            {
+              [w detach];
+              [objects addChild: w];
+            }
+        }
+    }
+  
+  if ([viewControllers count] > 0)
+    {
+      NSXMLElement *ce = [viewControllers objectAtIndex: 0];
+      NSXMLNode *attr = [ce attributeForName: @"id"];
+      controllerId = [attr stringValue];
+    }
+  
+  if ([controllerPlaceholders count] > 0)
+    {
+      NSXMLElement *ce = [controllerPlaceholders objectAtIndex: 0];
+      NSXMLNode *attr = [ce attributeForName: @"id"];
+      controllerId = [attr stringValue];
+    }
+  
+  return controllerId;
+}
+
 - (void) processStoryboard: (NSXMLDocument *)storyboardXml
 {
   NSArray *docNodes = [storyboardXml nodesForXPath: @"document" error: NULL];
@@ -534,46 +580,8 @@
               
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
-              NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
-              NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
-              NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder" error: NULL];
+              controllerId = [self controllerIdWithDocument: document];
               RELEASE(doc);
-              
-              if ([windowControllers count] > 0)
-                {
-                  NSXMLElement *ce = [windowControllers objectAtIndex: 0];
-                  NSXMLNode *attr = [ce attributeForName: @"id"];
-                  controllerId = [attr stringValue];
-
-                  NSEnumerator *windowControllerEnum = [windowControllers objectEnumerator];
-                  NSXMLElement *o = nil;
-                  while ((o = [windowControllerEnum nextObject]) != nil)
-                    {
-                      NSXMLElement *objects = (NSXMLElement *)[o parent];
-                      NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
-                      NSEnumerator *windowEn = [windows objectEnumerator];
-                      NSXMLNode *w = nil;
-                      while ((w = [windowEn nextObject]) != nil)
-                        {
-                          [w detach];
-                          [objects addChild: w];
-                        }
-                    }
-                }
-              
-              if ([viewControllers count] > 0)
-                {
-                  NSXMLElement *ce = [viewControllers objectAtIndex: 0];
-                  NSXMLNode *attr = [ce attributeForName: @"id"];
-                  controllerId = [attr stringValue];
-                }
-
-              if ([controllerPlaceholders count] > 0)
-                {
-                  NSXMLElement *ce = [controllerPlaceholders objectAtIndex: 0];
-                  NSXMLNode *attr = [ce attributeForName: @"id"];
-                  controllerId = [attr stringValue];
-                }
 
               NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
               NSEnumerator *coen = [customObjects objectEnumerator];
