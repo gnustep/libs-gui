@@ -725,6 +725,7 @@
 
 - (NSMapTable *) processConnections: (NSArray *)connectionsArray
                         withObjects: (NSXMLElement *)objects
+                       controllerId: (NSString *)src
 {
   NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
   if ([connectionsArray count] > 0)
@@ -827,7 +828,9 @@
       NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
       NSString *src = [self findControllerIdIn: xmlIn
                                        objects: objects];
-      NSMapTable *mapTable = [self processConnectionsWithObjects: objects];           
+      NSMapTable *mapTable = [self processConnections: connectionsArray
+                                          withObjects: objects
+                                         controllerId: src];           
       [_identifierToSegueMap setObject: mapTable
                                 forKey: identifier];                  
       // Add to cache...
