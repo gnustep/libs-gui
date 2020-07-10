@@ -1,3 +1,8 @@
+2020-07-10 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSOutlineView.h: Formalize protocols for
+        NSOutlineViewDelegate and NSOutlineViewDataSource.
+
 2020-07-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXib5KeyedUnarchiver.m (alternateName:): Be more careful
