@@ -633,37 +633,9 @@
     }
 }
 
-- (void) processSegues: (NSXMLDocument *)xmlIn
-                 forId: (NSString *)identifier
+- (NSString *) findControllerIdInDocument: (NSXMLDocument *)xmlIn
+                              withObjects: (NSXMLElement *)objects
 {
-  NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
-  NSArray *connectionsArray = [xmlIn nodesForXPath: @"//connections"
-                                             error: NULL];
-  NSArray *array = [xmlIn nodesForXPath: @"//objects[1]"
-                                  error: NULL];
-  NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
-  NSString *uuidString = nil;
-  NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
-
-  if ([docArray count] > 0)
-    {
-      NSXMLElement *docElem = (NSXMLElement *)[docArray objectAtIndex: 0];
-      NSXMLNode *a = [docElem attributeForName: @"uuid"];
-      NSString *value = [a stringValue];
-      if (value != nil)
-        {
-          return;
-        }
-      else
-        {
-          uuidString = [[NSUUID UUID] UUIDString];
-          NSXMLNode *new_uuid_attr = [NSXMLNode attributeWithName: @"uuid"
-                                                      stringValue: uuidString];
-          [docElem addAttribute: new_uuid_attr];
-        }
-    }
-
-  // Get the controller...
   NSString *src = nil;
   NSArray *controllers = [objects nodesForXPath: @"windowController"
                                           error: NULL];
@@ -684,19 +656,87 @@
           src = [idAttr stringValue];
         }
     }
+  return src;
+}
+
+- (BOOL) isProcessedDocument: (NSXMLDocument *)xmlIn
+                        uuid: (NSString **)uuid
+{
+  NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
+  if ([docArray count] > 0)
+    {
+      NSXMLElement *docElem = (NSXMLElement *)[docArray objectAtIndex: 0];
+      NSXMLNode *a = [docElem attributeForName: @"uuid"];
+      NSString *value = [a stringValue];
+      if (value != nil)
+        {
+          uuid = &value;
+          return YES;
+        }
+      else
+        {
+          NSString *uuidString = [[NSUUID UUID] UUIDString];
+          NSXMLNode *new_uuid_attr = [NSXMLNode attributeWithName: @"uuid"
+                                                      stringValue: uuidString];
+          [docElem addAttribute: new_uuid_attr];
+          uuid = &uuidString;
+        }
+    }
+  return NO;
+}
+
+- (NSXMLElement *) createStoryboardProxyElementWithSelector: (NSString *)selector
+                                                     target: (NSString *)dst
+                                            segueIdentifier: (NSString *)ident
+                                                     sender: (NSString *)src
+                                                       kind: (NSString *)kind
+{
+  NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
+
+  NSXMLNode *pselector
+    = [NSXMLNode attributeWithName: @"selector"
+                       stringValue: selector];
+  NSXMLNode *ptarget
+    = [NSXMLNode attributeWithName: @"target"
+                       stringValue: dst];
+  NSString *pident_value = [[NSUUID UUID] UUIDString];
+  NSXMLNode *pident
+    = [NSXMLNode attributeWithName: @"id"
+                       stringValue: pident_value];
+  NSXMLNode *psegueIdent
+    = [NSXMLNode attributeWithName: @"identifier"
+                       stringValue: ident];
+  NSXMLNode *psender
+    = [NSXMLNode attributeWithName: @"sender"
+                       stringValue: src];
+  NSXMLNode *pkind
+    = [NSXMLNode attributeWithName: @"kind"
+                       stringValue: kind];
   
+  [sbproxy addAttribute: pselector];
+  [sbproxy addAttribute: ptarget];
+  [sbproxy addAttribute: pident];
+  [sbproxy addAttribute: psegueIdent];
+  [sbproxy addAttribute: psender];
+  [sbproxy addAttribute: pkind];
+
+  return sbproxy;
+}
+
+- (NSMapTable *) processConnections: (NSArray *)connectionsArray
+                        withObjects: (NSXMLElement *)objects
+{
+  NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
   if ([connectionsArray count] > 0)
     {
-      NSEnumerator *connectionsEnum = [connectionsArray objectEnumerator];
-      id connObj = nil;
-      while ((connObj = [connectionsEnum nextObject]) != nil)
+      FOR_IN (NSXMLElement*, connObj, connectionsArray)
         {
           NSXMLElement *connections = (NSXMLElement *)connObj;
           NSArray *children = [connections children]; // there should be only one per set.
           NSEnumerator *en = [children objectEnumerator];
           id obj = nil;
-          
-          while ((obj = [en nextObject]) != nil)
+
+          FOR_IN (id, obj, children)
             {
               if ([[obj name] isEqualToString: @"segue"])
                 {
@@ -721,33 +761,12 @@
                     }
                   
                   // Create proxy object to invoke methods on the window controller
-                  NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
-                  NSXMLNode *pselector
-                    = [NSXMLNode attributeWithName: @"selector"
-                                       stringValue: @"doAction:"];
-                  NSXMLNode *ptarget
-                    = [NSXMLNode attributeWithName: @"target"
-                                       stringValue: dst];
-                  NSString *pident_value = [[NSUUID UUID] UUIDString];
-                  NSXMLNode *pident
-                    = [NSXMLNode attributeWithName: @"id"
-                                       stringValue: pident_value];
-                  NSXMLNode *psegueIdent
-                    = [NSXMLNode attributeWithName: @"identifier"
-                                       stringValue: ident];
-                  NSXMLNode *psender
-                    = [NSXMLNode attributeWithName: @"sender"
-                                       stringValue: src];
-                  NSXMLNode *pkind
-                    = [NSXMLNode attributeWithName: @"kind"
-                                       stringValue: kind];
-                  
-                  [sbproxy addAttribute: pselector];
-                  [sbproxy addAttribute: ptarget];
-                  [sbproxy addAttribute: pident];
-                  [sbproxy addAttribute: psegueIdent];
-                  [sbproxy addAttribute: psender];
-                  [sbproxy addAttribute: pkind];
+                  NSXMLElement *sbproxy =  [self createStoryboardProxyElementWithSelector: @"doAction:"
+                                                                                   target: dst
+                                                                          segueIdentifier: ident
+                                                                                   sender: src
+                                                                                     kind: kind];
+                    
                   NSUInteger count = [[objects children] count];
                   [objects insertChild: sbproxy
                                atIndex: count - 1];
@@ -783,19 +802,38 @@
                   // Add to maptable...
                   [mapTable setObject: ss
                                forKey: ident];
-
+                  
                 } // only process segue objects...
             } // iterate over objects in each set of connections
+          END_FOR_IN(children);          
         } // iterate over connection objs
+      END_FOR_IN(connectionsArray);
+    }
+}
 
+- (void) processSegues: (NSXMLDocument *)xmlIn
+                 forId: (NSString *)identifier
+{
+  NSString *uuidString = nil;
+  BOOL processed = [self isProcessedDocument: xmlIn
+                                        uuid: &uuidString];
+  if (processed)
+    {
+      return; // don't processed the document again
+    }
+  else
+    {
+      // Get the controller... there is only one per scene.
+      NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
+      NSString *src = [self findControllerIdIn: xmlIn
+                                       objects: objects];
+      NSMapTable *mapTable = [self processConnectionsWithObjects: objects];           
       [_identifierToSegueMap setObject: mapTable
                                 forKey: identifier];                  
-      
       // Add to cache...
       [_documentsMap setObject: mapTable
                         forKey: uuidString];
-      
-    }  // if connections > 0
+    }
 }
 
 @end
