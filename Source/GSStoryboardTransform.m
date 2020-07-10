@@ -546,6 +546,47 @@
   return controllerId;
 }
 
+- (void) processCustomElement: (NSXMLElement *)coel
+                  forDocument: (NSXMLDocument *)document
+{
+  NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
+  if ([[attr stringValue] isEqualToString: @"firstResponder"])
+    {
+      NSXMLNode *customClassAttr = [coel attributeForName: @"customClass"];
+      NSXMLNode *idAttr = [coel attributeForName: @"id"];
+      NSString *originalId = [idAttr stringValue];
+      
+      [idAttr setStringValue: @"-1"]; // set to first responder id
+      [customClassAttr setStringValue: @"FirstResponder"];
+      
+      // Actions
+      NSArray *cons = [document nodesForXPath: @"//action" error: NULL];
+      FOR_IN(NSXMLElement*, celem, cons) 
+        {
+          NSXMLNode *targetAttr = [celem attributeForName: @"target"];
+          NSString *val = [targetAttr stringValue];
+          if ([val isEqualToString: originalId])
+            {
+              [targetAttr setStringValue: @"-1"];
+            }
+        }
+      END_FOR_IN(cons);
+      
+      // Outlets
+      cons = [document nodesForXPath: @"//outlet" error: NULL];
+      FOR_IN(NSXMLElement*, celem, cons)
+        {
+          NSXMLNode *attr = [celem attributeForName: @"destination"];
+          NSString *val = [attr stringValue];
+          if ([val isEqualToString: originalId])
+            {
+              [attr setStringValue: @"-1"];
+            }
+        }
+      END_FOR_IN(cons);
+    }
+}
+
 - (void) processStoryboard: (NSXMLDocument *)storyboardXml
 {
   NSArray *docNodes = [storyboardXml nodesForXPath: @"document" error: NULL];
@@ -584,50 +625,12 @@
               RELEASE(doc);
 
               NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
-              NSEnumerator *coen = [customObjects objectEnumerator];
-              NSXMLElement *coel = nil;
-              while ((coel = [coen nextObject]) != nil)
+              FOR_IN(NSXMLElement*, coel, customObjects)
                 {
-                   NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
-                  if ([[attr stringValue] isEqualToString: @"firstResponder"])
-                    {
-                      NSXMLNode *customClassAttr = [coel attributeForName: @"customClass"];
-                      NSXMLNode *idAttr = [coel attributeForName: @"id"];
-                      NSString *originalId = [idAttr stringValue];
-
-                      [idAttr setStringValue: @"-1"]; // set to first responder id
-                      [customClassAttr setStringValue: @"FirstResponder"];
-
-                      // Actions
-                      NSArray *cons = [document nodesForXPath: @"//action" error: NULL];
-                      NSEnumerator *consen = [cons objectEnumerator];
-                      NSXMLElement *celem = nil;
-
-                      while ((celem = [consen nextObject]) != nil)
-                        {
-                          NSXMLNode *targetAttr = [celem attributeForName: @"target"];
-                          NSString *val = [targetAttr stringValue];
-                          if ([val isEqualToString: originalId])
-                            {
-                              [targetAttr setStringValue: @"-1"];
-                            }
-                        }
-
-                      // Outlets
-                      cons = [document nodesForXPath: @"//outlet" error: NULL];
-                      consen = [cons objectEnumerator];
-                      celem = nil;
-                      while ((celem = [consen nextObject]) != nil)
-                        {
-                          NSXMLNode *attr = [celem attributeForName: @"destination"];
-                          NSString *val = [attr stringValue];
-                          if ([val isEqualToString: originalId])
-                            {
-                              [attr setStringValue: @"-1"];
-                            }
-                        }
-                    }
+                  [self processCustomElement: coel
+                                 forDocument: document];
                 }
+              END_FOR_IN(customObjects);
 
               // Create document...
               [_scenesMap setObject: document
