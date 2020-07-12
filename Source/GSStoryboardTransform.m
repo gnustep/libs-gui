@@ -309,7 +309,6 @@
       
       _scenesMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
       _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
-      _documentsMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
       _identifierToSegueMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
       
       [self processStoryboard: xml];
@@ -324,7 +323,6 @@
   RELEASE(_applicationSceneId);
   RELEASE(_scenesMap);
   RELEASE(_controllerMap);
-  RELEASE(_documentsMap);
   RELEASE(_identifierToSegueMap);
   [super dealloc];
 }
@@ -347,11 +345,6 @@
 - (NSDictionary *) controllerMap
 {
   return _controllerMap;
-}
-
-- (NSDictionary *) documentsMap
-{
-  return _documentsMap;
 }
 
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier
@@ -856,9 +849,6 @@
                                          controllerId: src];           
       [_identifierToSegueMap setObject: mapTable
                                 forKey: identifier];                  
-      // Add to cache...
-      [_documentsMap setObject: mapTable
-                        forKey: uuidString];
     }
 }
 
