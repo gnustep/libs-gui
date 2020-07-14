@@ -31,6 +31,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSUUID.h>
+#import <Foundation/NSException.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
@@ -227,8 +228,11 @@ static NSStoryboard *__mainStoryboard = nil;
           if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
             {
               NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+              NSMapTable *mapTable = [[_transform identifierToSegueMap] objectForKey: identifier];
+              NSStoryboardSegue *ss = [mapTable objectForKey: [ssa identifier]];
+              
               [ssa setSender: result]; // resolve controller here...
-              [ssa setIdentifierToSegueMap: [_transform identifierToSegueMap]];
+              [ssa setStoryboardSegue: ss];
               [ssa setStoryboard: self];
               if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
                 {
@@ -262,7 +266,8 @@ static NSStoryboard *__mainStoryboard = nil;
     }
   else
     {
-      NSLog(@"Couldn't load controller scene identifier = %@", identifier);
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Couldn't load controller scene identifier = %@", identifier];
     }
 
   // Execute the block if it's set...

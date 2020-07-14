@@ -73,7 +73,7 @@ extern "C" {
   id            _sender;
   NSString     *_identifier;
   NSString     *_kind;
-  NSDictionary *_identifierToSegueMap;
+  NSStoryboardSegue *_storyboardSegue;
   NSStoryboard *_storyboard;
 }
 
@@ -95,12 +95,12 @@ extern "C" {
 - (NSString *) kind;
 - (void) setKind: (NSString *)kind;
 
-- (NSDictionary *) identifierToSegueMap;
-- (void) setIdentifierToSegueMap: (NSDictionary *)table;
-
 - (NSStoryboard *) storyboard;
 - (void) setStoryboard: (NSStoryboard *)storyboard;
 
+- (NSStoryboardSegue *) storyboardSegue;
+- (void) setStoryboardSegue: (NSStoryboardSegue *)ss;
+  
 - (IBAction) doAction: (id)sender;
 @end
 

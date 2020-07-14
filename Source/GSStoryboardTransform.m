@@ -143,16 +143,6 @@
   ASSIGN(_kind, kind);
 }
 
-- (NSDictionary *) identifierToSegueMap
-{
-  return _identifierToSegueMap;
-}
-
-- (void) setIdentifierToSegueMap: (NSDictionary *)table
-{
-  ASSIGN(_identifierToSegueMap, table);
-}
-
 - (NSStoryboard *) storyboard
 {
   return _storyboard;
@@ -163,6 +153,16 @@
   ASSIGN(_storyboard, storyboard);
 }
 
+- (NSStoryboardSegue *) storyboardSegue
+{
+  return _storyboardSegue;
+}
+
+- (void) setStoryboardSegue: (NSStoryboardSegue *)ss
+{
+  ASSIGN(_storyboardSegue, ss);
+}
+
 - (id) nibInstantiate
 {
   return self;
@@ -171,10 +171,10 @@
 - (void) dealloc
 {
   RELEASE(_storyboard);
-  RELEASE(_identifierToSegueMap);
   RELEASE(_kind);
   RELEASE(_identifier);
   RELEASE(_sender);
+  RELEASE(_storyboardSegue);
   [super dealloc];
 }
 
@@ -187,22 +187,20 @@
     }
   else // This is a special case where there is no source controller and we don't ask "should"
     {
-      NSMapTable *mapTable = [_identifierToSegueMap objectForKey: APPLICATION];
-      NSStoryboardSegue *segue = [mapTable objectForKey: _identifier]; 
       id destCon = nil;
-      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
-          [[segue destinationController] isKindOfClass: [NSWindowController class]])
+      if ([[_storyboardSegue destinationController] isKindOfClass: [NSViewController class]] ||
+          [[_storyboardSegue destinationController] isKindOfClass: [NSWindowController class]])
         {
-          destCon = [segue destinationController];
+          destCon = [_storyboardSegue destinationController];
         }
       else
         {
-          NSString *destId = [segue destinationController];
+          NSString *destId = [_storyboardSegue destinationController];
           destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
         }
-      [segue _setSourceController: nil]; 
-      [segue _setDestinationController: destCon];  // replace with actual controller...
-      [segue perform];
+      [_storyboardSegue _setSourceController: nil]; 
+      [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
+      [_storyboardSegue perform];
     }
 }
 
@@ -213,7 +211,7 @@
   [pa setSelector: [self selector]];
   [pa setSender: _sender];
   [pa setIdentifier: _identifier];
-  [pa setIdentifierToSegueMap: _identifierToSegueMap];
+  [pa setStoryboardSegue: _storyboardSegue];
   [pa setStoryboard: _storyboard];
   return pa;
 }
