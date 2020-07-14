@@ -406,14 +406,11 @@
       NSXMLElement *objects = (NSXMLElement *)[appNode parent];
       NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
       NSXMLNode *appCons = [appConsArr objectAtIndex: 0];
+
       if (appCons != nil)
         {
           [appCons detach];
         }
-      
-      NSArray *appChildren = [appNode children];
-      NSEnumerator *ace = [appChildren objectEnumerator];
-      NSXMLElement *ae = nil;
       
       // Assign application scene...
       ASSIGN(_applicationSceneId, sceneId);
@@ -421,11 +418,13 @@
                          forKey: APPLICATION];
       
       // Move all application children to objects...
-      while ((ae = [ace nextObject]) != nil)
+      NSArray *appChildren = [appNode children];      
+      FOR_IN(NSXMLElement*, ae, appChildren)
         {
           [ae detach];
           [objects addChild: ae];
         }
+      END_FOR_IN(appChildren);
       
       // Remove the appNode
       [appNode detach];
@@ -535,20 +534,18 @@
       NSXMLNode *attr = [ce attributeForName: @"id"];
       controllerId = [attr stringValue];
       
-      NSEnumerator *windowControllerEnum = [windowControllers objectEnumerator];
-      NSXMLElement *o = nil;
-      while ((o = [windowControllerEnum nextObject]) != nil)
+      FOR_IN(NSXMLElement*, o, windowControllers)
         {
           NSXMLElement *objects = (NSXMLElement *)[o parent];
           NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
-          NSEnumerator *windowEn = [windows objectEnumerator];
-          NSXMLNode *w = nil;
-          while ((w = [windowEn nextObject]) != nil)
+          FOR_IN(NSXMLNode*, w, windows)
             {
               [w detach];
               [objects addChild: w];
             }
+          END_FOR_IN(windows);
         }
+      END_FOR_IN(windowControllers);
     }
   
   if ([viewControllers count] > 0)
