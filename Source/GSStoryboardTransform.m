@@ -492,12 +492,42 @@
     }
 }
 
+- (NSArray *) findSubclassesOf: (Class)clz
+                    inDocument: (NSXMLDocument *)document
+{
+  NSArray *result = nil;
+  NSMutableArray *subclasses = [GSObjCAllSubclassesOfClass(clz) mutableCopy];
+
+  [subclasses insertObject: clz atIndex: 0];
+  FOR_IN(Class, cls, subclasses)
+    {
+      NSString *className = NSStringFromClass(cls);
+      NSString *classNameNoNamespace = [className substringFromIndex: 2];
+      NSString *xmlClassName = [NSString stringWithFormat: @"%@%@",
+                                         [[classNameNoNamespace substringToIndex: 1] lowercaseString],
+                                         [classNameNoNamespace substringFromIndex: 1]];
+      NSString *xpath = [NSString stringWithFormat: @"//%@",xmlClassName];
+      result = [document nodesForXPath: xpath error: NULL];
+
+      if ([result count] > 0)
+        {
+          break;
+        }
+    }
+  END_FOR_IN(subclasses);
+
+  return result;
+}
+
 - (NSString *) controllerIdWithDocument: (NSXMLDocument *)document
 {
   NSString *controllerId = nil;
-  NSArray *windowControllers = [document nodesForXPath: @"//windowController" error: NULL];
-  NSArray *viewControllers = [document nodesForXPath: @"//viewController" error: NULL];
-  NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder" error: NULL];
+  NSArray *windowControllers = [self findSubclassesOf: [NSWindowController class]
+                                           inDocument: document];
+  NSArray *viewControllers = [self findSubclassesOf: [NSViewController class]
+                                         inDocument: document];
+  NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder"
+                                                      error: NULL];
   
   if ([windowControllers count] > 0)
     {
