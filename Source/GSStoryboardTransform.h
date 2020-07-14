@@ -121,4 +121,3 @@ extern "C" {
 #endif
 
 #endif	/* _GSStoryboardTransform_h_GNUSTEP_GUI_INCLUDE */
-
