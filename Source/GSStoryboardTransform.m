@@ -708,26 +708,22 @@
 }
 
 - (BOOL) isProcessedDocument: (NSXMLDocument *)xmlIn
-                        uuid: (NSMutableString *)uuid
 {
   NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
   if ([docArray count] > 0)
     {
       NSXMLElement *docElem = (NSXMLElement *)[docArray objectAtIndex: 0];
-      NSXMLNode *a = [docElem attributeForName: @"uuid"];
+      NSXMLNode *a = [docElem attributeForName: @"processed"];
       NSString *value = [a stringValue];
       if (value != nil)
         {
-          [uuid appendString: value];
           return YES;
         }
       else
         {
-          NSString *uuidString = [[NSUUID UUID] UUIDString];
-          NSXMLNode *new_uuid_attr = [NSXMLNode attributeWithName: @"uuid"
-                                                      stringValue: uuidString];
-          [docElem addAttribute: new_uuid_attr];
-          [uuid appendString: uuidString];
+          NSXMLNode *new_attr = [NSXMLNode attributeWithName: @"processed"
+                                                      stringValue: @"true"];
+          [docElem addAttribute: new_attr];
         }
     }
   return NO;
@@ -861,9 +857,7 @@
 - (void) processSegues: (NSXMLDocument *)xml
        forControllerId: (NSString *)identifier
 {
-  NSMutableString *uuidString = [NSMutableString string];
-  BOOL processed = [self isProcessedDocument: xml
-                                        uuid: uuidString];
+  BOOL processed = [self isProcessedDocument: xml];
   if (processed)
     {
       return; // don't processed the document again
