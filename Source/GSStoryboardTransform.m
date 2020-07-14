@@ -32,6 +32,7 @@
 #import <Foundation/NSUUID.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSException.h>
 
 #import "AppKit/NSSeguePerforming.h"
 #import "AppKit/NSStoryboard.h"
@@ -42,6 +43,8 @@
 
 #import "GSStoryboardTransform.h"
 #import "GSFastEnumeration.h"
+
+#define APPLICATION @"application"
 
 @interface NSStoryboardSegue (__private__)
 - (void) _setDestinationController: (id)controller; 
@@ -184,7 +187,7 @@
     }
   else // This is a special case where there is no source controller and we don't ask "should"
     {
-      NSMapTable *mapTable = [_identifierToSegueMap objectForKey: @"application"];
+      NSMapTable *mapTable = [_identifierToSegueMap objectForKey: APPLICATION];
       NSStoryboardSegue *segue = [mapTable objectForKey: _identifier]; 
       id destCon = nil;
       if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
@@ -386,14 +389,12 @@
 {
   NSString *sceneId = [_controllerMap objectForKey: identifier];
   NSXMLDocument *xml = [_scenesMap objectForKey: sceneId];
-  [self processSegues: xml
-                forId: identifier];
   return [xml XMLData];
 }
 
 - (NSData *) dataForApplicationScene
 {
-  return [self dataForIdentifier: @"application"];
+  return [self dataForIdentifier: APPLICATION];
 }
 
 - (void) processChild: (NSXMLElement *)child
@@ -419,7 +420,7 @@
       // Assign application scene...
       ASSIGN(_applicationSceneId, sceneId);
       [_controllerMap setObject: _applicationSceneId
-                         forKey: @"application"];
+                         forKey: APPLICATION];
       
       // Move all application children to objects...
       while ((ae = [ace nextObject]) != nil)
@@ -580,9 +581,9 @@
     }
 }
 
-- (void) processStoryboard: (NSXMLDocument *)storyboardXml
+- (void) processStoryboard: (NSXMLDocument *)xml
 {
-  NSArray *docNodes = [storyboardXml nodesForXPath: @"document" error: NULL];
+  NSArray *docNodes = [xml nodesForXPath: @"document" error: NULL];
 
   if ([docNodes count] > 0)
     {
@@ -615,6 +616,7 @@
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; // put it into the document, so we can use Xpath.
               controllerId = [self controllerIdWithDocument: document];
+              controllerId = (controllerId != nil) ? controllerId : APPLICATION;
               RELEASE(doc);
 
               NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
@@ -634,8 +636,10 @@
                 {
                   [_controllerMap setObject: sceneId
                                      forKey: controllerId];
+
+                  [self processSegues: document
+                      forControllerId: controllerId];
                 }
-              
               RELEASE(document);
             }
           END_FOR_IN(children);
@@ -644,7 +648,8 @@
     }
   else
     {
-      NSLog(@"No document element in storyboard file");
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"No document element found in storyboard file"];
     }
 }
 
@@ -825,11 +830,11 @@
   return mapTable;
 }
 
-- (void) processSegues: (NSXMLDocument *)xmlIn
-                 forId: (NSString *)identifier
+- (void) processSegues: (NSXMLDocument *)xml
+       forControllerId: (NSString *)identifier
 {
   NSMutableString *uuidString = [NSMutableString string];
-  BOOL processed = [self isProcessedDocument: xmlIn
+  BOOL processed = [self isProcessedDocument: xml
                                         uuid: uuidString];
   if (processed)
     {
@@ -837,13 +842,13 @@
     }
   else // Get the controller... there is only one per scene.
     {
-      NSArray *array = [xmlIn nodesForXPath: @"//objects[1]"
-                                      error: NULL];
+      NSArray *array = [xml nodesForXPath: @"//objects[1]"
+                                    error: NULL];
       NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
-      NSString *src = [self findControllerIdInDocument: xmlIn
+      NSString *src = [self findControllerIdInDocument: xml
                                            withObjects: objects];
-      NSArray *connectionsArray = [xmlIn nodesForXPath: @"//connections"
-                                                 error: NULL];
+      NSArray *connectionsArray = [xml nodesForXPath: @"//connections"
+                                               error: NULL];
       NSMapTable *mapTable = [self processConnections: connectionsArray
                                           withObjects: objects
                                          controllerId: src];           

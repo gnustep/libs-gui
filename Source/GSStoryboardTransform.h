@@ -42,7 +42,6 @@ extern "C" {
 {
   NSMutableDictionary *_scenesMap;
   NSMutableDictionary *_controllerMap;
-  NSMutableDictionary *_documentsMap;
   NSMutableDictionary *_identifierToSegueMap;
   NSString *_initialViewControllerId;
   NSString *_applicationSceneId;
@@ -61,7 +60,7 @@ extern "C" {
 - (NSDictionary *) identifierToSegueMap;
 
 - (void) processSegues: (NSXMLDocument *)xmlIn
-                 forId: (NSString *)identifier;
+       forControllerId: (NSString *)identifier;
 - (void) processStoryboard: (NSXMLDocument *)storyboardXml;
   
 @end
