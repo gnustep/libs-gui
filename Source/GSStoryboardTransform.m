@@ -391,6 +391,36 @@
   return [self dataForIdentifier: APPLICATION];
 }
 
+- (void) addStandardObjects: (NSXMLElement *)objects
+                classString: (NSString *) customClassString
+                connections: (NSXMLNode *)appCons
+{
+  NSXMLElement *customObject = nil;
+  
+  customObject = 
+    [self createCustomObjectWithId: @"-3"
+                         userLabel: @"Application"
+                       customClass: @"NSObject"];
+  [objects insertChild: customObject
+               atIndex: 0];
+  customObject = 
+    [self createCustomObjectWithId: @"-1"
+                         userLabel: @"First Responder"
+                       customClass: @"FirstResponder"];
+  [objects insertChild: customObject
+               atIndex: 0];
+  customObject =
+    [self createCustomObjectWithId: @"-2"
+                         userLabel: @"File's Owner"
+                       customClass: customClassString];
+  if (appCons != nil)
+    {
+      [customObject addChild: appCons];
+    }
+  [objects insertChild: customObject
+               atIndex: 0]; 
+}
+
 - (void) processChild: (NSXMLElement *)child
               withDoc: (NSXMLElement *)doc
           withAppNode: (NSXMLNode *)appNode
@@ -428,60 +458,22 @@
       // Add it to the document
       [objects detach];
       [doc addChild: objects];
-      
+
       // create a customObject entry for NSApplication reference...
       NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode
                                                    attributeForName: @"customClass"];
       customClassString = ([appCustomClass stringValue] == nil) ?
         @"NSApplication" : [appCustomClass stringValue];
-      NSXMLElement *customObject = nil;
-      
-      customObject = 
-        [self createCustomObjectWithId: @"-3"
-                             userLabel: @"Application"
-                           customClass: @"NSObject"];
-      [child insertChild: customObject
-                 atIndex: 0];
-      customObject = 
-        [self createCustomObjectWithId: @"-1"
-                             userLabel: @"First Responder"
-                           customClass: @"FirstResponder"];
-      [child insertChild: customObject
-                 atIndex: 0];
-      customObject =
-        [self createCustomObjectWithId: @"-2"
-                             userLabel: @"File's Owner"
-                           customClass: customClassString];
-      if (appCons != nil)
-        {
-          [customObject addChild: appCons];
-        }
-      [child insertChild: customObject
-                 atIndex: 0]; 
+
+      [self addStandardObjects: objects
+                   classString: customClassString
+                   connections: appCons];
     }
   else
     {
-      NSXMLElement *customObject = nil;
-      
-      customObject = 
-        [self createCustomObjectWithId: @"-3"
-                             userLabel: @"Application"
-                           customClass: @"NSObject"];
-      [child insertChild: customObject
-                 atIndex: 0];
-      customObject = 
-        [self createCustomObjectWithId: @"-1"
-                             userLabel: @"First Responder"
-                           customClass: @"FirstResponder"];
-      [child insertChild: customObject
-                 atIndex: 0];
-      customObject = 
-        [self createCustomObjectWithId: @"-2"
-                             userLabel: @"File's Owner"
-                           customClass: customClassString];
-      [child insertChild: customObject
-                 atIndex: 0];
-      
+      [self addStandardObjects: child
+                   classString: customClassString
+                   connections: nil];
       [child detach];
       [doc addChild: child];
     }
