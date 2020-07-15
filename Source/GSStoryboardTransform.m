@@ -208,6 +208,10 @@
           [_sender performSegueWithIdentifier: _identifier
                                        sender: _sender];
         }
+      else
+        {
+          [_storyboardSegue perform];
+        }
     }
 }
 
