@@ -176,10 +176,12 @@
 - (IBAction) doAction: (id)sender
 {
   BOOL should = YES;
-  BOOL responds = [_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)]  &&
-    ( [_sender isKindOfClass: [NSViewController class]] || [_sender isKindOfClass: [NSWindowController class]] );
 
-  if (responds)
+  // If the instance we are testing is a controller, then the value of should is set by this method....
+  // if it is not, as it is possible to initiate a segue from an NSMenuItem, then we don't, but should
+  // remains set to YES so that the logic to replace the destination controller is still called.
+  if ([_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)]  &&
+      ([_sender isKindOfClass: [NSViewController class]] || [_sender isKindOfClass: [NSWindowController class]]))
     {
       should = [_sender shouldPerformSegueWithIdentifier: _identifier
                                                   sender: _sender];
@@ -341,16 +343,6 @@
 - (NSString *) applicationSceneId
 {
   return _applicationSceneId;
-}
-
-- (NSDictionary *) scenesMap
-{
-  return _scenesMap;
-}
-
-- (NSDictionary *) controllerMap
-{
-  return _controllerMap;
 }
 
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier

@@ -39,11 +39,6 @@
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSWindowController.h"
 
-@interface NSStoryboardSegue (__ViewControllerPrivate__)
-- (void) _setDestinationController: (id)controller;
-- (void) _setSourceController: (id)controller;
-@end
-
 @implementation NSViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil 

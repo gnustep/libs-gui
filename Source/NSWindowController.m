@@ -45,11 +45,6 @@
 
 #import "NSDocumentFrameworkPrivate.h"
 
-@interface NSStoryboardSegue (__WindowControllerPrivate__)
-- (void) _setDestinationController: (id)controller;
-- (void) _setSourceController: (id)controller;
-@end
-
 @implementation NSWindowController
 
 + (void) initialize
@@ -567,6 +562,8 @@
                             sender: (id)sender
 {
   NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+  [self prepareForSegue: segue
+                 sender: sender];  
   [segue perform];
 }
 

@@ -49,8 +49,6 @@ extern "C" {
 
 - (instancetype) initWithData: (NSData *)data;
 
-- (NSDictionary *) scenesMap;
-- (NSDictionary *) controllerMap;
 - (NSString *) initialViewControllerId;
 - (NSString *) applicationSceneId;
 
