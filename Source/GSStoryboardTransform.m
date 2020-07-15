@@ -188,19 +188,14 @@
 
   if (should)
     {
-      id destCon = nil;
-      if ([[_storyboardSegue destinationController] isKindOfClass: [NSViewController class]] ||
-          [[_storyboardSegue destinationController] isKindOfClass: [NSWindowController class]])
+      id destCon = [_storyboardSegue destinationController];
+      if ([destCon isKindOfClass: [NSString class]])
         {
-          destCon = [_storyboardSegue destinationController];
-        }
-      else
-        {
-          NSString *destId = [_storyboardSegue destinationController];
-          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
+          // resolve the destination controller
+          destCon = [_storyboard instantiateControllerWithIdentifier: destCon];
+          [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
         }
       [_storyboardSegue _setSourceController: _sender]; 
-      [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
       
       if (_sender != nil &&
           [_sender respondsToSelector: @selector(performSegueWithIdentifier:sender:)])
