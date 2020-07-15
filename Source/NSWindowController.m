@@ -566,29 +566,8 @@
 - (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                             sender: (id)sender
 {
-  BOOL should = [self shouldPerformSegueWithIdentifier: identifier
-                                                sender: sender];
-
-  if (should)
-    {
-      NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-      id destCon = nil;
-      if ([[segue destinationController] isKindOfClass: [NSViewController class]] ||
-          [[segue destinationController] isKindOfClass: [NSWindowController class]])
-        {
-          destCon = [segue destinationController];
-        }
-      else
-        {
-          NSString *destId = [segue destinationController];
-          destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
-        }
-      [segue _setSourceController: self];
-      [segue _setDestinationController: destCon];  // replace with actual controller...
-      [self prepareForSegue: segue
-                     sender: sender];
-      [segue perform];
-    }
+  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+  [segue perform];
 }
 
 - (void)prepareForSegue: (NSStoryboardSegue *)segue 

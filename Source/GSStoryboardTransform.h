@@ -57,7 +57,6 @@ extern "C" {
 - (NSData *) dataForIdentifier: (NSString *)identifier;
 - (NSData *) dataForApplicationScene;
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier;
-- (NSDictionary *) identifierToSegueMap;
 
 - (void) processSegues: (NSXMLDocument *)xmlIn
        forControllerId: (NSString *)identifier;

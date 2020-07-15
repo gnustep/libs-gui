@@ -228,7 +228,7 @@ static NSStoryboard *__mainStoryboard = nil;
           if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
             {
               NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-              NSMapTable *mapTable = [[_transform identifierToSegueMap] objectForKey: identifier];
+              NSMapTable *mapTable = [_transform segueMapForIdentifier: identifier];
               NSStoryboardSegue *ss = [mapTable objectForKey: [ssa identifier]];
               
               [ssa setSender: result]; // resolve controller here...
@@ -247,14 +247,6 @@ static NSStoryboard *__mainStoryboard = nil;
         {
           [wc setWindow: w];
         }
-          
-      // perform segues after all is initialized.
-      FOR_IN(id, o, seguesToPerform)
-        {
-          NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-          [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
-        }
-      END_FOR_IN(seguesToPerform);
 
       // process placeholders...
       FOR_IN(id, o, placeholders)
@@ -263,6 +255,14 @@ static NSStoryboard *__mainStoryboard = nil;
           result = [ph instantiate];
         }
       END_FOR_IN(placeholders);
+
+      // perform segues after all is initialized.
+      FOR_IN(id, o, seguesToPerform)
+        {
+          NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+          [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
+        }
+      END_FOR_IN(seguesToPerform);
     }
   else
     {

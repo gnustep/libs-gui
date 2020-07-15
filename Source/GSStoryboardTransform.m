@@ -163,11 +163,6 @@
   ASSIGN(_storyboardSegue, ss);
 }
 
-- (id) nibInstantiate
-{
-  return self;
-}
-
 - (void) dealloc
 {
   RELEASE(_storyboard);
@@ -180,12 +175,16 @@
 
 - (IBAction) doAction: (id)sender
 {
-  if (_sender != nil)
+  BOOL should = YES;
+  BOOL responds = [_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)];
+
+  if (responds)
     {
-      [_sender performSegueWithIdentifier: _identifier
-                                   sender: _sender];
+      should = [_sender shouldPerformSegueWithIdentifier: _identifier
+                                                  sender: _sender];
     }
-  else // This is a special case where there is no source controller and we don't ask "should"
+
+  if (should)
     {
       id destCon = nil;
       if ([[_storyboardSegue destinationController] isKindOfClass: [NSViewController class]] ||
@@ -198,9 +197,14 @@
           NSString *destId = [_storyboardSegue destinationController];
           destCon = [_storyboard instantiateControllerWithIdentifier: destId]; 
         }
-      [_storyboardSegue _setSourceController: nil]; 
+      [_storyboardSegue _setSourceController: _sender]; 
       [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
-      [_storyboardSegue perform];
+      
+      if (_sender != nil)
+        {
+          [_sender performSegueWithIdentifier: _identifier
+                                       sender: _sender];
+        }
     }
 }
 
@@ -351,11 +355,6 @@
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier
 {
   return [_identifierToSegueMap objectForKey: identifier];
-}
-
-- (NSDictionary *) identifierToSegueMap
-{
-  return _identifierToSegueMap;
 }
 
 - (NSXMLElement *) createCustomObjectWithId: (NSString *)ident
