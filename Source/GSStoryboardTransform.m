@@ -176,7 +176,8 @@
 - (IBAction) doAction: (id)sender
 {
   BOOL should = YES;
-  BOOL responds = [_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)];
+  BOOL responds = [_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)]  &&
+    ( [_sender isKindOfClass: [NSViewController class]] || [_sender isKindOfClass: [NSWindowController class]] );
 
   if (responds)
     {
