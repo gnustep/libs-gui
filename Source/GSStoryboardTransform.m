@@ -180,8 +180,7 @@
   // If the instance we are testing is a controller, then the value of should is set by this method....
   // if it is not, as it is possible to initiate a segue from an NSMenuItem, then we don't, but should
   // remains set to YES so that the logic to replace the destination controller is still called.
-  if ([_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)]  &&
-      ([_sender isKindOfClass: [NSViewController class]] || [_sender isKindOfClass: [NSWindowController class]]))
+  if ([_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)])
     {
       should = [_sender shouldPerformSegueWithIdentifier: _identifier
                                                   sender: _sender];
@@ -203,7 +202,8 @@
       [_storyboardSegue _setSourceController: _sender]; 
       [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
       
-      if (_sender != nil)
+      if (_sender != nil &&
+          [_sender respondsToSelector: @selector(performSegueWithIdentifier:sender:)])
         {
           [_sender performSegueWithIdentifier: _identifier
                                        sender: _sender];
