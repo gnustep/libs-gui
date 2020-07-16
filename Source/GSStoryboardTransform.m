@@ -416,18 +416,19 @@
                atIndex: 0]; 
 }
 
-- (void) processChild: (NSXMLElement *)child
+- (void) processChild: (NSXMLElement *)objects
               withDoc: (NSXMLElement *)doc
           withAppNode: (NSXMLNode *)appNode
               sceneId: (NSString *)sceneId
 {
   NSString *customClassString = nil;
+  NSXMLNode *appCons = nil;
+  
   if (appNode != nil)
     {
-      NSXMLElement *objects = (NSXMLElement *)[appNode parent];
       NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
-      NSXMLNode *appCons = [appConsArr objectAtIndex: 0];
-
+      
+      appCons = [appConsArr objectAtIndex: 0];
       if (appCons != nil)
         {
           [appCons detach];
@@ -450,30 +451,22 @@
       // Remove the appNode
       [appNode detach];
       
-      // Add it to the document
-      [objects detach];
-      [doc addChild: objects];
-
       // create a customObject entry for NSApplication reference...
-      NSXMLNode *appCustomClass = (NSXMLNode *)[(NSXMLElement *)appNode
-                                                   attributeForName: @"customClass"];
+      NSXMLNode *appCustomClass = [(NSXMLElement *)appNode
+                                      attributeForName: @"customClass"];
       customClassString = ([appCustomClass stringValue] == nil) ?
         @"NSApplication" : [appCustomClass stringValue];
-
-      [self addStandardObjects: objects
-                   classString: customClassString
-                   connections: appCons];
     }
-  else
-    {
-      [self addStandardObjects: child
-                   classString: customClassString
-                   connections: nil];
-      [child detach];
-      [doc addChild: child];
-    }
+  
+  [self addStandardObjects: objects
+               classString: customClassString
+               connections: appCons];
+  
+  // Add it to the document
+  [objects detach];
+  [doc addChild: objects];
 }
-
+   
 - (NSArray *) findSubclassesOf: (Class)clz
                     inDocument: (NSXMLDocument *)document
 {
