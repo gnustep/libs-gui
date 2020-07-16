@@ -661,32 +661,6 @@
     }
 }
 
-- (NSString *) findControllerIdInDocument: (NSXMLDocument *)xmlIn
-                              withObjects: (NSXMLElement *)objects
-{
-  NSString *src = nil;
-  NSArray *controllers = [objects nodesForXPath: @"windowController"
-                                          error: NULL];
-  if ([controllers count] > 0)
-    {
-      NSXMLElement *controller = (NSXMLElement *)[controllers objectAtIndex: 0];
-      NSXMLNode *idAttr = [controller attributeForName: @"id"];
-      src = [idAttr stringValue];
-    }
-  else
-    {
-      controllers = [objects nodesForXPath: @"viewController"
-                                     error: NULL];
-      if ([controllers count] > 0)
-        {
-          NSXMLElement *controller = (NSXMLElement *)[controllers objectAtIndex: 0];
-          NSXMLNode *idAttr = [controller attributeForName: @"id"];
-          src = [idAttr stringValue];
-        }
-    }
-  return src;
-}
-
 - (BOOL) isProcessedDocument: (NSXMLDocument *)xmlIn
 {
   NSArray *docArray = [xmlIn nodesForXPath: @"document" error: NULL];
@@ -847,8 +821,7 @@
       NSArray *array = [xml nodesForXPath: @"//objects[1]"
                                     error: NULL];
       NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
-      NSString *src = [self findControllerIdInDocument: xml
-                                           withObjects: objects];
+      NSString *src = [self controllerIdWithDocument: xml];                            
       NSArray *connectionsArray = [xml nodesForXPath: @"//connections"
                                                error: NULL];
       NSMapTable *mapTable = [self processConnections: connectionsArray
