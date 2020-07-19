@@ -499,7 +499,7 @@
           break;
         }
     }
-  END_FOR_IN(subclasses);
+  END_FOR_IN(xmlClassNames);
 
   return result;
 }
