@@ -697,9 +697,9 @@
         if ([[obj name] isEqualToString: @"segue"])
           {
             // get the information from the segue.
-            id segue_parent_parent = [[obj parent] parent];
-            id segue_parent = [obj parent];
-            NSString *segue_parent_parent_name = [segue_parent_parent name];
+            id connections_parent = [[obj parent] parent];
+            id segue_parent = connections; // [obj parent];
+            NSString *connections_parent_name = [connections_parent name];
             NSXMLNode *attr = [obj attributeForName: @"destination"];
             NSString *dst = [attr stringValue];
             attr = [obj attributeForName: @"kind"];
@@ -728,8 +728,8 @@
                          atIndex: count - 1];
             
             // add action to parent ONLY if it is NOT a controller..
-            if (![[self subclassesOfClass: [NSWindowController class]] containsObject: segue_parent_parent_name] &&
-                ![[self subclassesOfClass: [NSViewController class]] containsObject: segue_parent_parent_name])
+            if (![[self subclassesOfClass: [NSWindowController class]] containsObject: connections_parent_name] &&
+                ![[self subclassesOfClass: [NSViewController class]] containsObject: connections_parent_name])
               {              
                 // Create action...
                 NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
