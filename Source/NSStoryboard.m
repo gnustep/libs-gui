@@ -186,7 +186,6 @@ static NSStoryboard *__mainStoryboard = nil;
   if (success)
     {
       NSMutableArray *seguesToPerform = [NSMutableArray array];
-      NSMutableArray *placeholders = [NSMutableArray array];
       NSMapTable *segueMap = [_transform segueMapForIdentifier: identifier];
       NSWindowController *wc = nil;
       NSViewController *vc = nil;
@@ -216,10 +215,11 @@ static NSStoryboard *__mainStoryboard = nil;
           }
         else if ([o isKindOfClass: [NSControllerPlaceholder class]])
           {
-            [placeholders addObject: o];
+            NSControllerPlaceholder *ph = (NSControllerPlaceholder *)o;
+            result = [ph instantiate];
           }             
       END_FOR_IN(topLevelObjects);
-      
+
       // Process action proxies after so we know we have the windowController...
       FOR_IN(id, o, topLevelObjects)
         if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
@@ -243,11 +243,6 @@ static NSStoryboard *__mainStoryboard = nil;
         {
           [wc setWindow: w];
         }
-
-      // process placeholders...
-      FOR_IN(NSControllerPlaceholder*, ph, placeholders)
-        result = [ph instantiate];
-      END_FOR_IN(placeholders);
 
       // perform segues after all is initialized.
       FOR_IN(NSStoryboardSeguePerformAction*, ssa, seguesToPerform)
