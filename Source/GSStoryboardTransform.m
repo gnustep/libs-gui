@@ -462,12 +462,11 @@
   [objects detach];
   [doc addChild: objects];
 }
-   
-- (NSArray *) findSubclassesOf: (Class)clz
-                    inDocument: (NSXMLDocument *)document
+
+- (NSArray *) subclassesOfClass: (Class)clz
 {
-  NSArray *result = nil;
   NSMutableArray *subclasses = [GSObjCAllSubclassesOfClass(clz) mutableCopy];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [subclasses count]];
 
   [subclasses insertObject: clz atIndex: 0];
   FOR_IN(Class, cls, subclasses)
@@ -477,9 +476,24 @@
       NSString *xmlClassName = [NSString stringWithFormat: @"%@%@",
                                          [[classNameNoNamespace substringToIndex: 1] lowercaseString],
                                          [classNameNoNamespace substringFromIndex: 1]];
-      NSString *xpath = [NSString stringWithFormat: @"//%@",xmlClassName];
-      result = [document nodesForXPath: xpath error: NULL];
+      
+      [result addObject: xmlClassName];
+    }
+  END_FOR_IN(subclasses);
 
+  return result;
+}
+   
+- (NSArray *) findSubclassesOf: (Class)clz
+                    inDocument: (NSXMLDocument *)document
+{
+  NSArray *result = nil;
+  NSArray *xmlClassNames = [self subclassesOfClass: clz];
+
+  FOR_IN(NSString*, xmlClassName, xmlClassNames)
+    {
+      NSString *xpath = [NSString stringWithFormat: @"//%@",xmlClassName];
+      result = [document nodesForXPath: xpath error: NULL];      
       if ([result count] > 0)
         {
           break;
