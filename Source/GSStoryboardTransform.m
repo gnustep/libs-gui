@@ -766,12 +766,11 @@
       NSArray *array = [xml nodesForXPath: @"//objects[1]"
                                     error: NULL];
       NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
-      NSString *src = [self controllerIdWithDocument: xml];                            
       NSArray *connectionsArray = [xml nodesForXPath: @"//connections"
                                                error: NULL];
       NSMapTable *mapTable = [self processConnections: connectionsArray
                                           withObjects: objects
-                                         controllerId: src];           
+                                         controllerId: identifier];           
       [_identifierToSegueMap setObject: mapTable
                                 forKey: identifier];                  
     }
