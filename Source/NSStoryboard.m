@@ -193,53 +193,49 @@ static NSStoryboard *__mainStoryboard = nil;
       NSWindow *w = nil;
             
       FOR_IN(id, o, topLevelObjects)
-        {
-          if ([o isKindOfClass: [NSWindowController class]])
-            {
-              wc = (NSWindowController *)o;
-              [wc _setSegueMap: segueMap];
-              [wc _setTopLevelObjects: topLevelObjects];
-              [wc _setStoryboard: self];
-              [wc _setOwner: NSApp];
-              result = o;
-            }
-          else if ([o isKindOfClass: [NSViewController class]])
-            {
-              vc = (NSViewController *)o;
-              [vc _setSegueMap: segueMap];
-              [vc _setTopLevelObjects: topLevelObjects];
-              [vc _setStoryboard: self];
-              result = o;
-            }
-          else if ([o isKindOfClass: [NSWindow class]])
-            {
-              w = (NSWindow *)o;
-            }
-          else if ([o isKindOfClass: [NSControllerPlaceholder class]])
-            {
-              [placeholders addObject: o];
-            }             
-        }
+        if ([o isKindOfClass: [NSWindowController class]])
+          {
+            wc = (NSWindowController *)o;
+            [wc _setSegueMap: segueMap];
+            [wc _setTopLevelObjects: topLevelObjects];
+            [wc _setStoryboard: self];
+            [wc _setOwner: NSApp];
+            result = o;
+          }
+        else if ([o isKindOfClass: [NSViewController class]])
+          {
+            vc = (NSViewController *)o;
+            [vc _setSegueMap: segueMap];
+            [vc _setTopLevelObjects: topLevelObjects];
+            [vc _setStoryboard: self];
+            result = o;
+          }
+        else if ([o isKindOfClass: [NSWindow class]])
+          {
+            w = (NSWindow *)o;
+          }
+        else if ([o isKindOfClass: [NSControllerPlaceholder class]])
+          {
+            [placeholders addObject: o];
+          }             
       END_FOR_IN(topLevelObjects);
       
       // Process action proxies after so we know we have the windowController...
       FOR_IN(id, o, topLevelObjects)
-        {
-          if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
-            {
-              NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-              NSMapTable *mapTable = [_transform segueMapForIdentifier: identifier];
-              NSStoryboardSegue *ss = [mapTable objectForKey: [ssa identifier]];
-              
-              [ssa setSender: result]; // resolve controller here...
-              [ssa setStoryboardSegue: ss];
-              [ssa setStoryboard: self];
-              if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
-                {
-                  [seguesToPerform addObject: ssa];
-                }
-            }
-        }
+        if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
+          {
+            NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
+            NSMapTable *mapTable = [_transform segueMapForIdentifier: identifier];
+            NSStoryboardSegue *ss = [mapTable objectForKey: [ssa identifier]];
+            
+            [ssa setSender: result]; // resolve controller here...
+            [ssa setStoryboardSegue: ss];
+            [ssa setStoryboard: self];
+            if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
+              {
+                [seguesToPerform addObject: ssa];
+              }
+          }
       END_FOR_IN(topLevelObjects);
 
       // Depending on which kind of controller we have, do the correct thing....
@@ -249,19 +245,13 @@ static NSStoryboard *__mainStoryboard = nil;
         }
 
       // process placeholders...
-      FOR_IN(id, o, placeholders)
-        {
-          NSControllerPlaceholder *ph = (NSControllerPlaceholder *)o;
-          result = [ph instantiate];
-        }
+      FOR_IN(NSControllerPlaceholder*, ph, placeholders)
+        result = [ph instantiate];
       END_FOR_IN(placeholders);
 
       // perform segues after all is initialized.
-      FOR_IN(id, o, seguesToPerform)
-        {
-          NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-          [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
-        }
+      FOR_IN(NSStoryboardSeguePerformAction*, ssa, seguesToPerform)
+        [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
       END_FOR_IN(seguesToPerform);
     }
   else
