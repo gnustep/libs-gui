@@ -720,9 +720,8 @@
 {
   NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
   
-  FOR_IN (NSXMLElement*, connObj, connectionsArray)
+  FOR_IN (NSXMLElement*, connections, connectionsArray)
     {
-      NSXMLElement *connections = (NSXMLElement *)connObj;
       NSArray *children = [connections children]; // there should be only one per set.
       
       FOR_IN (id, obj, children)
