@@ -53,11 +53,8 @@ extern "C" {
 - (NSString *) applicationSceneId;
 
 - (NSData *) dataForIdentifier: (NSString *)identifier;
-- (NSData *) dataForApplicationScene;
 - (NSMapTable *) segueMapForIdentifier: (NSString *)identifier;
 
-- (void) processSegues: (NSXMLDocument *)xmlIn
-       forControllerId: (NSString *)identifier;
 - (void) processStoryboard: (NSXMLDocument *)storyboardXml;
   
 @end

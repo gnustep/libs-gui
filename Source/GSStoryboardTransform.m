@@ -381,11 +381,6 @@
   return [xml XMLData];
 }
 
-- (NSData *) dataForApplicationScene
-{
-  return [self dataForIdentifier: APPLICATION];
-}
-
 - (void) addStandardObjects: (NSXMLElement *)objects
                 classString: (NSString *) customClassString
                 connections: (NSXMLNode *)appCons
