@@ -384,6 +384,7 @@
 - (void) addStandardObjects: (NSXMLElement *)objects
                 classString: (NSString *) customClassString
                 connections: (NSXMLNode *)appCons
+           firstResponderId: (NSString *)firstResponderId
 {
   NSXMLElement *customObject = nil;
   
@@ -394,7 +395,7 @@
   [objects insertChild: customObject
                atIndex: 0];
   customObject = 
-    [self createCustomObjectWithId: @"-1"
+    [self createCustomObjectWithId: firstResponderId
                          userLabel: @"First Responder"
                        customClass: @"FirstResponder"];
   [objects insertChild: customObject
@@ -415,6 +416,7 @@
               withDoc: (NSXMLElement *)doc
           withAppNode: (NSXMLNode *)appNode
               sceneId: (NSString *)sceneId
+     firstResponderId: (NSString *)firstResponderId
 {
   NSString *customClassString = nil;
   NSXMLNode *appCons = nil;
@@ -437,10 +439,8 @@
       // Move all application children to objects...
       NSArray *appChildren = [appNode children];      
       FOR_IN(NSXMLElement*, ae, appChildren)
-        {
-          [ae detach];
-          [objects addChild: ae];
-        }
+        [ae detach];
+        [objects addChild: ae];
       END_FOR_IN(appChildren);
       
       // Remove the appNode
@@ -455,7 +455,8 @@
   
   [self addStandardObjects: objects
                classString: customClassString
-               connections: appCons];
+               connections: appCons
+          firstResponderId: firstResponderId];
   
   // Add it to the document
   [objects detach];
@@ -536,47 +537,6 @@
   return controllerId;
 }
 
-- (void) processCustomElement: (NSXMLElement *)coel
-                  forDocument: (NSXMLDocument *)document
-{
-  NSXMLNode *attr = [coel attributeForName: @"sceneMemberID"];
-  if ([[attr stringValue] isEqualToString: @"firstResponder"])
-    {
-      NSXMLNode *customClassAttr = [coel attributeForName: @"customClass"];
-      NSXMLNode *idAttr = [coel attributeForName: @"id"];
-      NSString *originalId = [idAttr stringValue];
-      
-      [idAttr setStringValue: @"-1"]; // set to first responder id
-      [customClassAttr setStringValue: @"FirstResponder"];
-      
-      // Actions
-      NSArray *cons = [document nodesForXPath: @"//action" error: NULL];
-      FOR_IN(NSXMLElement*, celem, cons) 
-        {
-          NSXMLNode *targetAttr = [celem attributeForName: @"target"];
-          NSString *val = [targetAttr stringValue];
-          if ([val isEqualToString: originalId])
-            {
-              [targetAttr setStringValue: @"-1"];
-            }
-        }
-      END_FOR_IN(cons);
-      
-      // Outlets
-      cons = [document nodesForXPath: @"//outlet" error: NULL];
-      FOR_IN(NSXMLElement*, celem, cons)
-        {
-          NSXMLNode *attr = [celem attributeForName: @"destination"];
-          NSString *val = [attr stringValue];
-          if ([val isEqualToString: originalId])
-            {
-              [attr setStringValue: @"-1"];
-            }
-        }
-      END_FOR_IN(cons);
-    }
-}
-
 - (void) processStoryboard: (NSXMLDocument *)xml
 {
   NSArray *docNodes = [xml nodesForXPath: @"document" error: NULL];
@@ -585,6 +545,14 @@
     {
       NSXMLElement *docNode = [docNodes objectAtIndex: 0];
       NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
+      NSArray *firstResponderIdNodes = [docNode nodesForXPath: @"//objects/customObject[@sceneMemberID =\"firstResponder\"]/@id"
+                                                         error: NULL];
+      NSString *firstResponderId = @"-1";
+
+      if([firstResponderIdNodes count] > 0)
+        {
+          firstResponderId = [[firstResponderIdNodes objectAtIndex: 0] stringValue];
+        }
       
       // Set initial view controller...
       ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);             
@@ -595,7 +563,6 @@
           NSXMLDocument *document = nil;
           NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
           NSString *controllerId = nil;
-
           // Move children...
           FOR_IN(NSXMLElement*, child, children)
             {
@@ -607,22 +574,15 @@
               [self processChild: child
                          withDoc: doc
                      withAppNode: appNode
-                         sceneId: sceneId];
+                         sceneId: sceneId
+                firstResponderId: firstResponderId];
               
               // fix other custom objects
               document = [[NSXMLDocument alloc] initWithRootElement: doc]; 
               controllerId = [self controllerIdWithDocument: document];
               controllerId = (controllerId != nil) ? controllerId : APPLICATION;
               RELEASE(doc);
-
-              NSArray *customObjects = [document nodesForXPath: @"//objects/customObject" error: NULL];
-              FOR_IN(NSXMLElement*, coel, customObjects)
-                {
-                  [self processCustomElement: coel
-                                 forDocument: document];
-                }
-              END_FOR_IN(customObjects);
-
+              
               // Create document...
               [_scenesMap setObject: document
                              forKey: sceneId];
