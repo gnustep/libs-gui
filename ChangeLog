@@ -1,3 +1,32 @@
+2020-07-19 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add include files for NSSegue* and other
+        classes.
+	* Headers/AppKit/NSSeguePerforming.h: Protocol for segue performing
+        so that classes that conform can be queried to determine if the
+        segue should be performed in the first place.
+	* Headers/AppKit/NSStoryboard.h: Class which loads the storyboard and
+        loads the individual scenes and controllers.
+	* Headers/AppKit/NSStoryboardSegue.h: This class handles the transition
+        between controllers/scenes.
+	* Headers/AppKit/NSViewController.h: Modifications to handle segues.
+	* Headers/AppKit/NSWindowController.h: Modifications to handle segues.
+	* Headers/AppKit/NSWindow.h: New method to create window controller for
+        view controllers.
+	* MISSING: Remove the classes implemented here from the missing list.
+	* Source/Functions.m: Enhance NSApplicationMain() function to handle the
+        loading of a storyboard.
+	* Source/GNUmakefile: Add the new classes to the build and copy the headers.
+	* Source/GSStoryboardTransform.[hm]: Class to handle the transformation of
+        the storyboard file into "XIB" files for loading.  Also handles the intermediate
+        processes of instantiation of the destination controller.
+	* Source/NSStoryboard.m: Implementation of the above described class.
+	* Source/NSStoryboardSegue.m: Implementation of the above described class.
+	* Source/NSViewController.m: Implementation of private methods to handle transitions.
+	* Source/NSWindowController.m: Implementation of private methods to handle transitions.
+	* Source/NSWindow.m: Implementation of method to create window controller for
+        view controllers.
+
 2020-07-10 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSOutlineView.h: Formalize protocols for
