@@ -62,6 +62,7 @@
 @class NSView;
 @class NSWindowController;
 @class NSCachedImageRep;
+@class NSViewController;
 
 @class GSWindowDecorationView;
 
@@ -335,6 +336,14 @@ PACKAGE_SCOPE
 /*
  * Computing frame and content rectangles
  */
+
+/**
+ * Returns a window with the view of the specified viewController as it's
+ * content view.  The window is resizable, titled, closable, and miniaturizable.
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
++ (instancetype) windowWithContentViewController: (NSViewController *)viewController;
+#endif
 
 /**
  * Returns the rectangle which would be used for the content view of

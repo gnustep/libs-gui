@@ -27,8 +27,6 @@ MISSING HEADERS
 > NSSplitViewItem.h
 > NSStackView.h
 > NSStatusBarButton.h
-> NSStoryboard.h
-> NSStoryboardSegue.h
 > NSTabViewController.h
 > NSTableCellView.h
 > NSTableRowView.h

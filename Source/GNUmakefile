@@ -162,6 +162,8 @@ NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
+NSStoryboard.m \
+NSStoryboardSegue.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
@@ -321,6 +323,7 @@ GSToolTips.m \
 GSToolbarView.m \
 GSToolbarCustomizationPalette.m \
 GSStandardWindowDecorationView.m \
+GSStoryboardTransform.m \
 GSWindowDecorationView.m \
 GSPrinting.m \
 GSPrintOperation.m \
@@ -521,6 +524,9 @@ NSSplitView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
+NSStoryboard.h \
+NSStoryboardSegue.h \
+NSSeguePerforming.h \
 NSStringDrawing.h \
 NSStatusBar.h \
 NSStatusItem.h \
