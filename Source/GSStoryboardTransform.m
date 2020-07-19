@@ -728,8 +728,8 @@
                          atIndex: count - 1];
             
             // add action to parent ONLY if it is NOT a controller..
-            if (![segue_parent_parent_name isEqualToString: @"windowController"] &&
-                ![segue_parent_parent_name isEqualToString: @"viewController"])
+            if (![[self subclassesOfClass: [NSWindowController class]] containsObject: segue_parent_parent_name] &&
+                ![[self subclassesOfClass: [NSViewController class]] containsObject: segue_parent_parent_name])
               {              
                 // Create action...
                 NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
