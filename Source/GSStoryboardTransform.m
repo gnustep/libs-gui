@@ -560,7 +560,7 @@
       NSXMLElement *docNode = [docNodes objectAtIndex: 0];
       NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
       NSArray *firstResponderIdNodes = [docNode nodesForXPath: @"//objects/customObject[@sceneMemberID =\"firstResponder\"]/@id"
-                                                         error: NULL];
+                                                        error: NULL];
       NSString *firstResponderId = @"-1";
 
       if([firstResponderIdNodes count] > 0)
