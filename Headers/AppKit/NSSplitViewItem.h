@@ -62,7 +62,7 @@ typedef NSInteger NSTitlebarSeparatorStyle;
 
 @class NSViewController;
   
-@interface NSSplitViewItem : NSObject
+@interface NSSplitViewItem : NSObject <NSCoding, NSCopying>
 {
   CGFloat _automaticMaximumThickness;
   CGFloat _preferredThicknessFraction;
@@ -82,9 +82,13 @@ typedef NSInteger NSTitlebarSeparatorStyle;
 + (instancetype)splitViewItemWithViewController:(NSViewController *)viewController;
 
 - (CGFloat) automaticMaximumThickness;
+- (void) setAutomaticMaximumThickness: (CGFloat)f;
 - (CGFloat) preferredThicknessFraction;
+- (void) setPreferredThicknessFraction: (CGFloat)f;
 - (CGFloat) minimumThickness;
+- (void) setMinimumThickness: (CGFloat)f;
 - (CGFloat) maximumThickness;
+- (void) setMaximumThickness: (CGFloat)f;
 
 - (/* NSLayoutPriority */ CGFloat) holdingPriority;
 

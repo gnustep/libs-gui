@@ -25,19 +25,29 @@
 #import "AppKit/NSSplitViewItem.h"
 
 @implementation NSSplitViewItem
-+ (instancetype)contentListWithViewController: (NSViewController *)viewController
+- (instancetype) initWithViewController: (NSViewController *)viewController
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_viewController, viewController);
+    }
+  return self;
 }
 
-+ (instancetype)sidebarWithViewController: (NSViewController *)viewController
++ (instancetype) contentListWithViewController: (NSViewController *)viewController
 {
-  return nil;
+  return [[NSSplitViewItem alloc] initWithViewController: viewController];
 }
 
-+ (instancetype)splitViewItemWithViewController: (NSViewController *)viewController
++ (instancetype) sidebarWithViewController: (NSViewController *)viewController
 {
-  return nil;
+  return [[NSSplitViewItem alloc] initWithViewController: viewController];
+}
+
++ (instancetype) splitViewItemWithViewController: (NSViewController *)viewController
+{
+  return [[NSSplitViewItem alloc] initWithViewController: viewController];  
 }
 
 - (CGFloat) automaticMaximumThickness
@@ -133,5 +143,21 @@
 - (NSViewController *) viewController
 {
   return _viewController;
+}
+
+// NSCoding
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+// NSCopying
+- (id) copyWithZone: (NSZone *)z
+{
+  return nil;
 }
 @end
