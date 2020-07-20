@@ -38,12 +38,12 @@
 
 - (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc
 {
-  FOR_IN(NSSplitViewItem*, svi, _splitViewItems)
+  FOR_IN (NSSplitViewItem*, svi, _splitViewItems)
     if ([svi viewController] == vc)
       {
         return svi;
       }
-  END_FOR_IN(_splitViewItems);
+  END_FOR_IN (_splitViewItems);
   return nil;
 }
 

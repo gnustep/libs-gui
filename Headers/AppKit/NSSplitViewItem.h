@@ -26,6 +26,7 @@
 #define _NSSplitViewItem_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -33,10 +34,73 @@
 extern "C" {
 #endif
 
-@interface NSSplitViewItem : NSObject
+enum
+{
+ NSSplitViewItemBehaviorDefault,
+ NSSplibViewItemBehaviorSidebar,
+ NSSplitViewItemBehaviorContentList
+};
+typedef NSInteger NSSplitViewItemBehavior;
 
+enum
+{
+ NSSplitViewItemCollapseBehaviorDefault,
+ NSSplitViewItemCollapseBehaviorPreferResizingSiblingsWithFixedSplitView,
+ NSSplitViewItemCollapseBehaviorPreferResizingSplitViewWithFixedSiblings,
+ NSSplitViewItemCollapseBehaviorUseConstraints
+};
+typedef NSInteger NSSplitViewItemCollapseBehavior;
+
+enum
+{
+ NSTitlebarSeparatorStyleAutomatic,
+ NSTitlebarSeparatorStyleLine,
+ NSTitlebarSeparatorStyleNone,
+ NSTitlebarSeparatorStyleShadow
+};
+typedef NSInteger NSTitlebarSeparatorStyle;
+
+@class NSViewController;
+  
+@interface NSSplitViewItem : NSObject
+{
+  CGFloat _automaticMaximumThickness;
+  CGFloat _preferredThicknessFraction;
+  CGFloat _minimumThickness;
+  CGFloat _maximumThickness;
+  BOOL _sprintLoaded;
+  BOOL _allowsFullHeightLayout;
+  NSTitlebarSeparatorStyle _style;
+  NSViewController *_viewController;
+}
+  
++ (instancetype)contentListWithViewController:(NSViewController *)viewController;
++ (instancetype)sidebarWithViewController:(NSViewController *)viewController;
++ (instancetype)splitViewItemWithViewController:(NSViewController *)viewController;
+
+- (CGFloat) automaticMaximumThickness;
+- (CGFloat) preferredThicknessFraction;
+- (CGFloat) minimumThickness;
+- (CGFloat) maximumThickness;
+
+- (/* NSLayoutPriority */ CGFloat) holdingPriority;
+
+- (BOOL) canCollapse;
+- (NSSplitViewItemCollapseBehavior) collapseBehavior;
+- (BOOL) isSpringLoaded;
+- (void) setSpringLoaded: (BOOL)flag;
+
+- (BOOL) allowsFullHeightLayout;
+- (void) setAllowsFullHeightLayout: (BOOL)flag;
+
+- (NSTitlebarSeparatorStyle) titlebarSeparatorStyle;
+- (void) setTitlebarSeparatorStyle: (NSTitlebarSeparatorStyle)style;
+
+- (NSViewController *) viewController;
 @end
 
+APPKIT_EXPORT const CGFloat NSSplitViewItemUnspecifiedDimension;
+  
 #if	defined(__cplusplus)
 }
 #endif
