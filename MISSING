@@ -23,8 +23,6 @@ MISSING HEADERS
 > NSPageController.h
 > NSRuleEditor.h
 > NSSliderAccessory.h
-> NSSplitViewController.h
-> NSSplitViewItem.h
 > NSStackView.h
 > NSStatusBarButton.h
 > NSTabViewController.h

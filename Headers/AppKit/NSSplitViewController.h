@@ -25,7 +25,9 @@
 #ifndef _NSSplitViewController_h_GNUSTEP_GUI_INCLUDE
 #define _NSSplitViewController_h_GNUSTEP_GUI_INCLUDE
 
+#import <Foundation/NSGeometry.h>
 #import "AppKit/NSViewController.h"
+#import "AppKit/NSUserInterfaceValidation.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -33,8 +35,35 @@
 extern "C" {
 #endif
 
+@class NSSplitView, NSSplitViewItem, NSArray, NSMutableArray;
+  
 @interface NSSplitViewController : NSViewController
+{
+  NSSplitView *_splitView;
+  CGFloat _minimumThicknessForInlineSidebars;
+  NSMutableArray *_splitViewItems;
+}
 
+// return splitview...
+- (NSSplitView *) splitView;
+- (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc;
+- (CGFloat) minimumThicknessForInlineSidebars;
+  
+// manage splitview items...
+- (NSArray *) splitViewItems;
+- (void) addSplitViewItem: (NSSplitViewItem *)item;
+- (void) insertSplitViewItem: (NSSplitViewItem *)item atIndex: (NSInteger)index;
+- (void) removeSplitViewItem: (NSSplitViewItem *)item;
+
+// instance methods...
+- (NSRect)splitView:(NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex:(NSInteger)dividerIndex;
+- (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview;
+- (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex;
+- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
+- (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex;
+- (IBAction)toggleSidebar:(id)sender;
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item;
+- (void)viewDidLoad;  
 @end
 
 #if	defined(__cplusplus)
