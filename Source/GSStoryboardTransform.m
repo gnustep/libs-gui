@@ -771,11 +771,7 @@
        forControllerId: (NSString *)identifier
 {
   BOOL processed = [self isProcessedDocument: xml];
-  if (processed)
-    {
-      return; // don't processed the document again
-    }
-  else // Get the controller... there is only one per scene.
+  if (!processed)
     {
       NSArray *array = [xml nodesForXPath: @"//objects[1]"
                                     error: NULL];
