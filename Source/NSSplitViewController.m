@@ -33,7 +33,12 @@
 // return splitview...
 - (NSSplitView *) splitView
 {
-  return _splitView;
+  return [self view];
+}
+
+- (void) setSplitView: (NSSplitView *)splitView
+{
+  [self setView: splitView];
 }
 
 - (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc

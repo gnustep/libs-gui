@@ -26,8 +26,8 @@
 #define _NSSplitViewController_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSGeometry.h>
-#import "AppKit/NSViewController.h"
-#import "AppKit/NSUserInterfaceValidation.h"
+#import <AppKit/NSViewController.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -39,13 +39,13 @@ extern "C" {
   
 @interface NSSplitViewController : NSViewController <NSCoding, NSCopying>
 {
-  NSSplitView *_splitView;
   CGFloat _minimumThicknessForInlineSidebars;
   NSMutableArray *_splitViewItems;
 }
 
 // return splitview...
 - (NSSplitView *) splitView;
+- (void) setSplitView: (NSSplitView *)splitView;
 - (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc;
 - (CGFloat) minimumThicknessForInlineSidebars;
   
