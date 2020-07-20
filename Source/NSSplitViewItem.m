@@ -25,6 +25,92 @@
 #import "AppKit/NSSplitViewItem.h"
 
 @implementation NSSplitViewItem
++ (instancetype)contentListWithViewController: (NSViewController *)viewController
+{
+}
 
++ (instancetype)sidebarWithViewController: (NSViewController *)viewController
+{
+}
+
++ (instancetype)splitViewItemWithViewController: (NSViewController *)viewController
+{
+}
+
+- (CGFloat) automaticMaximumThickness
+{
+}
+
+- (void) setAutomaticMaximumThickness: (CGFloat)f
+{
+}
+
+- (CGFloat) preferredThicknessFraction
+{
+}
+
+- (void) setPreferredThicknessFraction: (CGFloat)f
+{
+}
+
+- (CGFloat) minimumThickness
+{
+}
+
+- (void) setMinimumThickness: (CGFloat)f
+{
+}
+
+- (CGFloat) maximumThickness
+{
+}
+
+- (void) setMaximumThickness: (CGFloat)f
+{
+}
+
+- (/* NSLayoutPriority */ CGFloat) holdingPriority
+{
+}
+
+- (void) setHoldingPriority: (/*NSLayoutPriority*/ CGFloat)hp
+{
+}
+
+- (BOOL) canCollapse
+{
+}
+
+- (NSSplitViewItemCollapseBehavior) collapseBehavior
+{
+}
+
+- (BOOL) isSpringLoaded
+{
+}
+
+- (void) setSpringLoaded: (BOOL)flag
+{
+}
+
+- (BOOL) allowsFullHeightLayout
+{
+}
+
+- (void) setAllowsFullHeightLayout: (BOOL)flag
+{
+}
+
+- (NSTitlebarSeparatorStyle) titlebarSeparatorStyle
+{
+}
+
+- (void) setTitlebarSeparatorStyle: (NSTitlebarSeparatorStyle)style
+{
+}
+
+- (NSViewController *) viewController
+{
+  return _viewController;
+}
 @end
-
