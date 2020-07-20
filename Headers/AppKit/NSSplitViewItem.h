@@ -68,10 +68,13 @@ typedef NSInteger NSTitlebarSeparatorStyle;
   CGFloat _preferredThicknessFraction;
   CGFloat _minimumThickness;
   CGFloat _maximumThickness;
-  BOOL _sprintLoaded;
+  BOOL _springLoaded;
   BOOL _allowsFullHeightLayout;
-  NSTitlebarSeparatorStyle _style;
+  BOOL _canCollapse;
+  CGFloat /*NSLayoutPriority*/ _holdingPriority;
+  NSSplitViewItemCollapseBehavior _collapseBehavior;
   NSViewController *_viewController;
+  NSTitlebarSeparatorStyle _titlebarSeparatorStyle;
 }
   
 + (instancetype)contentListWithViewController:(NSViewController *)viewController;

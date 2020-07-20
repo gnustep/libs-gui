@@ -27,86 +27,107 @@
 @implementation NSSplitViewItem
 + (instancetype)contentListWithViewController: (NSViewController *)viewController
 {
+  return nil;
 }
 
 + (instancetype)sidebarWithViewController: (NSViewController *)viewController
 {
+  return nil;
 }
 
 + (instancetype)splitViewItemWithViewController: (NSViewController *)viewController
 {
+  return nil;
 }
 
 - (CGFloat) automaticMaximumThickness
 {
+  return _automaticMaximumThickness;
 }
 
 - (void) setAutomaticMaximumThickness: (CGFloat)f
 {
+  _automaticMaximumThickness = f;
 }
 
 - (CGFloat) preferredThicknessFraction
 {
+  return _preferredThicknessFraction;
 }
 
 - (void) setPreferredThicknessFraction: (CGFloat)f
 {
+  _preferredThicknessFraction = f;
 }
 
 - (CGFloat) minimumThickness
 {
+  return _minimumThickness;
 }
 
 - (void) setMinimumThickness: (CGFloat)f
 {
+  _minimumThickness = f;
 }
 
 - (CGFloat) maximumThickness
 {
+  return _maximumThickness;
 }
 
 - (void) setMaximumThickness: (CGFloat)f
 {
+  _maximumThickness = f;
 }
 
 - (/* NSLayoutPriority */ CGFloat) holdingPriority
 {
+  return _holdingPriority;
 }
 
 - (void) setHoldingPriority: (/*NSLayoutPriority*/ CGFloat)hp
 {
+  _holdingPriority = hp;
 }
 
 - (BOOL) canCollapse
 {
+  return _canCollapse;
 }
 
 - (NSSplitViewItemCollapseBehavior) collapseBehavior
 {
+  return _collapseBehavior;
 }
 
 - (BOOL) isSpringLoaded
 {
+  return _springLoaded;
 }
 
 - (void) setSpringLoaded: (BOOL)flag
 {
+  _springLoaded = flag;
 }
 
 - (BOOL) allowsFullHeightLayout
 {
+  return _allowsFullHeightLayout;
 }
 
 - (void) setAllowsFullHeightLayout: (BOOL)flag
 {
+  _allowsFullHeightLayout = flag;
 }
 
 - (NSTitlebarSeparatorStyle) titlebarSeparatorStyle
 {
+  return _titlebarSeparatorStyle;
 }
 
 - (void) setTitlebarSeparatorStyle: (NSTitlebarSeparatorStyle)style
 {
+  _titlebarSeparatorStyle = style;
 }
 
 - (NSViewController *) viewController
