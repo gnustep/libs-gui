@@ -239,6 +239,8 @@ NSSpeechSynthesizer.m \
 NSStepperTouchBarItem.m \
 NSSpellChecker.m \
 NSSplitView.m \
+NSSplitViewController.m \
+NSSplitViewItem.m \
 NSStepper.m \
 NSStepperCell.m \
 NSStringDrawing.m \
@@ -521,6 +523,8 @@ NSSpeechSynthesizer.h \
 NSSpellChecker.h \
 NSSpellServer.h \
 NSSplitView.h \
+NSSplitViewController.h \
+NSSplitViewItem.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
