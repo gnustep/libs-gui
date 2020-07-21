@@ -22,6 +22,7 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArchiver.h>
 #import "AppKit/NSSplitViewItem.h"
 
 @implementation NSSplitViewItem
@@ -148,16 +149,24 @@
 // NSCoding
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
+  self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSSplitViewItemViewController"])
+        {
+          _viewController = [coder decodeObjectForKey: @"NSSplitViewItemViewController"];
+        }
+    }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _viewController
+                   forKey: @"NSSplitViewItemViewController"];
+    }
 }
 
-// NSCopying
-- (id) copyWithZone: (NSZone *)z
-{
-  return nil;
-}
 @end
