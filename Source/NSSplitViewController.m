@@ -23,17 +23,19 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
 
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSSplitViewController.h"
 #import "AppKit/NSSplitViewItem.h"
+
 #import "GSFastEnumeration.h"
 
 @implementation NSSplitViewController
 // return splitview...
 - (NSSplitView *) splitView
 {
-  return [self view];
+  return (NSSplitView *)[self view];
 }
 
 - (void) setSplitView: (NSSplitView *)splitView
@@ -81,48 +83,56 @@
 // instance methods...
 - (NSRect)splitView:(NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex:(NSInteger)dividerIndex
 {
-  
+  return [splitView frame];
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview
 {
+  return YES;
 }
 
-- (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex
+- (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect
+   ofDividerAtIndex:(NSInteger)dividerIndex
 {
+  return proposedEffectiveRect;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex
 {
+  return YES;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex
 {
+  return YES;
 }
 
 - (IBAction)toggleSidebar:(id)sender
 {
-}
-
-- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
-{
-}
-
-- (void)viewDidLoad
-{
+  NSLog(@"Toggle");
 }
 
 // NSCoding
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
+  self = [super initWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSSplitView"])
+        {
+          NSSplitView *sv = [coder decodeObjectForKey: @"NSSplitView"];
+          [self setSplitView: sv];
+        }
+      if ([coder containsValueForKey: @"NSSplitViewItems"])
+        {
+          NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
+          [_splitViewItems addObjectsFromArray: items];
+        }
+    }
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
-{
-}
-
-// NSCopying
-- (id) copyWithZone: (NSZone *)z
 {
 }
 @end

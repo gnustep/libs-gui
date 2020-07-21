@@ -62,8 +62,6 @@ extern "C" {
 - (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
 - (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex;
 - (IBAction)toggleSidebar:(id)sender;
-- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item;
-- (void)viewDidLoad;  
 @end
 
 #if	defined(__cplusplus)
