@@ -27,8 +27,10 @@
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
+#import "AppKit/NSSplitViewController.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSView.h"
 
 @implementation NSStoryboardSegue
 
@@ -113,6 +115,13 @@
           [w setContentView: v];
           [w setTitle: [_destinationController title]];
           [_sourceController showWindow: self];
+        }
+      else if ([_relationship isEqualToString: @"splitItems"])
+        {
+          NSView *v = [_destinationController view];
+          NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
+          NSLog(@"sourceController = %@", _sourceController);
+          [[svc splitView] addSubview: v];
         }
     }
   else if ([_kind isEqualToString: @"modal"])
