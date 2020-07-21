@@ -62,7 +62,7 @@ typedef NSInteger NSTitlebarSeparatorStyle;
 
 @class NSViewController;
   
-@interface NSSplitViewItem : NSObject <NSCoding, NSCopying>
+@interface NSSplitViewItem : NSObject <NSCoding>
 {
   CGFloat _automaticMaximumThickness;
   CGFloat _preferredThicknessFraction;

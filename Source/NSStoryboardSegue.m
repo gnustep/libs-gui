@@ -106,11 +106,14 @@
   // Perform segue based on it's kind...
   if ([_kind isEqualToString: @"relationship"])
     {
-      NSWindow *w = [_sourceController window];
-      NSView *v = [_destinationController view];
-      [w setContentView: v];
-      [w setTitle: [_destinationController title]];
-      [_sourceController showWindow: self];
+      if ([_relationship isEqualToString: @"window.shadowedContentViewController"])
+        {
+          NSWindow *w = [_sourceController window];
+          NSView *v = [_destinationController view];
+          [w setContentView: v];
+          [w setTitle: [_destinationController title]];
+          [_sourceController showWindow: self];
+        }
     }
   else if ([_kind isEqualToString: @"modal"])
     {
