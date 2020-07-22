@@ -66,6 +66,7 @@ extern "C" {
   id            _sender;
   NSString     *_identifier;
   NSString     *_kind;
+  id            _popoverAnchorView;
   NSStoryboardSegue *_storyboardSegue;
   NSStoryboard *_storyboard;
 }
@@ -87,6 +88,9 @@ extern "C" {
 
 - (NSString *) kind;
 - (void) setKind: (NSString *)kind;
+
+- (void) setPopoverAnchorView: (id)view;
+- (id) popoverAnchorView;
 
 - (NSStoryboard *) storyboard;
 - (void) setStoryboard: (NSStoryboard *)storyboard;

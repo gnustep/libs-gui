@@ -23,14 +23,17 @@
 */
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSGeometry.h>
 
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSSplitViewController.h"
+#import "AppKit/NSSplitView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSPopover.h"
 
 @implementation NSStoryboardSegue
 
@@ -120,7 +123,7 @@
         {
           NSView *v = [_destinationController view];
           NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
-          NSLog(@"sourceController = %@", _sourceController);
+          [[svc splitView] adjustSubviews];
           [[svc splitView] addSubview: v];
         }
     }
@@ -154,6 +157,56 @@
           [w orderFrontRegardless];
           RETAIN(w);
         }
+    }
+  else if ([_kind isEqualToString: @"popover"])
+    {
+      NSPopover *po = [[NSPopover alloc] init];
+      NSRect rect = [_popoverAnchorView frame];
+      NSRectEdge edge = NSMinXEdge;
+      NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
+      
+      // Convert edge...
+      if ([_preferredEdge isEqualToString: @"maxY"])
+        {
+          edge = NSMaxYEdge;
+        }
+      else if ([_preferredEdge isEqualToString: @"minY"])
+        {
+          edge = NSMinYEdge;
+        }
+      else if ([_preferredEdge isEqualToString: @"maxX"])
+        {
+          edge = NSMaxXEdge;
+        }
+      else if ([_preferredEdge isEqualToString: @"minX"])
+        {
+          edge = NSMinXEdge;
+        }
+
+      // Convert behavior
+      if ([_popoverBehavior isEqualToString: @"a"])
+        {
+          behavior = NSPopoverBehaviorApplicationDefined; 
+        }
+      else if ([_popoverBehavior isEqualToString: @"t"])
+        {
+          behavior = NSPopoverBehaviorTransient;
+        }
+      else if ([_popoverBehavior isEqualToString: @"s"])
+        {
+          behavior = NSPopoverBehaviorSemitransient;
+        }
+      
+      [po setContentViewController: _destinationController];
+      [po showRelativeToRect: rect
+                      ofView: _popoverAnchorView
+               preferredEdge: edge];      
+    }
+  else if ([_kind isEqualToString: @"sheet"])
+    {
+    }
+  else if ([_kind isEqualToString: @"custom"])
+    {
     }
 
   if (_handler != nil)

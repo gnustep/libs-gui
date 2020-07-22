@@ -44,6 +44,9 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardSeguePerformHandler, void);
   NSStoryboardSegueIdentifier _identifier;
   NSString *_kind;
   NSString *_relationship;
+  id _popoverAnchorView;
+  NSString *_popoverBehavior;
+  NSString *_preferredEdge;
   GSStoryboardSeguePerformHandler _handler;
 }
 
