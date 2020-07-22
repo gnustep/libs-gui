@@ -104,6 +104,7 @@ typedef NSInteger NSTitlebarSeparatorStyle;
 - (void) setTitlebarSeparatorStyle: (NSTitlebarSeparatorStyle)style;
 
 - (NSViewController *) viewController;
+- (void) setViewController: (NSViewController *)vc;
 @end
 
 APPKIT_EXPORT const CGFloat NSSplitViewItemUnspecifiedDimension;

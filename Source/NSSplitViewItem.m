@@ -146,6 +146,11 @@
   return _viewController;
 }
 
+- (void) setViewController: (NSViewController *)vc
+{
+  _viewController = vc;
+}
+
 // NSCoding
 - (instancetype) initWithCoder: (NSCoder *)coder
 {

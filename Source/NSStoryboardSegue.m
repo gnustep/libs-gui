@@ -29,6 +29,7 @@
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSSplitViewController.h"
+#import "AppKit/NSSplitViewItem.h"
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
@@ -125,6 +126,9 @@
           NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
           [[svc splitView] adjustSubviews];
           [[svc splitView] addSubview: v];
+          NSUInteger idx = [[[svc splitView] subviews] count] - 1;
+          NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];
+          [item setViewController: _destinationController];
         }
     }
   else if ([_kind isEqualToString: @"modal"])
