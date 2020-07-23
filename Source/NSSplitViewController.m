@@ -68,6 +68,7 @@
 - (void) setSplitView: (NSSplitView *)splitView
 {
   [self setView: splitView];
+  [splitView setDelegate: self];
 }
 
 - (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc

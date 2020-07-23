@@ -50,7 +50,6 @@ typedef NSUInteger NSTabViewControllerTabStyle;
   NSTabViewControllerTabStyle _tabStyle;
   NSViewControllerTransitionOptions _transitionOptions;
   BOOL _canPropagateSelectedChildViewControllerTitle;
-  NSMutableArray *_tabViewItems;
 }
   
 - (NSTabViewControllerTabStyle) tabStyle;

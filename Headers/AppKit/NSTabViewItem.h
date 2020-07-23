@@ -41,6 +41,7 @@ typedef enum {
 @class NSColor;
 @class NSTabView;
 @class NSView;
+@class NSViewController;
 
 @interface NSTabViewItem : NSObject <NSCoding>
 {
@@ -53,7 +54,9 @@ typedef enum {
   NSTabView *_tabview;
   NSRect _rect; // cached
   NSString *_toolTip;
+  NSViewController *_viewController;
 }
+
 - (id) initWithIdentifier:(id)identifier;
 
 - (void)setIdentifier:(id)identifier;
@@ -77,6 +80,13 @@ typedef enum {
 
 - (void)drawLabel:(BOOL)shouldTruncateLabel
            inRect:(NSRect)tabRect;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (NSViewController *) viewController;
+- (void) setViewController: (NSViewController *)vc;
+
++ (instancetype) tabViewItemWithViewController: (NSViewController *)vc;
+#endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (NSString *)toolTip;

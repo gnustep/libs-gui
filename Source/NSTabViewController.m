@@ -22,9 +22,166 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
+
 #import "AppKit/NSTabViewController.h"
+#import "AppKit/NSTabViewItem.h"
+#import "AppKit/NSTabView.h"
+
+#import "GSFastEnumeration.h"
 
 @implementation NSTabViewController
+- (NSTabViewControllerTabStyle) tabStyle
+{
+  return _tabStyle;
+}
 
+- (void) setTabStyle: (NSTabViewControllerTabStyle)ts
+{
+  _tabStyle = ts;
+}
+
+- (NSTabView *) tabView
+{
+  return (NSTabView *)[self view];
+}
+
+- (void) setTabView: (NSTabView *)tv
+{
+  [self setView: tv];
+  [tv setDelegate: self];
+}
+
+- (NSViewControllerTransitionOptions) transitionOptions
+{
+  return _transitionOptions;
+}
+
+- (void) setTransitionOptions: (NSViewControllerTransitionOptions)options
+{
+  _transitionOptions = options;
+}
+
+- (BOOL) canPropagateSelectedChildViewControllerTitle
+{
+  return _canPropagateSelectedChildViewControllerTitle;
+}
+
+- (void) setCanPropagateSelectedChildViewControllerTitle: (BOOL)flag
+{
+  _canPropagateSelectedChildViewControllerTitle = flag;
+}
+
+// Managing tabViewItems...
+- (NSArray *) tabViewItems
+{
+  return [[self tabView] tabViewItems];
+}
+
+- (void) setTabViewItems: (NSArray *)items
+{
+  FOR_IN(NSTabViewItem*, item, items)
+    [[self tabView] addTabViewItem: item];
+  END_FOR_IN(items);
+}
+
+- (NSTabViewItem *) tabViewItemForViewController: (NSViewController *)controller
+{
+  NSArray *tabViewItems = [[self tabView] tabViewItems];
+  FOR_IN(NSTabViewItem*, tvi, tabViewItems)
+    if ([tvi viewController] == controller)
+      {
+        return tvi;
+      }
+  END_FOR_IN(tabViewItems);
+  return nil;
+}
+
+- (void) addTabViewItem: (NSTabViewItem *)item
+{
+  [[self tabView] addTabViewItem: item];
+}
+
+- (void) insertTabViewItem: (NSTabViewItem *)item 
+                   atIndex: (NSInteger)index
+{
+  [[self tabView] insertTabViewItem: item atIndex: index];
+}
+
+- (void) removeTabViewItem: (NSTabViewItem *)item
+{
+  [[self tabView] removeTabViewItem: item];
+}
+
+- (NSInteger) selectedTabViewItemIndex
+{
+  return [[self tabView] indexOfTabViewItem: [[self tabView] selectedTabViewItem]];
+}
+
+- (void) setSelectedTabViewItemIndex: (NSInteger)idx
+{
+  [[self tabView] selectTabViewItemAtIndex: idx];
+}
+
+// Responding to tabview actions...
+- (BOOL)tabView:(NSTabView *)tabView 
+  shouldSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+  return YES;
+}
+
+- (void)tabView:(NSTabView *)tabView
+  willSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+  // not implemented
+}
+
+- (void)tabView:(NSTabView *)tabView 
+  didSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+  // not implemented
+}
+
+// Responding to toolbar actions...
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar 
+     itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+     willBeInsertedIntoToolbar:(BOOL)flag
+{
+  return nil; 
+}
+
+- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
+{
+  return [NSArray array];
+}
+
+- (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar
+{
+  return [NSArray array];
+}
+
+// NSCoding
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSTabView"])
+        {
+          NSTabView *tv = [coder decodeObjectForKey: @"NSTabView"];
+          [self setTabView: tv];
+        }
+      if ([coder containsValueForKey: @"NSTabViewItems"])
+        {
+          NSArray *items = [coder decodeObjectForKey: @"NSTabViewItems"];
+          [self setTabViewItems: items];
+        }
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
 @end
 
