@@ -47,12 +47,14 @@
 #define XMD_H
 #endif
 /* And another so that boolean is not redefined in jmorecfg.h. */
-#ifndef HAVE_BOOLEAN
-#define HAVE_BOOLEAN
-/* This MUST match the jpeg definition of boolean */
-typedef int jpeg_boolean;
-#define boolean jpeg_boolean
-#endif
+// TESTPLANT-MAL-07232020: Removed since it breaks JPEG support.  Not sure
+// why it was put in unless it had something with legacy JPEG libraries...
+//#ifndef HAVE_BOOLEAN
+//#define HAVE_BOOLEAN
+///* This MUST match the jpeg definition of boolean */
+//typedef int jpeg_boolean;
+//#define boolean jpeg_boolean
+//#endif
 #endif // __MINGW32__
 
 #if defined(__MINGW64__)
@@ -331,10 +333,14 @@ static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)
 static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 {
   gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
-  free (dest->buffer);
-  free (dest->data);
-  free (dest);
-  cinfo->dest = NULL;
+  // TESTPLANT-MAL-07232020: Crash when 'dest' is NULL...
+  if (NULL != dest)
+    {
+      free (dest->buffer);
+      free (dest->data);
+      free (dest);
+      cinfo->dest = NULL;
+    }
 }
 
 
