@@ -28,8 +28,35 @@
 #import "AppKit/NSSplitView.h"
 #import "AppKit/NSSplitViewController.h"
 #import "AppKit/NSSplitViewItem.h"
+#import "AppKit/NSView.h"
 
 #import "GSFastEnumeration.h"
+
+@interface NSView (__NSSplitViewController_Notifications__)
+- (void) _viewWillMoveToWindow: (NSWindow *)w;
+- (void) _viewWillMoveToSuperview: (NSView *)v;
+- (void) _viewDidMoveToWindow;
+@end
+
+@interface NSView (__NSSplitViewController_Private__)
+- (void) insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@end
+
+@implementation NSView (__NSSplitViewController_Private__)
+- (void) insertSubview: (NSView *)sv atIndex: (NSUInteger)idx
+{
+  [sv _viewWillMoveToWindow: _window];
+  [sv _viewWillMoveToSuperview: self];
+  [sv setNextResponder: self];
+  [_sub_views insertObject: sv atIndex: idx];
+  _rFlags.has_subviews = 1;
+  [sv resetCursorRects];
+  [sv setNeedsDisplay: YES];
+  [sv _viewDidMoveToWindow];
+  [sv viewDidMoveToSuperview];
+  [self didAddSubview: sv];
+}
+@end
 
 @implementation NSSplitViewController
 // return splitview...
@@ -67,16 +94,45 @@
 
 - (void) addSplitViewItem: (NSSplitViewItem *)item
 {
+  NSViewController *vc = [item viewController];
   [_splitViewItems addObject: item];
+  if(vc != nil)
+    {
+      NSView *v = [vc view];
+      if (v != nil)
+        {
+          [[self splitView] addSubview: v];
+        }
+    }
 }
 
 - (void) insertSplitViewItem: (NSSplitViewItem *)item atIndex: (NSInteger)index
 {
-  [_splitViewItems insertObject: item atIndex: index];
+  NSSplitView *sv = [self splitView];
+  NSViewController *vc = [item viewController];
+
+  if (vc != nil)
+    {
+      NSView *v = [vc view];
+      if (v != nil)
+        {
+          [sv insertSubview: v atIndex: index];
+        }
+    }       
+  [_splitViewItems insertObject: item atIndex: index];     
 }
 
 - (void) removeSplitViewItem: (NSSplitViewItem *)item
 {
+  NSViewController *vc = [item viewController];
+  if (vc != nil)
+    {
+      NSView *v = [vc view];
+      if (v != nil)
+        {
+          [[self splitView] removeSubview: v];  
+        }
+    }
   [_splitViewItems removeObject: item];
 }
 
