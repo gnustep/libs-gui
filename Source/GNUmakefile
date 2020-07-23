@@ -247,6 +247,7 @@ NSStringDrawing.m \
 NSStatusBar.m \
 NSStatusItem.m \
 NSTabView.m \
+NSTabViewController.m \
 NSTabViewItem.m \
 NSTableColumn.m \
 NSTableHeaderView.m \
@@ -536,6 +537,7 @@ NSStatusBar.h \
 NSStatusItem.h \
 NSSwitch.h \
 NSTabView.h \
+NSTabViewController.h \
 NSTabViewItem.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \

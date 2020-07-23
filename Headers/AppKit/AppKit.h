@@ -234,6 +234,7 @@
 #import <AppKit/NSTableHeaderView.h>
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTabView.h>
+#import <AppKit/NSTabViewController.h>
 #import <AppKit/NSTabViewItem.h>
 #import <AppKit/NSTextAlternatives.h>
 #import <AppKit/NSTextAttachment.h>

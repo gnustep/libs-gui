@@ -25,7 +25,6 @@ MISSING HEADERS
 > NSSliderAccessory.h
 > NSStackView.h
 > NSStatusBarButton.h
-> NSTabViewController.h
 > NSTableCellView.h
 > NSTableRowView.h
 > NSTableViewRowAction.h
