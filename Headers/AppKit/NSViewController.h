@@ -34,6 +34,22 @@ Boston, MA 02110-1301, USA.
 
 @class NSArray, NSBundle, NSPointerArray, NSView, NSMapTable, NSStoryboard;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+enum
+  {
+    NSViewControllerTransitionNone                  =    0x0,
+    NSViewControllerTransitionCrossfade             =    0x1,   
+    NSViewControllerTransitionSlideUp               =   0x10,   
+    NSViewControllerTransitionSlideDown             =   0x20,   
+    NSViewControllerTransitionSlideLeft             =   0x40,   
+    NSViewControllerTransitionSlideRight            =   0x80,   
+    NSViewControllerTransitionSlideForward          =  0x140,   
+    NSViewControllerTransitionSlideBackward         =  0x180,   
+    NSViewControllerTransitionAllowUserInteraction  = 0x1000,   
+  };
+typedef NSUInteger NSViewControllerTransitionOptions;
+#endif
+
 @interface NSViewController : NSResponder <NSSeguePerforming>
 {
 @private
