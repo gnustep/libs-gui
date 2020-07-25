@@ -38,17 +38,17 @@
 
 + (instancetype) contentListWithViewController: (NSViewController *)viewController
 {
-  return [[NSSplitViewItem alloc] initWithViewController: viewController];
+  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
 }
 
 + (instancetype) sidebarWithViewController: (NSViewController *)viewController
 {
-  return [[NSSplitViewItem alloc] initWithViewController: viewController];
+  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
 }
 
 + (instancetype) splitViewItemWithViewController: (NSViewController *)viewController
 {
-  return [[NSSplitViewItem alloc] initWithViewController: viewController];  
+  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);  
 }
 
 - (CGFloat) automaticMaximumThickness
