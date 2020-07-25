@@ -2,7 +2,7 @@
    Copyright (C) 2020 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: 07-23-2020
+   Date: 23-07-2020
 
    This file is part of the GNUstep Library.
    

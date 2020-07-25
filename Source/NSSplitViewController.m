@@ -29,34 +29,9 @@
 #import "AppKit/NSSplitViewController.h"
 #import "AppKit/NSSplitViewItem.h"
 #import "AppKit/NSView.h"
+#import "NSViewPrivate.h"
 
 #import "GSFastEnumeration.h"
-
-@interface NSView (__NSSplitViewController_Notifications__)
-- (void) _viewWillMoveToWindow: (NSWindow *)w;
-- (void) _viewWillMoveToSuperview: (NSView *)v;
-- (void) _viewDidMoveToWindow;
-@end
-
-@interface NSView (__NSSplitViewController_Private__)
-- (void) insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
-@end
-
-@implementation NSView (__NSSplitViewController_Private__)
-- (void) insertSubview: (NSView *)sv atIndex: (NSUInteger)idx
-{
-  [sv _viewWillMoveToWindow: _window];
-  [sv _viewWillMoveToSuperview: self];
-  [sv setNextResponder: self];
-  [_sub_views insertObject: sv atIndex: idx];
-  _rFlags.has_subviews = 1;
-  [sv resetCursorRects];
-  [sv setNeedsDisplay: YES];
-  [sv _viewDidMoveToWindow];
-  [sv viewDidMoveToSuperview];
-  [self didAddSubview: sv];
-}
-@end
 
 @implementation NSSplitViewController
 // return splitview...
@@ -97,7 +72,7 @@
 {
   NSViewController *vc = [item viewController];
   [_splitViewItems addObject: item];
-  if(vc != nil)
+  if (vc != nil)
     {
       NSView *v = [vc view];
       if (v != nil)
@@ -117,7 +92,7 @@
       NSView *v = [vc view];
       if (v != nil)
         {
-          [sv insertSubview: v atIndex: index];
+          [sv _insertSubview: v atIndex: index];
         }
     }       
   [_splitViewItems insertObject: item atIndex: index];     

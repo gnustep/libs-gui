@@ -88,6 +88,8 @@
 {
   NSTabViewItem *item = [[NSTabViewItem alloc] init];
   [item setViewController: vc];
+  [item setLabel: [vc title]];
+  AUTORELEASE(item);
   return item;
 }
 
