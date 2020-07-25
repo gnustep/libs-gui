@@ -70,16 +70,7 @@
 
 - (void) addSplitViewItem: (NSSplitViewItem *)item
 {
-  NSViewController *vc = [item viewController];
-  [_splitViewItems addObject: item];
-  if (vc != nil)
-    {
-      NSView *v = [vc view];
-      if (v != nil)
-        {
-          [[self splitView] addSubview: v];
-        }
-    }
+  [self insertSplitViewItem: item atIndex: [_splitViewItems count]];
 }
 
 - (void) insertSplitViewItem: (NSSplitViewItem *)item atIndex: (NSInteger)index
