@@ -170,7 +170,8 @@
         }
       if ([coder containsValueForKey: @"NSMinimumThicknessForInlineSidebars"])
         {
-          _minimumThicknessForInlineSidebars = [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+          _minimumThicknessForInlineSidebars =
+            [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
         }
     }
   else
@@ -193,13 +194,15 @@
       [self setSplitView: sv];
       NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
       [_splitViewItems addObjectsFromArray: items];
-      _minimumThicknessForInlineSidebars = [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+      _minimumThicknessForInlineSidebars =
+        [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
     }
   else
     {
       [coder encodeObject: [self splitView]];
       [coder encodeObject: [self splitViewItems]];
-      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_minimumThicknessForInlineSidebars];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_minimumThicknessForInlineSidebars];
     }
 }
 @end
