@@ -58,11 +58,13 @@ extern "C" {
 - (void) removeSplitViewItem: (NSSplitViewItem *)item;
 
 // instance methods...
-- (NSRect)splitView:(NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex:(NSInteger)dividerIndex;
-- (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview;
-- (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect ofDividerAtIndex:(NSInteger)dividerIndex;
-- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
-- (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex;
+- (NSRect) splitView: (NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex: (NSInteger)dividerIndex;
+- (BOOL) splitView: (NSSplitView *)splitView canCollapseSubview: (NSView *)subview;
+- (NSRect) splitView: (NSSplitView *)splitView effectiveRect: (NSRect)proposedEffectiveRect
+           forDrawnRect: (NSRect)drawnRect ofDividerAtIndex: (NSInteger)dividerIndex;
+- (BOOL) splitView: (NSSplitView *)splitView shouldCollapseSubview: (NSView *)subview
+         forDoubleClickOnDividerAtIndex: (NSInteger)dividerIndex;
+- (BOOL) splitView: (NSSplitView *)splitView shouldHideDividerAtIndex: (NSInteger)dividerIndex;
 - (IBAction)toggleSidebar:(id)sender;
 @end
 

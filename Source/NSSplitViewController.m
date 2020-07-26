@@ -121,28 +121,28 @@
 }
 
 // instance methods...
-- (NSRect)splitView:(NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex:(NSInteger)dividerIndex
+- (NSRect) splitView: (NSSplitView *)splitView additionalEffectiveRectOfDividerAtIndex: (NSInteger)dividerIndex
 {
   return [splitView frame];
 }
 
-- (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview
+- (BOOL) splitView: (NSSplitView *)splitView canCollapseSubview: (NSView *)subview
 {
   return YES;
 }
 
-- (NSRect)splitView:(NSSplitView *)splitView effectiveRect:(NSRect)proposedEffectiveRect forDrawnRect:(NSRect)drawnRect
-   ofDividerAtIndex:(NSInteger)dividerIndex
+- (NSRect) splitView: (NSSplitView *)splitView effectiveRect: (NSRect)proposedEffectiveRect forDrawnRect: (NSRect)drawnRect
+    ofDividerAtIndex: (NSInteger)dividerIndex
 {
   return proposedEffectiveRect;
 }
 
-- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex
+- (BOOL) splitView:(NSSplitView *)splitView shouldCollapseSubview: (NSView *)subview forDoubleClickOnDividerAtIndex: (NSInteger)dividerIndex
 {
   return YES;
 }
 
-- (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex
+- (BOOL) splitView: (NSSplitView *)splitView shouldHideDividerAtIndex: (NSInteger)dividerIndex
 {
   return YES;
 }
