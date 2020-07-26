@@ -61,11 +61,22 @@
 {
   return _minimumThicknessForInlineSidebars;
 }
+
+- (void) setMinimumThicknessForInlineSidebars: (CGFloat)value
+{
+  _minimumThicknessForInlineSidebars = value;
+}
   
 // manage splitview items...
 - (NSArray *) splitViewItems
 {
   return _splitViewItems;
+}
+
+- (void) setSplitViewItems: (NSArray *)items
+{
+  NSMutableArray *mutableItems = [items mutableCopy];
+  ASSIGN(_splitViewItems, mutableItems);
 }
 
 - (void) addSplitViewItem: (NSSplitViewItem *)item
@@ -101,6 +112,12 @@
         }
     }
   [_splitViewItems removeObject: item];
+}
+
+- (void) dealloc
+{
+  RELEASE(_splitViewItems);
+  [super dealloc];
 }
 
 // instance methods...
@@ -151,12 +168,39 @@
           NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
           [_splitViewItems addObjectsFromArray: items];
         }
+      if ([coder containsValueForKey: @"NSMinimumThicknessForInlineSidebars"])
+        {
+          _minimumThicknessForInlineSidebars = [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+        }
+    }
+  else
+    {
+      NSSplitView *sv = [coder decodeObject];
+      [self setSplitView: sv];
+      NSArray *items = [coder decodeObject];
+      [self setSplitViewItems: items];
+      [coder decodeValueOfObjCType: @encode(CGFloat) at: &_minimumThicknessForInlineSidebars];
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      NSSplitView *sv = [coder decodeObjectForKey: @"NSSplitView"];
+      [self setSplitView: sv];
+      NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
+      [_splitViewItems addObjectsFromArray: items];
+      _minimumThicknessForInlineSidebars = [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+    }
+  else
+    {
+      [coder encodeObject: [self splitView]];
+      [coder encodeObject: [self splitViewItems]];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_minimumThicknessForInlineSidebars];
+    }
 }
 @end
 

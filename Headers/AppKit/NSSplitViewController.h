@@ -48,9 +48,11 @@ extern "C" {
 - (void) setSplitView: (NSSplitView *)splitView;
 - (NSSplitViewItem *) splitViewItemForViewController: (NSViewController *)vc;
 - (CGFloat) minimumThicknessForInlineSidebars;
+- (void) setMinimumThicknessForInlineSidebars: (CGFloat)value;
   
 // manage splitview items...
 - (NSArray *) splitViewItems;
+- (void) setSplitViewItems: (NSArray *)items;
 - (void) addSplitViewItem: (NSSplitViewItem *)item;
 - (void) insertSplitViewItem: (NSSplitViewItem *)item atIndex: (NSInteger)index;
 - (void) removeSplitViewItem: (NSSplitViewItem *)item;
