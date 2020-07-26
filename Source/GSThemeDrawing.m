@@ -2459,7 +2459,7 @@ typedef enum {
   [self drawTabViewBezelRect: aRect
  		 tabViewType: type
  		      inView: view];
- 
+
   if (type == NSBottomTabsBezelBorder
       || type == NSTopTabsBezelBorder)
     {

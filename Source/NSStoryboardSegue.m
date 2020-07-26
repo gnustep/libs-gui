@@ -127,7 +127,6 @@
         {
           NSView *v = [_destinationController view];
           NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
-          [[svc splitView] adjustSubviews];
           [[svc splitView] addSubview: v];
           NSUInteger idx = [[[svc splitView] subviews] count] - 1;
           NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];

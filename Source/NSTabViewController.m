@@ -170,6 +170,16 @@
         {
           NSTabView *tv = [coder decodeObjectForKey: @"NSTabView"];
           [self setTabView: tv];
+
+          // Currently we only support the tabs being on the top or the bottom.
+          // The rendering code doesn't support anything outside of these two
+          // cases.  Here we force the use of the top case, when it is outside
+          // of either of the cases we handle... this is temporary.  FIXME
+          if ([tv tabViewType] != NSTopTabsBezelBorder &&
+              [tv tabViewType] != NSBottomTabsBezelBorder)
+            {
+              [tv setTabViewType: NSTopTabsBezelBorder];
+            }
         }
       if ([coder containsValueForKey: @"NSTabViewItems"])
         {
