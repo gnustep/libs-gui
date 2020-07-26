@@ -181,11 +181,6 @@
               [tv setTabViewType: NSTopTabsBezelBorder];
             }
         }
-      if ([coder containsValueForKey: @"NSTabViewItems"])
-        {
-          NSArray *items = [coder decodeObjectForKey: @"NSTabViewItems"];
-          [self setTabViewItems: items];
-        }
     }
   return self;
 }

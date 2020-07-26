@@ -86,10 +86,17 @@
 
 + (instancetype) tabViewItemWithViewController: (NSViewController *)vc
 {
-  NSTabViewItem *item = [[NSTabViewItem alloc] init];
+  NSTabViewItem *item = AUTORELEASE([[NSTabViewItem alloc] init]);
+  if ([vc title] == nil || [[vc title] isEqualToString: @""])
+    {
+      NSString *className = [vc className];
+      [item setLabel: className];
+    }
+  else
+    {
+      [item setLabel: [vc title]];
+    }
   [item setViewController: vc];
-  [item setLabel: [vc title]];
-  AUTORELEASE(item);
   return item;
 }
 
