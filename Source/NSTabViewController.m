@@ -206,8 +206,7 @@
     {
       NSTabView *tv = [self tabView];
       [coder encodeObject: tv forKey: @"NSTabView"];
-      BOOL flag = [self canPropagateSelectedChildViewControllerTitle];
-      [coder encodeBool: flag
+      [coder encodeBool: [self canPropagateSelectedChildViewControllerTitle]
                  forKey: @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle"];
     }
   else
