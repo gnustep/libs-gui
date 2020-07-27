@@ -25,6 +25,7 @@
 #ifndef _NSPageController_h_GNUSTEP_GUI_INCLUDE
 #define _NSPageController_h_GNUSTEP_GUI_INCLUDE
 
+#import <Foundation/NSGeometry.h>
 #import <AppKit/NSViewController.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
@@ -33,8 +34,61 @@
 extern "C" {
 #endif
 
-@interface NSPageController : NSViewController
+@class NSView, NSArray, NSMutableArray;
+@protocol NSPageControllerDelegate;
 
+typedef NSString* NSPageControllerObjectIdentifier;
+
+enum
+{
+ NSPageControllerTransitionStyleStackHistory,
+ NSPageControllerTransitionStyleStackBook,
+ NSPageControllerTransitionStyleHorizontalStrip
+};
+typedef NSUInteger NSPageControllerTransitionStyle;
+
+@interface NSPageController : NSViewController <NSCoding>
+{
+  NSPageControllerTransitionStyle _transitionStyle;
+  id<NSPageControllerDelegate> _delegate;
+  NSMutableArray *_arrangedObjects;
+  NSInteger _selectedIndex;
+  NSViewController *_selectedViewController;
+}
+  
+// Set/Get properties
+- (NSPageControllerTransitionStyle) transitionStyle;
+- (void) setTransitionStyle: (NSPageControllerTransitionStyle)style;
+
+- (id<NSPageControllerDelegate>) delegate;
+- (void) setDelegate: (id<NSPageControllerDelegate>)delegate;
+
+- (NSArray *) arrangedObjects;
+- (void) setArrangedObjects: (NSArray *)array;
+
+- (NSInteger) selectedIndex;
+- (void) setSelectedIndex: (NSInteger)index;
+
+- (NSViewController *) selectedViewController;
+
+// Handle page transitions
+- (void) navigateForwardToObject: (id)object;
+
+- (void) completeTransition;
+
+- (IBAction) navigateBack: (id)sender;
+- (IBAction) navigateForward: (id)sender;
+- (IBAction) takeSelectedIndexFrom: (id)sender; // uses integerValue from sender
+@end
+
+@protocol NSPageControllerDelegate
+- (NSPageControllerObjectIdentifier) pageController: (NSPageController *)pageController identifierForObject: (id)object;
+- (NSViewController *) pageController: (NSPageController *)pageController viewControllerForIdentifier: (NSPageControllerObjectIdentifier)identifier;
+- (NSRect) pageController: (NSPageController *)pageController frameForObject: (id)object;
+- (void) pageController: (NSPageController *)pageController prepareViewController: (NSViewController *)viewController withObject: (id)object;
+- (void) pageController: (NSPageController *)pageController didTransitionToObject: (id)object;
+- (void) pageControllerWillStartLiveTransition: (NSPageController *)pageController;
+- (void) pageControllerDidEndLiveTransition: (NSPageController *)pageController;
 @end
 
 #if	defined(__cplusplus)
