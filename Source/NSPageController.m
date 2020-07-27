@@ -23,10 +23,69 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSArchiver.h>
+
 #import "AppKit/NSPageController.h"
+#import "AppKit/NSView.h"
 
 @implementation NSPageController
-  
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _transitionStyle = NSPageControllerTransitionStyleStackHistory;
+      _delegate = nil;
+      _arrangedObjects = [[NSMutableArray alloc] initWithCapacity: 10];
+      _selectedIndex = 0;
+      _selectedViewController = nil;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_arrangedObjects);
+  [super dealloc];
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self != nil)
+  {
+    if ([coder allowsKeyedCoding])
+      {
+        if ([coder containsValueForKey: @"NSTransitionStyle"])
+          {
+            _transitionStyle = [coder decodeIntForKey: @"NSTransitionStyle"];
+          }
+      }
+    else
+      {
+        [coder decodeValueOfObjCType: @encode(NSInteger)
+                                  at: &_transitionStyle];
+      }
+  }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeInt: _transitionStyle
+                forKey: @"NSTransitionStyle"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_transitionStyle];
+    }
+}
+
 // Set/Get properties
 - (NSPageControllerTransitionStyle) transitionStyle
 {
@@ -66,7 +125,36 @@
 
 - (void) setSelectedIndex: (NSInteger)index
 {
+  if ([_delegate respondsToSelector: @selector(pageControllerWillStartLiveTransition:)])
+    {
+      [_delegate pageControllerWillStartLiveTransition: self];
+    }
+  [self willChangeValueForKey: @"selectedIndex"];
   _selectedIndex = index;
+  _selectedViewController = [_arrangedObjects objectAtIndex: _selectedIndex];
+  [self didChangeValueForKey: @"selectedIndex"];
+
+  // Complete...
+  [self completeTransition];
+
+  // End transition...
+  if ([_delegate respondsToSelector: @selector(pageControllerDidEndLiveTransition:)])
+    {
+      [_delegate pageControllerDidEndLiveTransition: self];
+    }
+
+  // Notify delegate that transition is finished.
+  if ([_delegate respondsToSelector: @selector(pageController:didTransitionToObject:)])
+    {
+      [_delegate pageController: self didTransitionToObject: _selectedViewController];
+    }
+
+  // Resize based on frame...
+  if ([_delegate respondsToSelector: @selector(pageController:frameForObject:)])
+    {
+      NSRect rect = [_delegate pageController: self frameForObject: _selectedViewController];
+      [[_selectedViewController view] setFrame: rect];
+    }
 }
 
 - (NSViewController *) selectedViewController
@@ -77,22 +165,35 @@
 // Handle page transitions
 - (void) navigateForwardToObject: (id)object
 {
+  NSInteger index = [_arrangedObjects indexOfObject: object];
+  [self setSelectedIndex: index];
 }
 
 - (void) completeTransition
 {
+  [self setView: [_selectedViewController view]];
 }
 
 - (IBAction) navigateBack: (id)sender
 {
+  NSInteger idx = [self selectedIndex] - 1;
+  [self setSelectedIndex: (idx >= 0) ? idx : 0];
 }
 
 - (IBAction) navigateForward: (id)sender
 {
+  NSInteger idx = [self selectedIndex] + 1;
+  NSInteger lastPage = ([_arrangedObjects count] - 1);
+  [self setSelectedIndex: (idx > lastPage) ? lastPage : idx];
 }
 
 - (IBAction) takeSelectedIndexFrom: (id)sender // uses integerValue from sender
 {
+  if ([sender respondsToSelector: @selector(integerValue)])
+    {
+      NSInteger i = [sender integerValue];
+      [self setSelectedIndex: i];
+    }
 }
 @end
 

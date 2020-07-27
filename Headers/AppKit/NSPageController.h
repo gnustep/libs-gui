@@ -50,7 +50,7 @@ typedef NSUInteger NSPageControllerTransitionStyle;
 @interface NSPageController : NSViewController 
 {
   NSPageControllerTransitionStyle _transitionStyle;
-  id<NSPageControllerDelegate> _delegate;
+  id _delegate;
   NSMutableArray *_arrangedObjects;
   NSInteger _selectedIndex;
   NSViewController *_selectedViewController;
@@ -60,8 +60,8 @@ typedef NSUInteger NSPageControllerTransitionStyle;
 - (NSPageControllerTransitionStyle) transitionStyle;
 - (void) setTransitionStyle: (NSPageControllerTransitionStyle)style;
 
-- (id<NSPageControllerDelegate>) delegate;
-- (void) setDelegate: (id<NSPageControllerDelegate>)delegate;
+- (id) delegate;
+- (void) setDelegate: (id)delegate;
 
 - (NSArray *) arrangedObjects;
 - (void) setArrangedObjects: (NSArray *)array;
