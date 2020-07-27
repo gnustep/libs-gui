@@ -47,7 +47,7 @@ enum
 };
 typedef NSUInteger NSPageControllerTransitionStyle;
 
-@interface NSPageController : NSViewController <NSCoding>
+@interface NSPageController : NSViewController 
 {
   NSPageControllerTransitionStyle _transitionStyle;
   id<NSPageControllerDelegate> _delegate;
