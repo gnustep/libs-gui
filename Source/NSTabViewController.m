@@ -181,12 +181,42 @@
               [tv setTabViewType: NSTopTabsBezelBorder];
             }
         }
+
+      if ([coder containsValueForKey: @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle"])
+        {
+          BOOL flag = [coder decodeBoolForKey: @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle"];
+          [self setCanPropagateSelectedChildViewControllerTitle: flag];
+        }
+    }
+  else
+    {
+      BOOL flag;
+      [self setTabView: [coder decodeObject]]; // get tabview...
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &flag];
+      [self setCanPropagateSelectedChildViewControllerTitle: flag];
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      NSTabView *tv = [self tabView];
+      [coder encodeObject: tv forKey: @"NSTabView"];
+      BOOL flag = [self canPropagateSelectedChildViewControllerTitle];
+      [coder encodeBool: flag
+                 forKey: @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle"];
+    }
+  else
+    {
+      BOOL flag = [self canPropagateSelectedChildViewControllerTitle];
+      [coder encodeObject: [self tabView]]; // get tabview...
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &flag];
+    }
 }
 @end
 

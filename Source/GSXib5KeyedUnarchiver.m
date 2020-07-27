@@ -276,6 +276,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"bordered", @"NSIsBordered",
                                            @"altersStateOfSelectedItem", @"NSAltersState",
                                            @"string", @"NS.relative",
+                                           @"canPropagateSelectedChildViewControllerTitle",
+                                                   @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -395,6 +397,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"prefersToBeShown",
                                                @"editable",
                                                @"enabled",
+                                               @"canPropagateSelectedChildViewControllerTitle",
                                                nil];
         }
     }
