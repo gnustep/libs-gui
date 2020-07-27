@@ -208,6 +208,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
+                            @"NSPageController", @"pagecontroller", // why is pagecontroller capitalized this way?
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 

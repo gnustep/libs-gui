@@ -528,8 +528,10 @@
       NSString *xmlClassName = [NSString stringWithFormat: @"%@%@",
                                          [[classNameNoNamespace substringToIndex: 1] lowercaseString],
                                          [classNameNoNamespace substringFromIndex: 1]];
+      NSString *lowerCaseName = [xmlClassName lowercaseString];
       
       [result addObject: xmlClassName];
+      [result addObject: lowerCaseName];
     }
   END_FOR_IN(subclasses);
 
