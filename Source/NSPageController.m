@@ -22,9 +22,77 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
 #import "AppKit/NSPageController.h"
 
 @implementation NSPageController
+  
+// Set/Get properties
+- (NSPageControllerTransitionStyle) transitionStyle
+{
+  return _transitionStyle;
+}
 
+- (void) setTransitionStyle: (NSPageControllerTransitionStyle)style
+{
+  _transitionStyle = style;
+}
+
+- (id<NSPageControllerDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSPageControllerDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
+- (NSArray *) arrangedObjects
+{
+  return _arrangedObjects;
+}
+
+- (void) setArrangedObjects: (NSArray *)array
+{
+  [_arrangedObjects removeAllObjects];
+  [_arrangedObjects addObjectsFromArray: array];
+}
+
+- (NSInteger) selectedIndex
+{
+  return _selectedIndex;
+}
+
+- (void) setSelectedIndex: (NSInteger)index
+{
+  _selectedIndex = index;
+}
+
+- (NSViewController *) selectedViewController
+{
+  return _selectedViewController;
+}
+
+// Handle page transitions
+- (void) navigateForwardToObject: (id)object
+{
+}
+
+- (void) completeTransition
+{
+}
+
+- (IBAction) navigateBack: (id)sender
+{
+}
+
+- (IBAction) navigateForward: (id)sender
+{
+}
+
+- (IBAction) takeSelectedIndexFrom: (id)sender // uses integerValue from sender
+{
+}
 @end
 
