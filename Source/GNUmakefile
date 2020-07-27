@@ -185,6 +185,7 @@ NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
 NSOpenPanel.m \
 NSOutlineView.m \
+NSPageController.m \
 NSPageLayout.m \
 NSPanel.m \
 NSPanGestureRecognizer.m \
@@ -464,6 +465,7 @@ NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \
 NSOutlineView.h \
+NSPageController.h \
 NSPageLayout.h \
 NSPanel.h \
 NSPanGestureRecognizer.h \

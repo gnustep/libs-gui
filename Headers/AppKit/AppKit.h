@@ -185,6 +185,7 @@
 #import <AppKit/NSMediaLibraryBrowserController.h>
 #import <AppKit/NSMovie.h>
 #import <AppKit/NSMovieView.h>
+#import <AppKit/NSPageController.h>
 #import <AppKit/NSPanGestureRecognizer.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSNibControlConnector.h>
