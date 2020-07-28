@@ -61,8 +61,8 @@
 - (id) _popoverAnchorView;
 - (void) _setPopoverBehavior: (NSString *)behavior;
 - (NSString *) _popoverBehavior;
-- (void) _setPreferredEdge: (NSString *)edge;
-- (NSString *) _preferredEdge;
+- (void) _setPreferredEdge: (NSRectEdge)edge;
+- (NSRectEdge) _preferredEdge;
 @end
 
 // this needs to be set on segues
@@ -107,9 +107,9 @@
   return _popoverBehavior;
 }
 
-- (void) _setPreferredEdge: (NSString *)edge
+- (void) _setPreferredEdge: (NSRectEdge)edge
 {
-  ASSIGN(_preferredEdge, edge);
+  _preferredEdge = edge;
 }
 
 - (NSString *) _preferredEdge
@@ -779,6 +779,23 @@
             NSString *pb = [attr stringValue];
             attr = [obj attributeForName: @"preferredEdge"];
             NSString *pe = [attr stringValue];
+            NSRectEdge edge = NSMinXEdge;
+            if ([pe isEqualToString: @"maxY"])
+              {
+                edge = NSMaxYEdge;
+              }
+            else if ([pe isEqualToString: @"minY"])
+              {
+                edge = NSMinYEdge;
+              }
+            else if ([pe isEqualToString: @"maxX"])
+              {
+                edge = NSMaxXEdge;
+              }
+            else if ([pe isEqualToString: @"minX"])
+              {
+                edge = NSMinXEdge;
+              }
             [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
             
             // Create proxy object to invoke methods on the window controller
@@ -821,7 +838,7 @@
             [ss _setKind: kind];
             [ss _setRelationship: rel];
             [ss _setPopoverBehavior: pb];
-            [ss _setPreferredEdge: pe];
+            [ss _setPreferredEdge: edge];
               
             // Add to maptable...
             [mapTable setObject: ss

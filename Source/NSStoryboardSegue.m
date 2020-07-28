@@ -174,27 +174,8 @@
     {
       NSPopover *po = [[NSPopover alloc] init];
       NSRect rect = [_popoverAnchorView frame];
-      NSRectEdge edge = NSMinXEdge;
       NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
       
-      // Convert edge...
-      if ([_preferredEdge isEqualToString: @"maxY"])
-        {
-          edge = NSMaxYEdge;
-        }
-      else if ([_preferredEdge isEqualToString: @"minY"])
-        {
-          edge = NSMinYEdge;
-        }
-      else if ([_preferredEdge isEqualToString: @"maxX"])
-        {
-          edge = NSMaxXEdge;
-        }
-      else if ([_preferredEdge isEqualToString: @"minX"])
-        {
-          edge = NSMinXEdge;
-        }
-
       // Convert behavior
       if ([_popoverBehavior isEqualToString: @"a"])
         {
@@ -212,7 +193,7 @@
       [po setContentViewController: _destinationController];
       [po showRelativeToRect: rect
                       ofView: _popoverAnchorView
-               preferredEdge: edge];      
+               preferredEdge: _preferredEdge];      
     }
   else if ([_kind isEqualToString: @"sheet"])
     {
