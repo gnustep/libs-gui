@@ -54,9 +54,15 @@
 @interface NSStoryboardSegue (__StoryboardPrivate__)
 // Private to this class...
 - (void) _setKind: (NSString *)k;
-- (void) _setRelationship: (NSString *)r;
 - (NSString *) _kind;
+- (void) _setRelationship: (NSString *)r;
 - (NSString *) _relationship;
+- (void) _setPopoverAnchorView: (id)view;
+- (id) _popoverAnchorView;
+- (void) _setPopoverBehavior: (NSPopoverBehavior)behavior;
+- (NSPopoverBehavior) _popoverBehavior;
+- (void) _setPreferredEdge: (NSRectEdge)edge;
+- (NSRectEdge) _preferredEdge;
 @end
 
 // this needs to be set on segues
@@ -66,19 +72,49 @@
   ASSIGN(_kind, k);
 }
 
-- (void) _setRelationship: (NSString *)r
-{
-  ASSIGN(_relationship, r);
-}
-
 - (NSString *) _kind
 {
   return _kind;
 }
 
+- (void) _setRelationship: (NSString *)r
+{
+  ASSIGN(_relationship, r);
+}
+
 - (NSString *) _relationship
 {
   return _relationship;
+}
+
+- (void) _setPopoverAnchorView: (id)view
+{
+  ASSIGN(_popoverAnchorView, view);
+}
+
+- (id) _popoverAnchorView
+{
+  return _popoverAnchorView;
+}
+
+- (void) _setPopoverBehavior: (NSPopoverBehavior)behavior
+{
+  _popoverBehavior = behavior;
+}
+
+- (NSPopoverBehavior) _popoverBehavior
+{
+  return _popoverBehavior;
+}
+
+- (void) _setPreferredEdge: (NSRectEdge)edge
+{
+  _preferredEdge = edge;
+}
+
+- (NSRectEdge) _preferredEdge
+{
+  return _preferredEdge;
 }
 @end
 
@@ -143,6 +179,16 @@
   ASSIGN(_kind, kind);
 }
 
+- (void) setPopoverAnchorView: (id)view
+{
+  ASSIGN(_popoverAnchorView, view);
+}
+
+- (id) popoverAnchorView
+{
+  return _popoverAnchorView;
+}
+
 - (NSStoryboard *) storyboard
 {
   return _storyboard;
@@ -168,6 +214,7 @@
   RELEASE(_storyboard);
   RELEASE(_kind);
   RELEASE(_identifier);
+  RELEASE(_popoverAnchorView);
   RELEASE(_sender);
   RELEASE(_storyboardSegue);
   [super dealloc];
@@ -217,6 +264,7 @@
   [pa setSelector: [self selector]];
   [pa setSender: _sender];
   [pa setIdentifier: _identifier];
+  [pa setPopoverAnchorView: _popoverAnchorView];
   [pa setStoryboardSegue: _storyboardSegue];
   [pa setStoryboard: _storyboard];
   return pa;
@@ -246,6 +294,10 @@
       if ([coder containsValueForKey: @"NSKind"])
         {
           [self setKind: [coder decodeObjectForKey: @"NSKind"]];
+        }
+      if ([coder containsValueForKey: @"NSPopoverAnchorView"])
+        {
+          [self setPopoverAnchorView: [coder decodeObjectForKey: @"NSPopoverAnchorView"]];
         }
     }
   return self;
@@ -476,8 +528,10 @@
       NSString *xmlClassName = [NSString stringWithFormat: @"%@%@",
                                          [[classNameNoNamespace substringToIndex: 1] lowercaseString],
                                          [classNameNoNamespace substringFromIndex: 1]];
+      NSString *lowerCaseName = [xmlClassName lowercaseString];
       
       [result addObject: xmlClassName];
+      [result addObject: lowerCaseName];
     }
   END_FOR_IN(subclasses);
 
@@ -650,6 +704,7 @@
                                             segueIdentifier: (NSString *)ident
                                                      sender: (NSString *)src
                                                        kind: (NSString *)kind
+                                                 anchorView: (NSString *)anchorView
 {
   NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
 
@@ -672,6 +727,9 @@
   NSXMLNode *pkind
     = [NSXMLNode attributeWithName: @"kind"
                        stringValue: kind];
+  NSXMLNode *panchorview
+    = [NSXMLNode attributeWithName: @"popoverAnchorView"
+                       stringValue: anchorView];
   
   [sbproxy addAttribute: pselector];
   [sbproxy addAttribute: ptarget];
@@ -679,6 +737,7 @@
   [sbproxy addAttribute: psegueIdent];
   [sbproxy addAttribute: psender];
   [sbproxy addAttribute: pkind];
+  [sbproxy addAttribute: panchorview];
 
   return sbproxy;
 }
@@ -706,7 +765,6 @@
             NSString *kind =  [attr stringValue];
             attr = [obj attributeForName: @"relationship"];
             NSString *rel = [attr stringValue];
-            [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
             attr = [obj attributeForName: @"id"];
             NSString *uid = [attr stringValue];
             attr = [obj attributeForName: @"identifier"];
@@ -715,13 +773,52 @@
               {
                 ident = [[NSUUID UUID] UUIDString];
               }
+            attr = [obj attributeForName: @"popoverAnchorView"];
+            NSString *av = [attr stringValue];
+            attr = [obj attributeForName: @"popoverBehavior"];
+            NSString *pb = [attr stringValue];
+            NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
+            if ([pb isEqualToString: @"a"])
+              {
+                behavior = NSPopoverBehaviorApplicationDefined; 
+              }
+            else if ([pb isEqualToString: @"t"])
+              {
+                behavior = NSPopoverBehaviorTransient;
+              }
+            else if ([pb isEqualToString: @"s"])
+              {
+                behavior = NSPopoverBehaviorSemitransient;
+              }
+            
+            attr = [obj attributeForName: @"preferredEdge"];
+            NSString *pe = [attr stringValue];
+            NSRectEdge edge = NSMinXEdge;
+            if ([pe isEqualToString: @"maxY"])
+              {
+                edge = NSMaxYEdge;
+              }
+            else if ([pe isEqualToString: @"minY"])
+              {
+                edge = NSMinYEdge;
+              }
+            else if ([pe isEqualToString: @"maxX"])
+              {
+                edge = NSMaxXEdge;
+              }
+            else if ([pe isEqualToString: @"minX"])
+              {
+                edge = NSMinXEdge;
+              }
+            [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
             
             // Create proxy object to invoke methods on the window controller
             NSXMLElement *sbproxy =  [self createStoryboardProxyElementWithSelector: @"doAction:"
                                                                              target: dst
                                                                     segueIdentifier: ident
                                                                              sender: src
-                                                                               kind: kind];
+                                                                               kind: kind
+                                                                         anchorView: av];
             
             NSUInteger count = [[objects children] count];
             [objects insertChild: sbproxy
@@ -754,7 +851,9 @@
                                                                       destination: dst];
             [ss _setKind: kind];
             [ss _setRelationship: rel];
-            
+            [ss _setPopoverBehavior: behavior];
+            [ss _setPreferredEdge: edge];
+              
             // Add to maptable...
             [mapTable setObject: ss
                          forKey: ident];

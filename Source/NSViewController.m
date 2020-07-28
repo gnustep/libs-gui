@@ -84,6 +84,11 @@
 
 - (void)setTitle:(NSString *)title
 {
+  NSWindow *w = [[self view] window];
+  if (w != nil)
+    {
+      [w setTitle: title]; // sync title with window...
+    }
   ASSIGN(_title, title);
 }
 

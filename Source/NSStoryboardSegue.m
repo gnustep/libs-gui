@@ -23,12 +23,21 @@
 */
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSGeometry.h>
 
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
+#import "AppKit/NSSplitViewController.h"
+#import "AppKit/NSSplitViewItem.h"
+#import "AppKit/NSSplitView.h"
+#import "AppKit/NSTabViewController.h"
+#import "AppKit/NSTabViewItem.h"
+#import "AppKit/NSTabView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSPopover.h"
 
 @implementation NSStoryboardSegue
 
@@ -106,11 +115,29 @@
   // Perform segue based on it's kind...
   if ([_kind isEqualToString: @"relationship"])
     {
-      NSWindow *w = [_sourceController window];
-      NSView *v = [_destinationController view];
-      [w setContentView: v];
-      [w setTitle: [_destinationController title]];
-      [_sourceController showWindow: self];
+      if ([_relationship isEqualToString: @"window.shadowedContentViewController"])
+        {
+          NSWindow *w = [_sourceController window];
+          NSView *v = [_destinationController view];
+          [w setContentView: v];
+          [w setTitle: [_destinationController title]];
+          [_sourceController showWindow: self];
+        }
+      else if ([_relationship isEqualToString: @"splitItems"])
+        {
+          NSView *v = [_destinationController view];
+          NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
+          [[svc splitView] addSubview: v];
+          NSUInteger idx = [[[svc splitView] subviews] count] - 1;
+          NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];
+          [item setViewController: _destinationController];
+        }
+      else if ([_relationship isEqualToString: @"tabItems"])
+        {
+          NSTabViewController *tvc = (NSTabViewController *)_sourceController;
+          NSTabViewItem *item = [NSTabViewItem tabViewItemWithViewController: _destinationController];
+          [tvc addTabViewItem: item]; 
+        }
     }
   else if ([_kind isEqualToString: @"modal"])
     {
@@ -142,6 +169,23 @@
           [w orderFrontRegardless];
           RETAIN(w);
         }
+    }
+  else if ([_kind isEqualToString: @"popover"])
+    {
+      NSPopover *po = [[NSPopover alloc] init];
+      NSRect rect = [_popoverAnchorView frame];
+
+      [po setBehavior: _popoverBehavior];
+      [po setContentViewController: _destinationController];
+      [po showRelativeToRect: rect
+                      ofView: _popoverAnchorView
+               preferredEdge: _preferredEdge];      
+    }
+  else if ([_kind isEqualToString: @"sheet"])
+    {
+    }
+  else if ([_kind isEqualToString: @"custom"])
+    {
     }
 
   if (_handler != nil)

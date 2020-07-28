@@ -185,6 +185,7 @@ NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
 NSOpenPanel.m \
 NSOutlineView.m \
+NSPageController.m \
 NSPageLayout.m \
 NSPanel.m \
 NSPanGestureRecognizer.m \
@@ -239,12 +240,15 @@ NSSpeechSynthesizer.m \
 NSStepperTouchBarItem.m \
 NSSpellChecker.m \
 NSSplitView.m \
+NSSplitViewController.m \
+NSSplitViewItem.m \
 NSStepper.m \
 NSStepperCell.m \
 NSStringDrawing.m \
 NSStatusBar.m \
 NSStatusItem.m \
 NSTabView.m \
+NSTabViewController.m \
 NSTabViewItem.m \
 NSTableColumn.m \
 NSTableHeaderView.m \
@@ -461,6 +465,7 @@ NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \
 NSOutlineView.h \
+NSPageController.h \
 NSPageLayout.h \
 NSPanel.h \
 NSPanGestureRecognizer.h \
@@ -521,6 +526,8 @@ NSSpeechSynthesizer.h \
 NSSpellChecker.h \
 NSSpellServer.h \
 NSSplitView.h \
+NSSplitViewController.h \
+NSSplitViewItem.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
@@ -532,6 +539,7 @@ NSStatusBar.h \
 NSStatusItem.h \
 NSSwitch.h \
 NSTabView.h \
+NSTabViewController.h \
 NSTabViewItem.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \

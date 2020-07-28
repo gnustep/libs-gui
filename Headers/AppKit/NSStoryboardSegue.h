@@ -26,6 +26,8 @@
 #define _NSStoryboardSegue_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSPopover.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -44,6 +46,9 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSStoryboardSeguePerformHandler, void);
   NSStoryboardSegueIdentifier _identifier;
   NSString *_kind;
   NSString *_relationship;
+  id _popoverAnchorView;
+  NSPopoverBehavior _popoverBehavior;
+  NSRectEdge _preferredEdge;
   GSStoryboardSeguePerformHandler _handler;
 }
 

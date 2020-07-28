@@ -1,8 +1,31 @@
-2020-07-20 Gregory John Casamento <greg.casamento@gmail.com>
+2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Source/NSAlert.m: Fix NSAlert to have an OK button if none other
-        is specified.  This appears to be the default behavior at this point
-        according to testing on macOS.
+	* Headers/AppKit/AppKit.h: Add includes for splitviewcontroller, pagecontroller and tabviewcontroller.
+	* Headers/AppKit/NSPageController.h: Interface for page view controller
+	* Headers/AppKit/NSSplitViewController.h: Interface for splitview controller
+	* Headers/AppKit/NSSplitViewItem.h: Enhancements to splitview item to add logic for controller
+	* Headers/AppKit/NSStoryboardSegue.h: Add methods to handle popovers
+	* Headers/AppKit/NSTabViewController.h: Interface for tabViewController
+	* Headers/AppKit/NSTabViewItem.h: methods to support NSViewController
+	* Headers/AppKit/NSToolbar.h: Minor changes to support tabview controller
+	* Headers/AppKit/NSViewController.h: Additional enum
+	* MISSING: Remove implemented classes from list
+	* Source/GNUmakefile: Add new classes
+	* Source/GSStoryboardTransform.h: Additional methods on proxy
+	* Source/GSStoryboardTransform.m: Additional methods on proxy
+	* Source/GSThemeDrawing.m: minor changes
+	* Source/GSXib5KeyedUnarchiver.m: Handle pagecontroller element, set certain things to true if abesnt
+	* Source/NSPageController.m: Implementation of NSPageController
+	* Source/NSSplitViewController.m: Implementation of NSSplitViewController
+	* Source/NSSplitViewItem.m: Implementation
+	* Source/NSStoryboardSegue.m: New methods for segue
+	* Source/NSTabViewController.m: Implementation of NSTabViewController
+	* Source/NSTabViewItem.m: New methods implementation
+	* Source/NSTabView.m: Add methods to handle NSViewController changes
+	* Source/NSViewController.m: New methods.
+	* Source/NSView.m: Private methods to insert a view
+	* Source/NSViewPrivate.h: Private method to insert view, declaration
+	* Source/NSWindow.m: Minor fixes.
 
 2020-07-19 Gregory John Casamento <greg.casamento@gmail.com>
 

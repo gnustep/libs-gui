@@ -185,6 +185,7 @@
 #import <AppKit/NSMediaLibraryBrowserController.h>
 #import <AppKit/NSMovie.h>
 #import <AppKit/NSMovieView.h>
+#import <AppKit/NSPageController.h>
 #import <AppKit/NSPanGestureRecognizer.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -229,11 +230,14 @@
 #import <AppKit/NSStoryboardSegue.h>
 #import <AppKit/NSSeguePerforming.h>
 #import <AppKit/NSSwitch.h>
+#import <AppKit/NSSplitViewController.h>
+#import <AppKit/NSSplitViewItem.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>
 #import <AppKit/NSTableHeaderView.h>
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTabView.h>
+#import <AppKit/NSTabViewController.h>
 #import <AppKit/NSTabViewItem.h>
 #import <AppKit/NSTextAlternatives.h>
 #import <AppKit/NSTextAttachment.h>

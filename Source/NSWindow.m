@@ -739,6 +739,7 @@ static NSNotificationCenter *nc = nil;
                                                   defer: NO];
   [window setTitle: title];
   [window setContentView: view];
+  [view setNeedsDisplay: YES];
   AUTORELEASE(window);
   return window;
 }
