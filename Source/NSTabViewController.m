@@ -121,6 +121,14 @@
 - (void) setSelectedTabViewItemIndex: (NSInteger)idx
 {
   [[self tabView] selectTabViewItemAtIndex: idx];
+  if (_canPropagateSelectedChildViewControllerTitle)
+    {
+      NSString *title = [[[self tabView] tabViewItems] objectAtIndex: idx];
+      if (title != nil)
+        {
+          [self setTitle: title];
+        }
+    }
 }
 
 // Responding to tabview actions...
