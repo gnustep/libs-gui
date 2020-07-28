@@ -2005,6 +2005,10 @@ void NSBeginInformationalAlertSheet(NSString *title,
              icon: _icon
              title: _message_text != nil ? _message_text : _(@"Alert")
 	     message: _informative_text != nil ? _informative_text : _(@"No information")];
+      if ([_buttons count] == 0)
+        {
+          [self addButtonWithTitle: @"OK"];
+        }
       [panel setButtons: _buttons];
     }
 }

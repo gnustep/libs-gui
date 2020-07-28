@@ -1,3 +1,9 @@
+2020-07-20 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: Fix NSAlert to have an OK button if none other
+        is specified.  This appears to be the default behavior at this point
+        according to testing on macOS.
+
 2020-07-19 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add include files for NSSegue* and other
