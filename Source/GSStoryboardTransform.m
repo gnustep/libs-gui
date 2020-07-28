@@ -59,8 +59,8 @@
 - (NSString *) _relationship;
 - (void) _setPopoverAnchorView: (id)view;
 - (id) _popoverAnchorView;
-- (void) _setPopoverBehavior: (NSString *)behavior;
-- (NSString *) _popoverBehavior;
+- (void) _setPopoverBehavior: (NSPopoverBehavior)behavior;
+- (NSPopoverBehavior) _popoverBehavior;
 - (void) _setPreferredEdge: (NSRectEdge)edge;
 - (NSRectEdge) _preferredEdge;
 @end
@@ -97,12 +97,12 @@
   return _popoverAnchorView;
 }
 
-- (void) _setPopoverBehavior: (NSString *)behavior
+- (void) _setPopoverBehavior: (NSPopoverBehavior)behavior
 {
-  ASSIGN(_popoverBehavior, behavior);
+  _popoverBehavior = behavior;
 }
 
-- (NSString *) _popoverBehavior
+- (NSPopoverBehavior) _popoverBehavior
 {
   return _popoverBehavior;
 }
@@ -112,7 +112,7 @@
   _preferredEdge = edge;
 }
 
-- (NSString *) _preferredEdge
+- (NSRectEdge) _preferredEdge
 {
   return _preferredEdge;
 }
@@ -777,6 +777,20 @@
             NSString *av = [attr stringValue];
             attr = [obj attributeForName: @"popoverBehavior"];
             NSString *pb = [attr stringValue];
+            NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
+            if ([pb isEqualToString: @"a"])
+              {
+                behavior = NSPopoverBehaviorApplicationDefined; 
+              }
+            else if ([pb isEqualToString: @"t"])
+              {
+                behavior = NSPopoverBehaviorTransient;
+              }
+            else if ([pb isEqualToString: @"s"])
+              {
+                behavior = NSPopoverBehaviorSemitransient;
+              }
+            
             attr = [obj attributeForName: @"preferredEdge"];
             NSString *pe = [attr stringValue];
             NSRectEdge edge = NSMinXEdge;
@@ -837,7 +851,7 @@
                                                                       destination: dst];
             [ss _setKind: kind];
             [ss _setRelationship: rel];
-            [ss _setPopoverBehavior: pb];
+            [ss _setPopoverBehavior: behavior];
             [ss _setPreferredEdge: edge];
               
             // Add to maptable...

@@ -174,22 +174,8 @@
     {
       NSPopover *po = [[NSPopover alloc] init];
       NSRect rect = [_popoverAnchorView frame];
-      NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
-      
-      // Convert behavior
-      if ([_popoverBehavior isEqualToString: @"a"])
-        {
-          behavior = NSPopoverBehaviorApplicationDefined; 
-        }
-      else if ([_popoverBehavior isEqualToString: @"t"])
-        {
-          behavior = NSPopoverBehaviorTransient;
-        }
-      else if ([_popoverBehavior isEqualToString: @"s"])
-        {
-          behavior = NSPopoverBehaviorSemitransient;
-        }
-      
+
+      [po setBehavior: _popoverBehavior];
       [po setContentViewController: _destinationController];
       [po showRelativeToRect: rect
                       ofView: _popoverAnchorView
