@@ -34,7 +34,7 @@
 #import "AppKit/NSApplication.h"
 
 static NSMutableArray *activeConstraints = nil;
-static NSNotificationCenter *nc = nil;
+// static NSNotificationCenter *nc = nil;
 
 @implementation NSLayoutConstraint
 

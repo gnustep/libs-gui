@@ -1,9 +1,27 @@
+2020-07-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSLayoutAnchor.h
+	* Headers/AppKit/NSLayoutConstraint.h
+	* Headers/AppKit/NSLayoutGuide.h
+	* MISSING: Remove classes from list.
+	* Source/GNUmakefile
+	* Source/GSXib5KeyedUnarchiver.m: Add code to decode constraints.
+	* Source/NSLayoutAnchor.m
+	* Source/NSLayoutConstraint.m
+	* Source/NSLayoutGuide.m: Add infrastructure for layouts.
+        This needs additional work and study.  Comitting now so others
+        can more easily help.
+
 2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/AppKit.h: Add includes for splitviewcontroller, pagecontroller and tabviewcontroller.
+	* Headers/AppKit/AppKit.h: Add includes for splitviewcontroller,
+        pagecontroller and tabviewcontroller.
 	* Headers/AppKit/NSPageController.h: Interface for page view controller
-	* Headers/AppKit/NSSplitViewController.h: Interface for splitview controller
-	* Headers/AppKit/NSSplitViewItem.h: Enhancements to splitview item to add logic for controller
+	* Headers/AppKit/NSSplitViewController.h: Interface for splitview
+        controller
+	* Headers/AppKit/NSSplitViewItem.h: Enhancements to splitview item to
+        add logic for controller
 	* Headers/AppKit/NSStoryboardSegue.h: Add methods to handle popovers
 	* Headers/AppKit/NSTabViewController.h: Interface for tabViewController
 	* Headers/AppKit/NSTabViewItem.h: methods to support NSViewController
@@ -14,7 +32,8 @@
 	* Source/GSStoryboardTransform.h: Additional methods on proxy
 	* Source/GSStoryboardTransform.m: Additional methods on proxy
 	* Source/GSThemeDrawing.m: minor changes
-	* Source/GSXib5KeyedUnarchiver.m: Handle pagecontroller element, set certain things to true if abesnt
+	* Source/GSXib5KeyedUnarchiver.m: Handle pagecontroller element,
+        set certain things to true if abesnt
 	* Source/NSPageController.m: Implementation of NSPageController
 	* Source/NSSplitViewController.m: Implementation of NSSplitViewController
 	* Source/NSSplitViewItem.m: Implementation
@@ -45,16 +64,21 @@
 	* MISSING: Remove the classes implemented here from the missing list.
 	* Source/Functions.m: Enhance NSApplicationMain() function to handle the
         loading of a storyboard.
-	* Source/GNUmakefile: Add the new classes to the build and copy the headers.
-	* Source/GSStoryboardTransform.[hm]: Class to handle the transformation of
-        the storyboard file into "XIB" files for loading.  Also handles the intermediate
+	* Source/GNUmakefile: Add the new classes to the build and copy the
+        headers.
+	* Source/GSStoryboardTransform.[hm]: Class to handle the transformation
+        of the storyboard file into "XIB" files for loading.  Also handles the
+        intermediate
         processes of instantiation of the destination controller.
 	* Source/NSStoryboard.m: Implementation of the above described class.
-	* Source/NSStoryboardSegue.m: Implementation of the above described class.
-	* Source/NSViewController.m: Implementation of private methods to handle transitions.
-	* Source/NSWindowController.m: Implementation of private methods to handle transitions.
-	* Source/NSWindow.m: Implementation of method to create window controller for
-        view controllers.
+	* Source/NSStoryboardSegue.m: Implementation of the above described
+        class.
+	* Source/NSViewController.m: Implementation of private methods to
+        handle transitions.
+	* Source/NSWindowController.m: Implementation of private methods to
+        handle transitions.
+	* Source/NSWindow.m: Implementation of method to create window
+        controller for view controllers.
 
 2020-07-10 Gregory John Casamento <greg.casamento@gmail.com>
 
