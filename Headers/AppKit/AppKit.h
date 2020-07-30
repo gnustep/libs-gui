@@ -178,6 +178,9 @@
 #import <AppKit/NSInputServer.h>
 #import <AppKit/NSInterfaceStyle.h>
 #import <AppKit/NSKeyValueBinding.h>
+#import <AppKit/NSLayoutAnchor.h>
+#import <AppKit/NSLayoutConstraint.h>
+#import <AppKit/NSLayoutGuide.h>
 #import <AppKit/NSLayoutManager.h>
 #import <AppKit/NSLevelIndicator.h>
 #import <AppKit/NSLevelIndicatorCell.h>
