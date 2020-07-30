@@ -44,21 +44,23 @@ static NSNotificationCenter *nc = nil;
     {
       [self setVersion: 1];
       activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
-      nc = [NSNotificationCenter defaultCenter];
+      // nc = [NSNotificationCenter defaultCenter];
 
-      [nc addObserver: self
-             selector: @selector(_setupNotifications:)
-                 name: NSApplicationDidFinishLaunchingNotification
-               object: nil];
+      // [nc addObserver: self
+      //       selector: @selector(_setupNotifications:)
+      //           name: NSApplicationDidFinishLaunchingNotification
+      //         object: nil];
     }
 }
 
 + (void) _setupNotifications: (NSNotification *)n
 {
+  /*
   [nc addObserver: self
          selector: @selector(_handleWindowResize:)
              name: NSWindowDidResizeNotification
            object: nil];      
+  */
 }
 
 + (NSString *) _attributeToString: (NSLayoutAttribute)attr
@@ -220,8 +222,8 @@ static NSNotificationCenter *nc = nil;
 
 + (void) _activateConstraint: (NSLayoutConstraint *)constraint
 {
-  [activeConstraints addObject: constraint];
-  activeConstraints = [[activeConstraints sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
+  // [activeConstraints addObject: constraint];
+  // activeConstraints = [[activeConstraints sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
 }
 
 + (void) _removeConstraint: (NSLayoutConstraint *)constraint
@@ -584,6 +586,7 @@ static NSNotificationCenter *nc = nil;
 
 + (void) _handleWindowResize: (NSNotification *)notification
 {
+  /*
   NSLayoutConstraint *c = nil;
   NSEnumerator *en = [activeConstraints objectEnumerator];
 
@@ -596,6 +599,7 @@ static NSNotificationCenter *nc = nil;
           [c _applyConstraint];
         }
     }
+  */
 }
 
 @end

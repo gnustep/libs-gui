@@ -33,6 +33,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
 #import "AppKit/PSOperators.h"
+#import "AppKit/NSViewController.h"
 
 @implementation NSTabViewItem
 
@@ -70,6 +71,33 @@
 {
   return [NSString stringWithFormat: @"%@: %@ (ident: %@)", 
 		   NSStringFromClass([self class]), _label, _ident];
+}
+
+- (NSViewController *) viewController
+{
+  return _viewController;
+}
+
+- (void) setViewController: (NSViewController *)vc
+{
+  _viewController = vc; // weak
+  [self setView: [vc view]];
+}
+
++ (instancetype) tabViewItemWithViewController: (NSViewController *)vc
+{
+  NSTabViewItem *item = AUTORELEASE([[NSTabViewItem alloc] init]);
+  if ([vc title] == nil || [[vc title] isEqualToString: @""])
+    {
+      NSString *className = [vc className];
+      [item setLabel: className];
+    }
+  else
+    {
+      [item setLabel: [vc title]];
+    }
+  [item setViewController: vc];
+  return item;
 }
 
 // Set identifier.

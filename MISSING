@@ -17,16 +17,10 @@ MISSING HEADERS
 > NSItemProvider.h
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
-> NSPageController.h
 > NSRuleEditor.h
 > NSSliderAccessory.h
-> NSSplitViewController.h
-> NSSplitViewItem.h
 > NSStackView.h
 > NSStatusBarButton.h
-> NSStoryboard.h
-> NSStoryboardSegue.h
-> NSTabViewController.h
 > NSTableCellView.h
 > NSTableRowView.h
 > NSTableViewRowAction.h

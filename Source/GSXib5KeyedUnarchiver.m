@@ -61,6 +61,7 @@
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSPageController.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -212,6 +213,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",
+                            @"NSPageController", @"pagecontroller", // why is pagecontroller capitalized this way?
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -283,6 +285,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"bordered", @"NSIsBordered",
                                            @"altersStateOfSelectedItem", @"NSAltersState",
                                            @"string", @"NS.relative",
+                                           @"canPropagateSelectedChildViewControllerTitle",
+                                                   @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -395,6 +399,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeFirstAttribute:", @"NSFirstAttribute",
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
+               @"decodeTransitionStyle:", @"NSTransitionStyle",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -405,6 +410,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"prefersToBeShown",
                                                @"editable",
                                                @"enabled",
+                                               @"canPropagateSelectedChildViewControllerTitle",
                                                nil];
         }
     }
@@ -2884,6 +2890,31 @@ didStartElement: (NSString*)elementName
     }
   
   return num;
+}
+
+- (id) decodeTransitionStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"transitionStyle"];
+
+  if ([obj isEqualToString: @"stackHistory"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackHistory];
+    }
+  else if ([obj isEqualToString: @"stackBook"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackBook];
+    }
+  else if ([obj isEqualToString: @"horizontalStrip"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleHorizontalStrip];
+    }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackHistory];
+    }
+
+  return num;  
 }
 
 - (id) objectForXib: (GSXibElement*)element

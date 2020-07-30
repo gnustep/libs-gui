@@ -111,10 +111,15 @@
 {
   if (tabViewItem == nil)
     return;
+
+  if (_items == nil)
+    {
+      ASSIGN(_items, [NSMutableArray array]);
+    }
   
   [tabViewItem _setTabView: self];
   [_items insertObject: tabViewItem atIndex: index];
-  
+
   // If this is the first inserted then select it...
   if ([_items count] == 1)
     [self selectTabViewItem: tabViewItem];
@@ -564,7 +569,6 @@
         {
           ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
           [_items makeObjectsPerformSelector: @selector(_setTabView:) withObject: self];
-
         }
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {

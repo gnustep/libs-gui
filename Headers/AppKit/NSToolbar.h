@@ -72,6 +72,8 @@ typedef enum
 APPKIT_EXPORT NSString *NSToolbarDidRemoveItemNotification;
 APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 
+typedef NSString* NSToolbarItemIdentifier;
+
 @interface NSToolbar : NSObject
 {
   NSDictionary *_configurationDictionary;
