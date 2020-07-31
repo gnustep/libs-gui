@@ -24,7 +24,101 @@
 
 #import "AppKit/NSSliderAccessory.h"
 
+  
 @implementation NSSliderAccessory
 
++ (NSSliderAccessory *) accessoryWithImage: (NSImage *)image
+{
+  return nil;
+}
+
+- (NSSliderAccessoryBehavior *) behavior
+{
+  return _behavior;
+}
+
+- (void) setBehavior: (NSSliderAccessoryBehavior *)behavior
+{
+  ASSIGN(_behavior, behavior);
+}
+
+- (BOOL) isEnabled
+{
+  return _enabled;
+}
+
+- (void) setEnabled: (BOOL)flag
+{
+  _enabled = flag;
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  return self;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
 @end
+
+@implementation NSSliderAccessoryBehavior 
+
+// Initializers
++ (NSSliderAccessoryBehavior *) behaviorWithHandler: (GSSliderAccessoryBehaviorHandler)handler
+{
+  return nil;
+}
+
++ (NSSliderAccessoryBehavior *) behaviorWithTarget: (id)target action: (SEL)action
+{
+  return nil;
+}
+
+// Behaviors...
++ (NSSliderAccessoryBehavior *) automaticBehavior
+{
+  return nil;
+}
+
++ (NSSliderAccessoryBehavior *) valueResetBehavior
+{
+  return nil;
+}
+
++ (NSSliderAccessoryBehavior *) valueStepBehavior
+{
+  return nil;
+}
+
+// Handle events...
+- (void) handleAction: (NSSliderAccessory *)sender
+{
+  // do nothing
+}
+
+- (id) copyWithZone: (NSZone *)z
+{
+  return self;
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+  
+@end
+
 

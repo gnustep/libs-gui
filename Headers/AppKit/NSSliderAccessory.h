@@ -72,8 +72,6 @@ DEFINE_BLOCK_TYPE(GSSliderAccessoryBehaviorHandler, void, NSSliderAccessory*);
   
 @end
 
-
-
 #if	defined(__cplusplus)
 }
 #endif
