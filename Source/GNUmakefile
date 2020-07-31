@@ -127,6 +127,9 @@ NSPopoverTouchBarItem.m \
 NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
 NSSharingServicePickerTouchBarItem.m \
+NSSlider.m \
+NSSliderCell.m \
+NSSliderAccessory.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
 NSSwitch.m \
@@ -163,7 +166,6 @@ NSPressGestureRecognizer.m \
 NSRotationGestureRecognizer.m \
 NSSharingServicePickerToolbarItem.m \
 NSSharingServicePickerTouchBarItem.m \
-NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
 NSStoryboard.m \
 NSStoryboardSegue.m \
@@ -234,9 +236,6 @@ NSSelection.m \
 NSShadow.m \
 NSSharingService.m \
 NSSharingServicePickerTouchBarItem.m \
-NSSliderTouchBarItem.m \
-NSSlider.m \
-NSSliderCell.m \
 NSSound.m  \
 NSSpeechRecognizer.m \
 NSSpeechSynthesizer.m \
@@ -525,6 +524,7 @@ NSSharingServicePickerToolbarItem.h \
 NSSharingServicePickerTouchBarItem.h \
 NSSlider.h \
 NSSliderCell.h \
+NSSliderAccessory.h \
 NSSliderTouchBarItem.h \
 NSSound.h  \
 NSSpeechRecognizer.h \
