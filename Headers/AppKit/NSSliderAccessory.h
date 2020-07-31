@@ -33,9 +33,46 @@
 extern "C" {
 #endif
 
-@interface NSSliderAccessory : NSObject
+@class NSSliderAccessoryBehavior;
+@class NSImage;
+  
+@interface NSSliderAccessory : NSObject <NSCopying, NSCoding>
+{
+  NSImage *_image;
+  NSSliderAccessoryBehavior *_behavior;
+  BOOL _enabled;
+}
 
++ (NSSliderAccessory *) accessoryWithImage: (NSImage *)image;
+
+- (NSSliderAccessoryBehavior *) behavior;
+- (void) setBehavior: (NSSliderAccessoryBehavior *)behavior;
+
+- (BOOL) isEnabled;
+- (void) setEnabled: (BOOL)flag;
+  
 @end
+
+// Behavior...
+DEFINE_BLOCK_TYPE(GSSliderAccessoryBehaviorHandler, void, NSSliderAccessory*);
+  
+@interface NSSliderAccessoryBehavior : NSObject <NSCopying, NSCoding>
+
+// Initializers
++ (NSSliderAccessoryBehavior *) behaviorWithHandler: (GSSliderAccessoryBehaviorHandler)handler;
++ (NSSliderAccessoryBehavior *) behaviorWithTarget: (id)target action: (SEL)action;
+
+// Behaviors...
++ (NSSliderAccessoryBehavior *) automaticBehavior;
++ (NSSliderAccessoryBehavior *) valueResetBehavior;
++ (NSSliderAccessoryBehavior *) valueStepBehavior;
+
+// Handle events...
+- (void) handleAction: (NSSliderAccessory *)sender;
+  
+@end
+
+
 
 #if	defined(__cplusplus)
 }
