@@ -18,7 +18,6 @@ MISSING HEADERS
 > NSMenuToolbarItem.h
 > NSOpenGLLayer.h
 > NSRuleEditor.h
-> NSSliderAccessory.h
 > NSStackView.h
 > NSTableCellView.h
 > NSTableRowView.h
