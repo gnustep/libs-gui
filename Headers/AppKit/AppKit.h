@@ -133,6 +133,7 @@
 #import <AppKit/NSSpellProtocol.h>
 #import <AppKit/NSSplitView.h>
 #import <AppKit/NSStatusBar.h>
+#import <AppKit/NSStatusBarButton.h>
 #import <AppKit/NSStatusItem.h>
 #import <AppKit/NSStringDrawing.h>
 #import <AppKit/NSText.h>
