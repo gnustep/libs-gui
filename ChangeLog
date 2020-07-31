@@ -1,3 +1,11 @@
+2020-07-31 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add header
+	* Headers/AppKit/NSStatusBarButton.h: Declaration
+	* MISSING: Remove file from list
+	* Source/GNUmakefile: Add to compilation
+	* Source/NSStatusBarButton.m: Definition of class.
+
 2020-07-30 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h

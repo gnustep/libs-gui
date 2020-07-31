@@ -249,6 +249,7 @@ NSStepper.m \
 NSStepperCell.m \
 NSStringDrawing.m \
 NSStatusBar.m \
+NSStatusBarButton.m \
 NSStatusItem.m \
 NSTabView.m \
 NSTabViewController.m \
@@ -542,6 +543,7 @@ NSStoryboardSegue.h \
 NSSeguePerforming.h \
 NSStringDrawing.h \
 NSStatusBar.h \
+NSStatusBarButton.h \
 NSStatusItem.h \
 NSSwitch.h \
 NSTabView.h \
