@@ -1,37 +1,37 @@
-MISSING HEADERS
+MISSING HEADERS ( * = difficult, - = quick, + = placeholder )
 ---
-> NSATSTypesetter.h
-> NSCollectionViewCompositionalLayout.h
-> NSCollectionViewFlowLayout.h
-> NSCollectionViewGridLayout.h
-> NSCollectionViewLayout.h
-> NSCollectionViewTransitionLayout.h
-> NSDictionaryController.h
-> NSDiffableDataSource.h
-> NSDraggingItem.h
-> NSDraggingSession.h
-> NSFilePromiseProvider.h
-> NSFilePromiseReceiver.h
+> NSATSTypesetter.h +
+> NSCollectionViewCompositionalLayout.h *
+> NSCollectionViewFlowLayout.h *
+> NSCollectionViewGridLayout.h *
+> NSCollectionViewLayout.h *
+> NSCollectionViewTransitionLayout.h *
+> NSDictionaryController.h -
+> NSDiffableDataSource.h *
+> NSDraggingItem.h -
+> NSDraggingSession.h -
+> NSFilePromiseProvider.h -
+> NSFilePromiseReceiver.h -
 > NSGlyphInfo.h
-> NSGridView.h
-> NSItemProvider.h
-> NSMenuToolbarItem.h
+> NSGridView.h *
+> NSItemProvider.h + 
+> NSMenuToolbarItem.h -
 > NSOpenGLLayer.h
-> NSRuleEditor.h
-> NSStackView.h
-> NSTableCellView.h
-> NSTableRowView.h
-> NSTableViewRowAction.h
-> NSTextCheckingClient.h
-> NSTextCheckingController.h
-> NSTextFinder.h
-> NSTextInputClient.h
-> NSTextInputContext.h
-> NSTitlebarAccessoryViewController.h
-> NSTypesetter.h
-> NSUserActivity.h
-> NSWindowTab.h
-> NSWindowTabGroup.h
+> NSRuleEditor.h *
+> NSStackView.h *
+> NSTableCellView.h *
+> NSTableRowView.h *
+> NSTableViewRowAction.h *
+> NSTextCheckingClient.h + 
+> NSTextCheckingController.h +
+> NSTextFinder.h +
+> NSTextInputClient.h +
+> NSTextInputContext.h +
+> NSTitlebarAccessoryViewController.h -
+> NSTypesetter.h +
+> NSUserActivity.h -
+> NSWindowTab.h +
+> NSWindowTabGroup.h +
 
 Mac Specific
 ---
