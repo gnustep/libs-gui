@@ -133,6 +133,7 @@ NSSliderAccessory.m \
 NSSliderTouchBarItem.m \
 NSStepperTouchBarItem.m \
 NSSwitch.m \
+NSTitlebarAccessoryViewController.m \
 NSTouch.m \
 NSTouchBar.m \
 NSTouchBarItem.m \
@@ -563,6 +564,7 @@ NSTextList.h \
 NSTextStorage.h \
 NSTextTable.h \
 NSTextView.h \
+NSTitlebarAccessoryViewController.h \
 NSToolbar.h \
 NSToolbarItem.h \
 NSToolbarItemGroup.h \
