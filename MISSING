@@ -27,7 +27,6 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder )
 > NSTextFinder.h +
 > NSTextInputClient.h +
 > NSTextInputContext.h +
-> NSTitlebarAccessoryViewController.h -
 > NSTypesetter.h +
 > NSUserActivity.h -
 > NSWindowTab.h +
