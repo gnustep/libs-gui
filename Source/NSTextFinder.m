@@ -22,9 +22,93 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
+
 #import "AppKit/NSTextFinder.h"
 
 @implementation NSTextFinder
+// Validating and performing
+- (void)performAction:(NSTextFinderAction)op
+{
+}
+
+- (BOOL)validateAction:(NSTextFinderAction)op
+{
+  return NO;
+}
+
+- (void)cancelFindIndicator;
+{
+}
+
+// Properties
+- (id<NSTextFinderClient>) client
+{
+  return nil;
+}
+
+- (void) setClient: (id<NSTextFinderClient>) client
+{
+}
+
+- (id<NSTextFinderBarContainer>) findBarContainer
+{
+  return nil;
+}
+
+- (void) setFindBarContainer: (id<NSTextFinderBarContainer>) findBarContainer
+{
+}
+
+- (BOOL) findIndicatodNeedsUpdate
+{
+  return NO;
+}
+
+- (void) setFindIndicatorNeedsUpdate: (BOOL)flag
+{
+}
+
+- (BOOL) isIncrementalSearchingEnabled
+{
+  return NO;
+}
+
+- (void) setIncrementalSearchingEnabled: (BOOL)flag
+{
+}
+
+- (BOOL) incrementalSearchingShouldDimContentView
+{
+  return NO;
+}
+
+- (void) setIncrementalSearchingShouldDimContentView: (BOOL)flag
+{
+}
+
+- (NSArray *) incrementalMatchRanges
+{
+  return nil;
+}
+
++ (void) drawIncrementalMatchHighlightInRect: (NSRect)rect
+{
+}
+
+- (void) noteClientStringWillChange
+{
+}
+
+// NSCoding...
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  return [super init];
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
 
 @end
 
