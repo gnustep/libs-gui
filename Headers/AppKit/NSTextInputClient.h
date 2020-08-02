@@ -26,6 +26,9 @@
 #define _NSTextInputClient_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+
+#import <AppKit/NSAttributedString.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
@@ -33,7 +36,42 @@
 extern "C" {
 #endif
 
+@class NSArray;
+
 @protocol NSTextInputClient
+
+@required
+// Marked text
+- (BOOL) hasMarkedText;
+- (NSRange) markedRange;
+- (NSRange) selectedRange;
+- (void) setMarkedText: (id)string 
+         selectedRange: (NSRange)selectedRange 
+      replacementRange: (NSRange)replacementRange;
+- (void)unmarkText;
+- (NSArray *)validAttributesForMarkedText;
+
+// Storing text
+- (NSAttributedString *) attributedSubstringForProposedRange: (NSRange)range 
+                                                 actualRange: (NSRangePointer)actualRange;
+- (void) insertText: (id)string 
+   replacementRange: (NSRange)replacementRange;
+
+// Getting Character coordinates
+- (NSUInteger) characterIndexForPoint: (NSPoint)point;
+- (NSRect) firstRectForCharacterRange: (NSRange)range 
+                          actualRange: (NSRangePointer)actualRange;
+
+// Binding keystrokes
+- (void) doCommandBySelector: (SEL)selector;
+
+@optional
+// Optional methods
+- (NSAttributedString *) attributedString;
+- (CGFloat) fractionOfDistanceThroughGlyphForPoint: (NSPoint)point;
+- (CGFloat) baselineDeltaForCharacterAtIndex: (NSUInteger)anIndex;
+- (NSInteger) windowLevel;
+- (BOOL) drawsVerticallyForCharacterAtIndex: (NSUInteger)charIndex;
 
 @end
 
