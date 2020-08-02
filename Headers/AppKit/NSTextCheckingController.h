@@ -26,6 +26,9 @@
 #define _NSTextCheckingController_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
+
+#import <AppKit/NSTextCheckingClient.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
@@ -33,8 +36,40 @@
 extern "C" {
 #endif
 
+@class NSArray, NSDictionary, NSMenu;
+
 @interface NSTextCheckingController : NSObject
 
+// initializer
+- (instancetype) initWithClient: (id<NSTextCheckingClient>)client;
+
+// properties...
+- (id<NSTextCheckingClient>) client;
+- (NSInteger) spellCheckerDocumentTag;
+- (void) setSpellCheckerDocumentTag: (NSInteger)tag;
+
+// instance methods...
+- (void) changeSpelling: (id)sender;
+- (void) checkSpelling: (id)sender;
+- (void) checkTextInRange: (NSRange)range 
+                    types: (NSTextCheckingTypes)checkingTypes 
+                  options: (NSDictionary *)options;
+- (void) checkTextInSelection: (id)sender;
+- (void) checkTextInDocument: (id)sender;
+- (void) didChangeTextInRange: (NSRange)range;
+- (void) considerTextCheckingForRange: (NSRange)range;
+- (void) didChangeSelectedRange;
+- (void) ignoreSpelling: (id)sender;
+- (void) insertedTextInRange: (NSRange)range;
+- (void) invalidate;
+- (NSMenu *) menuAtIndex: (NSUInteger)location
+      clickedOnSelection: (BOOL)clickedOnSelection 
+          effectiveRange: (NSRangePointer)effectiveRange;
+- (void) orderFrontSubstitutionsPanel: (id)sender;
+- (void) showGuessPanel: (id)sender;
+- (void) updateCandidates;
+- (NSArray *) validAnnotations;
+  
 @end
 
 #if	defined(__cplusplus)

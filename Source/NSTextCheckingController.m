@@ -26,5 +26,101 @@
 
 @implementation NSTextCheckingController
 
+// initializer
+- (instancetype) initWithClient: (id<NSTextCheckingClient>)client
+{
+  self = [super init];
+  if (self != nil)
+    {
+    }
+  return self;
+}
+
+// properties...
+- (id<NSTextCheckingClient>) client
+{
+  return nil;
+}
+
+- (NSInteger) spellCheckerDocumentTag
+{
+  return 0;
+}
+
+- (void) setSpellCheckerDocumentTag: (NSInteger)tag
+{
+}
+
+// instance methods...
+- (void) changeSpelling: (id)sender
+{
+}
+
+- (void) checkSpelling: (id)sender
+{
+}
+
+- (void) checkTextInRange: (NSRange)range 
+                    types: (NSTextCheckingTypes)checkingTypes 
+                  options: (NSDictionary *)options
+{
+}
+
+- (void) checkTextInSelection: (id)sender
+{
+}
+
+- (void) checkTextInDocument: (id)sender
+{
+}
+
+- (void) didChangeTextInRange: (NSRange)range
+{
+}
+
+- (void) considerTextCheckingForRange: (NSRange)range
+{
+}
+
+- (void) didChangeSelectedRange
+{
+}
+
+- (void) ignoreSpelling: (id)sender
+{
+}
+
+- (void) insertedTextInRange: (NSRange)range
+{
+}
+
+- (void) invalidate
+{
+}
+
+- (NSMenu *) menuAtIndex: (NSUInteger)location
+      clickedOnSelection: (BOOL)clickedOnSelection 
+          effectiveRange: (NSRangePointer)effectiveRange
+{
+  return nil;
+}
+
+- (void) orderFrontSubstitutionsPanel: (id)sender
+{
+}
+
+- (void) showGuessPanel: (id)sender
+{
+}
+
+- (void) updateCandidates
+{
+}
+
+- (NSArray *) validAnnotations
+{
+  return nil;
+}
+
 @end
 
