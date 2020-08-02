@@ -246,6 +246,11 @@
 #import <AppKit/NSTextAlternatives.h>
 #import <AppKit/NSTextAttachment.h>
 #import <AppKit/NSTextContainer.h>
+#import <AppKit/NSTextCheckingClient.h>
+#import <AppKit/NSTextCheckingController.h>
+#import <AppKit/NSTextFinder.h>
+#import <AppKit/NSTextInputClient.h>
+#import <AppKit/NSTextInputContext.h>
 #import <AppKit/NSTextList.h>
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextTable.h>
