@@ -26,6 +26,11 @@
 #define _NSTextFinder_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
+#import <Foundation/NSGeometry.h>
+
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSNibDeclarations.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
@@ -33,9 +38,117 @@
 extern "C" {
 #endif
 
-@interface NSTextFinder : NSObject
+@class NSArray, NSView; 
+@protocol NSTextFinderClient, NSTextFinderBarContainer;
+  
+enum
+{
+ NSTextFinderActionShowFindInterface = 1,
+ NSTextFinderActionNextMatch,
+ NSTextFinderActionPreviousMatch,
+ NSTextFinderActionReplaceAll,
+ NSTextFinderActionReplace,
+ NSTextFinderActionReplaceAndFind,
+ NSTextFinderActionSetSearchString,
+ NSTextFinderActionReplaceAllInSelection,
+ NSTextFinderActionSelectAll,
+ NSTextFinderActionSelectAllInSelection,
+ NSTextFinderActionHideFindInterface,
+ NSTextFinderActionShowReplaceInterface,
+ NSTextFinderActionHideReplaceInterface
+};
+typedef NSInteger NSTextFinderAction;
+
+enum
+{
+ NSTextFinderMatchingTypeContains = 0,
+ NSTextFinderMatchingTypeStartsWith,
+ NSTextFinderMatchingTypeFullWord,
+ NSTextFinderMatchingTypeEndsWith
+};
+typedef NSInteger NSTextFinderMatchingType;
+
+typedef NSString* NSPasteboardTypeTextFinderOptionKey;
+APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensitiveKey;
+APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey;
+
+@interface NSTextFinder : NSObject <NSCoding>
+{
+  IBOutlet id<NSTextFinderClient> _client;
+  IBOutlet id<NSTextFinderBarContainer> _findBarContainer;
+  BOOL _findIndicatorNeedsUpdate;
+}
+  
+// Validating and performing
+- (void)performAction:(NSTextFinderAction)op;
+- (BOOL)validateAction:(NSTextFinderAction)op;
+- (void)cancelFindIndicator;
+
+// Properties
+- (id<NSTextFinderClient>) client;
+- (void) setClient: (id<NSTextFinderClient>) client;
+- (id<NSTextFinderBarContainer>) findBarContainer;
+- (void) setFindBarContainer: (id<NSTextFinderBarContainer>) findBarContainer;
+- (BOOL) findIndicatodNeedsUpdate;
+- (void) setFindIndicatorNeedsUpdate: (BOOL)flag;
+- (BOOL) isIncrementalSearchingEnabled;
+- (void) setIncrementalSearchingEnabled: (BOOL)flag;
+- (BOOL) incrementalSearchingShouldDimContentView;
+- (void) setIncrementalSearchingShouldDimContentView: (BOOL)flag;
+- (NSArray *) incrementalMatchRanges;
+
++ (void) drawIncrementalMatchHighlightInRect: (NSRect)rect;
+
+- (void) noteClientStringWillChange;  
 
 @end
+
+// PROTOCOLS
+
+@protocol NSTextFinderClient <NSObject>
+
+@optional
+
+- (BOOL) isSelectable;
+- (BOOL) allowsMultipleSelection;
+- (BOOL) isEditable;
+
+- (NSString *) string;
+
+- (NSString *)stringAtIndex:(NSUInteger)characterIndex effectiveRange:(NSRangePointer)outRange endsWithSearchBoundary:(BOOL *)outFlag;
+- (NSUInteger)stringLength;
+
+- (NSRange) firstSelectedRange;
+  
+- (NSArray *) selectedRanges;
+- (void) setSelectedRanges: (NSArray *)ranges;  
+- (void)scrollRangeToVisible:(NSRange)range;
+- (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings;
+- (void) replaceCharactersInRange: (NSRange)range withString: (NSString *)string;
+- (void) didReplaceCharacters;
+- (NSView *) contentViewAtIndex: (NSUInteger)index effectiveCharacterRange: (NSRangePointer)outRange;
+- (NSArray *) rectsForCharacterRange: (NSRange)range;
+- (NSArray *) visibleCharacterRanges;
+- (void)drawCharactersInRange: (NSRange)range forContentView: (NSView *)view;
+
+@end
+
+
+@protocol NSTextFinderBarContainer <NSObject>
+
+@required
+- (NSView *) findBarView;
+- (void) setFindBarView: (NSView *)view;
+- (BOOL) isfindBarVisible;
+- (void) setFindBarVisible: (BOOL)flag;  
+- (void) findBarViewDidChangeHeight;
+
+@optional
+- (NSView *) contentView;
+
+@end
+
+
 
 #if	defined(__cplusplus)
 }
