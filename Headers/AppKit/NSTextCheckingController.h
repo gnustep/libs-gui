@@ -39,7 +39,12 @@ extern "C" {
 @class NSArray, NSDictionary, NSMenu;
 
 @interface NSTextCheckingController : NSObject
-
+{
+  id<NSTextCheckingClient> _client;
+  NSInteger _spellCheckerDocumentTag;
+  NSMenu *_menu;
+}
+  
 // initializer
 - (instancetype) initWithClient: (id<NSTextCheckingClient>)client;
 

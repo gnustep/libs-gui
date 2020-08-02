@@ -32,6 +32,9 @@
   self = [super init];
   if (self != nil)
     {
+      _client = client;
+      _spellCheckerDocumentTag = 0;
+      _menu = nil;
     }
   return self;
 }
@@ -39,16 +42,17 @@
 // properties...
 - (id<NSTextCheckingClient>) client
 {
-  return nil;
+  return _client;
 }
 
 - (NSInteger) spellCheckerDocumentTag
 {
-  return 0;
+  return _spellCheckerDocumentTag;
 }
 
 - (void) setSpellCheckerDocumentTag: (NSInteger)tag
 {
+  _spellCheckerDocumentTag = tag;
 }
 
 // instance methods...
