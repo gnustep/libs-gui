@@ -26,6 +26,7 @@
 #define _NSTextInputContext_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/NSTextInputClient.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 
@@ -33,9 +34,40 @@
 extern "C" {
 #endif
 
+typedef NSString* NSTextInputSourceIdentifier;
+  
 @interface NSTextInputContext : NSObject
 
++ (NSTextInputContext *) currentInputContext;
+
+- (instancetype) initWithClient: (id<NSTextInputClient>)client;
+
+- (id<NSTextInputClient>) client; 
+
+- (BOOL) acceptsGlyphInfo;
+- (void) setAccessGlyphInfo: (BOOL)flag;
+  
+- (NSArray *) allowedInputSourceLocales;
+- (void) setAllowedInputSourceLocales: (NSArray *)locales; // copy;
+  
+- (void) activate;
+- (void) deactivate;
+
+- (BOOL) handleEvent: (NSEvent *)event;
+
+- (void) discardMarkedText;
+
+- (void) invalidateCharacterCoordinates;
+
+- (NSArray *) keyboardInputSources;
+
+- (NSTextInputSourceIdentifier) selectedKeyboardInputSource;
+
++ (NSString *) localizedNameForInputSource:(NSTextInputSourceIdentifier)inputSourceIdentifier;
+  
 @end
+
+APPKIT_EXPORT NSNotificationName NSTextInputContextKeyboardSelectionDidChangeNotification;
 
 #if	defined(__cplusplus)
 }
