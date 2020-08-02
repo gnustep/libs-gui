@@ -22,11 +22,6 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder )
 > NSTableCellView.h *
 > NSTableRowView.h *
 > NSTableViewRowAction.h *
-> NSTextCheckingClient.h + 
-> NSTextCheckingController.h +
-> NSTextFinder.h +
-> NSTextInputClient.h +
-> NSTextInputContext.h +
 > NSTypesetter.h +
 > NSUserActivity.h -
 > NSWindowTab.h +

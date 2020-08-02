@@ -26,6 +26,11 @@
 #define _NSTextCheckingClient_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSRange.h>
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSGeometry.h>
+
+#import <AppKit/NSTextInputClient.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
@@ -33,7 +38,68 @@
 extern "C" {
 #endif
 
-@protocol NSTextCheckingClient
+enum
+{
+ NSTextInputTraitTypeDefault,
+ NSTextInputTraitTypeNo,
+ NSTextInputTraitTypeYes
+};
+typedef NSInteger NSTextInputTraitType;
+
+@class NSDictionary, NSCandidateListTouchBarItem;
+
+@protocol NSTextInputTraits
+
+@optional
+- (NSTextInputTraitType) autocorrectionType;
+- (void) setAutocorrectionType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) spellCheckingType;
+- (void) setSpellCheckingType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) grammarCheckingType;
+- (void) setGrammarCheckingType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) smartQuotesType;
+- (void) setSmartQuotesType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) smartDashesType;
+- (void) setSmartDashesType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) smartInsertDeleteType;
+- (void) setSmartInsertDeleteType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) textReplacementType;
+- (void) setTextReplacementType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) dataDetectionType;
+- (void) setDataDetectionType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) linkDetectionType;
+- (void) setLinkDetectionType: (NSTextInputTraitType)type;  
+- (NSTextInputTraitType) textCompletionType;
+- (void) setTextCompletionType: (NSTextInputTraitType)type;
+  
+@end
+
+
+@protocol NSTextCheckingClient <NSTextInputClient, NSTextInputTraits>
+
+@required
+- (void) addAnnotations: (NSDictionary *)annotations 
+                  range: (NSRange)range;
+
+- (NSAttributedString *) annotatedSubstringForProposedRange: (NSRange)range 
+                                                actualRange: (NSRangePointer)actualRange;
+
+- (NSCandidateListTouchBarItem *) candidateListTouchBarItem;
+  
+- (void) removeAnnotation: (NSAttributedStringKey)annotationName 
+                    range: (NSRange)range;
+  
+- (void) replaceCharactersInRange: (NSRange)range 
+              withAnnotatedString: (NSAttributedString *)annotatedString;
+  
+- (void) selectAndShowRange: (NSRange)range;
+  
+- (void) setAnnotations: (NSDictionary *)annotations 
+                  range: (NSRange)range;
+  
+- (NSView *) viewForRange: (NSRange)range 
+                firstRect: (NSRectPointer)firstRect 
+              actualRange: (NSRangePointer)actualRange;
 
 @end
 
