@@ -6101,8 +6101,8 @@ configuation! */
 
 - (NSRange) firstSelectedRange
 {
-  NSString *rangeString = [[self selectedRanges] objectAtIndex: 0];
-  return NSRangeFromString(rangeString);
+  NSValue *r = [[self selectedRanges] objectAtIndex: 0];
+  return [r rangeValue];
 }
 
 - (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings
@@ -6112,7 +6112,10 @@ configuation! */
 
 - (void) replaceCharactersInRange: (NSRange)range withString: (NSString *)string
 {
-  // nothing...
+  NSString *theString = [[self string] stringByReplacingCharactersInRange: range
+                                                               withString: string];
+  [self setString: theString];
+  [self didReplaceCharacters];
 }
 
 - (void) didReplaceCharacters
@@ -6127,12 +6130,30 @@ configuation! */
 
 - (NSArray *) rectsForCharacterRange: (NSRange)range
 {
-  return nil;
+  NSValue *value = [NSValue valueWithRect: [self rectForCharacterRange: range]];
+  NSArray *result = [NSArray arrayWithObject: value];
+  return result;
 }
 
 - (NSArray *) visibleCharacterRanges
 {
-  return nil;
+  NSArray *result = nil;
+  
+  if (_layoutManager)
+    {
+      const NSRect visibleRect = [self visibleRect];
+      
+      NSRange visibleGlyphRange = [_layoutManager glyphRangeForBoundingRect: visibleRect
+                                                            inTextContainer: _textContainer];
+      
+      NSRange visibleRange = [_layoutManager characterRangeForGlyphRange: visibleGlyphRange
+                                                        actualGlyphRange: NULL];
+
+      NSValue *value = [NSValue valueWithRange: visibleRange];
+      result = [NSArray arrayWithObject: value];
+    }
+ 
+  return result;
 }
 
 - (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
