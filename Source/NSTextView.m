@@ -6078,6 +6078,67 @@ configuation! */
 		withTextView: self];
 }
 
+// NSTextFinder methods implementation...
+// isSelectable, isEditable, string, selectedRanges, setSelectedRanges
+// implemented by NSTextView already...
+
+- (BOOL) allowsMultipleSelection
+{
+  return NO;
+}
+
+- (NSString *) stringAtIndex: (NSUInteger)characterIndex
+              effectiveRange: (NSRangePointer)outRange
+      endsWithSearchBoundary: (BOOL *)outFlag
+{
+  return nil;
+}
+
+- (NSUInteger) stringLength
+{
+  return [[self string] length];
+}
+
+- (NSRange) firstSelectedRange
+{
+  NSString *rangeString = [[self selectedRanges] objectAtIndex: 0];
+  return NSRangeFromString(rangeString);
+}
+
+- (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings
+{
+  return YES;
+}
+
+- (void) replaceCharactersInRange: (NSRange)range withString: (NSString *)string
+{
+  // nothing...
+}
+
+- (void) didReplaceCharacters
+{
+  // nothing...
+}
+
+- (NSView *) contentViewAtIndex: (NSUInteger)index effectiveCharacterRange: (NSRangePointer)outRange
+{
+  return nil;
+}
+
+- (NSArray *) rectsForCharacterRange: (NSRange)range
+{
+  return nil;
+}
+
+- (NSArray *) visibleCharacterRanges
+{
+  return nil;
+}
+
+- (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
+{
+}
+
 @end
 
 

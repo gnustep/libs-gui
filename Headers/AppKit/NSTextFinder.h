@@ -115,21 +115,24 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 
 - (NSString *) string;
 
-- (NSString *)stringAtIndex:(NSUInteger)characterIndex effectiveRange:(NSRangePointer)outRange endsWithSearchBoundary:(BOOL *)outFlag;
-- (NSUInteger)stringLength;
+- (NSString *) stringAtIndex: (NSUInteger)characterIndex
+              effectiveRange: (NSRangePointer)outRange
+      endsWithSearchBoundary: (BOOL *)outFlag;
+  
+- (NSUInteger) stringLength;
 
 - (NSRange) firstSelectedRange;
   
 - (NSArray *) selectedRanges;
 - (void) setSelectedRanges: (NSArray *)ranges;  
-- (void)scrollRangeToVisible:(NSRange)range;
+- (void) scrollRangeToVisible:(NSRange)range;
 - (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings;
 - (void) replaceCharactersInRange: (NSRange)range withString: (NSString *)string;
 - (void) didReplaceCharacters;
 - (NSView *) contentViewAtIndex: (NSUInteger)index effectiveCharacterRange: (NSRangePointer)outRange;
 - (NSArray *) rectsForCharacterRange: (NSRange)range;
 - (NSArray *) visibleCharacterRanges;
-- (void)drawCharactersInRange: (NSRange)range forContentView: (NSView *)view;
+- (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view;
 
 @end
 
@@ -147,8 +150,6 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 - (NSView *) contentView;
 
 @end
-
-
 
 #if	defined(__cplusplus)
 }
