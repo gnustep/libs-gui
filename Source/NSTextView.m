@@ -6082,7 +6082,7 @@ configuation! */
 }
 
 // NSTextFinder methods implementation...
-// isSelectable, isEditable, string, selectedRanges, setSelectedRanges
+// isSelectable, isEditable, string, selectedRanges, setSelectedRanges, replaceCharactersInRange:withString:
 // implemented by NSTextView already...
 
 - (BOOL) allowsMultipleSelection
@@ -6111,14 +6111,6 @@ configuation! */
 - (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings
 {
   return YES;
-}
-
-- (void) replaceCharactersInRange: (NSRange)range withString: (NSString *)string
-{
-  NSString *theString = [[self string] stringByReplacingCharactersInRange: range
-                                                               withString: string];
-  [self setString: theString];
-  [self didReplaceCharacters];
 }
 
 - (void) didReplaceCharacters
