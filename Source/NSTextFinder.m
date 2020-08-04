@@ -33,11 +33,42 @@
 @implementation NSTextFinder
 
 // Validating and performing
-- (void)performAction:(NSTextFinderAction)op
+- (void) performAction: (NSTextFinderAction)op
 {
+  switch (op)
+    {
+    case NSTextFinderActionShowFindInterface:
+      break;        
+    case NSTextFinderActionNextMatch:
+      break;        
+    case NSTextFinderActionPreviousMatch:
+      break;        
+    case NSTextFinderActionReplaceAll:
+      break;        
+    case NSTextFinderActionReplace:
+      break;        
+    case NSTextFinderActionReplaceAndFind:
+      break;        
+    case NSTextFinderActionSetSearchString:
+      break;        
+    case NSTextFinderActionReplaceAllInSelection:
+      break;        
+    case NSTextFinderActionSelectAll:
+      break;        
+    case NSTextFinderActionSelectAllInSelection:
+      break;        
+    case NSTextFinderActionHideFindInterface:
+      break;        
+    case NSTextFinderActionShowReplaceInterface:
+      break;        
+    case NSTextFinderActionHideReplaceInterface:
+      break;        
+    default:
+      break;
+    }
 }
 
-- (BOOL)validateAction:(NSTextFinderAction)op
+- (BOOL) validateAction: (NSTextFinderAction)op
 {
   return NO;
 }

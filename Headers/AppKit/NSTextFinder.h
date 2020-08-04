@@ -87,9 +87,9 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 }
   
 // Validating and performing
-- (void)performAction:(NSTextFinderAction)op;
-- (BOOL)validateAction:(NSTextFinderAction)op;
-- (void)cancelFindIndicator;
+- (void) performAction: (NSTextFinderAction)op;
+- (BOOL) validateAction: (NSTextFinderAction)op;
+- (void) cancelFindIndicator;
 
 // Properties
 - (id<NSTextFinderClient>) client;
