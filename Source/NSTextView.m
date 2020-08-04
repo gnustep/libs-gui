@@ -6158,6 +6158,15 @@ configuation! */
 
 - (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
 {
+  NSArray *rectsArray = [self rectsForCharacterRange: range];
+  NSAttributedString *charactersInRange = [[self string] substringWithRange: range];
+  NSValue *v = [rectsArray objectAtIndex: 0];
+  NSRect rect = [v rectValue];
+  
+  [charactersInRange drawWithRect: rect 
+                          options: 0
+                       attributes: nil
+                          context: nil];
 }
 
 @end

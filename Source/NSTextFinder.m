@@ -23,10 +23,12 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
 
 #import "AppKit/NSTextFinder.h"
 
 @implementation NSTextFinder
+
 // Validating and performing
 - (void)performAction:(NSTextFinderAction)op
 {
@@ -60,36 +62,39 @@
 {
 }
 
-- (BOOL) findIndicatodNeedsUpdate
+- (BOOL) findIndicatorNeedsUpdate
 {
-  return NO;
+  return _findIndicatorNeedsUpdate;
 }
 
 - (void) setFindIndicatorNeedsUpdate: (BOOL)flag
 {
+  _findIndicatorNeedsUpdate = flag;
 }
 
 - (BOOL) isIncrementalSearchingEnabled
 {
-  return NO;
+  return _incrementalSearchingEnabled;
 }
 
 - (void) setIncrementalSearchingEnabled: (BOOL)flag
 {
+  _incrementalSearchingEnabled = flag;
 }
 
 - (BOOL) incrementalSearchingShouldDimContentView
 {
-  return NO;
+  return _incrementalSearchingShouldDimContentView;
 }
 
 - (void) setIncrementalSearchingShouldDimContentView: (BOOL)flag
 {
+  _incrementalSearchingShouldDimContentView = flag;
 }
 
 - (NSArray *) incrementalMatchRanges
 {
-  return nil;
+  return _incrementalMatchRanges;
 }
 
 + (void) drawIncrementalMatchHighlightInRect: (NSRect)rect
@@ -98,12 +103,46 @@
 
 - (void) noteClientStringWillChange
 {
+  // nothing...
 }
 
 // NSCoding...
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
-  return [super init];
+  self = [super init];
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          if ([coder containsValueForKey: @"NSFindIndicatorNeedsUpdate"])
+            {
+              _findIndicatorNeedsUpdate = [coder decodeBoolForKey: @"NSFindIndicatorNeedsUpdate"];
+            }
+          if ([coder containsValueForKey: @"NSIncrementalSearchingEnabled"])
+            {
+              _incrementalSearchingEnabled = [coder decodeBoolForKey: @"NSIncrementalSearchingEnabled"];
+            }
+          if ([coder containsValueForKey: @"NSIncrementalSearchingShouldDimContentView"])
+            {
+              _incrementalSearchingShouldDimContentView = [coder decodeBoolForKey: @"NSIncrementalSearchingShouldDimContentView"];
+            }
+          if ([coder containsValueForKey: @"NSIncrementalMatchRanges"])
+            {
+              ASSIGN(_incrementalMatchRanges, [coder decodeObjectForKey: @"NSIncrementalMatchRanges"]);
+            }
+        }
+      else
+        {
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_findIndicatorNeedsUpdate];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_incrementalSearchingEnabled];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_incrementalSearchingShouldDimContentView];
+          ASSIGN(_incrementalMatchRanges, [coder decodeObject]);
+        }
+    }
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder

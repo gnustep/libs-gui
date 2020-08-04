@@ -69,6 +69,7 @@ enum
 typedef NSInteger NSTextFinderMatchingType;
 
 typedef NSString* NSPasteboardTypeTextFinderOptionKey;
+
 APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensitiveKey;
 APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey;
 
@@ -76,7 +77,11 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 {
   IBOutlet id<NSTextFinderClient> _client;
   IBOutlet id<NSTextFinderBarContainer> _findBarContainer;
+  
   BOOL _findIndicatorNeedsUpdate;
+  BOOL _incrementalSearchingEnabled;
+  BOOL _incrementalSearchingShouldDimContentView;
+  NSArray *_incrementalMatchRanges;
 }
   
 // Validating and performing
@@ -89,7 +94,7 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 - (void) setClient: (id<NSTextFinderClient>) client;
 - (id<NSTextFinderBarContainer>) findBarContainer;
 - (void) setFindBarContainer: (id<NSTextFinderBarContainer>) findBarContainer;
-- (BOOL) findIndicatodNeedsUpdate;
+- (BOOL) findIndicatorNeedsUpdate;
 - (void) setFindIndicatorNeedsUpdate: (BOOL)flag;
 - (BOOL) isIncrementalSearchingEnabled;
 - (void) setIncrementalSearchingEnabled: (BOOL)flag;
@@ -112,17 +117,12 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 - (BOOL) isSelectable;
 - (BOOL) allowsMultipleSelection;
 - (BOOL) isEditable;
-
 - (NSString *) string;
-
 - (NSString *) stringAtIndex: (NSUInteger)characterIndex
               effectiveRange: (NSRangePointer)outRange
       endsWithSearchBoundary: (BOOL *)outFlag;
-  
 - (NSUInteger) stringLength;
-
 - (NSRange) firstSelectedRange;
-  
 - (NSArray *) selectedRanges;
 - (void) setSelectedRanges: (NSArray *)ranges;  
 - (void) scrollRangeToVisible:(NSRange)range;
