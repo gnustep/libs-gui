@@ -147,6 +147,27 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _findIndicatorNeedsUpdate
+                 forKey: @"NSFindIndicatorNeedsUpdate"];
+      [coder encodeBool: _incrementalSearchingEnabled
+                 forKey: @"NSIncrementalSearchingEnabled"];
+      [coder encodeBool: _incrementalSearchingShouldDimContentView
+                 forKey: @"NSIncrementalSearchingShouldDimContentView"];
+      [coder encodeObject: _incrementalMatchRanges
+                   forKey: @"NSIncrementalMatchRanges"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_findIndicatorNeedsUpdate];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_incrementalSearchingEnabled];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_incrementalSearchingShouldDimContentView];
+      [coder encodeObject: _incrementalMatchRanges];
+    }
 }
 
 @end

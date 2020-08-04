@@ -31,7 +31,6 @@
 #define _GS_TEXT_FINDER_H
 
 #import <Foundation/NSObject.h>
-#import "AppKit/NSTextFinder.h"
 
 @class NSString;
 @class NSButton;
@@ -39,7 +38,7 @@
 @class NSPanel;
 @class NSTextField;
 
-@interface GSTextFinder : NSTextFinder
+@interface GSTextFinder : NSObject
 {
   // local attributes
   NSString *findString;

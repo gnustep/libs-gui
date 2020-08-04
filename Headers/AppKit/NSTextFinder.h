@@ -82,6 +82,8 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
   BOOL _incrementalSearchingEnabled;
   BOOL _incrementalSearchingShouldDimContentView;
   NSArray *_incrementalMatchRanges;
+
+  id _finder;
 }
   
 // Validating and performing
