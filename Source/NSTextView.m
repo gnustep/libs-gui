@@ -61,6 +61,7 @@
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSUndoManager.h>
 #import <Foundation/NSValue.h>
+
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSClipView.h"
@@ -89,6 +90,8 @@
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSStringDrawing.h"
+
 #import "GSGuiPrivate.h"
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
@@ -6159,14 +6162,13 @@ configuation! */
 - (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
 {
   NSArray *rectsArray = [self rectsForCharacterRange: range];
-  NSAttributedString *charactersInRange = [[self string] substringWithRange: range];
+  NSString *charactersInRange = [[self string] substringWithRange: range];
   NSValue *v = [rectsArray objectAtIndex: 0];
   NSRect rect = [v rectValue];
   
   [charactersInRange drawWithRect: rect 
                           options: 0
-                       attributes: nil
-                          context: nil];
+                       attributes: nil];
 }
 
 @end

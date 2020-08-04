@@ -46,34 +46,48 @@
 // Operation methods
 - (void) _showFindInterface
 {
+  [_finder showFindPanel];
 }
 
 - (void) _nextMatch
 {
+  [_finder findStringInTextView: (NSTextView *)_client
+                        forward: YES];
 }
 
 - (void) _previousMatch
 {
+  [_finder findStringInTextView: (NSTextView *)_client
+                        forward: NO];
 }
 
 - (void) _replaceAll
 {
+  [_finder replaceAllInTextView: (NSTextView *)_client
+                onlyInSelection: NO];
 }
 
 - (void) _replace
 {
+  [_finder replaceStringInTextView: (NSTextView *)_client];
 }
 
 - (void) _replaceAndFind
 {
+   [_finder replaceStringInTextView: (NSTextView *)_client];
+   [_finder findStringInTextView: (NSTextView *)_client
+                         forward: YES];
 }
 
 - (void) _setSearchString
 {
+  [_finder takeFindStringFromTextView: (NSTextView *)_client];
 }
 
 - (void) _replaceAllInSelection
 {
+  [_finder replaceAllInTextView: (NSTextView *)_client
+                onlyInSelection: YES];
 }
 
 - (void) _selectAll
@@ -90,6 +104,7 @@
 
 - (void) _showReplaceInterface
 {
+  [_finder showFindPanel];
 }
 
 - (void) _hideReplaceInterface
@@ -148,7 +163,7 @@
 
 - (BOOL) validateAction: (NSTextFinderAction)op
 {
-  return NO;
+  return YES;
 }
 
 - (void)cancelFindIndicator;

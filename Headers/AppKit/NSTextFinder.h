@@ -113,9 +113,9 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 // PROTOCOLS
 
 @protocol NSTextFinderClient <NSObject>
-
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
-
+#endif
 - (BOOL) isSelectable;
 - (BOOL) allowsMultipleSelection;
 - (BOOL) isEditable;
@@ -140,15 +140,18 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
 
 
 @protocol NSTextFinderBarContainer <NSObject>
-
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
+#endif
 - (NSView *) findBarView;
 - (void) setFindBarView: (NSView *)view;
 - (BOOL) isfindBarVisible;
 - (void) setFindBarVisible: (BOOL)flag;  
 - (void) findBarViewDidChangeHeight;
 
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
+#endif
 - (NSView *) contentView;
 
 @end
