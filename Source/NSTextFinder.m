@@ -26,6 +26,9 @@
 #import <Foundation/NSArchiver.h>
 
 #import "AppKit/NSTextFinder.h"
+#import "AppKit/NSTextView.h"
+
+#import "GSTextFinder.h"
 
 @implementation NSTextFinder
 
@@ -46,20 +49,22 @@
 // Properties
 - (id<NSTextFinderClient>) client
 {
-  return nil;
+  return _client;
 }
 
 - (void) setClient: (id<NSTextFinderClient>) client
 {
+  _client = client;
 }
 
 - (id<NSTextFinderBarContainer>) findBarContainer
 {
-  return nil;
+  return _findBarContainer;
 }
 
 - (void) setFindBarContainer: (id<NSTextFinderBarContainer>) findBarContainer
 {
+  _findBarContainer = findBarContainer;
 }
 
 - (BOOL) findIndicatorNeedsUpdate
