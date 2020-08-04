@@ -32,6 +32,17 @@
 
 @implementation NSTextFinder
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      // initialize finder...
+      _finder = [GSTextFinder sharedTextFinder];
+    }
+  return self;
+}
+
 // Operation methods
 - (void) _showFindInterface
 {
@@ -233,6 +244,9 @@
             {
               ASSIGN(_incrementalMatchRanges, [coder decodeObjectForKey: @"NSIncrementalMatchRanges"]);
             }
+
+          // initialize finder...
+          _finder = [GSTextFinder sharedTextFinder];
         }
       else
         {
