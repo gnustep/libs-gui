@@ -42,7 +42,6 @@ extern "C" {
 {
   id<NSTextCheckingClient> _client;
   NSInteger _spellCheckerDocumentTag;
-  NSMenu *_menu;
 }
   
 // initializer

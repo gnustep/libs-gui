@@ -34,7 +34,6 @@
     {
       _client = client;
       _spellCheckerDocumentTag = 0;
-      _menu = nil;
     }
   return self;
 }
