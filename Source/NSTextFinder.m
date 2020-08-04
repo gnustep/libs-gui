@@ -32,38 +32,105 @@
 
 @implementation NSTextFinder
 
+// Operation methods
+- (void) _showFindInterface
+{
+}
+
+- (void) _nextMatch
+{
+}
+
+- (void) _previousMatch
+{
+}
+
+- (void) _replaceAll
+{
+}
+
+- (void) _replace
+{
+}
+
+- (void) _replaceAndFind
+{
+}
+
+- (void) _setSearchString
+{
+}
+
+- (void) _replaceAllInSelection
+{
+}
+
+- (void) _selectAll
+{
+}
+
+- (void) _selectAllInSelection
+{
+}
+
+- (void) _hideFindInterface
+{
+}
+
+- (void) _showReplaceInterface
+{
+}
+
+- (void) _hideReplaceInterface
+{
+}
+
 // Validating and performing
 - (void) performAction: (NSTextFinderAction)op
 {
   switch (op)
     {
     case NSTextFinderActionShowFindInterface:
-      break;        
+      [self _showFindInterface];
+      break;
     case NSTextFinderActionNextMatch:
-      break;        
+      [self _nextMatch];
+      break;
     case NSTextFinderActionPreviousMatch:
-      break;        
+      [self _previousMatch];
+      break;
     case NSTextFinderActionReplaceAll:
-      break;        
+      [self _replaceAll];
+      break;
     case NSTextFinderActionReplace:
-      break;        
+      [self _replace];
+      break;
     case NSTextFinderActionReplaceAndFind:
-      break;        
+      [self _replaceAndFind];
+      break;
     case NSTextFinderActionSetSearchString:
-      break;        
+      [self _setSearchString];
+      break;
     case NSTextFinderActionReplaceAllInSelection:
-      break;        
+      [self _replaceAllInSelection];
+      break;
     case NSTextFinderActionSelectAll:
-      break;        
+      [self _selectAll];
+      break;
     case NSTextFinderActionSelectAllInSelection:
-      break;        
+      [self _selectAllInSelection];
+      break;
     case NSTextFinderActionHideFindInterface:
-      break;        
+      [self _hideFindInterface];
+      break;
     case NSTextFinderActionShowReplaceInterface:
-      break;        
+      [self _showReplaceInterface];
+      break;
     case NSTextFinderActionHideReplaceInterface:
-      break;        
+      [self _hideReplaceInterface];
+      break;
     default:
+      NSLog(@"Unknown operation: %ld", op);
       break;
     }
 }
