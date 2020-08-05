@@ -25,33 +25,3 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder )
 > NSUserActivity.h -
 > NSWindowTab.h +
 > NSWindowTabGroup.h +
-
-Mac Specific
----
-> NSButtonTouchBarItem.h
-> NSCandidateListTouchBarItem.h
-> NSColorPickerTouchBarItem.h
-> NSCustomTouchBarItem.h
-> NSGroupTouchBarItem.h
-> NSPickerTouchBarItem.h
-> NSPopoverTouchBarItem.h
-> NSSharingServicePickerTouchBarItem.h
-> NSSliderTouchBarItem.h
-> NSStepperTouchBarItem.h
-> NSTouchBarItem.h
-> NSClickGestureRecognizer.h
-> NSMagnificationGestureRecognizer.h
-> NSPanGestureRecognizer.h
-> NSPressGestureRecognizer.h
-> NSRotationGestureRecognizer.h
-> NSApplicationScripting.h
-> NSDocumentScripting.h
-> NSTextStorageScripting.h
-> NSWindowScripting.h
-> NSHapticFeedback.h
-> NSAppleScriptExtensions.h
-> NSAlignmentFeedbackFilter.h
-> NSTouch.h
-> NSTouchBar.h
-> NSQuickDrawView.h
-> NSPressureConfiguration.h
