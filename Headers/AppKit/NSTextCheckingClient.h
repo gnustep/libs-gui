@@ -78,6 +78,7 @@ typedef NSInteger NSTextInputTraitType;
 
 
 @protocol NSTextCheckingClient <NSTextInputClient, NSTextInputTraits>
+
 #if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
 #endif
