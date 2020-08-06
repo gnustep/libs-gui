@@ -22,9 +22,89 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
+#import <Foundation/NSString.h>
 #import "AppKit/NSTextInputContext.h"
 
+NSTextInputContext *__currentInputContext;
+
 @implementation NSTextInputContext
+
++ (NSTextInputContext *) currentInputContext
+{
+  return __currentInputContext;
+}
+
+- (instancetype) initWithClient: (id<NSTextInputClient>)client
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _client = client;
+    }
+  return self;
+}
+
+- (id<NSTextInputClient>) client
+{
+  return _client;
+}
+
+- (BOOL) acceptsGlyphInfo
+{
+  return _acceptsGlyphInfo;
+}
+
+- (void) setAccessGlyphInfo: (BOOL)flag
+{
+  _acceptsGlyphInfo = flag;
+}
+  
+- (NSArray *) allowedInputSourceLocales
+{
+  return _allowedInputSourceLocales;
+}
+
+- (void) setAllowedInputSourceLocales: (NSArray *)locales
+{
+  ASSIGNCOPY(_allowedInputSourceLocales, locales);
+}
+  
+- (void) activate
+{
+}
+
+- (void) deactivate
+{
+}
+
+- (BOOL) handleEvent: (NSEvent *)event
+{
+  return YES;
+}
+
+- (void) discardMarkedText
+{
+}
+
+- (void) invalidateCharacterCoordinates
+{
+}
+
+- (NSArray *) keyboardInputSources
+{
+  return _keyboardInputSources;
+}
+
+- (NSTextInputSourceIdentifier) selectedKeyboardInputSource
+{
+  return _selectedKeyboardInputSource;
+}
+
++ (NSString *) localizedNameForInputSource:(NSTextInputSourceIdentifier)inputSourceIdentifier
+{
+  return nil;
+}
 
 @end
 

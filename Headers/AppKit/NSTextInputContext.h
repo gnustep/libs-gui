@@ -34,9 +34,18 @@
 extern "C" {
 #endif
 
+@class NSArray, NSString;
+  
 typedef NSString* NSTextInputSourceIdentifier;
   
 @interface NSTextInputContext : NSObject
+{
+  id<NSTextInputClient> _client;
+  BOOL _acceptsGlyphInfo;
+  NSArray *_allowedInputSourceLocales;
+  NSArray *_keyboardInputSources;
+  NSTextInputSourceIdentifier _selectedKeyboardInputSource;
+}
 
 + (NSTextInputContext *) currentInputContext;
 
