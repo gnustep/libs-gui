@@ -50,7 +50,9 @@ typedef NSInteger NSTextInputTraitType;
 
 @protocol NSTextInputTraits
 
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
+#endif
 - (NSTextInputTraitType) autocorrectionType;
 - (void) setAutocorrectionType: (NSTextInputTraitType)type;  
 - (NSTextInputTraitType) spellCheckingType;
@@ -76,8 +78,9 @@ typedef NSInteger NSTextInputTraitType;
 
 
 @protocol NSTextCheckingClient <NSTextInputClient, NSTextInputTraits>
-
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
+#endif
 - (void) addAnnotations: (NSDictionary *)annotations 
                   range: (NSRange)range;
 
