@@ -24,6 +24,7 @@
 
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSSplitViewItem.h"
+#import "AppKit/NSViewController.h"
 
 @implementation NSSplitViewItem
 - (instancetype) initWithViewController: (NSViewController *)viewController

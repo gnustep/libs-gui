@@ -34,6 +34,11 @@ static Class persistentDocumentClass = nil;
 
 @implementation NSPersistentDocument
 
++ (void) setPersistentDocumentClass: (Class)clz
+{
+  persistentDocumentClass = clz;
+}
+
 + (void) initialize
 {
   if (self == [NSPersistentDocument class])
@@ -41,11 +46,6 @@ static Class persistentDocumentClass = nil;
       [self setVersion: 1];
       [self setPersistentDocumentClass: [NSPersistentDocument class]];
     }
-}
-
-+ (void) setPersistentDocumentClass: (Class)clz
-{
-  persistentDocumentClass = clz;
 }
 
 + (id) allocWithZone: (NSZone *)z

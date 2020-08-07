@@ -37,6 +37,7 @@
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSStoryboard.h"
+#import "AppKit/NSWindow.h"
 #import "AppKit/NSWindowController.h"
 
 @implementation NSViewController

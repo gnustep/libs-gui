@@ -1,3 +1,11 @@
+2020-08-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStoryboardTransform.h,
+	* Source/NSPageController.m,
+	* Source/NSPersistentDocument.m,
+	* Source/NSSplitViewItem.m,
+	* Source/NSViewController.m: Fix compiler warnings mit gcc.
+
 2020-07-31 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add header
