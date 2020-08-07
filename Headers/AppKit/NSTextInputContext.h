@@ -57,8 +57,8 @@ typedef NSString* NSTextInputSourceIdentifier;
 - (void) setAccessGlyphInfo: (BOOL)flag;
   
 - (NSArray *) allowedInputSourceLocales;
-- (void) setAllowedInputSourceLocales: (NSArray *)locales; // copy;
-  
+- (void) setAllowedInputSourceLocales: (NSArray *)locales;
+
 - (void) activate;
 - (void) deactivate;
 
