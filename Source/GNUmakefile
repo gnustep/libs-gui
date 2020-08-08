@@ -115,6 +115,8 @@ NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
+NSGridView.m \
+NSGridCell.m \
 NSGroupTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSPanGestureRecognizer.m \
@@ -131,6 +133,7 @@ NSSlider.m \
 NSSliderCell.m \
 NSSliderAccessory.m \
 NSSliderTouchBarItem.m \
+NSStackView.m \
 NSStepperTouchBarItem.m \
 NSSwitch.m \
 NSTitlebarAccessoryViewController.m \
@@ -442,6 +445,8 @@ NSGradient.h \
 NSGroupTouchBarItem.h \
 NSGlyphGenerator.h \
 NSGraphicsContext.h \
+NSGridView.h \
+NSGridCell.h \
 NSHelpPanel.h \
 NSHelpManager.h \
 NSImage.h \
@@ -536,6 +541,7 @@ NSSpellServer.h \
 NSSplitView.h \
 NSSplitViewController.h \
 NSSplitViewItem.h \
+NSStackView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
