@@ -40,7 +40,9 @@ extern "C" {
 
 @protocol NSTextInputClient
 
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
+#endif
 // Marked text
 - (BOOL) hasMarkedText;
 - (NSRange) markedRange;
@@ -65,7 +67,9 @@ extern "C" {
 // Binding keystrokes
 - (void) doCommandBySelector: (SEL)selector;
 
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
+#endif
 // Optional methods
 - (NSAttributedString *) attributedString;
 - (CGFloat) fractionOfDistanceThroughGlyphForPoint: (NSPoint)point;
