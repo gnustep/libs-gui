@@ -26,5 +26,386 @@
 
 @implementation NSGridView
 
+- (instancetype) initWithFrame: (NSRect)frameRect
+{
+  return nil;
+}
+
++ (instancetype) gridViewWithNumberOfColumns: (NSInteger)columnCount rows: (NSInteger)rowCount
+{
+  return nil;
+}
+
++ (instancetype) gridViewWithViews: (NSArray *)rows
+{
+  return nil;
+}
+
+- (NSInteger) numberOfRows
+{
+  return 0;
+}
+
+- (NSInteger) numberOfColumns
+{
+  return 0;
+}
+
+- (NSGridRow *) rowAtIndex: (NSInteger)index
+{
+  return nil;
+}
+
+- (NSInteger) indexOfRow: (NSGridRow *)row
+{
+  return 0;
+}
+
+- (NSGridColumn *) columnAtIndex: (NSInteger)index
+{
+  return nil;
+}
+
+- (NSInteger) indexOfColumn: (NSGridColumn *)column
+{
+  return 0;
+}
+
+- (NSGridCell *) cellAtColumnIndex: (NSInteger)columnIndex rowIndex: (NSInteger)rowIndex
+{
+  return nil;
+}
+
+- (NSGridCell *) cellForView: (NSView*)view
+{
+  return nil;
+}
+
+- (NSGridRow *) addRowWithViews: (NSArray *)views
+{
+  return nil;
+}
+
+- (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
+{
+  return nil;
+}
+
+- (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
+{
+}
+
+- (void) removeRowAtIndex: (NSInteger)index
+{
+}
+
+- (NSGridColumn *) addColumnWithViews: (NSArray*)views
+{
+  return nil;
+}
+
+- (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
+{
+  return nil;
+}
+
+- (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
+{
+}
+
+- (void) removeColumnAtIndex: (NSInteger)index
+{
+}
+
+- (NSGridCellPlacement) xPlacement
+{
+  return 0;
+}
+
+- (void) setXPlacement: (NSGridCellPlacement)x;
+{
+}
+
+- (NSGridCellPlacement) yPlacement;
+{
+  return 0;
+}
+
+- (void) setYPlacement: (NSGridCellPlacement)y;
+{
+}
+
+- (NSGridRowAlignment) rowAlignment;
+{
+  return 0;
+}
+
+- (void) setRowAlignment: (NSGridRowAlignment)a;
+{
+}
+
+- (CGFloat) rowSpacing
+{
+  return 0.0;
+}
+
+- (void) setRowSpacing: (CGFloat)f
+{
+}
+
+- (CGFloat) columnSpacing
+{
+  return 0.0;
+}
+
+- (void) setColumnSpacing: (CGFloat)f
+{
+}
+  
+- (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
+{
+}
+
+// coding
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
 @end
 
+
+
+/// Cell ///
+@implementation NSGridCell
+
+- (NSView *) contentView
+{
+  return nil;
+}
+
+- (void) setContentView: (NSView *)v
+{
+}
+  
++ (NSView *) emptyContentView
+{
+  return nil;
+}
+
+// Weak references to row/column
+- (NSGridRow *) row
+{
+  return nil;
+}
+
+- (NSGridColumn *) column
+{
+  return nil;
+}
+
+// Placement
+- (NSGridCellPlacement) xPlacement
+{
+  return 0;
+}
+
+- (void) setXPlacement: (NSGridCellPlacement)x
+{
+}
+
+- (NSGridCellPlacement) yPlacement
+{
+  return 0;
+}
+
+- (void) setYPlacement: (NSGridCellPlacement)y
+{
+}
+
+- (NSGridRowAlignment) rowAlignment
+{
+  return 0;
+}
+
+- (void) setRowAlignment: (NSGridRowAlignment)a
+{
+}
+
+// Constraints
+- (NSArray *) customPlacementConstraints
+{
+  return nil;
+}
+
+// coding
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+@end
+
+
+/// Column ///
+@implementation NSGridColumn
+
+- (NSGridView *) gridView
+{
+  return nil;
+}
+
+- (NSInteger) numberOfCells
+{
+  return 0;
+}
+
+- (NSGridCell *) cellAtIndex:(NSInteger)index
+{
+  return nil;
+}
+
+- (NSGridCellPlacement) xPlacement
+{
+  return 0;
+}
+
+- (void) setXPlacement: (NSGridCellPlacement)x
+{
+}
+
+- (CGFloat) width
+{
+  return 0.0;
+}
+
+- (void) setWidth: (CGFloat)f
+{
+}
+
+- (CGFloat) leadingPadding
+{
+  return 0.0;
+}
+
+- (void) setLeadingPadding: (CGFloat)f
+{
+}
+
+- (CGFloat) trailingPadding
+{
+  return 0.0;
+}
+
+- (void) setTrailingPadding: (CGFloat)f
+{
+}
+
+- (BOOL) isHidden
+{
+  return NO;
+}
+
+- (void) mergeCellsInRange: (NSRange)range
+{
+}
+
+// coding
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+@end
+
+
+/// Row ///
+@implementation NSGridRow
+
+- (NSGridView *) gridView
+{
+  return nil;
+}
+
+- (NSInteger) numberOfCells
+{
+  return 0;
+}
+
+- (NSGridCell *) cellAtIndex:(NSInteger)index
+{
+  return nil;
+}
+
+- (NSGridCellPlacement) yPlacement
+{
+  return 0;
+}
+
+- (void) setYPlacement: (NSGridCellPlacement)x
+{
+}
+
+- (CGFloat) height
+{
+  return 0.0;
+}
+
+- (void) setHeight: (CGFloat)f
+{
+}
+
+- (CGFloat) topPadding
+{
+  return 0.0;
+}
+
+- (void) setTopPadding: (CGFloat)f
+{
+}
+
+- (CGFloat) bottomPadding
+{
+  return 0.0;
+}
+
+- (void) setBottomPadding: (CGFloat)f
+{
+}
+
+- (BOOL) isHidden
+{
+  return NO;
+}
+
+- (void) mergeCellsInRange: (NSRange)range
+{
+}
+
+// coding
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  return self;
+}
+
+@end
