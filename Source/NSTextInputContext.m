@@ -55,7 +55,7 @@ NSTextInputContext *__currentInputContext;
   return _acceptsGlyphInfo;
 }
 
-- (void) setAccessGlyphInfo: (BOOL)flag
+- (void) setAcceptsGlyphInfo: (BOOL)flag
 {
   _acceptsGlyphInfo = flag;
 }

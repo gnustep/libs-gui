@@ -54,7 +54,7 @@ typedef NSString* NSTextInputSourceIdentifier;
 - (id<NSTextInputClient>) client; 
 
 - (BOOL) acceptsGlyphInfo;
-- (void) setAccessGlyphInfo: (BOOL)flag;
+- (void) setAcceptsGlyphInfo: (BOOL)flag;
   
 - (NSArray *) allowedInputSourceLocales;
 - (void) setAllowedInputSourceLocales: (NSArray *)locales;
