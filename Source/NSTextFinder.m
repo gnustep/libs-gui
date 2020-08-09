@@ -38,7 +38,7 @@
   if (self != nil)
     {
       // initialize finder...
-      _finder = [GSTextFinder sharedTextFinder];
+      _finder = [[GSTextFinder alloc] init];
     }
   return self;
 }
