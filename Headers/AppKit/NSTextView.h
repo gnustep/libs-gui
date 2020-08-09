@@ -248,9 +248,6 @@ therefore be stored in the NSLayoutManager to avoid problems.
   // Text checking (spelling/grammar)
   NSTimer *_textCheckingTimer;
   NSRect _lastCheckedRect;
-
-  // NSTextFinder vars...
-  NSArray *_selectedRanges;
 }
 
 

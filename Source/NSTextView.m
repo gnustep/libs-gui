@@ -6115,7 +6115,7 @@ configuation! */
 
 - (void) didReplaceCharacters
 {
-  // nothing...
+  [self didChangeText];
 }
 
 - (NSView *) contentViewAtIndex: (NSUInteger)index effectiveCharacterRange: (NSRangePointer)outRange
