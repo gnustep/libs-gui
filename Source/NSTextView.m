@@ -6110,6 +6110,18 @@ configuation! */
 
 - (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings
 {
+  NSUInteger idx = 0;
+  FOR_IN(NSValue*, rv, ranges)
+    {
+      NSRange r = [rv rangeValue];
+      NSString *str = [strings objectAtIndex: idx];
+      if (![self shouldChangeTextInRange: r replacementString: str])
+        {
+          return NO;
+        }
+      idx++;
+    }
+  END_FOR_IN(ranges);
   return YES;
 }
 
