@@ -112,6 +112,19 @@
 }
 
 // Validating and performing
+- (void) performTextFinderAction: (id)sender
+{
+  if (_finder == nil)
+    {
+      _finder = [[GSTextFinder alloc] init];
+    }
+}
+
+- (void) performFindPanelAction: (id)sender
+{
+  [self performAction: [sender tag]];
+}
+
 - (void) performAction: (NSTextFinderAction)op
 {
   switch (op)
