@@ -6137,8 +6137,26 @@ configuation! */
 
 - (NSArray *) rectsForCharacterRange: (NSRange)range
 {
-  NSValue *value = [NSValue valueWithRect: [self rectForCharacterRange: range]];
-  NSArray *result = [NSArray arrayWithObject: value];
+  NSUInteger rectCount = 0;
+  NSRect *rects;
+  NSMutableArray *result = [NSMutableArray array];
+  
+  if (_layoutManager)
+    {
+      NSUInteger idx = 0;
+      rects = [_layoutManager rectArrayForCharacterRange: range
+                            withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
+                                         inTextContainer: _textContainer
+                                               rectCount: &rectCount];
+      
+      for(idx = 0; idx < rectCount; idx++)
+        {
+          NSRect r = rects[idx];
+          NSValue *v = [NSValue valueWithRect: r];
+          [result addObject: v];
+        }
+    }
+  
   return result;
 }
 
