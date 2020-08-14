@@ -27,6 +27,7 @@
 
 #import "AppKit/NSTextFinder.h"
 #import "AppKit/NSTextView.h"
+#import "AppKit/NSUserInterfaceValidation.h"
 
 #import "GSTextFinder.h"
 
@@ -114,15 +115,23 @@
 // Validating and performing
 - (void) performTextFinderAction: (id)sender
 {
-  if (_finder == nil)
+  BOOL valid = [self validateUserInterfaceAction: sender];
+  if (valid)
     {
-      _finder = [[GSTextFinder alloc] init];
+      if (_finder == nil)
+        {
+          _finder = [[GSTextFinder alloc] init];
+        }
     }
 }
 
 - (void) performFindPanelAction: (id)sender
 {
-  [self performAction: [sender tag]];
+  BOOL valid = [self validateUserInterfaceAction: sender];
+  if (valid)
+    {
+      [self performAction: [sender tag]];
+    }
 }
 
 - (void) performAction: (NSTextFinderAction)op
@@ -172,6 +181,11 @@
       NSLog(@"Unknown operation: %ld", op);
       break;
     }
+}
+
+- (BOOL) validateUserInterfaceAction: (id<NSValidatedUserInterfaceItem>)item
+{
+  return YES;
 }
 
 - (BOOL) validateAction: (NSTextFinderAction)op
