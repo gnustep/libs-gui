@@ -6094,7 +6094,7 @@ configuation! */
               effectiveRange: (NSRangePointer)outRange
       endsWithSearchBoundary: (BOOL *)outFlag
 {
-  return nil;
+  return [self string];
 }
 
 - (NSUInteger) stringLength
