@@ -115,15 +115,15 @@
 // Validating and performing
 - (void) performTextFinderAction: (id)sender
 {
-  if (_finder == nil)
-    {
-      _finder = [[GSTextFinder alloc] init];
-    }
-  [self validateUserInterfaceAction: sender];
+  [self performFindPanelAction: sender];
 }
 
 - (void) performFindPanelAction: (id)sender
 {
+  if (_finder == nil)
+    {
+      _finder = [[GSTextFinder alloc] init];
+    }
   [self performAction: [sender tag]];
   [self validateUserInterfaceAction: sender];
 }
