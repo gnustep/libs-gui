@@ -115,23 +115,17 @@
 // Validating and performing
 - (void) performTextFinderAction: (id)sender
 {
-  BOOL valid = [self validateUserInterfaceAction: sender];
-  if (valid)
+  if (_finder == nil)
     {
-      if (_finder == nil)
-        {
-          _finder = [[GSTextFinder alloc] init];
-        }
+      _finder = [[GSTextFinder alloc] init];
     }
+  [self validateUserInterfaceAction: sender];
 }
 
 - (void) performFindPanelAction: (id)sender
 {
-  BOOL valid = [self validateUserInterfaceAction: sender];
-  if (valid)
-    {
-      [self performAction: [sender tag]];
-    }
+  [self performAction: [sender tag]];
+  [self validateUserInterfaceAction: sender];
 }
 
 - (void) performAction: (NSTextFinderAction)op
