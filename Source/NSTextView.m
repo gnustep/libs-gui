@@ -1,6 +1,6 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2008 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2008, 2020 Free Software Foundation, Inc.
 
    Much code of this class was originally derived from code which was
    in NSText.m.
@@ -25,6 +25,9 @@
 
    Extensive reworking: Alexander Malmberg <alexander@malmberg.org>
    Date: December 2002 - February 2003
+
+   Implementing Catalina Extensions: Gregory Casamento <greg.casamento@gmail.com>
+   Date: August 2020
 
    This file is part of the GNUstep GUI Library.
 
