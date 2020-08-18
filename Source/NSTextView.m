@@ -4019,12 +4019,8 @@ Figure out how the additional layout stuff is supposed to work.
    * were!  */
   [self drawViewBackgroundInRect: [self bounds]];
 
-  /* Then draw the special background of the new glyphs.  */
-  [_layoutManager drawBackgroundForGlyphRange: drawnRange
-                  atPoint: _textContainerOrigin];
-
-  [_layoutManager drawGlyphsForGlyphRange: drawnRange 
-                  atPoint: _textContainerOrigin];
+  [self drawCharactersInRange: drawnRange
+               forContentView: self];
 
   if ([self shouldDrawInsertionPoint] &&
       [NSGraphicsContext currentContextDrawingToScreen])
@@ -6183,14 +6179,12 @@ configuation! */
 
 - (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
 {
-  NSArray *rectsArray = [self rectsForCharacterRange: range];
-  NSString *charactersInRange = [[self string] substringWithRange: range];
-  NSValue *v = [rectsArray objectAtIndex: 0];
-  NSRect rect = [v rectValue];
-  
-  [charactersInRange drawWithRect: rect 
-                          options: 0
-                       attributes: nil];
+  /* Then draw the special background of the new glyphs.  */
+  [_layoutManager drawBackgroundForGlyphRange: range
+                  atPoint: _textContainerOrigin];
+
+  [_layoutManager drawGlyphsForGlyphRange: range 
+                  atPoint: _textContainerOrigin];
 }
 
 @end
