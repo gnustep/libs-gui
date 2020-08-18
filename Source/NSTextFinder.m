@@ -185,6 +185,13 @@
 
 - (BOOL) validateUserInterfaceAction: (id<NSValidatedUserInterfaceItem>)item
 {
+  SEL action = [item action];
+  if (sel_isEqual(action, @selector(performTextFinderAction:)) ||
+      sel_isEqual(action, @selector(performFindPanelAction:)))
+    {
+      return [self validateAction: [item tag]];
+    }
+
   return YES;
 }
 

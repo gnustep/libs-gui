@@ -23,6 +23,7 @@
 */
 
 #import "AppKit/NSTextCheckingController.h"
+#import "AppKit/NSSpellChecker.h"
 
 @implementation NSTextCheckingController
 
@@ -61,6 +62,13 @@
 
 - (void) checkSpelling: (id)sender
 {
+    int wordCount = 0;
+  [[NSSpellChecker sharedSpellChecker] checkSpellingOfString: [_client string]
+                                                  startingAt: 0
+                                                    language: nil
+                                                        wrap: NO
+                                      inSpellDocumentWithTag: _spellCheckerDocumentTag
+                                                   wordCount: &wordCount];
 }
 
 - (void) checkTextInRange: (NSRange)range 
