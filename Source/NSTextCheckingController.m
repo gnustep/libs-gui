@@ -62,7 +62,7 @@
 
 - (void) checkSpelling: (id)sender
 {
-    int wordCount = 0;
+  int wordCount = 0;
   [[NSSpellChecker sharedSpellChecker] checkSpellingOfString: [_client string]
                                                   startingAt: 0
                                                     language: nil
