@@ -120,12 +120,7 @@
 
 - (void) performFindPanelAction: (id)sender
 {
-  if (_finder == nil)
-    {
-      _finder = [[GSTextFinder alloc] init];
-    }
   [self performAction: [sender tag]];
-  [self validateUserInterfaceAction: sender];
 }
 
 - (void) performAction: (NSTextFinderAction)op

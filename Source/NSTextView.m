@@ -93,7 +93,6 @@
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSStringDrawing.h"
 
 #import "GSGuiPrivate.h"
 #import "GSTextFinder.h"
@@ -6139,21 +6138,18 @@ configuation! */
   NSUInteger rectCount = 0;
   NSRect *rects;
   NSMutableArray *result = [NSMutableArray array];
+  NSUInteger idx = 0;
+
+  rects = [_layoutManager rectArrayForCharacterRange: range
+                        withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
+                                     inTextContainer: _textContainer
+                                           rectCount: &rectCount];
   
-  if (_layoutManager)
+  for (idx = 0; idx < rectCount; idx++)
     {
-      NSUInteger idx = 0;
-      rects = [_layoutManager rectArrayForCharacterRange: range
-                            withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
-                                         inTextContainer: _textContainer
-                                               rectCount: &rectCount];
-      
-      for(idx = 0; idx < rectCount; idx++)
-        {
-          NSRect r = rects[idx];
-          NSValue *v = [NSValue valueWithRect: r];
-          [result addObject: v];
-        }
+      NSRect r = rects[idx];
+      NSValue *v = [NSValue valueWithRect: r];
+      [result addObject: v];
     }
   
   return result;
