@@ -84,6 +84,7 @@ APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingType
   NSArray *_incrementalMatchRanges;
 
   id _finder;
+  NSInteger _tag;
 }
   
 // Validating and performing

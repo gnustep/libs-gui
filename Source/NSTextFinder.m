@@ -44,74 +44,6 @@
   return self;
 }
 
-// Operation methods
-- (void) _showFindInterface
-{
-  [_finder showFindPanel];
-}
-
-- (void) _nextMatch
-{
-  [_finder findStringInTextView: (NSTextView *)_client
-                        forward: YES];
-}
-
-- (void) _previousMatch
-{
-  [_finder findStringInTextView: (NSTextView *)_client
-                        forward: NO];
-}
-
-- (void) _replaceAll
-{
-  [_finder replaceAllInTextView: (NSTextView *)_client
-                onlyInSelection: NO];
-}
-
-- (void) _replace
-{
-  [_finder replaceStringInTextView: (NSTextView *)_client];
-}
-
-- (void) _replaceAndFind
-{
-   [_finder replaceStringInTextView: (NSTextView *)_client];
-   [_finder findStringInTextView: (NSTextView *)_client
-                         forward: YES];
-}
-
-- (void) _setSearchString
-{
-  [_finder takeFindStringFromTextView: (NSTextView *)_client];
-}
-
-- (void) _replaceAllInSelection
-{
-  [_finder replaceAllInTextView: (NSTextView *)_client
-                onlyInSelection: YES];
-}
-
-- (void) _selectAll
-{
-}
-
-- (void) _selectAllInSelection
-{
-}
-
-- (void) _hideFindInterface
-{
-}
-
-- (void) _showReplaceInterface
-{
-  [_finder showFindPanel];
-}
-
-- (void) _hideReplaceInterface
-{
-}
-
 // Validating and performing
 - (void) performTextFinderAction: (id)sender
 {
@@ -123,53 +55,64 @@
   [self performAction: [sender tag]];
 }
 
-- (void) performAction: (NSTextFinderAction)op
+- (NSInteger) tag
 {
-  switch (op)
+  return _tag;
+}
+
+- (void) _mapOpToTag: (NSTextFinderAction)op
+{
+    switch (op)
     {
     case NSTextFinderActionShowFindInterface:
-      [self _showFindInterface];
+      _tag = NSFindPanelActionShowFindPanel;
       break;
     case NSTextFinderActionNextMatch:
-      [self _nextMatch];
+      _tag = NSFindPanelActionNext;
       break;
     case NSTextFinderActionPreviousMatch:
-      [self _previousMatch];
+      _tag = NSFindPanelActionPrevious;
       break;
     case NSTextFinderActionReplaceAll:
-      [self _replaceAll];
+      _tag = NSFindPanelActionReplaceAll;
       break;
     case NSTextFinderActionReplace:
-      [self _replace];
+      _tag = NSFindPanelActionReplace;
       break;
     case NSTextFinderActionReplaceAndFind:
-      [self _replaceAndFind];
+      _tag = NSFindPanelActionReplaceAndFind;
       break;
     case NSTextFinderActionSetSearchString:
-      [self _setSearchString];
+      _tag = NSFindPanelActionSetFindString;
       break;
     case NSTextFinderActionReplaceAllInSelection:
-      [self _replaceAllInSelection];
+      _tag = NSFindPanelActionReplaceAllInSelection;
       break;
     case NSTextFinderActionSelectAll:
-      [self _selectAll];
+      _tag = NSFindPanelActionSelectAll;
       break;
     case NSTextFinderActionSelectAllInSelection:
-      [self _selectAllInSelection];
+      _tag = NSFindPanelActionSelectAllInSelection;
       break;
     case NSTextFinderActionHideFindInterface:
-      [self _hideFindInterface];
+      // unsupported;
       break;
     case NSTextFinderActionShowReplaceInterface:
-      [self _showReplaceInterface];
+      // unsupported;
       break;
     case NSTextFinderActionHideReplaceInterface:
-      [self _hideReplaceInterface];
+      // unsupported;
       break;
     default:
       NSLog(@"Unknown operation: %ld", op);
       break;
     }
+}
+
+- (void) performAction: (NSTextFinderAction)op
+{
+  [self _mapOpToTag: op];
+  [_finder performFindPanelAction: self];
 }
 
 - (BOOL) validateUserInterfaceAction: (id<NSValidatedUserInterfaceItem>)item
@@ -186,7 +129,9 @@
 
 - (BOOL) validateAction: (NSTextFinderAction)op
 {
-  return YES;
+  [self _mapOpToTag: op];
+  return [_finder validateFindPanelAction: self
+                             withTextView: nil];
 }
 
 - (void)cancelFindIndicator;
