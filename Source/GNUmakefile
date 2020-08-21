@@ -265,8 +265,11 @@ NSTextAlternatives.m \
 NSTextAttachment.m \
 NSTextBlock.m \
 NSTextContainer.m \
+NSTextCheckingController.m \
 NSTextField.m \
 NSTextFieldCell.m \
+NSTextFinder.m \
+NSTextInputContext.m \
 NSTextList.m \
 NSTextStorage.m \
 NSTextTable.m \
@@ -562,8 +565,13 @@ NSText.h \
 NSTextAlternatives.h \
 NSTextAttachment.h \
 NSTextContainer.h \
+NSTextCheckingClient.h \
+NSTextCheckingController.h \
 NSTextField.h \
 NSTextFieldCell.h \
+NSTextFinder.h \
+NSTextInputClient.h \
+NSTextInputContext.h \
 NSTextList.h \
 NSTextStorage.h \
 NSTextTable.h \

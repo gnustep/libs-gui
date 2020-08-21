@@ -97,12 +97,12 @@
   _transitionStyle = style;
 }
 
-- (id<NSPageControllerDelegate>) delegate
+- (id) delegate
 {
   return _delegate;
 }
 
-- (void) setDelegate: (id<NSPageControllerDelegate>)delegate
+- (void) setDelegate: (id)delegate
 {
   _delegate = delegate;
 }

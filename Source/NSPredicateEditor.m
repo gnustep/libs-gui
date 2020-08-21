@@ -57,6 +57,7 @@
     }
   else
     {
+      [aCoder encodeObject: _rowTemplates];
     }
 }
 
@@ -76,6 +77,9 @@
     }
   else
     {
+      NSArray *rowTemplates = [aDecoder decodeObject];
+      
+      [self setRowTemplates: rowTemplates];
     }
 
   return self;

@@ -1,3 +1,33 @@
+2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add all new headers
+	* Headers/AppKit/NSTextCheckingClient.h: Protocol for
+	NSTextCheckingController.m
+	* Headers/AppKit/NSTextCheckingController.h: New controller
+	for text checking - spelling/grammar
+	* Headers/AppKit/NSTextFinder.h: Text finder, currently delegates
+	all functionality to GSTextFinder.
+	* Headers/AppKit/NSTextInputClient.h: Protocol
+	* Headers/AppKit/NSTextInputContext.h: Protocol
+	* Headers/AppKit/NSTextView.h: Implementation of methods needed
+	for NSTextFinder.
+	* Headers/AppKit/NSUserInterfaceValidation.h: Minor changes
+	* MISSING: Removed these from MISSING list
+	* Source/GNUmakefile: Add files to be compiled or copied to list.
+	* Source/NSTextCheckingController.m: Implementation using
+	NSSpellChecker
+	* Source/NSTextFinder.m: Implementation using GSTextFinder
+	* Source/NSTextInputContext.m: Skeleton implementation.
+	* Source/NSTextView.m: Implementation of methods
+
+2020-08-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStoryboardTransform.h,
+	* Source/NSPageController.m,
+	* Source/NSPersistentDocument.m,
+	* Source/NSSplitViewItem.m,
+	* Source/NSViewController.m: Fix compiler warnings mit gcc.
+
 2020-07-31 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add header

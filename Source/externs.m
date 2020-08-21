@@ -35,6 +35,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSAppearance.h"
 #import "AppKit/NSFontCollection.h"
+#import "AppKit/NSTextFinder.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
@@ -833,6 +834,13 @@ NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAutoActivationOp
 
 // Speech recognition...
 const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
+
+// NSTextInputContext notifications
+NSString *NSTextInputContextKeyboardSelectionDidChangeNotification =
+  @"NSTextInputContextKeyboardSelectionDidChangeNotification";
+
+NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensitiveKey = @"NSTextFinderCaseInsensitiveKey";
+NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey = @"NSTextFinderMatchingTypeKey";
 
 extern void __objc_gui_force_linking (void);
 
