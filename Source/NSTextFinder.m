@@ -45,14 +45,14 @@
 }
 
 // Validating and performing
-- (void) performTextFinderAction: (id)sender
-{
-  [self performFindPanelAction: sender];
-}
-
 - (void) performFindPanelAction: (id)sender
 {
   [self performAction: [sender tag]];
+}
+
+- (void) performTextFinderAction: (id)sender
+{
+  [self performFindPanelAction: sender];
 }
 
 - (NSInteger) tag

@@ -25,6 +25,17 @@
 #import "AppKit/NSTextCheckingController.h"
 #import "AppKit/NSSpellChecker.h"
 
+/*
+@interface NSSpellChecker (Private)
+- (void) _findNext: (id)sender;
+- (void) _ignore: (id)sender;
+- (void) _guess: (id)sender;
+- (void) _correct: (id)sender;
+- (void) _switchDictionary: (id)sender;
+- (void) _highlightGuess: (id)sender;
+@end
+*/
+
 @implementation NSTextCheckingController
 
 // initializer
@@ -58,17 +69,19 @@
 // instance methods...
 - (void) changeSpelling: (id)sender
 {
+  
 }
 
 - (void) checkSpelling: (id)sender
 {
+  /*
   int wordCount = 0;
   [[NSSpellChecker sharedSpellChecker] checkSpellingOfString: [_client string]
                                                   startingAt: 0
                                                     language: nil
                                                         wrap: NO
                                       inSpellDocumentWithTag: _spellCheckerDocumentTag
-                                                   wordCount: &wordCount];
+                                      wordCount: &wordCount];*/
 }
 
 - (void) checkTextInRange: (NSRange)range 
