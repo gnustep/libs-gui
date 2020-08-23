@@ -56,15 +56,18 @@ typedef NSInteger NSGridRowAlignment;
 
 APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
-@class NSGridColumn, NSGridRow, NSGridCell;
+@class NSGridColumn, NSGridRow, NSGridCell, NSArray, NSMutableArray;
   
 @interface NSGridView : NSView
-
+{
+  NSMutableArray *_rows;
+}
+  
 - (instancetype) initWithFrame: (NSRect)frameRect;
 - (instancetype) initWithCoder: (NSCoder *)coder;
 
 + (instancetype) gridViewWithNumberOfColumns: (NSInteger)columnCount rows: (NSInteger)rowCount;
-+ (instancetype) gridViewWithViews: (NSArray *)rows; // an array containing an array of NSViews
++ (instancetype) gridViewWithViews: (NSArray *)rows; // an NSArray containing an NSArray of NSViews
 
 - (NSInteger) numberOfRows;
 - (NSInteger) numberOfColumns;

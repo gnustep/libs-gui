@@ -28,27 +28,48 @@
 
 - (instancetype) initWithFrame: (NSRect)frameRect
 {
-  return nil;
+  self = [super initWithFrame: frameRect];
+  if (self != nil)
+    {
+      _rows = [[NSMutableArray alloc] initWithCapacity: 10];
+    }
+  return self;
 }
 
 + (instancetype) gridViewWithNumberOfColumns: (NSInteger)columnCount rows: (NSInteger)rowCount
 {
-  return nil;
+  NSUInteger r = 0;
+  NSUInteger c = 0;
+  NSMutableArray *rows = [[NSMutableArray alloc] initWithCapacity: rowCount]; 
+
+  for (r = 0; r < rowCount; r++)
+    {
+      NSMutableArray *col = [NSMutableArray arrayWithCapacity: columnCount];
+      for (c = 0; c < columnCount; c++)
+        {
+          NSGridCell *gc = [[NSGridCell alloc] init];
+          [col addObject: gc];
+          RELEASE(gc);
+        }
+      [rows addObject: col];
+    }
+  
+  return AUTORELEASE([self gridViewWithViews: rows]);
 }
 
 + (instancetype) gridViewWithViews: (NSArray *)rows
 {
-  return nil;
+  return nil; //  ASSIGNCOPY(_rows, rows);
 }
 
 - (NSInteger) numberOfRows
 {
-  return 0;
+  return [_rows count];
 }
 
 - (NSInteger) numberOfColumns
 {
-  return 0;
+  return [[_rows objectAtIndex: 0] count];
 }
 
 - (NSGridRow *) rowAtIndex: (NSInteger)index
@@ -195,7 +216,7 @@
   
 + (NSView *) emptyContentView
 {
-  return nil;
+  return AUTORELEASE([[NSView alloc] initWithFrame: NSZeroRect]);
 }
 
 // Weak references to row/column

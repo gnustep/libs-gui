@@ -13,11 +13,9 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder )
 > NSFilePromiseProvider.h -
 > NSFilePromiseReceiver.h -
 > NSGlyphInfo.h
-> NSGridView.h *
 > NSItemProvider.h + 
 > NSMenuToolbarItem.h -
 > NSOpenGLLayer.h
-> NSStackView.h *
 > NSTableCellView.h *
 > NSTableRowView.h *
 > NSTableViewRowAction.h *
