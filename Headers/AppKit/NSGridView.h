@@ -63,9 +63,6 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   NSMutableArray *_rows;
 }
   
-- (instancetype) initWithFrame: (NSRect)frameRect;
-- (instancetype) initWithCoder: (NSCoder *)coder;
-
 + (instancetype) gridViewWithNumberOfColumns: (NSInteger)columnCount rows: (NSInteger)rowCount;
 + (instancetype) gridViewWithViews: (NSArray *)rows; // an NSArray containing an NSArray of NSViews
 
@@ -107,6 +104,9 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
 /// Cell
 @interface NSGridCell : NSObject <NSCoding>
+{
+  NSView *_contentView;
+}
 
 - (NSView *) contentView; 
 - (void) setContentView: (NSView *)v;
@@ -132,7 +132,15 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
 /// Column
 @interface NSGridColumn : NSObject <NSCoding>
-
+{
+  NSGridView *_gridView;
+  NSMutableArray *_col;
+  NSGridCellPlacement _xPlacement;
+  CGFloat _width;
+  CGFloat _leadingPadding;
+  CGFloat _trailingPadding;
+  BOOL _isHidden;
+}
 - (NSGridView *) gridView;
 - (NSInteger) numberOfCells;
 - (NSGridCell *) cellAtIndex:(NSInteger)index;
@@ -153,7 +161,16 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
 /// Row
 @interface NSGridRow : NSObject <NSCoding>
-
+{
+  NSGridView *_gridView;
+  NSMutableArray *_row;
+  NSGridCellPlacement _yPlacement;
+  CGFloat _height;
+  CGFloat _bottomPadding;
+  CGFloat _topPadding;
+  BOOL _isHidden;
+}
+  
 - (NSGridView *) gridView;
 - (NSInteger) numberOfCells;
 - (NSGridCell *)cellAtIndex:(NSInteger)index;

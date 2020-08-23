@@ -22,7 +22,20 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSArray.h>
 #import "AppKit/NSGridView.h"
+
+#import "GSFastEnumeration.h"
+
+@interface NSGridRow (Private)
+- (void) _setRow: (NSMutableArray *)row;
+- (NSMutableArray *) _row;
+@end
+
+@interface NSGridColumn (Private)
+- (void) _setColumn: (NSMutableArray *)col;
+- (NSMutableArray *) _column;
+@end
 
 @implementation NSGridView
 
@@ -33,6 +46,23 @@
     {
       _rows = [[NSMutableArray alloc] initWithCapacity: 10];
     }
+  return self;
+}
+
+- (instancetype) initWithViews: (NSArray *)rows
+{
+  self = [self initWithFrame: NSZeroRect];
+
+  if (self != nil)
+    {
+      NSMutableArray *mutableRows = [rows mutableCopy];
+      FOR_IN(NSMutableArray*, array, mutableRows)
+        {
+          [_rows addObject: array];
+        }
+      END_FOR_IN(mutableRows);
+    }
+  
   return self;
 }
 
@@ -59,7 +89,7 @@
 
 + (instancetype) gridViewWithViews: (NSArray *)rows
 {
-  return nil; //  ASSIGNCOPY(_rows, rows);
+  return [[self alloc] initWithViews: rows];
 }
 
 - (NSInteger) numberOfRows
@@ -74,7 +104,9 @@
 
 - (NSGridRow *) rowAtIndex: (NSInteger)index
 {
-  return nil;
+  NSGridRow *r = [[NSGridRow alloc] init];
+  [r _setRow: [_rows objectAtIndex: index]];
+  return r;
 }
 
 - (NSInteger) indexOfRow: (NSGridRow *)row
@@ -201,17 +233,17 @@
 @end
 
 
-
 /// Cell ///
 @implementation NSGridCell
 
 - (NSView *) contentView
 {
-  return nil;
+  return _contentView;
 }
 
 - (void) setContentView: (NSView *)v
 {
+  ASSIGN(_contentView, v);
 }
   
 + (NSView *) emptyContentView
@@ -358,60 +390,107 @@
 /// Row ///
 @implementation NSGridRow
 
+- (void) _setRow: (NSMutableArray *)row
+{
+  _row = row; // weak reference;
+}
+
+- (NSMutableArray *) _row
+{
+  return _row;
+}
+
+- (BOOL) isEqual: (NSGridRow *)r
+{
+  if (_row == [r _row])
+    {
+      return YES;
+    }
+  else
+    {
+      NSUInteger idx = 0;
+      FOR_IN(NSGridCell*, cell, _row)
+        {
+          NSGridCell *otherCell = [[r _row] objectAtIndex: idx];
+          if (![cell isEqual: otherCell])
+            {
+              return NO;
+            }
+          idx++;
+        }
+      END_FOR_IN(_row);
+    }
+  return YES;
+}
+
+- (void) setGridView: (NSGridView *)gridView
+{
+  _gridView = gridView; // weak reference...
+}
+
 - (NSGridView *) gridView
 {
-  return nil;
+  return _gridView;
 }
 
 - (NSInteger) numberOfCells
 {
-  return 0;
+  return [_row count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return nil;
+  return [_row objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) yPlacement
 {
-  return 0;
+  return _yPlacement;
 }
 
-- (void) setYPlacement: (NSGridCellPlacement)x
+- (void) setYPlacement: (NSGridCellPlacement)y
 {
+  _yPlacement = y;
 }
 
 - (CGFloat) height
 {
-  return 0.0;
+  return _height;
 }
 
 - (void) setHeight: (CGFloat)f
 {
+  _height = f;
 }
 
 - (CGFloat) topPadding
 {
-  return 0.0;
+  return _topPadding;
 }
 
 - (void) setTopPadding: (CGFloat)f
 {
+  _topPadding = f;
 }
 
 - (CGFloat) bottomPadding
 {
-  return 0.0;
+  return _bottomPadding;
 }
 
 - (void) setBottomPadding: (CGFloat)f
 {
+  _bottomPadding = f;
 }
 
 - (BOOL) isHidden
 {
-  return NO;
+  return _isHidden;
+}
+
+- (void) setHidden: (BOOL)flag
+{
+  _isHidden = flag;
 }
 
 - (void) mergeCellsInRange: (NSRange)range
