@@ -89,6 +89,9 @@
 // Keys in options dictionary
 
 // binding values
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+typedef NSString *NSBindingName;
+#endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 APPKIT_EXPORT BOOL NSIsControllerMarker(id object);
