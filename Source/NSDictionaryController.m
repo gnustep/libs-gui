@@ -184,5 +184,6 @@ NSUInteger __count = 0;
 {
   return [[self key] compare: [other key]];
 }
+
 @end
 

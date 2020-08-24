@@ -87,6 +87,10 @@ extern "C" {
 - (id) value;
 - (void) setValue: (id)value;
   
+=======
+@interface NSDictionaryController : NSArrayController
+
+>>>>>>> 89a555f23 (Add new class NSDictionaryController.)
 @end
 
 #if	defined(__cplusplus)
