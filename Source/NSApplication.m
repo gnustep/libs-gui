@@ -4149,7 +4149,11 @@ struct _DelegateWrapper
   else if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
 	   NSWindows95InterfaceStyle)
     {
-      [self terminate: self];
+      // if we have no windows open, then shut down...
+      if ([self windows] == 0)
+	{
+	  [self terminate: self];
+	}
     }
 }
 
