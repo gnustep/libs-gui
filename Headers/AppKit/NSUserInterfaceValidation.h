@@ -41,6 +41,7 @@
 @protocol NSUserInterfaceValidations
 
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
+
 @end
 
 #endif // _GNUstep_H_NSUserInterfaceValidation
