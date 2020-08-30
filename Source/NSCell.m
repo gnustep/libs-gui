@@ -697,7 +697,7 @@ static NSColor *dtxtCol;
     {
       case NSTextCellType:
         {
-          ASSIGN (_contents, @"title");
+          // ASSIGN (_contents, @"title");
           _cell.contents_is_attributed_string = NO;
           /* Doc says we have to reset the font too. */
           ASSIGN (_font, [fontClass systemFontOfSize: 0]);
@@ -2608,21 +2608,19 @@ static NSColor *dtxtCol;
     {
       id contents = [aDecoder decodeObjectForKey: @"NSContents"];
 
-      // initialize based on content...
-      if ([contents isKindOfClass: [NSString class]])
+      if ([aDecoder containsValueForKey: @"NSSupport"])
         {
-          self = [self initTextCell: contents];
-        }
-      else if ([contents isKindOfClass: [NSImage class]])
-        {
-          self = [self initImageCell: contents];
-        }
-      else
-        {
-          self = [self init];
-          [self setObjectValue: contents];
-        }
+          id support = [aDecoder decodeObjectForKey: @"NSSupport"];
 
+          if ([support isKindOfClass: [NSFont class]])
+            {
+              [self setFont: support];
+            }
+          else if ([support isKindOfClass: [NSImage class]])
+            {
+              [self setImage: support];
+            }
+        }
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
           unsigned long cFlags;
@@ -2670,24 +2668,27 @@ static NSColor *dtxtCol;
           [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
           [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
         }
-      if ([aDecoder containsValueForKey: @"NSSupport"])
-        {
-          id support = [aDecoder decodeObjectForKey: @"NSSupport"];
 
-          if ([support isKindOfClass: [NSFont class]])
-            {
-              [self setFont: support];
-            }
-          else if ([support isKindOfClass: [NSImage class]])
-            {
-              [self setImage: support];
-            }
-        }
       if ([aDecoder containsValueForKey: @"NSFormatter"])
         {
           NSFormatter *formatter = [aDecoder decodeObjectForKey: @"NSFormatter"];
 
           [self setFormatter: formatter];
+        }
+
+      // initialize based on content...
+      if ([contents isKindOfClass: [NSString class]])
+        {
+          self = [self initTextCell: contents];
+        }
+      else if ([contents isKindOfClass: [NSImage class]])
+        {
+          self = [self initImageCell: contents];
+        }
+      else
+        {
+          self = [self init];
+          [self setObjectValue: contents];
         }
     }
   else
