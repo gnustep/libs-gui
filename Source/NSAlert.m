@@ -92,7 +92,7 @@ static NSString	*defaultTitle = @" ";
  |                       s    |                                             |
  |                       s    |                                             |
  |    ...................s....|.........................................    |
- |    : Message           s                    s                        ;    |
+ |    : Message          s                    s                        ;    |
  |    :                  s                    s                        :    |
  |    :                  s                    s                        :    |
  |----:                  s                    s                        :----|
@@ -2010,6 +2010,9 @@ void NSBeginInformationalAlertSheet(NSString *title,
           [self addButtonWithTitle: @"OK"];
         }
       [panel setButtons: _buttons];
+      [panel setFrame: [panel frame]
+	      display: YES
+	      animate: NO];
     }
 }
 
