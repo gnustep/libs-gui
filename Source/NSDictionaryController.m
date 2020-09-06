@@ -23,8 +23,118 @@
 */
 
 #import "AppKit/NSDictionaryController.h"
-
+  
 @implementation NSDictionaryController
 
+- (NSDictionaryControllerKeyValuePair *) newObject
+{
+  return nil;
+}
+
+- (NSDictionary *) localizedKeyDictionary
+{
+  return _localizedKeyDictionary;
+}
+
+- (void) setLocalizedKeyDictionary: (NSDictionary *)dict
+{
+  ASSIGNCOPY(_localizedKeyDictionary, dict);
+}
+  
+- (NSString *) localizedKeyTable
+{
+  return _localizedKeyTable;
+}
+
+- (void) setLocalizedKeyTable: (NSString *)table
+{
+  ASSIGNCOPY(_localizedKeyTable, table);
+}
+
+  
+- (NSArray *) includedKeys
+{
+  return _includedKeys;
+}
+
+- (void) setIncludedKeys: (NSArray *)includedKeys
+{
+  ASSIGNCOPY(_includedKeys, includedKeys);
+}
+
+
+- (NSArray *) excludedKeys
+{
+  return _excludedKeys;
+}
+
+- (void) setExcludedKeys: (NSArray *)excludedKeys
+{
+  ASSIGNCOPY(_excludedKeys, excludedKeys);
+}
+
+  
+- (NSString *) initialKey
+{
+  return _initialKey;
+}
+
+- (void) setInitialKey: (NSString *)k
+{
+  ASSIGNCOPY(_initialKey, k);
+}
+
+  
+- (id) initialValue
+{
+  return _initialValue;
+}
+
+- (void) setInitialValue: (id)v
+{
+  ASSIGNCOPY(_initialValue, v);
+}
+
+@end
+
+@implementation NSDictionaryControllerKeyValuePair
+  
+- (BOOL) isExplicitlyIncluded
+{
+  return _explicitlyIncluded;
+}
+
+
+- (NSString *) key
+{
+  return _key;
+}
+
+- (void) setKey: (NSString *)key
+{
+  ASSIGNCOPY(_key, key);
+}
+
+  
+- (NSString *) localizedKey
+{
+  return _localizedKey;
+}
+
+- (void) setLocalizedKey: (NSString *)key
+{
+  ASSIGNCOPY(_localizedKey, key);
+}
+  
+- (id) value
+{
+  return _value;
+}
+
+- (void) setValue: (id)value
+{
+  ASSIGNCOPY(_value, value);
+}
+  
 @end
 

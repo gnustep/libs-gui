@@ -33,8 +33,59 @@
 extern "C" {
 #endif
 
+@class NSDictionaryControllerKeyValuePair;
+  
 @interface NSDictionaryController : NSArrayController
+{
+  NSDictionary *_localizedKeyDictionary;
+  NSString *_localizedKeyTable;
+  NSArray *_includedKeys;
+  NSArray *_excludedKeys;
+  NSString *_initialKey;
+  id _initialValue;
+}
 
+- (NSDictionaryControllerKeyValuePair *) newObject;
+
+- (NSDictionary *) localizedKeyDictionary;
+- (void) setLocalizedKeyDictionary: (NSDictionary *)dict;
+  
+- (NSString *) localizedKeyTable;
+- (void) setLocalizedKeyTable: (NSString *)table;
+  
+- (NSArray *) includedKeys;
+- (void) setIncludedKeys: (NSArray *)includedKeys;
+
+- (NSArray *) excludedKeys;
+- (void) setExcludedKeys: (NSArray *)excludedKeys;
+  
+- (NSString *) initialKey;
+- (void) setInitialKey: (NSString *)k;
+  
+- (id) initialValue;
+- (void) setInitialValue: (id)v;
+
+@end
+
+@interface NSDictionaryControllerKeyValuePair : NSObject
+{
+  BOOL _explicitlyIncluded;
+  NSString *_key;
+  NSString *_localizedKey;
+  id _value;
+}
+  
+- (BOOL) isExplicitlyIncluded;
+
+- (NSString *) key;
+- (void) setKey: (NSString *)key;
+  
+- (NSString *) localizedKey;
+- (void) setLocalizedKey: (NSString *)key;
+  
+- (id) value;
+- (void) setValue: (id)value;
+  
 @end
 
 #if	defined(__cplusplus)
