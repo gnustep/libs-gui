@@ -28,6 +28,7 @@
 #import <Foundation/NSKeyValueObserving.h>
 
 #import "AppKit/NSDictionaryController.h"
+
 #import "AppKit/NSKeyValueBinding.h"
 #import "GSBindingHelpers.h"
 
@@ -90,7 +91,7 @@ NSUInteger __count = 0;
 {
   ASSIGNCOPY(_localizedKeyTable, table);
 }
-  
+
 - (NSArray *) includedKeys
 {
   return _includedKeys;
@@ -111,7 +112,6 @@ NSUInteger __count = 0;
   ASSIGNCOPY(_excludedKeys, excludedKeys);
 }
 
-- (NSString *) initialKey
 {
   return _initialKey;
 }
