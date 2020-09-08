@@ -156,7 +156,10 @@
       NSRect frame = [self frame];
       NSRect textRect = NSInsetRect(frame, 2, 2);
 
+      [[NSColor whiteColor] set];
+      NSRectFill(bounds);
       NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
+      [[NSColor blackColor] set];
       [_text drawInRect: textRect];
     }
 }
@@ -182,6 +185,7 @@
                               defer: flag];
   if (self)
     {
+      [self setBackgroundColor: [NSColor whiteColor]];
       [self setContentView: [[[GSTTView alloc] initWithFrame: contentRect] autorelease]];
     }
   return self;
