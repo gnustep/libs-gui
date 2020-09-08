@@ -22,13 +22,31 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+
 #import "AppKit/NSDictionaryController.h"
-  
+
+NSString *__keyString;
+NSString *__valueString;
+NSUInteger __count = 0;
+
 @implementation NSDictionaryController
 
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
-  return nil;
+  NSDictionaryControllerKeyValuePair *o = [[NSDictionaryControllerKeyValuePair alloc] init];
+  NSString *k = [NSString stringWithFormat: @"%@-%lu", _initialKey, __count];
+  NSString *v = [NSString stringWithFormat: @"%@-%lu", _initialValue, __count];
+
+  [o setKey: k];
+  [o setValue: v];
+
+  __count++;
+  AUTORELEASE(o);
+  
+  return o;
 }
 
 - (NSDictionary *) localizedKeyDictionary
@@ -104,7 +122,6 @@
   return _explicitlyIncluded;
 }
 
-
 - (NSString *) key
 {
   return _key;
@@ -115,7 +132,6 @@
   ASSIGNCOPY(_key, key);
 }
 
-  
 - (NSString *) localizedKey
 {
   return _localizedKey;
@@ -135,6 +151,11 @@
 {
   ASSIGNCOPY(_value, value);
 }
-  
+
+- (NSComparisonResult) compare: (NSDictionaryControllerKeyValuePair *)other
+{
+  return [[self key] compare: [other key]];
+}
+
 @end
 
