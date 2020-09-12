@@ -1,3 +1,10 @@
+2020-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-initWithCoder:): Make sure text container is
+	in sync with the text view resize behaviour.
+	* Source/NSScrollView.m (-initWithCoder:): Add scrollers as
+	subviews when decoded.
+
 2020-09-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m
