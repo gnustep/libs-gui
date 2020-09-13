@@ -2651,8 +2651,9 @@ static NSColor *dtxtCol;
 	    {
 	      //
 	      // If the contents aren't set (the contents determine the type), 
-	      // get it from the flags.  This prevents the type from being accidentally
-	      // reset on some platforms (mainly WIN32) after the contents are set.
+	      // get it from the flags.  This prevents the type from being
+	      // accidentally reset on some platforms (mainly WIN32) after 
+	      // the contents are set.
 	      //
 	      [self setType: ((cFlags & 0xC000000) >> 26)];
 	    }
