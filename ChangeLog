@@ -1,3 +1,13 @@
+2020-09-12 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSToolTips.m: Fix issue where setting the theme causes
+	tooltips to become all black.  This is happening on windows and other
+	platforms.
+	* Source/NSCell.m: Fix for issue on Windows were contents are reset
+	when initWithCoder: coder is called.  If the contents are set, they
+	determine the type.  Currently investigating why this is occuring
+	ONLY on Windows.
+
 2020-09-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-initWithCoder:): Make sure text container is
