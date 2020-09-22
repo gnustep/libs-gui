@@ -429,7 +429,7 @@
 
 	* Source/GSLayoutManager.m
 	(-glyphRangeForCharacterRange:actualCharacterRange:): Handle zero
-	length charRagne at end of text correctly.
+	length charRange at end of text correctly.
 
 2020-09-07 Fred Kiefer <FredKiefer@gmx.de>
 
