@@ -116,6 +116,14 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 /* Screen capture */ 
 - (NSImage *) contentsOfScreen: (int)screen inRect: (NSRect)rect;
 
+/* Desktops (workspaces) */
+- (unsigned int) numberOfDesktops: (int)screen;
+- (NSArray *) namesOfDesktops: (int)screen;
+- (unsigned int) desktopNumberForScreen: (int)screen;
+- (void) setDesktopNumber: (unsigned int)workspace forScreen: (int)screen;
+- (unsigned int) desktopNumberForWindow: (int)win;
+- (void) setDesktopNumber: (unsigned int)workspace forWindow: (int)win;
+
 @end
 
 /* ----------------------------------------------------------------------- */

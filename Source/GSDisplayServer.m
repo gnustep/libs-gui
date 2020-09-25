@@ -950,6 +950,35 @@ GSCurrentServer(void)
   // Do nothing if not overridden by subclass
 }
 
+- (unsigned int) numberOfDesktops: (int)screen
+{
+  [self subclassResponsibility: _cmd];
+  return 1;
+}
+- (NSArray *) namesOfDesktops: (int)screen
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+- (unsigned int) desktopNumberForScreen: (int)screen
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+- (void) setDesktopNumber: (unsigned int)workspace forScreen: (int)screen
+{
+  // Do nothing if not overridden by subclass
+}
+- (unsigned int) desktopNumberForWindow: (int)win
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+- (void) setDesktopNumber: (unsigned int)workspace forWindow: (int)win
+{
+  // Do nothing if not overridden by subclass
+}
+
 @end
 
 /* ----------------------------------------------------------------------- */
