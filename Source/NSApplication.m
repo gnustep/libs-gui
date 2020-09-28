@@ -2530,6 +2530,9 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [_hidden addObject: win];
                   [win orderOut: self];
                 }
+              /* On hiding we also deactivate the application which will make 
+                 the menus go away too. */
+              [self deactivate];
             }
 	  _app_is_hidden = YES;
 	  
@@ -2553,11 +2556,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 	      [[_app_icon_window contentView] setNeedsDisplay: YES];
 	    }
 	  
-	  /*
-	   * On hiding we also deactivate the application which will make the menus
-	   * go away too.
-	   */
-	  [self deactivate];
 	  _unhide_on_activation = YES;
 	  
 	  info = [self _notificationUserInfo];
