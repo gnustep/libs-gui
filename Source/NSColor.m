@@ -2046,6 +2046,7 @@ systemColorWithName(NSString *name)
   NSColorList	*list = [theme colors];
   NSEnumerator	*enumerator;
   NSString	*name;
+  NSString	*key;
 
   if (list == nil)
     {
@@ -2065,6 +2066,22 @@ systemColorWithName(NSString *name)
     {
       [[systemDict objectForKey: name] recache];
     }
+
+  if (list != defaultSystemColors)
+    {
+      // Check that all default colours are definied in the theme
+      enumerator = [colorStrings keyEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+        {
+          if ([list colorWithKey: key] == nil)
+            {
+              // Add missing colours from the default system colour list
+              NSColor *color = [defaultSystemColors colorWithKey: key];
+              [list setColor: color forKey: key];
+            }
+        }
+    }
+
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSSystemColorsDidChangeNotification object: nil];
 }
@@ -2222,6 +2239,10 @@ static	NSRecursiveLock		*namedColorLock = nil;
     {
       list = [NSColorList colorListNamed: _catalog_name];
       real = [list colorWithKey: _color_name];
+      if (real == nil)
+        {
+          NSLog(@"Missing colour '%@' in colour list '%@'", _color_name, _catalog_name);
+        }
       ASSIGN(_cached_color, [real colorUsingColorSpaceName: colorSpace
 	device: deviceDescription]);
       ASSIGN(_cached_name_space, colorSpace);
