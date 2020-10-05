@@ -1,3 +1,8 @@
+2020-10-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: Protect against theme colour list missing out
+	on default colours.
+
 2020-09-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSToolTips.m: Revert bogus last commit.
