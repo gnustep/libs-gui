@@ -37,6 +37,7 @@ extern "C" {
   
 @interface NSDictionaryController : NSArrayController
 {
+  NSDictionary *_contentDictionary;
   NSDictionary *_localizedKeyDictionary;
   NSString *_localizedKeyTable;
   NSArray *_includedKeys;

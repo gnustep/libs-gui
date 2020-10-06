@@ -25,14 +25,34 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSKeyValueObserving.h>
 
 #import "AppKit/NSDictionaryController.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
 
 NSString *__keyString;
 NSString *__valueString;
 NSUInteger __count = 0;
 
 @implementation NSDictionaryController
+
++ (void) initialize
+{
+  if (self == [NSDictionaryController class])
+    {
+      [self setVersion: 1];
+
+      // bindings...
+      [self exposeBinding: NSContentDictionaryBinding];
+      [self exposeBinding: NSIncludedKeysBinding];
+
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding,
+                              NSContentObjectBinding,
+                              nil] 
+            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+    }
+}
 
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
@@ -68,7 +88,6 @@ NSUInteger __count = 0;
 {
   ASSIGNCOPY(_localizedKeyTable, table);
 }
-
   
 - (NSArray *) includedKeys
 {
@@ -80,7 +99,6 @@ NSUInteger __count = 0;
   ASSIGNCOPY(_includedKeys, includedKeys);
 }
 
-
 - (NSArray *) excludedKeys
 {
   return _excludedKeys;
@@ -91,7 +109,6 @@ NSUInteger __count = 0;
   ASSIGNCOPY(_excludedKeys, excludedKeys);
 }
 
-  
 - (NSString *) initialKey
 {
   return _initialKey;
@@ -102,7 +119,6 @@ NSUInteger __count = 0;
   ASSIGNCOPY(_initialKey, k);
 }
 
-  
 - (id) initialValue
 {
   return _initialValue;
@@ -112,6 +128,16 @@ NSUInteger __count = 0;
 {
   ASSIGNCOPY(_initialValue, v);
 }
+
+- (NSDictionary *) contentDictionary
+{
+  return (NSDictionary *)[self content];
+}
+
+- (void) setContentDictionary: (NSDictionary *)dict
+{
+  [self setContent: (id)dict];
+} 
 
 @end
 
@@ -156,6 +182,5 @@ NSUInteger __count = 0;
 {
   return [[self key] compare: [other key]];
 }
-
 @end
 
