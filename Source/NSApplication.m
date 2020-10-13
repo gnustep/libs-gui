@@ -2555,6 +2555,8 @@ image.</p><p>See Also: -applicationIconImage</p>
 	    {
 	      [[_app_icon_window contentView] setNeedsDisplay: YES];
 	    }
+
+          [[_main_menu itemWithTitle:@"Hide"] setTitle:@"Unhide"];
 	  
 	  _unhide_on_activation = YES;
 	  
@@ -2575,6 +2577,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  [self miniaturizeAll: sender];
 	}
     }
+  else
+    {
+      [self unhide:sender];
+    }
 #endif
 }
 
@@ -2593,6 +2599,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden)
     {
+      [[_main_menu itemWithTitle:@"Unhide"] setTitle:@"Hide"];
       [self unhideWithoutActivation];
       _unhide_on_activation = NO;
     }
