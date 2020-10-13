@@ -47,10 +47,12 @@ NSUInteger __count = 0;
       [self exposeBinding: NSContentDictionaryBinding];
       [self exposeBinding: NSIncludedKeysBinding];
 
+      /*
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding,
                               NSContentObjectBinding,
+                              NSContentArrayBinding,
                               nil] 
-            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+                              triggerChangeNotificationsForDependentKey: @"arrangedObjects"]; */
     }
 }
 
@@ -131,12 +133,12 @@ NSUInteger __count = 0;
 
 - (NSDictionary *) contentDictionary
 {
-  return (NSDictionary *)[self content];
+  return nil; // (NSDictionary *)[self content];
 }
 
 - (void) setContentDictionary: (NSDictionary *)dict
 {
-  [self setContent: (id)dict];
+  // [super setContent: (id)dict];
 } 
 
 @end
