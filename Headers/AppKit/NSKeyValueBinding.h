@@ -86,6 +86,10 @@
 
 @end
 
+// typedefs
+typedef NSString* NSBindingName;
+typedef NSString* NSBindingOption;
+
 // binding values
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 typedef NSString* NSBindingName;

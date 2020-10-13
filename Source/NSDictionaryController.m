@@ -50,10 +50,12 @@ NSUInteger __count = 0;
       [self exposeBinding: NSContentDictionaryBinding];
       [self exposeBinding: NSIncludedKeysBinding];
 
+      /*
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding,
                               NSContentObjectBinding,
+                              NSContentArrayBinding,
                               nil] 
-            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+                              triggerChangeNotificationsForDependentKey: @"arrangedObjects"]; */
     }
 }
 
@@ -91,11 +93,7 @@ NSUInteger __count = 0;
 {
   ASSIGNCOPY(_localizedKeyTable, table);
 }
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 66d8ddcf5 (Add binding constants)
 - (NSArray *) includedKeys
 {
   return _includedKeys;
@@ -116,10 +114,7 @@ NSUInteger __count = 0;
   ASSIGNCOPY(_excludedKeys, excludedKeys);
 }
 
-<<<<<<< HEAD
-=======
 - (NSString *) initialKey
->>>>>>> 66d8ddcf5 (Add binding constants)
 {
   return _initialKey;
 }
@@ -141,20 +136,12 @@ NSUInteger __count = 0;
 
 - (NSDictionary *) contentDictionary
 {
-<<<<<<< HEAD
-  return nil; // (NSDictionary *)[self content];
-=======
   return (NSDictionary *)[self content];
->>>>>>> 66d8ddcf5 (Add binding constants)
 }
 
 - (void) setContentDictionary: (NSDictionary *)dict
 {
-<<<<<<< HEAD
-  // [super setContent: (id)dict];
-=======
   [self setContent: (id)dict];
->>>>>>> 66d8ddcf5 (Add binding constants)
 } 
 
 @end
