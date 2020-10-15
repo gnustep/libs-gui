@@ -46,15 +46,30 @@
 #ifndef XMD_H
 #define XMD_H
 #endif
+
 /* And another so that boolean is not redefined in jmorecfg.h. */
 #ifndef HAVE_BOOLEAN
 #define HAVE_BOOLEAN
-/* This MUST match the jpeg definition of boolean */
+/* we don't redefine boolean any longer, there is an inconsistency in certain JPEG versions - this is heuristic, in case JPEG load files comment out as not needed */
+#if defined(__MINGW32_VERSION)
 typedef int jpeg_boolean;
 #define boolean jpeg_boolean
 #endif
+#endif
+
+/* Hide interface on MinGW not to interfere with MSYS2 base stuff */
+#pragma push_macro("interface")
+#undef interface
+#define interface struct
+
 #endif // __MINGW32__
+
 #include <jpeglib.h>
+
+#if defined(__MINGW32__)
+#pragma pop_macro("interface")
+#endif // __MINGW32__
+
 #include <setjmp.h>
 
 
