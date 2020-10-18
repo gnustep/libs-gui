@@ -1,3 +1,9 @@
+2020-10-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-validateEditing): Reset _isValidating on
+	intermediate return.
+	Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
 2020-10-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m: Protect against theme colour list missing out

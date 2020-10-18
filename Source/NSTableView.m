@@ -3282,6 +3282,8 @@ byExtendingSelection: (BOOL)flag
                         forTableColumn: tb
                         row: _editedRow];
                 }
+
+              _isValidating = NO;
               return;
             }
           else
