@@ -1134,16 +1134,16 @@ Fills in all glyph holes up to last. only looking at levels below level
         *actualCharRange = charRange;
       return NSMakeRange(0, 0);
     }
+  target = charRange.location;
   pos = NSMaxRange(charRange) - 1;
   [self _generateGlyphsUpToCharacter: pos];
-  if (glyphs->char_length <= pos)
+  if (glyphs->char_length <= pos || glyphs->char_length <= target)
     {
       if (actualCharRange)
         *actualCharRange = NSMakeRange([[_textStorage string] length], 0);
       return NSMakeRange([self numberOfGlyphs], 0);
     }
 
-  target = charRange.location;
   r = [self _glyphForCharacter: target
             index: &i
             positions: &pos : &cpos];

@@ -2138,7 +2138,7 @@ didStartElement: (NSString*)elementName
 {
   id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
 
-  [object setType: NSPushInCell];
+  [object setCellAttribute: NSPushInCell to: YES];
   [object setWraps: NO];
   [object sendActionOn: NSLeftMouseUpMask];
   [object setEnabled: YES];

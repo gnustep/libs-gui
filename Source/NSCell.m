@@ -2647,7 +2647,16 @@ static NSColor *dtxtCol;
           [self setSelectable: ((cFlags & 0x200000) == 0x200000)];
           [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
           [self setBordered: ((cFlags & 0x800000) == 0x800000)];
-          [self setType: ((cFlags & 0xC000000) >> 26)];
+	  if (contents == nil)
+	    {
+	      //
+	      // If the contents aren't set (the contents determine the type), 
+	      // get it from the flags.  This prevents the type from being
+	      // accidentally reset on some platforms (mainly WIN32) after 
+	      // the contents are set.
+	      //
+	      [self setType: ((cFlags & 0xC000000) >> 26)];
+	    }
           [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
           // This bit flag is the other way around!
           [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];

@@ -124,7 +124,9 @@ typedef NSInteger NSAccessibilityCustomRotorType;
 // Protocol...
 @protocol NSAccessibilityCustomRotorItemSearchDelegate <NSObject>
 
+#if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
+#endif
 - (NSAccessibilityCustomRotorItemResult *) rotor: (NSAccessibilityCustomRotor *)rotor
                        resultForSearchParameters: (NSAccessibilityCustomRotorSearchParameters *)parameters;
 

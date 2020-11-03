@@ -1,3 +1,51 @@
+2020-11-03 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m (_JPEGRepresentationWithProperties:):
+	Support greyscape output colorspace in JPEG decompression, fix Alpha output do NO, since JPEGs do not support it.
+
+2020-10-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-validateEditing): Reset _isValidating on
+	intermediate return.
+	Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
+2020-10-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: Protect against theme colour list missing out
+	on default colours.
+
+2020-09-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSToolTips.m: Revert bogus last commit.
+
+2020-09-12 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSToolTips.m: Fix issue where setting the theme causes
+	tooltips to become all black.  This is happening on windows and other
+	platforms.
+	* Source/NSCell.m: Fix for issue on Windows were contents are reset
+	when initWithCoder: coder is called.  If the contents are set, they
+	determine the type.  Currently investigating why this is occuring
+	ONLY on Windows.
+
+2020-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-initWithCoder:): Make sure text container is
+	in sync with the text view resize behaviour.
+	* Source/NSScrollView.m (-initWithCoder:): Add scrollers as
+	subviews when decoded.
+
+2020-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m
+	(-glyphRangeForCharacterRange:actualCharacterRange:): Handle zero
+	length charRagne at end of text correctly.
+
+2020-09-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m
+	(-decodeCellPrototypeForElement:): Fix misuse of setType:.
+
 2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add all new headers

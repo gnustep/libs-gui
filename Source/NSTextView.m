@@ -986,6 +986,10 @@ that makes decoding and encoding compatible with the old code.
         {
 	  NSTextContainer *container = [self buildUpTextNetwork: _frame.size];
 	  [container setTextView: self];
+
+          // These calls are here to make the text container aware of these settings
+          [self setHorizontallyResizable: _tf.is_horizontally_resizable];
+          [self setVerticallyResizable: _tf.is_vertically_resizable];
         }
 
       //@"NSDragTypes"

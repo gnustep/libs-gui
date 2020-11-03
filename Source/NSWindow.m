@@ -1757,21 +1757,22 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (void) makeKeyAndOrderFront: (id)sender
 {
   [self deminiaturize: self];
-  /*
-   * If a window is ordered in, make sure that the application isn't hidden,
-   * and is active.
-   */
-  if ([self canBecomeKeyWindow])
+  [self orderFrontRegardless];
+
+  if ([self canBecomeKeyWindow] != NO)
     {
+      [self makeKeyWindow];
+      /*
+       * OPENSTEP makes a window the main window when it makes it the key window.
+       * So we do the same (though the documentation doesn't mention it).
+       */
+      [self makeMainWindow];
+      /*
+       * If a window is ordered in, make sure that the application isn't hidden,
+       * and is active.
+       */
       [NSApp unhide: self];
     }
-  [self orderFrontRegardless];
-  [self makeKeyWindow];
-  /*
-   * OPENSTEP makes a window the main window when it makes it the key window.
-   * So we do the same (though the documentation doesn't mention it).
-   */
-  [self makeMainWindow];
 }
 
 - (void) makeKeyWindow
