@@ -413,6 +413,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   unsigned char *imgbuffer = NULL;
   BOOL isProgressive;
   double x_density, y_density;
+  NSString *outColorSpace;
 
   if (!(self = [super init]))
     return nil;
@@ -450,9 +451,17 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   jpeg_read_header(&cinfo, TRUE);
 
-  /* we use RGB as target color space; others are not yet supported */
-  cinfo.out_color_space = JCS_RGB;
-
+  if (cinfo.jpeg_color_space == JCS_GRAYSCALE)
+    {
+      cinfo.out_color_space = JCS_GRAYSCALE;
+      outColorSpace = NSCalibratedWhiteColorSpace;
+    }
+  else
+    {
+      /* In all other cases we use RGB as target color space; others are not yet supported */
+      cinfo.out_color_space = JCS_RGB;
+      outColorSpace = NSCalibratedRGBColorSpace;
+    }
   /* decompress */
   jpeg_start_decompress(&cinfo);
 
@@ -517,9 +526,9 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 		      pixelsHigh: cinfo.output_height
 		   bitsPerSample: BITS_IN_JSAMPLE
 		 samplesPerPixel: cinfo.output_components
-			hasAlpha: (cinfo.output_components == 3 ? NO : YES)
+			hasAlpha: NO // JPEG has no Alpha support
 			isPlanar: NO
-		  colorSpaceName: NSCalibratedRGBColorSpace
+		  colorSpaceName: outColorSpace
 		     bytesPerRow: rowSize
 		    bitsPerPixel: BITS_IN_JSAMPLE * cinfo.output_components];
 
