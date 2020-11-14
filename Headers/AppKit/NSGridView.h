@@ -60,7 +60,13 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   
 @interface NSGridView : NSView
 {
+  NSGridRowAlignment _rowAlignment;
   NSMutableArray *_rows;
+  NSMutableArray *_columns;
+  CGFloat _columnSpacing;
+  CGFloat _rowSpacing;
+  CGFloat _xPlacement;
+  CGFloat _yPlacement;
 }
   
 + (instancetype) gridViewWithNumberOfColumns: (NSInteger)columnCount rows: (NSInteger)rowCount;

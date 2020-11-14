@@ -172,47 +172,52 @@
 
 - (NSGridCellPlacement) xPlacement
 {
-  return 0;
+  return _xPlacement;
 }
 
 - (void) setXPlacement: (NSGridCellPlacement)x;
 {
+  _xPlacement = x;
 }
 
 - (NSGridCellPlacement) yPlacement;
 {
-  return 0;
+  return _yPlacement;
 }
 
 - (void) setYPlacement: (NSGridCellPlacement)y;
 {
+  _yPlacement = y;
 }
 
 - (NSGridRowAlignment) rowAlignment;
 {
-  return 0;
+  return _rowAlignment;
 }
 
 - (void) setRowAlignment: (NSGridRowAlignment)a;
 {
+  _rowAlignment = a;
 }
 
 - (CGFloat) rowSpacing
 {
-  return 0.0;
+  return _rowSpacing;
 }
 
 - (void) setRowSpacing: (CGFloat)f
 {
+  _rowSpacing = f;
 }
 
 - (CGFloat) columnSpacing
 {
-  return 0.0;
+  return _columnSpacing;
 }
 
 - (void) setColumnSpacing: (CGFloat)f
 {
+  _columnSpacing = f;
 }
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
@@ -227,6 +232,40 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSGrid_alignment"])
+        {
+          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
+        {
+          _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_columns"])
+        {
+          ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
+        }
+      if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
+        {
+          _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_rows"])
+        {
+          ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
+        }
+      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+        {
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+        {
+          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+        }      
+    }
+  else
+    {
+    }
   return self;
 }
 
@@ -299,11 +338,24 @@
 // coding
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+    }
+
   return self;
 }
 
