@@ -366,7 +366,7 @@
 
 - (NSGridView *) gridView
 {
-  return nil;
+  return _gridView;
 }
 
 - (NSInteger) numberOfCells
@@ -381,43 +381,47 @@
 
 - (NSGridCellPlacement) xPlacement
 {
-  return 0;
+  return _xPlacement;
 }
 
 - (void) setXPlacement: (NSGridCellPlacement)x
 {
+  _xPlacement = x;
 }
 
 - (CGFloat) width
 {
-  return 0.0;
+  return _width;
 }
 
 - (void) setWidth: (CGFloat)f
 {
+  _width = f;
 }
 
 - (CGFloat) leadingPadding
 {
-  return 0.0;
+  return _leadingPadding;
 }
 
 - (void) setLeadingPadding: (CGFloat)f
 {
+  _leadingPadding = f;
 }
 
 - (CGFloat) trailingPadding
 {
-  return 0.0;
+  return _trailingPadding;
 }
 
 - (void) setTrailingPadding: (CGFloat)f
 {
+  _trailingPadding = f;
 }
 
 - (BOOL) isHidden
 {
-  return NO;
+  return _isHidden;
 }
 
 - (void) mergeCellsInRange: (NSRange)range
@@ -444,7 +448,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_owningGrid"])
         {
-          _owningGrid = [coder decodeObjectForKey: @"NSGrid_owningGrid"];
+          ASSIGN(_gridView, [coder decodeObjectForKey: @"NSGrid_owningGrid"]);
         }
       if ([coder containsValueForKey: @"NSGrid_trailingPadding"])
         {

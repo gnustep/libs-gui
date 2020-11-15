@@ -139,7 +139,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 /// Column
 @interface NSGridColumn : NSObject <NSCoding>
 {
-  NSGridView *_owningGrid;
+  NSGridView *_gridView;
   NSGridCellPlacement _xPlacement;
   CGFloat _width;
   CGFloat _leadingPadding;
