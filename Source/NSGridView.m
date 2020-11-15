@@ -355,7 +355,6 @@
   else
     {
     }
-
   return self;
 }
 
@@ -433,6 +432,36 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSGrid_hidden"])
+        {
+          _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_leadingPadding"])
+        {
+          _leadingPadding = [coder decodeFloatForKey: @"NSGrid_leadingPadding"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_owningGrid"])
+        {
+          _owningGrid = [coder decodeObjectForKey: @"NSGrid_owningGrid"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_trailingPadding"])
+        {
+          _trailingPadding = [coder decodeFloatForKey: @"NSGrid_trailingPadding"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_width"])
+        {
+          _width = [coder decodeFloatForKey: @"NSGrid_width"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+        {
+          _xPlacement = [coder decodeBoolForKey: @"NSGrid_xPlacement"];
+        }      
+    }
+  else
+    {
+    }
   return self;
 }
 
