@@ -55,12 +55,11 @@
 
   if (self != nil)
     {
-      NSMutableArray *mutableRows = [rows mutableCopy];
-      FOR_IN(NSMutableArray*, array, mutableRows)
+      FOR_IN(NSMutableArray*, array, rows)
         {
           [_rows addObject: array];
         }
-      END_FOR_IN(mutableRows);
+      END_FOR_IN(rows);
     }
   
   return self;
