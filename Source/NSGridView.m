@@ -98,7 +98,7 @@
 
 - (NSInteger) numberOfColumns
 {
-  return [[_rows objectAtIndex: 0] count];
+  return [_columns count];
 }
 
 - (NSGridRow *) rowAtIndex: (NSInteger)index
@@ -243,7 +243,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_columns"])
         {
-          ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
+          _columns = [coder decodeObjectForKey: @"NSGrid_columns"];
         }
       if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
         {
@@ -251,7 +251,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_rows"])
         {
-          ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
+          _rows = [coder decodeObjectForKey: @"NSGrid_rows"];
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
@@ -352,7 +352,7 @@
     {
       if ([coder containsValueForKey: @"NSGrid_content"])
         {
-          ASSIGN(_contentView, [coder decodeObjectForKey: @"NSGrid_content"]);
+          [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
         }
       if ([coder containsValueForKey: @"NSGrid_mergeHead"])
         {
@@ -360,11 +360,11 @@
         }
       if ([coder containsValueForKey: @"NSGrid_owningRow"])
         {
-          _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"];
+          _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
         }
       if ([coder containsValueForKey: @"NSGrid_owningColumn"])
         {
-          _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"];
+          _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
@@ -471,7 +471,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_owningGrid"])
         {
-          ASSIGN(_gridView, [coder decodeObjectForKey: @"NSGrid_owningGrid"]);
+          _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"]; // weak
         }
       if ([coder containsValueForKey: @"NSGrid_trailingPadding"])
         {
@@ -597,7 +597,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_owningGrid"])
         {
-          ASSIGN(_gridView, [coder decodeObjectForKey: @"NSGrid_owningGrid"]);
+          _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"];
         }
       if ([coder containsValueForKey: @"NSGrid_topPadding"])
         {
