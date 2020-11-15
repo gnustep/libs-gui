@@ -112,6 +112,12 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @interface NSGridCell : NSObject <NSCoding>
 {
   NSView *_contentView;
+  NSGridRowAlignment _rowAlignment;
+  NSGridCellPlacement _xPlacement;
+  NSGridCellPlacement _yPlacement;
+  id _mergeHead;
+  NSGridRow *_owningRow;
+  NSGridColumn *_owningColumn;
 }
 
 - (NSView *) contentView; 
@@ -168,7 +174,6 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @interface NSGridRow : NSObject <NSCoding>
 {
   NSGridView *_gridView;
-  NSMutableArray *_row;
   NSGridCellPlacement _yPlacement;
   CGFloat _height;
   CGFloat _bottomPadding;

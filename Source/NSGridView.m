@@ -350,6 +350,30 @@
   self = [super init];
   if ([coder allowsKeyedCoding])
     {
+      if ([coder containsValueForKey: @"NSGrid_content"])
+        {
+          ASSIGN(_contentView, [coder decodeObjectForKey: @"NSGrid_content"]);
+        }
+      if ([coder containsValueForKey: @"NSGrid_mergeHead"])
+        {
+          _mergeHead = [coder decodeObjectForKey: @"NSGrid_mergeHead"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_owningRow"])
+        {
+          _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_owningColumn"])
+        {
+          _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+        {
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+        }      
+      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+        {
+          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+        }      
     }
   else
     {
@@ -459,7 +483,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
-          _xPlacement = [coder decodeBoolForKey: @"NSGrid_xPlacement"];
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
         }      
     }
   else
@@ -474,37 +498,9 @@
 /// Row ///
 @implementation NSGridRow
 
-- (void) _setRow: (NSMutableArray *)row
-{
-  _row = row; // weak reference;
-}
-
-- (NSMutableArray *) _row
-{
-  return _row;
-}
-
 - (BOOL) isEqual: (NSGridRow *)r
 {
-  if (_row == [r _row])
-    {
-      return YES;
-    }
-  else
-    {
-      NSUInteger idx = 0;
-      FOR_IN(NSGridCell*, cell, _row)
-        {
-          NSGridCell *otherCell = [[r _row] objectAtIndex: idx];
-          if (![cell isEqual: otherCell])
-            {
-              return NO;
-            }
-          idx++;
-        }
-      END_FOR_IN(_row);
-    }
-  return YES;
+  return NO;
 }
 
 - (void) setGridView: (NSGridView *)gridView
@@ -519,12 +515,12 @@
 
 - (NSInteger) numberOfCells
 {
-  return [_row count];
+  return 0; // [_row count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return [_row objectAtIndex: index];
+  return nil; // [_row objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) yPlacement
@@ -589,6 +585,36 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
+  if ([coder allowsKeyedCoding])
+    {
+      if ([coder containsValueForKey: @"NSGrid_hidden"])
+        {
+          _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_bottomPadding"])
+        {
+          _bottomPadding = [coder decodeFloatForKey: @"NSGrid_bottomPadding"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_owningGrid"])
+        {
+          ASSIGN(_gridView, [coder decodeObjectForKey: @"NSGrid_owningGrid"]);
+        }
+      if ([coder containsValueForKey: @"NSGrid_topPadding"])
+        {
+          _topPadding = [coder decodeFloatForKey: @"NSGrid_topPadding"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_height"])
+        {
+          _height = [coder decodeFloatForKey: @"NSGrid_height"];
+        }
+      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+        {
+          _yPlacement = [coder decodeFloatForKey: @"NSGrid_yPlacement"];
+        }
+    }
+  else
+    {
+    }
   return self;
 }
 
