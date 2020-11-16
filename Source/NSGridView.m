@@ -339,6 +339,12 @@
 {
   if ([coder allowsKeyedCoding])
     {
+      [coder encodeObject: _contentView forKey: @"NSGrid_content"];
+      [coder encodeObject: _mergeHead forKey: @"NSGrid_mergeHead"];
+      [coder encodeObject: _owningRow forKey: @"NSGrid_owningRow"]; // weak
+      [coder encodeObject: _owningColumn forKey: @"NSGrid_owningColumn"]; // weak
+      [coder encodeInteger: _xPlacement forKey: @"NSGrid_xPlacement"];
+      [coder encodeInteger: _yPlacement forKey: @"NSGrid_yPlacement"];
     }
   else
     {

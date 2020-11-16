@@ -41,6 +41,7 @@
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSFormCell.h"
+#import "AppKit/NSGridView.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSMenu.h"
@@ -287,6 +288,16 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"string", @"NS.relative",
                                            @"canPropagateSelectedChildViewControllerTitle",
                                                    @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
+                                           @"hidden", @"NSGrid_hidden",
+                                           @"leadingPadding", @"NSGrid_leadingPadding",
+                                           @"owningGrid", @"NSGrid_owningGrid",
+                                           @"trailingPadding", @"NSGrid_trailingPadding",
+                                           @"width", @"NSGrid_width",
+                                           @"xPlacement", @"NSGrid_xPlacement",
+                                           @"yPlacement", @"NSGrid_yPlacement",
+                                           @"mergeHead", "NSGrid_mergeHead",
+                                           @"row", "NSGrid_owningRow",
+                                           @"column", "NSGrid_owningColumn",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
