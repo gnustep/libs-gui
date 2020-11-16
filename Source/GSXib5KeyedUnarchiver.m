@@ -288,16 +288,18 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"string", @"NS.relative",
                                            @"canPropagateSelectedChildViewControllerTitle",
                                                    @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
+                                           @"rowAlignment", @"NSGrid_alignment",
+                                           @"rowSpacing", @"NSGrid_rowSpacing",
+                                           @"columnSpacing", @"NSGrid_columnSpacing",
                                            @"hidden", @"NSGrid_hidden",
                                            @"leadingPadding", @"NSGrid_leadingPadding",
-                                           @"owningGrid", @"NSGrid_owningGrid",
+                                           @"bottomPadding", @"NSGrid_bottomPadding",
                                            @"trailingPadding", @"NSGrid_trailingPadding",
+                                           @"topPadding", @"NSGrid_topPadding",
                                            @"width", @"NSGrid_width",
+                                           @"height", @"NSGrid_heighth",
                                            @"xPlacement", @"NSGrid_xPlacement",
                                            @"yPlacement", @"NSGrid_yPlacement",
-                                           @"mergeHead", "NSGrid_mergeHead",
-                                           @"row", "NSGrid_owningRow",
-                                           @"column", "NSGrid_owningColumn",
                                            nil];
           RETAIN(XmlKeyMapTable);
 

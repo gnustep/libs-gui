@@ -586,6 +586,18 @@
 // coding
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _isHidden forKey: @"NSGrid_hidden"];
+      [coder encodeFloat: _bottomPadding forKey: @"NSGrid_bottomPadding"];
+      [coder encodeObject: _gridView forKey: @"NSGrid_owningGrid"];
+      [coder encodeFloat: _topPadding forKey: @"NSGrid_topPadding"];
+      [coder encodeFloat: _height forKey: @"NSGrid_height"];
+      [coder encodeFloat: _yPlacement forKey: @"NSGrid_yPlacement"];
+    }
+  else
+    {
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
