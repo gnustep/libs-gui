@@ -226,11 +226,12 @@
 // coding
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
-  self = [super init];
+  self = [super initWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSGrid_alignment"])
@@ -460,6 +461,18 @@
 // coding
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _isHidden forKey: @"NSGrid_hidden"];
+      [coder encodeFloat: _leadingPadding forKey: @"NSGrid_leadingPadding"];
+      [coder encodeObject: _gridView forKey: @"NSGrid_owningGrid"]; // weak
+      [coder encodeFloat: _trailingPadding forKey: @"NSGrid_trailingPadding"];
+      [coder encodeFloat: _width forKey: @"NSGrid_width"];
+      [coder encodeInteger: _xPlacement forKey: @"NSGrid_xPlacement"];
+    }
+  else
+    {
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
