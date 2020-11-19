@@ -416,6 +416,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
+                          @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
+                          @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
+                          @"decodeRowAlignmentForElement:", @"NSGrid_rowAlignment",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2985,7 +2988,7 @@ didStartElement: (NSString*)elementName
 
 - (id) decodeRowAlignmentForElement: (GSXibElement *)element
 {
-  id obj = [element attributeForKey: @"xPlacement"];
+  id obj = [element attributeForKey: @"rowAlignment"];
   NSNumber *num = [NSNumber numberWithInteger: 0];
   if ([obj isEqualToString: @"inherited"])
     {
