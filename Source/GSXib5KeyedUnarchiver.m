@@ -348,6 +348,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
+               @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
+               @"decodeRowAlignmentForElement:", @"NSGrid_rowAlignment",
                @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
                @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
                @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",
@@ -2928,6 +2931,79 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) _decodePlacementForObject: (id)obj
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  if ([obj isEqualToString: @"inherited"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementInherited];
+    }
+  else if ([obj isEqualToString: @"leading"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementLeading];
+    }
+  else if ([obj isEqualToString: @"top"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementTop];
+    }
+  else if ([obj isEqualToString: @"trailing"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementTrailing];
+    }
+  else if ([obj isEqualToString: @"bottom"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementBottom];
+    }
+  else if ([obj isEqualToString: @"center"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementCenter];
+    }
+  else if ([obj isEqualToString: @"fill"])
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementFill];
+    }  
+  else // if not specified then assume none...
+    {
+      num = [NSNumber numberWithInteger: NSGridCellPlacementNone];
+    }
+  return num;
+}
+
+- (id) decodeXPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"xPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeYPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"yPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeRowAlignmentForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"xPlacement"];
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  if ([obj isEqualToString: @"inherited"])
+    {
+      num = [NSNumber numberWithInteger: NSGridRowAlignmentInherited];
+    }
+  else if ([obj isEqualToString: @"firstBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSGridRowAlignmentFirstBaseline];
+    }
+  else if ([obj isEqualToString: @"lastBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSGridRowAlignmentLastBaseline];
+    }
+  else
+    {
+      num = [NSNumber numberWithInteger: NSGridRowAlignmentNone];
+    }
+  return num;
 }
 
 - (id) objectForXib: (GSXibElement*)element
