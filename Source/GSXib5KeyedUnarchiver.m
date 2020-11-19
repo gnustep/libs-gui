@@ -416,9 +416,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
-                          @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
-                          @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
-                          @"decodeRowAlignmentForElement:", @"NSGrid_rowAlignment",
+               @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
+               @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
+               @"decodeRowAlignmentForElement:", @"NSGrid_rowAlignment",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
