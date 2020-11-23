@@ -306,40 +306,43 @@
 // Weak references to row/column
 - (NSGridRow *) row
 {
-  return nil;
+  return _owningRow;
 }
 
 - (NSGridColumn *) column
 {
-  return nil;
+  return _owningColumn;
 }
 
 // Placement
 - (NSGridCellPlacement) xPlacement
 {
-  return 0;
+  return _xPlacement;
 }
 
 - (void) setXPlacement: (NSGridCellPlacement)x
 {
+  _xPlacement = x;
 }
 
 - (NSGridCellPlacement) yPlacement
 {
-  return 0;
+  return _yPlacement;
 }
 
 - (void) setYPlacement: (NSGridCellPlacement)y
 {
+  _yPlacement = y;
 }
 
 - (NSGridRowAlignment) rowAlignment
 {
-  return 0;
+  return _rowAlignment;
 }
 
 - (void) setRowAlignment: (NSGridRowAlignment)a
 {
+  _rowAlignment = a;
 }
 
 // Constraints
@@ -359,6 +362,7 @@
       [coder encodeObject: _owningColumn forKey: @"NSGrid_owningColumn"]; // weak
       [coder encodeInteger: _xPlacement forKey: @"NSGrid_xPlacement"];
       [coder encodeInteger: _yPlacement forKey: @"NSGrid_yPlacement"];
+      [coder encodeInteger: _rowAlignment forKey: @"NSGrid_alignment"];
     }
   else
     {
@@ -393,6 +397,10 @@
       if ([coder containsValueForKey: @"NSGrid_yPlacement"])
         {
           _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+        }      
+      if ([coder containsValueForKey: @"NSGrid_alignment"])
+        {
+          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
         }      
     }
   else
