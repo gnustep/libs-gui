@@ -244,7 +244,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_columns"])
         {
-          _columns = [coder decodeObjectForKey: @"NSGrid_columns"];
+          ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
         }
       if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
         {
@@ -252,7 +252,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_rows"])
         {
-          _rows = [coder decodeObjectForKey: @"NSGrid_rows"];
+          ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
@@ -265,7 +265,20 @@
     }
   else
     {
+      [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_rowAlignment];
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_columnSpacing];
+      ASSIGN(_columns, [coder decodeObject]);
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_rowSpacing];
+      ASSIGN(_rows, [coder decodeObject]);
+      [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_xPlacement];
+      [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_yPlacement];
     }
+  
   return self;
 }
 
