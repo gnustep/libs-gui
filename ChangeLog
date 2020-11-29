@@ -1,3 +1,8 @@
+2020-11-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-mouseDown:): Protect against _window going
+	away during tracking.
+
 2020-11-03 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m (_JPEGRepresentationWithProperties:):
