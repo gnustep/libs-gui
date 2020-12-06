@@ -86,17 +86,12 @@
 // Few other private methods
 - (void) _build;
 - (int) _indexOfItem: (NSToolbarItem *)item;
-- (void) _concludeRemoveItem: (NSToolbarItem *)item 
-         atIndex: (int)index 
-         broadcast: (BOOL)broadcast;
-- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex;
-- (void) _performRemoveItem: (NSToolbarItem *)item; // Used by drag setup
 - (NSToolbar *) _toolbarModel;
 - (void) _validate: (NSWindow *)observedWindow;
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
+- (NSDictionary *) _config;
 - (void) _saveConfig;
 - (void) _resetConfig;
-- (NSArray *) _itemsFromConfig;
 - (BOOL) _containsItemWithIdentifier: (NSString *) identifier;
 
 // Accessors

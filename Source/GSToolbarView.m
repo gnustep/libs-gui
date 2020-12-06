@@ -888,12 +888,13 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 - (NSMenu *) menuForEvent: (NSEvent *)event 
 {
-  NSMenu *menu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
-  id <NSMenuItem> customize = [menu insertItemWithTitle: _(@"Customize Toolbar") action:@selector(runCustomizationPalette:) keyEquivalent:@"" atIndex:0];
+  NSMenu *menu = [[NSMenu alloc] initWithTitle: @""];
+  id <NSMenuItem> customize = [menu insertItemWithTitle: _(@"Customize Toolbar")
+                                                 action: @selector(runCustomizationPalette:)
+                                          keyEquivalent: @""
+                                                atIndex: 0];
   [customize setTarget: _toolbar];
-  return menu;
+  return AUTORELEASE(menu);
 }
-
-
 
 @end
