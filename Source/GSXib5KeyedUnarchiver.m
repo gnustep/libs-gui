@@ -3290,42 +3290,6 @@ didStartElement: (NSString*)elementName
   return flag;
 }
 
-- (NSInteger) decodeIntegerForKey: (NSString *)key
-{
-  NSInteger num = 0;
-
-  if ([super containsValueForKey: key])
-    {
-      num = [super decodeIntegerForKey: key];
-    }
-  else if ([currentElement attributeForKey: key])
-    {
-      num = [[currentElement attributeForKey: key] integerValue];
-    }
-  else if ([XmlKeyMapTable objectForKey: key])
-    {
-      num = [self decodeIntegerForKey: [XmlKeyMapTable objectForKey: key]];
-    }
-  else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-    {
-      SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-      num          = [[self performSelector: selector withObject: currentElement] integerValue];
-    }
-  else if ([key hasPrefix:@"NS"])
-    {
-      NSString *newKey = [self alternateName: key];
-      num = [self decodeIntegerForKey: newKey];
-    }
-#if DEBUG_XIB5
-  else
-    {
-      NSWarnMLog(@"no NSInteger for key: %@", key);
-    }
-#endif
-
-  return num;
-}
-
 - (NSPoint) decodePointForKey: (NSString *)key
 {
   NSPoint point = NSZeroPoint;
