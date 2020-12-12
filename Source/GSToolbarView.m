@@ -821,9 +821,9 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 // Accessors private methods
 
-- (float) _heightFromLayout
+- (CGFloat) _heightFromLayout
 {    
-  float height = _heightFromLayout;
+  CGFloat height = _heightFromLayout;
   
   if (_borderMask & GSToolbarViewBottomBorder)
     {

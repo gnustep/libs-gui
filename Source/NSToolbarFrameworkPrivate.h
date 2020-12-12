@@ -40,7 +40,7 @@
 - (void) _reload;
 
 // Accessors
-- (float) _heightFromLayout;
+- (CGFloat) _heightFromLayout;
 - (NSArray *) _visibleBackViews;
 
 - (BOOL) _usesStandardBackgroundColor;
