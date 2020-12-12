@@ -3,7 +3,7 @@
 
    <abstract>The toolbar view class.</abstract>
    
-   Copyright (C) 2004-2015 Free Software Foundation, Inc.
+   Copyright (C) 2004-2020 Free Software Foundation, Inc.
 
    Author:  Quentin Mathe <qmathe@club-internet.fr>
    Date: January 2004
@@ -686,10 +686,10 @@ static NSUInteger draggedItemIndex = NSNotFound;
     if ([item _isFlexibleSpace])
       {
         NSRect backViewFrame = [backView frame];
-      
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          spacePerFlexItem, 
-          backViewFrame.size.height)];        
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 spacePerFlexItem,
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect:newFrameRect]];
         mustAdjustNext = YES;
       }
     else if ([variableWidthItems indexOfObjectIdenticalTo:item] != NSNotFound)
@@ -698,17 +698,19 @@ static NSUInteger draggedItemIndex = NSNotFound;
         CGFloat maxFlex = [item maxSize].width - [item minSize].width;
         CGFloat flexAmount = MIN(maxFlex, spacePerFlexItem * FlexItemWeight);
         CGFloat newWidth = [item minSize].width + flexAmount + 2 * InsetItemViewX;
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          newWidth, 
-          backViewFrame.size.height)];
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 newWidth, 
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect: newFrameRect]];
         mustAdjustNext = YES;
       }
     else if (mustAdjustNext)
       {
         NSRect backViewFrame = [backView frame];
-      
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          backViewFrame.size.width, backViewFrame.size.height)];
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 backViewFrame.size.width,
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect: newFrameRect]];
       }
     view = [item view];
     if (view != nil)
@@ -802,8 +804,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
     }
 }
 
-- (void) _reload 
-{  
+- (void) _reload
+{
   // First, we resize
   [self _handleBackViewsFrame];
   [self _takeInAccountFlexibleSpaces];
