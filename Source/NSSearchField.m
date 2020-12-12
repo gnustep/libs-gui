@@ -62,22 +62,22 @@ static Class usedCellClass;
   usedCellClass = factoryId ? factoryId : [NSSearchFieldCell class];
 }
 
-- (NSArray *) recentSearches
+- (NSArray*) recentSearches
 { 
   return [[self cell] recentSearches];
 }
 
-- (NSString *) recentsAutosaveName
+- (NSString*) recentsAutosaveName
 {
   return [[self cell] recentsAutosaveName];
 }
 
-- (void) setRecentSearches: (NSArray *)searches 
+- (void) setRecentSearches: (NSArray*)searches 
 {
   [[self cell] setRecentSearches: searches];
 }
 
-- (void) setRecentsAutosaveName: (NSString *)name
+- (void) setRecentsAutosaveName: (NSString*)name
 {
   [[self cell] setRecentsAutosaveName: name];
 }
@@ -88,9 +88,9 @@ static Class usedCellClass;
 - (void) mouseDown: (NSEvent*)theEvent
 {
   [[self cell] trackMouse: theEvent 
-	     inRect: [self bounds] 
-	     ofView: self 
-       untilMouseUp: YES];
+                   inRect: [self bounds] 
+                   ofView: self 
+             untilMouseUp: YES];
 }
 
 - (void) delete: (id)sender
@@ -101,7 +101,7 @@ static Class usedCellClass;
 }
 
 // Cocoa only defines these methods on the cell, but nib loading targets the field itself
-- (void) setSearchMenuTemplate: (NSMenu *)newTemplate
+- (void) setSearchMenuTemplate: (NSMenu*)newTemplate
 {
   [[self cell] setSearchMenuTemplate: newTemplate];
 }

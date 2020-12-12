@@ -1,15 +1,15 @@
-/* 
+/*
    NSSearchFieldCell.h
- 
+
    Text field cell class for text search
- 
+
    Copyright (C) 2004 Free Software Foundation, Inc.
- 
+
    Author: H. Nikolaus Schaller <hns@computer.org>
    Date: Dec 2004
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: Mar 2006
- 
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -24,10 +24,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSException.h>
@@ -46,6 +46,10 @@
 #import "AppKit/NSSearchFieldCell.h"
 #import "AppKit/NSWindow.h"
 
+#import "GSGuiPrivate.h"
+
+#define ICON_WIDTH	16
+
 @interface NSSearchFieldCell (Private)
 
 - (NSMenu *) _buildTemplate;
@@ -59,20 +63,8 @@
 
 @implementation NSSearchFieldCell
 
-#define ICON_WIDTH	16
 
-// Inlined method
- 
-static inline NSRect textCellFrameFromRect(NSRect cellRect) 
-// Not the drawed part, precises just the part which receives events
-{
-  return NSMakeRect(cellRect.origin.x + ICON_WIDTH,
-		    NSMinY(cellRect),
-		    NSWidth(cellRect) - 2*ICON_WIDTH,
-		    NSHeight(cellRect));
-}
-
-- (id) initTextCell:(NSString *)aString
+- (id) initTextCell: (NSString*)aString
 {
   self = [super initTextCell: aString];
   if (self)
@@ -93,7 +85,6 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 /* Don't set the searchMenuTemplate unless it is explicitly set in code or by a nib connection
       template = [self _buildTemplate];
       [self setSearchMenuTemplate: template];
-      RELEASE(template);
 */
 
       //_recent_searches = [[NSMutableArray alloc] init];
@@ -116,7 +107,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   [super dealloc];
 }
 
-- (id) copyWithZone:(NSZone *) zone;
+- (id) copyWithZone: (NSZone*)zone;
 {
   NSSearchFieldCell *c = [super copyWithZone: zone];
 
@@ -132,24 +123,24 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 - (BOOL) isOpaque
 {
   // only if all components are opaque
-  return [super isOpaque] && [_cancel_button_cell isOpaque] && 
+  return [super isOpaque] && [_cancel_button_cell isOpaque] &&
       [_search_button_cell isOpaque];
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  [_search_button_cell drawWithFrame: [self searchButtonRectForBounds: cellFrame] 
+  [_search_button_cell drawWithFrame: [self searchButtonRectForBounds: cellFrame]
 		       inView: controlView];
-  [super drawWithFrame: [self searchTextRectForBounds: cellFrame] 
+  [super drawWithFrame: [self searchTextRectForBounds: cellFrame]
 	 inView: controlView];
   if ([[self stringValue] length] > 0)
-    [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame] 
+    [_cancel_button_cell drawWithFrame: [self cancelButtonRectForBounds: cellFrame]
 		       inView: controlView];
 }
 
 - (BOOL) sendsWholeSearchString
-{ 
-  return _sends_whole_search_string; 
+{
+  return _sends_whole_search_string;
 }
 
 - (void) setSendsWholeSearchString: (BOOL)flag
@@ -158,8 +149,8 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 }
 
 - (BOOL) sendsSearchStringImmediately
-{ 
-  return _sends_search_string_immediatly; 
+{
+  return _sends_search_string_immediatly;
 }
 
 - (void) setSendsSearchStringImmediately: (BOOL)flag
@@ -168,7 +159,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 }
 
 - (NSInteger) maximumRecents
-{ 
+{
   return _max_recents;
 }
 
@@ -193,18 +184,18 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 
 - (NSString *) recentsAutosaveName
 {
-  return _recents_autosave_name; 
+  return _recents_autosave_name;
 }
 
-- (void) setRecentsAutosaveName: (NSString *)name
+- (void) setRecentsAutosaveName: (NSString*)name
 {
   ASSIGN(_recents_autosave_name, name);
   [self _loadSearches];
 }
 
-- (void) setRecentSearches: (NSArray *)searches
+- (void) setRecentSearches: (NSArray*)searches
 {
-  int max;
+  NSInteger max;
   NSMutableArray *mutableSearches;
 
   max = [self maximumRecents];
@@ -223,8 +214,8 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   _recent_searches = mutableSearches;
   [self _saveSearches];
 }
- 
-- (void) addToRecentSearches:(NSString *)searchTerm
+
+- (void) addToRecentSearches: (NSString*)searchTerm
 {
   if (!_recent_searches)
     {
@@ -238,12 +229,12 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
     }
 }
 
-- (NSMenu *) searchMenuTemplate
+- (NSMenu*) searchMenuTemplate
 {
   return _menu_template;
 }
 
-- (void) setSearchMenuTemplate: (NSMenu *)menu
+- (void) setSearchMenuTemplate: (NSMenu*)menu
 {
   ASSIGN(_menu_template, menu);
   if (menu)
@@ -258,22 +249,22 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
     }
 }
 
-- (NSButtonCell *) cancelButtonCell
+- (NSButtonCell*) cancelButtonCell
 {
   return _cancel_button_cell;
 }
 
-- (void) setCancelButtonCell: (NSButtonCell *)cell
+- (void) setCancelButtonCell: (NSButtonCell*)cell
 {
   ASSIGN(_cancel_button_cell, cell);
 }
 
-- (NSButtonCell *) searchButtonCell
+- (NSButtonCell*) searchButtonCell
 {
   return _search_button_cell;
 }
 
-- (void) setSearchButtonCell: (NSButtonCell *)cell
+- (void) setSearchButtonCell: (NSButtonCell*)cell
 {
   ASSIGN(_search_button_cell, cell);
 }
@@ -281,7 +272,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 - (void) resetCancelButtonCell
 {
   NSButtonCell *c;
-  
+
   c = [self cancelButtonCell];
   // configure the button
   [c setButtonType: NSMomentaryChangeButton];
@@ -310,8 +301,6 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   [c setEditable: NO];
   [c setImagePosition: NSImageOnly];
   [c setImage: [NSImage imageNamed: @"GSSearch"]];
-//  [c setAction: [self action]];
-//  [c setTarget: [self target]];
   [c setAction: @selector(performClick:)];
   [c setTarget: self];
   [c sendActionOn: NSLeftMouseUpMask];
@@ -322,7 +311,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 - (NSRect) cancelButtonRectForBounds: (NSRect)rect
 {
   NSRect part, clear;
-	
+
   NSDivideRect(rect, &clear, &part, ICON_WIDTH, NSMaxXEdge);
   return clear;
 }
@@ -357,7 +346,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 - (NSRect) searchButtonRectForBounds: (NSRect)rect;
 {
   NSRect search, part;
-  
+
   NSDivideRect(rect, &search, &part, ICON_WIDTH, NSMinXEdge);
   return search;
 }
@@ -380,9 +369,9 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 {
   [self addToRecentSearches: [[[editor string] copy] autorelease]];
   [super endEditing: editor];
-  [[NSNotificationCenter defaultCenter] 
-      removeObserver: self 
-                name: NSTextDidChangeNotification 
+  [[NSNotificationCenter defaultCenter]
+      removeObserver: self
+                name: NSTextDidChangeNotification
               object: editor];
 }
 
@@ -392,7 +381,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 		delegate: (id)anObject
 		   start: (NSInteger)selStart
 		  length: (NSInteger)selLength
-{ 
+{
   // constrain to visible text area
   [super selectWithFrame: [self searchTextRectForBounds: aRect]
 	          inView: controlView
@@ -400,16 +389,16 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 	        delegate: anObject
 	           start: selStart
 	          length: selLength];
-  [[NSNotificationCenter defaultCenter] 
-      addObserver: self 
+  [[NSNotificationCenter defaultCenter]
+      addObserver: self
          selector: @selector(textDidChange:)
-             name: NSTextDidChangeNotification 
+             name: NSTextDidChangeNotification
            object: textObject];
 }
 
-- (BOOL) trackMouse: (NSEvent *)event 
-	     inRect: (NSRect)cellFrame 
-	     ofView: (NSView *)controlView 
+- (BOOL) trackMouse: (NSEvent *)event
+	     inRect: (NSRect)cellFrame
+	     ofView: (NSView *)controlView
        untilMouseUp: (BOOL)untilMouseUp
 {
   NSRect rect;
@@ -423,22 +412,22 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   rect = [self searchButtonRectForBounds: cellFrame];
   if ([controlView mouse: thePoint inRect: rect])
     {
-      return [[self searchButtonCell] trackMouse: event 
-				      inRect: rect 
-				      ofView: controlView 
+      return [[self searchButtonCell] trackMouse: event
+				      inRect: rect
+				      ofView: controlView
 				      untilMouseUp: untilMouseUp];
     }
 
   rect = [self cancelButtonRectForBounds: cellFrame];
   if ([controlView mouse: thePoint inRect: rect])
     {
-      return [[self cancelButtonCell] trackMouse: event 
-				      inRect: rect 
-				      ofView: controlView 
+      return [[self cancelButtonCell] trackMouse: event
+				      inRect: rect
+				      ofView: controlView
 				      untilMouseUp: untilMouseUp];
     }
 
-  currentEditor = ([controlView isKindOfClass:[NSControl class]]
+  currentEditor = ([controlView isKindOfClass: [NSControl class]]
 		   ? [(NSControl *)controlView currentEditor]
 		   : nil);
   if (currentEditor)
@@ -447,23 +436,24 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
       return YES;
     }
 
-  return [super trackMouse: event 
+  return [super trackMouse: event
 		inRect: [self searchTextRectForBounds: cellFrame]
-		ofView: controlView 
+		ofView: controlView
 		untilMouseUp: untilMouseUp];
 }
 
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  [super resetCursorRect: textCellFrameFromRect(cellFrame)
+  [super resetCursorRect: [self searchTextRectForBounds: cellFrame]
 		  inView: controlView];
 }
 
 - (void) textDidChange: (NSNotification *)notification
-{ 
+{
   NSText *textObject;
-  [_control_view setNeedsDisplay:YES];
-  
+
+  [_control_view setNeedsDisplay: YES];
+
   // make textChanged send action (unless disabled)
   if (_sends_whole_search_string)
     {
@@ -474,14 +464,14 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   textObject = [notification object];
   // copy the current NSTextEdit string so that it can be read from the NSSearchFieldCell!
   [self setStringValue: [textObject string]];
-  [NSApp sendAction:[self action] to:[self target] from:_control_view];
+  [NSApp sendAction: [self action] to: [self target] from: _control_view];
 }
 
-- (void) clearSearch:(id)sender
+- (void) clearSearch: (id)sender
 {
-  [self setStringValue:@""];
-  [NSApp sendAction:[self action] to:[self target] from:_control_view];
-  [_control_view setNeedsDisplay:YES];
+  [self setStringValue: @""];
+  [NSApp sendAction: [self action] to: [self target] from: _control_view];
+  [_control_view setNeedsDisplay: YES];
 }
 
 //
@@ -538,7 +528,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &max];
           [self setMaximumRecents: max];
 	}
-      
+
       [self resetCancelButtonCell];
       [self resetSearchButtonCell];
     }
@@ -559,37 +549,37 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   NSMenuItem *item;
 
   template = [[NSMenu alloc] init];
-  
-  item = [[NSMenuItem alloc] initWithTitle: @"Recent searches"
+
+  item = [[NSMenuItem alloc] initWithTitle: _(@"Recent searches")
 			     action: NULL
 			     keyEquivalent: @""];
   [item setTag: NSSearchFieldRecentsTitleMenuItemTag];
   [template addItem: item];
   RELEASE(item);
-  
-  item = [[NSMenuItem alloc] initWithTitle: @"Recent search item"
+
+  item = [[NSMenuItem alloc] initWithTitle: _(@"Recent search item")
 			     action: @selector(search:)
 			     keyEquivalent: @""];
   [item setTag: NSSearchFieldRecentsMenuItemTag];
   [template addItem: item];
   RELEASE(item);
-  
-  item = [[NSMenuItem alloc] initWithTitle: @"Clear recent searches"
+
+  item = [[NSMenuItem alloc] initWithTitle: _(@"Clear recent searches")
 			     action: @selector(_clearSearches:)
 			     keyEquivalent: @""];
   [item setTag: NSSearchFieldClearRecentsMenuItemTag];
   [item setTarget: self];
   [template addItem: item];
-  
   RELEASE(item);
-  item = [[NSMenuItem alloc] initWithTitle: @"No recent searches"
+
+  item = [[NSMenuItem alloc] initWithTitle: _(@"No recent searches")
 			     action: NULL
 			     keyEquivalent: @""];
   [item setTag: NSSearchFieldNoRecentsMenuItemTag];
   [template addItem: item];
   RELEASE(item);
-  
-  return template;
+
+  return AUTORELEASE(template);
 }
 
 - (void) _openPopup: (id)sender
@@ -599,18 +589,18 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   NSMenuView *mr;
   NSWindow *cvWin;
   NSRect cellFrame;
-  int i;
-  int recentCount = [_recent_searches count];
-  NSPopUpButtonCell *pbcell = [[NSPopUpButtonCell alloc] initTextCell:nil pullsDown:NO];
-  int selectedItemIndex = -1, newSelectedItemIndex;
-  
+  NSInteger i;
+  NSInteger recentCount = [_recent_searches count];
+  NSPopUpButtonCell *pbcell = [[NSPopUpButtonCell alloc] initTextCell: nil pullsDown: NO];
+  NSInteger selectedItemIndex = -1, newSelectedItemIndex;
+
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
 
-  // Fill the popup menu 
+  // Fill the popup menu
   for (i = 0; i < [template numberOfItems]; i++)
     {
-      int tag;
+      NSInteger tag;
       NSMenuItem *item, *newItem = nil;
 
       item = (NSMenuItem*)[template itemAtIndex: i];
@@ -629,12 +619,12 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
           if (recentCount > 0) // only show items with this tag if there are recent searches
             {
               newItem = [[item copy] autorelease];
-              [newItem setTarget:self];
-              [newItem setAction:@selector(_clearSearches:)];
+              [newItem setTarget: self];
+              [newItem setAction: @selector(_clearSearches:)];
             }
         }
       else if (tag == NSSearchFieldNoRecentsMenuItemTag)
-        { 
+        {
           if (recentCount == 0) // only show items with this tag if there are NO recent searches
             {
               newItem = [[item copy] autorelease];
@@ -642,15 +632,15 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
         }
       else if (tag == NSSearchFieldRecentsMenuItemTag)
         {
-          int j;
+          NSInteger j;
 
           for (j = 0; j < recentCount; j++)
             {
-              id <NSMenuItem> searchItem = [popupmenu addItemWithTitle: 
+              id <NSMenuItem> searchItem = [popupmenu addItemWithTitle:
                                                                     [_recent_searches objectAtIndex: j]
-                                                                action: 
+                                                                action:
                                                                     @selector(_searchForRecent:)
-                                                         keyEquivalent: 
+                                                         keyEquivalent:
                                                                     [item keyEquivalent]];
               [searchItem setTarget: self];
             }
@@ -664,18 +654,18 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
         {
           [popupmenu addItem: newItem];
         }
-    } 
+    }
 
-  [pbcell setMenu:popupmenu];
-  [pbcell selectItemAtIndex:selectedItemIndex];
-  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOffState]; // ensure that state resets fully
-  [[popupmenu itemAtIndex:selectedItemIndex] setState:NSOnState];
+  [pbcell setMenu: popupmenu];
+  [pbcell selectItemAtIndex: selectedItemIndex];
+  [[popupmenu itemAtIndex: selectedItemIndex] setState: NSOffState]; // ensure that state resets fully
+  [[popupmenu itemAtIndex: selectedItemIndex] setState: NSOnState];
 
   // Prepare to display the popup
   cvWin = [_control_view window];
   cellFrame = [_control_view frame];
-  cellFrame = [[_control_view superview] convertRect:cellFrame toView:nil]; // convert to window coordinates
-  cellFrame.origin = [cvWin convertBaseToScreen:cellFrame.origin]; // convert to screen coordinates
+  cellFrame = [[_control_view superview] convertRect: cellFrame toView: nil]; // convert to window coordinates
+  cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin]; // convert to screen coordinates
   mr = [popupmenu menuRepresentation];
 
   // Ask the MenuView to attach the menu to this rect
@@ -683,7 +673,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
       onScreen: [cvWin screen]
       preferredEdge: NSMinYEdge
       popUpSelectedItem: -1];
-  
+
   // Last, display the window
   [[mr window] orderFrontRegardless];
 
@@ -692,7 +682,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
   if (newSelectedItemIndex != selectedItemIndex && newSelectedItemIndex != -1
       && newSelectedItemIndex < [template numberOfItems])
     {
-      int tag = [[template itemAtIndex:newSelectedItemIndex] tag];
+      NSInteger tag = [[template itemAtIndex:newSelectedItemIndex] tag];
       if (tag != NSSearchFieldRecentsTitleMenuItemTag && tag != NSSearchFieldClearRecentsMenuItemTag
           && tag != NSSearchFieldNoRecentsMenuItemTag && tag != NSSearchFieldRecentsMenuItemTag
           && ![[template itemAtIndex:newSelectedItemIndex] isSeparatorItem])
@@ -727,7 +717,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 
   if (name)
     {
-      list = [[NSUserDefaults standardUserDefaults] 
+      list = [[NSUserDefaults standardUserDefaults]
 	         stringArrayForKey: name];
       [self setRecentSearches: list];
     }
@@ -740,7 +730,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 
   if (name && list)
     {
-      [[NSUserDefaults standardUserDefaults] 
+      [[NSUserDefaults standardUserDefaults]
           setObject: list forKey: name];
     }
 }

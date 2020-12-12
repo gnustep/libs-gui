@@ -1,3 +1,9 @@
+2020-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchField.m,
+	* Source/NSSearchFieldCell.m: Small cleanups in formatting and
+	int types.
+
 2020-12-11 Riccardo Mottola <rm@gnu.org>
 
 	* Source/GSToolbarView.m,
