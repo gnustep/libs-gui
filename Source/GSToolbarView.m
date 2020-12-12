@@ -546,8 +546,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 - (void) _handleBackViewsFrame
 {
-  float x = 0;
-  float newHeight = 0;
+  CGFloat x = 0;
+  CGFloat newHeight = 0;
   NSArray *subviews = [_clipView subviews];
   NSEnumerator *e = [[_toolbar items] objectEnumerator];
   NSToolbarItem *item;
@@ -592,13 +592,14 @@ static NSUInteger draggedItemIndex = NSNotFound;
   BOOL mustAdjustNext = NO;
   CGFloat x = 0, visibleItemsMinWidth = 0, backViewsWidth = 0;
   NSMutableArray *variableWidthItems = [NSMutableArray array];
-  int flexibleItemsCount = 0, maxWidthItemsCount = 0;
+  unsigned flexibleItemsCount = 0, maxWidthItemsCount = 0;
   CGFloat spacePerFlexItem, extraSpace = 0;
   CGFloat toolbarWidth = [self frame].size.width;
-  int i, n = [items count];
+  NSUInteger i, n;
   NSMutableArray *visibleItems = [NSMutableArray array];
   static const int FlexItemWeight = 4; // non-space flexible item counts as much as 4 flexible spaces
-  
+
+  n = [items count];
   if (n == 0)
     return; 
   
@@ -762,7 +763,7 @@ static NSUInteger draggedItemIndex = NSNotFound;
 - (void) _manageClipView
 {
   NSRect clipViewFrame = [_clipView frame];
-  int count = [[_toolbar items] count];
+  NSUInteger count = [[_toolbar items] count];
   // Retrieve the back views which should be visible now that the resize
   // process has been taken in account
   NSArray *visibleBackViews = [self _visibleBackViews];
@@ -846,11 +847,12 @@ static NSUInteger draggedItemIndex = NSNotFound;
 {
   NSArray *items = [_toolbar items];
   NSView *backView, *view;
-  int i, n = [items count];
+  NSUInteger i, n;
   float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
 
   NSMutableArray *visibleBackViews = [NSMutableArray array];
-  
+
+  n = [items count];
   for (i = 0; i < n; i++)
     {
       NSToolbarItem *item = [items objectAtIndex:i];
