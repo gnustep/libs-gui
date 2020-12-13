@@ -1,3 +1,7 @@
+2020-12-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchFieldCell.m: Use GSTheme to display the popup.
+
 2020-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSearchField.m,

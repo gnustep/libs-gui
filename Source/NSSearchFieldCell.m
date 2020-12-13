@@ -70,7 +70,6 @@
   if (self)
     {
       NSButtonCell *c;
-      // NSMenu *template;
 
       c = [[NSButtonCell alloc] initImageCell: nil];
       [self setCancelButtonCell: c];
@@ -83,8 +82,11 @@
       [self resetSearchButtonCell];
 
 /* Don't set the searchMenuTemplate unless it is explicitly set in code or by a nib connection
-      template = [self _buildTemplate];
-      [self setSearchMenuTemplate: template];
+      {
+        NSMenu *template;
+        template = [self _buildTemplate];
+        [self setSearchMenuTemplate: template];
+      }
 */
 
       //_recent_searches = [[NSMutableArray alloc] init];
@@ -470,8 +472,8 @@
 - (void) clearSearch: (id)sender
 {
   [self setStringValue: @""];
-  [NSApp sendAction: [self action] to: [self target] from: _control_view];
   [_control_view setNeedsDisplay: YES];
+  [NSApp sendAction: [self action] to: [self target] from: _control_view];
 }
 
 //
@@ -587,12 +589,12 @@
   NSMenu *template;
   NSMenu *popupmenu;
   NSMenuView *mr;
-  NSWindow *cvWin;
   NSRect cellFrame;
   NSInteger i;
   NSInteger recentCount = [_recent_searches count];
   NSPopUpButtonCell *pbcell = [[NSPopUpButtonCell alloc] initTextCell: nil pullsDown: NO];
-  NSInteger selectedItemIndex = -1, newSelectedItemIndex;
+  NSInteger selectedItemIndex = -1;
+  NSInteger newSelectedItemIndex;
 
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
@@ -658,38 +660,27 @@
 
   [pbcell setMenu: popupmenu];
   [pbcell selectItemAtIndex: selectedItemIndex];
-  [[popupmenu itemAtIndex: selectedItemIndex] setState: NSOffState]; // ensure that state resets fully
-  [[popupmenu itemAtIndex: selectedItemIndex] setState: NSOnState];
+  [pbcell setPreferredEdge: NSMinYEdge];
 
-  // Prepare to display the popup
-  cvWin = [_control_view window];
   cellFrame = [_control_view frame];
-  cellFrame = [[_control_view superview] convertRect: cellFrame toView: nil]; // convert to window coordinates
-  cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin]; // convert to screen coordinates
   mr = [popupmenu menuRepresentation];
 
-  // Ask the MenuView to attach the menu to this rect
-  [mr setWindowFrameForAttachingToRect: cellFrame
-      onScreen: [cvWin screen]
-      preferredEdge: NSMinYEdge
-      popUpSelectedItem: -1];
-
-  // Last, display the window
-  [[mr window] orderFrontRegardless];
+  [pbcell attachPopUpWithFrame: cellFrame
+                       inView: _control_view];
 
   [mr mouseDown: [NSApp currentEvent]];
   newSelectedItemIndex = [pbcell indexOfSelectedItem];
   if (newSelectedItemIndex != selectedItemIndex && newSelectedItemIndex != -1
       && newSelectedItemIndex < [template numberOfItems])
     {
-      NSInteger tag = [[template itemAtIndex:newSelectedItemIndex] tag];
+      NSInteger tag = [[template itemAtIndex: newSelectedItemIndex] tag];
       if (tag != NSSearchFieldRecentsTitleMenuItemTag && tag != NSSearchFieldClearRecentsMenuItemTag
           && tag != NSSearchFieldNoRecentsMenuItemTag && tag != NSSearchFieldRecentsMenuItemTag
-          && ![[template itemAtIndex:newSelectedItemIndex] isSeparatorItem])
+          && ![[template itemAtIndex: newSelectedItemIndex] isSeparatorItem])
         {
           //new selected item within the template that's not a template special item
-          [[template itemAtIndex:selectedItemIndex] setState:NSOffState];
-          [[template itemAtIndex:newSelectedItemIndex] setState:NSOnState];
+          [[template itemAtIndex: selectedItemIndex] setState: NSOffState];
+          [[template itemAtIndex: newSelectedItemIndex] setState: NSOnState];
         }
     }
   AUTORELEASE(popupmenu);
