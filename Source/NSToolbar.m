@@ -76,19 +76,15 @@ static GSValidationCenter *vc = nil;
 - (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key
 {
   NSMutableArray *result = [NSMutableArray array];
-  NSArray *keys = [self valueForKey: key];
-  int i, n = 0;
-
-  if (keys == nil)
-    return nil;
-
-  n = [keys count];
+  int i = 0;
+  int n = [self count];
 
   for (i = 0; i < n; i++)
     {
-      if ([[keys objectAtIndex: i] isEqual: value])
+      id obj = [self objectAtIndex: i];
+      if ([[obj valueForKey: key] isEqual: value])
         {
-          [result addObject: [self objectAtIndex: i]];
+          [result addObject: obj];
         }
     }
 
@@ -230,25 +226,14 @@ static GSValidationCenter *vc = nil;
   // this method unlike dealloc.
 }
 
-/*
- * FIXME: Replace the deprecated method which follows by this one when -base
- * NSObject will implement it.
- *
 - (id) valueForUndefinedKey: (NSString *)key
 {
   if ([key isEqualToString: @"window"] || [key isEqualToString: @"_window"])
-    return nil;
+    {
+      return nil;
+    }
 
   return [super valueForUndefinedKey: key];
-}
- */
-
-- (id) handleQueryWithUnboundKey: (NSString *)key
-{
-  if ([key isEqualToString: @"window"] || [key isEqualToString: @"_window"])
-    return [NSNull null];
-
-  return [super handleQueryWithUnboundKey: key];
 }
 
 - (NSMutableArray *) observers
@@ -495,7 +480,7 @@ static GSValidationCenter *vc = nil;
 + (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier
 {
   return [toolbars objectsWithValue: identifier
-                   forKey: @"_identifier"];
+                             forKey: @"_identifier"];
 }
 
 // Instance methods
@@ -505,7 +490,9 @@ static GSValidationCenter *vc = nil;
   NSToolbar *toolbarModel = nil;
 
   if ((self = [super init]) == nil)
-    return nil;
+    {
+      return nil;
+    }
 
   ASSIGN(_identifier, identifier);
 
@@ -581,7 +568,7 @@ static GSValidationCenter *vc = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      ASSIGN(_identifier, [aCoder decodeObjectForKey:@"NSToolbarIdentifier"]);
+      ASSIGN(_identifier, [aCoder decodeObjectForKey: @"NSToolbarIdentifier"]);
       _items = [[NSMutableArray alloc] init];
 
       ASSIGN(_interfaceBuilderItemsByIdentifier, [aCoder decodeObjectForKey: @"NSToolbarIBIdentifiedItems"]);
@@ -618,11 +605,10 @@ static GSValidationCenter *vc = nil;
   //NSLog(@"Toolbar dealloc %@", self);
   [self _setToolbarView: nil];
 
-  // Use DESTROY ?
-  RELEASE(_identifier);
-  RELEASE(_selectedItemIdentifier);
-  RELEASE(_configurationDictionary);
-  RELEASE(_items);
+  DESTROY(_identifier);
+  DESTROY(_selectedItemIdentifier);
+  DESTROY(_configurationDictionary);
+  DESTROY(_items);
 
   DESTROY(_interfaceBuilderItemsByIdentifier);
   DESTROY(_interfaceBuilderAllowedItemIdentifiers);
@@ -653,7 +639,9 @@ static GSValidationCenter *vc = nil;
 - (id) valueForUndefinedKey: (NSString *)key
 {
   if ([key isEqualToString: @"window"] || [key isEqualToString: @"_window"])
-    return nil;
+    {
+      return nil;
+    }
 
   return [super valueForUndefinedKey: key];
 }
@@ -679,6 +667,7 @@ static GSValidationCenter *vc = nil;
     {
       return;
     }
+
   if (_customizationPaletteIsRunning)
     {
       NSLog(@"Customization palette is already running for toolbar: %@", self);
@@ -687,20 +676,22 @@ static GSValidationCenter *vc = nil;
 
   if (!_visible)
     {
-      [self setVisible:YES];
+      [self setVisible: YES];
     }
 
   palette = [GSToolbarCustomizationPalette palette];
 
   if (palette != nil)
-    _customizationPaletteIsRunning = YES;
+    {
+      _customizationPaletteIsRunning = YES;
 
-  [palette showForToolbar: self];
+      [palette showForToolbar: self];
+    }
 }
 
 - (void) validateVisibleItems
 {
-  NSEnumerator *e = [[self visibleItems]  objectEnumerator];
+  NSEnumerator *e = [[self visibleItems] objectEnumerator];
   NSToolbarItem *item = nil;
 
   while ((item = [e nextObject]) != nil)
@@ -802,7 +793,7 @@ static GSValidationCenter *vc = nil;
   _displayMode = [[_configurationDictionary objectForKey: @"displayMode"] intValue];
 
   // remove all items...
-  for(i = 0; i < [_items count]; i++)
+  for (i = 0; i < [_items count]; i++)
     {
       [self _removeItemAtIndex: 0 broadcast: YES];
     }
@@ -811,11 +802,11 @@ static GSValidationCenter *vc = nil;
   i = 0;
   items = [_configurationDictionary objectForKey: @"items"];
   en = [items objectEnumerator];
-  while((item = [en nextObject]) != nil)
+  while ((item = [en nextObject]) != nil)
     {
       [self _insertItemWithItemIdentifier: item
-	    atIndex: i++
-	    broadcast: YES];
+                                  atIndex: i++
+                                broadcast: YES];
     }
 }
 
@@ -845,8 +836,7 @@ static GSValidationCenter *vc = nil;
 
       if (_interfaceBuilderItemsByIdentifier == nil)
 	{
-	  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
-				willBeInsertedIntoToolbar:);
+	  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:);
 	}
       if (_interfaceBuilderAllowedItemIdentifiers == nil)
 	{
@@ -892,6 +882,12 @@ static GSValidationCenter *vc = nil;
   return selectableIdentifiers;
 }
 
+- (NSArray *) _itemsWithIdentifier: (NSString *)identifier
+{
+  return [[self items] objectsWithValue: identifier
+                                 forKey: @"_itemIdentifier"];
+}
+
 - (void) setSelectedItemIdentifier: (NSString *)identifier
 {
   NSArray *selectedItems;
@@ -902,8 +898,7 @@ static GSValidationCenter *vc = nil;
   BOOL updated = NO;
 
   //  First, we have to deselect the previous selected toolbar items
-  selectedItems = [[self items] objectsWithValue: [self selectedItemIdentifier]
-                                          forKey: @"_itemIdentifier"];
+  selectedItems = [self _itemsWithIdentifier: [self selectedItemIdentifier]];
   e = [selectedItems objectEnumerator];
   while ((item = [e nextObject]) != nil)
     {
@@ -911,31 +906,31 @@ static GSValidationCenter *vc = nil;
     }
 
   selectableIdentifiers = [self _selectableItemIdentifiers];
+  if ((selectableIdentifiers == nil)
+      || ![selectableIdentifiers containsObject: identifier])
+    {
+      return;
+    }
 
-  if (selectableIdentifiers == nil)
-    return;
+  itemsToSelect = [self _itemsWithIdentifier: identifier];
+  e = [itemsToSelect objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+    {
+      if (![item _selected])
+        {
+          [item _setSelected: YES];
+        }
+      updated = YES;
+    }
 
-   itemsToSelect = [_items objectsWithValue: identifier
-                                     forKey: @"_itemIdentifier"];
-   e = [itemsToSelect objectEnumerator];
-   while ((item = [e nextObject]) != nil)
-     {
-       if ([selectableIdentifiers containsObject: [item itemIdentifier]])
-         {
-           if (![item _selected])
-             [item _setSelected: YES];
-           updated = YES;
-         }
-     }
-
-   if (updated)
-     {
-       ASSIGN(_selectedItemIdentifier, identifier);
-     }
-   else
-     {
-       NSLog(@"Toolbar delegate returns no such selectable item identifiers");
-     }
+  if (updated)
+    {
+      ASSIGN(_selectedItemIdentifier, identifier);
+    }
+  else
+    {
+      NSLog(@"Toolbar delegate returns no such selectable item identifiers");
+    }
 }
 
 - (NSToolbarSizeMode) sizeMode
@@ -947,14 +942,6 @@ static GSValidationCenter *vc = nil;
 {
   return _visible;
 }
-
-
-/**
- * Sets the receivers delegate ... this is the object which will receive
- * -toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:
- * -toolbarAllowedItemIdentifiers: and -toolbarDefaultItemIdentifiers:
- * messages.
- */
 
 - (void) setDisplayMode: (NSToolbarDisplayMode)displayMode
 {
@@ -987,7 +974,7 @@ static GSValidationCenter *vc = nil;
 {
   if (_delegate != nil)
     {
-      return [_delegate toolbarDefaultItemIdentifiers:self];
+      return [_delegate toolbarDefaultItemIdentifiers: self];
     }
   else
     {
@@ -1001,15 +988,13 @@ static GSValidationCenter *vc = nil;
  */
 - (void) _build
 {
-  NSToolbar *toolbarModel;
-  NSArray *wantedItemIdentifiers;
+  NSArray *wantedItemIdentifiers = nil;
   NSEnumerator *e;
   id itemIdentifier;
-  int i = 0;
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSString *tableKey =
-    [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
-  NSDictionary *config = [defaults objectForKey: tableKey];
+  NSDictionary *config = [self _config];
+
+  // Switch off toolbar view reload
+  _build = YES;
 
   if (config)
     {
@@ -1020,19 +1005,16 @@ static GSValidationCenter *vc = nil;
       [self setDisplayMode: displayMode];
       sizeMode = (NSToolbarSizeMode)[[config objectForKey: @"sizeMode"] intValue];
       [self setSizeMode: sizeMode];
+      wantedItemIdentifiers = [config objectForKey: @"items"];
     }
-
-  // Switch off toolbar view reload
-  _build = YES;
 
   RELEASE(_items);
   _items = [[NSMutableArray alloc] init];
 
-  toolbarModel = [self _toolbarModel];
-
-  wantedItemIdentifiers = [self _itemsFromConfig];
-  if(wantedItemIdentifiers == nil)
+  if (wantedItemIdentifiers == nil)
     {
+      NSToolbar *toolbarModel = [self _toolbarModel];
+
       if (toolbarModel != nil)
 	{
 	  wantedItemIdentifiers =
@@ -1043,6 +1025,7 @@ static GSValidationCenter *vc = nil;
 	  wantedItemIdentifiers = [self _defaultItemIdentifiers];
 	}
     }
+
   if (wantedItemIdentifiers == nil)
     {
       _build = NO;
@@ -1055,22 +1038,13 @@ static GSValidationCenter *vc = nil;
       [self _insertItemWithItemIdentifier: itemIdentifier
                                   atIndex: [_items count]
                                 broadcast: NO];
-      i++;
     }
 
   _build = NO;
+
   // Now do the toolbar view reload
   if (_toolbarView != nil)
     [_toolbarView _reload];
-}
-
-- (void) _resetConfig
-{
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSString *tableKey =
-    [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
-  [defaults removeObjectForKey: tableKey];
-  [self _build];
 }
 
 - (BOOL) usesStandardBackgroundColor
@@ -1088,25 +1062,29 @@ static GSValidationCenter *vc = nil;
   return [_items indexOfObjectIdenticalTo: item];
 }
 
-- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex
+- (NSDictionary *) _config
 {
-  if (![_items containsObject: item])
+  if (_identifier != nil)
     {
-      if (newIndex > [_items count] - 1)
-	{
-	  newIndex = [_items count] - 1;
-	}
-      else if(newIndex < 0)
-	{
-	  newIndex = 0;
-	}
+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      NSString       *tableKey =
+        [NSString stringWithFormat: @"NSToolbar Config %@", _identifier];
 
-      [_items insertObject: item atIndex: newIndex];
+      return [defaults objectForKey: tableKey];
     }
   else
     {
-      NSLog(@"Error: the toolbar already contains the item to insert.");
+      return nil;
     }
+}
+
+- (void) _resetConfig
+{
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *tableKey =
+    [NSString stringWithFormat: @"NSToolbar Config %@", _identifier];
+  [defaults removeObjectForKey: tableKey];
+  [self _build];
 }
 
 - (void) _saveConfig
@@ -1122,7 +1100,7 @@ static GSValidationCenter *vc = nil;
 
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey =
-        [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
+        [NSString stringWithFormat: @"NSToolbar Config %@", _identifier];
 
       config = [defaults objectForKey: tableKey];
 
@@ -1165,29 +1143,6 @@ static GSValidationCenter *vc = nil;
   return NO;
 }
 
-- (NSArray *) _itemsFromConfig
-{
-  NSArray *items = nil;
-  if (_identifier != nil)
-    {
-      NSUserDefaults     *defaults;
-      NSString           *tableKey;
-      id                  config;
-
-      defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey =
-        [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
-
-      config = [defaults objectForKey: tableKey];
-
-      if (config != nil)
-        {
-	  items = [config objectForKey: @"items"];
-        }
-    }
-  return items;
-}
-
 - (NSToolbar *) _toolbarModel
 {
   NSArray *linked;
@@ -1199,12 +1154,11 @@ static GSValidationCenter *vc = nil;
     {
       toolbar = [linked objectAtIndex: 0];
 
-      // Toolbar model class must be identical to self class :
-      // an NSToolbar instance cannot use a NSToolbar instance as a model
+      // Toolbar model class must be identical to self class
       if ([toolbar isMemberOfClass: [self class]] && toolbar != self)
-        return toolbar;
-      else
-        return nil;
+        {
+          return toolbar;
+        }
     }
 
   return nil;
@@ -1254,7 +1208,7 @@ static GSValidationCenter *vc = nil;
   \
   while ((toolbar = [e nextObject]) != nil) \
     { \
-      if (toolbar != self && [self isMemberOfClass: [self class]]) \
+      if (toolbar != self && [toolbar isMemberOfClass: [self class]]) \
         [toolbar signature]; \
     } \
 
@@ -1316,23 +1270,14 @@ static GSValidationCenter *vc = nil;
   id item = [_items objectAtIndex: index];
 
   RETAIN(item);
-  [self _performRemoveItem: item];
-  [self _concludeRemoveItem: item atIndex: index broadcast: broadcast];
-  RELEASE(item);
-}
-
-- (void) _performRemoveItem: (NSToolbarItem *)item
-{
   [_items removeObject: item];
   [_toolbarView _reload];
   [self _saveConfig];
-}
 
-- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast
-{
   [nc postNotificationName: NSToolbarDidRemoveItemNotification
                     object: self
                   userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
+  RELEASE(item);
 
   if (broadcast)
     {
@@ -1437,7 +1382,6 @@ static GSValidationCenter *vc = nil;
         }
     }
 }
-
 
 - (NSWindow*) _window
 {
@@ -1562,7 +1506,5 @@ static GSValidationCenter *vc = nil;
 
   [self validateVisibleItems];
 }
-
-
 
 @end

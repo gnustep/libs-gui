@@ -57,7 +57,7 @@ typedef enum {
   GSToolbarClippedItemsButton *_clippedItemsMark;
   unsigned int _borderMask;
   NSRect _rectAvailable;
-  float _heightFromLayout;
+  CGFloat _heightFromLayout;
 }
 
 + (NSUInteger) draggedItemIndex;

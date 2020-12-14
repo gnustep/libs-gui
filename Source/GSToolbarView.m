@@ -3,7 +3,7 @@
 
    <abstract>The toolbar view class.</abstract>
    
-   Copyright (C) 2004-2015 Free Software Foundation, Inc.
+   Copyright (C) 2004-2020 Free Software Foundation, Inc.
 
    Author:  Quentin Mathe <qmathe@club-internet.fr>
    Date: January 2004
@@ -546,8 +546,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 - (void) _handleBackViewsFrame
 {
-  float x = 0;
-  float newHeight = 0;
+  CGFloat x = 0;
+  CGFloat newHeight = 0;
   NSArray *subviews = [_clipView subviews];
   NSEnumerator *e = [[_toolbar items] objectEnumerator];
   NSToolbarItem *item;
@@ -592,13 +592,14 @@ static NSUInteger draggedItemIndex = NSNotFound;
   BOOL mustAdjustNext = NO;
   CGFloat x = 0, visibleItemsMinWidth = 0, backViewsWidth = 0;
   NSMutableArray *variableWidthItems = [NSMutableArray array];
-  int flexibleItemsCount = 0, maxWidthItemsCount = 0;
+  unsigned flexibleItemsCount = 0, maxWidthItemsCount = 0;
   CGFloat spacePerFlexItem, extraSpace = 0;
   CGFloat toolbarWidth = [self frame].size.width;
-  int i, n = [items count];
+  NSUInteger i, n;
   NSMutableArray *visibleItems = [NSMutableArray array];
   static const int FlexItemWeight = 4; // non-space flexible item counts as much as 4 flexible spaces
-  
+
+  n = [items count];
   if (n == 0)
     return; 
   
@@ -686,10 +687,10 @@ static NSUInteger draggedItemIndex = NSNotFound;
     if ([item _isFlexibleSpace])
       {
         NSRect backViewFrame = [backView frame];
-      
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          spacePerFlexItem, 
-          backViewFrame.size.height)];        
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 spacePerFlexItem,
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect:newFrameRect]];
         mustAdjustNext = YES;
       }
     else if ([variableWidthItems indexOfObjectIdenticalTo:item] != NSNotFound)
@@ -698,17 +699,19 @@ static NSUInteger draggedItemIndex = NSNotFound;
         CGFloat maxFlex = [item maxSize].width - [item minSize].width;
         CGFloat flexAmount = MIN(maxFlex, spacePerFlexItem * FlexItemWeight);
         CGFloat newWidth = [item minSize].width + flexAmount + 2 * InsetItemViewX;
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          newWidth, 
-          backViewFrame.size.height)];
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 newWidth, 
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect: newFrameRect]];
         mustAdjustNext = YES;
       }
     else if (mustAdjustNext)
       {
         NSRect backViewFrame = [backView frame];
-      
-        [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-          backViewFrame.size.width, backViewFrame.size.height)];
+	NSRect newFrameRect = NSMakeRect(x, backViewFrame.origin.y,
+					 backViewFrame.size.width,
+					 backViewFrame.size.height);
+	[backView setFrame: [self centerScanRect: newFrameRect]];
       }
     view = [item view];
     if (view != nil)
@@ -760,7 +763,7 @@ static NSUInteger draggedItemIndex = NSNotFound;
 - (void) _manageClipView
 {
   NSRect clipViewFrame = [_clipView frame];
-  int count = [[_toolbar items] count];
+  NSUInteger count = [[_toolbar items] count];
   // Retrieve the back views which should be visible now that the resize
   // process has been taken in account
   NSArray *visibleBackViews = [self _visibleBackViews];
@@ -802,8 +805,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
     }
 }
 
-- (void) _reload 
-{  
+- (void) _reload
+{
   // First, we resize
   [self _handleBackViewsFrame];
   [self _takeInAccountFlexibleSpaces];
@@ -818,9 +821,9 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 // Accessors private methods
 
-- (float) _heightFromLayout
+- (CGFloat) _heightFromLayout
 {    
-  float height = _heightFromLayout;
+  CGFloat height = _heightFromLayout;
   
   if (_borderMask & GSToolbarViewBottomBorder)
     {
@@ -844,11 +847,12 @@ static NSUInteger draggedItemIndex = NSNotFound;
 {
   NSArray *items = [_toolbar items];
   NSView *backView, *view;
-  int i, n = [items count];
+  NSUInteger i, n;
   float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
 
   NSMutableArray *visibleBackViews = [NSMutableArray array];
-  
+
+  n = [items count];
   for (i = 0; i < n; i++)
     {
       NSToolbarItem *item = [items objectAtIndex:i];
@@ -888,12 +892,13 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 - (NSMenu *) menuForEvent: (NSEvent *)event 
 {
-  NSMenu *menu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
-  id <NSMenuItem> customize = [menu insertItemWithTitle: _(@"Customize Toolbar") action:@selector(runCustomizationPalette:) keyEquivalent:@"" atIndex:0];
+  NSMenu *menu = [[NSMenu alloc] initWithTitle: @""];
+  id <NSMenuItem> customize = [menu insertItemWithTitle: _(@"Customize Toolbar")
+                                                 action: @selector(runCustomizationPalette:)
+                                          keyEquivalent: @""
+                                                atIndex: 0];
   [customize setTarget: _toolbar];
-  return menu;
+  return AUTORELEASE(menu);
 }
-
-
 
 @end

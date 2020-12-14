@@ -1,12 +1,33 @@
+2020-12-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchFieldCell.m: Use GSTheme to display the popup.
+
+2020-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchField.m,
+	* Source/NSSearchFieldCell.m: Small cleanups in formatting and
+	int types.
+
+2020-12-11 Riccardo Mottola <rm@gnu.org>
+
+	* Source/GSToolbarView.m,
+	Use centerScanRect to correct Items frame and avoid flickering.
+
+2020-12-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarFrameworkPrivate.h,
+	* Source/GSToolbarView.m,
+	* Source/NSToolbar.m: Minor changes to format code, remove unused
+	methods and introduce some new helper methods.
+
 2020-11-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m (-mouseDown:): Protect against _window going
 	away during tracking.
 
-2020-11-23 Riccardo <rm@gnu.org>
+2020-11-23 Riccardo Mottola <rm@gnu.org>
 	* Source/NSPopUpButtonCell.m (release):
 	Use standard setMenu: in release and avoid leaking the Menu. (Proposed by Fred)
-
 
 2020-11-03 Riccardo Mottola <rm@gnu.org>
 
