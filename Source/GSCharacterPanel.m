@@ -55,6 +55,18 @@
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 
+/*
+ * Define TRUE/FALSE to be used with UBool parameters, as these are no longer
+ * defined in ICU as of ICU 68.
+ */
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+
 @interface GSVerticallyCenteredTextFieldCell : NSTextFieldCell
 {
 }
