@@ -350,7 +350,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
             [NSDictionary dictionaryWithObjectsAndKeys:
                @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
                @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
-               @"decodeRowAlignmentForElement:", @"NSGrid_rowAlignment",
+               @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
                @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
                @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
                @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",

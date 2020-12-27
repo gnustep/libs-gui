@@ -236,7 +236,7 @@
     {
       if ([coder containsValueForKey: @"NSGrid_alignment"])
         {
-          _rowAlignment = [coder decodeIntForKey: @"NSGrid_alignment"];
+          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
         }
       if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
         {
@@ -256,11 +256,11 @@
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
-          _xPlacement = [coder decodeIntForKey: @"NSGrid_xPlacement"];
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
         }
       if ([coder containsValueForKey: @"NSGrid_yPlacement"])
         {
-          _yPlacement = [coder decodeIntForKey: @"NSGrid_yPlacement"];
+          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
         }      
     }
   else
@@ -392,15 +392,15 @@
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
-          _xPlacement = [coder decodeIntForKey: @"NSGrid_xPlacement"];
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
         }      
       if ([coder containsValueForKey: @"NSGrid_yPlacement"])
         {
-          _yPlacement = [coder decodeIntForKey: @"NSGrid_yPlacement"];
+          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
         }      
       if ([coder containsValueForKey: @"NSGrid_alignment"])
         {
-          _rowAlignment = [coder decodeIntForKey: @"NSGrid_alignment"];
+          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
         }      
     }
   else
@@ -523,7 +523,7 @@
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
-          _xPlacement = [coder decodeIntForKey: @"NSGrid_xPlacement"];
+          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
         }      
     }
   else
