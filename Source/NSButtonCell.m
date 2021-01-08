@@ -1579,8 +1579,6 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
-
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
@@ -1699,26 +1697,20 @@
       [aCoder encodeObject: _keyEquivalentFont];
       [aCoder encodeObject: _altContents];
       [aCoder encodeObject: _altImage];
-      tmp = _buttoncell_is_transparent;
-      [aCoder encodeValueOfObjCType: @encode(BOOL)
-              at: &tmp];
+      [aCoder encodeBool: _buttoncell_is_transparent];
 
       if([NSButtonCell version] <= 2)
 	{
 	  unsigned int ke = _keyEquivalentModifierMask << 16;
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &ke];
+	  [aCoder encodeUInteger: ke];
 	}
       else
 	{
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_keyEquivalentModifierMask];
+	  [aCoder encodeUInteger: _keyEquivalentModifierMask];
 	}
 
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_highlightsByMask];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_showAltStateMask];
+      [aCoder encodeUInteger: _highlightsByMask];
+      [aCoder encodeUInteger: _showAltStateMask];
 
       if([NSButtonCell version] >= 2)
 	{
@@ -1728,16 +1720,10 @@
 		  at: &_delayInterval];
 	  [aCoder encodeValueOfObjCType: @encode(float)
 		  at: &_repeatInterval];
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_bezel_style];
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_gradient_type];
-	  tmp = _image_dims_when_disabled;
-	  [aCoder encodeValueOfObjCType: @encode(BOOL)
-		  at: &tmp];
-	  tmp = _shows_border_only_while_mouse_inside;
-	  [aCoder encodeValueOfObjCType: @encode(BOOL)
-		  at: &tmp];
+	  [aCoder encodeUInteger: _bezel_style];
+	  [aCoder encodeUInteger: _gradient_type];
+	  [aCoder encodeBool: _image_dims_when_disabled];
+	  [aCoder encodeBool: _shows_border_only_while_mouse_inside];
 	}
     }
 }
@@ -1884,7 +1870,6 @@
     }
   else
     {
-      BOOL tmp;
       int version = [aDecoder versionForClassName: @"NSButtonCell"];
       NSString *key = nil;
 
@@ -1894,18 +1879,16 @@
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-      _buttoncell_is_transparent = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_keyEquivalentModifierMask];
+      _buttoncell_is_transparent = [aDecoder decodeBool];
+      _keyEquivalentModifierMask = [aDecoder decodeUInteger];
+
       if (version <= 2)
         {
           _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
         }
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_highlightsByMask];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_showAltStateMask];
+      // we need to cast because the encoded value is unisgned
+      _highlightsByMask = (NSInteger)[aDecoder decodeUInteger];
+      _showAltStateMask = (NSInteger)[aDecoder decodeUInteger];
 
       if (version >= 2)
         {
@@ -1913,14 +1896,10 @@
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                       at: &_bezel_style];
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                       at: &_gradient_type];
-          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-          _image_dims_when_disabled = tmp;
-          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-          _shows_border_only_while_mouse_inside = tmp;
+          _bezel_style = (NSBezelStyle)[aDecoder decodeUInteger];
+          _gradient_type = (NSGradientType)[aDecoder decodeUInteger];
+          _image_dims_when_disabled = [aDecoder decodeBool];
+          _shows_border_only_while_mouse_inside = [aDecoder decodeBool];
         }
       // Not encoded in non-keyed archive
       _imageScaling = NSImageScaleNone;
