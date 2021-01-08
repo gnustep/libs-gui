@@ -501,14 +501,20 @@
     }
   else
     {
+      int32_t tmp;
+
       [aCoder encodeValueOfObjCType: @encode(double) at: &_minValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_criticalValue];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_style];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfMajorTickMarks];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      tmp = _style;
+      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      tmp = _numberOfMajorTickMarks;
+      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      tmp = _numberOfTickMarks;
+      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      tmp = _tickMarkPosition;
+      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
     }
 }
 
@@ -556,15 +562,21 @@
         }
     }
   else
-    { 
+    {
+      int32_t tmp;
+
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_criticalValue];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_style];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfMajorTickMarks];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _style = tmp;
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _numberOfMajorTickMarks = tmp;
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _numberOfTickMarks = tmp;
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _tickMarkPosition = tmp;
     }
   
   return self;

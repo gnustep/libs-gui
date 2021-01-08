@@ -381,21 +381,20 @@
     }
   else
   {
-    int tmp1, tmp2;
+    int32_t tmp;
 
-    tmp1 = (int)_autorepeat;
-    tmp2 = (int)_valueWraps;
-    
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_maxValue];
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_minValue];
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_increment];
-    [aCoder encodeValueOfObjCType: @encode(int)
-	    at: &tmp1];
-    [aCoder encodeValueOfObjCType: @encode(int)
-	    at: &tmp2];
+    tmp = (int32_t)_autorepeat;
+    [aCoder encodeValueOfObjCType: @encode(int32_t)
+	    at: &tmp];
+    tmp = (int32_t)_valueWraps;
+    [aCoder encodeValueOfObjCType: @encode(int32_t)
+	    at: &tmp];
   }
 }
 
@@ -418,7 +417,7 @@
     }
   else
     {
-      int tmp1, tmp2;
+      int32_t tmp;
 
       [aDecoder decodeValueOfObjCType: @encode(double)
 		at: &_maxValue];
@@ -426,13 +425,12 @@
 		at: &_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double)
 		at: &_increment];
-      [aDecoder decodeValueOfObjCType: @encode(int)
-		at: &tmp1];
-      [aDecoder decodeValueOfObjCType: @encode(int)
-		at: &tmp2];
-
-      _autorepeat = (BOOL)tmp1;
-      _valueWraps = (BOOL)tmp2;
+      [aDecoder decodeValueOfObjCType: @encode(int32_t)
+		at: &tmp];
+      _autorepeat = (BOOL)tmp;
+      [aDecoder decodeValueOfObjCType: @encode(int32_t)
+		at: &tmp];
+      _valueWraps = (BOOL)tmp;
     }
 
   return self;

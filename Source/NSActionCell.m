@@ -386,7 +386,10 @@ static Class controlClass;
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
+      int32_t tmp;
+
+      tmp = _tag;
+      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
       // This is only encoded for backward compatibility and won't be decoded.
@@ -419,12 +422,15 @@ static Class controlClass;
   else
     {
       id dummy;
+      int32_t tmp;
 
-      [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _tag = tmp;
       _target = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       // Don't decode _control_view, as this may no longer be valid.
-      dummy = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &dummy];
+      RELEASE(dummy);
     }
 
   return self;

@@ -250,8 +250,11 @@ static Class pathComponentCellClass;
     }
   else
     {
-      [coder decodeValueOfObjCType: @encode(NSUInteger)
-                                at: &_pathStyle];
+      uint32_t tmp;
+
+      [coder decodeValueOfObjCType: @encode(uint32_t)
+                                at: &tmp];
+      _pathStyle = tmp;
       [self setPathComponentCells: [coder decodeObject]];
     }
 
@@ -270,8 +273,11 @@ static Class pathComponentCellClass;
     }
   else
     {
-      [coder encodeValueOfObjCType: @encode(NSUInteger)
-                                at: &_pathStyle];
+      uint32_t tmp;
+
+      tmp = _pathStyle;
+      [coder encodeValueOfObjCType: @encode(uint32_t)
+                                at: &tmp];
       [coder encodeObject: [self pathComponentCells]];
     }
 }

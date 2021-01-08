@@ -1579,9 +1579,8 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
-
   [super encodeWithCoder: aCoder];
+
   if ([aCoder allowsKeyedCoding])
     {
       GSButtonCellFlags buttonCellFlags;
@@ -1695,6 +1694,9 @@
     }
   else
     {
+      BOOL tmp;
+      uint32_t tmp2;
+
       [aCoder encodeObject: _keyEquivalent];
       [aCoder encodeObject: _keyEquivalentFont];
       [aCoder encodeObject: _altContents];
@@ -1703,42 +1705,35 @@
       [aCoder encodeValueOfObjCType: @encode(BOOL)
               at: &tmp];
 
-      if([NSButtonCell version] <= 2)
-	{
-	  unsigned int ke = _keyEquivalentModifierMask << 16;
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &ke];
-	}
-      else
-	{
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_keyEquivalentModifierMask];
-	}
+      tmp2 = _keyEquivalentModifierMask;
+      [aCoder encodeValueOfObjCType: @encode(uint32_t)
+                                 at: &tmp2];
 
+      tmp2 = _highlightsByMask;
+      [aCoder encodeValueOfObjCType: @encode(uint32_t)
+              at: &tmp2];
+      tmp2 = _showAltStateMask;
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_highlightsByMask];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_showAltStateMask];
+              at: &tmp2];
 
-      if([NSButtonCell version] >= 2)
-	{
-	  [aCoder encodeObject: _sound];
-	  [aCoder encodeObject: _backgroundColor];
-	  [aCoder encodeValueOfObjCType: @encode(float)
-		  at: &_delayInterval];
-	  [aCoder encodeValueOfObjCType: @encode(float)
-		  at: &_repeatInterval];
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_bezel_style];
-	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-		  at: &_gradient_type];
-	  tmp = _image_dims_when_disabled;
-	  [aCoder encodeValueOfObjCType: @encode(BOOL)
-		  at: &tmp];
-	  tmp = _shows_border_only_while_mouse_inside;
-	  [aCoder encodeValueOfObjCType: @encode(BOOL)
-		  at: &tmp];
-	}
+      [aCoder encodeObject: _sound];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeValueOfObjCType: @encode(float)
+                                 at: &_delayInterval];
+      [aCoder encodeValueOfObjCType: @encode(float)
+                                 at: &_repeatInterval];
+      tmp2 = _bezel_style;
+      [aCoder encodeValueOfObjCType: @encode(uint32_t)
+                                 at: &tmp2];
+      tmp2 = _gradient_type;
+      [aCoder encodeValueOfObjCType: @encode(uint32_t)
+                                 at: &tmp2];
+      tmp = _image_dims_when_disabled;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+                                 at: &tmp];
+      tmp = _shows_border_only_while_mouse_inside;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+                                 at: &tmp];
     }
 }
 
@@ -1885,27 +1880,36 @@
   else
     {
       BOOL tmp;
+      uint32_t tmp2;
       int version = [aDecoder versionForClassName: @"NSButtonCell"];
       NSString *key = nil;
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &key];
-      [self setKeyEquivalent: key]; // Set the key equivalent...
+      // Hack to correct a Gorm problem, there "\n" is used instead of "\r".
+      if ([key isEqualToString: @"\n" ])
+        {
+          key = @"\r";
+        }
+      [self setKeyEquivalent: key];
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
       _buttoncell_is_transparent = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_keyEquivalentModifierMask];
+      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
+                                   at: &tmp2];
+      _keyEquivalentModifierMask = (NSUInteger)tmp2;
       if (version <= 2)
         {
           _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
         }
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_highlightsByMask];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                   at: &_showAltStateMask];
+      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
+                                   at: &tmp2];
+      _highlightsByMask = (NSInteger)tmp2;
+      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
+                                   at: &tmp2];
+      _showAltStateMask = (NSInteger)tmp2;
 
       if (version >= 2)
         {
@@ -1913,10 +1917,12 @@
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                       at: &_bezel_style];
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-                                       at: &_gradient_type];
+          [aDecoder decodeValueOfObjCType: @encode(uint32_t)
+                                       at: &tmp2];
+          _bezel_style = (NSBezelStyle)tmp2;
+          [aDecoder decodeValueOfObjCType: @encode(uint32_t)
+                                       at: &tmp2];
+          _gradient_type = (NSGradientType)tmp2;
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
           _image_dims_when_disabled = tmp;
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
@@ -1924,12 +1930,6 @@
         }
       // Not encoded in non-keyed archive
       _imageScaling = NSImageScaleNone;
-    }
-
-  // Hack to correct a Gorm problem, there "\n" is used instead of "\r".
-  if ([_keyEquivalent isEqualToString: @"\n" ])
-    {
-      [self setKeyEquivalent: @"\r"];
     }
 
   return self;

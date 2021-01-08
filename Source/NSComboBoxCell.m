@@ -1557,15 +1557,19 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     }
   else
     {
+      int32_t tmp;
+
       [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_completes];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
-      [coder encodeValueOfObjCType: @encode(int) at: &_visibleItems];
+      tmp = _visibleItems;
+      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
       [coder encodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
       [coder encodeValueOfObjCType: @encode(float) at: &_itemHeight];
-      [coder encodeValueOfObjCType: @encode(int) at: &_selectedItem];
+      tmp = _selectedItem;
+      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
       
       if (_usesDataSource == YES)
 	[coder encodeConditionalObject: _dataSource];      
@@ -1635,6 +1639,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   else
     {
       BOOL dummy;
+      int32_t tmp;
       
       if ([aDecoder versionForClassName: @"NSComboBoxCell"] < 2)
         {
@@ -1649,10 +1654,12 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_completes];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dummy];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_visibleItems];
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _visibleItems = tmp;
       [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_itemHeight];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_selectedItem];
+      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      _selectedItem = tmp;
 
       if (_usesDataSource == YES)
 	[self setDataSource: [aDecoder decodeObject]];      
