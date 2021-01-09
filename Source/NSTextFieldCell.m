@@ -301,8 +301,6 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
-
   [super encodeWithCoder: aCoder];
 
   if ([aCoder allowsKeyedCoding])
@@ -319,8 +317,7 @@
     {
       [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
-      tmp = _textfieldcell_draws_background;
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      [aCoder encodeBool: _textfieldcell_draws_background];
     }
 }
 
@@ -354,8 +351,6 @@
     }
   else
     {
-      BOOL tmp;
-
       if ([aDecoder versionForClassName:@"NSTextFieldCell"] < 2)
         {
           /* Replace the old default _action_mask with the new default one
@@ -374,8 +369,7 @@
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-      _textfieldcell_draws_background = tmp;
+      _textfieldcell_draws_background = [aDecoder decodeBool];
     }
 
   return self;
