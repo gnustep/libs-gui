@@ -1894,8 +1894,8 @@
         {
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
-          [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
-          [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
+	  _delayInterval = [aDecoder decodeFloat];
+	  _repeatInterval = [aDecoder decodeFloat];
           _bezel_style = (NSBezelStyle)[aDecoder decodeUInteger];
           _gradient_type = (NSGradientType)[aDecoder decodeUInteger];
           _image_dims_when_disabled = [aDecoder decodeBool];
