@@ -4605,12 +4605,11 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
       [aCoder encodeRect: _frame];
       [aCoder encodeRect: _bounds];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
-      [aCoder encodeValueOfObjCType: @encode(BOOL)
-	      at: &_is_rotated_or_scaled_from_base];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
-      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_autoresizingMask];
+      [aCoder encodeBool: &_is_rotated_from_base];
+      [aCoder encodeBool: &_is_rotated_or_scaled_from_base];
+      [aCoder encodeBool: &_post_frame_changes];
+      [aCoder encodeBool: &_autoresizes_subviews];
+      [aCoder encodeBool: &_autoresizingMask];
       [aCoder encodeConditionalObject: [self nextKeyView]];
       [aCoder encodeConditionalObject: [self previousKeyView]];
       [aCoder encodeObject: _sub_views];
@@ -4750,16 +4749,12 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       _super_view = nil;
       _window = nil;
       _rFlags.needs_display = YES;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_is_rotated_from_base];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_is_rotated_or_scaled_from_base];
+      _is_rotated_from_base = [aDecoder decodeBool];
+      _is_rotated_or_scaled_from_base = [aDecoder decodeBool];
       _post_bounds_changes = YES;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_autoresizes_subviews];
-      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
-				   at: &_autoresizingMask];
+      _post_frame_changes = [aDecoder decodeBool];
+      _autoresizes_subviews = [aDecoder decodeBool];
+      _autoresizingMask = [aDecoder decodeUInteger];
       _coordinates_valid = NO;
       [self setNextKeyView: [aDecoder decodeObject]];
       [[aDecoder decodeObject] setNextKeyView: self];
