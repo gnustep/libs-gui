@@ -306,14 +306,14 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
     }
   else
     {
-      int32_t tmp;
+      NSInteger tmp;
 
       tmp = _imageAlignment;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &tmp);
       tmp = _frameStyle;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &tmp);
       tmp = _imageScaling;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &tmp);
       [aCoder encodeSize: _original_image_size];
     }
 }
@@ -343,13 +343,13 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 	}
       else
 	{
-          int32_t tmp;
+          NSInteger tmp;
 
-	  [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+          decode_NSInteger(aDecoder, &tmp);
           _imageAlignment = tmp;
-	  [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+          decode_NSInteger(aDecoder, &tmp);
           _frameStyle = tmp;
-	  [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+          decode_NSInteger(aDecoder, &tmp);
           _imageScaling = tmp;
 	  _original_image_size = [aDecoder decodeSize];
 	}

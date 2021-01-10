@@ -1546,7 +1546,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   if ([coder allowsKeyedCoding])
     {
       [coder encodeBool: [self hasVerticalScroller] forKey: @"NSHasVerticalScroller"];
-      [coder encodeInt: [self numberOfVisibleItems] forKey: @"NSVisibleItemCount"];
+      [coder encodeInteger: [self numberOfVisibleItems] forKey: @"NSVisibleItemCount"];
       [coder encodeBool: [self completes] forKey: @"NSCompletes"];
       [coder encodeDouble: _intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
       [coder encodeDouble: _intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
@@ -1557,19 +1557,15 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     }
   else
     {
-      int32_t tmp;
-
       [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_completes];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
-      tmp = _visibleItems;
-      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(coder, &_visibleItems);
       [coder encodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
       [coder encodeValueOfObjCType: @encode(float) at: &_itemHeight];
-      tmp = _selectedItem;
-      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(coder, &_selectedItem);
       
       if (_usesDataSource == YES)
 	[coder encodeConditionalObject: _dataSource];      
@@ -1600,7 +1596,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	}
       if ([aDecoder containsValueForKey: @"NSVisibleItemCount"])
         {
-	  [self setNumberOfVisibleItems: [aDecoder decodeIntForKey: 
+	  [self setNumberOfVisibleItems: [aDecoder decodeIntegerForKey:
 						       @"NSVisibleItemCount"]];
 	}
       if ([aDecoder containsValueForKey: @"NSCompletes"])
@@ -1639,7 +1635,6 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   else
     {
       BOOL dummy;
-      int32_t tmp;
       
       if ([aDecoder versionForClassName: @"NSComboBoxCell"] < 2)
         {
@@ -1654,12 +1649,10 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_completes];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dummy];
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      _visibleItems = tmp;
+      decode_NSInteger(aDecoder, &_visibleItems);
       [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_itemHeight];
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      _selectedItem = tmp;
+      decode_NSInteger(aDecoder, &_selectedItem);
 
       if (_usesDataSource == YES)
 	[self setDataSource: [aDecoder decodeObject]];      

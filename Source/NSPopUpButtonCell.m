@@ -41,6 +41,7 @@
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
+#import "GSGuiPrivate.h"
 
 /* The image to use in a specific popupbutton depends on type and
  * preferred edge; that is, _pbc_image[0] if it is a
@@ -1207,20 +1208,20 @@ static NSImage *_pbc_image[5];
     }
   else
     {    
-      int32_t flag;
+      NSInteger flag;
 
       [aCoder encodeObject: _menu];
       [aCoder encodeConditionalObject: [self selectedItem]];
       flag = _pbcFlags.pullsDown;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.preferredEdge;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.usesItemFromMenu;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.altersStateOfSelectedItem;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.arrowPosition;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &flag];
+      encode_NSInteger(aCoder, &flag);
     }
 }
 
@@ -1306,7 +1307,7 @@ static NSImage *_pbc_image[5];
     }
   else
     {
-      int32_t flag;
+      NSInteger flag;
       id<NSMenuItem> selectedItem;
       int version = [aDecoder versionForClassName: 
                                   @"NSPopUpButtonCell"];
@@ -1321,15 +1322,15 @@ static NSImage *_pbc_image[5];
       [self setMenu: nil];
       [self setMenu: menu];
       selectedItem = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.pullsDown = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.preferredEdge = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.usesItemFromMenu = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.altersStateOfSelectedItem = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.arrowPosition = flag;
       
       if (version < 2)

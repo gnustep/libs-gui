@@ -1070,7 +1070,7 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
   else
     {
       float tmp_float;
-      int32_t tmp_int;
+      NSInteger tmp_int;
 
       [self setDoubleValue: 0];
       [decoder decodeValueOfObjCType: @encode(float) at: &tmp_float];
@@ -1079,16 +1079,15 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
       [self setMaxValue: tmp_float];
       [decoder decodeValueOfObjCType: @encode(float) at: &tmp_float];
       [self setAltIncrementValue: tmp_float];
-      [decoder decodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
+      decode_NSInteger(decoder, &tmp_int);
       _isVertical = tmp_int;
       [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
       [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
       if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
 	{
 	  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-	  [decoder decodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
-          _numberOfTickMarks = tmp_int;
-	  [decoder decodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
+          decode_NSInteger(decoder, &_numberOfTickMarks);
+          decode_NSInteger(decoder, &tmp_int);
           _tickMarkPosition = tmp_int;
 	}
     }
@@ -1112,7 +1111,7 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
   else
     {
       float tmp_float;
-      int32_t tmp_int;
+      NSInteger tmp_int;
 
       tmp_float = _minValue;
       [coder encodeValueOfObjCType: @encode(float) at: &tmp_float];
@@ -1121,15 +1120,14 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
       tmp_float = _altIncrementValue;
       [coder encodeValueOfObjCType: @encode(float) at: &tmp_float];
       tmp_int = _isVertical;
-      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
+      encode_NSInteger(coder, &tmp_int);
       [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
       [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
       // New for version 2
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-      tmp_int = _numberOfTickMarks;
-      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
+      encode_NSInteger(coder, &_numberOfTickMarks);
       tmp_int = _tickMarkPosition;
-      [coder encodeValueOfObjCType: @encode(int32_t) at: &tmp_int];
+      encode_NSInteger(coder, &tmp_int);
     }
 }
   

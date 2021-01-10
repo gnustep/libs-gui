@@ -31,6 +31,7 @@
 
 #import "AppKit/NSActionCell.h"
 #import "AppKit/NSControl.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSActionCell
 
@@ -386,10 +387,7 @@ static Class controlClass;
     }
   else
     {
-      int32_t tmp;
-
-      tmp = _tag;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &_tag);
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
       // This is only encoded for backward compatibility and won't be decoded.
@@ -422,10 +420,8 @@ static Class controlClass;
   else
     {
       id dummy;
-      int32_t tmp;
 
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      _tag = tmp;
+      decode_NSInteger(aDecoder, &_tag);
       _target = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       // Don't decode _control_view, as this may no longer be valid.

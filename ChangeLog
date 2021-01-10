@@ -1,5 +1,7 @@
 2021-01-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSComboBoxCell.h: Correct type of instance variables.
+	* Source/GSGuiPrivate.h: Add macros for encoding/decoding.
 	* Source/NSActionCell.m,
 	* Source/NSButtonCell.m,
 	* Source/NSCell.m,

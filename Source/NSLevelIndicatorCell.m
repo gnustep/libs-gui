@@ -33,6 +33,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSLevelIndicatorCell.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSLevelIndicatorCell
 
@@ -501,20 +502,18 @@
     }
   else
     {
-      int32_t tmp;
+      NSInteger tmp;
 
       [aCoder encodeValueOfObjCType: @encode(double) at: &_minValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_criticalValue];
       tmp = _style;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      tmp = _numberOfMajorTickMarks;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      tmp = _numberOfTickMarks;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &tmp);
+      encode_NSInteger(aCoder, &_numberOfMajorTickMarks);
+      encode_NSInteger(aCoder, &_numberOfTickMarks);
       tmp = _tickMarkPosition;
-      [aCoder encodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      encode_NSInteger(aCoder, &tmp);
     }
 }
 
@@ -563,19 +562,17 @@
     }
   else
     {
-      int32_t tmp;
+      NSInteger tmp;
 
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_criticalValue];
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      decode_NSInteger(aDecoder, &tmp);
       _style = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      _numberOfMajorTickMarks = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
-      _numberOfTickMarks = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(int32_t) at: &tmp];
+      decode_NSInteger(aDecoder, &_numberOfMajorTickMarks);
+      decode_NSInteger(aDecoder, &_numberOfTickMarks);
+      decode_NSInteger(aDecoder, &tmp);
       _tickMarkPosition = tmp;
     }
   

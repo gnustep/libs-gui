@@ -1695,7 +1695,7 @@
   else
     {
       BOOL tmp;
-      uint32_t tmp2;
+      NSUInteger tmp2;
 
       [aCoder encodeObject: _keyEquivalent];
       [aCoder encodeObject: _keyEquivalentFont];
@@ -1705,16 +1705,11 @@
       [aCoder encodeValueOfObjCType: @encode(BOOL)
               at: &tmp];
 
-      tmp2 = _keyEquivalentModifierMask;
-      [aCoder encodeValueOfObjCType: @encode(uint32_t)
-                                 at: &tmp2];
-
+      encode_NSUInteger(aCoder, &_keyEquivalentModifierMask);
       tmp2 = _highlightsByMask;
-      [aCoder encodeValueOfObjCType: @encode(uint32_t)
-              at: &tmp2];
+      encode_NSUInteger(aCoder, &tmp2);
       tmp2 = _showAltStateMask;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &tmp2];
+      encode_NSUInteger(aCoder, &tmp2);
 
       [aCoder encodeObject: _sound];
       [aCoder encodeObject: _backgroundColor];
@@ -1723,11 +1718,9 @@
       [aCoder encodeValueOfObjCType: @encode(float)
                                  at: &_repeatInterval];
       tmp2 = _bezel_style;
-      [aCoder encodeValueOfObjCType: @encode(uint32_t)
-                                 at: &tmp2];
+      encode_NSUInteger(aCoder, &tmp2);
       tmp2 = _gradient_type;
-      [aCoder encodeValueOfObjCType: @encode(uint32_t)
-                                 at: &tmp2];
+      encode_NSUInteger(aCoder, &tmp2);
       tmp = _image_dims_when_disabled;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
                                  at: &tmp];
@@ -1880,7 +1873,7 @@
   else
     {
       BOOL tmp;
-      uint32_t tmp2;
+      NSUInteger tmp2;
       int version = [aDecoder versionForClassName: @"NSButtonCell"];
       NSString *key = nil;
 
@@ -1897,18 +1890,14 @@
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
       _buttoncell_is_transparent = tmp;
-      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
-                                   at: &tmp2];
-      _keyEquivalentModifierMask = (NSUInteger)tmp2;
+      decode_NSUInteger(aDecoder, &_keyEquivalentModifierMask);
       if (version <= 2)
         {
           _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
         }
-      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
-                                   at: &tmp2];
+      decode_NSUInteger(aDecoder, &tmp2);
       _highlightsByMask = (NSInteger)tmp2;
-      [aDecoder decodeValueOfObjCType: @encode(uint32_t)
-                                   at: &tmp2];
+      decode_NSUInteger(aDecoder, &tmp2);
       _showAltStateMask = (NSInteger)tmp2;
 
       if (version >= 2)
@@ -1917,11 +1906,9 @@
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
-          [aDecoder decodeValueOfObjCType: @encode(uint32_t)
-                                       at: &tmp2];
+          decode_NSUInteger(aDecoder, &tmp2);
           _bezel_style = (NSBezelStyle)tmp2;
-          [aDecoder decodeValueOfObjCType: @encode(uint32_t)
-                                       at: &tmp2];
+          decode_NSUInteger(aDecoder, &tmp2);
           _gradient_type = (NSGradientType)tmp2;
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
           _image_dims_when_disabled = tmp;
