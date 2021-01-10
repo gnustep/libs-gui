@@ -4605,11 +4605,11 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
       [aCoder encodeRect: _frame];
       [aCoder encodeRect: _bounds];
-      [aCoder encodeBool: &_is_rotated_from_base];
-      [aCoder encodeBool: &_is_rotated_or_scaled_from_base];
-      [aCoder encodeBool: &_post_frame_changes];
-      [aCoder encodeBool: &_autoresizes_subviews];
-      [aCoder encodeBool: &_autoresizingMask];
+      [aCoder encodeBool: _is_rotated_from_base];
+      [aCoder encodeBool: _is_rotated_or_scaled_from_base];
+      [aCoder encodeBool: _post_frame_changes];
+      [aCoder encodeBool: _autoresizes_subviews];
+      [aCoder encodeBool: _autoresizingMask];
       [aCoder encodeConditionalObject: [self nextKeyView]];
       [aCoder encodeConditionalObject: [self previousKeyView]];
       [aCoder encodeObject: _sub_views];
