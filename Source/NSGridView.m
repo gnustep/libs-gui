@@ -513,6 +513,17 @@
     }
   else
     {
+      [coder encodeValueOfObjCType:@encode(BOOL)
+                                at:&_isHidden];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_leadingPadding];
+      [coder encodeObject: _gridView];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_trailingPadding];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_width];
+      [coder encodeValueOfObjCType:@encode(NSInteger)
+                                at:&_xPlacement];
     }
 }
 
@@ -548,6 +559,18 @@
     }
   else
     {
+      [coder decodeValueOfObjCType:@encode(BOOL)
+                                at:&_isHidden];
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_leadingPadding];
+      ASSIGN(_gridView, [coder decodeObject]); 
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_trailingPadding];
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_width];
+      [coder decodeValueOfObjCType:@encode(NSInteger)
+                                at:&_xPlacement];
+
     }
   return self;
 }
