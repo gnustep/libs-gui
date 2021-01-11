@@ -570,7 +570,6 @@
                                 at:&_width];
       [coder decodeValueOfObjCType:@encode(NSInteger)
                                 at:&_xPlacement];
-
     }
   return self;
 }
@@ -674,6 +673,17 @@
     }
   else
     {
+      [coder encodeValueOfObjCType:@encode(BOOL)
+                                at:&_isHidden];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_bottomPadding];
+      [coder encodeObject: _gridView];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_topPadding];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_height];
+      [coder encodeValueOfObjCType:@encode(NSInteger)
+                                at:&_yPlacement];
     }
 }
 
@@ -709,6 +719,17 @@
     }
   else
     {
+      [coder decodeValueOfObjCType:@encode(BOOL)
+                                at:&_isHidden];
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_bottomPadding];
+      ASSIGN(_gridView, [coder decodeObject]); 
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_topPadding];
+      [coder decodeValueOfObjCType:@encode(CGFloat)
+                                at:&_height];
+      [coder decodeValueOfObjCType:@encode(NSInteger)
+                                at:&_yPlacement];
     }
   return self;
 }
