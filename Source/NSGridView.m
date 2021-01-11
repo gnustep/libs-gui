@@ -405,6 +405,16 @@
     }
   else
     {
+      [self setContentView: [coder decodeObject]];
+      ASSIGN(_mergeHead, [coder decodeObject]);
+      _owningRow = [coder decodeObject];
+      _owningColumn = [coder decodeObject];
+      [coder decodeValueOfObjCType:@encode(NSInteger)
+                                at: &_xPlacement];
+      [coder decodeValueOfObjCType:@encode(NSInteger)
+                                at: &_yPlacement];
+      [coder decodeValueOfObjCType:@encode(NSInteger)
+                                at: &_rowAlignment];
     }
   return self;
 }
