@@ -366,6 +366,16 @@
     }
   else
     {
+      [coder encodeObject: [self contentView]];
+      [coder encodeObject: _mergeHead];
+      [coder encodeObject: _owningRow];
+      [coder encodeObject: _owningColumn];
+      [coder encodeValueOfObjCType:@encode(NSInteger)
+                                at: &_xPlacement];
+      [coder encodeValueOfObjCType:@encode(NSInteger)
+                                at: &_yPlacement];
+      [coder encodeValueOfObjCType:@encode(NSInteger)
+                                at: &_rowAlignment];
     }
 }
 
@@ -407,8 +417,8 @@
     {
       [self setContentView: [coder decodeObject]];
       ASSIGN(_mergeHead, [coder decodeObject]);
-      _owningRow = [coder decodeObject];
-      _owningColumn = [coder decodeObject];
+      _owningRow = [coder decodeObject]; // weak
+      _owningColumn = [coder decodeObject]; // weak
       [coder decodeValueOfObjCType:@encode(NSInteger)
                                 at: &_xPlacement];
       [coder decodeValueOfObjCType:@encode(NSInteger)
