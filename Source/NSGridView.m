@@ -563,7 +563,7 @@
                                 at:&_isHidden];
       [coder decodeValueOfObjCType:@encode(CGFloat)
                                 at:&_leadingPadding];
-      ASSIGN(_gridView, [coder decodeObject]); 
+      _gridView = [coder decodeObject]; 
       [coder decodeValueOfObjCType:@encode(CGFloat)
                                 at:&_trailingPadding];
       [coder decodeValueOfObjCType:@encode(CGFloat)
@@ -723,7 +723,7 @@
                                 at:&_isHidden];
       [coder decodeValueOfObjCType:@encode(CGFloat)
                                 at:&_bottomPadding];
-      ASSIGN(_gridView, [coder decodeObject]); 
+      _gridView = [coder decodeObject]; 
       [coder decodeValueOfObjCType:@encode(CGFloat)
                                 at:&_topPadding];
       [coder decodeValueOfObjCType:@encode(CGFloat)
