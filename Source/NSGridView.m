@@ -135,12 +135,14 @@
 
 - (NSGridRow *) addRowWithViews: (NSArray *)views
 {
-  return nil;
+  NSGridRow *gr = [[NSGridRow alloc] init];
+  return gr;
 }
 
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  return nil;
+  NSGridRow *gr = [[NSGridRow alloc] init];
+  return gr;
 }
 
 - (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
@@ -153,12 +155,14 @@
 
 - (NSGridColumn *) addColumnWithViews: (NSArray*)views
 {
-  return nil;
+  NSGridColumn *gc = [[NSGridColumn alloc] init];
+  return gc;
 }
 
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  return nil;
+  NSGridColumn *gc = [[NSGridColumn alloc] init];
+  return gc;
 }
 
 - (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
