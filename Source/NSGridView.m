@@ -24,40 +24,32 @@
 
 #import <Foundation/NSArray.h>
 #import "AppKit/NSGridView.h"
-
 #import "GSFastEnumeration.h"
-
-@interface NSGridRow (Private)
-- (void) _setRow: (NSMutableArray *)row;
-- (NSMutableArray *) _row;
-@end
-
-@interface NSGridColumn (Private)
-- (void) _setColumn: (NSMutableArray *)col;
-- (NSMutableArray *) _column;
-@end
 
 @implementation NSGridView
 
 - (instancetype) initWithFrame: (NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
+
   if (self != nil)
     {
       _rows = [[NSMutableArray alloc] initWithCapacity: 10];
+      _columns = [[NSMutableArray alloc] initWithCapacity: 10];
+      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
     }
+
   return self;
 }
 
 - (instancetype) initWithViews: (NSArray *)rows
 {
   self = [self initWithFrame: NSZeroRect];
-
+  
   if (self != nil)
     {
       FOR_IN(NSMutableArray*, array, rows)
         {
-          [_rows addObject: array];
         }
       END_FOR_IN(rows);
     }
@@ -123,7 +115,9 @@
 
 - (NSGridCell *) cellAtColumnIndex: (NSInteger)columnIndex rowIndex: (NSInteger)rowIndex
 {
-  return nil;
+  NSGridColumn *col = [_columns objectAtIndex: columnIndex];
+  NSGridCell *c = [col cellAtIndex: rowIndex];
+  return c;
 }
 
 - (NSGridCell *) cellForView: (NSView*)view
@@ -231,12 +225,46 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeInteger: _rowAlignment
+                    forKey: @"NSGrid_alignment"];
+      [coder encodeFloat: _columnSpacing
+                  forKey: @"NSGrid_columnSpacing"];
+      [coder encodeObject: _columns
+                   forKey: @"NSGrid_columns"];
+      [coder encodeFloat: _rowSpacing
+                  forKey: @"NSGrid_rowSpacing"];
+      [coder encodeObject: _rows
+                   forKey: @"NSGrid_rows"];
+      [coder encodeInteger: _xPlacement
+                    forKey: @"NSGrid_xPlacement"];
+      [coder encodeInteger: _yPlacement forKey: @"NSGrid_yPlacement"];
+      [coder encodeObject: _cells
+                   forKey: @"NSGrid_cells"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_rowAlignment];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_columnSpacing];
+      [coder encodeObject: _columns];
+      [coder encodeValueOfObjCType:@encode(CGFloat)
+                                at:&_rowSpacing];
+      [coder encodeObject: _rows];
+      [coder encodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_xPlacement];
+      [coder encodeValueOfObjCType:@encode(NSUInteger)
+                                at:&_yPlacement];
+      [coder encodeObject: _cells];
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
-  NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSGrid_alignment"])
@@ -250,7 +278,7 @@
       if ([coder containsValueForKey: @"NSGrid_columns"])
         {
           ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-          NSLog(@"_columns = %@", _columns);
+          // NSLog(@"_columns = %@", _columns);
         }
       if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
         {
@@ -259,7 +287,7 @@
       if ([coder containsValueForKey: @"NSGrid_rows"])
         {
           ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-          NSLog(@"_rows = %@", _rows);
+          // NSLog(@"_rows = %@", _rows);
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
