@@ -278,7 +278,7 @@
       if ([coder containsValueForKey: @"NSGrid_columns"])
         {
           ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-          // NSLog(@"_columns = %@", _columns);
+          // NSDebugLog(@"_columns = %@", _columns);
         }
       if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
         {
@@ -287,7 +287,7 @@
       if ([coder containsValueForKey: @"NSGrid_rows"])
         {
           ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-          // NSLog(@"_rows = %@", _rows);
+          // NSDebugLog(@"_rows = %@", _rows);
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
@@ -431,7 +431,7 @@
 {
   self = [super init];
   
-  NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
   if ([coder allowsKeyedCoding])
     {
@@ -588,7 +588,7 @@
 {
   self = [super init];
   
-  NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
   if ([coder allowsKeyedCoding])
     {
@@ -752,7 +752,7 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
-  NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSGrid_hidden"])
