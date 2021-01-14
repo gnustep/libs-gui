@@ -202,7 +202,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
-                            @"NSMutableArray", @"constraints", 
+                            @"NSMutableArray", @"constraints",
+                            @"NSMutableArray", @"rows",
+                            @"NSMutableArray", @"columns",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -300,6 +302,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"height", @"NSGrid_heighth",
                                            @"xPlacement", @"NSGrid_xPlacement",
                                            @"yPlacement", @"NSGrid_yPlacement",
+                                           @"rows", @"NSGrid_rows",
+                                           @"columns", @"NSGrid_columns",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
