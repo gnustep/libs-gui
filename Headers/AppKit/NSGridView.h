@@ -63,6 +63,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   NSGridRowAlignment _rowAlignment;
   NSMutableArray *_rows;
   NSMutableArray *_columns;
+  NSMutableArray *_cells;
   CGFloat _columnSpacing;
   CGFloat _rowSpacing;
   CGFloat _xPlacement;

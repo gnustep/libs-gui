@@ -205,6 +205,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"constraints",
                             @"NSMutableArray", @"rows",
                             @"NSMutableArray", @"columns",
+                            @"NSMutableArray", @"gridCells",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -304,6 +305,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"yPlacement", @"NSGrid_yPlacement",
                                            @"rows", @"NSGrid_rows",
                                            @"columns", @"NSGrid_columns",
+                                           @"gridCells", @"NSGrid_cells",
                                            nil];
           RETAIN(XmlKeyMapTable);
 

@@ -103,24 +103,22 @@
 
 - (NSGridRow *) rowAtIndex: (NSInteger)index
 {
-  NSGridRow *r = [[NSGridRow alloc] init];
-  [r _setRow: [_rows objectAtIndex: index]];
-  return r;
+  return [_rows objectAtIndex: index];
 }
 
 - (NSInteger) indexOfRow: (NSGridRow *)row
 {
-  return 0;
+  return [_rows indexOfObject: row];
 }
 
 - (NSGridColumn *) columnAtIndex: (NSInteger)index
 {
-  return nil;
+  return [_columns objectAtIndex: index];
 }
 
 - (NSInteger) indexOfColumn: (NSGridColumn *)column
 {
-  return 0;
+  return [_columns indexOfObject: column];
 }
 
 - (NSGridCell *) cellAtColumnIndex: (NSInteger)columnIndex rowIndex: (NSInteger)rowIndex
@@ -135,8 +133,8 @@
 
 - (NSGridRow *) addRowWithViews: (NSArray *)views
 {
-  NSGridRow *gr = [[NSGridRow alloc] init];
-  return gr;
+  return [self insertRowAtIndex: [_rows count]
+                      withViews: views];
 }
 
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
@@ -151,12 +149,13 @@
 
 - (void) removeRowAtIndex: (NSInteger)index
 {
+  [_rows removeObjectAtIndex: index];
 }
 
 - (NSGridColumn *) addColumnWithViews: (NSArray*)views
 {
-  NSGridColumn *gc = [[NSGridColumn alloc] init];
-  return gc;
+  return [self insertColumnAtIndex: [_columns count]
+                         withViews: views];
 }
 
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
@@ -171,6 +170,7 @@
 
 - (void) removeColumnAtIndex: (NSInteger)index
 {
+  [_columns removeObjectAtIndex: index];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -259,7 +259,7 @@
       if ([coder containsValueForKey: @"NSGrid_rows"])
         {
           ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-          NSLog(@"_rows = %@", _columns);
+          NSLog(@"_rows = %@", _rows);
         }
       if ([coder containsValueForKey: @"NSGrid_xPlacement"])
         {
@@ -268,7 +268,11 @@
       if ([coder containsValueForKey: @"NSGrid_yPlacement"])
         {
           _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
-        }      
+        }
+      if ([coder containsValueForKey: @"NSGrid_cells"])
+        {
+          ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
+        }
     }
   else
     {
@@ -284,9 +288,18 @@
                                 at:&_xPlacement];
       [coder decodeValueOfObjCType:@encode(NSUInteger)
                                 at:&_yPlacement];
+      ASSIGN(_cells, [coder decodeObject]);
     }
   
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_columns);
+  RELEASE(_rows);
+  RELEASE(_cells);
+  [super dealloc];
 }
 
 @end
@@ -437,6 +450,12 @@
                                 at: &_rowAlignment];
     }
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_mergeHead);
+  [super dealloc];
 }
 
 @end
@@ -593,10 +612,12 @@
 /// Row ///
 @implementation NSGridRow
 
+/*
 - (BOOL) isEqual: (NSGridRow *)r
 {
   return NO;
 }
+*/
 
 - (void) setGridView: (NSGridView *)gridView
 {
