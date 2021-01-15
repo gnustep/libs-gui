@@ -28,6 +28,40 @@
 
 @implementation NSGridView
 
++ (void) initialize
+{
+  if (self == [NSGridView class])
+    {
+      [self setVersion: 1];
+    }
+}
+
+- (NSRect) _rectForCell: (NSGridCell *)cell
+                    row: (NSUInteger)row
+                 column: (NSUInteger)column
+{
+  return NSZeroRect;
+}
+
+- (void) _refreshCells
+{
+  NSUInteger r = 0, c = 0;
+  NSLog(@"Refresh cells in NSGridView");
+  FOR_IN(NSMutableArray*, row, _rows)
+    {
+      FOR_IN(NSMutableArray*, cell, row)
+        {
+          NSRect rect = [self _rectForCell: cell
+                                       row: r
+                                    column: c];
+          c++;
+        }
+      END_FOR_IN(row);
+      r++;
+    }
+  END_FOR_IN(_rows);
+}
+
 - (instancetype) initWithFrame: (NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
@@ -39,6 +73,8 @@
       _cells = [[NSMutableArray alloc] initWithCapacity: 10];
     }
 
+  [self _refreshCells];
+  
   return self;
 }
 
@@ -48,11 +84,13 @@
   
   if (self != nil)
     {
-      FOR_IN(NSMutableArray*, array, rows)
+      FOR_IN(NSMutableArray*, row, rows)
         {
         }
       END_FOR_IN(rows);
     }
+
+  [self _refreshCells];
   
   return self;
 }
@@ -134,16 +172,19 @@
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
   NSGridRow *gr = [[NSGridRow alloc] init];
+  [self _refreshCells];
   return gr;
 }
 
 - (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
+  [self _refreshCells];
 }
 
 - (void) removeRowAtIndex: (NSInteger)index
 {
   [_rows removeObjectAtIndex: index];
+  [self _refreshCells];
 }
 
 - (NSGridColumn *) addColumnWithViews: (NSArray*)views
@@ -155,16 +196,19 @@
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
   NSGridColumn *gc = [[NSGridColumn alloc] init];
+  [self _refreshCells];
   return gc;
 }
 
 - (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
+  [self _refreshCells]; 
 }
 
 - (void) removeColumnAtIndex: (NSInteger)index
 {
   [_columns removeObjectAtIndex: index];
+  [self _refreshCells];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -219,6 +263,7 @@
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
 {
+  [self _refreshCells]; 
 }
 
 // coding
@@ -264,60 +309,65 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
-  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-  if ([coder allowsKeyedCoding])
+  if (self != nil)
     {
-      if ([coder containsValueForKey: @"NSGrid_alignment"])
+      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      if ([coder allowsKeyedCoding])
         {
-          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
+          if ([coder containsValueForKey: @"NSGrid_alignment"])
+            {
+              _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
+            {
+              _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_columns"])
+            {
+              ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
+              // NSDebugLog(@"_columns = %@", _columns);
+            }
+          if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
+            {
+              _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_rows"])
+            {
+              ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
+              // NSDebugLog(@"_rows = %@", _rows);
+            }
+          if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+            {
+              _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+            {
+              _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_cells"])
+            {
+              ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
+            }
         }
-      if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
+      else
         {
-          _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_columns"])
-        {
-          ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-          // NSDebugLog(@"_columns = %@", _columns);
-        }
-      if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
-        {
-          _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_rows"])
-        {
-          ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-          // NSDebugLog(@"_rows = %@", _rows);
-        }
-      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
-        {
-          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
-        {
-          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_cells"])
-        {
-          ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
+          [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                    at:&_rowAlignment];
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_columnSpacing];
+          ASSIGN(_columns, [coder decodeObject]);
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_rowSpacing];
+          ASSIGN(_rows, [coder decodeObject]);
+          [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                    at:&_xPlacement];
+          [coder decodeValueOfObjCType:@encode(NSUInteger)
+                                    at:&_yPlacement];
+          ASSIGN(_cells, [coder decodeObject]);
         }
     }
-  else
-    {
-      [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_rowAlignment];
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_columnSpacing];
-      ASSIGN(_columns, [coder decodeObject]);
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_rowSpacing];
-      ASSIGN(_rows, [coder decodeObject]);
-      [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_xPlacement];
-      [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_yPlacement];
-      ASSIGN(_cells, [coder decodeObject]);
-    }
+  
+  [self _refreshCells];
   
   return self;
 }
@@ -332,9 +382,16 @@
 
 @end
 
-
 /// Cell ///
 @implementation NSGridCell
+
++ (void) initialize
+{
+  if (self == [NSGridCell class])
+    {
+      [self setVersion: 1];
+    }
+}
 
 - (NSView *) contentView
 {
@@ -430,52 +487,55 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
-  
-  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-  if ([coder allowsKeyedCoding])
+  if (self != nil)
     {
-      if ([coder containsValueForKey: @"NSGrid_content"])
+      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      
+      if ([coder allowsKeyedCoding])
         {
-          [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
+          if ([coder containsValueForKey: @"NSGrid_content"])
+            {
+              [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
+              NSLog(@"contentView = %@", [self contentView]);
+            }
+          if ([coder containsValueForKey: @"NSGrid_mergeHead"])
+            {
+              _mergeHead = [coder decodeObjectForKey: @"NSGrid_mergeHead"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_owningRow"])
+            {
+              _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
+            }
+          if ([coder containsValueForKey: @"NSGrid_owningColumn"])
+            {
+              _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
+            }
+          if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+            {
+              _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+            }      
+          if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+            {
+              _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+            }  
+          if ([coder containsValueForKey: @"NSGrid_alignment"])
+            {
+              _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
+            }      
         }
-      if ([coder containsValueForKey: @"NSGrid_mergeHead"])
+      else
         {
-          _mergeHead = [coder decodeObjectForKey: @"NSGrid_mergeHead"];
+          [self setContentView: [coder decodeObject]];
+          ASSIGN(_mergeHead, [coder decodeObject]);
+          _owningRow = [coder decodeObject]; // weak
+          _owningColumn = [coder decodeObject]; // weak
+          [coder decodeValueOfObjCType:@encode(NSInteger)
+                                    at: &_xPlacement];
+          [coder decodeValueOfObjCType:@encode(NSInteger)
+                                    at: &_yPlacement];
+          [coder decodeValueOfObjCType:@encode(NSInteger)
+                                    at: &_rowAlignment];
         }
-      if ([coder containsValueForKey: @"NSGrid_owningRow"])
-        {
-          _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
-        }
-      if ([coder containsValueForKey: @"NSGrid_owningColumn"])
-        {
-          _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
-        }
-      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
-        {
-          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-        }      
-      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
-        {
-          _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
-        }      
-      if ([coder containsValueForKey: @"NSGrid_alignment"])
-        {
-          _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
-        }      
-    }
-  else
-    {
-      [self setContentView: [coder decodeObject]];
-      ASSIGN(_mergeHead, [coder decodeObject]);
-      _owningRow = [coder decodeObject]; // weak
-      _owningColumn = [coder decodeObject]; // weak
-      [coder decodeValueOfObjCType:@encode(NSInteger)
-                                at: &_xPlacement];
-      [coder decodeValueOfObjCType:@encode(NSInteger)
-                                at: &_yPlacement];
-      [coder decodeValueOfObjCType:@encode(NSInteger)
-                                at: &_rowAlignment];
     }
   return self;
 }
@@ -488,9 +548,16 @@
 
 @end
 
-
 /// Column ///
 @implementation NSGridColumn
+
++ (void) initialize
+{
+  if (self == [NSGridColumn class])
+    {
+      [self setVersion: 1];
+    }
+}
 
 - (NSGridView *) gridView
 {
@@ -587,65 +654,67 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
-  
-  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-  if ([coder allowsKeyedCoding])
+  if (self != nil)
     {
-      if ([coder containsValueForKey: @"NSGrid_hidden"])
+      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      
+      if ([coder allowsKeyedCoding])
         {
-          _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+          if ([coder containsValueForKey: @"NSGrid_hidden"])
+            {
+              _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_leadingPadding"])
+            {
+              _leadingPadding = [coder decodeFloatForKey: @"NSGrid_leadingPadding"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_owningGrid"])
+            {
+              _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"]; // weak
+            }
+          if ([coder containsValueForKey: @"NSGrid_trailingPadding"])
+            {
+              _trailingPadding = [coder decodeFloatForKey: @"NSGrid_trailingPadding"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_width"])
+            {
+              _width = [coder decodeFloatForKey: @"NSGrid_width"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+            {
+              _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+            }      
         }
-      if ([coder containsValueForKey: @"NSGrid_leadingPadding"])
+      else
         {
-          _leadingPadding = [coder decodeFloatForKey: @"NSGrid_leadingPadding"];
+          [coder decodeValueOfObjCType:@encode(BOOL)
+                                    at:&_isHidden];
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_leadingPadding];
+          _gridView = [coder decodeObject]; 
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_trailingPadding];
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_width];
+          [coder decodeValueOfObjCType:@encode(NSInteger)
+                                    at:&_xPlacement];
         }
-      if ([coder containsValueForKey: @"NSGrid_owningGrid"])
-        {
-          _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"]; // weak
-        }
-      if ([coder containsValueForKey: @"NSGrid_trailingPadding"])
-        {
-          _trailingPadding = [coder decodeFloatForKey: @"NSGrid_trailingPadding"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_width"])
-        {
-          _width = [coder decodeFloatForKey: @"NSGrid_width"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_xPlacement"])
-        {
-          _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-        }      
-    }
-  else
-    {
-      [coder decodeValueOfObjCType:@encode(BOOL)
-                                at:&_isHidden];
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_leadingPadding];
-      _gridView = [coder decodeObject]; 
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_trailingPadding];
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_width];
-      [coder decodeValueOfObjCType:@encode(NSInteger)
-                                at:&_xPlacement];
     }
   return self;
 }
 
 @end
 
-
 /// Row ///
 @implementation NSGridRow
 
-/*
-- (BOOL) isEqual: (NSGridRow *)r
++ (void) initialize
 {
-  return NO;
+  if (self == [NSGridRow class])
+    {
+      [self setVersion: 1];
+    }
 }
-*/
 
 - (void) setGridView: (NSGridView *)gridView
 {
@@ -752,47 +821,50 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super init];
-  NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-  if ([coder allowsKeyedCoding])
+  if (self != nil)
     {
-      if ([coder containsValueForKey: @"NSGrid_hidden"])
+      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      if ([coder allowsKeyedCoding])
         {
-          _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+          if ([coder containsValueForKey: @"NSGrid_hidden"])
+            {
+              _isHidden = [coder decodeBoolForKey: @"NSGrid_hidden"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_bottomPadding"])
+            {
+              _bottomPadding = [coder decodeFloatForKey: @"NSGrid_bottomPadding"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_owningGrid"])
+            {
+              _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_topPadding"])
+            {
+              _topPadding = [coder decodeFloatForKey: @"NSGrid_topPadding"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_height"])
+            {
+              _height = [coder decodeFloatForKey: @"NSGrid_height"];
+            }
+          if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+            {
+              _yPlacement = [coder decodeFloatForKey: @"NSGrid_yPlacement"];
+            }
         }
-      if ([coder containsValueForKey: @"NSGrid_bottomPadding"])
+      else
         {
-          _bottomPadding = [coder decodeFloatForKey: @"NSGrid_bottomPadding"];
+          [coder decodeValueOfObjCType:@encode(BOOL)
+                                    at:&_isHidden];
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_bottomPadding];
+          _gridView = [coder decodeObject]; 
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_topPadding];
+          [coder decodeValueOfObjCType:@encode(CGFloat)
+                                    at:&_height];
+          [coder decodeValueOfObjCType:@encode(NSInteger)
+                                    at:&_yPlacement];
         }
-      if ([coder containsValueForKey: @"NSGrid_owningGrid"])
-        {
-          _gridView = [coder decodeObjectForKey: @"NSGrid_owningGrid"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_topPadding"])
-        {
-          _topPadding = [coder decodeFloatForKey: @"NSGrid_topPadding"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_height"])
-        {
-          _height = [coder decodeFloatForKey: @"NSGrid_height"];
-        }
-      if ([coder containsValueForKey: @"NSGrid_yPlacement"])
-        {
-          _yPlacement = [coder decodeFloatForKey: @"NSGrid_yPlacement"];
-        }
-    }
-  else
-    {
-      [coder decodeValueOfObjCType:@encode(BOOL)
-                                at:&_isHidden];
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_bottomPadding];
-      _gridView = [coder decodeObject]; 
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_topPadding];
-      [coder decodeValueOfObjCType:@encode(CGFloat)
-                                at:&_height];
-      [coder decodeValueOfObjCType:@encode(NSInteger)
-                                at:&_yPlacement];
     }
   return self;
 }

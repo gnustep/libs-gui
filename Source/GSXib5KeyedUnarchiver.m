@@ -306,6 +306,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"rows", @"NSGrid_rows",
                                            @"columns", @"NSGrid_columns",
                                            @"gridCells", @"NSGrid_cells",
+                                           @"contentView", @"NSGrid_content",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
