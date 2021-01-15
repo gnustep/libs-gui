@@ -2524,7 +2524,7 @@ static NSColor *dtxtCol;
   else
     {
       BOOL flag;
-      unsigned int tmp_int;
+      NSUInteger tmp_uint;
 
       [aCoder encodeObject: _contents];
       [aCoder encodeObject: _cell_image];
@@ -2566,39 +2566,39 @@ static NSColor *dtxtCol;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = [self wraps];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      tmp_int = _cell.text_align;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.type;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.image_position;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.entry_type;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_uint = _cell.text_align;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.type;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.image_position;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.entry_type;
+      encode_NSUInteger(aCoder, &tmp_uint);
       // FIXME: State may be -1, why do we encode it as unsigned?
-      tmp_int = _cell.state;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.mnemonic_location;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_mouse_down_flags];
-      [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
+      tmp_uint = _cell.state;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.mnemonic_location;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      encode_NSUInteger(aCoder, &_mouse_down_flags);
+      encode_NSUInteger(aCoder, &_action_mask);
       [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
 
-      tmp_int = _cell.allows_undo;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.line_break_mode;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.control_tint;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.control_size;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.focus_ring_type;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.base_writing_direction;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      tmp_int = _cell.uses_single_line_mode;
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_uint = _cell.allows_undo;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.line_break_mode;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.control_tint;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.control_size;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.focus_ring_type;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.base_writing_direction;
+      encode_NSUInteger(aCoder, &tmp_uint);
+      tmp_uint = _cell.uses_single_line_mode;
+      encode_NSUInteger(aCoder, &tmp_uint);
     }
 }
 
@@ -2702,7 +2702,7 @@ static NSColor *dtxtCol;
   else
     {
       BOOL flag, wraps;
-      unsigned int tmp_int;
+      NSUInteger tmp_uint;
       id formatter, menu;
       int version = [aDecoder versionForClassName: @"NSCell"];
 
@@ -2745,21 +2745,20 @@ static NSColor *dtxtCol;
       /* The wraps attribute has been superseded by lineBreakMode. However,
 	 we may need it to set lineBreakMode when reading old archives. */
       wraps = flag;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.text_align = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.type = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.image_position = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.entry_type = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.state = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      _cell.mnemonic_location = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(NSUInteger)
-                                   at: &_mouse_down_flags];
-      [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &_action_mask];
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.text_align = tmp_uint;
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.type = tmp_uint;
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.image_position = tmp_uint;
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.entry_type = tmp_uint;
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.state = tmp_uint;
+      decode_NSUInteger(aDecoder, &tmp_uint);
+      _cell.mnemonic_location = tmp_uint;
+      decode_NSUInteger(aDecoder, &_mouse_down_flags);
+      decode_NSUInteger(aDecoder, &_action_mask);
       if (version < 3)
         {
           unsigned int mask = 0;
@@ -2873,18 +2872,18 @@ static NSColor *dtxtCol;
 
       if (version >= 2)
         {
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.allows_undo = tmp_int;
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.line_break_mode = tmp_int;
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.control_tint = tmp_int;
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.control_size = tmp_int;
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.focus_ring_type = tmp_int;
-          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-          _cell.base_writing_direction = tmp_int;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.allows_undo = tmp_uint;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.line_break_mode = tmp_uint;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.control_tint = tmp_uint;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.control_size = tmp_uint;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.focus_ring_type = tmp_uint;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+          _cell.base_writing_direction = tmp_uint;
         }
       else
 	{
@@ -2895,8 +2894,8 @@ static NSColor *dtxtCol;
 
       if (version >= 4)
 	{
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.uses_single_line_mode = tmp_int;
+          decode_NSUInteger(aDecoder, &tmp_uint);
+	  _cell.uses_single_line_mode = tmp_uint;
 	}
 
     }

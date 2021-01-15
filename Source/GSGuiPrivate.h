@@ -31,6 +31,7 @@
 #define _GNUstep_H_GSGuiPrivate
 
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSCoder.h>
 #include "GNUstepBase/GSConfig.h"
 #include <math.h>
 
@@ -102,6 +103,25 @@ static inline CGFloat GSRoundTowardsNegativeInfinity(CGFloat x)
 {
   return ceil(x - 0.5);
 }
+
+#if !defined(GS_DECODER)
+#define GS_DECODER(type) \
+static inline void decode_##type(NSCoder *coder, type *value) \
+{ \
+[coder decodeValueOfObjCType: @encode(type) at: value]; \
+}
+
+#define GS_ENCODER(type) \
+static inline void encode_##type(NSCoder *coder, type *value) \
+{ \
+[coder encodeValueOfObjCType: @encode(type) at: value]; \
+}
+#endif
+
+GS_ENCODER(NSUInteger)
+GS_DECODER(NSUInteger)
+GS_ENCODER(NSInteger)
+GS_DECODER(NSInteger)
 
 #endif /* _GNUstep_H_GSGuiPrivate */
 

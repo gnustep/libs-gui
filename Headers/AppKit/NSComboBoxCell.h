@@ -45,10 +45,10 @@
    BOOL			_usesDataSource;
    BOOL			_hasVerticalScroller;
    BOOL                 _completes;
-   int			_visibleItems;
+   NSInteger		_visibleItems;
    NSSize		_intercellSpacing;
    float		_itemHeight;
-   int                  _selectedItem;
+   NSInteger            _selectedItem;
    NSRect               _lastValidFrame;
    NSRange		_prevSelectedRange;
   

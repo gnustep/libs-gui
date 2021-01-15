@@ -26,6 +26,7 @@
 #import "AppKit/NSWorkspace.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSPathComponentCell.h"
+#import "GSGuiPrivate.h"
 
 static Class pathComponentCellClass;
 
@@ -250,8 +251,7 @@ static Class pathComponentCellClass;
     }
   else
     {
-      [coder decodeValueOfObjCType: @encode(NSUInteger)
-                                at: &_pathStyle];
+      decode_NSUInteger(coder, &_pathStyle);
       [self setPathComponentCells: [coder decodeObject]];
     }
 
@@ -270,8 +270,7 @@ static Class pathComponentCellClass;
     }
   else
     {
-      [coder encodeValueOfObjCType: @encode(NSUInteger)
-                                at: &_pathStyle];
+      encode_NSUInteger(coder, &_pathStyle);
       [coder encodeObject: [self pathComponentCells]];
     }
 }
