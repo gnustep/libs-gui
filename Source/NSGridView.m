@@ -49,11 +49,20 @@
   NSLog(@"Refresh cells in NSGridView");
   FOR_IN(NSMutableArray*, row, _rows)
     {
-      FOR_IN(NSMutableArray*, cell, row)
+      FOR_IN(NSGridCell*, cell, row)
         {
-          NSRect rect = [self _rectForCell: cell
-                                       row: r
-                                    column: c];
+          NSView *v = [cell contentView];
+          if (v != nil)
+            {
+              NSRect rect = [self _rectForCell: cell
+                                           row: r
+                                        column: c];
+              [v setFrame: rect];
+              if ([v superview] == nil)
+                {
+                  [self addSubview: v];
+                }
+            }
           c++;
         }
       END_FOR_IN(row);
