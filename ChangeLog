@@ -1,3 +1,8 @@
+2021-01-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m: Change encoding/decoding to protect
+	against differences in integer size.
+
 2021-01-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSComboBoxCell.h: Correct type of instance variables.
