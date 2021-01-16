@@ -231,7 +231,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
-                                            @"selectedItem", @"firstItem", @"secondItem", nil];
+                                            @"selectedItem", @"firstItem", @"secondItem",
+                                            @"row", @"column", nil];
           RETAIN(XmlReferenceAttributes);
 
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
@@ -307,6 +308,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"columns", @"NSGrid_columns",
                                            @"gridCells", @"NSGrid_cells",
                                            @"contentView", @"NSGrid_content",
+                                           @"row", @"NSGrid_owningRow",
+                                           @"column", @"NSGrid_owningColumn",
                                            nil];
           RETAIN(XmlKeyMapTable);
 

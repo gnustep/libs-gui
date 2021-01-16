@@ -26,6 +26,14 @@
 #import "AppKit/NSGridView.h"
 #import "GSFastEnumeration.h"
 
+@interface NSGridRow (Private)
+- (void) _addCell: (NSGridCell *)c;
+@end
+
+@interface NSGridColumn (Private)
+- (void) _addCell: (NSGridCell *)c;
+@end
+
 @implementation NSGridView
 
 + (void) initialize
@@ -36,39 +44,68 @@
     }
 }
 
-- (NSRect) _rectForCell: (NSGridCell *)cell
+- (NSSize) _sizeForCell: (NSGridCell *)cell
                     row: (NSUInteger)row
                  column: (NSUInteger)column
 {
-  return NSZeroRect;
+  NSGridRow *r = [self rowAtIndex: row];
+  NSGridColumn *c = [self columnAtIndex: column];
+  NSSize f = NSMakeSize([c width], [r height]);
+  return f;
 }
 
 - (void) _refreshCells
 {
   NSUInteger r = 0, c = 0;
-  NSLog(@"Refresh cells in NSGridView");
-  FOR_IN(NSMutableArray*, row, _rows)
+  CGFloat x = 0.0, y = 0.0;
+  
+  // NSDebugLog(@"Refresh cells in NSGridView");
+  for (r = 0; r < [self numberOfRows]; r++)
     {
-      FOR_IN(NSGridCell*, cell, row)
+      CGFloat h = 0.0;
+      for (c = 0; c < [self numberOfColumns]; c++)
         {
-          NSView *v = [cell contentView];
-          if (v != nil)
+          NSGridCell *cell = [self cellAtColumnIndex: c
+                                            rowIndex: r];
+          if (cell != nil)
             {
-              NSRect rect = [self _rectForCell: cell
-                                           row: r
-                                        column: c];
-              [v setFrame: rect];
-              if ([v superview] == nil)
+              NSView *v = [cell contentView];
+              if (v != nil)
                 {
-                  [self addSubview: v];
+                  NSSize s = [self _sizeForCell: cell
+                                            row: r
+                                         column: c];
+                  NSPoint o;
+                  NSRect rect;
+
+                  h = s.height;
+                  o.x = x;
+                  o.y = y;                  
+                  rect.origin = o;
+                  rect.size = s;
+                  NSLog(@"rect = %@",NSStringFromRect(rect));
+                  
+                  // [v setFrame: rect];
+                  NSLog(@"v = %@", v);
+                  if ([v superview] == nil)
+                    {
+                      NSDebugLog(@"Add to view");
+                      [self addSubview: v];
+                    }
+                  x += [[cell column] width];
+                }
+              else
+                {
+                  NSLog(@"No view");
                 }
             }
-          c++;
+          else
+            {
+              NSLog(@"No cell");
+            }
         }
-      END_FOR_IN(row);
-      r++;
+      y += h;
     }
-  END_FOR_IN(_rows);
 }
 
 - (instancetype) initWithFrame: (NSRect)frameRect
@@ -505,7 +542,7 @@
           if ([coder containsValueForKey: @"NSGrid_content"])
             {
               [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
-              NSLog(@"contentView = %@", [self contentView]);
+              // NSLog(@"contentView = %@", [self contentView]);
             }
           if ([coder containsValueForKey: @"NSGrid_mergeHead"])
             {
@@ -514,10 +551,14 @@
           if ([coder containsValueForKey: @"NSGrid_owningRow"])
             {
               _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
+              NSDebugLog(@"_owningRow = %@", _owningRow);
+              [_owningRow _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_owningColumn"])
             {
               _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
+              NSDebugLog(@"_owningColumn = %@", _owningColumn);
+              [_owningColumn _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -537,8 +578,10 @@
           [self setContentView: [coder decodeObject]];
           ASSIGN(_mergeHead, [coder decodeObject]);
           _owningRow = [coder decodeObject]; // weak
+          [_owningRow _addCell: self];
           _owningColumn = [coder decodeObject]; // weak
-          [coder decodeValueOfObjCType:@encode(NSInteger)
+          [_owningRow _addCell: self];
+          [coder decodeValueOfObjCType: @encode(NSInteger)
                                     at: &_xPlacement];
           [coder decodeValueOfObjCType:@encode(NSInteger)
                                     at: &_yPlacement];
@@ -568,6 +611,11 @@
     }
 }
 
+- (void) _addCell: (NSGridCell *)c
+{
+  [_cells addObject: c];
+}
+
 - (NSGridView *) gridView
 {
   return _gridView;
@@ -575,12 +623,12 @@
 
 - (NSInteger) numberOfCells
 {
-  return 0;
+  return [_cells count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return nil;
+  return [_cells objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -666,7 +714,7 @@
   if (self != nil)
     {
       NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      
+      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -688,6 +736,7 @@
           if ([coder containsValueForKey: @"NSGrid_width"])
             {
               _width = [coder decodeFloatForKey: @"NSGrid_width"];
+              NSLog(@"_width = %f", _width);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -712,6 +761,22 @@
   return self;
 }
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_cells);
+  [super dealloc];
+}
+
 @end
 
 /// Row ///
@@ -723,6 +788,11 @@
     {
       [self setVersion: 1];
     }
+}
+
+- (void) _addCell: (NSGridCell *)c
+{
+  [_cells addObject: c];
 }
 
 - (void) setGridView: (NSGridView *)gridView
@@ -737,12 +807,12 @@
 
 - (NSInteger) numberOfCells
 {
-  return 0; // [_row count];
+  return [_cells count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return nil; // [_row objectAtIndex: index];
+  return [_cells objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) yPlacement
@@ -833,6 +903,7 @@
   if (self != nil)
     {
       NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -854,6 +925,7 @@
           if ([coder containsValueForKey: @"NSGrid_height"])
             {
               _height = [coder decodeFloatForKey: @"NSGrid_height"];
+              NSLog(@"_height = %f", _height);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
@@ -876,6 +948,22 @@
         }
     }
   return self;
+}
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_cells);
+  [super dealloc];
 }
 
 @end
