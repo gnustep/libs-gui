@@ -9,6 +9,40 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.29.0}
+
+This version adds support for storyboard files and many new
+classes. Plus the usual bunch of bug fixes.
+
+@itemize @bullet
+@item Support loading of storyboard files.
+@item Add classes NSSwitch, NSFontAssetRequest,
+NSMediaLibraryBrowserController, NSScrubberItemView, NSScrubberLayout,
+NSScrubber, NSSharingServicePickerToolbarItem, NSPathCell,
+NSPathComponentCell, NSPathControl, NSPathControlItem,
+NSPersistentDocument, NSAccessibilityCustomAction,
+NSAccessibilityCustomRotor, NSAccessibilityElement, NSStoryboard,
+NSStoryboardSegue, NSPageController, NSSplitViewController,
+NSSplitViewItem, NSTabViewController, NSLayoutAnchor,
+NSLayoutConstraint, NSLayoutGuide, NSStatusBarButton,
+NSTextCheckingController, NSTextFinder, NSTextInputContext.
+Some of these classes are still skeletons.
+@item Fix extraline fragment in text layout.
+@item Better encoding handling in RTF files.
+@item Add more italian translations.
+@item Add MacOSX methods to NSNib, NSMenu and NSWindow.
+@item Focus handling fixes for WindowMaker.
+@item Fix missing colours when loading old colour lists.
+@item Support JPEG export as greyscale image.
+@item Fix memory leak in NSPopupButtonCell.
+@item Fix toolbar flickering.
+@item NSSearchFieldCell use code from GSTheme to disolay popup.
+@item Fix int decoding to get it working on 64 bit big endian machines.
+@item Add tab stops after last defined at default intervals.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.28.0}
 
 This version adds support for modern XIB files and many new
@@ -47,7 +81,6 @@ support).
 menus.
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 @section Noteworthy changes in version @samp{0.27.0}
 
 This version includes numerous bugfixes, compatibility

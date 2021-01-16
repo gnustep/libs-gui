@@ -870,10 +870,10 @@ restart: ;
 		*/
 		NSArray *tabs = [curParagraphStyle tabStops];
 		NSTextTab *tab = nil;
-		float defaultInterval = [curParagraphStyle defaultTabInterval];
+		CGFloat defaultInterval = [curParagraphStyle defaultTabInterval];
 		/* Set it to something reasonable if unset */
 		if (defaultInterval == 0.0) {
-			defaultInterval = 100.0;
+                  defaultInterval = 100.0;
 		}
 		int i, c = [tabs count];
 		/* Find first tab beyond our current position. */
@@ -889,7 +889,9 @@ restart: ;
 		    tab, thus having no effect.
 		    */
 		    if ([tab location] > p.x + lf->rect.origin.x)
-		      break;
+                      {
+                        break;
+                      }
 		  }
 		if (i == c)
 		  {
