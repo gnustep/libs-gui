@@ -44,25 +44,13 @@
     }
 }
 
-- (NSSize) _sizeForCell: (NSGridCell *)cell
-                    row: (NSUInteger)row
-                 column: (NSUInteger)column
-{
-  NSGridRow *r = [self rowAtIndex: row];
-  NSGridColumn *c = [self columnAtIndex: column];
-  NSSize f = NSMakeSize([c width], [r height]);
-  return f;
-}
-
 - (void) _refreshCells
 {
   NSUInteger r = 0, c = 0;
-  CGFloat x = 0.0, y = 0.0;
   
-  // NSDebugLog(@"Refresh cells in NSGridView");
+  NSDebugLog(@"Refresh cells in NSGridView");
   for (r = 0; r < [self numberOfRows]; r++)
     {
-      CGFloat h = 0.0;
       for (c = 0; c < [self numberOfColumns]; c++)
         {
           NSGridCell *cell = [self cellAtColumnIndex: c
@@ -72,39 +60,23 @@
               NSView *v = [cell contentView];
               if (v != nil)
                 {
-                  NSSize s = [self _sizeForCell: cell
-                                            row: r
-                                         column: c];
-                  NSPoint o;
-                  NSRect rect;
-
-                  h = s.height;
-                  o.x = x;
-                  o.y = y;                  
-                  rect.origin = o;
-                  rect.size = s;
-                  NSLog(@"rect = %@",NSStringFromRect(rect));
-                  
-                  // [v setFrame: rect];
-                  NSLog(@"v = %@", v);
+                  NSDebugLog(@"v = %@", v);
                   if ([v superview] == nil)
                     {
                       NSDebugLog(@"Add to view");
                       [self addSubview: v];
                     }
-                  x += [[cell column] width];
                 }
               else
                 {
-                  NSLog(@"No view");
+                  NSDebugLog(@"No view");
                 }
             }
           else
             {
-              NSLog(@"No cell");
+              NSDebugLog(@"No cell");
             }
         }
-      y += h;
     }
 }
 
@@ -542,7 +514,7 @@
           if ([coder containsValueForKey: @"NSGrid_content"])
             {
               [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
-              // NSLog(@"contentView = %@", [self contentView]);
+              // NSDebugLog(@"contentView = %@", [self contentView]);
             }
           if ([coder containsValueForKey: @"NSGrid_mergeHead"])
             {
@@ -736,7 +708,7 @@
           if ([coder containsValueForKey: @"NSGrid_width"])
             {
               _width = [coder decodeFloatForKey: @"NSGrid_width"];
-              NSLog(@"_width = %f", _width);
+              NSDebugLog(@"_width = %f", _width);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -925,7 +897,7 @@
           if ([coder containsValueForKey: @"NSGrid_height"])
             {
               _height = [coder decodeFloatForKey: @"NSGrid_height"];
-              NSLog(@"_height = %f", _height);
+              NSDebugLog(@"_height = %f", _height);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
