@@ -33,6 +33,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSLevelIndicatorCell.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSLevelIndicatorCell
 
@@ -501,14 +502,18 @@
     }
   else
     {
+      NSInteger tmp;
+
       [aCoder encodeValueOfObjCType: @encode(double) at: &_minValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aCoder encodeValueOfObjCType: @encode(double) at: &_criticalValue];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_style];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfMajorTickMarks];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      tmp = _style;
+      encode_NSInteger(aCoder, &tmp);
+      encode_NSInteger(aCoder, &_numberOfMajorTickMarks);
+      encode_NSInteger(aCoder, &_numberOfTickMarks);
+      tmp = _tickMarkPosition;
+      encode_NSInteger(aCoder, &tmp);
     }
 }
 
@@ -556,15 +561,19 @@
         }
     }
   else
-    { 
+    {
+      NSInteger tmp;
+
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_maxValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_warningValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at: &_criticalValue];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_style];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfMajorTickMarks];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      decode_NSInteger(aDecoder, &tmp);
+      _style = tmp;
+      decode_NSInteger(aDecoder, &_numberOfMajorTickMarks);
+      decode_NSInteger(aDecoder, &_numberOfTickMarks);
+      decode_NSInteger(aDecoder, &tmp);
+      _tickMarkPosition = tmp;
     }
   
   return self;

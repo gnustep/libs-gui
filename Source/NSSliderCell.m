@@ -1069,24 +1069,26 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
     }
   else
     {
-      float minValue, maxValue;
-      float altIncrementValue;
-      int isVertical;
+      float tmp_float;
+      NSInteger tmp_int;
 
-      [decoder decodeValuesOfObjCTypes: "fffi",
-	       &minValue, &maxValue, &altIncrementValue, &isVertical];
       [self setDoubleValue: 0];
-      [self setMinValue: minValue];
-      [self setMaxValue: maxValue];
-      [self setAltIncrementValue: altIncrementValue];
-      _isVertical = isVertical;
+      [decoder decodeValueOfObjCType: @encode(float) at: &tmp_float];
+      [self setMinValue: tmp_float];
+      [decoder decodeValueOfObjCType: @encode(float) at: &tmp_float];
+      [self setMaxValue: tmp_float];
+      [decoder decodeValueOfObjCType: @encode(float) at: &tmp_float];
+      [self setAltIncrementValue: tmp_float];
+      decode_NSInteger(decoder, &tmp_int);
+      _isVertical = tmp_int;
       [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
       [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
       if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
 	{
 	  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-	  [decoder decodeValueOfObjCType: @encode(NSInteger) at: &_numberOfTickMarks];
-	  [decoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+          decode_NSInteger(decoder, &_numberOfTickMarks);
+          decode_NSInteger(decoder, &tmp_int);
+          _tickMarkPosition = tmp_int;
 	}
     }
   return self;
@@ -1108,19 +1110,24 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
     }
   else
     {
-      float minValue = _minValue;
-      float maxValue = _maxValue;
-      float altIncrementValue = _altIncrementValue;
-      int isVertical = _isVertical;
+      float tmp_float;
+      NSInteger tmp_int;
 
-      [coder encodeValuesOfObjCTypes: "fffi",
-	     &minValue, &maxValue, &altIncrementValue, &isVertical];
+      tmp_float = _minValue;
+      [coder encodeValueOfObjCType: @encode(float) at: &tmp_float];
+      tmp_float = _maxValue;
+      [coder encodeValueOfObjCType: @encode(float) at: &tmp_float];
+      tmp_float = _altIncrementValue;
+      [coder encodeValueOfObjCType: @encode(float) at: &tmp_float];
+      tmp_int = _isVertical;
+      encode_NSInteger(coder, &tmp_int);
       [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
       [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
       // New for version 2
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-      [coder encodeValueOfObjCType: @encode(NSInteger) at: &_numberOfTickMarks];
-      [coder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      encode_NSInteger(coder, &_numberOfTickMarks);
+      tmp_int = _tickMarkPosition;
+      encode_NSInteger(coder, &tmp_int);
     }
 }
   

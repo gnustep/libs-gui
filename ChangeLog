@@ -1,3 +1,25 @@
+2021-01-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m: Change encoding/decoding to protect
+	against differences in integer size.
+
+2021-01-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSComboBoxCell.h: Correct type of instance variables.
+	* Source/GSGuiPrivate.h: Add macros for encoding/decoding.
+	* Source/NSActionCell.m,
+	* Source/NSButtonCell.m,
+	* Source/NSCell.m,
+	* Source/NSComboBoxCell.m,
+	* Source/NSImageCell.m,
+	* Source/NSLevelIndicatorCell.m,
+	* Source/NSPathCell.m,
+	* Source/NSPopUpButtonCell.m,
+	* Source/NSSearchFieldCell.m,
+	* Source/NSSliderCell.m,
+	* Source/NSStepperCell.m: Change encoding/decoding to protect
+	against differences in integer size.
+
 2020-12-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSearchFieldCell.m: Use GSTheme to display the popup.
