@@ -67,7 +67,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 @interface NSStackView : NSView
 {
   id<NSStackViewDelegate> _delegate;
-  NSUserInterfaceLayoutOrientation orientation;
+  NSUserInterfaceLayoutOrientation _orientation;
   NSLayoutAttribute _alignment;
   NSEdgeInsets _edgeInsets;
   NSStackViewDistribution _distribution;
@@ -103,8 +103,8 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (void) setArrangedSubviews: (NSArray *)arrangedSubviews;
 - (NSArray *) arrangedSubviews;
 
-- (void) setDetachedSubviews: (NSArray *)detachedSubviews;
-- (NSArray *) detachedSubviews;
+- (void) setDetachedSubviews: (NSArray *)detachedViews;
+- (NSArray *) detachedViews;
 
 // Instance methods
 // Manage views...
