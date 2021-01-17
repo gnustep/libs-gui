@@ -191,9 +191,11 @@
 {
   NSGridRow *gr = [[NSGridRow alloc] init];
 
+  // Insert the row and release...
   [_rows insertObject: gr atIndex: index];
   RELEASE(gr);
-  
+
+  // Insert views...
   FOR_IN(NSView*, v, views)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
@@ -203,7 +205,7 @@
     }
   END_FOR_IN(views);
 
-  
+  // Refresh...
   [self _refreshCells];
   return gr;
 }
