@@ -33,6 +33,34 @@
 extern "C" {
 #endif
 
+// Gravity
+enum {
+    NSStackViewGravityTop = 1,
+    NSStackViewGravityLeading = 1,
+    NSStackViewGravityCenter = 2,
+    NSStackViewGravityBottom = 3,
+    NSStackViewGravityTrailing = 3
+};
+typedef NSInteger NSStackViewGravity;
+
+// Distribution
+enum {
+    NSStackViewDistributionGravityAreas = -1,
+    NSStackViewDistributionFill = 0,
+    NSStackViewDistributionFillEqually,
+    NSStackViewDistributionFillProportionally,
+    NSStackViewDistributionEqualSpacing,
+    NSStackViewDistributionEqualCentering
+};
+typedef NSInteger NSStackViewDistribution;
+
+typedef float NSStackViewVisibilityPriority;
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityMustHold = 1000; 
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityDetachOnlyIfNecessary = 900;
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityNotVisible = 0;
+
+static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
+  
 @interface NSStackView : NSView
 
 @end
