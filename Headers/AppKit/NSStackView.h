@@ -62,6 +62,54 @@ static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityNotVisib
 static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   
 @interface NSStackView : NSView
+{
+  id<NSStackViewDelegate> _delegate;
+  NSUserInterfaceLayoutOrientation _orientation;
+  NSLayoutAttribute _alignment;
+  NSEdgeInsets _edgeInsets;
+  NSStackViewDistribution _distribution;
+  CGFloat _spacing;
+  BOOL _detachesHiddenViews;
+  NSArray *_arrangedSubviews;
+  NSArray *_detachedViews;
+  NSArray *_views;
+}
+
+// Properties
+- (void) setDelegate: (id<NSStackViewDelegate>)delegate;
+- (id<NSStackViewDelegate>) delegate;
+
+- (void) setOrientation: (NSUserInterfaceLayoutOrientation)o;
+- (NSUserInterfaceLayoutOrientation) orientation;
+
+- (void) setAlignment: (NSLayoutAttribute)alignment;
+- (NSLayoutAttribute) alignment;
+
+- (void) setEdgeInsets: (NSEdgeInsets)insets;
+- (NSEdgeInsets) edgeInsets;
+
+- (void) setDistribution: (NSStackViewDistribution)d;
+- (NSStackViewDistribution) distribution;
+
+- (void) setSpacing: (CGFloat)f;
+- (CGFloat) spacing;
+
+- (void) setDetachesHiddenViews: (BOOL)f;
+- (BOOL) detachesHiddenViews;
+
+- (void) setArrangedSubviews: (NSArray *)arrangedSubviews;
+- (NSArray *) arrangedSubviews;
+
+- (void) setDetachedSubviews: (NSArray *)detachedViews;
+- (NSArray *) detachedViews;
+
+// Instance methods
+// Manage views...
++ (instancetype) stackViewWithViews: (NSArray *)views;
+
+- (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v;
+- (CGFloat) customSpacingAfterView: (NSView *)v;
+>>>>>>> 6ee374079... implement properties
 
 @end
 

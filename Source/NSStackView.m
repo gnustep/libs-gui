@@ -23,8 +23,188 @@
 */
 
 #import "AppKit/NSStackView.h"
-
+  
 @implementation NSStackView
 
+// Properties
+- (void) setDelegate: (id<NSStackViewDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
+- (id<NSStackViewDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setOrientation: (NSUserInterfaceLayoutOrientation)o
+{
+  _orientation = o;
+}
+
+- (NSUserInterfaceLayoutOrientation) orientation
+{
+  return _orientation;
+}
+
+- (void) setAlignment: (NSLayoutAttribute)alignment
+{
+  _alignment = alignment;
+}
+
+- (NSLayoutAttribute) alignment
+{
+  return _alignment;
+}
+
+- (void) setEdgeInsets: (NSEdgeInsets)insets
+{
+  _edgeInsets = insets;
+}
+
+- (NSEdgeInsets) edgeInsets
+{
+  return _edgeInsets;
+}
+
+- (void) setDistribution: (NSStackViewDistribution)d
+{
+  _distribution = d;
+}
+
+- (NSStackViewDistribution) distribution
+{
+  return _distribution;
+}
+
+- (void) setSpacing: (CGFloat)f
+{
+  _spacing = f;
+}
+
+- (CGFloat) spacing
+{
+  return _spacing;
+}
+
+- (void) setDetachesHiddenViews: (BOOL)f
+{
+  _detachesHiddenViews = f;
+}
+
+- (BOOL) detachesHiddenViews
+{
+  return _detachesHiddenViews;
+}
+
+- (void) setArrangedSubviews: (NSArray *)arrangedSubviews
+{
+  ASSIGN(_arrangedSubviews, arrangedSubviews);
+}
+
+- (NSArray *) arrangedSubviews
+{
+  return _arrangedSubviews;
+}
+
+- (void) setDetachedViews: (NSArray *)detachedViews
+{
+  ASSIGN(_detachedViews, detachedViews);
+}
+
+- (NSArray *) detachedViews
+{
+  return _detachedViews;
+}
+
+// Instance methods
+// Manage views...
++ (instancetype) stackViewWithViews: (NSArray *)views
+{
+}
+
+- (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v
+{
+}
+
+- (CGFloat) customSpacingAfterView: (NSView *)v
+{
+}
+
+- (void) addArrangedSubview: (NSView *)v
+{
+}
+
+- (void) insertArrangedSubview: (NSView *)v
+{
+}
+
+- (void) removeArrangedSubview: (NSView *)v
+{
+}
+
+// Custom priorities
+- (void)setVisibilityPriority: (NSStackViewVisibilityPriority)priority
+                      forView: (NSView *)v
+{
+}
+
+- (NSStackViewVisibilityPriority) visibilityPriorityForView: (NSView *)v
+{
+}
+ 
+- (NSLayoutPriority)clippingResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation
+{
+}
+
+- (void) setClippingResistancePriority: (NSLayoutPriority)clippingResistancePriority
+                        forOrientation: (NSLayoutConstraintOrientation)orientation
+{
+}
+
+- (NSLayoutPriority) huggingPriorityForOrientation: (NSLayoutConstraintOrientation)o
+{
+}
+
+- (void) setHuggingPriority: (NSLayoutPriority)huggingPriority
+             forOrientation: (NSLayoutConstraintOrientation)o
+{
+}
+
+- (void) setHasEqualSpacing: (BOOL)f
+{
+  // deprecated
+}
+
+- (BOOL) hasEqualSpacing
+{
+  // deprecated
+}
+
 @end
+
+@implementation NSStackView (NSStackViewGravityAreas)
+
+- (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity
+{
+}
+
+- (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity
+{
+}
+
+- (void)removeView: (NSView *)view
+{
+}
+
+- (NSArray *) viewsInGravity: (NSStackViewGravity)gravity
+{
+}
+
+- (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity
+{
+}
+  
+@end
+
 
