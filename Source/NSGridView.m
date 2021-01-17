@@ -190,6 +190,20 @@
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
   NSGridRow *gr = [[NSGridRow alloc] init];
+
+  [_rows insertObject: gr atIndex: index];
+  RELEASE(gr);
+  
+  FOR_IN(NSView*, v, views)
+    {
+      NSGridCell *c = [[NSGridCell alloc] init];
+      [c setContentView: v];
+      RELEASE(v);
+      [gr _addCell: c];
+    }
+  END_FOR_IN(views);
+
+  
   [self _refreshCells];
   return gr;
 }
