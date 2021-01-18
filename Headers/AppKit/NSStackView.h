@@ -73,9 +73,9 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSStackViewDistribution _distribution;
   CGFloat _spacing;
   BOOL _detachesHiddenViews;
-  NSArray *_arrangedSubviews;
-  NSArray *_detachedViews;
-  NSArray *_views;
+  NSMutableArray *_arrangedSubviews;
+  NSMutableArray *_detachedViews;
+  NSMutableArray *_views;
 }
 
 // Properties
@@ -103,7 +103,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (void) setArrangedSubviews: (NSArray *)arrangedSubviews;
 - (NSArray *) arrangedSubviews;
 
-- (void) setDetachedSubviews: (NSArray *)detachedViews;
+- (void) setDetachedViews: (NSArray *)detachedViews;
 - (NSArray *) detachedViews;
 
 // Instance methods
@@ -133,6 +133,12 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (void) setHasEqualSpacing: (BOOL)f; // deprecated
 - (BOOL) hasEqualSpacing; // deprecated
 
+- (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity;
+- (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity;
+- (void)removeView: (NSView *)view;
+- (NSArray *) viewsInGravity: (NSStackViewGravity)gravity;
+- (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity;
+
 @end
 
 // Protocol
@@ -141,16 +147,6 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (void) stackView: (NSStackView *)stackView willDetachViews: (NSArray *)views;
 - (void) stackView: (NSStackView *)stackView didReattachViews: (NSArray *)views;
 
-@end
-
-@interface NSStackView (NSStackViewGravityAreas)
-
-- (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity;
-- (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity;
-- (void)removeView: (NSView *)view;
-- (NSArray *) viewsInGravity: (NSStackViewGravity)gravity;
-- (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity;
-  
 @end
 
 #if	defined(__cplusplus)

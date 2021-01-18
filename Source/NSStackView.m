@@ -23,7 +23,8 @@
 */
 
 #import "AppKit/NSStackView.h"
-  
+#import "GSFastEnumeration.h"
+
 @implementation NSStackView
 
 // Properties
@@ -119,8 +120,27 @@
 
 // Instance methods
 // Manage views...
+- (instancetype) initWithViews: (NSArray *)views
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _arrangedSubviews = [[NSArray alloc] initWithArray: views];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_arrangedSubviews);
+  RELEASE(_detachedViews);
+  _delegate = nil;
+  [super dealloc];
+}
+
 + (instancetype) stackViewWithViews: (NSArray *)views
 {
+  return [[self alloc] initWithViews: views];
 }
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v
@@ -135,7 +155,7 @@
 {
 }
 
-- (void) insertArrangedSubview: (NSView *)v
+- (void) insertArrangedSubview: (NSView *)v atIndex: (NSInteger)idx
 {
 }
 
@@ -181,10 +201,6 @@
   // deprecated
 }
 
-@end
-
-@implementation NSStackView (NSStackViewGravityAreas)
-
 - (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity
 {
 }
@@ -203,6 +219,29 @@
 
 - (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity
 {
+}
+
+- (void) setViews: (NSArray *)views
+{
+}
+
+- (NSArray *) views
+{
+}
+
+// Encoding...
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [super encodeWithCoder: coder];
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self != nil)
+    {
+    }
+  return self;
 }
   
 @end

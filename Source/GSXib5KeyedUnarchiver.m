@@ -2945,40 +2945,40 @@ didStartElement: (NSString*)elementName
 
 - (id) _decodePlacementForObject: (id)obj
 {
-  NSNumber *num = [NSNumber numberWithInteger: 0];
+  NSGridRowAlignment alignment = NSGridCellPlacementNone;
   if ([obj isEqualToString: @"inherited"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementInherited];
+      alignment = NSGridCellPlacementInherited;
     }
   else if ([obj isEqualToString: @"leading"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementLeading];
+      alignment = NSGridCellPlacementLeading;
     }
   else if ([obj isEqualToString: @"top"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementTop];
+      alignment = NSGridCellPlacementTop;
     }
   else if ([obj isEqualToString: @"trailing"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementTrailing];
+      alignment = NSGridCellPlacementTrailing;
     }
   else if ([obj isEqualToString: @"bottom"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementBottom];
+      alignment = NSGridCellPlacementBottom;
     }
   else if ([obj isEqualToString: @"center"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementCenter];
+      alignment = NSGridCellPlacementCenter;
     }
   else if ([obj isEqualToString: @"fill"])
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementFill];
+      alignment = NSGridCellPlacementFill;
     }  
   else // if not specified then assume none...
     {
-      num = [NSNumber numberWithInteger: NSGridCellPlacementNone];
+      alignment = NSGridCellPlacementNone;
     }
-  return num;
+  return [NSNumber numberWithInteger: alignment];
 }
 
 - (id) decodeXPlacementForElement: (GSXibElement *)element
@@ -2996,24 +2996,24 @@ didStartElement: (NSString*)elementName
 - (id) decodeRowAlignmentForElement: (GSXibElement *)element
 {
   id obj = [element attributeForKey: @"rowAlignment"];
-  NSNumber *num = [NSNumber numberWithInteger: 0];
+  NSGridRowAlignment alignment = NSGridRowAlignmentNone;
   if ([obj isEqualToString: @"inherited"])
     {
-      num = [NSNumber numberWithInteger: NSGridRowAlignmentInherited];
+      alignment = NSGridRowAlignmentInherited;
     }
   else if ([obj isEqualToString: @"firstBaseline"])
     {
-      num = [NSNumber numberWithInteger: NSGridRowAlignmentFirstBaseline];
+      alignment = NSGridRowAlignmentFirstBaseline;
     }
   else if ([obj isEqualToString: @"lastBaseline"])
     {
-      num = [NSNumber numberWithInteger: NSGridRowAlignmentLastBaseline];
+      alignment = NSGridRowAlignmentLastBaseline;
     }
   else
     {
-      num = [NSNumber numberWithInteger: NSGridRowAlignmentNone];
+      alignment = NSGridRowAlignmentNone;
     }
-  return num;
+  return [NSNumber numberWithInteger: alignment];
 }
 
 - (id) objectForXib: (GSXibElement*)element
