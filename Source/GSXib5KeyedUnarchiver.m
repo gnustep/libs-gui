@@ -2917,6 +2917,82 @@ didStartElement: (NSString*)elementName
   return num;  
 }
 
+<<<<<<< HEAD
+=======
+- (id) _decodePlacementForObject: (id)obj
+{
+  NSGridRowAlignment alignment = NSGridCellPlacementNone;
+  if ([obj isEqualToString: @"inherited"])
+    {
+      alignment = NSGridCellPlacementInherited;
+    }
+  else if ([obj isEqualToString: @"leading"])
+    {
+      alignment = NSGridCellPlacementLeading;
+    }
+  else if ([obj isEqualToString: @"top"])
+    {
+      alignment = NSGridCellPlacementTop;
+    }
+  else if ([obj isEqualToString: @"trailing"])
+    {
+      alignment = NSGridCellPlacementTrailing;
+    }
+  else if ([obj isEqualToString: @"bottom"])
+    {
+      alignment = NSGridCellPlacementBottom;
+    }
+  else if ([obj isEqualToString: @"center"])
+    {
+      alignment = NSGridCellPlacementCenter;
+    }
+  else if ([obj isEqualToString: @"fill"])
+    {
+      alignment = NSGridCellPlacementFill;
+    }  
+  else // if not specified then assume none...
+    {
+      alignment = NSGridCellPlacementNone;
+    }
+  return [NSNumber numberWithInteger: alignment];
+}
+
+- (id) decodeXPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"xPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeYPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"yPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeRowAlignmentForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"rowAlignment"];
+  NSGridRowAlignment alignment = NSGridRowAlignmentNone;
+  if ([obj isEqualToString: @"inherited"])
+    {
+      alignment = NSGridRowAlignmentInherited;
+    }
+  else if ([obj isEqualToString: @"firstBaseline"])
+    {
+      alignment = NSGridRowAlignmentFirstBaseline;
+    }
+  else if ([obj isEqualToString: @"lastBaseline"])
+    {
+      alignment = NSGridRowAlignmentLastBaseline;
+    }
+  else
+    {
+      alignment = NSGridRowAlignmentNone;
+    }
+  return [NSNumber numberWithInteger: alignment];
+}
+
+>>>>>>> ba9dfadbf... Fix decoding in Xib unarchiver.  Other changes
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];

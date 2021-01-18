@@ -70,9 +70,9 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSStackViewDistribution _distribution;
   CGFloat _spacing;
   BOOL _detachesHiddenViews;
-  NSArray *_arrangedSubviews;
-  NSArray *_detachedViews;
-  NSArray *_views;
+  NSMutableArray *_arrangedSubviews;
+  NSMutableArray *_detachedViews;
+  NSMutableArray *_views;
 }
 
 // Properties
@@ -100,7 +100,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (void) setArrangedSubviews: (NSArray *)arrangedSubviews;
 - (NSArray *) arrangedSubviews;
 
-- (void) setDetachedSubviews: (NSArray *)detachedViews;
+- (void) setDetachedViews: (NSArray *)detachedViews;
 - (NSArray *) detachedViews;
 
 // Instance methods
@@ -109,6 +109,40 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v;
 - (CGFloat) customSpacingAfterView: (NSView *)v;
+
+- (void) addArrangedSubview: (NSView *)v;
+- (void) insertArrangedSubview: (NSView *)v;
+- (void) removeArrangedSubview: (NSView *)v;
+
+// Custom priorities
+- (void)setVisibilityPriority: (NSStackViewVisibilityPriority)priority
+                      forView: (NSView *)v;
+- (NSStackViewVisibilityPriority) visibilityPriorityForView: (NSView *)v;
+ 
+- (NSLayoutPriority)clippingResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation;
+- (void) setClippingResistancePriority: (NSLayoutPriority)clippingResistancePriority
+                        forOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (NSLayoutPriority) huggingPriorityForOrientation: (NSLayoutConstraintOrientation)o;
+- (void) setHuggingPriority: (NSLayoutPriority)huggingPriority
+             forOrientation: (NSLayoutConstraintOrientation)o;
+
+- (void) setHasEqualSpacing: (BOOL)f; // deprecated
+- (BOOL) hasEqualSpacing; // deprecated
+
+- (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity;
+- (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity;
+- (void)removeView: (NSView *)view;
+- (NSArray *) viewsInGravity: (NSStackViewGravity)gravity;
+- (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity;
+
+@end
+
+// Protocol
+@protocol NSStackViewDelegate <NSObject>
+
+- (void) stackView: (NSStackView *)stackView willDetachViews: (NSArray *)views;
+- (void) stackView: (NSStackView *)stackView didReattachViews: (NSArray *)views;
 
 @end
 
