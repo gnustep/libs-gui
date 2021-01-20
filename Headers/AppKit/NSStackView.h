@@ -55,9 +55,9 @@ enum {
 typedef NSInteger NSStackViewDistribution;
 
 typedef float NSStackViewVisibilityPriority;
-static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityMustHold = 1000; 
-static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityDetachOnlyIfNecessary = 900;
-static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityNotVisible = 0;
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityMustHold = 1000.0; 
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityDetachOnlyIfNecessary = 900.0;
+static const NSStackViewVisibilityPriority NSStackViewVisibilityPriorityNotVisible = 0.0;
 
 static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   
