@@ -495,13 +495,20 @@
 {
   if ([coder allowsKeyedCoding])
     {
-      [coder encodeObject: _contentView forKey: @"NSGrid_content"];
-      [coder encodeObject: _mergeHead forKey: @"NSGrid_mergeHead"];
-      [coder encodeObject: _owningRow forKey: @"NSGrid_owningRow"]; // weak
-      [coder encodeObject: _owningColumn forKey: @"NSGrid_owningColumn"]; // weak
-      [coder encodeInteger: _xPlacement forKey: @"NSGrid_xPlacement"];
-      [coder encodeInteger: _yPlacement forKey: @"NSGrid_yPlacement"];
-      [coder encodeInteger: _rowAlignment forKey: @"NSGrid_alignment"];
+      [coder encodeObject: _contentView
+                   forKey: @"NSGrid_content"];
+      [coder encodeObject: _mergeHead
+                   forKey: @"NSGrid_mergeHead"];
+      [coder encodeObject: _owningRow
+                   forKey: @"NSGrid_owningRow"]; // weak
+      [coder encodeObject: _owningColumn
+                   forKey: @"NSGrid_owningColumn"]; // weak
+      [coder encodeInteger: _xPlacement
+                    forKey: @"NSGrid_xPlacement"];
+      [coder encodeInteger: _yPlacement
+                    forKey: @"NSGrid_yPlacement"];
+      [coder encodeInteger: _rowAlignment
+                    forKey: @"NSGrid_alignment"];
     }
   else
     {
@@ -673,26 +680,32 @@
 {
   if ([coder allowsKeyedCoding])
     {
-      [coder encodeBool: _isHidden forKey: @"NSGrid_hidden"];
-      [coder encodeFloat: _leadingPadding forKey: @"NSGrid_leadingPadding"];
-      [coder encodeObject: _gridView forKey: @"NSGrid_owningGrid"]; // weak
-      [coder encodeFloat: _trailingPadding forKey: @"NSGrid_trailingPadding"];
-      [coder encodeFloat: _width forKey: @"NSGrid_width"];
-      [coder encodeInteger: _xPlacement forKey: @"NSGrid_xPlacement"];
+      [coder encodeBool: _isHidden
+                 forKey: @"NSGrid_hidden"];
+      [coder encodeFloat: _leadingPadding
+                  forKey: @"NSGrid_leadingPadding"];
+      [coder encodeObject: _gridView
+                   forKey: @"NSGrid_owningGrid"]; // weak
+      [coder encodeFloat: _trailingPadding
+                  forKey: @"NSGrid_trailingPadding"];
+      [coder encodeFloat: _width
+                  forKey: @"NSGrid_width"];
+      [coder encodeInteger: _xPlacement
+                    forKey: @"NSGrid_xPlacement"];
     }
   else
     {
-      [coder encodeValueOfObjCType:@encode(BOOL)
-                                at:&_isHidden];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_leadingPadding];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_isHidden];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_leadingPadding];
       [coder encodeObject: _gridView];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_trailingPadding];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_width];
-      [coder encodeValueOfObjCType:@encode(NSInteger)
-                                at:&_xPlacement];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_trailingPadding];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_width];
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_xPlacement];
     }
 }
 
@@ -733,17 +746,17 @@
         }
       else
         {
-          [coder decodeValueOfObjCType:@encode(BOOL)
-                                    at:&_isHidden];
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_leadingPadding];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_isHidden];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_leadingPadding];
           _gridView = [coder decodeObject]; 
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_trailingPadding];
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_width];
-          [coder decodeValueOfObjCType:@encode(NSInteger)
-                                    at:&_xPlacement];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_trailingPadding];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_width];
+          [coder decodeValueOfObjCType: @encode(NSInteger)
+                                    at: &_xPlacement];
         }
     }
   return self;
@@ -871,17 +884,17 @@
     }
   else
     {
-      [coder encodeValueOfObjCType:@encode(BOOL)
-                                at:&_isHidden];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_bottomPadding];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_isHidden];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_bottomPadding];
       [coder encodeObject: _gridView];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_topPadding];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_height];
-      [coder encodeValueOfObjCType:@encode(NSInteger)
-                                at:&_yPlacement];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_topPadding];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_height];
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_yPlacement];
     }
 }
 
@@ -922,17 +935,17 @@
         }
       else
         {
-          [coder decodeValueOfObjCType:@encode(BOOL)
-                                    at:&_isHidden];
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_bottomPadding];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_isHidden];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_bottomPadding];
           _gridView = [coder decodeObject]; 
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_topPadding];
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_height];
-          [coder decodeValueOfObjCType:@encode(NSInteger)
-                                    at:&_yPlacement];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_topPadding];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_height];
+          [coder decodeValueOfObjCType: @encode(NSInteger)
+                                    at: &_yPlacement];
         }
     }
   return self;
