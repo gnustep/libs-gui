@@ -139,7 +139,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:943 */
 /* Comment: Error description */
 "Not a writable type or no URL given."
-  = "Kein schreibbarer Typ oder keine URL übergeben.";
+  = "Kein schreibbarer Typ oder keine URL \U00F6bergeben.";
 /* File: ../Source/NSDocument.m:1037 */
 /* Comment: Error description */
 "Could not write file wrapper."
@@ -148,7 +148,7 @@ add comments above this one
 
 /*** Strings from ../Source/NSPathControl.m ***/
 /* File: ../Source/NSPathControl.m:389 */
-"Choose..." = "Auswählen...";
+"Choose..." = "Ausw\U00E4hlen...";
 
 
 /*** Strings from ../Source/NSSearchFieldCell.m ***/
@@ -157,7 +157,7 @@ add comments above this one
 /* File: ../Source/NSSearchFieldCell.m:563 */
 "Recent search item" = "Letzter Suchwert";
 /* File: ../Source/NSSearchFieldCell.m:570 */
-"Clear recent searches" = "Letzte Suchwerte löschen";
+"Clear recent searches" = "Letzte Suchwerte l\U00F6schen";
 /* File: ../Source/NSSearchFieldCell.m:578 */
 "No recent searches" = "Keine letzten Suchwerte";
 
