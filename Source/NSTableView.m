@@ -6724,6 +6724,16 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
   else
     {
+      NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
+      GSKeyValueBinding *theBinding;
+
+      theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+                                       forObject: tb];
+      if (theBinding != nil)
+        {
+          return [[theBinding destinationValue] count];
+        }
+
       // FIXME
       return 0;
     }

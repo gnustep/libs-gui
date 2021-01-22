@@ -617,8 +617,8 @@ to YES. */
 {
   if ([aKey isEqual: NSValueBinding])
     {
-      // FIXME
       // Reload data
+      [_tableView reloadData];
     }
   else if ([aKey isEqual: NSEnabledBinding])
     {

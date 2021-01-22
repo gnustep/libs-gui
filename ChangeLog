@@ -1,5 +1,11 @@
 2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTableView.m (-_numRows): Take column value binding into
+	consideration.
+	* Source/NSTableColumn.m (-setValue:forKey:): Reload table data.
+
+2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m (GSOrderedWindows): Don't try to handle
 	already gone windows that may be returned from a slow window manager.
 
