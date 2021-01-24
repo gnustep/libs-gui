@@ -870,6 +870,11 @@ restart: ;
 		*/
 		NSArray *tabs = [curParagraphStyle tabStops];
 		NSTextTab *tab = nil;
+		CGFloat defaultInterval = [curParagraphStyle defaultTabInterval];
+		/* Set it to something reasonable if unset */
+		if (defaultInterval == 0.0) {
+                  defaultInterval = 100.0;
+		}
 		int i, c = [tabs count];
 		/* Find first tab beyond our current position. */
 		for (i = 0; i < c; i++)
@@ -884,16 +889,17 @@ restart: ;
 		    tab, thus having no effect.
 		    */
 		    if ([tab location] > p.x + lf->rect.origin.x)
-		      break;
+                      {
+                        break;
+                      }
 		  }
 		if (i == c)
 		  {
-		    /* TODO: we're already past all the tab stops. what
-		    should we do?
-
-		    Pretend that we have tabs every 100 points.
+		    /*
+		    Tabs after the last value in tabStops should use the
+		    defaultTabInterval provided by NSParagraphStyle.
 		    */
-		    p.x = (floor(p.x / 100.0) + 1.0) * 100.0;
+		    p.x = (floor(p.x / defaultInterval) + 1.0) * defaultInterval;
 		  }
 		else
 		  {

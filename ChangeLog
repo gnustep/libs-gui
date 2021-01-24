@@ -1,3 +1,21 @@
+2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-_numRows): Take column value binding into
+	consideration.
+	* Source/NSTableColumn.m (-setValue:forKey:): Reload table data.
+
+2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (GSOrderedWindows): Don't try to handle
+	already gone windows that may be returned from a slow window manager.
+
+2021-01-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m: Small cleanups for nerged pull request.
+	* Resources: Regenerate translation files.
+	* Documentation/news.texi,
+	* Version: Updating documentation for the upcoming 0.29.0 release.
+
 2021-01-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m: Change encoding/decoding to protect
@@ -48,13 +66,15 @@
 	away during tracking.
 
 2020-11-23 Riccardo Mottola <rm@gnu.org>
+
 	* Source/NSPopUpButtonCell.m (release):
 	Use standard setMenu: in release and avoid leaking the Menu. (Proposed by Fred)
 
 2020-11-03 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m (_JPEGRepresentationWithProperties:):
-	Support greyscape output colorspace in JPEG decompression, fix Alpha output do NO, since JPEGs do not support it.
+	Support greyscape output colorspace in JPEG decompression, fix
+	Alpha output to NO, since JPEGs do not support it.
 
 2020-10-18 Fred Kiefer <FredKiefer@gmx.de>
 

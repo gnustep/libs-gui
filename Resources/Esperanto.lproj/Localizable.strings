@@ -4,7 +4,7 @@
 
 /***
 Esperanto.lproj/Localizable.strings
-updated by make_strings 2015-05-29 00:13:11 +0200
+updated by make_strings 2021-01-16 19:15:10 +0100
 add comments above this one
 ***/
 
@@ -12,14 +12,14 @@ add comments above this one
 /*** Keys found in multiple places ***/
 
 /* File: ../Source/GSPrintOperation.m:157 */
-/* File: ../Source/NSSavePanel.m:1384 */
-/* File: ../Source/NSSavePanel.m:1395 */
+/* File: ../Source/NSSavePanel.m:1387 */
+/* File: ../Source/NSSavePanel.m:1398 */
 "Dismiss" = "Forĵetu";
 
-/* File: ../Source/GSNibLoading.m:183 */
+/* File: ../Source/GSNibLoading.m:185 */
 /* Comment: Info */
 /* Flag: untranslated */
-/* File: ../Source/NSApplication.m:2891 */
+/* File: ../Source/NSApplication.m:2947 */
 /* Comment: Title of the Info Panel */
 /* File: ../Source/NSMenu.m:236 */
 /* Comment: Info */
@@ -31,50 +31,50 @@ add comments above this one
 /* Flag: unmatched */
 "Info" = "Info";
 
-/* File: ../Source/GSNibLoading.m:166 */
+/* File: ../Source/GSNibLoading.m:168 */
 /* Comment: Quit */
 /* Flag: untranslated */
-/* File: ../Source/NSApplication.m:3455 */
-/* File: ../Source/NSApplication.m:4220 */
+/* File: ../Source/NSApplication.m:3511 */
+/* File: ../Source/NSApplication.m:4305 */
 /* Flag: untranslated */
-/* File: ../Source/NSDocumentController.m:1015 */
+/* File: ../Source/NSDocumentController.m:1195 */
 "Quit" = "Finu";
 
 /* File: ../Source/NSAlert.m:384 */
 /* Flag: untranslated */
 /* File: ../Source/NSDocument.m:485 */
-/* File: ../Source/NSDocument.m:832 */
-/* File: ../Source/NSDocument.m:1688 */
-/* File: ../Source/NSDocumentController.m:921 */
-/* File: ../Source/NSDocumentController.m:953 */
+/* File: ../Source/NSDocument.m:840 */
+/* File: ../Source/NSDocument.m:1696 */
+/* File: ../Source/NSDocumentController.m:1093 */
+/* File: ../Source/NSDocumentController.m:1125 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:318 */
-/* File: ../Source/NSSavePanel.m:1333 */
+/* File: ../Source/NSSavePanel.m:319 */
+/* File: ../Source/NSSavePanel.m:1336 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1406 */
+/* File: ../Source/NSSavePanel.m:1409 */
 /* Flag: untranslated */
 "Cancel" = "Rezignu";
 
 /* File: ../Source/NSDocument.m:485 */
-/* File: ../Source/NSDocument.m:832 */
-/* File: ../Source/NSDocument.m:1211 */
-/* File: ../Source/NSSavePanel.m:435 */
-/* File: ../Source/NSSavePanel.m:1330 */
-/* File: ../Source/NSSavePanel.m:1369 */
-/* File: ../Source/NSSavePanel.m:1382 */
-/* File: ../Source/NSSavePanel.m:1393 */
+/* File: ../Source/NSDocument.m:840 */
+/* File: ../Source/NSDocument.m:1219 */
+/* File: ../Source/NSSavePanel.m:433 */
+/* File: ../Source/NSSavePanel.m:1333 */
+/* File: ../Source/NSSavePanel.m:1372 */
+/* File: ../Source/NSSavePanel.m:1385 */
+/* File: ../Source/NSSavePanel.m:1396 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1404 */
+/* File: ../Source/NSSavePanel.m:1407 */
 /* Flag: untranslated */
 "Save" = "Konservu";
 
-/* File: ../Source/NSDocument.m:1207 */
+/* File: ../Source/NSDocument.m:1215 */
 /* File: ../Source/NSSavePanel.m:855 */
 /* Flag: unmatched */
 "Save As" = "Konservu kiel";
 
-/* File: ../Source/NSDocument.m:1686 */
-/* File: ../Source/NSDocument.m:1688 */
+/* File: ../Source/NSDocument.m:1694 */
+/* File: ../Source/NSDocument.m:1696 */
 /* File: ../Source/NSFontPanel.m:696 */
 /* Flag: untranslated */
 "Revert" = "Malfaru";
@@ -86,16 +86,16 @@ add comments above this one
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
 /* Flag: untranslated */
-/* File: ../Source/NSAlert.m:1837 */
+/* File: ../Source/NSAlert.m:1836 */
 /* File: ../Source/NSPrintOperation.m:678 */
 /* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:408 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:334 */
+/* File: ../Source/NSSavePanel.m:335 */
 /* Flag: untranslated */
 "OK" = "OK";
 
-/* File: ../Source/Functions.m:85 */
+/* File: ../Source/Functions.m:94 */
 /* Flag: untranslated */
 /* File: ../Source/NSApplication.m:951 */
 /* Flag: unmatched */
@@ -107,28 +107,28 @@ add comments above this one
 /* File: ../Source/NSDocument.m:485 */
 "Don't Save" = "Forĵetu";
 
-/* File: ../Source/NSDocumentController.m:929 */
-/* File: ../Source/NSDocumentController.m:979 */
+/* File: ../Source/NSDocumentController.m:1101 */
+/* File: ../Source/NSDocumentController.m:1151 */
 /* Flag: untranslated */
 "You have unsaved documents" = "Vi havas malkonservitajn dokumentojn";
 
-/* File: ../Source/NSDocumentController.m:930 */
-/* File: ../Source/NSDocumentController.m:972 */
+/* File: ../Source/NSDocumentController.m:1102 */
+/* File: ../Source/NSDocumentController.m:1144 */
 /* Flag: untranslated */
 "Review Unsaved" = "Rigardu ree";
 
-/* File: ../Source/NSDocumentController.m:932 */
-/* File: ../Source/NSDocumentController.m:974 */
+/* File: ../Source/NSDocumentController.m:1104 */
+/* File: ../Source/NSDocumentController.m:1146 */
 /* Flag: untranslated */
 "Quit Anyway" = "Tamen finu";
 
-/* File: ../Source/GSCharacterPanel.m:154 */
+/* File: ../Source/GSCharacterPanel.m:166 */
 /* Flag: untranslated */
 /* File: ../Source/NSFontPanel.m:738 */
 /* Flag: untranslated */
 "Character Panel" = "Character Panel";
 
-/* File: ../Source/GSCharacterPanel.m:173 */
+/* File: ../Source/GSCharacterPanel.m:185 */
 /* Flag: untranslated */
 /* File: ../Source/NSPageLayout.m:959 */
 /* Flag: untranslated */
@@ -164,10 +164,10 @@ add comments above this one
 /* Flag: untranslated */
 "Make this the default theme" = "Make this the default theme";
 
-/* File: ../Source/NSAttributedString.m:1060 */
+/* File: ../Source/NSAttributedString.m:1062 */
 /* Comment: Error description */
 /* Flag: untranslated */
-/* File: ../Source/NSAttributedString.m:1083 */
+/* File: ../Source/NSAttributedString.m:1085 */
 /* Comment: Error description */
 /* Flag: untranslated */
 /* File: ../Source/NSDocument.m:646 */
@@ -175,13 +175,13 @@ add comments above this one
 /* Flag: untranslated */
 "Could not create data for type." = "Could not create data for type.";
 
-/* File: ../Source/NSColorPanel.m:245 */
+/* File: ../Source/NSColorPanel.m:230 */
 /* Flag: untranslated */
 /* File: ../Source/NSToolbarItem.m:1076 */
 /* Flag: untranslated */
 "Colors" = "Colors";
 
-/* File: ../Source/NSDocument.m:1137 */
+/* File: ../Source/NSDocument.m:1145 */
 /* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:350 */
 /* Flag: untranslated */
@@ -211,22 +211,22 @@ add comments above this one
 /* Flag: untranslated */
 "Manual" = "Manual";
 
-/* File: ../Source/NSSavePanel.m:251 */
+/* File: ../Source/NSSavePanel.m:252 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:434 */
+/* File: ../Source/NSSavePanel.m:432 */
 /* Flag: untranslated */
 "Name:" = "Name:";
 
-/* File: ../Source/NSSavePanel.m:1318 */
+/* File: ../Source/NSSavePanel.m:1321 */
 /* Flag: untranslated */
-/* File: ../Source/NSSavePanel.m:1326 */
+/* File: ../Source/NSSavePanel.m:1329 */
 /* Flag: untranslated */
 "Use .%@" = "Use .%@";
 
-/* File: ../Source/NSDocument.m:917 */
+/* File: ../Source/NSDocument.m:925 */
 /* Comment: Error description */
 /* Flag: untranslated */
-/* File: ../Source/NSDocument.m:957 */
+/* File: ../Source/NSDocument.m:965 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Could not write backup file." = "Could not write backup file.";
@@ -234,11 +234,11 @@ add comments above this one
 
 /*** Unmatched/untranslated keys ***/
 
-/* File: ../Source/GSCharacterPanel.m:182 */
+/* File: ../Source/GSCharacterPanel.m:194 */
 /* Flag: untranslated */
 "Code Point" = "Code Point";
 
-/* File: ../Source/GSCharacterPanel.m:191 */
+/* File: ../Source/GSCharacterPanel.m:203 */
 /* Flag: untranslated */
 "Unicode Block" = "Unicode Block";
 
@@ -263,7 +263,7 @@ add comments above this one
 /* Flag: untranslated */
 "%d replaced" = "%d replaced";
 
-/* File: ../Source/GSThemeDrawing.m:188 */
+/* File: ../Source/GSThemeDrawing.m:198 */
 /* Flag: untranslated */
 "?" = "?";
 
@@ -275,15 +275,15 @@ add comments above this one
 /* Flag: untranslated */
 "Themes" = "Themes";
 
-/* File: ../Source/GSToolbarView.m:894 */
+/* File: ../Source/GSToolbarView.m:896 */
 /* Flag: untranslated */
 "Customize Toolbar" = "Customize Toolbar";
 
-/* File: ../Source/NSAlert.m:2007 */
+/* File: ../Source/NSAlert.m:2006 */
 /* Flag: untranslated */
 "Alert" = "Alert";
 
-/* File: ../Source/NSAlert.m:2008 */
+/* File: ../Source/NSAlert.m:2007 */
 /* Flag: untranslated */
 "No information" = "No information";
 
@@ -291,36 +291,36 @@ add comments above this one
 /* Flag: unmatched */
 "Can't find backend context" = "Malpovas trovi backend-kontekston";
 
-/* File: ../Source/NSApplication.m:4210 */
+/* File: ../Source/NSApplication.m:4295 */
 /* Flag: untranslated */
 "Show" = "Show";
 
-/* File: ../Source/NSApplication.m:4216 */
+/* File: ../Source/NSApplication.m:4301 */
 /* Flag: untranslated */
 "Hide" = "Hide";
 
-/* File: ../Source/NSAttributedString.m:762 */
+/* File: ../Source/NSAttributedString.m:764 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "No data specified for data loading."
   = "No data specified for data loading.";
 
-/* File: ../Source/NSAttributedString.m:863 */
+/* File: ../Source/NSAttributedString.m:865 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Could not load data." = "Could not load data.";
 
-/* File: ../Source/NSAttributedString.m:927 */
+/* File: ../Source/NSAttributedString.m:929 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Could not load data from URL." = "Could not load data from URL.";
 
-/* File: ../Source/NSAttributedString.m:1033 */
+/* File: ../Source/NSAttributedString.m:1035 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "No type specified for data." = "No type specified for data.";
 
-/* File: ../Source/NSColorPanel.m:309 */
+/* File: ../Source/NSColorPanel.m:294 */
 /* Flag: untranslated */
 "Opacity" = "Opacity";
 
@@ -359,18 +359,18 @@ add comments above this one
 /* Flag: untranslated */
 "File wrapper is no file." = "File wrapper is no file.";
 
-/* File: ../Source/NSDocument.m:935 */
+/* File: ../Source/NSDocument.m:943 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Not a writable type or no URL given."
   = "Not a writable type or no URL given.";
 
-/* File: ../Source/NSDocument.m:1029 */
+/* File: ../Source/NSDocument.m:1037 */
 /* Comment: Error description */
 /* Flag: untranslated */
 "Could not write file wrapper." = "Could not write file wrapper.";
 
-/* File: ../Source/NSDocumentController.m:1671 */
+/* File: ../Source/NSDocumentController.m:1852 */
 /* Flag: untranslated */
 "Clear List" = "Clear List";
 
@@ -495,53 +495,53 @@ add comments above this one
 "Faxing of print file not implemented"
   = "Faxing of print file not implemented";
 
-/* File: ../Source/NSSavePanel.m:242 */
+/* File: ../Source/NSSavePanel.m:243 */
 /* Flag: untranslated */
 "Show Hidden Files" = "Show Hidden Files";
 
-/* File: ../Source/NSSavePanel.m:277 */
+/* File: ../Source/NSSavePanel.m:278 */
 /* Flag: untranslated */
 "Home" = "Home";
 
-/* File: ../Source/NSSavePanel.m:293 */
+/* File: ../Source/NSSavePanel.m:294 */
 /* Flag: untranslated */
 "Mount" = "Mount";
 
-/* File: ../Source/NSSavePanel.m:309 */
+/* File: ../Source/NSSavePanel.m:310 */
 /* Flag: untranslated */
 "Unmount" = "Unmount";
 
-/* File: ../Source/NSSavePanel.m:1317 */
+/* File: ../Source/NSSavePanel.m:1320 */
 /* Flag: untranslated */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
   = "You have used the extension '.%@'.\nThe standard extension is '.%@'.'";
 
-/* File: ../Source/NSSavePanel.m:1325 */
+/* File: ../Source/NSSavePanel.m:1328 */
 /* Flag: untranslated */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
   = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
 
-/* File: ../Source/NSSavePanel.m:1797 */
+/* File: ../Source/NSSavePanel.m:1799 */
 /* Flag: untranslated */
 "Reading Directory " = "Reading Directory ";
 
-/* File: ../Source/NSSpellChecker.m:731 */
+/* File: ../Source/NSSpellChecker.m:756 */
 /* Flag: untranslated */
 "Guess" = "Guess";
 
-/* File: ../Source/NSTextView.m:651 */
+/* File: ../Source/NSTextView.m:659 */
 /* Flag: untranslated */
 "Cut" = "Cut";
 
-/* File: ../Source/NSTextView.m:652 */
+/* File: ../Source/NSTextView.m:660 */
 /* Flag: untranslated */
 "Copy" = "Copy";
 
-/* File: ../Source/NSTextView.m:653 */
+/* File: ../Source/NSTextView.m:661 */
 /* Flag: untranslated */
 "Paste" = "Paste";
 
-/* File: ../Source/NSTextView.m:5904 */
+/* File: ../Source/NSTextView.m:5893 */
 /* Flag: untranslated */
 "No Suggestions" = "No Suggestions";
 
@@ -569,13 +569,38 @@ add comments above this one
 /* Flag: untranslated */
 "Print..." = "Print...";
 
-/* File: ../Source/NSWindow.m:5322 */
+/* File: ../Source/NSWindow.m:5637 */
 /* Flag: untranslated */
 "Hide Toolbar" = "Hide Toolbar";
 
-/* File: ../Source/NSWindow.m:5324 */
+/* File: ../Source/NSWindow.m:5641 */
 /* Flag: untranslated */
 "Show Toolbar" = "Show Toolbar";
+
+/* File: ../Source/Functions.m:106 */
+/* Flag: untranslated */
+"Cannot load the main storyboard file '%@'"
+  = "Cannot load the main storyboard file '%@'";
+
+/* File: ../Source/NSPathControl.m:389 */
+/* Flag: untranslated */
+"Choose..." = "Choose...";
+
+/* File: ../Source/NSSearchFieldCell.m:556 */
+/* Flag: untranslated */
+"Recent searches" = "Recent searches";
+
+/* File: ../Source/NSSearchFieldCell.m:563 */
+/* Flag: untranslated */
+"Recent search item" = "Recent search item";
+
+/* File: ../Source/NSSearchFieldCell.m:570 */
+/* Flag: untranslated */
+"Clear recent searches" = "Clear recent searches";
+
+/* File: ../Source/NSSearchFieldCell.m:578 */
+/* Flag: untranslated */
+"No recent searches" = "No recent searches";
 
 
 /*** Strings from ../Source/GSPrintOperation.m ***/
@@ -600,44 +625,44 @@ add comments above this one
 "Critical Error in %@" = "Krita eraro en %@";
 /* File: ../Source/NSApplication.m:141 */
 "Debug" = "Erarserĉu";
-/* File: ../Source/NSApplication.m:1198 */
+/* File: ../Source/NSApplication.m:1206 */
 "Problem during launch app notification: %@"
   = "Problemo dum lanĉo de app-notifiko: %@";
 /* File: ../Source/NSApplication.m:304 */
 "Unable to find backend %@" = "Ne trovis back-end %@";
-/* File: ../Source/NSApplication.m:972 */
+/* File: ../Source/NSApplication.m:980 */
 "[NSApplication -init] called more than once"
   = "[NSApplication -init] vokiĝis plurfoje";
-/* File: ../Source/NSApplication.m:3328 */
+/* File: ../Source/NSApplication.m:3384 */
 "reported exception - %@" = "raportis escepton - %@";
 
 
 /*** Strings from ../Source/NSBitmapImageRep.m ***/
-/* File: ../Source/NSBitmapImageRep.m:1645 */
-"CCITTFAX3 Compression" = "CCITTFAX3-kunpremado";
-/* File: ../Source/NSBitmapImageRep.m:1646 */
-"CCITTFAX4 Compression" = "CCITTFAX4-kunpremado";
-/* File: ../Source/NSBitmapImageRep.m:1648 */
-"JPEG Compression" = "JPEG-kunpremado";
 /* File: ../Source/NSBitmapImageRep.m:1647 */
-"LZW Compression" = "LZW-kunpremado";
-/* File: ../Source/NSBitmapImageRep.m:1649 */
-"NEXT Compression" = "NEXT-kunpremado";
-/* File: ../Source/NSBitmapImageRep.m:1644 */
-"No Compression" = "Neniu kunpremado";
-/* File: ../Source/NSBitmapImageRep.m:1651 */
-"Old JPEG Compression" = "malnova JPEG-kunpremado";
+"CCITTFAX3 Compression" = "CCITTFAX3-kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1648 */
+"CCITTFAX4 Compression" = "CCITTFAX4-kunpremado";
 /* File: ../Source/NSBitmapImageRep.m:1650 */
+"JPEG Compression" = "JPEG-kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1649 */
+"LZW Compression" = "LZW-kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1651 */
+"NEXT Compression" = "NEXT-kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1646 */
+"No Compression" = "Neniu kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1653 */
+"Old JPEG Compression" = "malnova JPEG-kunpremado";
+/* File: ../Source/NSBitmapImageRep.m:1652 */
 "PackBits Compression" = "PackBits-kunpremado";
 
 
 /*** Strings from ../Source/NSDocument.m ***/
-/* File: ../Source/NSDocument.m:1687 */
+/* File: ../Source/NSDocument.m:1695 */
 "%@ has been edited.  Are you sure you want to undo changes?"
   = "%@ redaktiĝis. Ĉu vi certas ke vi volas malfari ŝangojn?";
 /* File: ../Source/NSDocument.m:484 */
 "%@ has changed.  Save?" = "%@ ŝanĝiĝis. Konservu?";
-/* File: ../Source/NSDocument.m:831 */
+/* File: ../Source/NSDocument.m:839 */
 "Can't create backup file.  Save anyways?"
   = "Malpovas krei savkopian dosieron. Tamen konservu?";
 /* File: ../Source/NSDocument.m:483 */
@@ -646,37 +671,37 @@ add comments above this one
 "Could not load URL %@." = "Malpovas ŝarĝi URL %@.";
 /* File: ../Source/NSDocument.m:130 */
 "Could not load file %@." = "Malpovas ŝarĝi dosieron %@.";
-/* File: ../Source/NSDocument.m:830 */
+/* File: ../Source/NSDocument.m:838 */
 "File Error" = "Dosiera eraro";
-/* File: ../Source/NSDocument.m:152 */
 /* File: ../Source/NSDocument.m:129 */
+/* File: ../Source/NSDocument.m:152 */
 "Load failed" = "Ŝarĝi malsukcesis";
-/* File: ../Source/NSDocument.m:1208 */
+/* File: ../Source/NSDocument.m:1216 */
 "Save To" = "Konservu ĉe";
 /* File: ../Source/NSDocument.m:580 */
 "Untitled-%d" = "malnomita-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
-/* File: ../Source/NSDocumentController.m:1022 */
+/* File: ../Source/NSDocumentController.m:1202 */
 "Power Off" = "Malŝaltu";
 
 
 /*** Strings from ../Source/NSSavePanel.m ***/
-/* File: ../Source/NSSavePanel.m:1371 */
+/* File: ../Source/NSSavePanel.m:1374 */
 "No" = "Ne";
-/* File: ../Source/NSSavePanel.m:1406 */
+/* File: ../Source/NSSavePanel.m:1409 */
 "Replace" = "Anstatauigu";
-/* File: ../Source/NSSavePanel.m:1383 */
+/* File: ../Source/NSSavePanel.m:1386 */
 "The directory '%@' could not be created."
   = "La dosierujo '%@' ne povis kreiĝi.";
-/* File: ../Source/NSSavePanel.m:1370 */
+/* File: ../Source/NSSavePanel.m:1373 */
 "The directory '%@' does not exist, do you want to create it?"
   = "La dosierujo '%@' ne ekzistas. Ĉu vi volas krej ĝin?";
-/* File: ../Source/NSSavePanel.m:1405 */
+/* File: ../Source/NSSavePanel.m:1408 */
 "The file '%@' in '%@' exists. Replace it?"
   = "La dosiero '%@' en '%@' jam eksistas. Anstataŭiĝu?";
-/* File: ../Source/NSSavePanel.m:1394 */
+/* File: ../Source/NSSavePanel.m:1397 */
 "The path '%@' is not a directory." = "'%@' ne estas dosierujo.";
-/* File: ../Source/NSSavePanel.m:1371 */
+/* File: ../Source/NSSavePanel.m:1374 */
 "Yes" = "Jes";

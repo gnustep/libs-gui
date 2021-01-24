@@ -6196,7 +6196,10 @@ NSArray *GSOrderedWindows(void)
       NSInteger windowNumber = [[window_list objectAtIndex: i] integerValue];
       NSWindow *win = GSWindowWithNumber(windowNumber);
 
-      [ret addObject: win];
+      if (win != nil)
+        {
+          [ret addObject: win];
+        }
     }
 
   return ret;
