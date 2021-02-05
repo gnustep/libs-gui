@@ -1,3 +1,9 @@
+2021-02-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/Italian.lproj/Localizable.strings,
+	* Resources/Esperanto.lproj/Localizable.strings: Readd BOM which
+	was lost when regenerating these files.
+
 2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-_numRows): Take column value binding into

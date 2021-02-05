@@ -1,4 +1,4 @@
-/* Translator: Ingolf Jandt, <i.jandt@web.de>
+﻿/* Translator: Ingolf Jandt, <i.jandt@web.de>
  * Date: April 2006
  */
 
@@ -33,10 +33,8 @@ add comments above this one
 
 /* File: ../Source/GSNibLoading.m:168 */
 /* Comment: Quit */
-/* Flag: untranslated */
 /* File: ../Source/NSApplication.m:3511 */
 /* File: ../Source/NSApplication.m:4305 */
-/* Flag: untranslated */
 /* File: ../Source/NSDocumentController.m:1195 */
 "Quit" = "Finu";
 
@@ -76,12 +74,10 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1694 */
 /* File: ../Source/NSDocument.m:1696 */
 /* File: ../Source/NSFontPanel.m:696 */
-/* Flag: untranslated */
 "Revert" = "Malfaru";
 
 /* File: ../Source/GSPrintOperation.m:155 */
 /* File: ../Source/NSFontPanel.m:706 */
-/* Flag: untranslated */
 "Preview" = "Antaŭviso";
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
@@ -96,36 +92,29 @@ add comments above this one
 "OK" = "OK";
 
 /* File: ../Source/Functions.m:94 */
-/* Flag: untranslated */
 /* File: ../Source/NSApplication.m:951 */
 /* Flag: unmatched */
 "Cannot load the main model file '%@'"
   = "Malpovas ŝarĝi ŝefan model-dosieron '%@'";
 
 /* File: ../Source/NSAlert.m:389 */
-/* Flag: untranslated */
 /* File: ../Source/NSDocument.m:485 */
 "Don't Save" = "Forĵetu";
 
 /* File: ../Source/NSDocumentController.m:1101 */
 /* File: ../Source/NSDocumentController.m:1151 */
-/* Flag: untranslated */
 "You have unsaved documents" = "Vi havas malkonservitajn dokumentojn";
 
 /* File: ../Source/NSDocumentController.m:1102 */
 /* File: ../Source/NSDocumentController.m:1144 */
-/* Flag: untranslated */
 "Review Unsaved" = "Rigardu ree";
 
 /* File: ../Source/NSDocumentController.m:1104 */
 /* File: ../Source/NSDocumentController.m:1146 */
-/* Flag: untranslated */
 "Quit Anyway" = "Tamen finu";
 
 /* File: ../Source/GSCharacterPanel.m:166 */
-/* Flag: untranslated */
 /* File: ../Source/NSFontPanel.m:738 */
-/* Flag: untranslated */
 "Character Panel" = "Character Panel";
 
 /* File: ../Source/GSCharacterPanel.m:185 */
