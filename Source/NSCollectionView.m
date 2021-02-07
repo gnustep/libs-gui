@@ -40,6 +40,7 @@
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 
@@ -602,11 +603,11 @@ static NSString *placeholderItem = nil;
   
   if (self)
     {
+      _itemSize = NSMakeSize(0, 0);
+      _tileWidth = -1.0;
+          
       if ([aCoder allowsKeyedCoding])
         {
-          _itemSize = NSMakeSize(0, 0);
-          _tileWidth = -1.0;
-          
           _minItemSize = [aCoder decodeSizeForKey: NSCollectionViewMinItemSizeKey];
           _maxItemSize = [aCoder decodeSizeForKey: NSCollectionViewMaxItemSizeKey];
           
@@ -622,6 +623,12 @@ static NSString *placeholderItem = nil;
         }
       else
         {
+          _minItemSize = [aCoder decodeSize];
+          _maxItemSize = [aCoder decodeSize];
+          decode_NSUInteger(aCoder, &_maxNumberOfRows);
+          decode_NSUInteger(aCoder, &_maxNumberOfColumns);
+          [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];
+          [self setBackgroundColors: [aCoder decodeObject]]; // decode color...
         }
     }
   [self _initDefaults];
@@ -660,6 +667,12 @@ static NSString *placeholderItem = nil;
     }
   else
     {
+      [aCoder encodeSize: _minItemSize];
+      [aCoder encodeSize: _maxItemSize];
+      encode_NSUInteger(aCoder, &_maxNumberOfRows);
+      encode_NSUInteger(aCoder, &_maxNumberOfColumns);
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];      
+      [aCoder encodeObject: [self backgroundColors]]; // encode color...
     }
 }
 
