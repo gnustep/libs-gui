@@ -40,6 +40,7 @@
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 
@@ -624,8 +625,8 @@ static NSString *placeholderItem = nil;
         {
           _minItemSize = [aCoder decodeSize];
           _maxItemSize = [aCoder decodeSize];
-          [aCoder decodeValueOfObjCType: @encode(int64_t) at: &_maxNumberOfRows];
-          [aCoder decodeValueOfObjCType: @encode(int64_t) at: &_maxNumberOfColumns];
+          decode_NSUInteger(aCoder, &_maxNumberOfRows);
+          decode_NSUInteger(aCoder, &_maxNumberOfColumns);
           [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];
           [self setBackgroundColors: [aCoder decodeObject]]; // decode color...
         }
@@ -668,8 +669,8 @@ static NSString *placeholderItem = nil;
     {
       [aCoder encodeSize: _minItemSize];
       [aCoder encodeSize: _maxItemSize];
-      [aCoder encodeValueOfObjCType: @encode(int64_t) at: &_maxNumberOfRows];
-      [aCoder encodeValueOfObjCType: @encode(int64_t) at: &_maxNumberOfColumns];
+      encode_NSUInteger(aCoder, &_maxNumberOfRows);
+      encode_NSUInteger(aCoder, &_maxNumberOfColumns);
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];      
       [aCoder encodeObject: [self backgroundColors]]; // encode color...
     }
