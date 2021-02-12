@@ -1,3 +1,8 @@
+2021-02-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchFieldCell.m: Correct encoding/decoding that was
+	broken in last commit of this file.
+
 2021-02-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/Italian.lproj/Localizable.strings,
