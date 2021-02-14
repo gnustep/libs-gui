@@ -495,14 +495,14 @@
     }
   else
     {
-      NSInteger max = [self maximumRecents];
+      NSUInteger max = [self maximumRecents];
 
       [aCoder encodeObject: _search_button_cell];
       [aCoder encodeObject: _cancel_button_cell];
       [aCoder encodeObject: _recents_autosave_name];
       [aCoder encodeValueOfObjCType: @encode(BOOL)
               at: &_sends_whole_search_string];
-      encode_NSInteger(aCoder, &max);
+      encode_NSUInteger(aCoder, &max);
     }
 }
 
@@ -522,13 +522,13 @@
 	}
       else
 	{
-          NSInteger max;
+          NSUInteger max;
 
 	  [self setSearchButtonCell: [aDecoder decodeObject]];
 	  [self setCancelButtonCell: [aDecoder decodeObject]];
 	  [self setRecentsAutosaveName: [aDecoder decodeObject]];
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
-          decode_NSInteger(aDecoder, &max);
+          decode_NSUInteger(aDecoder, &max);
           [self setMaximumRecents: max];
 	}
 
