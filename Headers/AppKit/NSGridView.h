@@ -61,8 +61,8 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @interface NSGridView : NSView
 {
   NSGridRowAlignment _rowAlignment;
-  NSMutableArray *_rows;
   NSMutableArray *_columns;
+  NSMutableArray *_rows;
   NSMutableArray *_cells;
   CGFloat _columnSpacing;
   CGFloat _rowSpacing;
@@ -152,7 +152,6 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   CGFloat _leadingPadding;
   CGFloat _trailingPadding;
   BOOL _isHidden;
-  NSMutableArray *_cells;
 }
 - (NSGridView *) gridView;
 - (NSInteger) numberOfCells;
@@ -181,7 +180,6 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   CGFloat _bottomPadding;
   CGFloat _topPadding;
   BOOL _isHidden;
-  NSMutableArray *_cells;
 }
   
 - (NSGridView *) gridView;

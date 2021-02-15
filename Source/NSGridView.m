@@ -26,14 +26,6 @@
 #import "AppKit/NSGridView.h"
 #import "GSFastEnumeration.h"
 
-@interface NSGridRow (Private)
-- (void) _addCell: (NSGridCell *)c;
-@end
-
-@interface NSGridColumn (Private)
-- (void) _addCell: (NSGridCell *)c;
-@end
-
 @implementation NSGridView
 
 + (void) initialize
@@ -86,9 +78,8 @@
 
   if (self != nil)
     {
-      _rows = [[NSMutableArray alloc] initWithCapacity: 10];
-      _columns = [[NSMutableArray alloc] initWithCapacity: 10];
-      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
+      _rows = [[NSGridRow alloc] init];
+      _columns = [[NSGridColumn alloc] init];
     }
 
   [self _refreshCells];
@@ -201,10 +192,17 @@
       NSGridCell *c = [[NSGridCell alloc] init];
       [c setContentView: v];
       RELEASE(v);
-      [gr _addCell: c];
+      // [gr _addCell: c];
     }
   END_FOR_IN(views);
 
+  // Insert cell into column before the actual row position...
+  NSUInteger i = 0;
+  for (i = 0; i < index; i++)
+    {
+      NSGridCell *c = [[NSGridCell alloc] init];
+    }
+  
   // Refresh...
   [self _refreshCells];
   return gr;
@@ -426,6 +424,16 @@
       [self setVersion: 1];
     }
 }
+ 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      [self setContentView: [[self class] emptyContentView]]; 
+    }
+  return self;
+}
 
 - (NSView *) contentView
 {
@@ -547,13 +555,13 @@
             {
               _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
               NSDebugLog(@"_owningRow = %@", _owningRow);
-              [_owningRow _addCell: self];
+              // [_owningRow _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_owningColumn"])
             {
               _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
               NSDebugLog(@"_owningColumn = %@", _owningColumn);
-              [_owningColumn _addCell: self];
+              // [_owningColumn _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -573,9 +581,9 @@
           [self setContentView: [coder decodeObject]];
           ASSIGN(_mergeHead, [coder decodeObject]);
           _owningRow = [coder decodeObject]; // weak
-          [_owningRow _addCell: self];
+          // [_owningRow _addCell: self];
           _owningColumn = [coder decodeObject]; // weak
-          [_owningRow _addCell: self];
+          // [_owningRow _addCell: self];
           [coder decodeValueOfObjCType: @encode(NSInteger)
                                     at: &_xPlacement];
           [coder decodeValueOfObjCType:@encode(NSInteger)
@@ -589,6 +597,7 @@
 
 - (void) dealloc
 {
+  RELEASE(_contentView);
   RELEASE(_mergeHead);
   [super dealloc];
 }
@@ -606,11 +615,6 @@
     }
 }
 
-- (void) _addCell: (NSGridCell *)c
-{
-  [_cells addObject: c];
-}
-
 - (NSGridView *) gridView
 {
   return _gridView;
@@ -618,12 +622,12 @@
 
 - (NSInteger) numberOfCells
 {
-  return [_cells count];
+  return 0; // refer to gridView here... [_cells count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return [_cells objectAtIndex: index];
+  return nil; // refer to gridview here... [_cells objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -715,7 +719,7 @@
   if (self != nil)
     {
       NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
+      // _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -762,22 +766,6 @@
   return self;
 }
 
-- (instancetype) init
-{
-  self = [super init];
-  if (self != nil)
-    {
-      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
-    }
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE(_cells);
-  [super dealloc];
-}
-
 @end
 
 /// Row ///
@@ -789,11 +777,6 @@
     {
       [self setVersion: 1];
     }
-}
-
-- (void) _addCell: (NSGridCell *)c
-{
-  [_cells addObject: c];
 }
 
 - (void) setGridView: (NSGridView *)gridView
@@ -808,12 +791,12 @@
 
 - (NSInteger) numberOfCells
 {
-  return [_cells count];
+  return 0; // reference gridview here... [_cells count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return [_cells objectAtIndex: index];
+  return nil; // reference gridview here... [_cells objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) yPlacement
@@ -904,7 +887,7 @@
   if (self != nil)
     {
       NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
+      // _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -949,22 +932,6 @@
         }
     }
   return self;
-}
-
-- (instancetype) init
-{
-  self = [super init];
-  if (self != nil)
-    {
-      _cells = [[NSMutableArray alloc] initWithCapacity: 10];
-    }
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE(_cells);
-  [super dealloc];
 }
 
 @end
