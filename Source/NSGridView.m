@@ -36,7 +36,7 @@
     }
 }
 
-- (void) _refreshCells
+- (void) _redrawCells
 {
   NSUInteger r = 0, c = 0;
   
@@ -78,11 +78,11 @@
 
   if (self != nil)
     {
-      _rows = [[NSGridRow alloc] init];
-      _columns = [[NSGridColumn alloc] init];
+      _rows = [[NSMutableArray alloc] init];
+      _columns = [[NSMutableArray alloc] init];
     }
 
-  [self _refreshCells];
+  [self _redrawCells];
   
   return self;
 }
@@ -90,16 +90,40 @@
 - (instancetype) initWithViews: (NSArray *)rows
 {
   self = [self initWithFrame: NSZeroRect];
-  
+
+  NSUInteger c = 0;
+  NSUInteger r = 0;
   if (self != nil)
     {
-      FOR_IN(NSMutableArray*, row, rows)
+      FOR_IN(NSArray*, row, rows)
         {
+          NSArray *columns = [row objectAtIndex: c];
+          FOR_IN(NSArray*, column, columns)
+            {
+              NSView *v = [column objectAtIndex: c];
+              NSGridCell *cell = [[NSGridCell alloc] init];
+              [cell setContentView: v];
+              c++;
+            }
+          END_FOR_IN(columns);
+          r++;
         }
       END_FOR_IN(rows);
     }
 
-  [self _refreshCells];
+  _rows = [[NSMutableArray alloc] initWithCapacity: r];
+  _columns = [[NSMutableArray alloc] initWithCapacity: c];
+
+  NSUInteger i = 0;
+  for (i = 0; i < r; i++)
+    {
+      [_rows addObject: [[NSGridRow alloc] init]];
+    }
+  for (i = 0; i < r; i++)
+    {
+      [_columns addObject: [[NSGridColumn alloc] init]];
+    }
+  [self _redrawCells];
   
   return self;
 }
@@ -108,11 +132,11 @@
 {
   NSUInteger r = 0;
   NSUInteger c = 0;
-  NSMutableArray *rows = [[NSMutableArray alloc] initWithCapacity: rowCount]; 
-
+  NSMutableArray *rows = [[NSMutableArray alloc] initWithCapacity: rowCount];
+  
   for (r = 0; r < rowCount; r++)
     {
-      NSMutableArray *col = [NSMutableArray arrayWithCapacity: columnCount];
+      NSMutableArray *col = [[NSMutableArray alloc] initWithCapacity: columnCount];
       for (c = 0; c < columnCount; c++)
         {
           NSGridCell *gc = [[NSGridCell alloc] init];
@@ -121,7 +145,7 @@
         }
       [rows addObject: col];
     }
-  
+
   return AUTORELEASE([self gridViewWithViews: rows]);
 }
 
@@ -162,14 +186,34 @@
 
 - (NSGridCell *) cellAtColumnIndex: (NSInteger)columnIndex rowIndex: (NSInteger)rowIndex
 {
-  NSGridColumn *col = [_columns objectAtIndex: columnIndex];
-  NSGridCell *c = [col cellAtIndex: rowIndex];
-  return c;
+  return [[_cells objectAtIndex: rowIndex] objectAtIndex: columnIndex];
 }
 
 - (NSGridCell *) cellForView: (NSView*)view
 {
-  return nil;
+  NSGridCell *result = nil;
+
+  if (view != nil)
+    {
+      NSUInteger c = 0;
+      NSUInteger r = 0;
+     
+      for(r = 0; r < [self numberOfRows]; r++)
+        {
+          for(c = 0; c < [self numberOfColumns]; c++)
+            {
+              NSGridCell *cell = [self cellAtColumnIndex: c rowIndex: r];
+              NSView *v = [cell contentView];
+              if (v == view)
+                {
+                  result = cell;
+                  break;
+                }
+            }
+        }
+    }
+  
+  return result;
 }
 
 - (NSGridRow *) addRowWithViews: (NSArray *)views
@@ -195,28 +239,21 @@
       // [gr _addCell: c];
     }
   END_FOR_IN(views);
-
-  // Insert cell into column before the actual row position...
-  NSUInteger i = 0;
-  for (i = 0; i < index; i++)
-    {
-      NSGridCell *c = [[NSGridCell alloc] init];
-    }
   
   // Refresh...
-  [self _refreshCells];
+  [self _redrawCells];
   return gr;
 }
 
 - (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
-  [self _refreshCells];
+  [self _redrawCells];
 }
 
 - (void) removeRowAtIndex: (NSInteger)index
 {
   [_rows removeObjectAtIndex: index];
-  [self _refreshCells];
+  [self _redrawCells];
 }
 
 - (NSGridColumn *) addColumnWithViews: (NSArray*)views
@@ -227,20 +264,20 @@
 
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  NSGridColumn *gc = [[NSGridColumn alloc] init];
-  [self _refreshCells];
+  NSGridColumn *gc = [[NSGridColumn alloc] init];  
+  [self _redrawCells];
   return gc;
 }
 
 - (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
-  [self _refreshCells]; 
+  [self _redrawCells]; 
 }
 
 - (void) removeColumnAtIndex: (NSInteger)index
 {
   [_columns removeObjectAtIndex: index];
-  [self _refreshCells];
+  [self _redrawCells];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -295,7 +332,7 @@
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
 {
-  [self _refreshCells]; 
+  [self _redrawCells]; 
 }
 
 // coding
@@ -399,7 +436,7 @@
         }
     }
   
-  [self _refreshCells];
+  [self _redrawCells];
   
   return self;
 }
