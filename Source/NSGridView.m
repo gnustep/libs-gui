@@ -36,40 +36,16 @@
     }
 }
 
-- (void) _redrawCells
+- (void) _refreshCells
 {
-  NSUInteger r = 0, c = 0;
-  
-  NSDebugLog(@"Refresh cells in NSGridView");
-  for (r = 0; r < [self numberOfRows]; r++)
+  NSUInteger i = 0;
+  FOR_IN(NSGridCell*, c, _cells)
     {
-      for (c = 0; c < [self numberOfColumns]; c++)
-        {
-          NSGridCell *cell = [self cellAtColumnIndex: c
-                                            rowIndex: r];
-          if (cell != nil)
-            {
-              NSView *v = [cell contentView];
-              if (v != nil)
-                {
-                  NSDebugLog(@"v = %@", v);
-                  if ([v superview] == nil)
-                    {
-                      NSDebugLog(@"Add to view");
-                      [self addSubview: v];
-                    }
-                }
-              else
-                {
-                  NSDebugLog(@"No view");
-                }
-            }
-          else
-            {
-              NSDebugLog(@"No cell");
-            }
-        }
+      NSView *v = [c contentView];
+      [self addSubview: v];
+      i++;
     }
+  END_FOR_IN(_cells)
 }
 
 - (instancetype) initWithFrame: (NSRect)frameRect
@@ -82,7 +58,7 @@
       _columns = [[NSMutableArray alloc] init];
     }
 
-  [self _redrawCells];
+  [self _refreshCells];
   
   return self;
 }
@@ -93,8 +69,10 @@
 
   NSUInteger c = 0;
   NSUInteger r = 0;
+
   if (self != nil)
     {
+      _cells = [[NSMutableArray alloc] init];
       FOR_IN(NSArray*, row, rows)
         {
           NSArray *columns = [row objectAtIndex: c];
@@ -103,6 +81,7 @@
               NSView *v = [column objectAtIndex: c];
               NSGridCell *cell = [[NSGridCell alloc] init];
               [cell setContentView: v];
+              [_cells addObject: cell];
               c++;
             }
           END_FOR_IN(columns);
@@ -123,7 +102,7 @@
     {
       [_columns addObject: [[NSGridColumn alloc] init]];
     }
-  [self _redrawCells];
+  [self _refreshCells];
   
   return self;
 }
@@ -186,33 +165,25 @@
 
 - (NSGridCell *) cellAtColumnIndex: (NSInteger)columnIndex rowIndex: (NSInteger)rowIndex
 {
-  return [[_cells objectAtIndex: rowIndex] objectAtIndex: columnIndex];
+  NSUInteger idx = rowIndex * [self numberOfColumns] + columnIndex;
+  return [_cells objectAtIndex: idx];
 }
 
 - (NSGridCell *) cellForView: (NSView*)view
 {
   NSGridCell *result = nil;
 
-  if (view != nil)
+  FOR_IN(NSGridCell*, c, _cells)
     {
-      NSUInteger c = 0;
-      NSUInteger r = 0;
-     
-      for(r = 0; r < [self numberOfRows]; r++)
+      NSView *v = [c contentView];
+      if (v == view)
         {
-          for(c = 0; c < [self numberOfColumns]; c++)
-            {
-              NSGridCell *cell = [self cellAtColumnIndex: c rowIndex: r];
-              NSView *v = [cell contentView];
-              if (v == view)
-                {
-                  result = cell;
-                  break;
-                }
-            }
+          result = c;
+          break;
         }
     }
-  
+  END_FOR_IN(_cells);
+
   return result;
 }
 
@@ -241,19 +212,19 @@
   END_FOR_IN(views);
   
   // Refresh...
-  [self _redrawCells];
+  [self _refreshCells];
   return gr;
 }
 
 - (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
-  [self _redrawCells];
+  [self _refreshCells];
 }
 
 - (void) removeRowAtIndex: (NSInteger)index
 {
   [_rows removeObjectAtIndex: index];
-  [self _redrawCells];
+  [self _refreshCells];
 }
 
 - (NSGridColumn *) addColumnWithViews: (NSArray*)views
@@ -265,19 +236,19 @@
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
   NSGridColumn *gc = [[NSGridColumn alloc] init];  
-  [self _redrawCells];
+  [self _refreshCells];
   return gc;
 }
 
 - (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
-  [self _redrawCells]; 
+  [self _refreshCells]; 
 }
 
 - (void) removeColumnAtIndex: (NSInteger)index
 {
   [_columns removeObjectAtIndex: index];
-  [self _redrawCells];
+  [self _refreshCells];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -332,7 +303,7 @@
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
 {
-  [self _redrawCells]; 
+  [self _refreshCells]; 
 }
 
 // coding
@@ -361,17 +332,17 @@
     {
       [coder encodeValueOfObjCType:@encode(NSUInteger)
                                 at:&_rowAlignment];
+      [coder encodeObject: _columns];
+      [coder encodeObject: _rows];
+      [coder encodeObject: _cells];
       [coder encodeValueOfObjCType:@encode(CGFloat)
                                 at:&_columnSpacing];
-      [coder encodeObject: _columns];
       [coder encodeValueOfObjCType:@encode(CGFloat)
                                 at:&_rowSpacing];
-      [coder encodeObject: _rows];
       [coder encodeValueOfObjCType:@encode(NSUInteger)
                                 at:&_xPlacement];
       [coder encodeValueOfObjCType:@encode(NSUInteger)
                                 at:&_yPlacement];
-      [coder encodeObject: _cells];
     }
 }
 
@@ -380,63 +351,69 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
-      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_alignment"])
             {
-              _rowAlignment = [coder decodeIntegerForKey: @"NSGrid_alignment"];
-            }
-          if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
-            {
-              _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
+              _rowAlignment = (NSGridRowAlignment)[coder decodeIntegerForKey: @"NSGrid_alignment"];
+              NSLog(@"_rowAlignment = %ld", _rowAlignment);
             }
           if ([coder containsValueForKey: @"NSGrid_columns"])
             {
               ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-              // NSDebugLog(@"_columns = %@", _columns);
-            }
-          if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
-            {
-              _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
+              NSLog(@"_columns = %@", _columns);
             }
           if ([coder containsValueForKey: @"NSGrid_rows"])
             {
               ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-              // NSDebugLog(@"_rows = %@", _rows);
-            }
-          if ([coder containsValueForKey: @"NSGrid_xPlacement"])
-            {
-              _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-            }
-          if ([coder containsValueForKey: @"NSGrid_yPlacement"])
-            {
-              _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+              NSLog(@"_rows = %@", _rows);
             }
           if ([coder containsValueForKey: @"NSGrid_cells"])
             {
               ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
+              NSLog(@"_cells = %@", _cells);
+            }
+          if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
+            {
+              _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
+              NSLog(@"_columnSpacing = %f", _columnSpacing);
+            }
+          if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
+            {
+              _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
+              NSLog(@"_rowSpacing = %f", _rowSpacing);
+            }
+          if ([coder containsValueForKey: @"NSGrid_xPlacement"])
+            {
+              _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
+              NSLog(@"_xPlacement = %ld", _xPlacement);
+            }
+          if ([coder containsValueForKey: @"NSGrid_yPlacement"])
+            {
+              _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
+              NSLog(@"_yPlacement = %ld", _yPlacement);
             }
         }
       else
         {
           [coder decodeValueOfObjCType:@encode(NSUInteger)
                                     at:&_rowAlignment];
+          ASSIGN(_columns, [coder decodeObject]);
+          ASSIGN(_rows, [coder decodeObject]);
+          ASSIGN(_cells, [coder decodeObject]);
           [coder decodeValueOfObjCType:@encode(CGFloat)
                                     at:&_columnSpacing];
-          ASSIGN(_columns, [coder decodeObject]);
           [coder decodeValueOfObjCType:@encode(CGFloat)
                                     at:&_rowSpacing];
-          ASSIGN(_rows, [coder decodeObject]);
           [coder decodeValueOfObjCType:@encode(NSUInteger)
                                     at:&_xPlacement];
           [coder decodeValueOfObjCType:@encode(NSUInteger)
                                     at:&_yPlacement];
-          ASSIGN(_cells, [coder decodeObject]);
         }
     }
   
-  [self _redrawCells];
+  [self _refreshCells];
   
   return self;
 }
