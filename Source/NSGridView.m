@@ -26,6 +26,47 @@
 #import "AppKit/NSGridView.h"
 #import "GSFastEnumeration.h"
 
+// Private interfaces...
+@interface NSGridRow (Private)
+- (void) _setGridView: (NSGridView *)gv;
+@end
+
+@interface NSGridColumn (Private)
+- (void) _setGridView: (NSGridView *)gv;
+@end
+
+@interface NSGridCell (Private)
+- (void) _setOwningRow: (NSGridRow *)r;
+- (void) _setOwningColumn: (NSGridColumn *)c;
+@end
+
+@implementation NSGridRow (Private)
+- (void) _setGridView: (NSGridView *)gv
+{
+  _gridView = gv; // weak reference...
+}
+@end
+
+// Private methods...
+@implementation NSGridColumn (Private)
+- (void) _setGridView: (NSGridView *)gv
+{
+  _gridView = gv; // weak reference...
+}
+@end
+
+@implementation NSGridCell (Private)
+- (void) _setOwningRow: (NSGridRow *)r
+{
+  _owningRow = r;
+}
+
+- (void) _setOwningColumn: (NSGridColumn *)c
+{
+  _owningColumn = c;
+}
+@end
+
 @implementation NSGridView
 
 + (void) initialize
@@ -125,7 +166,7 @@
       // so it is necessary to figure out the width of each column so that things can be properly spaced.
       if (ci == 0)
         {
-          current_y -= rect.size.height;
+          current_y -= [[rowHeights objectAtIndex: ci] floatValue]; // rect.size.height;
           current_x = 0.0;
         }
       
@@ -165,7 +206,7 @@
   return self;
 }
 
-- (instancetype) initWithViews: (NSArray *)rows
+- (instancetype) initWithViews: (NSArray *)rows // an array of arrays
 {
   self = [self initWithFrame: NSZeroRect];
 
@@ -174,7 +215,17 @@
 
   if (self != nil)
     {
-      _cells = [[NSMutableArray alloc] init];
+      NSUInteger rc = [rows count], cc = 0;
+
+      if (rc > 0)
+        {
+          cc = [[rows objectAtIndex: 0] count];
+        }
+      
+      _cells = [[NSMutableArray alloc] initWithCapacity: rc * cc];
+      _rows = [[NSMutableArray alloc] initWithCapacity: rc];
+      _columns = [[NSMutableArray alloc] initWithCapacity: cc];
+
       FOR_IN(NSArray*, row, rows)
         {
           NSArray *columns = [row objectAtIndex: c];
@@ -182,6 +233,23 @@
             {
               NSView *v = [column objectAtIndex: c];
               NSGridCell *cell = [[NSGridCell alloc] init];
+
+              if (r == 0)
+                {
+                  NSGridRow *gr = [[NSGridRow alloc] init];
+                  [gr _setGridView: self];
+                  [_rows addObject: gr];
+                  [cell _setOwningRow: gr];
+                }
+
+              if (c == 0)
+                {
+                  NSGridColumn *gc = [[NSGridColumn alloc] init];
+                  [gc _setGridView: self];
+                  [_columns addObject: gc];
+                  [cell _setOwningColumn: gc];
+                }
+              
               [cell setContentView: v];
               [_cells addObject: cell];
               c++;
@@ -190,20 +258,6 @@
           r++;
         }
       END_FOR_IN(rows);
-
-      _rows = [[NSMutableArray alloc] initWithCapacity: r];
-      _columns = [[NSMutableArray alloc] initWithCapacity: c];
-      
-      NSUInteger i = 0;
-      for (i = 0; i < r; i++)
-        {
-          [_rows addObject: [[NSGridRow alloc] init]];
-        }
-      for (i = 0; i < r; i++)
-        {
-          [_columns addObject: [[NSGridColumn alloc] init]];
-        }
-      
       [self _refreshCells];
     }  
   return self;
@@ -304,14 +358,48 @@
   RELEASE(gr);
 
   // Insert views...
+  NSUInteger i = 0;
+  NSRect f = NSMakeRect(0,0,10,10);
+
+  // Find a cell to base the size off of.
+  if ([_cells count] > 0)
+    {
+      FOR_IN(NSGridCell*, acell, _cells)
+        {
+          NSView *av = [acell contentView];
+          if (av)
+            {
+              f = [av frame];
+              break;
+            }
+        }
+      END_FOR_IN(_cells);
+    }
+
+  NSUInteger pos = index * [self numberOfColumns];
   FOR_IN(NSView*, v, views)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
+
+      [v setFrame: f];
       [c setContentView: v];
       RELEASE(v);
-      // [gr _addCell: c];
+      [_cells insertObject: c
+                   atIndex: pos + i];
+      RELEASE(c);
+      i++;
     }
   END_FOR_IN(views);
+
+  // Insert remaineder of cells for views not present..
+  NSUInteger r = [self numberOfColumns] - i;
+  NSUInteger idx = 0;
+  pos += i;
+  for(idx = 0; idx < r; idx++)
+    {
+      NSGridCell *c = [[NSGridCell alloc] init];
+      [_cells insertObject: c atIndex: pos + idx];
+    }
   
   // Refresh...
   [self _refreshCells];
