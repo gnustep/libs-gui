@@ -63,6 +63,9 @@
           
           // Do the math for the frame...
           NSRect rect = [v frame];
+          // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
+          // as VERY small numbers (1.175... e-38) (see PR for this work, I have attached the XML nib there)
+          // so it is necessary to figure out the width of each column so that things can be properly spaced.
           if (ci == 0)
             {
               current_y -= rect.size.height;
