@@ -609,7 +609,6 @@
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
 {
-  [self _refreshCells]; 
 }
 
 // coding
