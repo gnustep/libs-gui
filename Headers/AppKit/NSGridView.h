@@ -153,7 +153,9 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   CGFloat _trailingPadding;
   BOOL _isHidden;
 }
+
 - (NSGridView *) gridView;
+- (void) setGridView: (NSGridView *)gv;
 - (NSInteger) numberOfCells;
 - (NSGridCell *) cellAtIndex:(NSInteger)index;
 
@@ -183,6 +185,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 }
   
 - (NSGridView *) gridView;
+- (void) setGridView: (NSGridView *)gv;
 - (NSInteger) numberOfCells;
 - (NSGridCell *)cellAtIndex:(NSInteger)index;
 
