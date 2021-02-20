@@ -842,6 +842,8 @@ NSString *NSTextInputContextKeyboardSelectionDidChangeNotification =
 NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensitiveKey = @"NSTextFinderCaseInsensitiveKey";
 NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey = @"NSTextFinderMatchingTypeKey";
 
+CGFloat const NSGridViewSizeForContent = 0.0;
+
 extern void __objc_gui_force_linking (void);
 
 void

@@ -301,7 +301,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"trailingPadding", @"NSGrid_trailingPadding",
                                            @"topPadding", @"NSGrid_topPadding",
                                            @"width", @"NSGrid_width",
-                                           @"height", @"NSGrid_heighth",
+                                           @"height", @"NSGrid_height",
                                            @"xPlacement", @"NSGrid_xPlacement",
                                            @"yPlacement", @"NSGrid_yPlacement",
                                            @"rows", @"NSGrid_rows",

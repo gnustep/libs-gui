@@ -39,11 +39,55 @@
 - (void) _refreshCells
 {
   NSUInteger i = 0;
+  NSUInteger num_col = [self numberOfColumns];
+  // NSUInteger num_rows = [self numberOfRows];
+  NSRect f = [self frame];
+  CGFloat current_x = 0.0, current_y = f.size.height;
+  NSMutableArray *colWidths = [NSMutableArray array];
+  NSMutableArray *rowHeights = [NSMutableArray array];
+  
   FOR_IN(NSGridCell*, c, _cells)
     {
       NSView *v = [c contentView];
-      [self addSubview: v];
-      i++;
+      if (v != nil)
+        {
+          NSUInteger ri = 0, ci = 0;
+          
+          // Get row and column index...
+          ci = i % num_col;
+          ri = i / num_col;
+          
+          // Get the row and col...
+          NSGridRow *row = [self rowAtIndex: ri];
+          NSGridColumn *col = [self columnAtIndex: ci];
+          
+          // Do the math for the frame...
+          NSRect rect = [v frame];
+          if (ci == 0)
+            {
+              current_y -= rect.size.height;
+              current_x = 0.0;
+              [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
+            }
+
+          if (ri == 0)
+            {
+              [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
+              NSLog(@"colWidths = %@", colWidths);
+            }
+          
+          current_y -= [c yPlacement] - [row topPadding];
+          current_x += [c xPlacement] + [col leadingPadding] + [col width];
+          rect.origin.x = current_x;
+          rect.origin.y = current_y;
+          [v setFrame: rect];
+          current_x += [col trailingPadding] + [col width] + [[colWidths objectAtIndex: ci] floatValue] + _columnSpacing;
+          current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
+          [self addSubview: v];
+
+          // inc
+          i++;
+        }
     }
   END_FOR_IN(_cells)
 }
@@ -56,6 +100,7 @@
     {
       _rows = [[NSMutableArray alloc] init];
       _columns = [[NSMutableArray alloc] init];
+      _cells = [[NSMutableArray alloc] init];
     }
 
   [self _refreshCells];
@@ -357,42 +402,42 @@
           if ([coder containsValueForKey: @"NSGrid_alignment"])
             {
               _rowAlignment = (NSGridRowAlignment)[coder decodeIntegerForKey: @"NSGrid_alignment"];
-              NSLog(@"_rowAlignment = %ld", _rowAlignment);
+              NSDebugLog(@"_rowAlignment = %ld", _rowAlignment);
             }
           if ([coder containsValueForKey: @"NSGrid_columns"])
             {
               ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-              NSLog(@"_columns = %@", _columns);
+              NSDebugLog(@"_columns = %@", _columns);
             }
           if ([coder containsValueForKey: @"NSGrid_rows"])
             {
               ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-              NSLog(@"_rows = %@", _rows);
+              NSDebugLog(@"_rows = %@", _rows);
             }
           if ([coder containsValueForKey: @"NSGrid_cells"])
             {
               ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
-              NSLog(@"_cells = %@", _cells);
+              NSDebugLog(@"_cells = %@", _cells);
             }
           if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
             {
               _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
-              NSLog(@"_columnSpacing = %f", _columnSpacing);
+              NSDebugLog(@"_columnSpacing = %f", _columnSpacing);
             }
           if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
             {
               _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
-              NSLog(@"_rowSpacing = %f", _rowSpacing);
+              NSDebugLog(@"_rowSpacing = %f", _rowSpacing);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
               _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-              NSLog(@"_xPlacement = %ld", _xPlacement);
+              NSDebugLog(@"_xPlacement = %ld", _xPlacement);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
               _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
-              NSLog(@"_yPlacement = %ld", _yPlacement);
+              NSDebugLog(@"_yPlacement = %ld", _yPlacement);
             }
         }
       else
@@ -755,7 +800,7 @@
           if ([coder containsValueForKey: @"NSGrid_width"])
             {
               _width = [coder decodeFloatForKey: @"NSGrid_width"];
-              NSDebugLog(@"_width = %f", _width);
+              NSLog(@"_width = %f", _width);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -923,7 +968,7 @@
           if ([coder containsValueForKey: @"NSGrid_height"])
             {
               _height = [coder decodeFloatForKey: @"NSGrid_height"];
-              NSDebugLog(@"_height = %f", _height);
+              NSLog(@"_height = %f", _height);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
