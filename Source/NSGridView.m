@@ -70,7 +70,7 @@
     {
       NSView *v = [c contentView];
       NSUInteger ri = 0, ci = 0;
-      NSRect rect = NSZeroRect;
+      NSRect rect = NSMakeRect(0,0,100,30); // default size by observation...
       
       // Get row and column index...
       ci = i % num_col;
@@ -609,6 +609,7 @@
   
 - (void) mergeCellsInHorizontalRange: (NSRange)hRange verticalRange: (NSRange)vRange
 {
+  NSLog(@"Method %@ unimplemented.", NSStringFromSelector(_cmd));
 }
 
 // coding
@@ -656,7 +657,7 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
-      NSLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_alignment"])
@@ -1003,6 +1004,7 @@
 
 - (void) mergeCellsInRange: (NSRange)range
 {
+  NSLog(@"Method %@ unimplemented.", NSStringFromSelector(_cmd));
 }
 
 // coding
@@ -1067,7 +1069,7 @@
           if ([coder containsValueForKey: @"NSGrid_width"])
             {
               _width = [coder decodeFloatForKey: @"NSGrid_width"];
-              NSLog(@"_width = %f", _width);
+              NSDebugLog(@"_width = %f", _width);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -1177,6 +1179,7 @@
 
 - (void) mergeCellsInRange: (NSRange)range
 {
+  NSLog(@"Method %@ unimplemented.", NSStringFromSelector(_cmd));
 }
 
 // coding
@@ -1235,7 +1238,7 @@
           if ([coder containsValueForKey: @"NSGrid_height"])
             {
               _height = [coder decodeFloatForKey: @"NSGrid_height"];
-              NSLog(@"_height = %f", _height);
+              NSDebugLog(@"_height = %f", _height);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
