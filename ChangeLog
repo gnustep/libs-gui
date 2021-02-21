@@ -1,3 +1,10 @@
+2021-02-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (-_pasteboardWithTarget:name:): Correct
+	wrong order of arguments to NSMapInsert.
+	* Source/NSPasteboard.m (-generalPasteboard): Simplify
+	implementation.
+
 2021-02-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSearchFieldCell.m: Correct encoding/decoding that was
