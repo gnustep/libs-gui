@@ -32,6 +32,94 @@
 - (void) _setOwningColumn: (NSGridColumn *)c;
 @end
 
+@interface NSGridView (Private)
+- (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex;
+- (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex;
+- (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex;
+- (NSArray *) _viewsForColumnAtIndex: (NSUInteger)columnIndex;
+@end
+
+@implementation NSGridView (Private)
+- (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex
+{
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
+  NSGridRow *row = [_columns objectAtIndex: rowIndex];
+  
+  FOR_IN(NSGridCell*, c, _cells)
+    {
+      if ([c row] == row)
+        {          
+          [result addObject: c];
+        }
+    }
+  END_FOR_IN(_cells);
+  
+  return result;
+}
+
+- (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex
+{
+  NSArray *cells = [self _cellsForColumnAtIndex: rowIndex];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
+  
+  FOR_IN(NSGridCell*, c, cells)
+    {
+      NSView *v = [c contentView];
+      if (c != nil)
+        {
+          [result addObject: v];
+        }
+      else
+        {
+          [result addObject: [NSGridCell emptyContentView]];
+        }
+    }
+  END_FOR_IN(cells);
+
+  return result;
+}
+
+- (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex
+{
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
+  NSGridColumn *col = [_columns objectAtIndex: columnIndex];
+
+  FOR_IN(NSGridCell*, c, _cells)
+    {
+      if ([c column] == col)
+        {          
+          [result addObject: c];
+        }
+    }
+  END_FOR_IN(_cells);
+  
+  return result;
+}
+
+- (NSArray *) _viewsForColumnAtIndex: (NSUInteger)columnIndex
+{
+  NSArray *cells = [self _cellsForColumnAtIndex: columnIndex];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_rows count]];
+  
+  FOR_IN(NSGridCell*, c, cells)
+    {
+      NSView *v = [c contentView];
+      if (c != nil)
+        {
+          [result addObject: v];
+        }
+      else
+        {
+          [result addObject: [NSGridCell emptyContentView]];
+        }
+    }
+  END_FOR_IN(cells);
+
+  return result;
+}
+@end
+
+
 // Private methods...
 @implementation NSGridCell (Private)
 - (void) _setOwningRow: (NSGridRow *)r
@@ -394,45 +482,6 @@
   return gr;
 }
 
-- (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex
-{
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
-  NSGridRow *row = [_columns objectAtIndex: rowIndex];
-  
-  FOR_IN(NSGridCell*, c, _cells)
-    {
-      if ([c row] == row)
-        {          
-          [result addObject: c];
-        }
-    }
-  END_FOR_IN(_cells);
-  
-  return result;
-}
-
-- (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex
-{
-  NSArray *cells = [self _cellsForColumnAtIndex: rowIndex];
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
-  
-  FOR_IN(NSGridCell*, c, cells)
-    {
-      NSView *v = [c contentView];
-      if (c != nil)
-        {
-          [result addObject: v];
-        }
-      else
-        {
-          [result addObject: [NSGridCell emptyContentView]];
-        }
-    }
-  END_FOR_IN(cells);
-
-  return result;
-}
-
 - (void) moveRowAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
 {
   NSArray *views = [self _viewsForRowAtIndex: fromIndex];
@@ -499,45 +548,6 @@
   // Refresh...
   [self _refreshCells];
   return gc;
-}
-
-- (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex
-{
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
-  NSGridColumn *col = [_columns objectAtIndex: columnIndex];
-
-  FOR_IN(NSGridCell*, c, _cells)
-    {
-      if ([c column] == col)
-        {          
-          [result addObject: c];
-        }
-    }
-  END_FOR_IN(_cells);
-  
-  return result;
-}
-
-- (NSArray *) _viewsForColumnAtIndex: (NSUInteger)columnIndex
-{
-  NSArray *cells = [self _cellsForColumnAtIndex: columnIndex];
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_rows count]];
-  
-  FOR_IN(NSGridCell*, c, cells)
-    {
-      NSView *v = [c contentView];
-      if (c != nil)
-        {
-          [result addObject: v];
-        }
-      else
-        {
-          [result addObject: [NSGridCell emptyContentView]];
-        }
-    }
-  END_FOR_IN(cells);
-
-  return result;
 }
 
 - (void) moveColumnAtIndex: (NSInteger)fromIndex toIndex: (NSInteger)toIndex
@@ -867,7 +877,7 @@
           if ([coder containsValueForKey: @"NSGrid_content"])
             {
               [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
-              // NSDebugLog(@"contentView = %@", [self contentView]);
+              NSDebugLog(@"contentView = %@", [self contentView]);
             }
           if ([coder containsValueForKey: @"NSGrid_mergeHead"])
             {
@@ -877,13 +887,11 @@
             {
               _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
               NSDebugLog(@"_owningRow = %@", _owningRow);
-              // [_owningRow _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_owningColumn"])
             {
               _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
               NSDebugLog(@"_owningColumn = %@", _owningColumn);
-              // [_owningColumn _addCell: self];
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -903,9 +911,7 @@
           [self setContentView: [coder decodeObject]];
           ASSIGN(_mergeHead, [coder decodeObject]);
           _owningRow = [coder decodeObject]; // weak
-          // [_owningRow _addCell: self];
           _owningColumn = [coder decodeObject]; // weak
-          // [_owningRow _addCell: self];
           [coder decodeValueOfObjCType: @encode(NSInteger)
                                     at: &_xPlacement];
           [coder decodeValueOfObjCType:@encode(NSInteger)
@@ -949,12 +955,16 @@
 
 - (NSInteger) numberOfCells
 {
-  return 0; // refer to gridView here... [_cells count];
+  NSUInteger ci = [_gridView indexOfColumn: self];
+  NSArray *arr = [_gridView _cellsForColumnAtIndex: ci];
+  return [arr count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return nil; // refer to gridview here... [_cells objectAtIndex: index];
+  NSUInteger ci = [_gridView indexOfColumn: self];
+  NSArray *arr = [_gridView _cellsForColumnAtIndex: ci];
+  return [arr objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -1119,12 +1129,16 @@
 
 - (NSInteger) numberOfCells
 {
-  return 0; // reference gridview here... [_cells count];
+  NSUInteger ri = [_gridView indexOfRow: self];
+  NSArray *arr = [_gridView _cellsForRowAtIndex: ri];
+  return [arr count];
 }
 
 - (NSGridCell *) cellAtIndex:(NSInteger)index
 {
-  return nil; // reference gridview here... [_cells objectAtIndex: index];
+  NSUInteger ri = [_gridView indexOfRow: self];
+  NSArray *arr = [_gridView _cellsForRowAtIndex: ri];
+  return [arr objectAtIndex: index];
 }
 
 - (NSGridCellPlacement) yPlacement
