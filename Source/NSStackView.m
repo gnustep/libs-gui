@@ -125,7 +125,13 @@
   self = [super init];
   if (self != nil)
     {
-      _arrangedSubviews = [[NSArray alloc] initWithArray: views];
+      _arrangedSubviews = [[NSMutableArray alloc] initWithArray: views];
+      _detachedViews = [[NSMutableArray alloc] initWithCapacity: [views count]];
+      ASSIGNCOPY(_views, views);
+      _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      _gravityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      _clippingMap = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
     }
   return self;
 }
@@ -134,6 +140,11 @@
 {
   RELEASE(_arrangedSubviews);
   RELEASE(_detachedViews);
+  RELEASE(_views);
+  RELEASE(_customSpacingMap);
+  RELEASE(_gravityMap);
+  RELEASE(_visiblePriorityMap);
+  RELEASE(_clippingMap);
   _delegate = nil;
   [super dealloc];
 }
@@ -145,41 +156,57 @@
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v
 {
+  NSNumber *n = [NSNumber numberWithFloat: spacing];
+  [_customSpacingMap setObject: n
+                        forKey: v];
 }
 
 - (CGFloat) customSpacingAfterView: (NSView *)v
 {
+  return [[_customSpacingMap objectForKey: v] floatValue];
 }
 
 - (void) addArrangedSubview: (NSView *)v
 {
+  [_arrangedSubviews addObject: v];
 }
 
 - (void) insertArrangedSubview: (NSView *)v atIndex: (NSInteger)idx
 {
+  [_arrangedSubviews insertObject: v atIndex: idx];
 }
 
 - (void) removeArrangedSubview: (NSView *)v
 {
+  [_arrangedSubviews removeObject: v];
 }
 
 // Custom priorities
 - (void)setVisibilityPriority: (NSStackViewVisibilityPriority)priority
                       forView: (NSView *)v
 {
+  NSNumber *n = [NSNumber numberWithInteger: priority];
+  [_visiblePriorityMap setObject: n
+                          forKey: v];
 }
 
 - (NSStackViewVisibilityPriority) visibilityPriorityForView: (NSView *)v
 {
+  NSNumber *n = [_visiblePriorityMap objectForKey: v];
+  NSStackViewVisibilityPriority p = (NSStackViewVisibilityPriority)[n integerValue];
+  return p;
 }
  
 - (NSLayoutPriority)clippingResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation
 {
+  NSNumber *r = [_clippingMap objectForKey: orientation];
+  return (NSLayoutPriority)[r integerValue];
 }
 
 - (void) setClippingResistancePriority: (NSLayoutPriority)clippingResistancePriority
                         forOrientation: (NSLayoutConstraintOrientation)orientation
 {
+  
 }
 
 - (NSLayoutPriority) huggingPriorityForOrientation: (NSLayoutConstraintOrientation)o
@@ -223,10 +250,12 @@
 
 - (void) setViews: (NSArray *)views
 {
+  ASSIGN(_arrangedSubviews, views);
 }
 
 - (NSArray *) views
 {
+  return _arrangedSubviews;
 }
 
 // Encoding...
@@ -240,6 +269,60 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
+      if ([coder allowsKeyedCoding])
+        {
+          if ([coder containsValueForKey: @"NSStackViewAlignment"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewBeginningContainer"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewDetachesHiddenViews"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewEdgeInsets.bottom"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewEdgeInsets.left"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewEdgeInsets.right"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewEdgeInsets.top"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewHasFlagViewHierarchy"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewHorizontalClippingResistance"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewHorizontalHugging"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewOrientation"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewSecondaryAlignment"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewSpacing"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewVerticalClippingResistance"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewVerticalHugging"])
+            {
+            }
+          if ([coder containsValueForKey: @"NSStackViewdistribution"])
+            {
+            }        
+        }
+      else
+        {
+        }
     }
   return self;
 }
