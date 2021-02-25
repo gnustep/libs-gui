@@ -132,7 +132,6 @@ NSSlider.m \
 NSSliderCell.m \
 NSSliderAccessory.m \
 NSSliderTouchBarItem.m \
-NSStackView.m \
 NSStepperTouchBarItem.m \
 NSSwitch.m \
 NSTitlebarAccessoryViewController.m \
@@ -542,7 +541,6 @@ NSSpellServer.h \
 NSSplitView.h \
 NSSplitViewController.h \
 NSSplitViewItem.h \
-NSStackView.h \
 NSStepper.h \
 NSStepperCell.h \
 NSStepperTouchBarItem.h \
