@@ -115,8 +115,6 @@ NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
-NSGridView.m \
-NSGridCell.m \
 NSGroupTouchBarItem.m \
 NSMagnificationGestureRecognizer.m \
 NSPanGestureRecognizer.m \
