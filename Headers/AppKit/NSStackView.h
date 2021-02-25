@@ -109,7 +109,6 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v;
 - (CGFloat) customSpacingAfterView: (NSView *)v;
->>>>>>> 6ee374079... implement properties
 
 @end
 
