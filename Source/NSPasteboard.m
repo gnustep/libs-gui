@@ -1095,16 +1095,7 @@ static  NSMapTable              *mimeMap = NULL;
  */
 + (NSPasteboard*) generalPasteboard
 {
-  static NSPasteboard *generalPboard = nil;
-  NSPasteboard *currentGeneralPboard;
-
-  // call pasteboardWithName: every time, to update server connection if needed
-  currentGeneralPboard = [self pasteboardWithName: NSGeneralPboard];
-  if (currentGeneralPboard != generalPboard)
-    {
-      ASSIGN(generalPboard, currentGeneralPboard);
-    }
-  return generalPboard;
+  return [self pasteboardWithName: NSGeneralPboard];
 }
 
 + (void) initialize
@@ -2138,7 +2129,7 @@ description, [cmd stringByDeletingLastPathComponent]);
 	{
 	  ASSIGN(p->target, (id)aTarget);
 	  ASSIGNCOPY(p->name, aName);
-	  NSMapInsert(pasteboards, (void*)p, (void*)p->name);
+	  NSMapInsert(pasteboards, (void*)p->name, (void*)p);
 	  [p autorelease];
 	}
     }
