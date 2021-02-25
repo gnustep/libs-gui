@@ -73,6 +73,10 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSMutableArray *_arrangedSubviews;
   NSMutableArray *_detachedViews;
   NSMutableArray *_views;
+  NSMapTable *_customSpacingMap;
+  NSMapTable *_gravityMap;
+  NSMapTable *_visiblePriorityMap;
+  NSMapTable *_clippingMap;
 }
 
 // Properties
@@ -111,7 +115,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (CGFloat) customSpacingAfterView: (NSView *)v;
 
 - (void) addArrangedSubview: (NSView *)v;
-- (void) insertArrangedSubview: (NSView *)v;
+- (void) insertArrangedSubview: (NSView *)v atIndex: (NSInteger)idx;
 - (void) removeArrangedSubview: (NSView *)v;
 
 // Custom priorities
