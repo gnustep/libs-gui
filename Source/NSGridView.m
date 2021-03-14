@@ -646,19 +646,19 @@
     }
   else
     {
-      [coder encodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_rowAlignment];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_rowAlignment];
       [coder encodeObject: _columns];
       [coder encodeObject: _rows];
       [coder encodeObject: _cells];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_columnSpacing];
-      [coder encodeValueOfObjCType:@encode(CGFloat)
-                                at:&_rowSpacing];
-      [coder encodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_xPlacement];
-      [coder encodeValueOfObjCType:@encode(NSUInteger)
-                                at:&_yPlacement];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_columnSpacing];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_rowSpacing];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_xPlacement];
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_yPlacement];
     }
 }
 
@@ -713,19 +713,19 @@
         }
       else
         {
-          [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                    at:&_rowAlignment];
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_rowAlignment];
           ASSIGN(_columns, [coder decodeObject]);
           ASSIGN(_rows, [coder decodeObject]);
           ASSIGN(_cells, [coder decodeObject]);
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_columnSpacing];
-          [coder decodeValueOfObjCType:@encode(CGFloat)
-                                    at:&_rowSpacing];
-          [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                    at:&_xPlacement];
-          [coder decodeValueOfObjCType:@encode(NSUInteger)
-                                    at:&_yPlacement];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_columnSpacing];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_rowSpacing];
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_xPlacement];
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_yPlacement];
         }
     }
   
@@ -1019,8 +1019,8 @@
 {
   NSUInteger ci = [_gridView indexOfColumn: self];
   NSRange hRange = NSMakeRange(ci, 1);
-  [self mergeCellsInHorizontalRange: hRange
-                      verticalRange: range];
+  [_gridView mergeCellsInHorizontalRange: hRange
+                           verticalRange: range];
 }
 
 // coding
@@ -1204,8 +1204,8 @@
   
   NSUInteger ri = [_gridView indexOfRow: self];
   NSRange vRange = NSMakeRange(ri, 1);
-  [self mergeCellsInHorizontalRange: range
-                      verticalRange: vRange];
+  [_gridView mergeCellsInHorizontalRange: range
+                           verticalRange: vRange];
 }
 
 // coding
