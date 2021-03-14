@@ -960,11 +960,14 @@
   return [arr count];
 }
 
-- (NSGridCell *) cellAtIndex:(NSInteger)index
+- (NSGridCell *) cellAtIndex: (NSInteger)index
 {
   NSUInteger ci = [_gridView indexOfColumn: self];
-  NSArray *arr = [_gridView _cellsForColumnAtIndex: ci];
-  return [arr objectAtIndex: index];
+  // First we get the columnIndex (ci) then we get the member of that column
+  // referred to by index.  The method called here gets the correct cell out of
+  // the _cells array in the containing NSGridView.
+  return [_gridView cellAtColumnIndex: ci
+                             rowIndex: index];
 }
 
 - (NSGridCellPlacement) xPlacement
@@ -1134,11 +1137,14 @@
   return [arr count];
 }
 
-- (NSGridCell *) cellAtIndex:(NSInteger)index
+- (NSGridCell *) cellAtIndex: (NSInteger)index
 {
   NSUInteger ri = [_gridView indexOfRow: self];
-  NSArray *arr = [_gridView _cellsForRowAtIndex: ri];
-  return [arr objectAtIndex: index];
+  // First we get the rowIndex (ri) then we get the member of that row
+  // referred to by index.  The method called here gets the correct cell out of
+  // the _cells array in the containing NSGridView.
+  return [_gridView cellAtColumnIndex: index 
+                             rowIndex: ri];
 }
 
 - (NSGridCellPlacement) yPlacement

@@ -156,7 +156,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 - (NSGridView *) gridView;
 - (void) setGridView: (NSGridView *)gv;
 - (NSInteger) numberOfCells;
-- (NSGridCell *) cellAtIndex:(NSInteger)index;
+- (NSGridCell *) cellAtIndex: (NSInteger)index;
 
 - (NSGridCellPlacement) xPlacement;
 - (void) setXPlacement: (NSGridCellPlacement)x;
@@ -186,7 +186,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 - (NSGridView *) gridView;
 - (void) setGridView: (NSGridView *)gv;
 - (NSInteger) numberOfCells;
-- (NSGridCell *)cellAtIndex:(NSInteger)index;
+- (NSGridCell *)cellAtIndex: (NSInteger)index;
 
 - (NSGridCellPlacement) yPlacement;
 - (void) setYPlacement: (NSGridCellPlacement)y;
