@@ -1060,7 +1060,6 @@
   if (self != nil)
     {
       NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      // _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
