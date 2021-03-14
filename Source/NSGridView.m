@@ -667,48 +667,39 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
-      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_alignment"])
             {
               _rowAlignment = (NSGridRowAlignment)[coder decodeIntegerForKey: @"NSGrid_alignment"];
-              NSDebugLog(@"_rowAlignment = %ld", _rowAlignment);
             }
           if ([coder containsValueForKey: @"NSGrid_columns"])
             {
               ASSIGN(_columns, [coder decodeObjectForKey: @"NSGrid_columns"]);
-              NSDebugLog(@"_columns = %@", _columns);
             }
           if ([coder containsValueForKey: @"NSGrid_rows"])
             {
               ASSIGN(_rows, [coder decodeObjectForKey: @"NSGrid_rows"]);
-              NSDebugLog(@"_rows = %@", _rows);
             }
           if ([coder containsValueForKey: @"NSGrid_cells"])
             {
               ASSIGN(_cells, [coder decodeObjectForKey: @"NSGrid_cells"]);
-              NSDebugLog(@"_cells = %@", _cells);
             }
           if ([coder containsValueForKey: @"NSGrid_columnSpacing"])
             {
               _columnSpacing = [coder decodeFloatForKey: @"NSGrid_columnSpacing"];
-              NSDebugLog(@"_columnSpacing = %f", _columnSpacing);
             }
           if ([coder containsValueForKey: @"NSGrid_rowSpacing"])
             {
               _rowSpacing = [coder decodeFloatForKey: @"NSGrid_rowSpacing"];
-              NSDebugLog(@"_rowSpacing = %f", _rowSpacing);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
               _xPlacement = [coder decodeIntegerForKey: @"NSGrid_xPlacement"];
-              NSDebugLog(@"_xPlacement = %ld", _xPlacement);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
               _yPlacement = [coder decodeIntegerForKey: @"NSGrid_yPlacement"];
-              NSDebugLog(@"_yPlacement = %ld", _yPlacement);
             }
         }
       else
@@ -870,14 +861,11 @@
   self = [super init];
   if (self != nil)
     {
-      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_content"])
             {
               [self setContentView: [coder decodeObjectForKey: @"NSGrid_content"]];
-              NSDebugLog(@"contentView = %@", [self contentView]);
             }
           if ([coder containsValueForKey: @"NSGrid_mergeHead"])
             {
@@ -886,12 +874,10 @@
           if ([coder containsValueForKey: @"NSGrid_owningRow"])
             {
               _owningRow = [coder decodeObjectForKey: @"NSGrid_owningRow"]; // weak
-              NSDebugLog(@"_owningRow = %@", _owningRow);
             }
           if ([coder containsValueForKey: @"NSGrid_owningColumn"])
             {
               _owningColumn = [coder decodeObjectForKey: @"NSGrid_owningColumn"]; // weak
-              NSDebugLog(@"_owningColumn = %@", _owningColumn);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -1062,7 +1048,6 @@
   self = [super init];
   if (self != nil)
     {
-      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -1084,7 +1069,6 @@
           if ([coder containsValueForKey: @"NSGrid_width"])
             {
               _width = [coder decodeFloatForKey: @"NSGrid_width"];
-              NSDebugLog(@"_width = %f", _width);
             }
           if ([coder containsValueForKey: @"NSGrid_xPlacement"])
             {
@@ -1241,8 +1225,6 @@
   self = [super init];
   if (self != nil)
     {
-      NSDebugLog(@"%@ %@",NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-      // _cells = [[NSMutableArray alloc] initWithCapacity: 10];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSGrid_hidden"])
@@ -1264,7 +1246,6 @@
           if ([coder containsValueForKey: @"NSGrid_height"])
             {
               _height = [coder decodeFloatForKey: @"NSGrid_height"];
-              NSDebugLog(@"_height = %f", _height);
             }
           if ([coder containsValueForKey: @"NSGrid_yPlacement"])
             {
