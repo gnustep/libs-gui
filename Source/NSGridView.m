@@ -1017,7 +1017,10 @@
 
 - (void) mergeCellsInRange: (NSRange)range
 {
-  NSLog(@"Method %@ unimplemented.", NSStringFromSelector(_cmd));
+  NSUInteger ci = [_gridView indexOfColumn: self];
+  NSRange hRange = NSMakeRange(ci, 1);
+  [self mergeCellsInHorizontalRange: hRange
+                      verticalRange: range];
 }
 
 // coding
@@ -1198,7 +1201,11 @@
 
 - (void) mergeCellsInRange: (NSRange)range
 {
-  NSLog(@"Method %@ unimplemented.", NSStringFromSelector(_cmd));
+  
+  NSUInteger ri = [_gridView indexOfRow: self];
+  NSRange vRange = NSMakeRange(ri, 1);
+  [self mergeCellsInHorizontalRange: range
+                      verticalRange: vRange];
 }
 
 // coding
