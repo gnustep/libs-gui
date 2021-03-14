@@ -454,12 +454,10 @@
       NSGridCell *c = [[NSGridCell alloc] init];
       NSGridColumn *col = [_columns objectAtIndex: i];
       
-      [col setGridView: self];
       [c _setOwningRow: gr];
       [c _setOwningColumn: col];
       [v setFrame: f];
       [c setContentView: v];
-      RELEASE(v);
       [_cells insertObject: c
                    atIndex: pos + i];
       RELEASE(c);
@@ -509,7 +507,7 @@
 {
   NSGridColumn *gc = [[NSGridColumn alloc] init];
 
-  // Insert the row and release...
+  // Insert the column and release...
   [_columns insertObject: gc atIndex: index];
   [gc setGridView: self];
   RELEASE(gc);
@@ -522,12 +520,10 @@
       NSGridCell *c = [[NSGridCell alloc] init];
       NSGridRow *row = [_rows objectAtIndex: i];
 
-      [row setGridView: self];
       [c _setOwningRow: row];
       [c _setOwningColumn: gc];
       [v setFrame: f];
       [c setContentView: v];
-      RELEASE(v);
       [_cells insertObject: c
                    atIndex: pos + i * [self numberOfColumns]];
       RELEASE(c);
@@ -535,7 +531,7 @@
     }
   END_FOR_IN(views);
 
-  // Insert remaineder of cells for views not present..
+  // Insert remainder of cells for views not present..
   NSUInteger r = [self numberOfColumns] - i;
   NSUInteger idx = 0;
   pos += i;
