@@ -937,9 +937,8 @@
 
 - (NSInteger) numberOfCells
 {
-  NSUInteger ci = [_gridView indexOfColumn: self];
-  NSArray *arr = [_gridView _cellsForColumnAtIndex: ci];
-  return [arr count];
+  // The number of cells in a column = # of rows
+  return [_gridView numberOfRows];
 }
 
 - (NSGridCell *) cellAtIndex: (NSInteger)index
@@ -1114,9 +1113,8 @@
 
 - (NSInteger) numberOfCells
 {
-  NSUInteger ri = [_gridView indexOfRow: self];
-  NSArray *arr = [_gridView _cellsForRowAtIndex: ri];
-  return [arr count];
+  // The number of cells in a row = # of columns
+  return [_gridView numberOfColumns];
 }
 
 - (NSGridCell *) cellAtIndex: (NSInteger)index
