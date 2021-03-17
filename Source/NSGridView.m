@@ -347,9 +347,9 @@
       NSMutableArray *col = [[NSMutableArray alloc] initWithCapacity: columnCount];
       for (c = 0; c < columnCount; c++)
         {
-          NSGridCell *gc = [[NSGridCell alloc] init];
-          [col addObject: gc];
-          RELEASE(gc);
+          NSView *gv = [[NSView alloc] init];
+          [col addObject: gv];
+          RELEASE(gv);
         }
       [rows addObject: col];
     }
