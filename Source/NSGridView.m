@@ -145,115 +145,122 @@
 
 - (void) _refreshCells
 {
-  NSUInteger i = 0;
-  NSUInteger num_col = [self numberOfColumns];
-  // NSUInteger num_rows = [self numberOfRows];
-  NSRect f = [self frame];
-  CGFloat current_x = 0.0, current_y = f.size.height;
-  NSMutableArray *colWidths = [NSMutableArray array];
-  NSMutableArray *rowHeights = [NSMutableArray array];
-
-  // precalculate w/h
-  FOR_IN(NSGridCell*, c, _cells)
+  if ([self isHidden])
     {
-      NSView *v = [c contentView];
-      NSUInteger ri = 0, ci = 0;
-      NSRect rect = NSMakeRect(0,0,100,30); // default size by observation...
+      return;
+    }
+  else
+    {
+      NSUInteger i = 0;
+      NSUInteger num_col = [self numberOfColumns];
+      // NSUInteger num_rows = [self numberOfRows];
+      NSRect f = [self frame];
+      CGFloat current_x = 0.0, current_y = f.size.height;
+      NSMutableArray *colWidths = [NSMutableArray array];
+      NSMutableArray *rowHeights = [NSMutableArray array];
       
-      // Get row and column index...
-      ci = i % num_col;
-      ri = i / num_col;
-      
-      if (v != nil)
+      // precalculate w/h
+      FOR_IN(NSGridCell*, c, _cells)
         {
-          rect = [v frame];
-          // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
-          // as VERY small numbers (1.175...e-38) (see PR for this work, I have attached the XML nib there)
-          // so it is necessary to figure out the width of each column so that things can be properly spaced.
-          if (ci == 0)
+          NSView *v = [c contentView];
+          NSUInteger ri = 0, ci = 0;
+          NSRect rect = NSMakeRect(0,0,100,30); // default size by observation...
+          
+          // Get row and column index...
+          ci = i % num_col;
+          ri = i / num_col;
+          
+          if (v != nil)
             {
-              if (rect.size.width > 0.0)
+              rect = [v frame];
+              // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
+              // as VERY small numbers (1.175...e-38) (see PR for this work, I have attached the XML nib there)
+              // so it is necessary to figure out the width of each column so that things can be properly spaced.
+              if (ci == 0)
                 {
-                  [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
+                  if (rect.size.width > 0.0)
+                    {
+                      [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
+                    }
+                }
+              
+              if (ri == 0)
+                {
+                  if (rect.size.width > 0.0)
+                    {
+                      [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
+                    }
                 }
             }
           
-          if (ri == 0)
+          // If the first column or row is blank... then take the next value that is non-zero
+          if (ri > 0 && [colWidths count] == 0)
             {
               if (rect.size.width > 0.0)
                 {
                   [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
                 }
             }
-        }
-
-      // If the first column or row is blank... then take the next value that is non-zero
-      if (ri > 0 && [colWidths count] == 0)
-        {
-          if (rect.size.width > 0.0)
-            {
-              [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
-            }
-        }
-
-      if (ci > 0 && [rowHeights count] == 0)
-        {
-          if (rect.size.width > 0.0)
-            {
-              [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
-            }
-        }
-    }
-  END_FOR_IN(_cells);
-
-  // Format the grid...
-  FOR_IN(NSGridCell*, c, _cells)
-    {
-      NSView *v = [c contentView];
-      NSUInteger ri = 0, ci = 0;
           
-      // Get row and column index...
-      ci = i % num_col;
-      ri = i / num_col;
-      
-      // Get the row and col...
-      NSGridRow *row = [self rowAtIndex: ri];
-      NSGridColumn *col = [self columnAtIndex: ci];
-      NSRect rect = NSZeroRect;
-
-      if (v != nil)
-        {
-          rect = [v frame];
+          if (ci > 0 && [rowHeights count] == 0)
+            {
+              if (rect.size.width > 0.0)
+                {
+                  [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
+                }
+            }
         }
+      END_FOR_IN(_cells);
       
-      // Do the math for the frame...
-      // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
-      // as VERY small numbers (1.175... e-38) (see PR for this work, I have attached the XML nib there)
-      // so it is necessary to figure out the width of each column so that things can be properly spaced.
-      if (ci == 0)
+      // Format the grid...
+      FOR_IN(NSGridCell*, c, _cells)
         {
-          current_y -= [[rowHeights objectAtIndex: ci] floatValue]; // rect.size.height;
-          current_x = 0.0;
+          NSView *v = [c contentView];
+          NSUInteger ri = 0, ci = 0;
+          
+          // Get row and column index...
+          ci = i % num_col;
+          ri = i / num_col;
+          
+          // Get the row and col...
+          NSGridRow *row = [self rowAtIndex: ri];
+          NSGridColumn *col = [self columnAtIndex: ci];
+          NSRect rect = NSZeroRect;
+          
+          if (v != nil)
+            {
+              rect = [v frame];
+            }
+          
+          // Do the math for the frame...
+          // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
+          // as VERY small numbers (1.175... e-38) (see PR for this work, I have attached the XML nib there)
+          // so it is necessary to figure out the width of each column so that things can be properly spaced.
+          if (ci == 0)
+            {
+              current_y -= [[rowHeights objectAtIndex: ci] floatValue]; // rect.size.height;
+              current_x = 0.0;
+            }
+          
+          current_y -= [c yPlacement] - [row topPadding];
+          current_x += [c xPlacement] + [col leadingPadding] + [col width];
+          
+          if (v != nil)
+            {
+              rect.origin.x = current_x;
+              rect.origin.y = current_y;
+              [v setFrame: rect];
+              [self addSubview: v];
+            }
+          
+          current_x += [col trailingPadding] + [col width] + [[colWidths objectAtIndex: ci] floatValue] + _columnSpacing;
+          current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
+          
+          // inc
+          i++;
         }
-      
-      current_y -= [c yPlacement] - [row topPadding];
-      current_x += [c xPlacement] + [col leadingPadding] + [col width];
-      
-      if (v != nil)
-        {
-          rect.origin.x = current_x;
-          rect.origin.y = current_y;
-          [v setFrame: rect];
-          [self addSubview: v];
-        }
-      
-      current_x += [col trailingPadding] + [col width] + [[colWidths objectAtIndex: ci] floatValue] + _columnSpacing;
-      current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
-
-      // inc
-      i++;
+      END_FOR_IN(_cells);
     }
-  END_FOR_IN(_cells)
 }
 
 - (instancetype) initWithFrame: (NSRect)frameRect
@@ -347,12 +354,12 @@
       [rows addObject: col];
     }
 
-  return AUTORELEASE([self gridViewWithViews: rows]);
+  return [self gridViewWithViews: rows];
 }
 
 + (instancetype) gridViewWithViews: (NSArray *)rows
 {
-  return [[self alloc] initWithViews: rows];
+  return AUTORELEASE([[self alloc] initWithViews: rows]);
 }
 
 - (NSInteger) numberOfRows
@@ -741,18 +748,6 @@
       [self setVersion: 1];
     }
 }
-
-/*
-- (instancetype) init
-{
-  self = [super init];
-  if (self != nil)
-    {
-      [self setContentView: [[self class] emptyContentView]]; 
-    }
-  return self;
-}
-*/
 
 - (NSView *) contentView
 {
