@@ -279,7 +279,7 @@
   return self;
 }
 
-- (instancetype) initWithViews: (NSArray *)rows // an array of arrays
+- (instancetype) initWithViews: (NSArray *)views // an array of arrays
 {
   self = [self initWithFrame: NSZeroRect];
 
@@ -288,18 +288,18 @@
 
   if (self != nil)
     {
-      NSUInteger rc = [rows count], cc = 0;
+      NSUInteger rc = [views count], cc = 0;
 
       if (rc > 0)
         {
-          cc = [[rows objectAtIndex: 0] count];
+          cc = [[views objectAtIndex: 0] count];
         }
       
       _cells = [[NSMutableArray alloc] initWithCapacity: rc * cc];
       _rows = [[NSMutableArray alloc] initWithCapacity: rc];
       _columns = [[NSMutableArray alloc] initWithCapacity: cc];
 
-      FOR_IN(NSArray*, row, rows)
+      FOR_IN(NSArray*, row, views)
         {
           NSArray *columns = [row objectAtIndex: c];
           FOR_IN(NSArray*, column, columns)
@@ -357,9 +357,9 @@
   return [self gridViewWithViews: rows];
 }
 
-+ (instancetype) gridViewWithViews: (NSArray *)rows
++ (instancetype) gridViewWithViews: (NSArray *)views
 {
-  return AUTORELEASE([[self alloc] initWithViews: rows]);
+  return AUTORELEASE([[self alloc] initWithViews: views]);
 }
 
 - (NSInteger) numberOfRows
