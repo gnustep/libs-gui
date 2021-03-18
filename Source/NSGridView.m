@@ -464,7 +464,7 @@
                    atIndex: pos + i];
       i++;
     }
-  END_FOR_IN(views);
+  END_FOR_IN(cells);
 
   // Insert remaineder of cells for views not present..
   NSUInteger r = [self numberOfColumns] - i;
@@ -540,7 +540,7 @@
                    atIndex: pos + i * [self numberOfColumns]];
       i++;
     }
-  END_FOR_IN(views);
+  END_FOR_IN(cells);
 
   // Insert remaineder of cells for views not present..
   NSUInteger r = [self numberOfColumns] - i;
