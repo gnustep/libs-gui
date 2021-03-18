@@ -106,8 +106,10 @@ enum {
 @interface NSWorkspace (NSWorkspaceRunningApplications)
 #if GS_HAS_DECLARED_PROPERTIES
 @property (readonly, copy) NSArray *runningApplications;
+@property (readonly, retain) NSRunningApplication *frontmostApplication;
 #else
 - (NSArray *)runningApplications;
+- (NSRunningApplication *)frontmostApplication;
 #endif
 @end
 
