@@ -330,7 +330,7 @@
           END_FOR_IN(columns);
           r++;
         }
-      END_FOR_IN(rows);
+      END_FOR_IN(views);
       [self _refreshCells];
     }  
   return self;
