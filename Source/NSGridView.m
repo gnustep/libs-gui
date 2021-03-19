@@ -458,6 +458,7 @@
   FOR_IN(NSGridCell*, c, cells)
     {
       NSGridColumn *col = [_columns objectAtIndex: i];
+
       [c _setOwningRow: gr];
       [c _setOwningColumn: col];
       [_cells insertObject: c
@@ -466,18 +467,24 @@
     }
   END_FOR_IN(cells);
 
-  // Insert remaineder of cells for views not present..
+  // Insert remainder of cells for views not present..
   NSUInteger r = [self numberOfColumns] - i;
   NSUInteger idx = 0;
   pos += i;
   for(idx = 0; idx < r; idx++)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
-      [_cells insertObject: c atIndex: pos + idx];
+      NSGridColumn *col = [_columns objectAtIndex: i];
+
+      [c _setOwningRow: gr];
+      [c _setOwningColumn: col];
+      [_cells insertObject: c
+                   atIndex: pos + idx];
     }
   
   // Refresh...
   [self _refreshCells];
+  
   return gr;
 }
 
@@ -488,6 +495,7 @@
   FOR_IN(NSView*, v, views)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
+
       [v setFrame: f];
       [c setContentView: v];
       [cells addObject: c];
@@ -542,13 +550,17 @@
     }
   END_FOR_IN(cells);
 
-  // Insert remaineder of cells for views not present..
+  // Insert remainder of cells for views not present..
   NSUInteger r = [self numberOfColumns] - i;
   NSUInteger idx = 0;
   pos += i;
   for(idx = 0; idx < r; idx++)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
+      NSGridRow *row = [_rows objectAtIndex: i];
+
+      [c _setOwningRow: row];
+      [c _setOwningColumn: gc];
       [_cells insertObject: c atIndex: pos + idx * [self numberOfColumns]];
     }
   
@@ -564,6 +576,7 @@
   FOR_IN(NSView*, v, views)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
+
       [v setFrame: f];
       [c setContentView: v];
       [cells addObject: c];
