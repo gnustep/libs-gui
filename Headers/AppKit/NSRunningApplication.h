@@ -69,6 +69,25 @@ enum {
 @property (readonly) BOOL ownsMenuBar;
 #endif
 #else
+{
+  BOOL _terminated;
+  BOOL _finishedLaunching;
+  BOOL _hidden;
+  BOOL _active;
+
+  NSApplicationActivationPolicy _activationPolicy;
+  NSString *_localizedName;
+  NSString *_bundleIdentifier;
+  NSURL *_bundleURL;
+  NSURL *_executableURL;
+
+  pid_t _processIdentifier;
+  NSInteger _executableArchitecture;
+
+  NSDate *_launchDate;
+  NSImage *_icon;
+}
+
 - (BOOL)isTerminated;
 - (BOOL)isFinishedLaunching;
 - (BOOL)isHidden;
