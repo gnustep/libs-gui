@@ -118,6 +118,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
   id _mergeHead;
   NSGridRow *_owningRow;
   NSGridColumn *_owningColumn;
+  NSArray *_customPlacementConstraints;
 }
 
 - (NSView *) contentView; 
@@ -139,7 +140,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
 // Constraints
 - (NSArray *) customPlacementConstraints;
-
+- (void) setCustomPlacementConstraints: (NSArray *)constraints;
 @end
 
 /// Column

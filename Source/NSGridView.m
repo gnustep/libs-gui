@@ -841,7 +841,12 @@
 // Constraints
 - (NSArray *) customPlacementConstraints
 {
-  return nil;
+  return _customPlacementConstraints;
+}
+
+- (void) setCustomPlacementConstraints: (NSArray *)constraints
+{
+  ASSIGNCOPY(_customPlacementConstraints, constraints);
 }
 
 // coding
@@ -870,6 +875,7 @@
       [coder encodeObject: _mergeHead];
       [coder encodeObject: _owningRow];
       [coder encodeObject: _owningColumn];
+      [coder encodeObject: _customPlacementConstraints];
       [coder encodeValueOfObjCType:@encode(NSInteger)
                                 at: &_xPlacement];
       [coder encodeValueOfObjCType:@encode(NSInteger)
