@@ -33,7 +33,7 @@
 @end
 
 @interface NSGridView (Private)
-- (NSRect) _findPrototypeView;
+- (NSRect) _prototypeFrame;
 - (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex;
 - (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex;
 - (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex;
@@ -41,7 +41,7 @@
 @end
 
 @implementation NSGridView (Private)
-- (NSRect) _findPrototypeView
+- (NSRect) _prototypeFrame
 {
   NSRect vf = [self frame];
   NSRect f = NSMakeRect(0.0, 0.0,
@@ -166,7 +166,7 @@
       NSUInteger num_col = [self numberOfColumns];
       NSRect f = [self frame];
       CGFloat current_x = 0.0, current_y = f.size.height;
-      NSRect p = [self _findPrototypeView];
+      NSRect p = [self _prototypeFrame];
       
       // Format the grid...
       FOR_IN(NSGridCell*, c, _cells)
@@ -418,7 +418,7 @@
 
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  NSRect f = [self _findPrototypeView];
+  NSRect f = [self _prototypeFrame];
   NSMutableArray *cells = [NSMutableArray arrayWithCapacity: [views count]];
   FOR_IN(NSView*, v, views)
     {
@@ -493,7 +493,7 @@
 
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  NSRect f = [self _findPrototypeView];
+  NSRect f = [self _prototypeFrame];
   NSMutableArray *cells = [NSMutableArray arrayWithCapacity: [views count]];
   FOR_IN(NSView*, v, views)
     {
