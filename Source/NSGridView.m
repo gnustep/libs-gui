@@ -455,31 +455,24 @@
 
   NSUInteger i = 0;
   NSUInteger pos = index * [self numberOfColumns];
-  FOR_IN(NSGridCell*, c, cells)
-    {
-      NSGridColumn *col = [_columns objectAtIndex: i];
-
-      [c _setOwningRow: gr];
-      [c _setOwningColumn: col];
-      [_cells insertObject: c
-                   atIndex: pos + i];
-      i++;
-    }
-  END_FOR_IN(cells);
-
-  // Insert remainder of cells for views not present..
-  NSUInteger r = [self numberOfColumns] - i;
-  NSUInteger idx = 0;
-  pos += i;
-  for(idx = 0; idx < r; idx++)
+  for(i = 0; i < [self numberOfColumns]; i++)
     {
       NSGridCell *c = [[NSGridCell alloc] init];
       NSGridColumn *col = [_columns objectAtIndex: i];
 
+      if (i > ([cells count] - 1))
+        {
+          c = [[NSGridCell alloc] init];
+        }
+      else
+        {
+          c = [cells objectAtIndex: i];
+        }
+      
       [c _setOwningRow: gr];
       [c _setOwningColumn: col];
       [_cells insertObject: c
-                   atIndex: pos + idx];
+                   atIndex: pos + i];
     }
   
   // Refresh...
@@ -538,30 +531,24 @@
 
   NSUInteger i = 0;
   NSUInteger pos = index;
-  FOR_IN(NSGridCell*, c, cells)
+  for(i = 0; i < [self numberOfRows]; i++)
     {
+      NSGridCell *c = nil;
       NSGridRow *row = [_rows objectAtIndex: i];
 
+      if (i > ([cells count] - 1))
+        {
+          c = [[NSGridCell alloc] init];
+        }
+      else
+        {
+          c = [cells objectAtIndex: i];
+        }
+      
       [c _setOwningRow: row];
       [c _setOwningColumn: gc];
       [_cells insertObject: c
                    atIndex: pos + i * [self numberOfColumns]];
-      i++;
-    }
-  END_FOR_IN(cells);
-
-  // Insert remainder of cells for views not present..
-  NSUInteger r = [self numberOfColumns] - i;
-  NSUInteger idx = 0;
-  pos += i;
-  for(idx = 0; idx < r; idx++)
-    {
-      NSGridCell *c = [[NSGridCell alloc] init];
-      NSGridRow *row = [_rows objectAtIndex: i];
-
-      [c _setOwningRow: row];
-      [c _setOwningColumn: gc];
-      [_cells insertObject: c atIndex: pos + idx * [self numberOfColumns]];
     }
   
   // Refresh...
@@ -927,6 +914,7 @@
           ASSIGN(_mergeHead, [coder decodeObject]);
           _owningRow = [coder decodeObject]; // weak
           _owningColumn = [coder decodeObject]; // weak
+          ASSIGN(_customPlacementConstraints, [coder decodeObject]);
           [coder decodeValueOfObjCType: @encode(NSInteger)
                                     at: &_xPlacement];
           [coder decodeValueOfObjCType:@encode(NSInteger)
