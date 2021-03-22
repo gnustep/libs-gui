@@ -43,7 +43,7 @@
 - (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex
 {
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
-  NSGridRow *row = [_columns objectAtIndex: rowIndex];
+  NSGridRow *row = [_rows objectAtIndex: rowIndex];
   
   FOR_IN(NSGridCell*, c, _cells)
     {
@@ -59,7 +59,7 @@
 
 - (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex
 {
-  NSArray *cells = [self _cellsForColumnAtIndex: rowIndex];
+  NSArray *cells = [self _cellsForRowAtIndex: rowIndex];
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
   
   FOR_IN(NSGridCell*, c, cells)
@@ -81,7 +81,7 @@
 
 - (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex
 {
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_rows count]];
   NSGridColumn *col = [_columns objectAtIndex: columnIndex];
 
   FOR_IN(NSGridCell*, c, _cells)
@@ -164,7 +164,7 @@
         {
           NSView *v = [c contentView];
           NSUInteger ri = 0, ci = 0;
-          NSRect rect = NSMakeRect(0,0,100,30); // default size by observation...
+          NSRect rect = NSMakeRect(0,0,100,30); // default size in Xcode by observation...
           
           // Get row and column index...
           ci = i % num_col;
