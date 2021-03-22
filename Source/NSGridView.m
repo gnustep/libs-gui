@@ -33,6 +33,7 @@
 @end
 
 @interface NSGridView (Private)
+- (NSRect) _findPrototypeView;
 - (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex;
 - (NSArray *) _viewsForRowAtIndex: (NSUInteger)rowIndex;
 - (NSArray *) _cellsForColumnAtIndex: (NSUInteger)columnIndex;
@@ -40,6 +41,16 @@
 @end
 
 @implementation NSGridView (Private)
+- (NSRect) _findPrototypeView
+{
+  NSRect vf = [self frame];
+  NSRect f = NSMakeRect(0.0, 0.0,
+                        (vf.size.width / [self numberOfColumns] - _columnSpacing),
+                        (vf.size.height / [self numberOfRows] - _rowSpacing));
+
+  return f;
+}
+
 - (NSArray *) _cellsForRowAtIndex: (NSUInteger)rowIndex
 {
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [_columns count]];
@@ -153,64 +164,9 @@
     {
       NSUInteger i = 0;
       NSUInteger num_col = [self numberOfColumns];
-      // NSUInteger num_rows = [self numberOfRows];
       NSRect f = [self frame];
       CGFloat current_x = 0.0, current_y = f.size.height;
-      NSMutableArray *colWidths = [NSMutableArray array];
-      NSMutableArray *rowHeights = [NSMutableArray array];
-      
-      // precalculate w/h
-      FOR_IN(NSGridCell*, c, _cells)
-        {
-          NSView *v = [c contentView];
-          NSUInteger ri = 0, ci = 0;
-          NSRect rect = NSMakeRect(0,0,100,30); // default size in Xcode by observation...
-          
-          // Get row and column index...
-          ci = i % num_col;
-          ri = i / num_col;
-          
-          if (v != nil)
-            {
-              rect = [v frame];
-              // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
-              // as VERY small numbers (1.175...e-38) (see PR for this work, I have attached the XML nib there)
-              // so it is necessary to figure out the width of each column so that things can be properly spaced.
-              if (ci == 0)
-                {
-                  if (rect.size.width > 0.0)
-                    {
-                      [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
-                    }
-                }
-              
-              if (ri == 0)
-                {
-                  if (rect.size.width > 0.0)
-                    {
-                      [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
-                    }
-                }
-            }
-          
-          // If the first column or row is blank... then take the next value that is non-zero
-          if (ri > 0 && [colWidths count] == 0)
-            {
-              if (rect.size.width > 0.0)
-                {
-                  [colWidths addObject: [NSNumber numberWithFloat: rect.size.width]];
-                }
-            }
-          
-          if (ci > 0 && [rowHeights count] == 0)
-            {
-              if (rect.size.width > 0.0)
-                {
-                  [rowHeights addObject: [NSNumber numberWithFloat: rect.size.height]];
-                }
-            }
-        }
-      END_FOR_IN(_cells);
+      NSRect p = [self _findPrototypeView];
       
       // Format the grid...
       FOR_IN(NSGridCell*, c, _cells)
@@ -238,7 +194,7 @@
           // so it is necessary to figure out the width of each column so that things can be properly spaced.
           if (ci == 0)
             {
-              current_y -= [[rowHeights objectAtIndex: ci] floatValue]; // rect.size.height;
+              current_y -= p.size.height; // rect.size.height;
               current_x = 0.0;
             }
           
@@ -247,13 +203,14 @@
           
           if (v != nil)
             {
+              rect = p;
               rect.origin.x = current_x;
               rect.origin.y = current_y;
               [v setFrame: rect];
               [self addSubview: v];
             }
           
-          current_x += [col trailingPadding] + [col width] + [[colWidths objectAtIndex: ci] floatValue] + _columnSpacing;
+          current_x += [col trailingPadding] + [col width] + p.size.width + _columnSpacing;
           current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
           
           // inc
@@ -422,28 +379,6 @@
                       withViews: views];
 }
 
-- (NSRect) _findProtypeView
-{
-  NSRect f = NSMakeRect(0,0,10,10);
-
-  // Find a cell to base the size off of.
-  if ([_cells count] > 0)
-    {
-      FOR_IN(NSGridCell*, acell, _cells)
-        {
-          NSView *av = [acell contentView];
-          if (av)
-            {
-              f = [av frame];
-              break;
-            }
-        }
-      END_FOR_IN(_cells);
-    }
-  
-  return f;
-}
-
 - (NSGridRow *) _insertRowAtIndex: (NSInteger)index withCells: (NSArray *)cells
 {
   NSGridRow *gr = [[NSGridRow alloc] init];
@@ -483,7 +418,7 @@
 
 - (NSGridRow *) insertRowAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  NSRect f = [self _findProtypeView];
+  NSRect f = [self _findPrototypeView];
   NSMutableArray *cells = [NSMutableArray arrayWithCapacity: [views count]];
   FOR_IN(NSView*, v, views)
     {
@@ -558,7 +493,7 @@
 
 - (NSGridColumn *) insertColumnAtIndex: (NSInteger)index withViews: (NSArray *)views
 {
-  NSRect f = [self _findProtypeView];
+  NSRect f = [self _findPrototypeView];
   NSMutableArray *cells = [NSMutableArray arrayWithCapacity: [views count]];
   FOR_IN(NSView*, v, views)
     {
