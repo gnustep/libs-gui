@@ -1,3 +1,8 @@
+2021-03-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-_setOwnedByPopUp:): Only update the menu if
+	there is a new popup.
+
 2021-02-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPasteboard.m (-_pasteboardWithTarget:name:): Correct
