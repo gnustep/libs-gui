@@ -199,7 +199,7 @@
             }
           
           current_y -= [c yPlacement] - [row topPadding];
-          current_x += [c xPlacement] + [col leadingPadding] + [col width];
+          current_x += [c xPlacement] + [col leadingPadding];
           
           if (v != nil)
             {
@@ -210,7 +210,7 @@
               [self addSubview: v];
             }
           
-          current_x += [col trailingPadding] + [col width] + p.size.width + _columnSpacing;
+          current_x += [col trailingPadding] + p.size.width + _columnSpacing;
           current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
           
           // inc
@@ -231,8 +231,6 @@
       _cells = [[NSMutableArray alloc] init];
     }
 
-  [self _refreshCells];
-  
   return self;
 }
 
@@ -252,17 +250,14 @@
           cc = [[views objectAtIndex: 0] count];
         }
       
-      _cells = [[NSMutableArray alloc] initWithCapacity: rc * cc];
-      _rows = [[NSMutableArray alloc] initWithCapacity: rc];
-      _columns = [[NSMutableArray alloc] initWithCapacity: cc];
-
       FOR_IN(NSArray*, row, views)
         {
           NSGridRow *gr = [[NSGridRow alloc] init];
 
           [gr setGridView: self];
           [_rows addObject: gr];
-
+          RELEASE(gr);
+          
           c = 0;
           FOR_IN(NSView*, v, row)
             {
@@ -273,6 +268,7 @@
                 {
                   gc = [[NSGridColumn alloc] init];
                   [_columns addObject: gc];
+                  RELEASE(gc);
                   [gc setGridView: self];                  
                 }
               else
@@ -399,14 +395,15 @@
 
   NSUInteger i = 0;
   NSUInteger pos = index * [self numberOfColumns];
+  
   for(i = 0; i < [self numberOfColumns]; i++)
     {
-      NSGridCell *c = [[NSGridCell alloc] init];
+      NSGridCell *c = nil;
       NSGridColumn *col = [_columns objectAtIndex: i];
 
       if (i > ([cells count] - 1))
         {
-          c = [[NSGridCell alloc] init];
+          c = AUTORELEASE([[NSGridCell alloc] init]);
         }
       else
         {
@@ -436,6 +433,8 @@
       [v setFrame: f];
       [c setContentView: v];
       [cells addObject: c];
+
+      RELEASE(c);
     }
   END_FOR_IN(views);
   return [self _insertRowAtIndex: index withCells: cells];
@@ -475,6 +474,7 @@
 
   NSUInteger i = 0;
   NSUInteger pos = index;
+  
   for(i = 0; i < [self numberOfRows]; i++)
     {
       NSGridCell *c = nil;
@@ -482,7 +482,7 @@
 
       if (i > ([cells count] - 1))
         {
-          c = [[NSGridCell alloc] init];
+          c = AUTORELEASE([[NSGridCell alloc] init]);
         }
       else
         {
@@ -511,6 +511,7 @@
       [v setFrame: f];
       [c setContentView: v];
       [cells addObject: c];
+      RELEASE(c);
     }
   END_FOR_IN(views);
   return [self _insertColumnAtIndex: index withCells: cells];
