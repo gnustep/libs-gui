@@ -258,33 +258,36 @@
 
       FOR_IN(NSArray*, row, views)
         {
-          NSArray *columns = [row objectAtIndex: c];
-          FOR_IN(NSArray*, column, columns)
+          NSGridRow *gr = [[NSGridRow alloc] init];
+
+          [gr setGridView: self];
+          [_rows addObject: gr];
+
+          c = 0;
+          FOR_IN(NSView*, v, row)
             {
-              NSView *v = [column objectAtIndex: c];
+              NSGridColumn *gc = nil; 
               NSGridCell *cell = [[NSGridCell alloc] init];
 
-              if (r == 0)
+              if (r == 0) // first row, create all of the columns...
                 {
-                  NSGridRow *gr = [[NSGridRow alloc] init];
-                  [gr setGridView: self];
-                  [_rows addObject: gr];
-                  [cell _setOwningRow: gr];
+                  gc = [[NSGridColumn alloc] init];
+                  [_columns addObject: gc];
+                  [gc setGridView: self];                  
+                }
+              else
+                {
+                  gc = [_columns objectAtIndex: c];
                 }
 
-              if (c == 0)
-                {
-                  NSGridColumn *gc = [[NSGridColumn alloc] init];
-                  [gc setGridView: self];
-                  [_columns addObject: gc];
-                  [cell _setOwningColumn: gc];
-                }
-              
+              [cell _setOwningRow: gr];
+              [cell _setOwningColumn: gc];
               [cell setContentView: v];
+              
               [_cells addObject: cell];
               c++;
             }
-          END_FOR_IN(columns);
+          END_FOR_IN(row);
           r++;
         }
       END_FOR_IN(views);
@@ -317,6 +320,12 @@
 + (instancetype) gridViewWithViews: (NSArray *)views
 {
   return AUTORELEASE([[self alloc] initWithViews: views]);
+}
+
+- (void) setFrame: (NSRect)f
+{
+  [super setFrame: f];
+  [self _refreshCells];
 }
 
 - (NSInteger) numberOfRows
