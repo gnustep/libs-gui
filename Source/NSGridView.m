@@ -194,11 +194,11 @@
           // so it is necessary to figure out the width of each column so that things can be properly spaced.
           if (ci == 0)
             {
-              current_y -= p.size.height; // rect.size.height;
+              current_y -= p.size.height;
               current_x = 0.0;
             }
           
-          current_y -= [c yPlacement] - [row topPadding];
+          current_y -= [c yPlacement] + [row topPadding];
           current_x += [c xPlacement] + [col leadingPadding];
           
           if (v != nil)
@@ -211,7 +211,7 @@
             }
           
           current_x += [col trailingPadding] + p.size.width + _columnSpacing;
-          current_y -= [row bottomPadding] - [row height]; // - _rowSpacing; // add paddings after view...
+          current_y -= [row bottomPadding];// + _rowSpacing;
           
           // inc
           i++;
