@@ -196,7 +196,7 @@
           
           if (ci == 0)
             {
-              // current_y -= [row topPadding];
+              current_y -= [row topPadding];
               current_y -= p.size.height;
               current_x = 0.0;
             }
@@ -210,8 +210,15 @@
               [v setFrame: rect];
               [self addSubview: v];
             }
-           
+
+          current_x += [col leadingPadding];
           current_x += p.size.width;
+          current_x += [col trailingPadding];
+
+          if (ci == 0)
+            {
+              current_y -= [row bottomPadding];
+            }
           
           // inc
           i++;
