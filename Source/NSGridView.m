@@ -26,6 +26,12 @@
 #import "AppKit/NSGridView.h"
 #import "GSFastEnumeration.h"
 
+//
+// This is, admittedly, a kludge.  Some controls were not working
+// when placed so close together (the checkbox, in particular).
+//
+#define MIN_SPACING 5.0
+
 // Private interfaces...
 @interface NSGridCell (Private)
 - (void) _setOwningRow: (NSGridRow *)r;
@@ -45,8 +51,8 @@
 {
   NSRect vf = [self frame];
   NSRect f = NSMakeRect(0.0, 0.0,
-                        (vf.size.width / [self numberOfColumns] - _columnSpacing),
-                        (vf.size.height / [self numberOfRows] - _rowSpacing));
+                        ((vf.size.width - (_columnSpacing + MIN_SPACING)) / [self numberOfColumns]),
+                        ((vf.size.height - (_rowSpacing + MIN_SPACING)) / [self numberOfRows]));
 
   return f;
 }
@@ -188,19 +194,14 @@
               rect = [v frame];
             }
           
-          // Do the math for the frame...
-          // NOTE: I am not sure why this is needed, the row and column heights are coming in via the nib
-          // as VERY small numbers (1.175... e-38) (see PR for this work, I have attached the XML nib there)
-          // so it is necessary to figure out the width of each column so that things can be properly spaced.
           if (ci == 0)
             {
+              // current_y -= [row topPadding];
               current_y -= p.size.height;
               current_x = 0.0;
             }
           
-          current_y -= [c yPlacement] + [row topPadding];
-          current_x += [c xPlacement] + [col leadingPadding];
-          
+          // current_x += [col leadingPadding];
           if (v != nil)
             {
               rect = p;
@@ -209,9 +210,8 @@
               [v setFrame: rect];
               [self addSubview: v];
             }
-          
-          current_x += [col trailingPadding] + p.size.width + _columnSpacing;
-          current_y -= [row bottomPadding];// + _rowSpacing;
+           
+          current_x += p.size.width;
           
           // inc
           i++;
@@ -237,58 +237,59 @@
 - (instancetype) initWithViews: (NSArray *)views // an array of arrays
 {
   self = [self initWithFrame: NSZeroRect];
-
+  if (self == nil)
+    {
+      return self;
+    }
+  
   NSUInteger c = 0;
   NSUInteger r = 0;
+  NSUInteger rc = [views count], cc = 0;
 
-  if (self != nil)
+  if (rc > 0)
     {
-      NSUInteger rc = [views count], cc = 0;
-
-      if (rc > 0)
-        {
-          cc = [[views objectAtIndex: 0] count];
-        }
+      cc = [[views objectAtIndex: 0] count];
+    }
+  
+  FOR_IN(NSArray*, row, views)
+    {
+      NSGridRow *gr = [[NSGridRow alloc] init];
       
-      FOR_IN(NSArray*, row, views)
+      [gr setGridView: self];
+      [_rows addObject: gr];
+      RELEASE(gr);
+      
+      c = 0;
+      FOR_IN(NSView*, v, row)
         {
-          NSGridRow *gr = [[NSGridRow alloc] init];
-
-          [gr setGridView: self];
-          [_rows addObject: gr];
-          RELEASE(gr);
+          NSGridColumn *gc = nil; 
+          NSGridCell *cell = [[NSGridCell alloc] init];
           
-          c = 0;
-          FOR_IN(NSView*, v, row)
+          if (r == 0) // first row, create all of the columns...
             {
-              NSGridColumn *gc = nil; 
-              NSGridCell *cell = [[NSGridCell alloc] init];
-
-              if (r == 0) // first row, create all of the columns...
-                {
-                  gc = [[NSGridColumn alloc] init];
-                  [_columns addObject: gc];
-                  RELEASE(gc);
-                  [gc setGridView: self];                  
-                }
-              else
-                {
-                  gc = [_columns objectAtIndex: c];
-                }
-
-              [cell _setOwningRow: gr];
-              [cell _setOwningColumn: gc];
-              [cell setContentView: v];
-              
-              [_cells addObject: cell];
-              c++;
+              gc = [[NSGridColumn alloc] init];
+              [_columns addObject: gc];
+              RELEASE(gc);
+              [gc setGridView: self];                  
             }
-          END_FOR_IN(row);
-          r++;
+          else
+            {
+              gc = [_columns objectAtIndex: c];
+            }
+          
+          [cell _setOwningRow: gr];
+          [cell _setOwningColumn: gc];
+          [cell setContentView: v];
+          
+          [_cells addObject: cell];
+          c++;
         }
-      END_FOR_IN(views);
-      [self _refreshCells];
-    }  
+      END_FOR_IN(row);
+      r++;
+    }
+  END_FOR_IN(views);
+  [self _refreshCells];
+
   return self;
 }
 
@@ -597,12 +598,12 @@
     {
       [coder encodeInteger: _rowAlignment
                     forKey: @"NSGrid_alignment"];
-      [coder encodeFloat: _columnSpacing
-                  forKey: @"NSGrid_columnSpacing"];
+      [coder encodeDouble: _columnSpacing
+                   forKey: @"NSGrid_columnSpacing"];
       [coder encodeObject: _columns
                    forKey: @"NSGrid_columns"];
-      [coder encodeFloat: _rowSpacing
-                  forKey: @"NSGrid_rowSpacing"];
+      [coder encodeDouble: _rowSpacing
+                   forKey: @"NSGrid_rowSpacing"];
       [coder encodeObject: _rows
                    forKey: @"NSGrid_rows"];
       [coder encodeInteger: _xPlacement
