@@ -536,7 +536,6 @@ static Class textFieldCellClass;
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-
   NSFormatter *formatter;
 
   [super textDidChange: aNotification];
