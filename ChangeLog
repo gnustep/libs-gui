@@ -1,3 +1,8 @@
+2021-03-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSGridView.[hm]: Add implementation of NSGridView.
+	* Source/GSXib5KeyedUnarchiver.m: Add keys to decode NSGridView.
+
 2021-03-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m (-textDidChange:): If there is a binding with
