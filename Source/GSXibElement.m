@@ -62,6 +62,10 @@
 
 - (NSString*) value
 {
+  if (value == nil)
+    {
+      return [attributes objectForKey: @"value"];
+    }
   return value;
 }
 

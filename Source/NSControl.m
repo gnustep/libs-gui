@@ -615,6 +615,7 @@ static NSNotificationCenter *nc;
 - (void) textDidChange: (NSNotification *)aNotification
 {
   NSMutableDictionary *dict;
+  GSKeyValueBinding *theBinding;
 
   dict = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
@@ -624,6 +625,19 @@ static NSNotificationCenter *nc;
       object: self
       userInfo: dict];
   RELEASE(dict);
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+                                   forObject: self];
+  if (theBinding != nil)
+    {
+      NSDictionary *options = [theBinding->info objectForKey: NSOptionsKey];
+      NSNumber *num = [options objectForKey: NSContinuouslyUpdatesValueBindingOption];
+
+      if ([num boolValue])
+        {
+          [theBinding reverseSetValueFor: @"objectValue"];
+        }
+    }
 }
 
 /**<p>Invokes when the text cell is changed.
