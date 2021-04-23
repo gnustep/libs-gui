@@ -112,10 +112,6 @@ NSApplicationMain(int argc, const char **argv)
               [storyboard instantiateInitialController];
             }
         }
-      else
-        {
-          NSLog(@"Storyboard is blank or nil, unable to load.");
-        }
     }
 
   RECREATE_AUTORELEASE_POOL(pool);
