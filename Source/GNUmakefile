@@ -350,7 +350,6 @@ GSXibLoader.m \
 GSXibLoading.m \
 GSXibKeyedUnarchiver.m \
 GSXib5KeyedUnarchiver.m \
-GSXibObjectContainer.m \
 GSHelpAttachment.m 
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
@@ -658,7 +657,6 @@ GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
-GSXibObjectContainer.h \
 GSHelpAttachment.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
