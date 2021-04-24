@@ -1,3 +1,21 @@
+2021-04-24 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h:
+        Declaration of canReadData: in the GSModelLoader class and
+        declaration of modelLoaderForData: in GSModelLoaderFactory.
+	* Source/GSGModelLoader.m: Prototype method for canReadData:
+        Implementation of modelLoaderForData:.
+	* Source/GSGormLoader.m
+	* Source/GSModelLoaderFactory.m
+	* Source/GSNibLoader.m
+	* Source/GSXibLoader.m: Implement -canReadData: method to
+        determine for each loader if that loader can handle the data
+        passed into it.
+	* Source/NSNib.m: Use of [GSModelLoaderFactory modelLoaderForData:]
+        to more generically implement methods that initialize an archive from
+        archived data since we have no file extention to rely on to identify
+        the archive contents.
+
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/Functions.m: QuickFix. Remove unecessary warning
