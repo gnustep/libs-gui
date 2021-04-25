@@ -1039,6 +1039,12 @@
   NSEnumerator *en;
   id obj;
 
+  // If we are currently in IB, then don't do anything.
+  if ([NSClassSwapper isInInterfaceBuilder])
+    {
+      return self;
+    }
+
   // iterate over connections, instantiate, and then establish them.
   en = [connectionRecords objectEnumerator];
   while ((obj = [en nextObject]) != nil)

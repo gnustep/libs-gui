@@ -760,11 +760,16 @@ didStartElement: (NSString*)elementName
       NSString            *className   = nil;
       NSString            *elementType = elementName;
 
-      if (([@"window" isEqualToString: elementName] == NO) &&
-          ([@"customView" isEqualToString: elementName] == NO) &&
-          ([@"customObject" isEqualToString: elementName] == NO))
+      // If we are in IB we don't want to handle custom classes since they are
+      // not linked into the application.
+      if ([NSClassSwapper isInInterfaceBuilder] == NO)
         {
-          className = [attributes objectForKey: @"customClass"];
+          if (([@"window" isEqualToString: elementName] == NO) &&
+              ([@"customView" isEqualToString: elementName] == NO) &&
+              ([@"customObject" isEqualToString: elementName] == NO))
+            {
+              className = [attributes objectForKey: @"customClass"];
+            }
         }
 
       if (nil == className)

@@ -159,6 +159,7 @@
 - (id) nibInstantiate;
 - (NSEnumerator *) connectionRecordEnumerator;
 - (NSEnumerator *) objectRecordEnumerator;
+- (NSDictionary *) customClassNames;
 @end
 
 @interface IBUserDefinedRuntimeAttributesPlaceholder : NSObject <NSCoding>

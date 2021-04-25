@@ -1,3 +1,16 @@
+2021-04-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add declaration
+        for customClassNames so that we can use that to collect the names
+        of all of the custom classes and their associations.
+	* Source/GNUmakefile: Remove classes which are not used.
+	* Source/GSXib5KeyedUnarchiver.m: In parserDidStartElement...
+        call isInInterfaceBuilder to determine if we should allocate
+        custom classes.
+	* Source/GSXibLoading.m: Add in code in nibInstantiate which uses
+        [NSClassSwapper isInInterfaceBuilder] to prevent connections
+        from being established if the XIB is being loaded in IB/Gorm.
+
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/Functions.m: QuickFix. Remove unecessary warning
