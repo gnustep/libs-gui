@@ -21,6 +21,55 @@
       </p>
 
       <section>
+        <heading>0.29.0</heading>
+        <p>
+          This version adds support for modern XIB files and many new
+          classes. Plus the usual bunch of bug fixes.
+        </p>
+        <deflist>
+          <term>storyboards</term>
+          <desc>Support loading of storyboard files.</desc>
+          <term>new classes</term>
+          <desc>Add classes NSSwitch, NSFontAssetRequest,
+          NSMediaLibraryBrowserController, NSScrubberItemView, NSScrubberLayout,
+          NSScrubber, NSSharingServicePickerToolbarItem, NSPathCell,
+          NSPathComponentCell, NSPathControl, NSPathControlItem,
+          NSPersistentDocument, NSAccessibilityCustomAction,
+          NSAccessibilityCustomRotor, NSAccessibilityElement, NSStoryboard,
+          NSStoryboardSegue, NSPageController, NSSplitViewController,
+          NSSplitViewItem, NSTabViewController, NSLayoutAnchor,
+          NSLayoutConstraint, NSLayoutGuide, NSStatusBarButton,
+          NSTextCheckingController, NSTextFinder, NSTextInputContext,
+          NSGridView.<br />
+          <br />
+          Some of these classes are still skeletons.</desc>
+          <term>text layout</term>
+          <desc>Fix extraline fragment in text layout.</desc>
+          <term>RTF</term>
+          <desc>Better encoding handling in RTF files.</desc>
+          <term>localization</term>
+          <desc>Add more italian translations.</desc>
+          <term>compatibility</term>
+          <desc>Add MacOSX methods to NSNib, NSMenu and NSWindow.</desc>
+          <term>window management compatibility</term>
+          <desc>Focus handling fixes for WindowMaker.<br />
+          Stop NSWindow from handling windows that are gone, but possibly
+returned by a slow window manager.</desc>
+          <term>bugfix</term>
+          <desc>Fix missing colours when loading old colour lists.<br />
+          Fix memory leak in NSPopupButtonCell.<br />
+          Fix toolbar flickering.<br />
+          Fix int decoding to get it working on 64 bit big endian machines.<br />
+          Add tab stops after last defined at default intervals.<br />
+          Fix NSTableView/NSTableColumn bindings.</desc>
+          <term>JPEG export improvements</term>
+          <desc>Support JPEG export as greyscale image.</desc>
+          <term>theming</term>
+          <desc>NSSearchFieldCell use code from GSTheme to display popup.</desc>
+        </deflist>
+      </section>
+
+      <section>
         <heading>0.28.0</heading>
         <p>
           This version adds support for modern XIB files and many new

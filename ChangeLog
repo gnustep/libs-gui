@@ -1,3 +1,13 @@
+2021-04-26  Ivan Vucica  <ivan@vucica.net>
+
+	* ANNOUNCE:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi:
+	* NEWS:
+	Updating documentation for the 0.29.0 release.
+	* Version:
+	Bumping requirement to gnustep-base 1.28.0.
+
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/Functions.m: QuickFix. Remove unecessary warning

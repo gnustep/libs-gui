@@ -25,7 +25,8 @@ NSAccessibilityCustomRotor, NSAccessibilityElement, NSStoryboard,
 NSStoryboardSegue, NSPageController, NSSplitViewController,
 NSSplitViewItem, NSTabViewController, NSLayoutAnchor,
 NSLayoutConstraint, NSLayoutGuide, NSStatusBarButton,
-NSTextCheckingController, NSTextFinder, NSTextInputContext.
+NSTextCheckingController, NSTextFinder, NSTextInputContext,
+NSGridView.
 Some of these classes are still skeletons.
 @item Fix extraline fragment in text layout.
 @item Better encoding handling in RTF files.
@@ -36,9 +37,12 @@ Some of these classes are still skeletons.
 @item Support JPEG export as greyscale image.
 @item Fix memory leak in NSPopupButtonCell.
 @item Fix toolbar flickering.
-@item NSSearchFieldCell use code from GSTheme to disolay popup.
+@item NSSearchFieldCell use code from GSTheme to display popup.
 @item Fix int decoding to get it working on 64 bit big endian machines.
 @item Add tab stops after last defined at default intervals.
+@item Stop NSWindow from handling windows that are gone, but possibly
+returned by a slow window manager.
+@item Fix NSTableView/NSTableColumn bindings.
 @end itemize
 
 @ifclear ANNOUNCE-ONLY
