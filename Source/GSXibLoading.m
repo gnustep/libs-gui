@@ -695,6 +695,13 @@
   [connection establishConnection];
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@ - %d, %@>", [super description],
+                   connectionID,
+                   connection];
+}
+
 @end
 
 @implementation IBToolTipAttribute
