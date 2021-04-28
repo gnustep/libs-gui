@@ -1,9 +1,43 @@
 1 NEWS
 ******
 
-The currently released version of the library is '0.28.0'.
+The currently released version of the library is '0.29.0'.
 
-1.1 Noteworthy changes in version '0.28.0'
+1.1 Noteworthy changes in version '0.29.0'
+==========================================
+
+This version adds support for storyboard files and many new classes.
+Plus the usual bunch of bug fixes.
+
+   * Support loading of storyboard files.
+   * Add classes NSSwitch, NSFontAssetRequest,
+     NSMediaLibraryBrowserController, NSScrubberItemView,
+     NSScrubberLayout, NSScrubber, NSSharingServicePickerToolbarItem,
+     NSPathCell, NSPathComponentCell, NSPathControl, NSPathControlItem,
+     NSPersistentDocument, NSAccessibilityCustomAction,
+     NSAccessibilityCustomRotor, NSAccessibilityElement, NSStoryboard,
+     NSStoryboardSegue, NSPageController, NSSplitViewController,
+     NSSplitViewItem, NSTabViewController, NSLayoutAnchor,
+     NSLayoutConstraint, NSLayoutGuide, NSStatusBarButton,
+     NSTextCheckingController, NSTextFinder, NSTextInputContext,
+     NSGridView.  Some of these classes are still skeletons.
+   * Fix extraline fragment in text layout.
+   * Better encoding handling in RTF files.
+   * Add more italian translations.
+   * Add MacOSX methods to NSNib, NSMenu and NSWindow.
+   * Focus handling fixes for WindowMaker.
+   * Fix missing colours when loading old colour lists.
+   * Support JPEG export as greyscale image.
+   * Fix memory leak in NSPopupButtonCell.
+   * Fix toolbar flickering.
+   * NSSearchFieldCell use code from GSTheme to display popup.
+   * Fix int decoding to get it working on 64 bit big endian machines.
+   * Add tab stops after last defined at default intervals.
+   * Stop NSWindow from handling windows that are gone, but possibly
+     returned by a slow window manager.
+   * Fix NSTableView/NSTableColumn bindings.
+
+1.2 Noteworthy changes in version '0.28.0'
 ==========================================
 
 This version adds support for modern XIB files and many new classes.
@@ -41,7 +75,7 @@ Plus the usual bunch of bug fixes.
    * Lowered NSFloatingWindowLevel by one to distinguish floating panels
      from menus.
 
-1.2 Noteworthy changes in version '0.27.0'
+1.3 Noteworthy changes in version '0.27.0'
 ==========================================
 
 This version includes numerous bugfixes, compatibility improvements and
@@ -64,7 +98,7 @@ be done on integrating NSViews with a Core Animation renderer.
    * Japanese translations.
    * Lots of bug fixes.
 
-1.3 Noteworthy changes in version '0.26.2'
+1.4 Noteworthy changes in version '0.26.2'
 ==========================================
 
 This version is a small, but important bugfix release.
@@ -72,7 +106,7 @@ This version is a small, but important bugfix release.
    * printing: Fix allocation of the CUPS printing classes.
    * installation: Fix the configure script.
 
-1.4 Noteworthy changes in version '0.26.1'
+1.5 Noteworthy changes in version '0.26.1'
 ==========================================
 
 This version is released to conincide with version 1.25.1 of
@@ -99,7 +133,7 @@ for more information.
    * graphics context: Workaround for Clang+libobjc2+nonfragile ABI
      issue.
 
-1.5 Noteworthy changes in version '0.26.0'
+1.6 Noteworthy changes in version '0.26.0'
 ==========================================
 
 This version was bumped due to previous binary incompatibilities between
@@ -130,7 +164,7 @@ system.
      and methods to improve source-level compatibility.
    * other bugfixes
 
-1.6 Noteworthy changes in version '0.25.1'
+1.7 Noteworthy changes in version '0.25.1'
 ==========================================
 
    * JPEG (saving) alpha channel fixes and size with resolution != 72
@@ -141,7 +175,7 @@ system.
    * Corrected layout of empty strings
    * Only update visible menus
 
-1.7 Noteworthy changes in version '0.25.0'
+1.8 Noteworthy changes in version '0.25.0'
 ==========================================
 
    * Fixes for new GIF library versions
@@ -156,15 +190,15 @@ system.
    * Numerous theme tweaks
    * Spanish locale
 
-1.8 Noteworthy changes in version '0.24.1'
+1.9 Noteworthy changes in version '0.24.1'
 ==========================================
 
 From a look through ChangeLog, we can see a lot of bugfixes for this
 release, with the main focus on avoiding display glitches and improving
 OSX compatibility.
 
-1.9 Noteworthy changes in version '0.24.0'
-==========================================
+1.10 Noteworthy changes in version '0.24.0'
+===========================================
 
 New features include:
    * Require newer base release as we moved the
@@ -175,13 +209,13 @@ New features include:
 
    Many bugfixes.
 
-1.10 Noteworthy changes in version '0.23.1'
+1.11 Noteworthy changes in version '0.23.1'
 ===========================================
 
 This is a bugfix release, primarily to deal with coding/archiving
 issues.
 
-1.11 Noteworthy changes in version '0.22.0'
+1.12 Noteworthy changes in version '0.22.0'
 ===========================================
 
 New features include:
@@ -197,19 +231,19 @@ New features include:
 selection of image reps, better support for icons).  Many bugfixes,
 including in Xib loading, printing, and NSView geometry.
 
-1.12 Noteworthy changes in version '0.20.0'
+1.13 Noteworthy changes in version '0.20.0'
 ===========================================
 
 A new stable release.  Many improvments with Nib loading, documents and
 document controllers.  Fixed many drawing issues, particularly ones
 related to flipping.  Much improved theming.
 
-1.13 Noteworthy changes in version '0.19.0'
+1.14 Noteworthy changes in version '0.19.0'
 ===========================================
 
 This is an (unstable) copy of the 0.18.0 release
 
-1.14 Noteworthy changes in version '0.18.0'
+1.15 Noteworthy changes in version '0.18.0'
 ===========================================
 
 A new stable release that has had many improvements.  Many new Mac OS X
@@ -218,20 +252,20 @@ were made (particularly with the use of the Windows theme).  There is
 also better compatibility with Mac OS X in terms of usage of NSInteger
 and other definitions.
 
-1.15 Noteworthy changes in version '0.17.1'
+1.16 Noteworthy changes in version '0.17.1'
 ===========================================
 
    * New Mac OS X 10.5 methods in NSFont
    * Add live resize in NSSplitView
 
-1.16 Noteworthy changes in version '0.17.0'
+1.17 Noteworthy changes in version '0.17.0'
 ===========================================
 
    * New Mac OS X 10.5 methods in many classes
    * Toolbars have been completely rewritten and improved.
    * Several improvements for Garbage Collection
 
-1.17 Noteworthy changes in version '0.16.0'
+1.18 Noteworthy changes in version '0.16.0'
 ===========================================
 
    * Nib loading refractored and improved.
@@ -239,7 +273,7 @@ and other definitions.
    * NSWindowController made a subclass of NSResponder
    * NSTokenField and netokenFiledCell classes added.
 
-1.18 Noteworthy changes in version '0.14.0'
+1.19 Noteworthy changes in version '0.14.0'
 ===========================================
 
    * New class NSGlyphGenerator for glyph generation
@@ -247,7 +281,7 @@ and other definitions.
    * NSOpenGLView added some Mac OS X 10.3 methods
    * Manu bug fixes.
 
-1.19 Noteworthy changes in version '0.13.2'
+1.20 Noteworthy changes in version '0.13.2'
 ===========================================
 
    * Printing works a little better now.
@@ -258,7 +292,7 @@ and other definitions.
    * New class NSSegmentedCell.
    * NSDrawer was implemented.
 
-1.20 Noteworthy changes in version '0.13.1'
+1.21 Noteworthy changes in version '0.13.1'
 ===========================================
 
    * NSMenu - Added more MacOS X methods and an ivar.
@@ -268,7 +302,7 @@ and other definitions.
    * Added some MacOS X 10.4 methods to NSTableView.
    * Changed the NSCursor hot point to 0,0 for MacOS X compatibility.
 
-1.21 Noteworthy changes in version '0.13.0'
+1.22 Noteworthy changes in version '0.13.0'
 ===========================================
 
 This is an unstable release.  There may be backward compatibility issues
@@ -295,7 +329,7 @@ with previous releases of the gui library.
    * Implementation of special connectors for Key-Value binding.
    * Base library version 1.15.1 is required for this release
 
-1.22 Noteworthy changes in version '0.12.0'
+1.23 Noteworthy changes in version '0.12.0'
 ===========================================
 
 It has been a long time since the last release and many things have been
@@ -315,7 +349,7 @@ added and changed, including new classes, new ivars, and new methods.
    * NSSpellServer and NSAffineTransform was moved to GNUstep base for
      Mac OS X compatibility.
 
-1.23 Noteworthy changes in version '0.11.0'
+1.24 Noteworthy changes in version '0.11.0'
 ===========================================
 
    * Added support for keyed encoding in all gui classes.
@@ -324,25 +358,25 @@ added and changed, including new classes, new ivars, and new methods.
    * Implemented glue code in GSNibCompatibility for classes such as
      NSIBObjectData, NSClassSwapper, etc.  to facilitate nib loading.
 
-1.24 Noteworthy changes in version '0.10.3'
+1.25 Noteworthy changes in version '0.10.3'
 ===========================================
 
    * Horizontal menus now work
    * Better support for tracking active applications.
 
-1.25 Noteworthy changes in version '0.10.2'
+1.26 Noteworthy changes in version '0.10.2'
 ===========================================
 
 Mostly bug fixes.
 
-1.26 Noteworthy changes in version '0.10.1'
+1.27 Noteworthy changes in version '0.10.1'
 ===========================================
 
 GNUstep now uses v19 of portaudio for the sound daemon.  Version v19
 hasn't been officially released, but it is still used in several
 distributions (SuSE, etc) as v18 is very old.
 
-1.27 Noteworthy changes in version '0.10.0'
+1.28 Noteworthy changes in version '0.10.0'
 ===========================================
 
 This release is binary incompatible with previous releases.  The
@@ -353,7 +387,7 @@ new version.
    * Model loading supports window auto-positioning
    * Keyed encoding is supported in many classes.
 
-1.28 Noteworthy changes in version '0.9.5'
+1.29 Noteworthy changes in version '0.9.5'
 ==========================================
 
    * Beginnings of CUPS interface were added.
@@ -362,7 +396,7 @@ new version.
    * NSApplication -runModalSession behavior changed.
    * You can find the GUI library's version using the Info.plist
 
-1.29 Noteworthy changes in version '0.9.4'
+1.30 Noteworthy changes in version '0.9.4'
 ==========================================
 
    * The printing classes have been completely reorganized to
@@ -373,7 +407,7 @@ new version.
    * NSScroller, NSScrollView has a new ivar.
    * Some improvement of NSDataLink classes.
 
-1.30 Noteworthy changes in version '0.9.3'
+1.31 Noteworthy changes in version '0.9.3'
 ==========================================
 
    * Spell checker reimplemented using libaspell
@@ -382,7 +416,7 @@ new version.
    * Binary incompatibilites from ivar additions in NSView and
      subclasses.
 
-1.31 Noteworthy changes in version '0.9.2'
+1.32 Noteworthy changes in version '0.9.2'
 ==========================================
 
    * Working NSToolbar implementation
@@ -394,21 +428,21 @@ new version.
    * NSStringDrawing redesigned.
    * Much improved loading of gorm files
 
-1.32 Noteworthy changes in version '0.9.1'
+1.33 Noteworthy changes in version '0.9.1'
 ==========================================
 
    * NSWindow - DnD works on whole window and events are propogated up
      to first DnD aware view.
    * Absolute paths and DnD works in OpenPanels.
 
-1.33 Noteworthy changes in version '0.9.0'
+1.34 Noteworthy changes in version '0.9.0'
 ==========================================
 
 Improvements in various classes, include NSPopUpButton,
 NSBitmapImageRep, NSMenu, NSToolbar.  Added support for thumbnail images
 in NSWorkspace.
 
-1.34 Noteworthy changes in version '0.8.9'
+1.35 Noteworthy changes in version '0.8.9'
 ==========================================
 
 Note that many headers have moved to new locations (both in the package
@@ -417,13 +451,13 @@ applications may not compile because they cannot find the right header.
 
    * New Language Setup documentation.
 
-1.35 Noteworthy changes in version '0.8.8'
+1.36 Noteworthy changes in version '0.8.8'
 ==========================================
 
    * Updated LanguageSetup documentation
    * Improved RTF reader (unicode support, etc).
 
-1.36 Noteworthy changes in version '0.8.7'
+1.37 Noteworthy changes in version '0.8.7'
 ==========================================
 
    * NSBezierPath glyph methods implemented (depends on backend).
@@ -431,7 +465,7 @@ applications may not compile because they cannot find the right header.
    * Added default to load user-defined bundles (GSAppKitUserBundles
      default).
 
-1.37 Noteworthy changes in version '0.8.6'
+1.38 Noteworthy changes in version '0.8.6'
 ==========================================
 
 Updated to install in new locations based on changes in gnustep-make
@@ -441,12 +475,12 @@ Updated to install in new locations based on changes in gnustep-make
    * Speed improvements, especially in tracking mouses movements.
    * Lots of menu improvements.
 
-1.38 Noteworthy changes in version '0.8.5'
+1.39 Noteworthy changes in version '0.8.5'
 ==========================================
 
 Bug fixes.  NSStringDrawing now uses text system implementation.
 
-1.39 Noteworthy changes in version '0.8.4'
+1.40 Noteworthy changes in version '0.8.4'
 ==========================================
 
 This release features a brand new text and layout system thanks to
@@ -457,7 +491,7 @@ Alexander Malmberg.  Other improvements include:
    * Printing fixes.
    * NSToolbar partially implemented.
 
-1.40 Noteworthy changes in version '0.8.3'
+1.41 Noteworthy changes in version '0.8.3'
 ==========================================
 
    * Additions for Gorm support.
@@ -468,7 +502,7 @@ Alexander Malmberg.  Other improvements include:
    * Window focus fixes
    * Key view handling rewritten.
 
-1.41 Noteworthy changes in version '0.8.2'
+1.42 Noteworthy changes in version '0.8.2'
 ==========================================
 
    * Handle fonts that aren't found better.
@@ -479,7 +513,7 @@ Alexander Malmberg.  Other improvements include:
    * NSBrowser: implement non-separate columns
    * Fix firstResponder status in text fields.
 
-1.42 Noteworthy changes in version '0.8.1'
+1.43 Noteworthy changes in version '0.8.1'
 ==========================================
 
    * Handle scaled curves correctly.
@@ -488,23 +522,23 @@ Alexander Malmberg.  Other improvements include:
    * NSSound implemented.  gssnd sound server.
    * Spell checker starts correctly now.
 
-1.43 Noteworthy changes in version '0.8.0'
+1.44 Noteworthy changes in version '0.8.0'
 ==========================================
 
-1.44 Noteworthy changes in version '0.7.9'
+1.45 Noteworthy changes in version '0.7.9'
 ==========================================
 
    * NSTableView, NSOutlineView improvements.
    * Menus no longer work in modal loop.
    * Skeleton implementation of NSToolBar
 
-1.45 Noteworthy changes in version '0.7.8'
+1.46 Noteworthy changes in version '0.7.8'
 ==========================================
 
    * Wheel color picker, standard color picker (bundles) added.
    * System colors now use named colors.  Easier configuration
 
-1.46 Noteworthy changes in version '0.7.7'
+1.47 Noteworthy changes in version '0.7.7'
 ==========================================
 
 The graphics/window interface was completely revamped.  Window functions
@@ -526,7 +560,7 @@ computers, although it is in a very alpha state.
    * Better autolayout with GSTable and subclasses.
    * NSOutlineView much improved.
 
-1.47 Noteworthy changes in version '0.7.6'
+1.48 Noteworthy changes in version '0.7.6'
 ==========================================
 
    * NSOutlineView implemented.
@@ -535,7 +569,7 @@ computers, although it is in a very alpha state.
    * Fully-functional keybindings, including multi-stroke keybindings.
    * Memory panel available from Info Panel.
 
-1.48 Noteworthy changes in version '0.7.5'
+1.49 Noteworthy changes in version '0.7.5'
 ==========================================
 
    * Drag and drop and image sliding much improved.
@@ -553,7 +587,7 @@ computers, although it is in a very alpha state.
    * Near rewrite of Menu handling code.
    * Gmodel code compiled as a separate bundle.
 
-1.49 Noteworthy changes in version '0.7.0'
+1.50 Noteworthy changes in version '0.7.0'
 ==========================================
 
    * Much improvement in NSBrowser, NSMatrix, NSPopUpButton, combo
@@ -564,7 +598,7 @@ computers, although it is in a very alpha state.
    * simpler, faster compilation and installation.
    * NSColorWell works.
 
-1.50 Noteworthy changes in version '0.6.7'
+1.51 Noteworthy changes in version '0.6.7'
 ==========================================
 
    * App Icons can support documents dropped using DnD.
@@ -580,7 +614,7 @@ computers, although it is in a very alpha state.
    * Implemented object value and formatter support in NSCell
    * Support middle mouse button.
 
-1.51 Noteworthy changes in version '0.6.6'
+1.52 Noteworthy changes in version '0.6.6'
 ==========================================
 
    * Window hints for motif and generic window managers.
@@ -606,7 +640,7 @@ however, that the xdps backend is still considered experimental and you
 may have to deal with many problems in order to get it working.  We
 recommend sticking with the xgps backend (the default) for now.
 
-1.52 Noteworthy changes in version '0.6.5'
+1.53 Noteworthy changes in version '0.6.5'
 ==========================================
 
 Many of the basic GUI classes have been vastly improved or rewritten,
@@ -630,7 +664,7 @@ thanks to Nicola Pero <n.pero@mi.flashnet.it> and many others.
 been written, thanks to Richard Frith-Macdonald
 <richard@brainstorm.co.uk>
 
-1.53 Noteworthy changes in version '0.6.0'
+1.54 Noteworthy changes in version '0.6.0'
 ==========================================
 
 A Huge amount of progress, although a lot still needs to be done.  It's
@@ -651,7 +685,7 @@ NeXT/OpenStep apps and libraries have been ported with little changes.
    * Rewrite of NSSavePanel and NSOpenPanel
    * Several fixes that at least double the speed of the gui.
 
-1.54 Noteworthy changes in version '0.5.5'
+1.55 Noteworthy changes in version '0.5.5'
 ==========================================
 
 Too extensive to list.
@@ -659,7 +693,7 @@ Too extensive to list.
    * A lot of rewritting has been done to the classes, with general
      cleanup of coordinate conversion code, etc.
 
-1.55 Noteworthy changes in version '0.5.0'
+1.56 Noteworthy changes in version '0.5.0'
 ==========================================
 
    * NSBrowser and NSBrowserCell have been implemented.  There is one
@@ -708,7 +742,7 @@ Too extensive to list.
 
    * Several cleanups and as usual, many bug fixes.
 
-1.56 Noteworthy changes in version '0.3.0'
+1.57 Noteworthy changes in version '0.3.0'
 ==========================================
 
    * Completely reworked the menu class.  The NSMenu class is now
@@ -739,7 +773,7 @@ Too extensive to list.
      retain/release policy has been fixed, the cell classes correctly
      implement the NSCopying protocol and many others.
 
-1.57 Noteworthy changes in version '0.2.0'
+1.58 Noteworthy changes in version '0.2.0'
 ==========================================
 
    * Additional NSImage and NSImageRep class work.  Incorporated common
@@ -773,7 +807,7 @@ Too extensive to list.
 
    * Many bug fixes and minor enhancements.
 
-1.58 Noteworthy changes in version '0.1.1'
+1.59 Noteworthy changes in version '0.1.1'
 ==========================================
 
    * Almost complete implementation of the PXKMenu and PXKMenuCell
@@ -796,7 +830,7 @@ Too extensive to list.
    * Now requires the TIFF library for reading, writing, and
      manipulating tiff files and images.
 
-1.59 Noteworthy changes in version '0.1.0'
+1.60 Noteworthy changes in version '0.1.0'
 ==========================================
 
    * Integration of the GNUstep X/DPS GUI Backend.  This has finally

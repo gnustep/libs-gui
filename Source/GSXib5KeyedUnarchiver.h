@@ -41,7 +41,9 @@
   GSXibElement        *_runtimeAttributes;
   NSMutableDictionary *_orderedObjectsDict;
   NSArray             *_resources;
+  NSMutableArray      *_customClasses;
 }
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
+- (NSMutableArray *) customClasses;
 @end

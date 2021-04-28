@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2021-04-25 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add declaration
@@ -10,6 +11,17 @@
 	* Source/GSXibLoading.m: Add in code in nibInstantiate which uses
         [NSClassSwapper isInInterfaceBuilder] to prevent connections
         from being established if the XIB is being loaded in IB/Gorm.
+=======
+2021-04-26  Ivan Vucica  <ivan@vucica.net>
+
+	* ANNOUNCE:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi:
+	* NEWS:
+	Updating documentation for the 0.29.0 release.
+	* Version:
+	Bumping requirement to gnustep-base 1.28.0.
+>>>>>>> cc6c371730d3f8835396041754713f8fbe0fbc2e
 
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 

@@ -202,8 +202,15 @@
                               if([classNodes count] > 0)
                                 {
                                   id classAttr = nil;
-                                  Class cls = NSClassFromString(className);
+                                  Class cls = nil;
 
+                                  // If we are in the interface builder app, do not replace
+                                  // the existing classes with their custom subclasses.
+                                  if ([NSClassSwapper isInInterfaceBuilder] == NO)
+                                    {
+                                      cls = NSClassFromString(className);
+                                    }
+                                  
                                   classNode = [classNodes objectAtIndex:0];
                                   classAttr = [classNode attributeForName:@"class"];
                                   [classAttr setStringValue:className];
@@ -257,13 +264,7 @@
   NSXMLParser *theParser;
   NSData *theData = data;
 
-  // If we are in the interface builder app, do not replace
-  // the existing classes with their custom subclasses.
-  if ([NSClassSwapper isInInterfaceBuilder] == NO)
-    {
-      theData = [self _preProcessXib: data];
-    }
-
+  theData = [self _preProcessXib: data];
   if (theData == nil)
     {
       return nil;
@@ -1028,4 +1029,8 @@ didStartElement: (NSString*)elementName
   return 0;
 }
 
+- (NSDictionary *) decoded
+{
+  return decoded;
+}
 @end
