@@ -1,7 +1,7 @@
 1 Announcement
 **************
 
-This is version 0.28.0 of the GNUstep GUI library ('gnustep-gui').
+This is version 0.29.0 of the GNUstep GUI library ('gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -32,55 +32,51 @@ Group's libjpeg library, and a back-end component from the GNUstep
 libraries.  For example, to build the Cairo backend in the GNUstep Back
 library, you will need to install Cairo.
 
-1.2 Noteworthy changes in version '0.28.0'
+1.2 Noteworthy changes in version '0.29.0'
 ==========================================
 
-This version adds support for modern XIB files and many new classes.
+This version adds support for storyboard files and many new classes.
 Plus the usual bunch of bug fixes.
 
-   * Support loading of document XIB files.
-   * Improve Key Value Binding for NSArrayController and add more
-     bindings.
-   * Better support for multi monitor usage and other improvement in the
-     backend integration.
-   * Add classes NSFontCollection, NSColorSampler, NSSpeechRecognizer,
-     NSAppearance, NSPDFInfo, NSPICTImageRep, NSCIImageRep,
-     NSPDFImageRep, NSPDFPanel, NSDataAsset, NSDatePicker,
-     NSDatePickerCell, NSPredicateEditor, NSPredicateEditorRowTemplate,
-     NSRuleEditor, NSGestureRecognizer, NSButtonTouchBarItem,
-     NSCandidateListTouchBarItem, NSClickGestureRecognizer,
-     NSColorPickerTouchBarItem, NSCustomTouchBarItem,
-     NSGroupTouchBarItem, NSMagnificationGestureRecognizer,
-     NSPanGestureRecognizer, NSPickerTouchBarItem,
-     NSPopoverTouchBarItem, NSPressGestureRecognizer,
-     NSRotationGestureRecognizer, NSSharingServicePickerTouchBarItem,
-     NSSliderTouchBarItem, NSStepperTouchBarItem, NSTouchBarItem,
-     NSTouchBar, NSTouch, NSDockTile.
-   * Implement NSEPSImageRep.
+   * Support loading of storyboard files.
+   * Add classes NSSwitch, NSFontAssetRequest,
+     NSMediaLibraryBrowserController, NSScrubberItemView,
+     NSScrubberLayout, NSScrubber, NSSharingServicePickerToolbarItem,
+     NSPathCell, NSPathComponentCell, NSPathControl, NSPathControlItem,
+     NSPersistentDocument, NSAccessibilityCustomAction,
+     NSAccessibilityCustomRotor, NSAccessibilityElement, NSStoryboard,
+     NSStoryboardSegue, NSPageController, NSSplitViewController,
+     NSSplitViewItem, NSTabViewController, NSLayoutAnchor,
+     NSLayoutConstraint, NSLayoutGuide, NSStatusBarButton,
+     NSTextCheckingController, NSTextFinder, NSTextInputContext,
+     NSGridView.  Some of these classes are still skeletons.
+   * Fix extraline fragment in text layout.
    * Better encoding handling in RTF files.
-   * Theming and drawing improvements.
-   * Increase small font size to 10.
-   * New cursor and stepper images.
-   * Move NSFileWrapper to Foundation.
-   * Fixed build on Debian GNU/kFreeBSD.
-   * With command line argument -autolaunch YES, do not activate the
-     application when -activateIgnoringOtherApps: is invoked.
-   * Improvements to WindowMaker compatibility (e.g.  WMFHideApplication
-     support).
-   * Lowered NSFloatingWindowLevel by one to distinguish floating panels
-     from menus.
+   * Add more italian translations.
+   * Add MacOSX methods to NSNib, NSMenu and NSWindow.
+   * Focus handling fixes for WindowMaker.
+   * Fix missing colours when loading old colour lists.
+   * Support JPEG export as greyscale image.
+   * Fix memory leak in NSPopupButtonCell.
+   * Fix toolbar flickering.
+   * NSSearchFieldCell use code from GSTheme to display popup.
+   * Fix int decoding to get it working on 64 bit big endian machines.
+   * Add tab stops after last defined at default intervals.
+   * Stop NSWindow from handling windows that are gone, but possibly
+     returned by a slow window manager.
+   * Fix NSTableView/NSTableColumn bindings.
 
 1.3 Where can you get it? How can you compile it?
 =================================================
 
-The gnustep-gui-0.28.0.tar.gz distribution file has been placed at
+The gnustep-gui-0.29.0.tar.gz distribution file has been placed at
 <ftp://ftp.gnustep.org/pub/gnustep/core>.
 
-   It is accompanied by gnustep-gui-0.28.0.tar.gz.sig, a PGP signature
+   It is accompanied by gnustep-gui-0.29.0.tar.gz.sig, a PGP signature
 which you can validate by putting both files in the same directory and
 using:
 
-     gpg --verify gnustep-gui-0.28.0.tar.gz.sig
+     gpg --verify gnustep-gui-0.29.0.tar.gz.sig
 
    Signature has been created using the key with the following
 fingerprint:

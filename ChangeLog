@@ -1,4 +1,4 @@
-2021-04-24 Gregory John Casamento <greg.casamento@gmail.com>
+2021-04-30 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h:
         Declaration of canReadData: in the GSModelLoader class and
@@ -15,6 +15,16 @@
         to more generically implement methods that initialize an archive from
         archived data since we have no file extention to rely on to identify
         the archive contents.
+
+2021-04-26  Ivan Vucica  <ivan@vucica.net>
+
+	* ANNOUNCE:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi:
+	* NEWS:
+	Updating documentation for the 0.29.0 release.
+	* Version:
+	Bumping requirement to gnustep-base 1.28.0.
 
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 
