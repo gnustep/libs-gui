@@ -81,6 +81,26 @@
     }
 }
 
++ (BOOL) canReadData: (NSData *)theData
+{
+  char *header = calloc(16, sizeof(char));
+
+  if (header != NULL)
+    {
+      [theData getBytes: header
+                 length: 16];
+
+      if (strncmp("GNUstep archive",header,15) == 0)
+        {
+          return YES;
+        }
+
+      free(header);
+    }
+
+  return NO;
+}
+
 + (NSString *)type
 {
   return @"gorm";

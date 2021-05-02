@@ -1,6 +1,6 @@
-/** <title>NSBundleAdditions</title>
+/** <title>GSModelLoaderFactory</title>
 
-   <abstract>Implementation of NSBundle Additions</abstract>
+   <abstract>Interface of GSModelLoader and GSModelLoaderFactory</abstract>
 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
@@ -39,6 +39,7 @@
 @class NSBundle;
 
 @interface GSModelLoader : NSObject
++ (BOOL) canReadData: (NSData *)theData;
 + (NSString *) type;
 + (float) priority;
 - (BOOL) loadModelData: (NSData *)data
@@ -57,6 +58,7 @@
 + (NSString *) supportedModelFileAtPath: (NSString *)modelPath;
 + (GSModelLoader *) modelLoaderForFileType: (NSString *)type;
 + (GSModelLoader *) modelLoaderForFileName: (NSString *)modelPath;
++ (GSModelLoader *) modelLoaderForData: (NSData *)theData;
 @end
 
 #endif

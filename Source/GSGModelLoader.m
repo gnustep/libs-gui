@@ -29,6 +29,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -80,6 +81,33 @@ Class gmodel_class(void)
   // register for the gmodel type.
 }
 
++ (BOOL) canReadData: (NSData *)theData
+{
+  char *header = calloc(1024, sizeof(char));
+
+  if (header != NULL)
+    {
+      NSUInteger len = [theData length];
+      NSRange r = NSMakeRange(len - 1024, len - 1);
+      NSString *hdr = nil;
+
+      [theData getBytes: header
+                  range: r];
+      hdr = [[NSString alloc] initWithBytes: header
+                                     length: 1024
+                                   encoding: NSUTF8StringEncoding];
+      AUTORELEASE(hdr);
+      if ([hdr containsString: @"GMModel"])
+        {
+          return YES;
+        }
+
+      free(header);
+    }
+
+  return NO;
+}
+
 + (NSString *) type
 {
   return @"gmodel";
@@ -119,7 +147,7 @@ Class gmodel_class(void)
   if ([ext isEqualToString: @"gmodel"])
     {
       return [gmodel_class() loadIMFile: fileName
-		      owner: [context objectForKey: NSNibOwner]];
+                                  owner: [context objectForKey: NSNibOwner]];
     } 
 
   return NO;

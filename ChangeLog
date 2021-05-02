@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-2021-04-25 Gregory John Casamento <greg.casamento@gmail.com>
+2021-05-01 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add declaration
         for customClassNames so that we can use that to collect the names
@@ -11,7 +10,25 @@
 	* Source/GSXibLoading.m: Add in code in nibInstantiate which uses
         [NSClassSwapper isInInterfaceBuilder] to prevent connections
         from being established if the XIB is being loaded in IB/Gorm.
-=======
+
+2021-04-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h:
+        Declaration of canReadData: in the GSModelLoader class and
+        declaration of modelLoaderForData: in GSModelLoaderFactory.
+	* Source/GSGModelLoader.m: Prototype method for canReadData:
+        Implementation of modelLoaderForData:.
+	* Source/GSGormLoader.m
+	* Source/GSModelLoaderFactory.m
+	* Source/GSNibLoader.m
+	* Source/GSXibLoader.m: Implement -canReadData: method to
+        determine for each loader if that loader can handle the data
+        passed into it.
+	* Source/NSNib.m: Use of [GSModelLoaderFactory modelLoaderForData:]
+        to more generically implement methods that initialize an archive from
+        archived data since we have no file extention to rely on to identify
+        the archive contents.
+
 2021-04-26  Ivan Vucica  <ivan@vucica.net>
 
 	* ANNOUNCE:
@@ -21,7 +38,6 @@
 	Updating documentation for the 0.29.0 release.
 	* Version:
 	Bumping requirement to gnustep-base 1.28.0.
->>>>>>> cc6c371730d3f8835396041754713f8fbe0fbc2e
 
 2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
 
