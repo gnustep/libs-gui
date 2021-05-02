@@ -70,6 +70,31 @@
 
 @implementation GSXibLoader
 
++ (BOOL) canReadData: (NSData *)theData
+{
+  char *header = calloc(1024, sizeof(char));
+
+  if (header != NULL)
+    {
+      [theData getBytes: header
+                 length: 1024];
+
+      NSString *hdr = [[NSString alloc] initWithBytes: header
+                                               length: 1024
+                                             encoding: NSUTF8StringEncoding];
+      AUTORELEASE(hdr);
+      if ([hdr containsString: @"Cocoa.XIB"])
+        {
+          free(header);
+          return YES;
+        }
+
+      free(header);
+    }
+
+  return NO;
+}
+
 + (NSString*) type
 {
   return @"xib";

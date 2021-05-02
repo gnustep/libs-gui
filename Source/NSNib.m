@@ -150,8 +150,7 @@
     {
       ASSIGN(_bundle, bundle);
       ASSIGN(_nibData, nibData);
-      // FIXME: Hardcode the most likely loader
-      ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"nib"]);
+      ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForData: nibData]);
     }
   return self;
 }
@@ -178,7 +177,7 @@
 - (BOOL) instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable
 {
   return [self instantiateNibWithExternalNameTable: externalNameTable
-	       withZone: NSDefaultMallocZone()];
+                                          withZone: NSDefaultMallocZone()];
 }
 
 /**
@@ -198,7 +197,8 @@
   if (topLevelObjects != 0)
     {
       *topLevelObjects = [NSMutableArray array];
-      [externalNameTable setObject: *topLevelObjects forKey: NSNibTopLevelObjects];
+      [externalNameTable setObject: *topLevelObjects
+                            forKey: NSNibTopLevelObjects];
     }
 
   return [self instantiateNibWithExternalNameTable: externalNameTable];
@@ -207,32 +207,30 @@
 - (BOOL) instantiateWithOwner: (id)owner
               topLevelObjects: (NSArray **)topLevelObjects
 {
-  return [self instantiateNibWithOwner: owner topLevelObjects: topLevelObjects];
+  return [self instantiateNibWithOwner: owner
+                       topLevelObjects: topLevelObjects];
 }
 
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ((self = [super init]) != nil)
     {
-      //
-      // NOTE: This is okay, since the only encodings which will ever be built into
-      //       the gui library are nib and gorm.  GModel only supports certain
-      //       objects and is going to be deprecated in the future.  There just so
-      //       happens to be a one to one correspondence here.
-      //
       if ([coder allowsKeyedCoding])
 	{
-	  // TODO_NIB: Need to verify this key...
+          // TODO_NIB: Need to verify this key...
 	  ASSIGN(_nibData, [coder decodeObjectForKey: @"NSData"]);
-	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"nib"]);
 	}
       else
 	{
 	  // this is sort of a kludge...
 	  [coder decodeValueOfObjCType: @encode(id)
-		 at: &_nibData];
-	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"gorm"]);
+                                    at: &_nibData];
 	}
+
+      if (_nibData != nil)
+        {
+          ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForData: _nibData]);
+        }
     }
   return self;
 }
