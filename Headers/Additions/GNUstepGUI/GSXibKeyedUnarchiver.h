@@ -53,4 +53,6 @@
 - (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element;
 - (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element;
 - (id) objectForXib: (GSXibElement*)element;
+
+- (NSDictionary *) decoded;
 @end

@@ -695,6 +695,13 @@
   [connection establishConnection];
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@ - %d, %@>", [super description],
+                   connectionID,
+                   connection];
+}
+
 @end
 
 @implementation IBToolTipAttribute
@@ -1038,6 +1045,12 @@
 {
   NSEnumerator *en;
   id obj;
+
+  // If we are currently in IB, then don't do anything.
+  if ([NSClassSwapper isInInterfaceBuilder])
+    {
+      return self;
+    }
 
   // iterate over connections, instantiate, and then establish them.
   en = [connectionRecords objectEnumerator];
