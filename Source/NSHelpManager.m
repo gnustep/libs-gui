@@ -221,6 +221,7 @@
 		{
 		  result = [[NSWorkspace sharedWorkspace] openFile: file
 						   withApplication: viewer];
+	          return;
 		}
 	    }
 
