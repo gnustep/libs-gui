@@ -87,26 +87,29 @@ static NSString *ApplicationClass = nil;
 {
   self = [super initWithCoder: coder];
 
-  if (self)
+  if (self != nil)
     {
-      // If we've not set the general application class yet...
-      if (_className && (ApplicationClass == nil) &&
-          ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
+      if ([coder allowsKeyedCoding])
         {
-          ASSIGNCOPY(ApplicationClass, _className);
-        }
-
-      _userLabel = [coder decodeObjectForKey: @"userLabel"];
-
-      // Override this one type...
-      if (_userLabel)
-        {
-          if ([@"Application" isEqualToString: _userLabel])
+          // If we've not set the general application class yet...
+          if (_className && (ApplicationClass == nil) &&
+              ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
             {
-              if (ApplicationClass == nil)
-                ASSIGN(_className, @"NSApplication");
-              else
-                ASSIGN(_className, ApplicationClass);
+              ASSIGNCOPY(ApplicationClass, _className);
+            }
+          
+          _userLabel = [coder decodeObjectForKey: @"userLabel"];
+          
+          // Override this one type...
+          if (_userLabel)
+            {
+              if ([@"Application" isEqualToString: _userLabel])
+                {
+                  if (ApplicationClass == nil)
+                    ASSIGN(_className, @"NSApplication");
+                  else
+                    ASSIGN(_className, ApplicationClass);
+                }
             }
         }
     }
