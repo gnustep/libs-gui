@@ -132,6 +132,7 @@ NSSlider.m \
 NSSliderCell.m \
 NSSliderAccessory.m \
 NSSliderTouchBarItem.m \
+NSStackView.m \
 NSStepperTouchBarItem.m \
 NSSwitch.m \
 NSTitlebarAccessoryViewController.m \
@@ -532,6 +533,7 @@ NSSlider.h \
 NSSliderCell.h \
 NSSliderAccessory.h \
 NSSliderTouchBarItem.h \
+NSStackView.h \
 NSSound.h  \
 NSSpeechRecognizer.h \
 NSSpeechSynthesizer.h \
