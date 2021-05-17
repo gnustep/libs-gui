@@ -179,10 +179,13 @@
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v
 {
-  NSNumber *n = [NSNumber numberWithFloat: spacing];
-  [_customSpacingMap setObject: n
-                        forKey: v];
-  [self _refreshView];
+  if (_hasEqualSpacing == NO)
+    {
+      NSNumber *n = [NSNumber numberWithFloat: spacing];
+      [_customSpacingMap setObject: n
+                            forKey: v];
+      [self _refreshView];
+    }
 }
 
 - (CGFloat) customSpacingAfterView: (NSView *)v
@@ -281,13 +284,12 @@
 
 - (void) setHasEqualSpacing: (BOOL)f
 {
-  // deprecated
+  _hasEqualSpacing = f;
 }
 
 - (BOOL) hasEqualSpacing
 {
-  // deprecated
-  return NO;
+  return _hasEqualSpacing;
 }
 
 - (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity

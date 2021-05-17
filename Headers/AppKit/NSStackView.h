@@ -79,6 +79,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   CGFloat _spacing;
   BOOL _detachesHiddenViews;
   BOOL _hasFlagViewHierarchy;
+  BOOL _hasEqualSpacing;
   NSMutableArray *_arrangedSubviews;
   NSMutableArray *_detachedViews;
   NSMutableArray *_views;
