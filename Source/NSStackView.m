@@ -384,6 +384,8 @@
     {
       [coder encodeInteger: _alignment forKey: @"NSStackViewAlignment"];
       [coder encodeObject: _beginningContainer forKey: @"NSStackViewBeginningContainer"];
+      [coder encodeObject: _middleContainer forKey: @"NSStackViewMiddleContainer"];
+      [coder encodeObject: _endContainer forKey: @"NSStackViewEndContainer"];
       [coder encodeBool: _detachesHiddenViews forKey: @"NSStackViewDetachesHiddenViews"];
       [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.bottom"];
       [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.left"];
@@ -404,6 +406,8 @@
       [coder encodeValueOfObjCType: @encode(NSUInteger)
                                 at: &_alignment];
       [coder encodeObject: _beginningContainer];
+      [coder encodeObject: _middleContainer];
+      [coder encodeObject: _endContainer];
       [coder encodeValueOfObjCType: @encode(BOOL)
                                 at: &_detachesHiddenViews];
       [coder encodeValueOfObjCType: @encode(CGFloat)
@@ -449,6 +453,14 @@
           if ([coder containsValueForKey: @"NSStackViewBeginningContainer"])
             {
               _beginningContainer = [coder decodeObjectForKey: @"NSStackViewBeginningContainer"];
+            }
+          if ([coder containsValueForKey: @"NSStackViewMiddleContainer"])
+            {
+              _middleContainer = [coder decodeObjectForKey: @"NSStackViewMiddleContainer"];
+            }
+          if ([coder containsValueForKey: @"NSStackViewEndContainer"])
+            {
+              _endContainer = [coder decodeObjectForKey: @"NSStackViewEndContainer"];
             }
           if ([coder containsValueForKey: @"NSStackViewDetachesHiddenViews"])
             {

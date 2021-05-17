@@ -83,7 +83,11 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSMutableArray *_arrangedSubviews;
   NSMutableArray *_detachedViews;
   NSMutableArray *_views;
-  NSView *_beginningContainer;
+
+  // Containers
+  NSMutableArray *_beginningContainer;
+  NSMutableArray *_middleContainer;
+  NSMutableArray *_endContainer;
 
   // Gravity
   NSMutableArray *_topGravity;
