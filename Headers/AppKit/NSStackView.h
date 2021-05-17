@@ -1,7 +1,7 @@
 /* Definition of class NSStackView
    Copyright (C) 2020 Free Software Foundation, Inc.
    
-   By: Gregory John Casamento
+   By: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 08-08-2020
 
    This file is part of the GNUstep Library.
@@ -82,10 +82,16 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSMutableArray *_arrangedSubviews;
   NSMutableArray *_detachedViews;
   NSMutableArray *_views;
+
+  // Gravity
+  NSView *_topGravity;
+  NSView *_leadingGravity;
+  NSView *_centerGravity;
+  NSView *_bottomGravity;
+  NSView *_trailingGravity;
+  
   NSMapTable *_customSpacingMap;
-  NSMapTable *_gravityMap;
   NSMapTable *_visiblePriorityMap;
-  NSMapTable *_clippingMap;
 }
 
 // Properties

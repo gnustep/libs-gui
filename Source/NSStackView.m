@@ -1,7 +1,7 @@
 /* Implementation of class NSStackView
    Copyright (C) 2020 Free Software Foundation, Inc.
    
-   By: Gregory John Casamento
+   By: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 08-08-2020
 
    This file is part of the GNUstep Library.
@@ -25,7 +25,15 @@
 #import "AppKit/NSStackView.h"
 #import "GSFastEnumeration.h"
 
+@interface NSView (__NSViewPrivateMethods__)
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@end
+
 @implementation NSStackView
+
+- (void) _refreshView
+{
+}
 
 // Properties
 - (void) setDelegate: (id<NSStackViewDelegate>)delegate
@@ -41,6 +49,7 @@
 - (void) setOrientation: (NSUserInterfaceLayoutOrientation)o
 {
   _orientation = o;
+  [self _refreshView];
 }
 
 - (NSUserInterfaceLayoutOrientation) orientation
@@ -51,6 +60,7 @@
 - (void) setAlignment: (NSLayoutAttribute)alignment
 {
   _alignment = alignment;
+  [self _refreshView];
 }
 
 - (NSLayoutAttribute) alignment
@@ -61,6 +71,7 @@
 - (void) setEdgeInsets: (NSEdgeInsets)insets
 {
   _edgeInsets = insets;
+  [self _refreshView];
 }
 
 - (NSEdgeInsets) edgeInsets
@@ -71,6 +82,7 @@
 - (void) setDistribution: (NSStackViewDistribution)d
 {
   _distribution = d;
+  [self _refreshView];
 }
 
 - (NSStackViewDistribution) distribution
@@ -81,6 +93,7 @@
 - (void) setSpacing: (CGFloat)f
 {
   _spacing = f;
+  [self _refreshView];
 }
 
 - (CGFloat) spacing
@@ -129,9 +142,16 @@
       _detachedViews = [[NSMutableArray alloc] initWithCapacity: [views count]];
       ASSIGNCOPY(_views, views);
       _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
-      _gravityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
-      _clippingMap = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+
+      // Gravity...
+      _topGravity = [[NSView alloc] init];
+      _leadingGravity = [[NSView alloc] init];
+      _centerGravity = [[NSView alloc] init];
+      _bottomGravity = [[NSView alloc] init];
+      _trailingGravity = [[NSView alloc] init];
+
+      [self _refreshView];
     }
   return self;
 }
@@ -142,16 +162,21 @@
   RELEASE(_detachedViews);
   RELEASE(_views);
   RELEASE(_customSpacingMap);
-  RELEASE(_gravityMap);
   RELEASE(_visiblePriorityMap);
-  RELEASE(_clippingMap);
+
+  RELEASE(_topGravity);
+  RELEASE(_leadingGravity);
+  RELEASE(_centerGravity);
+  RELEASE(_bottomGravity);
+  RELEASE(_trailingGravity);
+  
   _delegate = nil;
   [super dealloc];
 }
 
 + (instancetype) stackViewWithViews: (NSArray *)views
 {
-  return [[self alloc] initWithViews: views];
+  return AUTORELEASE([[self alloc] initWithViews: views]);
 }
 
 - (void) setCustomSpacing: (CGFloat)spacing afterView: (NSView *)v
@@ -264,10 +289,42 @@
 
 - (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity
 {
+  switch (gravity)
+    {
+    case NSStackViewGravityTop:  // or leading...
+      [_topGravity addSubview: view];
+      break;
+    case NSStackViewGravityCenter:
+      [_centerGravity addSubview: view];
+      break;
+    case NSStackViewGravityBottom:
+      [_bottomGravity addSubview: view]; // or trailing...
+      break;
+    default:
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Attempt to add view %@ to unknown gravity.", view];
+      break;
+    }
 }
 
 - (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity
 {
+  switch (gravity)
+    {
+    case NSStackViewGravityTop:  // or leading...
+      [_topGravity _insertSubview: view atIndex: index];
+      break;
+    case NSStackViewGravityCenter:
+      [_centerGravity _insertSubview: view atIndex: index];
+      break;
+    case NSStackViewGravityBottom:
+      [_bottomGravity _insertSubview: view atIndex: index]; // or trailing...
+      break;
+    default:
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Attempt insert view %@ to unknown gravity.", view];
+      break;
+    }
 }
 
 - (void)removeView: (NSView *)view
@@ -297,6 +354,9 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+    }
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
