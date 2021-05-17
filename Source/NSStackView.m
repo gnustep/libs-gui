@@ -25,10 +25,6 @@
 #import "AppKit/NSStackView.h"
 #import "GSFastEnumeration.h"
 
-@interface NSView (__NSViewPrivateMethods__)
-- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
-@end
-
 @implementation NSStackView
 
 - (void) _refreshView
@@ -138,18 +134,20 @@
   self = [super init];
   if (self != nil)
     {
+      NSUInteger c = [views count];
+      
       _arrangedSubviews = [[NSMutableArray alloc] initWithArray: views];
-      _detachedViews = [[NSMutableArray alloc] initWithCapacity: [views count]];
+      _detachedViews = [[NSMutableArray alloc] initWithCapacity: c];
       ASSIGNCOPY(_views, views);
       _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 
       // Gravity...
-      _topGravity = [[NSView alloc] init];
-      _leadingGravity = [[NSView alloc] init];
-      _centerGravity = [[NSView alloc] init];
-      _bottomGravity = [[NSView alloc] init];
-      _trailingGravity = [[NSView alloc] init];
+      _topGravity = [[NSMutableArray alloc] init];
+      _leadingGravity = [[NSMutableArray alloc] initWithCapacity: c];
+      _centerGravity = [[NSMutableArray alloc] initWithCapacity: c];
+      _bottomGravity = [[NSMutableArray alloc] initWithCapacity: c]; 
+      _trailingGravity = [[NSMutableArray alloc] initWithCapacity: c];
 
       [self _refreshView];
     }
@@ -184,6 +182,7 @@
   NSNumber *n = [NSNumber numberWithFloat: spacing];
   [_customSpacingMap setObject: n
                         forKey: v];
+  [self _refreshView];
 }
 
 - (CGFloat) customSpacingAfterView: (NSView *)v
@@ -194,6 +193,7 @@
 - (void) addArrangedSubview: (NSView *)v
 {
   [_arrangedSubviews addObject: v];
+  [self _refreshView];
 }
 
 - (void) insertArrangedSubview: (NSView *)v atIndex: (NSInteger)idx
@@ -213,6 +213,7 @@
   NSNumber *n = [NSNumber numberWithInteger: priority];
   [_visiblePriorityMap setObject: n
                           forKey: v];
+  [self _refreshView];
 }
 
 - (NSStackViewVisibilityPriority) visibilityPriorityForView: (NSView *)v
@@ -227,11 +228,11 @@
   NSLayoutPriority p = 0L;
   if (o == NSLayoutConstraintOrientationHorizontal)
     {
-      p = _horizontalResistancePriority;
+      p = _horizontalClippingResistancePriority;
     }
   else if (o == NSLayoutConstraintOrientationVertical)
     {
-      p = _verticalResistancePriority;
+      p = _verticalClippingResistancePriority;
     }
   return p;
 }
@@ -241,12 +242,13 @@
 {
   if (o == NSLayoutConstraintOrientationHorizontal)
     {
-      _horizontalResistancePriority = clippingResistancePriority;
+      _horizontalClippingResistancePriority = clippingResistancePriority;
     }
   else if (o == NSLayoutConstraintOrientationVertical)
     {
-      _verticalResistancePriority = clippingResistancePriority;
-    }  
+      _verticalClippingResistancePriority = clippingResistancePriority;
+    }
+  [self _refreshView];
 }
 
 - (NSLayoutPriority) huggingPriorityForOrientation: (NSLayoutConstraintOrientation)o
@@ -274,6 +276,7 @@
     {
       _verticalHuggingPriority = huggingPriority;
     }
+  [self _refreshView];
 }
 
 - (void) setHasEqualSpacing: (BOOL)f
@@ -292,19 +295,20 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      [_topGravity addSubview: view];
+      [_topGravity addObject: view];
       break;
     case NSStackViewGravityCenter:
-      [_centerGravity addSubview: view];
+      [_centerGravity addObject: view];
       break;
     case NSStackViewGravityBottom:
-      [_bottomGravity addSubview: view]; // or trailing...
+      [_bottomGravity addObject: view]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
                   format: @"Attempt to add view %@ to unknown gravity.", view];
       break;
     }
+  [self _refreshView];
 }
 
 - (void)insertView: (NSView *)view atIndex: (NSUInteger)index inGravity: (NSStackViewGravity)gravity
@@ -312,28 +316,48 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      [_topGravity _insertSubview: view atIndex: index];
+      [_topGravity insertObject: view atIndex: index];
       break;
     case NSStackViewGravityCenter:
-      [_centerGravity _insertSubview: view atIndex: index];
+      [_centerGravity insertObject: view atIndex: index];
       break;
     case NSStackViewGravityBottom:
-      [_bottomGravity _insertSubview: view atIndex: index]; // or trailing...
+      [_bottomGravity insertObject: view atIndex: index]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
                   format: @"Attempt insert view %@ at index %ld to unknown gravity.", view, index];
       break;
     }
+  [self _refreshView];
 }
 
 - (void)removeView: (NSView *)view
 {
+  [view removeFromSuperview];
+  [self _refreshView];
 }
 
 - (NSArray *) viewsInGravity: (NSStackViewGravity)gravity
 {
-  return nil;
+  NSArray *result = nil;
+  switch (gravity)
+    {
+    case NSStackViewGravityTop:  // or leading...
+      result = [_topGravity copy];
+      break;
+    case NSStackViewGravityCenter:
+      result = [_centerGravity copy];
+      break;
+    case NSStackViewGravityBottom:
+      result = [_bottomGravity copy]; // or trailing...
+      break;
+    default:
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Attempt get array of views from unknown gravity."];
+      break;
+    }
+  return result;
 }
 
 - (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity
@@ -356,6 +380,7 @@
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
+      
     }
 }
 
@@ -372,7 +397,7 @@
             }
           if ([coder containsValueForKey: @"NSStackViewBeginningContainer"])
             {
-              
+              _beginningContainer = [coder decodeObjectForKey: @"NSStackViewBeginningContainer"];
             }
           if ([coder containsValueForKey: @"NSStackViewDetachesHiddenViews"])
             {
@@ -400,7 +425,7 @@
             }
           if ([coder containsValueForKey: @"NSStackViewHorizontalClippingResistance"])
             {
-              _horizontalResistancePriority = [coder decodeFloatForKey: @"NSStackViewHorizontalClippingResistance"];
+              _horizontalClippingResistancePriority = [coder decodeFloatForKey: @"NSStackViewHorizontalClippingResistance"];
             }
           if ([coder containsValueForKey: @"NSStackViewHorizontalHugging"])
             {
@@ -420,7 +445,7 @@
             }
           if ([coder containsValueForKey: @"NSStackViewVerticalClippingResistance"])
             {
-              _verticalResistancePriority = [coder decodeFloatForKey: @"NSStackViewVerticalClippingResistance"];
+              _verticalClippingResistancePriority = [coder decodeFloatForKey: @"NSStackViewVerticalClippingResistance"];
             }
           if ([coder containsValueForKey: @"NSStackViewVerticalHugging"])
             {
@@ -433,7 +458,39 @@
         }
       else
         {
+          [coder decodeValueOfObjCType: @encode(NSUInteger)
+                                    at: &_alignment];
+          ASSIGN(_beginningContainer, [coder decodeObject]);
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_detachesHiddenViews];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_edgeInsets.bottom];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_edgeInsets.left];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_edgeInsets.right];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_edgeInsets.top];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_hasFlagViewHierarchy];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_horizontalClippingResistancePriority];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_horizontalHuggingPriority];
+          [coder decodeValueOfObjCType: @encode(NSInteger)
+                                    at: &_orientation];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_secondaryAlignment];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_spacing];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_verticalClippingResistancePriority];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_verticalHuggingPriority];
+          [coder decodeValueOfObjCType: @encode(NSInteger)
+                                    at: &_distribution];
         }
+      [self _refreshView];
     }
   return self;
 }

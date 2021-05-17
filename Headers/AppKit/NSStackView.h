@@ -70,8 +70,8 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSUserInterfaceLayoutOrientation _orientation;
   NSLayoutPriority _horizontalHuggingPriority;
   NSLayoutPriority _verticalHuggingPriority;
-  NSLayoutPriority _horizontalResistancePriority;
-  NSLayoutPriority _verticalResistancePriority;
+  NSLayoutPriority _horizontalClippingResistancePriority;
+  NSLayoutPriority _verticalClippingResistancePriority;
   NSLayoutAttribute _alignment;
   NSLayoutAttribute _secondaryAlignment;
   NSEdgeInsets _edgeInsets;
@@ -82,13 +82,14 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
   NSMutableArray *_arrangedSubviews;
   NSMutableArray *_detachedViews;
   NSMutableArray *_views;
+  NSView *_beginningContainer;
 
   // Gravity
-  NSView *_topGravity;
-  NSView *_leadingGravity;
-  NSView *_centerGravity;
-  NSView *_bottomGravity;
-  NSView *_trailingGravity;
+  NSMutableArray *_topGravity;
+  NSMutableArray *_leadingGravity;
+  NSMutableArray *_centerGravity;
+  NSMutableArray *_bottomGravity;
+  NSMutableArray *_trailingGravity;
   
   NSMapTable *_customSpacingMap;
   NSMapTable *_visiblePriorityMap;
@@ -139,7 +140,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 - (NSStackViewVisibilityPriority) visibilityPriorityForView: (NSView *)v;
  
 - (NSLayoutPriority)clippingResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation;
-- (void) setClippingResistancePriority: (NSLayoutPriority)clippingResistancePriority
+- (void) setClippingResistancePriority: (NSLayoutPriority)clippingResistancePriorityn
                         forOrientation: (NSLayoutConstraintOrientation)orientation;
 
 - (NSLayoutPriority) huggingPriorityForOrientation: (NSLayoutConstraintOrientation)o;
