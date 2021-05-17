@@ -380,7 +380,56 @@
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
-      
+      [coder encodeInteger: _alignment forKey: @"NSStackViewAlignment"];
+      [coder encodeObject: _beginningContainer forKey: @"NSStackViewBeginningContainer"];
+      [coder encodeBool: _detachesHiddenViews forKey: @"NSStackViewDetachesHiddenViews"];
+      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.bottom"];
+      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.left"];
+      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.right"];
+      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.top"];
+      [coder encodeBool: _hasFlagViewHierarchy forKey: @"NSStackViewHasFlagViewHierarchy"];
+      [coder encodeFloat: _horizontalClippingResistancePriority forKey: @"NSStackViewHorizontalClippingResistance"];
+      [coder encodeFloat: _horizontalHuggingPriority forKey: @"NSStackViewHorizontalHuggingPriority"];
+      [coder encodeInteger: _orientation forKey: @"NSStackViewOrientation"];
+      [coder encodeInteger: _alignment forKey: @"NSStackViewSecondaryAlignment"];
+      [coder encodeFloat: _spacing forKey: @"NSStackViewSpacing"];
+      [coder encodeFloat: _verticalClippingResistancePriority forKey: @"NSStackViewVerticalClippingResistance"];
+      [coder encodeFloat: _verticalHuggingPriority forKey: @"NSStackViewVerticalHuggingPriority"];
+      [coder encodeInteger: _distribution forKey: @"NSStackViewdistribution"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(NSUInteger)
+                                at: &_alignment];
+      [coder encodeObject: _beginningContainer];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_detachesHiddenViews];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_edgeInsets.bottom];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_edgeInsets.left];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_edgeInsets.right];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_edgeInsets.top];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_hasFlagViewHierarchy];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_horizontalClippingResistancePriority];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_horizontalHuggingPriority];
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_orientation];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_secondaryAlignment];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_spacing];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_verticalClippingResistancePriority];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_verticalHuggingPriority];
+      [coder encodeValueOfObjCType: @encode(NSInteger)
+                                at: &_distribution];
     }
 }
 
@@ -427,7 +476,7 @@
             {
               _horizontalClippingResistancePriority = [coder decodeFloatForKey: @"NSStackViewHorizontalClippingResistance"];
             }
-          if ([coder containsValueForKey: @"NSStackViewHorizontalHugging"])
+          if ([coder containsValueForKey: @"NSStackViewHorizontalHuggingPriority"])
             {
               _horizontalHuggingPriority = [coder decodeFloatForKey: @"NSStackViewHorizontalHuggingPriority"];
             }
