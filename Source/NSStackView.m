@@ -322,7 +322,7 @@
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt insert view %@ to unknown gravity.", view];
+                  format: @"Attempt insert view %@ at index %ld to unknown gravity.", view, index];
       break;
     }
 }
