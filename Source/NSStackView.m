@@ -25,19 +25,46 @@
 #import "AppKit/NSStackView.h"
 #import "GSFastEnumeration.h"
 
-@interface NSView (Private)
-- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@interface NSView (__NSViewPrivateMethods__)
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx; // implemented in NSView.m
+@end
+
+@interface NSView (__StackViewPrivate__)
+- (void) insertView: (NSView *)v atIndex: (NSUInteger)i;
+- (void) removeAllSubviews;
+- (void) addSubviews: (NSArray *)views;
+@end
+
+@implementation NSView (__StackViewPrivate__)
+- (void) insertView: (NSView *)v atIndex: (NSUInteger)i
+{
+  [self _insertSubview: v atIndex: i];
+}
+
+- (void) removeAllSubviews
+{
+  NSArray *subviews = [self subviews];
+  FOR_IN(NSView*, v, subviews)
+    {
+      [v removeFromSuperview];
+    }
+  END_FOR_IN(subviews);
+}
+
+- (void) addSubviews: (NSArray *)views
+{
+  FOR_IN(NSView*, v, views)
+    {
+      [self addSubview: v];
+    }
+  END_FOR_IN(views);
+}
 @end
 
 @interface NSStackViewContainer : NSView
-- (void) insertView: (NSView *)v atIndex: (NSUInteger)i;
 @end
 
 @implementation NSStackViewContainer
-- (void) insertView: (NSView *)v atIndex: (NSUInteger)i
-{
-  [super _insertSubview: v atIndex: i];
-}
 @end
 
 @implementation NSStackView
@@ -318,7 +345,7 @@
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt to add view %@ to unknown container.", view];
+                  format: @"Attempt to add view %@ to unknown container %ld.", view, gravity];
       break;
     }
   [self _refreshView];
@@ -339,7 +366,7 @@
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt insert view %@ at index %ld into unknown container.", view, index];
+                  format: @"Attempt insert view %@ at index %ld into unknown container %ld.", view, index, gravity];
       break;
     }
   [self _refreshView];
@@ -367,7 +394,7 @@
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt get array of views from unknown gravity."];
+                  format: @"Attempt get array of views from unknown gravity %ld.", gravity];
       break;
     }
   return result;
@@ -375,11 +402,32 @@
 
 - (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity
 {
+  switch (gravity)
+    {
+    case NSStackViewGravityTop:  // or leading...
+      [_beginningContainer removeAllSubviews];
+      [_beginningContainer addSubviews: views];
+      break;
+    case NSStackViewGravityCenter:
+      [_middleContainer removeAllSubviews];
+      [_middleContainer addSubviews: views];
+      break;
+    case NSStackViewGravityBottom:
+      [_endContainer removeAllSubviews];
+      [_endContainer addSubviews: views];
+      break;
+    default:
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Attempt set array of views %@ into unknown gravity %ld.", views, gravity];
+      break;
+    }
+  [self _refreshView];
 }
 
 - (void) setViews: (NSArray *)views
 {
   ASSIGN(_arrangedSubviews, views);
+  [self _refreshView];
 }
 
 - (NSArray *) views
@@ -570,5 +618,4 @@
 }
   
 @end
-
 
