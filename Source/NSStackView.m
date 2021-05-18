@@ -25,6 +25,21 @@
 #import "AppKit/NSStackView.h"
 #import "GSFastEnumeration.h"
 
+@interface NSView (Private)
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@end
+
+@interface NSStackViewContainer : NSView
+- (void) insertView: (NSView *)v atIndex: (NSUInteger)i;
+@end
+
+@implementation NSStackViewContainer
+- (void) insertView: (NSView *)v atIndex: (NSUInteger)i
+{
+  [super _insertSubview: v atIndex: i];
+}
+@end
+
 @implementation NSStackView
 
 - (void) _refreshView
@@ -143,11 +158,9 @@
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 
       // Gravity...
-      _topGravity = [[NSMutableArray alloc] init];
-      _leadingGravity = [[NSMutableArray alloc] initWithCapacity: c];
-      _centerGravity = [[NSMutableArray alloc] initWithCapacity: c];
-      _bottomGravity = [[NSMutableArray alloc] initWithCapacity: c]; 
-      _trailingGravity = [[NSMutableArray alloc] initWithCapacity: c];
+      _beginningContainer = [[NSStackViewContainer alloc] init];
+      _middleContainer = [[NSStackViewContainer alloc] init]; 
+      _endContainer = [[NSStackViewContainer alloc] init];
 
       [self _refreshView];
     }
@@ -162,11 +175,9 @@
   RELEASE(_customSpacingMap);
   RELEASE(_visiblePriorityMap);
 
-  RELEASE(_topGravity);
-  RELEASE(_leadingGravity);
-  RELEASE(_centerGravity);
-  RELEASE(_bottomGravity);
-  RELEASE(_trailingGravity);
+  RELEASE(_beginningContainer);
+  RELEASE(_middleContainer);
+  RELEASE(_endContainer);
   
   _delegate = nil;
   [super dealloc];
@@ -297,17 +308,17 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      [_topGravity addObject: view];
+      [_beginningContainer addSubview: view];
       break;
     case NSStackViewGravityCenter:
-      [_centerGravity addObject: view];
+      [_middleContainer addSubview: view];
       break;
     case NSStackViewGravityBottom:
-      [_bottomGravity addObject: view]; // or trailing...
+      [_endContainer addSubview: view]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt to add view %@ to unknown gravity.", view];
+                  format: @"Attempt to add view %@ to unknown container.", view];
       break;
     }
   [self _refreshView];
@@ -318,17 +329,17 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      [_topGravity insertObject: view atIndex: index];
+      [_beginningContainer insertView: view atIndex: index];
       break;
     case NSStackViewGravityCenter:
-      [_centerGravity insertObject: view atIndex: index];
+      [_middleContainer insertView: view atIndex: index];
       break;
     case NSStackViewGravityBottom:
-      [_bottomGravity insertObject: view atIndex: index]; // or trailing...
+      [_endContainer insertView: view atIndex: index]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt insert view %@ at index %ld to unknown gravity.", view, index];
+                  format: @"Attempt insert view %@ at index %ld into unknown container.", view, index];
       break;
     }
   [self _refreshView];
@@ -346,13 +357,13 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      result = [_topGravity copy];
+      result = [_beginningContainer copy];
       break;
     case NSStackViewGravityCenter:
-      result = [_centerGravity copy];
+      result = [_middleContainer copy];
       break;
     case NSStackViewGravityBottom:
-      result = [_bottomGravity copy]; // or trailing...
+      result = [_endContainer copy]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
