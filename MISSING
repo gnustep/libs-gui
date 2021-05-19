@@ -15,7 +15,7 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder, x = won't do )
 > NSGlyphInfo.h -
 > NSItemProvider.h + 
 > NSMenuToolbarItem.h -
-> NSOpenGLLayer.h +
+> NSOpenGLLayer.h x - header only
 > NSTableCellView.h *
 > NSTableRowView.h *
 > NSTableViewRowAction.h *

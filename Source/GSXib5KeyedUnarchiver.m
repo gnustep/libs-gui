@@ -299,7 +299,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"string", @"NS.relative",
                                            @"canPropagateSelectedChildViewControllerTitle",
                                                    @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
-                                           @"rowAlignment", @"NSGrid_alignment",
+                                           @"rowAlignment", @"NSGrid_alignment",  // NSGridView
                                            @"rowSpacing", @"NSGrid_rowSpacing",
                                            @"columnSpacing", @"NSGrid_columnSpacing",
                                            @"hidden", @"NSGrid_hidden",
@@ -317,6 +317,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"contentView", @"NSGrid_content",
                                            @"row", @"NSGrid_owningRow",
                                            @"column", @"NSGrid_owningColumn",
+                                           @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
+                                           @"middleViews", @"NSStackViewMiddleContainer",
+                                           @"endViews", @"NSStackViewEndContainer",
+                                           @"orientation", @"NSStackViewOrientation",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -365,6 +369,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeOrientationForElement:", @"NSStackViewOrientation",
                @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
                @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
                @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
@@ -3042,6 +3047,26 @@ didStartElement: (NSString*)elementName
 {
   id obj = [element attributeForKey: @"yPlacement"];
   return [self _decodePlacementForObject: obj];
+}
+
+- (id) _decodeOrientationForObject: (id)obj
+{
+  NSLayoutConstraintOrientation orientation = 0L;
+  if ([obj isEqualToString: @"vertical"])
+    {
+      orientation = NSLayoutConstraintOrientationVertical;
+    }
+  else if ([obj isEqualToString: @"horizontal"])
+    {
+      orientation = NSLayoutConstraintOrientationHorizontal;
+    }
+  return [NSNumber numberWithInteger: orientation];
+}
+
+- (id) decodeOrientationForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"orientation"];
+  return [self _decodeOrientationForObject: obj];
 }
 
 - (id) decodeRowAlignmentForElement: (GSXibElement *)element

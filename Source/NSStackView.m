@@ -71,6 +71,78 @@
 
 - (void) _refreshView
 {
+  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+    {
+      if (_beginningContainer != nil) // if one exists, they all do...
+        {
+          NSSize s = [self frame].size;
+          CGFloat w = s.width / 3.0; // three sections, always.
+          CGFloat h = s.height; // since we are horiz. the height is the height of the view
+          NSUInteger i = 0;
+          CGFloat y = 0.0;
+          CGFloat x = 0.0;
+          
+          for (i = 0; i < 3; i++)
+            {
+              NSRect f;
+
+              x = w * (CGFloat)i;
+              f = NSMakeRect(x,y,w,h);
+              
+              if (i == 0)
+                {
+                  [_beginningContainer setFrame: f];
+                  [self addSubview: _beginningContainer];
+                }
+              if (i == 1)
+                {
+                  [_middleContainer setFrame: f];
+                  [self addSubview: _middleContainer];
+                }
+              if (i == 2)
+                {
+                  [_endContainer setFrame: f];
+                  [self addSubview: _endContainer];
+                }
+            }
+        }
+    }
+  else
+    {
+      if (_beginningContainer != nil) // if one exists, they all do...
+        {
+          NSSize s = [self frame].size;
+          CGFloat w = s.width; // since vert... w is constant...
+          CGFloat h = s.height / 3.0; // 3 sections
+          NSUInteger i = 0;
+          CGFloat y = 0.0;
+          CGFloat x = 0.0;
+          
+          for (i = 0; i < 3; i++)
+            {
+              NSRect f;
+
+              x = h * (CGFloat)i;
+              f = NSMakeRect(x,y,w,h);
+              
+              if (i == 0)
+                {
+                  [_beginningContainer setFrame: f];
+                  [self addSubview: _beginningContainer];
+                }
+              if (i == 1)
+                {
+                  [_middleContainer setFrame: f];
+                  [self addSubview: _middleContainer];
+                }
+              if (i == 2)
+                {
+                  [_endContainer setFrame: f];
+                  [self addSubview: _endContainer];
+                }
+            }
+        }
+    }
 }
 
 // Properties
@@ -184,10 +256,10 @@
       _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 
-      // Gravity...
-      _beginningContainer = [[NSStackViewContainer alloc] init];
-      _middleContainer = [[NSStackViewContainer alloc] init]; 
-      _endContainer = [[NSStackViewContainer alloc] init];
+      // Gravity...  not used by default.
+      _beginningContainer = nil; // [[NSStackViewContainer alloc] init];
+      _middleContainer = nil; // [[NSStackViewContainer alloc] init]; 
+      _endContainer = nil; // [[NSStackViewContainer alloc] init];
 
       [self _refreshView];
     }
