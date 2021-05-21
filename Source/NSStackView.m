@@ -71,9 +71,11 @@
 
 - (void) _refreshView
 {
+  NSLog(@"orientation = %ld", _orientation);
+  NSLog(@"distribution = %ld, _beginningContainer = %@", _distribution, _beginningContainer);
   if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
     {
-      if (_beginningContainer != nil) // if one exists, they all do...
+      if (_beginningContainer != nil)
         {
           NSSize s = [self frame].size;
           CGFloat w = s.width / 3.0; // three sections, always.
@@ -81,6 +83,8 @@
           NSUInteger i = 0;
           CGFloat y = 0.0;
           CGFloat x = 0.0;
+
+          NSLog(@"Size = %@", NSStringFromSize(s));
           
           for (i = 0; i < 3; i++)
             {
@@ -117,27 +121,32 @@
           NSUInteger i = 0;
           CGFloat y = 0.0;
           CGFloat x = 0.0;
+
+          NSLog(@"V. Size = %@", NSStringFromSize(s));
           
           for (i = 0; i < 3; i++)
             {
               NSRect f;
 
-              x = h * (CGFloat)i;
+              y = h * (CGFloat)i;
               f = NSMakeRect(x,y,w,h);
               
               if (i == 0)
                 {
                   [_beginningContainer setFrame: f];
+                  NSLog(@"Adding beginning container with frame %@", NSStringFromRect(f));
                   [self addSubview: _beginningContainer];
                 }
               if (i == 1)
                 {
                   [_middleContainer setFrame: f];
+                  NSLog(@"Adding mid container with frame %@", NSStringFromRect(f));
                   [self addSubview: _middleContainer];
                 }
               if (i == 2)
                 {
                   [_endContainer setFrame: f];
+                  NSLog(@"Adding end container with frame %@", NSStringFromRect(f));
                   [self addSubview: _endContainer];
                 }
             }
@@ -404,22 +413,30 @@
 
 - (void)addView: (NSView *)view inGravity: (NSStackViewGravity)gravity
 {
-  switch (gravity)
+  if (_beginningContainer != nil)
     {
-    case NSStackViewGravityTop:  // or leading...
-      [_beginningContainer addSubview: view];
-      break;
-    case NSStackViewGravityCenter:
-      [_middleContainer addSubview: view];
-      break;
-    case NSStackViewGravityBottom:
-      [_endContainer addSubview: view]; // or trailing...
-      break;
-    default:
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt to add view %@ to unknown container %ld.", view, gravity];
-      break;
+      switch (gravity)
+        {
+        case NSStackViewGravityTop:  // or leading...
+          [_beginningContainer addSubview: view];
+          break;
+        case NSStackViewGravityCenter:
+          [_middleContainer addSubview: view];
+          break;
+        case NSStackViewGravityBottom:
+          [_endContainer addSubview: view]; // or trailing...
+          break;
+        default:
+          [NSException raise: NSInternalInconsistencyException
+                      format: @"Attempt to add view %@ to unknown container %ld.", view, gravity];
+          break;
+        }
     }
+  else
+    {
+      [self addSubview: view];
+    }
+  
   [self _refreshView];
 }
 
@@ -452,47 +469,64 @@
 
 - (NSArray *) viewsInGravity: (NSStackViewGravity)gravity
 {
-  NSArray *result = nil;
-  switch (gravity)
+  NSMutableArray *result = [NSMutableArray array];
+
+  if (_beginningContainer != nil)
     {
-    case NSStackViewGravityTop:  // or leading...
-      result = [_beginningContainer copy];
-      break;
-    case NSStackViewGravityCenter:
-      result = [_middleContainer copy];
-      break;
-    case NSStackViewGravityBottom:
-      result = [_endContainer copy]; // or trailing...
-      break;
-    default:
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt get array of views from unknown gravity %ld.", gravity];
-      break;
+      switch (gravity)
+        {
+        case NSStackViewGravityTop:  // or leading...
+          [result addObjectsFromArray: [_beginningContainer subviews]];
+          break;
+        case NSStackViewGravityCenter:
+          [result addObjectsFromArray: [_middleContainer subviews]];
+          break;
+        case NSStackViewGravityBottom:
+          [result addObjectsFromArray: [_endContainer subviews]];
+          break;
+        default:
+          [NSException raise: NSInternalInconsistencyException
+                      format: @"Attempt get array of views from unknown gravity %ld.", gravity];
+          break;
+        }
     }
+  
   return result;
 }
 
 - (void)setViews: (NSArray *)views inGravity: (NSStackViewGravity)gravity
 {
-  switch (gravity)
+  if (_beginningContainer != nil)
     {
-    case NSStackViewGravityTop:  // or leading...
-      [_beginningContainer removeAllSubviews];
-      [_beginningContainer addSubviews: views];
-      break;
-    case NSStackViewGravityCenter:
-      [_middleContainer removeAllSubviews];
-      [_middleContainer addSubviews: views];
-      break;
-    case NSStackViewGravityBottom:
-      [_endContainer removeAllSubviews];
-      [_endContainer addSubviews: views];
-      break;
-    default:
-      [NSException raise: NSInternalInconsistencyException
-                  format: @"Attempt set array of views %@ into unknown gravity %ld.", views, gravity];
-      break;
+      switch (gravity)
+        {
+        case NSStackViewGravityTop:  // or leading...
+          [_beginningContainer removeAllSubviews];
+          [_beginningContainer addSubviews: views];
+          break;
+        case NSStackViewGravityCenter:
+          [_middleContainer removeAllSubviews];
+          [_middleContainer addSubviews: views];
+          break;
+        case NSStackViewGravityBottom:
+          [_endContainer removeAllSubviews];
+          [_endContainer addSubviews: views];
+          break;
+        default:
+          [NSException raise: NSInternalInconsistencyException
+                      format: @"Attempt set array of views %@ into unknown gravity %ld.", views, gravity];
+          break;
+        }
     }
+  else
+    {
+      FOR_IN(NSView*,v,views)
+        {
+          [self addSubview: v];
+        }
+      END_FOR_IN(views);
+    }
+  
   [self _refreshView];
 }
 
@@ -579,19 +613,20 @@
         {
           if ([coder containsValueForKey: @"NSStackViewAlignment"])
             {
-              _alignment = [coder decodeIntegerForKey: @"NSStackViewAlignment"];
+              _alignment = [coder decodeIntForKey: @"NSStackViewAlignment"];
             }
           if ([coder containsValueForKey: @"NSStackViewBeginningContainer"])
             {
-              _beginningContainer = [coder decodeObjectForKey: @"NSStackViewBeginningContainer"];
+              ASSIGN(_beginningContainer, [coder decodeObjectForKey: @"NSStackViewBeginningContainer"]);
+              NSLog(@"_beginningContainer = %@", _beginningContainer);
             }
           if ([coder containsValueForKey: @"NSStackViewMiddleContainer"])
             {
-              _middleContainer = [coder decodeObjectForKey: @"NSStackViewMiddleContainer"];
+              ASSIGN(_middleContainer, [coder decodeObjectForKey: @"NSStackViewMiddleContainer"]);
             }
           if ([coder containsValueForKey: @"NSStackViewEndContainer"])
             {
-              _endContainer = [coder decodeObjectForKey: @"NSStackViewEndContainer"];
+              ASSIGN(_endContainer, [coder decodeObjectForKey: @"NSStackViewEndContainer"]);
             }
           if ([coder containsValueForKey: @"NSStackViewDetachesHiddenViews"])
             {
@@ -627,7 +662,7 @@
             }
           if ([coder containsValueForKey: @"NSStackViewOrientation"])
             {
-              _orientation = [coder decodeIntegerForKey: @"NSStackViewOrientation"];
+              _orientation = [coder decodeIntForKey: @"NSStackViewOrientation"];
             }
           if ([coder containsValueForKey: @"NSStackViewSecondaryAlignment"])
             {
@@ -647,7 +682,7 @@
             }
           if ([coder containsValueForKey: @"NSStackViewdistribution"])
             {
-              _distribution = [coder decodeIntegerForKey: @"NSStackViewdistribution"];
+              _distribution = [coder decodeIntForKey: @"NSStackViewdistribution"];
             }        
         }
       else

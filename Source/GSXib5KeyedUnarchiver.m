@@ -59,6 +59,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSSliderCell.h"
 #import "AppKit/NSSplitView.h"
+#import "AppKit/NSStackView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSTableView.h"
@@ -224,7 +225,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",
-                            @"NSPageController", @"pagecontroller", // why is pagecontroller capitalized this way?
+                            @"NSPageController", @"pagecontroller", // inconsistent capitalization
+                            @"NSStackViewContainer", @"beginningViews",
+                            @"NSStackViewContainer", @"middleViews",
+                            @"NSStackViewContainer", @"endViews",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -320,7 +324,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
-                                           @"orientation", @"NSStackViewOrientation",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -369,6 +372,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeDistributionForElement:", @"NSStackViewdistribution",
                @"decodeOrientationForElement:", @"NSStackViewOrientation",
                @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
                @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
@@ -3067,6 +3071,42 @@ didStartElement: (NSString*)elementName
 {
   id obj = [element attributeForKey: @"orientation"];
   return [self _decodeOrientationForObject: obj];
+}
+
+- (id) _decodeDistributionForObject: (id)obj
+{
+  NSStackViewDistribution d = 0L;
+  if ([obj isEqualToString: @"equalCentering"])
+    {
+      d = NSStackViewDistributionEqualCentering;
+    }
+  else if ([obj isEqualToString: @"equalSpacing"])
+    {
+      d = NSStackViewDistributionEqualCentering;
+    }
+  else if ([obj isEqualToString: @"fill"])
+    {
+      d = NSStackViewDistributionFill;
+    }
+  else if ([obj isEqualToString: @"fillEqually"])
+    {
+      d = NSStackViewDistributionFillEqually;
+    }
+  else if ([obj isEqualToString: @"fillProportionally"])
+    {
+      d = NSStackViewDistributionFillProportionally;
+    }
+  else if ([obj isEqualToString: @"gravityAreas"])
+    {
+      d = NSStackViewDistributionEqualCentering;
+    }
+  return [NSNumber numberWithInteger: d];
+}
+
+- (id) decodeDistributionForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"distribution"];
+  return [self _decodeDistributionForObject: obj];
 }
 
 - (id) decodeRowAlignmentForElement: (GSXibElement *)element
