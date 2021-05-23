@@ -73,6 +73,7 @@
 {
   NSLog(@"orientation = %ld", _orientation);
   NSLog(@"distribution = %ld, _beginningContainer = %@", _distribution, _beginningContainer);
+
   if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
     {
       if (_beginningContainer != nil)
@@ -84,7 +85,7 @@
           CGFloat y = 0.0;
           CGFloat x = 0.0;
 
-          NSLog(@"Size = %@", NSStringFromSize(s));
+          // NSLog(@"Size = %@", NSStringFromSize(s));
           
           for (i = 0; i < 3; i++)
             {
@@ -122,7 +123,7 @@
           CGFloat y = 0.0;
           CGFloat x = 0.0;
 
-          NSLog(@"V. Size = %@", NSStringFromSize(s));
+          // NSLog(@"V. Size = %@", NSStringFromSize(s));
           
           for (i = 0; i < 3; i++)
             {
@@ -151,7 +152,44 @@
                 }
             }
         }
+      else
+        {
+          NSRect frame = [self frame];
+          NSSize s = frame.size;
+          NSArray *sv = [self subviews];
+          NSUInteger n = [sv count] + 1;
+          CGFloat h = (s.height / (CGFloat)n); // / 2.0;
+          NSRect newFrame = frame;
+          newFrame.size.height += h * 2; // expand height
+          newFrame.origin.y -= h; // move the view down.
+          CGFloat y = newFrame.size.height; // start at top of view...
+          NSUInteger i = 0;
+
+          NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
+          [self setFrame: newFrame];
+          FOR_IN(NSView*,v,sv)
+            {
+              NSRect f; 
+              
+              f = [v frame];
+
+              if (f.origin.x < 0.0)
+                {
+                  f.origin.x = 0.0;
+                }
+              
+              y = (newFrame.size.height - ((CGFloat)i * h)) - f.size.height;              
+              f.origin.y = y;
+              [v setFrame: f];
+              NSLog(@"new frame = %@", NSStringFromRect(f));
+              i++;
+            }
+          END_FOR_IN(sv);
+          
+          NSLog(@"Vertical no containers");
+        }
     }
+  [self setNeedsDisplay: YES];
 }
 
 // Properties
