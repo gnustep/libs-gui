@@ -71,6 +71,7 @@
 
 - (void) _refreshView
 {
+  NSRect currentFrame = [self frame];
   NSLog(@"orientation = %ld", _orientation);
   NSLog(@"distribution = %ld, _beginningContainer = %@", _distribution, _beginningContainer);
 
@@ -78,7 +79,7 @@
     {
       if (_beginningContainer != nil)
         {
-          NSSize s = [self frame].size;
+          NSSize s = currentFrame.size;
           CGFloat w = s.width / 3.0; // three sections, always.
           CGFloat h = s.height; // since we are horiz. the height is the height of the view
           NSUInteger i = 0;
@@ -116,7 +117,7 @@
     {
       if (_beginningContainer != nil) // if one exists, they all do...
         {
-          NSSize s = [self frame].size;
+          NSSize s = currentFrame.size;
           CGFloat w = s.width; // since vert... w is constant...
           CGFloat h = s.height / 3.0; // 3 sections
           NSUInteger i = 0;
@@ -154,16 +155,17 @@
         }
       else
         {
-          NSRect frame = [self frame];
-          NSSize s = frame.size;
+          NSSize s = currentFrame.size;
           NSArray *sv = [self subviews];
           NSUInteger n = [sv count] + 1;
           CGFloat h = (s.height / (CGFloat)n); // / 2.0;
-          NSRect newFrame = frame;
+          NSRect newFrame = currentFrame;
+          CGFloat y = 0.0;
+          NSUInteger i = 0;
+          
           newFrame.size.height += h * 2; // expand height
           newFrame.origin.y -= h; // move the view down.
-          CGFloat y = newFrame.size.height; // start at top of view...
-          NSUInteger i = 0;
+          y = newFrame.size.height; // start at top of view...
 
           NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
           [self setFrame: newFrame];
@@ -172,7 +174,6 @@
               NSRect f; 
               
               f = [v frame];
-
               if (f.origin.x < 0.0)
                 {
                   f.origin.x = 0.0;
