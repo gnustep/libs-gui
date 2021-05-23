@@ -157,7 +157,7 @@
         {
           NSSize s = currentFrame.size;
           NSArray *sv = [self subviews];
-          NSUInteger n = [sv count] + 1;
+          NSUInteger n = [sv count];
           CGFloat h = (s.height / (CGFloat)n); // / 2.0;
           NSRect newFrame = currentFrame;
           CGFloat y = 0.0;
