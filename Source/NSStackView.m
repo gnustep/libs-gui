@@ -163,7 +163,7 @@
           CGFloat y = 0.0;
           NSUInteger i = 0;
           
-          newFrame.size.height += h * 2; // expand height
+          newFrame.size.height += h; // * 2; // expand height
           newFrame.origin.y -= h; // move the view down.
           y = newFrame.size.height; // start at top of view...
 
