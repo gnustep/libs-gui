@@ -76,27 +76,54 @@
   NSSize s = currentFrame.size;
   NSArray *sv = [view subviews];
   NSUInteger n = [sv count];
-  CGFloat h = 0.0; 
+  CGFloat sp = 0.0;
+  CGFloat x = 0.0;
   CGFloat y = 0.0;
   CGFloat newHeight = 0.0;
+  CGFloat newWidth = 0.0;
   NSUInteger i = 0;
   
-  h = 0.0;
   if ([view isKindOfClass: [NSStackViewContainer class]])
     {
-      h = (s.height / (CGFloat)n); // / 2.0;
+      sp = (s.height / (CGFloat)n); // / 2.0;
     }
   if ([view isKindOfClass: [NSStackView class]])
     {
-      h = [(NSStackView *)view spacing];
+      sp = [(NSStackView *)view spacing];
     }
 
   NSLog(@"Subviews = %ld", n);
-  NSLog(@"Spacing = %f", h);
-  
-  newFrame.size.height += h; // * 2; // expand height
-  newFrame.origin.y -= (h/2); // move the view down.
-  newHeight = newFrame.size.height; // start at top of view...
+  NSLog(@"Spacing = %f", sp);
+
+  if (o == NSUserInterfaceLayoutOrientationVertical)
+    {
+      if (sp == 0.0)
+        {
+          if (n >= 0)
+            {
+              NSView *v = [sv objectAtIndex: 0];
+              sp = [v frame].size.height;
+            }
+        }
+
+      newFrame.size.height += sp; // * 2; // expand height
+      newFrame.origin.y -= (sp / 2.0); // move the view down.
+      newHeight = newFrame.size.height; // start at top of view...
+    }
+  else
+    {
+      if (sp == 0.0)
+        {
+          if (n >= 0)
+            {
+              NSView *v = [sv objectAtIndex: 0];
+              sp = [v frame].size.width;
+            }
+        }
+
+      newFrame.size.width += sp;
+      newWidth = newFrame.size.width;
+    }
   
   NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
   [view setFrame: newFrame];
@@ -109,17 +136,24 @@
         {
           f.origin.x = 0.0;
         }
+
+      if (o == NSUserInterfaceLayoutOrientationVertical)
+        {
+          y = (newHeight - ((CGFloat)i * sp)) - f.size.height;              
+          f.origin.y = y;
+        }
+      else
+        {
+          x = ((CGFloat)i * sp);
+          f.origin.x = x;
+        }
       
-      y = (newHeight - ((CGFloat)i * h)) - f.size.height;              
-      f.origin.y = y;
       [v setFrame: f];
       NSLog(@"new frame = %@", NSStringFromRect(f));
       i++;
     }
   END_FOR_IN(sv);
   [view setNeedsDisplay: YES];
-  
-  NSLog(@"Vertical no containers");
 }
 
 - (void) _refreshView
@@ -164,6 +198,11 @@
                   [self addSubview: _endContainer];
                 }
             }
+        }
+      else
+        {
+          [self _layoutViewsInView: self withOrientation: _orientation];
+          NSLog(@"Horizontal no containers");
         }
     }
   else
