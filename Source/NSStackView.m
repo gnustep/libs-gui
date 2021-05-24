@@ -95,7 +95,7 @@
   NSLog(@"Spacing = %f", h);
   
   newFrame.size.height += h; // * 2; // expand height
-  newFrame.origin.y -= h; // move the view down.
+  newFrame.origin.y -= (h/2); // move the view down.
   newHeight = newFrame.size.height; // start at top of view...
   
   NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
