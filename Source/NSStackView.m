@@ -23,7 +23,37 @@
 */
 
 #import "AppKit/NSStackView.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSButton.h"
+
 #import "GSFastEnumeration.h"
+
+@interface NSString (__StackViewPrivate__)
+- (NSRect) rectOfString;
+@end
+
+@implementation NSString (__StackViewPrivate__)
+- (NSRect) rectOfString;
+{
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString: self];
+  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+  NSTextContainer *textContainer = [[NSTextContainer alloc] init];
+  
+  [layoutManager addTextContainer:textContainer];
+  [textContainer release];
+  
+  [textStorage addLayoutManager:layoutManager];
+  [layoutManager release];
+  
+  //Figure out the bounding rectangle
+  NSRect stringRect =
+    [layoutManager boundingRectForGlyphRange:NSMakeRange(0, [layoutManager numberOfGlyphs])
+                             inTextContainer:textContainer];
+  return stringRect;
+}
+@end
 
 @interface NSView (__NSViewPrivateMethods__)
 - (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx; // implemented in NSView.m
@@ -92,9 +122,7 @@
       sp = [(NSStackView *)view spacing];
     }
 
-  NSLog(@"Subviews = %ld", n);
-  NSLog(@"Spacing = %f", sp);
-
+  // Advance vertically or horizontally depending on orientation...
   if (o == NSUserInterfaceLayoutOrientationVertical)
     {
       if (sp == 0.0)
@@ -125,31 +153,48 @@
       newWidth = newFrame.size.width;
     }
   
-  NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
   [view setFrame: newFrame];
   FOR_IN(NSView*,v,sv)
     {
       NSRect f; 
-      
+      NSString *str = nil;
+      NSRect sr = NSZeroRect;
+
+      if ([v respondsToSelector: @selector(title)])
+        {
+          str = [(NSButton *)v title];
+        }
+                           
       f = [v frame];
       if (f.origin.x < 0.0)
         {
           f.origin.x = 0.0;
         }
 
+      if (str != nil)
+        {
+          sr = [str rectOfString];
+        }
+
+      // Calculate control position...
       if (o == NSUserInterfaceLayoutOrientationVertical)
         {
-          y = (newHeight - ((CGFloat)i * sp)) - f.size.height;              
+          y = newHeight - ((CGFloat)i * sp) - f.size.height;              
           f.origin.y = y;
         }
       else
         {
-          x = ((CGFloat)i * sp);
+          x = (CGFloat)i * sp;
           f.origin.x = x;
+        }
+
+      // expand width if control is too short for title...
+      if (f.size.width < sr.size.width)
+        {
+          f.size.width = sr.size.width + 5.0;  //+5 to accomodate border...
         }
       
       [v setFrame: f];
-      NSLog(@"new frame = %@", NSStringFromRect(f));
       i++;
     }
   END_FOR_IN(sv);
@@ -159,8 +204,6 @@
 - (void) _refreshView
 {
   NSRect currentFrame = [self frame];
-  NSLog(@"orientation = %ld", _orientation);
-  NSLog(@"distribution = %ld, _beginningContainer = %@", _distribution, _beginningContainer);
 
   if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
     {
@@ -173,8 +216,6 @@
           CGFloat y = 0.0;
           CGFloat x = 0.0;
 
-          // NSLog(@"Size = %@", NSStringFromSize(s));
-          
           for (i = 0; i < 3; i++)
             {
               NSRect f;
@@ -202,7 +243,6 @@
       else
         {
           [self _layoutViewsInView: self withOrientation: _orientation];
-          NSLog(@"Horizontal no containers");
         }
     }
   else
@@ -216,8 +256,6 @@
           CGFloat y = 0.0;
           CGFloat x = 0.0;
 
-          // NSLog(@"V. Size = %@", NSStringFromSize(s));
-          
           for (i = 0; i < 3; i++)
             {
               NSRect f;
