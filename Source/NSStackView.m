@@ -69,6 +69,59 @@
 
 @implementation NSStackView
 
+- (void) _layoutViewsInView: (NSView *)view withOrientation: (NSUserInterfaceLayoutOrientation)o
+{
+  NSRect currentFrame = [view frame];
+  NSRect newFrame = currentFrame;
+  NSSize s = currentFrame.size;
+  NSArray *sv = [view subviews];
+  NSUInteger n = [sv count];
+  CGFloat h = 0.0; 
+  CGFloat y = 0.0;
+  CGFloat newHeight = 0.0;
+  NSUInteger i = 0;
+  
+  h = 0.0;
+  if ([view isKindOfClass: [NSStackViewContainer class]])
+    {
+      h = (s.height / (CGFloat)n); // / 2.0;
+    }
+  if ([view isKindOfClass: [NSStackView class]])
+    {
+      h = [(NSStackView *)view spacing];
+    }
+
+  NSLog(@"Subviews = %ld", n);
+  NSLog(@"Spacing = %f", h);
+  
+  newFrame.size.height += h; // * 2; // expand height
+  newFrame.origin.y -= h; // move the view down.
+  newHeight = newFrame.size.height + h; // start at top of view...
+  
+  NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
+  [view setFrame: newFrame];
+  FOR_IN(NSView*,v,sv)
+    {
+      NSRect f; 
+      
+      f = [v frame];
+      if (f.origin.x < 0.0)
+        {
+          f.origin.x = 0.0;
+        }
+      
+      y = (newHeight - ((CGFloat)i * h)) - f.size.height;              
+      f.origin.y = y;
+      [v setFrame: f];
+      NSLog(@"new frame = %@", NSStringFromRect(f));
+      i++;
+    }
+  END_FOR_IN(sv);
+  [view setNeedsDisplay: YES];
+  
+  NSLog(@"Vertical no containers");
+}
+
 - (void) _refreshView
 {
   NSRect currentFrame = [self frame];
@@ -155,38 +208,7 @@
         }
       else
         {
-          NSSize s = currentFrame.size;
-          NSArray *sv = [self subviews];
-          NSUInteger n = [sv count];
-          CGFloat h = (s.height / (CGFloat)n); // / 2.0;
-          NSRect newFrame = currentFrame;
-          CGFloat y = 0.0;
-          NSUInteger i = 0;
-          
-          newFrame.size.height += h; // * 2; // expand height
-          newFrame.origin.y -= h; // move the view down.
-          y = newFrame.size.height; // start at top of view...
-
-          NSLog(@"frame for stack view %@", NSStringFromRect(newFrame));
-          [self setFrame: newFrame];
-          FOR_IN(NSView*,v,sv)
-            {
-              NSRect f; 
-              
-              f = [v frame];
-              if (f.origin.x < 0.0)
-                {
-                  f.origin.x = 0.0;
-                }
-              
-              y = (newFrame.size.height - ((CGFloat)i * h)) - f.size.height;              
-              f.origin.y = y;
-              [v setFrame: f];
-              NSLog(@"new frame = %@", NSStringFromRect(f));
-              i++;
-            }
-          END_FOR_IN(sv);
-          
+          [self _layoutViewsInView: self withOrientation: _orientation];
           NSLog(@"Vertical no containers");
         }
     }
@@ -592,9 +614,9 @@
       [coder encodeObject: _endContainer forKey: @"NSStackViewEndContainer"];
       [coder encodeBool: _detachesHiddenViews forKey: @"NSStackViewDetachesHiddenViews"];
       [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.bottom"];
-      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.left"];
-      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.right"];
-      [coder encodeFloat: _edgeInsets.bottom forKey: @"NSStackViewEdgeInsets.top"];
+      [coder encodeFloat: _edgeInsets.left forKey: @"NSStackViewEdgeInsets.left"];
+      [coder encodeFloat: _edgeInsets.right forKey: @"NSStackViewEdgeInsets.right"];
+      [coder encodeFloat: _edgeInsets.top forKey: @"NSStackViewEdgeInsets.top"];
       [coder encodeBool: _hasFlagViewHierarchy forKey: @"NSStackViewHasFlagViewHierarchy"];
       [coder encodeFloat: _horizontalClippingResistancePriority forKey: @"NSStackViewHorizontalClippingResistance"];
       [coder encodeFloat: _horizontalHuggingPriority forKey: @"NSStackViewHorizontalHuggingPriority"];
@@ -710,6 +732,7 @@
           if ([coder containsValueForKey: @"NSStackViewSpacing"])
             {
               _spacing = [coder decodeFloatForKey: @"NSStackViewSpacing"];
+              NSLog(@"Spacing = %f", _spacing);
             }
           if ([coder containsValueForKey: @"NSStackViewVerticalClippingResistance"])
             {
