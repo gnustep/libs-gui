@@ -3082,7 +3082,7 @@ didStartElement: (NSString*)elementName
     }
   else if ([obj isEqualToString: @"equalSpacing"])
     {
-      d = NSStackViewDistributionEqualCentering;
+      d = NSStackViewDistributionEqualSpacing;
     }
   else if ([obj isEqualToString: @"fill"])
     {

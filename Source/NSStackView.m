@@ -95,6 +95,25 @@
 @end
 
 @implementation NSStackViewContainer
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          if ([coder containsValueForKey: @"NSStackViewContainerNonDroppedViews"])
+            {
+              // Holds all of the subviews of this container.
+            }
+        }
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
 @end
 
 @implementation NSStackView
@@ -293,7 +312,7 @@
 }
 
 // Overridden methods
-/*
+
 - (NSArray *) subviews
 {
   if (_beginningContainer != nil)
@@ -309,7 +328,7 @@
     }
 
   return [super subviews];
-  }*/
+}
 
 // Properties
 - (void) setDelegate: (id<NSStackViewDelegate>)delegate
