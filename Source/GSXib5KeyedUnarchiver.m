@@ -3098,7 +3098,7 @@ didStartElement: (NSString*)elementName
     }
   else if ([obj isEqualToString: @"gravityAreas"])
     {
-      d = NSStackViewDistributionEqualCentering;
+      d = NSStackViewDistributionGravityAreas;
     }
   return [NSNumber numberWithInteger: d];
 }

@@ -223,20 +223,20 @@
               x = w * (CGFloat)i;
               f = NSMakeRect(x,y,w,h);
               
-              if (i == 0)
+              if (i == 2)
                 {
-                  [_beginningContainer setFrame: f];
-                  [self addSubview: _beginningContainer];
+                  //[_beginningContainer setFrame: f];
+                  [super addSubview: _beginningContainer];
                 }
               if (i == 1)
                 {
-                  [_middleContainer setFrame: f];
-                  [self addSubview: _middleContainer];
+                  //[_middleContainer setFrame: f];
+                  [super addSubview: _middleContainer];
                 }
-              if (i == 2)
+              if (i == 0)
                 {
-                  [_endContainer setFrame: f];
-                  [self addSubview: _endContainer];
+                  //[_endContainer setFrame: f];
+                  [super addSubview: _endContainer];
                 }
             }
         }
@@ -251,35 +251,35 @@
         {
           NSSize s = currentFrame.size;
           CGFloat w = s.width; // since vert... w is constant...
-          CGFloat h = s.height / 3.0; // 3 sections
           NSUInteger i = 0;
-          CGFloat y = 0.0;
+          CGFloat y = currentFrame.size.height;
           CGFloat x = 0.0;
 
           for (i = 0; i < 3; i++)
             {
               NSRect f;
 
-              y = h * (CGFloat)i;
-              f = NSMakeRect(x,y,w,h);
+              // y -= h * (CGFloat)i;
               
-              if (i == 0)
+              NSLog(@"RECT = %@", NSStringFromRect(f));
+              
+              if (i == 2)
                 {
-                  [_beginningContainer setFrame: f];
+                  //[_beginningContainer setFrame: f];
                   NSLog(@"Adding beginning container with frame %@", NSStringFromRect(f));
-                  [self addSubview: _beginningContainer];
+                  [super addSubview: _beginningContainer];
                 }
               if (i == 1)
                 {
-                  [_middleContainer setFrame: f];
+                  //[_middleContainer setFrame: f];
                   NSLog(@"Adding mid container with frame %@", NSStringFromRect(f));
-                  [self addSubview: _middleContainer];
+                  [super addSubview: _middleContainer];
                 }
-              if (i == 2)
+              if (i == 0)
                 {
-                  [_endContainer setFrame: f];
+                  //[_endContainer setFrame: f];
                   NSLog(@"Adding end container with frame %@", NSStringFromRect(f));
-                  [self addSubview: _endContainer];
+                  [super addSubview: _endContainer];
                 }
             }
         }
@@ -291,6 +291,25 @@
     }
   [self setNeedsDisplay: YES];
 }
+
+// Overridden methods
+/*
+- (NSArray *) subviews
+{
+  if (_beginningContainer != nil)
+    {
+      NSMutableArray *result = [NSMutableArray array];
+      NSArray *arr = [_beginningContainer subviews];
+      NSLog(@"arr = %@, _beginningContainer = %@", arr, _beginningContainer);
+      [result addObjectsFromArray: [_beginningContainer subviews]];
+      [result addObjectsFromArray: [_middleContainer subviews]];
+      [result addObjectsFromArray: [_endContainer subviews]];
+
+      return result;
+    }
+
+  return [super subviews];
+  }*/
 
 // Properties
 - (void) setDelegate: (id<NSStackViewDelegate>)delegate
@@ -572,7 +591,7 @@
     }
   else
     {
-      [self addSubview: view];
+      [super addSubview: view];
     }
   
   [self _refreshView];
@@ -658,11 +677,7 @@
     }
   else
     {
-      FOR_IN(NSView*,v,views)
-        {
-          [self addSubview: v];
-        }
-      END_FOR_IN(views);
+      [super addSubviews: views];
     }
   
   [self _refreshView];
