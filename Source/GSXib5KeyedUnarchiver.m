@@ -3137,7 +3137,6 @@ didStartElement: (NSString*)elementName
   NSEnumerator *en = [elements objectEnumerator];
   GSXibElement *e = nil;
   
-  NSLog(@"decodeStackViewNonDroppedViewsForElement: %@", element);
   while ((e = [en nextObject]) != nil)
     {
       id o = [self objectForXib: e];
