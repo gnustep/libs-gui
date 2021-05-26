@@ -3034,10 +3034,6 @@ didStartElement: (NSString*)elementName
     {
       alignment = NSGridCellPlacementFill;
     }  
-  else // if not specified then assume none...
-    {
-      alignment = NSGridCellPlacementNone;
-    }
   return [NSNumber numberWithInteger: alignment];
 }
 

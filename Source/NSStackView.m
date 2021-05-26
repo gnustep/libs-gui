@@ -92,6 +92,10 @@
 @end
 
 @interface NSStackViewContainer : NSView
+{
+  NSMutableArray *_nonDroppedViews;
+  NSMutableDictionary *_customAfterSpaceMap;
+}
 @end
 
 @implementation NSStackViewContainer
@@ -104,7 +108,14 @@
         {
           if ([coder containsValueForKey: @"NSStackViewContainerNonDroppedViews"])
             {
-              // Holds all of the subviews of this container.
+              ASSIGN(_nonDroppedViews,
+                     [coder decodeObjectForKey: @"NSStackViewContainerNonDroppedViews"]);
+            }
+
+          if ([coder containsValueForKey: @"NSStackViewContainerViewToCustomAfterSpaceMap"])
+            {
+              ASSIGN(_customAfterSpaceMap,
+                     [coder decodeObjectForKey: @"NSStackViewContainerViewToCustomAfterSpaceMap"]);
             }
         }
     }
