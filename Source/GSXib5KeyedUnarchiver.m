@@ -355,7 +355,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
                                     @"NSSharedData", @"NSFlags", @"NSTVFlags",
                                     @"NSDefaultParagraphStyle",
-                                    @"NSpiFlags", nil];
+                                    @"NSpiFlags", @"NSStackViewContainerNonDroppedViews",
+                                    nil];
           RETAIN(XmlKeysDefined);
 
           // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
@@ -372,6 +373,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeStackViewNonDroppedViewsForElement:", @"NSStackViewContainerNonDroppedViews",
                @"decodeDistributionForElement:", @"NSStackViewdistribution",
                @"decodeOrientationForElement:", @"NSStackViewOrientation",
                @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
@@ -3126,6 +3128,23 @@ didStartElement: (NSString*)elementName
       alignment = NSGridRowAlignmentNone;
     }
   return [NSNumber numberWithInteger: alignment];
+}
+
+- (id) decodeStackViewNonDroppedViewsForElement: (GSXibElement *)element
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSDictionary *elements = [element elements];
+  NSEnumerator *en = [elements objectEnumerator];
+  GSXibElement *e = nil;
+  
+  NSLog(@"decodeStackViewNonDroppedViewsForElement: %@", element);
+  while ((e = [en nextObject]) != nil)
+    {
+      id o = [self objectForXib: e];
+      [result addObject: o];
+    }
+  
+  return result;
 }
 
 - (id) objectForXib: (GSXibElement*)element
