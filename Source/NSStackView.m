@@ -118,12 +118,31 @@
                      [coder decodeObjectForKey: @"NSStackViewContainerViewToCustomAfterSpaceMap"]);
             }
         }
+      else
+        {
+          ASSIGN(_nonDroppedViews, [coder decodeObject]);
+          ASSIGN(_customAfterSpaceMap, [coder decodeObject]);
+        }
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
+
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _nonDroppedViews
+                   forKey: @"NSStackViewContainerNonDroppedViews"];
+      [coder encodeObject: _customAfterSpaceMap
+                   forKey: @"NSStackViewContainerViewToCustomAfterSpaceMap"];
+    }
+  else
+    {
+      [coder encodeObject: _nonDroppedViews];
+      [coder encodeObject: _customAfterSpaceMap];
+    }
 }
 @end
 
