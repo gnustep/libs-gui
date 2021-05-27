@@ -52,7 +52,6 @@
 
 - (NSArray *) nonDroppedViews;
 - (NSDictionary *) customAfterSpaceMap;
-- (void) layoutSubviewsWithOrientation: (NSUserInterfaceLayoutOrientation)o;
 @end
 
 @implementation NSString (__StackViewPrivate__)
@@ -133,56 +132,6 @@
 - (NSDictionary *) customAfterSpaceMap
 {
   return _customAfterSpaceMap;
-}
-
-- (void) layoutSubviewsWithOrientation: (NSUserInterfaceLayoutOrientation)o
-{
-  NSRect f = [self frame];
-  NSRect sf = [[self superview] frame];
-  NSArray *sv = [self subviews];
-  CGFloat x = 0.0;
-  CGFloat y = 0.0;
-  CGFloat sp = 0.0;
-  NSUInteger n = [sv count];
-  
-  if (o == NSUserInterfaceLayoutOrientationVertical)
-    {
-      sp = f.size.height / (CGFloat)n;
-      y = f.size.height;
-    }
-  else
-    {
-      sp = f.size.width / (CGFloat)n;
-    }
-  NSLog(@"spacing = %f", sp);
-
-  NSUInteger i = 0;
-  FOR_IN(NSView*, v, sv)
-    {
-      NSRect vf = [v frame];
-      NSLog(@"frame = %@", NSStringFromRect(vf));
-      NSLog(@"index = %ld",i);
-      NSLog(@"supview = %@", [v superview]);
-      if (o == NSUserInterfaceLayoutOrientationVertical)
-        {
-          y = sf.origin.y; // + (CGFloat)i * sp;
-          vf.origin.y = y;
-        }
-      else
-        {
-          x = sf.origin.x; // + (CGFloat)i * sp; 
-          vf.origin.x = x;
-        }
-
-      vf.origin.x = (vf.origin.x < 0.0) ? 0.0 : vf.origin.x;
-      vf.origin.y = (vf.origin.y < 0.0) ? 0.0 : vf.origin.y;
-      
-      NSLog(@"new frame = %@", NSStringFromRect(vf));
-      [v setFrame: vf];      
-      i++;
-    }
-  END_FOR_IN(sv);
-  [self setNeedsDisplay: YES];
 }
 @end
 
@@ -361,7 +310,6 @@
           
           [super addSubview: c];
           [c setFrame: f];
-          [c layoutSubviewsWithOrientation: _orientation];
         }
     }
   else
@@ -379,9 +327,9 @@
     {
       NSMutableArray *result = [NSMutableArray array];
       
-      [result addObjectsFromArray: [_beginningContainer subviews]];
-      [result addObjectsFromArray: [_middleContainer subviews]];
-      [result addObjectsFromArray: [_endContainer subviews]];
+      [result addObjectsFromArray: [_beginningContainer nonDroppedViews]];
+      [result addObjectsFromArray: [_middleContainer nonDroppedViews]];
+      [result addObjectsFromArray: [_endContainer nonDroppedViews]];
 
       return result;
     }
@@ -468,11 +416,21 @@
 - (void) setArrangedSubviews: (NSArray *)arrangedSubviews
 {
   ASSIGN(_arrangedSubviews, arrangedSubviews);
+  _distribution = NSStackViewDistributionFill;
+
+  [self _removeAllSubviews];
+
+  _beginningContainer = nil;
+  _middleContainer = nil;
+  _endContainer = nil;
+
+  [self _addSubviews: arrangedSubviews];
+  [self _refreshView];
 }
 
 - (NSArray *) arrangedSubviews
 {
-  return _arrangedSubviews;
+  return [self subviews];
 }
 
 - (void) setDetachedViews: (NSArray *)detachedViews
