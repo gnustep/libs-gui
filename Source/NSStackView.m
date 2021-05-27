@@ -459,9 +459,9 @@
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 
       // Gravity...  not used by default.
-      _beginningContainer = nil; // [[NSStackViewContainer alloc] init];
-      _middleContainer = nil; // [[NSStackViewContainer alloc] init]; 
-      _endContainer = nil; // [[NSStackViewContainer alloc] init];
+      _beginningContainer = nil;
+      _middleContainer = nil;
+      _endContainer = nil;
 
       [self _refreshView];
     }
