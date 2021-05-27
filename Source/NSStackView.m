@@ -31,11 +31,32 @@
 #import "GSFastEnumeration.h"
 
 @interface NSString (__StackViewPrivate__)
-- (NSRect) rectOfString;
+- (NSRect) _rectOfString;
+@end
+
+@interface NSView (__NSViewPrivateMethods__)
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx; // implemented in NSView.m
+@end
+
+@interface NSView (__StackViewPrivate__)
+- (void) _insertView: (NSView *)v atIndex: (NSUInteger)i;
+- (void) _removeAllSubviews;
+- (void) _addSubviews: (NSArray *)views;
+- (void) _layoutViewsWithOrientation: (NSUserInterfaceLayoutOrientation)o;
+@end
+
+@interface NSStackViewContainer : NSView
+{
+  NSMutableArray *_nonDroppedViews;
+  NSMutableDictionary *_customAfterSpaceMap;
+}
+
+- (NSArray *) nonDroppedViews;
+- (NSDictionary *) customAfterSpaceMap;
 @end
 
 @implementation NSString (__StackViewPrivate__)
-- (NSRect) rectOfString;
+- (NSRect) _rectOfString;
 {
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString: self];
   NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
@@ -52,49 +73,6 @@
     [layoutManager boundingRectForGlyphRange:NSMakeRange(0, [layoutManager numberOfGlyphs])
                              inTextContainer:textContainer];
   return stringRect;
-}
-@end
-
-@interface NSView (__NSViewPrivateMethods__)
-- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx; // implemented in NSView.m
-@end
-
-@interface NSView (__StackViewPrivate__)
-- (void) insertView: (NSView *)v atIndex: (NSUInteger)i;
-- (void) removeAllSubviews;
-- (void) addSubviews: (NSArray *)views;
-@end
-
-@implementation NSView (__StackViewPrivate__)
-- (void) insertView: (NSView *)v atIndex: (NSUInteger)i
-{
-  [self _insertSubview: v atIndex: i];
-}
-
-- (void) removeAllSubviews
-{
-  NSArray *subviews = [self subviews];
-  FOR_IN(NSView*, v, subviews)
-    {
-      [v removeFromSuperview];
-    }
-  END_FOR_IN(subviews);
-}
-
-- (void) addSubviews: (NSArray *)views
-{
-  FOR_IN(NSView*, v, views)
-    {
-      [self addSubview: v];
-    }
-  END_FOR_IN(views);
-}
-@end
-
-@interface NSStackViewContainer : NSView
-{
-  NSMutableArray *_nonDroppedViews;
-  NSMutableDictionary *_customAfterSpaceMap;
 }
 @end
 
@@ -123,6 +101,9 @@
           ASSIGN(_nonDroppedViews, [coder decodeObject]);
           ASSIGN(_customAfterSpaceMap, [coder decodeObject]);
         }
+
+      [self _addSubviews: _nonDroppedViews];
+      NSLog(@"subviews = %@", [self subviews]);
     }
   return self;
 }
@@ -144,16 +125,49 @@
       [coder encodeObject: _customAfterSpaceMap];
     }
 }
+
+- (NSArray *) nonDroppedViews
+{
+  return _nonDroppedViews;
+}
+
+- (NSDictionary *) customAfterSpaceMap
+{
+  return _customAfterSpaceMap;
+}
 @end
 
-@implementation NSStackView
-
-- (void) _layoutViewsInView: (NSView *)view withOrientation: (NSUserInterfaceLayoutOrientation)o
+@implementation NSView (__StackViewPrivate__)
+- (void) _insertView: (NSView *)v atIndex: (NSUInteger)i
 {
-  NSRect currentFrame = [view frame];
+  [self _insertSubview: v atIndex: i];
+}
+
+- (void) _removeAllSubviews
+{
+  NSArray *subviews = [self subviews];
+  FOR_IN(NSView*, v, subviews)
+    {
+      [v removeFromSuperview];
+    }
+  END_FOR_IN(subviews);
+}
+
+- (void) _addSubviews: (NSArray *)views
+{
+  FOR_IN(NSView*, v, views)
+    {
+      [self addSubview: v];
+    }
+  END_FOR_IN(views);
+}
+
+- (void) _layoutViewsWithOrientation: (NSUserInterfaceLayoutOrientation)o
+{
+  NSRect currentFrame = [self frame];
   NSRect newFrame = currentFrame;
   NSSize s = currentFrame.size;
-  NSArray *sv = [view subviews];
+  NSArray *sv = [self subviews];
   NSUInteger n = [sv count];
   CGFloat sp = 0.0;
   CGFloat x = 0.0;
@@ -162,13 +176,13 @@
   CGFloat newWidth = 0.0;
   NSUInteger i = 0;
   
-  if ([view isKindOfClass: [NSStackViewContainer class]])
+  if ([self isKindOfClass: [NSStackViewContainer class]])
     {
       sp = (s.height / (CGFloat)n); // / 2.0;
     }
-  if ([view isKindOfClass: [NSStackView class]])
+  if ([self isKindOfClass: [NSStackView class]])
     {
-      sp = [(NSStackView *)view spacing];
+      sp = [(NSStackView *)self spacing];
     }
 
   // Advance vertically or horizontally depending on orientation...
@@ -202,7 +216,7 @@
       newWidth = newFrame.size.width;
     }
   
-  [view setFrame: newFrame];
+  [self setFrame: newFrame];
   FOR_IN(NSView*,v,sv)
     {
       NSRect f; 
@@ -222,7 +236,7 @@
 
       if (str != nil)
         {
-          sr = [str rectOfString];
+          sr = [str _rectOfString];
         }
 
       // Calculate control position...
@@ -247,96 +261,78 @@
       i++;
     }
   END_FOR_IN(sv);
-  [view setNeedsDisplay: YES];
+  [self setNeedsDisplay: YES];
 }
+
+@end
+
+@implementation NSStackView
 
 - (void) _refreshView
 {
   NSRect currentFrame = [self frame];
-
-  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+  
+  if (_beginningContainer != nil)
     {
-      if (_beginningContainer != nil)
+      NSSize s = currentFrame.size;
+      NSUInteger i = 0;
+      CGFloat y = 0.0;
+      CGFloat x = 0.0;
+      CGFloat w = 0.0; 
+      CGFloat h = 0.0;
+
+      NSLog(@"Frame = %@", NSStringFromRect(currentFrame));
+      
+      if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
         {
-          NSSize s = currentFrame.size;
-          CGFloat w = s.width / 3.0; // three sections, always.
-          CGFloat h = s.height; // since we are horiz. the height is the height of the view
-          NSUInteger i = 0;
-          CGFloat y = 0.0;
-          CGFloat x = 0.0;
-
-          for (i = 0; i < 3; i++)
-            {
-              NSRect f;
-
-              x = w * (CGFloat)i;
-              f = NSMakeRect(x,y,w,h);
-              
-              if (i == 2)
-                {
-                  //[_beginningContainer setFrame: f];
-                  [super addSubview: _beginningContainer];
-                }
-              if (i == 1)
-                {
-                  //[_middleContainer setFrame: f];
-                  [super addSubview: _middleContainer];
-                }
-              if (i == 0)
-                {
-                  //[_endContainer setFrame: f];
-                  [super addSubview: _endContainer];
-                }
-            }
+          w = s.width / 3.0;  // three sections, always.
+          h = s.height; // since we are horiz. the height is the height of the view
         }
       else
         {
-          [self _layoutViewsInView: self withOrientation: _orientation];
+          h = s.height / 3.0; // 3 sections
+          w = s.width;
+        }
+      
+      for (i = 0; i < 3; i++)
+        {
+          NSRect f;
+          NSStackViewContainer *c = nil;
+          
+          if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+            {
+              x = w * (CGFloat)i;
+            }
+          else
+            {
+              y = h * (CGFloat)i;
+            }
+          
+          f = NSMakeRect(x,y,w,h);
+          NSLog(@"New Frame = %@", NSStringFromRect(f));
+          
+          if (i == 0)
+            {
+              c = _beginningContainer;
+            }
+          if (i == 1)
+            {
+              c = _middleContainer;
+            }
+          if (i == 2)
+            {
+              c = _endContainer;
+            }
+          
+          [super addSubview: c];
+          [c setFrame: f];
+          [c _layoutViewsWithOrientation: _orientation];
+          
         }
     }
   else
     {
-      if (_beginningContainer != nil) // if one exists, they all do...
-        {
-          NSSize s = currentFrame.size;
-          CGFloat w = s.width; // since vert... w is constant...
-          NSUInteger i = 0;
-          CGFloat y = currentFrame.size.height;
-          CGFloat x = 0.0;
-
-          for (i = 0; i < 3; i++)
-            {
-              NSRect f;
-
-              // y -= h * (CGFloat)i;
-              
-              NSLog(@"RECT = %@", NSStringFromRect(f));
-              
-              if (i == 2)
-                {
-                  //[_beginningContainer setFrame: f];
-                  NSLog(@"Adding beginning container with frame %@", NSStringFromRect(f));
-                  [super addSubview: _beginningContainer];
-                }
-              if (i == 1)
-                {
-                  //[_middleContainer setFrame: f];
-                  NSLog(@"Adding mid container with frame %@", NSStringFromRect(f));
-                  [super addSubview: _middleContainer];
-                }
-              if (i == 0)
-                {
-                  //[_endContainer setFrame: f];
-                  NSLog(@"Adding end container with frame %@", NSStringFromRect(f));
-                  [super addSubview: _endContainer];
-                }
-            }
-        }
-      else
-        {
-          [self _layoutViewsInView: self withOrientation: _orientation];
-          NSLog(@"Vertical no containers");
-        }
+      [self _layoutViewsWithOrientation: _orientation];
     }
   [self setNeedsDisplay: YES];
 }
@@ -348,8 +344,7 @@
   if (_beginningContainer != nil)
     {
       NSMutableArray *result = [NSMutableArray array];
-      NSArray *arr = [_beginningContainer subviews];
-      NSLog(@"arr = %@, _beginningContainer = %@", arr, _beginningContainer);
+      
       [result addObjectsFromArray: [_beginningContainer subviews]];
       [result addObjectsFromArray: [_middleContainer subviews]];
       [result addObjectsFromArray: [_endContainer subviews]];
@@ -651,13 +646,13 @@
   switch (gravity)
     {
     case NSStackViewGravityTop:  // or leading...
-      [_beginningContainer insertView: view atIndex: index];
+      [_beginningContainer _insertView: view atIndex: index];
       break;
     case NSStackViewGravityCenter:
-      [_middleContainer insertView: view atIndex: index];
+      [_middleContainer _insertView: view atIndex: index];
       break;
     case NSStackViewGravityBottom:
-      [_endContainer insertView: view atIndex: index]; // or trailing...
+      [_endContainer _insertView: view atIndex: index]; // or trailing...
       break;
     default:
       [NSException raise: NSInternalInconsistencyException
@@ -707,16 +702,16 @@
       switch (gravity)
         {
         case NSStackViewGravityTop:  // or leading...
-          [_beginningContainer removeAllSubviews];
-          [_beginningContainer addSubviews: views];
+          [_beginningContainer _removeAllSubviews];
+          [_beginningContainer _addSubviews: views];
           break;
         case NSStackViewGravityCenter:
-          [_middleContainer removeAllSubviews];
-          [_middleContainer addSubviews: views];
+          [_middleContainer _removeAllSubviews];
+          [_middleContainer _addSubviews: views];
           break;
         case NSStackViewGravityBottom:
-          [_endContainer removeAllSubviews];
-          [_endContainer addSubviews: views];
+          [_endContainer _removeAllSubviews];
+          [_endContainer _addSubviews: views];
           break;
         default:
           [NSException raise: NSInternalInconsistencyException
@@ -726,7 +721,7 @@
     }
   else
     {
-      [super addSubviews: views];
+      [super _addSubviews: views];
     }
   
   [self _refreshView];
@@ -820,7 +815,6 @@
           if ([coder containsValueForKey: @"NSStackViewBeginningContainer"])
             {
               ASSIGN(_beginningContainer, [coder decodeObjectForKey: @"NSStackViewBeginningContainer"]);
-              NSLog(@"_beginningContainer = %@", _beginningContainer);
             }
           if ([coder containsValueForKey: @"NSStackViewMiddleContainer"])
             {
@@ -873,7 +867,6 @@
           if ([coder containsValueForKey: @"NSStackViewSpacing"])
             {
               _spacing = [coder decodeFloatForKey: @"NSStackViewSpacing"];
-              NSLog(@"Spacing = %f", _spacing);
             }
           if ([coder containsValueForKey: @"NSStackViewVerticalClippingResistance"])
             {
