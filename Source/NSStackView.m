@@ -42,7 +42,6 @@
 - (void) _insertView: (NSView *)v atIndex: (NSUInteger)i;
 - (void) _removeAllSubviews;
 - (void) _addSubviews: (NSArray *)views;
-- (void) _layoutViewsWithOrientation: (NSUserInterfaceLayoutOrientation)o;
 @end
 
 @interface NSStackViewContainer : NSView
@@ -53,6 +52,7 @@
 
 - (NSArray *) nonDroppedViews;
 - (NSDictionary *) customAfterSpaceMap;
+- (void) layoutSubviewsWithOrientation: (NSUserInterfaceLayoutOrientation)o;
 @end
 
 @implementation NSString (__StackViewPrivate__)
@@ -103,7 +103,6 @@
         }
 
       [self _addSubviews: _nonDroppedViews];
-      NSLog(@"subviews = %@", [self subviews]);
     }
   return self;
 }
@@ -135,6 +134,56 @@
 {
   return _customAfterSpaceMap;
 }
+
+- (void) layoutSubviewsWithOrientation: (NSUserInterfaceLayoutOrientation)o
+{
+  NSRect f = [self frame];
+  NSRect sf = [[self superview] frame];
+  NSArray *sv = [self subviews];
+  CGFloat x = 0.0;
+  CGFloat y = 0.0;
+  CGFloat sp = 0.0;
+  NSUInteger n = [sv count];
+  
+  if (o == NSUserInterfaceLayoutOrientationVertical)
+    {
+      sp = f.size.height / (CGFloat)n;
+      y = f.size.height;
+    }
+  else
+    {
+      sp = f.size.width / (CGFloat)n;
+    }
+  NSLog(@"spacing = %f", sp);
+
+  NSUInteger i = 0;
+  FOR_IN(NSView*, v, sv)
+    {
+      NSRect vf = [v frame];
+      NSLog(@"frame = %@", NSStringFromRect(vf));
+      NSLog(@"index = %ld",i);
+      NSLog(@"supview = %@", [v superview]);
+      if (o == NSUserInterfaceLayoutOrientationVertical)
+        {
+          y = sf.origin.y; // + (CGFloat)i * sp;
+          vf.origin.y = y;
+        }
+      else
+        {
+          x = sf.origin.x; // + (CGFloat)i * sp; 
+          vf.origin.x = x;
+        }
+
+      vf.origin.x = (vf.origin.x < 0.0) ? 0.0 : vf.origin.x;
+      vf.origin.y = (vf.origin.y < 0.0) ? 0.0 : vf.origin.y;
+      
+      NSLog(@"new frame = %@", NSStringFromRect(vf));
+      [v setFrame: vf];      
+      i++;
+    }
+  END_FOR_IN(sv);
+  [self setNeedsDisplay: YES];
+}
 @end
 
 @implementation NSView (__StackViewPrivate__)
@@ -162,29 +211,23 @@
   END_FOR_IN(views);
 }
 
+@end
+
+@implementation NSStackView
+
 - (void) _layoutViewsWithOrientation: (NSUserInterfaceLayoutOrientation)o
 {
   NSRect currentFrame = [self frame];
   NSRect newFrame = currentFrame;
-  NSSize s = currentFrame.size;
   NSArray *sv = [self subviews];
   NSUInteger n = [sv count];
-  CGFloat sp = 0.0;
+  CGFloat sp = [self spacing];
   CGFloat x = 0.0;
   CGFloat y = 0.0;
   CGFloat newHeight = 0.0;
   CGFloat newWidth = 0.0;
   NSUInteger i = 0;
   
-  if ([self isKindOfClass: [NSStackViewContainer class]])
-    {
-      sp = (s.height / (CGFloat)n); // / 2.0;
-    }
-  if ([self isKindOfClass: [NSStackView class]])
-    {
-      sp = [(NSStackView *)self spacing];
-    }
-
   // Advance vertically or horizontally depending on orientation...
   if (o == NSUserInterfaceLayoutOrientationVertical)
     {
@@ -264,10 +307,6 @@
   [self setNeedsDisplay: YES];
 }
 
-@end
-
-@implementation NSStackView
-
 - (void) _refreshView
 {
   NSRect currentFrame = [self frame];
@@ -280,8 +319,6 @@
       CGFloat x = 0.0;
       CGFloat w = 0.0; 
       CGFloat h = 0.0;
-
-      NSLog(@"Frame = %@", NSStringFromRect(currentFrame));
       
       if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
         {
@@ -308,9 +345,7 @@
               y = h * (CGFloat)i;
             }
           
-          f = NSMakeRect(x,y,w,h);
-          NSLog(@"New Frame = %@", NSStringFromRect(f));
-          
+          f = NSMakeRect(x,y,w,h);          
           if (i == 0)
             {
               c = _beginningContainer;
@@ -326,8 +361,7 @@
           
           [super addSubview: c];
           [c setFrame: f];
-          [c _layoutViewsWithOrientation: _orientation];
-          
+          [c layoutSubviewsWithOrientation: _orientation];
         }
     }
   else
