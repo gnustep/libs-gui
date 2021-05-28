@@ -3,7 +3,7 @@
 	* Headers/AppKit/AppKit.h: Add NSStackView.h to header.
 	* Headers/AppKit/NSStackView.h: Header
 	* MISSING: Remove NSStackView from the list and update others.
-	* Source/GNUmakefile: Add to NSStackView GNUmakefile.
+	* Source/GNUmakefile: Add NSStackView.[hm] to GNUmakefile.
 	* Source/GSXib5KeyedUnarchiver.m: Add decoders and mappings to decode
         NSStackView content.
 	* Source/NSStackView.m: Implementation of NSStackView.
