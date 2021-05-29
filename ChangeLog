@@ -60,6 +60,20 @@
 	* Source/NSImageCell.m: subclass initImageCell, so that
 	RefusesFirstResponder can be set, matching Mac.
 
+2022-03-13 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Include NSDictionaryController.h
+	* Headers/AppKit/NSDictionaryController.h: Add declaration
+        for NSDictionaryController.
+	* Headers/AppKit/NSKeyValueBinding.h: Add bindings for
+        dictionary controller.
+	* MISSING: NSDictionaryController removed
+	* Source/externs.m: Add definition for notification for
+        strings defined in controller definition.
+	* Source/GNUmakefile: Add NSDictionaryController.[hm]
+	* Source/NSDictionaryController.m: Implementation of
+        NSDictionaryController.
+
 2022-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m(setMenu:): Select the first item of
