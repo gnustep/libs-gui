@@ -228,6 +228,7 @@
 #import <AppKit/NSSound.h>
 #import <AppKit/NSSpeechRecognizer.h>
 #import <AppKit/NSSpeechSynthesizer.h>
+#import <AppKit/NSStackView.h>
 #import <AppKit/NSStepperTouchBarItem.h>
 #import <AppKit/NSStepper.h>
 #import <AppKit/NSStepperCell.h>

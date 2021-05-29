@@ -59,6 +59,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSSliderCell.h"
 #import "AppKit/NSSplitView.h"
+#import "AppKit/NSStackView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSTableView.h"
@@ -224,7 +225,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",
-                            @"NSPageController", @"pagecontroller", // why is pagecontroller capitalized this way?
+                            @"NSPageController", @"pagecontroller", // inconsistent capitalization
+                            @"NSStackViewContainer", @"beginningViews",
+                            @"NSStackViewContainer", @"middleViews",
+                            @"NSStackViewContainer", @"endViews",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -299,7 +303,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"string", @"NS.relative",
                                            @"canPropagateSelectedChildViewControllerTitle",
                                                    @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
-                                           @"rowAlignment", @"NSGrid_alignment",
+                                           @"rowAlignment", @"NSGrid_alignment",  // NSGridView
                                            @"rowSpacing", @"NSGrid_rowSpacing",
                                            @"columnSpacing", @"NSGrid_columnSpacing",
                                            @"hidden", @"NSGrid_hidden",
@@ -317,6 +321,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"contentView", @"NSGrid_content",
                                            @"row", @"NSGrid_owningRow",
                                            @"column", @"NSGrid_owningColumn",
+                                           @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
+                                           @"middleViews", @"NSStackViewMiddleContainer",
+                                           @"endViews", @"NSStackViewEndContainer",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -348,7 +355,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
                                     @"NSSharedData", @"NSFlags", @"NSTVFlags",
                                     @"NSDefaultParagraphStyle",
-                                    @"NSpiFlags", nil];
+                                    @"NSpiFlags", @"NSStackViewContainerNonDroppedViews",
+                                    nil];
           RETAIN(XmlKeysDefined);
 
           // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
@@ -365,6 +373,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeStackViewNonDroppedViewsForElement:", @"NSStackViewContainerNonDroppedViews",
+               @"decodeDistributionForElement:", @"NSStackViewdistribution",
+               @"decodeOrientationForElement:", @"NSStackViewOrientation",
                @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
                @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
                @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
@@ -3025,10 +3036,6 @@ didStartElement: (NSString*)elementName
     {
       alignment = NSGridCellPlacementFill;
     }  
-  else // if not specified then assume none...
-    {
-      alignment = NSGridCellPlacementNone;
-    }
   return [NSNumber numberWithInteger: alignment];
 }
 
@@ -3042,6 +3049,62 @@ didStartElement: (NSString*)elementName
 {
   id obj = [element attributeForKey: @"yPlacement"];
   return [self _decodePlacementForObject: obj];
+}
+
+- (id) _decodeOrientationForObject: (id)obj
+{
+  NSLayoutConstraintOrientation orientation = 0L;
+  if ([obj isEqualToString: @"vertical"])
+    {
+      orientation = NSLayoutConstraintOrientationVertical;
+    }
+  else if ([obj isEqualToString: @"horizontal"])
+    {
+      orientation = NSLayoutConstraintOrientationHorizontal;
+    }
+  return [NSNumber numberWithInteger: orientation];
+}
+
+- (id) decodeOrientationForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"orientation"];
+  return [self _decodeOrientationForObject: obj];
+}
+
+- (id) _decodeDistributionForObject: (id)obj
+{
+  NSStackViewDistribution d = 0L;
+  if ([obj isEqualToString: @"equalCentering"])
+    {
+      d = NSStackViewDistributionEqualCentering;
+    }
+  else if ([obj isEqualToString: @"equalSpacing"])
+    {
+      d = NSStackViewDistributionEqualSpacing;
+    }
+  else if ([obj isEqualToString: @"fill"])
+    {
+      d = NSStackViewDistributionFill;
+    }
+  else if ([obj isEqualToString: @"fillEqually"])
+    {
+      d = NSStackViewDistributionFillEqually;
+    }
+  else if ([obj isEqualToString: @"fillProportionally"])
+    {
+      d = NSStackViewDistributionFillProportionally;
+    }
+  else if ([obj isEqualToString: @"gravityAreas"])
+    {
+      d = NSStackViewDistributionGravityAreas;
+    }
+  return [NSNumber numberWithInteger: d];
+}
+
+- (id) decodeDistributionForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"distribution"];
+  return [self _decodeDistributionForObject: obj];
 }
 
 - (id) decodeRowAlignmentForElement: (GSXibElement *)element
@@ -3065,6 +3128,22 @@ didStartElement: (NSString*)elementName
       alignment = NSGridRowAlignmentNone;
     }
   return [NSNumber numberWithInteger: alignment];
+}
+
+- (id) decodeStackViewNonDroppedViewsForElement: (GSXibElement *)element
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSDictionary *elements = [element elements];
+  NSEnumerator *en = [elements objectEnumerator];
+  GSXibElement *e = nil;
+  
+  while ((e = [en nextObject]) != nil)
+    {
+      id o = [self objectForXib: e];
+      [result addObject: o];
+    }
+  
+  return result;
 }
 
 - (id) objectForXib: (GSXibElement*)element

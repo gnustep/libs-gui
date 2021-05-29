@@ -1,3 +1,13 @@
+2021-05-20 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add NSStackView.h to header.
+	* Headers/AppKit/NSStackView.h: Header
+	* MISSING: Remove NSStackView from the list and update others.
+	* Source/GNUmakefile: Add NSStackView.[hm] to GNUmakefile.
+	* Source/GSXib5KeyedUnarchiver.m: Add decoders and mappings to decode
+        NSStackView content.
+	* Source/NSStackView.m: Implementation of NSStackView.
+
 2021-05-01 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibLoading.h: Add declaration
