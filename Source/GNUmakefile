@@ -76,6 +76,11 @@ NSClipView.m \
 NSClickGestureRecognizer.m \
 NSCollectionView.m \
 NSCollectionViewItem.m \
+NSCollectionViewLayout.m \
+NSCollectionViewCompositionalLayout.m \
+NSCollectionViewFlowLayout.m \
+NSCollectionViewGridLayout.m \
+NSCollectionViewTransitionLayout.m \
 NSColor.m \
 NSColorList.m \
 NSColorPanel.m \
@@ -402,6 +407,11 @@ NSClickGestureRecognizer.h \
 NSClipView.h \
 NSCollectionView.h \
 NSCollectionViewItem.h \
+NSCollectionViewLayout.h \
+NSCollectionViewCompositionalLayout.h \
+NSCollectionViewFlowLayout.h \
+NSCollectionViewGridLayout.h \
+NSCollectionViewTransitionLayout.h \
 NSColor.h \
 NSColorList.h \
 NSColorPanel.h \
