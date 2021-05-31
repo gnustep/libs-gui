@@ -1,10 +1,13 @@
 /** <title>NSCollectionView</title>
  
-   Copyright (C) 2013 Free Software Foundation, Inc.
+   Copyright (C) 2013, 2021 Free Software Foundation, Inc.
  
    Author: Doug Simons (doug.simons@testplant.com)
            Frank LeGrand (frank.legrand@testplant.com)
-   Date: February 2013
+           Gregory Casamento (greg.casamento@gmail.com)
+           (Incorporate NSCollectionViewLayout logic)
+
+   Date: February 2013, December 2021
  
    This file is part of the GNUstep GUI Library.
 
@@ -26,20 +29,28 @@
 */
 
 #import "Foundation/NSKeyedArchiver.h"
+
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSMapTable.h>
 #import <Foundation/NSKeyedArchiver.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewItem.h"
+#import "AppKit/NSCollectionViewLayout.h"
+#import "AppKit/NSCollectionViewGridLayout.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
+
 #import "GSGuiPrivate.h"
 
 #include <math.h>
@@ -52,6 +63,9 @@ static NSString* NSCollectionViewMaxNumberOfColumnsKey       = @"NSMaxNumberOfGr
 static NSString* NSCollectionViewSelectableKey               = @"NSSelectable";
 static NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSAllowsMultipleSelection";
 static NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundColors";
+static NSString* NSCollectionViewLayoutKey                   = @"NSCollectionViewLayout";
+
+static NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GSNoSupplementaryElement"; // private
 
 /*
  * Class variables
@@ -100,6 +114,7 @@ static NSString *placeholderItem = nil;
     {
       placeholderItem = @"Placeholder";
       [self exposeBinding: NSContentBinding];
+      [self setVersion: 0];
     }
 }
 
@@ -122,6 +137,18 @@ static NSString *placeholderItem = nil;
   _items = [[NSMutableArray alloc] init];
   _selectionIndexes = [[NSIndexSet alloc] init];
   _draggingOnIndex = NSNotFound;
+
+  // 10.11 variables
+  
+  // Managing items.
+  _visibleItems = [[NSMutableArray alloc] init];
+  _indexPathsForVisibleItems = [[NSMutableSet alloc] init];
+  _visibleSupplementaryViews = [[NSMutableDictionary alloc] init];
+  _indexPathsForSupplementaryElementsOfKind = [[NSMutableSet alloc] init];
+
+  // Registered nib/class
+  _registeredNibs = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+  _registeredClasses = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
 }
 
 - (void) _resetItemSize
@@ -185,6 +212,17 @@ static NSString *placeholderItem = nil;
   DESTROY (_backgroundColors);
   DESTROY (_selectionIndexes);
   DESTROY (_items);
+
+  // Managing items.
+  DESTROY(_visibleItems);
+  DESTROY(_indexPathsForVisibleItems);
+  DESTROY(_visibleSupplementaryViews);
+  DESTROY(_indexPathsForSupplementaryElementsOfKind);
+
+  // Registered nib/class
+  DESTROY(_registeredNibs);
+  DESTROY(_registeredClasses); 
+
   //DESTROY (_mouseDownEvent);
   [super dealloc];
 }
@@ -251,12 +289,12 @@ static NSString *placeholderItem = nil;
 
 - (id < NSCollectionViewDelegate >) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void) setDelegate: (id < NSCollectionViewDelegate >)aDelegate
 {
-  delegate = aDelegate;
+  _delegate = aDelegate;
 }
 
 - (NSCollectionViewItem *) itemPrototype
@@ -392,6 +430,16 @@ static NSString *placeholderItem = nil;
           [item setSelected: YES];
         }
     }
+}
+
+- (NSCollectionViewLayout *) collectionViewLayout
+{
+  return _collectionViewLayout;
+}
+
+- (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout
+{
+  ASSIGN(_collectionViewLayout, layout);
 }
 
 - (NSRect) frameForItemAtIndex: (NSUInteger)theIndex
@@ -608,18 +656,47 @@ static NSString *placeholderItem = nil;
           
       if ([aCoder allowsKeyedCoding])
         {
-          _minItemSize = [aCoder decodeSizeForKey: NSCollectionViewMinItemSizeKey];
-          _maxItemSize = [aCoder decodeSizeForKey: NSCollectionViewMaxItemSizeKey];
+          if ([aCoder containsValueForKey: NSCollectionViewMinItemSizeKey])
+            {
+              _minItemSize = [aCoder decodeSizeForKey: NSCollectionViewMinItemSizeKey];
+            }
           
-          _maxNumberOfRows = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfRowsKey];
-          _maxNumberOfColumns = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfColumnsKey];
+          if ([aCoder containsValueForKey: NSCollectionViewMaxItemSizeKey])
+            {
+              _maxItemSize = [aCoder decodeSizeForKey: NSCollectionViewMaxItemSizeKey];
+            }
+          
+          if ([aCoder containsValueForKey: NSCollectionViewMaxNumberOfRowsKey])
+            {
+              _maxNumberOfRows = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfRowsKey];
+            }
+          
+          if ([aCoder containsValueForKey: NSCollectionViewMaxNumberOfColumnsKey])
+            {
+              _maxNumberOfColumns = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfColumnsKey];
+            }
           
           //_verticalMargin = [aCoder decodeFloatForKey: NSCollectionViewVerticalMarginKey];
           
-          _isSelectable = [aCoder decodeBoolForKey: NSCollectionViewSelectableKey];
-          _allowsMultipleSelection = [aCoder decodeBoolForKey: NSCollectionViewAllowsMultipleSelectionKey];
+          if ([aCoder containsValueForKey: NSCollectionViewSelectableKey])
+            {
+              _isSelectable = [aCoder decodeBoolForKey: NSCollectionViewSelectableKey];
+            }
           
-          [self setBackgroundColors: [aCoder decodeObjectForKey: NSCollectionViewBackgroundColorsKey]];
+          if ([aCoder containsValueForKey: NSCollectionViewAllowsMultipleSelectionKey])
+            {
+              _allowsMultipleSelection = [aCoder decodeBoolForKey: NSCollectionViewAllowsMultipleSelectionKey];
+            }
+          
+          if ([aCoder containsValueForKey: NSCollectionViewBackgroundColorsKey])
+            {
+              [self setBackgroundColors: [aCoder decodeObjectForKey: NSCollectionViewBackgroundColorsKey]];
+            }
+          
+          if ([aCoder containsValueForKey: NSCollectionViewLayoutKey])
+            {
+              [self setCollectionViewLayout: [aCoder decodeObjectForKey: NSCollectionViewLayoutKey]];
+            }
         }
       else
         {
@@ -629,6 +706,7 @@ static NSString *placeholderItem = nil;
           decode_NSUInteger(aCoder, &_maxNumberOfColumns);
           [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];
           [self setBackgroundColors: [aCoder decodeObject]]; // decode color...
+          [self setCollectionViewLayout: [aCoder decodeObject]];
         }
     }
   [self _initDefaults];
@@ -664,6 +742,9 @@ static NSString *placeholderItem = nil;
       //[aCoder encodeCGFloat: _verticalMargin forKey: NSCollectionViewVerticalMarginKey];
       [aCoder encodeObject: _backgroundColors 
                     forKey: NSCollectionViewBackgroundColorsKey];
+
+      [aCoder encodeObject: _collectionViewLayout
+                    forKey: NSCollectionViewLayoutKey];
     }
   else
     {
@@ -673,6 +754,7 @@ static NSString *placeholderItem = nil;
       encode_NSUInteger(aCoder, &_maxNumberOfColumns);
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isSelectable];      
       [aCoder encodeObject: [self backgroundColors]]; // encode color...
+      [aCoder encodeObject: [self collectionViewLayout]];
     }
 }
 
@@ -959,12 +1041,12 @@ static NSString *placeholderItem = nil;
   if (![dragIndexes count])
     return NO;
   
-  if (![delegate respondsToSelector: @selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
+  if (![_delegate respondsToSelector: @selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
     return NO;
   
-  if ([delegate respondsToSelector: @selector(collectionView:canDragItemsAtIndexes:withEvent:)])
+  if ([_delegate respondsToSelector: @selector(collectionView:canDragItemsAtIndexes:withEvent:)])
     {
-      if (![delegate collectionView: self
+      if (![_delegate collectionView: self
               canDragItemsAtIndexes: dragIndexes
                           withEvent: event])
         {
@@ -999,9 +1081,9 @@ static NSString *placeholderItem = nil;
                                    withEvent: (NSEvent *)event 
                                       offset: (NSPointPointer)dragImageOffset
 {
-  if ([delegate respondsToSelector: @selector(collectionView:draggingImageForItemsAtIndexes:withEvent:offset:)])
+  if ([_delegate respondsToSelector: @selector(collectionView:draggingImageForItemsAtIndexes:withEvent:offset:)])
     {
-      return [delegate collectionView: self
+      return [_delegate collectionView: self
                        draggingImageForItemsAtIndexes: indexes
                             withEvent: event
                                offset: dragImageOffset];
@@ -1015,13 +1097,13 @@ static NSString *placeholderItem = nil;
 - (BOOL) _writeItemsAtIndexes: (NSIndexSet *)indexes 
                  toPasteboard: (NSPasteboard *)pasteboard
 {
-  if (![delegate respondsToSelector: @selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
+  if (![_delegate respondsToSelector: @selector(collectionView:writeItemsAtIndexes:toPasteboard:)])
     {
       return NO;
     }
   else
     {
-      return [delegate collectionView: self
+      return [_delegate collectionView: self
                   writeItemsAtIndexes: indexes
                          toPasteboard: pasteboard];
     }
@@ -1037,7 +1119,7 @@ static NSString *placeholderItem = nil;
 {
   NSDragOperation result = NSDragOperationNone;
   
-  if ([delegate respondsToSelector: @selector(collectionView:validateDrop:proposedIndex:dropOperation:)])
+  if ([_delegate respondsToSelector: @selector(collectionView:validateDrop:proposedIndex:dropOperation:)])
     {
       NSPoint location = [self convertPoint: [sender draggingLocation] fromView: nil];
       NSInteger index = [self _indexAtPoint: location];
@@ -1050,7 +1132,7 @@ static NSString *placeholderItem = nil;
       
       // TODO: We currently don't do anything with the proposedIndex & dropOperation that
       // may get altered by the delegate.
-      result = [delegate collectionView: self
+      result = [_delegate collectionView: self
                            validateDrop: sender
                           proposedIndex: proposedIndex
                           dropOperation: dropOperation];
@@ -1098,10 +1180,10 @@ static NSString *placeholderItem = nil;
   index = (index > [_items count] - 1) ? [_items count] - 1 : index;
   
   BOOL result = NO;
-  if ([delegate respondsToSelector: @selector(collectionView:acceptDrop:index:dropOperation:)])
+  if ([_delegate respondsToSelector: @selector(collectionView:acceptDrop:index:dropOperation:)])
     {
       // TODO: dropOperation should be retrieved from the validateDrop delegate method.
-      result = [delegate collectionView: self
+      result = [_delegate collectionView: self
                              acceptDrop: sender
                                   index: index
                           dropOperation: NSCollectionViewDropOn];
@@ -1112,6 +1194,331 @@ static NSString *placeholderItem = nil;
 - (BOOL) wantsPeriodicDraggingUpdates
 {
   return YES;
+}
+
+/* New methods for later versions of macOS */
+
+// 10.11 methods...
+
+/* Locating Items and Views */
+
+- (NSArray *) visibleItems
+{
+  return _visibleItems;
+}
+
+- (NSSet *) indexPathsForVisibleItems
+{
+  return _indexPathsForVisibleItems;
+}
+
+- (NSArray *) visibleSupplementaryViewsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
+{
+  return [_visibleSupplementaryViews objectForKey: elementKind];
+}
+
+- (NSSet *) indexPathsForVisibleSupplementaryElementsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
+{
+  return nil;
+}
+
+- (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
+{
+  return nil;
+}
+
+- (NSIndexPath *) indexPathForItemAtPoint: (NSPoint)point
+{
+  return nil;
+}
+
+- (NSCollectionViewItem *) itemAtIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (NSView *)supplementaryViewForElementKind: (NSCollectionViewSupplementaryElementKind)elementKind 
+                                atIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (void) scrollToItemsAtIndexPaths: (NSSet *)indexPaths 
+                    scrollPosition: (NSCollectionViewScrollPosition)scrollPosition
+{
+}
+
+/* Creating Collection view Items */
+
+- (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier 
+                                     forIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (void) registerClass: (Class)itemClass 
+ forItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+  [self registerClass: itemClass
+        forSupplementaryViewOfKind: GSNoSupplementaryElement
+       withIdentifier: identifier];
+}
+
+- (void) registerNib: (NSNib *)nib 
+         forItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+  [self registerNib: nib
+        forSupplementaryViewOfKind: GSNoSupplementaryElement
+     withIdentifier: identifier];
+}
+
+- (NSView *) makeSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind 
+                          withIdentifier: (NSUserInterfaceItemIdentifier)identifier 
+                            forIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (void) registerClass: (Class)viewClass 
+         forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 
+        withIdentifier:(NSUserInterfaceItemIdentifier)identifier
+{
+  NSMapTable *t = nil;
+
+  t = [_registeredClasses objectForKey: kind];
+  if (t == nil)
+    {
+      t = [NSMapTable weakToWeakObjectsMapTable];
+      [_registeredClasses setObject: t
+                             forKey: kind];
+    }
+
+  [t setObject: viewClass forKey: identifier];
+}
+
+- (void) registerNib: (NSNib *)nib 
+         forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 
+      withIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+  NSMapTable *t = nil;
+  
+  t = [_registeredNibs objectForKey: kind];
+  if (t == nil)
+    {
+      t = [NSMapTable weakToWeakObjectsMapTable];
+      [_registeredNibs setObject: t
+                          forKey: kind];
+    }
+
+  [t setObject: nib forKey: identifier];
+}
+
+/* Providing the collection view's data */
+
+- (id<NSCollectionViewDataSource>) dataSource
+{
+  return _dataSource;
+}
+
+- (void) setDataSource: (id<NSCollectionViewDataSource>)dataSource
+{
+  _dataSource = dataSource;
+  [self reloadData];
+}
+
+/* Configuring the Collection view */
+
+- (NSNib *) _nibForClass: (Class)cls
+{
+  NSString *clsName = NSStringFromClass(cls);
+  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
+                                        bundle: [NSBundle bundleForClass: cls]];
+  return nib;
+}
+
+- (NSView *) backgroundView
+{
+  return _backgroundView;
+}
+
+- (void) setBackgroundView: (NSView *)backgroundView
+{
+  _backgroundView = backgroundView; // weak since view retains this
+}
+
+- (BOOL) backgroundViewScrollsWithContent
+{
+  return _backgroundViewScrollsWithContent;
+}
+
+- (void) setBackgroundViewScrollsWithContent: (BOOL)f
+{
+  _backgroundViewScrollsWithContent = f;
+}
+
+/* Reloading Content */
+
+- (void) reloadData
+{
+  NSInteger ns = [self numberOfSections];
+  NSInteger cs = 0;
+
+  for (cs = 0; cs < ns; cs++)
+    {
+      NSInteger ni = [self numberOfItemsInSection: cs];
+      NSInteger ci = 0;
+      
+      for (ci = 0; ci < ni; ci++)
+        {
+          NSIndexPath *p = nil;
+          NSCollectionViewItem *item = [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: p];
+          NSNib *nib = [self _nibForClass: [item class]];
+          BOOL loaded = [nib instantiateWithOwner: item
+                                  topLevelObjects: NULL];
+          
+          if (loaded)
+            {
+              NSView *v = [item view];
+              NSLog(@"%@",v);
+            }
+        }
+    }
+}
+
+- (void) reloadSections: (NSIndexSet *)sections
+{
+}
+
+- (void) reloadItemsAtIndexPaths: (NSSet *)indexPaths
+{
+}
+
+/* Prefetching Collection View Cells and Data */
+
+- (id<NSCollectionViewPrefetching>) prefetchDataSource
+{
+  return _prefetchDataSource;
+}
+
+- (void) setPrefetchDataSource: (id<NSCollectionViewPrefetching>)prefetchDataSource
+{
+  _prefetchDataSource = prefetchDataSource;
+}
+
+/* Getting the State of the Collection View */
+
+- (NSInteger) numberOfSections
+{
+  NSInteger n = 0;
+
+  if ([_dataSource respondsToSelector: @selector(numberOfsectionsInCollectionView:)])
+    {
+      n = [_dataSource numberOfSectionsInCollectionView: self];
+    }
+  
+  return n;
+}
+
+- (NSInteger) numberOfItemsInSection: (NSInteger)section
+{
+  NSInteger n = 0;
+
+  // Since this is a required method by the delegate we can assume it's presence
+  // if it is not there, tests on macOS indicate that an unrecognized selector
+  // exception is thrown.
+  n = [_dataSource collectionView: self numberOfItemsInSection: section];
+  
+  return n;
+}
+
+/* Inserting, Moving and Deleting Items */
+
+- (void) insertItemsAtIndexPaths: (NSSet *)indexPaths
+{
+}
+
+- (void) moveItemAtIndexPath: (NSIndexPath *)indexPath 
+                 toIndexPath: (NSIndexPath *)newIndexPath
+{
+}
+
+- (void) deleteItemsAtIndexPaths: (NSSet *)indexPaths
+{
+}
+
+/* Inserting, Moving, Deleting and Collapsing Sections */
+
+- (void) insertSections: (NSIndexSet *)sections
+{
+}
+
+- (void) moveSection: (NSInteger)section 
+           toSection: (NSInteger)newSection
+{
+}
+
+- (void) deleteSections: (NSIndexSet *)sections
+{
+}
+
+// 10.12 method...
+
+- (IBAction) toggleSectionCollapse: (id)sender
+{
+}
+
+// 10.11 methods...
+
+- (BOOL) allowsEmptySelection
+{
+  return _allowsEmptySelection;
+}
+
+- (void) setAllowsEmptySelection: (BOOL)flag;
+{
+  _allowsEmptySelection = flag;
+}
+
+- (NSSet *) selectionIndexPaths // copy
+{
+  return nil;
+}
+
+- (IBAction) selectAll: (id)sender
+{
+}
+
+- (IBAction) deselectAll: (id)sender
+{
+}
+
+- (void) selectItemsAtIndexPaths: (NSSet *)indexPaths 
+                  scrollPosition: (NSCollectionViewScrollPosition)scrollPosition
+{
+}
+
+- (void) deselectItemsAtIndexPaths: (NSSet *)indexPaths
+{
+}
+
+/* Getting Layout Information */
+
+- (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *) layoutAttributesForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind 
+                                                                         atIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+/* Animating Multiple Changes */
+
+- (void) performBatchUpdates: (GSCollectionViewPerformBatchUpdatesBlock) updates 
+           completionHandler: (GSCollectionViewCompletionHandlerBlock) completionHandler
+{
 }
 
 @end

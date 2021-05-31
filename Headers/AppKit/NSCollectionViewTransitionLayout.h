@@ -27,13 +27,33 @@
 
 #import <AppKit/NSCollectionViewLayout.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+typedef NSString* NSCollectionViewTransitionLayoutAnimatedKey;
+
 @interface NSCollectionViewTransitionLayout : NSCollectionViewLayout
+{
+  CGFloat _transitionProgress;
+  NSCollectionViewLayout *_currentLayout;
+  NSCollectionViewLayout *_nextLayout;
+}
+
+- (CGFloat) transitionProgress;
+- (void) setTransitionProgress: (CGFloat)transitionProgress;
+
+- (NSCollectionViewLayout *) currentLayout;
+- (NSCollectionViewLayout *) nextLayout;
+
+// Designated initializer
+- (instancetype) initWithCurrentLayout: (NSCollectionViewLayout *)currentLayout
+                            nextLayout: (NSCollectionViewLayout *)nextLayout;
+
+- (void) updateValue: (CGFloat)value forAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key;
+- (CGFloat) valueForAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key;
 
 @end
 

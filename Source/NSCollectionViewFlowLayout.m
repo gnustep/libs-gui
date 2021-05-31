@@ -24,7 +24,155 @@
 
 #import "AppKit/NSCollectionViewFlowLayout.h"
 
+@implementation NSCollectionViewFlowLayoutInvalidationContext
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _invalidateFlowLayoutAttributes = YES;
+      _invalidateFlowLayoutDelegateMetrics = YES;
+    }
+  return self;
+}
+
+- (void) setInvalidateFlowLayoutDelegateMetrics: (BOOL)flag
+{
+  _invalidateFlowLayoutDelegateMetrics = flag;
+}
+
+- (BOOL) invalidateFlowLayoutDelegateMetrics
+{
+  return _invalidateFlowLayoutDelegateMetrics;
+}
+
+- (void) setInvalidateFlowLayoutAttributes: (BOOL)flag
+{
+  _invalidateFlowLayoutAttributes = flag;
+}
+
+- (BOOL) invalidateFlowLayoutAttributes
+{
+  return _invalidateFlowLayoutAttributes;
+}
+
+@end
+
 @implementation NSCollectionViewFlowLayout
+
+- (CGFloat) minimumLineSpacing
+{
+  return _minimumLineSpacing;
+}
+
+- (void) setMinimumLineSpacing: (CGFloat)spacing
+{
+  _minimumLineSpacing = spacing;
+}
+
+- (CGFloat) minimumInteritemSpacing
+{
+  return _minimumInteritemSpacing;
+}
+
+- (void) setMinimumInteritemSpacing: (CGFloat)spacing
+{
+  _minimumInteritemSpacing = spacing;
+}
+  
+- (NSSize) itemSize
+{
+  return _itemSize;
+}
+
+- (void) setItemSize: (NSSize)itemSize
+{
+  _itemSize = itemSize;
+}
+  
+- (NSSize) estimatedItemSize
+{
+  return _estimatedItemSize;
+}
+
+- (void) setEstimatedItemSize: (NSSize)size
+{
+  _estimatedItemSize = size;
+}
+  
+- (NSCollectionViewScrollDirection) scrollDirection
+{
+  return _scrollDirection;
+}
+
+- (void) setScrollDirection: (NSCollectionViewScrollDirection)direction
+{
+  _scrollDirection = direction;
+}
+  
+- (NSSize) headerReferenceSize
+{
+  return _headerReferenceSize;
+}
+
+- (void) setHeaderReferenceSize: (NSSize)size
+{
+  _headerReferenceSize = size;
+}
+  
+- (NSSize) footerReferenceSize
+{
+  return _footerReferenceSize;
+}
+
+- (void) setFooterReferenceSize: (NSSize)size
+{
+  _footerReferenceSize = size;
+}
+  
+- (NSEdgeInsets) sectionInset
+{
+  return _sectionInset;
+}
+
+- (void) setSectionInset: (NSEdgeInsets)inset
+{
+  _sectionInset = inset;
+}
+
+- (BOOL) sectionHeadersPinToVisibleBounds
+{
+  return _sectionHeadersPinToVisibleBounds;
+}
+
+- (void) setSectionHeadersPinToVisibleBounds: (BOOL)f
+{
+  _sectionHeadersPinToVisibleBounds = f;
+}
+
+- (BOOL) sectionFootersPinToVisibleBounds
+{
+  return _sectionFootersPinToVisibleBounds;
+}
+
+- (void) setSectionFootersPinToVisibleBounds: (BOOL)f
+{
+  _sectionFootersPinToVisibleBounds = f;
+}
+
+- (BOOL) sectionAtIndexIsCollapsed: (NSUInteger)sectionIndex
+{
+  return NO;
+}
+
+- (void) collapseSectionAtIndex: (NSUInteger)sectionIndex
+{
+}
+
+- (void) expandSectionAtIndex: (NSUInteger)sectionIndex
+{
+}
 
 @end
 

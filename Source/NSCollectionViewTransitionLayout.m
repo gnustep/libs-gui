@@ -26,5 +26,54 @@
 
 @implementation NSCollectionViewTransitionLayout
 
+- (CGFloat) transitionProgress
+{
+  return _transitionProgress;
+}
+
+- (void) setTransitionProgress: (CGFloat)transitionProgress
+{
+  _transitionProgress = transitionProgress;
+}
+
+- (NSCollectionViewLayout *) currentLayout
+{
+  return _currentLayout;
+}
+
+- (NSCollectionViewLayout *) nextLayout
+{
+  return _nextLayout;
+}
+
+// Designated initializer
+- (instancetype) initWithCurrentLayout: (NSCollectionViewLayout *)currentLayout
+                            nextLayout: (NSCollectionViewLayout *)nextLayout
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_currentLayout, currentLayout);
+      ASSIGN(_nextLayout, nextLayout);
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_currentLayout);
+  RELEASE(_nextLayout);
+  [super dealloc];
+}
+
+- (void) updateValue: (CGFloat)value forAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key
+{
+}
+
+- (CGFloat) valueForAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key
+{
+  return 1.0;
+}
+
 @end
 
