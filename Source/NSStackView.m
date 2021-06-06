@@ -168,7 +168,7 @@
 {
   NSRect currentFrame = [self frame];
   NSRect newFrame = currentFrame;
-  NSArray *sv = [self subviews];
+  NSArray *sv = [super subviews];
   NSUInteger n = [sv count];
   CGFloat sp = [self spacing];
   CGFloat x = 0.0;
@@ -176,7 +176,7 @@
   CGFloat newHeight = 0.0;
   CGFloat newWidth = 0.0;
   NSUInteger i = 0;
-  
+
   // Advance vertically or horizontally depending on orientation...
   if (o == NSUserInterfaceLayoutOrientationVertical)
     {
@@ -259,6 +259,12 @@
 - (void) _refreshView
 {
   NSRect currentFrame = [self frame];
+
+  if ([_views count] == 0)
+    {
+      NSLog(@"Returning");
+      return;
+    }
   
   if (_beginningContainer != nil)
     {
@@ -444,26 +450,41 @@
 }
 
 // Instance methods
-// Manage views...
+
+- (void) _createWithViews: (NSArray *)views
+{
+  NSUInteger c = [views count];
+  
+  _arrangedSubviews = [[NSMutableArray alloc] initWithArray: views];
+  _detachedViews = [[NSMutableArray alloc] initWithCapacity: c];
+  ASSIGNCOPY(_views, views);
+  _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+  _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+  
+  // Gravity...  not used by default.
+  _beginningContainer = nil;
+  _middleContainer = nil;
+  _endContainer = nil;
+
+  [self _refreshView];  
+}
+
 - (instancetype) initWithViews: (NSArray *)views
 {
   self = [super init];
   if (self != nil)
     {
-      NSUInteger c = [views count];
-      
-      _arrangedSubviews = [[NSMutableArray alloc] initWithArray: views];
-      _detachedViews = [[NSMutableArray alloc] initWithCapacity: c];
-      ASSIGNCOPY(_views, views);
-      _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
-      _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      [self _createWithViews: views];
+    }
+  return self;
+}
 
-      // Gravity...  not used by default.
-      _beginningContainer = nil;
-      _middleContainer = nil;
-      _endContainer = nil;
-
-      [self _refreshView];
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self != nil)
+    {
+      [self _createWithViews: nil];
     }
   return self;
 }
