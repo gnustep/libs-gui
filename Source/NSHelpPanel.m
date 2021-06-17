@@ -163,7 +163,7 @@ static NSHelpPanel	*_sharedPanel = nil;
                              hasHorizontalScroller: YES
                                hasVerticalScroller: YES
                                         borderType: NSNoBorder];
-      v = [[NSTextView alloc] initWithFrame: NSMakeRect(contentRect.origin.x, contentRect.origin.y, size.width, size.height)];
+      v = [[NSTextView alloc] initWithFrame: NSMakeRect(0, 0, size.width, size.height)];
       [v setHorizontallyResizable: YES];
       [v setVerticallyResizable: YES];
       [v setEditable: NO];
