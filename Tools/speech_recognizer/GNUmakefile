@@ -8,6 +8,9 @@ VERSION = 0.1
 APP_NAME = GSSpeechRecognitionServer
 
 GSSpeechRecognitionServer_LANGUAGES = English
+GSSpeechRecognitionServer_APPLICATION_ICON = SpeechRecognizer.png
+
+GSSpeechRecognitionServer_RESOURCE_FILES = SpeechRecognizer.png
 
 GSSpeechRecognitionServer_OBJC_FILES = \
 	GSSpeechRecognitionEngine.m \
