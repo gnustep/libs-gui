@@ -78,6 +78,10 @@ typedef enum _NSButtonType {
   NSMomentaryChangeButton,
   NSOnOffButton,
   NSMomentaryPushInButton,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+  NSAcceleratorButton,
+  NSMultiLevelAcceleratorButton,
+#endif
   // These are old names
   NSMomentaryLight = NSMomentaryPushInButton,
   NSMomentaryPushButton = NSMomentaryLightButton
