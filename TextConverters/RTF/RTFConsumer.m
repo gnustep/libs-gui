@@ -1377,6 +1377,12 @@ void GSRTFaddField (void *ctxt, int start, const char *inst)
 {
   NSString *fieldInstruction;
 
+  if (inst == NULL)
+    {
+      NSLog(@"inst is NULL");
+      return;
+    }
+  
   // Ignore leading blanks
   while (inst[0] == ' ')
     {
