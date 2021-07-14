@@ -25,5 +25,5 @@ jobs:
         run: ./.github/scripts/build.sh
 
       # Runs a single command using the runners shell
-      - name: Build source
+      - name: Run tests
         run: ./.github/scripts/test.sh
