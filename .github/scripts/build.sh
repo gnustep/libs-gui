@@ -37,7 +37,7 @@ then
 fi;
 
 # build dependencies...
-./github/scripts/dependencies.sh
+./.github/scripts/dependencies.sh
 
 export LIBRARY_PATH=$HOME/staging/lib:$HOME/staging/lib64:$LIBRARY_PATH;
 export LD_LIBRARY_PATH=$HOME/staging/lib:$HOME/staging/lib64:$LD_LIBRARY_PATH;
