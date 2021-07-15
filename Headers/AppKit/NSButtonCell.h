@@ -217,9 +217,9 @@ typedef enum _NSGradientType {
 - (void) drawImage: (NSImage*)imageToDisplay 
          withFrame: (NSRect)cellFrame 
             inView: (NSView *)controlView;
-- (NSRect) drawTitle: (NSAttributedString*)titleToDisplay 
-	   withFrame: (NSRect)cellFrame 
-	      inView: (NSView *)controlView;
+- (NSRect) drawTitle: (NSAttributedString*)titleToDisplay
+           withFrame: (NSRect)cellFrame
+              inView: (NSView *)controlView;
 #endif
 
 //

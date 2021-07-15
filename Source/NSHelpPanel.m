@@ -138,7 +138,7 @@ static NSHelpPanel	*_sharedPanel = nil;
     {
       NSScrollView	*s;
       NSTextView	*v;
-      NSRect		r;
+      NSSize		size;
 
       /* We have a standard start size.
        */
@@ -159,8 +159,11 @@ static NSHelpPanel	*_sharedPanel = nil;
       [self setContentView: s];
       RELEASE(s);
 
-      r = [[s documentView] frame];
-      v = [[NSTextView alloc] initWithFrame: r];
+      size = [NSScrollView contentSizeForFrameSize: contentRect.size
+                             hasHorizontalScroller: YES
+                               hasVerticalScroller: YES
+                                        borderType: NSNoBorder];
+      v = [[NSTextView alloc] initWithFrame: NSMakeRect(0, 0, size.width, size.height)];
       [v setHorizontallyResizable: YES];
       [v setVerticallyResizable: YES];
       [v setEditable: NO];
@@ -169,7 +172,7 @@ static NSHelpPanel	*_sharedPanel = nil;
       [v setMaxSize: NSMakeSize (1E7, 1E7)];
       [v setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
       [[v textContainer] setContainerSize:
-	NSMakeSize (MAX(r.size.width, 0.0), 1e7)];
+	NSMakeSize (MAX(size.width, 0.0), 1e7)];
       [[v textContainer] setWidthTracksTextView: YES];
 
       [s setDocumentView: v];

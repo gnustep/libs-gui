@@ -10,6 +10,9 @@ VERSION = 0.1
 # This is an app not a tool because, eventually, it will present the user
 # interface for the GUI part of the speech engine.
 APP_NAME = GSSpeechServer
+GSSpeechServer_APPLICATION_ICON = SpeechSynthesizer.png
+
+GSSpeechServer_RESOURCE_FILES = SpeechSynthesizer.png
 
 GSSpeechServer_LANGUAGES = English
 

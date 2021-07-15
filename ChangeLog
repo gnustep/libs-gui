@@ -1,3 +1,10 @@
+2021-06-17 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSHelpPanel.m: (initWithContentRect)
+	When initializing the text view do not use the document view
+	of the scroll view which is not yet set and invalid.
+	(Fixes exceptions/crashes)
+
 2021-05-20 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add NSStackView.h to header.
