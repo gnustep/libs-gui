@@ -397,6 +397,16 @@ static NSString *placeholderItem = nil;
     }
 }
 
+- (NSCollectionViewLayout *) collectionViewLayout
+{
+  return _collectionViewLayout;
+}
+
+- (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout
+{
+  ASSIGN(_collectionViewLayout, layout);
+}
+
 - (NSRect) frameForItemAtIndex: (NSUInteger)theIndex
 {
   NSRect itemFrame = NSMakeRect (0,0,0,0);

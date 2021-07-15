@@ -70,4 +70,5 @@ before_script: >
     . $HOME/staging/share/GNUstep/Makefiles/GNUstep.sh;
 script: >
     ./configure $BASE_ABI || (cat config.log && false);
-    make && make install && make check || (cat Tests/tests.log && false);
+    make && make install
+    # make check || (cat Tests/tests.log && false);

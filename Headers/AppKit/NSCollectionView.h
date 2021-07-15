@@ -141,6 +141,11 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL
 - (NSIndexSet *) selectionIndexes;
 - (void) setSelectionIndexes: (NSIndexSet *)indexes;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+- (NSCollectionViewLayout *) collectionViewLayout;
+- (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout;
+#endif
+
 - (NSRect) frameForItemAtIndex: (NSUInteger)index;
 - (NSCollectionViewItem *) itemAtIndex: (NSUInteger)index;
 - (NSCollectionViewItem *) newItemForRepresentedObject:(id)object;
