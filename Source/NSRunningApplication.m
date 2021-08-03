@@ -155,4 +155,9 @@
 {
   return nil;
 }
+
+- (NSRunningApplication *)frontmostApplication
+{
+  return nil;
+}
 @end

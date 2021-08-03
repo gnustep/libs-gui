@@ -1257,7 +1257,7 @@ static BOOL menuBarVisible = YES;
           }
 	NS_HANDLER
 	  {
-	    NSLog(@"Error Occurred While Updating Menu %@: %@", [self title], localException);
+	    NSLog(@"Error occurred While Updating Menu %@: %@", [self title], localException);
 	  }
 	NS_ENDHANDLER
       // Reenable displaying of menus
@@ -2350,9 +2350,9 @@ static BOOL menuBarVisible = YES;
 	{
 	  [_aWindow setLevel: NSPopUpMenuWindowLevel];
 	  [_bWindow setLevel: NSPopUpMenuWindowLevel];
+          [self update];
 	}
     }
-  [self update];
 }
 
 - (NSString*) description

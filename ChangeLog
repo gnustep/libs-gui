@@ -1,3 +1,56 @@
+2021-04-26  Ivan Vucica  <ivan@vucica.net>
+
+	* ANNOUNCE:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/news.texi:
+	* NEWS:
+	Updating documentation for the 0.29.0 release.
+	* Version:
+	Bumping requirement to gnustep-base 1.28.0.
+
+2021-04-23 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/Functions.m: QuickFix. Remove unecessary warning
+        about storyboard in NSApplicationMain function.
+
+2021-03-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSGridView.[hm]: Add implementation of NSGridView.
+	* Source/GSXib5KeyedUnarchiver.m: Add keys to decode NSGridView.
+
+2021-03-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m (-textDidChange:): If there is a binding with
+	continious update, pass on the changed text.
+	* Source/GSXibElement.m: Correct the handling of boolean values in attributes.
+	* Source/GSBindingHelpers.h,
+	* Source/NSKeyValueBinding.m: Prevent recursion when
+	reverseSetValue: is used.
+	* Source/NSTextField.m (-textDidChange:): Remove empty code line.
+
+2021-03-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-_setOwnedByPopUp:): Only update the menu if
+	there is a new popup.
+
+2021-02-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPasteboard.m (-_pasteboardWithTarget:name:): Correct
+	wrong order of arguments to NSMapInsert.
+	* Source/NSPasteboard.m (-generalPasteboard): Simplify
+	implementation.
+
+2021-02-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchFieldCell.m: Correct encoding/decoding that was
+	broken in last commit of this file.
+
+2021-02-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/Italian.lproj/Localizable.strings,
+	* Resources/Esperanto.lproj/Localizable.strings: Readd BOM which
+	was lost when regenerating these files.
+
 2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-_numRows): Take column value binding into

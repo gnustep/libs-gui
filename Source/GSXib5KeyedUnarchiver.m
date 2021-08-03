@@ -41,6 +41,7 @@
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSFormCell.h"
+#import "AppKit/NSGridView.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSMenu.h"
@@ -201,7 +202,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
-                            @"NSMutableArray", @"constraints", 
+                            @"NSMutableArray", @"constraints",
+                            @"NSMutableArray", @"rows",
+                            @"NSMutableArray", @"columns",
+                            @"NSMutableArray", @"gridCells",
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -227,7 +231,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
-                                            @"selectedItem", @"firstItem", @"secondItem", nil];
+                                            @"selectedItem", @"firstItem", @"secondItem",
+                                            @"row", @"column", nil];
           RETAIN(XmlReferenceAttributes);
 
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
@@ -287,6 +292,24 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"string", @"NS.relative",
                                            @"canPropagateSelectedChildViewControllerTitle",
                                                    @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
+                                           @"rowAlignment", @"NSGrid_alignment",
+                                           @"rowSpacing", @"NSGrid_rowSpacing",
+                                           @"columnSpacing", @"NSGrid_columnSpacing",
+                                           @"hidden", @"NSGrid_hidden",
+                                           @"leadingPadding", @"NSGrid_leadingPadding",
+                                           @"bottomPadding", @"NSGrid_bottomPadding",
+                                           @"trailingPadding", @"NSGrid_trailingPadding",
+                                           @"topPadding", @"NSGrid_topPadding",
+                                           @"width", @"NSGrid_width",
+                                           @"height", @"NSGrid_height",
+                                           @"xPlacement", @"NSGrid_xPlacement",
+                                           @"yPlacement", @"NSGrid_yPlacement",
+                                           @"rows", @"NSGrid_rows",
+                                           @"columns", @"NSGrid_columns",
+                                           @"gridCells", @"NSGrid_cells",
+                                           @"contentView", @"NSGrid_content",
+                                           @"row", @"NSGrid_owningRow",
+                                           @"column", @"NSGrid_owningColumn",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -335,6 +358,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // decoding the integer flag masks...
           XmlKeyToDecoderSelectorMap =
             [NSDictionary dictionaryWithObjectsAndKeys:
+               @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
+               @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
+               @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
                @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
                @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
                @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",
@@ -2915,6 +2941,79 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) _decodePlacementForObject: (id)obj
+{
+  NSGridRowAlignment alignment = NSGridCellPlacementNone;
+  if ([obj isEqualToString: @"inherited"])
+    {
+      alignment = NSGridCellPlacementInherited;
+    }
+  else if ([obj isEqualToString: @"leading"])
+    {
+      alignment = NSGridCellPlacementLeading;
+    }
+  else if ([obj isEqualToString: @"top"])
+    {
+      alignment = NSGridCellPlacementTop;
+    }
+  else if ([obj isEqualToString: @"trailing"])
+    {
+      alignment = NSGridCellPlacementTrailing;
+    }
+  else if ([obj isEqualToString: @"bottom"])
+    {
+      alignment = NSGridCellPlacementBottom;
+    }
+  else if ([obj isEqualToString: @"center"])
+    {
+      alignment = NSGridCellPlacementCenter;
+    }
+  else if ([obj isEqualToString: @"fill"])
+    {
+      alignment = NSGridCellPlacementFill;
+    }  
+  else // if not specified then assume none...
+    {
+      alignment = NSGridCellPlacementNone;
+    }
+  return [NSNumber numberWithInteger: alignment];
+}
+
+- (id) decodeXPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"xPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeYPlacementForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"yPlacement"];
+  return [self _decodePlacementForObject: obj];
+}
+
+- (id) decodeRowAlignmentForElement: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"rowAlignment"];
+  NSGridRowAlignment alignment = NSGridRowAlignmentNone;
+  if ([obj isEqualToString: @"inherited"])
+    {
+      alignment = NSGridRowAlignmentInherited;
+    }
+  else if ([obj isEqualToString: @"firstBaseline"])
+    {
+      alignment = NSGridRowAlignmentFirstBaseline;
+    }
+  else if ([obj isEqualToString: @"lastBaseline"])
+    {
+      alignment = NSGridRowAlignmentLastBaseline;
+    }
+  else
+    {
+      alignment = NSGridRowAlignmentNone;
+    }
+  return [NSNumber numberWithInteger: alignment];
 }
 
 - (id) objectForXib: (GSXibElement*)element

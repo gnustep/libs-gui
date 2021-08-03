@@ -41,6 +41,7 @@
 @public
   NSDictionary *info;
   id src;
+  BOOL inReverseSet;
 }
 
 + (void) exposeBinding: (NSString *)binding forClass: (Class)clazz;

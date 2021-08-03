@@ -1,4 +1,4 @@
-/* Translator: Nicola Pero <nicola@brainstorm.co.uk>
+﻿/* Translator: Nicola Pero <nicola@brainstorm.co.uk>
  * Date: September 2002
  * Translator: Maurizio Boriani <baux@gnu.org>
  * Date: April 2006
@@ -121,7 +121,6 @@ add comments above this one
 /* Comment: Error description */
 /* File: ../Source/NSDocument.m:646 */
 /* Comment: Error description */
-/* Flag: untranslated */
 "Could not create data for type."
   = "Impossibile generare i dati per il tipo dati.";
 
@@ -222,7 +221,6 @@ add comments above this one
 "Typeface" = "Typeface";
 
 /* File: ../Source/NSOpenPanel.m:92 */
-/* Flag: untranslated */
 "Open" = "Apri";
 
 /* File: ../Source/NSPageLayout.m:961 */
@@ -254,8 +252,7 @@ add comments above this one
 "8 up" = "8 up";
 
 /* File: ../Source/NSPrintPanel.m:407 */
-/* Flag: untranslated */
-"Sorry" = "Sorry";
+"Sorry" = "Spiacente";
 
 /* File: ../Source/NSSavePanel.m:243 */
 /* Flag: untranslated */
@@ -276,7 +273,6 @@ add comments above this one
   = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
 
 /* File: ../Source/NSSavePanel.m:1374 */
-/* Flag: untranslated */
 "No" = "No";
 
 /* File: ../Source/NSWindow.m:5637 */

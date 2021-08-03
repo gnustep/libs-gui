@@ -361,7 +361,9 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   keyPath = [info objectForKey: NSObservedKeyPathKey];
   dest = [info objectForKey: NSObservedObjectKey];
   NSDebugLLog(@"NSBinding", @"reverseSetValue: keyPath %@, dest %@ value %@", keyPath, dest, value);
+  inReverseSet = YES;
   [dest setValue: value forKeyPath: keyPath];
+  inReverseSet = NO;
 }
 
 - (void) reverseSetValueFor: (NSString *)binding
@@ -377,6 +379,11 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   NSString *binding = (NSString *)context;
   NSDictionary *options;
   id newValue;
+
+  if (inReverseSet)
+    {
+      return;
+    }
 
   if (change != nil)
     {
