@@ -60,17 +60,23 @@ APPKIT_EXPORT NSString *NSNibTopLevelObjects;
 APPKIT_EXPORT NSString *NSNibOwner;
 #endif
 
+typedef NSString *NSNibName;
+
 @interface NSNib : NSObject <NSCoding>
 {
   NSData *_nibData;
   id _loader;
-  NSURL *_url;
   NSBundle *_bundle;
 }
 
 // reading the data...
 - (id)initWithContentsOfURL: (NSURL *)nibFileURL;
-- (id)initWithNibNamed: (NSString *)nibNamed bundle: (NSBundle *)bundle;
+- (instancetype)initWithNibNamed: (NSNibName)nibNamed bundle: (NSBundle *)bundle;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (instancetype)initWithNibData: (NSData *)nibData 
+                         bundle: (NSBundle *)bundle;
+#endif
 
 // instantiating the nib.
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable;
@@ -79,7 +85,10 @@ APPKIT_EXPORT NSString *NSNibOwner;
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable withZone: (NSZone *)zone;
 #endif
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (BOOL)instantiateWithOwner: (id)owner 
+             topLevelObjects: (NSArray **)topLevelObjects;
+#endif
 @end
 
 #endif /* _GNUstep_H_NSNib */

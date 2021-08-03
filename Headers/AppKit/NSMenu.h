@@ -434,6 +434,12 @@
                  withFont: (NSFont *)font;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) popUpMenuPositionItem: (NSMenuItem *)item
+                    atLocation: (NSPoint) point
+                        inView: (NSView *) view;
+#endif
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 + (BOOL) menuBarVisible;
 + (void) setMenuBarVisible: (BOOL)flag;

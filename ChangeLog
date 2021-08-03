@@ -1,3 +1,405 @@
+2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-_numRows): Take column value binding into
+	consideration.
+	* Source/NSTableColumn.m (-setValue:forKey:): Reload table data.
+
+2021-01-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (GSOrderedWindows): Don't try to handle
+	already gone windows that may be returned from a slow window manager.
+
+2021-01-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m: Small cleanups for nerged pull request.
+	* Resources: Regenerate translation files.
+	* Documentation/news.texi,
+	* Version: Updating documentation for the upcoming 0.29.0 release.
+
+2021-01-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m: Change encoding/decoding to protect
+	against differences in integer size.
+
+2021-01-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSComboBoxCell.h: Correct type of instance variables.
+	* Source/GSGuiPrivate.h: Add macros for encoding/decoding.
+	* Source/NSActionCell.m,
+	* Source/NSButtonCell.m,
+	* Source/NSCell.m,
+	* Source/NSComboBoxCell.m,
+	* Source/NSImageCell.m,
+	* Source/NSLevelIndicatorCell.m,
+	* Source/NSPathCell.m,
+	* Source/NSPopUpButtonCell.m,
+	* Source/NSSearchFieldCell.m,
+	* Source/NSSliderCell.m,
+	* Source/NSStepperCell.m: Change encoding/decoding to protect
+	against differences in integer size.
+
+2020-12-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchFieldCell.m: Use GSTheme to display the popup.
+
+2020-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSearchField.m,
+	* Source/NSSearchFieldCell.m: Small cleanups in formatting and
+	int types.
+
+2020-12-11 Riccardo Mottola <rm@gnu.org>
+
+	* Source/GSToolbarView.m,
+	Use centerScanRect to correct Items frame and avoid flickering.
+
+2020-12-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarFrameworkPrivate.h,
+	* Source/GSToolbarView.m,
+	* Source/NSToolbar.m: Minor changes to format code, remove unused
+	methods and introduce some new helper methods.
+
+2020-11-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-mouseDown:): Protect against _window going
+	away during tracking.
+
+2020-11-23 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSPopUpButtonCell.m (release):
+	Use standard setMenu: in release and avoid leaking the Menu. (Proposed by Fred)
+
+2020-11-03 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m (_JPEGRepresentationWithProperties:):
+	Support greyscape output colorspace in JPEG decompression, fix
+	Alpha output to NO, since JPEGs do not support it.
+
+2020-10-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-validateEditing): Reset _isValidating on
+	intermediate return.
+	Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
+2020-10-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: Protect against theme colour list missing out
+	on default colours.
+
+2020-09-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSToolTips.m: Revert bogus last commit.
+
+2020-09-12 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSToolTips.m: Fix issue where setting the theme causes
+	tooltips to become all black.  This is happening on windows and other
+	platforms.
+	* Source/NSCell.m: Fix for issue on Windows were contents are reset
+	when initWithCoder: coder is called.  If the contents are set, they
+	determine the type.  Currently investigating why this is occuring
+	ONLY on Windows.
+
+2020-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-initWithCoder:): Make sure text container is
+	in sync with the text view resize behaviour.
+	* Source/NSScrollView.m (-initWithCoder:): Add scrollers as
+	subviews when decoded.
+
+2020-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m
+	(-glyphRangeForCharacterRange:actualCharacterRange:): Handle zero
+	length charRagne at end of text correctly.
+
+2020-09-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m
+	(-decodeCellPrototypeForElement:): Fix misuse of setType:.
+
+2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add all new headers
+	* Headers/AppKit/NSTextCheckingClient.h: Protocol for
+	NSTextCheckingController.m
+	* Headers/AppKit/NSTextCheckingController.h: New controller
+	for text checking - spelling/grammar
+	* Headers/AppKit/NSTextFinder.h: Text finder, currently delegates
+	all functionality to GSTextFinder.
+	* Headers/AppKit/NSTextInputClient.h: Protocol
+	* Headers/AppKit/NSTextInputContext.h: Protocol
+	* Headers/AppKit/NSTextView.h: Implementation of methods needed
+	for NSTextFinder.
+	* Headers/AppKit/NSUserInterfaceValidation.h: Minor changes
+	* MISSING: Removed these from MISSING list
+	* Source/GNUmakefile: Add files to be compiled or copied to list.
+	* Source/NSTextCheckingController.m: Implementation using
+	NSSpellChecker
+	* Source/NSTextFinder.m: Implementation using GSTextFinder
+	* Source/NSTextInputContext.m: Skeleton implementation.
+	* Source/NSTextView.m: Implementation of methods
+
+2020-08-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStoryboardTransform.h,
+	* Source/NSPageController.m,
+	* Source/NSPersistentDocument.m,
+	* Source/NSSplitViewItem.m,
+	* Source/NSViewController.m: Fix compiler warnings mit gcc.
+
+2020-07-31 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add header
+	* Headers/AppKit/NSStatusBarButton.h: Declaration
+	* MISSING: Remove file from list
+	* Source/GNUmakefile: Add to compilation
+	* Source/NSStatusBarButton.m: Definition of class.
+
+2020-07-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSLayoutAnchor.h
+	* Headers/AppKit/NSLayoutConstraint.h
+	* Headers/AppKit/NSLayoutGuide.h
+	* MISSING: Remove classes from list.
+	* Source/GNUmakefile
+	* Source/GSXib5KeyedUnarchiver.m: Add code to decode constraints.
+	* Source/NSLayoutAnchor.m
+	* Source/NSLayoutConstraint.m
+	* Source/NSLayoutGuide.m: Add infrastructure for layouts.
+        This needs additional work and study.  Comitting now so others
+        can more easily help.
+
+2020-07-28 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add includes for splitviewcontroller,
+        pagecontroller and tabviewcontroller.
+	* Headers/AppKit/NSPageController.h: Interface for page view controller
+	* Headers/AppKit/NSSplitViewController.h: Interface for splitview
+        controller
+	* Headers/AppKit/NSSplitViewItem.h: Enhancements to splitview item to
+        add logic for controller
+	* Headers/AppKit/NSStoryboardSegue.h: Add methods to handle popovers
+	* Headers/AppKit/NSTabViewController.h: Interface for tabViewController
+	* Headers/AppKit/NSTabViewItem.h: methods to support NSViewController
+	* Headers/AppKit/NSToolbar.h: Minor changes to support tabview controller
+	* Headers/AppKit/NSViewController.h: Additional enum
+	* MISSING: Remove implemented classes from list
+	* Source/GNUmakefile: Add new classes
+	* Source/GSStoryboardTransform.h: Additional methods on proxy
+	* Source/GSStoryboardTransform.m: Additional methods on proxy
+	* Source/GSThemeDrawing.m: minor changes
+	* Source/GSXib5KeyedUnarchiver.m: Handle pagecontroller element,
+        set certain things to true if abesnt
+	* Source/NSPageController.m: Implementation of NSPageController
+	* Source/NSSplitViewController.m: Implementation of NSSplitViewController
+	* Source/NSSplitViewItem.m: Implementation
+	* Source/NSStoryboardSegue.m: New methods for segue
+	* Source/NSTabViewController.m: Implementation of NSTabViewController
+	* Source/NSTabViewItem.m: New methods implementation
+	* Source/NSTabView.m: Add methods to handle NSViewController changes
+	* Source/NSViewController.m: New methods.
+	* Source/NSView.m: Private methods to insert a view
+	* Source/NSViewPrivate.h: Private method to insert view, declaration
+	* Source/NSWindow.m: Minor fixes.
+
+2020-07-19 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add include files for NSSegue* and other
+        classes.
+	* Headers/AppKit/NSSeguePerforming.h: Protocol for segue performing
+        so that classes that conform can be queried to determine if the
+        segue should be performed in the first place.
+	* Headers/AppKit/NSStoryboard.h: Class which loads the storyboard and
+        loads the individual scenes and controllers.
+	* Headers/AppKit/NSStoryboardSegue.h: This class handles the transition
+        between controllers/scenes.
+	* Headers/AppKit/NSViewController.h: Modifications to handle segues.
+	* Headers/AppKit/NSWindowController.h: Modifications to handle segues.
+	* Headers/AppKit/NSWindow.h: New method to create window controller for
+        view controllers.
+	* MISSING: Remove the classes implemented here from the missing list.
+	* Source/Functions.m: Enhance NSApplicationMain() function to handle the
+        loading of a storyboard.
+	* Source/GNUmakefile: Add the new classes to the build and copy the
+        headers.
+	* Source/GSStoryboardTransform.[hm]: Class to handle the transformation
+        of the storyboard file into "XIB" files for loading.  Also handles the
+        intermediate
+        processes of instantiation of the destination controller.
+	* Source/NSStoryboard.m: Implementation of the above described class.
+	* Source/NSStoryboardSegue.m: Implementation of the above described
+        class.
+	* Source/NSViewController.m: Implementation of private methods to
+        handle transitions.
+	* Source/NSWindowController.m: Implementation of private methods to
+        handle transitions.
+	* Source/NSWindow.m: Implementation of method to create window
+        controller for view controllers.
+
+2020-07-10 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSOutlineView.h: Formalize protocols for
+        NSOutlineViewDelegate and NSOutlineViewDataSource.
+
+2020-07-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m (alternateName:): Be more careful
+	when chopping of part of the name.
+
+2020-07-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSNib.h,
+	* Source/NSNib.m: Add missing MacOSX methods.
+	* Source/GSXibLoader.m: Remove semicolon. Add debug logs.
+
+2020-06-15 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSAccessibilityCustomAction.h
+	* Headers/AppKit/NSAccessibilityCustomRotor.h
+	* Headers/AppKit/NSAccessibilityElement.h
+	* Headers/AppKit/NSAccessibilityProtocols.h
+	* Source/GNUmakefile
+	* Source/NSAccessibilityCustomAction.m
+	* Source/NSAccessibilityCustomRotor.m
+	* Source/NSAccessibilityElement.m: Add skeletons for
+        these classes. Future support of accessibility features
+        will fill these in.
+
+2020-06-12  Yavor Doganov  <yavor@gnu.org>
+
+	* Headers/AppKit/NSApplication.h: Remove semicolons from the
+	NSAppKitVersionNumber* definitions.
+
+2020-05-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfGrammar.y: Correct encoding handling.
+	* TextConverters/RTF/rtfGrammar.tab.h,
+	* TextConverters/RTF/rtfGrammar.tab.m: Regenerated.
+	* TextConverters/RTF/RTFConsumer.m: Add code to handle code page 10000.
+
+2020-05-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSColor.h,
+	* Source/NSColor.m: Add newer Cocoa methods.
+
+2020-05-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeFirstResponder, -sendEvent:): Correct
+	handling of new first responder not becoming first responder.
+	Patch suggested by Josh Freeman <pikopixel@twilightedge.com>.
+
+2020-05-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXib5KeyedUnarchiver.m: Clean up NSPathCell decoding.
+
+2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStringDrawing.m: Initialize all the cache entries as
+	not used.
+
+2020-05-09 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPersistentDocument.[hm]: Add implementation of abstract
+	class for NSPersistentDocument.
+
+2020-05-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSHorizontalTypesetter.m (_addExtraLineFragment): Make
+	sure curParagraphStyle and line_height always have useful values.
+
+2020-05-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-initWithContentRect:...defer:): Call
+	setFrame:display: to ensure the minium and maximum size gets enforced.
+	* Source/NSFont.m (-description): Add this method.
+
+2020-05-06 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
+        for new drawing methods.
+	* Headers/AppKit/AppKit.h: Add headers to main header
+	* Headers/AppKit/NSMenu.h: Add method to draw the popup in
+        the appropriate positin
+	* Headers/AppKit/NSPathCell.h: Implementation of path cell header
+	* Headers/AppKit/NSPathComponentCell.h: Component cell
+	* Headers/AppKit/NSPathControl.h: Control
+	* Headers/AppKit/NSPathControlItem.h: Control item
+	* MISSING: Remove NSPath* classes since they have been implemented
+	* Source/GNUmakefile: Add files to compile and copy
+	* Source/GSThemeDrawing.m: Add new drawing methods.
+	* Source/GSXib5KeyedUnarchiver.m: Add new decoding methods
+	* Source/NSMenu.m: Implement method to position popup
+	* Source/NSPathCell.m: Implementation path cell.
+	* Source/NSPathComponentCell.m: Cell representation of each
+        component
+	* Source/NSPathControlItem.m: Path items
+	* Source/NSPathControl.m: Path control to contain path cell and
+        components.
+
+2020-04-30  Yavor Doganov  <yavor@gnu.org>
+
+	* Documentation/GSSpeechRecognitionServer.1: Add simplistic
+	manpage for GSSpeechRecognitionServer.
+	* Documentation/GNUmakefile: Install it conditionally.
+
+2020-04-26 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add declarations
+        for new drawing methods.
+	* Headers/AppKit/AppKit.h: Add new headers
+	* Headers/AppKit/NSAccessibilityProtocols.h
+	* Headers/AppKit/NSCell.h: Add NSControlStateValue enum
+	* Headers/AppKit/NSSwitch.h: Header for NSSwitch
+	* MISSING: Remove NSSwitch
+	* Source/GNUmakefile: Add .h and .m files
+	* Source/GSThemeDrawing.m: Add drawing code for knob and
+        switch basin.
+	* Source/GSXib5KeyedUnarchiver.m: Add decoding for
+        NSControlContents.  Make sure enabled is YES when not
+        present.
+	* Source/NSColor.m: Minor changes
+	* Source/NSMatrix.m: Remove unneeded code
+	* Source/NSSwitch.m: Implementation of NSSwitch
+	* Source/NSToolbarItem.m: Remove unneeded code
+
+2020-04-13 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKitErrors.h:
+	* Headers/AppKit/AppKit.h:
+	* Headers/AppKit/NSFontAssetRequest.h:
+	* Headers/AppKit/NSMediaLibraryBrowserController.h:
+	* Headers/AppKit/NSScrubber.h:
+	* Headers/AppKit/NSScrubberItemView.h:
+	* Headers/AppKit/NSScrubberLayout.h:
+	* Headers/AppKit/NSSharingServicePickerToolbarItem.h:
+	* Headers/AppKit/NSUserInterfaceCompression.h:
+	* Headers/AppKit/NSUserInterfaceItemSearching.h:
+	* Headers/AppKit/NSWindowRestoration.h:
+	* MISSING: Remove mention of these classes.
+	* Source/GNUmakefile
+	* Source/NSFontAssetRequest.m:
+	* Source/NSMediaLibraryBrowserController.m:
+	* Source/NSScrubberItemView.m:
+	* Source/NSScrubberLayout.m:
+	* Source/NSScrubber.m:
+	* Source/NSSharingServicePickerToolbarItem.m: Add code to allow
+        compilation using these classes.  These are Mac specific so they
+        can't be implemented on any other platform due to HW or
+        service limitations.  At some point these might be able to be
+        implemented, but, for now, they are here to allow apps which
+        use them to compile.
+
+2020-04-13  Ivan Vucica <ivan@vucica.net>
+
+	* Documentation/announce.texi:
+	* ANNOUNCE:
+	Normalize the accompanying text for the release announcement across
+	core packages: standardize chapter name and GPG information.
+
 2020-04-05  Ivan Vucica  <ivan@vucica.net>
 
 	* ANNOUNCE:

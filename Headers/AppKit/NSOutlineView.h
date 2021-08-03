@@ -86,9 +86,9 @@
 @end /* interface of NSOutlineView */
 
 /** 
- * Informal protocol NSOutlineViewDataSource 
+ * protocol NSOutlineViewDataSource 
  */
-@interface NSObject (NSOutlineViewDataSource)
+@protocol NSOutlineViewDataSource
 /**
  * Called to perform drop operation and returns YES if successful,
  * and NO otherwise.
@@ -197,7 +197,7 @@ APPKIT_EXPORT NSString *NSOutlineViewItemWillCollapseNotification;
 /*
  * Methods Implemented by the Delegate
  */
-@interface NSObject (NSOutlineViewDelegate)
+@protocol NSOutlineViewDelegate
 // notification methods
 /**
  * Called after the column has moved.

@@ -1,4 +1,4 @@
-/* 
+/*
    NSColor.h
 
    The colorful color class
@@ -7,7 +7,7 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSColor
 #define _GNUstep_H_NSColor
@@ -56,12 +56,32 @@ enum _NSControlSize {
 };
 typedef NSUInteger NSControlSize;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+enum _NSColorType {
+    NSColorTypeComponentBased,
+    NSColorTypePattern,
+    NSColorTypeCatalog
+};
+typedef NSInteger NSColorType;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+enum _NSColorSystemEffect {
+    NSColorSystemEffectNone,
+    NSColorSystemEffectPressed,
+    NSColorSystemEffectDeepPressed,
+    NSColorSystemEffectDisabled,
+    NSColorSystemEffectRollover
+};
+typedef NSInteger NSColorSystemEffect;
+#endif
+
 /*
  * NSColor is an abstract super class of the class cluster of the real colour classes.
- * For each colour space exists a specific subclass that implements the behaviour for 
+ * For each colour space exists a specific subclass that implements the behaviour for
  * this colour space.
  * The colour spaces NSDeviceBlackColorSpace and NSCalibratedBlackColorSpace
- * are no longer supported by this class. They were not in the old OpenStep 
+ * are no longer supported by this class. They were not in the old OpenStep
  * specification, and are not used in the new Apple specification. The names are
  * used as synonyms to NSDeviceWhiteColorSpace and NSCalibratedWhiteColorSpace.
  */
@@ -133,7 +153,7 @@ typedef NSUInteger NSControlSize;
 	magenta:(CGFloat *)magenta
 	 yellow:(CGFloat *)yellow
 	  black:(CGFloat *)black
-	  alpha:(CGFloat *)alpha;	
+	  alpha:(CGFloat *)alpha;
 - (void)getHue:(CGFloat *)hue
     saturation:(CGFloat *)saturation
     brightness:(CGFloat *)brightness
@@ -175,8 +195,8 @@ typedef NSUInteger NSControlSize;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 // + (NSColor *)colorWithCIColor:(CIColor *)color;
 + (NSColor *)colorWithColorSpace:(NSColorSpace *)space
-					   components:(const CGFloat *)comp
-							count:(NSInteger)number;
+                      components:(const CGFloat *)comp
+                           count:(NSInteger)number;
 - (NSColorSpace *)colorSpace;
 - (NSColor *)colorUsingColorSpace:(NSColorSpace *)space;
 - (void)getComponents:(CGFloat *)components;
@@ -273,6 +293,67 @@ typedef NSUInteger NSControlSize;
 // Tooltip colours
 + (NSColor*) toolTipColor;
 + (NSColor*) toolTipTextColor;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
++ (NSColor *)colorWithSRGBRed:(CGFloat)red
+                        green:(CGFloat)green
+                         blue:(CGFloat)blue
+                        alpha:(CGFloat)alpha;
++ (NSColor *)colorWithGenericGamma22White:(CGFloat)white
+                                    alpha:(CGFloat)alpha;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
++ (NSColor *)colorWithRed:(CGFloat)red
+                    green:(CGFloat)green
+                     blue:(CGFloat)blue
+                    alpha:(CGFloat)alpha;
++ (NSColor *)colorWithHue:(CGFloat)hue
+               saturation:(CGFloat)saturation
+               brightness:(CGFloat)brightness
+                    alpha:(CGFloat)alpha;
++ (NSColor *)colorWithWhite:(CGFloat)white
+                      alpha:(CGFloat)alpha;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
++ (NSColor *)systemBlueColor;
++ (NSColor *)systemBrownColor;
++ (NSColor *)systemGrayColor;
++ (NSColor *)systemGreenColor;
++ (NSColor *)systemOrangeColor;
++ (NSColor *)systemPinkColor;
++ (NSColor *)systemPurpleColor;
++ (NSColor *)systemRedColor;
++ (NSColor *)systemYellowColor;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
++ (NSColor *)colorWithDisplayP3Red:(CGFloat)red
+                             green:(CGFloat)green
+                              blue:(CGFloat)blue
+                             alpha:(CGFloat)alpha;
++ (NSColor *)colorWithColorSpace:(NSColorSpace *)space
+                             hue:(CGFloat)hue
+                      saturation:(CGFloat)saturation
+                      brightness:(CGFloat)brightness
+                           alpha:(CGFloat)alpha;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+- (NSColor *)colorUsingType:(NSColorType)type;
+- (NSColorType)type;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+- (NSColor *)colorWithSystemEffect:(NSColorSystemEffect)systemEffect;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
++ (NSColor *)systemIndigoColor;
++ (NSColor *)systemTealColor;
+#endif
+
 #endif
 
 @end
@@ -298,4 +379,3 @@ typedef struct CGColor *CGColorRef;
 @end
 
 #endif // _GNUstep_H_NSColor
-

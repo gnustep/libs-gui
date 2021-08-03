@@ -1,5 +1,5 @@
-1 ANNOUNCE
-**********
+1 Announcement
+**************
 
 This is version 0.28.0 of the GNUstep GUI library ('gnustep-gui').
 
@@ -76,7 +76,7 @@ Plus the usual bunch of bug fixes.
 The gnustep-gui-0.28.0.tar.gz distribution file has been placed at
 <ftp://ftp.gnustep.org/pub/gnustep/core>.
 
-   It is accompanied by gnustep-back-0.28.0.tar.gz.sig, a PGP signature
+   It is accompanied by gnustep-gui-0.28.0.tar.gz.sig, a PGP signature
 which you can validate by putting both files in the same directory and
 using:
 

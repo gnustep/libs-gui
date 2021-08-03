@@ -1923,9 +1923,6 @@ static float menuBarHeight = 0.0;
 */
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSRect currentFrame;
-  NSRect originalFrame;
-  NSPoint currentTopLeft;
   NSPoint originalTopLeft = NSZeroPoint; /* Silence compiler.  */
   BOOL restorePosition;
   /*
@@ -1934,9 +1931,10 @@ static float menuBarHeight = 0.0;
    */ 
   restorePosition = ![_attachedMenu isTransient];
 
-  if (restorePosition)
-    { // store old position;
-      originalFrame = [_window frame];
+  if (restorePosition && (nil != _window))
+    {
+      // store old position;
+      NSRect originalFrame = [_window frame];
       originalTopLeft = originalFrame.origin;
       originalTopLeft.y += originalFrame.size.height;
     }
@@ -1945,10 +1943,10 @@ static float menuBarHeight = 0.0;
   [self trackWithEvent: theEvent];
   [NSEvent stopPeriodicEvents];
 
-  if (restorePosition)
+  if (restorePosition && (nil != _window))
     {
-      currentFrame = [_window frame];
-      currentTopLeft = currentFrame.origin;
+      NSRect currentFrame = [_window frame];
+      NSPoint currentTopLeft = currentFrame.origin;
       currentTopLeft.y += currentFrame.size.height;
 
       if (NSEqualPoints(currentTopLeft, originalTopLeft) == NO)

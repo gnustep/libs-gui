@@ -62,6 +62,7 @@
 @class NSView;
 @class NSWindowController;
 @class NSCachedImageRep;
+@class NSViewController;
 
 @class GSWindowDecorationView;
 
@@ -337,6 +338,14 @@ PACKAGE_SCOPE
  */
 
 /**
+ * Returns a window with the view of the specified viewController as it's
+ * content view.  The window is resizable, titled, closable, and miniaturizable.
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
++ (instancetype) windowWithContentViewController: (NSViewController *)viewController;
+#endif
+
+/**
  * Returns the rectangle which would be used for the content view of
  * a window whose on-screen size and position is specified by aRect
  * and which is decorated with the border and title etc given by aStyle.<br />
@@ -528,6 +537,7 @@ PACKAGE_SCOPE
 - (void) orderWindow: (NSWindowOrderingMode)place
 	  relativeTo: (NSInteger)otherWin;
 - (BOOL) isVisible;
+- (void) setIsVisible: (BOOL)flag;
 - (NSInteger) level;
 - (void) setLevel: (NSInteger)newLevel;
 

@@ -955,7 +955,9 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
 - (IBAction) openDocument: (id)sender
 {
+#if !__has_feature(blocks)
   NSError *err = nil;
+#endif
   NSEnumerator *urlEnum;
   NSURL *url;
 

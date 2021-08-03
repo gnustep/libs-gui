@@ -35,6 +35,7 @@
 #import "AppKit/NSStepperCell.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 @interface NSStepperCell (Private)
 - (void) _increment;
@@ -381,21 +382,18 @@
     }
   else
   {
-    int tmp1, tmp2;
+    NSInteger tmp;
 
-    tmp1 = (int)_autorepeat;
-    tmp2 = (int)_valueWraps;
-    
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_maxValue];
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_minValue];
     [aCoder encodeValueOfObjCType: @encode(double)
 	    at: &_increment];
-    [aCoder encodeValueOfObjCType: @encode(int)
-	    at: &tmp1];
-    [aCoder encodeValueOfObjCType: @encode(int)
-	    at: &tmp2];
+    tmp = _autorepeat;
+    encode_NSInteger(aCoder, &tmp);
+    tmp = _valueWraps;
+    encode_NSInteger(aCoder, &tmp);
   }
 }
 
@@ -418,7 +416,7 @@
     }
   else
     {
-      int tmp1, tmp2;
+      NSInteger tmp;
 
       [aDecoder decodeValueOfObjCType: @encode(double)
 		at: &_maxValue];
@@ -426,13 +424,10 @@
 		at: &_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double)
 		at: &_increment];
-      [aDecoder decodeValueOfObjCType: @encode(int)
-		at: &tmp1];
-      [aDecoder decodeValueOfObjCType: @encode(int)
-		at: &tmp2];
-
-      _autorepeat = (BOOL)tmp1;
-      _valueWraps = (BOOL)tmp2;
+      decode_NSInteger(aDecoder, &tmp);
+      _autorepeat = (BOOL)tmp;
+      decode_NSInteger(aDecoder, &tmp);
+      _valueWraps = (BOOL)tmp;
     }
 
   return self;

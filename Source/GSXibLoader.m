@@ -95,6 +95,9 @@
       return;
     }
 
+  NSDebugLLog(@"XIB", @"First object %@", [rootObjects objectAtIndex: 0]);
+  NSDebugLLog(@"XIB", @"Second object %@", [rootObjects objectAtIndex: 1]);
+  NSDebugLLog(@"XIB", @"Third object %@", [rootObjects objectAtIndex: 2]);
   // Use the owner as first root object
   [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
 
@@ -142,7 +145,7 @@
 
 - (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone;
+              withZone: (NSZone *)zone
 {
   BOOL loaded = NO;
 

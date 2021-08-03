@@ -252,6 +252,8 @@
 @class NSProgressIndicator;
 @class NSTableHeaderCell;
 @class NSTabViewItem;
+@class NSPathControl;
+@class NSPathComponentCell;
 @class GSDrawTiles;
 @class GSTitleView;
 
@@ -957,6 +959,27 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Draw highlighted stepper down button
  */
 - (void) drawStepperHighlightDownButton: (NSRect)aRect;
+
+// NSSwitch drawing methods
+- (void) drawSwitchKnob: (NSRect)frame
+               forState: (NSControlStateValue)value
+                enabled: (BOOL)enabled;
+
+
+- (void) drawSwitchBezel: (NSRect)frame
+                forState: (NSControlStateValue)v
+                 enabled: (BOOL)enabled;
+
+- (void) drawSwitchInRect: (NSRect)rect
+                 forState: (NSControlStateValue)state
+                  enabled: (BOOL)enabled;
+
+// NSPathComponentCell
+
+- (void) drawPathComponentCellWithFrame: (NSRect)f
+                                 inView: (NSPathControl *)pc
+                               withCell: (NSPathComponentCell *)cell
+                        isLastComponent: (BOOL)last;
 
 // NSSegmentedControl drawing methods
 

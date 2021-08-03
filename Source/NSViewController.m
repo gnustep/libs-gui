@@ -29,11 +29,16 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSMapTable.h>
+
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSViewController.h"
-
+#import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSStoryboard.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSWindowController.h"
 
 @implementation NSViewController
 
@@ -46,7 +51,7 @@
   
   ASSIGN(_nibName, nibNameOrNil);
   ASSIGN(_nibBundle, nibBundleOrNil);
-  
+ 
   return self;
 }
 
@@ -63,7 +68,8 @@
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
   DESTROY(view);
-
+  DESTROY(_segueMap);
+  
   [super dealloc];
 }
 
@@ -79,6 +85,11 @@
 
 - (void)setTitle:(NSString *)title
 {
+  NSWindow *w = [[self view] window];
+  if (w != nil)
+    {
+      [w setTitle: title]; // sync title with window...
+    }
   ASSIGN(_title, title);
 }
 
@@ -151,6 +162,7 @@
       return nil;
     }
 
+  _segueMap = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
   if ([aDecoder allowsKeyedCoding])
     {
       NSView *aView = [aDecoder decodeObjectForKey: @"NSView"];
@@ -178,6 +190,29 @@
     {
       [aCoder encodeObject: [self view]];
     }
+}
+
+
+// NSSeguePerforming methods...
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender
+{
+  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+  [self prepareForSegue: segue
+                 sender: sender];  
+  [segue perform];
+}
+
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender
+{
+  // do nothing in base class method...
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender
+{
+  return YES;
 }
 @end
 
@@ -227,5 +262,5 @@
   // Loop over all elements of _editors
   [self notImplemented: _cmd];
 }
-
 @end
+

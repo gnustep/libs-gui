@@ -44,8 +44,17 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/DPSOperators.h"
+#import "AppKit/NSStoryboard.h"
 
 char **NSArgv = NULL;
+
+@interface NSStoryboard (Private)
+
++ (void) _setMainStoryboard: (NSStoryboard *)storyboard;
+- (void) _instantiateApplicationScene;
+
+@end
+
 
 /*
  * Main initialization routine for the GNUstep GUI Library Apps
@@ -84,6 +93,29 @@ NSApplicationMain(int argc, const char **argv)
 	{
 	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
 	}
+    }
+  else
+    {
+      mainModelFile = [infoDict objectForKey: @"NSMainStoryboardFile"];
+      if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
+        {
+          NSStoryboard *storyboard = [NSStoryboard storyboardWithName: mainModelFile
+                                                               bundle: [NSBundle mainBundle]];
+          if (storyboard == nil)
+            {
+              NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
+            }
+          else
+            {
+              [NSStoryboard _setMainStoryboard: storyboard];
+              [storyboard _instantiateApplicationScene];
+              [storyboard instantiateInitialController];
+            }
+        }
+      else
+        {
+          NSLog(@"Storyboard is blank or nil, unable to load.");
+        }
     }
 
   RECREATE_AUTORELEASE_POOL(pool);

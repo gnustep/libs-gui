@@ -965,7 +965,7 @@ static CGFloat scrollerWidth;
     }
   else if (_rulersVisible)
     {
-      [self addSubview:_horizRuler];
+      [self addSubview: _horizRuler];
     }
 
   if (_rulersVisible)
@@ -1016,7 +1016,7 @@ static CGFloat scrollerWidth;
     }
   else if (_rulersVisible)
     {
-      [self addSubview:_vertRuler];
+      [self addSubview: _vertRuler];
     }
 
   if (_rulersVisible)
@@ -1676,12 +1676,14 @@ GSOppositeEdge(NSRectEdge edge)
         {
           [self setHorizontalScroller: hScroller];
 	  [hScroller setHidden: NO];
+          [self addSubview: _horizScroller];
         }
 
       if (vScroller != nil && _hasVertScroller)
         {
           [self setVerticalScroller: vScroller];
 	  [vScroller setHidden: NO];
+          [self addSubview: _vertScroller];
         }
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])

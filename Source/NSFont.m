@@ -80,6 +80,7 @@ globalFontMap.
 {
   return hash;
 }
+
 -(BOOL) isEqual: (id)other
 {
   GSFontMapKey *o;
@@ -99,11 +100,21 @@ globalFontMap.
     return NO;
   return YES;
 }
+
 -(void) dealloc
 {
   DESTROY(name);
   [super dealloc];
 }
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ %d %d [%d %d %d %d %d %d]",
+                   name, screenFont, role,
+                   matrix[0], matrix[1], matrix[2],
+                   matrix[3], matrix[4], matrix[5]];
+}
+
 @end
 
 static GSFontMapKey *

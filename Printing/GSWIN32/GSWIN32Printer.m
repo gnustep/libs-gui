@@ -65,7 +65,16 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
     if (!EnumPrinters(flags, NULL, 
         2, (LPBYTE) prninfo, needed, &needed, &returned))
       {
-	NSLog(@"Error: %s\n", GetLastError());
+	DWORD errorCode = GetLastError();
+        char *errorText = NULL;
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM||FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			errorCode,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPTSTR)&errorText,
+			0, NULL);
+	NSLog(@"Error: %lu: %s\n", errorCode, errorText);
+	LocalFree(errorText);
       }
     else
       {

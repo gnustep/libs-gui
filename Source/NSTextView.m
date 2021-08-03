@@ -1,6 +1,6 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2008 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2008, 2020 Free Software Foundation, Inc.
 
    Much code of this class was originally derived from code which was
    in NSText.m.
@@ -25,6 +25,9 @@
 
    Extensive reworking: Alexander Malmberg <alexander@malmberg.org>
    Date: December 2002 - February 2003
+
+   Implementing Catalina Extensions: Gregory Casamento <greg.casamento@gmail.com>
+   Date: August 2020
 
    This file is part of the GNUstep GUI Library.
 
@@ -61,6 +64,7 @@
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSUndoManager.h>
 #import <Foundation/NSValue.h>
+
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSClipView.h"
@@ -89,6 +93,7 @@
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
+
 #import "GSGuiPrivate.h"
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
@@ -981,6 +986,10 @@ that makes decoding and encoding compatible with the old code.
         {
 	  NSTextContainer *container = [self buildUpTextNetwork: _frame.size];
 	  [container setTextView: self];
+
+          // These calls are here to make the text container aware of these settings
+          [self setHorizontallyResizable: _tf.is_horizontally_resizable];
+          [self setVerticallyResizable: _tf.is_vertically_resizable];
         }
 
       //@"NSDragTypes"
@@ -4016,12 +4025,8 @@ Figure out how the additional layout stuff is supposed to work.
    * were!  */
   [self drawViewBackgroundInRect: [self bounds]];
 
-  /* Then draw the special background of the new glyphs.  */
-  [_layoutManager drawBackgroundForGlyphRange: drawnRange
-                  atPoint: _textContainerOrigin];
-
-  [_layoutManager drawGlyphsForGlyphRange: drawnRange 
-                  atPoint: _textContainerOrigin];
+  [self drawCharactersInRange: drawnRange
+               forContentView: self];
 
   if ([self shouldDrawInsertionPoint] &&
       [NSGraphicsContext currentContextDrawingToScreen])
@@ -6076,6 +6081,113 @@ configuation! */
     [[GSTextFinder sharedTextFinder]
       performFindPanelAction: sender
 		withTextView: self];
+}
+
+// NSTextFinder methods implementation...
+// isSelectable, isEditable, string, selectedRanges, setSelectedRanges, replaceCharactersInRange:withString:
+// implemented by NSTextView already...
+
+- (BOOL) allowsMultipleSelection
+{
+  return NO;
+}
+
+- (NSString *) stringAtIndex: (NSUInteger)characterIndex
+              effectiveRange: (NSRangePointer)outRange
+      endsWithSearchBoundary: (BOOL *)outFlag
+{
+  return [self string];
+}
+
+- (NSUInteger) stringLength
+{
+  return [[self string] length];
+}
+
+- (NSRange) firstSelectedRange
+{
+  NSValue *r = [[self selectedRanges] objectAtIndex: 0];
+  return [r rangeValue];
+}
+
+- (BOOL) shouldReplaceCharactersInRanges: (NSArray *)ranges withStrings: (NSArray *)strings
+{
+  NSUInteger idx = 0;
+  FOR_IN(NSValue*, rv, ranges)
+    {
+      NSRange r = [rv rangeValue];
+      NSString *str = [strings objectAtIndex: idx];
+      if (![self shouldChangeTextInRange: r replacementString: str])
+        {
+          return NO;
+        }
+      idx++;
+    }
+  END_FOR_IN(ranges);
+  return YES;
+}
+
+- (void) didReplaceCharacters
+{
+  [self didChangeText];
+}
+
+- (NSView *) contentViewAtIndex: (NSUInteger)index effectiveCharacterRange: (NSRangePointer)outRange
+{
+  return nil;
+}
+
+- (NSArray *) rectsForCharacterRange: (NSRange)range
+{
+  NSUInteger rectCount = 0;
+  NSRect *rects;
+  NSMutableArray *result = [NSMutableArray array];
+  NSUInteger idx = 0;
+
+  rects = [_layoutManager rectArrayForCharacterRange: range
+                        withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
+                                     inTextContainer: _textContainer
+                                           rectCount: &rectCount];
+  
+  for (idx = 0; idx < rectCount; idx++)
+    {
+      NSRect r = rects[idx];
+      NSValue *v = [NSValue valueWithRect: r];
+      [result addObject: v];
+    }
+  
+  return result;
+}
+
+- (NSArray *) visibleCharacterRanges
+{
+  NSArray *result = nil;
+  
+  if (_layoutManager)
+    {
+      const NSRect visibleRect = [self visibleRect];
+      
+      NSRange visibleGlyphRange = [_layoutManager glyphRangeForBoundingRect: visibleRect
+                                                            inTextContainer: _textContainer];
+      
+      NSRange visibleRange = [_layoutManager characterRangeForGlyphRange: visibleGlyphRange
+                                                        actualGlyphRange: NULL];
+
+      NSValue *value = [NSValue valueWithRange: visibleRange];
+      result = [NSArray arrayWithObject: value];
+    }
+ 
+  return result;
+}
+
+- (void) drawCharactersInRange: (NSRange)range forContentView: (NSView *)view
+{
+  /* Then draw the special background of the new glyphs.  */
+  [_layoutManager drawBackgroundForGlyphRange: range
+                  atPoint: _textContainerOrigin];
+
+  [_layoutManager drawGlyphsForGlyphRange: range 
+                  atPoint: _textContainerOrigin];
 }
 
 @end

@@ -41,6 +41,7 @@
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
+#import "GSGuiPrivate.h"
 
 /* The image to use in a specific popupbutton depends on type and
  * preferred edge; that is, _pbc_image[0] if it is a
@@ -145,18 +146,10 @@ static NSImage *_pbc_image[5];
     {
       [self dismissPopUp];
     }
-  /* 
-   * We don't use methods here to clean up the selected item, the menu
-   * item and the menu as these methods internally update the menu,
-   * which tries to access the target of the menu item (or of this cell). 
-   * When the popup is relases this target may already have been freed, 
-   * so the local reference to it is invalid and will result in a 
-   * segmentation fault. 
-   */
+
   if (_menu != nil)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-      [nc removeObserver: self name: nil object: _menu];
+      [self setMenu:nil];
     }
   _selectedItem = nil;
   [super dealloc];
@@ -1218,19 +1211,20 @@ static NSImage *_pbc_image[5];
     }
   else
     {    
-      int flag;
+      NSInteger flag;
+
       [aCoder encodeObject: _menu];
       [aCoder encodeConditionalObject: [self selectedItem]];
       flag = _pbcFlags.pullsDown;
-      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.preferredEdge;
-      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.usesItemFromMenu;
-      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.altersStateOfSelectedItem;
-      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      encode_NSInteger(aCoder, &flag);
       flag = _pbcFlags.arrowPosition;
-      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      encode_NSInteger(aCoder, &flag);
     }
 }
 
@@ -1316,7 +1310,7 @@ static NSImage *_pbc_image[5];
     }
   else
     {
-      int flag;
+      NSInteger flag;
       id<NSMenuItem> selectedItem;
       int version = [aDecoder versionForClassName: 
                                   @"NSPopUpButtonCell"];
@@ -1331,15 +1325,15 @@ static NSImage *_pbc_image[5];
       [self setMenu: nil];
       [self setMenu: menu];
       selectedItem = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.pullsDown = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.preferredEdge = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.usesItemFromMenu = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.altersStateOfSelectedItem = flag;
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      decode_NSInteger(aDecoder, &flag);
       _pbcFlags.arrowPosition = flag;
       
       if (version < 2)

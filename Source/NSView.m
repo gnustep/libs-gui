@@ -205,7 +205,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  *	Private methods.
  */
 
-
 /*
  *	The [-_invalidateCoordinates] method marks the coordinate mapping
  *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
@@ -5131,6 +5130,28 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 }
 
 @end
+
+@implementation NSView (__NSViewPrivateMethods__)
+
+/*
+ * This method inserts a view at a given place in the view hierarchy.
+ */
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx
+{
+  [sv _viewWillMoveToWindow: _window];
+  [sv _viewWillMoveToSuperview: self];
+  [sv setNextResponder: self];
+  [_sub_views insertObject: sv atIndex: idx];
+  _rFlags.has_subviews = 1;
+  [sv resetCursorRects];
+  [sv setNeedsDisplay: YES];
+  [sv _viewDidMoveToWindow];
+  [sv viewDidMoveToSuperview];
+  [self didAddSubview: sv];
+}
+
+@end
+
 
 @implementation NSView(KeyViewLoop)
 

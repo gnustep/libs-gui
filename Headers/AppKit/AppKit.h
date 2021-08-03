@@ -42,10 +42,15 @@
 //
 // GNUstep GUI Library functions
 //
+#import <AppKit/AppKitErrors.h>
 #import <AppKit/NSGraphics.h>
 
 #import <AppKit/NSAccessibility.h>
 #import <AppKit/NSAccessibilityConstants.h>
+#import <AppKit/NSAccessibilityCustomAction.h>
+#import <AppKit/NSAccessibilityCustomRotor.h>
+#import <AppKit/NSAccessibilityElement.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSAnimationContext.h>
 #import <AppKit/NSAppearance.h>
@@ -117,6 +122,9 @@
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSScrollView.h>
+#import <AppKit/NSScrubber.h>
+#import <AppKit/NSScrubberItemView.h>
+#import <AppKit/NSScrubberLayout.h>
 #import <AppKit/NSSelection.h>
 #import <AppKit/NSSharingService.h>
 #import <AppKit/NSSlider.h>
@@ -125,6 +133,7 @@
 #import <AppKit/NSSpellProtocol.h>
 #import <AppKit/NSSplitView.h>
 #import <AppKit/NSStatusBar.h>
+#import <AppKit/NSStatusBarButton.h>
 #import <AppKit/NSStatusItem.h>
 #import <AppKit/NSStringDrawing.h>
 #import <AppKit/NSText.h>
@@ -157,6 +166,7 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
+#import <AppKit/NSFontAssetRequest.h>
 #import <AppKit/NSFontCollection.h>
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSGestureRecognizer.h>
@@ -169,12 +179,17 @@
 #import <AppKit/NSInputServer.h>
 #import <AppKit/NSInterfaceStyle.h>
 #import <AppKit/NSKeyValueBinding.h>
+#import <AppKit/NSLayoutAnchor.h>
+#import <AppKit/NSLayoutConstraint.h>
+#import <AppKit/NSLayoutGuide.h>
 #import <AppKit/NSLayoutManager.h>
 #import <AppKit/NSLevelIndicator.h>
 #import <AppKit/NSLevelIndicatorCell.h>
 #import <AppKit/NSMagnificationGestureRecognizer.h>
+#import <AppKit/NSMediaLibraryBrowserController.h>
 #import <AppKit/NSMovie.h>
 #import <AppKit/NSMovieView.h>
+#import <AppKit/NSPageController.h>
 #import <AppKit/NSPanGestureRecognizer.h>
 #import <AppKit/NSNib.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -185,6 +200,11 @@
 #import <AppKit/NSOpenGLView.h>
 #import <AppKit/NSOutlineView.h>
 #import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSPersistentDocument.h>
+#import <AppKit/NSPathControl.h>
+#import <AppKit/NSPathCell.h>
+#import <AppKit/NSPathComponentCell.h>
+#import <AppKit/NSPathControlItem.h>
 #import <AppKit/NSPickerTouchBarItem.h>
 #import <AppKit/NSPredicateEditor.h>
 #import <AppKit/NSPredicateEditorRowTemplate.h>
@@ -201,6 +221,7 @@
 #import <AppKit/NSSegmentedCell.h>
 #import <AppKit/NSSegmentedControl.h>
 #import <AppKit/NSShadow.h>
+#import <AppKit/NSSharingServicePickerToolbarItem.h>
 #import <AppKit/NSSharingServicePickerTouchBarItem.h>
 #import <AppKit/NSSliderTouchBarItem.h>
 #import <AppKit/NSSound.h>
@@ -209,15 +230,27 @@
 #import <AppKit/NSStepperTouchBarItem.h>
 #import <AppKit/NSStepper.h>
 #import <AppKit/NSStepperCell.h>
+#import <AppKit/NSStoryboard.h>
+#import <AppKit/NSStoryboardSegue.h>
+#import <AppKit/NSSeguePerforming.h>
+#import <AppKit/NSSwitch.h>
+#import <AppKit/NSSplitViewController.h>
+#import <AppKit/NSSplitViewItem.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>
 #import <AppKit/NSTableHeaderView.h>
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSTabView.h>
+#import <AppKit/NSTabViewController.h>
 #import <AppKit/NSTabViewItem.h>
 #import <AppKit/NSTextAlternatives.h>
 #import <AppKit/NSTextAttachment.h>
 #import <AppKit/NSTextContainer.h>
+#import <AppKit/NSTextCheckingClient.h>
+#import <AppKit/NSTextCheckingController.h>
+#import <AppKit/NSTextFinder.h>
+#import <AppKit/NSTextInputClient.h>
+#import <AppKit/NSTextInputContext.h>
 #import <AppKit/NSTextList.h>
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextTable.h>
@@ -235,6 +268,8 @@
 #import <AppKit/NSTreeNode.h>
 #import <AppKit/NSUserDefaultsController.h>
 #import <AppKit/NSUserInterfaceItemIdentification.h>
+#import <AppKit/NSUserInterfaceCompression.h>
+#import <AppKit/NSUserInterfaceItemSearching.h>
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSUserInterfaceValidation.h>
 #import <AppKit/NSViewController.h>

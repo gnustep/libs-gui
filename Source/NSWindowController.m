@@ -33,11 +33,16 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSMapTable.h>
 
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSWindowController.h"
+#import "AppKit/NSStoryboardSegue.h"
+#import "AppKit/NSStoryboard.h"
+#import "AppKit/NSViewController.h"
+
 #import "NSDocumentFrameworkPrivate.h"
 
 @implementation NSWindowController
@@ -137,6 +142,7 @@
   RELEASE(_window_nib_path);
   RELEASE(_window_frame_autosave_name);
   RELEASE(_top_level_objects);
+  RELEASE(_segueMap);
   [super dealloc];
 }
 
@@ -319,7 +325,7 @@
   return _window;
 }
 
-/** Sets the window that this controller managers to aWindow. The old
+/** Sets the window that this controller manages to aWindow. The old
    window is released. */
 - (void) setWindow: (NSWindow *)aWindow
 {
@@ -527,6 +533,7 @@
       if (!self)
         return nil;
 
+      _segueMap = nil;
       ASSIGN(_window_frame_autosave_name, @"");
       _wcFlags.should_cascade = YES;
       //_wcFlags.should_close_document = NO;
@@ -548,6 +555,28 @@
   // unarchival.  ?
 
   [super encodeWithCoder: coder];
+}
+
+// NSSeguePerforming methods...
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender
+{
+  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+  [self prepareForSegue: segue
+                 sender: sender];  
+  [segue perform];
+}
+
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender
+{
+  // do nothing in base class method...
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender
+{
+  return YES;
 }
 
 @end

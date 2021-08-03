@@ -34,4 +34,8 @@
 - (void) _recursiveSetUpKeyViewLoopWithNextKeyView: (NSView *)nextKeyView;
 @end
 
+@interface NSView (__NSViewPrivateMethods__)
+- (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@end
+
 #endif // _GNUstep_H_NSViewPrivate

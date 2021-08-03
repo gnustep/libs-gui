@@ -50,6 +50,7 @@
 #import "AppKit/NSWindow.h"
 #import "GSBindingHelpers.h"
 #import "NSViewPrivate.h"
+#import "GSGuiPrivate.h"
 
 /*
  * Class variables
@@ -993,7 +994,7 @@ static NSNotificationCenter *nc;
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      encode_NSInteger(aCoder, &_tag);
       [aCoder encodeObject: _cell];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
     }
@@ -1038,7 +1039,7 @@ static NSNotificationCenter *nc;
     }
   else 
     {
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+      decode_NSInteger(aDecoder, &_tag);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
     }

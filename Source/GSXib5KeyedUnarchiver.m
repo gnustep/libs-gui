@@ -47,6 +47,7 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPathCell.h"
 #import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSScroller.h"
@@ -59,6 +60,8 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSPageController.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -155,7 +158,6 @@ static NSString *ApplicationClass = nil;
 
 @end
 
-
 @implementation GSXib5KeyedUnarchiver
 
 static NSDictionary *XmlTagToObjectClassMap = nil;
@@ -168,6 +170,7 @@ static NSDictionary *XmlKeyToDecoderSelectorMap = nil;
 static NSArray      *XmlKeysDefined  = nil;
 static NSArray      *XmlReferenceAttributes  = nil;
 static NSArray      *XmlConnectionRecordTags  = nil;
+static NSArray      *XmlConstraintRecordTags  = nil;
 static NSArray      *XmlBoolDefaultYes  = nil;
 
 + (void) initialize
@@ -198,6 +201,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
+                            @"NSMutableArray", @"constraints", 
                             @"NSSegmentItem", @"segment",
                             @"NSCell", @"customCell",
                             @"NSCustomObject5", @"customObject",
@@ -207,6 +211,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSWindowTemplate", @"window",
                             @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
+                            @"NSURL", @"url",
+                            @"NSLayoutConstraint", @"constraint",
+                            @"NSPageController", @"pagecontroller", // why is pagecontroller capitalized this way?
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -220,12 +227,15 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
-                                            @"selectedItem", nil];
+                                            @"selectedItem", @"firstItem", @"secondItem", nil];
           RETAIN(XmlReferenceAttributes);
 
           XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
           RETAIN(XmlConnectionRecordTags);
 
+          XmlConstraintRecordTags = [NSArray arrayWithObject: @"constraint"];
+          RETAIN(XmlConstraintRecordTags);
+          
           // These cross-reference from the OLD key to the NEW key that can be referenced and its value
           // or object returned verbatim.  If an OLD XIB key does not exist and contains the 'NS' prefix
           // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
@@ -274,6 +284,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
                                            @"bordered", @"NSIsBordered",
                                            @"altersStateOfSelectedItem", @"NSAltersState",
+                                           @"string", @"NS.relative",
+                                           @"canPropagateSelectedChildViewControllerTitle",
+                                                   @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -381,7 +394,13 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeDividerStyleForElement:", @"NSDividerStyle",
                @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
                @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               nil];
+               @"decodeControlContentsForElement:", @"NSControlContents",
+               @"decodePathStyle:", @"NSPathStyle",
+               @"decodeFirstAttribute:", @"NSFirstAttribute",
+               @"decodeSecondAttribute:", @"NSSecondAttribute",
+               @"decodeRelation:", @"NSRelation",
+               @"decodeTransitionStyle:", @"NSTransitionStyle",
+                 nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
           // boolean fields that should be treated as YES when missing.
@@ -390,6 +409,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                @"bordered",
                                                @"prefersToBeShown",
                                                @"editable",
+                                               @"enabled",
+                                               @"canPropagateSelectedChildViewControllerTitle",
                                                nil];
         }
     }
@@ -444,7 +465,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   NSString *postfix = [self alternateName: name startIndex: 2];
   NSString *typeName = [currentElement attributeForKey: @"key"];
 
-  if ((typeName != nil) && [postfix hasPrefix: typeName])
+  if ((typeName != nil) && [postfix hasPrefix: typeName] &&
+      ([XmlTagToObjectClassMap objectForKey: postfix] == nil))
     {
       return [self alternateName: name startIndex: [typeName length] + 2];
     }
@@ -501,7 +523,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                    forKey: @"destination"];
     }
 
-  // Build a connection recort
+  // Build a connection record
   connectionRecord = [[GSXibElement alloc] initWithType: @"object"
                                           andAttributes:
                                              [NSDictionary dictionaryWithObjectsAndKeys:
@@ -782,6 +804,10 @@ didStartElement: (NSString*)elementName
             {
               // Need to store element for making the connections...
               [self addConnection: element];
+            }
+          else if ([XmlConstraintRecordTags containsObject: elementName])
+            {
+              [self objectForXib: element]; // decode the constraint...
             }
         }
       else
@@ -1426,6 +1452,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
         size = [NSFont systemFontSize];
+      else if ([metaFont containsString: @"toolTip"])
+        size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
@@ -2110,7 +2138,7 @@ didStartElement: (NSString*)elementName
 {
   id object = [[NSBrowserCell alloc] initTextCell: @"BrowserItem"];
 
-  [object setType: NSPushInCell];
+  [object setCellAttribute: NSPushInCell to: YES];
   [object setWraps: NO];
   [object sendActionOn: NSLeftMouseUpMask];
   [object setEnabled: YES];
@@ -2189,6 +2217,10 @@ didStartElement: (NSString*)elementName
   else if ([class isSubclassOfClass: [NSFormCell class]])
     {
       object = [element attributeForKey: @"stringValue"];
+    }
+  else if ([class isSubclassOfClass: [NSPathCell class]])
+    {
+      object = [self decodeObjectForKey: @"url"];
     }
   else
     {
@@ -2725,6 +2757,166 @@ didStartElement: (NSString*)elementName
   return [self findResourceWithName: name];
 }
 
+- (id) decodeControlContentsForElement: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"state"];
+
+  if ([obj isEqualToString: @"on"])
+    {
+      num = [NSNumber numberWithInteger: 1];
+    }
+
+  return num;
+}
+
+- (id) decodePathStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"pathStyle"];
+
+  if ([obj isEqualToString: @"standard"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+  else if ([obj isEqualToString: @"popUp"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStylePopUp];
+    }
+  else if ([obj isEqualToString: @"navigationBar"])
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleNavigationBar];
+    }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPathStyleStandard];
+    }
+
+  return num;  
+}
+
+- (id) decodeConstraintAttribute: (id)obj
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+
+  if ([obj isEqualToString: @"left"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLeft];
+    }
+  else if ([obj isEqualToString: @"right"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeRight];
+    }
+  else if ([obj isEqualToString: @"top"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeTop];
+    }
+  else if ([obj isEqualToString: @"bottom"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeBottom];
+    }
+  else if ([obj isEqualToString: @"leading"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLeading];
+    }
+  else if ([obj isEqualToString: @"trailing"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeTrailing];
+    }
+  else if ([obj isEqualToString: @"width"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeWidth];
+    }
+  else if ([obj isEqualToString: @"height"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeHeight];
+    }
+  else if ([obj isEqualToString: @"centerX"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeCenterX];
+    }
+  else if ([obj isEqualToString: @"centerY"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeCenterY];
+    }
+  else if ([obj isEqualToString: @"lastBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeLastBaseline];
+    }
+  else if ([obj isEqualToString: @"baseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeBaseline];
+    }
+  else if ([obj isEqualToString: @"firstBaseline"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeFirstBaseline];
+    }
+  else if ([obj isEqualToString: @"notAnAttribute"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutAttributeNotAnAttribute];
+    }
+
+  return num;
+}
+
+- (id) decodeFirstAttribute: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"firstAttribute"];
+  return [self decodeConstraintAttribute: obj];
+}
+
+- (id) decodeSecondAttribute: (GSXibElement *)element
+{
+  id obj = [element attributeForKey: @"secondAttribute"];
+  return [self decodeConstraintAttribute: obj];
+}
+
+- (id) decodeRelation: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"relation"];
+
+  if ([obj isEqualToString: @"lessThanOrEqual"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationLessThanOrEqual];
+    }
+  else if ([obj isEqualToString: @"equal"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationEqual];
+    }
+  else if ([obj isEqualToString: @"greaterThanOrEqual"])
+    {
+      num = [NSNumber numberWithInteger: NSLayoutRelationGreaterThanOrEqual];
+    }
+  
+  return num;
+}
+
+- (id) decodeTransitionStyle: (GSXibElement *)element
+{
+  NSNumber *num = [NSNumber numberWithInteger: 0];
+  id obj = [element attributeForKey: @"transitionStyle"];
+
+  if ([obj isEqualToString: @"stackHistory"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackHistory];
+    }
+  else if ([obj isEqualToString: @"stackBook"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackBook];
+    }
+  else if ([obj isEqualToString: @"horizontalStrip"])
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleHorizontalStrip];
+    }
+  else // if not specified then assume standard...
+    {
+      num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackHistory];
+    }
+
+  return num;  
+}
+
 - (id) objectForXib: (GSXibElement*)element
 {
   id object = [super objectForXib: element];
@@ -2788,7 +2980,6 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
-
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
@@ -3152,6 +3343,10 @@ didStartElement: (NSString*)elementName
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
           hasValue |= [currentElement attributeForKey: @"image"] != nil;
+        }
+      else if ([@"NSControlContents" isEqualToString: key])
+        {
+          hasValue  = [currentElement attributeForKey: @"state"] != nil;
         }
       else if ([@"NSAlternateContents" isEqualToString: key])
         {
