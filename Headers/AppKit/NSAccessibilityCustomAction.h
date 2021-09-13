@@ -36,13 +36,19 @@ extern "C" {
 DEFINE_BLOCK_TYPE(GSAccessibilityCustomActionHandler, void, BOOL);
   
 @interface NSAccessibilityCustomAction : NSObject
+{
+  NSString *_name;
+  GSAccessibilityCustomActionHandler _handler;
+  id _target;
+  SEL _selector;
+}
 
-- (instancetype)initWithName: (NSString *)name
-                     handler: (GSAccessibilityCustomActionHandler)handler;
+- (instancetype) initWithName: (NSString *)name
+                      handler: (GSAccessibilityCustomActionHandler)handler;
 
-- (instancetype)initWithName: (NSString *)name
-                      target: (id)target
-                    selector: (SEL)selector;
+- (instancetype) initWithName: (NSString *)name
+                       target: (id)target
+                     selector: (SEL)selector;
 
 - (NSString *) name;
 - (void) setName: (NSString *)name;

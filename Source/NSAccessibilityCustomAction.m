@@ -29,50 +29,66 @@
 - (instancetype)initWithName: (NSString *)name
                      handler: (GSAccessibilityCustomActionHandler)handler
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_name, name);
+      ASSIGN(_handler, handler);
+    }
+  return self;
 }
 
 - (instancetype)initWithName: (NSString *)name
                       target: (id)target
                     selector: (SEL)selector
 {
-  return nil;
+  self = [super init];
+  if (self != nil)
+    {
+      _target = target;
+      _selector = selector;
+    }
+  return self;
 }
 
 - (NSString *) name
 {
-  return nil;
+  return _name;
 }
 
 - (void) setName: (NSString *)name
 {
+  ASSIGN(_name, name);
 }
   
 - (GSAccessibilityCustomActionHandler) handler
 {
-  return nil;
+  return _handler;
 }
 
 - (void) setHandler: (GSAccessibilityCustomActionHandler)handler
 {
+  ASSIGN(_handler, handler);
 }
 
 - (id) target
 {
-  return nil;
+  return _target;
 }
 
 - (void) setTarget: (id)target
 {
+  _target = target;
 }
 
 - (SEL) selector
 {
-  return NULL;
+  return _selector;
 }
 
 - (void) setSelector: (SEL)selector
 {
+  _selector = selector;
 }
 
 @end
