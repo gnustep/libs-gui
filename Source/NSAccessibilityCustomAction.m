@@ -26,8 +26,8 @@
 
 @implementation NSAccessibilityCustomAction
 
-- (instancetype)initWithName: (NSString *)name
-                     handler: (GSAccessibilityCustomActionHandler)handler
+- (instancetype) initWithName: (NSString *)name
+                      handler: (GSAccessibilityCustomActionHandler)handler
 {
   self = [super init];
   if (self != nil)
@@ -38,17 +38,25 @@
   return self;
 }
 
-- (instancetype)initWithName: (NSString *)name
-                      target: (id)target
-                    selector: (SEL)selector
+- (instancetype) initWithName: (NSString *)name
+                       target: (id)target
+                     selector: (SEL)selector
 {
   self = [super init];
   if (self != nil)
     {
+      ASSIGN(_name, name);
       _target = target;
       _selector = selector;
     }
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_name);
+  RELEASE(_handler);
+  [super dealloc];
 }
 
 - (NSString *) name
