@@ -121,9 +121,6 @@
 - (void) comboBoxSelectionIsChanging: (NSNotification *)notification;
 @end
 
-@protocol NSComboBoxDelegate <NSTextFieldDelegate>
-@end
-
 APPKIT_EXPORT	NSString *NSComboBoxWillPopUpNotification;
 APPKIT_EXPORT	NSString *NSComboBoxWillDismissNotification;
 APPKIT_EXPORT	NSString *NSComboBoxSelectionDidChangeNotification;
