@@ -94,7 +94,11 @@
 #endif
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+@protocol NSComboBoxDataSource <NSObject>
+#else
 @interface NSObject (NSComboBoxDataSource)
+#endif
 - (NSInteger) numberOfItemsInComboBox: (NSComboBox *)aComboBox;
 - (id) comboBox: (NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index;
 - (NSUInteger) comboBox: (NSComboBox *)aComboBox 
@@ -106,10 +110,11 @@
 #endif
 @end
 
-@protocol NSComboBoxDataSource <NSObject>
-@end
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+@protocol NSComboBoxDelegate <NSTextFieldDelegate>
+#else
 @interface NSObject (NSComboBoxNotifications)
+#endif
 - (void) comboBoxWillPopUp: (NSNotification *)notification;
 - (void) comboBoxWillDismiss: (NSNotification *)notification;
 - (void) comboBoxSelectionDidChange: (NSNotification *)notification;
