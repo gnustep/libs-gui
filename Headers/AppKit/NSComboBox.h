@@ -106,11 +106,17 @@
 #endif
 @end
 
+@protocol NSComboBoxDataSource <NSObject>
+@end
+
 @interface NSObject (NSComboBoxNotifications)
 - (void) comboBoxWillPopUp: (NSNotification *)notification;
 - (void) comboBoxWillDismiss: (NSNotification *)notification;
 - (void) comboBoxSelectionDidChange: (NSNotification *)notification;
 - (void) comboBoxSelectionIsChanging: (NSNotification *)notification;
+@end
+
+@protocol NSComboBoxDelegate <NSTextFieldDelegate>
 @end
 
 APPKIT_EXPORT	NSString *NSComboBoxWillPopUpNotification;
