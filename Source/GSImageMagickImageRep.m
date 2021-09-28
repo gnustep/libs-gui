@@ -82,11 +82,19 @@
       NSSize res;
       if (image->units == PixelsPerCentimeterResolution)
 	{
+#if (MagickLibVersion >= 0x700)
 	  res = NSMakeSize(image->resolution.x * 2.54, image->resolution.y * 2.54);
+#else
+	  res = NSMakeSize(image->x_resolution * 2.54, image->y_resolution * 2.54);
+#endif
 	}
       else
 	{
+#if (MagickLibVersion >= 0x700)
 	  res = NSMakeSize(image->resolution.x, image->resolution.y);
+#else
+	  res = NSMakeSize(image->x_resolution, image->y_resolution);
+#endif
 	}
 
       if (res.width > 0 && res.height > 0)
@@ -121,7 +129,11 @@
   
   // Set the background color to transparent
   // (otherwise SVG's are rendered against a white background by default)
+#if (MagickLibVersion >= 0x700)
   QueryColorCompliance("none", AllCompliance, &imageinfo->background_color, exception);
+#else
+  QueryColorDatabase("none", &imageinfo->background_color, exception);
+#endif
 
   images = BlobToImage(imageinfo, [data bytes], [data length], exception);
 
