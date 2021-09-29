@@ -96,6 +96,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 @protocol NSComboBoxDataSource <NSObject>
+@optional
 #else
 @interface NSObject (NSComboBoxDataSource)
 #endif
@@ -112,6 +113,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 @protocol NSComboBoxDelegate <NSTextFieldDelegate>
+@optional
 #else
 @interface NSObject (NSComboBoxNotifications)
 #endif
