@@ -1379,7 +1379,7 @@ void GSRTFaddField (void *ctxt, int start, const char *inst)
 
   if (inst == NULL)
     {
-      NSLog(@"inst is NULL");
+      NSLog(@"RTF add field content is NULL");
       return;
     }
   

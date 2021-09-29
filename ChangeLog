@@ -1,5 +1,10 @@
 2021-09-29 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* TextConverters/RTF/RTFConsumer.m: Improve error message for
+	when a field being added to the RTF document is NULL.
+
+2021-09-29 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Headers/AppKit/NSComboBox.h: Add @optional to protocol
 	declarations for NSComboBoxDelegate and NSComboBoxDataSource.
 
