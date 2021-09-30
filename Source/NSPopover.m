@@ -35,7 +35,16 @@
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSStoryboard.h"
 
+// Popover window
+
+@interface GSPopoverWindow : NSWindow
+@end
+
+@implementation GSPopoverWindow : NSWindow
+@end
 
 /* Class */
 @implementation NSPopover
@@ -83,6 +92,25 @@
 
 - (void) setContentViewController: (NSViewController *)controller
 {
+  if ([NSStoryboard mainStoryboard] == nil)
+    {
+      NSString *controllerClassName = NSStringFromClass([controller class]);
+      BOOL loaded = [NSBundle loadNibNamed: controllerClassName
+				     owner: controller];
+      if (!loaded)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		      format: @"Could not load controller %@", controllerClassName];
+	}
+      else
+	{
+	  if ([controller view] == nil)
+	    {
+	      [NSException raise: NSInternalInconsistencyException
+			  format: @"Loaded controller named %@, but view is not set", controllerClassName];
+	    }
+	}
+    }
   ASSIGN(_contentViewController, controller);
 }
 
@@ -137,16 +165,22 @@
   NSRect screenRect;
   NSRect windowFrame;
   NSRect viewFrame;
-
+  
   [_contentViewController loadView];
   view = [_contentViewController view];
   viewFrame = [view frame];
 
-  _realWindow = [[NSWindow alloc] initWithContentRect: viewFrame
-					    styleMask: NSBorderlessWindowMask
-					      backing: NSBackingStoreRetained
-						defer: NO];
-
+  if (!_realWindow)
+    {
+      _realWindow = [[GSPopoverWindow alloc] initWithContentRect: viewFrame
+						       styleMask: NSBorderlessWindowMask
+							 backing: NSBackingStoreRetained
+							   defer: NO];
+    }
+  
+  [_realWindow setDelegate: self];
+  [_realWindow setBackgroundColor: [NSColor darkGrayColor]];
+  
   screenRect = [[positioningView window] convertRectToScreen:positioningRect];
   windowFrame = [_realWindow frame];
   windowFrame.origin = screenRect.origin;
@@ -172,10 +206,6 @@
 
   NSLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
   NSLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
-  // [_realWindow setBackgroundColor:[NSColor clearColor]];
-  // [_realWindow setOpaque:NO];
-  // [_realWindow setLevel:NSFloatingWindowLevel];
-  // [_realWindow setAlphaValue:0.0];
 
   [[_realWindow contentView] addSubview: view];
   [_realWindow setDelegate: self];
@@ -199,6 +229,11 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:NSPopoverWillCloseNotification
 						      object:self
 						    userInfo:nil];
+}
+
+- (void) windowDidResignMain: (NSNotification *)notification
+{
+  [_realWindow close];
 }
 
 - (id) initWithCoder: (NSCoder *)coder

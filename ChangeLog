@@ -1,3 +1,9 @@
+2021-09-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPopover.m: Fix an issue with NSPopover loading the
+	model (nib/xib/gorm) when it is loaded by a setContentViewController:
+	in an non-storyboard based application.
+
 2021-09-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* TextConverters/RTF/RTFConsumer.m: Improve error message for
