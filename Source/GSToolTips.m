@@ -174,7 +174,7 @@
 - (id) initWithContentRect: (NSRect)contentRect
                  styleMask: (NSUInteger)aStyle
                    backing: (NSBackingStoreType)bufferingType
-                     defer: (BOOL)flag;
+                     defer: (BOOL)flag
 {
   self = [super initWithContentRect: contentRect
                           styleMask: aStyle
@@ -182,7 +182,7 @@
                               defer: flag];
   if (self)
     {
-      [self setContentView: [[[GSTTView alloc] initWithFrame: contentRect] autorelease]];
+      [self setContentView: AUTORELEASE([[GSTTView alloc] initWithFrame: contentRect])];
     }
   return self;
 }
@@ -452,7 +452,7 @@ static BOOL		restoreMouseMoved;
     {
       ((NSViewPtr)view)->_rFlags.has_trkrects = 0;
     }
-  [indexes release];
+  RELEASE(indexes);
 }
 
 - (void) removeToolTip: (NSToolTipTag)tag

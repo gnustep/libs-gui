@@ -60,7 +60,7 @@ enum {
 typedef NSInteger NSPopoverBehavior;
 
 /* Forward declarations */
-@class NSViewController, NSWindow, NSView, NSNotification;
+@class NSViewController, NSPanel, NSView, NSNotification;
 @protocol NSPopoverDelegate;
 
 /* Class */
@@ -75,7 +75,7 @@ typedef NSInteger NSPopoverBehavior;
   NSRect _positioningRect;
   BOOL _shown;
 
-  NSWindow *_realWindow;
+  NSPanel *_realPanel;
 }
 
 /* Properties */
