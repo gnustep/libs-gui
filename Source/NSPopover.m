@@ -42,9 +42,6 @@
 // Popover private classes
 
 @interface GSPopoverView : NSView
-
-- (void) setContentView: (NSView *)view;
-
 @end
 
 @implementation GSPopoverView
@@ -184,7 +181,7 @@
 				     owner: controller];
       if (!loaded)
         {
-          [NSException raise: NSInternalInconsistencyExceptio
+          [NSException raise: NSInternalInconsistencyException
                       format: @"Could not load controller %@", controllerClassName];
         }
       else
