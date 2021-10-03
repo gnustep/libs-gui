@@ -34,13 +34,104 @@
 #import "AppKit/NSPopover.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSView.h"
-#import "AppKit/NSWindow.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSStoryboard.h"
+#import "AppKit/NSGraphics.h"
 
+// Popover private classes
+
+@interface GSPopoverView : NSView
+@end
+
+@implementation GSPopoverView
+
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self)
+    {
+      [self setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+    }
+  return self;
+}
+
+- (void) drawRect: (NSRect)dirtyRect
+{
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
+  NSColor *black = [NSColor blackColor];
+  NSColor *white = [NSColor whiteColor];
+  NSColor *colors[] = {white, white, black, black};
+  NSRect bounds = [self bounds];
+
+  [super drawRect: dirtyRect];
+  NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
+}
+
+@end
+
+@interface GSPopoverPanel : NSPanel
+@end
+
+@implementation GSPopoverPanel
+
+- (id) initWithContentRect: (NSRect)contentRect
+                 styleMask: (NSUInteger)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag
+{
+  self = [super initWithContentRect: contentRect
+                          styleMask: aStyle
+                            backing: bufferingType
+                              defer: flag];
+  if (self)
+    {
+      [super setContentView: AUTORELEASE([[GSPopoverView alloc]
+                                           initWithFrame: contentRect])];
+    }
+  return self;
+}
+
+- (void) orderOut: (id)sender
+{
+  [super orderOut: sender];
+  [self close];
+}
+
+- (BOOL) canBecomeKeyWindow 
+{
+  return NO;
+}
+
+- (BOOL) canBecomeMainWindow 
+{
+  return NO;
+}
+
+- (void) setContentView: (NSView *)view
+{
+  [[super contentView] addSubview: view];
+}
+
+- (NSView *) contentView
+{
+  NSArray *subviews = [[super contentView] subviews];
+
+  if ([subviews count] == 0)
+    {
+      return nil;
+    }
+  
+  return [subviews objectAtIndex: 0];
+}
+
+@end
 
 /* Class */
 @implementation NSPopover
 
 /* Properties */
+
 - (void) setAnimates: (BOOL)flag
 {
   _animates = flag;
@@ -83,6 +174,25 @@
 
 - (void) setContentViewController: (NSViewController *)controller
 {
+  if ([NSStoryboard mainStoryboard] == nil)
+    {
+      NSString *controllerClassName = NSStringFromClass([controller class]);
+      BOOL loaded = [NSBundle loadNibNamed: controllerClassName
+				     owner: controller];
+      if (!loaded)
+        {
+          [NSException raise: NSInternalInconsistencyException
+                      format: @"Could not load controller %@", controllerClassName];
+        }
+      else
+        {
+          if ([controller view] == nil)
+            {
+              [NSException raise: NSInternalInconsistencyException
+                          format: @"Loaded controller named %@, but view is not set", controllerClassName];
+            }
+        }
+    }
   ASSIGN(_contentViewController, controller);
 }
 
@@ -117,16 +227,17 @@
 }
 
 /* Methods */
+
 - (void) close
 {
-  [_realWindow close];
-  [_realWindow setDelegate:nil];
+  [_realPanel close];
+  [_realPanel setDelegate:nil];
 }
 
 - (IBAction) performClose: (id)sender
 {
-  [_realWindow performClose:sender];
-  [_realWindow setDelegate:nil];
+  [_realPanel performClose:sender];
+  [_realPanel setDelegate:nil];
 }
 
 - (void) showRelativeToRect: (NSRect)positioningRect
@@ -137,18 +248,29 @@
   NSRect screenRect;
   NSRect windowFrame;
   NSRect viewFrame;
-
+  
   [_contentViewController loadView];
   view = [_contentViewController view];
   viewFrame = [view frame];
 
-  _realWindow = [[NSWindow alloc] initWithContentRect: viewFrame
-					    styleMask: NSBorderlessWindowMask
-					      backing: NSBackingStoreRetained
-						defer: NO];
-
+  if (!_realPanel)
+    {
+      _realPanel = [[GSPopoverPanel alloc] initWithContentRect: viewFrame
+						      styleMask: NSBorderlessWindowMask
+							backing: NSBackingStoreRetained
+							  defer: NO];
+      
+      [_realPanel setBackgroundColor: [NSColor darkGrayColor]];
+      [_realPanel setReleasedWhenClosed: YES];
+      [_realPanel setExcludedFromWindowsMenu: YES];
+      [_realPanel setLevel: NSPopUpMenuWindowLevel];
+      [_realPanel setAutodisplay: NO];
+      [_realPanel setDelegate: self];
+      [_realPanel setContentView: view];
+    }
+  
   screenRect = [[positioningView window] convertRectToScreen:positioningRect];
-  windowFrame = [_realWindow frame];
+  windowFrame = [_realPanel frame];
   windowFrame.origin = screenRect.origin;
 
   if(NSMinXEdge == preferredEdge)
@@ -168,18 +290,13 @@
       windowFrame.origin.x += viewFrame.size.width;
     }
 
-  [_realWindow setFrame: windowFrame display: YES];
-
-  NSLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
-  NSLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
-  // [_realWindow setBackgroundColor:[NSColor clearColor]];
-  // [_realWindow setOpaque:NO];
-  // [_realWindow setLevel:NSFloatingWindowLevel];
-  // [_realWindow setAlphaValue:0.0];
-
-  [[_realWindow contentView] addSubview: view];
-  [_realWindow setDelegate: self];
-  [_realWindow makeKeyAndOrderFront:self];
+  [_realPanel setFrame: windowFrame display: YES];
+  [_realPanel makeKeyAndOrderFront:self];
+  
+  NSDebugLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
+  NSDebugLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
+  
+  _shown = YES;
 }
 
 - (BOOL) windowShouldClose: (id)sender
@@ -249,4 +366,5 @@
       [coder encodeObject:_contentViewController];
     } 
 }
+
 @end
