@@ -42,9 +42,9 @@
 // Popover private classes
 
 @interface GSPopoverView : NSView
-{
-  NSView *_contentView;
-}
+
+- (void) setContentView: (NSView *)view;
+
 @end
 
 @implementation GSPopoverView
@@ -63,13 +63,8 @@
 {
   if (view != nil)
     {
-      ASSIGN(_contentView, view);
-      [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [self addSubview: _contentView];
-    }
-  else
-    {
-      [_contentView removeFromSuperview];
+      [view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [self addSubview: view];
     }
 }
 
@@ -148,81 +143,48 @@
 
 /* Properties */
 
-/**
- * Sets the animate flag.  If YES then the popover will animate when it appears or disappears.
- */
 - (void) setAnimates: (BOOL)flag
 {
   _animates = flag;
 }
 
-/**
- * Returns current value of the animate flag.
- */
 - (BOOL) animates
 {
   return _animates;
 }
 
-/** 
- * Sets ths appearance of the popover.  Minimal is the default.  HUD is not supported.
- */ 
 - (void) setAppearance: (NSPopoverAppearance)value
 {
   _appearance = value;
 }
 
-/**
- * Returns the current appearance setting.
- */
 - (NSPopoverAppearance) appearance
 {
   return _appearance;
 }
 
-/**
- * Sets current popup behavior.  Valid settings are:
- * NSPopupBehaviorApplicationDefined, NSPopupBehaviorTransient, 
- * NSPopupBehaviorSemiTransient.
- */
+
 - (void) setBehavior: (NSPopoverBehavior)value
 {
   _behavior = value;
 }
 
-/**
- * Returns current behavior setting
- */
+
 - (NSPopoverBehavior) behavior
 {
   return _behavior;
 }
 
-/**
- * Accepts an NSSize value for the current content size.
- */
 - (void) setContentSize: (NSSize)value
 {
   _contentSize = value;
 }
 
-/**
- * Returns an NSSize representing the size of the NSPopover content view.
- */
 - (NSSize) contentSize
 {
   return _contentSize;
 }
 
-/**
- * Sets the contentViewController.  If in a storyboard this is automatically set
- * but if this is in a model that is NOT a storyboard (nib, xib, gorm, etc) then there must be
- * a model with the same name as the class name of the contentViewController.  Also,
- * This model must have the "view" outlet set to the view that will be shown
- * in the popup, if both of these conditions are not met, then the code will
- * throw an NSInternalInconsistency exception to report the issue back to the
- * user.
- */
 - (void) setContentViewController: (NSViewController *)controller
 {
   if ([NSStoryboard mainStoryboard] == nil)
@@ -236,60 +198,42 @@
 		      format: @"Could not load controller %@", controllerClassName];
 	}
       else
-	{
-	  if ([controller view] == nil)
-	    {
-	      [NSException raise: NSInternalInconsistencyException
-			  format: @"Loaded controller named %@, but view is not set", controllerClassName];
-	    }
-	}
+        {
+          if ([controller view] == nil)
+            {
+              [NSException raise: NSInternalInconsistencyException
+                          format: @"Loaded controller named %@, but view is not set", controllerClassName];
+            }
+        }
     }
   ASSIGN(_contentViewController, controller);
 }
 
-/**
- * Returns the current contentViewController.
- */
 - (NSViewController *) contentViewController
 {
   return _contentViewController;
 }
 
-/**
- * Set delegate 
- */
 - (void) setDelegate: (id)value
 {
   _delegate = value;
 }
 
-/**
- * Return delegate
- */
 - (id) delegate
 {
   return _delegate;
 }
 
-/**
- * Set relative position of the popup to the view it is associated with.
- */
 - (void) setPositioningRect: (NSRect)value
 {
   _positioningRect = value;
 }
 
-/**
- * Return the NSRect.
- */
 - (NSRect) positioningRect
 {
   return _positioningRect;
 }
 
-/**
- * Is the popover being shown.
- */
 - (BOOL) isShown
 {
   return _shown;
@@ -297,27 +241,18 @@
 
 /* Methods */
 
-/**
- * Close the popover.
- */
 - (void) close
 {
   [_realPanel close];
   [_realPanel setDelegate:nil];
 }
 
-/**
- * Close the popover.
- */
 - (IBAction) performClose: (id)sender
 {
   [_realPanel performClose:sender];
   [_realPanel setDelegate:nil];
 }
 
-/**
- * Show the popover relative to the specified rect on the edge specified.
- */
 - (void) showRelativeToRect: (NSRect)positioningRect
                      ofView: (NSView *)positioningView 
               preferredEdge: (NSRectEdge)preferredEdge
