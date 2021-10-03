@@ -194,8 +194,8 @@
 				     owner: controller];
       if (!loaded)
         {
-	  [NSException raise: NSInternalInconsistencyException
-		      format: @"Could not load controller %@", controllerClassName];
+          [NSException raise: NSInternalInconsistencyExceptio
+                      format: @"Could not load controller %@", controllerClassName];
         }
       else
         {
