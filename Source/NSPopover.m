@@ -59,15 +59,6 @@
   return self;
 }
 
-- (void) setContentView: (NSView *)view
-{
-  if (view != nil)
-    {
-      [view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [self addSubview: view];
-    }
-}
-
 - (void) drawRect: (NSRect)dirtyRect
 {
   NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
@@ -98,7 +89,8 @@
                               defer: flag];
   if (self)
     {
-      [super setContentView: AUTORELEASE([[GSPopoverView alloc] initWithFrame: contentRect])];
+      [super setContentView: AUTORELEASE([[GSPopoverView alloc]
+                                           initWithFrame: contentRect])];
     }
   return self;
 }
@@ -163,12 +155,10 @@
   return _appearance;
 }
 
-
 - (void) setBehavior: (NSPopoverBehavior)value
 {
   _behavior = value;
 }
-
 
 - (NSPopoverBehavior) behavior
 {
