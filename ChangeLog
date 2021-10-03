@@ -1,3 +1,8 @@
+2021-10-03 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSComboBox.h: Add check to see if @optional
+        is available.
+
 2021-10-02 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSToolTips.m: Use RELEASE and AUTORELEASE macros where
