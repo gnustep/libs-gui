@@ -419,6 +419,32 @@ static NSNotificationCenter *nc = nil;
 
 }
 
+- (NSRect) _dividerRectForIndex: (NSUInteger)index
+{
+  const SEL selector = @selector(splitView:effectiveRect:forDrawnRect:ofDividerAtIndex:);
+  NSRect rect = [[[self subviews] objectAtIndex: index] frame];
+  {
+    if (_isVertical == NO)
+      {
+        rect.origin.y = NSMaxY (rect);
+        rect.size.height = _dividerWidth;
+      }
+    else
+      {
+        rect.origin.x = NSMaxX (rect);
+        rect.size.width = _dividerWidth;
+      }
+    rect = NSIntersectionRect(rect, [self visibleRect]);
+
+    // TESTPLANT-MAL-08242017: Check with delegate for hit rect...
+    if (_delegate && [_delegate respondsToSelector: selector])
+      {
+        rect = [_delegate splitView: self effectiveRect: rect forDrawnRect: rect ofDividerAtIndex: index];
+      }
+  }
+  return rect;
+}
+
 /**
  * In -mouseDown we intercept the mouse event to handle the
  * splitview divider move. Moving the divider will do a live
