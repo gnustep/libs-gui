@@ -157,7 +157,7 @@
   [super setFont: f];
 }
 
-- (NSAttributedString *)_replacementAttributedString
+- (NSAttributedString *) _replacementAttributedString
 {
   NSDictionary *attributes;
   NSMutableString *string;
@@ -183,7 +183,7 @@
 
 - (NSAttributedString*) _drawAttributedString
 {
-  if (_echosBullets)
+  if (_echosBullets && (0 < [[self stringValue] length]))
     {
       if (!_cell.is_disabled)
         {
@@ -207,22 +207,27 @@
                                  attributes: newAttribs]);
         }
     }
-  else
-    {
-      /* .. do nothing.  */
-      return nil;
-    }
+
+  // Default to super return on null/empty string...i.e. placeholder...
+  return [super _drawAttributedString];
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  NSSecureTextView *secureView;
+  if ([self echosBullets])
+    {
+      NSSecureTextView *secureView;
 
-  /* Replace the text object with a secure instance.  It's not shared.  */
-  secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
+      /* Replace the text object with a secure instance.  It's not shared.  */
+      secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
 
-  [secureView setEchosBullets: [self echosBullets]];
-  return [super setUpFieldEditorAttributes: secureView];
+      [secureView setEchosBullets: [self echosBullets]];
+
+      return [super setUpFieldEditorAttributes: secureView];
+    }
+
+  // Otherwise...
+  return [super setUpFieldEditorAttributes: textObject];
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
@@ -233,7 +238,17 @@
 
   if ([decoder allowsKeyedCoding])
     {
-      _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"];
+      // Default to on...
+      [self setEchosBullets: YES];
+      
+      if ([decoder containsValueForKey: @"GSEchoBullets"])
+        {
+          _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"]; // XIB5 decoding...
+        }
+      else if ([decoder containsValueForKey: @"NSEchosBullets"])
+        {
+          _echosBullets = [decoder decodeBoolForKey: @"NSEchosBullets"];
+        }
     }
   else
     {
@@ -263,7 +278,7 @@
                             glyphIndex: (NSUInteger*)glyph
                         characterIndex: (NSUInteger*)index
 {
-  NSGlyph glyphs[num];
+  NSGlyph *glyphs = NSZoneMalloc(NSDefaultMallocZone(), (sizeof(NSGlyph) * num));
   NSGlyph gl;
   NSAttributedString *attrstr = [storage attributedString];
   GSFontInfo *fi;
@@ -293,6 +308,9 @@
                  length: num
            forStartingGlyphAtIndex: *glyph
          characterIndex: *index];
+
+  // Cleanup
+  NSZoneFree(NSDefaultMallocZone(), glyphs);
 }
 
 @end

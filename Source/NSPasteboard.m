@@ -1939,154 +1939,182 @@ static  NSMapTable              *mimeMap = NULL;
 {
   if (the_server == nil)
     {
-      NSString	*host;
-      NSString	*description;
+      //
+      // NOTE: This is a bit strange and bears review, I believe what TP is doing here is
+      //    using an external pasteboard server instead of gpbs.
+      //
+      // TESTPLANT-MAL-12112017: If the pasteboard server class it available
+      // the use it directly to avoid windows issue with the GPBS communications...
+      if (NSClassFromString(@"PasteboardServer") != nil)
+        {
+          the_server = [[NSClassFromString(@"PasteboardServer") alloc] init];
+        }
+      else // Otherwise fallback to using GPBS...
+        {
+          NSString	*host;
+          NSString	*description;
+          
+          host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+          if (host == nil)
+            {
+              host = @"";
+            }
+          else
+            {
+              NSHost	*h;
+              
+              /*
+               * If we have a host specified, but it is the current host,
+               * we do not need to ask for a host by name (nameserver lookup
+               * can be faster) and the empty host name can be used to
+               * indicate that we may start a pasteboard server locally.
+               */
+              h = [NSHost hostWithName: host];
+              if (h == nil)
+                {
+                  NSLog(@"Unknown NSHost (%@) ignored", host);
+                  host = @"";
+                }
+              else if ([h isEqual: [NSHost currentHost]] == YES)
+                {
+                  host = @"";
+                }
+              else
+                {
+                  host = [h name];
+                }
+            }
+          
+          if ([host length] == 0)
+            {
+              description = @"local host";
+            }
+          else
+            {
+              description = host;
+            }
+          
+          the_server = (id<GSPasteboardSvr>)[NSConnection
+                                              rootProxyForConnectionWithRegisteredName: PBSNAME host: host];
+          if (the_server == nil && [host length] > 0)
+            {
+              NSString	*service;
+              
+              service = [PBSNAME stringByAppendingFormat: @"-%@", host];
+              the_server = (id<GSPasteboardSvr>)[NSConnection
+                                                  rootProxyForConnectionWithRegisteredName: service host: @"*"];
+            }
+          
+          if (RETAIN((id)the_server) != nil)
+            {
+              NSConnection	*conn = [(id)the_server connectionForProxy];
+              Protocol      *p = @protocol(GSPasteboardSvr);
+              
+              [conn enableMultipleThreads];
+              [conn setReplyTimeout:2.0];
+              [(id)the_server setProtocolForProxy: p];
+              [[NSNotificationCenter defaultCenter]
+                addObserver: self
+                   selector: @selector(_lostServer:)
+                       name: NSConnectionDidDieNotification
+                     object: conn];
+            }
+          else
+            {
+              static BOOL		recursion = NO;
+              static NSString	*cmd = nil;
+              
+              if (cmd == nil && recursion ==NO)
+                {
+                  cmd = RETAIN([NSTask launchPathForTool: @"gpbs"]);
+                }
+              if (recursion == YES || cmd == nil)
+                {
+                  NSLog(@"Unable to contact pasteboard server - "
+                        @"please ensure that gpbs is running for %@.", description);
+                  return nil;
+                }
+              else
+                {
+                  NSNotificationCenter *nc;
+                  NSMutableArray *startIndicator;
+                  NSArray *args = nil;
+                  NSDate *timeoutDate;
+                  
+                  NSDebugLLog(@"NSPasteboard",
+                              @"\nI couldn't contact the pasteboard server for %@ -\n"
+                              @"so I'm attempting to start one - which might take a few seconds.\n"
+                              @"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n",
+                              description, [cmd stringByDeletingLastPathComponent]);
+                  
+                  if ([host length] > 0)
+                    {
+                      args = [[NSArray alloc] initWithObjects:
+                                                @"-NSHost", host,
+                                              @"-GSStartupNotification", @"GSStartup-GPBS",
+                                              @"--auto",
+                                              nil];
+                    }
+                  else
+                    {
+                      args = [[NSArray alloc] initWithObjects:
+                                                @"-GSStartupNotification",@"GSStartup-GPBS",
+                                              @"--auto",
+                                              nil];
+                    }
+                  
+                  /*
+                    Trick: To avoid having to use global variables or new methods
+                    to track whether the notification has been received or not, we
+                    use a mutable array as an indicator. When the notification is
+                    received, the array is emptied, so we just check the count.
+                  */
+                  startIndicator = [[NSMutableArray alloc] initWithObjects:
+                                                             AUTORELEASE([[NSObject alloc] init]), nil];
+                  
+                  nc = [NSDistributedNotificationCenter defaultCenter];
+                  [nc addObserver: startIndicator
+                         selector: @selector(removeAllObjects)
+                             name: @"GSStartup-GPBS"
+                           object: nil];
 
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host == nil)
-	{
-	  host = @"";
-	}
-      else
-	{
-	  NSHost	*h;
-
-	  /*
-	   * If we have a host specified, but it is the current host,
-	   * we do not need to ask for a host by name (nameserver lookup
-	   * can be faster) and the empty host name can be used to
-	   * indicate that we may start a pasteboard server locally.
-	   */
-	  h = [NSHost hostWithName: host];
-	  if (h == nil)
-	    {
-	      NSLog(@"Unknown NSHost (%@) ignored", host);
-	      host = @"";
-	    }
-	  else if ([h isEqual: [NSHost currentHost]] == YES)
-	    {
-	      host = @"";
-	    }
-	  else
-	    {
-	      host = [h name];
-	    }
-	}
-
-      if ([host length] == 0)
-	{
-	  description = @"local host";
-	}
-      else
-	{
-	  description = host;
-	}
-
-      the_server = (id<GSPasteboardSvr>)[NSConnection
-	rootProxyForConnectionWithRegisteredName: PBSNAME host: host];
-      if (the_server == nil && [host length] > 0)
-	{
-	  NSString	*service;
-
-	  service = [PBSNAME stringByAppendingFormat: @"-%@", host];
-	  the_server = (id<GSPasteboardSvr>)[NSConnection
-	    rootProxyForConnectionWithRegisteredName: service host: @"*"];
-	}
-
-      if (RETAIN((id)the_server) != nil)
-	{
-	  NSConnection	*conn = [(id)the_server connectionForProxy];
-          Protocol      *p = @protocol(GSPasteboardSvr);
-
-	  [conn enableMultipleThreads];
-          [conn setReplyTimeout:2.0];
-          [(id)the_server setProtocolForProxy: p];
-	  [[NSNotificationCenter defaultCenter]
-	    addObserver: self
-	       selector: @selector(_lostServer:)
-		   name: NSConnectionDidDieNotification
-		 object: conn];
-	}
-      else
-	{
-	  static BOOL		recursion = NO;
-	  static NSString	*cmd = nil;
-
-	  if (cmd == nil && recursion ==NO)
-	    {
-	      cmd = RETAIN([NSTask launchPathForTool: @"gpbs"]);
-	    }
-	  if (recursion == YES || cmd == nil)
-	    {
-	      NSLog(@"Unable to contact pasteboard server - "
-		@"please ensure that gpbs is running for %@.", description);
-	      return nil;
-	    }
-	  else
-	    {
-	      NSNotificationCenter *nc;
-	      NSMutableArray *startIndicator;
-	      NSArray *args = nil;
-	      NSDate *timeoutDate;
-
-	      NSDebugLLog(@"NSPasteboard",
-@"\nI couldn't contact the pasteboard server for %@ -\n"
-@"so I'm attempting to start one - which might take a few seconds.\n"
-@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n",
-description, [cmd stringByDeletingLastPathComponent]);
-
-	      if ([host length] > 0)
-		{
-		  args = [[NSArray alloc] initWithObjects:
-		    @"-NSHost", host,
-		    @"-GSStartupNotification", @"GSStartup-GPBS",
-		    @"--auto",
-		    nil];
-		}
-	      else
-		{
-		  args = [[NSArray alloc] initWithObjects:
-		    @"-GSStartupNotification",@"GSStartup-GPBS",
-		    @"--auto",
-		    nil];
-		}
-
-	      /*
-	      Trick: To avoid having to use global variables or new methods
-	      to track whether the notification has been received or not, we
-	      use a mutable array as an indicator. When the notification is
-	      received, the array is emptied, so we just check the count.
-	      */
-	      startIndicator = [[NSMutableArray alloc] initWithObjects:
-		AUTORELEASE([[NSObject alloc] init]), nil];
-
-	      nc = [NSDistributedNotificationCenter defaultCenter];
-	      [nc addObserver: startIndicator
-		     selector: @selector(removeAllObjects)
-			 name: @"GSStartup-GPBS"
-		       object: nil];
-
-	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
-	      RELEASE(args);
-
-	      timeoutDate = [NSDate dateWithTimeIntervalSinceNow: 5.0];
-
-	      while ([startIndicator count]
-	        && [timeoutDate timeIntervalSinceNow] > 0.0)
-		{
-		  [[NSRunLoop currentRunLoop]
-		       runMode: NSDefaultRunLoopMode
-		    beforeDate: timeoutDate];
-		}
-
-	      [nc removeObserver: startIndicator];
-	      DESTROY(startIndicator);
-
-	      recursion = YES;
-	      [self _pbs];
-	      recursion = NO;
-	    }
-	}
+#if defined(__MINGW32__)
+                  //
+                  // NOTE: By ePF they mean the parent process...  not sure if this is needed.
+                  //
+                  // Testplant-MAL-10042016: keeping branch code
+                  //   Needed in order to avoid sub-tasks from inheriting and writing to
+                  //   ePF log files...
+                  NSTask *task = AUTORELEASE([NSTask new]);
+                  [task setStandardError:[NSFileHandle fileHandleForWritingAtPath:@"NUL"]];
+                  [task setStandardOutput:[NSFileHandle fileHandleForWritingAtPath:@"NUL"]];
+                  [task setLaunchPath:cmd];
+                  [task setArguments:args];
+                  [task launch];
+#else
+                  [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
+#endif                  
+                  RELEASE(args);
+                  
+                  timeoutDate = [NSDate dateWithTimeIntervalSinceNow: 5.0];
+                  
+                  while ([startIndicator count]
+                         && [timeoutDate timeIntervalSinceNow] > 0.0)
+                    {
+                      [[NSRunLoop currentRunLoop]
+                        runMode: NSDefaultRunLoopMode
+                        beforeDate: timeoutDate];
+                    }
+                  
+                  [nc removeObserver: startIndicator];
+                  DESTROY(startIndicator);
+                  
+                  recursion = YES;
+                  [self _pbs];
+                  recursion = NO;
+                }
+            }
+        }
     }
   return the_server;
 }

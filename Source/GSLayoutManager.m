@@ -755,6 +755,11 @@ Fills in all glyph holes up to last. only looking at levels below level
           (last - glyphs->glyph_length) * (glyphs->char_length / (glyphs->glyph_length + 1));
 
       [self _generateGlyphsUpToCharacter: char_last];
+
+      // TESTPLANT-MAL-08152017: Not sure why but there are times that this condition
+      // happens causing an infinite loop...
+      if (char_last > glyphs->char_length)
+        break;
     }
 }
 
@@ -3218,8 +3223,10 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
   glyph_run_t *run;
   int i;
   unsigned int gpos, cpos;
-  NSSize advances[length];
-
+  // TESTPLANT-MAL-07312017: Would be nice to optimize this...
+  //     but we've been seeing stack overwrite crashes due to this...
+  NSSize *advances = NSZoneMalloc(NSDefaultMallocZone(), sizeof(NSSize)*length);
+  
   run = [self run_for_character_index: index : &gpos : &cpos];
   if (!run)
     {
@@ -3245,6 +3252,9 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
 	      length: length
 	forStartingGlyphAtIndex: glyph
       characterIndex: index];
+
+  // Cleanup...
+  NSZoneFree(NSDefaultMallocZone(), advances);
 }
 
 - (NSUInteger) layoutOptions

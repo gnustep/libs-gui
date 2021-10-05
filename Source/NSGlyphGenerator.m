@@ -93,13 +93,15 @@ fb04 'ffl'
                         characterIndex: (NSUInteger*)index
 {
   // Try to get enough space for all glyphs
-  NSGlyph glyphs[2 * num];
+  // TESTPLANT-MAL-09132018: Would be nice to optimize this...
+  //     but we've been seeing stack overwrite crashes due to this...
+  NSGlyph *glyphs = NSZoneMalloc(NSDefaultMallocZone(), 2 * num * sizeof(NSGlyph));
   NSGlyph *g;
   NSGlyph gl;
   NSAttributedString *attrstr = [storage attributedString];
   GSFontInfo *fi;
   int i;
-  unichar buf[num];
+  unichar *buf = NSZoneMalloc(NSDefaultMallocZone(), num * sizeof(unichar));
   unsigned int cstart = 0;
   NSRange maxRange = NSMakeRange(*index, num);
   NSRange curRange;
@@ -285,7 +287,11 @@ fb04 'ffl'
     }
 
   // Send all remaining glyphs
-  SEND_GLYPHS(); 
+  SEND_GLYPHS();
+  
+  // Cleanup...
+  NSZoneFree(NSDefaultMallocZone(), glyphs);
+  NSZoneFree(NSDefaultMallocZone(), buf);
 }
 
 @end

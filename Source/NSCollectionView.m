@@ -442,6 +442,10 @@ static NSString *placeholderItem = nil;
       
       x += _itemSize.width + _horizontalMargin;
     }
+  
+  if (_maxNumberOfColumns == 1)
+    itemFrame.size.width = self.frame.size.width;
+
   return itemFrame;
 }
 
@@ -474,6 +478,19 @@ static NSString *placeholderItem = nil;
         {
           [item setSelected: YES];
         }
+
+      // GJC: I realize this isn't being used, but it seems informational... we can
+      //   remove it before the final merge.
+      // Frank LeGrand 4/25/13:
+      // We set this initial rect as a workaround for a weird display
+      // issue in our app where the item view would get drawn in front
+      // of another view (a transparent NSBox) whereas it should stay
+      // behind.
+#if 0
+      NSRect initRect = NSMakeRect (-10000,-10000,100,100);
+      [[item view] setFrame:initRect];
+#endif
+      
       [self addSubview: [item view]];
       RELEASE(item);
     }

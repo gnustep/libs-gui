@@ -232,6 +232,14 @@ this to return nil to indicate that we have no context menu.
   [_cell removeItemAtIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
+
+  // TESTPLANT-MAL-09182017: removing causes a multiple sequence eventually
+  //   deselecting any item - after multiple attempts to try to avoid the sequence
+  //   we'll just override the selection at this point...
+  if ([_cell usesItemFromMenu] && ([self selectedItem] == nil) && ([self numberOfItems] > 0))
+    {
+      [self selectItemAtIndex: [self numberOfItems]-1];
+    }
 }
 
 /** <p>Returns the selected item</p>

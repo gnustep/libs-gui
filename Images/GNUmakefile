@@ -45,7 +45,8 @@ Images_RESOURCE_FILES = \
  LogoGNUstep.tiff \
  MagnifyGlass.tiff \
  NSAddTemplate.tiff\
- NSComboArrow.tiff \
+ NSDropDownIndicatorTemplate.png\
+ NSDropDownIndicatorTemplate-reversed.png\ NSComboArrow.tiff \
  NSRatingLevelIndicator.tiff \
  NSRemoveTemplate.tiff\
  common_2DCheckMark.tiff \
