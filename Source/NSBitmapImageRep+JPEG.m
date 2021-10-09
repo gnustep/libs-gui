@@ -343,10 +343,16 @@ static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)
 
 static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 {
+  if (NULL == cinfo)
+    return;
+
   gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
-  free (dest->buffer);
-  free (dest->data);
-  free (dest);
+  if (NULL != dest)
+    {
+      free (dest->buffer);
+      free (dest->data);
+      free (dest);
+    }
   cinfo->dest = NULL;
 }
 
