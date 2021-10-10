@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2013 Free Software Foundation, Inc.
+   Copyright (C) 2013-2021 Free Software Foundation, Inc.
 
    Author: German A. Arias <german@xelalug.org>
    Date: 2013
@@ -499,14 +499,14 @@ static GSAutocompleteWindow *gsWindow = nil;
 }
 
 // Delegate
-- (int) numberOfRowsInTableView: (NSTableView *)aTableView
+- (NSInteger) numberOfRowsInTableView: (NSTableView *)aTableView
 {
   return [_words count];
 }
 
 - (id) tableView: (NSTableView *)aTableView
   objectValueForTableColumn: (NSTableColumn *)aTableColumn
-	     row: (int)rowIndex
+	     row: (NSInteger)rowIndex
 {
   return [[_words objectAtIndex: rowIndex] description];
 }
