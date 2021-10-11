@@ -6,6 +6,14 @@
 #import <AppKit/NSImage.h>
 #import <AppKit/NSNibLoading.h>
 
+// For some nib/xibs the AppDelegate is defined...
+@interface AppDelegate : NSObject
+@end
+
+@implementation AppDelegate
+@end
+
+
 int main()
 {
   NSAutoreleasePool *arp = [NSAutoreleasePool new];
@@ -40,7 +48,13 @@ int main()
                  topLevelObjects: testObjects];
   
   pass(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
-  NSLog(@"%@", *testObjects);
+
+  success = [bundle loadNibNamed: @"Test-xib"
+                           owner: [NSApplication sharedApplication]
+                 topLevelObjects: testObjects];
+  
+  pass(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+
   
   END_SET("NSNibLoading GNUstep basic")
 
