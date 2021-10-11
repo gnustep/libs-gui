@@ -154,5 +154,36 @@
       return NO;
     }
 }
+
+- (BOOL) loadNibNamed: (NSString *)aNibName
+	        owner: (id)owner
+      topLevelObjects: (NSArray **)topLevelObjects
+{
+  BOOL success = NO;
+
+  if (owner != nil && aNibName != nil)
+    {
+      NSDictionary	*table = [NSDictionary dictionaryWithObject: owner forKey: NSNibOwner];
+
+      success = [self loadNibFile: aNibName
+                      externalNameTable: table
+                         withZone: [owner zone]];
+      
+      // When using the newer topLevelObjects API, conform to the cocoa standard of letting the caller own
+      // the TLOs these were previously retained by [GSXibLoader awake:withContext:] so we need to
+      // autorelease them.  See cocoa docs for loadNibNamed:owner:topLevelObjects:
+      if (success && topLevelObjects && [table objectForKey: NSNibTopLevelObjects])
+        {
+          *topLevelObjects = [table objectForKey: NSNibTopLevelObjects];
+          for (NSObject *obj in *topLevelObjects)
+            {
+              AUTORELEASE(obj);
+            }
+        }
+    }
+ 
+  return success;
+}
+
 @end
 // end of NSBundleAdditions

@@ -62,6 +62,12 @@
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (BOOL) loadNibNamed: (NSString *)aNibName
+	        owner: (id)owner
+      topLevelObjects: (NSArray **)topLevelObjects;
+#endif
+
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (NSString *) pathForNibResource: (NSString *)fileName;
 #endif // GS_API_NONE
