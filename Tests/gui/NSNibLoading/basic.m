@@ -8,6 +8,9 @@
 
 // For some nib/xibs the AppDelegate is defined...
 @interface AppDelegate : NSObject
+{
+  IBOutlet NSWindow *window;
+}
 @end
 
 @implementation AppDelegate
@@ -41,20 +44,33 @@ int main()
       path = [path stringByDeletingLastPathComponent];
     }
   
-  pass(bundle != NO, "NSBundle was initialized");
-  
-  success = [bundle loadNibNamed: @"Test-gorm"
-                           owner: [NSApplication sharedApplication]
-                 topLevelObjects: testObjects];
-  
-  pass(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+  pass(bundle != nil, "NSBundle was initialized");
 
-  success = [bundle loadNibNamed: @"Test-xib"
-                           owner: [NSApplication sharedApplication]
-                 topLevelObjects: testObjects];
-  
-  pass(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
-
+  NS_DURING
+    {
+      success = [bundle loadNibNamed: @"Test-gorm"
+                               owner: [NSApplication sharedApplication]
+                     topLevelObjects: testObjects];
+      
+      pass(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      
+      success = [bundle loadNibNamed: @"Test-xib"
+                               owner: [NSApplication sharedApplication]
+                     topLevelObjects: testObjects];
+      
+      pass(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      
+      success = [bundle loadNibNamed: @"Test-nib"
+                               owner: [NSApplication sharedApplication]
+                     topLevelObjects: testObjects];
+      
+      pass(success == YES, ".nib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+    }
+  NS_HANDLER
+    {
+      NSLog(@"%@", [localException reason]);
+    }
+  NS_ENDHANDLER;
   
   END_SET("NSNibLoading GNUstep basic")
 
