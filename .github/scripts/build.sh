@@ -6,7 +6,8 @@ echo "Building..."
 
 sudo apt-get -qq update
 sudo apt-get install -y cmake pkg-config libgnutls28-dev libgmp-dev libffi-dev libicu-dev \
-     libxml2-dev libxslt1-dev libssl-dev libavahi-client-dev zlib1g-dev gnutls-bin
+     libxml2-dev libxslt1-dev libssl-dev libavahi-client-dev zlib1g-dev gnutls-bin \
+     libcairo2-dev
 
 if [ $LIBRARY_COMBO = 'gnu-gnu-gnu' ];
 then
@@ -54,3 +55,11 @@ export GNUSTEP_MAKEFILES=$HOME/staging/share/GNUstep/Makefiles;
 # Build gui
 ./configure $BASE_ABI || (cat config.log && false);
 make && make install
+
+# Build back, it's needed by some tests...
+#cd ..
+#git clone https://github.com/gnustep/libs-back.git
+#cd libs-back
+#./configure
+#make && make install
+
