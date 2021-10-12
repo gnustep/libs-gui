@@ -1,3 +1,9 @@
+2021-10-12 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBitmapImageRep.m: Change initWithBitmapDataPlanes:...
+        to conform to Apple documented behavior and return nil if it
+        cannot initialize with the given arguments.
+
 2021-10-03 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSComboBox.h: Add check to see if @optional

@@ -439,10 +439,11 @@
 {
   NSDebugLLog(@"NSImage", @"Creating bitmap image with pw %d ph %d bps %d spp %d alpha %d, planar %d cs %@",
               (int)width,(int) height, (int)bps, (int)spp, alpha, isPlanar, colorSpaceName);
-  if (!bps || !spp || !width || !height) 
+  if (!bps || !spp || !width || !height)
     {
-      [NSException raise: NSInvalidArgumentException
-        format: @"Required arguments not specified creating NSBitmapImageRep"];
+      // Per Apple documentation, return nil if can't initialize.
+      NSLog(@"Cannot initialize image with bps = %ld, spp = %ld, width = %ld, height = %ld", bps, spp, width, height);
+      return nil;
     }
 
   _pixelsWide = width;
