@@ -57,9 +57,9 @@ export GNUSTEP_MAKEFILES=$HOME/staging/share/GNUstep/Makefiles;
 make && make install
 
 # Build back, it's needed by some tests...
-cd ..
-git clone https://github.com/gnustep/libs-back.git
-cd libs-back
-./configure
-make && make install
+#cd ..
+#git clone https://github.com/gnustep/libs-back.git
+#cd libs-back
+#./configure
+#make && make install
 
