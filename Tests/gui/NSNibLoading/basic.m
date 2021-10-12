@@ -1,10 +1,7 @@
 #import "ObjectTesting.h"
-#import <Foundation/NSArray.h>
-#import <Foundation/NSAutoreleasePool.h>
-#import <Foundation/NSFileManager.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSNibLoading.h>
+
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 // For some nib/xibs the AppDelegate is defined...
 @interface AppDelegate : NSObject 
