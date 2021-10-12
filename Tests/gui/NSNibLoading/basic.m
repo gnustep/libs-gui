@@ -7,7 +7,7 @@
 #import <AppKit/NSNibLoading.h>
 
 // For some nib/xibs the AppDelegate is defined...
-@interface AppDelegate : NSObject
+@interface AppDelegate : NSObject 
 {
   IBOutlet NSWindow *window;
 }
@@ -37,14 +37,14 @@ int main()
     if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
        SKIP("It looks like GNUstep backend is not yet installed")
   }
-  NS_ENDHANDLER;
+  NS_ENDHANDLER
 
   if ([[path lastPathComponent] isEqualToString: @"obj"])
     {
       path = [path stringByDeletingLastPathComponent];
     }
   
-  pass(bundle != nil, "NSBundle was initialized");
+  PASS(bundle != nil, "NSBundle was initialized");
 
   NS_DURING
     {
@@ -52,25 +52,25 @@ int main()
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      pass(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
       
       success = [bundle loadNibNamed: @"Test-xib"
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      pass(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
       
       success = [bundle loadNibNamed: @"Test-nib"
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      pass(success == YES, ".nib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".nib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
     }
   NS_HANDLER
     {
       NSLog(@"%@", [localException reason]);
     }
-  NS_ENDHANDLER;
+  NS_ENDHANDLER
   
   END_SET("NSNibLoading GNUstep basic")
 
