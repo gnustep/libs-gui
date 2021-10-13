@@ -391,6 +391,22 @@ typedef enum {
   GSThemeSelectedState		/** A control which is selected */
 } GSThemeControlState;
 
+/**
+ * This enumeration is used when selecting the NSTabView.
+ */
+typedef enum {
+  GSTabSelectedLeft,
+  GSTabSelectedRight,
+  GSTabSelectedToUnSelectedJunction,
+  GSTabSelectedFill,
+  GSTabUnSelectedLeft,
+  GSTabUnSelectedRight,
+  GSTabUnSelectedToSelectedJunction,
+  GSTabUnSelectedJunction,
+  GSTabUnSelectedFill,
+  GSTabBackgroundFill
+} GSTabPart;
+
 /** Notification sent when a theme has just become active.<br />
  * The notification is posted by the -activate method.<br />
  * This is primarily for internal use by AppKit controls which

@@ -65,8 +65,8 @@
 - (void) moveDownSelection;
 
 // Delegate
-- (int) numberOfRowsInTableView: (NSTableView*)aTableView;
+- (NSInteger) numberOfRowsInTableView: (NSTableView*)aTableView;
 - (id) tableView: (NSTableView*)aTableView
       objectValueForTableColumn: (NSTableColumn*)aTableColumn
-	     row: (int)rowIndex;
+	     row: (NSInteger)rowIndex;
 @end

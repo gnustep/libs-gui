@@ -2075,19 +2075,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-typedef enum {
-  GSTabSelectedLeft,
-  GSTabSelectedRight,
-  GSTabSelectedToUnSelectedJunction,
-  GSTabSelectedFill,
-  GSTabUnSelectedLeft,
-  GSTabUnSelectedRight,
-  GSTabUnSelectedToSelectedJunction,
-  GSTabUnSelectedJunction,
-  GSTabUnSelectedFill,
-  GSTabBackgroundFill
-} GSTabPart;
-
 - (NSImage *)imageForTabPart: (GSTabPart)part type: (NSTabViewType)type
 {
   NSMutableString *imageName = [NSMutableString stringWithCapacity: 32];
