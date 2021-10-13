@@ -2783,8 +2783,10 @@ byExtendingSelection: (BOOL)flag
     {
       if ([indexes lastIndex] >= _numberOfColumns)
         {
-	  [NSException raise: NSInvalidArgumentException
-                      format: @"Column index out of table in selectColumn"];
+          // Cocoa returns in this case...
+          NSDebugLLog(@"NSTableView", @"Column index %lu out of table in selectColumn",
+                      [indexes lastIndex]);
+          return;
 	}
 
       /* This check is not fully correct, as both sets may contain just 

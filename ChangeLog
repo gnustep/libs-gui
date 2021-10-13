@@ -1,5 +1,10 @@
 2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* Source/NSTableView.m: Remove exception where lastIndex is greater
+        than number of columns.
+
+2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add tabview enum
 	* Source/GSAutocompleteWindow.h: Fix signature mismatch
 	* Source/GSThemeDrawing.m: Move tabview enum to header.
