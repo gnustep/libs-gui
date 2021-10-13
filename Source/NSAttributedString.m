@@ -60,6 +60,11 @@
 #import "GNUstepGUI/GSTextConverter.h"
 #import "GSGuiPrivate.h"
 
+/* Redefine unavailable function when using the MSVC ABI on Windows. */
+#ifdef _MSC_VER
+#  define strncasecmp _strnicmp
+#endif
+
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;
 static Class stringClass = nil;
