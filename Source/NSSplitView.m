@@ -1592,4 +1592,50 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   ASSIGN(_dividerColor, aColor);
 }
 
+// NSStackView processing for arranged subviews and seems to be based
+// on auto layout constraints...
+- (NSArray *) arrangedSubviews
+{
+  // needs to be an attribute that holds the arranged subviews...
+  return [self subviews];
+}
+
+- (BOOL) arrangesAllSubviews
+{
+  return _arrangesAllSubviews;
+}
+
+- (void) setArrangesAllSubviews: (BOOL) flag
+{
+  // processing...
+  _arrangesAllSubviews = flag;
+}
+
+- (void) addArrangedSubview:(NSView *)view
+{
+  [self addSubview: view];
+}
+
+- (void)insertArrangedSubview:(NSView *)view atIndex:(NSInteger)index
+{
+  // needs to be removed to the internal attribute that holds the arranged subviews...
+  if ((index < 0) || (index >= [[self arrangedSubviews] count]))
+    {
+      [self addArrangedSubview: view];
+    }
+  else
+    {
+      NSView *v = [[self subviews] objectAtIndex: index];
+      [self addSubview: view
+            positioned: NSWindowBelow
+            relativeTo: v];
+    }
+}
+
+- (void) removeArrangedSubview:(NSView *)view
+{
+  // needs to be removed to the internal attribute that holds the arranged subviews...
+  [view removeFromSuperview];
+}
+
 @end
