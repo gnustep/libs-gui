@@ -12,7 +12,6 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder, x = won't do )
 > NSDraggingSession.h -
 > NSFilePromiseProvider.h -
 > NSFilePromiseReceiver.h -
-> NSGlyphInfo.h -
 > NSItemProvider.h + 
 > NSMenuToolbarItem.h -
 > NSOpenGLLayer.h +
