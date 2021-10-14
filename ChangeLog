@@ -1,5 +1,11 @@
 2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* Headers/AppKit/NSTabView.h: Update NSTabView.h to have a formal
+        protocol for NSTabViewDelegate if the API we are using is 10.6 or
+        later.
+
+2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Source/NSTableView.m: Remove exception where lastIndex is greater
         than number of columns.
 
