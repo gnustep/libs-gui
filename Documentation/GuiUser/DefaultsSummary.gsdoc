@@ -287,6 +287,13 @@
           Default "#".
 	  </p>
 	  </desc>
+	  </desc>
+	  <term>GSDisableSpellCheckerServer</term>
+	  <desc>
+          <p>
+          A boolean that, if enabled, disable start of the Spekk Checker.
+          </p>
+	  </desc>
 	  <term>NSInterfaceStyleDefault</term>
 	  <desc>
           <p>
@@ -295,7 +302,6 @@
           responds to user interaction. See the NSInterfaceStyle
           documentation for more information.
           </p>
-	  </desc>
 	  <term>NSMenuInterfaceStyle</term>
 	  <desc>
           <p>
