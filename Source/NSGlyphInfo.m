@@ -22,6 +22,12 @@
    Boston, MA 02110 USA.
 */
 
+/*
+ * This class should use data from this project for it's character collection data...
+ * https://github.com/adobe-type-tools/cmap-resources
+ * NOTE: This class is a place holder until the above is better understood.
+ */
+
 #import <Foundation/NSString.h>
 
 #import "AppKit/NSGlyphInfo.h"
@@ -120,5 +126,9 @@
   return _glyphName;
 }
 
-@end
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"GID %4x", _glyphID];
+}
 
+@end
