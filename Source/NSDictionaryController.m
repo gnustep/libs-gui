@@ -26,5 +26,64 @@
 
 @implementation NSDictionaryController
 
+- (NSDictionaryControllerKeyValuePair *) newObject
+{
+  return nil;
+}
+
+- (NSString *) initialKey
+{
+  return nil;
+}
+
+- (void) setInitialKey: (NSString *)key
+{
+}
+
+- (id) initialValue
+{
+  return nil;
+}
+
+- (void) setInitialValue: (id)value
+{
+}
+
+- (NSArray *) includedKeys
+{
+  return nil;
+}
+
+- (void) setIncludedKeys: (NSArray *)includedKeys
+{
+}
+
+- (NSArray *) excludedKeys
+{
+  return nil;
+}
+
+- (void) setExcludedKeys: (NSArray *)excludedKeys
+{
+}
+
+- (NSDictionary *) localizedKeyDictionary
+{
+  return nil;
+}
+
+- (void) setLocalizedKeyDictionary: (NSDictionary *)dict
+{
+}
+
+- (NSString *) localizedKeyTable
+{
+  return nil;
+}
+
+- (void) setLocalizedKeyTable: (NSString *)keyTable
+{
+}
+
 @end
 

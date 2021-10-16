@@ -27,6 +27,37 @@
 
 #import <AppKit/NSArrayController.h>
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+@interface NSDictionaryControllerKeyValuePair : NSObject
+- (instancetype) init;
+
+/**
+ * Returns a copy of the key
+ */
+- (NSString *) key;
+- (void) setKey: (NSString *)key;
+
+/**
+ * Returns a strong reference to the value
+ */
+- (id) value;
+- (void) setValue: (id)value;
+
+/**
+ * Localized key copy
+ */
+- (NSString *) localizedKey;
+- (void) setLocalizedKey: (NSString *)localizedKey;
+
+/**
+ * Is this key value pair included in the underlying dictionary.
+ */
+- (BOOL) isExplicitlyIncluded; 
+- (void) setExplicitlyIncluded: (BOOL)flag;
+@end
+#endif
+
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 #if	defined(__cplusplus)
@@ -34,6 +65,44 @@ extern "C" {
 #endif
 
 @interface NSDictionaryController : NSArrayController
+
+/**
+ * Returns a new object conforming to the NSDictionaryControllerKeyValuePair
+ * informal protocol.  Overriden from superclass.
+ */
+- (NSDictionaryControllerKeyValuePair *) newObject;
+
+/**
+ * Returns a copy of the initialKey.
+ */
+- (NSString *) initialKey;
+- (void) setInitialKey: (NSString *)initialKey;
+
+/**
+ * Returns a strong reference to the initialValue.
+ */
+- (id) initialValue;
+- (void) setInitialValue: (id)value;
+
+/**
+ * Returns a copy of the included keys.  Included keys are always represented by a
+ * key value pair whether or not they are included in the underlying dictionary.
+ */
+- (NSArray *) includedKeys;
+- (void) setIncludedKeys: (NSArray *)includedKeys;
+  
+/**
+ * Returns a copy of the included keys.  Included keys are always represented by a
+ * key value pair whether or not they are included in the underlying dictionary.
+ */
+- (NSArray *) excludedKeys;
+- (void) setExcludedKeys: (NSArray *)excludedKeys;
+
+- (NSDictionary *) localizedKeyDictionary;
+- (void) setLocalizedKeyDictionary: (NSDictionary *)dict;
+  
+- (NSString *) localizedKeyTable;
+- (void) setLocalizedKeyTable: (NSString *)keyTable;
 
 @end
 
