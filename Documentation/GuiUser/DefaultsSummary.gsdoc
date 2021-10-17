@@ -291,7 +291,7 @@
 	  <term>GSDisableSpellCheckerServer</term>
 	  <desc>
           <p>
-          A boolean that, if enabled, disable start of the Spekk Checker.
+          A boolean that, if enabled, disables the start of the Spell Checker.
           </p>
 	  </desc>
 	  <term>NSInterfaceStyleDefault</term>
@@ -302,6 +302,7 @@
           responds to user interaction. See the NSInterfaceStyle
           documentation for more information.
           </p>
+	  </desc>
 	  <term>NSMenuInterfaceStyle</term>
 	  <desc>
           <p>
