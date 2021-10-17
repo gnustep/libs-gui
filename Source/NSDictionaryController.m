@@ -22,68 +22,170 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSKeyValueObserving.h>
+
 #import "AppKit/NSDictionaryController.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 
 @implementation NSDictionaryController
 
++ (void) initialize
+{
+  if (self == [NSDictionaryController class])
+    {
+      [self exposeBinding: NSContentDictionaryBinding];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
+            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+    }
+}
+
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
-  return nil;
+  NSDictionaryControllerKeyValuePair *o = [[NSDictionaryControllerKeyValuePair alloc] init];
+  NSString *k = [NSString stringWithFormat: @"%@-%lu", _initialKey, _count];
+  NSString *v = [NSString stringWithFormat: @"%@-%lu", _initialValue, _count];
+
+  [o setKey: k];
+  [o setValue: v];
+
+  _count++;
+  AUTORELEASE(o);
+
+  return o;
 }
 
 - (NSString *) initialKey
 {
-  return nil;
+  return [_initialKey copy];
 }
 
 - (void) setInitialKey: (NSString *)key
 {
+  ASSIGN(_initialKey, key);
 }
 
 - (id) initialValue
 {
-  return nil;
+  return [_initialValue copy];
 }
 
 - (void) setInitialValue: (id)value
 {
+  ASSIGN(_initialValue, value);
 }
 
 - (NSArray *) includedKeys
 {
-  return nil;
+  return [_includedKeys copy];
 }
 
 - (void) setIncludedKeys: (NSArray *)includedKeys
 {
+  ASSIGN(_includedKeys, includedKeys);
 }
 
 - (NSArray *) excludedKeys
 {
-  return nil;
+  return [_excludedKeys copy];
 }
 
 - (void) setExcludedKeys: (NSArray *)excludedKeys
 {
+  ASSIGN(_excludedKeys, excludedKeys);
 }
 
 - (NSDictionary *) localizedKeyDictionary
 {
-  return nil;
+  return [_localizedKeyDictionary copy];
 }
 
 - (void) setLocalizedKeyDictionary: (NSDictionary *)dict
 {
+  ASSIGN(_localizedKeyDictionary, dict);
 }
 
 - (NSString *) localizedKeyTable
 {
-  return nil;
+  return [_localizedKeyTable copy];
 }
 
 - (void) setLocalizedKeyTable: (NSString *)keyTable
 {
+  ASSIGN(_localizedKeyTable, keyTable);
 }
 
 @end
 
+@implementation NSDictionaryControllerKeyValuePair
+
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _key = nil;
+      _value = nil;
+      _localizedKey = nil;
+      _explicitlyIncluded = NO;
+    }
+  return self;
+}
+
+/**
+ * Returns a copy of the key
+ */
+- (NSString *) key
+{
+  return [_key copy];
+}
+
+- (void) setKey: (NSString *)key
+{
+  ASSIGN(_key, key);
+}
+
+/**
+ * Returns a strong reference to the value
+ */
+- (id) value
+{
+  return [_value copy];
+}
+
+- (void) setValue: (id)value
+{
+  ASSIGN(_value, value);
+}
+
+/**
+ * Localized key copy
+ */
+- (NSString *) localizedKey
+{
+  return [_localizedKey copy];
+}
+
+- (void) setLocalizedKey: (NSString *)localizedKey
+{
+  ASSIGN(_localizedKey, localizedKey);
+}
+
+/**
+ * Is this key value pair included in the underlying dictionary.
+ */
+- (BOOL) isExplicitlyIncluded
+{
+  return _explicitlyIncluded;
+}
+
+- (void) setExplicitlyIncluded: (BOOL)flag
+{
+  _explicitlyIncluded = flag;
+}
+
+@end

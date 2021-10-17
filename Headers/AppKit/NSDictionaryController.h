@@ -28,7 +28,15 @@
 #import <AppKit/NSArrayController.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+
 @interface NSDictionaryControllerKeyValuePair : NSObject
+{
+  NSString *_key;
+  id _value;
+  NSString *_localizedKey;
+  BOOL _explicitlyIncluded;
+}
+
 - (instancetype) init;
 
 /**
@@ -55,6 +63,7 @@
 - (BOOL) isExplicitlyIncluded; 
 - (void) setExplicitlyIncluded: (BOOL)flag;
 @end
+
 #endif
 
 
@@ -65,6 +74,15 @@ extern "C" {
 #endif
 
 @interface NSDictionaryController : NSArrayController
+{
+  NSString *_initialKey;
+  id _initialValue;
+  NSArray *_includedKeys;
+  NSArray *_excludedKeys;
+  NSDictionary *_localizedKeyDictionary;
+  NSString *_localizedKeyTable;
+  NSUInteger _count;
+}
 
 /**
  * Returns a new object conforming to the NSDictionaryControllerKeyValuePair
