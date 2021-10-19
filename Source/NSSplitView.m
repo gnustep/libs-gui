@@ -1435,9 +1435,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
   else
     {
-      // FIXME: No idea why this as encode as int
-      int draggedBarWidth = _draggedBarWidth;
-
       /*
        *        Encode objects we don't own.
        */
@@ -1453,13 +1450,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       /*
        *        Encode the rest of the ivar data.
        */
-      [aCoder encodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
+      encode_NSInteger(aCoder, &_draggedBarWidth);
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       /*
        *        Encode Divider style
        */
-      [aCoder encodeValueOfObjCType: @encode(int) at: &_dividerStyle];
+      encode_NSInteger(aCoder, _dividerStyle);
     }
 }
 
@@ -1503,9 +1500,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     {
       int version = [aDecoder versionForClassName: @"NSSplitView"];
 
-      // FIXME: No idea why this as encode as int
-      int draggedBarWidth;
-
       // Decode objects that we don't retain.
       [self setDelegate: [aDecoder decodeObject]];
 
@@ -1518,13 +1512,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
       // Decode non-object data.
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
-      _draggedBarWidth = draggedBarWidth;
+      decode_NSInteger(aDecoder, &_draggedBarWidth);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       if (version >= 1)
         {
-          [aDecoder decodeValueOfObjCType: @encode(int) at: &_dividerStyle];
+	  decode_NSInteger(aDecoder, &_dividerStyle);
         }
 
       _dividerWidth = [self dividerThickness];
