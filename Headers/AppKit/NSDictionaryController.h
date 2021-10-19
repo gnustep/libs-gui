@@ -82,6 +82,8 @@ extern "C" {
   NSDictionary *_localizedKeyDictionary;
   NSString *_localizedKeyTable;
   NSUInteger _count;
+
+  NSDictionary *_contentDictionary;
 }
 
 /**
@@ -116,6 +118,9 @@ extern "C" {
 - (NSArray *) excludedKeys;
 - (void) setExcludedKeys: (NSArray *)excludedKeys;
 
+/**
+ * Returns a copy of the localized key dictionary.
+ */
 - (NSDictionary *) localizedKeyDictionary;
 - (void) setLocalizedKeyDictionary: (NSDictionary *)dict;
   

@@ -585,6 +585,19 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
     }
   else
     {
+      BOOL f;
+      f = _acflags.avoids_empty_selection;
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      f = _acflags.selects_inserted_objects;
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      f = _acflags.clears_filter_predicate_on_insertion;
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      f = _acflags.automatically_rearranges_objects;
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
     }
 }
 
@@ -625,6 +638,19 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
     }
   else
     {
+      BOOL f;
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      _acflags.avoids_empty_selection = f;
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      _acflags.selects_inserted_objects = f;
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      _acflags.clears_filter_predicate_on_insertion = f;
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      _acflags.automatically_rearranges_objects = f;
     }
 
   return self; 

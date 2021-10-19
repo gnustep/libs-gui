@@ -26,11 +26,109 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSIndexSet.h>
 
 #import "AppKit/NSDictionaryController.h"
 #import "AppKit/NSKeyValueBinding.h"
+
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
+
+@implementation GSObservableDictionary
+
+- (instancetype) initWithDictionary: (NSDictionary *)dictionary
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_dictionary, dictionary);
+    }
+  return self;
+}
+
+- (id) initWithObjects: (const id[])objects
+	       forKeys: (const id <NSCopying>[])keys
+		 count: (NSUInteger)count
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _dictionary = [[NSDictionary alloc] initWithObjects: objects
+                                                  forKeys: keys
+                                                    count: count];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_dictionary);
+  [super dealloc];
+}
+
+- (NSUInteger) count
+{
+  return [_dictionary count];
+}
+
+- (id) objectForKey: (id)key
+{
+  return [_dictionary objectForKey: key];
+}
+
+- (NSEnumerator *) keyEnumerator
+{
+  return [_dictionary keyEnumerator];
+}
+
+- (void) setValue: (id)value forKey: (NSString *)key
+{
+  [_dictionary setValue: value forKey: key];
+}
+
+/*
+- (id) valueForKey: (NSString *)key
+{
+  id result = [_dictionary valueForKey: key];
+
+  if ([result isKindOfClass: [NSDictionary class]])
+    {
+      // FIXME: Using the correct memory management here
+      // Leads to an issue inside of KVO. For now we leak the
+      // object until this gets fixed.
+      //return AUTORELEASE([[GSObservableDictionary alloc]
+      return ([[GSObservableDictionary alloc]
+                                initWithDictionary: result]);
+    }
+
+  return result;
+}
+*/
+
+- (void) addObserver: (NSObject*)anObserver
+	  forKeyPath: (NSString*)aPath
+	     options: (NSKeyValueObservingOptions)options
+	     context: (void*)aContext
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self addObserver: anObserver
+ toObjectsAtIndexes: indexes
+         forKeyPath: aPath
+            options: options
+            context: aContext];
+}
+
+- (void) removeObserver: (NSObject*)anObserver forKeyPath: (NSString*)aPath
+{
+  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
+
+  [self removeObserver: anObserver
+  fromObjectsAtIndexes: indexes
+            forKeyPath: aPath];
+}
+
+@end
 
 @implementation NSDictionaryController
 
@@ -39,6 +137,7 @@
   if (self == [NSDictionaryController class])
     {
       [self exposeBinding: NSContentDictionaryBinding];
+      [self exposeBinding: NSIncludedKeysBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
@@ -119,6 +218,16 @@
   ASSIGN(_localizedKeyTable, keyTable);
 }
 
+- (NSDictionary *) contentDictionary
+{
+  return _contentDictionary;
+}
+
+- (void) setContentDictionary: (NSDictionary *)dict
+{
+  ASSIGN(_contentDictionary, dict);
+}
+
 @end
 
 @implementation NSDictionaryControllerKeyValuePair
@@ -162,9 +271,6 @@
   ASSIGN(_value, value);
 }
 
-/**
- * Localized key copy
- */
 - (NSString *) localizedKey
 {
   return [_localizedKey copy];
@@ -175,9 +281,6 @@
   ASSIGN(_localizedKey, localizedKey);
 }
 
-/**
- * Is this key value pair included in the underlying dictionary.
- */
 - (BOOL) isExplicitlyIncluded
 {
   return _explicitlyIncluded;
@@ -186,6 +289,46 @@
 - (void) setExplicitlyIncluded: (BOOL)flag
 {
   _explicitlyIncluded = flag;
+}
+
+- (void) bind: (NSString *)binding 
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSContentDictionaryBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
+                                              withName: binding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding 
+         toObject: anObject 
+      withKeyPath: keyPath 
+          options: options];
+    }
+}
+
+- (Class) valueClassForBinding: (NSString *)binding
+{
+  if ([binding isEqual: NSContentDictionaryBinding])
+    {
+      return [NSDictionary class];
+    }
+  else
+    {
+      return [super valueClassForBinding: binding];
+    }
 }
 
 @end
