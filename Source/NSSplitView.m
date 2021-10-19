@@ -90,25 +90,24 @@ static NSNotificationCenter *nc = nil;
 {
   const SEL selector = @selector(splitView:effectiveRect:forDrawnRect:ofDividerAtIndex:);
   NSRect rect = [[[self subviews] objectAtIndex: index] frame];
-  {
-    if (_isVertical == NO)
-      {
-        rect.origin.y = NSMaxY (rect);
-        rect.size.height = _dividerWidth;
-      }
-    else
-      {
-        rect.origin.x = NSMaxX (rect);
-        rect.size.width = _dividerWidth;
-      }
-    rect = NSIntersectionRect(rect, [self visibleRect]);
-
-    // Check with delegate for hit rect...
-    if (_delegate && [_delegate respondsToSelector: selector])
-      {
-        rect = [_delegate splitView: self effectiveRect: rect forDrawnRect: rect ofDividerAtIndex: index];
-      }
-  }
+  
+  if (_isVertical == NO)
+    {
+      rect.origin.y = NSMaxY (rect);
+      rect.size.height = _dividerWidth;
+    }
+  else
+    {
+      rect.origin.x = NSMaxX (rect);
+      rect.size.width = _dividerWidth;
+    }
+  rect = NSIntersectionRect(rect, [self visibleRect]);
+  
+  // Check with delegate for hit rect...
+  if (_delegate && [_delegate respondsToSelector: selector])
+    {
+      rect = [_delegate splitView: self effectiveRect: rect forDrawnRect: rect ofDividerAtIndex: index];
+    }
   return rect;
 }
 
@@ -491,12 +490,12 @@ static NSNotificationCenter *nc = nil;
           // Otherwise, check whether the delegate wants a larger rectangle
           // for the divider grab area that may overlap the view and validate
           // the point within that area...
-          r = [self _dividerRectForIndex: i-1];
+          r = [self _dividerRectForIndex: i - 1];
           if (NSPointInRect(p, r) == NO)
             return;
           
           // Capture the offset for use during the resize loop below...
-          poffset = NSMakePoint(r.origin.x-p.x, r.origin.y-p.y);
+          poffset = NSMakePoint(r.origin.x - p.x, r.origin.y - p.y);
           
           // Force the view processing below to select this view...
           p = r.origin;         
@@ -1086,16 +1085,15 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   [path setLineWidth: lineWidth];
   [path moveToPoint: startPoint];
   [path lineToPoint: endPoint];
-  [path closePath];
   [path stroke];
 }
 
 - (void) drawDividerInRect: (NSRect)aRect
 {
-  if (_dividerStyle == NSSplitViewDividerStyleThick)
-    [self drawThickDividerInRect: aRect];
-  else if (_dividerStyle == NSSplitViewDividerStyleThin)
+  if (_dividerStyle == NSSplitViewDividerStyleThin)
     [self drawThinDividerInRect: aRect];
+  else if (_dividerStyle == NSSplitViewDividerStyleThick)
+    [self drawThickDividerInRect: aRect];
   else if (_dividerStyle == NSSplitViewDividerStylePaneSplitter)
     [self drawThickDividerInRect: aRect];
 }
@@ -1419,6 +1417,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle
 {
   _dividerStyle = dividerStyle;
+  [self setNeedsDisplay: YES];
 }
 
 /*
@@ -1523,7 +1522,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       _draggedBarWidth = draggedBarWidth;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
-      if (version == 1)
+      if (version >= 1)
         {
           [aDecoder decodeValueOfObjCType: @encode(int) at: &_dividerStyle];
         }
@@ -1611,12 +1610,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   _arrangesAllSubviews = flag;
 }
 
-- (void) addArrangedSubview:(NSView *)view
+- (void) addArrangedSubview: (NSView *)view
 {
   [self addSubview: view];
 }
 
-- (void)insertArrangedSubview:(NSView *)view atIndex:(NSInteger)index
+- (void)insertArrangedSubview: (NSView *)view atIndex: (NSInteger)index
 {
   // needs to be removed to the internal attribute that holds the arranged subviews...
   if ((index < 0) || (index >= [[self arrangedSubviews] count]))
@@ -1632,7 +1631,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
 }
 
-- (void) removeArrangedSubview:(NSView *)view
+- (void) removeArrangedSubview: (NSView *)view
 {
   // needs to be removed to the internal attribute that holds the arranged subviews...
   [view removeFromSuperview];
