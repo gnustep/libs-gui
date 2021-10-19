@@ -1450,13 +1450,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       /*
        *        Encode the rest of the ivar data.
        */
-      encode_NSInteger(aCoder, &_draggedBarWidth);
+      [aCoder encodeValueOfObjCType: @encode(CGFloat) at: &_draggedBarWidth];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       /*
        *        Encode Divider style
        */
-      encode_NSInteger(aCoder, _dividerStyle);
+      encode_NSInteger(aCoder, &_dividerStyle);
     }
 }
 
@@ -1512,7 +1512,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
       // Decode non-object data.
-      decode_NSInteger(aDecoder, &_draggedBarWidth);
+      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_draggedBarWidth];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       if (version >= 1)
