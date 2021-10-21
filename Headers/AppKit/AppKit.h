@@ -171,6 +171,7 @@
 #import <AppKit/NSFontDescriptor.h>
 #import <AppKit/NSGestureRecognizer.h>
 #import <AppKit/NSGlyphGenerator.h>
+#import <AppKit/NSGlyphInfo.h>
 #import <AppKit/NSGradient.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSGridView.h>
