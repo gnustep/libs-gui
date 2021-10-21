@@ -1,3 +1,9 @@
+2021-10-21 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSGlyphInfo.[hm]: Class which provides info about
+	each glyph depending on mappings.  Currently only identity mapping
+	is supported.
+
 2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSToolbar.h: Update to use formal protocol if
