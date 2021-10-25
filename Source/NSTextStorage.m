@@ -141,7 +141,7 @@ static NSNotificationCenter *nc = nil;
  *	The range argument to edited:... is the range in the original string
  *	(before the edit).
  */
-- (void) edited: (unsigned)mask range: (NSRange)old changeInLength: (int)delta
+- (void) edited: (NSTextStorageEditedOptions)mask range: (NSRange)old changeInLength: (NSInteger)delta
 {
 
   NSDebugLLog(@"NSText", @"edited:range:changeInLength: called");
@@ -191,9 +191,9 @@ static NSNotificationCenter *nc = nil;
 - (void) processEditing
 {
   NSRange	r;
-  int original_delta;
+  NSInteger original_delta;
   unsigned int i;
-  unsigned length;
+  NSUInteger length;
 
   NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
 
@@ -258,8 +258,8 @@ static NSNotificationCenter *nc = nil;
    * correct values
    */
   NSRange editedRange = _editedRange;
-  int editedDelta = _editedDelta;
-  unsigned editedMask = _editedMask;
+  NSInteger editedDelta = _editedDelta;
+  NSTextStorageEditedOptions editedMask = _editedMask;
 
   /*
    * edited values reset to be used again in the next pass.
@@ -289,7 +289,7 @@ static NSNotificationCenter *nc = nil;
  *	during processEditing... editedRange.location will be NSNotFound if
  *	nothing has been edited.
  */       
-- (unsigned) editedMask
+- (NSTextStorageEditedOptions) editedMask
 {
   return _editedMask;
 }
@@ -299,7 +299,7 @@ static NSNotificationCenter *nc = nil;
   return _editedRange;
 }
 
-- (int) changeInLength
+- (NSInteger) changeInLength
 {
   return _editedDelta;
 }
