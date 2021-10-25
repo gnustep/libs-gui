@@ -254,6 +254,21 @@ static NSNotificationCenter *nc = nil;
     }
 
   /*
+   * we make a local copy to ensure recursing in layoutManagers has
+   * correct values
+   */
+  NSRange editedRange = _editedRange;
+  int editedDelta = _editedDelta;
+  unsigned editedMask = _editedMask;
+
+  /*
+   * edited values reset to be used again in the next pass.
+   */
+  _editedRange = NSMakeRange (0, 0);
+  _editedDelta = 0;
+  _editedMask = 0;
+
+  /*
    * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
    * every layoutManager.
    */
@@ -262,17 +277,10 @@ static NSNotificationCenter *nc = nil;
     {
       GSLayoutManager *lManager = [_layoutManagers objectAtIndex: i];
 
-      [lManager textStorage: self  edited: _editedMask  range: r
-		changeInLength: _editedDelta  invalidatedRange: _editedRange];
+      [lManager textStorage: self  edited: editedMask  range: r
+		changeInLength: editedDelta  invalidatedRange: editedRange];
     }
 
-  /*
-   * edited values reset to be used again in the next pass.
-   */
-
-  _editedRange = NSMakeRange (0, 0);
-  _editedDelta = 0;
-  _editedMask = 0;
 }
 
 /*

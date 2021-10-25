@@ -1,3 +1,8 @@
+2021-10-25 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSTextStorage.m:
+	Keep local variables to ensure correct values during recursion.
+
 2021-10-21 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSGlyphInfo.[hm]: Class which provides info about
