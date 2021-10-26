@@ -24,6 +24,7 @@
 
 #ifndef _NSDataAsset_h_GNUSTEP_GUI_INCLUDE
 #define _NSDataAsset_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -37,6 +38,7 @@ extern "C" {
   
 typedef NSString* NSDataAssetName;
   
+APPKIT_EXPORT_CLASS
 @interface NSDataAsset : NSObject <NSCopying>
 {
   NSDataAssetName _name;

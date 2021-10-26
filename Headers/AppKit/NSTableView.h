@@ -91,6 +91,7 @@ typedef enum _NSTableViewAnimationOptions
 #endif
 
 
+APPKIT_EXPORT_CLASS
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
 {
   /*

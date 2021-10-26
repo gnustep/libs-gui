@@ -73,6 +73,7 @@ typedef NSString* NSPasteboardTypeTextFinderOptionKey;
 APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensitiveKey;
 APPKIT_EXPORT NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey;
 
+APPKIT_EXPORT_CLASS
 @interface NSTextFinder : NSObject <NSCoding>
 {
   IBOutlet id<NSTextFinderClient> _client;

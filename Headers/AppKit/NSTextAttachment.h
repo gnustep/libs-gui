@@ -43,8 +43,7 @@ the NSTextAttachment protocol.
 
 #ifndef _GNUstep_H_NSTextAttachment
 #define _GNUstep_H_NSTextAttachment
-
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
@@ -144,12 +143,14 @@ The class uses -cellSize and -cellBaselineOffset to return a rect.
    By default this class causes NSTextView to send out delegate 
    messages when the attachment is clicked on or dragged.
  */
+APPKIT_EXPORT_CLASS
 @interface NSTextAttachmentCell : NSCell <NSTextAttachmentCell> {
     NSTextAttachment *_attachment;
 }
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface NSTextAttachment : NSObject <NSCoding> {
     NSFileWrapper *_fileWrapper;
     id <NSTextAttachmentCell>_cell;

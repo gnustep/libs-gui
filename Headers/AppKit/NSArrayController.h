@@ -38,6 +38,7 @@
 @class NSIndexSet;
 @class NSPredicate;
 
+APPKIT_EXPORT_CLASS
 @interface NSArrayController : NSObjectController
 {
   NSArray *_arranged_objects;

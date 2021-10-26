@@ -24,6 +24,7 @@
 
 #ifndef _NSTouchBar_h_GNUSTEP_GUI_INCLUDE
 #define _NSTouchBar_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -33,6 +34,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSTouchBar : NSObject
 
 @end

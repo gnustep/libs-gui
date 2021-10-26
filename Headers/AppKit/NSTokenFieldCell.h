@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSTokenFieldCell
 #define _GNUstep_H_NSTokenFieldCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSDate.h>
 #import <AppKit/NSTextFieldCell.h>
@@ -44,6 +44,7 @@ typedef enum _NSTokenStyle
 } NSTokenStyle;
 
 
+APPKIT_EXPORT_CLASS
 @interface NSTokenFieldCell : NSTextFieldCell <NSCoding>
 {
   NSTokenStyle tokenStyle;

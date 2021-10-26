@@ -162,6 +162,7 @@
 - (NSDictionary *) customClassNames;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBUserDefinedRuntimeAttributesPlaceholder : NSObject <NSCoding>
 {
   NSArray  *runtimeAttributes;
@@ -176,6 +177,7 @@
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBUserDefinedRuntimeAttribute : NSObject <NSCoding>
 {
   NSString *typeIdentifier;

@@ -37,6 +37,7 @@ extern "C" {
 
 @class NSSplitView, NSSplitViewItem, NSArray, NSMutableArray;
   
+APPKIT_EXPORT_CLASS
 @interface NSSplitViewController : NSViewController
 {
   CGFloat _minimumThicknessForInlineSidebars;

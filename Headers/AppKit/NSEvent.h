@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSEvent
 #define _GNUstep_H_NSEvent
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -256,6 +256,7 @@ typedef NSUInteger NSEventSwipeTrackingOptions;
 
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSEvent : NSObject <NSCoding, NSCopying>
 {
   NSEventType	event_type;

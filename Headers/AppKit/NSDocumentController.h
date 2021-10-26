@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSDocumentController
 #define _GNUstep_H_NSDocumentController
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST) 
 
@@ -49,6 +49,7 @@
 @class NSOpenPanel;
 @class NSWindow;
 
+APPKIT_EXPORT_CLASS
 @interface NSDocumentController : NSObject <NSCoding>
 {
   @private

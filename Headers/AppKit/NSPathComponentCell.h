@@ -35,6 +35,7 @@ extern "C" {
 
 @class NSImage, NSURL;
   
+APPKIT_EXPORT_CLASS
 @interface NSPathComponentCell : NSTextFieldCell
 {
   NSImage *_image;

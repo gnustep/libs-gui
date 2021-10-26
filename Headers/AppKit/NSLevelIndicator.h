@@ -36,6 +36,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
+APPKIT_EXPORT_CLASS
 @interface NSLevelIndicator : NSControl
 {
 }

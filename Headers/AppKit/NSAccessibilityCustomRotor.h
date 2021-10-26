@@ -24,6 +24,7 @@
 
 #ifndef _NSAccessibilityCustomRotor_h_GNUSTEP_GUI_INCLUDE
 #define _NSAccessibilityCustomRotor_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSRange.h>
@@ -80,6 +81,7 @@ enum
 typedef NSInteger NSAccessibilityCustomRotorType;
 
 // Rotor...
+APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomRotor : NSObject
   
 - (instancetype) initWithLabel: (NSString *)label
@@ -103,6 +105,7 @@ typedef NSInteger NSAccessibilityCustomRotorType;
 @end
 
 // Results...
+APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomRotorItemResult : NSObject
 
 - (instancetype)initWithTargetElement:(id<NSAccessibilityElement>)targetElement;

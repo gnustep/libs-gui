@@ -37,7 +37,7 @@
 
 #ifndef _GNUstep_H_NSApplication
 #define _GNUstep_H_NSApplication
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceValidation.h>
@@ -200,6 +200,7 @@ typedef enum _NSApplicationPresentationOptions
 APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
 APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
+APPKIT_EXPORT_CLASS
 @interface NSApplication : NSResponder <NSCoding,NSUserInterfaceValidations>
 {
   NSGraphicsContext	*_default_context;

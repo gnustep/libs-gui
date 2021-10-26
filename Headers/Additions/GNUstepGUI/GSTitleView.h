@@ -33,6 +33,7 @@
 @class NSButton;
 @class NSImage;
 
+APPKIT_EXPORT_CLASS
 @interface GSTitleView : NSView
 {
   NSButton            *closeButton;

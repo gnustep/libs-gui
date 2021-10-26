@@ -29,7 +29,7 @@
 
 #ifndef __GNUstep_H_NSHelpManager
 #define __GNUstep_H_NSHelpManager
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSGeometry.h>

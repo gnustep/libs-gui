@@ -128,6 +128,7 @@ enum {
   NSBacktabKey        = 25
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSText : NSView <NSChangeSpelling, NSIgnoreMisspelledWords>
 {
 }

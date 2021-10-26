@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSDataLinkPanel
 #define _GNUstep_H_NSDataLinkPanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSPanel.h>
@@ -42,6 +42,7 @@
 - (void) orderFrontDataLinkPanel: (id)sender;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSDataLinkPanel : NSPanel
 {
   // Outlets

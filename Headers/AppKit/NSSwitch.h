@@ -35,6 +35,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSSwitch : NSControl <NSAccessibilitySwitch>
 {
   NSControlStateValue _state;

@@ -24,6 +24,7 @@
 
 #ifndef _NSLayoutAnchor_h_GNUSTEP_GUI_INCLUDE
 #define _NSLayoutAnchor_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -35,6 +36,7 @@ extern "C" {
 
 @class NSLayoutConstraint, NSString, NSArray;
   
+APPKIT_EXPORT_CLASS
 @interface NSLayoutAnchor : NSObject <NSCoding, NSCopying>
 {
   NSString *_name;
@@ -61,6 +63,7 @@ extern "C" {
   
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSLayoutDimension : NSLayoutAnchor
 {
 }
@@ -79,12 +82,14 @@ extern "C" {
   
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSLayoutXAxisAnchor : NSLayoutAnchor
 
 - (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutXAxisAnchor *)anchor;
   
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSLayoutYAxisAnchor : NSLayoutAnchor
 
 - (NSLayoutDimension *) anchorWithOffsetToAnchor: (NSLayoutYAxisAnchor *)anchor;

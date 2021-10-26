@@ -28,7 +28,7 @@
 */
 
 #import <AppKit/NSView.h>
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -59,6 +59,7 @@ enum {
   NSVisualEffectStateInactive,
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSVisualEffectView : NSView {
 }
 

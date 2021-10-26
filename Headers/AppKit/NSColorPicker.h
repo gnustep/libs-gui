@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSColorPicker
 #define _GNUstep_H_NSColorPicker
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSColorPicking.h>
@@ -39,6 +39,7 @@
 @class NSImage;
 @class NSButtonCell;
 
+APPKIT_EXPORT_CLASS
 @interface NSColorPicker : NSObject <NSColorPickingDefault>
 {
   // Attributes

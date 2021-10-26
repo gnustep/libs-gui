@@ -29,13 +29,14 @@
 
 #ifndef _GNUstep_H_NSCachedImageRep
 #define _GNUstep_H_NSCachedImageRep
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSImageRep.h>
 #import <AppKit/NSGraphics.h>
 
 @class NSWindow;
 
+APPKIT_EXPORT_CLASS
 @interface NSCachedImageRep : NSImageRep
 {
   // Attributes

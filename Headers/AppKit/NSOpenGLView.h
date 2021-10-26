@@ -25,13 +25,14 @@
 
 #ifndef _NSOpenGLView_h
 #define _NSOpenGLView_h
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
 @class NSOpenGLContext;
 @class NSOpenGLPixelFormat;
 
+APPKIT_EXPORT_CLASS
 @interface NSOpenGLView : NSView
 {
   NSOpenGLContext 	*glcontext;

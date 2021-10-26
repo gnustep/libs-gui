@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSPasteboard
 #define _GNUstep_H_NSPasteboard
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
@@ -196,6 +196,7 @@ APPKIT_EXPORT NSString *const NSPasteboardTypeTextFinderOptions;
 #endif
 
 
+APPKIT_EXPORT_CLASS
 @interface NSPasteboard : NSObject
 {
   NSString	*name;		// The name of this pasteboard.

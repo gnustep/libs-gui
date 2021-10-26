@@ -29,6 +29,7 @@
 
 #ifndef _GNUstep_H_NSFileWrapper_Extensions
 #define _GNUstep_H_NSFileWrapper_Extensions
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSFileWrapper.h>
 

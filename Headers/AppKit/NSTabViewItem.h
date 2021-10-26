@@ -43,6 +43,7 @@ typedef enum {
 @class NSView;
 @class NSViewController;
 
+APPKIT_EXPORT_CLASS
 @interface NSTabViewItem : NSObject <NSCoding>
 {
   id _ident;

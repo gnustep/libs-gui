@@ -24,6 +24,7 @@
 
 #ifndef _NSPDFImageRep_h_GNUSTEP_GUI_INCLUDE
 #define _NSPDFImageRep_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSImageRep.h>
 
@@ -33,6 +34,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSPDFImageRep : NSImageRep
 {
   NSArray *_pageReps;

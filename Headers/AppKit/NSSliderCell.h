@@ -49,6 +49,7 @@ typedef enum _NSSliderType
     NSCircularSlider
 } NSSliderType;
 
+APPKIT_EXPORT_CLASS
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
   double	_value;

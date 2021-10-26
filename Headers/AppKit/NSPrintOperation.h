@@ -36,7 +36,7 @@
 
 #ifndef _GNUstep_H_NSPrintOperation
 #define _GNUstep_H_NSPrintOperation
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -58,6 +58,7 @@ typedef enum _NSPrintingPageOrder {
   NSUnknownPageOrder
 } NSPrintingPageOrder;
 
+APPKIT_EXPORT_CLASS
 @interface NSPrintOperation : NSObject
 {
   // Attributes

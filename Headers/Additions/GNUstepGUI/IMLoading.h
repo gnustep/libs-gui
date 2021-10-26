@@ -41,6 +41,7 @@
 - (void)awakeFromModel;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GMModel : NSObject
 {
   NSArray* objects;

@@ -56,6 +56,7 @@
  * GSAnimator is the front of a class cluster. Instances of a subclass of 
  * GSAnimator manage the timing of an animation.
  */
+APPKIT_EXPORT_CLASS
 @interface GSAnimator : NSObject
 {
   id<GSAnimation> _animation; // The Object to be animated

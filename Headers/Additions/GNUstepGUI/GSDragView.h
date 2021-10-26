@@ -54,6 +54,7 @@
 
 #define NSDragOperationIgnoresModifiers  0xffff
 
+APPKIT_EXPORT_CLASS
 @interface GSDragView : NSView <NSDraggingInfo>
 {
   // the graphics that is dragged

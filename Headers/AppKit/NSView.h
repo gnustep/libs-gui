@@ -32,7 +32,7 @@
 
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
@@ -122,6 +122,7 @@ typedef enum _NSFocusRingType {
   NSFocusRingTypeExterior = 2
 } NSFocusRingType;
 
+APPKIT_EXPORT_CLASS
 @interface NSView : NSResponder
 {
   NSRect _frame;

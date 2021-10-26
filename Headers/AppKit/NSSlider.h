@@ -38,6 +38,7 @@
 @class NSColor;
 @class NSEvent;
 
+APPKIT_EXPORT_CLASS
 @interface NSSlider : NSControl
 // appearance 
 - (double) altIncrementValue;

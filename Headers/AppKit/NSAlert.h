@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSAlert
 #define _GNUstep_H_NSAlert
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -55,6 +55,7 @@ enum {
   NSAlertThirdButtonReturn = 1002
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSAlert : NSObject 
 {
   @private

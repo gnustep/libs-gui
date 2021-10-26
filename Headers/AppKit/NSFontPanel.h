@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSFontPanel
 #define _GNUstep_H_NSFontPanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSFontManager.h>
@@ -56,6 +56,7 @@ enum {
   NSFPSizeBrowser
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSFontPanel : NSPanel <NSTextFieldDelegate>
 {
   // Attributes

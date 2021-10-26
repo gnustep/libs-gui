@@ -33,10 +33,12 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSScrubberArrangedView : NSView
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSScrubberItemView : NSScrubberArrangedView
 
 @end

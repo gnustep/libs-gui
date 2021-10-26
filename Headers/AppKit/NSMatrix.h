@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSMatrix
 #define _GNUstep_H_NSMatrix
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 
@@ -52,6 +52,7 @@ typedef enum _NSMatrixMode {
 @protocol NSMatrixDelegate <NSControlTextEditingDelegate>
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSMatrix : NSControl <NSCoding>
 {
   __strong id		**_cells;

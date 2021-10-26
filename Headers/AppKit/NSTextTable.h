@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSTextTable
 #define _GNUstep_H_NSTextTable
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 #import <Foundation/NSObject.h>
@@ -70,6 +70,7 @@ typedef enum _NSTextBlockVerticalAlignment
 	NSTextBlockBaselineAlignment
 } NSTextBlockVerticalAlignment;
 
+APPKIT_EXPORT_CLASS
 @interface NSTextBlock : NSObject <NSCoding, NSCopying>
 {
   NSColor *_backgroundColor;
@@ -127,6 +128,7 @@ typedef enum _NSTextTableLayoutAlgorithm {
 	NSTextTableFixedLayoutAlgorithm
 } NSTextTableLayoutAlgorithm;
 
+APPKIT_EXPORT_CLASS
 @interface NSTextTable : NSTextBlock
 {
   NSTextTableLayoutAlgorithm _layoutAlgorithm;
@@ -161,6 +163,7 @@ typedef enum _NSTextTableLayoutAlgorithm {
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSTextTableBlock : NSTextBlock
 {
   NSTextTable *_table;

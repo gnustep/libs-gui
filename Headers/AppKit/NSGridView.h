@@ -24,6 +24,7 @@
 
 #ifndef _NSGridView_h_GNUSTEP_GUI_INCLUDE
 #define _NSGridView_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -57,6 +58,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 
 @class NSGridColumn, NSGridRow, NSGridCell, NSArray, NSMutableArray;
   
+APPKIT_EXPORT_CLASS
 @interface NSGridView : NSView
 {
   NSGridRowAlignment _rowAlignment;
@@ -109,6 +111,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @end
 
 /// Cell
+APPKIT_EXPORT_CLASS
 @interface NSGridCell : NSObject <NSCoding>
 {
   NSView *_contentView;
@@ -144,6 +147,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @end
 
 /// Column
+APPKIT_EXPORT_CLASS
 @interface NSGridColumn : NSObject <NSCoding>
 {
   NSGridView *_gridView;
@@ -174,6 +178,7 @@ APPKIT_EXPORT const CGFloat NSGridViewSizeForContent;
 @end
 
 /// Row
+APPKIT_EXPORT_CLASS
 @interface NSGridRow : NSObject <NSCoding>
 {
   NSGridView *_gridView;

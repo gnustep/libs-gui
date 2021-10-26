@@ -32,6 +32,7 @@
 
 #import <AppKit/NSControl.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSStepper : NSControl
 {
   // Attributes

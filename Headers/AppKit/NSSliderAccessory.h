@@ -24,6 +24,7 @@
 
 #ifndef _NSSliderAccessory_h_GNUSTEP_GUI_INCLUDE
 #define _NSSliderAccessory_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -36,6 +37,7 @@ extern "C" {
 @class NSSliderAccessoryBehavior;
 @class NSImage;
   
+APPKIT_EXPORT_CLASS
 @interface NSSliderAccessory : NSObject <NSCopying, NSCoding>
 {
   NSImage *_image;
@@ -56,6 +58,7 @@ extern "C" {
 // Behavior...
 DEFINE_BLOCK_TYPE(GSSliderAccessoryBehaviorHandler, void, NSSliderAccessory*);
   
+APPKIT_EXPORT_CLASS
 @interface NSSliderAccessoryBehavior : NSObject <NSCopying, NSCoding>
 
 // Initializers

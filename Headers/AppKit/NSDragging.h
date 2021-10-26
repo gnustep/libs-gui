@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSDragging
 #define _GNUstep_H_NSDragging
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 

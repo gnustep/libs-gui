@@ -61,6 +61,7 @@ APPKIT_EXPORT NSString *GSDisplayName;
 APPKIT_EXPORT NSString *GSDisplayNumber;
 APPKIT_EXPORT NSString *GSScreenNumber;
 
+APPKIT_EXPORT_CLASS
 @interface GSDisplayServer : NSObject
 {
   NSMutableDictionary	*server_info;

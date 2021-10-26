@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSColorSpace
 #define _GNUstep_H_NSColorSpace
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 #import <Foundation/NSObject.h>
@@ -47,6 +47,7 @@ typedef enum _NSColorSpaceModel
   NSDeviceNColorSpaceModel
 } NSColorSpaceModel;
 
+APPKIT_EXPORT_CLASS
 @interface NSColorSpace : NSObject <NSCoding>
 {
   NSColorSpaceModel _colorSpaceModel;

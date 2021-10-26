@@ -33,6 +33,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSTitlebarAccessoryViewController : NSViewController
 
 @end

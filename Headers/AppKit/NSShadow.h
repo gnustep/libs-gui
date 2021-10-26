@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSShadow
 #define _GNUstep_H_NSShadow
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 #import <Foundation/NSGeometry.h>
@@ -37,6 +37,7 @@
 
 @class NSColor;
 
+APPKIT_EXPORT_CLASS
 @interface NSShadow : NSObject <NSCopying, NSCoding>
 {
     NSSize _offset;

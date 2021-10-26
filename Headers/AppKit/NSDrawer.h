@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSDrawer
 #define _GNUstep_H_NSDrawer
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <AppKit/NSResponder.h>
@@ -45,6 +45,7 @@ enum {
   NSDrawerClosingState = 3
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSDrawer : NSResponder
 {
   // Attributes

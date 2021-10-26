@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSInterfaceStyle
 #define _GNUstep_H_NSInterfaceStyle
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if defined(__cplusplus)
 extern "C" {

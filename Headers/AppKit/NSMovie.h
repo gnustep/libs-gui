@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSMovie
 #define _GNUstep_H_NSMovie
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -37,6 +37,7 @@
 @class NSURL;
 @class NSPasteboard;
 
+APPKIT_EXPORT_CLASS
 @interface NSMovie : NSObject <NSCopying, NSCoding> 
 {
   @private

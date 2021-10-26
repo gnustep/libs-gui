@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSHelpPanel
 #define _GNUstep_H_NSHelpPanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_OPENSTEP,GS_API_MACOSX) || GS_API_VERSION(GS_API_NONE, GS_API_LATEST)
 
@@ -42,6 +42,7 @@
 - (void) orderFrontHelpPanel: (id)sender;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSHelpPanel : NSPanel
 {
   // Attributes

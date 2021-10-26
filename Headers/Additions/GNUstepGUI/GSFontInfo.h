@@ -38,6 +38,7 @@
 @class NSBezierPath;
 @class NSFontDescriptor;
 
+APPKIT_EXPORT_CLASS
 @interface GSFontEnumerator : NSObject
 {
   NSArray *allFontNames;
@@ -66,6 +67,7 @@ values. Backends may override these. */
 - (NSString *) defaultFixedPitchFontName;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSFontInfo : NSObject <NSCopying, NSMutableCopying>
 {
   NSMutableDictionary* fontDictionary;

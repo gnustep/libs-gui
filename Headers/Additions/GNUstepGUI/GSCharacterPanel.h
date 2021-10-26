@@ -36,6 +36,7 @@
 @class NSSearchField;
 @class NSIndexSet;
 
+APPKIT_EXPORT_CLASS
 @interface GSCharacterPanel : NSPanel
 {
 	NSTableView *table;

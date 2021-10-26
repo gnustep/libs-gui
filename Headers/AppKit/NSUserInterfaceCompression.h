@@ -24,6 +24,7 @@
 
 #ifndef _NSUserInterfaceCompression_h_GNUSTEP_GUI_INCLUDE
 #define _NSUserInterfaceCompression_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -35,6 +36,7 @@ extern "C" {
 
 @class NSSet, NSString, NSArray;
 
+APPKIT_EXPORT_CLASS
 @interface NSUserInterfaceCompressionOptions : NSObject <NSCopying, NSCoding>
 
 - (instancetype) initWithIdentifier: (NSString *)identifier;

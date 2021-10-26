@@ -28,6 +28,7 @@
 
 #ifndef _GNUstep_H_GSModelLoaderFactory
 #define _GNUstep_H_GSModelLoaderFactory
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSZone.h>
@@ -38,6 +39,7 @@
 @class NSString;
 @class NSBundle;
 
+APPKIT_EXPORT_CLASS
 @interface GSModelLoader : NSObject
 + (BOOL) canReadData: (NSData *)theData;
 + (NSString *) type;
@@ -51,6 +53,7 @@
 - (NSData *)dataForFile: (NSString *)fileName;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSModelLoaderFactory : NSObject
 + (void) registerModelLoaderClass: (Class)aClass;
 + (Class) classForType: (NSString *)type;

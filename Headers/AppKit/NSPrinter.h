@@ -32,6 +32,7 @@
 
 #ifndef _GNUstep_H_NSPrinter
 #define _GNUstep_H_NSPrinter
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -47,6 +48,7 @@ typedef enum _NSPrinterTableStatus {
   NSPrinterTableError
 } NSPrinterTableStatus;
 
+APPKIT_EXPORT_CLASS
 @interface NSPrinter : NSObject <NSCoding>
 {
   NSString *_printerHost;

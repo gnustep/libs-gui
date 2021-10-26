@@ -27,15 +27,18 @@
 */
 #ifndef __GNUstep_NSSharingService
 #define __GNUstep_NSSharingService
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSSharingService : NSObject
 @end
 
 @protocol NSSharingServiceDelegate <NSObject>
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSSharingServicePicker : NSObject 
 @end
 

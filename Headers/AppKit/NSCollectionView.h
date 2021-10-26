@@ -28,8 +28,7 @@
 
 #ifndef _GNUstep_H_NSCollectionView
 #define _GNUstep_H_NSCollectionView
-
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSNibDeclarations.h>
@@ -72,6 +71,7 @@ namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropURL
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionView : NSView //<NSDraggingDestination, NSDraggingSource>
 {
   NSArray *_content;

@@ -33,7 +33,7 @@
 
 #ifndef _GNUstep_H_NSScreen
 #define _GNUstep_H_NSScreen
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSGraphics.h>
@@ -41,6 +41,7 @@
 @class NSArray;
 @class NSDictionary;
 
+APPKIT_EXPORT_CLASS
 @interface NSScreen : NSObject
 {
 @private
