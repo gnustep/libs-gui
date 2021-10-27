@@ -134,7 +134,7 @@ static Class textFieldCellClass;
 */
 - (BOOL) isSelectable
 {
-  return [_cell isSelectable] && [self isEnabled];
+  return [_cell isSelectable];
 }
 
 /** <p>Sets whether the NSTextField's cell and the NSText object is editable.
