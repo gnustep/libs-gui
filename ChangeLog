@@ -1,5 +1,10 @@
 2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* Source/GSToolbarView.m: Toolbar fixes to prevent the index
+        from exceeding the number of visibleBackViews.
+
+2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Source/NSScrollView.m: Add scrollview keys from TP merge.
 
 2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>

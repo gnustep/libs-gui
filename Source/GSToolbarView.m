@@ -291,7 +291,7 @@ static NSUInteger draggedItemIndex = NSNotFound;
       if (draggingLeft)
         {
           // dragging to the left of dragged item's current location
-          for (index=0; index < draggedItemIndex; index++)
+          for (index=0; index < draggedItemIndex && index < [visibleBackViews count]; index++)
             {
               itemRect = [[visibleBackViews objectAtIndex:index] frame];
               if (location.x < (itemRect.origin.x + (itemRect.size.width/2)))
