@@ -1580,6 +1580,16 @@ GSOppositeEdge(NSRectEdge edge)
         flags |= 512;
 
       [aCoder encodeInt: flags forKey: @"NSsFlags"];
+
+      // XIB 5 keys...
+      [aCoder encodeInteger: _hLineScroll
+                     forKey: @"horizontalLineScroll"];
+      [aCoder encodeInteger: _hPageScroll
+                     forKey: @"horizontalPageScroll"];
+      [aCoder encodeInteger: _vLineScroll
+                     forKey: @"verticalLineScroll"];
+      [aCoder encodeInteger: _vPageScroll
+                     forKey: @"verticalPageScroll"];
     }
   else
     {
@@ -1643,6 +1653,16 @@ GSOppositeEdge(NSRectEdge edge)
       _scrollsDynamically = YES;
       /* _autohidesScroller, _rulersVisible, _hasHorizRuler and _hasVertRuler 
          implicitly set to NO */
+
+      // XIB 5 keys...
+      if ([aDecoder containsValueForKey: @"horizontalLineScroll"])
+        _hLineScroll = [aDecoder decodeIntegerForKey: @"horizontalLineScroll"];
+      if ([aDecoder containsValueForKey: @"horizontalPageScroll"])
+        _hPageScroll = [aDecoder decodeIntegerForKey: @"horizontalPageScroll"];
+      if ([aDecoder containsValueForKey: @"verticalLineScroll"])
+        _vLineScroll = [aDecoder decodeIntegerForKey: @"verticalLineScroll"];
+      if ([aDecoder containsValueForKey: @"verticalPageScroll"])
+        _vPageScroll = [aDecoder decodeIntegerForKey: @"verticalPageScroll"];
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
