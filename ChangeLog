@@ -65,9 +65,6 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add tabview enum
 	* Source/GSAutocompleteWindow.h: Fix signature mismatch
 	* Source/GSThemeDrawing.m: Move tabview enum to header.
-
-2021-10-12 Gregory John Casamento <greg.casamento@gmail.com>
-
 	* Source/NSBitmapImageRep.m: Change initWithBitmapDataPlanes:...
         to conform to Apple documented behavior and return nil if it
         cannot initialize with the given arguments.
