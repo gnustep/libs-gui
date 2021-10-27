@@ -250,10 +250,10 @@
   NSAttributedString *attrStr;
 
   attrStr = [super _drawAttributedString];
-  if (attrStr == nil)
+  if ((attrStr == nil) || ([[attrStr string] length] == 0))
     {
       attrStr = [self placeholderAttributedString];
-      if (attrStr == nil)
+      if ((attrStr == nil) || ([[attrStr string] length] == 0))
         {
           NSString *string;
           NSDictionary *attributes;
@@ -284,6 +284,14 @@
     {
       return attrStr;
     }
+}
+
+- (void) _updateFieldEditor: (NSText*)textObject
+{
+  [super _updateFieldEditor: textObject];
+  [textObject setDrawsBackground: _textfieldcell_draws_background];
+  [textObject setBackgroundColor: _background_color];
+  [textObject setTextColor: _text_color];
 }
 
 - (BOOL) isOpaque

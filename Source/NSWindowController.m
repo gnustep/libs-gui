@@ -282,7 +282,8 @@
 	   * Apple's implementation doesn't seem to deal with this case, and
 	   * crashes if isReleaseWhenClosed is set.
 	   */
-	  RETAIN(_window);
+          if ([_window isReleasedWhenClosed])
+            RETAIN(_window);
 	  [self setWindow: nil];
 
 	  [_document _removeWindowController: self];

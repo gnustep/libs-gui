@@ -6466,13 +6466,15 @@ or add guards
 
 - (void) _scheduleTextCheckingTimer
 {
-  [_textCheckingTimer invalidate];
-  _textCheckingTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-							target: self
-						      selector: @selector(_textCheckingTimerFired:) 
-						      userInfo: [NSValue valueWithRect: [self visibleRect]]
-						       repeats: NO];
-  
+  if ([[NSUserDefaults standardUserDefaults] boolForKey: @"GSDisableSpellCheckerServer"] == NO)
+    {
+      [_textCheckingTimer invalidate];
+      _textCheckingTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                                            target: self
+                                                          selector: @selector(_textCheckingTimerFired:) 
+                                                          userInfo: [NSValue valueWithRect: [self visibleRect]]
+                                                           repeats: NO];  
+    }
 }
 
 - (void) _scheduleTextCheckingInVisibleRectIfNeeded

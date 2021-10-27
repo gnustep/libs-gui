@@ -1,5 +1,16 @@
 2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* Source/NSPopUpButtonCell.m
+	* Source/NSTabView.m
+	* Source/NSTextContainer.m
+	* Source/NSTextFieldCell.m
+	* Source/NSTextField.m
+	* Source/NSTextView.m
+	* Source/NSWindowController.m: Remaining improvements and stability
+        changes contributed by testplant. 
+
+2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Source/GSToolbarView.m: Toolbar fixes to prevent the index
         from exceeding the number of visibleBackViews.
 

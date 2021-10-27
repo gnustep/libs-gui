@@ -570,6 +570,10 @@
           ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
           [_items makeObjectsPerformSelector: @selector(_setTabView:) withObject: self];
         }
+      else
+        {
+          ASSIGN(_items, [NSMutableArray array]);
+        }
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
 	  // N.B.: As a side effect, this discards the subview frame
