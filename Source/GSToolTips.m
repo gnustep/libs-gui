@@ -649,10 +649,12 @@ static BOOL		restoreMouseMoved;
       rect = [toolTipText boundingRectWithSize: NSMakeSize(300, 1e7)
                                        options: 0];
       textSize = rect.size;
-      // This extra pixel is needed, otherwise the last line gets cut off.
-      textSize.height += 1;
     }
 
+  // Need to fudge the result just a bit due to occasionally cutoff characters...
+  textSize.width += 1;
+  textSize.height += 1;
+  
   /* Create window just off the current mouse position
    * Constrain it to be on screen, shrinking if necessary.
    */

@@ -1,3 +1,8 @@
+2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSToolTips.m: Add extra pixels so that tool tip doesn't
+        overrun the window.
+
 2021-10-25 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSTextStorage.m:
