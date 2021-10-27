@@ -14,7 +14,6 @@
 	* Source/GSLayoutManager.m: In _generateGlyphsUpToGlyph:
         add code to break out of the loop
         if char_last is > glyphs->char_length
->>>>>>> 5c7c12c77 (Add code to break out of the loop if char_last has exceeded the end of the existing set of characters)
 
 2021-10-13 Gregory John Casamento <greg.casamento@gmail.com>
 
