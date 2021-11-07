@@ -121,6 +121,7 @@
   NSMenu *_the_menu;
 }
 - (void) _setmenu: (NSMenu *)menu;
+- (NSMenu *) menu;
 @end
 
 @interface NSMenuView (GNUstepPrivate)
@@ -154,6 +155,10 @@ static BOOL menuBarVisible = YES;
 - (void) _setmenu: (NSMenu *)menu
 {
   _the_menu = menu;
+}
+- (NSMenu *) menu
+{
+    return _the_menu;
 }
 
 - (BOOL) canBecomeKeyWindow
