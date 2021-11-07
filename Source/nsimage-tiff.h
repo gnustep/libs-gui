@@ -37,7 +37,7 @@
 #define _GNUstep_H_tiff
 
 #include <tiffio.h>
-#include <sys/types.h>
+#include <inttypes.h>
 
 /* Structure to store common information about a tiff. */
 typedef struct {
