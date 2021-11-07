@@ -271,7 +271,7 @@ NSTiffInfo *
 NSTiffGetInfo(int imageNumber, TIFF* image)
 {
   NSTiffInfo* info;
-  uint16 *sample_info = NULL;
+  uint16_t *sample_info = NULL;
 
   if (image == NULL)
     return NULL;
@@ -328,7 +328,7 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
     }
 
   {
-    uint16 resolution_unit;
+    uint16_t resolution_unit;
     float xres, yres;
     if (TIFFGetField(image, TIFFTAG_XRESOLUTION, &xres) 
 	&& TIFFGetField(image, TIFFTAG_YRESOLUTION, &yres))
@@ -369,9 +369,9 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
   int     i;
   unsigned int row, col;
   int	  error = 0;
-  uint8* outP;
-  uint8* buf;
-  uint8* raster;
+  uint8_t* outP;
+  uint8_t* buf;
+  uint8_t* raster;
   NSTiffColormap* map;
   tmsize_t scan_line_size;
 
@@ -389,7 +389,7 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
   scan_line_size = TIFFScanlineSize(image);
   buf = _TIFFmalloc(scan_line_size);
   
-  raster = (uint8 *)data;
+  raster = (uint8_t *)data;
   outP = raster;
   switch (info->photoInterp) 
     {
@@ -419,7 +419,7 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
       {
 	for (row = 0; row < info->height; ++row) 
 	  {
-	    uint8 *inP;
+	    uint8_t *inP;
 	    READ_SCANLINE(0);
 	    inP = buf;
 	    for (col = 0; col < info->width; col++) 
@@ -474,7 +474,7 @@ int
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   void*	buf = (void*)data;
-  uint16        sample_info[1];
+  uint16_t        sample_info[1];
   int		i;
   unsigned int 	row;
   int           error = 0;
