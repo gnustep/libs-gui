@@ -100,9 +100,9 @@ typedef enum _NSBitmapFormat
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
-  Nsbitmapformatalphafirst = 1,
-  NSBitmapFormatAlphaNonpremultiplied = 2,
-  NSBitmapFormatFloatingPointSamples = 4,
+  NSBitmapFormatAlphaFirst = 1,
+  NSBitmapFormatAlphaNonpremultiplied = (1 << 1),
+  NSBitmapFormatFloatingPointSamples = (1 << 2),
   NSBitmapFormatSixteenBitLittleEndian = (1 << 8),
   NSBitmapFormatThirtyTwoBitLittleEndian = (1 << 9),
   NSBitmapFormatSixteenBitBigEndian = (1 << 10),

@@ -679,21 +679,14 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width,
       long byte2 = byte1 + 1;
       uint16_t value;
 
-      if (NSHostByteOrder() == NS_BigEndian)
+      if ((NSHostByteOrder() == NS_BigEndian && !(format & NSBitmapFormatSixteenBitLittleEndian)) ||
+          (NSHostByteOrder() == NS_LittleEndian && (format & NSBitmapFormatSixteenBitBigEndian)))
         {
           value = base[byte2] | base[byte1] << 8;
         }
       else
         {
           value = base[byte1] | base[byte2] << 8;
-        }
-      if (format & NSBitmapFormatSixteenBitLittleEndian)
-        {
-          value = GSSwapLittleI16ToHost(value);
-        }
-      else if (format & NSBitmapFormatSixteenBitBigEndian)
-        {
-          value = GSSwapBigI16ToHost(value);
         }
 
       return value;
@@ -805,24 +798,16 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       long byte2 = byte1 + 1;
       uint16_t value16 = value;
 
-      if (format & NSBitmapFormatSixteenBitLittleEndian)
+      if ((NSHostByteOrder() == NS_BigEndian && !(format & NSBitmapFormatSixteenBitLittleEndian)) ||
+          (NSHostByteOrder() == NS_LittleEndian && (format & NSBitmapFormatSixteenBitBigEndian)))
         {
-          value16 = GSSwapHostI16ToLittle(value16);
-        }
-      else if (format & NSBitmapFormatSixteenBitBigEndian)
-        {
-          value16 = GSSwapHostI16ToBig(value16);
-        }
-
-      if (NSHostByteOrder() == NS_BigEndian)
-        {
-          base[byte1] = (value >> 8);
-          base[byte2] = (value & 255);
+          base[byte1] = (value16 >> 8);
+          base[byte2] = (value16 & 255);
         }
       else
         {
-          base[byte2] = (value >> 8);
-          base[byte1] = (value & 255);
+          base[byte2] = (value16 >> 8);
+          base[byte1] = (value16 & 255);
         }
     }
   else if (bit_width == 32)
