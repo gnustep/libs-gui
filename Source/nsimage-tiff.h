@@ -37,21 +37,21 @@
 #define _GNUstep_H_tiff
 
 #include <tiffio.h>
-#include <sys/types.h>
+#include <inttypes.h>
 
 /* Structure to store common information about a tiff. */
 typedef struct {
-    uint16  numImages;	      /* number of images in tiff */
-    uint16  imageNumber;      /* number of current image */
-    uint32  subfileType;
-    uint32  width;
-    uint32  height;
-    uint16 bitsPerSample;    /* number of bits per data channel */
-    uint16 samplesPerPixel;  /* number of channels per pixel */
-    uint16 planarConfig;     /* meshed or separate */
-    uint16 photoInterp;      /* photometric interpretation of bitmap data, */
-    uint16 compression;
-    uint16 extraSamples;     /* Alpha */
+    uint16_t  numImages;	      /* number of images in tiff */
+    uint16_t  imageNumber;      /* number of current image */
+    uint32_t  subfileType;
+    uint32_t  width;
+    uint32_t  height;
+    uint16_t bitsPerSample;    /* number of bits per data channel */
+    uint16_t samplesPerPixel;  /* number of channels per pixel */
+    uint16_t planarConfig;     /* meshed or separate */
+    uint16_t photoInterp;      /* photometric interpretation of bitmap data, */
+    uint16_t compression;
+    uint16_t extraSamples;     /* Alpha */
     int     assocAlpha;
     int     quality;	      /* compression quality (for jpeg) 1 to 255 */
     int     error;
@@ -60,10 +60,10 @@ typedef struct {
 } NSTiffInfo; 
 
 typedef struct {
-    uint32 size;
-    uint16 *red;
-    uint16 *green;
-    uint16 *blue;
+    uint32_t size;
+    uint16_t *red;
+    uint16_t *green;
+    uint16_t *blue;
 } NSTiffColormap;
 
 typedef char* realloc_data_callback(char* data, long size);

@@ -106,6 +106,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
   BOOL alpha;
   int bpp;
   NSString *colorspace;
+  NSBitmapFormat bitmapFormat = NSAlphaNonpremultipliedBitmapFormat;
 
   reader_struct_t reader;
 
@@ -228,6 +229,15 @@ static void reader_func(png_structp png_struct, png_bytep data,
     png_read_image(png_struct, row_pointers);
   }
 
+  if (depth == 16)
+    {
+      bitmapFormat |= NSBitmapFormatSixteenBitBigEndian;
+    }
+  else if (depth == 32)
+    {
+      bitmapFormat |= NSBitmapFormatThirtyTwoBitBigEndian;
+    }
+
   self = [self initWithBitmapDataPlanes: &buf
                              pixelsWide: width
                              pixelsHigh: height
@@ -236,7 +246,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
                                hasAlpha: alpha
                                isPlanar: NO
                          colorSpaceName: colorspace
-                           bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
+                           bitmapFormat: bitmapFormat
                             bytesPerRow: bytes_per_row
                            bitsPerPixel: bpp];
   

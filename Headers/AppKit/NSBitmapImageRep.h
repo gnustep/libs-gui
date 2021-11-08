@@ -90,7 +90,24 @@ typedef enum _NSBitmapFormat
 {
   NSAlphaFirstBitmapFormat = 1,
   NSAlphaNonpremultipliedBitmapFormat = 2,
-  NSFloatingPointSamplesBitmapFormat = 4
+  NSFloatingPointSamplesBitmapFormat = 4,
+  
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, MAC_OS_X_VERSION_10_14)
+  NS16BitLittleEndianBitmapFormat = (1 << 8),
+  NS32BitLittleEndianBitmapFormat = (1 << 9),
+  NS16BitBigEndianBitmapFormat = (1 << 10),
+  NS32BitBigEndianBitmapFormat = (1 << 11),
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSBitmapFormatAlphaFirst = 1,
+  NSBitmapFormatAlphaNonpremultiplied = (1 << 1),
+  NSBitmapFormatFloatingPointSamples = (1 << 2),
+  NSBitmapFormatSixteenBitLittleEndian = (1 << 8),
+  NSBitmapFormatThirtyTwoBitLittleEndian = (1 << 9),
+  NSBitmapFormatSixteenBitBigEndian = (1 << 10),
+  NSBitmapFormatThirtyTwoBitBigEndian = (1 << 11)
+#endif
 } NSBitmapFormat;
 
 typedef enum _NSImageRepLoadStatus
