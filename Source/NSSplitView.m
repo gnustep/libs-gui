@@ -200,8 +200,8 @@ static NSNotificationCenter *nc = nil;
  * It is only used in the non-live resize mode.
  */
 - (BOOL) _drawHighlightedDividerWithSize: (NSRect) r
-                   andOldSize: (NSRect) oldRect
-                        isLit: (BOOL) lit
+                              andOldSize: (NSRect) oldRect
+                                   isLit: (BOOL) lit
 {
   if (NSEqualRects(r, oldRect) == YES)
     {
@@ -1417,6 +1417,14 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) setDividerStyle: (NSSplitViewDividerStyle)dividerStyle
 {
   _dividerStyle = dividerStyle;
+
+  _dividerWidth = [self dividerThickness];
+  _draggedBarWidth = _dividerWidth + 2; // default bigger than dividerThickness
+  ASSIGN(_dividerColor, [NSColor controlShadowColor]);
+  ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
+  _never_displayed_before = YES;
+  _is_pane_splitter = (dividerStyle == NSSplitViewDividerStylePaneSplitter);
+
   [self setNeedsDisplay: YES];
 }
 
@@ -1483,14 +1491,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
           [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
         }
 
-      _dividerWidth = [self dividerThickness];
-      _draggedBarWidth = 8; // default bigger than dividerThickness
-      ASSIGN(_dividerColor, [NSColor controlShadowColor]);
-      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
-      _never_displayed_before = YES;
-      _is_pane_splitter = YES;
+      if ([aDecoder containsValueForKey: @"NSDividerStyle"])
+        {
+          [self setDividerStyle: [aDecoder decodeIntegerForKey: @"NSDividerStyle"]];
+        }
+      
       [self setAutoresizesSubviews: YES];
-
       while((subview = [en nextObject]) != nil)
 	{
 	  [subview setAutoresizesSubviews: YES];
@@ -1518,11 +1524,14 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       if (version >= 1)
         {
 	  decode_NSInteger(aDecoder, &_dividerStyle);
+          [self setDividerStyle: _dividerStyle];
         }
-
-      _dividerWidth = [self dividerThickness];
-      _never_displayed_before = YES;
-      _draggedBarWidth = _dividerWidth + 2;
+      else
+        {
+          _dividerStyle = NSSplitViewDividerStyleThick;
+        }
+      
+      [self setDividerStyle: _dividerStyle];
     }
 
   return self;
