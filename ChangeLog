@@ -1,3 +1,8 @@
+2021-11-18 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBrowser.m: Check [bc isLoaded] in _remapColumnSubviews
+        before making the window first responder.
+
 2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSSplitView.h

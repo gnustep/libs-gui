@@ -3209,7 +3209,7 @@ static BOOL browserUseBezels;
           sc = [bc columnScrollView];
           [self addSubview: sc];
 
-          if ([bc columnMatrix] == firstResponder)
+          if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
             {
               [_window makeFirstResponder: firstResponder];
               setFirstResponder = YES;
@@ -3231,7 +3231,7 @@ static BOOL browserUseBezels;
           sc = [bc columnScrollView];
           [self addSubview: sc];
 
-          if ([bc columnMatrix] == firstResponder)
+          if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
             {
               [_window makeFirstResponder: firstResponder];
               setFirstResponder = YES;
