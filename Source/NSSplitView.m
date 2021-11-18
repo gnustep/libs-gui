@@ -1524,7 +1524,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       if (version >= 1)
         {
 	  decode_NSInteger(aDecoder, &_dividerStyle);
-          [self setDividerStyle: _dividerStyle];
         }
       else
         {
