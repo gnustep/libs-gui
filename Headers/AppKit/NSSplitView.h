@@ -57,6 +57,8 @@ typedef NSInteger NSSplitViewDividerStyle;
   BOOL      _isVertical;
   BOOL      _never_displayed_before;
   BOOL      _is_pane_splitter;
+  BOOL      _arrangesAllSubviews;  
+  NSSplitViewDividerStyle _dividerStyle;
 }
 
 - (void) setDelegate: (id)anObject;

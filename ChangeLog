@@ -1,5 +1,12 @@
 2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
 
+	* Headers/AppKit/NSSplitView.h
+	* Source/NSSplitView.m: Incorporate and refactor changes to NSSplitView
+        to support Think, Thin, and PaneSplitter NSSplitViewDividerStyle
+        settings.
+
+2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
+
 	* Source/NSView.m: Add cast to id in case nil is not "id".  This
         is the same fix that was done by Frederick Seiffert on base.
 
