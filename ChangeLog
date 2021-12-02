@@ -1,3 +1,9 @@
+2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSSplitView.m: Correct issue introduced in the previous change
+	for this class.  The code now uses the older, somewhat broken, logic
+	for version 0 and the newer logic for later versions.
+
 2021-11-18 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSBrowser.m: Check [bc isLoaded] in _remapColumnSubviews
