@@ -1518,7 +1518,17 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
       // Decode non-object data.
-      [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_draggedBarWidth];
+      if (version >= 1)
+        {
+          [aDecoder decodeValueOfObjCType: @encode(CGFloat) at: &_draggedBarWidth];
+        }
+      else
+        {
+          int barWidth = 0;
+
+          decode_NSInteger(aDecoder, &barWidth);
+          _draggedBarWidth = (CGFloat)barWidth;
+        }
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
       if (version >= 1)
