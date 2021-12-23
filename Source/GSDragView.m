@@ -588,6 +588,8 @@ static	GSDragView *sharedDragView = nil;
   // Storing values, to restore after we have finished.
   NSCursor      *cursorBeforeDrag = [NSCursor currentCursor];
   BOOL deposited;
+  id target;
+  SEL sel;
 
   startPoint = [eWindow convertBaseToScreen: [theEvent locationInWindow]];
   startPoint.x -= offset.width;
@@ -602,10 +604,26 @@ static	GSDragView *sharedDragView = nil;
 		       beganAt: startPoint];
     }
 
+#define GSTargetForSelector(source, sel, target)	      \
+  target = nil;						      \
+  if ([source respondsToSelector: @selector(delegate)])	      \
+    {							      \
+      id sourceDelegate = [source delegate];		      \
+      if (sourceDelegate != nil				      \
+	  && [sourceDelegate respondsToSelector: sel] == YES) \
+	{						      \
+	  target = sourceDelegate;			      \
+	}						      \
+    }							      \
+  if (target == nil && [source respondsToSelector: sel])      \
+    {							      \
+      target = source;					      \
+    }
+  
   // --- Setup up the masks for the drag operation ---------------------
-  if ([dragSource respondsToSelector:
-    @selector(ignoreModifierKeysWhileDragging)]
-    && [dragSource ignoreModifierKeysWhileDragging])
+  sel = @selector(ignoreModifierKeysWhileDragging);
+  target = GSTargetForSelector(dragSource, sel, target);
+  if (target != nil && [target ignoreModifierKeysWhileDragging])
     {
       operationMask = NSDragOperationIgnoresModifiers;
     }
@@ -616,10 +634,11 @@ static	GSDragView *sharedDragView = nil;
     }
 
 
-  if ([dragSource respondsToSelector:
-                    @selector(draggingSourceOperationMaskForLocal:)])
+  sel = @selector(draggingSourceOperationMaskForLocal:);
+  target = GSTargetForSelector(dragSource, sel, target);
+  if (target != nil)
     {
-      dragMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
+      dragMask = [target draggingSourceOperationMaskForLocal: !destExternal];
     }
   else
     {
