@@ -1,5 +1,10 @@
 2021-12-26 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m: Try to prevent segmenation fault
+	when deallocating a popup button.
+
+2021-12-26 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenu.m: Rename method on NSMenuPanel for the Wayland
 	backend to -_menu to keep it apart from the already existing method
 	-menu on NSResponder.
