@@ -114,6 +114,10 @@
 				   [theme titlebarButtonSize], [theme titlebarButtonSize]);
       [closeButton setFrame: closeButtonRect];
     }
+  else
+    {
+        closeButtonRect = NSZeroRect;
+    }
 
   if (hasMiniaturizeButton)
     {
@@ -122,6 +126,11 @@
 					 [theme titlebarButtonSize], [theme titlebarButtonSize]);
       [miniaturizeButton setFrame: miniaturizeButtonRect];
     }
+  else
+    {
+        miniaturizeButtonRect = NSZeroRect;
+    }
+
 }
 
 - (id) initWithFrame: (NSRect)frame
@@ -268,7 +277,7 @@
 
 static NSRect
 calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
-  int mode, NSSize minSize, NSSize maxSize)
+  GSResizeEdgeMode mode, NSSize minSize, NSSize maxSize)
 {
   NSRect newFrame = frame;
   newFrame.origin.y = point.y - firstPoint.y;
@@ -279,7 +288,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
       newFrame.origin.y = NSMaxY(frame) - newFrame.size.height;
     }
 
-  if (mode == 0)
+  if (mode == GSResizeEdgeBottomLeftMode)
     {
       newFrame.origin.x = point.x - firstPoint.x;
       newFrame.size.width = NSMaxX(frame) - newFrame.origin.x;
@@ -290,7 +299,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 	  newFrame.origin.x = NSMaxX(frame) - newFrame.size.width;
 	}
     }
-  else if (mode == 1)
+  else if (mode == GSResizeEdgeBottomRightMode)
     {
       newFrame.size.width = point.x - frame.origin.x + frame.size.width
 			    - firstPoint.x;
@@ -315,23 +324,9 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   NSSize minSize, maxSize;
   int num = 0;
 
-  /*
-  0 drag lower left corner
-  1 drag lower right corner
-  2 drag lower edge
-  */
-  int mode;
-
   firstPoint = [event locationInWindow];
-  if (resizeBarRect.size.width < 30 * 2
-      && firstPoint.x < resizeBarRect.size.width / 2)
-    mode = 0;
-  else if (firstPoint.x > resizeBarRect.size.width - 29)
-    mode = 1;
-  else if (firstPoint.x < 29)
-    mode = 0;
-  else
-    mode = 2;
+
+  GSResizeEdgeMode mode = [self resizeModeForPoint: firstPoint];
 
   frame = [window frame];
   minSize = [window minSize];
@@ -379,23 +374,56 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   return YES;
 }
 
+- (BOOL) pointInContentRect:(NSPoint)point
+{
+    return NSPointInRect(point, contentRect);
+}
+
+- (BOOL) pointInTitleBarRect:(NSPoint)point
+{
+  return NSPointInRect(point, titleBarRect);
+}
+
+- (BOOL) pointInResizeBarRect:(NSPoint)point
+{
+    return NSPointInRect(point, resizeBarRect);
+}
+
+- (GSResizeEdgeMode) resizeModeForPoint:(NSPoint)point
+{
+  GSResizeEdgeMode mode;
+
+  if (resizeBarRect.size.width < 30 * 2
+      && point.x < resizeBarRect.size.width / 2)
+    mode = GSResizeEdgeBottomLeftMode;
+  else if (point.x > resizeBarRect.size.width - 29)
+    mode = GSResizeEdgeBottomRightMode;
+  else if (point.x < 29)
+    mode = GSResizeEdgeBottomLeftMode;
+  else
+    mode = GSResizeEdgeBottomMode;
+
+  return mode;
+}
+
+
 - (void) mouseDown: (NSEvent *)event
 {
   NSPoint p = [self convertPoint: [event locationInWindow] fromView: nil];
 
-  if (NSPointInRect(p, contentRect))
+  if ([self pointInContentRect:p])
     {
       [super mouseDown: event];
       return;
     }
 
-  if (NSPointInRect(p, titleBarRect))
+  if ([self pointInTitleBarRect:p])
     {
       [self moveWindowStartingWithEvent: event];
       return;
     }
 
-  if (NSPointInRect(p, resizeBarRect))
+  if ([self pointInResizeBarRect:p])
     {
       [self resizeWindowStartingWithEvent: event];
       return;

@@ -32,6 +32,12 @@
 
 @class NSWindow;
 
+typedef enum _GSResizeEdgeMode {
+  GSResizeEdgeBottomLeftMode = 0,
+  GSResizeEdgeBottomRightMode = 1,
+  GSResizeEdgeBottomMode = 2,
+} GSResizeEdgeMode;
+
 // These are implemented as class methods on GSWindowDecorationView
 @protocol GSWindowDecorator
 - (id) newWindowDecorationViewWithFrame: (NSRect)frame
@@ -42,6 +48,10 @@
 			 styleMask: (NSUInteger)aStyle;
 - (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
                          styleMask: (NSUInteger)aStyle;
+- (BOOL) pointInContentRect:(NSPoint)point;
+- (BOOL) pointInTitleBarRect:(NSPoint)point;
+- (BOOL) pointInResizeBarRect:(NSPoint)point;
+- (GSResizeEdgeMode) resizeModeForPoint:(NSPoint)point;
 @end
 
 
