@@ -1,3 +1,15 @@
+2021-12-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m: Try to prevent segmenation fault
+	when deallocating a popup button.
+
+2021-12-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m: Rename method on NSMenuPanel for the Wayland
+	backend to -_menu to keep it apart from the already existing method
+	-menu on NSResponder.
+	* Source/NSSplitView.m: Correct decoded integer type.
+
 2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSSplitView.m: Correct issue introduced in the previous change
@@ -30,7 +42,7 @@
 	* Source/NSTextField.m
 	* Source/NSTextView.m
 	* Source/NSWindowController.m: Remaining improvements and stability
-        changes contributed by testplant. 
+        changes contributed by testplant.
 
 2021-10-27 Gregory John Casamento <greg.casamento@gmail.com>
 
