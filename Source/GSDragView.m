@@ -622,7 +622,7 @@ static	GSDragView *sharedDragView = nil;
   
   // --- Setup up the masks for the drag operation ---------------------
   sel = @selector(ignoreModifierKeysWhileDragging);
-  target = GSTargetForSelector(dragSource, sel, target);
+  GSTargetForSelector(dragSource, sel, target);
   if (target != nil && [target ignoreModifierKeysWhileDragging])
     {
       operationMask = NSDragOperationIgnoresModifiers;
@@ -635,7 +635,7 @@ static	GSDragView *sharedDragView = nil;
 
 
   sel = @selector(draggingSourceOperationMaskForLocal:);
-  target = GSTargetForSelector(dragSource, sel, target);
+  GSTargetForSelector(dragSource, sel, target);
   if (target != nil)
     {
       dragMask = [target draggingSourceOperationMaskForLocal: !destExternal];
@@ -717,8 +717,9 @@ static	GSDragView *sharedDragView = nil;
       deposited = NO;
     }
 
-  if ([dragSource respondsToSelector:
-                      @selector(draggedImage:endedAt:operation:)])
+  sel = @selector(draggedImage:endedAt:operation:);
+  GSTargetForSelector(dragSource, sel, target);
+  if (target != nil)
      {
        NSPoint point;
            
@@ -727,23 +728,27 @@ static	GSDragView *sharedDragView = nil;
        point.x -= offset.width;
        point.y -= offset.height;
        point = [[theEvent window] convertBaseToScreen: point];
-       [dragSource draggedImage: [self draggedImage]
-                        endedAt: point
-                      operation: targetMask & dragMask & operationMask];
+       [target draggedImage: [self draggedImage]
+		    endedAt: point
+		  operation: targetMask & dragMask & operationMask];
      }
-   else if ([dragSource respondsToSelector:
-                            @selector(draggedImage:endedAt:deposited:)])
+   else
     {
-      NSPoint point;
+      sel = @selector(draggedImage:endedAt:deposited:);
+      GSTargetForSelector(dragSource, sel, target);
+      if (target != nil)
+	{
+	  NSPoint point;
           
-      point = [theEvent locationInWindow];
-      // Convert from mouse cursor coordinate to image coordinate
-      point.x -= offset.width;
-      point.y -= offset.height;
-      point = [[theEvent window] convertBaseToScreen: point];
-      [dragSource draggedImage: [self draggedImage]
+	  point = [theEvent locationInWindow];
+	  // Convert from mouse cursor coordinate to image coordinate
+	  point.x -= offset.width;
+	  point.y -= offset.height;
+	  point = [[theEvent window] convertBaseToScreen: point];
+	  [target draggedImage: [self draggedImage]
                        endedAt: point
                      deposited: deposited];
+	}
     }
 }
 
