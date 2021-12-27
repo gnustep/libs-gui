@@ -381,9 +381,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 
 - (BOOL) pointInTitleBarRect:(NSPoint)point
 {
-  return !NSPointInRect(point, closeButtonRect) &&
-         !NSPointInRect(point, miniaturizeButtonRect) &&
-         NSPointInRect(point, titleBarRect);
+  return NSPointInRect(point, titleBarRect);
 }
 
 - (BOOL) pointInResizeBarRect:(NSPoint)point
