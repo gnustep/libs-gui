@@ -323,10 +323,10 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   NSRect newFrame, frame;
   NSSize minSize, maxSize;
   int num = 0;
+  GSResizeEdgeMode mode = [self resizeModeForPoint: firstPoint];
 
   firstPoint = [event locationInWindow];
 
-  GSResizeEdgeMode mode = [self resizeModeForPoint: firstPoint];
 
   frame = [window frame];
   minSize = [window minSize];

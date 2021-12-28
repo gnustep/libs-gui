@@ -1,3 +1,10 @@
+2021-12-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h:
+	Move new addon methods for Wayland to correct class
+	GSStandardWindowDecorationView.
+	* Source/GSWindowDecorationView.m: Keep variables declarations together.
+
 2021-12-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m: Try to prevent segmenation fault

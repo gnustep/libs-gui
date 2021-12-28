@@ -48,10 +48,6 @@ typedef enum _GSResizeEdgeMode {
 			 styleMask: (NSUInteger)aStyle;
 - (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
                          styleMask: (NSUInteger)aStyle;
-- (BOOL) pointInContentRect:(NSPoint)point;
-- (BOOL) pointInTitleBarRect:(NSPoint)point;
-- (BOOL) pointInResizeBarRect:(NSPoint)point;
-- (GSResizeEdgeMode) resizeModeForPoint:(NSPoint)point;
 @end
 
 
@@ -125,6 +121,10 @@ Standard OPENSTEP-ish window decorations.
 
   NSButton *closeButton, *miniaturizeButton;
 }
+- (BOOL) pointInContentRect:(NSPoint)point;
+- (BOOL) pointInTitleBarRect:(NSPoint)point;
+- (BOOL) pointInResizeBarRect:(NSPoint)point;
+- (GSResizeEdgeMode) resizeModeForPoint:(NSPoint)point;
 @end
 
 #endif
