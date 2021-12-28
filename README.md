@@ -37,9 +37,8 @@ subdirectories under this are covered under the LGPL.
 GNUstep tools, test programs, and other files are covered under the
 GNU Public License.  This means if you make changes to these programs,
 you cannot charge a fee, other than distribution fees, for others to use
-the program.  You should read the COPYING file for more information.
-All files in the 'Documentation', 'Examples', 'Tools', 'config', and
-'macosx' directories are covered under the GPL.
+the program.  All files in this package EXCEPT files in the 'Tools'
+directories and subdirectories under this are covered under the LGPL.
 
 How can you help?
 -----------------
