@@ -13,7 +13,7 @@ pasteboards and images.
 
 Initial reading
 ---------------
-The file [ANNOUNC](ANNOUNCE) contains a very brief overview of the library.
+The file [ANNOUNCE](ANNOUNCE) contains a very brief overview of the library.
 It also tells you where to get the most recent version.
      
 The file [NEWS](NEWS) has the library's feature history.
