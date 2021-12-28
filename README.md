@@ -31,8 +31,7 @@ Lesser Public License.  This means you can use these libraries in any
 program (even non-free programs).  If you distribute the libraries along
 with your program, you must make the improvements you have made to the
 libraries freely available.  You should read the COPYING.LIB file for
-more information.  All files in the 'Source', 'Headers',
-'NSCharacterSets', 'NSTimeZones', and 'Resources' directories and
+more information.  All files in the 'Source', 'Headers', directories and
 subdirectories under this are covered under the LGPL.
 
 GNUstep tools, test programs, and other files are covered under the
