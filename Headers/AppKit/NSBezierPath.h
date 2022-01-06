@@ -39,36 +39,60 @@
 typedef enum {
   NSButtLineCapStyle = 0,
   NSRoundLineCapStyle = 1,
-  NSSquareLineCapStyle = 2
+  NSSquareLineCapStyle = 2,
+  #if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+  NSLineCapStyleButt = 0,
+  NSLineCapStyleRound = 1,
+  NSLineCapStyleSquare = 2
+  #endif
 } NSLineCapStyle;
 
 typedef enum {
   NSMiterLineJoinStyle = 0,
   NSRoundLineJoinStyle = 1,
-  NSBevelLineJoinStyle = 2
+  NSBevelLineJoinStyle = 2,
+  #if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+  NSLineJoinStyleMiter = 0,
+  NSLineJoinStyleRound = 1,
+  NSLineJoinStyleBevel = 2
+  #endif
 } NSLineJoinStyle;
 
 /** A winding rule defines which points are considered inside and which
     points are considered outside a path.
     <deflist>
       <term>NSNonZeroWindingRule</term>
+      <desc>Deprecated. Use NSWindingRuleNonZero instead.</desc>
+      <term>NSEvenOddWindingRule</term>
+      <desc>Deprecated. Use NSWindingRuleEvenOdd instead.</desc>
+      <term>NSWindingRuleNonZero</term>
       <desc>A point is inside the path iff the winding count at the point
       is non-zero.</desc>
-      <term>NSEvenOddWindingRule</term>
+      <term>NSWindingRuleEvenOdd</term>
       <desc>A point is inside the path iff the winding count at the point
       is odd.</desc>
     </deflist>
     */
 typedef enum {
-  NSNonZeroWindingRule,
-  NSEvenOddWindingRule
+  NSNonZeroWindingRule = 0,
+  NSEvenOddWindingRule = 1,
+  #if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+  NSWindingRuleNonZero = 0,
+  NSWindingRuleEvenOdd = 1
+  #endif
 } NSWindingRule;
 
 typedef enum {
-  NSMoveToBezierPathElement,
-  NSLineToBezierPathElement,
-  NSCurveToBezierPathElement,
-  NSClosePathBezierPathElement
+  NSMoveToBezierPathElement = 0,
+  NSLineToBezierPathElement = 1,
+  NSCurveToBezierPathElement = 2,
+  NSClosePathBezierPathElement = 3
+  #if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+  NSBezierPathElementMoveTo = 0,
+  NSBezierPathElementLineTo = 1,
+  NSBezierPathElementCurveTo = 2,
+  NSBezierPathElementClosePath = 3
+  #endif
 } NSBezierPathElement;
 
 @interface NSBezierPath : NSObject <NSCopying, NSCoding>
