@@ -86,7 +86,7 @@ typedef enum {
   NSMoveToBezierPathElement = 0,
   NSLineToBezierPathElement = 1,
   NSCurveToBezierPathElement = 2,
-  NSClosePathBezierPathElement = 3
+  NSClosePathBezierPathElement = 3,
   #if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
   NSBezierPathElementMoveTo = 0,
   NSBezierPathElementLineTo = 1,
