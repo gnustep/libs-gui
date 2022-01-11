@@ -67,7 +67,7 @@
   if (style
     & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
-      *t = [theme titlebarHeight];
+      *t = [[NSScreen mainScreen] userSpaceScaleFactor] * [theme titlebarHeight];
     }
   if (style & NSResizableWindowMask)
     {
