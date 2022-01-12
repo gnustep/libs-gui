@@ -176,11 +176,13 @@
       if (success && topLevelObjects && [table objectForKey: NSNibTopLevelObjects])
         {
           *topLevelObjects = [table objectForKey: NSNibTopLevelObjects];
-          FOR_IN(NSObject*, obj, *topLevelObjects)
+          NSEnumerator *en = [*topLevelObjects objectEnumerator];
+          id obj = nil;
+          
+          while ((obj = [en nextObject]) != nil)
             {
               AUTORELEASE(obj);
             }
-          END_FOR_IN(*topLevelObjects);
         }
     }
  
