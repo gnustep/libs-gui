@@ -1,3 +1,8 @@
+2022-01-11 Gregory John Casamento <greg.casamento@gmail.com>
+
+        * Source/NSBundleAdditions.m: Use FOR_IN macro instead
+        of for(... in...) for compiler compatibility.
+
 2021-11-15 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSSplitView.m: Correct issue introduced in the previous change
