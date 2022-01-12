@@ -1524,7 +1524,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
         }
       else
         {
-          int barWidth = 0;
+          NSInteger barWidth = 0;
 
           decode_NSInteger(aDecoder, &barWidth);
           _draggedBarWidth = (CGFloat)barWidth;

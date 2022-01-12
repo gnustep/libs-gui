@@ -121,7 +121,7 @@
   NSMenu *_the_menu;
 }
 - (void) _setmenu: (NSMenu *)menu;
-- (NSMenu *) menu;
+- (NSMenu *) _menu;
 @end
 
 @interface NSMenuView (GNUstepPrivate)
@@ -156,7 +156,7 @@ static BOOL menuBarVisible = YES;
 {
   _the_menu = menu;
 }
-- (NSMenu *) menu
+- (NSMenu *) _menu
 {
     return _the_menu;
 }
