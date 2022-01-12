@@ -42,6 +42,7 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GSFastEnumeration.h"
 
 @implementation NSBundle (NSBundleAdditions)
 + (BOOL) loadNibFile: (NSString*)fileName
@@ -175,10 +176,11 @@
       if (success && topLevelObjects && [table objectForKey: NSNibTopLevelObjects])
         {
           *topLevelObjects = [table objectForKey: NSNibTopLevelObjects];
-          for (NSObject *obj in *topLevelObjects)
+          FOR_IN(NSObject*, obj, *topLevelObjects)
             {
               AUTORELEASE(obj);
             }
+          END_FOR_IN(*topLevelObjects);
         }
     }
  
