@@ -257,10 +257,13 @@ NSStatusItem.m \
 NSTabView.m \
 NSTabViewController.m \
 NSTabViewItem.m \
+NSTableCellView.m \
 NSTableColumn.m \
 NSTableHeaderView.m \
 NSTableHeaderCell.m \
+NSTableRowView.m \
 NSTableView.m \
+NSTableViewRowAction.m \
 NSText.m \
 NSTextAlternatives.m \
 NSTextAttachment.m \
@@ -558,10 +561,13 @@ NSSwitch.h \
 NSTabView.h \
 NSTabViewController.h \
 NSTabViewItem.h \
+NSTableCellView.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
+NSTableRowView.h \
 NSTableView.h \
+NSTableViewRowAction.h \
 NSText.h \
 NSTextAlternatives.h \
 NSTextAttachment.h \
