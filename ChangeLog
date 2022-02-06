@@ -1,3 +1,8 @@
+2022-02-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSPopUpButtonCell.m: Add fix to avoid a dangling
+	pointer when changing the menu.
+
 2022-01-11 Gregory John Casamento <greg.casamento@gmail.com>
 
         * Source/NSBundleAdditions.m: Use FOR_IN macro instead

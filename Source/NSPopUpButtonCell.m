@@ -150,8 +150,6 @@ static NSImage *_pbc_image[5];
 
   if (_menu != nil)
     {
-      // prevent further actions on the menu
-      _pbcFlags.usesItemFromMenu = NO;
       [self setMenu: nil];
     }
   _selectedItem = nil;
@@ -177,6 +175,17 @@ static NSImage *_pbc_image[5];
       [nc removeObserver: self
                     name: nil
                   object: _menu];
+    }
+  if (_selectedItem != nil)
+    {
+      // _selectedItem may be dead after the following ASSIGN statement,
+      // so make sure we leave no dangling pointer behind and unset the
+      // item's state if necessary.
+      if (_pbcFlags.altersStateOfSelectedItem)
+        {
+          [_selectedItem setState: NSOffState];
+        }
+      _selectedItem = nil;
     }
   ASSIGN(_menu, menu);
   if (_menu != nil)
