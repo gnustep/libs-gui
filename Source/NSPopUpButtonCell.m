@@ -157,7 +157,6 @@ static NSImage *_pbc_image[5];
                   object: _menu];
       [self setMenuView: nil];
     }
-
   _selectedItem = nil;
   [super dealloc];
 }
