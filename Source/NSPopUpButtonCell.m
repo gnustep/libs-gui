@@ -150,6 +150,8 @@ static NSImage *_pbc_image[5];
 
   if (_menu != nil)
     {
+      // prevent further actions on the menu
+      _pbcFlags.usesItemFromMenu = NO;
       [self setMenu: nil];
     }
   _selectedItem = nil;
