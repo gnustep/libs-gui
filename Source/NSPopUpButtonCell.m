@@ -138,6 +138,7 @@ static NSImage *_pbc_image[5];
 
 - (void) dealloc
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   /* 
    * The popup must be closed here, just in case the cell goes away 
    * while the popup is still displayed. In that case the notification
@@ -150,10 +151,13 @@ static NSImage *_pbc_image[5];
 
   if (_menu != nil)
     {
-      // prevent further actions on the menu
-      _pbcFlags.usesItemFromMenu = NO;
-      [self setMenu: nil];
+      [_menu _setOwnedByPopUp: nil];
+      [nc removeObserver: self
+                    name: nil
+                  object: _menu];
+      [self setMenuView: nil];
     }
+
   _selectedItem = nil;
   [super dealloc];
 }
