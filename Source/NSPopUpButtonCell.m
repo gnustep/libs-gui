@@ -181,12 +181,7 @@ static NSImage *_pbc_image[5];
   if (_selectedItem != nil)
     {
       // _selectedItem may be dead after the following ASSIGN statement,
-      // so make sure we leave no dangling pointer behind and unset the
-      // item's state if necessary.
-      if (_pbcFlags.altersStateOfSelectedItem)
-        {
-          [_selectedItem setState: NSOffState];
-        }
+      // so make sure we leave no dangling pointer behind.
       _selectedItem = nil;
     }
   ASSIGN(_menu, menu);
