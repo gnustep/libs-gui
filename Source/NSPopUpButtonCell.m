@@ -155,7 +155,6 @@ static NSImage *_pbc_image[5];
       [nc removeObserver: self
                     name: nil
                   object: _menu];
-      [self setMenuView: nil];
     }
   _selectedItem = nil;
   [super dealloc];
