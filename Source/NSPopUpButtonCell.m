@@ -149,6 +149,14 @@ static NSImage *_pbc_image[5];
       [self dismissPopUp];
     }
 
+  /*
+   * We don't use methods here to clean up the selected item, the menu
+   * item and the menu as these methods internally update the menu,
+   * which tries to access the target of the menu item (or of this cell).
+   * When the popup is released this target may already have been freed,
+   * so the local reference to it is invalid and will result in a
+   * segmentation fault.
+   */
   if (_menu != nil)
     {
       [_menu _setOwnedByPopUp: nil];
