@@ -165,7 +165,6 @@ static NSImage *_pbc_image[5];
                   object: _menu];
       RELEASE(_menu);
     }
-
   _selectedItem = nil;
   [super dealloc];
 }
