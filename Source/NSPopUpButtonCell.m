@@ -163,7 +163,7 @@ static NSImage *_pbc_image[5];
       [nc removeObserver: self
                     name: nil
                   object: _menu];
-      RELEASE(_menu);
+      DESTROY(_menu);
     }
   _selectedItem = nil;
   [super dealloc];
