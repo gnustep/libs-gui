@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 	[item retain];
 	[b dealloc];                  // releases own _menuItem
 
-	PASS([item retainCount] == 1, "-[setUsesItemFromMenu:NO]");
+	PASS(item != nil && [item retainCount] == 1, "-[setUsesItemFromMenu:NO]");
 
 	DESTROY(item);
 
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	[b dealloc];                  
 	DESTROY(arp2);
 
-	PASS([item retainCount] == 1, "-[setPullsDown:YES]");
+	PASS(item != nil && [item retainCount] == 1, "-[setPullsDown:YES]");
 
 	DESTROY(item);
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	[b dealloc];                  
 	DESTROY(arp3);
 
-	PASS([item retainCount] == 1, "when highlighted");
+	PASS(item != nil && [item retainCount] == 1, "when highlighted");
 
 	DESTROY(item);
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 	[b dealloc];                  
 	DESTROY(arp4);
 
-	PASS([item retainCount] == 1, "when selected");
+	PASS(item != nil && [item retainCount] == 1, "when selected");
 
 	DESTROY(item);
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
 	[mv release]; // the validator is deallocated early
 
-	[b dealloc]; // must not fall in a segfault
+	[b dealloc]; // must not fall in a segfault(called NSZombie)
 
 	PASS(YES, "early validator deallocation");
 
