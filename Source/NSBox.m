@@ -98,6 +98,8 @@
 
 - (void) dealloc
 {
+  TEST_RELEASE(_border_color);
+  TEST_RELEASE(_fill_color);
   TEST_RELEASE(_cell);
   [super dealloc];
 }
