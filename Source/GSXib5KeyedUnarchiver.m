@@ -790,9 +790,9 @@ static NSArray      *XmlConnectionRecordTags  = nil;
   else
     {
       // Ensure we have a XIB 5 version...first see if we can parse the XML...
-      NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data
+      NSXMLDocument *document = [[[NSXMLDocument alloc] initWithData:data
                                                             options:0
-                                                              error:NULL];
+                                                              error:NULL] autorelease];
       if (document == nil)
         {
           NSLog(@"%s:DOCUMENT IS NIL: %@\n", __PRETTY_FUNCTION__, document);
