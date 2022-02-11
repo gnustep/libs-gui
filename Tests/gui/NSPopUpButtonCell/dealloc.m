@@ -120,9 +120,7 @@ int main(int argc, char **argv)
 
 	[mv release]; // the validator is deallocated early
 
-	[b dealloc]; // must not fall in a segfault(called NSZombie)
-
-	PASS(YES, "early validator deallocation");
+	PASS_RUNS([b dealloc], "early validator deallocation");
 
 	END_SET("NSPopupButtonCell GNUstep -[dealloc]")
 
