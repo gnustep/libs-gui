@@ -750,7 +750,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_frameMatrix);
   TEST_RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
-
   if (_rFlags.has_tooltips != 0)
     {
       [GSToolTips removeTipsForView: self];
