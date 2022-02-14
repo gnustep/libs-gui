@@ -751,8 +751,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
 
-  [GSToolTips removeTipsForView: self];
-
+  if (_rFlags.has_tooltips != 0)
+  {
+    [GSToolTips removeTipsForView: self];
+  }
   if (_rFlags.has_currects != 0)
     {
       [self discardCursorRects];	// Handle release of cursors
