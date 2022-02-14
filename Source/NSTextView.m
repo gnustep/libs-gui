@@ -64,6 +64,7 @@
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSUndoManager.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSAutoreleasePool.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
@@ -1170,6 +1171,9 @@ to this method from the text container or layout manager.
 */
 - (void) setTextContainer: (NSTextContainer *)container
 {
+
+  ENTER_POOL
+  
   NSUInteger i, c;
   NSArray *tcs;
   NSTextView *other;
@@ -1233,6 +1237,8 @@ to this method from the text container or layout manager.
   _currentInsertionPointMovementDirection = 0;
 
   [self _updateMultipleTextViews];
+  
+  LEAVE_POOL
 }
 
 - (void) replaceTextContainer: (NSTextContainer *)newContainer
