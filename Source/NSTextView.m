@@ -1172,7 +1172,7 @@ to this method from the text container or layout manager.
 - (void) setTextContainer: (NSTextContainer *)container
 {
 
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  ENTER_POOL
   
   NSUInteger i, c;
   NSArray *tcs;
@@ -1238,7 +1238,7 @@ to this method from the text container or layout manager.
 
   [self _updateMultipleTextViews];
   
-  [pool drain];
+  LEAVE_POOL
 }
 
 - (void) replaceTextContainer: (NSTextContainer *)newContainer
