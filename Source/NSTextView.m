@@ -4040,7 +4040,10 @@ Figure out how the additional layout stuff is supposed to work.
     }
 
   // Remove any existing tooltips in the redrawn rectangle.
-  [[GSToolTips tipsForView: self] removeToolTipsInRect: rect];
+  if (_rFlags.has_tooltips != 0)
+  {
+    [[GSToolTips tipsForView: self] removeToolTipsInRect: rect];
+  }
   {
     NSRange r;
     NSUInteger i = drawnRange.location;
