@@ -210,8 +210,9 @@ static NSImage *_pbc_image[5];
       [self setMenuView: nil];
     }
   
-  // FIXME: Select the first or last item?
-  [self selectItemAtIndex: [_menu numberOfItems] - 1];
+  // Select the first item because that is the only selection that makes
+  // sense for pull downs.
+  [self selectItemAtIndex: [_menu numberOfItems] > 0 ? 0 : - 1];
   [self synchronizeTitleAndSelectedItem];
 }
 
