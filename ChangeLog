@@ -1,3 +1,9 @@
+2022-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSPopUpButtonCell.m: Never change the state of the
+	selected item when configured as a pull down to match Apple's
+	documentation and implementation.
+
 2022-02-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m: Add fix to avoid a dangling
