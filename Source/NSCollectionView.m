@@ -440,6 +440,7 @@ static NSString *placeholderItem = nil;
 - (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout
 {
   ASSIGN(_collectionViewLayout, layout);
+  [self reloadData];
 }
 
 - (NSRect) frameForItemAtIndex: (NSUInteger)theIndex
@@ -690,6 +691,7 @@ static NSString *placeholderItem = nil;
           
           if ([aCoder containsValueForKey: NSCollectionViewBackgroundColorsKey])
             {
+              NSLog(@"******** loading colors");
               [self setBackgroundColors: [aCoder decodeObjectForKey: NSCollectionViewBackgroundColorsKey]];
             }
           
@@ -1322,6 +1324,7 @@ static NSString *placeholderItem = nil;
 
 - (void) setDataSource: (id<NSCollectionViewDataSource>)dataSource
 {
+  NSLog(@"Adding data source %@", dataSource);
   _dataSource = dataSource;
   [self reloadData];
 }
@@ -1362,24 +1365,37 @@ static NSString *placeholderItem = nil;
 {
   NSInteger ns = [self numberOfSections];
   NSInteger cs = 0;
-
+  
+  NSLog(@"reloading data... number of sections = %ld, %@", ns, _collectionViewLayout);
   for (cs = 0; cs < ns; cs++)
     {
       NSInteger ni = [self numberOfItemsInSection: cs];
       NSInteger ci = 0;
+
+      NSLog(@"current section = %ld", cs);
       
       for (ci = 0; ci < ni; ci++)
         {
-          NSIndexPath *p = nil;
-          NSCollectionViewItem *item = [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: p];
+          NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
+          NSCollectionViewItem *item =
+            [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: p];
           NSNib *nib = [self _nibForClass: [item class]];
           BOOL loaded = [nib instantiateWithOwner: item
                                   topLevelObjects: NULL];
           
-          if (loaded)
+          if (!loaded)
+            {
+              NSLog(@"Could not load model %@", nib);
+            }
+          else
             {
               NSView *v = [item view];
-              NSLog(@"%@",v);
+              NSCollectionViewLayoutAttributes *attrs =
+                [_collectionViewLayout layoutAttributesForItemAtIndexPath: p];
+              NSRect f = [attrs frame];
+
+              // set position of item based on currently selected layout...
+              [v setFrame: f];
             }
         }
     }
@@ -1411,7 +1427,7 @@ static NSString *placeholderItem = nil;
 {
   NSInteger n = 0;
 
-  if ([_dataSource respondsToSelector: @selector(numberOfsectionsInCollectionView:)])
+  if ([_dataSource respondsToSelector: @selector(numberOfSectionsInCollectionView:)])
     {
       n = [_dataSource numberOfSectionsInCollectionView: self];
     }
