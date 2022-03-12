@@ -129,7 +129,6 @@ static NSString *placeholderItem = nil;
 
 -(void) _initDefaults
 {
-//  _draggingSourceOperationMaskForLocal = NSDragOperationCopy | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForLocal = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
   _draggingSourceOperationMaskForRemote = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
   [self _resetItemSize];
@@ -691,7 +690,6 @@ static NSString *placeholderItem = nil;
           
           if ([aCoder containsValueForKey: NSCollectionViewBackgroundColorsKey])
             {
-              NSLog(@"******** loading colors");
               [self setBackgroundColors: [aCoder decodeObjectForKey: NSCollectionViewBackgroundColorsKey]];
             }
           

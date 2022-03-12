@@ -3320,6 +3320,10 @@ didStartElement: (NSString*)elementName
           // New xib stores values as attributes...
           object = [currentElement attributeForKey: key];
         }
+      else if ([@"NSCollectionViewBackgroundColor" isEqualToString: key])
+        {
+          object = [self decodeObjectForKey: @"primaryBackgroundColor"];
+        }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
         {
@@ -3541,19 +3545,19 @@ didStartElement: (NSString*)elementName
         {
           hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
         }
-      else if ([@"NSCollectionViewBackgroundColorsKey" isEqualToString: key])
+      else if ([@"NSBackgroundColors" isEqualToString: key])
         {
           hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
-        }
+        } 
       else if ([@"NSCollectionViewLayout" isEqualToString: key])
         {
           hasValue = [currentElement elementForKey: @"collectionViewLayout"] != nil;
-        }
+        } 
       else if (([@"NSIntercellSpacingHeight" isEqualToString: key]) ||
                ([@"NSIntercellSpacingWidth" isEqualToString: key]))
         {
           hasValue = [currentElement elementForKey: @"intercellSpacing"] != nil;
-        }
+        } 
       else if ([@"NSContents" isEqualToString: key])
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
