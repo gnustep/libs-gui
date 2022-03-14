@@ -1393,10 +1393,16 @@ static NSString *placeholderItem = nil;
               NSView *v = [item view];
               NSCollectionViewLayoutAttributes *attrs =
                 [_collectionViewLayout layoutAttributesForItemAtIndexPath: p];
-              NSRect f = [attrs frame];
-
-              // set position of item based on currently selected layout...
-              [v setFrame: f];
+              NSRect frame = [attrs frame];
+              BOOL hidden = [attrs isHidden];
+              CGFloat alpha = [attrs alpha];
+              NSSize sz = [attrs size];
+              
+              // set attributes of item based on currently selected layout...
+              frame.size = sz;
+              [v setFrame: frame];
+              [v setHidden: hidden];
+              [v setAlphaValue: alpha];
             }
         }
     }

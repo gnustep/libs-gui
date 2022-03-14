@@ -178,8 +178,6 @@
 - (void) prepareLayout
 {
   [super prepareLayout];
-  _invalidateFlowLayoutAttributes = NO;
-  _invalidateFlowLayoutDelegateMetrics = NO;
 }
 
 - (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
