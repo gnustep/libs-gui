@@ -439,6 +439,8 @@ static NSString *placeholderItem = nil;
 - (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout
 {
   ASSIGN(_collectionViewLayout, layout);
+  
+  [_collectionViewLayout setCollectionView: self]; // weak reference
   [self reloadData];
 }
 
@@ -1363,8 +1365,9 @@ static NSString *placeholderItem = nil;
 {
   NSInteger ns = [self numberOfSections];
   NSInteger cs = 0;
-  
+
   NSLog(@"reloading data... number of sections = %ld, %@", ns, _collectionViewLayout);
+  [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
     {
       NSInteger ni = [self numberOfItemsInSection: cs];

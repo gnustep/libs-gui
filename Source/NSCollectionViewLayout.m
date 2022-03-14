@@ -242,6 +242,14 @@
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
+  self = [super initWithCoder: coder];
+  if (self != nil)
+    {
+      if ([coder containsValueForKey: @"NSItemSize"])
+        {
+          [coder decodeSizeForKey: @"NSItemSize"];
+        }
+    }
   return self;
 }
 

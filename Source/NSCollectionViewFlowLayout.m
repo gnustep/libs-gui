@@ -174,5 +174,87 @@
 {
 }
 
+// Methods to override for specific layouts...
+- (void) prepareLayout
+{
+  [super prepareLayout];
+  _invalidateFlowLayoutAttributes = NO;
+  _invalidateFlowLayoutDelegateMetrics = NO;
+}
+
+- (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *)
+  layoutAttributesForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
+  atIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *)
+  layoutAttributesForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind
+                              atIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *)layoutAttributesForDropTargetAtPoint: (NSPoint)pointInCollectionView
+{
+  return nil;
+}
+
+- (NSCollectionViewLayoutAttributes *)layoutAttributesForInterItemGapBeforeIndexPath: (NSIndexPath *)indexPath
+{
+  return nil;
+}
+
+- (BOOL)shouldInvalidateLayoutForBoundsChange: (NSRect)newBounds
+{
+  return NO;
+}
+
+- (NSCollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange: (NSRect)newBounds
+{
+  return nil;
+}
+
+- (BOOL)shouldInvalidateLayoutForPreferredLayoutAttributes: (NSCollectionViewLayoutAttributes *)preferredAttributes
+                                    withOriginalAttributes: (NSCollectionViewLayoutAttributes *)originalAttributes
+{
+  return NO;
+}
+
+- (NSCollectionViewLayoutInvalidationContext *)
+  invalidationContextForPreferredLayoutAttributes: (NSCollectionViewLayoutAttributes *)preferredAttributes
+                           withOriginalAttributes: (NSCollectionViewLayoutAttributes *)originalAttributes
+{
+  return nil;
+}
+
+- (NSPoint) targetContentOffsetForProposedContentOffset: (NSPoint)proposedContentOffset
+                                  withScrollingVelocity: (NSPoint)velocity
+{
+  return NSZeroPoint;
+}
+
+- (NSPoint) targetContentOffsetForProposedContentOffset: (NSPoint)proposedContentOffset
+{
+  return NSZeroPoint;  
+}
+
+- (NSSize) collectionViewContentSize
+{
+  return [_collectionView frame].size;
+}
+// end subclassing hooks...
+
 @end
 

@@ -94,6 +94,7 @@ NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndi
 
 - (NSCollectionElementCategory) representedElementCategory;
 - (NSString *) representedElementKind;
+
 @end
 
 enum
@@ -116,15 +117,16 @@ typedef NSInteger NSCollectionUpdateAction;
 - (NSIndexPath *) indexPathBeforeUpdate;
 - (NSIndexPath *) indexPathAfterUpdate;
 - (NSCollectionUpdateAction) updateAction;
+
 @end
 
 
 @interface NSCollectionViewLayoutInvalidationContext : NSObject
 {
-  NSPoint _contentOffsetAdjustment; 
+  NSPoint _contentOffsetAdjustment;
   NSSize _contentSizeAdjustment;
   NSSet *_invalidatedItemIndexPaths;
-  NSDictionary *_invalidatedSupplementaryIndexPaths; 
+  NSDictionary *_invalidatedSupplementaryIndexPaths;
   NSDictionary *_invalidatedDecorationIndexPaths;
 }
 
@@ -149,6 +151,7 @@ typedef NSInteger NSCollectionUpdateAction;
 
 - (NSDictionary *) invalidatedSupplementaryIndexPaths;
 - (NSDictionary *) invalidatedDecorationIndexPaths;
+
 @end
 
 @interface NSCollectionViewLayout : NSObject <NSCoding>
@@ -163,7 +166,7 @@ typedef NSInteger NSCollectionUpdateAction;
 
 // Initializers
 - (void)invalidateLayout;
-- (void)invalidateLayoutWithContext:(NSCollectionViewLayoutInvalidationContext *)context;
+- (void)invalidateLayoutWithContext: (NSCollectionViewLayoutInvalidationContext *)context;
 
 - (void)registerClass: (Class)viewClass
         forDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind;
@@ -173,7 +176,7 @@ typedef NSInteger NSCollectionUpdateAction;
 // Properties
 - (NSCollectionView *) collectionView;
 - (void) setCollectionView: (NSCollectionView *)cv;
-
+  
 @end
 
 @interface NSCollectionViewLayout (NSSubclassingHooks)
