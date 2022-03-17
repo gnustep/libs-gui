@@ -52,6 +52,7 @@
 #import "AppKit/NSWindow.h"
 
 #import "GSGuiPrivate.h"
+#import "GSFastEnumeration.h"
 
 #include <math.h>
 
@@ -1360,6 +1361,49 @@ static NSString *placeholderItem = nil;
 }
 
 /* Reloading Content */
+- (void) _loadItemAtIndexPath: (NSIndexPath *)path
+{
+  NSCollectionViewItem *item =
+    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: path];
+  NSNib *nib = [self _nibForClass: [item class]];
+  BOOL loaded = [nib instantiateWithOwner: item
+                          topLevelObjects: NULL];
+  
+  if (loaded)
+    {
+      NSView *v = [item view];
+      NSCollectionViewLayoutAttributes *attrs =
+        [_collectionViewLayout layoutAttributesForItemAtIndexPath: path];
+      NSRect frame = [attrs frame];
+      BOOL hidden = [attrs isHidden];
+      CGFloat alpha = [attrs alpha];
+      NSSize sz = [attrs size];
+      
+      // set attributes of item based on currently selected layout...
+      frame.size = sz;
+      [v setFrame: frame];
+      [v setHidden: hidden];
+      [v setAlphaValue: alpha];
+    }
+  else
+    {
+      NSLog(@"Could not load model %@", nib);
+    }
+}
+
+- (void) _loadSectionAtIndex: (NSUInteger)cs
+{
+  NSInteger ni = [self numberOfItemsInSection: cs];
+  NSInteger ci = 0;
+  
+  NSLog(@"current section = %ld", cs);
+  
+  for (ci = 0; ci < ni; ci++)
+    {
+      NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
+      [self _loadItemAtIndexPath: p];
+    }
+}
 
 - (void) reloadData
 {
@@ -1370,50 +1414,39 @@ static NSString *placeholderItem = nil;
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
     {
-      NSInteger ni = [self numberOfItemsInSection: cs];
-      NSInteger ci = 0;
-
-      NSLog(@"current section = %ld", cs);
-      
-      for (ci = 0; ci < ni; ci++)
-        {
-          NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
-          NSCollectionViewItem *item =
-            [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: p];
-          NSNib *nib = [self _nibForClass: [item class]];
-          BOOL loaded = [nib instantiateWithOwner: item
-                                  topLevelObjects: NULL];
-          
-          if (!loaded)
-            {
-              NSLog(@"Could not load model %@", nib);
-            }
-          else
-            {
-              NSView *v = [item view];
-              NSCollectionViewLayoutAttributes *attrs =
-                [_collectionViewLayout layoutAttributesForItemAtIndexPath: p];
-              NSRect frame = [attrs frame];
-              BOOL hidden = [attrs isHidden];
-              CGFloat alpha = [attrs alpha];
-              NSSize sz = [attrs size];
-              
-              // set attributes of item based on currently selected layout...
-              frame.size = sz;
-              [v setFrame: frame];
-              [v setHidden: hidden];
-              [v setAlphaValue: alpha];
-            }
-        }
+      [self _loadSectionAtIndex: cs];
     }
 }
 
 - (void) reloadSections: (NSIndexSet *)sections
 {
+  NSUInteger *buffer = NULL;
+  NSUInteger c = 0;
+  NSUInteger i = 0;
+  
+  c = [sections getIndexes: buffer
+                  maxCount: [sections count]
+              inIndexRange: NULL];
+
+  if (buffer != NULL)
+    {
+      for(i = 0; i < c; i++)
+        {
+          NSUInteger cs = buffer[i];
+          [self _loadSectionAtIndex: cs];
+        }
+    }
 }
 
 - (void) reloadItemsAtIndexPaths: (NSSet *)indexPaths
 {
+  FOR_IN(NSIndexPath*, p, indexPaths)
+    {
+      [self _loadItemAtIndexPath: p];
+    }
+  END_FOR_IN(indexPaths);
+
+  
 }
 
 /* Prefetching Collection View Cells and Data */
