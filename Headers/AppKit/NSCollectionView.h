@@ -128,10 +128,16 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #if GS_PROTOCOLS_HAVE_OPTIONAL
 @required
 #endif
+/**
+ * Load the items listed in indexPaths in collectionView before they are displayed
+ */
 - (void)collectionView:(NSCollectionView *)collectionView prefetchItemsAtIndexPaths:(NSArray *)indexPaths;
 #if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #endif
+/**
+ * Cancel the prefetch request for the listed indexPaths.
+ */ 
 - (void)collectionView:(NSCollectionView *)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray *)indexPaths;
 @end
 #endif
@@ -143,42 +149,63 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Return a boolean indicating if the indexPaths on collectionView can be dragged with the passed in event.
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
          canDragItemsAtIndexPaths: (NSSet *)indexPaths
               withEvent: (NSEvent *)event;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Return a boolean indicating if the indexes on collectionView can be dragged with the passed in event.
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
   canDragItemsAtIndexes: (NSIndexSet *)indexes
               withEvent: (NSEvent *)event;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Return a boolean if the items at indexPaths can be written to the pasteboard
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
          writeItemsAtIndexPaths: (NSSet *)indexPaths
            toPasteboard: (NSPasteboard *)pasteboard;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Return a boolean if the items at indexes can be written to the pasteboard
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
     writeItemsAtIndexes: (NSIndexSet *)indexes
            toPasteboard: (NSPasteboard *)pasteboard;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Returns an array of filenames for files at indexPaths that will be dropped at the destination specified by NSURL.
+ */ 
 - (NSArray *) collectionView: (NSCollectionView *)collectionView
               namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropURL
  forDraggedItemsAtIndexPaths: (NSSet *)indexPaths;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Returns an array of filenames for files at indexes that will be dropped at the destination specified by NSURL.
+ */ 
 - (NSArray *) collectionView: (NSCollectionView *)collectionView
               namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropURL
     forDraggedItemsAtIndexes: (NSIndexSet *)indexes;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Returns an NSImage representing the items at indexPaths which are being dragged.
+ */ 
 - (NSImage *) collectionView: (NSCollectionView *)collectionView
               draggingImageForItemsAtIndexPaths: (NSSet *)indexPaths
                    withEvent: (NSEvent *)event
@@ -186,6 +213,9 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Returns an NSImage representing the items at indexes which are being dragged.
+ */ 
 - (NSImage *) collectionView: (NSCollectionView *)collectionView
               draggingImageForItemsAtIndexes: (NSIndexSet *)indexes
                    withEvent: (NSEvent *)event
@@ -193,6 +223,9 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Return NSDragOperation when performing drag and drop on collectionView at proposedDropIndexPath.
+ */
 - (NSDragOperation) collectionView: (NSCollectionView *)collectionView
                       validateDrop: (id < NSDraggingInfo >)draggingInfo
                  proposedIndexPath: (NSIndexPath **)proposedDropIndexPath
@@ -200,6 +233,9 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Return NSDragOperation when performing drag and drop on collectionView at proposedIndex.
+ */
 - (NSDragOperation) collectionView: (NSCollectionView *)collectionView
                       validateDrop: (id < NSDraggingInfo >)draggingInfo
                      proposedIndex: (NSInteger *)proposedDropIndex
@@ -207,6 +243,9 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Returns a BOOL to indicate if the drop at indexPath was accepted
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
              acceptDrop: (id < NSDraggingInfo >)draggingInfo
               indexPath: (NSIndexPath *)indexPath
@@ -214,6 +253,9 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/**
+ * Returns a BOOL to indicate if the drop at index was accepted
+ */
 - (BOOL) collectionView: (NSCollectionView *)collectionView
              acceptDrop: (id < NSDraggingInfo >)draggingInfo
                   index: (NSInteger)index
@@ -223,68 +265,120 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 /* Multi-image drag and drop */
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Return NSPasteboardWriting object for collectionView at indexPath
+ */
 - (id <NSPasteboardWriting>) collectionView: (NSCollectionView *)collectionView
          pasteboardWriterForItemAtIndexPath: (NSIndexPath *)indexPath;
 #endif
 
+/**
+ * Return NSPasteboardWriting object for collectionView at index
+ */
 - (id <NSPasteboardWriting>) collectionView: (NSCollectionView *)collectionView
              pasteboardWriterForItemAtIndex: (NSUInteger)index;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Allows application to specify the screenPoint at which a dragging session will begin
+ * for the given indexPaths
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
         draggingSession: (NSDraggingSession *)session
        willBeginAtPoint: (NSPoint)screenPoint
    forItemsAtIndexPaths: (NSSet *)indexPaths;
 #endif
 
+/**
+ * Allows application to specify the screenPoint at which a dragging session will begin
+ * for the given indexes
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
         draggingSession: (NSDraggingSession *)session
        willBeginAtPoint: (NSPoint)screenPoint
       forItemsAtIndexes: (NSIndexSet *)indexes;
 
+/**
+ * Allows application to specify the screenPoint at which a dragging session will end
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
         draggingSession: (NSDraggingSession *)session
            endedAtPoint: (NSPoint)screenPoint
           dragOperation: (NSDragOperation)operation;
-
+/**
+ * Update items include in the drag operation for collectionView.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
          updateDraggingItemsForDrag: (id <NSDraggingInfo>)draggingInfo;
 
 /* Selection and Highlighting */
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Returns the set of indexPaths that should change their selection.  This is sent to inform the delegate of
+ * those items that the collectionView would like to change to highlightState.
+ */
 - (NSSet *) collectionView: (NSCollectionView *)collectionView
             shouldChangeItemsAtIndexPaths: (NSSet *)indexPaths
           toHighlightState: (NSCollectionViewItemHighlightState)highlightState;
 
+/**
+ * This is sent to inform the delegate of those items that did change highlightState.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
          didChangeItemsAtIndexPaths: (NSSet *)indexPaths
        toHighlightState: (NSCollectionViewItemHighlightState)highlightState;
 
+/**
+ * Returns the set of indexPaths that should change.
+ */ 
 - (NSSet *) collectionView: (NSCollectionView *)collectionView
 shouldSelectItemsAtIndexPaths: (NSSet *)indexPaths;
 
+/**
+ * Returns the set of NSIndexPath objects that should be deselected given the proposed indexPaths.
+ */
 - (NSSet *) collectionView: (NSCollectionView *)collectionView shouldDeselectItemsAtIndexPaths: (NSSet *)indexPaths;
 
+/**
+ * Called to inform the delegate of those items that were selected.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView didSelectItemsAtIndexPaths: (NSSet *)indexPaths;
 
+/**
+ * Called to inform the delegate of those items that were deselected.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView didDeselectItemsAtIndexPaths: (NSSet *)indexPaths;
 
 /* Display Notification */
 
+/**
+ * Called to inform the delegate that the item representing the object at indexPath will be displayed.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
         willDisplayItem: (NSCollectionViewItem *)item
         forRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath;
 
+/**
+ * Called to inform the delegate that the supplementary view for the elementKind will be displayed 
+ * at indexPath.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
          willDisplaySupplementaryView: (NSView *)view
          forElementKind: (NSCollectionViewSupplementaryElementKind)elementKind
             atIndexPath: (NSIndexPath *)indexPath;
 
+/**
+ * Called to inform the delegate that the collectionView will end display of item for the object at indexPath.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
    didEndDisplayingItem: (NSCollectionViewItem *)item
    forRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath;
 
+/**
+ * Called to inform the delegate that the collectionView will end display of supplementaryView for the 
+ * object at indexPath.
+ */
 - (void) collectionView: (NSCollectionView *)collectionView
          didEndDisplayingSupplementaryView: (NSView *)view
        forElementOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
@@ -292,6 +386,10 @@ shouldSelectItemsAtIndexPaths: (NSSet *)indexPaths;
 
 /* Layout Transition Support */
 
+/**
+ * Called to inform the delegate that the collectionView is transitioning from the old to the new
+ * layout indicated.
+ */
 - (NSCollectionViewTransitionLayout *) collectionView: (NSCollectionView *)collectionView
                          transitionLayoutForOldLayout: (NSCollectionViewLayout *)fromLayout
                                             newLayout: (NSCollectionViewLayout *)toLayout;
