@@ -245,10 +245,6 @@
   self = [super init];
   if (self != nil)
     {
-      if ([coder containsValueForKey: @"NSItemSize"])
-        {
-          [coder decodeSizeForKey: @"NSItemSize"];
-        }
     }
   return self;
 }
@@ -260,7 +256,7 @@
 // Methods to override for specific layouts...
 - (void) prepareLayout
 {
-  // abstract method implements nothing...
+  _valid = YES;
 }
 
 - (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
