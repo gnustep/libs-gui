@@ -1,3 +1,8 @@
+2022-03-18  Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSCell.m: only for ImageCell set refuses first responder,
+	as behavior on Mac.
+
 2022-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m(setMenu:): Select the first item of

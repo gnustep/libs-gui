@@ -2,7 +2,7 @@
 
    <abstract>The abstract cell class</abstract>
 
-   Copyright (C) 1996-2012,2019 Free Software Foundation, Inc.
+   Copyright (C) 1996-2012,2019,2022 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -175,7 +175,6 @@ static NSColor *dtxtCol;
   //_cell.is_rich_text = NO;
   //_cell.imports_graphics = NO;
   //_cell.shows_first_responder = NO;
-  //_cell.refuses_first_responder = NO;
   //_cell.sends_action_on_end_editing = NO;
   //_cell.is_bordered = NO;
   //_cell.is_bezeled = NO;
@@ -183,6 +182,8 @@ static NSColor *dtxtCol;
   //_cell.is_selectable = NO;
   //_cell.state = 0;
   //_cell.line_break_mode = NSLineBreakByWordWrapping;
+
+  _cell.refuses_first_responder = YES;
   _action_mask = NSLeftMouseUpMask;
   _menu = [object_getClass(self) defaultMenu];
   [self setFocusRingType: [object_getClass(self) defaultFocusRingType]];
