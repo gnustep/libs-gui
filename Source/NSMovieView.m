@@ -35,6 +35,25 @@
 
 @implementation NSMovieView
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _movie = nil;
+      _rate = 1.0;
+      _volume = 1.0;
+      
+      _flags.muted = NO;
+      _flags.loopMode = NSQTMovieNormalPlayback;
+      _flags.plays_selection_only = NO;
+      _flags.plays_every_frame = YES;
+      _flags.is_controller_visible = NO;
+      _flags.editable = NO;
+      _flags.reserved = 0;
+    }
+  return self;
+}
 - (void) setMovie: (NSMovie*)movie
 {
   ASSIGN(_movie, movie);
