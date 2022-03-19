@@ -43,9 +43,9 @@ typedef enum {
 @interface NSMovieView : NSView
 {
   @protected
-    NSMovie* _movie;
-    float _rate;
-    float _volume;
+    NSMovie *_movie;
+    CGFloat  _rate;
+    CGFloat  _volume;
     struct NSMovieViewFlags {
       unsigned int muted: 1;
       unsigned int loopMode: 3;

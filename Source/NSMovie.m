@@ -7,6 +7,9 @@
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2003
 
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: March 2022
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -54,24 +57,27 @@
   return ([pbTypes firstObjectCommonWithArray: myTypes] != nil);
 }
 
-- (id) initWithData: (NSData *)movie
+- (id) initWithData: (NSData *)movieData
 {
-  if (movie == nil)
+  if (movieData == nil)
     {
       RELEASE(self);
       return nil;
     }
   
   [super init];
-  ASSIGN(_movie, movie);
+  ASSIGN(_movieData, movieData);
 
   return self;
 }
 
 - (id) initWithMovie: (void*)movie
 {
-  //FIXME
-
+  self = [super init];
+  if (self != nil)
+    {
+      _movie = movie;
+    }
   return self;
 }
 
@@ -80,7 +86,6 @@
   NSData* data = [url resourceDataUsingCache: YES];
 
   self = [self initWithData: data];
-
   if (byRef)
     {
       ASSIGN(_url, url);
@@ -128,7 +133,7 @@
 
 - (void*) QTMovie
 {
-  return (void*)[_movie bytes];
+  return (void*)[_movieData bytes];
 }
 
 - (NSURL*) URL
@@ -141,7 +146,8 @@
 {
   NSMovie *new = (NSMovie*)NSCopyObject (self, 0, zone);
 
-  new->_movie = [_movie copyWithZone: zone];
+  new->_movie = _movie;
+  new->_movieData =  [_movieData copyWithZone: zone];
   new->_url = [_url copyWithZone: zone];
   return new;
 }
@@ -155,7 +161,7 @@
     }
   else
     {
-      [aCoder encodeObject: _movie];
+      [aCoder encodeObject: _movieData];
       [aCoder encodeObject: _url];
     }
 }
@@ -168,7 +174,7 @@
     }
   else
     {
-      ASSIGN (_movie, [aDecoder decodeObject]);
+      ASSIGN (_movieData, [aDecoder decodeObject]);
       ASSIGN (_url, [aDecoder decodeObject]);
     }
   return self;

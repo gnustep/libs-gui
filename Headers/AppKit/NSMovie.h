@@ -7,6 +7,9 @@
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2003
 
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: March 2022
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -40,20 +43,21 @@
 @interface NSMovie : NSObject <NSCopying, NSCoding> 
 {
   @private
-    NSData*  _movie;
-    NSURL*   _url;
+    NSData *_movieData;
+    NSURL  *_url;
+    void   *_movie;
 }
 
-+ (NSArray*) movieUnfilteredFileTypes;
-+ (NSArray*) movieUnfilteredPasteboardTypes;
-+ (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard;
++ (NSArray *) movieUnfilteredFileTypes;
++ (NSArray *) movieUnfilteredPasteboardTypes;
++ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard;
 
-- (id) initWithMovie: (void*)movie;
-- (id) initWithURL: (NSURL*)url byReference: (BOOL)byRef;
-- (id) initWithPasteboard: (NSPasteboard*)pasteboard;
+- (id) initWithMovie: (void *)movie;
+- (id) initWithURL: (NSURL *)url byReference: (BOOL)byRef;
+- (id) initWithPasteboard: (NSPasteboard *)pasteboard;
 
-- (void*) QTMovie;
-- (NSURL*) URL;
+- (void *) QTMovie;
+- (NSURL *) URL;
 
 @end
 
