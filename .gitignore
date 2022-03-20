@@ -17,6 +17,8 @@ Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app
 Tools/speech_recognizer/GSSpeechRecognitionServer.app
+Tools/sound/AudioOutput.nssound
+Tools/sound/Sndfile.nssound
 *~
 *.nssound
 *.nsmovie

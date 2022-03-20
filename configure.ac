@@ -561,6 +561,23 @@ AC_SUBST(RECOGNIZER_BASE_CFLAGS)
 AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 
 #--------------------------------------------------------------------
+# NSMovie
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(video, 
+  [  --disable-video          Disable video],,
+  enable_video=yes)
+# Initialize to nothing...
+BUILD_VIDEO=
+
+# Check for the headers...
+AC_CHECK_HEADERS(libavcodec/avcodec.h, have_video=yes, have_video=no)
+# Only if we have both...
+if test $have_video = yes -a $enable_video = yes; then
+   BUILD_VIDEO="video"
+fi
+AC_SUBST(BUILD_VIDEO)
+
+#--------------------------------------------------------------------
 # Find CUPS
 #--------------------------------------------------------------------
 GSCUPS_CFLAGS=
