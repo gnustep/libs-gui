@@ -635,6 +635,7 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
+BUILD_VIDEO
 RECOGNIZER_ENGINE_CLASS
 RECOGNIZER_BASE_CFLAGS
 RECOGNIZER_BASE_LIBS
@@ -734,6 +735,7 @@ enable_aspell
 enable_sound
 enable_speech
 enable_speech_recognizer
+enable_video
 enable_cups
 '
       ac_precious_vars='build_alias
@@ -1390,6 +1392,7 @@ Optional Features:
   --disable-sound          Disable sound
   --disable-speech          Disable speech server
   --disable-speech-recognizer          Disable speech recognition server
+  --disable-video          Disable video
   --disable-cups          Disable cups printing support
 
 Optional Packages:
@@ -5746,6 +5749,40 @@ fi
 
 
 
+
+
+#--------------------------------------------------------------------
+# NSMovie
+#--------------------------------------------------------------------
+# Check whether --enable-video was given.
+if test "${enable_video+set}" = set; then :
+  enableval=$enable_video;
+else
+  enable_video=yes
+fi
+
+# Initialize to nothing...
+BUILD_VIDEO=
+
+# Check for the headers...
+for ac_header in libavcodec/avcodec.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "libavcodec/avcodec.h" "ac_cv_header_libavcodec_avcodec_h" "$ac_includes_default"
+if test "x$ac_cv_header_libavcodec_avcodec_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBAVCODEC_AVCODEC_H 1
+_ACEOF
+ have_video=yes
+else
+  have_video=no
+fi
+
+done
+
+# Only if we have both...
+if test $have_video = yes -a $enable_video = yes; then
+   BUILD_VIDEO="video"
+fi
 
 
 #--------------------------------------------------------------------

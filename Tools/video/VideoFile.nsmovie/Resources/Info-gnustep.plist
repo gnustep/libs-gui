@@ -1,0 +1,6 @@
+{
+  NOTE = "Automatically generated, do not edit!";
+  NSExecutable = "VideoFile";
+  NSMainNibFile = "";
+  NSPrincipalClass = "VideoFileSource";
+}
