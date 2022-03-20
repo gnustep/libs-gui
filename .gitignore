@@ -19,7 +19,7 @@ Tools/speech/GSSpeechServer.app
 Tools/speech_recognizer/GSSpeechRecognitionServer.app
 Tools/sound/AudioOutput.nssound
 Tools/sound/Sndfile.nssound
-Tools/sound/VideoFile.nsmovie
+Tools/video/VideoFile.nsmovie
 Tools/video/VideoOutput.nsmovie
 *~
 *.nssound
