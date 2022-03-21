@@ -30,23 +30,97 @@
 */
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSURL.h>
+
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
 
-@implementation NSMovie
+#import "GNUstepGUI/GSVideoSource.h"
+#import "GNUstepGUI/GSVideoSink.h"
 
-+ (NSArray*) movieUnfilteredFileTypes
+#import "GSFastEnumeration.h"
+
+/* Class variables and functions for class methods */
+static NSArray *__videoSourcePlugIns = nil;
+static NSArray *__videoSinkPlugIns = nil;
+
+static inline void _loadNSMoviePlugIns (void)
 {
-  return [NSArray arrayWithObject: @"mov"];
+  NSArray       *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                             NSAllDomainsMask, YES);
+  NSMutableArray *all = [NSMutableArray array];
+  NSMutableArray *sourcePlugins = [NSMutableArray array];
+  NSMutableArray *sinkPlugins = [NSMutableArray array];
+  
+  // Collect paths...
+  FOR_IN(NSString*, path, paths)
+    {
+      NSBundle *bundle = [NSBundle bundleWithPath: path];
+      paths = [bundle pathsForResourcesOfType: @"nsmovie"
+                                  inDirectory: @"Bundles"];
+      [all addObjectsFromArray: paths];
+    }
+  END_FOR_IN(paths);
+
+  // Check all paths for bundles conforming to the protocol...
+  FOR_IN(NSString*, path, all)
+    {
+      NSBundle *bundle = [NSBundle bundleWithPath: path];
+      Class plugInClass = [bundle principalClass];
+      if ([plugInClass conformsToProtocol: @protocol(GSVideoSource)])
+        {
+          [sourcePlugins addObject:plugInClass];
+        }
+      else if ([plugInClass conformsToProtocol: @protocol(GSVideoSink)])
+        {
+          [sinkPlugins addObject:plugInClass];
+        }
+      else
+        {
+          NSLog (@"Bundle %@ does not conform to GSVideoSource or GSVideoSink",
+                 path);
+        }
+    }
+  END_FOR_IN(all);
+  
+  __videoSourcePlugIns = [[NSArray alloc] initWithArray: sourcePlugins];
+  __videoSinkPlugIns = [[NSArray alloc] initWithArray: sinkPlugins];
 }
 
-+ (NSArray*) movieUnfilteredPasteboardTypes
+@implementation NSMovie
+
++ (void) initialize
 {
-  // FIXME
-  return [NSArray arrayWithObject: @"QuickTimeMovie"];
+  if (self == [NSMovie class])
+    {
+      [self setVersion: 2];
+      _loadNSMoviePlugIns();
+    }
+}
+
++ (NSArray *) movieUnfilteredFileTypes
+{
+  Class sourceClass;
+  NSMutableArray *array;
+  NSEnumerator *enumerator;
+  
+  array = [NSMutableArray arrayWithCapacity: 10];
+  FOR_IN(Class, sourceClass, __videoSourcePlugIns)
+    {
+      [array addObjectsFromArray: [sourceClass movieUnfilteredFileTypes]];
+    }
+  END_FOR_IN(__videoSourcePlugins);
+  
+  return array;
+}
+
++ (NSArray *) movieUnfilteredPasteboardTypes
+{
+  return [NSArray arrayWithObjects: @"NSGeneralPboardType", nil];
 }
 
 + (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard
@@ -103,7 +177,7 @@
 			 [object_getClass(self) movieUnfilteredPasteboardTypes]];
   if (type == nil)
     {
-      //NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
+      // NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
       // FIXME
       data = nil;
     }

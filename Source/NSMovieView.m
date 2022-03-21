@@ -33,6 +33,17 @@
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
 
+@interface NSMovie (NSMovieViewPrivate)
+- (id<GSVideoSource>) source;
+@end
+
+@implementation NSMovie (NSMovieViewPrivate)
+- (id<GSVideoSource>) source
+{
+  return _source;
+}
+@end
+
 @implementation NSMovieView
 
 - (instancetype) init
