@@ -31,7 +31,10 @@
 
 #ifndef _GNUstep_H_NSMovie
 #define _GNUstep_H_NSMovie
+
 #import <AppKit/AppKitDefines.h>
+#import <GNUstepBase/GSVersionMacros.h>
+#import <GNUstepGUI/GSVideoSource.h>
 
 #import <Foundation/NSObject.h>
 
@@ -44,9 +47,10 @@ APPKIT_EXPORT_CLASS
 @interface NSMovie : NSObject <NSCopying, NSCoding> 
 {
   @private
-    NSData *_movieData;
-    NSURL  *_url;
-    void   *_movie;
+    NSData             *_movieData;
+    NSURL              *_url;
+    void               *_movie;
+    id< GSVideoSource > _source;
 }
 
 + (NSArray *) movieUnfilteredFileTypes;
