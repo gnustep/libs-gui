@@ -201,6 +201,7 @@ static inline void _loadNSMoviePlugIns (void)
 {
   TEST_RELEASE(_url);
   TEST_RELEASE(_movieData);
+  _movie = nil;
     
   [super dealloc];
 }
