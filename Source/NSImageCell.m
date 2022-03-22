@@ -2,7 +2,7 @@
 
    <abstract>The image cell class</abstract>
 
-   Copyright (C) 1999, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2005-2022 Free Software Foundation, Inc.
 
    Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
@@ -61,6 +61,15 @@
 - (id) init
 {
   return [self initImageCell: nil];
+}
+
+- (id) initImageCell: (NSImage*)anImage
+{
+  if (self = [super initImageCell: anImage])
+    {
+      [self setRefusesFirstResponder:YES];
+    }
+  return self;
 }
 
 - (void) setImage:(NSImage *)anImage
