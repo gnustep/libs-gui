@@ -35,6 +35,8 @@
 
 @protocol GSVideoSink <NSObject>
 
++ (BOOL) canInitWithData: (NSData *)data;
+
 /** 
  * Opens the device for output, called by [NSMovie-play].
  */

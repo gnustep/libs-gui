@@ -35,12 +35,18 @@
 
 @interface NSMovie (NSMovieViewPrivate)
 - (id<GSVideoSource>) source;
+- (id<GSVideoSink>) sink;
 @end
 
 @implementation NSMovie (NSMovieViewPrivate)
 - (id<GSVideoSource>) source
 {
   return _source;
+}
+
+- (id<GSVideoSink>) sink
+{
+  return _sink;
 }
 @end
 

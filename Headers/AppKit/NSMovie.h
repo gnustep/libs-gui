@@ -35,6 +35,7 @@
 #import <AppKit/AppKitDefines.h>
 #import <GNUstepBase/GSVersionMacros.h>
 #import <GNUstepGUI/GSVideoSource.h>
+#import <GNUstepGUI/GSVideoSink.h>
 
 #import <Foundation/NSObject.h>
 
@@ -51,6 +52,7 @@ APPKIT_EXPORT_CLASS
     NSURL              *_url;
     void               *_movie;
     id< GSVideoSource > _source;
+    id< GSVideoSink >   _sink;
 }
 
 + (NSArray *) movieUnfilteredFileTypes;

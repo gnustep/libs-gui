@@ -28,32 +28,22 @@
 */ 
 
 #include <Foundation/Foundation.h>
-#include <GNUstepGUI/GSSoundSource.h>
-#include <GNUstepGUI/GSSoundSink.h>
-#include <ao/ao.h>
+#include <GNUstepGUI/GSVideoSink.h>
 
-@interface AudioOutputSink : NSObject <GSSoundSink>
+@interface VideoOutputSink : NSObject <GSVideoSink>
 {
-  ao_device *_dev;
-  int _driver;
-  ao_sample_format _format;
 }
 @end
 
-@implementation AudioOutputSink
+@implementation VideoOutputSink
 
 + (void) initialize
 {
-  /* FIXME: According to the docs, this needs a corresponding ao_shutdown(). */
-  ao_initialize ();
 }
 
-+ (BOOL)canInitWithPlaybackDevice: (NSString *)playbackDevice
++ (BOOL)canInitWithData: (NSData *)data
 {
-  // This is currently the only sink in NSSound, just say
-  // YES to everything.
-  /* FIXME: What is OS X's identifier for the main sound? */
-  return (playbackDevice == nil ? YES : NO);
+  return YES;
 }
 
 - (void)dealloc
@@ -61,109 +51,36 @@
   [super dealloc];
 }
 
-- (id)initWithEncoding: (int)encoding
-              channels: (NSUInteger)channelCount
-            sampleRate: (NSUInteger)sampleRate
-             byteOrder: (NSByteOrder)byteOrder
+- (id)init
 {
   self = [super init];
-  if (self == nil)
+  if (self != nil)
     {
-      return nil;
     }
-  
-  _format.channels = (int)channelCount;
-  _format.rate = (int)sampleRate;
-  
-  switch (encoding)
-    {
-      case GSSoundFormatPCMS8:
-        _format.bits = 8;
-        break;
-      
-      case GSSoundFormatPCM16:
-        _format.bits = 16;
-        break;
-      
-      case GSSoundFormatPCM24:
-        _format.bits = 24;
-        break;
-      
-      case GSSoundFormatPCM32:
-        _format.bits = 32;
-        break;
-      
-      case GSSoundFormatFloat32: // Float and double not supported by libao.
-      case GSSoundFormatFloat64:
-      default:
-        DESTROY(self);
-        return nil;
-    }
-  
-	if (byteOrder == NS_LittleEndian)
-	  {
-	    _format.byte_format = AO_FMT_LITTLE;
-    }
-  else if (byteOrder == NS_BigEndian)
-    {
-      _format.byte_format = AO_FMT_BIG;
-    }
-  else
-    {
-      _format.byte_format = AO_FMT_NATIVE;
-    }
-
   return self;
 }
 
 - (BOOL)open
 {
-  _driver = ao_default_driver_id();
-  
-  _dev = ao_open_live(_driver, &_format, NULL);
-  return ((_dev == NULL) ? NO : YES);
+  return YES;
 }
 
 - (void)close
 {
-  ao_close(_dev);
 }
 
 - (BOOL)playBytes: (void *)bytes length: (NSUInteger)length
 {
-  int ret = ao_play(_dev, bytes, (uint_32)length);
-  return (ret == 0 ? NO : YES);
 }
 
 /* Functionality not supported by libao */
 - (void)setVolume: (float)volume
 {
-  return;
 }
 
 - (float)volume
 {
   return 1.0;
-}
-
-- (void)setPlaybackDeviceIdentifier: (NSString *)playbackDeviceIdentifier
-{
-  return;
-}
-
-- (NSString *)playbackDeviceIdentifier
-{
-  return nil;
-}
-
-- (void)setChannelMapping: (NSArray *)channelMapping
-{
-  return;
-}
-
-- (NSArray *)channelMapping
-{
-  return nil;
 }
 
 @end
