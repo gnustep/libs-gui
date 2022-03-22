@@ -45,8 +45,8 @@
 #import "GSFastEnumeration.h"
 
 /* Class variables and functions for class methods */
-static NSArray *__videoSourcePlugIns = nil;
-static NSArray *__videoSinkPlugIns = nil;
+static NSArray *videoSourcePlugIns = nil;
+static NSArray *videoSinkPlugIns = nil;
 
 static inline void _loadNSMoviePlugIns (void)
 {
@@ -87,8 +87,8 @@ static inline void _loadNSMoviePlugIns (void)
     }
   END_FOR_IN(all);
   
-  __videoSourcePlugIns = [[NSArray alloc] initWithArray: sourcePlugins];
-  __videoSinkPlugIns = [[NSArray alloc] initWithArray: sinkPlugins];
+  videoSourcePlugIns = [[NSArray alloc] initWithArray: sourcePlugins];
+  videoSinkPlugIns = [[NSArray alloc] initWithArray: sinkPlugins];
 }
 
 @implementation NSMovie
@@ -109,11 +109,11 @@ static inline void _loadNSMoviePlugIns (void)
   NSEnumerator *enumerator;
   
   array = [NSMutableArray arrayWithCapacity: 10];
-  FOR_IN(Class, sourceClass, __videoSourcePlugIns)
+  FOR_IN(Class, sourceClass, videoSourcePlugIns)
     {
       [array addObjectsFromArray: [sourceClass movieUnfilteredFileTypes]];
     }
-  END_FOR_IN(__videoSourcePlugins);
+  END_FOR_IN(videoSourcePlugins);
   
   return array;
 }
