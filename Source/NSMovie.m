@@ -104,11 +104,8 @@ static inline void _loadNSMoviePlugIns (void)
 
 + (NSArray *) movieUnfilteredFileTypes
 {
-  Class sourceClass;
-  NSMutableArray *array;
-  NSEnumerator *enumerator;
-  
-  array = [NSMutableArray arrayWithCapacity: 10];
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
+
   FOR_IN(Class, sourceClass, __videoSourcePlugIns)
     {
       [array addObjectsFromArray: [sourceClass movieUnfilteredFileTypes]];
@@ -133,14 +130,38 @@ static inline void _loadNSMoviePlugIns (void)
 
 - (id) initWithData: (NSData *)movieData
 {
-  if (movieData == nil)
+  self = [super init];
+  if (self != nil)
     {
-      RELEASE(self);
-      return nil;
+      if (movieData != nil)
+        {
+          ASSIGN(_movieData, movieData);
+
+          // Choose video sink...
+          FOR_IN(Class, pluginClass, __videoSinkPlugIns)
+            {
+              if ([pluginClass canInitWithData: movieData])
+                {
+                  _sink = [[pluginClass alloc] init];
+                }
+            }
+          END_FOR_IN(__videoSinkPlugIns);
+
+          // Choose video source...
+          FOR_IN(Class, pluginClass, __videoSourcePlugIns)
+            {
+              if ([pluginClass canInitWithData: movieData])
+                {
+                  _source = [[pluginClass alloc] init];
+                }
+            }
+          END_FOR_IN(__videoSourcePlugIns);
+        }
+      else
+        {
+          RELEASE(self);
+        }
     }
-  
-  [super init];
-  ASSIGN(_movieData, movieData);
 
   return self;
 }

@@ -34,6 +34,7 @@
 
 #import <GNUstepBase/GSVersionMacros.h>
 #import <GNUstepGUI/GSVideoSource.h>
+#import <GNUstepGUI/GSVideoSink.h>
 
 #import <Foundation/NSObject.h>
 
@@ -49,6 +50,7 @@
     NSURL              *_url;
     void               *_movie;
     id< GSVideoSource > _source;
+    id< GSVideoSink >   _sink;
 }
 
 + (NSArray *) movieUnfilteredFileTypes;
