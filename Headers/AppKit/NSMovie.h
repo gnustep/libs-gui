@@ -64,7 +64,7 @@
 + (NSArray *) movieUnfilteredPasteboardTypes;
 
 /**
- * Examines the data on the pasteboard and determins if NSMovie can initialize with it
+ * Returns YES, if NSMovie can initialize with the data on the pasteboard
  */
 + (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard;
 
