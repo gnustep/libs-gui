@@ -53,15 +53,45 @@
     id< GSVideoSink >   _sink;
 }
 
+/**
+ * Returns the array of file types/extensions that NSMovie can handle
+ */
 + (NSArray *) movieUnfilteredFileTypes;
+
+/**
+ * Returns the array of pasteboard types that NSMovie can handle
+ */
 + (NSArray *) movieUnfilteredPasteboardTypes;
+
+/**
+ * Examines the data on the pasteboard and determins if NSMovie can initialize with it
+ */
 + (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard;
 
+/**
+ * Accepts a Carbon movie and uses it to init NSMovie (non-functional on GNUstep).
+ */
 - (id) initWithMovie: (void *)movie;
+
+/**
+ * Retrieves the data from url and initializes with it, does so by references depending
+ * on byRef
+ */
 - (id) initWithURL: (NSURL *)url byReference: (BOOL)byRef;
+
+/**
+ * Pulls the data from the pasteboard and initializes NSMovie.
+ */
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard;
 
+/**
+ * Return QTMovie
+ */ 
 - (void *) QTMovie;
+
+/**
+ * The URL used to initialize NSMovie
+ */
 - (NSURL *) URL;
 
 @end

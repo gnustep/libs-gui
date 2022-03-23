@@ -57,50 +57,186 @@ typedef enum {
     } _flags;
 }
 
+/**
+ * Set the NSMovie object to play
+ */
 - (void) setMovie: (NSMovie*)movie;
+
+/**
+ * the NSMovie object this view is to display
+ */
 - (NSMovie*) movie;
 
+/**
+ * Start playback
+ */
 - (void) start: (id)sender;
+
+/**
+ * Stop playback
+ */
 - (void) stop: (id)sender;
+
+/**
+ * Returns YES if movie is playing
+ */
 - (BOOL) isPlaying;
 
+/**
+ * Goes to the poster frame for the movie
+ */
 - (void) gotoPosterFrame: (id)sender;
+
+/**
+ * Goes to the beginning of the NSMovie
+ */
 - (void) gotoBeginning: (id)sender;
+
+/**
+ * Goes to the end of the NSMovie
+ */
 - (void) gotoEnd: (id)sender;
+
+/**
+ * Steps one frame forward
+ */
 - (void) stepForward: (id)sender;
+
+/**
+ * Steps one frame backward
+ */
 - (void) stepBack: (id)sender;
 
+/**
+ * A range from 0.0 to 1.0 (or more) determine the rate at which
+ * the movie will be played.  More than 1.0 means faster than normal
+ */
 - (void) setRate: (float)rate;
+
+/**
+ * The current rate the movie is being played at
+ */
 - (float) rate;
 
+/**
+ * A range from 0.0 (mute) to 1.0 (full) volume.
+ */
 - (void) setVolume: (float)volume;
+
+/**
+ * Current volume
+ */
 - (float) volume;
+
+/**
+ * Mute the volume
+ */
 - (void) setMuted: (BOOL)mute;
+
+/**
+ * Returns YES if movie is muted
+ */
 - (BOOL) isMuted;
 
+/**
+ * Sets the loop mode
+ */
 - (void) setLoopMode: (NSQTMovieLoopMode)mode;
+
+/**
+ * Returns the loop mode
+ */
 - (NSQTMovieLoopMode) loopMode;
+
+/**
+ * If this flag is true then NSMovieView only plays the selected portion of the movie
+ */
 - (void) setPlaysSelectionOnly: (BOOL)flag;
+
+/**
+ * Returns YES if the view is playing a selection
+ */
 - (BOOL) playsSelectionOnly;
+
+/**
+ * The view plays every single frame in the movie
+ */
 - (void) setPlaysEveryFrame: (BOOL)flag;
+
+/**
+ * Returns YES if the view plays every frame.
+ */
 - (BOOL) playsEveryFrame;
 
+/**
+ * Shows the controller with the play, stop, pause, and slider
+ */
 - (void) showController: (BOOL)show adjustingSize: (BOOL)adjustSize;
+
+/**
+ * Returns the movie controller
+ */
 - (void*) movieController;
+
+/**
+ * Returns YES if the controller is visible
+ */
 - (BOOL) isControllerVisible;
 
+/**
+ * NSRect for the NSMovie
+ */
 - (NSRect) movieRect;
+
+/**
+ * Resizes the view for the given magnification factor
+ */
 - (void) resizeWithMagnification: (float)magnification;
+
+/**
+ * Resizes the view for the given magnification factor, returns NSSize
+ */
 - (NSSize) sizeForMagnification: (float)magnification;
 
+/**
+ * Makes the NSMovieView editable
+ */
 - (void) setEditable: (BOOL)editable;
+
+
+/**
+ * return YES if editable
+ */
 - (BOOL) isEditable;
 
+/**
+ * Cut existing selection
+ */
 - (void) cut: (id)sender;
+
+/**
+ * Copy existing selection
+ */
 - (void) copy: (id)sender;
+
+/**
+ * Paste info into movie
+ */
 - (void) paste: (id)sender;
+
+/**
+ * Clear existing selection
+ */
 - (void) clear: (id)sender;
+
+/**
+ * Undo previous action
+ */
 - (void) undo: (id)sender;
+
+/**
+ * Select the entire movie
+ */
 - (void) selectAll: (id)sender;
 
 @end
