@@ -51,7 +51,7 @@
 {
   if (self == [NSImageCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
     }
 }
 
@@ -67,7 +67,7 @@
 {
   if (self = [super initImageCell: anImage])
     {
-      [self setRefusesFirstResponder:YES];
+      [self setRefusesFirstResponder: YES];
     }
   return self;
 }
@@ -353,7 +353,13 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
       else
 	{
           NSInteger tmp;
-
+          NSUInteger version = [aDecoder versionForClassName: @"NSImageCell"];
+          
+          if (version == 1)
+            {
+              [self setRefusesFirstResponder: YES];
+            }
+          
           decode_NSInteger(aDecoder, &tmp);
           _imageAlignment = tmp;
           decode_NSInteger(aDecoder, &tmp);
