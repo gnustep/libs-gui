@@ -30,6 +30,10 @@
 #include <Foundation/Foundation.h>
 #include "GNUstepGUI/GSVideoSource.h"
 
+#include <libavcodec/avcodec.h>
+
+#define INBUF_SIZE 4096
+
 @interface VideofileSource : NSObject <GSVideoSource>
 {
   NSData *_data;
@@ -81,25 +85,11 @@
   
   _data = data;
   RETAIN(_data);
-  
-  // _info.format = 0;
-  /*
-  _video = sf_open_virtual (&dataIO, SFM_READ, &_info, self);
-  if (_video == NULL)
-    {
-      DESTROY(self);
-      return nil;
-    }
-  */
-  
-  // Setup immutable values...
-  /* FIXME: support multiple types */
-  // _dur = (double)_info.frames / (double)_info.samplerate;
-  
+
   return self;
 }
 
-- (NSUInteger)readBytes: (void *)bytes length: (NSUInteger)length
+- (NSUInteger) readBytes: (void *)bytes length: (NSUInteger)length
 {
   return 0; // (NSUInteger) (sf_read_short (_video, bytes, (length>>1))<<1);
 }
