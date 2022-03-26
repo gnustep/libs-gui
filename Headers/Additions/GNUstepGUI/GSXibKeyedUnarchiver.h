@@ -41,6 +41,7 @@
   NSMutableArray *stack;
   GSXibElement *currentElement;
   NSMutableDictionary *decoded;
+  NSMutableArray      *_customClasses;
 }
 
 + (BOOL) checkXib5: (NSData *)data;
@@ -53,6 +54,7 @@
 - (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element;
 - (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element;
 - (id) objectForXib: (GSXibElement*)element;
+- (NSArray *) customClasses;
 
 - (NSDictionary *) decoded;
 @end
