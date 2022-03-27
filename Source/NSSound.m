@@ -413,6 +413,7 @@ static inline void _loadNSSoundPlugIns (void)
       return NO;
     }
   _shouldStop = YES;
+
   // Set to SOUND_SHOULD_PLAY so that thread isn't blocked.
   [_readLock unlockWithCondition: SOUND_SHOULD_PLAY];
   

@@ -1,3 +1,23 @@
+2022-03-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* config.make.in: Add video flag
+	* configure.ac: Update to detect avformat.h
+	* Headers/Additions/GNUstepGUI/GSVideoSink.h
+	* Headers/Additions/GNUstepGUI/GSVideoSource.h: Add protocol
+        methods for reading and playing video.
+	* Headers/AppKit/NSMovie.h: Minor formatting changes.
+	* Headers/AppKit/NSMovieView.h: Minor formatting changes.
+	* Headers/AppKit/NSSound.h: Minor formatting changes
+	* Source/NSMovie.m: Fixes.
+	* Source/NSMovieView.m: Implement _stream method
+	* Source/NSSound.m: Minor formatting changes
+	* Tools/GNUmakefile: Cleanup
+	* Tools/video/GNUmakefile: Minor fixes
+	* Tools/video/VideoFileSource.m: Implementation of
+        readBytes:length: method for reading from the NSData.
+	* Tools/video/VideoOutputSink.m: Implementation of
+        playBytes:length: for playing the bytes as a movie.
+
 2022-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m(setMenu:): Select the first item of

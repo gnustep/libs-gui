@@ -66,7 +66,7 @@ NSArray *PlaybackDeviceIdentifiers (void);
   id<GSSoundSource> _source;
   id<GSSoundSink>   _sink;
   NSConditionLock   *_readLock;
-  NSLock            * _playbackLock;
+  NSLock            *_playbackLock;
   BOOL _shouldStop;
   BOOL _shouldLoop;
 }

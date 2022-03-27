@@ -33,6 +33,8 @@
 #import <AppKit/NSView.h>
 
 @class NSMovie;
+@class NSConditionLock;
+@class NSLock;
 
 typedef enum {
   NSQTMovieNormalPlayback,
@@ -43,9 +45,13 @@ typedef enum {
 @interface NSMovieView : NSView
 {
   @protected
-    NSMovie *_movie;
-    CGFloat  _rate;
-    CGFloat  _volume;
+    NSMovie         *_movie;
+    CGFloat          _rate;
+    CGFloat          _volume;
+    NSConditionLock *_readLock;
+    NSLock          *_playbackLock;
+    BOOL             _shouldLoop;
+    BOOL             _shouldStop;
     struct NSMovieViewFlags {
       unsigned int muted: 1;
       unsigned int loopMode: 3;

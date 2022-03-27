@@ -32,7 +32,7 @@
 
 #include <libavcodec/avcodec.h>
 
-#define INBUF_SIZE 4096
+#define INBUF_SIZE 4096 + AV_INPUT_BUFFER_PADDING_SIZE
 
 @interface VideofileSource : NSObject <GSVideoSource>
 {
@@ -70,14 +70,13 @@
 - (void)dealloc
 {
   TEST_RELEASE (_data);
-  // sf_close (_video);
-  
   [super dealloc];
 }
 
 - (id)initWithData: (NSData *)data
 {
   self = [super init];
+
   if (self == nil)
     {
       return nil;
@@ -91,7 +90,24 @@
 
 - (NSUInteger) readBytes: (void *)bytes length: (NSUInteger)length
 {
-  return 0; // (NSUInteger) (sf_read_short (_video, bytes, (length>>1))<<1);
+  NSRange range;
+  NSUInteger len = length - 1;
+
+  if (_curPos >= [_data length] - 1)
+    {
+      return 0;
+    }
+  
+  if (length > [_data length])
+    {
+      len = [_data length] - 1;
+    }
+  
+  range = NSMakeRange(_curPos, len);
+  [_data getBytes: bytes range: range];
+  _curPos += len;
+  
+  return len;
 }
 
 - (NSTimeInterval)duration
@@ -101,13 +117,10 @@
 
 - (void)setCurrentTime: (NSTimeInterval)currentTime
 {
-  // sf_count_t frames = (sf_count_t)((double)_info.samplerate * currentTime);
-  // sf_seek (_video, frames, SEEK_SET);
 }
+
 - (NSTimeInterval)currentTime
 {
-  // sf_count_t frames;
-  // frames = sf_seek (_video, 0, SEEK_CUR);
   return 0.0; // (NSTimeInterval)((double)frames / (double)_info.samplerate);
 }
 

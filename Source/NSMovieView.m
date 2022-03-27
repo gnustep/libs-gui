@@ -28,25 +28,94 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSLock.h>
 #import <Foundation/NSURL.h>
+
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
 
+enum
+  {
+    MOVIE_SHOULD_PLAY = 1,
+    MOVIE_SHOULD_PAUSE
+  };
+
+#define BUFFER_SIZE 4096
+
 @interface NSMovie (NSMovieViewPrivate)
-- (id<GSVideoSource>) source;
-- (id<GSVideoSink>) sink;
+- (id<GSVideoSource>) _source;
+- (id<GSVideoSink>) _sink;
 @end
 
 @implementation NSMovie (NSMovieViewPrivate)
-- (id<GSVideoSource>) source
+- (id< GSVideoSource >) _source
 {
   return _source;
 }
 
-- (id<GSVideoSink>) sink
+- (id< GSVideoSink >) _sink
 {
   return _sink;
+}
+@end
+
+@interface NSMovieView (PrivateMethods)
+- (void) _stream;
+- (void) _finished: (NSNumber *)finishedPlaying;
+@end
+
+@implementation NSMovieView (PrivateMethods)
+- (void) _stream
+{
+  NSUInteger bytesRead;
+  BOOL success = NO;
+  void *buffer;
+  id <GSVideoSink> sink = [[self movie] _sink];
+  id <GSVideoSource> source = [[self movie] _source];
+  
+  // Exit with success = NO if device could not be open.
+  if ([sink open])
+    {
+      // Allocate space for buffer and start writing.
+      buffer = NSZoneMalloc(NSDefaultMallocZone(), BUFFER_SIZE);
+      do
+        {
+          do
+            {
+              // If not MOVIE_SHOULD_PLAY block thread
+              [_readLock lockWhenCondition: MOVIE_SHOULD_PLAY];
+              if (_shouldStop)
+                {
+                  [_readLock unlock];
+                  break;
+                }
+              bytesRead = [source readBytes: buffer
+                                     length: BUFFER_SIZE];
+              [_readLock unlock];
+              [_playbackLock lock];
+              success = [sink playBytes: buffer length: bytesRead];
+              [_playbackLock unlock];
+            } while ((!_shouldStop) && (bytesRead > 0) && success);
+          
+          [source setCurrentTime: 0.0];
+        } while (_shouldLoop == YES && _shouldStop == NO);
+      
+      [sink close];
+      NSZoneFree (NSDefaultMallocZone(), buffer);
+    }
+  
+  RETAIN(self);
+  [self performSelectorOnMainThread: @selector(_finished:)
+                         withObject: [NSNumber numberWithBool: success]
+                      waitUntilDone: YES];
+  RELEASE(self);
+}
+
+- (void) _finished: (NSNumber *)finishedPlaying
+{
+  DESTROY(_readLock);
+  DESTROY(_playbackLock);
 }
 @end
 
@@ -71,9 +140,15 @@
     }
   return self;
 }
-- (void) setMovie: (NSMovie*)movie
+
+- (void) setMovie: (NSMovie *)movie
 {
   ASSIGN(_movie, movie);
+
+  if (_movie != nil)
+    {
+      [[movie _sink] setMovieView: self];
+    }
 }
 
 - (NSMovie*) movie
@@ -83,18 +158,56 @@
 
 - (void) start: (id)sender
 {
-  //FIXME
+  // If the locks exists this instance is already playing
+  if (_readLock != nil && _playbackLock != nil)
+    {
+      return;
+    }
+  
+  _readLock = [[NSConditionLock alloc] initWithCondition: MOVIE_SHOULD_PAUSE];
+  _playbackLock = [[NSLock alloc] init];
+  
+  if ([_readLock tryLock] != YES)
+    {
+      return;
+    }
+  
+  _shouldStop = NO;
+  [NSThread detachNewThreadSelector: @selector(_stream)
+                           toTarget: self
+                         withObject: nil];
+
+  [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
 }
 
 - (void) stop: (id)sender
 {
-  //FIXME
+    if (_readLock == nil)
+    {
+      return;
+    }
+  
+  if ([_readLock tryLock] != YES)
+    {
+      return;
+    }
+  _shouldStop = YES;
+
+  // Set to MOVIE_SHOULD_PLAY so that thread isn't blocked.
+  [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
 }
 
 - (BOOL) isPlaying
 {
-  //FIXME
-  return NO;  
+  if (_readLock == nil)
+    {
+      return NO;
+    }
+  if ([_readLock condition] == MOVIE_SHOULD_PLAY)
+    {
+      return YES;
+    }
+  return NO;
 }
 
 - (void) gotoPosterFrame: (id)sender;
