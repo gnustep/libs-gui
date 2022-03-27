@@ -51,7 +51,7 @@ include GNUmakefile.preamble
 ifeq ($(CROSS_COMPILING),yes)
   GNUSTEP_MAKE_SERVICES=:
 else
-  GNUSTEP_MAKE_SERVICES=./$(GNUSTEP_OBJ_DIR)/make_services
+  GNUSTEP_MAKE_SERVICES=$(GNUSTEP_OBJ_DIR)/make_services
 endif
 
 include $(GNUSTEP_MAKEFILES)/tool.make

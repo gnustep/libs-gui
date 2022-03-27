@@ -18,6 +18,11 @@
 	* Tools/video/VideoOutputSink.m: Implementation of
         playBytes:length: for playing the bytes as a movie.
 
+2022-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSImageCell.m: subclass initImageCell, so that
+	RefusesFirstResponder can be set, matching Mac.
+
 2022-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSPopUpButtonCell.m(setMenu:): Select the first item of
