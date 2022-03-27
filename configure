@@ -5779,8 +5779,23 @@ fi
 
 done
 
-# Only if we have both...
-if test $have_video = yes -a $enable_video = yes; then
+for ac_header in libavformat/avformat.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "libavformat/avformat.h" "ac_cv_header_libavformat_avformat_h" "$ac_includes_default"
+if test "x$ac_cv_header_libavformat_avformat_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBAVFORMAT_AVFORMAT_H 1
+_ACEOF
+ have_format=yes
+else
+  have_format=no
+fi
+
+done
+
+
+# Only if we have both and enabled, then build video
+if test $have_video = yes -a $have_format -a $enable_video = yes; then
    BUILD_VIDEO="video"
 fi
 

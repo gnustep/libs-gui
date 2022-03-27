@@ -33,11 +33,12 @@
 #import <Foundation/NSByteOrder.h>
 #import <Foundation/NSObject.h>
 
+@class NSMovie;
+@class NSMovieView;
+
 @protocol GSVideoSink <NSObject>
 
-+ (BOOL) canInitWithData: (NSData *)data;
-
-/** 
+/**
  * Opens the device for output, called by [NSMovie-play].
  */
 - (BOOL) open;
@@ -59,6 +60,16 @@
 /** Called by [NSMovieView -volume].
  */
 - (CGFloat) volume;
+
+/**
+ * Sets the view to output to.
+ */
+- (void) setMovieView: (NSMovieView *)view;
+
+/**
+ * The movie view
+ */
+- (NSMovieView *) movieView;
 
 @end
 
