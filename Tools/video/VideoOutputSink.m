@@ -267,6 +267,8 @@
     }
   else
     {
+      NSLog(@"Invalid packet, can't play data");
+      
       return NO;
     }
   
