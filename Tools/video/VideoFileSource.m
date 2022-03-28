@@ -82,8 +82,8 @@
       return nil;
     }
   
-  _data = data;
-  RETAIN(_data);
+  ASSIGN(_data, data);
+  // NSLog(@"data = %@", _data);
 
   return self;
 }

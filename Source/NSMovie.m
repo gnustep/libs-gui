@@ -152,7 +152,7 @@ static inline void _loadNSMoviePlugIns (void)
             {
               if ([pluginClass canInitWithData: movieData])
                 {
-                  _source = [[pluginClass alloc] init];
+                  _source = [[pluginClass alloc] initWithData: movieData];
                 }
             }
           END_FOR_IN(__videoSourcePlugIns);
