@@ -75,6 +75,11 @@
 
 @implementation VideoOutputSink
 
++ (BOOL) canInitWithData: (NSData *)data
+{
+  return YES; // for now just say yes...
+}
+
 - (void) display: (unsigned char *) buf
             wrap: (int) wrap
            xsize: (int) xsize
@@ -90,6 +95,7 @@
         fwrite(buf + i * wrap, 1, xsize, f);
     fclose(f);
   */
+  NSLog(@"Playing...");
 }
 
 
