@@ -38,7 +38,7 @@
 {
   NSData *_data;
   
-  NSUInteger _curPos;
+  NSUInteger _currentPosition;
   NSTimeInterval _dur;
   int _encoding;
 }
@@ -83,29 +83,28 @@
     }
   
   ASSIGN(_data, data);
-  // NSLog(@"data = %@", _data);
-
+ 
   return self;
 }
 
 - (NSUInteger) readBytes: (void *)bytes length: (NSUInteger)length
 {
   NSRange range;
-  NSUInteger len = length - 1;
+  NSUInteger len = length; //- 1;
 
-  if (_curPos >= [_data length] - 1)
+  if (_currentPosition >= [_data length] - 1)
     {
       return 0;
     }
   
-  if (length > [_data length])
+  if (length > [_data length] - _currentPosition)
     {
-      len = [_data length] - 1;
+      len = [_data length] - _currentPosition;
     }
   
-  range = NSMakeRange(_curPos, len);
+  range = NSMakeRange(_currentPosition, len);
   [_data getBytes: bytes range: range];
-  _curPos += len;
+  _currentPosition += len;
   
   return len;
 }
@@ -148,12 +147,12 @@
 
 - (NSUInteger)currentPosition
 {
-  return _curPos;
+  return _currentPosition;
 }
 
 - (void)setCurrentPosition: (NSUInteger)curPos
 {
-  _curPos = curPos;
+  _currentPosition = curPos;
 }
 
 @end
