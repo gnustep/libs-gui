@@ -198,9 +198,10 @@
                                         {
                                           NSXMLElement *refNode = [refNodes objectAtIndex: 0];
                                           NSString *refId = [refNode stringValue];
-                                          NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                               refId, @"id", sc, @"parentClassName", cn, @"customClassName", nil];
-                                          [_customClasses addObject: dict];
+
+                                          [self createCustomClassRecordForId: refId
+                                                             withParentClass: sc
+                                                              forCustomClass: cn];
                                         }
                                     }
                                 }
@@ -1109,6 +1110,20 @@ didStartElement: (NSString*)elementName
 - (NSArray *) customClasses
 {
   return _customClasses;
+}
+
+- (void) createCustomClassRecordForId: (NSString *)theId
+                      withParentClass: (NSString *)parentClassName
+                       forCustomClass: (NSString *)customClassName
+{
+  if (theId == nil || customClassName == nil)
+    return;
+
+  NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                                     theId, @"id",
+                                                   parentClassName, @"parentClassName",
+                                                   customClassName, @"customClassName",nil];
+  [_customClasses addObject: dict];
 }
 
 @end

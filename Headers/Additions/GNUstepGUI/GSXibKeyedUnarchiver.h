@@ -45,16 +45,27 @@
 }
 
 + (BOOL) checkXib5: (NSData *)data;
+
 + (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data;
 
 - (void) _initCommon;
+
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID;
+
 - (id) _decodeArrayOfObjectsForElement: (GSXibElement*)element;
+
 - (id) _decodeDictionaryOfObjectsForElement: (GSXibElement*)element;
+
 - (id) objectForXib: (GSXibElement*)element;
+
+- (void) createCustomClassRecordForId: (NSString *)theId
+                      withParentClass: (NSString *)parentClassName
+                       forCustomClass: (NSString *)customClassName;
+
 - (NSArray *) customClasses;
 
 - (NSDictionary *) decoded;
+
 @end

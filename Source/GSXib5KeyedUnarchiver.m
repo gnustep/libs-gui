@@ -765,21 +765,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   [super dealloc];
 }
 
-- (void) createCustomClassRecordForId: (NSString *)theId
-                      withParentClass: (NSString *)parentClassName
-                       forCustomClass: (NSString *)customClassName
-{
-  if (theId == nil || customClassName == nil)
-    return;
-
-  NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                     theId, @"id",
-                                                   parentClassName, @"parentClassName",
-                                                   customClassName, @"customClassName",nil];
-  [_customClasses addObject: dict];
-  // NSLog(@"theId = %@, parentClassName = %@, customClassName = %@", theId, parentClassName, customClassName);
-}
-
 - (void) parser: (NSXMLParser*)parser
 didStartElement: (NSString*)elementName
    namespaceURI: (NSString*)namespaceURI
