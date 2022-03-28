@@ -264,6 +264,10 @@
         {
           [self decode];
         }
+      else
+        {
+          NSLog(@"Packet size is 0");
+        } 
     }
   else
     {
