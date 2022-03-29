@@ -41,7 +41,7 @@
   NSMutableArray *stack;
   GSXibElement *currentElement;
   NSMutableDictionary *decoded;
-  NSMutableArray      *_customClasses;
+  NSMutableDictionary *_customClasses;
 }
 
 + (BOOL) checkXib5: (NSData *)data;
@@ -64,7 +64,7 @@
                       withParentClass: (NSString *)parentClassName
                        forCustomClass: (NSString *)customClassName;
 
-- (NSArray *) customClasses;
+- (NSDictionary *) customClasses;
 
 - (NSDictionary *) decoded;
 

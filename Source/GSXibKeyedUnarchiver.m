@@ -86,22 +86,13 @@
 - (NSString *) _substituteClassForClassName: (NSString *)className
 {
   NSString *result = className;
-  NSEnumerator *en = [_customClasses objectEnumerator];
-  NSDictionary *dict = nil;
+  NSDictionary *dict = [_customClasses objectForKey: className];  
 
-  //  NSLog(@"_customClasses = %@", _customClasses);
-  while ((dict = [en nextObject]) != nil)
+  if (dict != nil)
     {
-      NSString *customClassName = [dict objectForKey: @"customClassName"];
-
-      if ([customClassName isEqualToString: className])
-        {
-          result = [dict objectForKey: @"parentClassName"];
-          break;
-        }
+      result = [dict objectForKey: @"parentClassName"];
     }
   
-  NSDebugLog(@"result = %@", result);
   return result;
 }
 
@@ -328,7 +319,7 @@
   NSData *theData = data;
 
   // Dictionary which contains custom class information for Gorm/IB.
-  _customClasses = [[NSMutableArray alloc] initWithCapacity: 10];
+  _customClasses = [[NSMutableDictionary alloc] init];
 
   theData = [self _preProcessXib: data];
   if (theData == nil)
@@ -1107,7 +1098,7 @@ didStartElement: (NSString*)elementName
   return decoded;
 }
 
-- (NSArray *) customClasses
+- (NSDictionary *) customClasses
 {
   return _customClasses;
 }
@@ -1119,11 +1110,13 @@ didStartElement: (NSString*)elementName
   if (theId == nil || customClassName == nil)
     return;
 
-  NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                     theId, @"id",
-                                                   parentClassName, @"parentClassName",
-                                                   customClassName, @"customClassName",nil];
-  [_customClasses addObject: dict];
+  NSMutableDictionary *dict =
+    [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                           parentClassName, @"parentClassName",
+                         theId, @"id",nil];
+  
+  [_customClasses setObject: dict
+                     forKey: customClassName];
 }
 
 @end

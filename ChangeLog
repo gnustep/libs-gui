@@ -1,3 +1,11 @@
+2022-03-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.m
+	* Source/GSXibKeyedUnarchiver.m: Change format of
+        customClass dictionary.
+
 2022-03-26 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h: Add
