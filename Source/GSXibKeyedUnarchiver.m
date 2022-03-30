@@ -167,14 +167,14 @@
                           //
                           if ([NSClassSwapper isInInterfaceBuilder] == YES)
                             {
-                              NSString *xpath = [NSString stringWithFormat: @"//object[@class=\"IBClassDescriber\"]"
-                                                          @"//string[@key=\"className\"][text()=\"%@\"]"
-                                                          @"/../string[@key=\"superclassName\"]", cn];
-                              NSArray *descriptionObjs = [document nodesForXPath: xpath error: NULL];
-                              if ([descriptionObjs count] > 0)
+                              NSUInteger idx = [key rangeOfString: @"."].location;
+                              if (idx != NSNotFound) // unlikely to be NSNotFound...
                                 {
-                                  NSUInteger idx = [key rangeOfString: @"."].location;
-                                  if (idx != NSNotFound) // unlikely to be NSNotFound...
+                                  NSString *xpath = [NSString stringWithFormat: @"//object[@class=\"IBClassDescriber\"]"
+                                                              @"//string[@key=\"className\"][text()=\"%@\"]"
+                                                              @"/../string[@key=\"superclassName\"]", cn];
+                                  NSArray *descriptionObjs = [document nodesForXPath: xpath error: NULL];
+                                  if ([descriptionObjs count] > 0)
                                     {
                                       NSString *num = [key substringToIndex: idx];
                                       NSXMLNode *descriptionNode = [descriptionObjs objectAtIndex: 0];
@@ -189,7 +189,7 @@
                                         {
                                           NSXMLElement *refNode = [refNodes objectAtIndex: 0];
                                           NSString *refId = [refNode stringValue];
-
+                                          
                                           [self createCustomClassRecordForId: refId
                                                              withParentClass: sc
                                                               forCustomClass: cn];
