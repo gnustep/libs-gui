@@ -45,7 +45,9 @@
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler
 {
   NSError *error = nil;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
   CALL_BLOCK(completionHandler, error);
+#endif
 }
 
 @end
