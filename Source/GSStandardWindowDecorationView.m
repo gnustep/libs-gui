@@ -319,14 +319,12 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   NSEvent *currentEvent = event;
   NSDate *distantPast = [NSDate distantPast];
   NSDate *distantFuture = [NSDate distantFuture];
-  NSPoint firstPoint, point;
+  NSPoint firstPoint = [event locationInWindow];
+  NSPoint point;
   NSRect newFrame, frame;
   NSSize minSize, maxSize;
   int num = 0;
   GSResizeEdgeMode mode = [self resizeModeForPoint: firstPoint];
-
-  firstPoint = [event locationInWindow];
-
 
   frame = [window frame];
   minSize = [window minSize];
