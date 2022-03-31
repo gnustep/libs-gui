@@ -1,5 +1,13 @@
 2022-03-31 Riccardo Mottola <rm@gnu.org>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Source/GSStandardWindowDecorationView.m
+	* Source/GSThemeDrawing.m
+	Refactor resize bar notch width to be a constant and private inside
+	GSTheme, making it accessible through -[GSTheme resizebarNotchWidth].
+
+2022-03-31 Riccardo Mottola <rm@gnu.org>
+
 	* Source/GSStandardWindowDecorationView.m:
 	Fix resizing mode by fixing initialization order.
 

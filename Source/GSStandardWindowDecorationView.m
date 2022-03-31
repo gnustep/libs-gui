@@ -390,13 +390,14 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 - (GSResizeEdgeMode) resizeModeForPoint:(NSPoint)point
 {
   GSResizeEdgeMode mode;
+  float resizebarNotchWidth = [[GSTheme theme] resizebarNotchWidth];
 
-  if (resizeBarRect.size.width < 30 * 2
+  if (resizeBarRect.size.width < resizebarNotchWidth * 2
       && point.x < resizeBarRect.size.width / 2)
     mode = GSResizeEdgeBottomLeftMode;
-  else if (point.x > resizeBarRect.size.width - 29)
+  else if (point.x > resizeBarRect.size.width - resizebarNotchWidth - 1)
     mode = GSResizeEdgeBottomRightMode;
-  else if (point.x < 29)
+  else if (point.x < resizebarNotchWidth - 1)
     mode = GSResizeEdgeBottomLeftMode;
   else
     mode = GSResizeEdgeBottomMode;

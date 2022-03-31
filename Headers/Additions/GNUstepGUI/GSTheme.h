@@ -1227,6 +1227,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 - (float) resizebarHeight;
 
+- (float) resizebarNotchWidth;
+
 - (float) titlebarButtonSize;
 
 - (float) titlebarPaddingRight;
