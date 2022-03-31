@@ -83,6 +83,19 @@
   return AUTORELEASE(unarchiver);
 }
 
+- (NSString *) _substituteClassForClassName: (NSString *)className
+{
+  NSString *result = className;
+  NSDictionary *dict = [_customClasses objectForKey: className];  
+
+  if (dict != nil)
+    {
+      result = [dict objectForKey: @"parentClassName"];
+    }
+  
+  return result;
+}
+
 - (NSData *) _preProcessXib: (NSData *)data
 {
   NSData *result = data;
@@ -143,8 +156,47 @@
                       id key = [[xmlKeys objectAtIndex:index] stringValue];
                       if ([key rangeOfString:@"CustomClassName"].location != NSNotFound)
                         {
-                          // NSString *obj = [[xmlObjs objectAtIndex:index] stringValue];
-                          [customClassDict setObject:[[xmlObjs objectAtIndex:index] stringValue] forKey:key];
+                          NSString *cn = [[xmlObjs objectAtIndex: index] stringValue]; // className
+
+                          [customClassDict setObject:cn forKey:key];
+                                                    
+                          //
+                          // If we are in IB/Gorm build the custom classes map so that we don't instantiate
+                          // classes which don't exist (yet) in IB/Gorm.  This allows editing of the model
+                          // in IB/Gorm.  If we are in the live app, don't bother as it's a waste of memory.
+                          //
+                          if ([NSClassSwapper isInInterfaceBuilder] == YES)
+                            {
+                              NSUInteger idx = [key rangeOfString: @"."].location;
+                              if (idx != NSNotFound) // unlikely to be NSNotFound...
+                                {
+                                  NSString *xpath = [NSString stringWithFormat: @"//object[@class=\"IBClassDescriber\"]"
+                                                              @"//string[@key=\"className\"][text()=\"%@\"]"
+                                                              @"/../string[@key=\"superclassName\"]", cn];
+                                  NSArray *descriptionObjs = [document nodesForXPath: xpath error: NULL];
+                                  if ([descriptionObjs count] > 0)
+                                    {
+                                      NSString *num = [key substringToIndex: idx];
+                                      NSXMLNode *descriptionNode = [descriptionObjs objectAtIndex: 0];
+                                      NSString *sc = [descriptionNode stringValue]; // superclassName
+                                      NSString *refXPath = [NSString stringWithFormat:
+                                                                       @"//object[@class=\"IBMutableOrderedSet\"][@key=\"objectRecords\"]"
+                                                                     @"/object/object[@class=\"IBObjectRecord\"]/int[@key=\"objectID\"]"
+                                                                     @"[text()=\"%@\"]/../reference[@key=\"object\"]/@ref", num];
+                                      
+                                      NSArray *refNodes = [document nodesForXPath: refXPath error: NULL];
+                                      if ([refNodes count] > 0)
+                                        {
+                                          NSXMLElement *refNode = [refNodes objectAtIndex: 0];
+                                          NSString *refId = [refNode stringValue];
+                                          
+                                          [self createCustomClassRecordForId: refId
+                                                             withParentClass: sc
+                                                              forCustomClass: cn];
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -206,14 +258,16 @@
 
                                   // If we are in the interface builder app, do not replace
                                   // the existing classes with their custom subclasses.
-                                  if ([NSClassSwapper isInInterfaceBuilder] == NO)
+                                  NSString *clsName = className;
+                                  if ([NSClassSwapper isInInterfaceBuilder] == YES)
                                     {
-                                      cls = NSClassFromString(className);
+                                      clsName = [self _substituteClassForClassName: className];
                                     }
                                   
+                                  cls = NSClassFromString(clsName);                                 
                                   classNode = [classNodes objectAtIndex:0];
                                   classAttr = [classNode attributeForName:@"class"];
-                                  [classAttr setStringValue:className];
+                                  [classAttr setStringValue: className];
 
                                   if (cls != nil)
                                     {
@@ -232,7 +286,7 @@
                                               id cellAttr = nil;
                                               cellNode = [cellNodes objectAtIndex:0];
                                               cellAttr = [cellNode attributeForName:@"class"];
-                                              [cellAttr setStringValue:cellClassString];
+                                              [cellAttr setStringValue: cellClassString];
                                             }
                                         }
                                     }
@@ -263,6 +317,9 @@
 #if     GNUSTEP_BASE_HAVE_LIBXML
   NSXMLParser *theParser;
   NSData *theData = data;
+
+  // Dictionary which contains custom class information for Gorm/IB.
+  _customClasses = [[NSMutableDictionary alloc] init];
 
   theData = [self _preProcessXib: data];
   if (theData == nil)
@@ -298,6 +355,7 @@
   DESTROY(objects);
   DESTROY(stack);
   DESTROY(decoded);
+  DESTROY(_customClasses);
 
   [super dealloc];
 }
@@ -364,11 +422,17 @@ didStartElement: (NSString*)elementName
     }
 }
 
-- (id) allocObjectForClassName: (NSString*)classname
+- (id) allocObjectForClassName: (NSString*)clsname
 {
   Class c = nil;
   id delegate = [self delegate];
-
+  NSString *classname = clsname;
+  
+  if ([NSClassSwapper isInInterfaceBuilder] == YES)
+    {
+      classname = [self _substituteClassForClassName: classname];
+    }
+  
   c = [self classForClassName: classname];
 
   if (c == nil)
@@ -1033,4 +1097,26 @@ didStartElement: (NSString*)elementName
 {
   return decoded;
 }
+
+- (NSDictionary *) customClasses
+{
+  return _customClasses;
+}
+
+- (void) createCustomClassRecordForId: (NSString *)theId
+                      withParentClass: (NSString *)parentClassName
+                       forCustomClass: (NSString *)customClassName
+{
+  if (theId == nil || customClassName == nil)
+    return;
+
+  NSMutableDictionary *dict =
+    [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                           parentClassName, @"parentClassName",
+                         theId, @"id",nil];
+  
+  [_customClasses setObject: dict
+                     forKey: customClassName];
+}
+
 @end

@@ -1,3 +1,22 @@
+2022-03-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.m
+	* Source/GSXibKeyedUnarchiver.m: Change format of
+        customClass dictionary.
+
+2022-03-26 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h: Add
+        customClasses method and _customClasses ivar.
+	* Source/GSXib5KeyedUnarchiver.h: Remove _customClasses from
+        declarations here and the method as well.
+	* Source/GSXib5KeyedUnarchiver.m: Remove customClasses method
+        from here.
+	* Source/GSXibKeyedUnarchiver.m: Implement logic here to build
+        _customClasses array when loading a XIB of version 3 or 4.
+
 2022-03-22 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSImageCell.m: subclass initImageCell, so that
