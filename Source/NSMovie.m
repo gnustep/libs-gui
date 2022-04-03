@@ -245,6 +245,7 @@ static inline void _loadNSMoviePlugIns (void)
   new->_movie = _movie;
   new->_movieData =  [_movieData copyWithZone: zone];
   new->_url = [_url copyWithZone: zone];
+
   return new;
 }
 
