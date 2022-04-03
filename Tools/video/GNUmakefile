@@ -25,7 +25,7 @@ VideoOutput_OBJC_FILES = VideoOutputSink.m ffplay.m
 VideoFile_PRINCIPAL_CLASS = VideoFileSource
 VideoOutput_PRINCIPAL_CLASS = VidioOutputSink
 
-VideoFile_BUNDLE_LIBS = -lavformat -lavcodec
-VideoOutput_BUNDLE_LIBS = -lavformat -lavcodec
+VideoFile_BUNDLE_LIBS = 
+VideoOutput_BUNDLE_LIBS = -lavformat -lavcodec -lSDL2
 
 include $(GNUSTEP_MAKEFILES)/bundle.make
