@@ -570,11 +570,12 @@ AC_ARG_ENABLE(video,
 BUILD_VIDEO=
 
 # Check for the headers...
-AC_CHECK_HEADERS(libavcodec/avcodec.h, have_video=yes, have_video=no)
+AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
 AC_CHECK_HEADERS(libavformat/avformat.h, have_format=yes, have_format=no)
+AC_CHECK_HEADERS(SDL/SDL.h, have_sdl=yes, have_sdl=no)
 
 # Only if we have both and enabled, then build video
-if test $have_video = yes -a $have_format -a $enable_video = yes; then
+if test $have_codec = yes -a $have_format -a $have_sdl -a $enable_video = yes; then
    BUILD_VIDEO="video"
 fi
 AC_SUBST(BUILD_VIDEO)

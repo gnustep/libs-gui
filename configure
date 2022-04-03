@@ -5772,9 +5772,9 @@ if test "x$ac_cv_header_libavcodec_avcodec_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBAVCODEC_AVCODEC_H 1
 _ACEOF
- have_video=yes
+ have_codec=yes
 else
-  have_video=no
+  have_codec=no
 fi
 
 done
@@ -5793,9 +5793,23 @@ fi
 
 done
 
+for ac_header in SDL/SDL.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "SDL/SDL.h" "ac_cv_header_SDL_SDL_h" "$ac_includes_default"
+if test "x$ac_cv_header_SDL_SDL_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SDL_SDL_H 1
+_ACEOF
+ have_sdl=yes
+else
+  have_sdl=no
+fi
+
+done
+
 
 # Only if we have both and enabled, then build video
-if test $have_video = yes -a $have_format -a $enable_video = yes; then
+if test $have_codec = yes -a $have_format -a $have_sdl -a $enable_video = yes; then
    BUILD_VIDEO="video"
 fi
 
