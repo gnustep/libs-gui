@@ -25,7 +25,7 @@
 
 // Modified to work with Objective-C by Gregory Casamento <greg.casamento@gmail.com>
 
-#include "config.h"
+#include "ffmpeg_config.h"
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
@@ -56,10 +56,10 @@
 # include <libavfilter/buffersrc.h>
 #endif
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
 
-// #include "cmdutils.h"
+#include "cmdutils.h"
 
 #include <assert.h>
 
