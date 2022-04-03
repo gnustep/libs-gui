@@ -5793,12 +5793,12 @@ fi
 
 done
 
-for ac_header in SDL/SDL.h
+for ac_header in SDL2/SDL.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "SDL/SDL.h" "ac_cv_header_SDL_SDL_h" "$ac_includes_default"
-if test "x$ac_cv_header_SDL_SDL_h" = xyes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "SDL2/SDL.h" "ac_cv_header_SDL2_SDL_h" "$ac_includes_default"
+if test "x$ac_cv_header_SDL2_SDL_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_SDL_SDL_H 1
+#define HAVE_SDL2_SDL_H 1
 _ACEOF
  have_sdl=yes
 else
