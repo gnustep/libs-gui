@@ -310,6 +310,10 @@ typedef struct VideoState {
     int last_video_stream, last_audio_stream, last_subtitle_stream;
 
     SDL_cond *continue_read_thread;
+
+  // GNUstep additions..
+  NSData *data;
+  
 } VideoState;
 
 /* options specified by the user */
@@ -401,6 +405,7 @@ static const struct TextureFormatEntry {
     { AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
 };
 
+/*
 #if CONFIG_AVFILTER
 static int opt_add_vfilter(void *optctx, const char *opt, const char *arg)
 {
@@ -409,6 +414,7 @@ static int opt_add_vfilter(void *optctx, const char *opt, const char *arg)
     return 0;
 }
 #endif
+*/
 
 static inline
 int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
@@ -605,30 +611,33 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                     return -1;
 
                 switch (d->avctx->codec_type) {
-                    case AVMEDIA_TYPE_VIDEO:
-                        ret = avcodec_receive_frame(d->avctx, frame);
-                        if (ret >= 0) {
-                            if (decoder_reorder_pts == -1) {
-                                frame->pts = frame->best_effort_timestamp;
-                            } else if (!decoder_reorder_pts) {
-                                frame->pts = frame->pkt_dts;
-                            }
-                        }
-                        break;
-                    case AVMEDIA_TYPE_AUDIO:
-                        ret = avcodec_receive_frame(d->avctx, frame);
-                        if (ret >= 0) {
-                            AVRational tb = (AVRational){1, frame->sample_rate};
-                            if (frame->pts != AV_NOPTS_VALUE)
-                                frame->pts = av_rescale_q(frame->pts, d->avctx->pkt_timebase, tb);
-                            else if (d->next_pts != AV_NOPTS_VALUE)
-                                frame->pts = av_rescale_q(d->next_pts, d->next_pts_tb, tb);
-                            if (frame->pts != AV_NOPTS_VALUE) {
-                                d->next_pts = frame->pts + frame->nb_samples;
-                                d->next_pts_tb = tb;
-                            }
-                        }
-                        break;
+                case AVMEDIA_TYPE_VIDEO:
+                  ret = avcodec_receive_frame(d->avctx, frame);
+                  if (ret >= 0) {
+                    if (decoder_reorder_pts == -1) {
+                      frame->pts = frame->best_effort_timestamp;
+                    } else if (!decoder_reorder_pts) {
+                      frame->pts = frame->pkt_dts;
+                    }
+                  }
+                  break;
+                case AVMEDIA_TYPE_AUDIO:
+                  ret = avcodec_receive_frame(d->avctx, frame);
+                  if (ret >= 0) {
+                    AVRational tb = (AVRational){1, frame->sample_rate};
+                    if (frame->pts != AV_NOPTS_VALUE)
+                      frame->pts = av_rescale_q(frame->pts, d->avctx->pkt_timebase, tb);
+                    else if (d->next_pts != AV_NOPTS_VALUE)
+                      frame->pts = av_rescale_q(d->next_pts, d->next_pts_tb, tb);
+                    if (frame->pts != AV_NOPTS_VALUE) {
+                      d->next_pts = frame->pts + frame->nb_samples;
+                      d->next_pts_tb = tb;
+                    }
+                  }
+                  break;
+                default:
+                  NSLog(@"Unknown codec type");
+                  break;
                 }
                 if (ret == AVERROR_EOF) {
                     d->finished = d->pkt_serial;
@@ -1464,8 +1473,8 @@ static double get_master_clock(VideoState *is)
 }
 
 static void check_external_clock_speed(VideoState *is) {
-   if (is->video_stream >= 0 && is->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES ||
-       is->audio_stream >= 0 && is->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) {
+  if ((is->video_stream >= 0 && is->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) ||
+      (is->audio_stream >= 0 && is->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES)) {
        set_clock_speed(&is->extclk, FFMAX(EXTERNAL_CLOCK_SPEED_MIN, is->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
    } else if ((is->video_stream < 0 || is->videoq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES) &&
               (is->audio_stream < 0 || is->audioq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES)) {
@@ -2605,9 +2614,10 @@ static int stream_component_open(VideoState *is, int stream_index)
     codec = avcodec_find_decoder(avctx->codec_id);
 
     switch(avctx->codec_type){
-        case AVMEDIA_TYPE_AUDIO   : is->last_audio_stream    = stream_index; forced_codec_name =    audio_codec_name; break;
-        case AVMEDIA_TYPE_SUBTITLE: is->last_subtitle_stream = stream_index; forced_codec_name = subtitle_codec_name; break;
-        case AVMEDIA_TYPE_VIDEO   : is->last_video_stream    = stream_index; forced_codec_name =    video_codec_name; break;
+    case AVMEDIA_TYPE_AUDIO   : is->last_audio_stream    = stream_index; forced_codec_name =    audio_codec_name; break;
+    case AVMEDIA_TYPE_SUBTITLE: is->last_subtitle_stream = stream_index; forced_codec_name = subtitle_codec_name; break;
+    case AVMEDIA_TYPE_VIDEO   : is->last_video_stream    = stream_index; forced_codec_name =    video_codec_name; break;
+    default: NSLog(@"Unknown codec type"); break;
     }
     if (forced_codec_name)
         codec = avcodec_find_decoder_by_name(forced_codec_name);
@@ -2736,10 +2746,10 @@ static int decode_interrupt_cb(void *ctx)
 }
 
 static int stream_has_enough_packets(AVStream *st, int stream_id, PacketQueue *queue) {
-    return stream_id < 0 ||
-           queue->abort_request ||
-           (st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
-           queue->nb_packets > MIN_FRAMES && (!queue->duration || av_q2d(st->time_base) * queue->duration > 1.0);
+  return stream_id < 0 ||
+    queue->abort_request ||
+    (st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
+    (queue->nb_packets > MIN_FRAMES && (!queue->duration || av_q2d(st->time_base) * queue->duration > 1.0));
 }
 
 static int is_realtime(AVFormatContext *s)
@@ -3226,7 +3236,7 @@ static void toggle_audio_display(VideoState *is)
     int next = is->show_mode;
     do {
         next = (next + 1) % SHOW_MODE_NB;
-    } while (next != is->show_mode && (next == SHOW_MODE_VIDEO && !is->video_st || next != SHOW_MODE_VIDEO && !is->audio_st));
+    } while (next != is->show_mode && ((next == SHOW_MODE_VIDEO && !is->video_st) || (next != SHOW_MODE_VIDEO && !is->audio_st)));
     if (is->show_mode != next) {
         is->force_refresh = 1;
         is->show_mode = next;
@@ -3477,6 +3487,7 @@ static void event_loop(VideoState *cur_stream)
     }
 }
 
+/*
 static int opt_frame_size(void *optctx, const char *opt, const char *arg)
 {
     av_log(NULL, AV_LOG_WARNING, "Option -s is deprecated, use -video_size.\n");
@@ -3681,6 +3692,7 @@ void show_help_default(const char *opt, const char *arg)
            "left double-click   toggle full screen\n"
            );
 }
+*/
 
 /* Called from the main */
 int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
@@ -3707,9 +3719,9 @@ int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
     // show_banner(argc, argv, options);
 
     // parse_options(NULL, argc, argv, options, opt_input_file);
-    input_filename = [[[NSMovie URL] path] cString];
+    input_filename = [[[movie URL] path] cString];
     if (!input_filename) {
-        show_usage();
+        // show_usage();
         av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
         av_log(NULL, AV_LOG_FATAL,
                "Use -h to get full help or, even better, run 'man %s'\n", program_name);
