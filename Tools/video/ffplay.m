@@ -63,6 +63,9 @@
 
 #include <assert.h>
 
+#import <AppKit/NSMovieView.h>
+#import <AppKit/NSMovie.h>
+
 const char program_name[] = "ffplay";
 const int program_birth_year = 2003;
 
@@ -3680,7 +3683,7 @@ void show_help_default(const char *opt, const char *arg)
 }
 
 /* Called from the main */
-int main(int argc, char **argv)
+int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
 {
     int flags;
     VideoState *is;
@@ -3688,7 +3691,7 @@ int main(int argc, char **argv)
     init_dynload();
 
     av_log_set_flags(AV_LOG_SKIP_REPEATED);
-    parse_loglevel(argc, argv, options);
+    // parse_loglevel(argc, argv, options);
 
     /* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
@@ -3701,10 +3704,10 @@ int main(int argc, char **argv)
     signal(SIGINT , sigterm_handler); /* Interrupt (ANSI).    */
     signal(SIGTERM, sigterm_handler); /* Termination (ANSI).  */
 
-    show_banner(argc, argv, options);
+    // show_banner(argc, argv, options);
 
-    parse_options(NULL, argc, argv, options, opt_input_file);
-
+    // parse_options(NULL, argc, argv, options, opt_input_file);
+    input_filename = [[[NSMovie URL] path] cString];
     if (!input_filename) {
         show_usage();
         av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
