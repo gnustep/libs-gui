@@ -1718,6 +1718,7 @@ static NSImage *spinningImages[MaxCount];
 /* These include the black border. */
 #define TITLE_HEIGHT 23.0
 #define RESIZE_HEIGHT 9.0
+#define RESIZE_NOTCH_WIDTH 30.0
 #define TITLEBAR_BUTTON_SIZE 15.0
 #define TITLEBAR_PADDING_TOP 4.0
 #define TITLEBAR_PADDING_RIGHT 4.0
@@ -1731,6 +1732,11 @@ static NSImage *spinningImages[MaxCount];
 - (float) resizebarHeight
 {
   return RESIZE_HEIGHT;
+}
+
+- (float) resizebarNotchWidth
+{
+  return RESIZE_NOTCH_WIDTH;
 }
 
 - (float) titlebarButtonSize
@@ -1910,6 +1916,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 - (void) drawResizeBarRect: (NSRect)resizeBarRect
 {
   GSDrawTiles *tiles;
+  float resizebarNotchWidth = [self resizebarNotchWidth];
+
   tiles = [self tilesNamed: @"GSWindowResizeBar" state: GSThemeNormalState];
   if (tiles == nil)
     {
@@ -1935,21 +1943,21 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 
       /* Only draw the notches if there's enough space. */
-      if (resizeBarRect.size.width < 30 * 2)
+      if (resizeBarRect.size.width < resizebarNotchWidth * 2)
 	return;
 
       [[NSColor darkGrayColor] set];
-      PSmoveto(27.5, 1.0);
-      PSlineto(27.5, RESIZE_HEIGHT - 2.0);
-      PSmoveto(resizeBarRect.size.width - 28.5, 1.0);
-      PSlineto(resizeBarRect.size.width - 28.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizebarNotchWidth - 3 + 0.5, 1.0);
+      PSlineto(resizebarNotchWidth - 3 + 0.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizeBarRect.size.width - (resizebarNotchWidth - 2 + 0.5), 1.0);
+      PSlineto(resizeBarRect.size.width - (resizebarNotchWidth - 2 + 0.5), RESIZE_HEIGHT - 2.0);
       PSstroke();
 
       [[NSColor whiteColor] set];
-      PSmoveto(28.5, 1.0);
-      PSlineto(28.5, RESIZE_HEIGHT - 2.0);
-      PSmoveto(resizeBarRect.size.width - 27.5, 1.0);
-      PSlineto(resizeBarRect.size.width - 27.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizebarNotchWidth - 2 + 0.5, 1.0);
+      PSlineto(resizebarNotchWidth - 2 + 0.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizeBarRect.size.width - (resizebarNotchWidth - 3 + 0.5), 1.0);
+      PSlineto(resizeBarRect.size.width - (resizebarNotchWidth - 3 + 0.5), RESIZE_HEIGHT - 2.0);
       PSstroke();
     }
   else

@@ -18,6 +18,39 @@
 	* Tools/video/VideoOutputSink.m: Implementation of
         playBytes:length: for playing the bytes as a movie.
 
+2022-03-31 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Source/GSStandardWindowDecorationView.m
+	* Source/GSThemeDrawing.m
+	Refactor resize bar notch width to be a constant and private inside
+	GSTheme, making it accessible through -[GSTheme resizebarNotchWidth].
+
+2022-03-31 Riccardo Mottola <rm@gnu.org>
+
+	* Source/GSStandardWindowDecorationView.m:
+	Fix resizing mode by fixing initialization order.
+
+2022-03-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.h
+	* Source/GSXib5KeyedUnarchiver.m
+	* Source/GSXibKeyedUnarchiver.m: Change format of
+        customClass dictionary.
+
+2022-03-26 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSXibKeyedUnarchiver.h: Add
+        customClasses method and _customClasses ivar.
+	* Source/GSXib5KeyedUnarchiver.h: Remove _customClasses from
+        declarations here and the method as well.
+	* Source/GSXib5KeyedUnarchiver.m: Remove customClasses method
+        from here.
+	* Source/GSXibKeyedUnarchiver.m: Implement logic here to build
+        _customClasses array when loading a XIB of version 3 or 4.
+>>>>>>> e0012349f6df6895f736de1f158c52116fce7fc1
+
 2022-03-22 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSImageCell.m: subclass initImageCell, so that

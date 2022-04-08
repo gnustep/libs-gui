@@ -750,9 +750,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
   [_IBObjectContainer setElement: _objectRecords forKey: @"objectRecords"];
   [_IBObjectContainer setElement: _flattenedProperties forKey: @"flattenedProperties"];
-
-  // Hold the dictionary which contains custom class information for Gorm/IB.
-  _customClasses = [[NSMutableArray alloc] initWithCapacity: 10];
 }
 
 - (void)dealloc
@@ -765,28 +762,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   RELEASE(_orderedObjects);
   RELEASE(_orderedObjectsDict);
   RELEASE(_resources);
-  RELEASE(_customClasses);
   [super dealloc];
-}
-
-- (NSMutableArray *) customClasses
-{
-  return _customClasses;
-}
-
-- (void) createCustomClassRecordForId: (NSString *)theId
-                      withParentClass: (NSString *)parentClassName
-                       forCustomClass: (NSString *)customClassName
-{
-  if (theId == nil || customClassName == nil)
-    return;
-
-  NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                     theId, @"id",
-                                                   parentClassName, @"parentClassName",
-                                                   customClassName, @"customClassName",nil];
-  [_customClasses addObject: dict];
-  // NSLog(@"theId = %@, parentClassName = %@, customClassName = %@", theId, parentClassName, customClassName);
 }
 
 - (void) parser: (NSXMLParser*)parser

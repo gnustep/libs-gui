@@ -29,6 +29,8 @@
 #import <Foundation/NSProgress.h>
 #import <Foundation/NSError.h>
 
+DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
 #if	defined(__cplusplus)
@@ -39,8 +41,6 @@ enum {
   NSFontAssetRequestOptionUsesStandardUI = 1 << 0, // Use standard system UI for downloading.
 };
 typedef NSUInteger NSFontAssetRequestOptions;
-
-DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
 
 @interface NSFontAssetRequest : NSObject <NSProgressReporting>
 
