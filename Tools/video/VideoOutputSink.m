@@ -61,6 +61,8 @@
 
 #define INBUF_SIZE 4096
 
+int video_main(NSMovie *movie, NSMovieView *view);
+
 @interface VideoOutputSink : NSObject <GSVideoSink>
 {
   AVCodec *_codec;
@@ -246,6 +248,11 @@
     {
       av_packet_free(&_pkt);
     }
+}
+
+- (void) play
+{
+  
 }
 
 - (BOOL)playBytes: (void *)bytes length: (NSUInteger)length

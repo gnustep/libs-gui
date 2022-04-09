@@ -158,6 +158,7 @@ enum
 
 - (void) start: (id)sender
 {
+  /*
   // If the locks exists this instance is already playing
   if (_readLock != nil && _playbackLock != nil)
     {
@@ -195,6 +196,7 @@ enum
 
   // Set to MOVIE_SHOULD_PLAY so that thread isn't blocked.
   [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
+  */
 }
 
 - (BOOL) isPlaying
