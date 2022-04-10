@@ -1,7 +1,7 @@
 /* 
    VideofileSource.m
 
-   Load and read video data using libvideofile.
+   Load and read video data 
 
    Copyright (C) 2009 Free Software Foundation, Inc.
 
@@ -57,11 +57,13 @@
                   @"mov", @"mp4", @"3gp", @"mpegts", @"mpjpeg", @"rawvideo", @"sbg",
                   @"tedcaptions", @"vapoursynth",nil];
 }
+
 + (NSArray *)videoUnfilteredTypes
 {
   /* FIXME: I'm not sure what the UTI for all the types above are. */
   return [self videoUnfilteredFileTypes];
 }
+
 + (BOOL)canInitWithData: (NSData *)data
 {
   return YES;
@@ -85,28 +87,6 @@
   ASSIGN(_data, data);
  
   return self;
-}
-
-- (NSUInteger) readBytes: (void *)bytes length: (NSUInteger)length
-{
-  NSRange range;
-  NSUInteger len = length; //- 1;
-
-  if (_currentPosition >= [_data length] - 1)
-    {
-      return 0;
-    }
-  
-  if (length > [_data length] - _currentPosition)
-    {
-      len = [_data length] - _currentPosition;
-    }
-  
-  range = NSMakeRange(_currentPosition, len);
-  [_data getBytes: bytes range: range];
-  _currentPosition += len;
-  
-  return len;
 }
 
 - (NSTimeInterval)duration

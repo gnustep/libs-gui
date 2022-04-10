@@ -54,11 +54,6 @@
  */
 - (id)initWithData: (NSData *)data;
 
-/** Reads data provided in -initWithData:.  Parameter bytes must be big enough
- *  to hold length bytes.
- */
-- (NSUInteger)readBytes: (void *)bytes length: (NSUInteger)length;
-
 /** Returns the duration, in seconds.  Equivalent to [NSMovieView-duration].
  */
 - (NSTimeInterval)duration;

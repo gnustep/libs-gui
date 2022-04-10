@@ -66,6 +66,12 @@
 #import <AppKit/NSMovieView.h>
 #import <AppKit/NSMovie.h>
 
+@interface NSMovie (__ffplay_PrivateMethod_)
+
+- (NSData *) movieData;
+
+@end
+
 const char program_name[] = "ffplay";
 const int program_birth_year = 2003;
 
@@ -363,7 +369,7 @@ static int nb_vfilters = 0;
 static char *afilters = NULL;
 #endif
 static int autorotate = 1;
-static int find_stream_info = 1;
+// static int find_stream_info = 1;
 static int filter_nbthreads = 0;
 
 /* current context */
@@ -1875,7 +1881,7 @@ static int configure_video_filters(AVFilterGraph *graph, VideoState *is, const c
     AVFilterContext *filt_src = NULL, *filt_out = NULL, *last_filter = NULL;
     AVCodecParameters *codecpar = is->video_st->codecpar;
     AVRational fr = av_guess_frame_rate(is->ic, is->video_st, NULL);
-    AVDictionaryEntry *e = NULL;
+    // AVDictionaryEntry *e = NULL;
     int nb_pix_fmts = 0;
     int i, j;
 
@@ -1889,12 +1895,14 @@ static int configure_video_filters(AVFilterGraph *graph, VideoState *is, const c
     }
     pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
 
+    /*
     while ((e = av_dict_get(sws_dict, "", e, AV_DICT_IGNORE_SUFFIX))) {
         if (!strcmp(e->key, "sws_flags")) {
             av_strlcatf(sws_flags_str, sizeof(sws_flags_str), "%s=%s:", "flags", e->value);
         } else
             av_strlcatf(sws_flags_str, sizeof(sws_flags_str), "%s=%s:", e->key, e->value);
     }
+    */
     if (strlen(sws_flags_str))
         sws_flags_str[strlen(sws_flags_str)-1] = '\0';
 
@@ -1978,7 +1986,7 @@ static int configure_audio_filters(VideoState *is, const char *afilters, int for
     int channels[2] = { 0, -1 };
     AVFilterContext *filt_asrc = NULL, *filt_asink = NULL;
     char aresample_swr_opts[512] = "";
-    AVDictionaryEntry *e = NULL;
+    // AVDictionaryEntry *e = NULL;
     char asrc_args[256];
     int ret;
 
@@ -1986,9 +1994,10 @@ static int configure_audio_filters(VideoState *is, const char *afilters, int for
     if (!(is->agraph = avfilter_graph_alloc()))
         return AVERROR(ENOMEM);
     is->agraph->nb_threads = filter_nbthreads;
-
+    /*
     while ((e = av_dict_get(swr_opts, "", e, AV_DICT_IGNORE_SUFFIX)))
         av_strlcatf(aresample_swr_opts, sizeof(aresample_swr_opts), "%s=%s:", e->key, e->value);
+    */
     if (strlen(aresample_swr_opts))
         aresample_swr_opts[strlen(aresample_swr_opts)-1] = '\0';
     av_opt_set(is->agraph, "aresample_swr_opts", aresample_swr_opts, 0);
@@ -2641,7 +2650,7 @@ static int stream_component_open(VideoState *is, int stream_index)
     if (fast)
         avctx->flags2 |= AV_CODEC_FLAG2_FAST;
 
-    opts = filter_codec_opts(codec_opts, avctx->codec_id, ic, ic->streams[stream_index], codec);
+    // opts = filter_codec_opts(codec_opts, avctx->codec_id, ic, ic->streams[stream_index], codec);
     if (!av_dict_get(opts, "threads", NULL, 0))
         av_dict_set(&opts, "threads", "auto", 0);
     if (stream_lowres)
@@ -2773,14 +2782,14 @@ static int read_thread(void *arg)
 {
     VideoState *is = arg;
     AVFormatContext *ic = NULL;
-    int err, i, ret;
+    int /* err, */ i, ret;
     int st_index[AVMEDIA_TYPE_NB];
     AVPacket pkt1, *pkt = &pkt1;
     int64_t stream_start_time;
     int pkt_in_play_range = 0;
     AVDictionaryEntry *t;
     SDL_mutex *wait_mutex = SDL_CreateMutex();
-    int scan_all_pmts_set = 0;
+    // int scan_all_pmts_set = 0;
     int64_t pkt_ts;
 
     if (!wait_mutex) {
@@ -2800,6 +2809,7 @@ static int read_thread(void *arg)
     }
     ic->interrupt_callback.callback = decode_interrupt_cb;
     ic->interrupt_callback.opaque = is;
+    /*
     if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
         av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
         scan_all_pmts_set = 1;
@@ -2818,6 +2828,7 @@ static int read_thread(void *arg)
         ret = AVERROR_OPTION_NOT_FOUND;
         goto fail;
     }
+    */
     is->ic = ic;
 
     if (genpts)
@@ -2825,6 +2836,7 @@ static int read_thread(void *arg)
 
     av_format_inject_global_side_data(ic);
 
+    /*
     if (find_stream_info) {
         AVDictionary **opts = setup_find_stream_info_opts(ic, codec_opts);
         int orig_nb_streams = ic->nb_streams;
@@ -2842,13 +2854,18 @@ static int read_thread(void *arg)
             goto fail;
         }
     }
-
+    */
+    
     if (ic->pb)
         ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
 
     if (seek_by_bytes < 0)
-        seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
-
+      {
+        int c = strcmp("ogg", ic->iformat->name);
+        int f = ic->iformat->flags;
+        seek_by_bytes = !!(f & AVFMT_TS_DISCONT) && c;
+      }
+    
     is->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
     if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
@@ -3091,6 +3108,12 @@ static int read_thread(void *arg)
 static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
 {
     VideoState *is;
+    AVInputFormat *ifmt;
+
+    ifmt = av_mallocz(sizeof(AVInputFormat));
+    if (!ifmt)
+      return NULL;    
+    memcpy(ifmt, iformat, sizeof(AVInputFormat));
 
     is = av_mallocz(sizeof(VideoState));
     if (!is)
@@ -3101,7 +3124,7 @@ static VideoState *stream_open(const char *filename, AVInputFormat *iformat)
     is->filename = av_strdup(filename);
     if (!is->filename)
         goto fail;
-    is->iformat = iformat;
+    is->iformat = ifmt;
     is->ytop    = 0;
     is->xleft   = 0;
 
@@ -3695,13 +3718,16 @@ void show_help_default(const char *opt, const char *arg)
 */
 
 /* Called from the main */
-int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
+int video_main(NSMovieView *view) //(int argc, char **argv)
 {
-    int flags;
+    int flags = 0;
     VideoState *is;
-
-    init_dynload();
-
+    NSMovie *movie = [view movie];
+    
+    // init_dynload();
+    // initialize...
+    file_iformat = NULL;
+    
     av_log_set_flags(AV_LOG_SKIP_REPEATED);
     // parse_loglevel(argc, argv, options);
 
@@ -3711,7 +3737,7 @@ int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
 #endif
     avformat_network_init();
 
-    init_opts();
+    // init_opts();
 
     signal(SIGINT , sigterm_handler); /* Interrupt (ANSI).    */
     signal(SIGTERM, sigterm_handler); /* Termination (ANSI).  */
@@ -3719,14 +3745,33 @@ int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
     // show_banner(argc, argv, options);
 
     // parse_options(NULL, argc, argv, options, opt_input_file);
-    input_filename = [[[movie URL] path] cString];
-    if (!input_filename) {
-        // show_usage();
-        av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
-        av_log(NULL, AV_LOG_FATAL,
-               "Use -h to get full help or, even better, run 'man %s'\n", program_name);
-        exit(1);
+    NSString *path = [[movie URL] path];
+    input_filename = [path cString];
+    if (!input_filename)
+      {
+        NSString *tmp = NSTemporaryDirectory();
+        NSUUID *uuid = [NSUUID UUID];
+        NSString *tempFile = [tmp stringByAppendingPathComponent: [uuid UUIDString]];
+        NSData *data = [movie movieData];
+        if (data != nil)
+          {
+            [data writeToFile: tempFile atomically: YES];
+            input_filename = [tempFile cString];
+          }
+      }
+
+    // Instantiate iformat...
+    const char *fmt = [[path pathExtension] cString];
+    NSLog(@"fmt = %s", fmt);
+    file_iformat = av_find_input_format(fmt);
+    if (!file_iformat) {
+        av_log(NULL, AV_LOG_FATAL, "Unknown input format: %s\n", fmt);
+        return AVERROR(EINVAL);
     }
+   
+    // Set the format name...
+    file_iformat->name = [[path pathExtension] cString];
+    file_iformat->flags = flags;
 
     if (display_disable) {
         video_disable = 1;

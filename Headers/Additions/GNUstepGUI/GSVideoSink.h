@@ -38,21 +38,14 @@
 
 @protocol GSVideoSink <NSObject>
 
-+ (BOOL) canInitWithData: (NSData *)d;
-
-/**
- * Opens the device for output, called by [NSMovie-play].
- */
-- (BOOL) open;
-
-/** Closes the device, called by [NSMovie-stop].
- */
-- (void) close;
++ (BOOL) canInitWithData: (NSData *)data;
 
 /** 
  * Plays the data in bytes
  */
-- (BOOL) playBytes: (void *)bytes length: (NSUInteger)length;
+- (void) play;
+
+- (void) stop;
 
 /** Called by [NSMovieView -setVolume:], and corresponds to it.  Parameter volume
  *  is between the values 0.0 and 1.0.

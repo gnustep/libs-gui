@@ -26,6 +26,6 @@ VideoFile_PRINCIPAL_CLASS = VideoFileSource
 VideoOutput_PRINCIPAL_CLASS = VidioOutputSink
 
 VideoFile_BUNDLE_LIBS = 
-VideoOutput_BUNDLE_LIBS = -lavformat -lavcodec -lSDL2
+VideoOutput_BUNDLE_LIBS = -lavformat -lavcodec -lavdevice -lswscale -lswresample -lSDL2
 
 include $(GNUSTEP_MAKEFILES)/bundle.make

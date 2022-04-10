@@ -65,6 +65,7 @@ enum
 - (void) _finished: (NSNumber *)finishedPlaying;
 @end
 
+/*
 @implementation NSMovieView (PrivateMethods)
 - (void) _stream
 {
@@ -118,6 +119,7 @@ enum
   DESTROY(_playbackLock);
 }
 @end
+*/
 
 @implementation NSMovieView
 
@@ -179,6 +181,8 @@ enum
                          withObject: nil];
 
   [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
+  */
+  [[_movie _sink] play];
 }
 
 - (void) stop: (id)sender
@@ -196,7 +200,6 @@ enum
 
   // Set to MOVIE_SHOULD_PLAY so that thread isn't blocked.
   [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
-  */
 }
 
 - (BOOL) isPlaying

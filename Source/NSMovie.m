@@ -62,6 +62,8 @@ static inline void _loadNSMoviePlugIns (void)
       NSBundle *bundle = [NSBundle bundleWithPath: path];
       paths = [bundle pathsForResourcesOfType: @"nsmovie"
                                   inDirectory: @"Bundles"];
+
+      NSLog(@"NSMovie paths = %@", paths);
       [all addObjectsFromArray: paths];
     }
   END_FOR_IN(paths);
@@ -69,6 +71,7 @@ static inline void _loadNSMoviePlugIns (void)
   // Check all paths for bundles conforming to the protocol...
   FOR_IN(NSString*, path, all)
     {
+      NSLog(@"path = %@", path);
       NSBundle *bundle = [NSBundle bundleWithPath: path];
       Class plugInClass = [bundle principalClass];
       if ([plugInClass conformsToProtocol: @protocol(GSVideoSource)])
@@ -140,7 +143,7 @@ static inline void _loadNSMoviePlugIns (void)
           // Choose video sink...
           FOR_IN(Class, pluginClass, __videoSinkPlugIns)
             {
-              if ([pluginClass canInitWithData: movieData])
+              // if ([pluginClass canInitWithData: movieData])
                 {
                   _sink = [[pluginClass alloc] init];
                 }
@@ -150,7 +153,7 @@ static inline void _loadNSMoviePlugIns (void)
           // Choose video source...
           FOR_IN(Class, pluginClass, __videoSourcePlugIns)
             {
-              if ([pluginClass canInitWithData: movieData])
+              // if ([pluginClass canInitWithData: movieData])
                 {
                   _source = [[pluginClass alloc] initWithData: movieData];
                 }
@@ -181,11 +184,11 @@ static inline void _loadNSMoviePlugIns (void)
   NSData* data = [url resourceDataUsingCache: YES];
 
   self = [self initWithData: data];
-  if (byRef)
+  if (self != nil)
     {
       ASSIGN(_url, url);
     }
-
+  
   return self;
 }
 
@@ -237,7 +240,7 @@ static inline void _loadNSMoviePlugIns (void)
   return _url;
 }
 
-// NSCopying protocoll
+// NSCopying protocol
 - (id) copyWithZone: (NSZone *)zone
 {
   NSMovie *new = (NSMovie*)NSCopyObject (self, 0, zone);
@@ -249,7 +252,7 @@ static inline void _loadNSMoviePlugIns (void)
   return new;
 }
 
-// NSCoding protocoll
+// NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   if ([aCoder allowsKeyedCoding])
@@ -275,6 +278,12 @@ static inline void _loadNSMoviePlugIns (void)
       ASSIGN (_url, [aDecoder decodeObject]);
     }
   return self;
+}
+
+// Private methods...
+- (NSData *) movieData
+{
+  return _movieData;
 }
 
 @end
