@@ -39,11 +39,12 @@
 
 - (void) setIcon: (NSImage*)icon
 {
-  ASSIGN(_icon, icon);
+  // ASSIGN(_icon, icon);
 }
 
 - (NSImage*) icon
 {
+  /*
   if (_icon == nil && [self filename])
     {
       return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
@@ -52,6 +53,8 @@
     {
       return (NSImage *)_icon;
     }
+  */
+  return nil;
 }
 
 @end
