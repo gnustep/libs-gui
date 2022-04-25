@@ -62,7 +62,6 @@ PrinterTypes \
 TextConverters \
 KeyBindings \
 Resources \
-Printing \
 Themes \
 Tests
 
