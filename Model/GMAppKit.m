@@ -455,7 +455,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     cell_array = [unarchiver decodeObjectWithName:@"cells"];
     [self renewRows:nr columns:nc];
 #if GNU_GUI_LIBRARY
-    _selectedRow = _selectedColumn = 0;
+    //    _selectedRow = _selectedColumn = 0;
 #endif
     for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++)
     {
@@ -1221,9 +1221,9 @@ extern id _nibOwner;
 
 
 #ifdef GNU_GUI_LIBRARY
-  _rFlags.flipped_view = [self isFlipped];
-  if ([_sub_views count])
-    _rFlags.has_subviews = 1;
+  //  _rFlags.flipped_view = [self isFlipped];
+  //if ([_sub_views count])
+  //  _rFlags.has_subviews = 1;
 #endif
 
   return self;
@@ -1302,7 +1302,8 @@ extern id _nibOwner;
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   NSString* frameAutosaveName;
-
+  NSUInteger windowLevel = 0;
+  
   [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
   [self setMaxSize:[unarchiver decodeSizeWithName:@"maxSize"]];
   [self setMinSize:[unarchiver decodeSizeWithName:@"minSize"]];
@@ -1312,7 +1313,8 @@ extern id _nibOwner;
     [self setFrameAutosaveName:frameAutosaveName];
 
 #ifdef GNU_GUI_LIBRARY
-  _windowLevel = [unarchiver decodeIntWithName:@"level"];
+  windowLevel = [unarchiver decodeIntWithName:@"level"];
+  [self setWindowLevel: windowLevel];
 #endif
 
   [self setInitialFirstResponder: 
