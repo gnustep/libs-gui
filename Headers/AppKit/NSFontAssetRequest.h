@@ -26,10 +26,12 @@
 #define _NSFontAssetRequest_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
-#import <Foundation/NSProgress.h>
 #import <Foundation/NSError.h>
 
 DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
+
+@class NSProgress;
+// @protocol NSProgressReporting;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
@@ -42,7 +44,7 @@ enum {
 };
 typedef NSUInteger NSFontAssetRequestOptions;
 
-@interface NSFontAssetRequest : NSObject <NSProgressReporting>
+@interface NSFontAssetRequest : NSObject // <NSProgressReporting>
 
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options;
@@ -62,4 +64,3 @@ typedef NSUInteger NSFontAssetRequestOptions;
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSFontAssetRequest_h_GNUSTEP_GUI_INCLUDE */
-

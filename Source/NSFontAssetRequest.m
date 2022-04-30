@@ -39,7 +39,7 @@
 
 - (NSProgress *) progress
 {
-  return [NSProgress progressWithTotalUnitCount: 0.0];
+  return nil; // [NSProgress progressWithTotalUnitCount: 0.0];
 }
 
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler
