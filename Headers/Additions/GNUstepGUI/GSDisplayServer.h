@@ -180,6 +180,17 @@ APPKIT_EXPORT NSString *GSScreenNumber;
 
 @end
 
+// Testplant-MAL-10042016: support for checking running services i.e. bonjour
+/* ----------------------------------------------------------------------- */
+/* GNUstep Window operations */
+/* ----------------------------------------------------------------------- */
+@interface GSDisplayServer (ServiceOps)
+- (BOOL) isServiceInstalled: (NSString*)serviceName;
+- (BOOL) isServiceRunning: (NSString*)serviceName;
+- (BOOL) isDiscoveryServiceInstalled;
+- (BOOL) isDiscoveryServiceRunning;
+@end
+
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event Operations */
 /* ----------------------------------------------------------------------- */

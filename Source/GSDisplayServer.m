@@ -953,6 +953,35 @@ GSCurrentServer(void)
 @end
 
 /* ----------------------------------------------------------------------- */
+/* GNUstep Service Operations */
+/* ----------------------------------------------------------------------- */
+@implementation GSDisplayServer (ServiceOps)
+- (BOOL) isServiceInstalled: (NSString*)serviceName
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+
+- (BOOL) isServiceRunning: (NSString*)serviceName
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+
+- (BOOL) isDiscoveryServiceInstalled
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+
+- (BOOL) isDiscoveryServiceRunning
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+@end
+
+/* ----------------------------------------------------------------------- */
 /* GNUstep Event Operations */
 /* ----------------------------------------------------------------------- */
 @implementation GSDisplayServer (EventOps)
