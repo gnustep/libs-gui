@@ -1,3 +1,10 @@
+2022-06-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImageCell.m,
+	* Source/NSAccessibilityCustomAction.m,
+	* Source/NSStackView.m,
+	* Source/NSGridView.m: Fix compiler warnings
+
 2022-03-31 Riccardo Mottola <rm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h
