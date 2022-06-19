@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	NSView *view1;
 	int passed = 1;
 
-	START_SET("NView GNUstep frame_bounds")
+	START_SET("NSView GNUstep frame_bounds")
 
 	NS_DURING
 	{
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
 	pass(passed,"NSView -frame and -bounds work");
 
-	END_SET("NView GNUstep frame_bounds")
+	END_SET("NSView GNUstep frame_bounds")
 
 	DESTROY(arp);
 	return 0;
