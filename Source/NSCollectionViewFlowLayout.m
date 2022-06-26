@@ -187,6 +187,7 @@
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
+  NSLog(@"Flow layout for index path = %@", indexPath);
   return nil;
 }
 

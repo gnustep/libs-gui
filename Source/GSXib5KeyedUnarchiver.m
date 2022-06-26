@@ -3324,6 +3324,10 @@ didStartElement: (NSString*)elementName
         {
           object = [self decodeObjectForKey: @"primaryBackgroundColor"];
         }
+      else if ([@"NSCollectionViewLayout" isEqualToString: key])
+        {
+          object = [self decodeObjectForKey: @"collectionViewLayout"];
+        }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
         {

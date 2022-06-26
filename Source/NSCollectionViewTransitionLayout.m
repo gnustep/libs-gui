@@ -68,6 +68,7 @@
 
 - (void) updateValue: (CGFloat)value forAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key
 {
+  // not implemented...
 }
 
 - (CGFloat) valueForAnimatedKey: (NSCollectionViewTransitionLayoutAnimatedKey)key
@@ -76,4 +77,3 @@
 }
 
 @end
-

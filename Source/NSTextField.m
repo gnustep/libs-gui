@@ -776,7 +776,8 @@ static Class textFieldCellClass;
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
-      // do nothing for now...
+      // Set cell to not editable by default...
+      [_cell setEditable: NO];
     }
   else
     {

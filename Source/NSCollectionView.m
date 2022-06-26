@@ -441,6 +441,7 @@ static NSString *placeholderItem = nil;
 {
   ASSIGN(_collectionViewLayout, layout);
   
+  NSLog(@"layout = %@", layout);
   [_collectionViewLayout setCollectionView: self]; // weak reference
   [self reloadData];
 }
