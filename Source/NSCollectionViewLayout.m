@@ -100,6 +100,16 @@
   _indexPath = indexPath;
 }
 
+- (NSInteger) zIndex
+{
+  return _zIndex;
+}
+
+- (void) setZIndex: (NSInteger)zIndex
+{
+  _zIndex = zIndex;
+}
+
 - (NSCollectionElementCategory) representedElementCategory
 {
   return _representedElementCategory;
@@ -112,8 +122,24 @@
 
 - (id) copyWithZone: (NSZone *)z
 {
+  NSCollectionViewLayoutAttributes *a = [[NSCollectionViewLayoutAttributes allocWithZone: z] init];
+
+  [a setFrame: [self frame]];
+  [a setSize: [self size]];
+  [a setAlpha: [self alpha]];
+  [a setHidden: [self isHidden]];
+  [a setIndexPath: [self indexPath]];
+  [a setZIndex: [self zIndex]];
+  
   return self;
 }
+
+/*
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ - f = %@, s = %@", [super description], NSStringFromRect(_frame), NSStringFromSize(_size)];
+}
+*/
 
 @end
 

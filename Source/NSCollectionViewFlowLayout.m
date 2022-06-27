@@ -22,7 +22,10 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSIndexPath.h>
+
 #import "AppKit/NSCollectionViewFlowLayout.h"
+#import "AppKit/NSCollectionViewItem.h"
 
 @implementation NSCollectionViewFlowLayoutInvalidationContext
 
@@ -60,6 +63,27 @@
 @end
 
 @implementation NSCollectionViewFlowLayout
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self)
+    {
+      if ([coder allowsKeyedCoding])
+        {
+          _itemSize = [coder decodeSizeForKey: @"NSItemSize"];
+        }
+      else
+        {
+          _itemSize = [coder decodeSize];
+        }
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
 
 - (CGFloat) minimumLineSpacing
 {
@@ -187,8 +211,28 @@
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
-  NSLog(@"Flow layout for index path = %@", indexPath);
-  return nil;
+  NSCollectionViewLayoutAttributes *attrs = [[NSCollectionViewLayoutAttributes alloc] init];
+  NSSize sz = [self itemSize];
+  NSInteger s = [indexPath section];
+  NSInteger r = [indexPath item];
+  CGFloat h = sz.height;
+  CGFloat w = sz.width;
+  NSRect f = NSMakeRect(r * w, s * h, h, w);
+  
+  // NSLog(@"Flow layout for index path = %@", indexPath);
+
+  [attrs setFrame: f];
+  [attrs setHidden: NO];
+  [attrs setZIndex: 0];
+  [attrs setSize: sz];
+
+  // NSLog(@"f = %@", NSStringFromRect(f));
+  // NSLog(@"s = %@", NSStringFromSize(sz));
+  // NSLog(@"self = %@", self);
+  
+  AUTORELEASE(attrs);
+  
+  return attrs;
 }
 
 - (NSCollectionViewLayoutAttributes *)

@@ -95,6 +95,9 @@ NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndi
 - (NSCollectionElementCategory) representedElementCategory;
 - (NSString *) representedElementKind;
 
+- (NSInteger) zIndex;
+- (void) setZIndex: (NSInteger)zIndex;
+  
 @end
 
 enum

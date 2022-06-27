@@ -1373,18 +1373,28 @@ static NSString *placeholderItem = nil;
   if (loaded)
     {
       NSView *v = [item view];
-      NSCollectionViewLayoutAttributes *attrs =
-        [_collectionViewLayout layoutAttributesForItemAtIndexPath: path];
-      NSRect frame = [attrs frame];
-      BOOL hidden = [attrs isHidden];
-      CGFloat alpha = [attrs alpha];
-      NSSize sz = [attrs size];
-      
-      // set attributes of item based on currently selected layout...
-      frame.size = sz;
-      [v setFrame: frame];
-      [v setHidden: hidden];
-      [v setAlphaValue: alpha];
+      if (_collectionViewLayout)
+        {
+          NSCollectionViewLayoutAttributes *attrs =
+            [_collectionViewLayout layoutAttributesForItemAtIndexPath: path];
+          NSRect frame = [attrs frame];
+          BOOL hidden = [attrs isHidden];
+          CGFloat alpha = [attrs alpha];
+          NSSize sz = [attrs size];
+          
+          // set attributes of item based on currently selected layout...
+          frame.size = sz;
+          [v setFrame: frame];
+          [v setHidden: hidden];
+          [v setAlphaValue: alpha];
+          
+          // NSLog(@"v = %@, a = %@, l = %@", v, attrs, _collectionViewLayout);
+          [self addSubview: v];
+        }
+      else
+        {
+          NSLog(@"Layout view is not set");
+        }
     }
   else
     {
