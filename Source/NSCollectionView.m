@@ -1257,6 +1257,25 @@ static NSString *placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier 
                                      forIndexPath: (NSIndexPath *)indexPath
 {
+  NSCollectionViewItem *item =
+    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
+  NSNib *nib = [self _nibForClass: [item class]];
+  BOOL loaded = [nib instantiateWithOwner: item
+                          topLevelObjects: NULL];
+
+  if (loaded == NO)
+    {
+      item = nil;
+      NSLog(@"Could not load model %@", nib);
+    }
+  
+  return item;
+}
+
+- (NSView *) makeSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind 
+                          withIdentifier: (NSUserInterfaceItemIdentifier)identifier 
+                            forIndexPath: (NSIndexPath *)indexPath
+{
   return nil;
 }
 
@@ -1274,13 +1293,6 @@ static NSString *placeholderItem = nil;
   [self registerNib: nib
         forSupplementaryViewOfKind: GSNoSupplementaryElement
      withIdentifier: identifier];
-}
-
-- (NSView *) makeSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind 
-                          withIdentifier: (NSUserInterfaceItemIdentifier)identifier 
-                            forIndexPath: (NSIndexPath *)indexPath
-{
-  return nil;
 }
 
 - (void) registerClass: (Class)viewClass 
@@ -1364,13 +1376,10 @@ static NSString *placeholderItem = nil;
 /* Reloading Content */
 - (void) _loadItemAtIndexPath: (NSIndexPath *)path
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: path];
-  NSNib *nib = [self _nibForClass: [item class]];
-  BOOL loaded = [nib instantiateWithOwner: item
-                          topLevelObjects: NULL];
+  NSCollectionViewItem *item = [self makeItemWithIdentifier: nil
+                                               forIndexPath: path];
   
-  if (loaded)
+  if (item != nil)
     {
       NSView *v = [item view];
       if (_collectionViewLayout)
@@ -1395,10 +1404,6 @@ static NSString *placeholderItem = nil;
         {
           NSLog(@"Layout view is not set");
         }
-    }
-  else
-    {
-      NSLog(@"Could not load model %@", nib);
     }
 }
 
