@@ -1382,6 +1382,8 @@ static NSString *placeholderItem = nil;
   if (item != nil)
     {
       NSView *v = [item view];
+
+      [_visibleItems addObject: item];
       if (_collectionViewLayout)
         {
           NSCollectionViewLayoutAttributes *attrs =
@@ -1426,6 +1428,7 @@ static NSString *placeholderItem = nil;
   NSInteger ns = [self numberOfSections];
   NSInteger cs = 0;
 
+  [_visibleItems removeAllObjects];
   NSLog(@"reloading data... number of sections = %ld, %@", ns, _collectionViewLayout);
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)

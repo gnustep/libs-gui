@@ -437,7 +437,7 @@ APPKIT_EXPORT_CLASS
   NSCollectionViewLayout *_collectionViewLayout;
 
   // Managing items
-  NSArray *_visibleItems;
+  NSMutableArray *_visibleItems;
   NSSet *_indexPathsForVisibleItems;
   NSDictionary *_visibleSupplementaryViews;
   NSSet *_indexPathsForSupplementaryElementsOfKind;
