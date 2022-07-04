@@ -33,6 +33,51 @@
     {
       if ([coder allowsKeyedCoding])
         {
+          if ([coder containsValueForKey: @"NSMaximumNumberOfRows"])
+            {
+              _maximumNumberOfRows = [coder decodeIntegerForKey: @"NSMaximumNumberOfRows"];
+            }
+
+          if ([coder containsValueForKey: @"NSMaximumNumberOfColumns"])
+            {
+              _maximumNumberOfColumns = [coder decodeIntegerForKey: @"NSMaximumNumberOfColumns"];
+            }
+
+          if ([coder containsValueForKey: @"NSMaximumItemSize"])
+            {
+              _maximumItemSize = [coder decodeSizeForKey: @"NSMaximumItemSize"];
+            }
+          
+          if ([coder containsValueForKey: @"NSMinimumItemSize"])
+            {
+              _minimumItemSize = [coder decodeSizeForKey: @"NSMinimumItemSize"];
+            }
+          
+          if ([coder containsValueForKey: @"NSMinimumInteritemSpacing"])
+            {
+              _minimumInteritemSpacing = [coder decodeFloatForKey: @"NSMinimumInteritemSpacing"];
+            }
+          
+          // margins...
+          if ([coder containsValueForKey: @"NSCollectionViewGridLayoutMargins.bottom"])
+            {
+              _margins.bottom = [coder decodeFloatForKey: @"NSCollectionViewGridLayoutMargins.bottom"];
+            }
+
+          if ([coder containsValueForKey: @"NSCollectionViewGridLayoutMargins.top"])
+            {
+              _margins.top = [coder decodeFloatForKey: @"NSCollectionViewGridLayoutMargins.top"];
+            }
+
+          if ([coder containsValueForKey: @"NSCollectionViewGridLayoutMargins.left"])
+            {
+              _margins.left = [coder decodeFloatForKey: @"NSCollectionViewGridLayoutMargins.left"];
+            }
+
+          if ([coder containsValueForKey: @"NSCollectionViewGridLayoutMargins.right"])
+            {
+              _margins.right = [coder decodeFloatForKey: @"NSCollectionViewGridLayoutMargins.right"];
+            }
         }
       else
         {
