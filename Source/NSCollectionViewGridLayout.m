@@ -88,6 +88,33 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeInteger: _maximumNumberOfRows
+                    forKey: @"NSMaximumNumberOfRows"];
+      [coder encodeInteger: _maximumNumberOfColumns
+                    forKey: @"NSMaximumNumberOfColumns"];
+
+      [coder encodeSize: _maximumItemSize
+                 forKey: @"NSMaximumItemSize"];
+      [coder encodeSize: _minimumItemSize
+                 forKey: @"NSMinimumItemSize"];
+
+      [coder encodeFloat: _minimumInteritemSpacing
+                  forKey: @"NSMinimumInteritemSpacing"];
+      
+      [coder encodeFloat: _margins.bottom
+                  forKey: @"NSCollectionViewGridLayoutMargins.bottom"];
+      [coder encodeFloat: _margins.top
+                  forKey: @"NSCollectionViewGridLayoutMargins.top"];
+      [coder encodeFloat: _margins.left
+                  forKey: @"NSCollectionViewGridLayoutMargins.left"];
+      [coder encodeFloat: _margins.right
+                  forKey: @"NSCollectionViewGridLayoutMargins.right"];
+    }
+  else
+    {
+    }
 }
 
 - (void) setMaximumNumberOfRows: (NSUInteger)maxRows
