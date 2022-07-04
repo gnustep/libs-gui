@@ -1394,7 +1394,7 @@ static NSString *placeholderItem = nil;
       if (_collectionViewLayout)
         {
           NSCollectionViewLayoutAttributes *attrs =
-            [_collectionViewLayout layoutAttributesForItemAtIndexPath: path];
+            [self layoutAttributesForItemAtIndexPath: path];
           NSRect frame = [attrs frame];
           BOOL hidden = [attrs isHidden];
           CGFloat alpha = [attrs alpha];
@@ -1604,13 +1604,18 @@ static NSString *placeholderItem = nil;
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  NSCollectionViewLayoutAttributes *attrs =
+    [_collectionViewLayout layoutAttributesForItemAtIndexPath: indexPath];
+  return attrs;
 }
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind 
                                                                          atIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  NSCollectionViewLayoutAttributes *attrs =
+    [_collectionViewLayout layoutAttributesForSupplementaryViewOfKind: kind
+                                                          atIndexPath: indexPath];
+  return attrs;
 }
 
 /* Animating Multiple Changes */

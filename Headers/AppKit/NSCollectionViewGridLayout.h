@@ -26,6 +26,7 @@
 #define _NSCollectionViewGridLayout_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSCollectionViewLayout.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -34,7 +35,34 @@ extern "C" {
 #endif
 
 @interface NSCollectionViewGridLayout : NSCollectionViewLayout
+{
+  NSUInteger _maximumNumberOfRows;
+  NSUInteger _maximumNumberOfColumns;
+  NSSize _minimumItemSize;
+  NSSize _maximumItemSize;
+  NSEdgeInsets _margins;
+  CGFloat _minimumInteritemSpacing;
+}
 
+- (void) setMaximumNumberOfRows: (NSUInteger)maxRows;
+- (NSUInteger) maximumNumberOfRows;
+
+- (void) setMaximumNumberOfColumns: (NSUInteger)maxCols;
+- (NSUInteger) maximumNumberOfColumns;
+
+- (void) setMinimumItemSize: (NSSize)minSize;
+- (NSSize) minimumItemSize;
+
+- (void) setMaximumItemSize: (NSSize)maxSize;
+- (NSSize) maximumItemSize;;
+
+- (void) setMargins: (NSEdgeInsets)insets;
+- (NSEdgeInsets) margins;
+
+- (void) setMinimumInteritemSpacing: (CGFloat)spacing;
+- (CGFloat) minimumInteritemSpacing;
+
+  
 @end
 
 #if	defined(__cplusplus)
