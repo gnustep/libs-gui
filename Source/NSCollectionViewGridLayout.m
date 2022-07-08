@@ -24,6 +24,8 @@
 
 #import "AppKit/NSCollectionViewGridLayout.h"
 
+#import "GSGuiPrivate.h"
+
 @implementation NSCollectionViewGridLayout
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -81,6 +83,17 @@
         }
       else
         {
+          decode_NSUInteger(coder, &_maximumNumberOfRows); 
+          decode_NSUInteger(coder, &_maximumNumberOfColumns);
+          
+          _maximumItemSize = [coder decodeSize];
+          _minimumItemSize = [coder decodeSize];
+          
+          [coder decodeValueOfObjCType: @encode(CGFloat) at: &_minimumInteritemSpacing];
+          [coder decodeValueOfObjCType: @encode(CGFloat) at: &_margins.bottom];
+          [coder decodeValueOfObjCType: @encode(CGFloat) at: &_margins.top];
+          [coder decodeValueOfObjCType: @encode(CGFloat) at: &_margins.left];
+          [coder decodeValueOfObjCType: @encode(CGFloat) at: &_margins.right];        
         }
     }
   return self;
@@ -114,6 +127,17 @@
     }
   else
     {
+      encode_NSUInteger(coder, &_maximumNumberOfRows);
+      encode_NSUInteger(coder, &_maximumNumberOfColumns);
+
+      [coder encodeSize: _maximumItemSize];
+      [coder encodeSize: _minimumItemSize];
+
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_minimumInteritemSpacing];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_margins.bottom];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_margins.top];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_margins.left];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_margins.right];
     }
 }
 
