@@ -319,7 +319,7 @@
   return nil;
 }
 
-- (BOOL)shouldInvalidateLayoutForBoundsChange: (NSRect)newBounds
+- (BOOL) shouldInvalidateLayoutForBoundsChange: (NSRect)newBounds
 {
   return NO;
 }

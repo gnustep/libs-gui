@@ -71,7 +71,61 @@
     {
       if ([coder allowsKeyedCoding])
         {
-          _itemSize = [coder decodeSizeForKey: @"NSItemSize"];
+          if ([coder containsValueForKey: @"NSMinimumLineSpacing"])
+            {
+              _minimumLineSpacing = [coder decodeFloatForKey: @"NSMinimumLineSpacing"];
+            }
+          if ([coder containsValueForKey: @"NSMinimumInteritemSpacing"])
+            {
+              _minimumInteritemSpacing = [coder decodeFloatForKey: @"NSMinimumInteritemSpacing"];
+            }
+          if ([coder containsValueForKey: @"NSItemSize"])
+            {
+              _itemSize = [coder decodeSizeForKey: @"NSItemSize"];
+            }
+          if ([coder containsValueForKey: @"NSEstimatedItemSize"])
+            {
+              _estimatedItemSize = [coder decodeSizeForKey: @"NSEstimatedItemSize"];
+            }
+          if ([coder containsValueForKey: @"NSScrollDirection"])
+            {
+              _scrollDirection = [coder decodeIntForKey: @"NSScrollDirection"];
+            }
+          if ([coder containsValueForKey: @"NSHeaderReferenceSize"])
+            {
+              _headerReferenceSize = [coder decodeSizeForKey: @"NSHeaderReferneceSize"];
+            }
+          if ([coder containsValueForKey: @"NSFooterReferenceSize"])
+            {
+              _footerReferenceSize = [coder decodeSizeForKey: @"NSFooterReferenceSize"];
+            }
+
+          // decode inset...
+          if ([coder containsValueForKey: @"NSSectionInset.bottom"])
+            {
+              _sectionInset.bottom = [coder decodeFloatForKey: @"NSSectionInset.bottom"];
+            }
+          if ([coder containsValueForKey: @"NSSectionInset.top"])
+            {
+              _sectionInset.top = [coder decodeFloatForKey: @"NSSectionInset.top"];
+            }
+          if ([coder containsValueForKey: @"NSSectionInset.left"])
+            {
+              _sectionInset.left = [coder decodeFloatForKey: @"NSSectionInset.left"];
+            }
+          if ([coder containsValueForKey: @"NSSectionInset.right"])
+            {
+              _sectionInset.right = [coder decodeFloatForKey: @"NSSectionInset.right"];
+            }
+          
+          if ([coder containsValueForKey: @"NSSectionHeadersPinToVisibleBounds"])
+            {
+              _sectionHeadersPinToVisibleBounds = [coder decodeBoolForKey: @"NSSectionHeadersPinToVisibleBounds"];
+            }
+          if ([coder containsValueForKey: @"NSSectionFootersPinToVisibleBounds"])
+            {
+              _sectionFootersPinToVisibleBounds = [coder decodeBoolForKey: @"NSSectionFootersPinToVisibleBounds"];
+            }
         }
       else
         {
@@ -83,6 +137,41 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeFloat: _minimumLineSpacing
+                  forKey: @"NSMinimumLineSpacing"];
+      [coder encodeFloat: _minimumInteritemSpacing
+                  forKey: @"NSMinimumInteritemSpacing"];
+      [coder encodeSize: _itemSize
+                 forKey: @"NSItemSize"];
+      [coder encodeSize: _estimatedItemSize
+                 forKey: @"NSEstimatedItemSize"];
+      [coder encodeInt: _scrollDirection
+                forKey: @"NSScrollDirection"];
+      [coder encodeSize: _headerReferenceSize
+                 forKey: @"NSHeaderReferneceSize"];
+      [coder encodeSize: _footerReferenceSize
+                 forKey: @"NSFooterReferenceSize"];
+      
+      // decode inset...
+      [coder encodeFloat: _sectionInset.bottom
+                  forKey: @"NSSectionInset.bottom"];
+      [coder encodeFloat: _sectionInset.top
+                  forKey: @"NSSectionInset.top"];
+      [coder encodeFloat: _sectionInset.left
+                  forKey: @"NSSectionInset.left"];
+      [coder encodeFloat: _sectionInset.right
+                  forKey: @"NSSectionInset.right"];
+
+      [coder encodeBool: _sectionHeadersPinToVisibleBounds
+                 forKey: @"NSSectionHeadersPinToVisibleBounds"];
+      [coder encodeBool: _sectionFootersPinToVisibleBounds
+                 forKey: @"NSSectionFootersPinToVisibleBounds"];
+    }
+  else
+    {
+    }
 }
 
 - (CGFloat) minimumLineSpacing
