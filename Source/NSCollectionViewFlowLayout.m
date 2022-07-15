@@ -27,6 +27,8 @@
 #import "AppKit/NSCollectionViewFlowLayout.h"
 #import "AppKit/NSCollectionViewItem.h"
 
+#import "GSGuiPrivate.h"
+
 @implementation NSCollectionViewFlowLayoutInvalidationContext
 
 - (instancetype) init
@@ -171,6 +173,29 @@
     }
   else
     {
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_minimumInteritemSpacing];
+      [coder encodeSize: _itemSize];
+      [coder encodeSize: _estimatedItemSize];
+      encode_NSInteger(coder, &_scrollDirection);
+      [coder encodeSize: _headerReferenceSize];
+      [coder encodeSize: _footerReferenceSize];
+      
+      // decode inset...
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_sectionInset.bottom];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_sectionInset.top];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_sectionInset.left];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_sectionInset.right];
+
+
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_sectionHeadersPinToVisibleBounds];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &_sectionFootersPinToVisibleBounds];
     }
 }
 
