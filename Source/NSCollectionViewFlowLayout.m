@@ -131,7 +131,29 @@
         }
       else
         {
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_minimumInteritemSpacing];
           _itemSize = [coder decodeSize];
+          _estimatedItemSize = [coder decodeSize];
+          decode_NSInteger(coder, &_scrollDirection);
+          _headerReferenceSize = [coder decodeSize];
+          _footerReferenceSize = [coder decodeSize];
+          
+          // decode inset...
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_sectionInset.bottom];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_sectionInset.top];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_sectionInset.left];
+          [coder decodeValueOfObjCType: @encode(CGFloat)
+                                    at: &_sectionInset.right];
+          
+          
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_sectionHeadersPinToVisibleBounds];
+          [coder decodeValueOfObjCType: @encode(BOOL)
+                                    at: &_sectionFootersPinToVisibleBounds];
         }
     }
   return self;
