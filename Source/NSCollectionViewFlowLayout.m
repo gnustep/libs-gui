@@ -425,24 +425,19 @@
       mis = [self minimumInteritemSpacing];
     }
 
-  // Do calculations...
+  // Calculations...
   h = sz.height;
   w = sz.width;
   x = (r * w) + si.left + mis;
   y = (s * h) + si.top + mls;
   f = NSMakeRect(x, y, h, w);
   
-  // NSLog(@"Flow layout for index path = %@", indexPath);
-
+  // Build attrs object...
   [attrs setFrame: f];
   [attrs setHidden: NO];
   [attrs setZIndex: 0];
   [attrs setSize: sz];
 
-  // NSLog(@"f = %@", NSStringFromRect(f));
-  // NSLog(@"s = %@", NSStringFromSize(sz));
-  // NSLog(@"self = %@", self);
-  
   AUTORELEASE(attrs);
   
   return attrs;
@@ -450,7 +445,7 @@
 
 - (NSCollectionViewLayoutAttributes *)
   layoutAttributesForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
-  atIndexPath: (NSIndexPath *)indexPath
+                                 atIndexPath: (NSIndexPath *)indexPath
 {
   return nil;
 }

@@ -66,24 +66,24 @@ NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFoo
    sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
 
 - (NSEdgeInsets)collectionView: (NSCollectionView *)collectionView
-                        layout: (NSCollectionViewLayout*)collectionViewLayout
+                        layout: (NSCollectionViewLayout *)collectionViewLayout
         insetForSectionAtIndex: (NSInteger)section;
   
 - (CGFloat) collectionView: (NSCollectionView *)collectionView
-                    layout: (NSCollectionViewLayout*)collectionViewLayout
+                    layout: (NSCollectionViewLayout *)collectionViewLayout
                     minimumLineSpacingForSectionAtIndex: (NSInteger)section;
   
 - (CGFloat) collectionView: (NSCollectionView *)collectionView
-                    layout: (NSCollectionViewLayout*)collectionViewLayout
+                    layout: (NSCollectionViewLayout *)collectionViewLayout
                     minimumInteritemSpacingForSectionAtIndex: (NSInteger)section;
   
 - (NSSize) collectionView: (NSCollectionView *)collectionView
-                   layout: (NSCollectionViewLayout*)collectionViewLayout
+                   layout: (NSCollectionViewLayout *)collectionViewLayout
                    referenceSizeForHeaderInSection: (NSInteger)section;
   
 - (NSSize) collectionView: (NSCollectionView *)collectionView
-                   layout: (NSCollectionViewLayout*)collectionViewLayout
-                   referenceSizeForFooterInSection:(NSInteger)section;
+                   layout: (NSCollectionViewLayout *)collectionViewLayout
+                   referenceSizeForFooterInSection: (NSInteger)section;
 
 @end
 
