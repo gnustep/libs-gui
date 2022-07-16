@@ -66,11 +66,28 @@
 
 @implementation NSCollectionViewFlowLayout
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _collapsedSections = [[NSMutableIndexSet alloc] init];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_collapsedSections);
+  [super dealloc];
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
   if (self)
     {
+      _collapsedSections = [[NSMutableIndexSet alloc] init];
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSMinimumLineSpacing"])
@@ -242,7 +259,7 @@
 }
   
 - (NSSize) itemSize
-{
+{  
   return _itemSize;
 }
 
@@ -323,15 +340,17 @@
 
 - (BOOL) sectionAtIndexIsCollapsed: (NSUInteger)sectionIndex
 {
-  return NO;
+  return [_collapsedSections containsIndex: sectionIndex];
 }
 
 - (void) collapseSectionAtIndex: (NSUInteger)sectionIndex
 {
+  [_collapsedSections addIndex: sectionIndex];
 }
 
 - (void) expandSectionAtIndex: (NSUInteger)sectionIndex
 {
+  [_collapsedSections removeIndex: sectionIndex];
 }
 
 // Methods to override for specific layouts...
@@ -348,12 +367,39 @@
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
   NSCollectionViewLayoutAttributes *attrs = [[NSCollectionViewLayoutAttributes alloc] init];
-  NSSize sz = [self itemSize];
+  NSSize sz = NSZeroSize;
+  id <NSCollectionViewDelegateFlowLayout> d = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
   NSInteger s = [indexPath section];
   NSInteger r = [indexPath item];
+  NSEdgeInsets si;
+
+  if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
+    {
+      sz = [d collectionView: _collectionView
+                      layout: self
+              sizeForItemAtIndexPath: indexPath];
+    }
+  else
+    {
+      sz = [self itemSize];
+    }
+
+  if ([d respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
+    {
+      si = [d collectionView: _collectionView
+                      layout: self
+              insetForSectionAtIndex: s];
+    }
+  else
+    {
+      si = [self sectionInset];
+    }
+
   CGFloat h = sz.height;
   CGFloat w = sz.width;
-  NSRect f = NSMakeRect(r * w, s * h, h, w);
+  CGFloat x = (r * w) + si.left;
+  CGFloat y = (s * h) + si.top;
+  NSRect f = NSMakeRect(x, y, h, w);
   
   // NSLog(@"Flow layout for index path = %@", indexPath);
 

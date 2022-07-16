@@ -28,6 +28,8 @@
 #import <AppKit/NSCollectionView.h>
 #import <AppKit/NSCollectionViewLayout.h>
 
+@class NSMutableIndexSet;
+
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
 #if	defined(__cplusplus)
@@ -97,6 +99,7 @@ NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFoo
   NSEdgeInsets _sectionInset;
   BOOL _sectionHeadersPinToVisibleBounds;
   BOOL _sectionFootersPinToVisibleBounds;
+  NSMutableIndexSet *_collapsedSections;
 }
 
 - (CGFloat) minimumLineSpacing;
