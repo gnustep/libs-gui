@@ -372,7 +372,12 @@
   NSInteger s = [indexPath section];
   NSInteger r = [indexPath item];
   NSEdgeInsets si;
-
+  CGFloat mls = 0.0;
+  CGFloat mis = 0.0;
+  CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
+  NSRect f = NSZeroRect;
+  
+  // Item size...
   if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
     {
       sz = [d collectionView: _collectionView
@@ -384,6 +389,7 @@
       sz = [self itemSize];
     }
 
+  // Inset
   if ([d respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
     {
       si = [d collectionView: _collectionView
@@ -395,11 +401,36 @@
       si = [self sectionInset];
     }
 
-  CGFloat h = sz.height;
-  CGFloat w = sz.width;
-  CGFloat x = (r * w) + si.left;
-  CGFloat y = (s * h) + si.top;
-  NSRect f = NSMakeRect(x, y, h, w);
+  // minimum line spacing
+  if ([d respondsToSelector: @selector(collectionView:layout:minimimLineSpacingForSectionAtIndex:)])
+    {
+      mls = [d collectionView: _collectionView
+                       layout: self
+               minimumLineSpacingForSectionAtIndex: s];
+    }
+  else
+    {
+      mls = [self minimumLineSpacing];
+    }
+  
+  // minimum interitem spacing
+  if ([d respondsToSelector: @selector(collectionView:layout:minimimInteritemSpacingForSectionAtIndex:)])
+    {
+      mis = [d collectionView: _collectionView
+                       layout: self
+               minimumInteritemSpacingForSectionAtIndex: s];
+    }
+  else
+    {
+      mis = [self minimumInteritemSpacing];
+    }
+
+  // Do calculations...
+  h = sz.height;
+  w = sz.width;
+  x = (r * w) + si.left + mis;
+  y = (s * h) + si.top + mls;
+  f = NSMakeRect(x, y, h, w);
   
   // NSLog(@"Flow layout for index path = %@", indexPath);
 
