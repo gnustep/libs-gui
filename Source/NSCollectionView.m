@@ -1345,7 +1345,6 @@ static NSString *placeholderItem = nil;
 
 - (void) setDataSource: (id<NSCollectionViewDataSource>)dataSource
 {
-  NSLog(@"Adding data source %@", dataSource);
   _dataSource = dataSource;
   [self reloadData];
 }
