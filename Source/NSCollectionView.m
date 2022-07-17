@@ -1437,14 +1437,9 @@ static NSString *placeholderItem = nil;
   NSSize s = _itemSize;
   CGFloat h = s.height;
   CGFloat proposedHeight = ns * h;
-
   id sv = [self superview];
-  //if ([sv isKindOfClass: [NSClipView class]])
-  //  {
-  //    sv = [sv superview];
-  //  }
-  
   NSRect newRect = [sv frame];
+  
   if (proposedHeight < newRect.size.height)
     {
       proposedHeight = newRect.size.height;
@@ -1453,10 +1448,8 @@ static NSString *placeholderItem = nil;
   newRect.size.height = proposedHeight;
 
   [self setFrame: newRect];
-
-  NSDebugLog(@"reloading data... number of sections = %ld, %@", ns, _collectionViewLayout);
   [_visibleItems removeAllObjects];
-  [[self subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
+  [self setSubviews: [NSArray array]];
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
     {

@@ -29,6 +29,17 @@
 
 #import "GSGuiPrivate.h"
 
+@interface NSCollectionView (__FlowLayoutPrivate__)
+- (void) _setFrameWithoutTile: (NSRect)f;
+@end
+
+@implementation NSCollectionView (__FlowLayoutPrivate__)
+- (void) _setFrameWithoutTile: (NSRect)f
+{
+  _frame = f;
+}
+@end
+
 @implementation NSCollectionViewFlowLayoutInvalidationContext
 
 - (instancetype) init
@@ -448,7 +459,7 @@
   if (y + h > vf.size.height)
     {
       vf.size.height = y + h;
-      // [_collectionView setFrame: vf];
+      [_collectionView _setFrameWithoutTile: vf];
     }
   
   // Build attrs object...
