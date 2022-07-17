@@ -23,6 +23,27 @@
 */
 
 #import "AppKit/NSCollectionViewLayout.h"
+#import "AppKit/NSCollectionViewItem.h"
+
+#import "GSFastEnumeration.h"
+
+@interface NSCollectionViewItem (__NSCollectionViewLayout__)
+- (NSCollectionViewLayoutAttributes *) attrs;
+@end
+
+@implementation NSCollectionViewItem (__NSCollectionViewLayout__)  
+- (NSCollectionViewLayoutAttributes *) attrs
+{
+  NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
+
+  [attrs setFrame: [[self view] frame]];
+  [attrs setSize: [[self view] frame].size];
+  [attrs setAlpha: [[self view] alphaValue]];
+  [attrs setHidden: [[self view] isHidden]];
+
+  return attrs;
+}
+@end
 
 @implementation NSCollectionViewLayoutAttributes
 
@@ -287,7 +308,24 @@
 
 - (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
 {
-  return nil;
+  NSMutableArray *result = [NSMutableArray array];
+  NSArray *items = [_collectionView visibleItems];
+  
+  FOR_IN(NSCollectionViewItem*, i, items)
+    {
+      NSView *v = [i view];
+      NSRect f = [v frame];
+      BOOL intersects = NSIntersectsRect(f, rect);
+    
+      if (intersects)
+        {
+          NSCollectionViewLayoutAttributes *a = [i attrs];
+          [result addObject: a]; // add item since it intersects
+        }
+    }
+  END_FOR_IN(items);
+
+  return result;
 }
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath

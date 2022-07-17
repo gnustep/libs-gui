@@ -372,11 +372,6 @@
   _dr = 0;
 }
 
-- (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
-{
-  return nil;
-}
-
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
   NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);

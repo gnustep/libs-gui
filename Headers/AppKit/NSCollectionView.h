@@ -438,9 +438,9 @@ APPKIT_EXPORT_CLASS
 
   // Managing items
   NSMutableArray *_visibleItems;
-  NSSet *_indexPathsForVisibleItems;
+  NSMutableSet *_indexPathsForVisibleItems;
   NSDictionary *_visibleSupplementaryViews;
-  NSSet *_indexPathsForSupplementaryElementsOfKind;
+  NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
 
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;

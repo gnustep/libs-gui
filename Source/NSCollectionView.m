@@ -1391,6 +1391,7 @@ static NSString *placeholderItem = nil;
       NSView *v = [item view];
 
       [_visibleItems addObject: item];
+      [_indexPathsForVisibleItems addObject: path];
       if (_collectionViewLayout)
         {
           NSCollectionViewLayoutAttributes *attrs =
@@ -1449,6 +1450,7 @@ static NSString *placeholderItem = nil;
 
   [self setFrame: newRect];
   [_visibleItems removeAllObjects];
+  [_indexPathsForVisibleItems removeAllObjects];
   [self setSubviews: [NSArray array]];
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
