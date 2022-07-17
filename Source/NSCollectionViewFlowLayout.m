@@ -357,6 +357,8 @@
 - (void) prepareLayout
 {
   [super prepareLayout];
+  _ds = 0;
+  _dr = 0;
 }
 
 - (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
@@ -366,16 +368,17 @@
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewLayoutAttributes *attrs = [[NSCollectionViewLayoutAttributes alloc] init];
+  NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
   NSSize sz = NSZeroSize;
   id <NSCollectionViewDelegateFlowLayout> d = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
-  NSInteger s = [indexPath section];
-  NSInteger r = [indexPath item];
+  NSInteger s = [indexPath section]; // + _ds;
+  NSInteger r = [indexPath item]; // + _dr;
   NSEdgeInsets si;
   CGFloat mls = 0.0;
   CGFloat mis = 0.0;
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
+  NSRect vf = [_collectionView frame];
   
   // Item size...
   if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
@@ -430,15 +433,29 @@
   w = sz.width;
   x = (r * w) + si.left + mis;
   y = (s * h) + si.top + mls;
-  f = NSMakeRect(x, y, h, w);
+  f = NSMakeRect(x, y, w, h);
+
+  // Determine if it is needed to reflow the given element...
+  if ((x + w) > (vf.size.width - w))
+    {
+      _ds += 1;
+      x = si.left + mis;
+      y = ((s + _ds) * h) + si.top + mls;
+      f = NSMakeRect(x, y, w, h);
+    }
+
+  // Resize parent view...
+  if (y + h > vf.size.height)
+    {
+      vf.size.height = y + h;
+      // [_collectionView setFrame: vf];
+    }
   
   // Build attrs object...
   [attrs setFrame: f];
   [attrs setHidden: NO];
   [attrs setZIndex: 0];
   [attrs setSize: sz];
-
-  AUTORELEASE(attrs);
   
   return attrs;
 }

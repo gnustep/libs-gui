@@ -1456,6 +1456,7 @@ static NSString *placeholderItem = nil;
 
   NSDebugLog(@"reloading data... number of sections = %ld, %@", ns, _collectionViewLayout);
   [_visibleItems removeAllObjects];
+  [[self subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
     {

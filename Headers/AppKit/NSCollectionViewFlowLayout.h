@@ -100,6 +100,10 @@ NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFoo
   BOOL _sectionHeadersPinToVisibleBounds;
   BOOL _sectionFootersPinToVisibleBounds;
   NSMutableIndexSet *_collapsedSections;
+
+  NSInteger _ds; // deltas for when overflow happens...
+  NSInteger _dr;
+
 }
 
 - (CGFloat) minimumLineSpacing;
