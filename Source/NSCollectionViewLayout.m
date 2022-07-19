@@ -27,21 +27,14 @@
 
 #import "GSFastEnumeration.h"
 
-@interface NSCollectionViewItem (__NSCollectionViewLayout__)
-- (NSCollectionViewLayoutAttributes *) attrs;
+@interface NSCollectionView (__NSCollectionViewLayout__)
+- (NSDictionary *) itemsToAttributes;
 @end
 
-@implementation NSCollectionViewItem (__NSCollectionViewLayout__)  
-- (NSCollectionViewLayoutAttributes *) attrs
+@implementation NSCollectionView (__NSCollectionViewLayout__)  
+- (NSDictionary *) itemsToAttributes
 {
-  NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
-
-  [attrs setFrame: [[self view] frame]];
-  [attrs setSize: [[self view] frame].size];
-  [attrs setAlpha: [[self view] alphaValue]];
-  [attrs setHidden: [[self view] isHidden]];
-
-  return attrs;
+  return _itemsToAttributes;
 }
 @end
 
@@ -252,6 +245,11 @@
 @implementation NSCollectionViewLayout
 
 // Initializers
+- (void) _initDefaults
+{
+  _itemsToAttributes = [[NSMutableDictionary alloc] init];
+}
+
 - (void)invalidateLayout
 {
   _valid = NO;
@@ -292,6 +290,7 @@
   self = [super init];
   if (self != nil)
     {
+      [self _initDefaults];
     }
   return self;
 }
@@ -310,6 +309,7 @@
 {
   NSMutableArray *result = [NSMutableArray array];
   NSArray *items = [_collectionView visibleItems];
+  NSDictionary *itemsToAttributes = [_collectionView itemsToAttributes];
   
   FOR_IN(NSCollectionViewItem*, i, items)
     {
@@ -319,7 +319,7 @@
     
       if (intersects)
         {
-          NSCollectionViewLayoutAttributes *a = [i attrs];
+          NSCollectionViewLayoutAttributes *a = [itemsToAttributes objectForKey: i];
           [result addObject: a]; // add item since it intersects
         }
     }

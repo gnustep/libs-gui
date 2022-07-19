@@ -44,4 +44,3 @@ extern "C" {
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSCollectionViewCompositionalLayout_h_GNUSTEP_GUI_INCLUDE */
-

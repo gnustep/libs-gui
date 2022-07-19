@@ -49,11 +49,6 @@
 @class NSMutableDictionary;
 @class NSMutableSet;
 
-@class NSMapTable;
-@class NSMutableArray;
-@class NSMutableDictionary;
-@class NSMutableSet;
-
 @protocol NSPasteboardWriting;
 
 enum
@@ -439,9 +434,10 @@ APPKIT_EXPORT_CLASS
   // Managing items
   NSMutableArray *_visibleItems;
   NSMutableSet *_indexPathsForVisibleItems;
-  NSDictionary *_visibleSupplementaryViews;
+  NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
-
+  NSMutableDictionary *_itemsToAttributes;
+  
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;
   NSMapTable *_registeredClasses;

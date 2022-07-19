@@ -130,8 +130,11 @@ static NSString *placeholderItem = nil;
 
 -(void) _initDefaults
 {
+  _itemSize = NSMakeSize(0, 0);
+  _tileWidth = -1.0;
   _draggingSourceOperationMaskForLocal = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
   _draggingSourceOperationMaskForRemote = NSDragOperationGeneric | NSDragOperationMove | NSDragOperationCopy;
+
   [self _resetItemSize];
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
@@ -145,6 +148,7 @@ static NSString *placeholderItem = nil;
   _indexPathsForVisibleItems = [[NSMutableSet alloc] init];
   _visibleSupplementaryViews = [[NSMutableDictionary alloc] init];
   _indexPathsForSupplementaryElementsOfKind = [[NSMutableSet alloc] init];
+  _itemsToAttributes = [[NSMutableDictionary alloc] init];
 
   // Registered nib/class
   _registeredNibs = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
@@ -441,7 +445,6 @@ static NSString *placeholderItem = nil;
 {
   ASSIGN(_collectionViewLayout, layout);
   
-  NSLog(@"layout = %@", layout);
   [_collectionViewLayout setCollectionView: self]; // weak reference
   [self reloadData];
 }
@@ -662,9 +665,7 @@ static NSString *placeholderItem = nil;
   
   if (self)
     {
-      _itemSize = NSMakeSize(0, 0);
-      _tileWidth = -1.0;
-          
+      [self _initDefaults];
       if ([aCoder allowsKeyedCoding])
         {
           if ([aCoder containsValueForKey: NSCollectionViewMinItemSizeKey])
@@ -720,7 +721,6 @@ static NSString *placeholderItem = nil;
           [self setCollectionViewLayout: [aCoder decodeObject]];
         }
     }
-  [self _initDefaults];
     
   return self;
 }
@@ -1405,6 +1405,9 @@ static NSString *placeholderItem = nil;
           [v setFrame: frame];
           [v setHidden: hidden];
           [v setAlphaValue: alpha];
+
+          [_itemsToAttributes setObject: attrs
+                                 forKey: item];
           
           // NSLog(@"v = %@, a = %@, l = %@", v, attrs, _collectionViewLayout);
           [self addSubview: v];

@@ -42,7 +42,7 @@
 
 
 APPKIT_EXPORT_CLASS
-@interface NSCollectionViewItem : NSViewController
+@interface NSCollectionViewItem : NSViewController <NSCopying>
 {
   IBOutlet NSTextField *textField;
   IBOutlet NSImageView *imageView;

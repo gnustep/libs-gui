@@ -53,6 +53,7 @@ NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndi
 @class NSCollectionView;
 @class NSDictionary;
 @class NSIndexPath;
+@class NSMutableDictionary;
 @class NSNib;
 @class NSSet;
 
@@ -161,6 +162,7 @@ typedef NSInteger NSCollectionUpdateAction;
 {
   NSCollectionView *_collectionView; // weak
   BOOL _valid;
+  NSMutableDictionary *_itemsToAttributes;
 
   Class _layoutAttributesClass;
   Class _invalidationContextClass;

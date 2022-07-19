@@ -464,7 +464,7 @@
   [attrs setSize: sz];
   [attrs setHidden: NO];
   [attrs setAlpha: 1.0];
-  
+
   return attrs;
 }
 
