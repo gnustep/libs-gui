@@ -214,6 +214,11 @@
 {
   return YES;
 }
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ - view = %@", [super description], view];
+}
 @end
 
 @implementation NSViewController (NSEditorRegistration)

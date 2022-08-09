@@ -437,6 +437,7 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
   NSMutableDictionary *_itemsToAttributes;
+  NSSet *_selectionIndexPaths;
   
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;
@@ -481,6 +482,10 @@ APPKIT_EXPORT_CLASS
 - (void) setSelectionIndexes: (NSIndexSet *)indexes;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+- (NSSet *) selectionIndexPaths;
+- (void) setSelectionIndexPaths: (NSSet *)indexPaths;
+
+
 - (NSCollectionViewLayout *) collectionViewLayout;
 - (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout;
 #endif

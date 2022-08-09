@@ -134,6 +134,7 @@
   return _representedElementKind;
 }
 
+// Copying
 - (id) copyWithZone: (NSZone *)z
 {
   NSCollectionViewLayoutAttributes *a = [[NSCollectionViewLayoutAttributes allocWithZone: z] init];
@@ -148,14 +149,15 @@
   return self;
 }
 
-/*
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"%@ - f = %@, s = %@", [super description], NSStringFromRect(_frame), NSStringFromSize(_size)];
+  return [NSString stringWithFormat: @"%@ - f = %@, s = %@, alpha = %f, z = %ld",
+                   [super description], NSStringFromRect(_frame), NSStringFromSize(_size),
+                   _alpha, _zIndex];
 }
-*/
 
 @end
+
 
 @implementation NSCollectionViewUpdateItem
 
