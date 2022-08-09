@@ -94,7 +94,7 @@ int main(int argc, char **argv)
   CGFloat ts[6];
   int passed = 1;
 
-  START_SET("NView GNUstep bounds_scale")
+  START_SET("NSView GNUstep bounds_scale")
 
   NS_DURING
   {
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
   pass(passed,"NSView -scaleUnitSquareToSize works");
   testHopeful = NO;
 
-  END_SET("NView GNUstep bounds_scale")
+  END_SET("NSView GNUstep bounds_scale")
 
   DESTROY(arp);
   return 0;

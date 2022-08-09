@@ -174,7 +174,6 @@
   CGFloat x = 0.0;
   CGFloat y = 0.0;
   CGFloat newHeight = 0.0;
-  CGFloat newWidth = 0.0;
   NSUInteger i = 0;
   
   // Advance vertically or horizontally depending on orientation...
@@ -205,7 +204,6 @@
         }
 
       newFrame.size.width += sp;
-      newWidth = newFrame.size.width;
     }
   
   [self setFrame: newFrame];

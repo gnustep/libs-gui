@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	NSView *v=[[NSView alloc] initWithFrame: NSMakeRect(0,0,100,100)];
 	[cv setDocumentView: v];
 
-  START_SET("NView GNUstep scrollRectToVisible")
+  START_SET("NSView GNUstep scrollRectToVisible")
 
   NS_DURING
   {
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	[v scrollRectToVisible: NSMakeRect(15,15,5,5)];
 	TEST(NSMakeRect(10,10,10,10),"12");
 
-	END_SET("NView GNUstep scrollRectToVisible")
+	END_SET("NSView GNUstep scrollRectToVisible")
 
 	DESTROY(arp);
 

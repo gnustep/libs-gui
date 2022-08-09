@@ -65,23 +65,24 @@
 
 - (id) initImageCell: (NSImage*)anImage
 {
-  if (self = [super initImageCell: anImage])
+  self = [super initImageCell: anImage];
+  if (self != nil)
     {
       [self setRefusesFirstResponder: YES];
     }
   return self;
 }
 
-- (void) setImage:(NSImage *)anImage
+- (void) setImage: (NSImage *)anImage
 {
-  [super setImage:anImage];
+  [super setImage: anImage];
   if (anImage)
     _original_image_size = [anImage size];
   else
     _original_image_size = NSMakeSize(1,1);
 }
 
-- (void)setObjectValue:(id)object
+- (void) setObjectValue: (id)object
 {
   if ((object == nil) || ([object isKindOfClass:[NSImage class]]))
     {

@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	NSView *view;
 	int passed;
 
-	START_SET("NView GNUstep frame_rotation")
+	START_SET("NSView GNUstep frame_rotation")
 
 	NS_DURING
 	{
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
 	pass(passed,"-frameRotation/-setFrameRotation work");
 
-	END_SET("NView GNUstep frame_rotation")
+	END_SET("NSView GNUstep frame_rotation")
 
 	DESTROY(arp);
 	return 0;

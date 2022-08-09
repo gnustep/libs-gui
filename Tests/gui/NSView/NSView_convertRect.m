@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	NSView *view1,*view2;
 	int passed=1;
 
-	START_SET("NView GNUstep converRect")
+	START_SET("NSView GNUstep converRect")
 
 	NS_DURING
 	{
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 
 	pass(passed,"NSView -convertRect:fromView: and -convertRect:toView: work");
 
-	END_SET("NView GNUstep converRect")
+	END_SET("NSView GNUstep converRect")
 
 	DESTROY(arp);
 	return 0;

@@ -251,13 +251,7 @@
   
   NSUInteger c = 0;
   NSUInteger r = 0;
-  NSUInteger rc = [views count], cc = 0;
 
-  if (rc > 0)
-    {
-      cc = [[views objectAtIndex: 0] count];
-    }
-  
   FOR_IN(NSArray*, row, views)
     {
       NSGridRow *gr = [[NSGridRow alloc] init];

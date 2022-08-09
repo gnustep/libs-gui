@@ -22,6 +22,7 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
 #import "AppKit/NSAccessibilityCustomAction.h"
 
 @implementation NSAccessibilityCustomAction
