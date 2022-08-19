@@ -29,9 +29,6 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 include ../config.make
 
-# Interface version changes with each minor release
-libgnustep-gui_INTERFACE_VERSION=${GNUSTEP_GUI_MAJOR_VERSION}.${GNUSTEP_GUI_MINOR_VERSION}
-
 srcdir = .
 PACKAGE_NAME = gnustep-gui
 LIBRARY_VAR = GNUSTEP_GUI
@@ -671,7 +668,7 @@ HEADERS_INSTALL = ${APPKIT_HEADERS} \
 
 # Resources
 RESOURCE_SET_NAME = libgui-resources
-libgui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(libgnustep-gui_INTERFACE_VERSION)/Resources
+libgui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/${GNUSTEP_GUI_MAJOR_VERSION}.${GNUSTEP_GUI_MINOR_VERSION}/Resources
 libgui-resources_RESOURCE_DIRS =
 libgui-resources_RESOURCE_FILES = Info-gnustep.plist
 
