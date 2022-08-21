@@ -28,10 +28,9 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
-libgnustep-gui_INTERFACE_VERSION=$(GNUSTEP_GUI_MAJOR_VERSION).$(GNUSTEP_GUI_MINOR_VERSION)
 
 RESOURCE_SET_NAME = gui-resources
-gui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(libgnustep-gui_INTERFACE_VERSION)/Resources
+gui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(GNUSTEP_GUI_MAJOR_VERSION).$(GNUSTEP_GUI_MINOR_VERSION)/Resources
 gui-resources_LANGUAGES = English Italian Lojban Esperanto German French Spanish Korean Japanese Polish
 gui-resources_LOCALIZED_RESOURCE_FILES = Localizable.strings
 
