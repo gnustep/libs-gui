@@ -1,3 +1,8 @@
+2022-08-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSButton.m: Fix to address issue #151, NSRadio button
+        behavior on 10.7 should now be implemented.
+
 2022-08-09 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSPredicateEditorRowTemplate.h:

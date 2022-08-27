@@ -36,6 +36,10 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+
+#import "GSFastEnumeration.h"
 
 //
 // class variables
@@ -541,6 +545,45 @@ static id buttonCellClass = nil;
 - (NSSound *) sound
 {
   return [_cell sound];
+}
+
+- (void) mouseDown: (NSEvent *)event
+{
+  [super mouseDown: event];
+
+  if ([[self superview] isKindOfClass: [NSMatrix class]] == NO)
+  {
+    NSImage *i = [[self cell] image];
+    BOOL isRadio = (i == [NSImage imageNamed: @"NSRadioButton"]);
+  
+    if (isRadio)
+      {
+        NSView *sv = [self superview];
+        NSArray *subviews = [sv subviews];
+        
+        FOR_IN(NSView*, v, subviews)
+          {
+          if ([v isKindOfClass: [NSButton class]])
+            {
+              NSButton *b = (NSButton *)v;
+              NSImage *image = [[b cell] image];
+              BOOL flag = (image == [NSImage imageNamed: @"NSRadioButton"]);
+              
+              if (flag)
+                {
+                  if ([self action] == [b action] && b != self)
+                    {
+                      if ([self state] == NSOnState)
+                        {
+                          [b setState: NSOffState];
+                        }
+                    }
+                }
+            }
+          }
+        END_FOR_IN(subviews);
+      }
+  }
 }
 
 @end
