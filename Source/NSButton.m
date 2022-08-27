@@ -547,42 +547,42 @@ static id buttonCellClass = nil;
   return [_cell sound];
 }
 
+- (BOOL) _isRadioButton
+{
+  return ([[self cell] image] ==
+          [NSImage imageNamed: @"NSRadioButton"]);
+}
+
 - (void) mouseDown: (NSEvent *)event
 {
   [super mouseDown: event];
 
+  if ([self _isRadioButton] == NO)
+    return;
+  
   if ([[self superview] isKindOfClass: [NSMatrix class]] == NO)
   {
-    NSImage *i = [[self cell] image];
-    BOOL isRadio = (i == [NSImage imageNamed: @"NSRadioButton"]);
-  
-    if (isRadio)
+    NSView *sv = [self superview];
+    NSArray *subviews = [sv subviews];
+    
+    FOR_IN(NSView*, v, subviews)
       {
-        NSView *sv = [self superview];
-        NSArray *subviews = [sv subviews];
-        
-        FOR_IN(NSView*, v, subviews)
+        if ([v isKindOfClass: [NSButton class]])
           {
-          if ([v isKindOfClass: [NSButton class]])
-            {
-              NSButton *b = (NSButton *)v;
-              NSImage *image = [[b cell] image];
-              BOOL flag = (image == [NSImage imageNamed: @"NSRadioButton"]);
-              
-              if (flag)
-                {
-                  if ([self action] == [b action] && b != self)
-                    {
-                      if ([self state] == NSOnState)
-                        {
-                          [b setState: NSOffState];
-                        }
-                    }
-                }
-            }
+            NSButton *b = (NSButton *)v;
+            if ([b _isRadioButton])
+              {
+                if ([self action] == [b action] && b != self)
+                  {
+                    if ([self state] == NSOnState)
+                      {
+                        [b setState: NSOffState];
+                      }
+                  }
+              }
           }
-        END_FOR_IN(subviews);
       }
+    END_FOR_IN(subviews);
   }
 }
 
