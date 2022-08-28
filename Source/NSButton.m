@@ -547,16 +547,29 @@ static id buttonCellClass = nil;
   return [_cell sound];
 }
 
+// Implement 10.7+ radio button behavior
 - (BOOL) _isRadioButton
 {
   return ([[self cell] image] ==
           [NSImage imageNamed: @"NSRadioButton"]);
 }
 
-- (void) mouseDown: (NSEvent *)event
+- (void) _flipState: (NSButton *)b
 {
-  [super mouseDown: event];
+  if ([b _isRadioButton])
+    {
+      if ([self action] == [b action] && b != self)
+        {
+          if ([self state] == NSOnState)
+            {
+              [b setState: NSOffState];
+            }
+        }
+    }
+}
 
+- (void) _handleRadioStates
+{
   if ([self _isRadioButton] == NO)
     return;
   
@@ -570,20 +583,23 @@ static id buttonCellClass = nil;
         if ([v isKindOfClass: [NSButton class]])
           {
             NSButton *b = (NSButton *)v;
-            if ([b _isRadioButton])
-              {
-                if ([self action] == [b action] && b != self)
-                  {
-                    if ([self state] == NSOnState)
-                      {
-                        [b setState: NSOffState];
-                      }
-                  }
-              }
+            [self _flipState: b];
           }
       }
     END_FOR_IN(subviews);
   }
+}
+
+- (BOOL) sendAction: (SEL)theAction to: (id)theTarget
+{
+  BOOL flag = [super sendAction: theAction
+                             to: theTarget];
+  if (flag == YES)
+    {
+      [self _handleRadioStates];
+    }
+  
+  return flag;
 }
 
 @end
