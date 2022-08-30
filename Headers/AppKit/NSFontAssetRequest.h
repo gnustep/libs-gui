@@ -48,7 +48,7 @@ typedef NSUInteger NSFontAssetRequestOptions;
 DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
 
 APPKIT_EXPORT_CLASS
-@interface NSFontAssetRequest : NSObject <NSProgressReporting>
+@interface NSFontAssetRequest : NSObject // <NSProgressReporting>
 
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options;
