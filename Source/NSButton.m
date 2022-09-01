@@ -46,6 +46,10 @@
 //
 static id buttonCellClass = nil;
 
+@interface NSButtonCell (_NSButton_Private_)
+- (BOOL) _isRadio;
+@end
+
 /**
    TODO Description
 */
@@ -548,46 +552,36 @@ static id buttonCellClass = nil;
 }
 
 // Implement 10.7+ radio button behavior
-- (BOOL) _isRadioButton
-{
-  return ([[self cell] image] ==
-          [NSImage imageNamed: @"NSRadioButton"]);
-}
-
 - (void) _flipState: (NSButton *)b
 {
-  if ([b _isRadioButton])
+  if ([[b cell] _isRadio])
     {
       if ([self action] == [b action] && b != self)
         {
-          if ([self state] == NSOnState)
-            {
-              [b setState: NSOffState];
-            }
+          [b setState: NSOffState];
         }
     }
 }
 
 - (void) _handleRadioStates
 {
-  if ([self _isRadioButton] == NO)
+  if ([[self cell] _isRadio] == NO)
     return;
+  else
+    {
+      NSView *sv = [self superview];
+      NSArray *subviews = [sv subviews];
   
-  if ([[self superview] isKindOfClass: [NSMatrix class]] == NO)
-  {
-    NSView *sv = [self superview];
-    NSArray *subviews = [sv subviews];
-    
-    FOR_IN(NSView*, v, subviews)
-      {
-        if ([v isKindOfClass: [NSButton class]])
-          {
-            NSButton *b = (NSButton *)v;
-            [self _flipState: b];
-          }
-      }
-    END_FOR_IN(subviews);
-  }
+      FOR_IN(NSView*, v, subviews)
+        {
+          if ([v isKindOfClass: [NSButton class]])
+            {
+              NSButton *b = (NSButton *)v;
+              [self _flipState: b];
+            }
+        }
+      END_FOR_IN(subviews);
+    }
 }
 
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
