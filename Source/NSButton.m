@@ -36,8 +36,6 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSImage.h"
-#import "AppKit/NSMatrix.h"
 
 #import "GSFastEnumeration.h"
 
