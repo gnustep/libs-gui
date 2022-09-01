@@ -1971,4 +1971,19 @@
   return self;
 }
 
+// Implement 10.7 NSRadio button behavior...
+
+- (BOOL) _isRadio
+{
+  return ([self image] == [NSImage imageNamed: @"NSRadioButton"]);
+}
+
+- (NSInteger) nextState
+{
+  if ([self _isRadio] && [self state] == NSOnState)
+    return [self state];
+
+  return [super nextState];
+}
+
 @end
