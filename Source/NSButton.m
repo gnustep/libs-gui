@@ -36,11 +36,18 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
 
 //
 // class variables
 //
 static id buttonCellClass = nil;
+
+@interface NSButtonCell (_NSButton_Private_)
+- (BOOL) _isRadio;
+@end
+
 
 /**
    TODO Description
@@ -541,6 +548,51 @@ static id buttonCellClass = nil;
 - (NSSound *) sound
 {
   return [_cell sound];
+}
+// Implement 10.7+ radio button behavior
+- (void) _flipState: (NSButton *)b
+{
+  if ([[b cell] _isRadio])
+    {
+      if ([self action] == [b action] && b != self)
+        {
+          [b setState: NSOffState];
+        }
+    }
+}
+
+- (void) _handleRadioStates
+{
+  if ([[self cell] _isRadio] == NO)
+    return;
+  else
+    {
+      NSView *sv = [self superview];
+      NSArray *subviews = [sv subviews];
+      NSEnumerator *en = [subviews objectEnumerator];
+      NSView *v = nil;
+      
+      while((v = [en nextObject]) != nil)
+        {
+          if ([v isKindOfClass: [NSButton class]])
+            {
+              NSButton *b = (NSButton *)v;
+              [self _flipState: b];
+            }
+        }
+    }
+}
+
+- (BOOL) sendAction: (SEL)theAction to: (id)theTarget
+{
+  BOOL flag = [super sendAction: theAction
+                             to: theTarget];
+  if (flag == YES)
+    {
+      [self _handleRadioStates];
+    }
+  
+  return flag;
 }
 
 @end
