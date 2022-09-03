@@ -26,6 +26,16 @@
 
 @implementation NSTableCellView
 
+- (void) setObjectValue: (id)value
+{
+  ASSIGN(_objectValue, value);
+}
+
+- (id) objectValue
+{
+  return _objectValue;
+}
+
 - (void) setImageView: (NSImageView *)imageView
 {
   ASSIGN(_imageView, imageView);

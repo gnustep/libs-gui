@@ -50,6 +50,9 @@ extern "C" {
   NSArray  *_draggingImageComponents;
 }
 
+- (void) setObjectValue: (id)value;
+- (id) objectValue;
+
 - (void) setImageView: (NSImageView *)imageView;
 - (NSImageView *) imageView;
 
