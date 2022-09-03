@@ -265,6 +265,8 @@ NSTableColumn.m \
 NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
+NSTableCellView.m \
+NSTableRowView.m \
 NSText.m \
 NSTextAlternatives.m \
 NSTextAttachment.m \
@@ -584,6 +586,8 @@ NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
+NSTableCellView.h \
+NSTableRowView.h \
 NSText.h \
 NSTextAlternatives.h \
 NSTextAttachment.h \
