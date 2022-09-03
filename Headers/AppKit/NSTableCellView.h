@@ -27,6 +27,7 @@
 
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSCell.h>
+#import <AppKit/NSNibDeclarations.h>
 
 @class NSImageView;
 @class NSTextField;
