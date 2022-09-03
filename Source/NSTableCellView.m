@@ -26,5 +26,51 @@
 
 @implementation NSTableCellView
 
+- (void) setImageView: (NSImageView *)imageView
+{
+  ASSIGN(_imageView, imageView);
+}
+
+- (NSImageView *) imageView
+{
+  return _imageView;
+}
+
+- (void) setTextField: (NSTextField *)textField
+{
+  ASSIGN(_textField, textField);
+}
+
+- (NSTextField *) textField
+{
+  return _textField;
+}
+
+- (void) setBackgroundStyle: (NSBackgroundStyle)style
+{
+  _backgroundStyle = style;
+}
+
+- (NSBackgroundStyle) backgroundStyle
+{
+  return _backgroundStyle;
+}
+
+- (void) setRowSizeStyle: (NSTableViewRowSizeStyle)style
+{
+  _rowSizeStyle = style;
+}
+
+- (NSTableViewRowSizeStyle) rowSizeStyle
+{
+  return _rowSizeStyle;
+}
+
+- (NSArray *) draggingImageComponents
+{
+  return _draggingImageComponents;
+}
+
+
 @end
 

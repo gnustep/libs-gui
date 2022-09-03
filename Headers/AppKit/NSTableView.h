@@ -88,6 +88,15 @@ typedef enum _NSTableViewAnimationOptions
   NSTableViewAnimationSlideLeft  = 0x30,
   NSTableViewAnimationSlideRight = 0x40,
 } NSTableViewAnimationOptions;
+
+typedef enum _NSTableViewRowSizeStyle
+{
+  NSTableViewRowSizeStyleDefault = -1,
+  NSTableViewRowSizeStyleCustom = 0,
+  NSTableViewRowSizeStyleSmall = 1,
+  NSTableViewRowSizeStyleMedium = 2,
+  NSTableViewRowSizeStyleLarge = 3,
+} NSTableViewRowSizeStyle;
 #endif
 
 
