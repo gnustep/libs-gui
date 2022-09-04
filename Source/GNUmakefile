@@ -265,6 +265,7 @@ NSTableColumn.m \
 NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
+NSTableViewRowAction.m \
 NSTableCellView.m \
 NSTableRowView.m \
 NSText.m \
@@ -586,6 +587,7 @@ NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
+NSTableViewRowAction.h \
 NSTableCellView.h \
 NSTableRowView.h \
 NSText.h \
