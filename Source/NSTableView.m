@@ -1,4 +1,4 @@
-/** <title>NSTableView</title>
+em/** <title>NSTableView</title>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
