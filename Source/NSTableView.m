@@ -1,4 +1,4 @@
-/** <title>NSTableView</title>
+em/** <title>NSTableView</title>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
@@ -70,6 +70,7 @@
 #import "GSBindingHelpers.h"
 
 #include <math.h>
+
 static NSNotificationCenter *nc = nil;
 
 static const int currentVersion = 5;
