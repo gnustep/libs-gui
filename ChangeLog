@@ -1,3 +1,15 @@
+2022-09-01 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSButtonCell.m: Move method to detect if button is a
+        radio button to this class (- _isRadio)
+	* Source/NSButton.m: Add method to check current state of button
+        clicked and flip other buttons to off (-_handleRadioStates)
+
+2022-08-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSButton.m: Fix to address issue #151, NSRadio button
+        behavior on 10.7 should now be implemented.
+
 2022-08-09 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSPredicateEditorRowTemplate.h:
