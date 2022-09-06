@@ -943,6 +943,7 @@ static NSString *placeholderItem = nil;
 
 - (void) _selectWithEvent: (NSEvent *)theEvent indexPath: (NSIndexPath *)index
 {
+  /*
   NSMutableIndexSet *currentIndexSet = [[NSMutableIndexSet alloc] initWithIndexSet: [self selectionIndexes]];
   
   if (_isSelectable && ((index < [_items count]) || index < [_visibleItems count]))
@@ -995,6 +996,7 @@ static NSString *placeholderItem = nil;
       [self setSelectionIndexes: [NSIndexSet indexSet]];
     }
   RELEASE (currentIndexSet);
+  */
 }
 
 
