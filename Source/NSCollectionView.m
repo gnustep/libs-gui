@@ -428,6 +428,15 @@ static NSString *placeholderItem = nil;
 
 - (void) setSelectionIndexPaths: (NSSet *)indexPaths
 {
+  if (!_isSelectable)
+    {
+      return;
+    }
+
+  if (![_selectionIndexPaths isEqual: indexPaths])
+    {
+      ASSIGN(_selectionIndexPaths, indexPaths);
+    }
 }
 
 - (NSIndexSet *) selectionIndexes
