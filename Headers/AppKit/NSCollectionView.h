@@ -402,6 +402,7 @@ APPKIT_EXPORT_CLASS
   BOOL _isSelectable;
   BOOL _allowsEmptySelection;
   NSIndexSet *_selectionIndexes;
+  NSSet *_selectionIndexPaths;
   
   NSArray *_backgroundColors;
 
@@ -437,7 +438,6 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
   NSMutableDictionary *_itemsToAttributes;
-  NSSet *_selectionIndexPaths;
   
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;

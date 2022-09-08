@@ -408,7 +408,26 @@ static NSString *placeholderItem = nil;
               [item setSelected:NO];
             }
         }
+
+      FOR_IN(NSIndexPath*, i, _selectionIndexPaths)
+        {
+          id item = [self itemAtIndexPath: i];          
+          if ([item respondsToSelector: @selector(setSelected:)])
+            {
+              [item setSelected: NO];
+            }   
+        }
+      END_FOR_IN(_selectionIndexPaths);
     }
+}
+
+- (NSSet *) selectionIndexPaths
+{
+  return _selectionIndexPaths;
+}
+
+- (void) setSelectionIndexPaths: (NSSet *)indexPaths
+{
 }
 
 - (NSIndexSet *) selectionIndexes
@@ -943,10 +962,9 @@ static NSString *placeholderItem = nil;
 
 - (void) _selectWithEvent: (NSEvent *)theEvent indexPath: (NSIndexPath *)index
 {
-  /*
-  NSMutableIndexSet *currentIndexSet = [[NSMutableIndexSet alloc] initWithIndexSet: [self selectionIndexes]];
-  
-  if (_isSelectable && ((index < [_items count]) || index < [_visibleItems count]))
+  NSMutableSet *currentSet = [[NSMutableSet alloc] initWithSet: [self selectionIndexPaths]];
+
+  if (_isSelectable)
     {
       if (_allowsMultipleSelection
           && (([theEvent modifierFlags] & NSControlKeyMask)
@@ -954,22 +972,23 @@ static NSString *placeholderItem = nil;
         {
           if ([theEvent modifierFlags] & NSControlKeyMask)
             {
-              if ([currentIndexSet containsIndex: index])
+              if ([currentSet containsObject: index])
                 {
-                  [currentIndexSet removeIndex: index];
+                  [currentSet removeObject: index];
                 }
               else
                 {
-                  [currentIndexSet addIndex: index];
+                  [currentSet addObject: index];
                 }
-              [self setSelectionIndexes: currentIndexSet];
+              [self setSelectionIndexPaths: currentSet];
             }
           else if ([theEvent modifierFlags] & NSShiftKeyMask)
             {
-              NSUInteger firstSelectedIndex = [currentIndexSet firstIndex];
+              /*
+              id firstSelected = [currentSet firstObject];
               NSRange selectedRange;
               
-              if (firstSelectedIndex == NSNotFound)
+              if (firstSelected == nil)
                 {
                   selectedRange = NSMakeRange(index, index);
                 }
@@ -982,21 +1001,22 @@ static NSString *placeholderItem = nil;
                   selectedRange = NSMakeRange(firstSelectedIndex, (index - firstSelectedIndex + 1));
                 }
               [currentIndexSet addIndexesInRange: selectedRange];
-              [self setSelectionIndexes: currentIndexSet];
+              */
+              [self setSelectionIndexPaths: currentSet];
             }
         }
       else
         {
-          [self setSelectionIndexes: [NSIndexSet indexSetWithIndex: index]];
+          [self setSelectionIndexPaths: [NSSet setWithObject: index]];
         }
       [[self window] makeFirstResponder: self];
     }
   else
     {
-      [self setSelectionIndexes: [NSIndexSet indexSet]];
+      [self setSelectionIndexPaths: [NSSet set]];
     }
-  RELEASE (currentIndexSet);
-  */
+
+  RELEASE (currentSet);
 }
 
 
@@ -1705,16 +1725,6 @@ static NSString *placeholderItem = nil;
 - (void) setAllowsEmptySelection: (BOOL)flag;
 {
   _allowsEmptySelection = flag;
-}
-
-- (NSSet *) selectionIndexPaths
-{
-  return _selectionIndexPaths;
-}
-
-- (void) setSelectionIndexPaths: (NSSet *)indexPaths
-{
-  ASSIGN(_selectionIndexPaths, indexPaths);
 }
 
 - (IBAction) selectAll: (id)sender
