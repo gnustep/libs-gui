@@ -394,10 +394,12 @@ shouldSelectItemsAtIndexPaths: (NSSet *)indexPaths;
 APPKIT_EXPORT_CLASS
 @interface NSCollectionView : NSView //<NSDraggingDestination, NSDraggingSource>
 {
+  // Content
   NSArray *_content;
   IBOutlet NSCollectionViewItem *itemPrototype;
   NSMutableArray *_items;
-  
+
+  // Selection management...
   BOOL _allowsMultipleSelection;
   BOOL _isSelectable;
   BOOL _allowsEmptySelection;
@@ -406,6 +408,7 @@ APPKIT_EXPORT_CLASS
   
   NSArray *_backgroundColors;
 
+  // Delegate and datasource
   IBOutlet id <NSCollectionViewDelegate> _delegate;
   IBOutlet id <NSCollectionViewDataSource> _dataSource;
   IBOutlet NSView *_backgroundView;
@@ -413,6 +416,7 @@ APPKIT_EXPORT_CLASS
 
   BOOL _backgroundViewScrollsWithContent;
 
+  // Size
   NSSize _itemSize;
   NSSize _maxItemSize;
   NSSize _minItemSize;
@@ -423,13 +427,15 @@ APPKIT_EXPORT_CLASS
   NSUInteger _maxNumberOfColumns;
   NSUInteger _maxNumberOfRows;
   NSUInteger _numberOfColumns;
-  
+
+  // Drag & Drop
   NSDragOperation _draggingSourceOperationMaskForLocal;
   NSDragOperation _draggingSourceOperationMaskForRemote;
   
   NSUInteger _draggingOnRow;
   NSUInteger _draggingOnIndex;
 
+  // Layout
   NSCollectionViewLayout *_collectionViewLayout;
 
   // Managing items
