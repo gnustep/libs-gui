@@ -437,6 +437,27 @@ static NSString *placeholderItem = nil;
     {
       ASSIGN(_selectionIndexPaths, indexPaths);
     }
+
+  // First unselect all of the items
+  FOR_IN(id, item, _visibleItems)
+    {
+      if ([item respondsToSelector: @selector(setSelected:)])
+        {
+          [item setSelected: NO];
+        }
+    }
+  END_FOR_IN(indexPaths);  
+  
+  // Now select all that are selected
+  FOR_IN(NSIndexPath*, p, indexPaths)
+    {
+      id item = [self itemAtIndexPath: p];
+      if ([item respondsToSelector: @selector(setSelected:)])
+        {
+          [item setSelected: YES];
+        }
+    }
+  END_FOR_IN(indexPaths);
 }
 
 - (NSIndexSet *) selectionIndexes
