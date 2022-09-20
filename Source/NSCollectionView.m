@@ -455,7 +455,7 @@ static NSString *placeholderItem = nil;
           [item setSelected: NO];
         }
     }
-  END_FOR_IN(indexPaths);  
+  END_FOR_IN(_visibleItems);  
   
   // Now select all that are selected
   FOR_IN(NSIndexPath*, p, indexPaths)
@@ -1429,6 +1429,12 @@ static NSString *placeholderItem = nil;
       if (attr != nil)
         {
           NSRect f = [attr frame];
+
+          // Expand the target area so it is easier to hit...
+          // f.origin.x -= 10.0;
+          // f.origin.y -= 10.0;
+          // f.size.width += 20.0;
+          // f.size.height += 20.0;
           
           if (NSPointInRect(point, f))
             {
