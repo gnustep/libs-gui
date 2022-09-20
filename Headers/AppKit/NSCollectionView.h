@@ -444,14 +444,15 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
   NSMutableDictionary *_itemsToAttributes;
+
+  // Private
+  // Map items -> indexPath
+  NSMapTable *_itemsToIndexPaths;
+  NSMapTable *_indexPathsToItems;
   
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;
   NSMapTable *_registeredClasses;
-
-  // Registered class/nib for item kind & identifier
-  NSMapTable *_registeredNibForItemWithIdentifier;
-  NSMapTable *_registeredClassForItemWithIdentifier;
 }
 
 - (BOOL) allowsMultipleSelection;

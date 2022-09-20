@@ -78,7 +78,6 @@ static NSString *placeholderItem = nil;
 - (void) _resetItemSize;
 - (void) _removeItemsViews;
 - (NSInteger) _indexAtPoint: (NSPoint)point;
-- (NSIndexPath *) _indexPathAtPoint: (NSPoint)point;
 
 - (NSRect) _frameForRowOfItemAtIndex: (NSUInteger)theIndex;
 - (NSRect) _frameForRowsAroundItemAtIndex: (NSUInteger)theIndex;
@@ -164,7 +163,9 @@ static NSString *placeholderItem = nil;
   _visibleSupplementaryViews = [[NSMutableDictionary alloc] init];
   _indexPathsForSupplementaryElementsOfKind = [[NSMutableSet alloc] init];
   _itemsToAttributes = [[NSMutableDictionary alloc] init];
-
+  _itemsToIndexPaths = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+  _indexPathsToItems = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+  
   // Registered nib/class
   _registeredNibs = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
   _registeredClasses = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
@@ -426,13 +427,21 @@ static NSString *placeholderItem = nil;
   return _selectionIndexPaths;
 }
 
-- (void) setSelectionIndexPaths: (NSSet *)indexPaths
+- (void) setSelectionIndexPaths: (NSSet *)paths
 {
+  NSSet *indexPaths = paths;
+  
   if (!_isSelectable)
     {
       return;
     }
 
+  if ([_delegate respondsToSelector: @selector(collectionView:shouldSelectItemsAtIndexPaths:)])
+    {
+      indexPaths = [_delegate collectionView: self
+                              shouldSelectItemsAtIndexPaths: indexPaths];
+    }
+  
   if (![_selectionIndexPaths isEqual: indexPaths])
     {
       ASSIGN(_selectionIndexPaths, indexPaths);
@@ -841,7 +850,6 @@ static NSString *placeholderItem = nil;
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location = [self convertPoint: initialLocation fromView: nil];
   NSEvent *lastEvent = theEvent;
@@ -851,11 +859,10 @@ static NSString *placeholderItem = nil;
                           | NSLeftMouseDraggedMask 
                           | NSPeriodicMask);
   NSDate *distantFuture = [NSDate distantFuture];
-  
-  
+    
   if (_collectionViewLayout)
     {
-      NSIndexPath *indexPath = [self _indexPathAtPoint: location];
+      NSIndexPath *indexPath = [self indexPathForItemAtPoint: location];
 
       while (!done)
         {
@@ -1047,16 +1054,6 @@ static NSString *placeholderItem = nil;
     }
 
   RELEASE (currentSet);
-}
-
-
-- (NSIndexPath *) _indexPathAtPoint: (NSPoint)point
-{
-  NSInteger row = floor(point.y / (_itemSize.height + _verticalMargin));
-  NSInteger column = floor(point.x / (_itemSize.width + _horizontalMargin));
-  NSIndexPath *p = [NSIndexPath indexPathForRow: row inSection: column];
-
-  return p;
 }
 
 - (BOOL) acceptsFirstResponder
@@ -1416,17 +1413,21 @@ static NSString *placeholderItem = nil;
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
 {
-  return nil;
+  return [_itemsToIndexPaths objectForKey: item];
 }
 
 - (NSIndexPath *) indexPathForItemAtPoint: (NSPoint)point
 {
-  return nil;
+  NSInteger row = floor(point.y / (_itemSize.height + _verticalMargin));
+  NSInteger column = floor(point.x / (_itemSize.width + _horizontalMargin));
+  NSIndexPath *p = [NSIndexPath indexPathForRow: row inSection: column];
+
+  return p;
 }
 
 - (NSCollectionViewItem *) itemAtIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  return [_indexPathsToItems objectForKey: indexPath];
 }
 
 - (NSView *)supplementaryViewForElementKind: (NSCollectionViewSupplementaryElementKind)elementKind 
@@ -1589,8 +1590,13 @@ static NSString *placeholderItem = nil;
 
           [_itemsToAttributes setObject: attrs
                                  forKey: item];
+
+          // Map items...
+          [_itemsToIndexPaths setObject: path
+                                 forKey: item];
+          [_indexPathsToItems setObject: item
+                                 forKey: path];
           
-          // NSLog(@"v = %@, a = %@, l = %@", v, attrs, _collectionViewLayout);
           [self addSubview: v];
         }
       else
@@ -1634,6 +1640,9 @@ static NSString *placeholderItem = nil;
   [self setFrame: newRect];
   [_visibleItems removeAllObjects];
   [_indexPathsForVisibleItems removeAllObjects];
+  [_itemsToIndexPaths removeAllObjects];
+  [_indexPathsToItems removeAllObjects];
+
   [self setSubviews: [NSArray array]];
   [_collectionViewLayout prepareLayout];
   for (cs = 0; cs < ns; cs++)
