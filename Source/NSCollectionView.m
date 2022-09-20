@@ -142,6 +142,35 @@ static NSString *placeholderItem = nil;
   return self;
 }
 
+- (void) dealloc
+{
+  //[[NSNotificationCenter defaultCenter] removeObserver: self];
+  DESTROY (_content);
+
+  // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
+  DESTROY (itemPrototype);
+  
+  DESTROY (_backgroundColors);
+  DESTROY (_selectionIndexes);
+  DESTROY (_items);
+
+  // Managing items.
+  DESTROY(_visibleItems);
+  DESTROY(_indexPathsForVisibleItems);
+  DESTROY(_visibleSupplementaryViews);
+  DESTROY(_indexPathsForSupplementaryElementsOfKind);
+  DESTROY(_itemsToAttributes);
+  DESTROY(_itemsToIndexPaths);
+  DESTROY(_indexPathsToItems);
+  
+  // Registered nib/class
+  DESTROY(_registeredNibs);
+  DESTROY(_registeredClasses); 
+
+  //DESTROY (_mouseDownEvent);
+  [super dealloc];
+}
+
 -(void) _initDefaults
 {
   _itemSize = NSMakeSize(0, 0);
@@ -218,33 +247,6 @@ static NSString *placeholderItem = nil;
       NSView *view = [collectionItem view];
       [view setFrame: [self frameForItemAtIndex: index]];
     }
-}
-
-- (void) dealloc
-{
-  //[[NSNotificationCenter defaultCenter] removeObserver: self];
-
-  DESTROY (_content);
-
-  // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
-  DESTROY (itemPrototype);
-  
-  DESTROY (_backgroundColors);
-  DESTROY (_selectionIndexes);
-  DESTROY (_items);
-
-  // Managing items.
-  DESTROY(_visibleItems);
-  DESTROY(_indexPathsForVisibleItems);
-  DESTROY(_visibleSupplementaryViews);
-  DESTROY(_indexPathsForSupplementaryElementsOfKind);
-
-  // Registered nib/class
-  DESTROY(_registeredNibs);
-  DESTROY(_registeredClasses); 
-
-  //DESTROY (_mouseDownEvent);
-  [super dealloc];
 }
 
 - (BOOL) isFlipped
@@ -1495,7 +1497,7 @@ static NSString *placeholderItem = nil;
 {
   [self registerClass: itemClass
         forSupplementaryViewOfKind: GSNoSupplementaryElement
-       withIdentifier: identifier];
+        withIdentifier: identifier];
 }
 
 - (void) registerNib: (NSNib *)nib 
@@ -1503,12 +1505,12 @@ static NSString *placeholderItem = nil;
 {
   [self registerNib: nib
         forSupplementaryViewOfKind: GSNoSupplementaryElement
-     withIdentifier: identifier];
+        withIdentifier: identifier];
 }
 
 - (void) registerClass: (Class)viewClass 
          forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 
-        withIdentifier:(NSUserInterfaceItemIdentifier)identifier
+         withIdentifier:(NSUserInterfaceItemIdentifier)identifier
 {
   NSMapTable *t = nil;
 

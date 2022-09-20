@@ -45,7 +45,6 @@
 @class NSPasteboard;
 @class NSNib;
 @class NSMapTable;
-@class NSMutableArray;
 @class NSMutableDictionary;
 @class NSMutableSet;
 
