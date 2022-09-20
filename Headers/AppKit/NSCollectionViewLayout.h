@@ -162,7 +162,6 @@ typedef NSInteger NSCollectionUpdateAction;
 {
   NSCollectionView *_collectionView; // weak
   BOOL _valid;
-  NSMutableDictionary *_itemsToAttributes;
 
   Class _layoutAttributesClass;
   Class _invalidationContextClass;

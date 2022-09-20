@@ -162,9 +162,9 @@ static NSString *placeholderItem = nil;
   _indexPathsForVisibleItems = [[NSMutableSet alloc] init];
   _visibleSupplementaryViews = [[NSMutableDictionary alloc] init];
   _indexPathsForSupplementaryElementsOfKind = [[NSMutableSet alloc] init];
-  _itemsToAttributes = [[NSMutableDictionary alloc] init];
-  _itemsToIndexPaths = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
-  _indexPathsToItems = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+  _itemsToAttributes = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+  _itemsToIndexPaths = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+  _indexPathsToItems = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
   
   // Registered nib/class
   _registeredNibs = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
@@ -1418,9 +1418,25 @@ static NSString *placeholderItem = nil;
 
 - (NSIndexPath *) indexPathForItemAtPoint: (NSPoint)point
 {
-  NSInteger row = floor(point.y / (_itemSize.height + _verticalMargin));
-  NSInteger column = floor(point.x / (_itemSize.width + _horizontalMargin));
-  NSIndexPath *p = [NSIndexPath indexPathForRow: row inSection: column];
+  NSIndexPath *p = nil;
+  NSEnumerator *ke = [_itemsToAttributes keyEnumerator];
+  NSCollectionViewItem *item = nil;
+
+  while ((item = [ke nextObject]) != nil)
+    {
+      NSCollectionViewLayoutAttributes *attr = [_itemsToAttributes objectForKey: item];
+
+      if (attr != nil)
+        {
+          NSRect f = [attr frame];
+          
+          if (NSPointInRect(point, f))
+            {
+              p = [self indexPathForItem: item];
+              break;
+            }
+        }
+    }
 
   return p;
 }

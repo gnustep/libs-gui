@@ -28,11 +28,11 @@
 #import "GSFastEnumeration.h"
 
 @interface NSCollectionView (__NSCollectionViewLayout__)
-- (NSDictionary *) itemsToAttributes;
+- (NSMapTable *) itemsToAttributes;
 @end
 
 @implementation NSCollectionView (__NSCollectionViewLayout__)  
-- (NSDictionary *) itemsToAttributes
+- (NSMapTable *) itemsToAttributes
 {
   return _itemsToAttributes;
 }
@@ -249,7 +249,7 @@
 // Initializers
 - (void) _initDefaults
 {
-  _itemsToAttributes = [[NSMutableDictionary alloc] init];
+  // _itemsToAttributes = [[NSMutableDictionary alloc] init];
 }
 
 - (void)invalidateLayout
@@ -311,7 +311,7 @@
 {
   NSMutableArray *result = [NSMutableArray array];
   NSArray *items = [_collectionView visibleItems];
-  NSDictionary *itemsToAttributes = [_collectionView itemsToAttributes];
+  NSMapTable *itemsToAttributes = [_collectionView itemsToAttributes];
   
   FOR_IN(NSCollectionViewItem*, i, items)
     {

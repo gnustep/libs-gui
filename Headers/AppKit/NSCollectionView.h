@@ -443,12 +443,12 @@ APPKIT_EXPORT_CLASS
   NSMutableSet *_indexPathsForVisibleItems;
   NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
-  NSMutableDictionary *_itemsToAttributes;
 
   // Private
   // Map items -> indexPath
   NSMapTable *_itemsToIndexPaths;
   NSMapTable *_indexPathsToItems;
+  NSMapTable *_itemsToAttributes;
   
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;
