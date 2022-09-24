@@ -326,6 +326,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
+                                           @"primaryBackgroundColor", @"NSBackgroundColors",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -3549,10 +3550,6 @@ didStartElement: (NSString*)elementName
         {
           hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
         }
-      else if ([@"NSBackgroundColors" isEqualToString: key])
-        {
-          hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
-        } 
       else if ([@"NSCollectionViewLayout" isEqualToString: key])
         {
           hasValue = [currentElement elementForKey: @"collectionViewLayout"] != nil;
