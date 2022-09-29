@@ -36,13 +36,14 @@
 
 #ifndef _GNUstep_H_NSOpenPanel
 #define _GNUstep_H_NSOpenPanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSSavePanel.h>
 
 @class NSString;
 @class NSArray;
 
+APPKIT_EXPORT_CLASS
 @interface NSOpenPanel : NSSavePanel
 {
   BOOL _canChooseDirectories;

@@ -29,10 +29,11 @@
 
 #ifndef _GNUstep_H_NSFormCell
 #define _GNUstep_H_NSFormCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSActionCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSFormCell : NSActionCell <NSCoding>
 {
   // NB: this is the titleWidth which is effectively used -- takes in

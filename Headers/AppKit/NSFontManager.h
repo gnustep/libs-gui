@@ -32,7 +32,7 @@
 
 #ifndef _GNUstep_H_NSFontManager
 #define _GNUstep_H_NSFontManager
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -81,6 +81,7 @@ typedef enum {
   NSLighterFontAction,
 } NSFontTag;
 
+APPKIT_EXPORT_CLASS
 @interface NSFontManager : NSObject
 {
   // Attributes

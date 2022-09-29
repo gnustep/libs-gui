@@ -30,9 +30,9 @@
 
 #ifndef _GNUstep_H_NSTableColumn
 #define _GNUstep_H_NSTableColumn
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
-#import <AppKit/AppKitDefines.h>
 
 @class NSSortDescriptor;
 @class NSCell;
@@ -56,6 +56,7 @@ enum {
   /** Allow the user to resize the column manually. */
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSTableColumn : NSObject <NSCoding>
 {
   id _identifier;

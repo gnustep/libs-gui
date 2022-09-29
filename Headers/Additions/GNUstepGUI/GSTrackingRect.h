@@ -33,6 +33,7 @@
 #import <Foundation/NSObject.h>
 #import <AppKit/NSView.h>
 
+APPKIT_EXPORT_CLASS
 @interface GSTrackingRect : NSObject <NSCoding>
 {
 @public

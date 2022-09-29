@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSCell
 #define _GNUstep_H_NSCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 
@@ -186,6 +186,7 @@ enum __NSControlSize {
 };
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes

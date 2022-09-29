@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSProgressIndicator
 #define _GNUstep_H_NSProgressIndicator
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -54,6 +54,7 @@ typedef enum _NSProgressIndicatorStyle
   NSProgressIndicatorSpinningStyle = 1
 } NSProgressIndicatorStyle;
 
+APPKIT_EXPORT_CLASS
 @interface NSProgressIndicator : NSView
 {
   double _doubleValue;

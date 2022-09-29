@@ -29,10 +29,11 @@
 
 #ifndef _GNUstep_H_NSActionCell
 #define _GNUstep_H_NSActionCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSActionCell : NSCell
 {
   // Attributes

@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSControl
 #define _GNUstep_H_NSControl
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 // for NSWritingDirection
 #import <AppKit/NSParagraphStyle.h>
@@ -44,6 +44,7 @@
 @class NSEvent;
 @class NSTextView;
 
+APPKIT_EXPORT_CLASS
 @interface NSControl : NSView
 {
   // Attributes

@@ -36,6 +36,7 @@ extern "C" {
 
 @class NSData;
   
+APPKIT_EXPORT_CLASS
 @interface NSPICTImageRep : NSImageRep
 {
   NSBitmapImageRep *_pageRep;

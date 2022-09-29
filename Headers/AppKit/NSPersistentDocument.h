@@ -41,6 +41,7 @@ extern "C" {
 @class NSDictionary;
 @class NSUndoManager;
 
+APPKIT_EXPORT_CLASS
 @interface NSPersistentDocument : NSDocument
 {
   NSManagedObjectContext *_managedObjectContext;

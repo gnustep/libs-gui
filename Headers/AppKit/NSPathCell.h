@@ -44,6 +44,7 @@ typedef NSUInteger NSPathStyle;
 
 @class NSEvent, NSView, NSArray, NSString, NSAttributeString, NSColor, NSPathComponentCell, NSOpenPanel, NSURL;    
   
+APPKIT_EXPORT_CLASS
 @interface NSPathCell : NSActionCell
 {
   NSPathStyle _pathStyle;

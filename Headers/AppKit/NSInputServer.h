@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSInputServer
 #define _GNUstep_H_NSInputServer
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>

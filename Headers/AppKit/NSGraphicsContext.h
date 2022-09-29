@@ -30,7 +30,7 @@
 
 #ifndef _NSGraphicsContext_h_INCLUDE
 #define _NSGraphicsContext_h_INCLUDE
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSMapTable.h>
@@ -168,6 +168,7 @@ typedef enum _GSColorSpace
   GSICC
 } GSColorSpace;
 
+APPKIT_EXPORT_CLASS
 @interface NSGraphicsContext : NSObject
 {
   /* Make the one public instance variable first in the object so that, if we

@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSColorPicking
 #define _GNUstep_H_NSColorPicking
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSColor;
 @class NSColorPanel;

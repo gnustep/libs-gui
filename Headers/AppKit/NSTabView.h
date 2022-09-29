@@ -45,6 +45,7 @@ typedef enum {
 @class NSFont;
 @class NSTabViewItem;
 
+APPKIT_EXPORT_CLASS
 @interface NSTabView : NSView <NSCoding>
 {
   NSMutableArray *_items;

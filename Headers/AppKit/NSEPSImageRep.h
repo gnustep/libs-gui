@@ -29,13 +29,14 @@
 
 #ifndef _GNUstep_H_NSEPSImageRep
 #define _GNUstep_H_NSEPSImageRep
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <AppKit/NSImageRep.h>
 
 @class NSData;
 
+APPKIT_EXPORT_CLASS
 @interface NSEPSImageRep : NSImageRep
 {
   // Attributes

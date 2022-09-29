@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSMenuItemCell
 #define _GNUstep_H_NSMenuItemCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSButtonCell.h>
 #import <AppKit/NSMenuItem.h>
@@ -36,6 +36,7 @@
 
 typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 
+APPKIT_EXPORT_CLASS
 @interface NSMenuItemCell : NSButtonCell <NSCopying, NSCoding>
 {
   NSMenuItem *_menuItem;

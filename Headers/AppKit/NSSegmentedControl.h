@@ -40,6 +40,7 @@ typedef enum _NSSegmentStyle {
 } NSSegmentStyle;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSSegmentedControl : NSControl
 
 // Specifying number of segments...

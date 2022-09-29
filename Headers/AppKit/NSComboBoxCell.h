@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSComboBoxCell
 #define _GNUstep_H_NSComboBoxCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <AppKit/NSTextFieldCell.h>
@@ -37,6 +37,7 @@
 @class NSArray;
 @class NSString;
 
+APPKIT_EXPORT_CLASS
 @interface NSComboBoxCell : NSTextFieldCell
 {
    id			_dataSource;

@@ -43,6 +43,7 @@ typedef enum {
 @class NSMenu;
 @class NSView;
 
+APPKIT_EXPORT_CLASS
 @interface NSSegmentedCell : NSActionCell
 {
   @private

@@ -31,6 +31,7 @@
 
 #ifndef _GNUstep_H_NSGestureRecognizer
 #define _GNUstep_H_NSGestureRecognizer
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -43,6 +44,7 @@ extern "C" {
 
 @class NSView, NSEvent;
 
+APPKIT_EXPORT_CLASS
 @interface NSGestureRecognizer : NSObject
 - (NSPoint)locationInView:(NSView *)view;
 @end

@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSNibLoading
 #define _GNUstep_H_NSNibLoading
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSBundle.h>

@@ -25,7 +25,7 @@
 #ifndef _NSGlyphInfo_h_GNUSTEP_GUI_INCLUDE
 #define _NSGlyphInfo_h_GNUSTEP_GUI_INCLUDE
 
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 #import <Foundation/NSObject.h>
 #import <AppKit/NSFont.h>
 

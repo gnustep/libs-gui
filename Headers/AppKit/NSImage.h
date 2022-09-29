@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSGraphicsContext.h>
 #import <Foundation/NSBundle.h>
@@ -123,6 +123,7 @@ APPKIT_EXTERN NSString *const NSImageNameNetwork;
 APPKIT_EXTERN NSString *const NSImageNameFolder;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSImage : NSObject <NSCoding, NSCopying>
 {
   // Attributes

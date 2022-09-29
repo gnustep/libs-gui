@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSUserDefaultsController
 #define _GNUstep_H_NSUserDefaultsController
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSController.h>
 
@@ -38,6 +38,7 @@
 @class NSDictionary;
 @class NSMutableDictionary;
 
+APPKIT_EXPORT_CLASS
 @interface NSUserDefaultsController : NSController
 {
   NSUserDefaults* _defaults;

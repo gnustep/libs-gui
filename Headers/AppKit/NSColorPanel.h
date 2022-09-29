@@ -29,9 +29,8 @@
 
 #ifndef _GNUstep_H_NSColorPanel
 #define _GNUstep_H_NSColorPanel
-#import <GNUstepBase/GSVersionMacros.h>
-
 #import <AppKit/AppKitDefines.h>
+
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSColorPicking.h>
 #import <AppKit/NSColorWell.h>
@@ -74,6 +73,7 @@ enum {
 - (void) orderFrontColorPanel: (id)sender;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSColorPanel : NSPanel
 {
   // Attributes

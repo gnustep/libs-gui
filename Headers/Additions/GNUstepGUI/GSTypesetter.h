@@ -41,6 +41,7 @@
 /* This isn't final. It will probably change. If you want to sub-class,
 you'll have to update your code when things change (or wait until it's
 done). */
+APPKIT_EXPORT_CLASS
 @interface GSTypesetter : NSObject
 
 /*

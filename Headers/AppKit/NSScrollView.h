@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSScrollView
 #define _GNUstep_H_NSScrollView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -49,6 +49,7 @@ typedef NSInteger NSScrollElasticity;
 @class NSCursor;
 @class NSScroller;
 
+APPKIT_EXPORT_CLASS
 @interface NSScrollView : NSView
 {
   NSClipView *_contentView;

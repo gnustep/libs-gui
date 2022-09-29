@@ -45,6 +45,7 @@ enum
 };
 typedef NSUInteger NSTabViewControllerTabStyle;
   
+APPKIT_EXPORT_CLASS
 @interface NSTabViewController : NSViewController
 {
   NSTabViewControllerTabStyle _tabStyle;

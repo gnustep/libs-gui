@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSBrowser
 #define _GNUstep_H_NSBrowser
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 
@@ -54,6 +54,7 @@ enum _NSBrowserColumnResizingType
 typedef NSUInteger NSBrowserColumnResizingType;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSBrowser : NSControl <NSCoding>
 {
   // Attributes

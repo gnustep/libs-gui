@@ -40,6 +40,7 @@ typedef NSString *NSStoryboardSceneIdentifier;
 
 DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 
+APPKIT_EXPORT_CLASS
 @interface NSStoryboard : NSObject
 {
   id _transform;

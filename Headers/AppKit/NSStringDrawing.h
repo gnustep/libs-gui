@@ -32,7 +32,7 @@
 
 #ifndef _GNUstep_H_NSStringDrawing
 #define _GNUstep_H_NSStringDrawing
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 

@@ -29,13 +29,13 @@
 
 #ifndef _GNUstep_H_NSTextAlternatives 
 #define _GNUstep_H_NSTextAlternatives 
-
 #import <AppKit/AppKitDefines.h>
+
 #import <Foundation/NSString.h>
-#import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
 
+APPKIT_EXPORT_CLASS
 @interface NSTextAlternatives : NSObject {
   NSString *_primaryString;
   NSArray *_alternativeStrings;

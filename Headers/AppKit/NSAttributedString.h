@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSAttributedString
 #define _GNUstep_H_NSAttributedString
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
@@ -39,7 +39,6 @@
 // for NSWritingDirection
 #import <AppKit/NSParagraphStyle.h>
 #import <AppKit/NSText.h>
-#import <AppKit/AppKitDefines.h>
 
 @class NSTextAttachment;
 @class NSFileWrapper;

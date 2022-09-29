@@ -38,6 +38,7 @@ extern "C" {
 
 @class NSArray, NSDictionary, NSMenu;
 
+APPKIT_EXPORT_CLASS
 @interface NSTextCheckingController : NSObject
 {
   id<NSTextCheckingClient> _client;

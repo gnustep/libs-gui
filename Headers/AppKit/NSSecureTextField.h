@@ -33,12 +33,14 @@
 #import <AppKit/NSTextField.h>
 #import <AppKit/NSTextFieldCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSSecureTextField : NSTextField
 {}
 - (void) setEchosBullets:(BOOL)flag;
 - (BOOL) echosBullets;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSSecureTextFieldCell : NSTextFieldCell
 {
   BOOL _echosBullets;

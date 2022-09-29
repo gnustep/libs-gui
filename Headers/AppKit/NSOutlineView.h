@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSOutlineView
 #define _GNUstep_H_NSOutlineView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSTableView.h>
 
@@ -38,6 +38,7 @@
 @class NSString;
 @class NSURL;
 
+APPKIT_EXPORT_CLASS
 @interface NSOutlineView : NSTableView
 {
   NSMapTable *_itemDict;

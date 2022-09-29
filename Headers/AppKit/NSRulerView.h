@@ -52,6 +52,7 @@ typedef enum {
 
 @class GSRulerUnit;
 
+APPKIT_EXPORT_CLASS
 @interface NSRulerView : NSView
 {
   GSRulerUnit *_unit;

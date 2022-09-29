@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSLayoutManager
 #define _GNUstep_H_NSLayoutManager
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <GNUstepGUI/GSLayoutManager.h>
@@ -47,6 +47,7 @@ typedef enum {
 } GSInsertionPointMovementDirection;
 
 
+APPKIT_EXPORT_CLASS
 @interface NSLayoutManager : GSLayoutManager
 {
   /* Public for use only in the associated NSTextViews.  Don't access

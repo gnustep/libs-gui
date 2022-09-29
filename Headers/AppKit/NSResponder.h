@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSResponder
 #define _GNUstep_H_NSResponder
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSInterfaceStyle.h>
@@ -44,6 +44,7 @@
 @class NSUndoManager;
 @class NSWindow;
 
+APPKIT_EXPORT_CLASS
 @interface NSResponder : NSObject <NSCoding>
 {
 PACKAGE_SCOPE

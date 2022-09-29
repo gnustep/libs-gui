@@ -38,6 +38,7 @@
 @class NSMapTable;
 @class NSStoryboard;
 
+APPKIT_EXPORT_CLASS
 @interface NSWindowController : NSResponder <NSCoding, NSSeguePerforming>
 {
   @private

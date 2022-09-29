@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSButton
 #define _GNUstep_H_NSButton
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 #import <AppKit/NSButtonCell.h>
@@ -39,6 +39,7 @@
 @class NSString;
 @class NSEvent;
 
+APPKIT_EXPORT_CLASS
 @interface NSButton : NSControl
 {
   // Attributes

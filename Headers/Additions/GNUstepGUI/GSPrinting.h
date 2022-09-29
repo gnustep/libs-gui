@@ -30,11 +30,13 @@
 
 #ifndef _GNUstep_H_GSPrinting
 #define _GNUstep_H_GSPrinting
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
 @class NSBundle;
 
+APPKIT_EXPORT_CLASS
 @interface GSPrinting : NSObject
 {
 }
@@ -44,6 +46,7 @@
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface GSPrintingPrincipalClass : NSObject
 {
 }

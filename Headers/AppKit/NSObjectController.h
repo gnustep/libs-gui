@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSObjectController
 #define _GNUstep_H_NSObjectController
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSController.h>
 #import <AppKit/NSMenuItem.h>
@@ -43,6 +43,7 @@
 @class NSFetchRequest;
 @class NSManagedObjectContext;
 
+APPKIT_EXPORT_CLASS
 @interface NSObjectController : NSController
 {
   @protected

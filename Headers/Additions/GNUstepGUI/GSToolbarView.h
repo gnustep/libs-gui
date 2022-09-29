@@ -50,6 +50,7 @@ typedef enum {
   GSToolbarViewBottomBorder = 16
 } GSToolbarViewBorder;
 
+APPKIT_EXPORT_CLASS
 @interface GSToolbarView : NSView
 {
   NSToolbar *_toolbar;

@@ -33,10 +33,9 @@
 
 #ifndef _GNUstep_H_NSToolbar
 #define _GNUstep_H_NSToolbar
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
-#import <AppKit/AppKitDefines.h>
 
 @class NSArray;
 @class NSString;
@@ -74,6 +73,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 
 typedef NSString* NSToolbarItemIdentifier;
 
+APPKIT_EXPORT_CLASS
 @interface NSToolbar : NSObject
 {
   NSDictionary *_configurationDictionary;

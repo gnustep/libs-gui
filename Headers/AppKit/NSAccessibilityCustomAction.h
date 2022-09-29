@@ -24,6 +24,7 @@
 
 #ifndef _NSAccessibilityCustomAction_h_GNUSTEP_GUI_INCLUDE
 #define _NSAccessibilityCustomAction_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -35,6 +36,7 @@ extern "C" {
 
 DEFINE_BLOCK_TYPE(GSAccessibilityCustomActionHandler, void, BOOL);
   
+APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomAction : NSObject
 {
   NSString *_name;

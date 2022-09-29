@@ -40,6 +40,7 @@ extern "C" {
 @class NSColor, NSPathComponentCell, NSArray, NSURL, NSAttributedString, NSString,
   NSMenu, NSPasteboard, NSOpenPanel, NSPathControlItem;
   
+APPKIT_EXPORT_CLASS
 @interface NSPathControl : NSControl
 {
   NSArray *_pathItems;

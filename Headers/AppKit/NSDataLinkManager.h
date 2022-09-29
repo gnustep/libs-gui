@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSDataLinkManager
 #define _GNUstep_H_NSDataLinkManager
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -41,6 +41,7 @@
 @class NSPasteboard;
 @class NSWindow;
 
+APPKIT_EXPORT_CLASS
 @interface NSDataLinkManager : NSObject <NSCoding>
 {
   // Attributes

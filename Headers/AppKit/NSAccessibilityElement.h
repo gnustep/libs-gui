@@ -24,6 +24,7 @@
 
 #ifndef _NSAccessibilityElement_h_GNUSTEP_GUI_INCLUDE
 #define _NSAccessibilityElement_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -33,6 +34,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSAccessibilityElement : NSObject
 
 @end

@@ -47,6 +47,7 @@ enum
 };
 typedef NSUInteger NSPageControllerTransitionStyle;
 
+APPKIT_EXPORT_CLASS
 @interface NSPageController : NSViewController 
 {
   NSPageControllerTransitionStyle _transitionStyle;

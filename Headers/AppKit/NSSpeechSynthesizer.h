@@ -100,6 +100,7 @@ extern NSString *NSSpeechDictionaryEntrySpelling;
 extern NSString *NSSpeechDictionaryEntryPhonemes;
 
 // class declaration...
+APPKIT_EXPORT_CLASS
 @interface NSSpeechSynthesizer : NSObject
 
 // init...

@@ -27,6 +27,7 @@
 
 #ifndef _GNUstep_H_NSController
 #define _GNUstep_H_NSController
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -34,6 +35,7 @@
 
 @class NSMutableArray;
 
+APPKIT_EXPORT_CLASS
 @interface NSController : NSObject <NSCoding>
 {
   NSMutableArray *_editors;

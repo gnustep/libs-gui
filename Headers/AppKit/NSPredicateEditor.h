@@ -35,6 +35,7 @@
 
 @class NSArray;
 
+APPKIT_EXPORT_CLASS
 @interface NSPredicateEditor : NSRuleEditor {
   NSArray *_rowTemplates;
 }

@@ -61,6 +61,7 @@ enum {
 /*
  * This is the class that holds objects within a nib.
  */
+APPKIT_EXPORT_CLASS
 @interface GSNibContainer : NSObject <NSCoding, GSNibContainer>
 {
   NSMutableDictionary	*nameTable;
@@ -85,6 +86,7 @@ enum {
 - (NSString *)className;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSClassSwapper : NSObject <GSTemplate, NSCoding>
 {
   id                   _object;
@@ -94,6 +96,7 @@ enum {
 - (BOOL) shouldSwapClass;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSNibItem : NSObject <NSCoding> 
 {
   NSString		*theClass;
@@ -102,11 +105,13 @@ enum {
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSCustomView : GSNibItem <NSCoding>  
 {
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSWindowTemplate : GSClassSwapper
 {
   BOOL                 _deferFlag;
@@ -123,24 +128,31 @@ enum {
 - (BOOL) deferFlag;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSViewTemplate : GSClassSwapper
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSTextTemplate : GSClassSwapper
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSTextViewTemplate : GSClassSwapper 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSMenuTemplate : GSClassSwapper
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSControlTemplate : GSClassSwapper
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSObjectTemplate : GSClassSwapper
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSTemplateFactory : NSObject
 + (id) templateForObject: (id) object 
 	   withClassName: (NSString *)className

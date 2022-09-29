@@ -36,6 +36,7 @@
 
 @class NSTableView;
 
+APPKIT_EXPORT_CLASS
 @interface NSTableHeaderView : NSView
 {
   NSTableView *_tableView;

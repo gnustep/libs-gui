@@ -31,7 +31,7 @@
 
 #ifndef _GNUstep_H_NSToolbarItem
 #define _GNUstep_H_NSToolbarItem
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -67,6 +67,7 @@ enum _NSToolbarItemVisibilityPriority {
 };
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSToolbarItem : NSObject <NSCopying, NSValidatedUserInterfaceItem>
 {
   // externally visible variables

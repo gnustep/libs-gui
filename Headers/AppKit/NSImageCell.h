@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSImageCell
 #define _GNUstep_H_NSImageCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSCell.h>
 
@@ -85,6 +85,7 @@ typedef enum {
  *  <p>The -setImageFrameStyle: method can be used to control if the
  *  cell should display a frame border, and which one.</p>
  */
+APPKIT_EXPORT_CLASS
 @interface NSImageCell : NSCell
 {
   NSImageAlignment _imageAlignment;

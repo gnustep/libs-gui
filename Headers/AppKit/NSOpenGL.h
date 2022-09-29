@@ -25,7 +25,7 @@
 
 #ifndef _NSOpenGL_h_INCLUDE
 #define _NSOpenGL_h_INCLUDE
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -86,6 +86,7 @@ typedef enum {
   NSOpenGLGOResetLibrary = 504
 } NSOpenGLGlobalOption;
 
+APPKIT_EXPORT_CLASS
 @interface NSOpenGLPixelFormat : NSObject <NSCoding>
 {
 }
@@ -96,6 +97,7 @@ typedef enum {
 - (int)numberOfVirtualScreens;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSOpenGLContext : NSObject
 {
 }

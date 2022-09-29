@@ -32,7 +32,7 @@
 
 #ifndef _GNUstep_H_NSDocument
 #define _GNUstep_H_NSDocument
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSNibDeclarations.h>
@@ -84,6 +84,7 @@ typedef enum _NSSaveOperationType {
 #endif
 } NSSaveOperationType;
 
+APPKIT_EXPORT_CLASS
 @interface NSDocument : NSObject
 {
   @private

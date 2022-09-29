@@ -64,7 +64,7 @@ whenever this happens.
 
 #ifndef _GNUstep_H_NSTextContainer
 #define _GNUstep_H_NSTextContainer
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if GS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
@@ -91,6 +91,7 @@ enum {
 };
 typedef NSUInteger NSLineMovementDirection;
 
+APPKIT_EXPORT_CLASS
 @interface NSTextContainer : NSObject
 {
   id _layoutManager;

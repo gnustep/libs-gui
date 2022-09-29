@@ -38,6 +38,7 @@ extern "C" {
 
 @class NSArray, NSString, NSUUID;
   
+APPKIT_EXPORT_CLASS
 @interface NSSpeechRecognizer : NSObject
 {
   id<NSSpeechRecognizerDelegate> _delegate;

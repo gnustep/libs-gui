@@ -24,6 +24,7 @@
 
 #ifndef _NSPDFPanel_h_GNUSTEP_GUI_INCLUDE
 #define _NSPDFPanel_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -44,6 +45,7 @@ typedef NSUInteger NSPDFPanelOptions;
 
 DEFINE_BLOCK_TYPE(GSPDFPanelCompletionHandler, void, NSInteger);
   
+APPKIT_EXPORT_CLASS
 @interface NSPDFPanel : NSObject
 {
   NSViewController *_accessoryController;

@@ -41,7 +41,7 @@
 
 #ifndef _GNUstep_H_NSNib
 #define _GNUstep_H_NSNib
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSZone.h>
@@ -62,6 +62,7 @@ APPKIT_EXPORT NSString *NSNibOwner;
 
 typedef NSString *NSNibName;
 
+APPKIT_EXPORT_CLASS
 @interface NSNib : NSObject <NSCoding>
 {
   NSData *_nibData;

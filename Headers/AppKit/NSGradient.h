@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSGradient
 #define _GNUstep_H_NSGradient
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 #import <Foundation/NSGeometry.h>
@@ -47,6 +47,7 @@ enum {
   NSGradientDrawsAfterEndingLocation = 2
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSGradient : NSObject <NSCopying, NSCoding>
 {
   NSColorSpace *_colorSpace;

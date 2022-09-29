@@ -52,6 +52,7 @@ enum
   NSCorrectionIndicatorTypeGuesses
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSSpellChecker : NSObject
 {
 @private

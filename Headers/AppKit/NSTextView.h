@@ -31,7 +31,7 @@
 
 #ifndef _GNUstep_H_NSTextView
 #define _GNUstep_H_NSTextView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSText.h>
 #import <AppKit/NSTextFinder.h>
@@ -93,6 +93,7 @@ be stored in the NSTextView. Non-persistant attributes don't, and should
 therefore be stored in the NSLayoutManager to avoid problems.
 */
 
+APPKIT_EXPORT_CLASS
 @interface NSTextView : NSText <NSTextInput, NSUserInterfaceValidations, NSTextFinderClient>
 {
   /* These attributes are shared by all text views attached to a layout

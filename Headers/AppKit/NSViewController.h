@@ -24,7 +24,7 @@ Boston, MA 02110-1301, USA.
 
 #ifndef _GNUstep_H_NSViewController
 #define _GNUstep_H_NSViewController
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSResponder.h>
@@ -50,6 +50,7 @@ enum
 typedef NSUInteger NSViewControllerTransitionOptions;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSViewController : NSResponder <NSSeguePerforming>
 {
 @private

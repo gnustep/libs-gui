@@ -46,6 +46,7 @@ typedef enum {
   NSPopUpArrowAtBottom = 2
 } NSPopUpArrowPosition;
 
+APPKIT_EXPORT_CLASS
 @interface NSPopUpButtonCell : NSMenuItemCell
 {
   id <NSMenuItem> _selectedItem;

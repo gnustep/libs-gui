@@ -29,13 +29,14 @@
 
 #ifndef _GNUstep_H_NSForm
 #define _GNUstep_H_NSForm
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSMatrix.h>
 
 @class NSFormCell;
 @class NSFont;
 
+APPKIT_EXPORT_CLASS
 @interface NSForm : NSMatrix
 {
   BOOL _title_width_needs_update;

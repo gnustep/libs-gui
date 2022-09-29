@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSTokenField
 #define _GNUstep_H_NSTokenField
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSDate.h>
 #import <AppKit/NSTextField.h>
@@ -37,6 +37,7 @@
 
 @class NSCharacterSet;
 
+APPKIT_EXPORT_CLASS
 @interface NSTokenField : NSTextField
 // Style...
 - (NSTokenStyle)tokenStyle;

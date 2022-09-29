@@ -42,6 +42,7 @@ enum {
 };
 typedef NSUInteger NSMediaLibrary;  
 
+APPKIT_EXPORT_CLASS
 @interface NSMediaLibraryBrowserController : NSObject
 
 + (NSMediaLibraryBrowserController *) sharedMediaLibraryBrowserController;

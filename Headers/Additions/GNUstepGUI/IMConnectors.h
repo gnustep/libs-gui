@@ -38,6 +38,7 @@
 #include <Foundation/NSObject.h>
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface IMConnector : NSObject
 {
   id source;
@@ -54,6 +55,7 @@
 - (void)establishConnection;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IMOutletConnector : IMConnector
 - (void)establishConnection;
 @end

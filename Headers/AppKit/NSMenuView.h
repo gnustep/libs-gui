@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSMenuView
 #define _GNUstep_H_NSMenuView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
@@ -78,6 +78,7 @@
    </item>
    </list>
 */
+APPKIT_EXPORT_CLASS
 @interface NSMenuView : NSView <NSCoding, NSMenuView>
 {
   NSMutableArray *_itemCells;

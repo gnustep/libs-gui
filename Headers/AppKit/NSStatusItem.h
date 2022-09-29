@@ -33,7 +33,7 @@
 
 #ifndef _GNUstep_H_NSStatusItem
 #define _GNUstep_H_NSStatusItem
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
 
@@ -45,6 +45,7 @@
 @class NSMenu;
 @class NSMenuItem;
 
+APPKIT_EXPORT_CLASS
 @interface NSStatusItem : NSObject
 {
   @private

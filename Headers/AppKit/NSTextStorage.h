@@ -64,6 +64,7 @@ typedef NSUInteger NSTextStorageEditedOptions;
 /* 
  * The NSTextStorage 
  */
+APPKIT_EXPORT_CLASS
 @interface NSTextStorage : NSMutableAttributedString
 {
   NSRange		_editedRange;

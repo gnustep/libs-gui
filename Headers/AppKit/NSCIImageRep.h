@@ -33,6 +33,7 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSCIImageRep : NSImageRep
 
 @end

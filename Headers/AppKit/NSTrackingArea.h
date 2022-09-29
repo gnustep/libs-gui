@@ -29,6 +29,7 @@
 
 #ifndef _GNUstep_H_NSTrackingArea
 #define _GNUstep_H_NSTrackingArea
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSCoder.h>
@@ -53,6 +54,7 @@ typedef NSUInteger NSTrackingAreaOptions;
 @class NSDictionary;
 @class GSTrackingRect;
 
+APPKIT_EXPORT_CLASS
 @interface NSTrackingArea : NSObject <NSCoding, NSCopying>
 {
     NSDictionary *_userInfo;

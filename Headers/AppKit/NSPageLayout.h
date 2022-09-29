@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSPageLayout
 #define _GNUstep_H_NSPageLayout
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSPanel.h>
@@ -65,6 +65,7 @@ enum {
 - (void) runPageLayout: (id)sender;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSPageLayout : NSPanel
 {
   id _controller; 

@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSScroller
 #define _GNUstep_H_NSScroller
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 #import <AppKit/NSCell.h>
@@ -86,6 +86,7 @@ enum _NSScrollerArrow {
 };
 typedef NSUInteger NSScrollerArrow;
 
+APPKIT_EXPORT_CLASS
 @interface NSScroller : NSControl <NSCoding>
 {
   double _doubleValue;
