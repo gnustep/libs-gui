@@ -45,8 +45,6 @@ enum {
 };
 typedef NSUInteger NSFontAssetRequestOptions;
 
-DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
-
 APPKIT_EXPORT_CLASS
 @interface NSFontAssetRequest : NSObject // <NSProgressReporting>
 
