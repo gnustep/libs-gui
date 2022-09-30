@@ -518,10 +518,13 @@ static NSString *placeholderItem = nil;
 
 - (void) setCollectionViewLayout: (NSCollectionViewLayout *)layout
 {
-  ASSIGN(_collectionViewLayout, layout);
-  
-  [_collectionViewLayout setCollectionView: self]; // weak reference
-  [self reloadData];
+  if (_collectionViewLayout != layout)
+    {
+      ASSIGN(_collectionViewLayout, layout);
+      
+      [_collectionViewLayout setCollectionView: self]; // weak reference
+      [self reloadData];
+    }
 }
 
 - (NSRect) frameForItemAtIndex: (NSUInteger)theIndex
@@ -645,84 +648,80 @@ static NSString *placeholderItem = nil;
   // TODO: - Animate items, Add Fade-in/Fade-out (as in Cocoa)
   //       - Put the tiling on a delay
   if (_collectionViewLayout)
+    return; // if the layout is managed, do nothing.
+  
+  if (!_items)
+    return;
+  
+  CGFloat width = [self bounds].size.width;
+  
+  if (width == _tileWidth)
+    return;
+  
+  NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
+  
+  _numberOfColumns = MAX(1.0, floor(width / itemSize.width));
+  
+  if (_maxNumberOfColumns > 0)
     {
-      [self reloadData];
+      _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
     }
-  else
+  
+  if (_numberOfColumns == 0)
     {
-      if (!_items)
-        return;
-      
-      CGFloat width = [self bounds].size.width;
-      
-      if (width == _tileWidth)
-        return;
-      
-      NSSize itemSize = NSMakeSize(_minItemSize.width, _minItemSize.height);
-      
-      _numberOfColumns = MAX(1.0, floor(width / itemSize.width));
-      
-      if (_maxNumberOfColumns > 0)
-        {
-          _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
-        }
-      
-      if (_numberOfColumns == 0)
-        {
-          _numberOfColumns = 1;
-        }
-      
-      CGFloat remaining = width - _numberOfColumns * itemSize.width;
-      
-      if (remaining > 0 && itemSize.width < _maxItemSize.width)
-        {
-          itemSize.width = MIN(_maxItemSize.width, itemSize.width + 
-                               floor(remaining / _numberOfColumns));
-        }
-      
-      if (_maxNumberOfColumns == 1 && itemSize.width < 
-          _maxItemSize.width && itemSize.width < width)
-        {
-          itemSize.width = MIN(_maxItemSize.width, width);
-        }
-      
-      if (!NSEqualSizes(_itemSize, itemSize))
-        {
-          _itemSize = itemSize;
-        }
-      
-      NSInteger index;
-      NSUInteger count = [_items count];
-      
-      if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
-        {
-          count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
-        }
-      
-      _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / 
-                                (_numberOfColumns + 1));
-      CGFloat y = -itemSize.height;
-      
-      for (index = 0; index < count; ++index)
-        {
-          if (index % _numberOfColumns == 0)
-            {
-              y += _verticalMargin + itemSize.height;
-            }
-        }
-      
-      id superview = [self superview];
-      CGFloat proposedHeight = y + itemSize.height + _verticalMargin;
-      if ([superview isKindOfClass: [NSClipView class]])
-        {
-          NSSize superviewSize = [superview bounds].size;
-          proposedHeight = MAX(superviewSize.height, proposedHeight);
-        }
-      
-      _tileWidth = width;
-      [self setFrameSize: NSMakeSize(width, proposedHeight)];
-      [self setNeedsDisplay: YES];
+      _numberOfColumns = 1;
     }
+  
+  CGFloat remaining = width - _numberOfColumns * itemSize.width;
+  
+  if (remaining > 0 && itemSize.width < _maxItemSize.width)
+    {
+      itemSize.width = MIN(_maxItemSize.width, itemSize.width + 
+                           floor(remaining / _numberOfColumns));
+    }
+  
+  if (_maxNumberOfColumns == 1 && itemSize.width < 
+      _maxItemSize.width && itemSize.width < width)
+    {
+      itemSize.width = MIN(_maxItemSize.width, width);
+    }
+  
+  if (!NSEqualSizes(_itemSize, itemSize))
+    {
+      _itemSize = itemSize;
+    }
+  
+  NSInteger index;
+  NSUInteger count = [_items count];
+  
+  if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
+    {
+      count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
+    }
+  
+  _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / 
+                            (_numberOfColumns + 1));
+  CGFloat y = -itemSize.height;
+  
+  for (index = 0; index < count; ++index)
+    {
+      if (index % _numberOfColumns == 0)
+        {
+          y += _verticalMargin + itemSize.height;
+        }
+    }
+  
+  id superview = [self superview];
+  CGFloat proposedHeight = y + itemSize.height + _verticalMargin;
+  if ([superview isKindOfClass: [NSClipView class]])
+    {
+      NSSize superviewSize = [superview bounds].size;
+      proposedHeight = MAX(superviewSize.height, proposedHeight);
+    }
+  
+  _tileWidth = width;
+  [self setFrameSize: NSMakeSize(width, proposedHeight)];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) resizeSubviewsWithOldSize: (NSSize)aSize
@@ -1415,7 +1414,7 @@ static NSString *placeholderItem = nil;
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
 {
-  return [_itemsToIndexPaths objectForKey: item];
+  return [_itemsToIndexPaths objectForKey: item]; // h];
 }
 
 - (NSIndexPath *) indexPathForItemAtPoint: (NSPoint)point
@@ -1432,17 +1431,15 @@ static NSString *placeholderItem = nil;
         {
           NSRect f = [attr frame];
 
-          // Expand the target area so it is easier to hit...
-          // f.origin.x -= 10.0;
-          // f.origin.y -= 10.0;
-          // f.size.width += 20.0;
-          // f.size.height += 20.0;
-          
-          if (NSPointInRect(point, f))
+          if (NSMouseInRect(point, f, NO))
             {
               p = [self indexPathForItem: item];
               break;
             }
+        }
+      else
+        {
+          NSLog(@"No attributes found");
         }
     }
 
@@ -1612,14 +1609,18 @@ static NSString *placeholderItem = nil;
           [v setHidden: hidden];
           [v setAlphaValue: alpha];
 
-          [_itemsToAttributes setObject: attrs
-                                 forKey: item];
-
           // Map items...
-          [_itemsToIndexPaths setObject: path
-                                 forKey: item];
-          [_indexPathsToItems setObject: item
-                                 forKey: path];
+          //if ([_itemsToIndexPaths objectForKey: item] == nil &&
+          //  [_indexPathsToItems objectForKey: path] == nil &&
+          //  [_itemsToAttributes objectForKey: item] == nil)
+            {
+              [_itemsToAttributes setObject: attrs
+                                     forKey: item];
+              [_itemsToIndexPaths setObject: path
+                                     forKey: item]; // [NSNumber numberWithInteger: [item hash]]];
+              [_indexPathsToItems setObject: item
+                                     forKey: path];
+            }
           
           [self addSubview: v];
         }
@@ -1653,7 +1654,7 @@ static NSString *placeholderItem = nil;
   CGFloat proposedHeight = ns * h;
   id sv = [self superview];
   NSRect newRect = [sv frame];
-  
+
   if (proposedHeight < newRect.size.height)
     {
       proposedHeight = newRect.size.height;
