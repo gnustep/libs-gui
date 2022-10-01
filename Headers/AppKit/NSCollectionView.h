@@ -414,6 +414,7 @@ APPKIT_EXPORT_CLASS
   IBOutlet id <NSCollectionViewPrefetching> _prefetchDataSource;
 
   BOOL _backgroundViewScrollsWithContent;
+  BOOL _allowReload;
 
   // Size
   NSSize _itemSize;

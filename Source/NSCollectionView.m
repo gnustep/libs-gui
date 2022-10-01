@@ -198,6 +198,8 @@ static NSString *placeholderItem = nil;
   // Registered nib/class
   _registeredNibs = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
   _registeredClasses = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+
+  _allowReload = YES;
 }
 
 - (void) _resetItemSize
@@ -648,7 +650,10 @@ static NSString *placeholderItem = nil;
   // TODO: - Animate items, Add Fade-in/Fade-out (as in Cocoa)
   //       - Put the tiling on a delay
   if (_collectionViewLayout)
-    return; // if the layout is managed, do nothing.
+    {
+      [self reloadData];
+      return;
+    }
   
   if (!_items)
     return;
@@ -1609,18 +1614,12 @@ static NSString *placeholderItem = nil;
           [v setHidden: hidden];
           [v setAlphaValue: alpha];
 
-          // Map items...
-          //if ([_itemsToIndexPaths objectForKey: item] == nil &&
-          //  [_indexPathsToItems objectForKey: path] == nil &&
-          //  [_itemsToAttributes objectForKey: item] == nil)
-            {
-              [_itemsToAttributes setObject: attrs
-                                     forKey: item];
-              [_itemsToIndexPaths setObject: path
-                                     forKey: item]; // [NSNumber numberWithInteger: [item hash]]];
-              [_indexPathsToItems setObject: item
-                                     forKey: path];
-            }
+          [_itemsToAttributes setObject: attrs
+                                 forKey: item];
+          [_itemsToIndexPaths setObject: path
+                                 forKey: item];
+          [_indexPathsToItems setObject: item
+                                 forKey: path];
           
           [self addSubview: v];
         }
@@ -1645,34 +1644,60 @@ static NSString *placeholderItem = nil;
     }
 }
 
-- (void) reloadData
+- (void) _clearMaps
 {
-  NSInteger ns = [self numberOfSections];
-  NSInteger cs = 0;
-  NSSize s = _itemSize;
-  CGFloat h = s.height;
-  CGFloat proposedHeight = ns * h;
-  id sv = [self superview];
-  NSRect newRect = [sv frame];
-
-  if (proposedHeight < newRect.size.height)
-    {
-      proposedHeight = newRect.size.height;
-    }
-  
-  newRect.size.height = proposedHeight;
-
-  [self setFrame: newRect];
+  // Remove objects
   [_visibleItems removeAllObjects];
   [_indexPathsForVisibleItems removeAllObjects];
   [_itemsToIndexPaths removeAllObjects];
   [_indexPathsToItems removeAllObjects];
-
   [self setSubviews: [NSArray array]];
   [_collectionViewLayout prepareLayout];
-  for (cs = 0; cs < ns; cs++)
+
+  // destroy
+  DESTROY(_indexPathsForVisibleItems);
+  DESTROY(_indexPathsToItems);
+  DESTROY(_itemsToIndexPaths);
+
+  // reallocate the maps...
+  _itemsToAttributes = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+  _itemsToIndexPaths = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+  _indexPathsToItems = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+}
+
+- (void) reloadData
+{
+  if (_allowReload == NO)
     {
-      [self _loadSectionAtIndex: cs];
+      return;
+    }
+  else
+    {
+      NSInteger ns = [self numberOfSections];
+      NSInteger cs = 0;
+      NSSize s = _itemSize;
+      CGFloat h = s.height;
+      CGFloat proposedHeight = ns * h;
+      id sv = [self superview];
+      NSRect newRect = [sv frame];
+      BOOL f = [self postsFrameChangedNotifications];
+      
+      if (proposedHeight < newRect.size.height)
+        {
+          proposedHeight = newRect.size.height;
+        }
+      
+      _allowReload = NO;
+      [self setPostsFrameChangedNotifications: NO]; // prevent recursion...
+      [self _clearMaps];
+      newRect.size.height = proposedHeight;
+      [self setFrame: newRect];
+      for (cs = 0; cs < ns; cs++)
+        {
+          [self _loadSectionAtIndex: cs];
+        }
+      [self setPostsFrameChangedNotifications: f]; // reset
+      _allowReload = YES;
     }
 }
 
