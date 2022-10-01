@@ -440,17 +440,22 @@ static NSString *placeholderItem = nil;
       return;
     }
 
+  if ([_selectionIndexPaths isEqual: indexPaths])
+    {
+      return;
+    }
+  else
+    {
+      ASSIGN(_selectionIndexPaths, indexPaths);
+    }
+
+
   if ([_delegate respondsToSelector: @selector(collectionView:shouldSelectItemsAtIndexPaths:)])
     {
       indexPaths = [_delegate collectionView: self
                               shouldSelectItemsAtIndexPaths: indexPaths];
     }
   
-  if (![_selectionIndexPaths isEqual: indexPaths])
-    {
-      ASSIGN(_selectionIndexPaths, indexPaths);
-    }
-
   // First unselect all of the items
   FOR_IN(id, item, _visibleItems)
     {
