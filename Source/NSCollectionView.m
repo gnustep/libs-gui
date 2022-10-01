@@ -1763,14 +1763,10 @@ static NSString *placeholderItem = nil;
 
 - (NSInteger) numberOfItemsInSection: (NSInteger)section
 {
-  NSInteger n = 0;
-
   // Since this is a required method by the delegate we can assume it's presence
   // if it is not there, tests on macOS indicate that an unrecognized selector
   // exception is thrown.
-  n = [_dataSource collectionView: self numberOfItemsInSection: section];
-  
-  return n;
+  return [_dataSource collectionView: self numberOfItemsInSection: section];
 }
 
 /* Inserting, Moving and Deleting Items */
@@ -1823,19 +1819,59 @@ static NSString *placeholderItem = nil;
 
 - (IBAction) selectAll: (id)sender
 {
+  NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
+  id obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      if ([obj respondsToSelector: @selector(setSelected:)])
+        {
+          [obj setSelected: YES];
+        }
+    }
 }
 
 - (IBAction) deselectAll: (id)sender
 {
+  NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
+  id obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      if ([obj respondsToSelector: @selector(setSelected:)])
+        {
+          [obj setSelected: NO];
+        }
+    }  
 }
 
 - (void) selectItemsAtIndexPaths: (NSSet *)indexPaths 
                   scrollPosition: (NSCollectionViewScrollPosition)scrollPosition
 {
+  FOR_IN(NSIndexPath*,p,indexPaths)
+    {
+      id item = [_indexPathsToItems objectForKey: p];
+
+      if ([item respondsToSelector: @selector(setSelected:)])
+        {
+          [item setSelected: YES];
+        }
+    }
+  END_FOR_IN(indexPaths);
 }
 
 - (void) deselectItemsAtIndexPaths: (NSSet *)indexPaths
 {
+  FOR_IN(NSIndexPath*,p,indexPaths)
+    {
+      id item = [_indexPathsToItems objectForKey: p];
+
+      if ([item respondsToSelector: @selector(setSelected:)])
+        {
+          [item setSelected: NO];
+        }
+    }
+  END_FOR_IN(indexPaths);
 }
 
 /* Getting Layout Information */
