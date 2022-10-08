@@ -29,6 +29,8 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSLayoutAnchor.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
 
 @class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
 
@@ -103,6 +105,11 @@ enum {
 };
 typedef NSUInteger NSLayoutFormatOptions;
 
+typedef struct GSIntrinsicContentSizePriority {
+  NSLayoutPriority horizontal;
+  NSLayoutPriority vertical;
+} GSIntrinsicContentSizePriority;
+
 @interface NSLayoutConstraint : NSObject <NSCoding, NSCopying>
 {
   NSLayoutAnchor *_firstAnchor;
@@ -156,7 +163,45 @@ typedef NSUInteger NSLayoutFormatOptions;
 
 - (NSLayoutAnchor *) secondAnchor;
 
+-(void) setPriority: (NSLayoutPriority)priority;
+
+-(void)setConstant: (CGFloat)constant;
+
 - (NSLayoutPriority) priority;  
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutLayering)
+
+@property (readonly) NSSize intrinsicContentSize;
+
+@property (readonly) CGFloat firstBaselineOffsetFromTop;
+
+@property (readonly) CGFloat baselineOffsetFromBottom;
+
+- (NSLayoutPriority)contentHuggingPriorityForOrientation:(NSLayoutConstraintOrientation)orientation;
+
+- (void)setContentHuggingPriority:(NSLayoutPriority)priority forOrientation:(NSLayoutConstraintOrientation)orientation;
+
+- (NSLayoutPriority)contentCompressionResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation;
+
+- (void)setContentCompressionResistancePriority:(NSLayoutPriority)priority forOrientation:(NSLayoutConstraintOrientation)orientation;
+
+@end
+
+@interface NSWindow (NSConstraintBasedLayoutCoreMethods)
+
+- (void)layoutIfNeeded;
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void)updateConstraints;
+
+-(void) updateConstraintsForSubtreeIfNeeded;
+
+@property BOOL needsUpdateConstraints;
 
 @end
 

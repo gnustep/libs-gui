@@ -178,6 +178,8 @@ PACKAGE_SCOPE
   BOOL _is_hidden;
   BOOL _in_live_resize;
 
+  BOOL _needsLayout;
+
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
@@ -637,6 +639,20 @@ PACKAGE_SCOPE
 - (NSUserInterfaceLayoutDirection) userInterfaceLayoutDirection;
 - (void) setUserInterfaceLayoutDirection: (NSUserInterfaceLayoutDirection)dir;
 #endif
+#endif
+
+/**
+Layout
+*/
+
+- (void)layoutSubtreeIfNeeded;
+- (void)layout;
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (nonatomic) BOOL needsLayout;
+#else
+-(BOOL)needsLayout;
+-(void)setNeedsLayout: (BOOL)needsLayout;
 #endif
 
 @end

@@ -418,6 +418,12 @@ static NSMutableArray *activeConstraints = nil;
   _priority = priority;
 }
 
+
+-(void)setConstant: (CGFloat)constant
+{
+  _constant = constant;
+}
+
 // Coding...
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
@@ -600,6 +606,161 @@ static NSMutableArray *activeConstraints = nil;
         }
     }
   */
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutLayering)
+
+NSString const *huggingPrioritiesKey = @"NSConstraintBasedLayoutLayering.huggingPrioritiesKey";
+
+NSString const *compressionPrioritiesKey = @"NSConstraintBasedLayoutLayering.compressionPrioritiesKey";
+
+-(GSIntrinsicContentSizePriority)_defaultHuggingPriorities
+{
+    GSIntrinsicContentSizePriority defaultPriorities;
+    defaultPriorities.horizontal = 250;
+    defaultPriorities.vertical = 250; 
+    return defaultPriorities;
+}
+
+-(GSIntrinsicContentSizePriority)_defaultCompressionPriorities
+{
+  GSIntrinsicContentSizePriority defaultPriorities;
+  defaultPriorities.horizontal = 750;
+  defaultPriorities.vertical = 750;
+
+  return defaultPriorities;
+}
+
+-(GSIntrinsicContentSizePriority)_huggingPriorities
+{
+  NSValue *prioritiesValue = objc_getAssociatedObject(self, &huggingPrioritiesKey);
+  if (prioritiesValue == nil) {
+    return [self _defaultHuggingPriorities];;
+  }
+
+  GSIntrinsicContentSizePriority priorities;
+  [prioritiesValue getValue:&priorities];
+  return priorities;
+}
+
+-(GSIntrinsicContentSizePriority)_compressionPriorities
+{
+  NSValue *prioritiesValue = objc_getAssociatedObject(self, &compressionPrioritiesKey);
+  if (prioritiesValue == nil) {
+    return [self _defaultCompressionPriorities];
+  }
+
+  GSIntrinsicContentSizePriority priorities;
+  [prioritiesValue getValue: &priorities];
+  return priorities;
+}
+
+- (NSLayoutPriority)contentCompressionResistancePriorityForOrientation:(NSLayoutConstraintOrientation)orientation {
+  GSIntrinsicContentSizePriority priorities = [self _compressionPriorities];
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return priorities.horizontal;
+  } else {
+    return priorities.vertical;
+  }
+}
+
+- (void)setContentCompressionResistancePriority:(NSLayoutPriority)priority forOrientation:(NSLayoutConstraintOrientation)orientation {
+    GSIntrinsicContentSizePriority priorities = [self _compressionPriorities];
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      priorities.horizontal = priority;
+    } else {
+      priorities.vertical = priority;
+    }
+
+    NSValue *prioritiesValue = [NSValue value:&priorities withObjCType:@encode(GSIntrinsicContentSizePriority)];
+    objc_setAssociatedObject(self, &compressionPrioritiesKey, prioritiesValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSLayoutPriority)contentHuggingPriorityForOrientation:(NSLayoutConstraintOrientation)orientation {
+  GSIntrinsicContentSizePriority priorities = [self _huggingPriorities];
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return priorities.horizontal;
+  } else {
+    return priorities.vertical;
+  }
+}
+
+- (void)setContentHuggingPriority:(NSLayoutPriority)priority forOrientation:(NSLayoutConstraintOrientation)orientation
+{
+    GSIntrinsicContentSizePriority priorities = [self _huggingPriorities];
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      priorities.horizontal = priority;
+    } else {
+      priorities.vertical = priority;
+    }
+
+    NSValue *prioritiesValue = [NSValue value:&priorities withObjCType:@encode(GSIntrinsicContentSizePriority)];
+    objc_setAssociatedObject(self, &huggingPrioritiesKey, prioritiesValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
+
+@implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
+
+-(void)layoutIfNeeded
+{
+  [self updateConstraintsIfNeeded];
+  [self.contentView _layoutViewAndSubViews];
+}
+
+-(void)updateConstraintsIfNeeded
+{
+  [self.contentView updateConstraintsForSubtreeIfNeeded];
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutCoreMethods)
+
+NSString const *needsUpdateConstraintsKey = @"NSConstraintBasedLayoutCoreMethods.needsUpdateConstraintsKey";
+
+-(void) updateConstraintsForSubtreeIfNeeded
+{
+    for (NSView *subView in [self subviews]) {
+      [subView updateConstraintsForSubtreeIfNeeded];
+    }
+    if ([self needsUpdateConstraints]) {
+      [self updateConstraints];
+    }
+}
+
+- (void)updateConstraints
+{
+  [self _setNeedsUpdateConstraints: NO];
+}
+
+-(void)_setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
+{
+  NSValue *value = [NSValue valueWithBytes:&needsUpdateConstraints objCType:@encode(BOOL)];
+  objc_setAssociatedObject(self, &needsUpdateConstraintsKey, value, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+-(void)setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
+{
+  if (!needsUpdateConstraints) {
+    return;
+  }
+  [self _setNeedsUpdateConstraints: YES];
+}
+
+-(BOOL)needsUpdateConstraints
+{
+  NSValue *needsUpdateConstraintsValue = objc_getAssociatedObject(self, &needsUpdateConstraintsKey);
+  if (needsUpdateConstraintsValue == nil) {
+    return YES;
+  }
+
+  BOOL needsUpdateConstraints;
+  [needsUpdateConstraintsValue getValue: &needsUpdateConstraints];
+
+  return needsUpdateConstraints;
 }
 
 @end

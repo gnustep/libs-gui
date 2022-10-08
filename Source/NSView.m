@@ -630,6 +630,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_previousKeyView = 0;
 
   _alphaValue = 1.0;
+
+  _needsLayout = YES;
   
   return self;
 }
@@ -5127,6 +5129,45 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 {
   // FIXME: implement this
   return;
+}
+
+/**
+* Layout 
+*/
+
+- (void) layoutSubtreeIfNeeded
+{
+  [self updateConstraintsForSubtreeIfNeeded];
+  [self _layoutViewAndSubViews];
+}
+
+-(void) _layoutViewAndSubViews
+{
+  if (_needsLayout) {
+    [self layout];
+    _needsLayout = NO;
+  }
+  for (NSView *subView in [self subviews]) {
+    [subView _layoutViewAndSubViews];
+  }
+}
+
+-(void) setNeedsLayout: (BOOL)needsLayout 
+{
+  if (!needsLayout) {
+    return;
+  }
+  _needsLayout = needsLayout;
+}
+
+-(BOOL) needsLayout
+{
+  return _needsLayout;
+}
+
+- (void)layout
+{
+
 }
 
 @end
