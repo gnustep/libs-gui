@@ -36,6 +36,7 @@
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSView.h>
+#import <AppKit/NSUserInterfaceItemIdentification.h>
 
 @class NSCollectionViewItem;
 @class NSCollectionView;
@@ -95,6 +96,24 @@ typedef NSUInteger NSCollectionViewScrollPosition;
 
 typedef NSString *NSCollectionViewSupplementaryElementKind;
 typedef NSString *NSUserInterfaceItemIdentifier;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+@protocol NSCollectionViewElement <NSObject, NSUserInterfaceItemIdentification>
+#if GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#endif
+
+- (void) prepareForReuse;
+
+- (void) applyLayoutAttributes: (NSCollectionViewLayoutAttributes *)layoutAttributes;
+
+- (void) willTransitionFromLayout: (NSCollectionViewLayout *)oldLayout toLayout: (NSCollectionViewLayout *)newLayout;
+
+- (void) didTransitionFromLayout: (NSCollectionViewLayout *)oldLayout toLayout: (NSCollectionViewLayout *)newLayout;
+
+- (NSCollectionViewLayoutAttributes *) preferredLayoutAttributesFittingAttributes: (NSCollectionViewLayoutAttributes *)layoutAttributes;
+@end
+#endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 @protocol NSCollectionViewDataSource <NSObject>
