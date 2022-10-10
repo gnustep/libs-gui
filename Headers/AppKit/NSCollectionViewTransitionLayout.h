@@ -26,6 +26,7 @@
 #define _NSCollectionViewTransitionLayout_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSCollectionViewLayout.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
@@ -35,6 +36,7 @@ extern "C" {
 
 typedef NSString* NSCollectionViewTransitionLayoutAnimatedKey;
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewTransitionLayout : NSCollectionViewLayout
 {
   CGFloat _transitionProgress;

@@ -29,6 +29,7 @@
 #import <Foundation/NSGeometry.h>
 
 #import <AppKit/NSCollectionView.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
@@ -57,6 +58,7 @@ NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndi
 @class NSNib;
 @class NSSet;
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayoutAttributes : NSObject <NSCopying>
 {
   NSRect _frame;
@@ -111,6 +113,7 @@ enum
 };
 typedef NSInteger NSCollectionUpdateAction;
 
+APPKIT_EXPORT_CLASS  
 @interface NSCollectionViewUpdateItem : NSObject
 {
   NSIndexPath *_indexPathBeforeUpdate;
@@ -124,7 +127,7 @@ typedef NSInteger NSCollectionUpdateAction;
 
 @end
 
-
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayoutInvalidationContext : NSObject
 {
   NSPoint _contentOffsetAdjustment;
@@ -158,6 +161,7 @@ typedef NSInteger NSCollectionUpdateAction;
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayout : NSObject <NSCoding>
 {
   NSCollectionView *_collectionView; // weak
@@ -183,6 +187,7 @@ typedef NSInteger NSCollectionUpdateAction;
   
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayout (NSSubclassingHooks)
   
 // Methods to override for specific layouts...
@@ -218,6 +223,7 @@ typedef NSInteger NSCollectionUpdateAction;
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayout (NSUpdateSupportHooks)
 
 // Update support

@@ -26,13 +26,15 @@
 #define _NSCollectionViewCompositionalLayout_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSCollectionViewLayout.h>
+#import <AppKit/AppKitDefines.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewCompositionalLayout : NSCollectionViewLayout
 
 @end

@@ -27,6 +27,7 @@
 
 #import <AppKit/NSCollectionView.h>
 #import <AppKit/NSCollectionViewLayout.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSMutableIndexSet;
 
@@ -46,6 +47,7 @@ typedef NSInteger NSCollectionViewScrollDirection;
 NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionHeader;
 NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFooter;
 
+APPKIT_EXPORT_CLASS  
 @interface NSCollectionViewFlowLayoutInvalidationContext : NSCollectionViewLayoutInvalidationContext
 {
   BOOL _invalidateFlowLayoutDelegateMetrics; 
@@ -87,6 +89,7 @@ NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFoo
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewFlowLayout : NSCollectionViewLayout
 {
   CGFloat _minimumLineSpacing;
