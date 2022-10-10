@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_AppKit
 #define _GNUstep_H_AppKit
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 /* Define library version */
 #import <GNUstepGUI/GSVersion.h>

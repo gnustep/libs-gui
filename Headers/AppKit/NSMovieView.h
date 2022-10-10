@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSMovieView
 #define _GNUstep_H_NSMovieView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -40,6 +40,7 @@ typedef enum {
   NSQTMovieLoopingBackAndForthPlayback
 } NSQTMovieLoopMode;
 
+APPKIT_EXPORT_CLASS
 @interface NSMovieView : NSView
 {
   @protected

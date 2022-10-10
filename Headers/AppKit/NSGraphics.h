@@ -27,7 +27,7 @@
 
 #ifndef __NSGraphics_h__
 #define __NSGraphics_h__
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>

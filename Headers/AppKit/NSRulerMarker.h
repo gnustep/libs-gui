@@ -31,6 +31,7 @@
 
 #ifndef _GNUstep_H_NSRulerMarker
 #define _GNUstep_H_NSRulerMarker
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -39,6 +40,7 @@
 @class NSImage;
 @class NSEvent;
 
+APPKIT_EXPORT_CLASS
 @interface NSRulerMarker : NSObject <NSCopying, NSCoding>
 {
   NSRulerView *_rulerView;

@@ -31,7 +31,7 @@
 
 #ifndef _GNUstep_H_NSParagraphStyle
 #define _GNUstep_H_NSParagraphStyle
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSText.h>
@@ -67,6 +67,7 @@ typedef NSInteger NSWritingDirection;
 APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName; 
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSTextTab : NSObject <NSCopying, NSCoding>
 {
   NSTextTabType	_tabStopType;
@@ -89,6 +90,7 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSParagraphStyle : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
   NSMutableArray *_tabStops;
@@ -192,6 +194,7 @@ APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName;
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSMutableParagraphStyle : NSParagraphStyle
 {
 }

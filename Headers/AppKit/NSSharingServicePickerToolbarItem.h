@@ -35,6 +35,7 @@ extern "C" {
 
 @protocol NSSharingServicePickerToolbarItemDelegate;
   
+APPKIT_EXPORT_CLASS
 @interface NSSharingServicePickerToolbarItem : NSToolbarItem
 
 - (id) activityItemsConfiguration;

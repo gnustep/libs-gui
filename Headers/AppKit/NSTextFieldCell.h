@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSTextFieldCell
 #define _GNUstep_H_NSTextFieldCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSActionCell.h>
 
@@ -43,6 +43,7 @@ typedef enum _NSTextFieldBezelStyle
 } NSTextFieldBezelStyle;
 #endif 
 
+APPKIT_EXPORT_CLASS
 @interface NSTextFieldCell : NSActionCell <NSCoding>
 {
   // Attributes

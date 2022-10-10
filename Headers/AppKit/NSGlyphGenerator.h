@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSGlyphGenerator
 #define _GNUstep_H_NSGlyphGenerator
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 // define NSGlyph
@@ -61,6 +61,7 @@ forStartingGlyphAtIndex: (NSUInteger)glyph
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface NSGlyphGenerator : NSObject
 
 + (id) sharedGlyphGenerator;

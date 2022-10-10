@@ -28,8 +28,8 @@
 
 #ifndef _GNUstep_H_NSCollectionViewItem
 #define _GNUstep_H_NSCollectionViewItem
+#import <AppKit/AppKitDefines.h>
 
-#import <GNUstepBase/GSVersionMacros.h>
 #import <Foundation/NSArray.h>
 
 #import <AppKit/NSCollectionView.h>
@@ -41,6 +41,7 @@
 #import <AppKit/NSViewController.h>
 
 
+APPKIT_EXPORT_CLASS
 @interface NSCollectionViewItem : NSViewController
 {
   IBOutlet NSTextField *textField;

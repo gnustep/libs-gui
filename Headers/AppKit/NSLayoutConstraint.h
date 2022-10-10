@@ -103,6 +103,7 @@ enum {
 };
 typedef NSUInteger NSLayoutFormatOptions;
 
+APPKIT_EXPORT_CLASS
 @interface NSLayoutConstraint : NSObject <NSCoding, NSCopying>
 {
   NSLayoutAnchor *_firstAnchor;

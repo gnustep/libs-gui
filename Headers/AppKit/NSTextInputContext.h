@@ -38,6 +38,7 @@ extern "C" {
   
 typedef NSString* NSTextInputSourceIdentifier;
   
+APPKIT_EXPORT_CLASS
 @interface NSTextInputContext : NSObject
 {
   id<NSTextInputClient> _client;

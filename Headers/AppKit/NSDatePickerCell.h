@@ -62,6 +62,7 @@ typedef NSUInteger NSDatePickerElementFlags;
 
 @class NSColor, NSDate, NSCalendar, NSLocale, NSTimeZone;
 
+APPKIT_EXPORT_CLASS
 @interface NSDatePickerCell : NSActionCell
 {
   NSColor *_backgroundColor;

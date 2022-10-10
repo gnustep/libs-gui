@@ -94,6 +94,7 @@ APPKIT_EXPORT NSString *NSPrintPanelAccessorySummaryItemDescriptionKey;
 APPKIT_EXPORT NSString *NSPrintPhotoJobStyleHint;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSPrintPanel : NSPanel
 {
   id _panel;

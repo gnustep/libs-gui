@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSCursor
 #define _GNUstep_H_NSCursor
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
@@ -38,6 +38,7 @@
 @class NSEvent;
 @class NSColor;
 
+APPKIT_EXPORT_CLASS
 @interface NSCursor : NSObject <NSCoding>
 {
   NSImage	*_cursor_image;

@@ -30,10 +30,9 @@
 
 #ifndef _GNUstep_H_NSFontDescriptor
 #define _GNUstep_H_NSFontDescriptor
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
-#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
@@ -103,6 +102,7 @@ APPKIT_EXPORT NSString *NSFontVariationAxisMaximumValueKey;
 APPKIT_EXPORT NSString *NSFontVariationAxisDefaultValueKey;
 APPKIT_EXPORT NSString *NSFontVariationAxisNameKey;
 
+APPKIT_EXPORT_CLASS
 @interface NSFontDescriptor : NSObject <NSCoding, NSCopying>
 {
   NSDictionary *_attributes;

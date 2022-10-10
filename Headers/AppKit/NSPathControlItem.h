@@ -24,6 +24,7 @@
 
 #ifndef _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE
 #define _NSPathControlItem_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
@@ -35,6 +36,7 @@ extern "C" {
 
 @class NSURL, NSAttributedString, NSImage, NSString;
 
+APPKIT_EXPORT_CLASS
 @interface NSPathControlItem : NSObject
 {
   NSURL *_url;

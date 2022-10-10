@@ -45,6 +45,7 @@
 @class	NSString;
 @class	NSTimer;
 
+APPKIT_EXPORT_CLASS
 @interface      GSServicesManager : NSObject
 {
   NSApplication         *_application;

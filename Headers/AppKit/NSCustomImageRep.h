@@ -29,10 +29,11 @@
 
 #ifndef _GNUstep_H_NSCustomImageRep
 #define _GNUstep_H_NSCustomImageRep
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSImageRep.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSCustomImageRep : NSImageRep
 {
   // Attributes

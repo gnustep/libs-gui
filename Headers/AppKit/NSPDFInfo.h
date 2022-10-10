@@ -24,6 +24,7 @@
 
 #ifndef _NSPDFInfo_h_GNUSTEP_GUI_INCLUDE
 #define _NSPDFInfo_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -37,6 +38,7 @@ extern "C" {
 
 @class NSURL, NSArray, NSMutableDictionary;
   
+APPKIT_EXPORT_CLASS
 @interface NSPDFInfo : NSObject <NSCoding, NSCopying>
 {
   NSURL *_url;

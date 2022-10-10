@@ -27,11 +27,12 @@
 
 #ifndef _GNUstep_H_NSImageView
 #define _GNUstep_H_NSImageView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 #import <AppKit/NSImageCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSImageView : NSControl
 {
   id _target;

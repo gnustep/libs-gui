@@ -29,6 +29,7 @@
 
 #ifndef __GMArchiver_h__
 #define __GMArchiver_h__
+#import <AppKit/AppKitDefines.h>
 
 #ifndef GNUSTEP
 #import <Foundation/Foundation.h>
@@ -74,6 +75,7 @@
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface GMArchiver : NSObject
 {
   NSMutableDictionary*	propertyList;
@@ -136,6 +138,7 @@
 @end /* GMArchiver */
 
 
+APPKIT_EXPORT_CLASS
 @interface GMUnarchiver : NSObject
 {	
   NSMutableDictionary*	propertyList;

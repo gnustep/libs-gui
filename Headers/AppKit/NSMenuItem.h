@@ -32,7 +32,7 @@
 
 #ifndef _GNUstep_H_NSMenuItem
 #define _GNUstep_H_NSMenuItem
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/NSUserInterfaceValidation.h>
@@ -368,6 +368,7 @@
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSMenuItem : NSObject <NSMenuItem, NSValidatedUserInterfaceItem>
 {
   NSMenu *_menu;

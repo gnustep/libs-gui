@@ -24,6 +24,7 @@
 
 #ifndef _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
 #define _NSScrubberLayout_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSCoder.h>
@@ -37,6 +38,7 @@ extern "C" {
 
 @class NSScrubber; 
   
+APPKIT_EXPORT_CLASS
 @interface NSScrubberLayoutAttributes : NSObject <NSCopying>
 
 + (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index;
@@ -49,6 +51,7 @@ extern "C" {
 
 @end
   
+APPKIT_EXPORT_CLASS
 @interface NSScrubberLayout : NSObject <NSCoding>
 
 // Configuring

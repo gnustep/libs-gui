@@ -27,10 +27,11 @@
 
 #ifndef _GNUstep_H_NSTableHeaderCell
 #define _GNUstep_H_NSTableHeaderCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSTextFieldCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSTableHeaderCell : NSTextFieldCell
 {
 }

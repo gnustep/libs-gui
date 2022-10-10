@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSImageRep
 #define _GNUstep_H_NSImageRep
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
@@ -46,6 +46,7 @@ enum {
   NSImageRepMatchesDevice
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSImageRep : NSObject <NSCoding, NSCopying>
 {
   // Attributes

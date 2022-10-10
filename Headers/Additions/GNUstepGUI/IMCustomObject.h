@@ -49,6 +49,7 @@
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface IMCustomObject : NSObject
 {
   NSString* className;
@@ -61,6 +62,7 @@
 @end
 
 
+APPKIT_EXPORT_CLASS
 @interface IMCustomView : NSView
 {
   NSString* className;

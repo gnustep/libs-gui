@@ -32,6 +32,7 @@
 
 #import <AppKit/NSBitmapImageRep.h>
 
+APPKIT_EXPORT_CLASS
 @interface GSImageMagickImageRep : NSBitmapImageRep
 {
 }

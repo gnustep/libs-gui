@@ -30,6 +30,7 @@
 
 #import <AppKit/NSNibConnector.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSNibOutletConnector : NSNibConnector
 - (void) establishConnection;
 @end

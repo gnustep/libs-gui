@@ -32,7 +32,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/NSWorkspace.h>
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 
@@ -49,6 +49,7 @@ enum {
   NSApplicationActivationPolicyProhibited
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSRunningApplication : NSObject
 #if GS_HAS_DECLARED_PROPERTIES
 @property (readonly, getter=isTerminated) BOOL terminated;

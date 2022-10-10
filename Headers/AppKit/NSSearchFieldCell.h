@@ -45,6 +45,7 @@ enum
     NSSearchFieldNoRecentsMenuItemTag = 1003
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSSearchFieldCell : NSTextFieldCell
 {
     NSMutableArray *_recent_searches;

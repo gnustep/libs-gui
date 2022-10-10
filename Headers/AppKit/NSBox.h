@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSBox
 #define _GNUstep_H_NSBox
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -71,6 +71,7 @@ typedef enum _NSBoxType
 } NSBoxType;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSBox : NSView <NSCoding>
 {
   // Attributes

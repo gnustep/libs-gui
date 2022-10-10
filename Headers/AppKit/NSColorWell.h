@@ -29,12 +29,13 @@
 
 #ifndef _GNUstep_H_NSColorWell
 #define _GNUstep_H_NSColorWell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 
 @class NSColor;
 
+APPKIT_EXPORT_CLASS
 @interface NSColorWell : NSControl <NSCoding>
 
 {

@@ -24,6 +24,7 @@
 
 #ifndef _NSFontAssetRequest_h_GNUSTEP_GUI_INCLUDE
 #define _NSFontAssetRequest_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSError.h>
@@ -44,6 +45,7 @@ enum {
 };
 typedef NSUInteger NSFontAssetRequestOptions;
 
+APPKIT_EXPORT_CLASS
 @interface NSFontAssetRequest : NSObject // <NSProgressReporting>
 
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors

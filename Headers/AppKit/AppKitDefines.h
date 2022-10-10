@@ -37,24 +37,37 @@
 
 #if BUILD_libgnustep_gui_DLL
 #
-# if defined(__MINGW32__)
+# if defined(__MINGW__)
   /* On Mingw, the compiler will export all symbols automatically, so
    * __declspec(dllexport) is not needed.
    */
+#  define APPKIT_EXPORT_CLASS
 #  define APPKIT_EXPORT  APPKIT_EXTERN
-#  define APPKIT_DECLARE 
+#  define APPKIT_IMPORT  __declspec(dllimport)
+#  define APPKIT_DECLARE
 # else
-#  define APPKIT_EXPORT  __declspec(dllexport) APPKIT_EXTERN
+#  define APPKIT_EXPORT_CLASS  __declspec(dllexport)
+#  define APPKIT_EXPORT  APPKIT_EXTERN __declspec(dllexport)
+#  define APPKIT_IMPORT  __declspec(dllimport)
 #  define APPKIT_DECLARE __declspec(dllexport)
 # endif
 #else
+# if defined(__MINGW__)
+   /* MinGW does not need dllimport on ObjC classes and produces warnings. */
+#  define APPKIT_EXPORT_CLASS
+# else
+#  define APPKIT_EXPORT_CLASS  __declspec(dllimport)
+# endif
+#  define APPKIT_IMPORT  __declspec(dllimport)
 #  define APPKIT_EXPORT  APPKIT_EXTERN __declspec(dllimport)
 #  define APPKIT_DECLARE __declspec(dllimport)
 #endif
 
 #else /* GNUSTEP_WITH[OUT]_DLL */
 
-#  define APPKIT_EXPORT APPKIT_EXTERN 
+#  define APPKIT_EXPORT_CLASS
+#  define APPKIT_EXPORT APPKIT_EXTERN
+#  define APPKIT_IMPORT
 #  define APPKIT_DECLARE
 
 #endif

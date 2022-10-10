@@ -28,6 +28,7 @@
 
 #ifndef _GNUstep_H_NSRuleEditor
 #define _GNUstep_H_NSRuleEditor
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 
@@ -57,6 +58,7 @@ extern NSString * const NSRuleEditorPredicateCompoundType;
 
 extern NSString *NSRuleEditorRowsDidChangeNotification;
 
+APPKIT_EXPORT_CLASS
 @interface NSRuleEditor : NSControl {
   id _target;
   SEL _action;

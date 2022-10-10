@@ -30,11 +30,13 @@
  Free Software Foundation, 51 Franklin Street, Fifth Floor,
  Boston, MA 02110-1301, USA.
  */
-
+ 
+#import <AppKit/AppKitDefines.h>
 #import <Foundation/Foundation.h>
 
 @class GSXibElement;
 
+APPKIT_EXPORT_CLASS
 @interface GSXibKeyedUnarchiver : NSKeyedUnarchiver
 {
   NSMutableDictionary *objects;

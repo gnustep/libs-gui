@@ -45,6 +45,7 @@ enum {
 typedef NSInteger NSSplitViewDividerStyle;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSSplitView : NSView
 {
   id	      _delegate;

@@ -64,6 +64,7 @@ typedef NSInteger NSPopoverBehavior;
 @protocol NSPopoverDelegate;
 
 /* Class */
+APPKIT_EXPORT_CLASS
 @interface NSPopover : NSResponder
 {
   BOOL _animates;

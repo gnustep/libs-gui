@@ -35,6 +35,7 @@
 @class NSDictionary;
 @class NSParagraphStyle, NSFont;
 
+APPKIT_EXPORT_CLASS
 @interface GSHorizontalTypesetter : GSTypesetter
 {
   NSLock *lock;

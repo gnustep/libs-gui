@@ -27,7 +27,7 @@
 
 #ifndef BEZIERPATH_H
 #define BEZIERPATH_H
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
@@ -95,6 +95,7 @@ typedef enum {
   #endif
 } NSBezierPathElement;
 
+APPKIT_EXPORT_CLASS
 @interface NSBezierPath : NSObject <NSCopying, NSCoding>
 {
 @private

@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSPasteboardItem
 #define _GNUstep_H_NSPasteboardItem 
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
@@ -43,6 +43,7 @@
 
 @protocol NSPasteboardItemDataProvider;
 
+APPKIT_EXPORT_CLASS
 @interface NSPasteboardItem : NSObject <NSPasteboardWriting, NSPasteboardReading> {
   NSMutableDictionary *_providerMap;
   NSMutableDictionary *_dataMap;

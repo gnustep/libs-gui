@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSClipView
 #define _GNUstep_H_NSClipView
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
 
@@ -37,6 +37,7 @@
 @class NSCursor;
 @class NSColor;
 
+APPKIT_EXPORT_CLASS
 @interface NSClipView : NSView
 {
   NSView* _documentView;

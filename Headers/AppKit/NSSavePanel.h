@@ -33,7 +33,7 @@
 
 #ifndef _GNUstep_H_NSSavePanel
 #define _GNUstep_H_NSSavePanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 #import <GNUstepBase/GSBlocks.h>
 
 #import <AppKit/NSPanel.h>
@@ -84,6 +84,7 @@ enum {
 
 DEFINE_BLOCK_TYPE(GSSavePanelCompletionHandler, void, NSInteger);
 
+APPKIT_EXPORT_CLASS
 @interface NSSavePanel : NSPanel
 {
   NSView *_accessoryView;

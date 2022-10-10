@@ -37,6 +37,7 @@ extern "C" {
 
 typedef NSString* NSAppearanceName;
 
+APPKIT_EXPORT_CLASS
 @interface NSAppearance : NSObject <NSCoding>
 {
   NSString *_name;

@@ -28,7 +28,7 @@
 
 #ifndef _GNUstep_H_NSAffineTransform
 #define _GNUstep_H_NSAffineTransform
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSAffineTransform.h>
 

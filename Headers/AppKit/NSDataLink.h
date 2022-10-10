@@ -29,10 +29,9 @@
 
 #ifndef _GNUstep_H_NSDataLink
 #define _GNUstep_H_NSDataLink
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
-#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -59,6 +58,7 @@ typedef enum _NSDataLinkUpdateMode {
 
 APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
 
+APPKIT_EXPORT_CLASS
 @interface NSDataLink : NSObject <NSCoding>
 {
   // Attributes

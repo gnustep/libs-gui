@@ -26,7 +26,7 @@
 
 #ifndef _DPSOperators_h_INCLUDE
 #define _DPSOperators_h_INCLUDE
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSGraphicsContext.h>
 

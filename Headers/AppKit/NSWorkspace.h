@@ -76,6 +76,7 @@ enum {
 typedef NSUInteger NSWorkspaceIconCreationOptions;
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSWorkspace : NSObject
 {
   NSMutableDictionary	*_iconMap;

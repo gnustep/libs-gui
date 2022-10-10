@@ -30,7 +30,7 @@
 #ifndef _GNUstep_H_NSTreeController
 #define _GNUstep_H_NSTreeController
 
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 #import <AppKit/NSObjectController.h>
@@ -40,6 +40,7 @@
 @class NSIndexPath;
 @class NSTreeNode;
 
+APPKIT_EXPORT_CLASS
 @interface NSTreeController : NSObjectController <NSCoding, NSCopying>
 {
   NSString *_childrenKeyPath;

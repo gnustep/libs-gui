@@ -28,11 +28,13 @@
 */
 #ifndef _GNUstep_H_NSStatusBar
 #define _GNUstep_H_NSStatusBar
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/Foundation.h>
 
 @class NSStatusItem;
 
+APPKIT_EXPORT_CLASS
 @interface NSStatusBar : NSObject
 {
   @private

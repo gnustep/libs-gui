@@ -34,6 +34,7 @@
 
 @class NSData;
 
+APPKIT_EXPORT_CLASS
 @interface GSGhostscriptImageRep : NSImageRep
 {
   NSBitmapImageRep *_bitmap;

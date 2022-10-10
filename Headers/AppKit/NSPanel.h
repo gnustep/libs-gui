@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSPanel
 #define _GNUstep_H_NSPanel
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSWindow.h>
 
@@ -70,6 +70,7 @@ enum {
 #define	NS_ALERTERROR		NSAlertErrorReturn
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSPanel : NSWindow
 {
   // Think of the following as BOOL ivars

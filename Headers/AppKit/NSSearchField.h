@@ -32,6 +32,7 @@
 
 #import <AppKit/NSTextField.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSSearchField : NSTextField
 
 - (NSArray *) recentSearches;

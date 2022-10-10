@@ -37,6 +37,7 @@ extern "C" {
   
 DEFINE_BLOCK_TYPE(GSColorSampleHandler, void, NSColor*);
 
+APPKIT_EXPORT_CLASS
 @interface NSColorSampler : NSObject
 
 - (void) showSamplerWithSelectionHandler: (GSColorSampleHandler)selectionHandler;

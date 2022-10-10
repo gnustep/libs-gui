@@ -42,6 +42,7 @@
 @class NSArray;
 
 
+APPKIT_EXPORT_CLASS
 @interface NSPopUpButton : NSButton
 {
 }

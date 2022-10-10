@@ -29,6 +29,7 @@
 
 #import <AppKit/NSTextAttachment.h>
 
+APPKIT_EXPORT_CLASS
 @interface GSHelpLinkAttachment : NSTextAttachment
 {
   NSString *fileName, *markerName;
@@ -42,6 +43,7 @@
 
 @end
 
+APPKIT_EXPORT_CLASS
 @interface GSHelpMarkerAttachment : NSTextAttachment
 {
   NSString *markerName;

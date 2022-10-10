@@ -24,6 +24,7 @@
 
 #ifndef _NSDockTile_h_GNUSTEP_GUI_INCLUDE
 #define _NSDockTile_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
@@ -36,6 +37,7 @@ extern "C" {
 
 @class NSView, NSString;
 
+APPKIT_EXPORT_CLASS
 @interface NSDockTile : NSObject
 {
   NSView   *_contentView;

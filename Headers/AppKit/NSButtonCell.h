@@ -30,7 +30,7 @@
 
 #ifndef _GNUstep_H_NSButtonCell
 #define _GNUstep_H_NSButtonCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSActionCell.h>
 
@@ -119,6 +119,7 @@ typedef enum _NSGradientType {
 } NSGradientType;
 
 
+APPKIT_EXPORT_CLASS
 @interface NSButtonCell : NSActionCell
 {
   // Attributes

@@ -30,7 +30,7 @@
 
 #ifndef _NSNibDeclarations_H_
 #define _NSNibDeclarations_H_
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* IBOutlet and IBAction are now built-in macros in recent Clang */

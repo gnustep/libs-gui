@@ -44,6 +44,7 @@ typedef enum _NSLevelIndicatorStyle
   NSRatingLevelIndicatorStyle
 } NSLevelIndicatorStyle;
 
+APPKIT_EXPORT_CLASS
 @interface NSLevelIndicatorCell : NSActionCell
 {
   double _minValue;

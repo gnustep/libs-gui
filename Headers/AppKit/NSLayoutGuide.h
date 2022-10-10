@@ -38,6 +38,7 @@ extern "C" {
 
 @class NSView, NSLayoutXAxisAnchor, NSLayoutYAxisAnchor, NSLayoutDimension;
   
+APPKIT_EXPORT_CLASS
 @interface NSLayoutGuide : NSObject <NSCoding, NSUserInterfaceItemIdentification>
 {
   NSRect _frame;

@@ -27,7 +27,7 @@
 
 #ifndef _GNUstep_H_NSTextList
 #define _GNUstep_H_NSTextList
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 #import <Foundation/NSObject.h>
@@ -38,6 +38,7 @@ enum {
 	NSTextListPrependEnclosingMarker = 1
 };
 
+APPKIT_EXPORT_CLASS
 @interface NSTextList : NSObject <NSCopying, NSCoding>
 {
 	NSString *_markerFormat;

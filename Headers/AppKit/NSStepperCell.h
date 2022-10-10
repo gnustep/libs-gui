@@ -30,6 +30,7 @@
 
 #import <AppKit/NSActionCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface NSStepperCell : NSActionCell
 {
   // Think of the following ones as of two BOOL ivars

@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSToolbarItemGroup
 #define _GNUstep_H_NSToolbarItemGroup
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSToolbarItem.h>
 
@@ -37,6 +37,7 @@
 
 @class NSArray;
 
+APPKIT_EXPORT_CLASS
 @interface NSToolbarItemGroup : NSToolbarItem
 {
 	NSArray *_subitems;

@@ -27,12 +27,13 @@
 
 #ifndef _GNUstep_H_NSNibConnector
 #define _GNUstep_H_NSNibConnector
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 
 @class NSString;
 
+APPKIT_EXPORT_CLASS
 @interface NSNibConnector : NSObject <NSCoding>
 {
   id		_src;

@@ -35,7 +35,7 @@
 
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
@@ -227,6 +227,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
  * -convertBaseToScreen: and -convertScreenToBase: methods.
  * </p>
  */
+APPKIT_EXPORT_CLASS
 @interface NSWindow : NSResponder <NSCoding>
 {
   NSRect        _frame;

@@ -28,6 +28,7 @@
 
 #ifndef _GNUstep_H_NSAnimationContext_
 #define _GNUstep_H_NSAnimationContext_
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSDate.h>
@@ -37,6 +38,7 @@
 DEFINE_BLOCK_TYPE_NO_ARGS(GSAnimationContextCompletionHandler, void);
 DEFINE_BLOCK_TYPE(GSAnimationContextChanges, void, NSAnimationContext*);
 
+APPKIT_EXPORT_CLASS
 @interface NSAnimationContext : NSObject
 {
   NSTimeInterval _duration;

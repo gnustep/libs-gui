@@ -29,12 +29,13 @@
 
 #ifndef _GNUstep_H_NSBrowserCell
 #define _GNUstep_H_NSBrowserCell
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSCell.h>
 
 @class NSImage;
 
+APPKIT_EXPORT_CLASS
 @interface NSBrowserCell : NSCell
 {
   // Attributes

@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSTextField
 #define _GNUstep_H_NSTextField
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
 // For NSTextFieldBezelStyle
@@ -43,6 +43,7 @@
 @protocol NSTextFieldDelegate <NSControlTextEditingDelegate>
 @end
 
+APPKIT_EXPORT_CLASS
 @interface NSTextField : NSControl
 {
   // Attributes

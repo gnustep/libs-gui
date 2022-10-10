@@ -28,13 +28,11 @@
 
 #ifndef _GNUstep_H_NSAnimation_
 #define _GNUstep_H_NSAnimation_
-
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
 #import <Foundation/NSObject.h>
-#import <AppKit/AppKitDefines.h>
 #import <GNUstepGUI/GSAnimator.h>
 
 @class NSString;
@@ -109,6 +107,7 @@ APPKIT_EXPORT NSString *NSAnimationTriggerOrderOut;
  * It does not provide any drawing support for animation and does not directly
  * deal with views, targets, or actions.
  */
+APPKIT_EXPORT_CLASS
 @interface NSAnimation : NSObject < NSCopying, NSCoding, GSAnimation >
 {
 // FIXME ... all these ivars should be hidden inside a pointer to an
@@ -309,6 +308,7 @@ APPKIT_EXPORT NSString *NSViewAnimationFadeOutEffect;
  * The animation effects you can achieve are limited to changes in
  * frame location and size, and to fade-in and fade-out effects.
  */
+APPKIT_EXPORT_CLASS
 @interface NSViewAnimation : NSAnimation
 {
   NSArray *_viewAnimations;

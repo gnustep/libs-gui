@@ -64,6 +64,7 @@ static const CGFloat NSStackViewSpacingUseDefault = FLT_MAX;
 
 @protocol NSStackViewDelegate;
   
+APPKIT_EXPORT_CLASS
 @interface NSStackView : NSView
 {
   id<NSStackViewDelegate> _delegate;

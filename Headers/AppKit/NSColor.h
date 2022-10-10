@@ -29,7 +29,7 @@
 
 #ifndef _GNUstep_H_NSColor
 #define _GNUstep_H_NSColor
-#import <GNUstepBase/GSVersionMacros.h>
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSObject.h>
@@ -86,6 +86,7 @@ typedef NSInteger NSColorSystemEffect;
  * used as synonyms to NSDeviceWhiteColorSpace and NSCalibratedWhiteColorSpace.
  */
 
+APPKIT_EXPORT_CLASS
 @interface NSColor : NSObject <NSCoding, NSCopying>
 {
 }
