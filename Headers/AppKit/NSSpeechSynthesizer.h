@@ -29,6 +29,7 @@
 #define _GNUstep_H_NSSpeechSynthesizer
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 // NSSpeechBoundary enumerated type...
 typedef enum 
