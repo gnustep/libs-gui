@@ -5554,12 +5554,18 @@ other than copy/paste or dragging. */
       if (granularity == NSSelectByCharacter)
 	{
 	  NSTextAttachment *attachment;
+	  NSInteger startIndexNoFraction;
+
+	  /* since we look for an attachment with by-character granularity,
+	     recalculate the index without resepecting fraction */
+	  startIndexNoFraction = [self _characterIndexForPoint: startPoint
+					       respectFraction: NO];
 
 	  /* Check if the click was on an attachment cell.  */
 	  attachment = [_textStorage attribute: NSAttachmentAttributeName
-				       atIndex: startIndex
+				       atIndex: startIndexNoFraction
 				effectiveRange: NULL];
-	      
+
 	  if (attachment != nil)
 	    {
 	      id <NSTextAttachmentCell> cell = [attachment attachmentCell];
@@ -5594,11 +5600,11 @@ other than copy/paste or dragging. */
 		  if ([cell wantsToTrackMouseForEvent: theEvent
 			inRect: cellFrame
 			ofView: self
-			atCharacterIndex: startIndex]
+			atCharacterIndex: startIndexNoFraction]
 		      && [cell trackMouse: theEvent
 				   inRect: cellFrame 
 				   ofView: self
-			 atCharacterIndex: startIndex
+			 atCharacterIndex: startIndexNoFraction
 			     untilMouseUp: NO])
 		    {
 		      return;

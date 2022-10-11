@@ -1,3 +1,11 @@
+2022-10-11 Riccardo Mottola <rm@gnu.org>
+
+	* Source/NSTextView.m
+	Fix click on TextAttachmentCells, where the left side was not respected.
+	This was because index was respecting fraction and thus loosing the
+	attachment when clicking on the right part, only for this case,
+	recalculate character index without respectFraction.
+
 2022-09-01 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSButtonCell.m: Move method to detect if button is a
