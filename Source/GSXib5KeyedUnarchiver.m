@@ -3562,7 +3562,7 @@ didStartElement: (NSString*)elementName
                ([@"NSIntercellSpacingWidth" isEqualToString: key]))
         {
           hasValue = [currentElement elementForKey: @"intercellSpacing"] != nil;
-        } 
+        }
       else if ([@"NSContents" isEqualToString: key])
         {
           hasValue  = [currentElement attributeForKey: @"title"] != nil;
