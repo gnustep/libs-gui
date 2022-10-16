@@ -4987,7 +4987,8 @@ right.)
           NSArray *list = [pboard propertyListForType: NSFilenamesPboardType];
           NSMutableAttributedString *as = [[NSMutableAttributedString alloc] init]; 
 
-	  for (NSString *filename in list)
+	  id<NSFastEnumeration> enumerator = list;
+	  FOR_IN (NSString*, filename, enumerator)
 	   {
 	      NSFileWrapper *fw = [[NSFileWrapper alloc] initWithPath:filename];
 	      if (fw) 
@@ -5000,9 +5001,10 @@ right.)
 	          RELEASE(fw);
 	          RELEASE(attachment);
 
-	          [as appendAttributedString:asat];
+	          [as appendAttributedString: asat];
 	        }
 	   }
+	  END_FOR_IN(enumerator)
 
 	  if (as && changeRange.location != NSNotFound &&
 	      [self shouldChangeTextInRange: changeRange
@@ -5013,6 +5015,7 @@ right.)
 	      [self didChangeText];
 	      changeRange.length = [as length];
 	      [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
+	      RELEASE(as);
 	    }
 	  return YES;
 	}
