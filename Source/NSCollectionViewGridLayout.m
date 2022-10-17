@@ -181,7 +181,6 @@
   return _maximumItemSize;
 }
 
-
 - (void) setMargins: (NSEdgeInsets)insets
 {
   _margins = insets;
@@ -203,86 +202,102 @@
 }
 
 // Methods to override for specific layouts...
-- (void) prepareLayout
-{
-  [super prepareLayout];
-}
-
-- (NSArray *) layoutAttributesForElementsInRect: (NSRect)rect
-{
-  return nil;
-}
-
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewLayoutAttributes *attrs = [[NSCollectionViewLayoutAttributes alloc] init];
-  AUTORELEASE(attrs);
+  NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
+  NSSize sz = NSZeroSize;
+  id <NSCollectionViewDelegateFlowLayout> d = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+  NSInteger s = [indexPath section]; // + _ds;
+  NSInteger r = [indexPath item]; // + _dr;
+  NSEdgeInsets si;
+  CGFloat mls = 0.0;
+  CGFloat mis = 0.0;
+  CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
+  NSRect f = NSZeroRect;
+  NSRect vf = [_collectionView frame];
+  
+  // Item size...
+  if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
+    {
+      sz = [d collectionView: _collectionView
+                      layout: self
+              sizeForItemAtIndexPath: indexPath];
+
+      if (sz.width > _maxiumumItemSize.width && 
+    }
+  else
+    {
+      sz = [self itemSize];
+    }
+
+  // Inset
+  if ([d respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
+    {
+      si = [d collectionView: _collectionView
+                      layout: self
+              insetForSectionAtIndex: s];
+    }
+  else
+    {
+      si = [self sectionInset];
+    }
+
+  // minimum line spacing
+  if ([d respondsToSelector: @selector(collectionView:layout:minimimLineSpacingForSectionAtIndex:)])
+    {
+      mls = [d collectionView: _collectionView
+                       layout: self
+               minimumLineSpacingForSectionAtIndex: s];
+    }
+  else
+    {
+      mls = [self minimumLineSpacing];
+    }
+  
+  // minimum interitem spacing
+  if ([d respondsToSelector: @selector(collectionView:layout:minimimInteritemSpacingForSectionAtIndex:)])
+    {
+      mis = [d collectionView: _collectionView
+                       layout: self
+               minimumInteritemSpacingForSectionAtIndex: s];
+    }
+  else
+    {
+      mis = [self minimumInteritemSpacing];
+    }
+
+  // Calculations...
+  h = sz.height;
+  w = sz.width;
+  x = (r * w) + si.left + mis;
+  y = (s * h) + si.top + mls;
+  f = NSMakeRect(x, y, w, h);
+
+  // Determine if it is needed to reflow the given element...
+  if ((x + w) > (vf.size.width - w))
+    {
+      _ds += 1;
+      x = si.left + mis;
+      y = ((s + _ds) * h) + si.top + mls;
+      f = NSMakeRect(x, y, w, h);
+    }
+
+  // Resize parent view...
+  if (y + h > vf.size.height)
+    {
+      vf.size.height = y + h;
+      [_collectionView _setFrameWithoutTile: vf];
+    }
+  
+  // Build attrs object...
+  [attrs setFrame: f];
+  [attrs setHidden: NO];
+  [attrs setZIndex: 0];
+  [attrs setSize: sz];
+  [attrs setHidden: NO];
+  [attrs setAlpha: 1.0];
+
   return attrs;
 }
 
-- (NSCollectionViewLayoutAttributes *)
-  layoutAttributesForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
-  atIndexPath: (NSIndexPath *)indexPath
-{
-  return nil;
-}
-
-- (NSCollectionViewLayoutAttributes *)
-  layoutAttributesForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind
-                              atIndexPath: (NSIndexPath *)indexPath
-{
-  return nil;
-}
-
-- (NSCollectionViewLayoutAttributes *)layoutAttributesForDropTargetAtPoint: (NSPoint)pointInCollectionView
-{
-  return nil;
-}
-
-- (NSCollectionViewLayoutAttributes *)layoutAttributesForInterItemGapBeforeIndexPath: (NSIndexPath *)indexPath
-{
-  return nil;
-}
-
-- (BOOL)shouldInvalidateLayoutForBoundsChange: (NSRect)newBounds
-{
-  return NO;
-}
-
-- (NSCollectionViewLayoutInvalidationContext *)invalidationContextForBoundsChange: (NSRect)newBounds
-{
-  return nil;
-}
-
-- (BOOL)shouldInvalidateLayoutForPreferredLayoutAttributes: (NSCollectionViewLayoutAttributes *)preferredAttributes
-                                    withOriginalAttributes: (NSCollectionViewLayoutAttributes *)originalAttributes
-{
-  return NO;
-}
-
-- (NSCollectionViewLayoutInvalidationContext *)
-  invalidationContextForPreferredLayoutAttributes: (NSCollectionViewLayoutAttributes *)preferredAttributes
-                           withOriginalAttributes: (NSCollectionViewLayoutAttributes *)originalAttributes
-{
-  return nil;
-}
-
-- (NSPoint) targetContentOffsetForProposedContentOffset: (NSPoint)proposedContentOffset
-                                  withScrollingVelocity: (NSPoint)velocity
-{
-  return NSZeroPoint;
-}
-
-- (NSPoint) targetContentOffsetForProposedContentOffset: (NSPoint)proposedContentOffset
-{
-  return NSZeroPoint;  
-}
-
-- (NSSize) collectionViewContentSize
-{
-  return [_collectionView frame].size;
-}
-// end subclassing hooks...
-
 @end
-

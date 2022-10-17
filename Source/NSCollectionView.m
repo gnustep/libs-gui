@@ -1670,6 +1670,16 @@ static NSString *placeholderItem = nil;
   _indexPathsToItems = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
 }
 
+- (void) _updateParentViewFrame
+{
+  NSEnumerator *oe = [_itemsToAttributes objectEnumerator];
+  NSCollectionViewLayoutAttributes *attrs = nil;
+
+  while ((attrs = [oe nextObject]) != nil)
+    {
+    }
+}
+
 - (void) reloadData
 {
   if (_allowReload == NO)
@@ -1701,6 +1711,7 @@ static NSString *placeholderItem = nil;
         {
           [self _loadSectionAtIndex: cs];
         }
+      [self _updateParentViewFrame];
       [self setPostsFrameChangedNotifications: f]; // reset
       _allowReload = YES;
     }
