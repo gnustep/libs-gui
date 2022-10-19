@@ -4990,7 +4990,7 @@ right.)
 	  id<NSFastEnumeration> enumerator = list;
 	  FOR_IN (NSString*, filename, enumerator)
 	   {
-	      NSFileWrapper *fw = [[NSFileWrapper alloc] initWithPath:filename];
+	      NSFileWrapper *fw = [[NSFileWrapper alloc] initWithPath: filename];
 	      if (fw) 
 	        {
 	          NSTextAttachment *attachment = [[NSTextAttachment alloc] 
@@ -5015,8 +5015,9 @@ right.)
 	      [self didChangeText];
 	      changeRange.length = [as length];
 	      [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
-	      RELEASE(as);
 	    }
+
+	  RELEASE(as);
 	  return YES;
 	}
     }
