@@ -256,7 +256,7 @@
   // Build attrs object...
   [attrs setFrame: f];
   [attrs setZIndex: 0];
-  [attrs setSize: sz];
+  [attrs setSize: f.size];
   [attrs setHidden: NO];
   [attrs setAlpha: 1.0];
 
