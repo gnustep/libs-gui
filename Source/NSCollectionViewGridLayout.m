@@ -213,6 +213,11 @@
   CGFloat mis = 0.0;
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
+  NSRect vf = [_collectionView frame];
+  NSInteger ns = [_collectionView numberOfSections];
+  NSInteger ni = [_collectionView numberOfItemsInSection: s];
+  CGFloat ph = 0.0;
+  CGFloat pw = 0.0;
   
   sz = [self minimumItemSize];
   si = [self margins];
@@ -221,7 +226,29 @@
 
   // Calculations...
   h = sz.height;
+  ph = vf.size.height / ns;
+  if (ph > sz.height)
+    {
+      NSSize mx = [self maximumItemSize];
+      if (ph > mx.height)
+        {
+          ph = mx.height;
+        }
+      h = ph;
+    }
+  
   w = sz.width;
+  pw = vf.size.width / ni;
+  if (pw > sz.width)
+    {
+      NSSize mx = [self maximumItemSize];
+      if (pw > mx.width)
+        {
+          pw = mx.width;
+        }
+      w = pw;
+    }
+  
   x = (r * w) + si.left + mis;
   y = (s * h) + si.top + mls;
   f = NSMakeRect(x, y, w, h);
