@@ -29,17 +29,6 @@
 
 #import "GSGuiPrivate.h"
 
-@interface NSCollectionView (__FlowLayoutPrivate__)
-- (void) _setFrameWithoutTile: (NSRect)f;
-@end
-
-@implementation NSCollectionView (__FlowLayoutPrivate__)
-- (void) _setFrameWithoutTile: (NSRect)f
-{
-  _frame = f;
-}
-@end
-
 @implementation NSCollectionViewFlowLayoutInvalidationContext
 
 - (instancetype) init
@@ -384,7 +373,7 @@
   CGFloat mis = 0.0;
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
-  NSRect vf = [_collectionView frame];
+  NSRect vf = [_collectionView frame];  // needed for reflow...
   
   // Item size...
   if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
@@ -450,16 +439,8 @@
       f = NSMakeRect(x, y, w, h);
     }
 
-  // Resize parent view...
-  if (y + h > vf.size.height)
-    {
-      vf.size.height = y + h;
-      [_collectionView _setFrameWithoutTile: vf];
-    }
-  
   // Build attrs object...
   [attrs setFrame: f];
-  [attrs setHidden: NO];
   [attrs setZIndex: 0];
   [attrs setSize: sz];
   [attrs setHidden: NO];

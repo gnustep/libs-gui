@@ -206,7 +206,6 @@
 {
   NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
   NSSize sz = NSZeroSize;
-  id <NSCollectionViewDelegateFlowLayout> d = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
   NSInteger s = [indexPath section]; // + _ds;
   NSInteger r = [indexPath item]; // + _dr;
   NSEdgeInsets si;
@@ -214,57 +213,11 @@
   CGFloat mis = 0.0;
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
-  NSRect vf = [_collectionView frame];
   
-  // Item size...
-  if ([d respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
-    {
-      sz = [d collectionView: _collectionView
-                      layout: self
-              sizeForItemAtIndexPath: indexPath];
-
-      if (sz.width > _maxiumumItemSize.width && 
-    }
-  else
-    {
-      sz = [self itemSize];
-    }
-
-  // Inset
-  if ([d respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
-    {
-      si = [d collectionView: _collectionView
-                      layout: self
-              insetForSectionAtIndex: s];
-    }
-  else
-    {
-      si = [self sectionInset];
-    }
-
-  // minimum line spacing
-  if ([d respondsToSelector: @selector(collectionView:layout:minimimLineSpacingForSectionAtIndex:)])
-    {
-      mls = [d collectionView: _collectionView
-                       layout: self
-               minimumLineSpacingForSectionAtIndex: s];
-    }
-  else
-    {
-      mls = [self minimumLineSpacing];
-    }
-  
-  // minimum interitem spacing
-  if ([d respondsToSelector: @selector(collectionView:layout:minimimInteritemSpacingForSectionAtIndex:)])
-    {
-      mis = [d collectionView: _collectionView
-                       layout: self
-               minimumInteritemSpacingForSectionAtIndex: s];
-    }
-  else
-    {
-      mis = [self minimumInteritemSpacing];
-    }
+  sz = [self minimumItemSize];
+  si = [self margins];
+  mls = [self minimumInteritemSpacing];
+  mis = [self minimumInteritemSpacing];
 
   // Calculations...
   h = sz.height;
@@ -273,25 +226,8 @@
   y = (s * h) + si.top + mls;
   f = NSMakeRect(x, y, w, h);
 
-  // Determine if it is needed to reflow the given element...
-  if ((x + w) > (vf.size.width - w))
-    {
-      _ds += 1;
-      x = si.left + mis;
-      y = ((s + _ds) * h) + si.top + mls;
-      f = NSMakeRect(x, y, w, h);
-    }
-
-  // Resize parent view...
-  if (y + h > vf.size.height)
-    {
-      vf.size.height = y + h;
-      [_collectionView _setFrameWithoutTile: vf];
-    }
-  
   // Build attrs object...
   [attrs setFrame: f];
-  [attrs setHidden: NO];
   [attrs setZIndex: 0];
   [attrs setSize: sz];
   [attrs setHidden: NO];

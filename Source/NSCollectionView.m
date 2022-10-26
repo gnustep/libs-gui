@@ -1670,14 +1670,30 @@ static NSString *placeholderItem = nil;
   _indexPathsToItems = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
 }
 
+- (void) _setFrameWithoutTile: (NSRect)f
+{
+  _frame = f;
+}
+
 - (void) _updateParentViewFrame
 {
   NSEnumerator *oe = [_itemsToAttributes objectEnumerator];
   NSCollectionViewLayoutAttributes *attrs = nil;
-
+  NSRect cf = [self frame];
+  NSSize ps = cf.size;
+  
   while ((attrs = [oe nextObject]) != nil)
     {
+      NSRect f = [attrs frame];
+      CGFloat w = f.origin.x + f.size.width;
+      CGFloat h = f.origin.y + f.size.height;
+        
+      ps.width  = (w > ps.width) ? w : ps.width;
+      ps.height = (h > ps.height) ? h : ps.height;
     }
+
+  cf.size = ps;
+  [self _setFrameWithoutTile: cf];
 }
 
 - (void) reloadData
