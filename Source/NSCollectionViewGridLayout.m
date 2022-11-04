@@ -206,8 +206,8 @@
 {
   NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
   NSSize sz = NSZeroSize;
-  NSInteger s = [indexPath section]; // + _ds;
-  NSInteger r = [indexPath item]; // + _dr;
+  NSInteger s = [indexPath section];
+  NSInteger r = [indexPath item];
   NSEdgeInsets si;
   CGFloat mls = 0.0;
   CGFloat mis = 0.0;

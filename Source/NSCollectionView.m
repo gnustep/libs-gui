@@ -70,7 +70,7 @@ static NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GS
 /*
  * Class variables
  */
-static NSString *placeholderItem = nil;
+static NSString *_placeholderItem = nil;
 
 @interface NSCollectionView (CollectionViewInternalPrivate)
 
@@ -127,7 +127,7 @@ static NSString *placeholderItem = nil;
 {
   if (self == [NSCollectionView class])
     {
-      placeholderItem = @"Placeholder";
+      _placeholderItem = @"Placeholder";
       [self exposeBinding: NSContentBinding];
       [self setVersion: 1];
     }
@@ -294,7 +294,7 @@ static NSString *placeholderItem = nil;
  
   for (i = 0; i < [_content count]; i++)
     {
-      [_items addObject: placeholderItem];
+      [_items addObject: _placeholderItem];
     }
 
   if (!itemPrototype)
@@ -606,7 +606,7 @@ static NSString *placeholderItem = nil;
 {
   id item = [_items objectAtIndex: index];
 
-  if (item == placeholderItem)
+  if (item == _placeholderItem)
     {
       item = [self newItemForRepresentedObject: [_content objectAtIndex: index]];
       [_items replaceObjectAtIndex: index withObject: item];
@@ -1237,7 +1237,7 @@ static NSString *placeholderItem = nil;
     {
       dragIndexes = [NSIndexSet indexSetWithIndex: index];
     }
-  
+
   if (![dragIndexes count])
     return NO;
   
@@ -1432,7 +1432,8 @@ static NSString *placeholderItem = nil;
   NSIndexPath *p = nil;
   NSEnumerator *ke = [_itemsToAttributes keyEnumerator];
   NSCollectionViewItem *item = nil;
-
+  BOOL isFlipped = [self isFlipped];
+  
   while ((item = [ke nextObject]) != nil)
     {
       NSCollectionViewLayoutAttributes *attr = [_itemsToAttributes objectForKey: item];
@@ -1441,7 +1442,7 @@ static NSString *placeholderItem = nil;
         {
           NSRect f = [attr frame];
 
-          if (NSMouseInRect(point, f, NO))
+          if (NSMouseInRect(point, f, isFlipped))
             {
               p = [self indexPathForItem: item];
               break;
@@ -1461,8 +1462,8 @@ static NSString *placeholderItem = nil;
   return [_indexPathsToItems objectForKey: indexPath];
 }
 
-- (NSView *)supplementaryViewForElementKind: (NSCollectionViewSupplementaryElementKind)elementKind 
-                                atIndexPath: (NSIndexPath *)indexPath
+- (NSView *) supplementaryViewForElementKind: (NSCollectionViewSupplementaryElementKind)elementKind 
+                                 atIndexPath: (NSIndexPath *)indexPath
 {
   return nil;
 }
@@ -1651,19 +1652,21 @@ static NSString *placeholderItem = nil;
 
 - (void) _clearMaps
 {
-  // Remove objects
+  // Remove objects from set/dict/maps
   [_visibleItems removeAllObjects];
   [_indexPathsForVisibleItems removeAllObjects];
   [_itemsToIndexPaths removeAllObjects];
   [_indexPathsToItems removeAllObjects];
+  [_itemsToAttributes removeAllObjects];
+  
   [self setSubviews: [NSArray array]];
   [_collectionViewLayout prepareLayout];
 
-  // destroy
-  DESTROY(_indexPathsForVisibleItems);
+  // destroy maps...
   DESTROY(_indexPathsToItems);
   DESTROY(_itemsToIndexPaths);
-
+  DESTROY(_itemsToAttributes);
+  
   // reallocate the maps...
   _itemsToAttributes = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
   _itemsToIndexPaths = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
