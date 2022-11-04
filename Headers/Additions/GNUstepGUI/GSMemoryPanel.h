@@ -36,10 +36,12 @@
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSPanel.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSTableView;
 @class NSMutableArray;
 
+APPKIT_EXPORT_CLASS
 @interface GSMemoryPanel: NSPanel
 {
   NSTableView *table;
