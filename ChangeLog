@@ -1,3 +1,9 @@
+2022-11-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h,
+	* Source/GSLayoutManager.m: Add new methods
+	-defaultLineHeightForFont: and -defaultBaselineOffsetForFont:.
+
 2022-10-11 Riccardo Mottola <rm@gnu.org>
 
 	* Source/NSTextView.m

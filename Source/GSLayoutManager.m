@@ -3089,6 +3089,16 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   return showsControlCharacters;
 }
 
+- (CGFloat) defaultLineHeightForFont: (NSFont*)theFont
+{
+  return [theFont defaultLineHeightForFont];
+}
+
+- (CGFloat) defaultBaselineOffsetForFont: (NSFont*)theFont
+{
+  return 0.0;
+}
+
 /*
 Note that NSLayoutManager completely overrides this (to perform more
 intelligent invalidation of layout using the constraints on layout it

@@ -139,6 +139,13 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
 - (BOOL) showsControlCharacters;
 
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (CGFloat) defaultLineHeightForFont: (NSFont*)theFont;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (CGFloat) defaultBaselineOffsetForFont: (NSFont*)theFont;
+#endif
+
 /** Font handling **/
 
 - (BOOL) usesScreenFonts;
