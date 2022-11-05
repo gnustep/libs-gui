@@ -32,6 +32,7 @@
 #import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
+#import "GSAutoLayoutVFLParser.h"
 
 static NSMutableArray *activeConstraints = nil;
 // static NSNotificationCenter *nc = nil;
@@ -236,8 +237,16 @@ static NSMutableArray *activeConstraints = nil;
                                   metrics: (NSDictionary *)metrics 
                                     views: (NSDictionary *)views
 {
-  NSMutableArray *array = [NSMutableArray arrayWithCapacity: 10];
-  return array;
+  GSAutoLayoutVFLParser *parser = [[GSAutoLayoutVFLParser alloc]
+    initWithFormat: fmt
+    options: opt
+    metrics: metrics
+    views: views];
+  NSArray *constraints = [parser parse];
+
+  [parser release];
+
+  return constraints;
 }
 
 - (instancetype) initWithItem: (id)firstItem 
