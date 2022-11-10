@@ -1,11 +1,34 @@
+/* Copyright (C) 2022 Free Software Foundation, Inc.
+   
+   By: Benjamin Johnson
+   Date: 11-11-2022
+   This file is part of the GNUstep Library.
+   
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+   
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110 USA.
+*/
+
 #import "GSAutoLayoutVFLParser.h"
 #import <AppKit/AppKit.h>
 
-struct GSObjectOfPredicate {
-    NSNumber *priority;
-    NSView *view;
-    NSLayoutRelation relation;
-    CGFloat constant;
+struct GSObjectOfPredicate
+{
+  NSNumber *priority;
+  NSView *view;
+  NSLayoutRelation relation;
+  CGFloat constant;
 };
 typedef struct GSObjectOfPredicate GSObjectOfPredicate;
 
@@ -14,513 +37,720 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 @implementation GSAutoLayoutVFLParser
 
--(instancetype)initWithFormat: (NSString*)format options: (NSLayoutFormatOptions)options metrics: (NSDictionary*)metrics views: (NSDictionary*)views
+- (instancetype) initWithFormat:(NSString *)format
+                       options:(NSLayoutFormatOptions)options
+                       metrics:(NSDictionary *)metrics
+                         views:(NSDictionary *)views
 {
-    if (self = [super init]) {
-        if ([format length] == 0) {
-            [self failParseWithMessage:@"Cannot parse an empty string"];
+  if (self = [super init])
+    {
+      if ([format length] == 0)
+        {
+          [self failParseWithMessage:@"Cannot parse an empty string"];
         }
-        
-        _views = views;
-        _metrics = metrics;
-        _options = options;
-        
-        _scanner = [NSScanner scannerWithString:format];
-        _constraints = [NSMutableArray array];
-        _layoutFormatConstraints = [NSMutableArray array];
+
+      _views = views;
+      _metrics = metrics;
+      _options = options;
+
+      _scanner = [NSScanner scannerWithString:format];
+      _constraints = [NSMutableArray array];
+      _layoutFormatConstraints = [NSMutableArray array];
     }
-    
-    return self;
+
+  return self;
 }
 
--(NSArray*)parse
+- (NSArray *) parse
 {
-    [self parseOrientation];
-    NSNumber *spacingConstant = [self parseLeadingSuperViewConnection];
-    NSView *previousView = nil;
+  [self parseOrientation];
+  NSNumber *spacingConstant = [self parseLeadingSuperViewConnection];
+  NSView *previousView = nil;
 
-    while (![_scanner isAtEnd]) {
-        NSArray *viewConstraints = [self parseView];
-        if (_createLeadingConstraintToSuperview) {
-            [self addLeadingSuperviewConstraint: spacingConstant];
-            _createLeadingConstraintToSuperview = NO;
+  while (![_scanner isAtEnd])
+    {
+      NSArray *viewConstraints = [self parseView];
+      if (_createLeadingConstraintToSuperview)
+        {
+          [self addLeadingSuperviewConstraint:spacingConstant];
+          _createLeadingConstraintToSuperview = NO;
         }
-             
-        if (previousView != nil) {
-            [self addViewSpacingConstraint:spacingConstant previousView:previousView];
-            [self addFormattingConstraints: previousView];
+
+      if (previousView != nil)
+        {
+          [self addViewSpacingConstraint:spacingConstant
+                            previousView:previousView];
+          [self addFormattingConstraints:previousView];
         }
-        [_constraints addObjectsFromArray:viewConstraints];
-        
-        spacingConstant = [self parseConnection];
-        if ([_scanner scanString:@"|" intoString:nil]) {
-            [self addTrailingToSuperviewConstraint: spacingConstant];
+      [_constraints addObjectsFromArray:viewConstraints];
+
+      spacingConstant = [self parseConnection];
+      if ([_scanner scanString:@"|" intoString:nil])
+        {
+          [self addTrailingToSuperviewConstraint:spacingConstant];
         }
-        previousView = _view;
+      previousView = _view;
     }
-    
-    [_constraints addObjectsFromArray:_layoutFormatConstraints];
-        
-    return _constraints;
+
+  [_constraints addObjectsFromArray:_layoutFormatConstraints];
+
+  return _constraints;
 }
 
--(void)addFormattingConstraints: (NSView*)lastView
+- (void) addFormattingConstraints:(NSView *)lastView
 {
-    BOOL hasFormatOptions = (_options & NSLayoutFormatAlignmentMask) > 0;
-    if (!hasFormatOptions) {
-         return;
-     }
-    [self assertHasValidFormatLayoutOptions];
-    
-    NSArray *attributes = [self layoutAttributesForLayoutFormatOptions:_options];
-    for (NSNumber *layoutAttribute in attributes) {
-        NSLayoutConstraint *formatConstraint = [NSLayoutConstraint constraintWithItem:lastView  attribute:[layoutAttribute integerValue] relatedBy:NSLayoutRelationEqual toItem:_view attribute:[layoutAttribute integerValue] multiplier:1.0 constant:0];
-        [_layoutFormatConstraints addObject:formatConstraint];
+  BOOL hasFormatOptions = (_options & NSLayoutFormatAlignmentMask) > 0;
+  if (!hasFormatOptions)
+    {
+      return;
     }
-}
+  [self assertHasValidFormatLayoutOptions];
 
--(void)assertHasValidFormatLayoutOptions
-{
-    if (_isVerticalOrientation && [self isVerticalEdgeFormatLayoutOption: _options]) {
-        [self failParseWithMessage:@"A vertical alignment format option cannot be used with a vertical layout"];
-    } else if (!_isVerticalOrientation && ![self isVerticalEdgeFormatLayoutOption:_options]) {
-        [self failParseWithMessage:@"A horizontal alignment format option cannot be used with a horizontal layout"];
-    }
-}
-         
--(void)parseOrientation
-{
-    if ([_scanner scanString:@"V:" intoString:nil]) {
-        _isVerticalOrientation = true;
-    } else {
-        [_scanner scanString:@"H:" intoString:nil];
+  NSArray *attributes = [self layoutAttributesForLayoutFormatOptions:_options];
+  for (NSNumber *layoutAttribute in attributes)
+    {
+      NSLayoutConstraint *formatConstraint =
+          [NSLayoutConstraint constraintWithItem:lastView
+                                       attribute:[layoutAttribute integerValue]
+                                       relatedBy:NSLayoutRelationEqual
+                                          toItem:_view
+                                       attribute:[layoutAttribute integerValue]
+                                      multiplier:1.0
+                                        constant:0];
+      [_layoutFormatConstraints addObject:formatConstraint];
     }
 }
 
--(NSArray*)parseView
+- (void) assertHasValidFormatLayoutOptions
 {
-    [self parseViewOpen];
-    
-    _view = [self parseViewName];
-    NSArray *viewConstraints = [self parsePredicateList];
-    [self parseViewClose];
-    
-    return viewConstraints;
+  if (_isVerticalOrientation &&
+      [self isVerticalEdgeFormatLayoutOption:_options])
+    {
+      [self failParseWithMessage:@"A vertical alignment format option cannot "
+                                 @"be used with a vertical layout"];
+    }
+  else if (!_isVerticalOrientation
+           && ![self isVerticalEdgeFormatLayoutOption:_options])
+    {
+      [self failParseWithMessage:@"A horizontal alignment format option "
+                                 @"cannot be used with a horizontal layout"];
+    }
 }
 
--(NSView*)parseViewName
+- (void) parseOrientation
 {
-    NSString *viewName = nil;
-    NSCharacterSet *viewTerminators = [NSCharacterSet characterSetWithCharactersInString:@"]("];
-    [_scanner scanUpToCharactersFromSet:viewTerminators intoString:&viewName];
-        
-    if (viewName == nil) {
-        [self failParseWithMessage:@"Failed to parse view name"];
+  if ([_scanner scanString:@"V:" intoString:nil])
+    {
+      _isVerticalOrientation = true;
     }
-    
-    if (![self isValidIdentifer:viewName]) {
-        [self failParseWithMessage:@"Invalid view name. A view name must be a valid C identifier and may only contain letters, numbers and underscores"];
+  else
+    {
+      [_scanner scanString:@"H:" intoString:nil];
     }
-    
-    return [self resolveViewWithIdentifier:viewName];
 }
 
--(BOOL)isVerticalEdgeFormatLayoutOption: (NSLayoutFormatOptions)options
+- (NSArray *) parseView
 {
-    if (options & NSLayoutFormatAlignAllTop) {
-        return YES;
-    }
-    if (options & NSLayoutFormatAlignAllBaseline) {
-        return YES;
-    }
-    if (options & NSLayoutFormatAlignAllFirstBaseline) {
-        return YES;
-    }
-    if (options & NSLayoutFormatAlignAllBottom) {
-        return YES;
-    }
-    if (options & NSLayoutFormatAlignAllCenterY) {
-        return YES;
-    }
-    
-    return NO;
+  [self parseViewOpen];
+
+  _view = [self parseViewName];
+  NSArray *viewConstraints = [self parsePredicateList];
+  [self parseViewClose];
+
+  return viewConstraints;
 }
 
--(void)addViewSpacingConstraint: (NSNumber*)spacing previousView: (NSView*)previousView
+- (NSView *) parseViewName
 {
-    CGFloat viewSpacingConstant = spacing ? [spacing doubleValue] : GS_DEFAULT_VIEW_SPACING;
-    NSLayoutAttribute firstAttribute;
-    NSLayoutAttribute secondAttribute;
-    NSView *firstItem;
-    NSView *secondItem;
-    
-    NSLayoutFormatOptions directionOptions = _options & NSLayoutFormatDirectionMask;
-    if (_isVerticalOrientation) {
-        firstAttribute = NSLayoutAttributeTop;
-        secondAttribute = NSLayoutAttributeBottom;
-        firstItem = _view;
-        secondItem = previousView;
-    } else if (directionOptions & NSLayoutFormatDirectionRightToLeft) {
-        firstAttribute = NSLayoutAttributeLeft;
-        secondAttribute = NSLayoutAttributeRight;
-        firstItem = previousView;
-        secondItem = _view;
-    } else if (directionOptions & NSLayoutFormatDirectionLeftToRight) {
-        firstAttribute = NSLayoutAttributeLeft;
-         secondAttribute = NSLayoutAttributeRight;
-         firstItem = _view;
-         secondItem = previousView;
-    } else {
-        firstAttribute = NSLayoutAttributeLeading;
-        secondAttribute = NSLayoutAttributeTrailing;
-        firstItem = _view;
-        secondItem = previousView;
-    }
-    
-    NSLayoutConstraint *viewSeparatorConstraint = [NSLayoutConstraint constraintWithItem:firstItem attribute:firstAttribute relatedBy:NSLayoutRelationEqual toItem:secondItem attribute:secondAttribute multiplier:1.0 constant:viewSpacingConstant];
+  NSString *viewName = nil;
+  NSCharacterSet *viewTerminators =
+      [NSCharacterSet characterSetWithCharactersInString:@"]("];
+  [_scanner scanUpToCharactersFromSet:viewTerminators intoString:&viewName];
 
-    [_constraints addObject:viewSeparatorConstraint];
+  if (viewName == nil)
+    {
+      [self failParseWithMessage:@"Failed to parse view name"];
+    }
+
+  if (![self isValidIdentifier:viewName])
+    {
+      [self failParseWithMessage:
+                @"Invalid view name. A view name must be a valid C identifier "
+                @"and may only contain letters, numbers and underscores"];
+    }
+
+  return [self resolveViewWithIdentifier:viewName];
 }
 
--(void)addLeadingSuperviewConstraint: (NSNumber*)spacing
+- (BOOL) isVerticalEdgeFormatLayoutOption:(NSLayoutFormatOptions)options
 {
-    NSLayoutAttribute firstAttribute;
-    NSView *firstItem;
-    NSView *secondItem;
-
-    NSLayoutFormatOptions directionOptions = _options & NSLayoutFormatDirectionMask;
-    if (_isVerticalOrientation) {
-        firstAttribute = NSLayoutAttributeTop;
-        firstItem = _view;
-        secondItem = _view.superview;
-    } else if (directionOptions & NSLayoutFormatDirectionRightToLeft) {
-        firstAttribute = NSLayoutAttributeRight;
-        firstItem = _view.superview;
-        secondItem = _view;
-    } else if (directionOptions & NSLayoutFormatDirectionLeftToRight) {
-        firstAttribute = NSLayoutAttributeLeft;
-        firstItem = _view;
-        secondItem = _view.superview;
-    } else {
-        firstAttribute = _isVerticalOrientation ? NSLayoutAttributeTop : NSLayoutAttributeLeading;
-        firstItem = _view;
-        secondItem = _view.superview;
+  if (options & NSLayoutFormatAlignAllTop)
+    {
+      return YES;
     }
-    
-    CGFloat viewSpacingConstant = spacing ? [spacing doubleValue] : GS_DEFAULT_SUPERVIEW_SPACING;
+  if (options & NSLayoutFormatAlignAllBaseline)
+    {
+      return YES;
+    }
+  if (options & NSLayoutFormatAlignAllFirstBaseline)
+    {
+      return YES;
+    }
+  if (options & NSLayoutFormatAlignAllBottom)
+    {
+      return YES;
+    }
+  if (options & NSLayoutFormatAlignAllCenterY)
+    {
+      return YES;
+    }
 
-    NSLayoutConstraint *leadingConstraintToSuperview = [NSLayoutConstraint constraintWithItem:firstItem attribute:firstAttribute relatedBy:NSLayoutRelationEqual toItem:secondItem attribute:firstAttribute multiplier:1.0 constant:viewSpacingConstant];
-    [_constraints addObject:leadingConstraintToSuperview];
+  return NO;
 }
 
--(void)addTrailingToSuperviewConstraint: (NSNumber*)spacing
+- (void) addViewSpacingConstraint:(NSNumber *)spacing
+                     previousView:(NSView *)previousView
 {
-    CGFloat viewSpacingConstant = spacing ? [spacing doubleValue] : GS_DEFAULT_SUPERVIEW_SPACING;
-    
-    NSLayoutFormatOptions directionOptions = _options & NSLayoutFormatDirectionMask;
-    NSLayoutAttribute attribute;
-    NSView *firstItem;
-    NSView *secondItem;
-    
-    if (_isVerticalOrientation) {
-        attribute = NSLayoutAttributeBottom;
-        firstItem = _view.superview;
-        secondItem = _view;
-    } else if (directionOptions & NSLayoutFormatDirectionRightToLeft) {
-        attribute = NSLayoutAttributeLeft;
-        firstItem = _view;
-        secondItem = _view.superview;
-    } else if (directionOptions & NSLayoutFormatDirectionLeftToRight) {
-        attribute = NSLayoutAttributeRight;
-        firstItem =  _view.superview;
-        secondItem = _view;
-    } else {
-        attribute = NSLayoutAttributeTrailing;
-        firstItem = _view.superview;
-        secondItem = _view;
+  CGFloat viewSpacingConstant
+      = spacing ? [spacing doubleValue] : GS_DEFAULT_VIEW_SPACING;
+  NSLayoutAttribute firstAttribute;
+  NSLayoutAttribute secondAttribute;
+  NSView *firstItem;
+  NSView *secondItem;
+
+  NSLayoutFormatOptions directionOptions
+      = _options & NSLayoutFormatDirectionMask;
+  if (_isVerticalOrientation)
+    {
+      firstAttribute = NSLayoutAttributeTop;
+      secondAttribute = NSLayoutAttributeBottom;
+      firstItem = _view;
+      secondItem = previousView;
     }
-    
-    NSLayoutConstraint *trailingConstraintToSuperview = [NSLayoutConstraint constraintWithItem: firstItem  attribute:attribute relatedBy:NSLayoutRelationEqual toItem: secondItem attribute:attribute multiplier:1.0 constant:viewSpacingConstant];
-    [_constraints addObject:trailingConstraintToSuperview];
+  else if (directionOptions & NSLayoutFormatDirectionRightToLeft)
+    {
+      firstAttribute = NSLayoutAttributeLeft;
+      secondAttribute = NSLayoutAttributeRight;
+      firstItem = previousView;
+      secondItem = _view;
+    }
+  else if (directionOptions & NSLayoutFormatDirectionLeftToRight)
+    {
+      firstAttribute = NSLayoutAttributeLeft;
+      secondAttribute = NSLayoutAttributeRight;
+      firstItem = _view;
+      secondItem = previousView;
+    }
+  else
+    {
+      firstAttribute = NSLayoutAttributeLeading;
+      secondAttribute = NSLayoutAttributeTrailing;
+      firstItem = _view;
+      secondItem = previousView;
+    }
+
+  NSLayoutConstraint *viewSeparatorConstraint =
+      [NSLayoutConstraint constraintWithItem:firstItem
+                                   attribute:firstAttribute
+                                   relatedBy:NSLayoutRelationEqual
+                                      toItem:secondItem
+                                   attribute:secondAttribute
+                                  multiplier:1.0
+                                    constant:viewSpacingConstant];
+
+  [_constraints addObject:viewSeparatorConstraint];
 }
 
--(NSNumber*)parseLeadingSuperViewConnection
+- (void) addLeadingSuperviewConstraint:(NSNumber *)spacing
 {
-    BOOL foundSuperview = [_scanner scanString:@"|" intoString:nil];
-    if (!foundSuperview) {
-        return nil;
+  NSLayoutAttribute firstAttribute;
+  NSView *firstItem;
+  NSView *secondItem;
+
+  NSLayoutFormatOptions directionOptions
+      = _options & NSLayoutFormatDirectionMask;
+  if (_isVerticalOrientation)
+    {
+      firstAttribute = NSLayoutAttributeTop;
+      firstItem = _view;
+      secondItem = _view.superview;
     }
-    _createLeadingConstraintToSuperview = YES;
-    return [self parseConnection];
+  else if (directionOptions & NSLayoutFormatDirectionRightToLeft)
+    {
+      firstAttribute = NSLayoutAttributeRight;
+      firstItem = _view.superview;
+      secondItem = _view;
+    }
+  else if (directionOptions & NSLayoutFormatDirectionLeftToRight)
+    {
+      firstAttribute = NSLayoutAttributeLeft;
+      firstItem = _view;
+      secondItem = _view.superview;
+    }
+  else
+    {
+      firstAttribute = _isVerticalOrientation ? NSLayoutAttributeTop
+                                              : NSLayoutAttributeLeading;
+      firstItem = _view;
+      secondItem = _view.superview;
+    }
+
+  CGFloat viewSpacingConstant
+      = spacing ? [spacing doubleValue] : GS_DEFAULT_SUPERVIEW_SPACING;
+
+  NSLayoutConstraint *leadingConstraintToSuperview =
+      [NSLayoutConstraint constraintWithItem:firstItem
+                                   attribute:firstAttribute
+                                   relatedBy:NSLayoutRelationEqual
+                                      toItem:secondItem
+                                   attribute:firstAttribute
+                                  multiplier:1.0
+                                    constant:viewSpacingConstant];
+  [_constraints addObject:leadingConstraintToSuperview];
 }
 
--(NSNumber*)parseConnection
+- (void) addTrailingToSuperviewConstraint:(NSNumber *)spacing
 {
-    BOOL foundConnection = [_scanner scanString:@"-" intoString:nil];
-    if (!foundConnection) {
-        return [NSNumber numberWithDouble:0];
+  CGFloat viewSpacingConstant
+      = spacing ? [spacing doubleValue] : GS_DEFAULT_SUPERVIEW_SPACING;
+
+  NSLayoutFormatOptions directionOptions
+      = _options & NSLayoutFormatDirectionMask;
+  NSLayoutAttribute attribute;
+  NSView *firstItem;
+  NSView *secondItem;
+
+  if (_isVerticalOrientation)
+    {
+      attribute = NSLayoutAttributeBottom;
+      firstItem = _view.superview;
+      secondItem = _view;
+    }
+  else if (directionOptions & NSLayoutFormatDirectionRightToLeft)
+    {
+      attribute = NSLayoutAttributeLeft;
+      firstItem = _view;
+      secondItem = _view.superview;
+    }
+  else if (directionOptions & NSLayoutFormatDirectionLeftToRight)
+    {
+      attribute = NSLayoutAttributeRight;
+      firstItem = _view.superview;
+      secondItem = _view;
+    }
+  else
+    {
+      attribute = NSLayoutAttributeTrailing;
+      firstItem = _view.superview;
+      secondItem = _view;
     }
 
-    NSNumber *simplePredicateValue = [self parseSimplePredicate];
-    BOOL endConnectionFound = [_scanner scanString:@"-" intoString:nil];
-
-    if (simplePredicateValue != nil && !endConnectionFound) {
-        [self failParseWithMessage:@"A connection must end with a '-'"];
-    } else if (simplePredicateValue == nil && endConnectionFound) {
-        [self failParseWithMessage:@"Found invalid connection"];
-    }
-
-    return simplePredicateValue;
+  NSLayoutConstraint *trailingConstraintToSuperview =
+      [NSLayoutConstraint constraintWithItem:firstItem
+                                   attribute:attribute
+                                   relatedBy:NSLayoutRelationEqual
+                                      toItem:secondItem
+                                   attribute:attribute
+                                  multiplier:1.0
+                                    constant:viewSpacingConstant];
+  [_constraints addObject:trailingConstraintToSuperview];
 }
 
--(NSNumber*)parseSimplePredicate
+- (NSNumber *) parseLeadingSuperViewConnection
 {
-    float constant;
-    BOOL scanConstantResult = [_scanner scanFloat:&constant];
-    if (scanConstantResult) {
-        return [NSNumber numberWithDouble:constant];
-    } else {
-        NSString *metricName = nil;
-        NSCharacterSet *simplePredicateTerminatorsCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"-[|"];
-        BOOL didParseMetricName = [_scanner scanUpToCharactersFromSet:simplePredicateTerminatorsCharacterSet intoString:&metricName];
-        if (!didParseMetricName) {
-            return nil;
+  BOOL foundSuperview = [_scanner scanString:@"|" intoString:nil];
+  if (!foundSuperview)
+    {
+      return nil;
+    }
+  _createLeadingConstraintToSuperview = YES;
+  return [self parseConnection];
+}
+
+- (NSNumber *) parseConnection
+{
+  BOOL foundConnection = [_scanner scanString:@"-" intoString:nil];
+  if (!foundConnection)
+    {
+      return [NSNumber numberWithDouble:0];
+    }
+
+  NSNumber *simplePredicateValue = [self parseSimplePredicate];
+  BOOL endConnectionFound = [_scanner scanString:@"-" intoString:nil];
+
+  if (simplePredicateValue != nil && !endConnectionFound)
+    {
+      [self failParseWithMessage:@"A connection must end with a '-'"];
+    }
+  else if (simplePredicateValue == nil && endConnectionFound)
+    {
+      [self failParseWithMessage:@"Found invalid connection"];
+    }
+
+  return simplePredicateValue;
+}
+
+- (NSNumber *) parseSimplePredicate
+{
+  float constant;
+  BOOL scanConstantResult = [_scanner scanFloat:&constant];
+  if (scanConstantResult)
+    {
+      return [NSNumber numberWithDouble:constant];
+    }
+  else
+    {
+      NSString *metricName = nil;
+      NSCharacterSet *simplePredicateTerminatorsCharacterSet =
+          [NSCharacterSet characterSetWithCharactersInString:@"-[|"];
+      BOOL didParseMetricName = [_scanner
+          scanUpToCharactersFromSet:simplePredicateTerminatorsCharacterSet
+                         intoString:&metricName];
+      if (!didParseMetricName)
+        {
+          return nil;
         }
-        if (![self isValidIdentifer:metricName]) {
-            [self failParseWithMessage:@"Invalid metric identifier. Metric identifiers must be a valid C identifier and may only contain letters, numbers and underscores"];
+      if (![self isValidIdentifier:metricName])
+        {
+          [self failParseWithMessage:
+                    @"Invalid metric identifier. Metric identifiers must be a "
+                    @"valid C identifier and may only contain letters, "
+                    @"numbers and underscores"];
         }
-        
-        NSNumber *metric = [self resolveMetricWithIdentifier:metricName];
-        return metric;
+
+      NSNumber *metric = [self resolveMetricWithIdentifier:metricName];
+      return metric;
     }
 }
 
--(NSArray*)parsePredicateList
+- (NSArray *) parsePredicateList
 {
-    BOOL startsWithPredicateList = [_scanner scanString:@"(" intoString:nil];
-    if (!startsWithPredicateList) {
-        return [NSArray array];
+  BOOL startsWithPredicateList = [_scanner scanString:@"(" intoString:nil];
+  if (!startsWithPredicateList)
+    {
+      return [NSArray array];
     }
-        
-    NSMutableArray *viewPredicateConstraints = [NSMutableArray array];
-    BOOL shouldParsePredicate = YES;
-    while (shouldParsePredicate) {
-        GSObjectOfPredicate *predicate = [self parseObjectOfPredicate];
-        [viewPredicateConstraints addObject:[self createConstraintFromParsedPredicate:predicate]];
-        [self freeObjectOfPredicate:predicate];
-        
-        shouldParsePredicate = [_scanner scanString:@"," intoString:nil];
+
+  NSMutableArray *viewPredicateConstraints = [NSMutableArray array];
+  BOOL shouldParsePredicate = YES;
+  while (shouldParsePredicate)
+    {
+      GSObjectOfPredicate *predicate = [self parseObjectOfPredicate];
+      [viewPredicateConstraints
+          addObject:[self createConstraintFromParsedPredicate:predicate]];
+      [self freeObjectOfPredicate:predicate];
+
+      shouldParsePredicate = [_scanner scanString:@"," intoString:nil];
     }
-    
-    if (![_scanner scanString:@")" intoString:nil]) {
-        [self failParseWithMessage:@"A predicate on a view must end with ')'"];
+
+  if (![_scanner scanString:@")" intoString:nil])
+    {
+      [self failParseWithMessage:@"A predicate on a view must end with ')'"];
     }
-    
-    return viewPredicateConstraints;
+
+  return viewPredicateConstraints;
 }
 
--(NSLayoutConstraint*)createConstraintFromParsedPredicate: (GSObjectOfPredicate*)predicate
+- (NSLayoutConstraint *) createConstraintFromParsedPredicate:
+    (GSObjectOfPredicate *)predicate
 {
-    NSLayoutConstraint *constraint = nil;
-    NSLayoutAttribute attribute = _isVerticalOrientation ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
-    if (predicate->view != nil) {
-        constraint = [NSLayoutConstraint constraintWithItem:_view attribute:attribute relatedBy:predicate->relation toItem:predicate->view attribute:attribute multiplier:1.0 constant:predicate->constant];
-    } else {
-        constraint = [NSLayoutConstraint constraintWithItem:_view attribute:attribute relatedBy:predicate->relation toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:predicate->constant];
+  NSLayoutConstraint *constraint = nil;
+  NSLayoutAttribute attribute = _isVerticalOrientation
+                                    ? NSLayoutAttributeHeight
+                                    : NSLayoutAttributeWidth;
+  if (predicate->view != nil)
+    {
+      constraint = [NSLayoutConstraint constraintWithItem:_view
+                                                attribute:attribute
+                                                relatedBy:predicate->relation
+                                                   toItem:predicate->view
+                                                attribute:attribute
+                                               multiplier:1.0
+                                                 constant:predicate->constant];
+    }
+  else
+    {
+      constraint = [NSLayoutConstraint
+          constraintWithItem:_view
+                   attribute:attribute
+                   relatedBy:predicate->relation
+                      toItem:nil
+                   attribute:NSLayoutAttributeNotAnAttribute
+                  multiplier:1.0
+                    constant:predicate->constant];
     }
 
-     if (predicate->priority) {
-         constraint.priority = [predicate->priority doubleValue];
-     }
-    
-    return constraint;
+  if (predicate->priority)
+    {
+      constraint.priority = [predicate->priority doubleValue];
+    }
+
+  return constraint;
 }
 
--(GSObjectOfPredicate*)parseObjectOfPredicate
+- (GSObjectOfPredicate *) parseObjectOfPredicate
 {
-    NSLayoutRelation relation = [self parseRelation];
-    
-    CGFloat parsedConstant;
-    NSView *predicatedView = nil;
-    BOOL scanConstantResult = [_scanner scanDouble:&parsedConstant];
-    if (!scanConstantResult) {
-        NSString *identiferName = [self parseIdentifier];
-        if (![self isValidIdentifer:identiferName]) {
-            [self failParseWithMessage:@"Invalid metric or view identifier. Metric/View identifiers must be a valid C identifier and may only contain letters, numbers and underscores"];
+  NSLayoutRelation relation = [self parseRelation];
+
+  CGFloat parsedConstant;
+  NSView *predicatedView = nil;
+  BOOL scanConstantResult = [_scanner scanDouble:&parsedConstant];
+  if (!scanConstantResult)
+    {
+      NSString *identiferName = [self parseIdentifier];
+      if (![self isValidIdentifier:identiferName])
+        {
+          [self failParseWithMessage:
+                    @"Invalid metric or view identifier. Metric/View "
+                    @"identifiers must be a valid C identifier and may only "
+                    @"contain letters, numbers and underscores"];
         }
-        
-        NSNumber *metric = [_metrics objectForKey:identiferName];
-        if (metric != nil) {
-            parsedConstant = [metric doubleValue];
-        } else if ([_views objectForKey:identiferName]) {
-            parsedConstant = 0;
-            predicatedView = [_views objectForKey:identiferName];
-        } else {
-            NSString *message = [NSString stringWithFormat:@"Failed to find constant or metric for identifier '%@'", identiferName];
-            [self failParseWithMessage:message];
+
+      NSNumber *metric = [_metrics objectForKey:identiferName];
+      if (metric != nil)
+        {
+          parsedConstant = [metric doubleValue];
+        }
+      else if ([_views objectForKey:identiferName])
+        {
+          parsedConstant = 0;
+          predicatedView = [_views objectForKey:identiferName];
+        }
+      else
+        {
+          NSString *message = [NSString
+              stringWithFormat:
+                  @"Failed to find constant or metric for identifier '%@'",
+                  identiferName];
+          [self failParseWithMessage:message];
         }
     }
-    
-    NSNumber *priorityValue = [self parsePriority];
 
-    GSObjectOfPredicate *predicate = calloc(1, sizeof(GSObjectOfPredicate));
-    predicate->priority = priorityValue;
-    predicate->relation = relation;
-    predicate->constant = parsedConstant;
-    predicate->view = predicatedView;
-    
-    return predicate;
+  NSNumber *priorityValue = [self parsePriority];
+
+  GSObjectOfPredicate *predicate = calloc (1, sizeof (GSObjectOfPredicate));
+  predicate->priority = priorityValue;
+  predicate->relation = relation;
+  predicate->constant = parsedConstant;
+  predicate->view = predicatedView;
+
+  return predicate;
 }
 
--(NSLayoutRelation)parseRelation
+- (NSLayoutRelation) parseRelation
 {
-    if ([_scanner scanString:@"==" intoString:nil]) {
-        return NSLayoutRelationEqual;
-    } else if ([_scanner scanString:@">=" intoString:nil]) {
-        return NSLayoutRelationGreaterThanOrEqual;
-    } else if ([_scanner scanString:@"<=" intoString:nil]) {
-        return NSLayoutRelationLessThanOrEqual;
-    } else {
-        return NSLayoutRelationEqual;
+  if ([_scanner scanString:@"==" intoString:nil])
+    {
+      return NSLayoutRelationEqual;
+    }
+  else if ([_scanner scanString:@">=" intoString:nil])
+    {
+      return NSLayoutRelationGreaterThanOrEqual;
+    }
+  else if ([_scanner scanString:@"<=" intoString:nil])
+    {
+      return NSLayoutRelationLessThanOrEqual;
+    }
+  else
+    {
+      return NSLayoutRelationEqual;
     }
 }
 
--(NSNumber*)parsePriority
+- (NSNumber *) parsePriority
 {
-    NSCharacterSet *priorityMarkerCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"@"];
-    BOOL foundPriorityMarker = [_scanner scanCharactersFromSet:priorityMarkerCharacterSet intoString:nil];
-    if (!foundPriorityMarker) {
-        return nil;
+  NSCharacterSet *priorityMarkerCharacterSet =
+      [NSCharacterSet characterSetWithCharactersInString:@"@"];
+  BOOL foundPriorityMarker =
+      [_scanner scanCharactersFromSet:priorityMarkerCharacterSet
+                           intoString:nil];
+  if (!foundPriorityMarker)
+    {
+      return nil;
     }
-    
-    return [self parseConstant];
+
+  return [self parseConstant];
 }
 
--(NSNumber*)resolveMetricWithIdentifier: (NSString*)identifier
+- (NSNumber *) resolveMetricWithIdentifier:(NSString *)identifier
 {
-    NSNumber *metric = [_metrics objectForKey:identifier];
-    if (metric == nil) {
-        [self failParseWithMessage:@"Found metric not inside metric dictionary"];
+  NSNumber *metric = [_metrics objectForKey:identifier];
+  if (metric == nil)
+    {
+      [self failParseWithMessage:@"Found metric not inside metric dictionary"];
     }
-    return metric;
+  return metric;
 }
 
--(NSView*)resolveViewWithIdentifier: (NSString*)identifier
+- (NSView *) resolveViewWithIdentifier:(NSString *)identifier
 {
-    NSView *view = [_views objectForKey:identifier];
-    if (view == nil) {
-        [self failParseWithMessage:@"Found view not inside view dictionary"];
+  NSView *view = [_views objectForKey:identifier];
+  if (view == nil)
+    {
+      [self failParseWithMessage:@"Found view not inside view dictionary"];
     }
-    return view;
+  return view;
 }
 
--(NSNumber*)parseConstant
+- (NSNumber *) parseConstant
 {
-    CGFloat constant;
-    BOOL scanConstantResult = [_scanner scanDouble:&constant];
-    if (scanConstantResult) {
-        return [NSNumber numberWithFloat:constant];
+  CGFloat constant;
+  BOOL scanConstantResult = [_scanner scanDouble:&constant];
+  if (scanConstantResult)
+    {
+      return [NSNumber numberWithFloat:constant];
     }
-    
-    NSString *metricName = [self parseIdentifier];
-    if (![self isValidIdentifer:metricName]) {
-        [self failParseWithMessage:@"Invalid metric identifier. Metric identifiers must be a valid C identifier and may only contain letters, numbers and underscores"];
+
+  NSString *metricName = [self parseIdentifier];
+  if (![self isValidIdentifier:metricName])
+    {
+      [self failParseWithMessage:
+                @"Invalid metric identifier. Metric identifiers must be a "
+                @"valid C identifier and may only contain letters, numbers "
+                @"and underscores"];
     }
-    
-    return [self resolveMetricWithIdentifier:metricName];
+
+  return [self resolveMetricWithIdentifier:metricName];
 }
 
--(NSString*)parseIdentifier
+- (NSString *) parseIdentifier
 {
-    NSString *identifierName = nil;
-    NSCharacterSet *identifierTerminators = [NSCharacterSet characterSetWithCharactersInString:@"),"];
-    BOOL scannedIdentifier = [_scanner scanUpToCharactersFromSet:identifierTerminators intoString:&identifierName];
-    if (!scannedIdentifier) {
-        [self failParseWithMessage:@"Failed to find constant or metric"];
+  NSString *identifierName = nil;
+  NSCharacterSet *identifierTerminators =
+      [NSCharacterSet characterSetWithCharactersInString:@"),"];
+  BOOL scannedIdentifier =
+      [_scanner scanUpToCharactersFromSet:identifierTerminators
+                               intoString:&identifierName];
+  if (!scannedIdentifier)
+    {
+      [self failParseWithMessage:@"Failed to find constant or metric"];
     }
-    
-    return identifierName;
+
+  return identifierName;
 }
 
--(void)parseViewOpen
+- (void) parseViewOpen
 {
-    NSCharacterSet *openViewIdentifier = [NSCharacterSet characterSetWithCharactersInString:@"["];
-     BOOL scannedOpenBracket = [_scanner scanCharactersFromSet:openViewIdentifier intoString:nil];
-     if (!scannedOpenBracket) {
-         [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"A view must start with a '['" userInfo:nil] raise];
-     }
+  NSCharacterSet *openViewIdentifier =
+      [NSCharacterSet characterSetWithCharactersInString:@"["];
+  BOOL scannedOpenBracket = [_scanner scanCharactersFromSet:openViewIdentifier
+                                                 intoString:nil];
+  if (!scannedOpenBracket)
+    {
+      [[NSException exceptionWithName:NSInternalInconsistencyException
+                               reason:@"A view must start with a '['"
+                             userInfo:nil] raise];
+    }
 }
 
--(void)parseViewClose
+- (void) parseViewClose
 {
-    NSCharacterSet *closeViewIdentifier = [NSCharacterSet characterSetWithCharactersInString:@"]"];
-    BOOL scannedCloseBracket = [_scanner scanCharactersFromSet:closeViewIdentifier intoString:nil];
-    if (!scannedCloseBracket) {
-        [[NSException exceptionWithName:NSInternalInconsistencyException reason:@"A view must end with a ']'" userInfo:nil] raise];
+  NSCharacterSet *closeViewIdentifier =
+      [NSCharacterSet characterSetWithCharactersInString:@"]"];
+  BOOL scannedCloseBracket =
+      [_scanner scanCharactersFromSet:closeViewIdentifier intoString:nil];
+  if (!scannedCloseBracket)
+    {
+      [[NSException exceptionWithName:NSInternalInconsistencyException
+                               reason:@"A view must end with a ']'"
+                             userInfo:nil] raise];
     }
 }
 
--(BOOL)isValidIdentifer: (NSString*)identifer
+- (BOOL) isValidIdentifier:(NSString *)identifer
 {
-    NSRegularExpression *cIdentifierRegex = [NSRegularExpression regularExpressionWithPattern:@"^[a-zA-Z_][a-zA-Z0-9_]*$" options:0 error:nil];
-    NSArray *matches = [cIdentifierRegex matchesInString:identifer options:0 range:NSMakeRange(0, identifer.length)];
-    
-    return [matches count] > 0;
+  NSRegularExpression *cIdentifierRegex = [NSRegularExpression
+      regularExpressionWithPattern:@"^[a-zA-Z_][a-zA-Z0-9_]*$"
+                           options:0
+                             error:nil];
+  NSArray *matches =
+      [cIdentifierRegex matchesInString:identifer
+                                options:0
+                                  range:NSMakeRange (0, identifer.length)];
+
+  return [matches count] > 0;
 }
 
--(NSArray*)layoutAttributesForLayoutFormatOptions: (NSLayoutFormatOptions)options {
-    NSMutableArray *attributes = [NSMutableArray array];
-    
-    if (options & NSLayoutFormatAlignAllLeft) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeft]];
-    }
-    if (options & NSLayoutFormatAlignAllRight) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeRight]];
-    }
-    if (options & NSLayoutFormatAlignAllTop) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeTop]];
-    }
-    if (options & NSLayoutFormatAlignAllBottom) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeBottom]];
-    }
-    if (options & NSLayoutFormatAlignAllLeading) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeading]];
-    }
-    if (options & NSLayoutFormatAlignAllTrailing) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeTrailing]];
-    }
-    if (options & NSLayoutFormatAlignAllCenterX) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterX]];
-    }
-    if (options & NSLayoutFormatAlignAllCenterY) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterY]];
-    }
-    if (options & NSLayoutFormatAlignAllBaseline) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeBaseline]];
-    }
-    if (options & NSLayoutFormatAlignAllFirstBaseline) {
-        [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeFirstBaseline]];
-    }
-    
-    if ([attributes count] == 0) {
-        [self failParseWithMessage:@"Unrecognized layout formatting option"];
-    }
-    
-    return attributes;
-}
-
--(void)failParseWithMessage: (NSString*)parseErrorMessage
+- (NSArray *) layoutAttributesForLayoutFormatOptions:
+    (NSLayoutFormatOptions)options
 {
-    NSException *parseException = [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"Unable to parse constraint format: %@", parseErrorMessage] userInfo:nil];
-    [parseException raise];
+  NSMutableArray *attributes = [NSMutableArray array];
+
+  if (options & NSLayoutFormatAlignAllLeft)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeft]];
+    }
+  if (options & NSLayoutFormatAlignAllRight)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeRight]];
+    }
+  if (options & NSLayoutFormatAlignAllTop)
+    {
+      [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeTop]];
+    }
+  if (options & NSLayoutFormatAlignAllBottom)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeBottom]];
+    }
+  if (options & NSLayoutFormatAlignAllLeading)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeading]];
+    }
+  if (options & NSLayoutFormatAlignAllTrailing)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeTrailing]];
+    }
+  if (options & NSLayoutFormatAlignAllCenterX)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterX]];
+    }
+  if (options & NSLayoutFormatAlignAllCenterY)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterY]];
+    }
+  if (options & NSLayoutFormatAlignAllBaseline)
+    {
+      [attributes
+          addObject:[NSNumber numberWithInteger:NSLayoutAttributeBaseline]];
+    }
+  if (options & NSLayoutFormatAlignAllFirstBaseline)
+    {
+      [attributes
+          addObject:[NSNumber
+                        numberWithInteger:NSLayoutAttributeFirstBaseline]];
+    }
+
+  if ([attributes count] == 0)
+    {
+      [self failParseWithMessage:@"Unrecognized layout formatting option"];
+    }
+
+  return attributes;
 }
 
-
--(void)freeObjectOfPredicate: (GSObjectOfPredicate*)predicate
+- (void) failParseWithMessage:(NSString *)parseErrorMessage
 {
-    predicate->view = nil;
-    predicate->priority = nil;
-    free(predicate);
+  NSException *parseException = [NSException
+      exceptionWithName:NSInvalidArgumentException
+                 reason:[NSString stringWithFormat:
+                                      @"Unable to parse constraint format: %@",
+                                      parseErrorMessage]
+               userInfo:nil];
+  [parseException raise];
+}
+
+- (void) freeObjectOfPredicate:(GSObjectOfPredicate *)predicate
+{
+  predicate->view = nil;
+  predicate->priority = nil;
+  free (predicate);
 }
 
 @end
