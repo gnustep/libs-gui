@@ -21,6 +21,7 @@
 */
 
 #import "GSAutoLayoutVFLParser.h"
+#import "GSFastEnumeration.h"
 
 struct GSObjectOfPredicate
 {
@@ -43,11 +44,6 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 {
   if (self = [super init])
     {
-      if ([format length] == 0)
-        {
-          [self failParseWithMessage: @"Cannot parse an empty string"];
-        }
-
       _views = views;
       _metrics = metrics;
       _options = options;
@@ -62,6 +58,11 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSArray *) parse
 {
+  if ([[_scanner string] length] == 0)
+    {
+      [self failParseWithMessage: @"Cannot parse an empty string"];
+    }
+
   [self parseOrientation];
   NSNumber *spacingConstant = [self parseLeadingSuperViewConnection];
   NSView *previousView = nil;
@@ -84,7 +85,7 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
       [_constraints addObjectsFromArray: viewConstraints];
 
       spacingConstant = [self parseConnection];
-      if ([_scanner scanString: @"|" intoString:nil])
+      if ([_scanner scanString: @"|" intoString: nil])
         {
           [self addTrailingToSuperviewConstraint: spacingConstant];
         }
@@ -106,18 +107,17 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
   [self assertHasValidFormatLayoutOptions];
 
   NSArray *attributes = [self layoutAttributesForLayoutFormatOptions:_options];
-  for (NSNumber *layoutAttribute in attributes)
-    {
-      NSLayoutConstraint *formatConstraint =
-          [NSLayoutConstraint constraintWithItem: lastView
-                                       attribute: [layoutAttribute integerValue]
-                                       relatedBy: NSLayoutRelationEqual
-                                          toItem: _view
-                                       attribute: [layoutAttribute integerValue]
-                                      multiplier: 1.0
-                                        constant: 0];
-      [_layoutFormatConstraints addObject: formatConstraint];
-    }
+  FOR_IN(NSNumber*, layoutAttribute, attributes)
+    NSLayoutConstraint *formatConstraint =
+      [NSLayoutConstraint constraintWithItem: lastView
+                                    attribute: [layoutAttribute integerValue]
+                                    relatedBy: NSLayoutRelationEqual
+                                      toItem: _view
+                                    attribute: [layoutAttribute integerValue]
+                                  multiplier: 1.0
+                                    constant: 0];
+    [_layoutFormatConstraints addObject: formatConstraint];
+  END_FOR_IN(attributes);
 }
 
 - (void) assertHasValidFormatLayoutOptions
@@ -417,14 +417,13 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                     @"numbers and underscores"];
         }
 
-      NSNumber *metric = [self resolveMetricWithIdentifier: metricName];
-      return metric;
+      return [self resolveMetricWithIdentifier: metricName];
     }
 }
 
 - (NSArray *) parsePredicateList
 {
-  BOOL startsWithPredicateList = [_scanner scanString: @"(" intoString:nil];
+  BOOL startsWithPredicateList = [_scanner scanString: @"(" intoString: nil];
   if (!startsWithPredicateList)
     {
       return [NSArray array];
@@ -434,12 +433,12 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
   BOOL shouldParsePredicate = YES;
   while (shouldParsePredicate)
     {
-      GSObjectOfPredicate *predicate = [self parseObjectOfPredicate];
+      GSObjectOfPredicate predicate;
+      [self parseObjectOfPredicate: &predicate];
       [viewPredicateConstraints
-          addObject: [self createConstraintFromParsedPredicate: predicate]];
-      [self freeObjectOfPredicate: predicate];
+          addObject: [self createConstraintFromParsedPredicate: &predicate]];
 
-      shouldParsePredicate = [_scanner scanString: @"," intoString:nil];
+      shouldParsePredicate = [_scanner scanString: @"," intoString: nil];
     }
 
   if (![_scanner scanString: @")" intoString: nil])
@@ -481,13 +480,13 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
   if (predicate->priority)
     {
-      constraint.priority = [predicate->priority doubleValue];
+      [constraint setPriority: [predicate->priority doubleValue]];
     }
 
   return constraint;
 }
 
-- (GSObjectOfPredicate *) parseObjectOfPredicate
+- (void) parseObjectOfPredicate: (GSObjectOfPredicate *)predicate
 {
   NSLayoutRelation relation = [self parseRelation];
 
@@ -527,13 +526,10 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
   NSNumber *priorityValue = [self parsePriority];
 
-  GSObjectOfPredicate *predicate = calloc (1, sizeof (GSObjectOfPredicate));
   predicate->priority = priorityValue;
   predicate->relation = relation;
   predicate->constant = parsedConstant;
   predicate->view = predicatedView;
-
-  return predicate;
 }
 
 - (NSLayoutRelation) parseRelation
@@ -741,15 +737,8 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                  reason:[NSString stringWithFormat:
                                       @"Unable to parse constraint format: %@",
                                       parseErrorMessage]
-               userInfo:nil];
+               userInfo: nil];
   [parseException raise];
-}
-
-- (void) freeObjectOfPredicate:(GSObjectOfPredicate *)predicate
-{
-  predicate->view = nil;
-  predicate->priority = nil;
-  free (predicate);
 }
 
 @end
