@@ -244,7 +244,7 @@ static NSMutableArray *activeConstraints = nil;
     views: views];
   NSArray *constraints = [parser parse];
 
-  [parser release];
+  RELEASE(parser);
 
   return constraints;
 }

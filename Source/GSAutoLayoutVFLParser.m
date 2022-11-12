@@ -21,7 +21,6 @@
 */
 
 #import "GSAutoLayoutVFLParser.h"
-#import <AppKit/AppKit.h>
 
 struct GSObjectOfPredicate
 {
@@ -46,14 +45,14 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
     {
       if ([format length] == 0)
         {
-          [self failParseWithMessage:@"Cannot parse an empty string"];
+          [self failParseWithMessage: @"Cannot parse an empty string"];
         }
 
       _views = views;
       _metrics = metrics;
       _options = options;
 
-      _scanner = [NSScanner scannerWithString:format];
+      _scanner = [NSScanner scannerWithString: format];
       _constraints = [NSMutableArray array];
       _layoutFormatConstraints = [NSMutableArray array];
     }
@@ -72,27 +71,27 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
       NSArray *viewConstraints = [self parseView];
       if (_createLeadingConstraintToSuperview)
         {
-          [self addLeadingSuperviewConstraint:spacingConstant];
+          [self addLeadingSuperviewConstraint: spacingConstant];
           _createLeadingConstraintToSuperview = NO;
         }
 
       if (previousView != nil)
         {
-          [self addViewSpacingConstraint:spacingConstant
-                            previousView:previousView];
-          [self addFormattingConstraints:previousView];
+          [self addViewSpacingConstraint: spacingConstant
+                            previousView: previousView];
+          [self addFormattingConstraints: previousView];
         }
-      [_constraints addObjectsFromArray:viewConstraints];
+      [_constraints addObjectsFromArray: viewConstraints];
 
       spacingConstant = [self parseConnection];
-      if ([_scanner scanString:@"|" intoString:nil])
+      if ([_scanner scanString: @"|" intoString:nil])
         {
-          [self addTrailingToSuperviewConstraint:spacingConstant];
+          [self addTrailingToSuperviewConstraint: spacingConstant];
         }
       previousView = _view;
     }
 
-  [_constraints addObjectsFromArray:_layoutFormatConstraints];
+  [_constraints addObjectsFromArray: _layoutFormatConstraints];
 
   return _constraints;
 }
@@ -110,42 +109,42 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
   for (NSNumber *layoutAttribute in attributes)
     {
       NSLayoutConstraint *formatConstraint =
-          [NSLayoutConstraint constraintWithItem:lastView
-                                       attribute:[layoutAttribute integerValue]
-                                       relatedBy:NSLayoutRelationEqual
-                                          toItem:_view
-                                       attribute:[layoutAttribute integerValue]
-                                      multiplier:1.0
-                                        constant:0];
-      [_layoutFormatConstraints addObject:formatConstraint];
+          [NSLayoutConstraint constraintWithItem: lastView
+                                       attribute: [layoutAttribute integerValue]
+                                       relatedBy: NSLayoutRelationEqual
+                                          toItem: _view
+                                       attribute: [layoutAttribute integerValue]
+                                      multiplier: 1.0
+                                        constant: 0];
+      [_layoutFormatConstraints addObject: formatConstraint];
     }
 }
 
 - (void) assertHasValidFormatLayoutOptions
 {
   if (_isVerticalOrientation &&
-      [self isVerticalEdgeFormatLayoutOption:_options])
+      [self isVerticalEdgeFormatLayoutOption: _options])
     {
-      [self failParseWithMessage:@"A vertical alignment format option cannot "
+      [self failParseWithMessage: @"A vertical alignment format option cannot "
                                  @"be used with a vertical layout"];
     }
   else if (!_isVerticalOrientation
-           && ![self isVerticalEdgeFormatLayoutOption:_options])
+           && ![self isVerticalEdgeFormatLayoutOption: _options])
     {
-      [self failParseWithMessage:@"A horizontal alignment format option "
+      [self failParseWithMessage: @"A horizontal alignment format option "
                                  @"cannot be used with a horizontal layout"];
     }
 }
 
 - (void) parseOrientation
 {
-  if ([_scanner scanString:@"V:" intoString:nil])
+  if ([_scanner scanString: @"V:" intoString: nil])
     {
       _isVerticalOrientation = true;
     }
   else
     {
-      [_scanner scanString:@"H:" intoString:nil];
+      [_scanner scanString: @"H:" intoString: nil];
     }
 }
 
@@ -164,22 +163,22 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 {
   NSString *viewName = nil;
   NSCharacterSet *viewTerminators =
-      [NSCharacterSet characterSetWithCharactersInString:@"]("];
-  [_scanner scanUpToCharactersFromSet:viewTerminators intoString:&viewName];
+      [NSCharacterSet characterSetWithCharactersInString: @"]("];
+  [_scanner scanUpToCharactersFromSet: viewTerminators intoString: &viewName];
 
   if (viewName == nil)
     {
-      [self failParseWithMessage:@"Failed to parse view name"];
+      [self failParseWithMessage: @"Failed to parse view name"];
     }
 
-  if (![self isValidIdentifier:viewName])
+  if (![self isValidIdentifier: viewName])
     {
       [self failParseWithMessage:
                 @"Invalid view name. A view name must be a valid C identifier "
                 @"and may only contain letters, numbers and underscores"];
     }
 
-  return [self resolveViewWithIdentifier:viewName];
+  return [self resolveViewWithIdentifier: viewName];
 }
 
 - (BOOL) isVerticalEdgeFormatLayoutOption:(NSLayoutFormatOptions)options
@@ -250,15 +249,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
     }
 
   NSLayoutConstraint *viewSeparatorConstraint =
-      [NSLayoutConstraint constraintWithItem:firstItem
-                                   attribute:firstAttribute
-                                   relatedBy:NSLayoutRelationEqual
-                                      toItem:secondItem
-                                   attribute:secondAttribute
-                                  multiplier:1.0
-                                    constant:viewSpacingConstant];
+      [NSLayoutConstraint constraintWithItem: firstItem
+                                   attribute: firstAttribute
+                                   relatedBy: NSLayoutRelationEqual
+                                      toItem: secondItem
+                                   attribute: secondAttribute
+                                  multiplier: 1.0
+                                    constant: viewSpacingConstant];
 
-  [_constraints addObject:viewSeparatorConstraint];
+  [_constraints addObject: viewSeparatorConstraint];
 }
 
 - (void) addLeadingSuperviewConstraint:(NSNumber *)spacing
@@ -299,14 +298,14 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
       = spacing ? [spacing doubleValue] : GS_DEFAULT_SUPERVIEW_SPACING;
 
   NSLayoutConstraint *leadingConstraintToSuperview =
-      [NSLayoutConstraint constraintWithItem:firstItem
-                                   attribute:firstAttribute
-                                   relatedBy:NSLayoutRelationEqual
-                                      toItem:secondItem
-                                   attribute:firstAttribute
-                                  multiplier:1.0
-                                    constant:viewSpacingConstant];
-  [_constraints addObject:leadingConstraintToSuperview];
+      [NSLayoutConstraint constraintWithItem: firstItem
+                                   attribute: firstAttribute
+                                   relatedBy: NSLayoutRelationEqual
+                                      toItem: secondItem
+                                   attribute: firstAttribute
+                                  multiplier: 1.0
+                                    constant: viewSpacingConstant];
+  [_constraints addObject: leadingConstraintToSuperview];
 }
 
 - (void) addTrailingToSuperviewConstraint:(NSNumber *)spacing
@@ -346,19 +345,19 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
     }
 
   NSLayoutConstraint *trailingConstraintToSuperview =
-      [NSLayoutConstraint constraintWithItem:firstItem
-                                   attribute:attribute
-                                   relatedBy:NSLayoutRelationEqual
-                                      toItem:secondItem
-                                   attribute:attribute
-                                  multiplier:1.0
-                                    constant:viewSpacingConstant];
-  [_constraints addObject:trailingConstraintToSuperview];
+      [NSLayoutConstraint constraintWithItem: firstItem
+                                   attribute: attribute
+                                   relatedBy: NSLayoutRelationEqual
+                                      toItem: secondItem
+                                   attribute: attribute
+                                  multiplier: 1.0
+                                    constant: viewSpacingConstant];
+  [_constraints addObject: trailingConstraintToSuperview];
 }
 
 - (NSNumber *) parseLeadingSuperViewConnection
 {
-  BOOL foundSuperview = [_scanner scanString:@"|" intoString:nil];
+  BOOL foundSuperview = [_scanner scanString: @"|" intoString: nil];
   if (!foundSuperview)
     {
       return nil;
@@ -369,22 +368,22 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSNumber *) parseConnection
 {
-  BOOL foundConnection = [_scanner scanString:@"-" intoString:nil];
+  BOOL foundConnection = [_scanner scanString: @"-" intoString: nil];
   if (!foundConnection)
     {
-      return [NSNumber numberWithDouble:0];
+      return [NSNumber numberWithDouble: 0];
     }
 
   NSNumber *simplePredicateValue = [self parseSimplePredicate];
-  BOOL endConnectionFound = [_scanner scanString:@"-" intoString:nil];
+  BOOL endConnectionFound = [_scanner scanString: @"-" intoString: nil];
 
   if (simplePredicateValue != nil && !endConnectionFound)
     {
-      [self failParseWithMessage:@"A connection must end with a '-'"];
+      [self failParseWithMessage: @"A connection must end with a '-'"];
     }
   else if (simplePredicateValue == nil && endConnectionFound)
     {
-      [self failParseWithMessage:@"Found invalid connection"];
+      [self failParseWithMessage: @"Found invalid connection"];
     }
 
   return simplePredicateValue;
@@ -393,24 +392,24 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 - (NSNumber *) parseSimplePredicate
 {
   float constant;
-  BOOL scanConstantResult = [_scanner scanFloat:&constant];
+  BOOL scanConstantResult = [_scanner scanFloat: &constant];
   if (scanConstantResult)
     {
-      return [NSNumber numberWithDouble:constant];
+      return [NSNumber numberWithDouble: constant];
     }
   else
     {
       NSString *metricName = nil;
       NSCharacterSet *simplePredicateTerminatorsCharacterSet =
-          [NSCharacterSet characterSetWithCharactersInString:@"-[|"];
+          [NSCharacterSet characterSetWithCharactersInString: @"-[|"];
       BOOL didParseMetricName = [_scanner
-          scanUpToCharactersFromSet:simplePredicateTerminatorsCharacterSet
-                         intoString:&metricName];
+          scanUpToCharactersFromSet: simplePredicateTerminatorsCharacterSet
+                         intoString: &metricName];
       if (!didParseMetricName)
         {
           return nil;
         }
-      if (![self isValidIdentifier:metricName])
+      if (![self isValidIdentifier: metricName])
         {
           [self failParseWithMessage:
                     @"Invalid metric identifier. Metric identifiers must be a "
@@ -418,14 +417,14 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                     @"numbers and underscores"];
         }
 
-      NSNumber *metric = [self resolveMetricWithIdentifier:metricName];
+      NSNumber *metric = [self resolveMetricWithIdentifier: metricName];
       return metric;
     }
 }
 
 - (NSArray *) parsePredicateList
 {
-  BOOL startsWithPredicateList = [_scanner scanString:@"(" intoString:nil];
+  BOOL startsWithPredicateList = [_scanner scanString: @"(" intoString:nil];
   if (!startsWithPredicateList)
     {
       return [NSArray array];
@@ -437,15 +436,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
     {
       GSObjectOfPredicate *predicate = [self parseObjectOfPredicate];
       [viewPredicateConstraints
-          addObject:[self createConstraintFromParsedPredicate:predicate]];
-      [self freeObjectOfPredicate:predicate];
+          addObject: [self createConstraintFromParsedPredicate: predicate]];
+      [self freeObjectOfPredicate: predicate];
 
-      shouldParsePredicate = [_scanner scanString:@"," intoString:nil];
+      shouldParsePredicate = [_scanner scanString: @"," intoString:nil];
     }
 
-  if (![_scanner scanString:@")" intoString:nil])
+  if (![_scanner scanString: @")" intoString: nil])
     {
-      [self failParseWithMessage:@"A predicate on a view must end with ')'"];
+      [self failParseWithMessage: @"A predicate on a view must end with ')'"];
     }
 
   return viewPredicateConstraints;
@@ -460,24 +459,24 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                                     : NSLayoutAttributeWidth;
   if (predicate->view != nil)
     {
-      constraint = [NSLayoutConstraint constraintWithItem:_view
-                                                attribute:attribute
-                                                relatedBy:predicate->relation
-                                                   toItem:predicate->view
-                                                attribute:attribute
-                                               multiplier:1.0
-                                                 constant:predicate->constant];
+      constraint = [NSLayoutConstraint constraintWithItem: _view
+                                                attribute: attribute
+                                                relatedBy: predicate->relation
+                                                   toItem: predicate->view
+                                                attribute: attribute
+                                               multiplier: 1.0
+                                                 constant: predicate->constant];
     }
   else
     {
       constraint = [NSLayoutConstraint
-          constraintWithItem:_view
-                   attribute:attribute
-                   relatedBy:predicate->relation
-                      toItem:nil
-                   attribute:NSLayoutAttributeNotAnAttribute
-                  multiplier:1.0
-                    constant:predicate->constant];
+          constraintWithItem: _view
+                   attribute: attribute
+                   relatedBy: predicate->relation
+                      toItem: nil
+                   attribute: NSLayoutAttributeNotAnAttribute
+                  multiplier: 1.0
+                    constant: predicate->constant];
     }
 
   if (predicate->priority)
@@ -494,11 +493,11 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
   CGFloat parsedConstant;
   NSView *predicatedView = nil;
-  BOOL scanConstantResult = [_scanner scanDouble:&parsedConstant];
+  BOOL scanConstantResult = [_scanner scanDouble: &parsedConstant];
   if (!scanConstantResult)
     {
       NSString *identiferName = [self parseIdentifier];
-      if (![self isValidIdentifier:identiferName])
+      if (![self isValidIdentifier: identiferName])
         {
           [self failParseWithMessage:
                     @"Invalid metric or view identifier. Metric/View "
@@ -506,15 +505,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                     @"contain letters, numbers and underscores"];
         }
 
-      NSNumber *metric = [_metrics objectForKey:identiferName];
+      NSNumber *metric = [_metrics objectForKey: identiferName];
       if (metric != nil)
         {
           parsedConstant = [metric doubleValue];
         }
-      else if ([_views objectForKey:identiferName])
+      else if ([_views objectForKey: identiferName])
         {
           parsedConstant = 0;
-          predicatedView = [_views objectForKey:identiferName];
+          predicatedView = [_views objectForKey: identiferName];
         }
       else
         {
@@ -522,7 +521,7 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
               stringWithFormat:
                   @"Failed to find constant or metric for identifier '%@'",
                   identiferName];
-          [self failParseWithMessage:message];
+          [self failParseWithMessage: message];
         }
     }
 
@@ -539,15 +538,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSLayoutRelation) parseRelation
 {
-  if ([_scanner scanString:@"==" intoString:nil])
+  if ([_scanner scanString: @"==" intoString: nil])
     {
       return NSLayoutRelationEqual;
     }
-  else if ([_scanner scanString:@">=" intoString:nil])
+  else if ([_scanner scanString: @">=" intoString: nil])
     {
       return NSLayoutRelationGreaterThanOrEqual;
     }
-  else if ([_scanner scanString:@"<=" intoString:nil])
+  else if ([_scanner scanString: @"<=" intoString: nil])
     {
       return NSLayoutRelationLessThanOrEqual;
     }
@@ -560,10 +559,10 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 - (NSNumber *) parsePriority
 {
   NSCharacterSet *priorityMarkerCharacterSet =
-      [NSCharacterSet characterSetWithCharactersInString:@"@"];
+      [NSCharacterSet characterSetWithCharactersInString: @"@"];
   BOOL foundPriorityMarker =
-      [_scanner scanCharactersFromSet:priorityMarkerCharacterSet
-                           intoString:nil];
+      [_scanner scanCharactersFromSet: priorityMarkerCharacterSet
+                           intoString: nil];
   if (!foundPriorityMarker)
     {
       return nil;
@@ -574,20 +573,20 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSNumber *) resolveMetricWithIdentifier:(NSString *)identifier
 {
-  NSNumber *metric = [_metrics objectForKey:identifier];
+  NSNumber *metric = [_metrics objectForKey: identifier];
   if (metric == nil)
     {
-      [self failParseWithMessage:@"Found metric not inside metric dictionary"];
+      [self failParseWithMessage: @"Found metric not inside metric dictionary"];
     }
   return metric;
 }
 
 - (NSView *) resolveViewWithIdentifier:(NSString *)identifier
 {
-  NSView *view = [_views objectForKey:identifier];
+  NSView *view = [_views objectForKey: identifier];
   if (view == nil)
     {
-      [self failParseWithMessage:@"Found view not inside view dictionary"];
+      [self failParseWithMessage: @"Found view not inside view dictionary"];
     }
   return view;
 }
@@ -595,14 +594,14 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 - (NSNumber *) parseConstant
 {
   CGFloat constant;
-  BOOL scanConstantResult = [_scanner scanDouble:&constant];
+  BOOL scanConstantResult = [_scanner scanDouble: &constant];
   if (scanConstantResult)
     {
-      return [NSNumber numberWithFloat:constant];
+      return [NSNumber numberWithFloat: constant];
     }
 
   NSString *metricName = [self parseIdentifier];
-  if (![self isValidIdentifier:metricName])
+  if (![self isValidIdentifier: metricName])
     {
       [self failParseWithMessage:
                 @"Invalid metric identifier. Metric identifiers must be a "
@@ -610,20 +609,20 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                 @"and underscores"];
     }
 
-  return [self resolveMetricWithIdentifier:metricName];
+  return [self resolveMetricWithIdentifier: metricName];
 }
 
 - (NSString *) parseIdentifier
 {
   NSString *identifierName = nil;
   NSCharacterSet *identifierTerminators =
-      [NSCharacterSet characterSetWithCharactersInString:@"),"];
+      [NSCharacterSet characterSetWithCharactersInString: @"),"];
   BOOL scannedIdentifier =
-      [_scanner scanUpToCharactersFromSet:identifierTerminators
-                               intoString:&identifierName];
+      [_scanner scanUpToCharactersFromSet: identifierTerminators
+                               intoString: &identifierName];
   if (!scannedIdentifier)
     {
-      [self failParseWithMessage:@"Failed to find constant or metric"];
+      [self failParseWithMessage: @"Failed to find constant or metric"];
     }
 
   return identifierName;
@@ -632,41 +631,41 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 - (void) parseViewOpen
 {
   NSCharacterSet *openViewIdentifier =
-      [NSCharacterSet characterSetWithCharactersInString:@"["];
-  BOOL scannedOpenBracket = [_scanner scanCharactersFromSet:openViewIdentifier
-                                                 intoString:nil];
+      [NSCharacterSet characterSetWithCharactersInString: @"["];
+  BOOL scannedOpenBracket = [_scanner scanCharactersFromSet: openViewIdentifier
+                                                 intoString: nil];
   if (!scannedOpenBracket)
     {
-      [[NSException exceptionWithName:NSInternalInconsistencyException
-                               reason:@"A view must start with a '['"
-                             userInfo:nil] raise];
+      [[NSException exceptionWithName: NSInternalInconsistencyException
+                               reason: @"A view must start with a '['"
+                             userInfo: nil] raise];
     }
 }
 
 - (void) parseViewClose
 {
   NSCharacterSet *closeViewIdentifier =
-      [NSCharacterSet characterSetWithCharactersInString:@"]"];
+      [NSCharacterSet characterSetWithCharactersInString: @"]"];
   BOOL scannedCloseBracket =
-      [_scanner scanCharactersFromSet:closeViewIdentifier intoString:nil];
+      [_scanner scanCharactersFromSet: closeViewIdentifier intoString: nil];
   if (!scannedCloseBracket)
     {
-      [[NSException exceptionWithName:NSInternalInconsistencyException
-                               reason:@"A view must end with a ']'"
-                             userInfo:nil] raise];
+      [[NSException exceptionWithName: NSInternalInconsistencyException
+                               reason: @"A view must end with a ']'"
+                             userInfo: nil] raise];
     }
 }
 
 - (BOOL) isValidIdentifier:(NSString *)identifer
 {
   NSRegularExpression *cIdentifierRegex = [NSRegularExpression
-      regularExpressionWithPattern:@"^[a-zA-Z_][a-zA-Z0-9_]*$"
-                           options:0
-                             error:nil];
+      regularExpressionWithPattern: @"^[a-zA-Z_][a-zA-Z0-9_]*$"
+                           options: 0
+                             error: nil];
   NSArray *matches =
-      [cIdentifierRegex matchesInString:identifer
-                                options:0
-                                  range:NSMakeRange (0, identifer.length)];
+      [cIdentifierRegex matchesInString: identifer
+                                options: 0
+                                  range: NSMakeRange (0, identifer.length)];
 
   return [matches count] > 0;
 }
@@ -679,52 +678,52 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
   if (options & NSLayoutFormatAlignAllLeft)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeft]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeLeft]];
     }
   if (options & NSLayoutFormatAlignAllRight)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeRight]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeRight]];
     }
   if (options & NSLayoutFormatAlignAllTop)
     {
-      [attributes addObject:[NSNumber numberWithInteger:NSLayoutAttributeTop]];
+      [attributes addObject: [NSNumber numberWithInteger: NSLayoutAttributeTop]];
     }
   if (options & NSLayoutFormatAlignAllBottom)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeBottom]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeBottom]];
     }
   if (options & NSLayoutFormatAlignAllLeading)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeLeading]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeLeading]];
     }
   if (options & NSLayoutFormatAlignAllTrailing)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeTrailing]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeTrailing]];
     }
   if (options & NSLayoutFormatAlignAllCenterX)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterX]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeCenterX]];
     }
   if (options & NSLayoutFormatAlignAllCenterY)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeCenterY]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeCenterY]];
     }
   if (options & NSLayoutFormatAlignAllBaseline)
     {
       [attributes
-          addObject:[NSNumber numberWithInteger:NSLayoutAttributeBaseline]];
+          addObject: [NSNumber numberWithInteger: NSLayoutAttributeBaseline]];
     }
   if (options & NSLayoutFormatAlignAllFirstBaseline)
     {
       [attributes
-          addObject:[NSNumber
-                        numberWithInteger:NSLayoutAttributeFirstBaseline]];
+          addObject: [NSNumber
+                        numberWithInteger: NSLayoutAttributeFirstBaseline]];
     }
 
   if ([attributes count] == 0)

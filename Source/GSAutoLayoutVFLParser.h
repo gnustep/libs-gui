@@ -20,7 +20,9 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#import "AppKit/NSView.h"
+#import "AppKit/NSLayoutConstraint.h"
 
 @interface GSAutoLayoutVFLParser : NSObject
 {
