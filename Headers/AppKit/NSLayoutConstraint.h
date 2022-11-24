@@ -157,7 +157,12 @@ APPKIT_EXPORT_CLASS
 
 - (NSLayoutAnchor *) secondAnchor;
 
-- (NSLayoutPriority) priority;  
+#if GS_HAS_DECLARED_PROPERTIES
+@property NSLayoutPriority priority;
+#else
+- (NSLayoutPriority) priority;
+- (void) setPriority: (NSLayoutPriority)priority;
+#endif
 
 @end
 
