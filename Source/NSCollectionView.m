@@ -1614,7 +1614,13 @@ static NSString *_placeholderItem = nil;
           CGFloat alpha = [attrs alpha];
           NSSize sz = [attrs size];
           
-          // set attributes of item based on currently selected layout...
+	  // set next responder...
+	  [[item imageView] setEnabled: NO];
+	  [[item textField] setEnabled: NO];
+	  [[item imageView] setNextResponder: self];
+	  [[item textField] setNextResponder: self];
+	  
+	  // set attributes of item based on currently selected layout...
           frame.size = sz;
           [v setFrame: frame];
           [v setHidden: hidden];

@@ -63,4 +63,4 @@ APPKIT_EXPORT_CLASS
 
 @end
 
-#endif /* _GNUstep_H_NSCollectionView */
+#endif /* _GNUstep_H_NSCollectionViewItem */
