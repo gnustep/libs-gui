@@ -117,6 +117,109 @@ static NSString *_placeholderItem = nil;
 
 @end
 
+// Private class to track items so that we do not need to maintain multiple maps
+// or manually track items
+@interface _GSCollectionViewItemTrackingView : NSView
+{
+  NSCollectionViewItem *_item; // weak reference to the item...
+  NSCollectionView *_collectionView; // weak reference to the CV
+  NSIndexPath *_indexPath;
+}
+
+- (void) setIndexPath: (NSIndexPath *)p;
+- (NSIndexPath *) indexPath;
+
+- (void) setItem: (NSCollectionViewItem *)i;
+- (NSCollectionViewItem *) item;
+
+- (void) setCollectionView: (NSCollectionView *)cv;
+- (NSCollectionView *) collectionView;
+
+@end
+
+
+@implementation _GSCollectionViewItemTrackingView : NSView
+
+- (void) setIndexPath: (NSIndexPath *)p
+{
+  _indexPath = p;
+}
+
+- (NSIndexPath *) indexPath
+{
+  return _indexPath;
+}
+
+- (void) setItem: (NSCollectionViewItem *)i
+{
+  _item = i; // weak
+}
+
+- (NSCollectionViewItem *) item
+{
+  return _item;
+}
+
+- (void) setCollectionView: (NSCollectionView *) cv
+{
+  _collectionView = cv; // weak
+}
+
+- (NSCollectionView *) collectionView
+{
+  return _collectionView;
+}
+
+- (void) mouseDown: (NSEvent *)theEvent
+{
+  NSPoint initialLocation = [theEvent locationInWindow];
+  // NSPoint location = [self convertPoint: initialLocation fromView: nil];
+  NSEvent *lastEvent = theEvent;
+  BOOL done = NO;
+  NSUInteger eventMask = (NSLeftMouseUpMask 
+                          | NSLeftMouseDownMask
+                          | NSLeftMouseDraggedMask 
+                          | NSPeriodicMask);
+  NSDate *distantFuture = [NSDate distantFuture];
+
+  while (!done)
+    {
+      lastEvent = [NSApp nextEventMatchingMask: eventMask 
+				     untilDate: distantFuture
+					inMode: NSEventTrackingRunLoopMode 
+				       dequeue: YES];
+
+      NSEventType eventType = [lastEvent type];
+      NSPoint mouseLocationWin = [lastEvent locationInWindow];
+      switch (eventType)
+	{
+	case NSLeftMouseDown:
+	  break;
+	case NSLeftMouseDragged:
+	  if (fabs(mouseLocationWin.x - initialLocation.x) >= 2
+	      || fabs(mouseLocationWin.y - initialLocation.y) >= 2)
+	    {
+	      if ([_collectionView _startDragOperationWithEvent: theEvent
+					       clickedIndexPath: _indexPath])
+		{
+		  done = YES;
+		}
+	    }
+	  break;
+	case NSLeftMouseUp:
+	  [_collectionView _selectWithEvent: theEvent indexPath: _indexPath];
+	  done = YES;
+	  break;
+	default:
+	  done = NO;
+	  break;
+	}
+    }
+
+  [[_item view] mouseDown: theEvent];
+}
+
+@end
 
 @implementation NSCollectionView
 
@@ -870,78 +973,46 @@ static NSString *_placeholderItem = nil;
                           | NSLeftMouseDraggedMask 
                           | NSPeriodicMask);
   NSDate *distantFuture = [NSDate distantFuture];
-    
+
   if (_collectionViewLayout)
     {
-      NSIndexPath *indexPath = [self indexPathForItemAtPoint: location];
-
-      while (!done)
-        {
-          lastEvent = [NSApp nextEventMatchingMask: eventMask 
-                                         untilDate: distantFuture
-                                            inMode: NSEventTrackingRunLoopMode 
-                                           dequeue: YES]; 
-          NSEventType eventType = [lastEvent type];
-          NSPoint mouseLocationWin = [lastEvent locationInWindow];
-          switch (eventType)
-            {
-            case NSLeftMouseDown:
-              break;
-            case NSLeftMouseDragged:
-              if (fabs(mouseLocationWin.x - initialLocation.x) >= 2
-                  || fabs(mouseLocationWin.y - initialLocation.y) >= 2)
-                {
-                  if ([self _startDragOperationWithEvent: theEvent clickedIndexPath: indexPath])
-                    {
-                      done = YES;
-                    }
-                }
-              break;
-            case NSLeftMouseUp:
-              [self _selectWithEvent: theEvent indexPath: indexPath];
-              done = YES;
-              break;
-            default:
-              done = NO;
-              break;
-            }
-        }
+      [self hitTest: initialLocation]; // resets selection so one click touches the tracking view.
     }
   else
     {
       NSInteger index = [self _indexAtPoint: location];
-      
+
       while (!done)
-        {
-          lastEvent = [NSApp nextEventMatchingMask: eventMask 
-                                         untilDate: distantFuture
-                                            inMode: NSEventTrackingRunLoopMode 
-                                           dequeue: YES]; 
-          NSEventType eventType = [lastEvent type];
-          NSPoint mouseLocationWin = [lastEvent locationInWindow];
-          switch (eventType)
-            {
-            case NSLeftMouseDown:
-              break;
-            case NSLeftMouseDragged:
-              if (fabs(mouseLocationWin.x - initialLocation.x) >= 2
-                  || fabs(mouseLocationWin.y - initialLocation.y) >= 2)
-                {
-                  if ([self _startDragOperationWithEvent: theEvent clickedIndex: index])
-                    {
-                      done = YES;
-                    }
-                }
-              break;
-            case NSLeftMouseUp:
-              [self _selectWithEvent: theEvent index: index];
-              done = YES;
-              break;
-            default:
-              done = NO;
-              break;
-            }
-        }
+	{
+	  lastEvent = [NSApp nextEventMatchingMask: eventMask 
+					 untilDate: distantFuture
+					    inMode: NSEventTrackingRunLoopMode 
+					   dequeue: YES]; 
+	  NSEventType eventType = [lastEvent type];
+	  NSPoint mouseLocationWin = [lastEvent locationInWindow];
+	  switch (eventType)
+	    {
+	    case NSLeftMouseDown:
+	      break;
+	    case NSLeftMouseDragged:
+	      if (fabs(mouseLocationWin.x - initialLocation.x) >= 2
+		  || fabs(mouseLocationWin.y - initialLocation.y) >= 2)
+		{
+		  if ([self _startDragOperationWithEvent: theEvent clickedIndex: index])
+		    {
+		      done = YES;
+		    }
+		}
+	      break;
+	    case NSLeftMouseUp:
+	      [self _selectWithEvent: theEvent index: index];
+	      done = YES;
+	      break;
+	    default:
+	      done = NO;
+	      break;
+	    }
+	}
     }
 }
 
@@ -1602,7 +1673,20 @@ static NSString *_placeholderItem = nil;
   if (item != nil)
     {
       NSView *v = [item view];
+      NSRect f = [v frame];
+      _GSCollectionViewItemTrackingView *tv =
+	[[_GSCollectionViewItemTrackingView alloc]
+	  initWithFrame: NSMakeRect(0.0, 0.0, f.size.width, f.size.height)];
 
+      // Set up tracking view...
+      [v setNextResponder: tv];
+      [tv setAlphaValue: 0.0];
+      [tv setItem: item];
+      [tv setCollectionView: self];
+      [tv setIndexPath: path];
+      [v addSubview: tv positioned: NSWindowAbove relativeTo: nil];
+      RELEASE(tv);
+      
       [_visibleItems addObject: item];
       [_indexPathsForVisibleItems addObject: path];
       if (_collectionViewLayout)
@@ -1614,12 +1698,6 @@ static NSString *_placeholderItem = nil;
           CGFloat alpha = [attrs alpha];
           NSSize sz = [attrs size];
           
-	  // set next responder...
-	  [[item imageView] setEnabled: NO];
-	  [[item textField] setEnabled: NO];
-	  [[item imageView] setNextResponder: self];
-	  [[item textField] setNextResponder: self];
-	  
 	  // set attributes of item based on currently selected layout...
           frame.size = sz;
           [v setFrame: frame];
