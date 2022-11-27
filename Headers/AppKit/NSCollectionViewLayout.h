@@ -62,7 +62,6 @@ APPKIT_EXPORT_CLASS
 @interface NSCollectionViewLayoutAttributes : NSObject <NSCopying>
 {
   NSRect _frame;
-  NSSize _size;
   CGFloat _alpha;
   NSInteger _zIndex;
   BOOL _hidden; 

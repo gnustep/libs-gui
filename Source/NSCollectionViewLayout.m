@@ -76,12 +76,12 @@
 
 - (NSSize) size
 {
-  return _size;
+  return _frame.size;
 }
 
 - (void) setSize: (NSSize)size
 {
-  _size = size;
+  _frame.size = size;
 }
 
 - (CGFloat) alpha
@@ -151,8 +151,8 @@
 
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"%@ - f = %@, s = %@, alpha = %f, z = %ld",
-                   [super description], NSStringFromRect(_frame), NSStringFromSize(_size),
+  return [NSString stringWithFormat: @"%@ - f = %@, alpha = %f, z = %ld",
+                   [super description], NSStringFromRect(_frame),
                    _alpha, _zIndex];
 }
 
