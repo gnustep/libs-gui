@@ -43,8 +43,8 @@ enum
 };
 typedef NSInteger NSCollectionViewScrollDirection;
   
-NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionHeader;
-NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFooter;
+const NSCollectionViewSupplementaryElementKind NSCollectionElementKindSectionHeader;
+const NSCollectionViewSupplementaryElementKind NSCollectionElementKindSectionFooter;
 
 APPKIT_EXPORT_CLASS  
 @interface NSCollectionViewFlowLayoutInvalidationContext : NSCollectionViewLayoutInvalidationContext
