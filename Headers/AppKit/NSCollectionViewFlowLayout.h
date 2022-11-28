@@ -25,11 +25,10 @@
 #ifndef _NSCollectionViewFlowLayout_h_GNUSTEP_GUI_INCLUDE
 #define _NSCollectionViewFlowLayout_h_GNUSTEP_GUI_INCLUDE
 
-#import <AppKit/NSCollectionView.h>
 #import <AppKit/NSCollectionViewLayout.h>
 #import <AppKit/AppKitDefines.h>
 
-@class NSMutableIndexSet;
+@class NSCollectionViewLayout, NSMutableIndexSet;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 

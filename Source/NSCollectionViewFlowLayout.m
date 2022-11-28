@@ -24,6 +24,7 @@
 
 #import <Foundation/NSIndexPath.h>
 
+#import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewFlowLayout.h"
 #import "AppKit/NSCollectionViewItem.h"
 
