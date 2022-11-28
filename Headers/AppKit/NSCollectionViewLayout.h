@@ -48,7 +48,7 @@ typedef NSInteger NSCollectionElementCategory;
   
 
 typedef NSString *NSCollectionViewDecorationElementKind;
-const static NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndicator;
+APPKIT_EXPORT NSCollectionViewSupplementaryElementKind NSCollectionElementKindInterItemGapIndicator;
 
 @class NSCollectionViewLayoutAttributes;
 @class NSCollectionView;

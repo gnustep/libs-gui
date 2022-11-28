@@ -36,6 +36,7 @@
 #import "AppKit/NSAppearance.h"
 #import "AppKit/NSFontCollection.h"
 #import "AppKit/NSTextFinder.h"
+#import "AppKit/NSCollectionView.h"
 
 // Global strings
 APPKIT_DECLARE APPKIT_DECLARE NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
@@ -777,6 +778,11 @@ APPKIT_DECLARE NSPasteboardTypeTextFinderOptionKey const NSTextFinderCaseInsensi
 APPKIT_DECLARE NSPasteboardTypeTextFinderOptionKey const NSTextFinderMatchingTypeKey = @"NSTextFinderMatchingTypeKey";
 
 APPKIT_DECLARE CGFloat const NSGridViewSizeForContent = 0.0;
+
+// NSCollectionView constants
+APPKIT_DECLARE NSCollectionViewSupplementaryElementKind const NSCollectionElementKindInterItemGapIndicator = @"NSCollectionElementKindInterItemGapIndicator";
+APPKIT_DECLARE NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionHeader = @"UICollectionElementKindSectionHeader";
+APPKIT_DECLARE NSCollectionViewSupplementaryElementKind const NSCollectionElementKindSectionFooter = @"UICollectionElementKindSectionFooter";
 
 extern void __objc_gui_force_linking (void);
 

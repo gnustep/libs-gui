@@ -74,7 +74,7 @@ typedef enum _NSFontRenderingMode
 } NSFontRenderingMode;
 #endif
 
-APPKIT_EXPORT const CGFloat *NSFontIdentityMatrix;
+APPKIT_EXPORT const CGFloat NSFontIdentityMatrix[6];
 
 APPKIT_EXPORT_CLASS
 @interface NSFont : NSObject <NSCoding, NSCopying>
