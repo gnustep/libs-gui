@@ -34,6 +34,7 @@
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTextField.h"
+#import "AppKit/NSDragging.h"
 
 @implementation NSCollectionViewItem
 
