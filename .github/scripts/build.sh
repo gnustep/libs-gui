@@ -15,7 +15,7 @@ then
   then
     sudo apt-get install -y gobjc;
   fi;
-  sudo apt-get install -y libobjc-8-dev libblocksruntime-dev;
+  sudo apt-get install -y libobjc-10-dev libblocksruntime-dev;
 else
   curl -s -o - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -;
   sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" && sudo apt-get update -qq;
