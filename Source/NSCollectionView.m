@@ -72,6 +72,39 @@ static NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GS
  */
 static NSString *_placeholderItem = nil;
 
+@interface NSObject (CollectionViewInternalPrivate)
+
+/**
+ * This method is used to determine if the receiver overrides the
+ * given selector.
+ */
+- (BOOL) overridesSelector: (SEL)s;
+
+@end
+
+@implementation NSObject (CollectionViewInternalPrivate)
+
+- (BOOL) overridesSelector: (SEL)s
+{
+  Class osc = [self superclass];
+  BOOL overriden = NO;
+
+  while(osc != nil)
+    {
+      overriden = ([self methodForSelector: s] != [osc instanceMethodForSelector: s]);
+      if (overriden)
+	{
+	  break;
+	}
+
+      osc = [osc superclass];
+    }
+
+  return overriden;
+}
+
+@end
+
 @interface NSCollectionView (CollectionViewInternalPrivate)
 
 - (void) _initDefaults;
@@ -1779,17 +1812,23 @@ static NSString *_placeholderItem = nil;
       ps.height = (h > ps.height) ? h : ps.height;
     }
 
+  // Get the size proposed by the layout...
+  if ([_collectionViewLayout overridesSelector: @selector(collectionViewContentSize)])
+    {
+      ps = [_collectionViewLayout collectionViewContentSize];
+    }
+  else
+    {
+      NSLog(@"%@ does not override -collectionViewContentSize, some items may not be shown", _collectionViewLayout);
+    }
+
   cf.size = ps;
   [self _setFrameWithoutTile: cf];
 }
 
 - (void) reloadData
 {
-  if (_allowReload == NO)
-    {
-      return;
-    }
-  else
+  if (_allowReload)
     {
       NSInteger ns = [self numberOfSections];
       NSInteger cs = 0;
