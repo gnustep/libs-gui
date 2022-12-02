@@ -1748,7 +1748,7 @@ static NSString *_placeholderItem = nil;
         }
       else
         {
-          NSLog(@"Layout view is not set");
+          NSLog(@"NSCollectionViewLayout subclass is not set");
         }
     }
 }
@@ -1813,13 +1813,13 @@ static NSString *_placeholderItem = nil;
     }
 
   // Get the size proposed by the layout...
-  if ([_collectionViewLayout overridesSelector: @selector(collectionViewContentSize)])
+  if (_collectionViewLayout != nil && [_collectionViewLayout overridesSelector: @selector(collectionViewContentSize)])
     {
       ps = [_collectionViewLayout collectionViewContentSize];
     }
   else
     {
-      NSLog(@"%@ does not override -collectionViewContentSize, some items may not be shown", _collectionViewLayout);
+      NSLog(@"%@ does not override -collectionViewContentSize, some items may not be shown", NSStringFromClass([_collectionViewLayout class]));
     }
 
   cf.size = ps;
