@@ -73,6 +73,14 @@
   [super dealloc];
 }
 
+- (void)viewWillLoad
+{
+}
+
+- (void)viewDidLoad
+{
+}
+
 - (void)setRepresentedObject:(id)representedObject
 {
   ASSIGN(_representedObject, representedObject);
@@ -124,6 +132,11 @@
       return;
     }
 
+  if ([self respondsToSelector: @selector(viewWillLoad)])
+    {
+      [self viewWillLoad];
+    }
+  
   nib = [[NSNib alloc] initWithNibNamed: [self nibName]
                                  bundle: [self nibBundle]];
   if ((nib != nil) && [nib instantiateNibWithOwner: self
@@ -131,6 +144,10 @@
     {
       _vcFlags.nib_is_loaded = YES;
       // FIXME: Need to resolve possible retain cycles here
+      if ([self respondsToSelector: @selector(viewDidLoad)])
+	{
+	  [self viewWillLoad];
+	}      
     }
   else
     {
