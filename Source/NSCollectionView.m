@@ -1869,7 +1869,7 @@ static NSString *_placeholderItem = nil;
 
   if (buffer != NULL)
     {
-      for(i = 0; i < c; i++)
+      for (i = 0; i < c; i++)
         {
           NSUInteger cs = buffer[i];
           [self _loadSectionAtIndex: cs];
@@ -1973,7 +1973,7 @@ static NSString *_placeholderItem = nil;
   NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       if ([obj respondsToSelector: @selector(setSelected:)])
         {
@@ -1987,7 +1987,7 @@ static NSString *_placeholderItem = nil;
   NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       if ([obj respondsToSelector: @selector(setSelected:)])
         {
@@ -1999,7 +1999,7 @@ static NSString *_placeholderItem = nil;
 - (void) selectItemsAtIndexPaths: (NSSet *)indexPaths 
                   scrollPosition: (NSCollectionViewScrollPosition)scrollPosition
 {
-  FOR_IN(NSIndexPath*,p,indexPaths)
+  FOR_IN (NSIndexPath*, p, indexPaths)
     {
       id item = [_indexPathsToItems objectForKey: p];
 
@@ -2013,7 +2013,7 @@ static NSString *_placeholderItem = nil;
 
 - (void) deselectItemsAtIndexPaths: (NSSet *)indexPaths
 {
-  FOR_IN(NSIndexPath*,p,indexPaths)
+  FOR_IN (NSIndexPath*, p, indexPaths)
     {
       id item = [_indexPathsToItems objectForKey: p];
 
