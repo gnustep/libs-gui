@@ -326,6 +326,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
+					   @"collectionViewLayout", @"NSCollectionViewLayout",
                                          // @"primaryBackgroundColor", @"NSBackgroundColors",
                                            nil];
           RETAIN(XmlKeyMapTable);
@@ -3325,10 +3326,6 @@ didStartElement: (NSString*)elementName
         {
           object = [self decodeObjectForKey: @"primaryBackgroundColor"];
         }
-      else if ([@"NSCollectionViewLayout" isEqualToString: key])
-        {
-          object = [self decodeObjectForKey: @"collectionViewLayout"];
-        }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
         {
@@ -3554,10 +3551,6 @@ didStartElement: (NSString*)elementName
         {
           hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
         }
-      else if ([@"NSCollectionViewLayout" isEqualToString: key])
-        {
-          hasValue = [currentElement elementForKey: @"collectionViewLayout"] != nil;
-        } 
       else if (([@"NSIntercellSpacingHeight" isEqualToString: key]) ||
                ([@"NSIntercellSpacingWidth" isEqualToString: key]))
         {
