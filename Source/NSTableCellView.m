@@ -28,6 +28,32 @@
 
 @implementation NSTableCellView
 
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self != nil)
+    {
+      _rowSizeStyle = NSTableViewRowSizeStyleDefault;
+      _backgroundStyle = NSBackgroundStyleLight;
+    }
+  return self;
+}
+
+- (instancetype) init
+{
+  return [self initWithFrame: NSZeroRect];
+}
+
+- (void) dealloc
+{
+  RELEASE(_objectValue);
+  RELEASE(_imageView);
+  RELEASE(_textField);
+  RELEASE(_draggingImageComponents);
+
+  [super dealloc];
+}
+
 - (id) objectValue
 {
   return _objectValue;
@@ -86,6 +112,58 @@
 - (void) setDraggingImageComponents: (NSArray *)draggingImageComponents
 {
   ASSIGNCOPY(_draggingImageComponents, draggingImageComponents);
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [coder encodeObject: _objectValue];
+      [coder encodeObject: _imageView];
+      [coder encodeObject: _textField];
+      [coder encodeObject: _draggingImageComponents];
+
+      [coder encodeValueOfObjCType: @encode(NSBackgroundStyle)
+				at: &_backgroundStyle];
+      [coder encodeValueOfObjCType: @encode(NSTableViewRowSizeStyle)
+				at: &_rowSizeStyle];
+    }
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if (self != nil)
+    {
+      if ([coder allowsKeyedCoding])
+	{
+	}
+      else
+	{
+	  [self setObjectValue: [coder decodeObject]];
+	  [self setImageView: [coder decodeObject]];
+	  [self setTextField: [coder decodeObject]];
+	  [self setDraggingImageComponents: [coder decodeObject]];
+	  
+	  [coder decodeValueOfObjCType: @encode(NSBackgroundStyle)
+				    at: &_backgroundStyle];
+	  [coder decodeValueOfObjCType: @encode(NSTableViewRowSizeStyle)
+				    at: &_rowSizeStyle];	  
+	}
+    }
+  return self;
+}
+
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSData *d = [NSArchiver archivedDataWithRootObject: self];
+  id copy = [NSUnarchiver unarchiveObjectWithData: d];
+
+  return copy;
 }
 
 @end
