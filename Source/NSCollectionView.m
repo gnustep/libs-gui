@@ -89,7 +89,7 @@ static NSString *_placeholderItem = nil;
   Class osc = [self superclass];
   BOOL overriden = NO;
 
-  while(osc != nil)
+  while (osc != nil)
     {
       overriden = ([self methodForSelector: s] != [osc instanceMethodForSelector: s]);
       if (overriden)
@@ -546,7 +546,7 @@ static NSString *_placeholderItem = nil;
           id item = [_items objectAtIndex: index];
           if ([item respondsToSelector: @selector(setSelected:)])
             {
-              [item setSelected:NO];
+              [item setSelected: NO];
             }
         }
 
@@ -637,7 +637,7 @@ static NSString *_placeholderItem = nil;
       id item = [_items objectAtIndex: index];
       if ([item respondsToSelector: @selector(setSelected:)])
         {
-          [item setSelected:NO];
+          [item setSelected: NO];
         }
       index++;
     }
