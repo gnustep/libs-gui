@@ -23,8 +23,70 @@
 */
 
 #import "AppKit/NSTableCellView.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSTextField.h"
 
 @implementation NSTableCellView
+
+- (id) objectValue
+{
+  return _objectValue;
+}
+
+- (void) setObjectValue: (id)objectValue
+{
+  ASSIGN(_objectValue, objectValue);
+}
+
+- (NSImageView *) imageView
+{
+  return _imageView;
+}
+
+- (void) setImageView: (NSImageView *)imageView
+{
+  ASSIGN(_imageView, imageView);
+}
+
+- (NSTextField *) textField
+{
+  return _textField;
+}
+
+- (void) setTextField: (NSTextField *)textField
+{
+  ASSIGN(_textField, textField);
+}
+
+- (NSBackgroundStyle) backgroundStyle
+{
+  return _backgroundStyle;
+}
+
+- (void) setBackgroundStyle: (NSBackgroundStyle)backgroundStyle
+{
+  _backgroundStyle = backgroundStyle;
+}
+
+- (NSTableViewRowSizeStyle) rowSizeStyle
+{
+  return _rowSizeStyle;
+}
+
+- (void) setRowSizeStyle: (NSTableViewRowSizeStyle) rowSizeStyle
+{
+  _rowSizeStyle = rowSizeStyle;
+}
+
+- (NSArray *) draggingImageComponents
+{
+  return _draggingImageComponents;
+}
+
+- (void) setDraggingImageComponents: (NSArray *)draggingImageComponents
+{
+  ASSIGNCOPY(_draggingImageComponents, draggingImageComponents);
+}
 
 @end
 

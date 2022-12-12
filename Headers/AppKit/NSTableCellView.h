@@ -26,7 +26,9 @@
 #define _NSTableCellView_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSView.h>
+#import <AppKit/NSCell.h>
 #import <AppKit/AppKitDefines.h>
+#import <AppKit/NSTableView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
@@ -34,9 +36,36 @@
 extern "C" {
 #endif
 
+@class NSImageView, NSTextField, NSArray;
+
 APPKIT_EXPORT_CLASS    
 @interface NSTableCellView : NSView
+{
+  id _objectValue;
+  NSImageView *_imageView;
+  NSTextField *_textField;
+  NSBackgroundStyle _backgroundStyle;
+  NSTableViewRowSizeStyle _rowSizeStyle;
+  NSArray *_draggingImageComponents;
+}
 
+- (id) objectValue;
+- (void) setObjectValue: (id)objectValue;
+
+- (NSImageView *) imageView;
+- (void) setImageView: (NSImageView *)imageView;
+
+- (NSTextField *) textField;
+- (void) setTextField: (NSTextField *)textField;
+
+- (NSBackgroundStyle) backgroundStyle;
+- (void) setBackgroundStyle: (NSBackgroundStyle)backgroundStyle;
+
+- (NSTableViewRowSizeStyle) rowSizeStyle;
+- (void) setRowSizeStyle: (NSTableViewRowSizeStyle) rowSizeStyle;
+
+- (NSArray *) draggingImageComponents;
+- (void) setDraggingImageComponents: (NSArray *)draggingImageComponents;  
 @end
 
 #if	defined(__cplusplus)
