@@ -1758,8 +1758,6 @@ static NSString *_placeholderItem = nil;
   NSInteger ni = [self numberOfItemsInSection: cs];
   NSInteger ci = 0;
   
-  NSDebugLog(@"current section = %ld", cs);
-  
   for (ci = 0; ci < ni; ci++)
     {
       NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
