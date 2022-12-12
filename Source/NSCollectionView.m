@@ -1511,7 +1511,7 @@ static NSString *_placeholderItem = nil;
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
 {
-  return [_itemsToIndexPaths objectForKey: item]; // h];
+  return [_itemsToIndexPaths objectForKey: item];
 }
 
 - (NSIndexPath *) indexPathForItemAtPoint: (NSPoint)point
