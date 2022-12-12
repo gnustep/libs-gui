@@ -30,6 +30,7 @@
 #import <AppKit/NSTableView.h>
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/AppKitDefines.h>
+#import <AppKit/NSTableView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
@@ -43,12 +44,11 @@ APPKIT_EXPORT_CLASS
 @interface NSTableCellView : NSView
 {
   id _objectValue;
-  IBOutlet NSImageView *_imageView;
-  IBOutlet NSTextField *_textField;
-  NSArray *_draggingImageComponents;
-
+  NSImageView *_imageView;
+  NSTextField *_textField;
   NSBackgroundStyle _backgroundStyle;
   NSTableViewRowSizeStyle _rowSizeStyle;
+  NSArray *_draggingImageComponents;
 }
 
 - (id) objectValue;
