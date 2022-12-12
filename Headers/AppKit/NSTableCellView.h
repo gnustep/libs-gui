@@ -2,7 +2,7 @@
    Copyright (C) 2022 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: 03-09-2022
+   Date: 12-12-2022
 
    This file is part of the GNUstep Library.
    
@@ -25,47 +25,18 @@
 #ifndef _NSTableCellView_h_GNUSTEP_GUI_INCLUDE
 #define _NSTableCellView_h_GNUSTEP_GUI_INCLUDE
 
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSCell.h>
-#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSView.h>
+#import <AppKit/AppKitDefines.h>
 
-@class NSImageView;
-@class NSTextField;
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS    
 @interface NSTableCellView : NSView
-{
-  id _objectValue;
-  
-  IBOutlet NSImageView *_imageView;
-  IBOutlet NSTextField *_textField;
 
-  NSBackgroundStyle _backgroundStyle;
-  NSTableViewRowSizeStyle _rowSizeStyle;
-  NSArray  *_draggingImageComponents;
-}
-
-- (void) setObjectValue: (id)value;
-- (id) objectValue;
-
-- (void) setImageView: (NSImageView *)imageView;
-- (NSImageView *) imageView;
-
-- (void) setTextField: (NSTextField *)textField;
-- (NSTextField *) textField;
-
-- (void) setBackgroundStyle: (NSBackgroundStyle)style;
-- (NSBackgroundStyle) backgroundStyle;
-
-- (void) setRowSizeStyle: (NSTableViewRowSizeStyle)style;
-- (NSTableViewRowSizeStyle) rowSizeStyle;
-
-- (NSArray *) draggingImageComponents;
 @end
 
 #if	defined(__cplusplus)

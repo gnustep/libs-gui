@@ -2,7 +2,7 @@
    Copyright (C) 2022 Free Software Foundation, Inc.
    
    By: Gregory John Casamento
-   Date: 03-09-2022
+   Date: 12-12-2022
 
    This file is part of the GNUstep Library.
    
@@ -25,62 +25,6 @@
 #import "AppKit/NSTableCellView.h"
 
 @implementation NSTableCellView
-
-- (void) setObjectValue: (id)value
-{
-  ASSIGN(_objectValue, value);
-}
-
-- (id) objectValue
-{
-  return _objectValue;
-}
-
-- (void) setImageView: (NSImageView *)imageView
-{
-  ASSIGN(_imageView, imageView);
-}
-
-- (NSImageView *) imageView
-{
-  return _imageView;
-}
-
-- (void) setTextField: (NSTextField *)textField
-{
-  ASSIGN(_textField, textField);
-}
-
-- (NSTextField *) textField
-{
-  return _textField;
-}
-
-- (void) setBackgroundStyle: (NSBackgroundStyle)style
-{
-  _backgroundStyle = style;
-}
-
-- (NSBackgroundStyle) backgroundStyle
-{
-  return _backgroundStyle;
-}
-
-- (void) setRowSizeStyle: (NSTableViewRowSizeStyle)style
-{
-  _rowSizeStyle = style;
-}
-
-- (NSTableViewRowSizeStyle) rowSizeStyle
-{
-  return _rowSizeStyle;
-}
-
-- (NSArray *) draggingImageComponents
-{
-  return _draggingImageComponents;
-}
-
 
 @end
 

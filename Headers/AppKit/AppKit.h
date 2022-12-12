@@ -243,6 +243,7 @@
 #import <AppKit/NSSwitch.h>
 #import <AppKit/NSSplitViewController.h>
 #import <AppKit/NSSplitViewItem.h>
+#import <AppKit/NSTableCellView.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>
 #import <AppKit/NSTableHeaderView.h>
