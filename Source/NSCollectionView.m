@@ -812,12 +812,12 @@ static NSString *_placeholderItem = nil;
     {
       _numberOfColumns = MIN(_maxNumberOfColumns, _numberOfColumns);
     }
-  
+
   if (_numberOfColumns == 0)
     {
       _numberOfColumns = 1;
     }
-  
+
   CGFloat remaining = width - _numberOfColumns * itemSize.width;
   
   if (remaining > 0 && itemSize.width < _maxItemSize.width)
