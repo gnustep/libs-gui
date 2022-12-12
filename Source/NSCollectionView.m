@@ -56,14 +56,14 @@
 
 #include <math.h>
 
-static NSString* NSCollectionViewMinItemSizeKey              = @"NSMinGridSize";
-static NSString* NSCollectionViewMaxItemSizeKey              = @"NSMaxGridSize";
-static NSString* NSCollectionViewMaxNumberOfRowsKey          = @"NSMaxNumberOfGridRows";
-static NSString* NSCollectionViewMaxNumberOfColumnsKey       = @"NSMaxNumberOfGridColumns";
-static NSString* NSCollectionViewSelectableKey               = @"NSSelectable";
-static NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSAllowsMultipleSelection";
-static NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundColors";
-static NSString* NSCollectionViewLayoutKey                   = @"NSCollectionViewLayout";
+APPKIT_DECLARE NSString* NSCollectionViewMinItemSizeKey              = @"NSMinGridSize";
+APPKIT_DECLARE NSString* NSCollectionViewMaxItemSizeKey              = @"NSMaxGridSize";
+APPKIT_DECLARE NSString* NSCollectionViewMaxNumberOfRowsKey          = @"NSMaxNumberOfGridRows";
+APPKIT_DECLARE NSString* NSCollectionViewMaxNumberOfColumnsKey       = @"NSMaxNumberOfGridColumns";
+APPKIT_DECLARE NSString* NSCollectionViewSelectableKey               = @"NSSelectable";
+APPKIT_DECLARE NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSAllowsMultipleSelection";
+APPKIT_DECLARE NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundColors";
+APPKIT_DECLARE NSString* NSCollectionViewLayoutKey                   = @"NSCollectionViewLayout";
 
 static NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GSNoSupplementaryElement"; // private
 
