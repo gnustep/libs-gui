@@ -414,45 +414,17 @@ APPKIT_EXPORT_CLASS
 {
   // Content
   NSArray *_content;
-  IBOutlet NSCollectionViewItem *itemPrototype;
   NSMutableArray *_items;
-
-  // Selection management...
-  BOOL _allowsMultipleSelection;
-  BOOL _isSelectable;
-  BOOL _allowsEmptySelection;
   NSIndexSet *_selectionIndexes;
-  NSSet *_selectionIndexPaths;
-  
+  NSSet *_selectionIndexPaths;  
   NSArray *_backgroundColors;
 
   // Delegate and datasource
+  IBOutlet NSCollectionViewItem *itemPrototype;
   IBOutlet id <NSCollectionViewDelegate> _delegate;
   IBOutlet id <NSCollectionViewDataSource> _dataSource;
   IBOutlet NSView *_backgroundView;
   IBOutlet id <NSCollectionViewPrefetching> _prefetchDataSource;
-
-  BOOL _backgroundViewScrollsWithContent;
-  BOOL _allowReload;
-
-  // Size
-  NSSize _itemSize;
-  NSSize _maxItemSize;
-  NSSize _minItemSize;
-  CGFloat _tileWidth;
-  CGFloat _verticalMargin;
-  CGFloat _horizontalMargin;
-
-  NSUInteger _maxNumberOfColumns;
-  NSUInteger _maxNumberOfRows;
-  NSUInteger _numberOfColumns;
-
-  // Drag & Drop
-  NSDragOperation _draggingSourceOperationMaskForLocal;
-  NSDragOperation _draggingSourceOperationMaskForRemote;
-  
-  NSUInteger _draggingOnRow;
-  NSUInteger _draggingOnIndex;
 
   // Layout
   NSCollectionViewLayout *_collectionViewLayout;
@@ -472,6 +444,31 @@ APPKIT_EXPORT_CLASS
   // Registered class/nib for item identifier
   NSMapTable *_registeredNibs;
   NSMapTable *_registeredClasses;
+
+  // Selection management...
+  BOOL _allowsMultipleSelection;
+  BOOL _isSelectable;
+  BOOL _allowsEmptySelection;
+  BOOL _backgroundViewScrollsWithContent;
+  BOOL _allowReload;
+
+  // Size
+  NSSize _itemSize;
+  NSSize _maxItemSize;
+  NSSize _minItemSize;
+  CGFloat _tileWidth;
+  CGFloat _verticalMargin;
+  CGFloat _horizontalMargin;
+
+  NSUInteger _maxNumberOfColumns;
+  NSUInteger _maxNumberOfRows;
+  NSUInteger _numberOfColumns;
+
+  // Drag & Drop
+  NSDragOperation _draggingSourceOperationMaskForLocal;
+  NSDragOperation _draggingSourceOperationMaskForRemote;  
+  NSUInteger _draggingOnRow;
+  NSUInteger _draggingOnIndex;
 }
 
 - (BOOL) allowsMultipleSelection;
