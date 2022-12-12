@@ -87,7 +87,7 @@
 
 @interface GSObservableDictionary : NSDictionary
 {
-  NSDictionary *_dictionary;
+  NSMutableDictionary *_dictionary;
 }
 @end
 

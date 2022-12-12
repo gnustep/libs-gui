@@ -27,6 +27,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSException.h>
 
 #import "AppKit/NSDictionaryController.h"
 #import "AppKit/NSKeyValueBinding.h"
@@ -53,7 +54,7 @@
   self = [super init];
   if (self != nil)
     {
-      _dictionary = [[NSDictionary alloc] initWithObjects: objects
+      _dictionary = [[NSMutableDictionary alloc] initWithObjects: objects
                                                   forKeys: keys
                                                     count: count];
     }
@@ -86,7 +87,6 @@
   [_dictionary setValue: value forKey: key];
 }
 
-/*
 - (id) valueForKey: (NSString *)key
 {
   id result = [_dictionary valueForKey: key];
@@ -103,30 +103,6 @@
 
   return result;
 }
-*/
-
-- (void) addObserver: (NSObject*)anObserver
-	  forKeyPath: (NSString*)aPath
-	     options: (NSKeyValueObservingOptions)options
-	     context: (void*)aContext
-{
-  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
-
-  [self addObserver: anObserver
- toObjectsAtIndexes: indexes
-         forKeyPath: aPath
-            options: options
-            context: aContext];
-}
-
-- (void) removeObserver: (NSObject*)anObserver forKeyPath: (NSString*)aPath
-{
-  NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [self count])];
-
-  [self removeObserver: anObserver
-  fromObjectsAtIndexes: indexes
-            forKeyPath: aPath];
-}
 
 @end
 
@@ -138,6 +114,9 @@
     {
       [self exposeBinding: NSContentDictionaryBinding];
       [self exposeBinding: NSIncludedKeysBinding];
+      [self exposeBinding: NSExcludedKeysBinding];
+      [self exposeBinding: NSInitialKeyBinding];
+      [self exposeBinding: NSInitialValueBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
@@ -226,6 +205,22 @@
 - (void) setContentDictionary: (NSDictionary *)dict
 {
   ASSIGN(_contentDictionary, dict);
+}
+
+- (void) rearrangeObjects
+{
+}
+
+- (void) observeValueForKeyPath: (NSString*)aPath
+		       ofObject: (id)anObject
+			 change: (NSDictionary*)aChange
+		        context: (void*)aContext
+{
+  [NSException raise: NSInvalidArgumentException
+              format: @"-%@ cannot be sent to %@ ..."
+              @" create an instance overriding this",
+              NSStringFromSelector(_cmd), NSStringFromClass([self class])];
+  return;
 }
 
 @end
