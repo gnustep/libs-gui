@@ -1577,6 +1577,14 @@ static NSString *_placeholderItem = nil;
       NSLog(@"Could not load model %@", nib);
     }
   
+  RELEASE(nib);
+  
+  // Add to maps...
+  [_itemsToIndexPaths setObject: indexPath
+			 forKey: item];
+  [_indexPathsToItems setObject: item
+			 forKey: indexPath];
+
   return item;
 }
 
@@ -1722,10 +1730,6 @@ static NSString *_placeholderItem = nil;
 
           [_itemsToAttributes setObject: attrs
                                  forKey: item];
-          [_itemsToIndexPaths setObject: path
-                                 forKey: item];
-          [_indexPathsToItems setObject: item
-                                 forKey: path];
           
           [self addSubview: v];
         }
