@@ -65,7 +65,7 @@ APPKIT_DECLARE NSString* NSCollectionViewAllowsMultipleSelectionKey  = @"NSAllow
 APPKIT_DECLARE NSString* NSCollectionViewBackgroundColorsKey         = @"NSBackgroundColors";
 APPKIT_DECLARE NSString* NSCollectionViewLayoutKey                   = @"NSCollectionViewLayout";
 
-static NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GSNoSupplementaryElement"; // private
+APPKIT_DECLARE NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GSNoSupplementaryElement"; // private
 
 /*
  * Class variables
