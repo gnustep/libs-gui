@@ -1136,24 +1136,7 @@ static NSString *_placeholderItem = nil;
             }
           else if ([theEvent modifierFlags] & NSShiftKeyMask)
             {
-              /*
-              id firstSelected = [currentSet firstObject];
-              NSRange selectedRange;
-              
-              if (firstSelected == nil)
-                {
-                  selectedRange = NSMakeRange(index, index);
-                }
-              else if (index < firstSelectedIndex)
-                {
-                  selectedRange = NSMakeRange(index, (firstSelectedIndex - index + 1));
-                }
-              else
-                {
-                  selectedRange = NSMakeRange(firstSelectedIndex, (index - firstSelectedIndex + 1));
-                }
-              [currentIndexSet addIndexesInRange: selectedRange];
-              */
+	      // TODO: Implement multiple selection logic
               [self setSelectionIndexPaths: currentSet];
             }
         }
