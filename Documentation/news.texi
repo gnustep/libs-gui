@@ -9,6 +9,51 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.30.0}
+
+This version adds parsing support for layout constraints, compilation with MSVC
+and many new classes. Plus the usual bunch of bug fixes.
+
+@itemize @bullet
+@item Add classes NSStackView, NSGlyphInfo.
+@item Add more formal protocols to headers.
+@item Add extra pixels so that tool tip doesn't overrun the window.
+@item More improvements from Testplant.
+@item NSSplitView support different divider styles.
+@item Improve on Wayland support.
+@item NSPopUpButtonCell attempt to fix deallocation and item selection.
+@item NSImageCell fix refuse first responder.
+@item Improve NIB and XIB unarchiving.
+@item GSStandardWindowDecorationView fix resizing mode
+@item Make resize bar notch themable.
+@item NSButton add radio button behavior from MacOS 10.7.
+@item Fix clicking on test attachment cells.
+@item Add missing methods to GSLayoutManager.
+@item Add NSLayoutConstraint parsing.
+@item Add APPKIT_EXPORT_CLASS to support compilation with MSVC.
+@item Remove libgnustep-gui_INTERFACE_VERSION.
+@item Fix to build GSSpell in custom build dir.
+@item Add all new header files to DocMakefile.
+@item Fix memory leaks in NSView, NSTextView and NSBox.
+@item Add placeholder string handling in NSTextField.m.
+@item Apply userSpaceScaleFactor to title bar height when calculating offsets.
+@item Add new constants from MacOS 10.14 to NSBezierPath.
+@item Add README.md file.
+@item Add helper methods in GSWindowDecorator protocol for pointer hit test on window decorations.
+@item Improve support for 16 bit colour values in images.
+@item NSTextStorage update signatures to match MacOS.
+@item Add a preference to disable spellchecker.
+@item Fix crash in JPEG reading.
+@item Improve NSPopover and NSAccessibilityCustomAction.
+@item Support ImageMagick version >= 7.
+@item Add github workflow.
+@item Add icon for speech synthesizer.
+@item 
+@item 
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.29.0}
 
 This version adds support for storyboard files and many new
@@ -44,8 +89,6 @@ Some of these classes are still skeletons.
 returned by a slow window manager.
 @item Fix NSTableView/NSTableColumn bindings.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.28.0}
 

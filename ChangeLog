@@ -1,7 +1,10 @@
-2022-11-05 Fred Kiefer <FredKiefer@gmx.de>
+2022-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Headers/Additions/GNUstepGUI/GSLayoutManager.h,
-	* Source/GSLayoutManager.m: Add new methods
+        * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.30.0 by Fred.
+	* Version: bump to 0.30.0
 	-defaultLineHeightForFont: and -defaultBaselineOffsetForFont:.
 
 2022-10-11 Riccardo Mottola <rm@gnu.org>
