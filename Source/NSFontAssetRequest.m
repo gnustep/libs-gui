@@ -22,6 +22,7 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/Foundation.h>
 #import "AppKit/NSFontAssetRequest.h"
 
 @implementation NSFontAssetRequest
@@ -42,10 +43,13 @@
   return nil; // [NSProgress progressWithTotalUnitCount: 0.0];
 }
 
-- (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler
+- (void) downloadFontAssetsWithCompletionHandler:
+  (GSFontAssetCompletionHandler)completionHandler
 {
   NSError *error = nil;
-  CALL_BLOCK(completionHandler, error);
+
+  NSAssert(completionHandler != nil, NSInvalidArgumentException);
+  CALL_NON_NULL_BLOCK(completionHandler, error);
 }
 
 @end
