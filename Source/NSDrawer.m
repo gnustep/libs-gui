@@ -162,14 +162,14 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect newFrame = [_parentWindow frame];
   CGFloat totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
-  NSRectEdge edge = _currentEdge; // [_drawer preferredEdge];
+  // NSRectEdge edge = _currentEdge;
   BOOL opened = (state == NSDrawerOpenState || state == NSDrawerOpeningState);
   NSSize size = [_parentWindow frame].size;
   NSRect windowContentRect = [[_parentWindow contentView] frame];
   CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height;
   // FIXME: This should probably add the toolbar height too, if the window has a toolbar
   
-  if (edge == NSMinXEdge) // left
+  if (_currentEdge == NSMinXEdge) // left
     {
       if (opened)
         newFrame.size.width = [_drawer minContentSize].width + _borderSize.width;
@@ -181,7 +181,7 @@ static NSNotificationCenter *nc = nil;
       if (opened)
         newFrame.origin.x -= newFrame.size.width;
     }
-  else if (edge == NSMinYEdge) // bottom
+  else if (_currentEdge == NSMinYEdge) // bottom
     {
       if (opened)
         newFrame.size.height = [_drawer minContentSize].height + _borderSize.height;
@@ -193,7 +193,7 @@ static NSNotificationCenter *nc = nil;
       if (opened)
         newFrame.origin.y -= newFrame.size.height;
     }
-  else if (edge == NSMaxXEdge) // right
+  else if (_currentEdge == NSMaxXEdge) // right
     {
       if (opened)
         newFrame.size.width = [_drawer minContentSize].width + _borderSize.width;
@@ -206,7 +206,7 @@ static NSNotificationCenter *nc = nil;
       if (!opened)
         newFrame.origin.x -= newFrame.size.width;
     }
-  else if (edge == NSMaxYEdge) // top
+  else if (_currentEdge == NSMaxYEdge) // top
     {
       if (opened)
         newFrame.size.height = [_drawer minContentSize].height + _borderSize.height;
@@ -269,22 +269,21 @@ static NSNotificationCenter *nc = nil;
 // and attach it to the appropriate edge instead
 - (void) lockBorderBoxForSliding
 {
-  NSRectEdge edge = [_drawer preferredEdge];
   NSUInteger resizeMask = 0;
 
-  if (edge == NSMinXEdge) // left
+  if (_currentEdge == NSMinXEdge) // left
     {
       resizeMask = NSViewMaxXMargin;
     }
-  else if (edge == NSMinYEdge) // bottom
+  else if (_currentEdge == NSMinYEdge) // bottom
     {
       resizeMask = NSViewMaxYMargin;
     }
-  else if (edge == NSMaxXEdge) // right
+  else if (_currentEdge == NSMaxXEdge) // right
     {
       resizeMask = NSViewMinXMargin;
     }
-  else if (edge == NSMaxYEdge) // top
+  else if (_currentEdge == NSMaxYEdge) // top
     {
       resizeMask = NSViewMinYMargin;
     }  
@@ -304,6 +303,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
 
+  _currentEdge = edge;
   [self setFrame:frame display: YES]; // make sure it's the full (open) size before locking the borderBox
   if ([_parentWindow isVisible]) // don't order front until parent window is visible
     {
