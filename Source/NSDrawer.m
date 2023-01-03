@@ -42,27 +42,32 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSDrawer.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSScreen.h"
 
 static NSNotificationCenter *nc = nil;
 
 @interface GSDrawerWindow : NSWindow
 {
-  NSWindow *_parentWindow;
-  NSWindow *_pendingParentWindow;
-  NSDrawer *_drawer;
-  id        _container;
-  NSBox    *_borderBox;
-  NSSize   _borderSize;
-  NSTimer  *_timer;
-  NSRect   _latestParentFrame;
-  BOOL     _wasOpen;
+  NSWindow  *_parentWindow;
+  NSWindow  *_pendingParentWindow;
+  NSDrawer  *_drawer;
+  id         _container;
+  NSBox     *_borderBox;
+  NSSize     _borderSize;
+  NSTimer   *_timer;
+  NSRect     _latestParentFrame;
+  BOOL       _wasOpen;
+  NSRectEdge _currentEdge;
 }
+
 - (NSRect) frameFromParentWindowFrameInState:(NSInteger)state;
 
 // open/close
-- (void) openOnEdge;
+- (void) openOnEdge: (NSRectEdge)edge;
+- (void) closeOnEdge: (NSRectEdge)edge;
 - (void) closeOnEdge;
-- (void) slideOpen:(BOOL)opening;
+- (void) slideOpen: (BOOL)opening onEdge: (NSRectEdge)edge;
+- (void) slideOpen: (BOOL)opening;
 - (void) startTimer;
 - (void) stopTimer;
 
@@ -80,9 +85,11 @@ static NSNotificationCenter *nc = nil;
 - (void) handleWindowMiniaturize: (NSNotification *)notification;
 - (void) handleWindowDeminiaturize: (NSNotification *)notification;
 - (void) handleWindowMove: (NSNotification *)notification;
+
 @end
 
 @implementation GSDrawerWindow
+
 + (void) initialize
 {
   if (self == [GSDrawerWindow class])
@@ -151,15 +158,16 @@ static NSNotificationCenter *nc = nil;
   return _container;
 }
 
-- (NSRect) frameFromParentWindowFrameInState:(NSInteger)state
+- (NSRect) frameFromParentWindowFrameInState: (NSInteger)state
 {
   NSRect newFrame = [_parentWindow frame];
   CGFloat totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
-  NSRectEdge edge = [_drawer preferredEdge];
+  NSRectEdge edge = _currentEdge; // [_drawer preferredEdge];
   BOOL opened = (state == NSDrawerOpenState || state == NSDrawerOpeningState);
-  NSSize size = [_parentWindow frame].size; // [_drawer maxContentSize];
+  NSSize size = [_parentWindow frame].size;
   NSRect windowContentRect = [[_parentWindow contentView] frame];
-  CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height; // FIXME: This should probably add the toolbar height too, if the window has a toolbar
+  CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height;
+  // FIXME: This should probably add the toolbar height too, if the window has a toolbar
   
   if (edge == NSMinXEdge) // left
     {
@@ -215,8 +223,6 @@ static NSNotificationCenter *nc = nil;
   return newFrame;
 }
 
-
- 
 - (BOOL) canBecomeKeyWindow
 {
   return YES;
@@ -229,42 +235,18 @@ static NSNotificationCenter *nc = nil;
 
 - (void) becomeKeyWindow
 {
-      [_parentWindow orderFrontRegardless]; // so clicking on the drawer will bring the parent to the front
-      [super becomeKeyWindow];
+  [_parentWindow orderFrontRegardless]; // so clicking on the drawer will bring the parent to the front
+  [super becomeKeyWindow];
 }
-
-/*
-- (void) orderFront: (id)sender
-{
-  NSPoint holdOrigin = [self frame].origin;
-  NSPoint newOrigin = NSMakePoint(-10000,-10000);
-  NSRect tempFrame = [self frame];
-
-  // order the window under the parent...
-  tempFrame.origin = newOrigin;
-  [self setFrame: tempFrame display: NO];
-  [super orderFront: sender];
-  // [_parentWindow orderWindow: NSWindowAbove relativeTo: [self windowNumber]];  
-  tempFrame.origin = holdOrigin;
-  // [self setFrame: tempFrame display: YES];
-}
-*/
-
-/*
-- (void) orderFront: (id)sender
-{
-  [super orderWindow:NSWindowBelow relativeTo:[_parentWindow windowNumber]];
-}
-*/
 
 - (void) startTimer
 {
   NSTimeInterval time = 0.1;
   _timer = [NSTimer scheduledTimerWithTimeInterval: time
-		    target: self
-		    selector: @selector(_timedWindowReset)
-		    userInfo: nil
-		    repeats: YES];
+					    target: self
+					  selector: @selector(_timedWindowReset)
+					  userInfo: nil
+					   repeats: YES];
 }
 
 - (void) stopTimer
@@ -283,19 +265,13 @@ static NSNotificationCenter *nc = nil;
   [super orderOut: sender];
 }
 
-/*
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)windowNum
-{
-  NSLog(@"Ordering window....");
-  [super orderWindow: place relativeTo: windowNum];  
-}
-*/
-
+// set the _borderBox to not resize during the slide,
+// and attach it to the appropriate edge instead
 - (void) lockBorderBoxForSliding
 {
-  // set the _borderBox to not resize during the slide, and attach it to the appropriate edge instead
   NSRectEdge edge = [_drawer preferredEdge];
   NSUInteger resizeMask = 0;
+
   if (edge == NSMinXEdge) // left
     {
       resizeMask = NSViewMaxXMargin;
@@ -312,7 +288,9 @@ static NSNotificationCenter *nc = nil;
     {
       resizeMask = NSViewMinYMargin;
     }  
-  [_borderBox setAutoresizingMask: resizeMask]; // don't resize -- just give appearance of sliding
+
+  // don't resize -- just give appearance of sliding
+  [_borderBox setAutoresizingMask: resizeMask]; 
 }
 
 - (void) unlockBorderBoxAfterSliding
@@ -321,28 +299,34 @@ static NSNotificationCenter *nc = nil;
   [_borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 }
 
-- (void) openOnEdge
+// prepare drawer contents before sliding...
+- (void) openOnEdge: (NSRectEdge)edge
 {
-  // prepare drawer contents before sliding...
   NSRect frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
+
   [self setFrame:frame display: YES]; // make sure it's the full (open) size before locking the borderBox
   if ([_parentWindow isVisible]) // don't order front until parent window is visible
     {
       [self lockBorderBoxForSliding];
+      [self slideOpen: YES onEdge: edge];
       [self orderFront: self];
-      [self slideOpen:YES];
       [self performSelector:@selector(unlockBorderBoxAfterSliding) withObject:nil afterDelay:0.01];
     }
   [self startTimer];
 }
 
-- (void) closeOnEdge
+- (void) openOnEdge
+{
+  [self openOnEdge: _currentEdge];
+}
+
+- (void) closeOnEdge: (NSRectEdge)edge
 {
   NSRect frame;
 
   [self stopTimer];
   [self lockBorderBoxForSliding];
-  [self slideOpen:NO];
+  [self slideOpen: NO onEdge: edge];
   [self orderOut: self];
 
   frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
@@ -353,21 +337,30 @@ static NSNotificationCenter *nc = nil;
     && _pendingParentWindow != _parentWindow)
     {
       [self setParentWindow: _pendingParentWindow];
-      ASSIGN(_pendingParentWindow, nil);
-    }  
+      _pendingParentWindow = nil;
+    }
 }
 
-- (void) slideOpen:(BOOL)opening
+- (void) closeOnEdge
 {
-  NSRect frame = [self frameFromParentWindowFrameInState:(opening?NSDrawerClosedState:NSDrawerOpenState)];
-  NSRect newFrame = [self frameFromParentWindowFrameInState:(opening?NSDrawerOpenState:NSDrawerClosedState)];
+  [self closeOnEdge: _currentEdge];
+}
+
+- (void) slideOpen: (BOOL)opening onEdge: (NSRectEdge)edge
+{
+  NSUInteger count = 10;
+  NSRect frame = [self frameFromParentWindowFrameInState:
+			    (opening?NSDrawerClosedState:NSDrawerOpenState)];
+  NSRect newFrame = [self frameFromParentWindowFrameInState:
+				 (opening?NSDrawerOpenState:NSDrawerClosedState)];
   NSTimeInterval slideDelay = 0.03;
   NSDate *nextStop = [NSDate dateWithTimeIntervalSinceNow:slideDelay];
-  int count = 10;
   CGFloat deltaX = (newFrame.origin.x - frame.origin.x) / count;
   CGFloat deltaY = (newFrame.origin.y - frame.origin.y) / count;
   CGFloat deltaW = (newFrame.size.width - frame.size.width) / count;
   CGFloat deltaH = (newFrame.size.height - frame.size.height) / count;
+
+  _currentEdge = edge;
   while (count--)
     {
       frame.origin.x += deltaX;
@@ -376,9 +369,15 @@ static NSNotificationCenter *nc = nil;
       frame.size.height += deltaH;
       [self setFrame: frame display: YES];
       [NSThread sleepUntilDate:nextStop];
-      nextStop = [nextStop addTimeInterval:slideDelay];
+      nextStop = [nextStop addTimeInterval: slideDelay];
     }
+  
   [self setFrame:newFrame display: YES];
+}
+
+- (void) slideOpen: (BOOL)opening
+{
+  [self slideOpen: opening onEdge: _currentEdge];
 }
 
 - (void) _resetWindowPosition
@@ -552,6 +551,10 @@ static NSNotificationCenter *nc = nil;
 	     preferredEdge: (NSRectEdge)edge
 {
   self = [super init];
+
+  if (self == nil)
+    return nil;
+  
   // initialize the drawer window...
   _drawerWindow =  [[GSDrawerWindow alloc] 
 		     initWithContentRect: NSMakeRect(0, 0, contentSize.width,  
@@ -565,14 +568,19 @@ static NSNotificationCenter *nc = nil;
   _preferredEdge = edge;
   _currentEdge = edge;
   _maxContentSize = NSMakeSize(200,200);
-  _minContentSize = contentSize; //NSMakeSize(50,50);
-  if (edge == NSMinXEdge || edge == NSMaxXEdge) {
-    _leadingOffset = 0.0; // for side drawers, top of drawer is immediately below the title bar
-    _trailingOffset = 10.0;
-  } else { 
-    _leadingOffset = 10.0;
-    _trailingOffset = 10.0;
-  }
+  _minContentSize = contentSize;
+
+  // for side drawers, top of drawer is immediately below the title bar
+  if (edge == NSMinXEdge || edge == NSMaxXEdge)
+    {
+      _leadingOffset = 0.0;
+      _trailingOffset = 10.0;
+    }
+  else
+    { 
+      _leadingOffset = 10.0;
+      _trailingOffset = 10.0;
+    }
   _state = NSDrawerClosedState;
 
   return self;
@@ -590,6 +598,46 @@ static NSNotificationCenter *nc = nil;
 }
 
 // Opening and Closing
+- (NSRectEdge) _computeEdge
+{
+  NSRectEdge result = _preferredEdge;
+  NSRect windowFrame = [[self parentWindow] frame];
+  NSRect screenRect = [[NSScreen mainScreen] frame];
+  
+  switch (_preferredEdge)
+    {
+    case NSMinXEdge:
+      if (windowFrame.origin.x < _maxContentSize.width)
+	{
+	  result = NSMaxXEdge;
+	}
+      break;
+      
+    case NSMinYEdge:
+      if (windowFrame.origin.y < _maxContentSize.height)
+	{
+	  result = NSMaxYEdge;
+	}
+      break;
+      
+    case NSMaxXEdge:
+      if (windowFrame.origin.x + windowFrame.size.height > screenRect.size.height)
+	{
+	  result = NSMinXEdge;
+	}
+      break;
+      
+    case NSMaxYEdge:
+      if (windowFrame.origin.y + windowFrame.size.width > screenRect.size.width)
+	{
+	  result = NSMinYEdge;
+	}
+      break;
+    }
+
+  return result;
+}
+
 - (void) close
 {
   if (_state != NSDrawerOpenState)
@@ -616,7 +664,8 @@ static NSNotificationCenter *nc = nil;
 
 - (void) open
 {
-  [self openOnEdge: _preferredEdge];
+  NSRectEdge edge = [self _computeEdge];
+  [self openOnEdge: edge];
 }
 
 - (void) open: (id)sender
@@ -639,7 +688,7 @@ static NSNotificationCenter *nc = nil;
   [nc postNotificationName: NSDrawerWillOpenNotification object: self];
 
   _currentEdge = edge;
-  [_drawerWindow openOnEdge]; 
+  [_drawerWindow openOnEdge: edge]; 
   
   _state = NSDrawerOpenState;
   [nc postNotificationName: NSDrawerDidOpenNotification object: self];
