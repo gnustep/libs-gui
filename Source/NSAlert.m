@@ -2049,6 +2049,15 @@ void NSBeginInformationalAlertSheet(NSString *title,
   DESTROY(_window);
 }
 
+- (void) beginSheetModalForWindow:(NSWindow *)sheet
+                completionHandler:(GSNSWindowDidEndSheetCallbackBlock)handler
+{
+  [self _setupPanel];
+  [sheet beginSheet: _window
+  completionHandler: handler];
+  DESTROY(_window);
+}
+
 - (void) _alertDidEnd: (NSWindow *)sheet
            returnCode: (NSInteger)returnCode
 	  contextInfo: (void *)contextInfo

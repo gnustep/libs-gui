@@ -74,6 +74,10 @@ enum {
   NSRunContinuesResponse = (-1002)
 };
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
+  typedef NSInteger NSModalResponse;
+#endif
+
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #define NSUpdateWindowsRunLoopOrdering 600000
 

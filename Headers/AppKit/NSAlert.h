@@ -55,6 +55,11 @@ enum {
   NSAlertThirdButtonReturn = 1002
 };
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
+  typedef NSInteger NSModalResponse;
+  DEFINE_BLOCK_TYPE(GSNSWindowDidEndSheetCallbackBlock, void, NSModalResponse returnCode);
+#endif
+
 APPKIT_EXPORT_CLASS
 @interface NSAlert : NSObject 
 {
@@ -105,6 +110,11 @@ APPKIT_EXPORT_CLASS
 - (void) setShowsHelp: (BOOL)showsHelp;
 - (BOOL) showsHelp;
 - (id) window;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
+- (void) beginSheetModalForWindow:(NSWindow *)sheetWindow 
+                completionHandler:(GSNSWindowDidEndSheetCallbackBlock)handler;
+#endif
 
 @end
 
