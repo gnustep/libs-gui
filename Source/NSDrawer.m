@@ -99,6 +99,36 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+- (void) _configureContainer: (NSRect)contentRect
+{
+  NSRect rect = contentRect;
+  NSSize containerContentSize;
+
+  rect.origin.x += 2.0;
+  rect.origin.y -= 5.0;
+  
+  if (_container == nil)
+    {
+      _container = [[NSBox alloc] initWithFrame: rect];
+      [[super contentView] addSubview: _container];
+
+      [_container setTitle: @""];
+      [_container setTitlePosition: NSNoTitle];
+      [_container setBorderType: NSBezelBorder];
+      [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [_container setContentViewMargins: NSMakeSize(2,2)];  
+    }
+  else
+    {
+      [_container setFrame: rect];
+    }
+
+  // determine the difference between the container's content size and the window content size
+  containerContentSize = [[_container contentView] frame].size;
+  _borderSize = NSMakeSize(contentRect.size.width - containerContentSize.width,
+			   contentRect.size.height - containerContentSize.height);
+}
+
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -113,43 +143,12 @@ static NSNotificationCenter *nc = nil;
 		styleMask: aStyle
 		backing: bufferingType
 		defer: flag];
+
   if (self != nil)
     {
-      NSRect rect = contentRect;
-      NSRect border = contentRect;
-      NSSize containerContentSize;
-
-      rect.origin.x += 6;
-      rect.origin.y += 6;
-      rect.size.width -= 16;
-      rect.size.height -= 16;
-
-      border.origin.x += 1;
-      border.origin.y += 1;
-      border.size.width -= 2;
-      border.size.height -= 2;
-
-      _borderBox = [[NSBox alloc] initWithFrame: border];
-      [_borderBox setTitle: @""];
-      [_borderBox setTitlePosition: NSNoTitle];
-      [_borderBox setBorderType: NSLineBorder];
-      [_borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [_borderBox setContentViewMargins: NSMakeSize(0,0)];
-      [[super contentView] addSubview: _borderBox];      
-      
-      _container = [[NSBox alloc] initWithFrame: rect];
-      [_container setTitle: @""];
-      [_container setTitlePosition: NSNoTitle];
-      [_container setBorderType: NSBezelBorder];
-      [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [_container setContentViewMargins: NSMakeSize(2,2)];
-      [_borderBox addSubview: _container]; 
-
-      // determine the difference between the container's content size and the window content size
-      containerContentSize = [[_container contentView] frame].size;
-      _borderSize = NSMakeSize(contentRect.size.width - containerContentSize.width,
-				contentRect.size.height - containerContentSize.height);
+      [self _configureContainer: contentRect];
     }
+  
   return self;
 }
 
@@ -162,13 +161,13 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect newFrame = [_parentWindow frame];
   CGFloat totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
-  // NSRectEdge edge = _currentEdge;
   BOOL opened = (state == NSDrawerOpenState || state == NSDrawerOpeningState);
   NSSize size = [_parentWindow frame].size;
   NSRect windowContentRect = [[_parentWindow contentView] frame];
   CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height;
+
   // FIXME: This should probably add the toolbar height too, if the window has a toolbar
-  
+  [self _configureContainer: windowContentRect];
   if (_currentEdge == NSMinXEdge) // left
     {
       if (opened)
@@ -621,14 +620,14 @@ static NSNotificationCenter *nc = nil;
       break;
       
     case NSMaxXEdge:
-      if (windowFrame.origin.x + windowFrame.size.height > screenRect.size.height)
+      if (windowFrame.origin.x + windowFrame.size.width > screenRect.size.width)
 	{
 	  result = NSMinXEdge;
 	}
       break;
       
     case NSMaxYEdge:
-      if (windowFrame.origin.y + windowFrame.size.width > screenRect.size.width)
+      if (windowFrame.origin.y + windowFrame.size.height > screenRect.size.height)
 	{
 	  result = NSMinYEdge;
 	}
