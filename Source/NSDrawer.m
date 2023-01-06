@@ -601,32 +601,38 @@ static NSNotificationCenter *nc = nil;
   NSRectEdge result = _preferredEdge;
   NSRect windowFrame = [[self parentWindow] frame];
   NSRect screenRect = [[NSScreen mainScreen] frame];
+
+  // Diffs,,,
+  CGFloat top = screenRect.size.height - (windowFrame.origin.y + windowFrame.size.height);
+  CGFloat bottom = windowFrame.origin.y;
+  CGFloat right = screenRect.size.width - (windowFrame.origin.x + windowFrame.size.width);
+  CGFloat left = windowFrame.origin.x;
   
   switch (_preferredEdge)
     {
     case NSMinXEdge:
-      if (windowFrame.origin.x < _maxContentSize.width)
+      if (right > left)
 	{
 	  result = NSMaxXEdge;
 	}
       break;
       
     case NSMinYEdge:
-      if (windowFrame.origin.y < _maxContentSize.height)
+      if (top > bottom)
 	{
 	  result = NSMaxYEdge;
 	}
       break;
       
     case NSMaxXEdge:
-      if (windowFrame.origin.x + windowFrame.size.width > screenRect.size.width)
+      if (left > right)
 	{
 	  result = NSMinXEdge;
 	}
       break;
       
     case NSMaxYEdge:
-      if (windowFrame.origin.y + windowFrame.size.height > screenRect.size.height)
+      if (bottom > top)
 	{
 	  result = NSMinYEdge;
 	}
