@@ -13,6 +13,10 @@ on:
         description: "libs-base branch"
         default: "master"
         required: true
+      libs_back_branch:
+        description: "libs-back branch"
+        default: "master"
+        required: true
 
 env:
   APT_PACKAGES: >-
@@ -108,6 +112,16 @@ jobs:
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
           ./configure
           make && make install
+
+### Building libs-back is disabled due to various test failures. Re-enable when fixed.
+#      - name: Build libs-back # required by some tests
+#        working-directory: ${{env.DEPS_PATH}}
+#        run: |
+#          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+#          git clone -q -b ${LIBS_BACK_BRANCH:-master} https://github.com/gnustep/libs-back.git
+#          cd libs-back
+#          ./configure
+#          make && make install
 
       - name: Run tests
         run: |
