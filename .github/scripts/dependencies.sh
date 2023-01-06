@@ -2,72 +2,83 @@
 
 set -ex
 
-DEP_SRC=$HOME/dependency_source/
-DEP_ROOT=$HOME/staging
-
 install_gnustep_make() {
-    cd $DEP_SRC
-    git clone https://github.com/gnustep/tools-make.git
+    echo "::group::GNUstep Make"
+    cd $DEPS_PATH
+    git clone -q -b ${TOOLS_MAKE_BRANCH:-master} https://github.com/gnustep/tools-make.git
     cd tools-make
-    if [ -n "$RUNTIME_VERSION" ]
-    then
-        WITH_RUNTIME_ABI="--with-runtime-abi=${RUNTIME_VERSION}"
-    else
-        WITH_RUNTIME_ABI=""
+    MAKE_OPTS=
+    if [ -n "$HOST" ]; then
+      MAKE_OPTS="$MAKE_OPTS --host=$HOST"
     fi
-    ./configure --prefix=$DEP_ROOT --with-library-combo=$LIBRARY_COMBO $WITH_RUNTIME_ABI
+    if [ -n "$RUNTIME_VERSION" ]; then
+      MAKE_OPTS="$MAKE_OPTS --with-runtime-abi=$RUNTIME_VERSION"
+    fi
+    ./configure --prefix=$INSTALL_PATH --with-library-combo=$LIBRARY_COMBO $MAKE_OPTS || cat config.log
     make install
-    echo Objective-C build flags: `$HOME/staging/bin/gnustep-config --objc-flags`
+
+    echo Objective-C build flags:
+    $INSTALL_PATH/bin/gnustep-config --objc-flags
+    echo "::endgroup::"
 }
 
-install_ng_runtime() {
-    cd $DEP_SRC
-    git clone https://github.com/gnustep/libobjc2.git
+install_libobjc2() {
+    echo "::group::libobjc2"
+    cd $DEPS_PATH
+    git clone -q https://github.com/gnustep/libobjc2.git
     cd libobjc2
-    git submodule init
     git submodule sync
-    git submodule update
-    cd ..
-    mkdir libobjc2/build
-    cd libobjc2/build
-    export CC="clang"
-    export CXX="clang++"
-    export CXXFLAGS="-std=c++11"
-    cmake -DTESTS=off -DCMAKE_BUILD_TYPE=RelWithDebInfo -DGNUSTEP_INSTALL_TYPE=NONE -DCMAKE_INSTALL_PREFIX:PATH=$DEP_ROOT ../
+    git submodule update --init
+    mkdir build
+    cd build
+    cmake \
+      -DTESTS=off \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DGNUSTEP_INSTALL_TYPE=NONE \
+      -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH \
+      ../
     make install
+    echo "::endgroup::"
 }
 
 install_libdispatch() {
-    cd $DEP_SRC
+    echo "::group::libdispatch"
+    cd $DEPS_PATH
     # will reference upstream after https://github.com/apple/swift-corelibs-libdispatch/pull/534 is merged
-    git clone -b system-blocksruntime https://github.com/ngrewe/swift-corelibs-libdispatch.git
-    mkdir swift-corelibs-libdispatch/build
-    cd swift-corelibs-libdispatch/build
-    export CC="clang"
-    export CXX="clang++"
-    export LIBRARY_PATH=$DEP_ROOT/lib;
-    export LD_LIBRARY_PATH=$DEP_ROOT/lib:$LD_LIBRARY_PATH;
-    export CPATH=$DEP_ROOT/include;
-    cmake -DBUILD_TESTING=off -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DCMAKE_INSTALL_PREFIX:PATH=$HOME/staging -DINSTALL_PRIVATE_HEADERS=1 -DBlocksRuntime_INCLUDE_DIR=$DEP_ROOT/include -DBlocksRuntime_LIBRARIES=$DEP_ROOT/lib/libobjc.so ../
+    git clone -q -b system-blocksruntime https://github.com/ngrewe/swift-corelibs-libdispatch.git libdispatch
+    mkdir libdispatch/build
+    cd libdispatch/build
+    # -Wno-error=void-pointer-to-int-cast to work around build error in queue.c due to -Werror
+    cmake \
+      -DBUILD_TESTING=off \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH \
+      -DCMAKE_C_FLAGS="-Wno-error=void-pointer-to-int-cast" \
+      -DINSTALL_PRIVATE_HEADERS=1 \
+      -DBlocksRuntime_INCLUDE_DIR=$INSTALL_PATH/include \
+      -DBlocksRuntime_LIBRARIES=$INSTALL_PATH/lib/libobjc.so \
+      ../
     make install
+    echo "::endgroup::"
 }
 
 install_gnustep_base() {
-    export GNUSTEP_MAKEFILES=$HOME/staging/share/GNUstep/Makefiles
-    . $HOME/staging/share/GNUstep/Makefiles/GNUstep.sh
-
-    cd $DEP_SRC
-    git clone https://github.com/gnustep/libs-base.git
+    echo "::group::GNUstep Base"
+    cd $DEPS_PATH
+    . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+    git clone -q -b ${LIBS_BASE_BRANCH:-master} https://github.com/gnustep/libs-base.git
     cd libs-base
     ./configure
     make
     make install
+    echo "::endgroup::"
 }
 
-mkdir -p $DEP_SRC
-if [ "$LIBRARY_COMBO" = 'ng-gnu-gnu' ]
-then
-    install_ng_runtime
+mkdir -p $DEPS_PATH
+
+# Windows MSVC toolchain uses tools-windows-msvc scripts to install non-GNUstep dependencies
+if [ "$LIBRARY_COMBO" = "ng-gnu-gnu" -a "$IS_WINDOWS_MSVC" != "true" ]; then
+    install_libobjc2
     install_libdispatch
 fi
 
