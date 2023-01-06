@@ -104,9 +104,8 @@ static NSNotificationCenter *nc = nil;
   NSRect rect = contentRect;
   NSSize containerContentSize;
 
-  rect.origin.x += 2.0;
+  rect.origin.x += 1.0;
   rect.origin.y -= 5.0;
-  
   if (_container == nil)
     {
       _container = [[NSBox alloc] initWithFrame: rect];
