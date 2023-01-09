@@ -139,9 +139,9 @@ static NSNotificationCenter *nc = nil;
     }
 
   self = [super initWithContentRect: contentRect
-		styleMask: aStyle
-		backing: bufferingType
-		defer: flag];
+			  styleMask: aStyle
+			    backing: bufferingType
+			      defer: flag];
 
   if (self != nil)
     {
@@ -547,40 +547,41 @@ static NSNotificationCenter *nc = nil;
 
 - (id) initWithContentSize: (NSSize)contentSize 
 	     preferredEdge: (NSRectEdge)edge
-{
+{  
   self = [super init];
 
-  if (self == nil)
-    return nil;
-  
-  // initialize the drawer window...
-  _drawerWindow =  [[GSDrawerWindow alloc] 
-		     initWithContentRect: NSMakeRect(0, 0, contentSize.width,  
-						     contentSize.height)
-		     styleMask: 0
-		     backing: NSBackingStoreBuffered
-		     defer: NO];
-  [_drawerWindow setDrawer: self];
-  [_drawerWindow setReleasedWhenClosed: NO];
-
-  _preferredEdge = edge;
-  _currentEdge = edge;
-  _maxContentSize = NSMakeSize(200,200);
-  _minContentSize = contentSize;
-
-  // for side drawers, top of drawer is immediately below the title bar
-  if (edge == NSMinXEdge || edge == NSMaxXEdge)
+  if (self != nil)
     {
-      _leadingOffset = 0.0;
-      _trailingOffset = 10.0;
-    }
-  else
-    { 
-      _leadingOffset = 10.0;
-      _trailingOffset = 10.0;
-    }
-  _state = NSDrawerClosedState;
+        NSRect rect = NSMakeRect(0, 0, contentSize.width, contentSize.height);
 
+	// initialize the drawer window...  
+	_drawerWindow =  [[GSDrawerWindow alloc] 
+			     initWithContentRect: rect
+				       styleMask: 0
+					 backing: NSBackingStoreBuffered
+					   defer: NO];
+	[_drawerWindow setDrawer: self];
+	[_drawerWindow setReleasedWhenClosed: NO];
+	
+	_preferredEdge = edge;
+	_currentEdge = edge;
+	_maxContentSize = NSMakeSize(200,200);
+	_minContentSize = contentSize;
+	
+	// for side drawers, top of drawer is immediately below the title bar
+	if (edge == NSMinXEdge || edge == NSMaxXEdge)
+	  {
+	    _leadingOffset = 0.0;
+	    _trailingOffset = 10.0;
+	  }
+	else
+	  { 
+	    _leadingOffset = 10.0;
+	    _trailingOffset = 10.0;
+	  }
+	_state = NSDrawerClosedState;
+    }
+  
   return self;
 }
 
@@ -601,38 +602,45 @@ static NSNotificationCenter *nc = nil;
   NSRectEdge result = _preferredEdge;
   NSRect windowFrame = [[self parentWindow] frame];
   NSRect screenRect = [[NSScreen mainScreen] frame];
-
+  NSSize contentSize = [self contentSize];
+  
   // Diffs,,,
   CGFloat top = screenRect.size.height - (windowFrame.origin.y + windowFrame.size.height);
   CGFloat bottom = windowFrame.origin.y;
   CGFloat right = screenRect.size.width - (windowFrame.origin.x + windowFrame.size.width);
   CGFloat left = windowFrame.origin.x;
+
+  // Space left...
+  CGFloat topSpace = top - contentSize.height;
+  CGFloat bottomSpace = bottom - contentSize.height;
+  CGFloat rightSpace = right - contentSize.width;
+  CGFloat leftSpace = left - contentSize.width;
   
   switch (_preferredEdge)
     {
     case NSMinXEdge:
-      if (right > left)
+      if (leftSpace < 0.0 && rightSpace > leftSpace)
 	{
 	  result = NSMaxXEdge;
 	}
       break;
       
     case NSMinYEdge:
-      if (top > bottom)
+      if (bottomSpace < 0.0 && topSpace > bottomSpace)
 	{
 	  result = NSMaxYEdge;
 	}
       break;
       
     case NSMaxXEdge:
-      if (left > right)
+      if (rightSpace < 0.0 && leftSpace > rightSpace)
 	{
 	  result = NSMinXEdge;
 	}
       break;
       
     case NSMaxYEdge:
-      if (bottom > top)
+      if (topSpace < 0.0 && bottomSpace > topSpace)
 	{
 	  result = NSMinYEdge;
 	}
@@ -655,7 +663,7 @@ static NSNotificationCenter *nc = nil;
   _state = NSDrawerClosingState;
   [nc postNotificationName: NSDrawerWillCloseNotification object: self];
 
-   [_drawerWindow closeOnEdge];
+  [_drawerWindow closeOnEdge];
 
   _state = NSDrawerClosedState;
   [nc postNotificationName: NSDrawerDidCloseNotification object: self];
