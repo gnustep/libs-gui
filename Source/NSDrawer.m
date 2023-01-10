@@ -348,9 +348,9 @@ static NSNotificationCenter *nc = nil;
 {
   NSUInteger count = 10;
   NSRect frame = [self frameFromParentWindowFrameInState:
-			    (opening?NSDrawerClosedState:NSDrawerOpenState)];
+			    (opening ? NSDrawerClosedState : NSDrawerOpenState)];
   NSRect newFrame = [self frameFromParentWindowFrameInState:
-				 (opening?NSDrawerOpenState:NSDrawerClosedState)];
+			       (opening ? NSDrawerOpenState : NSDrawerClosedState)];
   NSTimeInterval slideDelay = 0.03;
   NSDate *nextStop = [NSDate dateWithTimeIntervalSinceNow:slideDelay];
   CGFloat deltaX = (newFrame.origin.x - frame.origin.x) / count;
