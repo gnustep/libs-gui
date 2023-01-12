@@ -39,6 +39,10 @@
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSGraphics.h"
 
+
+static NSNotificationCenter *nc = nil;
+
+
 // Popover private classes
 
 @interface GSPopoverView : NSView
@@ -130,8 +134,16 @@
 /* Class */
 @implementation NSPopover
 
-/* Properties */
++ (void) initialize
+{
+  if ([self class] == [NSPopover class])
+    {
+      nc = [NSNotificationCenter defaultCenter];
+      [self setVersion: 0];
+    }
+}
 
+/* Properties */
 - (void) setAnimates: (BOOL)flag
 {
   _animates = flag;
@@ -240,6 +252,16 @@
   [_realPanel setDelegate:nil];
 }
 
+- (void) _handleWindowDidBecomeKey: (NSNotification *)notification
+{
+  id obj = [notification object];
+
+  if (obj != _realPanel)
+    {
+      [self close];
+    }
+}
+
 - (void) showRelativeToRect: (NSRect)positioningRect
                      ofView: (NSView *)positioningView 
               preferredEdge: (NSRectEdge)preferredEdge
@@ -268,6 +290,11 @@
       [_realPanel setDelegate: self];
       [_realPanel setContentView: view];
     }
+
+  [nc addObserver: self
+	 selector: @selector(_handleWindowDidBecomeKey:)
+	     name: NSWindowDidBecomeKeyNotification
+	   object: nil];
   
   screenRect = [[positioningView window] convertRectToScreen:positioningRect];
   windowFrame = [_realPanel frame];
