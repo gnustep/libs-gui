@@ -61,6 +61,7 @@ static NSNotificationCenter *nc = nil;
 }
 
 - (NSRect) frameFromParentWindowFrameInState:(NSInteger)state;
+- (void) configureContainer: (NSRect)contentRect;
 
 // open/close
 - (void) openOnEdge: (NSRectEdge)edge;
@@ -99,35 +100,6 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (void) _configureContainer: (NSRect)contentRect
-{
-  NSRect rect = contentRect;
-  NSSize containerContentSize;
-
-  rect.origin.x += 1.0;
-  rect.origin.y -= 5.0;
-  if (_container == nil)
-    {
-      _container = [[NSBox alloc] initWithFrame: rect];
-      [[super contentView] addSubview: _container];
-
-      [_container setTitle: @""];
-      [_container setTitlePosition: NSNoTitle];
-      [_container setBorderType: NSBezelBorder];
-      [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [_container setContentViewMargins: NSMakeSize(2,2)];  
-    }
-  else
-    {
-      [_container setFrame: rect];
-    }
-
-  // determine the difference between the container's content size and the window content size
-  containerContentSize = [[_container contentView] frame].size;
-  _borderSize = NSMakeSize(contentRect.size.width - containerContentSize.width,
-			   contentRect.size.height - containerContentSize.height);
-}
-
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (NSUInteger)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -145,10 +117,40 @@ static NSNotificationCenter *nc = nil;
 
   if (self != nil)
     {
-      [self _configureContainer: contentRect];
+      [self configureContainer: contentRect];
     }
   
   return self;
+}
+
+- (void) configureContainer: (NSRect)contentRect
+{
+  NSRect rect = contentRect;
+  NSSize containerContentSize;
+
+  rect.origin.x += 1.0;
+  rect.origin.y -= 5.0;
+  if (_container == nil)
+    {
+      _container = [[NSBox alloc] initWithFrame: rect];
+      [[super contentView] addSubview: _container];
+      RELEASE(_container);
+      
+      [_container setTitle: @""];
+      [_container setTitlePosition: NSNoTitle];
+      [_container setBorderType: NSBezelBorder];
+      [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [_container setContentViewMargins: NSMakeSize(2,2)];  
+    }
+  else
+    {
+      [_container setFrame: rect];
+    }
+
+  // determine the difference between the container's content size and the window content size
+  containerContentSize = [[_container contentView] frame].size;
+  _borderSize = NSMakeSize(contentRect.size.width - containerContentSize.width,
+			   contentRect.size.height - containerContentSize.height);
 }
 
 - (id) container
@@ -166,11 +168,11 @@ static NSNotificationCenter *nc = nil;
   CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height;
 
   // FIXME: This should probably add the toolbar height too, if the window has a toolbar
-  [self _configureContainer: windowContentRect];
+  [self configureContainer: windowContentRect];
   if (_currentEdge == NSMinXEdge) // left
     {
       if (opened)
-        newFrame.size.width = [_drawer minContentSize].width + _borderSize.width;
+        newFrame.size.width = [_drawer maxContentSize].width + _borderSize.width;
       else
         newFrame.size.width = 16;
 
@@ -182,7 +184,7 @@ static NSNotificationCenter *nc = nil;
   else if (_currentEdge == NSMinYEdge) // bottom
     {
       if (opened)
-        newFrame.size.height = [_drawer minContentSize].height + _borderSize.height;
+        newFrame.size.height = [_drawer maxContentSize].height + _borderSize.height;
       else
         newFrame.size.height = 16;
 
@@ -194,7 +196,7 @@ static NSNotificationCenter *nc = nil;
   else if (_currentEdge == NSMaxXEdge) // right
     {
       if (opened)
-        newFrame.size.width = [_drawer minContentSize].width + _borderSize.width;
+        newFrame.size.width = [_drawer maxContentSize].width + _borderSize.width;
       else
         newFrame.size.width = 16;
 
@@ -207,7 +209,7 @@ static NSNotificationCenter *nc = nil;
   else if (_currentEdge == NSMaxYEdge) // top
     {
       if (opened)
-        newFrame.size.height = [_drawer minContentSize].height + _borderSize.height;
+        newFrame.size.height = [_drawer maxContentSize].height + _borderSize.height;
       else
         newFrame.size.height = 16;
 
@@ -565,8 +567,8 @@ static NSNotificationCenter *nc = nil;
 	
 	_preferredEdge = edge;
 	_currentEdge = edge;
-	_maxContentSize = NSMakeSize(200,200);
-	_minContentSize = contentSize;
+	_maxContentSize = contentSize;
+	_minContentSize = NSMakeSize(200,200);
 	
 	// for side drawers, top of drawer is immediately below the title bar
 	if (edge == NSMinXEdge || edge == NSMaxXEdge)
@@ -579,6 +581,7 @@ static NSNotificationCenter *nc = nil;
 	    _leadingOffset = 10.0;
 	    _trailingOffset = 10.0;
 	  }
+	
 	_state = NSDrawerClosedState;
     }
   
@@ -738,16 +741,6 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setContentSize: (NSSize)size
 {
-  // Check with min and max size
-  if (size.width < _minContentSize.width)
-    size.width = _minContentSize.width;
-  if (size.height < _minContentSize.height)
-    size.height = _minContentSize.height;
-  if (size.width > _maxContentSize.width)
-    size.width = _maxContentSize.width;
-  if (size.height > _maxContentSize.height)
-    size.height = _maxContentSize.height;
-
   // Check with delegate
   if ((_delegate != nil)
     && ([_delegate respondsToSelector:
@@ -815,6 +808,7 @@ static NSNotificationCenter *nc = nil;
 - (void) setContentView: (NSView *)aView
 {
   [[_drawerWindow container] setContentView: aView];
+  [self setContentSize: [aView frame].size];
 }
 
 - (void) setParentWindow: (NSWindow *)parent
