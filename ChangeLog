@@ -1,3 +1,8 @@
+2023-01-03 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSDrawer.m: Open drawer on the opposite edge if needed when
+	close to the boundary of the screen.
+
 2022-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 
         * ChangeLog: Update for new release
