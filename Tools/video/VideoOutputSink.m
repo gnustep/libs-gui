@@ -1,7 +1,7 @@
-/* 
-   AudioOutputSink.m
+/*
+   VideoOutputSink.m
 
-   Sink audio data to libavcodec.
+   Sink video data to libavcodec.
 
    Copyright (C) 2022 Free Software Foundation, Inc.
 
@@ -58,18 +58,28 @@
  */
 
 #include <libavcodec/avcodec.h>
+#include "cmdutils.h"
 
 #define INBUF_SIZE 4096
+
+/*
+AVDictionary *codec_opts;
+AVDictionary *format_opts;
+AVDictionary *swr_opts;
+AVDictionary *sws_dict;
+*/
 
 int video_main(NSMovie *movie, NSMovieView *view);
 
 @interface VideoOutputSink : NSObject <GSVideoSink>
 {
+  /*
   AVCodec *_codec;
   AVCodecParserContext *_parser;
   AVCodecContext *_context; // = NULL;
   AVPacket *_pkt;
   AVFrame *_frame;
+  */
   
   NSMovieView *_movieView;
 }
@@ -97,13 +107,14 @@ int video_main(NSMovie *movie, NSMovieView *view);
         fwrite(buf + i * wrap, 1, xsize, f);
     fclose(f);
   */
-  NSLog(@"Playing...");
+  NSLog(@"Playing...  %d, %d, %d", wrap, xsize, ysize);
 }
 
 
 
 - (void) decode
 {
+  /*
   int ret;
   
   ret = avcodec_send_packet(_context, _pkt);
@@ -129,8 +140,8 @@ int video_main(NSMovie *movie, NSMovieView *view);
       NSLog(@"saving frame %3d\n", _context->frame_number);
       fflush(stdout);
       
-      /* the picture is allocated by the decoder. no need to
-         free it */
+      // the picture is allocated by the decoder. no need to
+      // free it 
       // snprintf(buf, sizeof(buf), "%d", _context->frame_number);
       [self display: _frame->data[0]
                wrap: _frame->linesize[0]
@@ -140,16 +151,17 @@ int video_main(NSMovie *movie, NSMovieView *view);
       // pgm_save(frame->data[0], frame->linesize[0],
       //         frame->width, frame->height, buf);      
     }
+   */
 }
 
 - (void)dealloc
 {
   [self close];
   _movieView = nil;
-  _pkt = NULL;
-  _context = NULL;
-  _parser = NULL;
-  _frame = NULL;
+  //_pkt = NULL;
+  //_context = NULL;
+  //_parser = NULL;
+  //_frame = NULL;
   
   [super dealloc];
 }
@@ -161,10 +173,10 @@ int video_main(NSMovie *movie, NSMovieView *view);
   if (self != nil)
     {
       _movieView = nil;
-      _pkt = NULL;
-      _context = NULL;
-      _parser = NULL;
-      _frame = NULL;
+      //  _pkt = NULL;
+      //_context = NULL;
+      //_parser = NULL;
+      //_frame = NULL;
     }
   
   return self;
@@ -182,6 +194,7 @@ int video_main(NSMovie *movie, NSMovieView *view);
 
 - (BOOL)open
 {
+  /*
   _pkt = av_packet_alloc();
   if (!_pkt)
     {
@@ -210,7 +223,6 @@ int video_main(NSMovie *movie, NSMovieView *view);
       return NO;
     }
   
-  /* open it */
   if (avcodec_open2(_context, _codec, NULL) < 0)
     {
       NSLog(@"Could not open codec\n");
@@ -225,10 +237,13 @@ int video_main(NSMovie *movie, NSMovieView *view);
     }
   
   return YES;
+  */
+  return NO;
 }
 
 - (void)close
 {
+  /*
   if (_parser != NULL)
     {
       av_parser_close(_parser);
@@ -248,15 +263,17 @@ int video_main(NSMovie *movie, NSMovieView *view);
     {
       av_packet_free(&_pkt);
     }
+  */
 }
 
 - (void) play
 {
-  
+  video_main([_movieView movie], _movieView);
 }
 
 - (BOOL)playBytes: (void *)bytes length: (NSUInteger)length
 {
+  /*
   int ret = av_parser_parse2(_parser, _context, &_pkt->data, &_pkt->size,
                              bytes, length, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
   if (ret < 0)
@@ -284,6 +301,8 @@ int video_main(NSMovie *movie, NSMovieView *view);
     }
   
   return YES;
+  */
+  return NO;
 }
 
 - (void)setVolume: (float)volume

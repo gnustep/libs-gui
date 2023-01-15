@@ -49,6 +49,11 @@
  */
 - (void) close;
 
+/**
+ * Play the entire video
+ */
+- (void) play;
+
 /** 
  * Plays the data in bytes
  */
@@ -76,4 +81,3 @@
 @end
 
 #endif // _GNUstep_H_GSVideoSink
-

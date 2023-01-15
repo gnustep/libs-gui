@@ -68,6 +68,7 @@ enum
 @implementation NSMovieView (PrivateMethods)
 - (void) _stream
 {
+  /*
   NSUInteger bytesRead;
   BOOL success = NO;
   void *buffer;
@@ -110,6 +111,9 @@ enum
                          withObject: [NSNumber numberWithBool: success]
                       waitUntilDone: YES];
   RELEASE(self);
+  */
+  [[_movie _sink] play];
+  // video_main(_movie, self);
 }
 
 - (void) _finished: (NSNumber *)finishedPlaying
@@ -159,7 +163,7 @@ enum
 - (void) start: (id)sender
 {
   /*
-  // If the locks exists this instance is already playing
+   // If the locks exists this instance is already playing
   if (_readLock != nil && _playbackLock != nil)
     {
       return;
@@ -172,13 +176,14 @@ enum
     {
       return;
     }
-  
+  */
   _shouldStop = NO;
   [NSThread detachNewThreadSelector: @selector(_stream)
                            toTarget: self
                          withObject: nil];
 
-  [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
+  // [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
+  
 }
 
 - (void) stop: (id)sender
@@ -196,7 +201,6 @@ enum
 
   // Set to MOVIE_SHOULD_PLAY so that thread isn't blocked.
   [_readLock unlockWithCondition: MOVIE_SHOULD_PLAY];
-  */
 }
 
 - (BOOL) isPlaying

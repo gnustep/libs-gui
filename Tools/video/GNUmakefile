@@ -21,6 +21,7 @@ VideoOutput_LIB_DIRS += \
 # Build the bundles.
 VideoFile_OBJC_FILES = VideoFileSource.m
 VideoOutput_OBJC_FILES = VideoOutputSink.m ffplay.m
+VideoOutlet_C_FILES = cmdutils.c
 
 VideoFile_PRINCIPAL_CLASS = VideoFileSource
 VideoOutput_PRINCIPAL_CLASS = VidioOutputSink

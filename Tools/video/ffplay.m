@@ -3700,6 +3700,8 @@ int video_main(NSMovie *movie, NSMovieView *view) //(int argc, char **argv)
     int flags;
     VideoState *is;
 
+    NSLog(@"video_main called %@, %@", movie, view);
+    
     init_dynload();
 
     av_log_set_flags(AV_LOG_SKIP_REPEATED);
