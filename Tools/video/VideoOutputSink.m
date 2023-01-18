@@ -27,11 +27,10 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include <AppKit/NSMovie.h>
-#include <AppKit/NSMovieView.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
-#include <GNUstepGUI/GSVideoSink.h>
+#import <GNUstepGUI/GSVideoSink.h>
 
 // Portions of this code have been taken from an example in avcodec by Fabrice Bellard
 
@@ -57,31 +56,15 @@
  * THE SOFTWARE.
  */
 
-#include <libavcodec/avcodec.h>
-#include "cmdutils.h"
+#import <libavcodec/avcodec.h>
+#import <libavformat/avformat.h>
 
-#define INBUF_SIZE 4096
-
-/*
-AVDictionary *codec_opts;
-AVDictionary *format_opts;
-AVDictionary *swr_opts;
-AVDictionary *sws_dict;
-*/
-
-int video_main(NSMovie *movie, NSMovieView *view);
+// #define INBUF_SIZE 4096
 
 @interface VideoOutputSink : NSObject <GSVideoSink>
 {
-  /*
-  AVCodec *_codec;
-  AVCodecParserContext *_parser;
-  AVCodecContext *_context; // = NULL;
-  AVPacket *_pkt;
-  AVFrame *_frame;
-  */
-  
   NSMovieView *_movieView;
+  CGFloat _volume;
 }
 @end
 
@@ -92,226 +75,182 @@ int video_main(NSMovie *movie, NSMovieView *view);
   return YES; // for now just say yes...
 }
 
-- (void) display: (unsigned char *) buf
-            wrap: (int) wrap
-           xsize: (int) xsize
-           ysize: (int) ysize
+/**
+ * Opens the device for output, called by [NSMovie-play].
+ */
+- (BOOL) open
 {
-  /*
-    FILE *f;
-    int i;
-
-    f = fopen(filename,"wb");
-    fprintf(f, "P5\n%d %d\n%d\n", xsize, ysize, 255);
-    for (i = 0; i < ysize; i++)
-        fwrite(buf + i * wrap, 1, xsize, f);
-    fclose(f);
-  */
-  NSLog(@"Playing...  %d, %d, %d", wrap, xsize, ysize);
+  return YES;
 }
 
-
-
-- (void) decode
+/** Closes the device, called by [NSMovie-stop].
+ */
+- (void) close
 {
-  /*
-  int ret;
-  
-  ret = avcodec_send_packet(_context, _pkt);
-  if (ret < 0)
-    {
-      NSLog(@"Error sending a packet for decoding\n");
-      return;
-    }
-  
-  while (ret >= 0)
-    {
-      ret = avcodec_receive_frame(_context, _frame);
-      if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-        {
-          return;
-        }
-      else if (ret < 0)
-        {
-          NSLog(@"Error during decoding\n");
-          return;
-        }
-      
-      NSLog(@"saving frame %3d\n", _context->frame_number);
-      fflush(stdout);
-      
-      // the picture is allocated by the decoder. no need to
-      // free it 
-      // snprintf(buf, sizeof(buf), "%d", _context->frame_number);
-      [self display: _frame->data[0]
-               wrap: _frame->linesize[0]
-              xsize: _frame->width
-              ysize: _frame->height];
-      
-      // pgm_save(frame->data[0], frame->linesize[0],
-      //         frame->width, frame->height, buf);      
-    }
-   */
 }
 
-- (void)dealloc
+/** 
+ * Plays the data in bytes
+ */
+- (BOOL) playBytes: (void *)bytes length: (NSUInteger)length
 {
-  [self close];
-  _movieView = nil;
-  //_pkt = NULL;
-  //_context = NULL;
-  //_parser = NULL;
-  //_frame = NULL;
-  
-  [super dealloc];
+  return YES;
 }
 
-- (id)init
+/** Called by [NSMovieView -setVolume:], and corresponds to it.  Parameter volume
+ *  is between the values 0.0 and 1.0.
+ */
+- (void) setVolume: (float)volume
 {
-  self = [super init];
-
-  if (self != nil)
-    {
-      _movieView = nil;
-      //  _pkt = NULL;
-      //_context = NULL;
-      //_parser = NULL;
-      //_frame = NULL;
-    }
-  
-  return self;
+  _volume = volume;
 }
 
+/** Called by [NSMovieView -volume].
+ */
+- (CGFloat) volume
+{
+  return _volume;
+}
+
+/**
+ * Sets the view to output to.
+ */
 - (void) setMovieView: (NSMovieView *)view
 {
-  _movieView = view; // weak, don't retain since the view is retained by its parent view.
+  ASSIGN(_movieView, view);
 }
 
+/**
+ * The movie view
+ */
 - (NSMovieView *) movieView
 {
   return _movieView;
 }
 
-- (BOOL)open
+- (void) drawFrame: (AVFrame *)frame toView: (NSView *)view
 {
-  /*
-  _pkt = av_packet_alloc();
-  if (!_pkt)
-    {
-      NSLog(@"Could not allocate packet");
-      return NO;
-    }
+  int bitsPerPixel = 24;
+  int bytesPerRow = frame->linesize[0];
+  NSSize size = NSMakeSize(frame->width, frame->height);
+  NSBitmapImageRep *imageRep =
+    [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: &frame->data[0]
+					    pixelsWide: frame->width
+					    pixelsHigh: frame->height
+					 bitsPerSample: 8
+				       samplesPerPixel: 3
+					      hasAlpha: NO
+					      isPlanar: NO
+					colorSpaceName: NSCalibratedRGBColorSpace
+					   bytesPerRow: bytesPerRow
+					  bitsPerPixel: bitsPerPixel];
 
-  _codec = avcodec_find_decoder(AV_CODEC_ID_MPEG4); // will set this based on file type.
-  if (!_codec)
-    {
-      NSLog(@"Could not find decoder for type");
-      return NO;
-    }
-  
-  _parser = av_parser_init(_codec->id);
-  if (!_parser)
-    {
-      NSLog(@"Could not init parser");
-      return NO;
-    }
+  // Create an NSImage from the bitmap image rep
+  NSImage *image = [[NSImage alloc] initWithSize: size];
+  [image addRepresentation: imageRep];
 
-  _context = avcodec_alloc_context3(_codec);
-  if (!_context)
-    {
-      NSLog(@"Could not allocate video coder context");
-      return NO;
-    }
-  
-  if (avcodec_open2(_context, _codec, NULL) < 0)
-    {
-      NSLog(@"Could not open codec\n");
-      return NO;
-    }
-
-  _frame = av_frame_alloc();
-  if (!_frame)
-    {
-      NSLog(@"Could not allocate video frame\n");
-      return NO;
-    }
-  
-  return YES;
-  */
-  return NO;
-}
-
-- (void)close
-{
-  /*
-  if (_parser != NULL)
-    {
-      av_parser_close(_parser);
-    }
-  
-  if (_context != NULL)
-    {
-      avcodec_free_context(&_context);
-    }
-  
-  if (_frame != NULL)
-    {
-      av_frame_free(&_frame);
-    }
-
-  if (_pkt != NULL)
-    {
-      av_packet_free(&_pkt);
-    }
-  */
+  // Draw the image to the view
+  [image drawInRect: view.bounds
+	   fromRect: NSZeroRect
+	  operation: NSCompositeCopy
+	   fraction: 1.0];
 }
 
 - (void) play
 {
-  video_main([_movieView movie], _movieView);
-}
-
-- (BOOL)playBytes: (void *)bytes length: (NSUInteger)length
-{
-  /*
-  int ret = av_parser_parse2(_parser, _context, &_pkt->data, &_pkt->size,
-                             bytes, length, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-  if (ret < 0)
+  NSView *view = _movieView;
+  NSURL *movieURL = [[_movieView movie] URL];
+  
+  // Initialize ffmpeg
+  av_register_all();
+  avcodec_register_all();
+  avformat_network_init();
+  
+  // Open the movie file using ffmpeg
+  AVFormatContext *formatContext = avformat_alloc_context();
+  if (avformat_open_input(&formatContext, [movieURL UTF8String], NULL, NULL) != 0)
     {
-      NSLog(@"Error encountered while parsing data");
-      return NO;
-    }
-
-  if (_pkt != NULL)
-    {
-      if (_pkt->size)
-        {
-          [self decode];
-        }
-      else
-        {
-          NSLog(@"Packet size is 0");
-        } 
-    }
-  else
-    {
-      NSLog(@"Invalid packet, can't play data");
-      
-      return NO;
+      NSLog(@"Error opening movie file");
+      return;
     }
   
-  return YES;
-  */
-  return NO;
-}
-
-- (void)setVolume: (float)volume
-{
-}
-
-- (CGFloat)volume
-{
-  return 1.0;
+  // Retrieve stream information
+  if (avformat_find_stream_info(formatContext, NULL) < 0)
+    {
+      NSLog(@"Error retrieving stream information");
+      return;
+    }
+  
+  // Find the video stream
+  int videoStream = -1;
+  for (int i = 0; i < formatContext->nb_streams; i++)
+    {
+      if (formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+	{
+	  videoStream = i;
+	  break;
+	}
+    }
+  
+  if (videoStream == -1)
+    {
+      NSLog(@"Error finding video stream");
+      return;
+    }
+  
+  // Get the codec context for the video stream
+  AVCodecContext *codecContext = formatContext->streams[videoStream]->codec;
+  
+  // Find the decoder for the video stream
+  AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
+  if (codec == NULL)
+    {
+      NSLog(@"Error finding decoder");
+      return;
+    }
+  
+  // Open the codec
+  if (avcodec_open2(codecContext, codec, NULL) < 0)
+    {
+      NSLog(@"Error opening codec");
+      return;
+    }
+  
+  // Allocate a frame to hold the decoded video
+  AVFrame *frame = av_frame_alloc();
+  
+  // Create a packet
+  AVPacket packet;
+  av_init_packet(&packet);
+  
+  // Read frames from the movie file
+  while (av_read_frame(formatContext, &packet) >= 0)
+    {
+      if (packet.stream_index == videoStream)
+	{
+	  // Decode the video frame
+	  int frameFinished = 0;
+	  avcodec_decode_video2(codecContext, frame, &frameFinished, &packet);
+	  
+	  if (frameFinished)
+	    {
+	      // Draw the frame to the NSView
+	      [self drawFrame:frame toView:view];
+	    }
+	}
+      
+      // Free the packet
+      av_free_packet(&packet);
+    }
+  
+  // Free the frame
+  av_free(frame);
+  
+  // Close the codec
+  avcodec_close(codecContext);
+  
+  // Close the movie file
+  avformat_close_input(&formatContext);
 }
 
 @end
