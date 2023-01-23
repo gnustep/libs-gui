@@ -85,10 +85,4 @@
 }
 @end
 
-@interface GSObservableDictionary : NSDictionary
-{
-  NSMutableDictionary *_dictionary;
-}
-@end
-
 #endif //_GS_BINDING_HELPER_H

@@ -35,98 +35,30 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 
-@implementation GSObservableDictionary
-
-- (instancetype) initWithDictionary: (NSDictionary *)dictionary
-{
-  self = [super init];
-  if (self != nil)
-    {
-      ASSIGN(_dictionary, dictionary);
-    }
-  return self;
-}
-
-- (id) initWithObjects: (const id[])objects
-	       forKeys: (const id <NSCopying>[])keys
-		 count: (NSUInteger)count
-{
-  self = [super init];
-  if (self != nil)
-    {
-      _dictionary = [[NSMutableDictionary alloc] initWithObjects: objects
-                                                  forKeys: keys
-                                                    count: count];
-    }
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE(_dictionary);
-  [super dealloc];
-}
-
-- (NSUInteger) count
-{
-  return [_dictionary count];
-}
-
-- (id) objectForKey: (id)key
-{
-  return [_dictionary objectForKey: key];
-}
-
-- (NSEnumerator *) keyEnumerator
-{
-  return [_dictionary keyEnumerator];
-}
-
-- (void) setValue: (id)value forKey: (NSString *)key
-{
-  [_dictionary setValue: value forKey: key];
-}
-
-- (id) valueForKey: (NSString *)key
-{
-  id result = [_dictionary valueForKey: key];
-
-  if ([result isKindOfClass: [NSDictionary class]])
-    {
-      // FIXME: Using the correct memory management here
-      // Leads to an issue inside of KVO. For now we leak the
-      // object until this gets fixed.
-      //return AUTORELEASE([[GSObservableDictionary alloc]
-      return ([[GSObservableDictionary alloc]
-                                initWithDictionary: result]);
-    }
-
-  return result;
-}
-
-@end
-
 @implementation NSDictionaryController
 
 + (void) initialize
 {
   if (self == [NSDictionaryController class])
     {
+      
       [self exposeBinding: NSContentDictionaryBinding];
-      [self exposeBinding: NSIncludedKeysBinding];
+      //[self exposeBinding: NSIncludedKeysBinding];
       [self exposeBinding: NSExcludedKeysBinding];
       [self exposeBinding: NSInitialKeyBinding];
       [self exposeBinding: NSInitialValueBinding];
-      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
+      /*
+      [self setKeys: [NSArray arrayWithObjects: NSContentDictionaryBinding, nil] // NSContentBinding, NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+      */
     }
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
   NSDictionaryControllerKeyValuePair *o = [[NSDictionaryControllerKeyValuePair alloc] init];
-  NSString *k = [NSString stringWithFormat: @"%@-%lu", _initialKey, _count];
-  NSString *v = [NSString stringWithFormat: @"%@-%lu", _initialValue, _count];
+  NSString *k = [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
+  NSString *v = [NSString stringWithFormat: @"%@%lu", _initialValue, _count];
 
   [o setKey: k];
   [o setValue: v];
@@ -197,6 +129,36 @@
   ASSIGN(_localizedKeyTable, keyTable);
 }
 
+- (NSArray *) _buildArray
+{
+  NSArray *allKeys = [_contentDictionary allKeys];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
+
+  FOR_IN(id, k, allKeys)
+    {
+      NSDictionaryControllerKeyValuePair *kvp =
+	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
+
+      if ([_includedKeys containsObject: k])
+	{
+	  id v = [_contentDictionary objectForKey: k];
+
+	  [kvp setKey: k];
+	  [kvp setValue: v];
+
+	  if (![_excludedKeys containsObject: k])
+	    {
+	      [kvp setExplicitlyIncluded: NO];
+	    }
+
+	  [result addObject: kvp];
+	}
+    }
+  END_FOR_IN(allKeys);
+
+  return result;
+}
+
 - (NSDictionary *) contentDictionary
 {
   return _contentDictionary;
@@ -204,11 +166,11 @@
 
 - (void) setContentDictionary: (NSDictionary *)dict
 {
+  NSArray *array = nil;
+  
   ASSIGN(_contentDictionary, dict);
-}
-
-- (void) rearrangeObjects
-{
+  array = [self _buildArray];
+  [self arrangeObjects: array];
 }
 
 - (void) observeValueForKeyPath: (NSString*)aPath
@@ -235,7 +197,7 @@
       _key = nil;
       _value = nil;
       _localizedKey = nil;
-      _explicitlyIncluded = NO;
+      _explicitlyIncluded = YES;
     }
   return self;
 }
